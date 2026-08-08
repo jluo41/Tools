@@ -38,7 +38,7 @@ REQUIRED = [
     "done_criteria", "closed_when", "exit_when",
 ]
 FAMILIES = {"Open", "Seed", "Work", "Venue", "Literature", "Value", "Display", "Main",
-            "Appendix", "Submission", "Round"}
+            "Appendix", "Submission", "Round", "Label"}
 PATH_FIELD = re.compile(
     r"^\s*([a-z][a-z0-9_]*):\s+"
     r"(0-lifecycle/\S+|0-sections/\S+|0-displays/\S+)"

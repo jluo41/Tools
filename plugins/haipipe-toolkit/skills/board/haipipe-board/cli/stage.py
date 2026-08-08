@@ -25,7 +25,7 @@ from src.stage_contract import (END, START, STYLE_END, STYLE_START,  # noqa: E40
                                 replace_managed_style)
 
 FAMILIES = ("Open", "Seed", "Work", "Venue", "Literature", "Value", "Display", "Main",
-            "Appendix", "Submission", "Round")
+            "Appendix", "Submission", "Round", "Label")
 
 
 def compact(text, limit=520):

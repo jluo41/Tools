@@ -820,7 +820,10 @@ def _render_question(q, prv, nxt):
     return (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
-        f' data-session="{esc(q.get("session",""))}">'
+        f' data-session="{esc(q.get("session",""))}"'
+        # A plugin surface gates on the page's declared type (JL 260807), so the type
+        # has to survive into the DOM; before this it lived only in the source head.
+        f' data-page-type="{esc(q.get("page_type",""))}">'
         f'<div class="qh"><span class="qid">{q["id"]}</span>'
         f'<span class="pill {cls}">{tok} {esc(lab)}</span>'
         f'<span class="mut">{esc(who)}</span>'

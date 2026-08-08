@@ -514,6 +514,7 @@ def render(meta, qs):
         ("appendix", "Appendix"),
         ("submission", "Submission"),
         ("round", "Round"),
+        ("label", "Label"),
         ("stage", "legacy stages"),
     ]
     bar = "█" * round(done / nq * 14) + "░" * (14 - round(done / nq * 14)) if nq else ""

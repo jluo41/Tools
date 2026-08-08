@@ -215,13 +215,20 @@
   function pickOpen() {
     var tgt = chatTarget();
     var tui = tuiDefault();
-    pick.innerHTML =
-      '<button class="pk" data-v="gui" role="menuitem">'
-        + '<b>\u{1F4AC} GUI-Chat</b><i>the SDK drawer: gated edits, diffs, tool cards</i>'
-        + '<u></u><s>' + (tui ? '' : '●') + '</s></button>'
-      + '<button class="pk" data-v="tui" role="menuitem">'
-        + '<b>⌨️ TUI-Chat</b><i>the real CLI in a terminal: long jobs, skills</i>'
-        + '<u></u><s>' + (tui ? '●' : '') + '</s></button>';
+    // 🔌 The menu is a REGISTRY now (JL 260807): the board contributes the two chats,
+    // a plugin contributes its own surface, and an entry that cannot act on the open
+    // page is never drawn. `data-v` stays the id so the existing handler still reads it.
+    var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
+    var entries = window.boardPlugins ? window.boardPlugins.applicable(page) : [];
+    // The menu has a NAME now (JL 260807): it is the Plugin menu, not "the chat picker",
+    // because two of its entries are not chats and the next ones will not be either.
+    pick.innerHTML = '<div class="pkh">\u{1F50C} Plugin</div>' + entries.map(function (e) {
+      var dot = e.id === 'gui' ? (tui ? '' : '●')
+              : e.id === 'tui' ? (tui ? '●' : '') : '';
+      return '<button class="pk" data-v="' + e.id + '" role="menuitem">'
+        + '<b>' + e.label + '</b><i>' + (e.hint || '') + '</i>'
+        + '<u></u><s>' + dot + '</s></button>';
+    }).join('');
     pick.hidden = false;
     document.addEventListener('pointerdown', pickAway, true);
     document.addEventListener('keydown', pickKey, true);
@@ -231,14 +238,34 @@
     });
     pick.querySelectorAll('.pk').forEach(function (b) {
       b.onclick = function () {
-        try { localStorage.setItem(TUIKEY, b.dataset.v === 'tui' ? '1' : '0'); } catch (e) {}
+        var id = b.dataset.v;
+        var hit = (window.boardPlugins ? window.boardPlugins.all() : [])
+                    .filter(function (e) { return e.id === id; })[0];
         pickClose();
-        var t = chatTarget();
-        chatOpen(t || 'board');
+        if (hit) hit.open(window.boardPlugins.livePage());
       };
     });
     var first = pick.querySelector('.pk');
     if (first) first.focus();
+  }
+
+  // The board owns exactly two surfaces and registers them like anybody else, so the
+  // engine has no privileged path a plugin cannot take.
+  if (window.boardPlugins) {
+    window.boardPlugins.register({
+      id: 'gui', label: '\u{1F4AC} GUI Chat',
+      hint: 'the SDK drawer: gated edits, diffs, tool cards',
+      open: function () {
+        try { localStorage.setItem(TUIKEY, '0'); } catch (e) {}
+        chatOpen(chatTarget() || 'board');
+      } });
+    window.boardPlugins.register({
+      id: 'tui', label: '⌨️ TUI Chat',
+      hint: 'the real CLI in a terminal: long jobs, skills',
+      open: function () {
+        try { localStorage.setItem(TUIKEY, '1'); } catch (e) {}
+        chatOpen(chatTarget() || 'board');
+      } });
   }
 
   fab.onclick = function () {

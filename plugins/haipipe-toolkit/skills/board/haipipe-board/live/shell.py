@@ -234,7 +234,20 @@ def _shell_doc(page_url, index_url):
   html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);overflow:hidden}
   /* The strip that answers "which board am I looking at". The address bar shows
      the shell rather than the page, so this is the only place that can say it. */
-  #bar{height:30px;display:flex;align-items:center;gap:9px;padding:0 12px;
+  .mhide{display:none !important}
+#mplugmenu{position:absolute;top:38px;left:150px;z-index:90;min-width:250px;
+  background:#fff;border:1px solid #d8d8d8;border-radius:9px;padding:4px;
+  box-shadow:0 10px 30px rgba(0,0,0,.16)}
+#mplugmenu[hidden]{display:none}
+#mplugmenu .mrow{display:block;width:100%;text-align:left;border:0;background:none;
+  padding:7px 10px;border-radius:6px;cursor:pointer;
+  font:500 13px/1.35 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:#1e1e1e !important}
+#mplugmenu .mrow:hover{background:#f1f3f5}
+#mplugmenu .mrow b{display:block;font-size:13px;font-weight:600;color:#1e1e1e !important}
+#mplugmenu .mrow i{display:block;font-size:11.5px;font-style:normal;color:#6b7280 !important}
+#mplugmenu{min-width:260px;max-width:320px}
+#bar{height:30px;display:flex;align-items:center;gap:9px;padding:0 12px;
     background:var(--card);color:var(--mut);border-bottom:1px solid var(--line);
     font:12px/1 ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden}
   #bar a{color:var(--accent);text-decoration:none;flex:0 0 auto}
@@ -262,7 +275,14 @@ def _shell_doc(page_url, index_url):
   #split{display:grid;height:calc(100% - 30px);overflow:hidden;
     grid-template-columns:var(--iw,250px) 5px 1fr 5px var(--cw,520px)}
   #split.hi{grid-template-columns:0 0 1fr 5px var(--cw,520px)}
-  #split.hc{grid-template-columns:var(--iw,250px) 5px 1fr 0 0}
+  #cx{position:absolute;top:8px;right:12px;z-index:80;cursor:pointer;
+  font:500 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:5px 10px;border-radius:6px;border:1px solid #d8d8d8;
+  background:#fff;color:#1e1e1e}
+#cx:hover{background:#f1f3f5}
+#split.hc #cx{display:none}
+#split{position:relative}
+#split.hc{grid-template-columns:var(--iw,250px) 5px 1fr 0 0}
   #split.hi.hc{grid-template-columns:0 0 1fr 0 0}
   /* NARROW: THE SAME FIVE CHILDREN, STACKED. Three panes side by side stop
      being readable somewhere around a phone, so below 820px they become rows —
@@ -297,10 +317,18 @@ def _shell_doc(page_url, index_url):
 <div id="bar">
   <a href="/boards" target="_top" title="every board in this SPACE">🏠</a>
   <button id="ti" type="button" title="Show or hide the page list (☰ on the old board)">☰ Pages</button>
-  <button id="mtui" type="button" data-mode="tui"
+  <button id="mplugbtn" type="button" aria-haspopup="menu" aria-expanded="false"
+    title="Everything this page can open">🔌 Plugin ▾</button>
+  <div id="mplugmenu" hidden role="menu"></div>
+  <button id="mtui" class="mhide" type="button" data-mode="tui"
     title="The real CLI in a terminal. Click again to put the chat away.">&gt;_ TUI Chat</button>
-  <button id="mgui" type="button" data-mode="gui"
+  <button id="mgui" class="mhide" type="button" data-mode="gui"
     title="The SDK chat box. Click again to put the chat away.">💬 GUI Chat</button>
+  <!-- 🔌 A plugin surface the OPEN PAGE contributes. The shell hides the page's own
+       FAB (see pane-page CSS), so without this row a registered plugin is unreachable
+       inside the viewer: it worked on a bare page and nowhere a person actually looks.
+       Drawn only when the page registers something that applies to it. -->
+
   <span class="sep">·</span>
   <span id="where">board</span>
   <span class="sep">·</span>
@@ -313,6 +341,7 @@ def _shell_doc(page_url, index_url):
   <iframe name="page"  id="fp" src="__PAGE__"  title="page"></iframe>
   <div class="gr" data-var="cw" data-min="280" data-max="900" data-rev="1"></div>
   <iframe name="chat"  id="fc" data-src="__CHAT__"  title="chat"></iframe>
+  <button id="cx" type="button" title="close the chat pane (Esc)">✕ close</button>
 </div>
 <script>
 (function () {
@@ -464,10 +493,76 @@ def _shell_doc(page_url, index_url):
   try { wanted = localStorage.getItem('board-split-mode') || 'tui'; } catch (e) {}
   var btns = [document.getElementById('mtui'), document.getElementById('mgui')];
 
+  /* The registry lives in the PAGE frame, which is same-origin, so the shell reads it
+     rather than keeping a second list that would drift. A page with nothing applicable
+     keeps the button hidden, which is the same "never offer refused work" rule the
+     surfaces use one level down. */
+  var plugBtn  = document.getElementById('mplugbtn');
+  var plugMenu = document.getElementById('mplugmenu');
+  function pageWin() {
+    try { return frames.page || document.getElementById('fp').contentWindow; }
+    catch (e) { return null; }
+  }
+  /* The two chats are the SHELL's, the rest are the open page's. One list, because a
+     person choosing what to open should see everything at once (JL 260807, twice). The
+     chat rows click the hidden radio buttons, so the lit-state and pane logic that was
+     already written keeps working and is not reimplemented here. */
+  function plugEntries() {
+    var rows = [
+      { id: 'tui', label: '⌨️ TUI Chat', hint: 'the real CLI: long jobs, skills',
+        run: function () { document.getElementById('mtui').click(); } },
+      { id: 'gui', label: '💬 GUI Chat', hint: 'the SDK drawer: gated edits, diffs',
+        run: function () { document.getElementById('mgui').click(); } }
+    ];
+    var w = pageWin();
+    try {
+      if (w && w.boardPlugins) {
+        w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach(function (e) {
+          if (e.id === 'gui' || e.id === 'tui') return;
+          rows.push({ id: e.id, label: e.label, hint: e.hint || '',
+                      run: function () { e.open(w.boardPlugins.livePage()); } });
+        });
+      }
+    } catch (err) {}
+    return rows;
+  }
+  function plugClose() {
+    plugMenu.hidden = true;
+    plugBtn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('pointerdown', plugAway, true);
+  }
+  function plugAway(ev) {
+    if (!plugMenu.contains(ev.target) && ev.target !== plugBtn) plugClose();
+  }
+  if (plugBtn) plugBtn.onclick = function () {
+    if (!plugMenu.hidden) return plugClose();
+    var rows = plugEntries();
+    plugMenu.innerHTML = rows.map(function (r, i) {
+      return '<button class="mrow" type="button" role="menuitem" data-i="' + i + '">'
+        + '<b>' + r.label + '</b><i>' + r.hint + '</i></button>';
+    }).join('');
+    plugMenu.querySelectorAll('.mrow').forEach(function (b) {
+      b.onclick = function () { plugClose(); rows[+b.dataset.i].run(); };
+    });
+    plugMenu.hidden = false;
+    plugBtn.setAttribute('aria-expanded', 'true');
+    document.addEventListener('pointerdown', plugAway, true);
+  };
+
   function liveMode() {
     try { return frames.chat.__paneModeNow ? frames.chat.__paneModeNow() : wanted; }
     catch (e) { return wanted; }
   }
+  /* Closing is "click the lit one", which is a path that already exists and already
+     writes both localStorage keys. Reusing it means the ✕ can never drift from what the
+     buttons do, which is the drift that produced the 260802 lit-strip bug. */
+  function closePane() { if (!hidden) want(liveMode()); }
+  var cx = document.getElementById('cx');
+  if (cx) cx.onclick = closePane;
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') closePane();
+  });
+
   function paint() {
     split.classList.toggle('hc', hidden);
     if (!hidden) load(document.getElementById('fc'));

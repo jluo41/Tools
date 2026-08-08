@@ -148,6 +148,10 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         # it sits in the head, right after owner:/method:, and resolves the
         # page to for-literature or for-value where the filename cannot.
         "route": "",
+        # page-type: is the OTHER type key. `route:` resolves the two evidence
+        # variants; this one names the variant outright, and a plugin surface
+        # gates on it (JL 260807), so it has to reach the page dict and the DOM.
+        "page_type": "",
         "session": "",
         "requires": "",
         "style_from": "",
@@ -156,7 +160,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     }
     while i < len(lines) and not lines[i].startswith("## "):
         m = re.match(
-            r"^(state|owner|method|route|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
+            r"^(state|owner|method|route|page-type|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
             lines[i].strip(),
         )
         if m:
@@ -248,7 +252,7 @@ def parse_dir(d):
             # exposure. It leads the alternation because `\d+[a-z]?` would
             # otherwise consume `4a` and then fail the `-|$` that follows,
             # which made such a page silently unparseable rather than rejected.
-            r"S-(Open|Seed|Work|Venue|Literature|Value|Display|Main|Appendix|Submission|Round)-"
+            r"S-(Open|Seed|Work|Venue|Literature|Value|Display|Main|Appendix|Submission|Round|Label)-"
             # A CAPITAL PLUS DIGITS is a per-unit member of a lettered series
             # (JL 2026-08-02, choosing option A): in Work the letter says the
             # STAGE and the number says the UNIT, so `S-Work-R` is the resources
@@ -320,6 +324,7 @@ def parse_dir(d):
                     "appendix": 7,
                     "submission": 8,
                     "round": 9,
+                    "label": 10,
                 }[family]
                 unit_key = (0, int(unit)) if unit.isdigit() else (1, unit)
                 key = (1, family_order, *unit_key)

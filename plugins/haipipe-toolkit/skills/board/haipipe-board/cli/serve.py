@@ -334,6 +334,10 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/term-type":   # a surface types one line into the PTY
+            res, err = self.term_type(f, p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/local-cmd":    # the command that lands in this session
             res, err = self.local_cmd(f, p)
             return self.reply(200 if not err else 400,
