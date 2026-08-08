@@ -49,6 +49,7 @@ OptimalMessage_Holistic_ABCTest_v250721          holistic (ABC test variant)
 R3sms_9o20_ArmGreedy_v250922                     R3 SMS 9-of-20 greedy
 R3sms_9o20_ArmGreedyRandom_v250922               R3 SMS 9-of-20 greedy + random
 R3sms_9o20_ABTest_v250922                        R3 SMS 9-of-20 AB test
+R4sms_10o40_ArmGreedy_v260807                    R4 SMS 10-of-40 greedy (top-9 + default)
 WeightLossMultiLabel_PostFn_v260305              weight-loss multi-label
 WeightLossMultiLabel_Af1M_PostFn_v260310         weight-loss (Af1M variant)
 WeightLossMultiLabel_v3_PostFn_v260316           weight-loss v3
@@ -83,6 +84,50 @@ Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-e
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
 Step 2: Execute the procedure scoped to PostFn.
 Step 3: Emit the structured tail.
+
+---
+
+Guardrails (learned the hard way — do NOT skip)
+------------------------------------------------
+
+```
+POST-1  An ARM-RESTRICTING PostFn must RAISE on a candidate that does not resolve.
+        The `action_list_candidates` pattern filters a hardcoded name list by
+        membership in the model's arm set:
+
+            action_list = [i for i in action_list_candidates if i in action_list_full]
+
+        A name that is absent is dropped SILENTLY. When SMSR4 expanded 20 arms ->
+        40 and renamed one, a 3-name list became a 2-name list and the endpoint
+        served `salience` on 6,513/6,513 live requests for months. The list was
+        never wrong for the round it was written for; it was wrong for the round
+        it was INHERITED into, and nothing in the code could tell the difference.
+        Always assert first:
+
+            _unresolved = [i for i in action_list_candidates if i not in action_list_full]
+            assert not _unresolved, f'candidate arms absent from model output: {_unresolved}'
+
+POST-2  One PostFn per (round, candidate set, policy). NEVER edit a shared impl
+        in place. Count the manifests first:
+
+            find . -name manifest.json | xargs grep -l '"PostFn": "<name>"'
+
+        Nine manifests shared OptimalMessage_Holistic_Greedy_v250721, and its
+        list was still CORRECT for SMSR3. Editing it to fix SMSR4 would have
+        broken SMSR3. Fork with a dated name following the existing convention:
+        `<Round>_<N>o<M>_<Policy>_v<YYMMDD>` (R3sms_9o20_ArmGreedy_v250922).
+
+POST-3  A restricted candidate list constrains ONLY `action.name`. The response
+        still carries every arm in `predictions[]`. So a broken candidate list
+        leaves all scores correct and serves the wrong message: any check that
+        compares only the returned SCORES cannot see it. Assert on the SERVED arm.
+        (See haipipe-task guardrail GATE-1.)
+
+POST-4  Derive the candidate list from an eval artifact at build time and assert
+        it against a frozen expected list, rather than typing names in. A hand-
+        typed list is what goes stale; a derived one regenerates and a drifted
+        eval table then FAILS the build instead of shipping quietly.
+```
 
 ---
 
