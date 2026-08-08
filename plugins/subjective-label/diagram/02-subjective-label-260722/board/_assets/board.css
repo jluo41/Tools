@@ -2036,3 +2036,99 @@ li.folded, tr.folded { font-size: .92em; }
 .wf-run[disabled] { opacity:.55; cursor:default; }
 .wf-copy { font:inherit; font-size:12px; padding:4px 10px; cursor:pointer;
            border:1px solid var(--line,#d8d8d8); background:var(--bg,#fff); border-radius:5px; }
+
+/* 🎞 Slides · the derived reading view (see 70-plugin-slides.js for what it is not).
+ *
+ * FOUR CLASS NAMES ARE THE SEAM. `.sd-slide / .sd-kicker / .sd-title / .sd-body` are
+ * the whole contract between the reflow and the look, so an html-ppt theme can be
+ * adopted by mapping onto these and changing nothing in the JS. Everything here is
+ * written in the board's own tokens so the deck follows the reader's light or dark
+ * setting, which a vendored theme file would not.
+ *
+ * WHY NOT `.slide`: the board already calls a whole page `section.slide.q`, and
+ * html-ppt's runtime binds to `.slide` too. Three owners of one class name is a
+ * fight nobody wins, so the deck takes the `sd-` prefix and keeps out of it. */
+
+#sdeck {
+  position: fixed; inset: 0; z-index: 120;
+  display: flex; flex-direction: column;
+  background: var(--bg, #fbfbf9); color: var(--fg, #1c1c1c);
+}
+#sdeck[hidden] { display: none; }
+
+/* The stage scrolls, the slide does not stretch. A board division can be longer
+   than any screen, and a deck that clipped it would hide page content, which is the
+   one thing a DERIVED view may never do: it would then disagree with the page. */
+.sd-stage {
+  flex: 1 1 auto; overflow: auto;
+  display: flex; justify-content: center;
+  padding: 5vh 4vw 3vh;
+}
+
+.sd-slide {
+  width: 100%; max-width: 60rem;
+  align-self: flex-start;
+}
+
+.sd-kicker {
+  font: 600 11.5px/1 ui-monospace, Menlo, monospace;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--mut, #7c7c78);
+  margin: 0 0 14px;
+}
+
+.sd-title {
+  font-size: clamp(22px, 3.4vw, 40px);
+  line-height: 1.18; font-weight: 700;
+  margin: 0 0 22px; letter-spacing: -.01em;
+}
+
+/* The body is the page's own nodes, cloned, so the board's stylesheet is already
+   styling the prose, the record blocks and the fences. Only the scale is raised:
+   the same text read from further away. */
+.sd-body { font-size: clamp(14px, 1.15vw, 17px); line-height: 1.65; }
+.sd-body pre { font-size: .92em; line-height: 1.5; overflow-x: auto; }
+.sd-body details { margin: 0 0 10px; }
+.sd-body summary { cursor: default; list-style: none; font-weight: 600; }
+.sd-body summary::-webkit-details-marker { display: none; }
+.sd-was-link { color: var(--accent, #1f5aa8); }
+
+/* the cover, which is the only slide the reflow composes rather than clones */
+.sd-cover .sd-title { font-size: clamp(26px, 4.4vw, 52px); }
+.sd-cover .sd-state {
+  display: inline-block; margin: 0 0 10px;
+  padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line, #e4e4df);
+  font-size: 13px;
+}
+.sd-cover .sd-meta { color: var(--mut, #7c7c78); font-size: 14px; margin: 4px 0; }
+.sd-lead .sd-body { font-size: clamp(16px, 1.5vw, 21px); line-height: 1.6; }
+
+.sd-bar {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line, #e4e4df);
+  background: var(--card, #fff);
+  font: 12px/1 ui-monospace, Menlo, monospace;
+}
+.sd-nav {
+  font: 400 18px/1 inherit; width: 30px; height: 28px; cursor: pointer;
+  border: 1px solid var(--line, #e4e4df); border-radius: 6px;
+  background: var(--bg, #fff); color: var(--fg, #1c1c1c);
+}
+.sd-nav:hover { background: var(--card, #f1f3f5); }
+.sd-count { min-width: 66px; text-align: center; color: var(--mut, #7c7c78); }
+.sd-hint { flex: 1; color: var(--mut, #7c7c78); opacity: .75; }
+.sd-x {
+  font: 500 12px/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 6px 11px; cursor: pointer;
+  border: 1px solid var(--line, #e4e4df); border-radius: 6px;
+  background: var(--bg, #fff); color: var(--fg, #1c1c1c);
+}
+.sd-x:hover { background: var(--card, #f1f3f5); }
+
+@media (max-width: 700px) {
+  .sd-stage { padding: 3vh 5vw 2vh; }
+  .sd-hint { display: none; }
+}
