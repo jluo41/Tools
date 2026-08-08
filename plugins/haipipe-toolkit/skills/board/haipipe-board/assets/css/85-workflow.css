@@ -79,13 +79,16 @@ li.folded, tr.folded { font-size: .92em; }
 .folded .sub, .folded .aimbar, .folded .cue { display: none; }
 .folded:hover { opacity: 1; }
 
-/* 🔌 the Plugin menu's own title row: the list stopped being "the chat picker" the
-   day two of its entries were not chats (JL 260807). */
+/* 🔌 the picker's group titles: the list stopped being "the chat picker" the day two
+   of its entries were not chats (JL 260807), and it carries TWO groups since the
+   Plugin/Workflow split (JL 260808). The second heading needs room above it, or the
+   groups read as one list with a stray line in the middle. */
 #chatpick .pkh {
   font-size: 11px; letter-spacing: .06em; opacity: .55;
   padding: 7px 12px 4px; border-bottom: 1px solid var(--line, #d8d8d8);
   margin-bottom: 3px;
 }
+#chatpick .pk + .pkh { margin-top: 8px; }
 
 /* the live step's one action. The command is SHOWN, so a reader can see exactly what
    the button would put in their hands before pressing it (QB7: what lands is what an

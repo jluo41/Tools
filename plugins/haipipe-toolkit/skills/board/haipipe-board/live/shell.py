@@ -235,18 +235,22 @@ def _shell_doc(page_url, index_url):
   /* The strip that answers "which board am I looking at". The address bar shows
      the shell rather than the page, so this is the only place that can say it. */
   .mhide{display:none !important}
-#mplugmenu{position:absolute;top:38px;left:150px;z-index:90;min-width:250px;
+/* One rule for BOTH bar menus (JL 260808: Plugin and Workflow). `left` is set from the
+   button's own position when it opens, because a hardcoded offset was already only
+   right for one button and would be wrong for every one added after it. */
+.pmenu{position:absolute;top:38px;left:150px;z-index:90;
+  min-width:260px;max-width:320px;
   background:#fff;border:1px solid #d8d8d8;border-radius:9px;padding:4px;
   box-shadow:0 10px 30px rgba(0,0,0,.16)}
-#mplugmenu[hidden]{display:none}
-#mplugmenu .mrow{display:block;width:100%;text-align:left;border:0;background:none;
+.pmenu[hidden]{display:none}
+.pmenu .mrow{display:block;width:100%;text-align:left;border:0;background:none;
   padding:7px 10px;border-radius:6px;cursor:pointer;
   font:500 13px/1.35 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   color:#1e1e1e !important}
-#mplugmenu .mrow:hover{background:#f1f3f5}
-#mplugmenu .mrow b{display:block;font-size:13px;font-weight:600;color:#1e1e1e !important}
-#mplugmenu .mrow i{display:block;font-size:11.5px;font-style:normal;color:#6b7280 !important}
-#mplugmenu{min-width:260px;max-width:320px}
+.pmenu .mrow:hover{background:#f1f3f5}
+.pmenu .mrow b{display:block;font-size:13px;font-weight:600;color:#1e1e1e !important}
+.pmenu .mrow i{display:block;font-size:11.5px;font-style:normal;color:#6b7280 !important}
+.pmenu .mnone{padding:8px 10px;font-size:12px;color:#6b7280}
 #bar{height:30px;display:flex;align-items:center;gap:9px;padding:0 12px;
     background:var(--card);color:var(--mut);border-bottom:1px solid var(--line);
     font:12px/1 ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden}
@@ -318,8 +322,11 @@ def _shell_doc(page_url, index_url):
   <a href="/boards" target="_top" title="every board in this SPACE">🏠</a>
   <button id="ti" type="button" title="Show or hide the page list (☰ on the old board)">☰ Pages</button>
   <button id="mplugbtn" type="button" aria-haspopup="menu" aria-expanded="false"
-    title="Everything this page can open">🔌 Plugin ▾</button>
-  <div id="mplugmenu" hidden role="menu"></div>
+    title="Surfaces this page can open, to the right">🔌 Plugin ▾</button>
+  <div id="mplugmenu" class="pmenu" hidden role="menu"></div>
+  <button id="mwfbtn" type="button" aria-haspopup="menu" aria-expanded="false"
+    title="Steppers for this page, along the bottom">🪜 Workflow ▾</button>
+  <div id="mwfmenu" class="pmenu" hidden role="menu"></div>
   <button id="mtui" class="mhide" type="button" data-mode="tui"
     title="The real CLI in a terminal. Click again to put the chat away.">&gt;_ TUI Chat</button>
   <button id="mgui" class="mhide" type="button" data-mode="gui"
@@ -497,28 +504,19 @@ def _shell_doc(page_url, index_url):
      rather than keeping a second list that would drift. A page with nothing applicable
      keeps the button hidden, which is the same "never offer refused work" rule the
      surfaces use one level down. */
-  var plugBtn  = document.getElementById('mplugbtn');
-  var plugMenu = document.getElementById('mplugmenu');
   function pageWin() {
     try { return frames.page || document.getElementById('fp').contentWindow; }
     catch (e) { return null; }
   }
-  /* The two chats are the SHELL's, the rest are the open page's. One list, because a
-     person choosing what to open should see everything at once (JL 260807, twice). The
-     chat rows click the hidden radio buttons, so the lit-state and pane logic that was
-     already written keeps working and is not reimplemented here. */
-  function plugEntries() {
-    var rows = [
-      { id: 'tui', label: '⌨️ TUI Chat', hint: 'the real CLI: long jobs, skills',
-        run: function () { document.getElementById('mtui').click(); } },
-      { id: 'gui', label: '💬 GUI Chat', hint: 'the SDK drawer: gated edits, diffs',
-        run: function () { document.getElementById('mgui').click(); } }
-    ];
-    var w = pageWin();
+  /* Entries registered by the OPEN PAGE, for one menu. The shell holds no list of its
+     own beyond the two chats below, so a surface the engine has never heard of shows up
+     here the moment its page registers it. */
+  function pageEntries(menu) {
+    var w = pageWin(), rows = [];
     try {
       if (w && w.boardPlugins) {
-        w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach(function (e) {
-          if (e.id === 'gui' || e.id === 'tui') return;
+        w.boardPlugins.applicable(w.boardPlugins.livePage(), menu).forEach(function (e) {
+          if (e.id === 'gui' || e.id === 'tui') return;   // the shell owns these two
           rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                       run: function () { e.open(w.boardPlugins.livePage()); } });
         });
@@ -526,28 +524,71 @@ def _shell_doc(page_url, index_url):
     } catch (err) {}
     return rows;
   }
-  function plugClose() {
-    plugMenu.hidden = true;
-    plugBtn.setAttribute('aria-expanded', 'false');
-    document.removeEventListener('pointerdown', plugAway, true);
+
+  /* 🔌 PLUGIN · surfaces, which open to the RIGHT. The two chats are the SHELL's and
+     everything else is the open page's. The chat rows click the hidden radio buttons,
+     so the lit-state and pane logic that was already written keeps working and is not
+     reimplemented here. */
+  function plugEntries() {
+    return [
+      { id: 'tui', label: '⌨️ TUI Chat', hint: 'the real CLI: long jobs, skills',
+        run: function () { document.getElementById('mtui').click(); } },
+      { id: 'gui', label: '💬 GUI Chat', hint: 'the SDK drawer: gated edits, diffs',
+        run: function () { document.getElementById('mgui').click(); } }
+    ].concat(pageEntries('plugin'));
   }
-  function plugAway(ev) {
-    if (!plugMenu.contains(ev.target) && ev.target !== plugBtn) plugClose();
+  /* 🪜 WORKFLOW · steppers over THIS page, which open along the BOTTOM. The shell owns
+     none of these: a workflow is gated on the page's declared type, so the page is the
+     only thing that can know whether one applies (JL 260808). */
+  function wfEntries() { return pageEntries('workflow'); }
+
+  /* One implementation, two buttons. A second copy of open/close/dismiss is how the two
+     would drift, and the drift a person sees is a menu that will not shut. */
+  function wireMenu(btn, menu, entries) {
+    if (!btn || !menu) return function () {};
+    function close() {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('pointerdown', away, true);
+    }
+    function away(ev) {
+      if (!menu.contains(ev.target) && ev.target !== btn) close();
+    }
+    btn.onclick = function () {
+      if (!menu.hidden) return close();
+      var rows = entries();
+      menu.innerHTML = rows.map(function (r, i) {
+        return '<button class="mrow" type="button" role="menuitem" data-i="' + i + '">'
+          + '<b>' + r.label + '</b><i>' + r.hint + '</i></button>';
+      }).join('');
+      menu.querySelectorAll('.mrow').forEach(function (b) {
+        b.onclick = function () { close(); rows[+b.dataset.i].run(); };
+      });
+      menu.style.left = Math.round(btn.getBoundingClientRect().left) + 'px';
+      menu.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      document.addEventListener('pointerdown', away, true);
+    };
+    /* An EMPTY menu hides its button rather than opening onto nothing. Most pages have
+       no workflow, and a button that opens an empty box reads as broken rather than as
+       not-applicable. The Plugin button always has the two chats, so it never hides. */
+    return function () {
+      var n = entries().length;
+      btn.style.display = n ? '' : 'none';
+      if (!n) close();
+    };
   }
-  if (plugBtn) plugBtn.onclick = function () {
-    if (!plugMenu.hidden) return plugClose();
-    var rows = plugEntries();
-    plugMenu.innerHTML = rows.map(function (r, i) {
-      return '<button class="mrow" type="button" role="menuitem" data-i="' + i + '">'
-        + '<b>' + r.label + '</b><i>' + r.hint + '</i></button>';
-    }).join('');
-    plugMenu.querySelectorAll('.mrow').forEach(function (b) {
-      b.onclick = function () { plugClose(); rows[+b.dataset.i].run(); };
-    });
-    plugMenu.hidden = false;
-    plugBtn.setAttribute('aria-expanded', 'true');
-    document.addEventListener('pointerdown', plugAway, true);
-  };
+  var syncPlug = wireMenu(document.getElementById('mplugbtn'),
+                          document.getElementById('mplugmenu'), plugEntries);
+  var syncWf   = wireMenu(document.getElementById('mwfbtn'),
+                          document.getElementById('mwfmenu'), wfEntries);
+  function syncMenus() { try { syncPlug(); syncWf(); } catch (e) {} }
+  /* The page registers its entries as it loads, and which ones apply changes with every
+     navigation, so the buttons are synced on the page frame's load and once more a beat
+     later: an entry contributed by a deferred script would otherwise stay missing until
+     the NEXT navigation, which reads as the feature being broken on the page you opened. */
+  fp.addEventListener('load', function () { syncMenus(); setTimeout(syncMenus, 150); });
+  syncMenus();
 
   function liveMode() {
     try { return frames.chat.__paneModeNow ? frames.chat.__paneModeNow() : wanted; }

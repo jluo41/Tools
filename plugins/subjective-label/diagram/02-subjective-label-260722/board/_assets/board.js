@@ -71,31 +71,54 @@ function boardDirPath() {
     toast._t = setTimeout(function () { toast.style.display = 'none'; }, 3000);
   }
 
-/* 🔌 Plugin registry · what a page can OPEN, and who contributed it.
+/* 🔌 Registry of what a page can OPEN · two menus, one list.
  *
  * WHY A REGISTRY. The picker used to be two hardcoded buttons, so the board engine
  * had to know every surface by name. A plugin now registers its own entry, and the
  * engine never learns that labeling exists (JL 260807).
  *
- * THERE IS NO GENERIC "WORKFLOW" ENTRY (JL 260807: "Labeling is the workflow").
- * A page type's workflow is contributed BY the plugin that owns that page type and
- * carries that plugin's name. A display plugin would register 🖼 Display, and that
- * entry IS the display workflow. An abstract Workflow entry would name a concept no
- * plugin owns, and every page would carry it whether or not it means anything there.
+ * TWO MENUS, AND THE SPLIT IS NOT COSMETIC (JL 260808).
+ *
+ *   🔌 Plugin    a SURFACE you open. Opens to the RIGHT, tab-like. It has no
+ *                opinion about where you are on the page, so it applies almost
+ *                everywhere. GUI Chat, TUI Chat, and later Draw and Slide.
+ *   🪜 Workflow  a STEPPER over THIS page. Opens along the BOTTOM. Its whole job
+ *                is to say which step is live and which are refused, so it is
+ *                gated on the page's declared type. Labeling, and later Page.
+ *
+ * This reverses the 260807 ruling that there is no Workflow entry, and the reason
+ * the earlier one was right is the reason this one is: a category with one member
+ * names a concept nobody owns. Page's four phases arrive as the second member, so
+ * the category now describes something real instead of anticipating it.
+ *
+ * A WORKFLOW IS NOT ALWAYS A LADDER. Labeling's five doors are ordered and each is
+ * locked by the one before. Page's DRAFT/PROBE/REVISE/CHECK is a loop whose CHECK
+ * routes BACKWARD ("RUN is deliberately not ADVANCE"), so it has a current phase and
+ * legal next phases and no locks at all. Each surface computes its own dimming; the
+ * registry holds no step model, which is what lets both live in one menu.
  *
  * `applies` KEEPS THE MENU HONEST. An entry that cannot act on the open page is not
- * shown, so the menu never offers work that would be refused. This is the same rule
- * the step strip uses inside a surface, one level up.
+ * shown, so the menu never offers work that would be refused. It follows that an
+ * entry ships when its surface does: registering Draw before it opens anything makes
+ * the menu lie, and a menu that lies once stops being read.
  */
 (function () {
   'use strict';
 
   var reg = [];
 
-  /* {id, label, hint, applies(page)->bool, open(page)} · order is registration order,
-     which is asset sort order, which is stable across builds. */
+  var MENUS = ['plugin', 'workflow'];
+
+  /* {id, label, hint, menu, applies(page)->bool, open(page)} · order is registration
+     order, which is asset sort order, which is stable across builds.
+
+     `menu` defaults to 'plugin' so an entry written before the split still lands
+     somewhere visible rather than silently in neither menu. An unknown menu name is
+     corrected to 'plugin' for the same reason: a typo should misfile an entry, not
+     delete it. */
   function register(spec) {
     if (!spec || !spec.id || typeof spec.open !== 'function') return;
+    if (MENUS.indexOf(spec.menu) < 0) spec.menu = 'plugin';
     reg = reg.filter(function (e) { return e.id !== spec.id; });
     reg.push(spec);
   }
@@ -116,8 +139,11 @@ function boardDirPath() {
             || page.getAttribute('data-type') || '').trim();
   }
 
-  function applicable(page) {
+  /* `menu` is optional: omitted, this answers "everything this page can open", which
+     is what the in-page picker wants when it draws both groups in one list. */
+  function applicable(page, menu) {
     return reg.filter(function (e) {
+      if (menu && e.menu !== menu) return false;
       try { return !e.applies || e.applies(page, pageType(page)); }
       catch (err) { return false; }
     });
@@ -127,6 +153,7 @@ function boardDirPath() {
     register: register,
     all: function () { return reg.slice(); },
     applicable: applicable,
+    menus: function () { return MENUS.slice(); },
     livePage: livePage,
     pageType: pageType
   };
@@ -3595,16 +3622,25 @@ function boardDirPath() {
     // a plugin contributes its own surface, and an entry that cannot act on the open
     // page is never drawn. `data-v` stays the id so the existing handler still reads it.
     var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
-    var entries = window.boardPlugins ? window.boardPlugins.applicable(page) : [];
-    // The menu has a NAME now (JL 260807): it is the Plugin menu, not "the chat picker",
-    // because two of its entries are not chats and the next ones will not be either.
-    pick.innerHTML = '<div class="pkh">\u{1F50C} Plugin</div>' + entries.map(function (e) {
-      var dot = e.id === 'gui' ? (tui ? '' : '●')
-              : e.id === 'tui' ? (tui ? '●' : '') : '';
-      return '<button class="pk" data-v="' + e.id + '" role="menuitem">'
-        + '<b>' + e.label + '</b><i>' + (e.hint || '') + '</i>'
-        + '<u></u><s>' + dot + '</s></button>';
-    }).join('');
+    // TWO GROUPS, ONE LIST (JL 260808). The shell splits these into two buttons because
+    // it has a bar to put them in; the in-page picker is one popup, so the split shows
+    // as two titled groups. Same registry, same ids, so `data-v` still resolves.
+    // A group with nothing applicable prints no heading: an empty heading claims the
+    // page has a workflow and then shows none, which is worse than saying nothing.
+    function group(title, menu) {
+      var rows = window.boardPlugins
+        ? window.boardPlugins.applicable(page, menu) : [];
+      if (!rows.length) return '';
+      return '<div class="pkh">' + title + '</div>' + rows.map(function (e) {
+        var dot = e.id === 'gui' ? (tui ? '' : '●')
+                : e.id === 'tui' ? (tui ? '●' : '') : '';
+        return '<button class="pk" data-v="' + e.id + '" role="menuitem">'
+          + '<b>' + e.label + '</b><i>' + (e.hint || '') + '</i>'
+          + '<u></u><s>' + dot + '</s></button>';
+      }).join('');
+    }
+    pick.innerHTML = group('\u{1F50C} Plugin', 'plugin')
+                   + group('\u{1FA9C} Workflow', 'workflow');
     pick.hidden = false;
     document.addEventListener('pointerdown', pickAway, true);
     document.addEventListener('keydown', pickKey, true);
@@ -3626,7 +3662,9 @@ function boardDirPath() {
   }
 
   // The board owns exactly two surfaces and registers them like anybody else, so the
-  // engine has no privileged path a plugin cannot take.
+  // engine has no privileged path a plugin cannot take. Both are PLUGINS: they open a
+  // surface to the right and neither knows or cares where you are on the page, which
+  // is exactly the line the Workflow menu is on the other side of.
   if (window.boardPlugins) {
     window.boardPlugins.register({
       id: 'gui', label: '\u{1F4AC} GUI Chat',
@@ -4106,6 +4144,10 @@ function boardDirPath() {
       id: 'labeling',
       label: '\u{1F3F7} Labeling',
       hint: 'this run’s steps, left to right, one live',
+      // 🪜 A WORKFLOW, not a plugin (JL 260808): it opens along the bottom and its
+      // whole content is where THIS page stands, which is why it is type-gated and
+      // GUI Chat is not. Page's four phases join this menu, not the other one.
+      menu: 'workflow',
       applies: function (page, type) { return type === 'labeling'; },
       open: function () { open(); }
     });
