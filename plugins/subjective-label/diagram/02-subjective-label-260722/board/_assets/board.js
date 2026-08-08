@@ -3756,13 +3756,14 @@ function boardDirPath() {
   window.__boardRewire = rewire;
   safewire([marks, paint, wireDadd, wireXcal]);
 })();
-/* 🏷 Labeling · the subjective-label plugin's surface, registered into the 🔌 Plugin menu.
+/* 🏷 Labeling · the subjective-label plugin's surface, registered into the 🪜 Workflow menu.
  *
- * THIS IS THE WORKFLOW FOR A LABELING PAGE, AND IT CARRIES THAT PLUGIN'S NAME, NOT
- * A GENERIC ONE (JL 260807: "Labeling is the workflow"). A display plugin will register
- * 🖼 Display and that entry will be the display workflow. There is deliberately no
- * abstract "Workflow" entry: it would name a concept no plugin owns, and it would show
- * on every page whether or not it meant anything there.
+ * IT IS A WORKFLOW, NOT A PLUGIN (JL 260808). A Plugin opens a surface to the right and
+ * has no opinion about where you are; this opens along the bottom and its entire content
+ * is where THIS page stands, which is why it is gated on `page-type: labeling` and GUI
+ * Chat is gated on nothing. It shipped in the Plugin menu on 260807 under the ruling
+ * that a one-member category names a concept nobody owns; Page's four phases are the
+ * second member, so the category is now real and this moved into it.
  *
  * WHAT IT IS. The page's own lifecycle, drawn left to right, one cell per step,
  * with exactly one cell live and everything after it locked.
@@ -3886,7 +3887,7 @@ function boardDirPath() {
      the five doors. A page organized by SUBJECT has an A1 that means the policy, not
      init, and offering `/sl-init` there would hand a person the wrong command with a
      straight face. So the surface checks first and says nothing rather than lying.
-     The two shapes disagree today, which is an open Decision Now row on QBt11; this
+     The two shapes disagree today, which is an open Decision Now row on QG1; this
      check is what keeps that disagreement from becoming a wrong button. */
   function stepShaped(steps) {
     return steps.some(function (s) { return /Step\s*[①②③④⑤]/.test(s.name); });
@@ -4078,7 +4079,7 @@ function boardDirPath() {
     if (!shaped) {
       return '<div class="wf-act wf-human">📄 This page\u2019s Content is organized by '
            + 'SUBJECT, not by the five doors, so no step command can be offered here. '
-           + 'The shape is an open decision on <code>QBt11</code>.</div>';
+           + 'The shape is an open decision on <code>QG1</code>.</div>';
     }
     var cmd = DOOR[step.aid];
     if (step.rank === 2) {
