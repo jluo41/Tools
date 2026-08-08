@@ -243,14 +243,18 @@ def _shell_doc(page_url, index_url):
   background:#fff;border:1px solid #d8d8d8;border-radius:9px;padding:4px;
   box-shadow:0 10px 30px rgba(0,0,0,.16)}
 .pmenu[hidden]{display:none}
-.pmenu .mrow{display:block;width:100%;text-align:left;border:0;background:none;
+/* `#bar button` above paints every button in the bar as a blue pill, and these rows
+   ARE buttons inside the bar. The old `#mplugmenu .mrow` outranked it by an id; the
+   class-only `.pmenu .mrow` did not, and the menu came back blue-on-blue. So the id
+   stays in the selector: it is load-bearing, not decoration (measured 260808). */
+#bar .pmenu .mrow{display:block;width:100%;text-align:left;border:0;background:none;
   padding:7px 10px;border-radius:6px;cursor:pointer;
   font:500 13px/1.35 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   color:#1e1e1e !important}
-.pmenu .mrow:hover{background:#f1f3f5}
-.pmenu .mrow b{display:block;font-size:13px;font-weight:600;color:#1e1e1e !important}
-.pmenu .mrow i{display:block;font-size:11.5px;font-style:normal;color:#6b7280 !important}
-.pmenu .mnone{padding:8px 10px;font-size:12px;color:#6b7280}
+#bar .pmenu .mrow:hover{background:#f1f3f5}
+#bar .pmenu .mrow b{display:block;font-size:13px;font-weight:600;color:#1e1e1e !important}
+#bar .pmenu .mrow i{display:block;font-size:11.5px;font-style:normal;
+  color:#6b7280 !important;font-weight:400}
 #bar{height:30px;display:flex;align-items:center;gap:9px;padding:0 12px;
     background:var(--card);color:var(--mut);border-bottom:1px solid var(--line);
     font:12px/1 ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden}
