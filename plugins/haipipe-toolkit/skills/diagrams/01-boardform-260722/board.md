@@ -202,7 +202,6 @@ QB4 · what any page is      ◀── QBt1   for-stage                ──▶
                             ◀── QBt6   for-section              ──▶  page-type: section
                             ◀── QBt9   for-slide                ──▶  page-type: slide
                             ◀── QBt10  for-design               ──▶  page-type: design
-                            ◀── QBt11  for-labeling             ──▶  page-type: labeling
 
                                 ⬜ two left: for-skill · for-meeting
                                 ⚠️ QBt7 · QBt8 unused numbers, not missing pages
@@ -217,7 +216,6 @@ QBt5-for-value.md
 QBt6-for-section.md
 QBt9-for-slide.md
 QBt10-for-design.md
-QBt11-for-labeling.md
 ### QC · Engine
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
@@ -359,6 +357,7 @@ This group ACCUMULATES, which is why it is a group rather than a few rows inside
 Meeting-1-260723-boardform-demo.md
 
 ## Links
+QBt11 ../../../../subjective-label/diagram/02-subjective-label-260722/QG-page-type/QG1-for-labeling.md
 QC5                 QC-engine/QC3-generate.md
 QC5a                QC-engine/QC3a-skill-to-page.md
 QC5b                QC-engine/QC3b-meetingnote.md

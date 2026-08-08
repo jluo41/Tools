@@ -112,7 +112,18 @@ QF3-agent-topology.md
 QF4-library-mapping.md
 QF5-acceptance-tests.md
 
+### QG · Page type
+This group owns how one run of this workflow shows up as a board page, which is the only concern here that a reader meets before the method rather than inside it.
+`QG1` is the worked specimen of the `labeling` page type: a real corpus and a real target walked through the five doors `QF1` defines, so a writer copies a page instead of copying a description. The contract it demonstrates is `haipipe-board-page-for-labeling`, in this plugin's own `skills/`, and that contract's `template.md` is the copy-and-fill version.
+It lived on the boardform board as `QBt11` until 260808. It moved here because the steps it walks are this plugin's, not board form's, and a specimen belongs beside the thing it is a specimen of.
+QG1-for-labeling.md
+
 ## Links
+haipipe-board-page-for-labeling ../../skills/haipipe-board-page-for-labeling/SKILL.md
+template.md ../../skills/haipipe-board-page-for-labeling/template.md
+template-dash.md ../../skills/haipipe-board-page-for-labeling/template-dash.md
+QB4 ../../../haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB4-overall.md
+QB6 ../../../haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB6-page-types.md
 skills/subjective-label/SKILL.md ../../skills/subjective-label/SKILL.md
 skills/sl-init/SKILL.md ../../skills/sl-init/SKILL.md
 skills/sl-round/SKILL.md ../../skills/sl-round/SKILL.md

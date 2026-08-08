@@ -1,4 +1,4 @@
-# QBt11 · page-type LABELING · one corpus and one target, walked from step 1 to step 5 on one page
+# QG1 · page-type LABELING · one corpus and one target, walked from step 1 to step 5 on one page
 
 state: 🟡 PARTIAL · step ① has run and step ② is now the live one; the embedding unit inside ① is still on HOLD, and every label on this page is still a proposal
 page-type: labeling
@@ -20,9 +20,9 @@ So this specimen makes the lifecycle's five doors its own Content divisions.
 
 **What this page teaches**: that a typed page can be a STEPPER. Every other specimen here organizes Content by subject; this one organizes it by the order a person does things, and each division reports whether it is locked, ready, resumable, waiting on a person, done, or held.
 
-**Where the steps come from**: the `subjective-label` plugin's board, `../../../../subjective-label/diagram/02-subjective-label-260722`. Its `QF1` names five doors and fixes the dispatch as state read, precondition check, one phase, authorized write, next state. This page invents no step and reorders none.
+**Where the steps come from**: `QF1` on this same board names five doors and fixes the dispatch as state read, precondition check, one phase, authorized write, next state. This page invents no step and reorders none. It sits on this board rather than on the boardform board for exactly that reason: the steps are this plugin's, so the page that walks them is too.
 
-**Covered elsewhere**: `QB4` owns what any page is. The variant contract is `haipipe-board-page-for-labeling`, (now in the `subjective-label` plugin's own `skills/`, because that plugin maintains it) whose `template.md` is the copy-and-fill specimen; this page is the worked one. `QBt3` is the display specimen, which is the opposite shape: it IS its atom, while this page is a process over one.
+**Covered elsewhere**: what any board page is, and the section grammar this page obeys, belong to the boardform board at `../../../../haipipe-toolkit/skills/diagrams/01-boardform-260722`, whose `QB4` owns it and whose `QB6` admits the type. The variant contract is `haipipe-board-page-for-labeling`, in this plugin's own `skills/`, and its `template.md` is the copy-and-fill specimen; this page is the worked one.
 
 ## Diagram
 
@@ -306,10 +306,14 @@ policy/ gold/ evaluation/ production/ audit/   empty scaffolds
 ```
 
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · ALL` · [QB4 page](QB-delivery/QB4-overall.md)
-  QB4 owns the section grammar every typed page obeys, including this one.
-- `reads · ALL` · [QBt3 page](QBt-page-types/QBt3-for-display.md)
-  QBt3 is the opposite shape: it IS its atom, while this page is a process over one.
+- `reads · ALL` · [QF1 page](QF-execution-contract/QF1-skill-command-contract.md)
+  QF1 names the five doors this page turns into divisions, and fixes their dispatch.
+- `reads · ALL` · [QB1 page](QB-calibration-round/QB1-initialize-round-one.md)
+  QB1 requires round 1 to be a random draw, which is why §2 runs without an index.
+- `reads · ALL` · [QC1 page](QC-selection-and-adjudication/QC1-candidate-pool.md)
+  QC1 excludes sealed ids from every development index, which is the ordering §1.2 defends.
+- `reads · ALL` · [QD4 page](QD-optimization-and-convergence/QD4-stopping-criteria.md)
+  QD4 makes §3's four gates conjunctive and gives the signoff to a person.
 
 ## Law
 
@@ -320,7 +324,8 @@ policy/ gold/ evaluation/ production/ audit/   empty scaffolds
 
 ## Log
 
-260807 · Written as the labeling page type's worked specimen. Took `QBt11` rather than the free QBt7, because whether the QBt7 and QBt8 gap is filled is an open Decision Now row on `QB6`, and taking a number would settle it silently.
+260807 · Written as the labeling page type's worked specimen, on the boardform board, as the eleventh of its type pages. It took the next free number rather than the two-number gap below it, because whether that gap gets filled is an open Decision Now row on `QB6` and taking a number would have settled it silently.
 260807 · Corpus measured and flattened before writing, so no count on this page is estimated. Step ① is genuinely on HOLD; nothing here is fabricated to make the shape look finished.
 260808 · `/sl-init` ran. Four units of step ① produced files, the fifth refused: `--embed bge-m3` found no `torch`, `sentence_transformers`, or `faiss`, so `cache/embeddings/` holds a HOLD and no vector. The seal was reserved before the development table was built, and `test3` was found not to straddle an encounter, so no development turn shares an encounter with a sealed one. `B_1` is 60 items, `random.Random(42)`, p = 0.012812, no sealed row and no seed case. Step ① moved ⛔ → 🟡 and step ② moved 🔒 → 🟢; no gate, policy, or label moved at all.
+260808 · Moved off the boardform board, where it was the eleventh type page, and became `QG1` here, at JL's instruction. The specimen walks five doors that `QF1` on THIS board defines, and the contract it demonstrates is maintained in this plugin's own `skills/`, so it was the one page in `QBt-page-types` whose subject was not board form. Boardform keeps the ten types whose page grammar it does own; what it loses is a worked example of the eleventh, and `QB6` still admits the type.
 260808 · Two facts this page states were checked against the corpus and one neighbouring page was found wrong: the seed case quoted at `§2.4` as `D2N023` is `D2N023#t65`, while `S-Label-1`'s Stage Contract JSON gives its id as `D2N023#t31`, which is a different turn reading only "right .". That page owns the defect; this one records that it was found.
