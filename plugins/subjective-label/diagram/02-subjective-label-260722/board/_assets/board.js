@@ -3769,7 +3769,7 @@ function boardDirPath() {
  * with exactly one cell live and everything after it locked.
  *
  * ⚠️ WHERE THIS FILE OUGHT TO LIVE. With its plugin, at
- * `subjective-label/skills/haipipe-board-page-for-labeling/`, beside the contract it
+ * `subjective-label/skills/haipipe-page-for-labeling/`, beside the contract it
  * serves. It sits in the board engine's assets only because `assets.py` concatenates
  * `assets/js/**` from THIS skill and has no way to load a file a plugin contributes.
  * That loader is owed; until it exists this file is a guest here, and the registration
@@ -3861,7 +3861,14 @@ function boardDirPath() {
     }
     steps.forEach(function (s, i) {
       s.live = (i === live);
-      s.locked = (live >= 0 && i > live && s.rank !== 3);
+      /* 🧠 IS NEVER LOCKED (measured 260808 on QG1). `locked` means an earlier step
+         has not finished, and the CSS draws that as dim and unclickable. But 🧠 means
+         a person owes an answer RIGHT NOW: QG1's A6 is a cold-reader test that no
+         earlier step blocks, and it was rendering as the one thing you cannot touch
+         when it was the one thing only a human could move. Dimming it tells the
+         reader there is nothing to do here, which is the surface stating a
+         precondition the page never declared. */
+      s.locked = (live >= 0 && i > live && s.rank !== 3 && s.rank !== 2);
     });
     return live;
   }
@@ -3991,14 +3998,25 @@ function boardDirPath() {
       };
     });
 
+    /* A CARD IS A JUMP, NOT A SELECTOR: it opens the step's own Content division and
+       scrolls to it. The detail box below always shows the LIVE step, because that is
+       the step the surface exists to answer "what now" about.
+
+       ⚠️ The selector was `.sect.col.content` and matched NOTHING, so every card click
+       was silently doing nothing at all: Content stayed shut and the page never moved
+       (measured 260808, clicking A6 and A3 on QG1 and reading scrollY back). Content
+       renders as `details.sect.content` — `col` belongs to the OTHER sections, and
+       States is `.sect.col.now`, which is why reading the steps worked the whole time
+       and only the jump was dead. A dead jump on a card that says `cursor: pointer` is
+       invisible: nothing errors, the click just goes nowhere. */
     host.querySelectorAll('.wf-step').forEach(function (b) {
       b.onclick = function () {
         var s = steps[+b.dataset.i];
         var d = divisionOf(s);
-        var t = page.querySelector('.sect.col.content');
+        var t = page.querySelector('.sect.content');
         if (t) t.open = true;
         if (d) {
-          var heads = page.querySelectorAll('.sect.col.content details.csec');
+          var heads = page.querySelectorAll('.sect.content details.csec');
           var want = heads[+d - 1];
           if (want) { want.open = true; want.scrollIntoView({ block: 'center' }); }
         }
