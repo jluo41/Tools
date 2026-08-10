@@ -560,6 +560,88 @@ def sync(board: Path, apply: bool) -> int:
     return 0
 
 
+def retire_plan(board: Path):
+    """Plan the removal of imports whose Page has left board.md.
+
+    `sync` is deliberately additive and REFUSES a stale import, which is right:
+    a drawing whose page vanished may be a page that moved on purpose or a page
+    somebody deleted by accident, and code cannot tell those apart. So arrivals
+    had a verb and departures had none, and the only way a departure showed was
+    `verify` failing with a manifest mismatch three commits later. That happened
+    for real: QBt11's page moved to the subjective-label board on 260808, its
+    drawing stayed behind, and the Board reported the loss as an import count.
+
+    THE BYTES ARE NEVER DELETED. A retired source moves to `draw/_retired/`,
+    because a page that moves boards will want its picture again, and a drawing
+    is the one artefact here that no rebuild can regenerate.
+    """
+    _, _, _, groups, _ = board_inventory(board)
+    plans = []
+    for gid, group in groups.items():
+        group_path = board / group["parent"] / "draw" / "group.excalidraw"
+        if not group_path.is_file():
+            continue
+        group_scene = read_scene(group_path)
+        ext = group_scene.get("haipipe", {})
+        if ext.get("schema") != SCHEMA or ext.get("kind") != "group":
+            raise DrawError(f"not a linked Group source: {group_path}")
+        imports = ext.get("imports")
+        if not isinstance(imports, list):
+            raise DrawError(f"Group {gid} has no import manifest")
+        expected = {page["id"] for page in group["pages"]}
+        stale = [item for item in imports if item.get("page") not in expected]
+        if not stale:
+            continue
+        kept = [item for item in imports if item.get("page") in expected]
+        updated = copy.deepcopy(group_scene)
+        updated["haipipe"]["imports"] = kept
+        moves = []
+        for item in stale:
+            name = item.get("source") or f"{item.get('page')}.excalidraw"
+            src = group_path.parent / name
+            if src.is_file():
+                moves.append((src, group_path.parent / "_retired" / name))
+        plans.append((gid, group_path, group_scene, updated, stale, moves))
+    return plans
+
+
+def retire(board: Path, apply: bool) -> int:
+    plans = retire_plan(board)
+    count = sum(len(stale) for *_, stale, _ in plans)
+    for gid, _, _, _, stale, moves in plans:
+        for item in stale:
+            page = item.get("page")
+            kept = "source moved to draw/_retired/" if moves else "no source on disk"
+            print(f"retire: {gid} · {page} · its page is gone from board.md · {kept}")
+    print(f"plan  : {count} stale import(s) across {len(plans)} Group manifest(s)")
+    if not apply:
+        print("dry run; add --apply to drop the imports and shelve the sources")
+        return 0
+    moved = []
+    replaced = []
+    try:
+        for _, group_path, original, updated, _, moves in plans:
+            for src, dst in moves:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                if dst.exists():
+                    raise DrawError(f"refusing to overwrite a retired source: {dst}")
+                src.replace(dst)
+                moved.append((src, dst))
+            original_bytes = scene_text(original).encode("utf-8")
+            if group_path.read_bytes() != original_bytes:
+                raise DrawError(f"Group source changed during retire: {group_path}")
+            write_scene_atomic(group_path, updated)
+            replaced.append((group_path, original))
+    except Exception as exc:
+        for group_path, original in reversed(replaced):
+            write_scene_atomic(group_path, original)
+        for src, dst in reversed(moved):
+            dst.replace(src)
+        raise DrawError(f"retire rolled back after write failure: {exc}") from exc
+    print(f"wrote : dropped {count} import(s); shelved {len(moved)} source(s)")
+    return 0
+
+
 def merge_files(target: dict, incoming: dict, owner: str) -> None:
     for file_id, value in incoming.items():
         if file_id in target and target[file_id] != value:
@@ -779,6 +861,9 @@ def parser() -> argparse.ArgumentParser:
     sync_ap = sub.add_parser("sync", help="add Page sources missing after board.md changed")
     sync_ap.add_argument("board", type=Path)
     sync_ap.add_argument("--apply", action="store_true", help="create missing sources and update manifests")
+    retire_ap = sub.add_parser("retire", help="drop imports whose Page left board.md")
+    retire_ap.add_argument("board", type=Path)
+    retire_ap.add_argument("--apply", action="store_true", help="drop imports and shelve sources")
     compose_ap = sub.add_parser("compose", help="compose all Group and Page sources")
     compose_ap.add_argument("board", type=Path)
     compose_ap.add_argument("--output", type=Path, required=True)
@@ -799,6 +884,8 @@ def main(argv=None) -> int:
         return split(board, source, args.apply)
     if args.command == "sync":
         return sync(board, args.apply)
+    if args.command == "retire":
+        return retire(board, args.apply)
     if args.command == "compose":
         return compose(board, args.output.resolve(), args.replace)
     source = (args.source or board / "board.excalidraw").resolve()

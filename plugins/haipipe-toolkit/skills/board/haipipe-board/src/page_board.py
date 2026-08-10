@@ -105,6 +105,44 @@ def board_map(meta):
     )
 
 
+def group_canvas(meta, group, members):
+    """The live linked drawing for one generated Group page."""
+    host = (meta.get("excalidraw") or "").strip().rstrip("/")
+    board_dir = Path(meta.get("dir") or "")
+    if not host or not board_dir.is_dir() or not members:
+        return ""
+    parents = {Path(member.get("file") or "").parent for member in members}
+    if len(parents) != 1:
+        return ""
+    scene = board_dir / parents.pop() / "draw" / "group.excalidraw"
+    if not scene.is_file():
+        return ""
+    root = next((path for path in (board_dir, *board_dir.parents)
+                 if (path / "pyproject.toml").is_file()), None)
+    if root is None:
+        return ""
+    try:
+        rel = scene.relative_to(root).as_posix()
+    except ValueError:
+        return ""
+    url = f"{host}/?board={quote(rel, safe='/')}"
+    edit = f"{url}&edit=1&mode=group-source"
+    arrange = f"{url}&edit=1&mode=arrange"
+    return (
+        '<section class="board-map group-canvas" aria-label="Group drawing">'
+        '<div class="board-map-head"><div><span class="board-map-kicker">GROUP DRAW</span>'
+        f'<h2>{esc(group)} · linked Page sources</h2></div>'
+        '<p>Page drawings are composed live; the visible edit mode names the one save owner.</p></div>'
+        f'<iframe title="{esc(group)} Group drawing" src="{esc(url)}" '
+        'referrerpolicy="no-referrer"></iframe>'
+        '<div class="board-map-foot"><span>Live composition · Page sources stay independent</span>'
+        f'<a class="fp" href="{esc(edit)}" target="_blank" rel="noopener">✏️ Group layer</a>'
+        f'<a class="fp" href="{esc(arrange)}" target="_blank" rel="noopener">🧭 Arrange Pages</a>'
+        f'<a class="fp" href="{esc(url)}" target="_blank" rel="noopener">↗ Full drawing</a>'
+        '</div></section>'
+    )
+
+
 RELATED_MAX_DEPTH = 4      # how deep the walk descends
 RELATED_MAX_ENTRIES = 300  # per folder, so one huge directory cannot flood the page
 RELATED_SKIP = {"__pycache__", ".git", ".DS_Store", "node_modules",
@@ -491,7 +529,7 @@ def render(meta, qs):
     # never enters the settled count (JL 260731). That contradiction was the
     # old `Q-Skill` name: it was counted as a question and declared not to be one.
     # `meeting` joined this list on 260806. Two contracts already said it should
-    # be here, `haipipe-board-page` ("mirror and Meeting pages are NEVER counted
+    # be here, `haipipe-page` ("mirror and Meeting pages are NEVER counted
     # in a board's settled totals") and `-for-meeting` ("NEVER counted in settled
     # totals"), and the code counted it anyway, so every board holding a meeting
     # reported a denominator one too large. A meeting page decides nothing: what
@@ -680,7 +718,7 @@ TPL = """<!DOCTYPE html>
 <code>S-Appendix-A-xxx.md</code>. Edit those, then rebuild:
 <code>python3 build.py</code>.<br>Every page is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
-</div>{popcards}{js}</body></html>
+</div><div id="popcards">{popcards}</div>{js}</body></html>
 """
 
 _CJK = re.compile(r"[一-鿿]")
@@ -752,10 +790,10 @@ TREE_TPL = """<!DOCTYPE html>
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <link rel="stylesheet" href="{root}_assets/board.css?v={css_stamp}">
-</head><body class="single split" data-board="{boarddir}" data-board-root="{root}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+</head><body class="single split" data-board="{boarddir}" data-board-root="{root}" data-xcal="{xcal}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 <nav class="sitebar" aria-label="Breadcrumb"><a href="/boards">🏠 Boards</a><span class="sb-sep">›</span><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
 {body}
-</div>{popcards}
+</div><div id="popcards">{popcards}</div>
 <script src="{root}_assets/board.js?v={js_stamp}"></script></body></html>
 """
 
@@ -914,6 +952,11 @@ def render_tree(meta, qs, out_dir, only=None):
             title=esc(title), body=body, root=root, crumb=crumb,
             sidebar=sidebar, popcards=popcards,
             assets_stamp=ASSETS_STAMP, css_stamp=CSS_STAMP, js_stamp=JS_STAMP, favicon=MARK_FAVICON,
+            # The drawing host, so a plugin can open a Page's own source without
+            # the browser re-deriving what the build already knows. Empty on a
+            # Board that declares no `excalidraw:`, which is how 🖌 Draw stays
+            # out of the menu rather than offering a surface that cannot open.
+            xcal=esc((meta.get("excalidraw") or "").strip().rstrip("/")),
             boarddir=esc(meta.get("dir", "")), bsession=esc(meta.get("session", "")))
 
     # one file per page, inside its group's folder.
@@ -991,6 +1034,7 @@ def render_tree(meta, qs, out_dir, only=None):
                 + purpose + why
                 + f'<p class="bar">{len(members)} pages · '
                   f'{done}/{len(counted)} settled</p>'
+                + group_canvas(meta, g, members)
                 + f'<div class="idx">{"".join(rows)}</div>')
         # Group prose may contain authored Q/S references; in a split group
         # page those are file links, not fragments into a monolith.
