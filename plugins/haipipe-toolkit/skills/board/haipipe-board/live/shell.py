@@ -283,7 +283,23 @@ def _shell_doc(page_url, index_url):
   #split{display:grid;height:calc(100% - 30px);overflow:hidden;
     grid-template-columns:var(--iw,250px) 5px 1fr 5px var(--cw,520px)}
   #split.hi{grid-template-columns:0 0 1fr 5px var(--cw,520px)}
-  #cx{position:absolute;top:8px;right:12px;z-index:80;cursor:pointer;
+  #rp{display:flex;flex-direction:column;min-width:0;overflow:hidden;
+  border-left:1px solid var(--line,#e4e4df);background:var(--bg,#fff)}
+#rptabs{flex:0 0 auto;display:flex;align-items:stretch;gap:2px;padding:5px 6px 0 6px;
+  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
+.rpt{border:1px solid var(--line,#e4e4df);border-bottom:0;background:transparent;
+  color:var(--mut,#7c7c78);cursor:pointer;border-radius:7px 7px 0 0;padding:5px 11px;
+  font:600 12px/1 ui-monospace,Menlo,monospace}
+.rpt:hover{background:var(--bg,#f1f3f5)}
+/* the OPEN tab is the one that looks attached to the pane below it */
+.rpt[aria-selected="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c);
+  border-color:var(--line,#e4e4df);margin-bottom:-1px;padding-bottom:6px}
+.rpt[hidden]{display:none}
+.rp-sp{flex:1}
+#rp iframe{flex:1 1 auto;min-height:0}
+#rp iframe[hidden]{display:none}
+#split.hc #rp{display:none}
+#cx{position:absolute;top:8px;right:12px;z-index:80;cursor:pointer;
   font:500 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   padding:5px 10px;border-radius:6px;border:1px solid #d8d8d8;
   background:#fff;color:#1e1e1e}
@@ -351,7 +367,22 @@ def _shell_doc(page_url, index_url):
   <div class="gr" data-var="iw" data-min="140" data-max="520"></div>
   <iframe name="page"  id="fp" src="__PAGE__"  title="page"></iframe>
   <div class="gr" data-var="cw" data-min="280" data-max="900" data-rev="1"></div>
-  <iframe name="chat"  id="fc" data-src="__CHAT__"  title="chat"></iframe>
+  <!-- 🗂 THE RIGHT PANE IS TABBED (JL 260810). It used to be one iframe that the
+       chat owned, while Draw painted its own overlay inside the PAGE column, so
+       "opens to the right" meant two different mechanisms and opening both left
+       405px of actual page. One column, three tabs, and the frames are HIDDEN
+       rather than destroyed, because two of them hold state nothing can rebuild:
+       a live SDK session and a live PTY. -->
+  <div id="rp">
+    <div id="rptabs" role="tablist">
+      <button class="rpt" data-tab="gui" type="button" role="tab">💬 GUI</button>
+      <button class="rpt" data-tab="tui" type="button" role="tab">⌨️ TUI</button>
+      <button class="rpt" data-tab="draw" type="button" role="tab" hidden>🖌 Draw</button>
+      <span class="rp-sp"></span>
+    </div>
+    <iframe name="chat"  id="fc" data-src="__CHAT__"  title="chat"></iframe>
+    <iframe name="draw"  id="fd" title="drawing" referrerpolicy="no-referrer" hidden></iframe>
+  </div>
   <button id="cx" type="button" title="close the chat pane (Esc)">✕ close</button>
 </div>
 <script>
@@ -520,7 +551,12 @@ def _shell_doc(page_url, index_url):
     try {
       if (w && w.boardPlugins) {
         w.boardPlugins.applicable(w.boardPlugins.livePage(), menu).forEach(function (e) {
-          if (e.id === 'gui' || e.id === 'tui') return;   // the shell owns these two
+          /* The shell owns these three. GUI and TUI always were; Draw joined them
+             when the right pane gained tabs, because otherwise the same drawing has
+             two doors inside the viewer, one of them the old overlay that eats the
+             page column. On a BARE page there is no shell and no tab strip, so the
+             menu entry is still the only door and still works. */
+          if (e.id === 'gui' || e.id === 'tui' || e.id === 'draw') return;
           rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                       run: function () { e.open(w.boardPlugins.livePage()); } });
         });
@@ -678,6 +714,76 @@ def _shell_doc(page_url, index_url):
       g.addEventListener('pointerup', up);
     });
   });
+
+  /* ── 🗂 the tab strip ────────────────────────────────────────────────────────
+     GUI and TUI are NOT reimplemented here: their tabs click the same `want()`
+     the bar buttons use, so the lit-state, the localStorage keys and the session
+     hand-off keep their single writer. Only Draw is new, and it is new only in
+     WHERE it opens: the scene url still comes from the page's own plugin, so the
+     shell never learns how a drawing owner is derived. */
+  var rp = document.getElementById('rp'), fd = document.getElementById('fd');
+  var tabs = [].slice.call(document.querySelectorAll('.rpt'));
+  var tab = 'chat';                 // 'chat' (gui|tui live inside it) or 'draw'
+
+  function drawURL() {
+    try {
+      var w = frames.page;
+      if (!w || !w.boardDrawOwner || !w.boardPlugins) return '';
+      var o = w.boardDrawOwner(w.boardPlugins.livePage());
+      return (o && o.url) || '';
+    } catch (e) { return ''; }
+  }
+
+  function paintTabs() {
+    var url = drawURL();
+    var dt = document.querySelector('.rpt[data-tab="draw"]');
+    /* The Draw tab is DRAWN ONLY WHEN THIS PAGE HAS A DRAWING, which is the same
+       `applies` rule the menu uses one level up: never offer work that would be
+       refused. */
+    if (dt) dt.hidden = !url;
+    if (!url && tab === 'draw') showTab('gui');
+    var live = hidden ? '' : (tab === 'draw' ? 'draw' : liveMode());
+    tabs.forEach(function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.tab === live));
+    });
+  }
+
+  function showTab(which) {
+    if (which === 'draw') {
+      var url = drawURL();
+      if (!url) return;
+      tab = 'draw';
+      hidden = false;
+      split.classList.remove('hc');
+      if (fd.getAttribute('src') !== url) fd.setAttribute('src', url);
+      fd.hidden = false;
+      document.getElementById('fc').hidden = true;
+      try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
+      paint(); paintTabs();
+      return;
+    }
+    /* Coming BACK from Draw must not toggle the chat away: `want()` reads the lit
+       button and would treat this as "click the lit one". Reveal the frame first,
+       then only call want() if the mode is actually changing. */
+    var wasDraw = tab === 'draw';
+    tab = 'chat';
+    fd.hidden = true;
+    document.getElementById('fc').hidden = false;
+    if (wasDraw && liveMode() === which) { hidden = false; paint(); }
+    else want(which);
+    paintTabs();
+  }
+
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+  });
+  /* The page frame decides whether Draw applies, so the strip is repainted when a
+     new page lands in it, not only at boot. */
+  var fpEl = document.getElementById('fp');
+  if (fpEl) fpEl.addEventListener('load', function () { setTimeout(paintTabs, 300); });
+  setTimeout(paintTabs, 900);
+  var _paint = paint;
+  paint = function () { _paint(); paintTabs(); };
 })();
 </script>
 </body>

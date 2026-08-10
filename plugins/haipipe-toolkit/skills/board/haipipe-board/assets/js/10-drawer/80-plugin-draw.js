@@ -228,5 +228,9 @@
     });
   }
 
+  /* The SHELL needs the scene url to put this drawing in its right-hand tab, and
+     deriving it a second time up there would be a second answer to "which file
+     does this view save to". One export, one derivation (JL 260810). */
+  window.boardDrawOwner = owner;
   window.boardDrawOpen = open;   // for direct calls and for the tests
 })();
