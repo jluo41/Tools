@@ -95,6 +95,7 @@ from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
                        spawn_pty, pty_pump, pty_resize, ws_send)
 from live.xcal import XcalMixin
 from live.shell import ShellMixin
+from live.deck import DeckMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
 # exactly as before (QE3's Law: one implementation, the console is a pipe).
@@ -107,7 +108,7 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
                        BOARD_CHAT_RULES, BOARD_FULL_RULES, READONLY, WRITE_TOOLS)
 
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, SimpleHTTPRequestHandler):
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, DeckMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -332,6 +333,10 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 res, err = self.save_image(board, p)
             except Exception as e:
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/deck":       # write this page out as an html-ppt deck
+            res, err = self.deck(None, p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/term-type":   # a surface types one line into the PTY
