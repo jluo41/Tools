@@ -312,9 +312,33 @@
      with no parser of its own. */
   function payload(page) {
     return build(page).map(function (s) {
+      var t = s.body ? txt(s.body) : '';
       return { kicker: s.kicker || '', title: s.title || '',
+               /* A slide the split could not rescue (one oversized child) is
+                  flagged so the deck can set it smaller rather than let it run
+                  off the bottom. Measured, not guessed: QBt1's ASCII figure was
+                  128% of the box. */
+               dense: t.length > LIMIT,
                body: s.body ? s.body.innerHTML : '' };
     });
+  }
+
+  /* SLIDES IS A MODE, NOT A PANE (JL 260810). Measured at 1600x970 it is
+     100% x 100% at z-index 120, so opening it left Draw and the workflow strip
+     alive and invisible underneath. One thing on screen is the entire point of
+     it, so the others are PUT AWAY rather than covered.
+     Each is closed through its OWN control, so its own teardown runs: Draw drops
+     its iframe on close for a reason (a hidden Excalidraw keeps a live editor and
+     an unsaved buffer), and reaching past that to hide the element would keep the
+     ghost this whole surface is trying not to create. */
+  function putOthersAway() {
+    var wf = document.getElementById('wfpanel');
+    if (wf && !wf.hidden) {
+      var wx = wf.querySelector('.wf-x');
+      if (wx) wx.click();
+    }
+    var dx = document.querySelector('.xp-x');
+    if (dx && dx.closest('[hidden]') === null) dx.click();
   }
 
   function open(page) {
@@ -324,6 +348,7 @@
     if (!d.hidden) return close();       // a second click puts it away
 
     var slides = payload(page);
+    putOthersAway();
     d.hidden = false;
     note(d, 'writing ' + slides.length + ' slides…');
     d.querySelector('.sd-open').hidden = true;
