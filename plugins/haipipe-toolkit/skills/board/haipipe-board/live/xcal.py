@@ -26,11 +26,84 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from . import base
+from cli.draw import (DrawError, SCHEMA, compose_group_data, read_scene,
+                      reference_ids, write_scene_atomic)
+
+
+_DRAW_LOCK_GUARD = threading.Lock()
+_DRAW_LOCKS = {}
 
 
 
 
 class XcalMixin:
+    def draw_lock(self, path):
+        """One compare-and-save critical section per linked source."""
+        key = str(path.resolve())
+        with _DRAW_LOCK_GUARD:
+            return _DRAW_LOCKS.setdefault(key, threading.Lock())
+
+    @staticmethod
+    def scene_revision(path):
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def group_revision(self, group_path, scene=None):
+        """Revision of the derived view: Group manifest plus every Page source."""
+        group_path = group_path.resolve()
+        scene = scene or read_scene(group_path)
+        digest = hashlib.sha256()
+        for path in [group_path] + [
+            group_path.parent / item["source"]
+            for item in scene.get("haipipe", {}).get("imports", [])
+        ]:
+            resolved = path.resolve()
+            try:
+                resolved.relative_to(group_path.parent.resolve())
+            except ValueError as exc:
+                raise DrawError(f"import leaves draw/: {path}") from exc
+            digest.update(path.name.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(path.read_bytes())
+            digest.update(b"\0")
+        return digest.hexdigest()
+
+    def linked_runtime_scene(self, f, scene):
+        """Return one Page source or a freshly composed Group view with owner data."""
+        f = f.resolve()
+        ext = scene.get("haipipe", {})
+        rel = f.relative_to(self.root.resolve()).as_posix()
+        if ext.get("schema") != SCHEMA:
+            return None
+        if ext.get("kind") == "page":
+            owner = ext.get("page", {}).get("id")
+            scene["haipipe"] = dict(ext)
+            scene["haipipe"]["runtime"] = {
+                "ownerKind": "page", "owner": owner, "source": rel,
+                "revision": self.scene_revision(f),
+            }
+            scene["files"] = self.hydrate_files(scene, scene.get("elements", []), f.parent)
+            return scene
+        if ext.get("kind") != "group":
+            return None
+        composed = compose_group_data(f, namespace=True, runtime=True)
+        imports = []
+        for item in composed["haipipe"].get("imports", []):
+            entry = dict(item)
+            entry["board"] = (f.parent / item["source"]).relative_to(
+                self.root.resolve()).as_posix()
+            imports.append(entry)
+        composed["haipipe"]["imports"] = imports
+        composed["haipipe"]["runtime"] = {
+            "ownerKind": "group",
+            "owner": ext.get("group", {}).get("id"),
+            "source": rel,
+            "revision": self.group_revision(f, scene),
+            "modes": ["group-source", "arrange", "page-source"],
+        }
+        composed["files"] = self.hydrate_files(
+            composed, composed.get("elements", []), f.parent
+        )
+        return composed
     def excalidraw_key(self):
         """The Excalidraw+ key, from the environment or from env.sh at the root.
 
@@ -327,10 +400,11 @@ class XcalMixin:
                         "dataURL": f"data:{mime};base64,{b64}"}
         return out
 
-    def stash_files(self, scene, files, base):
+    def stash_files(self, scene, files, base, relative_to=None):
         """the editor's dataURLs -> files on disk + pointers in the scene."""
         keep = dict(scene.get("files") or {})
         wrote = []
+        relative_to = (relative_to or base.parent).resolve()
         for fid, rec in (files or {}).items():
             if not isinstance(rec, dict):
                 continue
@@ -344,11 +418,164 @@ class XcalMixin:
                 (base / name).write_bytes(base64.b64decode(b64))
             except Exception:
                 continue
-            keep[fid] = {"id": fid, "mimeType": mime, "path": f"{base.name}/{name}",
+            rel = (base / name).resolve().relative_to(relative_to).as_posix()
+            keep[fid] = {"id": fid, "mimeType": mime, "path": rel,
                          "created": rec.get("created", 0)}
             wrote.append(name)
         scene["files"] = keep
         return wrote
+
+    @staticmethod
+    def strip_runtime_element(element, owners):
+        """Turn one namespaced derived Group element back into source form."""
+        def raw_id(value):
+            if not isinstance(value, str) or "::" not in value:
+                return value
+            owner, _, rest = value.partition("::")
+            return rest if owner in owners else value
+
+        def clean(value, key=None):
+            if isinstance(value, dict):
+                out = {}
+                for child_key, child in value.items():
+                    if child_key == "haipipeRuntime" and key == "customData":
+                        continue
+                    if child_key in ("id", "frameId", "containerId", "elementId"):
+                        out[child_key] = raw_id(child)
+                    elif child_key == "groupIds" and isinstance(child, list):
+                        out[child_key] = [raw_id(item) for item in child
+                                          if not str(item).startswith("portal::")]
+                    else:
+                        out[child_key] = clean(child, child_key)
+                return out
+            if isinstance(value, list):
+                return [clean(child, key) for child in value]
+            return value
+        return clean(element)
+
+    def conflict(self, current):
+        return {"ok": False, "conflict": True,
+                "err": "drawing changed after this editor opened; reload before saving",
+                "current_revision": current}
+
+    def save_linked_page(self, d, f, scene):
+        ext = scene.get("haipipe", {})
+        owner = ext.get("page", {}).get("id")
+        if d.get("owner_kind") != "page" or d.get("owner_id") != owner:
+            return {"ok": False, "err": f"save owner does not match Page {owner}"}
+        elements = d.get("elements")
+        if not isinstance(elements, list):
+            return {"ok": False, "err": "elements must be a list"}
+        with self.draw_lock(f):
+            current = self.scene_revision(f)
+            if not d.get("base_revision") or d.get("base_revision") != current:
+                return self.conflict(current)
+            scene = read_scene(f)
+            scene["elements"] = [e for e in elements
+                                 if isinstance(e, dict) and not e.get("isDeleted")]
+            images = self.stash_files(
+                scene, d.get("files"), f.parent / "assets" / owner, f.parent
+            )
+            write_scene_atomic(f, scene)
+            revision = self.scene_revision(f)
+        return {"ok": True, "owner": owner, "owner_kind": "page",
+                "wrote": len(scene["elements"]), "images": images,
+                "revision": revision}
+
+    def validate_group_elements(self, group_path, group_scene, elements):
+        """Reject unresolved/ambiguous bindings before replacing a Group layer."""
+        gid = group_scene["haipipe"]["group"]["id"]
+        page_ids = [item["page"] for item in group_scene["haipipe"].get("imports", [])]
+        owners = {gid, *page_ids}
+        clean = []
+        for element in elements:
+            if not isinstance(element, dict) or element.get("isDeleted"):
+                continue
+            runtime = (element.get("customData") or {}).get("haipipeRuntime") or {}
+            if runtime.get("kind") == "page" or (
+                runtime.get("owner") and runtime.get("owner") != gid
+            ):
+                continue
+            clean.append(self.strip_runtime_element(element, owners))
+        ids = [element.get("id") for element in clean]
+        if any(not item for item in ids) or len(ids) != len(set(ids)):
+            raise DrawError("Group layer contains a missing or duplicate element id")
+        group_ids = set(ids)
+        page_owners = {}
+        for item in group_scene["haipipe"].get("imports", []):
+            page = read_scene(group_path.parent / item["source"])
+            for element in page["elements"]:
+                page_owners.setdefault(element["id"], set()).add(item["page"])
+        for element in clean:
+            for ref in reference_ids(element):
+                if ref in group_ids:
+                    continue
+                matches = page_owners.get(ref, set())
+                if len(matches) != 1:
+                    why = "ambiguous" if matches else "unresolved"
+                    raise DrawError(
+                        f"Group element {element['id']} has {why} reference {ref}"
+                    )
+        return clean
+
+    def save_linked_group(self, d, f, scene):
+        ext = scene.get("haipipe", {})
+        owner = ext.get("group", {}).get("id")
+        if d.get("owner_kind") != "group" or d.get("owner_id") != owner:
+            return {"ok": False, "err": f"save owner does not match Group {owner}"}
+        mode = d.get("mode")
+        if mode not in ("group-source", "arrange"):
+            return {"ok": False, "err": f"unsupported Group edit mode: {mode!r}"}
+        with self.draw_lock(f):
+            scene = read_scene(f)
+            current = self.group_revision(f, scene)
+            if not d.get("base_revision") or d.get("base_revision") != current:
+                return self.conflict(current)
+            images = []
+            if mode == "arrange":
+                placement = d.get("placement") or {}
+                page_id = placement.get("page")
+                item = next((entry for entry in scene["haipipe"].get("imports", [])
+                             if entry.get("page") == page_id), None)
+                if item is None:
+                    return {"ok": False, "err": f"Group {owner} does not import {page_id!r}"}
+                try:
+                    x, y, scale = (float(placement["x"]), float(placement["y"]),
+                                   float(placement["scale"]))
+                except (KeyError, TypeError, ValueError):
+                    return {"ok": False, "err": "placement needs numeric x, y, and scale"}
+                if not 0.05 <= scale <= 20:
+                    return {"ok": False, "err": "scale must be between 0.05 and 20"}
+                item["placement"] = {
+                    "x": x, "y": y, "scale": scale,
+                    "visible": bool(placement.get("visible", True)),
+                }
+                wrote = 1
+            else:
+                elements = d.get("elements")
+                if not isinstance(elements, list):
+                    return {"ok": False, "err": "elements must be a list"}
+                try:
+                    clean = self.validate_group_elements(f, scene, elements)
+                except DrawError as exc:
+                    return {"ok": False, "err": str(exc)}
+                scene["elements"] = clean
+                images = self.stash_files(
+                    scene, d.get("files"), f.parent / "assets" / "group", f.parent
+                )
+                wrote = len(clean)
+            write_scene_atomic(f, scene)
+            revision = self.group_revision(f, scene)
+        return {"ok": True, "owner": owner, "owner_kind": "group", "mode": mode,
+                "wrote": wrote, "images": images, "revision": revision}
+
+    def save_linked_excalidraw(self, d, f, scene):
+        kind = scene.get("haipipe", {}).get("kind")
+        if kind == "page":
+            return self.save_linked_page(d, f, scene)
+        if kind == "group":
+            return self.save_linked_group(d, f, scene)
+        return {"ok": False, "err": f"not a linked drawing source: {f.name}"}
 
     def save_excalidraw(self, d):
         """POST /_board/excalidraw-save {board, frame, elements} -> the scene file.
@@ -375,6 +602,8 @@ class XcalMixin:
             scene = json.loads(f.read_text(encoding="utf-8"))
         except Exception as e:
             return {"ok": False, "err": f"{f.name} is not a scene: {e}"}
+        if scene.get("haipipe", {}).get("schema") == SCHEMA:
+            return self.save_linked_excalidraw(d, f, scene)
         old = scene.get("elements", [])
         els = [e for e in els if isinstance(e, dict) and not e.get("isDeleted")]
         if not frame:
@@ -407,12 +636,13 @@ class XcalMixin:
                 "images": imgs, "frame": frame or "(whole board)"}
 
     def serve_frame(self):
-        """`…/board.excalidraw?frame=QA4a` -> the SAME scene, that frame only.
+        """Legacy `…/board.excalidraw?frame=QA4a` projection, that frame only.
 
-        ONE excalidraw per board, one FRAME per page (JL 260726). The frame is not
-        a separate file and must never become one: the whole point of a single
-        scene is that it can say how the pages relate, which is the thing a
-        per-page drawing can never express.
+        This route implements the retired one-scene source contract for Boards
+        that have not moved to QD5a's linked Group/Page sources. Inside this
+        legacy route the frame is not a separate file. New linked drawing work
+        uses one Page source plus a Group composition instead, and must not be
+        connected here until its ownership-aware live save path lands.
 
         A per-frame URL is needed anyway, because a page's Diagram should open at
         ITS frame rather than at the whole board. The hosted `?element=<id>` anchor
@@ -440,6 +670,13 @@ class XcalMixin:
             scene = json.loads(f.read_text(encoding="utf-8"))
         except Exception as e:
             return self.reply(400, {"ok": False, "err": f"{f.name} is not a scene: {e}"})
+
+        try:
+            linked = self.linked_runtime_scene(f, scene)
+        except DrawError as e:
+            return self.reply(409, {"ok": False, "err": f"cannot compose linked drawing: {e}"})
+        if linked is not None:
+            return self.reply_scene(linked)
 
         els = scene.get("elements", [])
         if not want:

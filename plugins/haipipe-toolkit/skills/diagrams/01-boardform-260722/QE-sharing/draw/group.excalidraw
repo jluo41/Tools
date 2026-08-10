@@ -1,0 +1,123 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [
+    {
+      "id": "t-group-4",
+      "type": "text",
+      "x": 0,
+      "y": 4793.0,
+      "width": 184.8,
+      "height": 35.0,
+      "angle": 0,
+      "strokeColor": "#6a5acd",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 472398166,
+      "version": 1,
+      "versionNonce": 1642191059,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1,
+      "link": null,
+      "locked": false,
+      "text": "QE · Sharing",
+      "originalText": "QE · Sharing",
+      "fontSize": 28,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QE",
+      "name": "QE · Sharing"
+    },
+    "imports": [
+      {
+        "page": "QE1",
+        "source": "QE1.excalidraw",
+        "placement": {
+          "x": 0.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE1"
+      },
+      {
+        "page": "QE2",
+        "source": "QE2.excalidraw",
+        "placement": {
+          "x": 904.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE2"
+      },
+      {
+        "page": "QE3",
+        "source": "QE3.excalidraw",
+        "placement": {
+          "x": 1597.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE3"
+      },
+      {
+        "page": "QE4",
+        "source": "QE4.excalidraw",
+        "placement": {
+          "x": 2414.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE4"
+      },
+      {
+        "page": "QE5",
+        "source": "QE5.excalidraw",
+        "placement": {
+          "x": 3289.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE5"
+      },
+      {
+        "page": "QE6",
+        "source": "QE6.excalidraw",
+        "placement": {
+          "x": 4099.0,
+          "y": 3645.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-QE6"
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {
+        "t-group-4": 124
+      }
+    }
+  }
+}

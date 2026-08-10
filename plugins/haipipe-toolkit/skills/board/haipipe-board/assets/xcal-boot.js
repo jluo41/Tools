@@ -85,6 +85,7 @@
   if (!board) return start();               // not our URL: leave the app alone
   var frame = q.get("frame") || "";
   var edit = q.get("edit") === "1";
+  var mode = q.get("mode") || "";
   var K_EL = "excalidraw", K_ST = "excalidraw-state";
   var LOCK = "haipipe-xcal-edit", LOCK_MS = 6000;
   var SAVE = "/_board/excalidraw-save";
@@ -111,6 +112,12 @@
     console.error("[haipipe] could not load " + scene_url + " (HTTP " + x.status + ")");
     return start();
   }
+  var runtime = (scene.haipipe && scene.haipipe.runtime) || null;
+  var linked = !!runtime;
+  if (!mode && linked)
+    mode = runtime.ownerKind === "group" ? "group-source" : "page-source";
+  var canvasEdit = edit && (!linked || runtime.ownerKind === "page" || mode === "group-source");
+  var baseRevision = runtime && runtime.revision;
   var els = (scene.elements || []).filter(function (e) { return !e.isDeleted; });
 
   // The app filters stored appState through a per-key table, and `viewModeEnabled`
@@ -118,8 +125,8 @@
   // read-only does not work. `activeTool` and `zenModeEnabled` do restore, and
   // between them they do the job better: the hand tool pans and zooms but cannot
   // draw, and zen mode takes the editing chrome off a figure nobody is editing.
-  var st = { viewBackgroundColor: "#ffffff", zenModeEnabled: !edit };
-  if (!edit) st.activeTool = { type: "hand", customType: null, locked: true,
+  var st = { viewBackgroundColor: "#ffffff", zenModeEnabled: !canvasEdit };
+  if (!canvasEdit) st.activeTool = { type: "hand", customType: null, locked: true,
                                lastActiveTool: null, fromSelection: false };
   // Without `#url=` nothing scrolls to content, so a frame at x=4000 would open
   // on empty canvas. Fit whatever we were asked for, frame or whole board.
@@ -140,7 +147,7 @@
     st.scrollY = (vh / z - (box[3] - box[1])) / 2 - box[1];
   }
 
-  if (edit) {
+  if (canvasEdit) {
     localStorage.setItem(K_EL, JSON.stringify(els));
     localStorage.setItem(K_ST, JSON.stringify(st));
     localStorage.setItem(LOCK, JSON.stringify({ id: me, frame: frame, t: Date.now() }));
@@ -194,14 +201,119 @@
       say("👁 read-only · another tab is editing " + (blocked.frame || "the board"), "bad");
     } else if (!edit) {
       say("👁 read-only · pan and zoom · ✏️ Edit on the page to draw");
+    } else if (linked && runtime.ownerKind === "group" && mode === "arrange") {
+      say("🧭 Arrange Instance · saves placement to Group " + runtime.owner);
+    } else if (linked) {
+      say("✏️ " + mode + " · saves only to " + runtime.ownerKind + " " + runtime.owner);
     } else {
       say("✏️ editing " + (frame || "the whole board") + " · saves to the repo");
     }
   }
   ready();
 
+  /* ---- 2b. linked owner controls ------------------------------------ */
+  function linkedControls() {
+    if (!linked || !edit || blocked || !document.body) return;
+    var panel = document.createElement("div");
+    panel.id = "haipipe-linked-controls";
+    panel.setAttribute("style",
+      "position:fixed;left:12px;top:12px;z-index:2147483647;display:flex;gap:6px;" +
+      "align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px);padding:8px;" +
+      "border:1px solid #d0d7de;border-radius:10px;background:rgba(255,255,255,.96);" +
+      "box-shadow:0 2px 10px rgba(0,0,0,.16);font:12px/1.4 ui-monospace,Menlo,monospace");
+    function button(label, fn) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = label; b.onclick = fn;
+      b.setAttribute("style", "padding:5px 8px;border:1px solid #9aa4af;border-radius:6px;background:#fff;cursor:pointer");
+      panel.appendChild(b); return b;
+    }
+    function go(nextMode) {
+      q.set("edit", "1"); q.set("mode", nextMode);
+      location.search = q.toString();
+    }
+    var owner = document.createElement("b");
+    owner.textContent = runtime.ownerKind + " " + runtime.owner;
+    panel.appendChild(owner);
+
+    if (runtime.ownerKind === "page") {
+      var back = q.get("return");
+      if (back) button("← Group", function () {
+        location.search = new URLSearchParams({ board: back, edit: "1", mode: "group-source" }).toString();
+      });
+      var note = document.createElement("span");
+      note.textContent = "Edit Page Source · this file is the source";
+      panel.appendChild(note);
+      document.body.appendChild(panel);
+      return;
+    }
+
+    button("✏️ Group layer", function () { go("group-source"); });
+    button("🧭 Arrange", function () { go("arrange"); });
+    var imports = scene.haipipe.imports || [];
+    var select = document.createElement("select");
+    imports.forEach(function (item) {
+      var o = document.createElement("option"); o.value = item.page; o.textContent = item.page;
+      select.appendChild(o);
+    });
+    select.setAttribute("style", "padding:5px;border-radius:6px");
+    panel.appendChild(select);
+    button("✏️ Edit Page Source", function () {
+      var item = imports.filter(function (x) { return x.page === select.value; })[0];
+      if (!item) return;
+      location.search = new URLSearchParams({
+        board: item.board, edit: "1", mode: "page-source", "return": runtime.source
+      }).toString();
+    });
+
+    if (mode === "arrange") {
+      ["x", "y", "scale"].forEach(function (name) {
+        var label = document.createElement("label");
+        label.textContent = name + " ";
+        var input = document.createElement("input");
+        input.type = "number"; input.step = name === "scale" ? "0.05" : "10";
+        input.dataset.field = name; input.placeholder = name;
+        input.setAttribute("style", "width:68px;padding:5px;border:1px solid #9aa4af;border-radius:6px");
+        label.appendChild(input); panel.appendChild(label);
+      });
+      var visible = document.createElement("label");
+      visible.innerHTML = '<input type="checkbox" data-field="visible"> visible';
+      panel.appendChild(visible);
+      function fill() {
+        var item = imports.filter(function (x) { return x.page === select.value; })[0];
+        var p = (item && item.placement) || {};
+        panel.querySelector('[data-field="x"]').value = p.x == null ? 0 : p.x;
+        panel.querySelector('[data-field="y"]').value = p.y == null ? 0 : p.y;
+        panel.querySelector('[data-field="scale"]').value = p.scale == null ? 1 : p.scale;
+        panel.querySelector('[data-field="visible"]').checked = p.visible !== false;
+      }
+      select.onchange = fill; fill();
+      button("Save placement", function () {
+        var placement = { page: select.value };
+        ["x", "y", "scale"].forEach(function (name) {
+          placement[name] = Number(panel.querySelector('[data-field="' + name + '"]').value);
+        });
+        placement.visible = panel.querySelector('[data-field="visible"]').checked;
+        say("… saving Group placement", "busy");
+        fetch(SAVE, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ board: runtime.source, owner_kind: "group",
+            owner_id: runtime.owner, mode: "arrange", base_revision: baseRevision,
+            placement: placement })
+        }).then(function (r) { return r.json(); }).then(function (r) {
+          if (!r.ok) { say("✗ " + (r.err || "refused"), "bad"); return; }
+          baseRevision = r.revision; location.reload();
+        }).catch(function (e) { say("✗ " + e, "bad"); });
+      });
+    } else {
+      var note2 = document.createElement("span");
+      note2.textContent = "imported Pages are locked; saves only the Group layer";
+      panel.appendChild(note2);
+    }
+    document.body.appendChild(panel);
+  }
+  if (document.body) linkedControls(); else addEventListener("DOMContentLoaded", linkedControls);
+
   /* ---- 3. write back, from the editing tab only ---------------------- */
-  if (!edit) return;
+  if (!canvasEdit) return;
   // Compare on CONTENT, not on the raw JSON. Excalidraw rewrites `version`,
   // `versionNonce` and `updated` on every element the moment it loads a scene,
   // so a raw comparison reports a change the instant the editor opens and the
@@ -217,12 +329,29 @@
     }));
   }
 
-  var last = sig(els), busy = false;
+  var last = sig(els), busy = false, stale = false, armed = !linked;
+  function arm(ev) {
+    if (armed || !linked) return;
+    var target = ev && ev.target;
+    if (target && target.closest && target.closest("#haipipe-linked-controls")) return;
+    // Excalidraw normalizes loaded elements before the first human gesture.
+    // Take that normalized scene as the baseline at gesture START, then save
+    // only what the gesture changes. Toolbar navigation never arms a write.
+    try {
+      var normalized = JSON.parse(localStorage.getItem(K_EL) || "[]")
+        .filter(function (e) { return !e.isDeleted; });
+      last = sig(normalized);
+    } catch (e) {}
+    armed = true;
+  }
+  ["pointerdown", "keydown", "paste"].forEach(function (name) {
+    document.addEventListener(name, arm, true);
+  });
   var sent = {};                            // fileIds the server already has
   Object.keys(scene.files || {}).forEach(function (id) { sent[id] = 1; });
   function flush(unloading) {
     var now = localStorage.getItem(K_EL);
-    if (!now || busy) return;
+    if (!now || busy || stale || !armed) return;
     var live;
     try { live = JSON.parse(now).filter(function (e) { return !e.isDeleted; }); }
     catch (e) { return; }
@@ -234,7 +363,11 @@
       // tick stay. Only an image pasted in the last second or so can be lost.
       if (navigator.sendBeacon)
         navigator.sendBeacon(SAVE, new Blob(
-          [JSON.stringify({ board: board, frame: frame, elements: live })],
+          [JSON.stringify({ board: board, frame: frame, elements: live,
+            owner_kind: runtime && runtime.ownerKind,
+            owner_id: runtime && runtime.owner,
+            mode: linked ? mode : undefined,
+            base_revision: baseRevision })],
           { type: "application/json" }));
       return;
     }
@@ -247,15 +380,23 @@
       var n = Object.keys(files).length;
       return fetch(SAVE, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board: board, frame: frame, elements: live, files: files })
+        body: JSON.stringify({ board: board, frame: frame, elements: live, files: files,
+          owner_kind: runtime && runtime.ownerKind,
+          owner_id: runtime && runtime.owner,
+          mode: linked ? mode : undefined,
+          base_revision: baseRevision })
       }).then(function (r) { return r.json(); }).then(function (r) {
         busy = false;
         if (r && r.ok) {
           last = body;
+          if (r.revision) baseRevision = r.revision;
           Object.keys(files).forEach(function (id) { sent[id] = 1; });
           say("✓ saved " + new Date().toTimeString().slice(0, 8) +
               (n ? " · " + n + " image" + (n > 1 ? "s" : "") : ""));
-        } else { say("✗ " + ((r && r.err) || "refused"), "bad"); }
+        } else {
+          if (r && r.conflict) stale = true;
+          say("✗ " + ((r && r.err) || "refused"), "bad");
+        }
       });
     }).catch(function (e) { busy = false; say("✗ " + e, "bad"); });
   }

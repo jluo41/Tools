@@ -1,0 +1,153 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [
+  {
+   "id": "t-group-3",
+   "type": "text",
+   "x": 0,
+   "y": 4133,
+   "width": 338.8,
+   "height": 35,
+   "angle": 0,
+   "strokeColor": "#6a5acd",
+   "backgroundColor": "transparent",
+   "fillStyle": "solid",
+   "strokeWidth": 1,
+   "strokeStyle": "solid",
+   "roughness": 1,
+   "opacity": 100,
+   "groupIds": [],
+   "frameId": null,
+   "roundness": null,
+   "seed": 1650029528,
+   "version": 1,
+   "versionNonce": 1553781194,
+   "isDeleted": false,
+   "boundElements": null,
+   "updated": 1,
+   "link": null,
+   "locked": false,
+   "text": "QD \u00b7 Working with Chat",
+   "originalText": "QD \u00b7 Working with Chat",
+   "fontSize": 28,
+   "fontFamily": 2,
+   "textAlign": "left",
+   "verticalAlign": "top",
+   "containerId": null,
+   "lineHeight": 1.25
+  }
+ ],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QD",
+   "name": "QD \u00b7 Working with Chat"
+  },
+  "imports": [
+   {
+    "page": "QD1",
+    "source": "QD1.excalidraw",
+    "placement": {
+     "x": 0.0,
+     "y": 3120.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD1"
+   },
+   {
+    "page": "QD2",
+    "source": "QD2.excalidraw",
+    "placement": {
+     "x": 744.0,
+     "y": 3120.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD2"
+   },
+   {
+    "page": "QD3",
+    "source": "QD3.excalidraw",
+    "placement": {
+     "x": 1473.0,
+     "y": 3120.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD3"
+   },
+   {
+    "page": "QD4",
+    "source": "QD4.excalidraw",
+    "placement": {
+     "x": 2699.0,
+     "y": 4185.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD4"
+   },
+   {
+    "page": "QD5",
+    "source": "QD5.excalidraw",
+    "placement": {
+     "x": 3443.0,
+     "y": 4185.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD5"
+   },
+   {
+    "page": "QD5a",
+    "source": "QD5a.excalidraw",
+    "placement": {
+     "x": 6100.0,
+     "y": 4185.0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   },
+   {
+    "page": "QD6",
+    "source": "QD6.excalidraw",
+    "placement": {
+     "x": 2618.0,
+     "y": 3120.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD6"
+   },
+   {
+    "page": "QD7",
+    "source": "QD7.excalidraw",
+    "placement": {
+     "x": 3486.0,
+     "y": 3120.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD7"
+   },
+   {
+    "page": "QD8",
+    "source": "QD8.excalidraw",
+    "placement": {
+     "x": 5308.0,
+     "y": 4185.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD8"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {
+    "t-group-3": 99
+   }
+  }
+ }
+}
