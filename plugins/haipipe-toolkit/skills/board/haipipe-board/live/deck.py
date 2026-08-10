@@ -82,6 +82,27 @@ BRIDGE = """
    overflow; a deck that CLIPPED page text would say something the page does not,
    which is the one thing a derived view may never do. */
 .slide { overflow-y: auto; }
+
+/* TOP, NOT MIDDLE. html-ppt centres a slide vertically, which is right for a
+   five-word title and wrong for a paragraph: a short body floated in the middle
+   of the screen with a third empty above and below it, and the eye had to hunt
+   for where the text began. Board slides start at a fixed top edge, so every
+   slide's first line is in the same place. */
+.deck .slide { justify-content: flex-start; align-content: flex-start; }
+.deck .slide > .kicker:first-child { margin-top: 4vh; }
+
+/* THE ONE SLIDE A SPLIT CANNOT RESCUE. A section whose single largest child is
+   already over the limit stays whole (see the reflow), so it is set smaller
+   instead. Measured on QBt1: 128% of the box before, inside it after. This is
+   the only place the deck trades type size for fit, and it does so on the
+   slides that would otherwise lose their last lines off the bottom. */
+.slide.dense { padding-top: 2vh; padding-bottom: 2vh; }
+.slide.dense .sd-body { font-size: .56em; line-height: 1.45; }
+.slide.dense pre, .slide.dense pre.asc { font-size: .62em; line-height: 1.3;
+  padding: 8px 10px; margin: 6px 0; }
+.slide.dense .h2 { font-size: clamp(16px, 1.5vw, 24px); margin-bottom: .3em; }
+.slide.dense .kicker { font-size: .7em; margin-bottom: 2px; }
+.slide.dense .deck-footer { font-size: .8em; }
 """
 
 SHELL = """<!DOCTYPE html>
@@ -110,7 +131,7 @@ SHELL = """<!DOCTYPE html>
 # "55 / 22 / 22". Both were the same mistake: html-ppt updates the ACTIVE slide's
 # `.slide-number`, not the page's first, so any literal is a second writer on the
 # same span. The element still has to BE there for the runtime to fill.
-SLIDE = """  <section class="slide" data-title="{dt}">
+SLIDE = """  <section class="slide{dense}" data-title="{dt}">
 {kicker}    <h2 class="h2">{title}</h2>
     <div class="sd-body">{body}</div>
     <div class="deck-footer"><span class="dim2">{foot}</span>\
@@ -172,6 +193,7 @@ class DeckMixin:
         for i, s in enumerate(slides, 1):
             k = (s.get("kicker") or "").strip()
             body.append(SLIDE.format(
+                dense=(" dense" if s.get("dense") else ""),
                 dt=_attr(s.get("title")),
                 kicker=('    <p class="kicker">%s</p>\n' % _text(k)) if k else "",
                 title=_text(s.get("title")),
