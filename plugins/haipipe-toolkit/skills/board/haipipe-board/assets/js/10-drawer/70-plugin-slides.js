@@ -95,9 +95,15 @@
        rendered as a title over nothing. */
     if (c.tagName === 'DETAILS') c.open = true;
     c.querySelectorAll('details').forEach(function (d) { d.open = true; });
-    c.querySelectorAll('.secall,.cpy,.copy,.sb-x,button').forEach(function (b) {
-      b.parentNode && b.parentNode.removeChild(b);
-    });
+    /* `.schatbar` and `.smenu` are the SENTENCE APPARATUS, injected after load and
+       therefore invisible in the HTML on disk. On the page they are quiet controls
+       beside a sentence; cloned into a deck they print as bare text, so every slide
+       of QBt1 carried a stack of "C1.P1.S1 / QBt1.C1.P1.S1" between its sentences
+       and half the slide was ids (JL 260810: "the quality is not that good"). They
+       are stripped by WRAPPER, not by the `.sidchip` inside, because removing the
+       chip alone leaves the empty bar holding its own vertical space. */
+    c.querySelectorAll('.secall,.cpy,.copy,.sb-x,.schatbar,.smenu,button')
+      .forEach(function (b) { b.parentNode && b.parentNode.removeChild(b); });
     /* Links keep their text but stop being links: a click inside the deck that
        navigated the frame away would look like the deck crashed. */
     c.querySelectorAll('a').forEach(function (a) {
@@ -190,6 +196,54 @@
       }
     });
 
+    return chunk(out);
+  }
+
+  /* A SECTION IS NOT A SLIDE, which the first version assumed. Measured on QBt1:
+     22 slides carrying 138 to 2231 characters, and the 2231 one rendered at 118%
+     of the box, so its foot was cut off. One heading can hold a paragraph or a
+     whole figure plus four subdivisions, and nothing in the page grammar bounds it.
+
+     So the split MEASURES instead of counting headings. An over-long body is cut at
+     its own TOP-LEVEL child boundaries, never inside one: a `<pre>` figure cut down
+     the middle is worse than a tall slide, because the reader cannot tell the halves
+     apart. A single child already over the limit therefore stays whole and overflows,
+     which the deck scrolls rather than clips. */
+  var LIMIT = 1500;   // characters of body text; about a screenful at deck size
+
+  function chunk(slides) {
+    var out = [];
+    slides.forEach(function (s) {
+      var b = s.body;
+      if (!b || txt(b).length <= LIMIT || b.children.length < 2) { out.push(s); return; }
+      /* A SPLIT THAT CANNOT HELP MUST NOT HAPPEN. When one child is already over
+         the limit, cutting at child boundaries only peels the small ones off it:
+         the first attempt turned QBt1's ASCII section into a 7-character slide
+         followed by a 2249-character one still at 127%, which is the original
+         problem plus a useless slide. A lone oversized figure stays whole and the
+         deck scrolls it. */
+      var big = 0;
+      Array.prototype.forEach.call(b.children, function (k) {
+        big = Math.max(big, (k.textContent || '').length);
+      });
+      if (big > LIMIT) { out.push(s); return; }
+      var parts = [], cur = document.createElement('div'), used = 0;
+      Array.prototype.slice.call(b.children).forEach(function (kid) {
+        var len = (kid.textContent || '').length;
+        if (used && used + len > LIMIT) {
+          parts.push(cur); cur = document.createElement('div'); used = 0;
+        }
+        cur.appendChild(kid.cloneNode(true));
+        used += len;
+      });
+      if (cur.children.length) parts.push(cur);
+      parts.forEach(function (p, i) {
+        out.push({ kicker: s.kicker, klass: s.klass, body: p,
+                   /* a continuation says so in the TITLE, because a reader who
+                      arrives mid-section otherwise reads it as a repeated heading */
+                   title: i === 0 ? s.title : s.title + ' (' + (i + 1) + ')' });
+      });
+    });
     return out;
   }
   /* ── the surface: an html-ppt deck, in an iframe ─────────────────────────────

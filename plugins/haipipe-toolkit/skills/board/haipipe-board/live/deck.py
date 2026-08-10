@@ -53,7 +53,14 @@ DEFAULT_THEME = "academic-paper"
 # too. This is the only CSS the board contributes to the deck, and it is written
 # here rather than in board.css because it applies nowhere else.
 BRIDGE = """
-.slide .sd-body { font-size: .58em; line-height: 1.6; }
+/* THE RATIO, not the sizes. html-ppt's `.h2` is sized for a five-word slide
+   title; a board division title sits above real prose, so at .58em the body read
+   as a footnote under a billboard (measured 1 : 6 on QBt1). Both move toward each
+   other rather than the body alone, or the title simply loses the page. */
+.slide .h2 { font-size: clamp(20px, 2.1vw, 34px); line-height: 1.18;
+             margin-bottom: .55em; }
+.slide .kicker { font-size: .8em; }
+.slide .sd-body { font-size: .80em; line-height: 1.62; }
 .slide pre, .slide pre.asc {
   background: var(--surface, rgba(127,127,127,.08));
   border: 1px solid var(--line, rgba(127,127,127,.22));
@@ -97,17 +104,17 @@ SHELL = """<!DOCTYPE html>
 </html>
 """
 
-# `{num}` IS EMPTY ON SLIDE 1 AND A LITERAL EVERYWHERE ELSE, and the split is not
-# arbitrary. html-ppt fills `document.querySelector('.slide-number')`, the FIRST
-# one on the page, which is why its own templates put the element on the cover
-# alone. A deck of 27 board sections wants the count on every slide, so the rest
-# carry a literal, which the runtime never touches and which is also what makes
-# the number right with JavaScript off.
+# THE NUMBER IS THE RUNTIME'S, on every slide, and the span is always empty.
+# Two wrong guesses got here. First the literal went on every slide and the cover
+# read "1 / 27 / 27"; then it went on all but the cover and slide 5 of QBt1 read
+# "55 / 22 / 22". Both were the same mistake: html-ppt updates the ACTIVE slide's
+# `.slide-number`, not the page's first, so any literal is a second writer on the
+# same span. The element still has to BE there for the runtime to fill.
 SLIDE = """  <section class="slide" data-title="{dt}">
 {kicker}    <h2 class="h2">{title}</h2>
     <div class="sd-body">{body}</div>
     <div class="deck-footer"><span class="dim2">{foot}</span>\
-<span class="slide-number" data-current="{i}" data-total="{n}">{num}</span></div>
+<span class="slide-number" data-current="{i}" data-total="{n}"></span></div>
   </section>
 """
 
@@ -164,13 +171,7 @@ class DeckMixin:
         body = []
         for i, s in enumerate(slides, 1):
             k = (s.get("kicker") or "").strip()
-            # SLIDE 1 IS THE RUNTIME'S. html-ppt fills the FIRST `.slide-number`
-            # it finds, so writing a literal there too rendered "1 / 27 / 27" on
-            # the cover (seen in Chrome 260810, not in the code). Every other
-            # slide keeps its literal, which the runtime never touches and which
-            # is also what makes the count right with JavaScript off.
             body.append(SLIDE.format(
-                num=("" if i == 1 else f"{i} / {n}"),
                 dt=_attr(s.get("title")),
                 kicker=('    <p class="kicker">%s</p>\n' % _text(k)) if k else "",
                 title=_text(s.get("title")),
