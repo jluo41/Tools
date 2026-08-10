@@ -1,0 +1,125 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QCskill",
+      "name": "QCskill · Engine skills"
+    },
+    "imports": [
+      {
+        "page": "Skill-0",
+        "source": "Skill-0.excalidraw",
+        "placement": {
+          "x": 9013.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-0"
+      },
+      {
+        "page": "Skill-3",
+        "source": "Skill-3.excalidraw",
+        "placement": {
+          "x": 10049.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-3"
+      },
+      {
+        "page": "Skill-4",
+        "source": "Skill-4.excalidraw",
+        "placement": {
+          "x": 10837.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-4"
+      },
+      {
+        "page": "Skill-5",
+        "source": "Skill-5.excalidraw",
+        "placement": {
+          "x": 11683.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-5"
+      },
+      {
+        "page": "Skill-6",
+        "source": "Skill-6.excalidraw",
+        "placement": {
+          "x": 13871.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-6"
+      },
+      {
+        "page": "Skill-7",
+        "source": "Skill-7.excalidraw",
+        "placement": {
+          "x": 14732.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Skill-7"
+      },
+      {
+        "page": "Skill-8",
+        "source": "Skill-8.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "Agent-1",
+        "source": "Agent-1.excalidraw",
+        "placement": {
+          "x": 12566.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Agent-1"
+      },
+      {
+        "page": "Agent-2",
+        "source": "Agent-2.excalidraw",
+        "placement": {
+          "x": 13237.0,
+          "y": 1905.0,
+          "scale": 1
+        },
+        "sourceFrame": "frame-Agent-2"
+      },
+      {
+        "page": "Agent-3",
+        "source": "Agent-3.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {}
+    }
+  }
+}
