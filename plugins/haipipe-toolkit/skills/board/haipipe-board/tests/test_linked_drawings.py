@@ -177,6 +177,53 @@ class LinkedDrawingTest(unittest.TestCase):
                              existing_before)
             self.assertEqual((board / "board.excalidraw").read_bytes(), legacy_before)
 
+    def test_retire_drops_a_departed_page_and_keeps_its_drawing(self):
+        """A Page that LEAVES board.md had no verb, only a refusal three steps later.
+
+        Arrivals were additive and departures raised "stale imports" from `sync`,
+        so the real signal a person saw was `verify` failing on an import count.
+        Retiring drops the import, shelves the bytes, and lets `verify` pass again.
+        """
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            board, _ = fixture_board(Path(root))
+            draw.split(board, board / "board.excalidraw", apply=True)
+            drawn = board / "QA-first" / "draw" / "QA2.excalidraw"
+            kept_bytes = drawn.read_bytes()
+            board_md = board / "board.md"
+            board_md.write_text(
+                board_md.read_text(encoding="utf-8").replace("QA2-two.md\n", ""),
+                encoding="utf-8",
+            )
+            # The page LEFT: delisted AND gone from disk, which is what a move to
+            # another Board looks like. Delisting alone makes the Board report a
+            # "⚠️ Not in Pages" group, and every verb refuses that by design.
+            (board / "QA-first" / "QA2-two.md").unlink()
+            # `sync` still refuses, on purpose: it cannot tell a move from a mistake.
+            with self.assertRaises(draw.DrawError):
+                draw.sync(board, apply=True)
+            self.assertEqual(draw.retire(board, apply=True), 0)
+            group = draw.read_scene(board / "QA-first" / "draw" / "group.excalidraw")
+            self.assertEqual([item["page"] for item in group["haipipe"]["imports"]],
+                             ["QA1", "QA3"])
+            self.assertFalse(drawn.exists())
+            shelved = board / "QA-first" / "draw" / "_retired" / "QA2.excalidraw"
+            self.assertTrue(shelved.is_file())
+            self.assertEqual(shelved.read_bytes(), kept_bytes)
+            # and the departure is now silent to sync rather than fatal
+            self.assertEqual(draw.sync(board, apply=True), 0)
+
+    def test_retire_is_a_no_op_when_every_page_is_still_declared(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            board, _ = fixture_board(Path(root))
+            draw.split(board, board / "board.excalidraw", apply=True)
+            group_path = board / "QA-first" / "draw" / "group.excalidraw"
+            before = group_path.read_bytes()
+            self.assertEqual(draw.retire_plan(board), [])
+            self.assertEqual(draw.retire(board, apply=True), 0)
+            self.assertEqual(group_path.read_bytes(), before)
+
     def test_live_group_composition_tags_and_locks_page_elements(self):
         import tempfile
         with tempfile.TemporaryDirectory() as root:

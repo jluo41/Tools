@@ -95,17 +95,6 @@
           "scale": 1
         },
         "sourceFrame": null
-      },
-      {
-        "page": "QBt11",
-        "source": "QBt11.excalidraw",
-        "placement": {
-          "x": 0,
-          "y": 0,
-          "scale": 1,
-          "visible": true
-        },
-        "sourceFrame": null
       }
     ],
     "migration": {
