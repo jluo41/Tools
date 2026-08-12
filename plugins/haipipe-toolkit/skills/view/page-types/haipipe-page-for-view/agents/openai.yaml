@@ -1,0 +1,4 @@
+interface:
+  display_name: "Haipipe Page for View"
+  short_description: "Define View Pages and source/fixture boundaries"
+  default_prompt: "Use $haipipe-page-for-view to create or repair a first-class View Page with QA inputs, readable Cards, independently accepted renderer-complete Displays, consumers, and safe `_fixture` manifests."

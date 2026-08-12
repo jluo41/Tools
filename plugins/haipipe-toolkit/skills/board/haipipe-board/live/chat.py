@@ -144,6 +144,56 @@ def group_folder(board, gname):
     return None
 
 
+def drawing_owner_context(target, root):
+    """Give Chat the same Group/Page source address the canvas uses."""
+    target = Path(target)
+    draw_dir = target / "draw" if target.is_dir() else target.parent / "draw"
+    if not draw_dir.is_dir():
+        return []
+
+    def rel(path):
+        try:
+            return str(path.resolve().relative_to(Path(root).resolve()))
+        except ValueError:
+            return str(path)
+
+    if target.is_dir():
+        group_source = draw_dir / "group.excalidraw"
+        if not group_source.is_file():
+            return []
+        pages = []
+        for source in sorted(draw_dir.glob("*.excalidraw")):
+            if source.name == "group.excalidraw":
+                continue
+            try:
+                scene = json.loads(source.read_text(encoding="utf-8"))
+                page_id = scene.get("haipipe", {}).get("page", {}).get("id")
+            except Exception:
+                page_id = None
+            if page_id:
+                pages.append(f"      · {page_id} -> {rel(source)}")
+        return [
+            "  · Drawing owner: Group source -> " + rel(group_source),
+            "  · Imported Page drawing owners:",
+            *pages,
+            "For drawing edits, use exactly one owner: Group relationships and "
+            "Page-instance placement belong to group.excalidraw; shapes or text "
+            "inside one Page belong to that Page's .excalidraw source. Never edit "
+            "the derived composed scene.",
+        ]
+
+    page_id = page_id_of(target.stem)
+    page_source = draw_dir / f"{page_id}.excalidraw"
+    if not page_source.is_file():
+        return []
+    return [
+        f"  · Drawing owner: Page {page_id} -> {rel(page_source)}",
+        "When the user asks to change this Page's drawing, edit that source; "
+        "the importing Group will recompose it. Group placement never belongs "
+        "in the Page source.",
+    ]
+
+
 def group_prime_context(f, board, root):
     """组级会话的开场定位（JL 260731：每个 question group 也要能聊）：
     这组是干嘛的、有哪些页、各自什么状态 —— 视野是一组，不是一页也不是整板。"""
@@ -180,6 +230,7 @@ def group_prime_context(f, board, root):
         "belongs to the board session; deep work inside one page belongs to that "
         "page's own chat. Read the pages for the full picture; wait for the "
         "user's instruction.")
+    lines.extend(drawing_owner_context(f, root))
     lines.extend(status_strip_context(board, letter, root))
     return "\n".join(lines)
 
@@ -235,6 +286,7 @@ def prime_context(f, board, root):
         lines.append(f"  · {nitem} open Aim(s) in its ## Aims.")
     lines.append("Read that file for the full picture. You already know which page and board "
                  "this is; wait for the user's instruction.")
+    lines.extend(drawing_owner_context(f, root))
     lines.extend(status_strip_context(board, qid, root))
     return "\n".join(lines)
 

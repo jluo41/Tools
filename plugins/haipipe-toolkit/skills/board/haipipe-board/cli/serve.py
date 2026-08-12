@@ -281,7 +281,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 res = self.save_excalidraw(p)
             except Exception as e:
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            return self.reply(200 if res.get("ok") else 400, res)
+            status = 200 if res.get("ok") else (409 if res.get("conflict") else 400)
+            return self.reply(status, res)
         if self.path == "/_board/terms":       # 列出所有在跑的终端（跨板）
             return self.reply(200, {"ok": True, "terms": self.list_terms()})
         if self.path == "/_board/killall":     # 一键全关

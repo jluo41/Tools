@@ -4,7 +4,7 @@ Migrated 2026-08-01 from `paper/2-phase/0-draft/haipipe-paper-draft` Steps 4, 4a
 and 4c. The SHAPE is general and the NOTATION is not, which is the same split as
 `change-record.md`: one discipline, one dialect per host.
 
-The board half of this is NOT this file's to define. `board/haipipe-board-sentence`
+The board half of this is NOT this file's to define. `board/haipipe-sentence`
 owns the lanes and the evidence card, and `QB4 §3.3.3` names all eight lanes and
 states the paper mapping. This file carries the discipline; those carry the grammar.
 

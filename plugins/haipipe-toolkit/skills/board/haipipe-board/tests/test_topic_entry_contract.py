@@ -147,6 +147,43 @@ class TopicEntryContractTest(unittest.TestCase):
             # no topic detected, so the overlay stays silent
             self.assertEqual([], report.rows)
 
+    def test_companion_display_is_checked_when_a_topic_opts_in(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            board = Path(tmp)
+            topic_text = TOPIC.replace(
+                "route: outward\n", "route: outward\ndisplay: companion\n"
+            ).replace(
+                "🔗 QA-probe: `probes/L01-topic/1-entry.md` · state: deferred\n",
+                "🔗 QA-probe: `probes/L01-topic/1-entry.md` · state: deferred\n"
+                "🖼 Display: `display/S-Literature-1-topic/1-entry.md` · state: candidate\n",
+            )
+            topic, _entry = _write(board, topic_text)
+            card = board / "display" / "S-Literature-1-topic" / "1-entry.md"
+            card.parent.mkdir(parents=True)
+            card.write_text("# Candidate\nstate: candidate\nkind: literature-matrix\n", encoding="utf-8")
+            report = _Report()
+
+            check_topic_entries(board, {topic.name: topic}, report)
+
+            self.assertEqual([], report.rows)
+
+    def test_companion_display_must_exist_when_a_topic_opts_in(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            board = Path(tmp)
+            topic_text = TOPIC.replace(
+                "route: outward\n", "route: outward\ndisplay: companion\n"
+            ).replace(
+                "🔗 QA-probe: `probes/L01-topic/1-entry.md` · state: deferred\n",
+                "🔗 QA-probe: `probes/L01-topic/1-entry.md` · state: deferred\n"
+                "🖼 Display: `display/S-Literature-1-topic/1-entry.md` · state: candidate\n",
+            )
+            topic, _entry = _write(board, topic_text)
+            report = _Report()
+
+            check_topic_entries(board, {topic.name: topic}, report)
+
+            self.assertEqual(["topic-display-missing"], [row[1] for row in report.rows])
+
 
 if __name__ == "__main__":
     unittest.main()

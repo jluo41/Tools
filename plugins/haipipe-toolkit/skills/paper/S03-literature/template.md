@@ -5,7 +5,7 @@ owner: <who gates this topic; usually JL>
 method: <one line: how this topic turns its stake questions into citation bindings>
 route: outward
 requires: <the S03 hub page this topic hangs off, e.g. S-Literature-Dash; drop the line if there is none>
-<!-- RULE: the route: line is REQUIRED and lives HERE, in the metadata head right after owner:/method:. It is the machine-readable type key that resolves this page to page-types/haipipe-board-page-for-literature (board/haipipe-board/ref/topic-entry-contract.md, "The head route line"). Without it the page's type is unresolvable and the page is defective. -->
+<!-- RULE: the route: line is REQUIRED and lives HERE, in the metadata head right after owner:/method:. It is the machine-readable type key that resolves this page to page-types/haipipe-page-for-literature (board/haipipe-board/ref/topic-entry-contract.md, "The head route line"). Without it the page's type is unresolvable and the page is defective. -->
 
 ## Opening
 <!-- RULE: the lead is ONE question and it carries the topic's POSITIONING STAKE: what the work claims to add here, and what published result would strengthen or break that claim. "Find papers about <area>" is a reading list, not a stake. After the lead, a blank line, then two or three More sentences, one sentence per line. -->

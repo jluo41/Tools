@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-board-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
+description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.7.0"
@@ -17,7 +17,7 @@ User-facing entry for the paper lifecycle, and since 2026-08-05 the ONLY paper r
 The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
 Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
-Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-board-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
+Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
 The stage's LaTeX-side craft lives in data files each `stage.md` declares under `craft:`; the phase contracts load them after the type contract.
 Canonical structure: `../README.md` at the paper skill root.
 
@@ -125,7 +125,7 @@ Resolution order (first match wins):
 4. a PAGE id or page path on the paper's board (S-<Family>-…, Q…, or a .md
    under 0-lifecycle/) with no stage verb    -> a stage page resolves its stage key first (board_family/unit)
                                                 and runs the STAGE step; any other page hands to
-                                                haipipe-board-page WORK ON directly, phase verb passed through.
+                                                haipipe-page WORK ON directly, phase verb passed through.
                                                 "work on <page>" is always legal at this door.
 5. no args, cwd inside a paper root          -> enter "."
 6. no args, no paper root                    -> chooser (below)
@@ -173,7 +173,7 @@ create a sidecar request or handoff file; unfinished work stays in the page's `#
 its current fact in `## States`.
 
 **Step 3 — hand the page to the page layer.**
-Phase driving is NOT this door's: with the page resolved, call `haipipe-board-page` (WORK ON to
+Phase driving is NOT this door's: with the page resolved, call `haipipe-page` (WORK ON to
 repair one page; RUN with a raw-material packet to drive it through its declared phases). The
 `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK; the shared probe model is
 `probe/haipipe-probe/SKILL.md` and the paper-side loop is `fn/probes.md`.
@@ -681,7 +681,7 @@ Composing with Evidence Workers
 /haipipe-paper (the door)
         ├─► STAGE step        seed -> resource -> claims -> [venue] -> pitch ->
         │                     narrative -> display -> section-edit -> round (pages
-        │                     driven via haipipe-board-page)
+        │                     driven via haipipe-page)
         ├─► fn/ verbs         folder · conform · compile · diffpdf · project ·
         │                     to-overleaf · to-word (human-triggered, tooling in scripts/)
         │

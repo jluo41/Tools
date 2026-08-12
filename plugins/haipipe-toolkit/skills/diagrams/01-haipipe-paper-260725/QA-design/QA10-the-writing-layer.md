@@ -18,9 +18,9 @@ That is not an oversight, and the skill's own README gives the reason: every oth
 
 The prose that produced it was this board's. Every rule in `../../writing/haipipe-writing/ref/plain-rules.md` was ruled while rewriting `QB4` on `④`, the `✎` record grammar was built because the same two mistakes were made twice by hand in one evening, and `../../writing/haipipe-writing/ref/ai-tells.md`, `../../writing/haipipe-writing/ref/weaving.md` and `../../writing/haipipe-writing/ref/holes.md` were all migrated OUT of `①` because no paper owned them. The skill exists because a design board needed it first.
 
-Scope: This page covers Where the prose verb sits, what it owns against `①` and `③`, why it has no board of its own, and what is still owed at the seam. Neighbouring pages cover Which folder this is among the eleven is `QA1`; what ships and whether it is well is `../01-boardform-260722/QCskill-engine-skill/Skill-7-haipipe-writing.md`; the lane contract the `✎` record lives inside is `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-board-sentence.md`; the paper's own venue-bound revision chain is `Skill-0-haipipe-paper.md`, which since 0.5.0 is the whole paper family.
+Scope: This page covers Where the prose verb sits, what it owns against `①` and `③`, why it has no board of its own, and what is still owed at the seam. Neighbouring pages cover Which folder this is among the eleven is `QA1`; what ships and whether it is well is `../01-boardform-260722/QCskill-engine-skill/Skill-7-haipipe-writing.md`; the lane contract the `✎` record lives inside is `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-sentence.md`; the paper's own venue-bound revision chain is `Skill-0-haipipe-paper.md`, which since 0.5.0 is the whole paper family.
 
-This board's own mirror pages for those two units retired on 260806. The `QCskill` group here keeps `Skill-0-haipipe-paper.md` alone, and `Skill-9-haipipe-board-sentence.md`, `Skill-11-haipipe-writing.md` and `Skill-5-haipipe-paper-revise.md` are in `_archive/QCskill-retired-260806/`. The live mirrors for `③` and `⑪` are on `④`, the board that owns them.
+This board's own mirror pages for those two units retired on 260806. The `QCskill` group here keeps `Skill-0-haipipe-paper.md` alone, and `Skill-9-haipipe-sentence.md`, `Skill-11-haipipe-writing.md` and `Skill-5-haipipe-paper-revise.md` are in `_archive/QCskill-retired-260806/`. The live mirrors for `③` and `⑪` are on `④`, the board that owns them.
 
 ## Writing Style
 
@@ -124,7 +124,7 @@ The division is the skill's own and it is stated in one line there: they share m
 
 #### 1.2 · It owns one lane out of ten, and none of the machinery around it
 
-The `✎` record is not a grammar this family invented. `③` owns the lane contract, `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-board-sentence.md` mirrors the shipping unit on `④`, and `QB4@boardform §3.3.3` names the ten kinds: eight `⚑` typed lanes, one `💬` comment, and the `✎` change record `⑪` writes. Three of those rules bind it directly and `cli/wdiff.py apply` enforces all three: a lane is appended and never edited in place, a signed `> WHO:` or `> ✎` line is never erased, and a lane with no signature is not a lane.
+The `✎` record is not a grammar this family invented. `③` owns the lane contract, `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-sentence.md` mirrors the shipping unit on `④`, and `QB4@boardform §3.3.3` names the ten kinds: eight `⚑` typed lanes, one `💬` comment, and the `✎` change record `⑪` writes. Three of those rules bind it directly and `cli/wdiff.py apply` enforces all three: a lane is appended and never edited in place, a signed `> WHO:` or `> ✎` line is never erased, and a lane with no signature is not a lane.
 
 That is the healthy shape of a dependency, and it was got wrong first. Releases 0.1.0 through 0.3.0 described `✎` as a standalone grammar, which created a second authority on something `③` already owned. JL caught it on 260802 and 0.4.0 rewrote the reference to CITE the owning contract rather than restate it.
 
@@ -327,7 +327,7 @@ The checker got its own job wrong twice before it worked, and both are recorded 
   `⑪` itself: the plain-English rules, the change-record grammar, the AI-tell catalogue, the weaving method, the hole discipline.
 - `../../writing/README.md`
   Where the no-artifact-kind argument is stated by the family in its own words.
-- `../../board/haipipe-board-sentence/`
+- `../../board/haipipe-sentence/`
   `③`'s lane contract, which owns the shape the `✎` record lives in.
 - `../../writing/haipipe-paper-revise-humanizer/`
   The venue half, and since the `haipipe-paper-revise` hub retired (260805), the one live caller.

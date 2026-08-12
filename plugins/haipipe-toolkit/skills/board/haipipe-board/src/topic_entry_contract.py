@@ -30,6 +30,10 @@ ENTRY_HEADINGS = ("Q-executor", "consumer trace", "bank binding", "A-executor")
 RESOLVED_STATES = {"read", "answered-local"}
 QUEUED_STATES = {"planned", "commissioned", "deferred"}
 ENTRY_STATES = RESOLVED_STATES | QUEUED_STATES
+DISPLAY_STATES = {"candidate", "selected", "paper-bound", "parked", "not-displayable"}
+DISPLAY_POINTER = re.compile(
+    r"🖼 Display:\s*`?([^`\s·]+)`?\s*·\s*state:\s*([a-z-]+)"
+)
 
 
 # The paper's drawer of bound records. `QA-probe` is the name ruled on 260806 so
@@ -234,6 +238,37 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
             report.add("ERROR", "topic-probe-division", where,
                        f"a QA-probe belongs to exactly one `### E<n>` division of "
                        f"{topic_id}; {len(owners)} division(s) point at it")
+
+        # A topic page may opt into the paired PROBE -> DISPLAY workflow with
+        # `display: companion` in its metadata head.  New Value and Literature
+        # pages do this.  Old pages remain readable while they migrate.
+        if head_key(topic_text, "display") == "companion":
+            divisions = [body for n, _q, body in e_divisions(topic_text)
+                         if n > 0 and rel_from_topic and rel_from_topic in body]
+            if len(divisions) == 1:
+                pointers = DISPLAY_POINTER.findall(divisions[0])
+                if len(pointers) != 1:
+                    report.add("ERROR", "topic-display-pointer", where,
+                               "a companion-enabled E division needs exactly one "
+                               "`🖼 Display:` pointer")
+                else:
+                    display_rel, display_state = pointers[0]
+                    if display_state not in DISPLAY_STATES:
+                        allowed = " · ".join(sorted(DISPLAY_STATES))
+                        report.add("ERROR", "topic-display-state", where,
+                                   f"display state {display_state!r} is not one of {allowed}")
+                    display_path = topic_path.parent / display_rel
+                    if not display_path.is_file():
+                        report.add("ERROR", "topic-display-missing", where,
+                                   f"display companion `{display_rel}` does not exist")
+                    else:
+                        card_state = head_key(
+                            display_path.read_text(encoding="utf-8"), "state"
+                        ).split("·")[0].strip().lower()
+                        if card_state != display_state:
+                            report.add("ERROR", "topic-display-state", where,
+                                       f"display pointer says `{display_state}` but companion "
+                                       f"says `{card_state or 'missing'}`")
 
         if lean:
             # A lean record carries no consumer trace, on purpose: who is

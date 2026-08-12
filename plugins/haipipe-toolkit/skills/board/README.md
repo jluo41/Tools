@@ -8,28 +8,37 @@ reviewable set of question pages or lifecycle stages.
 - `haipipe-board/` is the callable skill and owns the Board format, actions,
   renderer, local service, write-back, checks, and the reply-ending session
   status strip. It is the family's one DOOR.
-- `haipipe-board-page/` is a loadable SPEC: what a Page is, its six Page Types over
+- `haipipe-page/` is a loadable SPEC: what a Page is, its six Page Types over
   one base, its sections in their fixed order, and how it resolves a stable
   Page Type plus a current Page Phase. Its `RUN` verb uses a shared raw-material
   packet and auditable phase receipt rather than a fixed phase sequence. A
   Page's `Files › Related Board Pages` rows add checked, phase-scoped context;
   the engine reads them once through `cli/pagecontext.py`, never recursively.
-- `page-types/haipipe-board-page-for-venue/` is the loadable VARIANT of that base for
-  `QBv<n>` venue pages, one per place a paper is submitted to. Its pages live on
-  the paper board, and the board family maintains the contract, which is why it
-  ships here.
-- `page-types/haipipe-board-page-for-skill/` is the loadable VARIANT of that base for the
-  two skill and agent page kinds, `Skill-<n>` and `Agent-<n>`. A skill page mirrors a unit
-  that ships elsewhere and decides nothing, so its Opening introduces the unit
-  instead of asking a question.
-- `page-types/haipipe-board-page-for-stage/` is the loadable VARIANT for
-  `S-<Family>-<unit>` lifecycle pages. It owns the persistent chain and gate
-  shape, not the active phase.
+- `page-types/` holds the FIVE variants this skill set owns. A variant ships
+  under the `page-types/` folder of the skill set that owns it (JL 260809), so
+  the six paper- and labeling-specific variants live with their own families:
+  `paper/page-types/` and `subjective-label/skills/page-types/`.
+  - `haipipe-page-for-stage/` is the VARIANT for `S-<Family>-<unit>` lifecycle
+    pages. It owns the persistent chain and gate shape, not the active phase. It
+    stays here because a stage page is a BOARD mechanism that both the paper and
+    application families instantiate.
+  - `haipipe-page-for-skill/` is the VARIANT for the two mirror kinds,
+    `Skill-<n>` and `Agent-<n>`. A skill page mirrors a unit that ships elsewhere
+    and decides nothing, so its Opening introduces the unit instead of asking a
+    question.
+  - `haipipe-page-for-meeting/` is the VARIANT for `Meeting-<n>`: talk is
+    recorded there and ruled elsewhere, and it is never counted as settled.
+  - `haipipe-page-for-slide/` is the VARIANT for a deck, one division per slide,
+    each embedding the one deck file live.
+  - `haipipe-page-for-design/` is the VARIANT for a design brief: candidates side
+    by side, closing on a SELECTION record.
+  ⚠️ Moving a variant between skill sets does not move its installed symlink.
+  Re-run `Tools/install.sh --global` afterwards or the skill stops resolving.
 - `page-phases/` holds the four host-agnostic phase contracts:
-  `haipipe-board-page-draft`, `haipipe-board-page-probe`,
-  `haipipe-board-page-revise`, and `haipipe-board-page-check`.
+  `haipipe-page-draft`, `haipipe-page-probe`,
+  `haipipe-page-revise`, and `haipipe-page-check`.
   They are selected by authority rather than by edit operation or a rigid order.
-- `haipipe-board-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
+- `haipipe-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
   the evidence card, and the archive-never-delete record lifecycle.
 - `haipipe-board-routing/` is the WRITE VERB, at both altitudes. Board and group:
   propose a board's structure before any file exists, materialize it after
@@ -48,7 +57,7 @@ reviewable set of question pages or lifecycle stages.
 - `agents/haipipe-board-reviewer-agent.md` is the read-only, fresh-context
   CHECK. It judges one source/render version and returns CLOSE, REVISE, PROBE,
   DRAFT, or HOLD; it never repairs the Board it judges.
-- `agents/haipipe-board-page-orchestrator-agent.md` is the non-interactive RUN
+- `agents/haipipe-page-orchestrator-agent.md` is the non-interactive RUN
   target. It invokes the bounded Workflow, stores `_runs/page/` receipts, and
   calls the deterministic auditor without editing Page prose.
 
@@ -57,26 +66,27 @@ reviewable set of question pages or lifecycle stages.
 ```text
 board/
 ├── README.md
-├── DESIGN.md
 ├── CHANGELOG.md
 ├── agents/
 │   ├── README.md
 │   ├── CHANGELOG.md
 │   ├── haipipe-board-creator-agent.md
 │   ├── haipipe-board-reviewer-agent.md
-│   └── haipipe-board-page-orchestrator-agent.md
-├── haipipe-board-page/
+│   └── haipipe-page-orchestrator-agent.md
+├── haipipe-page/
 │   └── ref/page-run-contract.md
-├── page-types/
-│   ├── haipipe-board-page-for-stage/
-│   ├── haipipe-board-page-for-skill/
-│   └── haipipe-board-page-for-venue/
+├── page-types/          the five variants THIS skill set owns
+│   ├── haipipe-page-for-stage/
+│   ├── haipipe-page-for-skill/
+│   ├── haipipe-page-for-meeting/
+│   ├── haipipe-page-for-slide/
+│   └── haipipe-page-for-design/
 ├── page-phases/
-│   ├── haipipe-board-page-draft/
-│   ├── haipipe-board-page-probe/
-│   ├── haipipe-board-page-revise/
-│   └── haipipe-board-page-check/
-├── haipipe-board-sentence/
+│   ├── haipipe-page-draft/
+│   ├── haipipe-page-probe/
+│   ├── haipipe-page-revise/
+│   └── haipipe-page-check/
+├── haipipe-sentence/
 ├── haipipe-board-routing/
 │   └── src/lanes.py
 └── haipipe-board/

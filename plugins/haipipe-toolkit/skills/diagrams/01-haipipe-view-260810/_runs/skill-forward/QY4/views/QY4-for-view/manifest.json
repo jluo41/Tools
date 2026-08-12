@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "id": "QY4-for-view",
+  "page_id": "QY4",
+  "title": "Measurement-boundary regression",
+  "page_source": "../../QY4-for-view.md",
+  "acceptance": "waiting",
+  "inputs": {
+    "qa_probes": [
+      "input/QA-probes/Q1-observable-signal.md",
+      "input/QA-probes/Q2-measurement-boundary.md"
+    ],
+    "sources": ["input/sources/references.bib"]
+  },
+  "displays": [
+    {
+      "id": "QY4-Display1",
+      "folder": "QY4-Display1-measurement-boundary-table",
+      "kind": "table",
+      "reader_job": "Separate the observable signal from the measurement boundary.",
+      "body_bindings": ["EC1", "EC2"],
+      "status": "rendered",
+      "acceptance": "waiting",
+      "preview_image": "preview.png",
+      "preview_pdf": "preview.pdf"
+    }
+  ],
+  "consumers": [
+    {
+      "id": "C1",
+      "target": "../../consumers/S-Results.md",
+      "uses": ["QY4-Display1"],
+      "placement": "Results / construct boundary",
+      "status": "planned"
+    }
+  ],
+  "build": {
+    "fixture_root": "../../_fixture",
+    "formats": ["tex", "pdf", "docx"]
+  }
+}

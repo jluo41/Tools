@@ -9,7 +9,7 @@ Every page agent reads THIS FILE FIRST, then its one target page, then works.
    project/to-overleaf/to-word as fn/ verbs, round/rebuttal as S10 stage DATA (260806).
    All old paper skills live in `paper/_old/`. Stage data: S01-opening … S10-round
    (stage.md contract+craft, template.md, craft .md files, checker scripts).
-2. THE ENGINE: `board/haipipe-board-page` 0.21.0. Page = TYPE x PHASE. Ten types under
+2. THE ENGINE: `board/haipipe-page` 0.21.0. Page = TYPE x PHASE. Ten types under
    `board/page-types/`, four phases under `board/page-phases/`. Verbs CREATE / WORK ON /
    RUN (receipts under _runs/, first live RUN 260805 on QB8e).
 3. EVIDENCE PAGES (the 260806 redesign): for-literature/for-value 0.4.0. A page declares

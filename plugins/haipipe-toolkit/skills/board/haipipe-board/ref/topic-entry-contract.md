@@ -17,6 +17,8 @@ S evidence page                       the ONE board page this overlay adds
             ├── consumer trace     audit copy of each Q-consumer
             ├── bank binding       route, bank, target, and state
             └── A-executor         the returned answer
+  └── display/<topic>/
+       └── one Display companion per QA-probe        <n>-<slug>.md · not a page
 ```
 
 An originating delivery page may raise a Q first. The evidence page owns the canonical evidence-routing record, while the QA-probe owns the Q-executor because it is the neutral question another system can answer. The consumer trace is never a second register.
@@ -30,7 +32,7 @@ route: outward    the questions face published knowledge
 route: inward     the questions face results this project must produce
 ```
 
-An evidence page wears a stage-shaped filename, so only this line separates it from a plain stage page: a page with E divisions and no `route:` head line, or one with any other value, leaves the page's type unresolvable and the page defective. `route: outward` resolves the page to `page-types/haipipe-board-page-for-literature`; `route: inward` resolves it to `page-types/haipipe-board-page-for-value`.
+An evidence page wears a stage-shaped filename, so only this line separates it from a plain stage page: a page with E divisions and no `route:` head line, or one with any other value, leaves the page's type unresolvable and the page defective. `route: outward` resolves the page to `page-types/haipipe-page-for-literature`; `route: inward` resolves it to `page-types/haipipe-page-for-value`.
 
 ## The E divisions: one per Q-executor conversation
 
@@ -39,10 +41,19 @@ The evidence page organizes its Content BY EXECUTOR (JL 260806). Each division i
 1. a pointer line, `🔗 QA-probe: probes/<topic>/<n>-<slug>.md · state: <its bank-binding state>`
 2. a `#### consumers` block: one row per Q-consumer collected from other pages. Each row carries the source page id, the stake in one line, then its A-consumer interpretation, and wears exactly one row state: `⬜` open · SUPPORTED (outward) or BOUND (inward) · DEFERRED, with the reason on the row · WITHDRAWN, because the claim the row served changed
 3. a `#### answer digest` block: 2-3 lines from the A-executor. The full text stays in the QA-probe record, one click away; the digest is what a reader scans.
+4. when the page declares `display: companion`, one `🖼 Display:` pointer to the same-numbered candidate display record. Its state is `candidate`, `selected`, `paper-bound`, `parked`, or `not-displayable`.
 
 `### E0 · incoming` is the one standing division: the queue where a newly collected Q-consumer waits until PROBE translates it into a new E<n> and opens its QA-probe. A Q-consumer born on ANY page is COLLECTED into the owning topic's E0 first, then promoted.
 
 The page closes only when every E<n> division's consumers are terminal AND E0 is empty. The human gate reads the E divisions, not the QA-probes: an answer sitting in a QA-probe's `#### A-executor` that never became an A-consumer row closes nothing.
+
+## The Display companion: a candidate, not a final float
+
+An answered probe should be made visible before it is made manuscript-ready. A topic page opting in with `display: companion` therefore pairs each QA-probe with a hidden, same-stem record under `display/<topic>/`.
+The record states the possible five-second takeaway, claim role, and disposition.
+It may say `not-displayable`; the purpose is to make that decision inspectable, not to force every result into a figure or table.
+Only a `selected` companion may file a Display request and become a formal Display unit.
+The card grammar is `ref/topic-display-card.md`.
 
 ## The QA-probe: a record, not a Page
 

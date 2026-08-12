@@ -1,6 +1,6 @@
 # The change record: `✎`
 
-**This file does not own the sentence apparatus.** `board/haipipe-board-sentence`
+**This file does not own the sentence apparatus.** `board/haipipe-sentence`
 does, and `QB4 §3.3.3` states the taxonomy. Read those first. What follows is
 only the part that belongs to this skill: how a change record is COMPUTED and
 WHERE it is placed.
@@ -28,7 +28,7 @@ end of the sentence says which:
 `⚑ 2` is two typed lanes, `💬 2` is two people waiting, `✎ 2` is two edits.
 A person waiting outranks a record, so a sentence carrying both shows `💬`.
 
-Three rules from `haipipe-board-sentence` bind this skill directly:
+Three rules from `haipipe-sentence` bind this skill directly:
 
 - **A lane is APPENDED, never edited in place.** The record is the point.
 - **A signed `> WHO:` or `> ✎` line is never erased** (`ref/writing-rules.md`).

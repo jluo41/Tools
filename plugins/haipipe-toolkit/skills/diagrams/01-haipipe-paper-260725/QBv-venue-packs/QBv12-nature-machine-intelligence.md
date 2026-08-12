@@ -1235,8 +1235,8 @@ Three of these four are the same paper, because the guide has only two, which is
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md` · the variant contract this page is written to: three figures in a fixed order, the `Sec-<n>` index, the two-source rule, and the five Files groups. The link runs both ways, so a rule changed here is changed in that file in the same pass.
-- `../../board/haipipe-board-page/SKILL.md` · the base frame the variant extends: the section order, the Opening split, the numbering, and the Aim-to-State pairing.
+- `../../board/page-types/haipipe-page-for-venue/SKILL.md` · the variant contract this page is written to: three figures in a fixed order, the `Sec-<n>` index, the two-source rule, and the five Files groups. The link runs both ways, so a rule changed here is changed in that file in the same pass.
+- `../../board/haipipe-page/SKILL.md` · the base frame the variant extends: the section order, the Opening split, the numbering, and the Aim-to-State pairing.
 
 ### 📥 Input files · what this page READS
 
@@ -1315,7 +1315,7 @@ Three of these four are the same paper, because the guide has only two, which is
 
 ## Log
 
-260803 · Brought up to `haipipe-board-page-for-venue` 0.1.1, which shipped after this page was written.
+260803 · Brought up to `haipipe-page-for-venue` 0.1.1, which shipped after this page was written.
   The Diagram now carries the contract's three figures in order: the desk taste figure it already had, then `Venue-Structure`, then `Submission-Rules`.
   Every section division is renamed with the venue's own reading index, `Sec-0-Abstract` through `Sec-A-Appendix`, taken from `section-kinds.yml:74` and not from the desk.
   The two orders genuinely differ here: the desk prints Methods LAST and the resolver has it third, so the desk's order is a column in `Venue-Structure` instead.

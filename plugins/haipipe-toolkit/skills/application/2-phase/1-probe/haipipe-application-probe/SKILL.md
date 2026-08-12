@@ -6,7 +6,7 @@ metadata:
   argument_hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
   version: "0.3.3"
   last_updated: "2026-08-04"
-  summary: "Application-specific PROBE worker layered on haipipe-board-page-probe and haipipe-probe; it runs all five steps because DRAFT authors no executor-side field."
+  summary: "Application-specific PROBE worker layered on haipipe-page-probe and haipipe-probe; it runs all five steps because DRAFT authors no executor-side field."
 ---
 
 Skill: haipipe-application-probe — the PROBE-phase worker for an application
@@ -15,7 +15,7 @@ Skill: haipipe-application-probe — the PROBE-phase worker for an application
 Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
 DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
 The persisted QX file is the application's Probe file.
 Older code may call the record an entry, but that label is not another Page Type or phase.
 

@@ -983,6 +983,11 @@ def render_tree(meta, qs, out_dir, only=None):
         page_hrefs = {key: "../" + value for key, value in tree_href_map(qs).items()}
         page_hrefs["#top"] = "../index.html"
         card = tree_relink(card, page_hrefs)
+        # Span-Card payloads may name another Board Page. `_chip()` emits the
+        # same fragment route as an ASCII map; relink the detached popover HTML
+        # too, or the link incorrectly searches for that Page inside the
+        # current document instead of opening its generated Page.
+        bd.CARDS[:] = [tree_relink(popcard, page_hrefs) for popcard in bd.CARDS]
         gtok = bd.group_token(q.get("group") or "") or "_ungrouped"
         gdir = out_dir / gtok
         gdir.mkdir(exist_ok=True)

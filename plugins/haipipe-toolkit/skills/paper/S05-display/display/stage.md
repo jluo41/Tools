@@ -8,7 +8,7 @@ one_line: "What evidence artifacts must the reader SEE, and are they ready?"
 board_family: Display
 board_unit: "0"
 
-dashboard: display-report.py <this stage's dir>
+dashboard: board/haipipe-board/cli/display-report.py <this stage's dir>
 #            where every display unit stands, and which are named by no section's prose.
 #            A dashboard is not a page TYPE: `for-dashboard` failed the
 #            admission test's fourth question on 260806, because the four
@@ -54,6 +54,7 @@ inbox: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md      # DR rows other stages f
 units: displays/displayNN-<slug>/                   # README + intake/ + recipe/ + float.tex + preview + assets/ candidates/ versions/
 intake_contract: ../../../display/ref/display-intake-contract.md
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+displays: 0-lifecycle/S03-literature/display/L<n>-<topic>/ | 0-lifecycle/S04-value/display/V<n>-<topic>/  # candidate cards; only selected ones can commission a formal unit here
 checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage display
                           # run by CHECK before judging; path relative to the skills root
 craft: [draft-craft.md]   # data file DRAFT loads after the type contract (ex workers/)
@@ -210,7 +211,8 @@ Every other stage that wants a figure FILES A ROW and waits. Display is the only
 authority to create a display unit, dispatch a renderer, or advance a `_DISPLAY_REQUEST.md` row.
 
 ```text
-another stage needs a display  -> it writes a DR row into _DISPLAY_REQUEST.md, status: requested
+Narrative selects a candidate  -> it writes a DR row into _DISPLAY_REQUEST.md, naming the
+                                  candidate path, claim, and role; status: requested
 this stage rules on the row    -> accepted (map row + block + unit) | declined (reason written back)
 this stage binds inputs        -> intake-ready (manifest + approved snapshot)
 this stage delivers            -> done (unit: displays/displayNN-slug/) — now the section may \input it

@@ -1,0 +1,14 @@
+% Standalone wrapper: compiles THIS unit alone, so a render can be judged
+% without waiting for the whole paper. Compiled from the paper root, which here
+% is `_fixture/`, exactly as the real papers compile theirs from theirs.
+%
+%   cd _fixture && pdflatex -output-directory=../display/QBt3-for-display \
+%                           ../display/QBt3-for-display/preview.tex
+\documentclass{article}
+\usepackage[margin=1in,landscape]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\begin{document}
+\input{../display/QBt3-for-display/float.tex}
+\end{document}

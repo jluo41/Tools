@@ -1,0 +1,55 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QB",
+      "name": "QB · Calibration Round"
+    },
+    "imports": [
+      {
+        "page": "QB1",
+        "source": "QB1.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QB2",
+        "source": "QB2.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QB3",
+        "source": "QB3.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {}
+    }
+  }
+}

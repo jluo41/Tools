@@ -1,5 +1,5 @@
 export const meta = {
-  name: 'haipipe-board-page-lifecycle',
+  name: 'haipipe-page-lifecycle',
   description: 'Route one Page through bounded DRAFT, PROBE, REVISE, and independent CHECK loops.',
   phases: [
     { title: 'Produce', detail: 'a phase-scoped producer performs DRAFT, PROBE, or REVISE' },
@@ -150,7 +150,7 @@ for (let step = 1; step <= maxSteps; step++) {
       `Perform CHECK on exactly one Board Page in a fresh, read-only context.\n\n` +
       `Board: ${board}\nPage: ${page}\nExpected version: ${currentVersion.version_id}\n` +
       `Intent: ${intent}\nHuman gate: ${JSON.stringify(humanGate)}\n\n` +
-      `Load haipipe-board-page, the matching Page Type, and haipipe-board-page-check. ` +
+      `Load haipipe-page, the matching Page Type, and haipipe-page-check. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
       `Do not edit, rebuild, or cure a finding. Route to CLOSE, REVISE, PROBE, DRAFT, or HOLD. ` +
@@ -286,7 +286,7 @@ for (let step = 1; step <= maxSteps; step++) {
   const producer = await agent(
     `Perform exactly one ${current} phase for one Board Page.\n\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
-    `Load haipipe-board-page, the matching Page Type, haipipe-board-page-${current.toLowerCase()}, and any family worker. ` +
+    `Load haipipe-page, the matching Page Type, haipipe-page-${current.toLowerCase()}, and any family worker. ` +
     `Follow the phase boundary. Work only on the target Page and a declared probe surface when PROBE requires one. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
     `Return one phase receipt and suggest the next legal route. DRAFT from a non-DRAFT phase must explain the changed purpose or Aim and set reopens_promise=true.`,

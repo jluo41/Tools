@@ -3,6 +3,8 @@
 spine: A board = one source folder. One Markdown file per page inside it, plus one generated board/ site with an Index, group pages, focused page files, and shared assets. Pin that shape down in SKILL.md so a fresh reader can open and run it without memory.
 close: Every Q on this board reaches ✅ or ⏸️. SKILL.md is written, and a fresh agent with no background can read only that and open a decent board, and then this skill is done.
 excalidraw: /_excalidraw
+dialect: paper
+paper-root: QBt-page-types/_fixture
 session: 2a45769d-85f8-4704-a30f-17adb2c82776
 ## Topic
 What a board is for: a topic has several undecided questions; lay them out on one page anyone can open and comment on; settle them one by one, then close the board.
@@ -30,10 +32,10 @@ Every id here is a link: a group token opens the index at that group, a page id 
 
   ⚙️ ① skills/board/                          ONE folder, the family that SHIPS
        ├── haipipe-board/           the DOOR · SKILL.md src/ assets/ ref/ + 9 scripts
-       ├── haipipe-board-page/      SPEC · what a page is
-       ├── haipipe-board-page-for-skill/
+       ├── haipipe-page/      SPEC · what a page is
+       ├── haipipe-page-for-skill/
        │                            SPEC · the VARIANT for skill and agent pages
-       ├── haipipe-board-sentence/  SPEC + DOOR · one line · 3 verbs (260802)
+       ├── haipipe-sentence/  SPEC + DOOR · one line · 3 verbs (260802)
        ├── haipipe-board-routing/   VERB · BOTH altitudes · src/lanes.py
        │                            board.md structure + one anchored write
        └── agents/                  haipipe-board-reviewer-agent.md
@@ -186,6 +188,31 @@ QB8e-sentence-details-lifecycle.md
 ### QBt · Page Type examples
 One worked example per admitted Page Type, so a writer copies a page instead of interpreting a contract. `QB4` is the base example, what ANY page looks like; each page here states only what ONE type adds on top, because a type loads the core and never restates it (`QB6` §4).
 Split out of `QB` on 260806 rather than added as faces of `QB4`, which already tried the face shape once: `QB4a` through `QB4g` cut the base by SECTION, folded back into `QB4`'s Content on 260801, and sit in `_archive/`. These cut by TYPE, a different axis, and they stay a group so ten of them do not flatten the Delivery ladder into twenty rows.
+HOW THIS GROUP IS USED, which is a METHOD and not just a folder (JL 260807). A specimen is not decoration: it is the first of three steps, and the three are the page's own four phases at the altitude of a SKILL rather than a page.
+
+```text
+  a page's phase        this group's step      what it actually buys
+  ─────────────────────────────────────────────────────────────────────────────
+  DRAFT   the promise   ① SPECIMEN             you cannot write a contract for a
+                          build ONE real one     shape you have never built. The
+                                                 seven parts of a display unit were
+                                                 not knowable from prose.
+  PROBE   the inquiry   ② MEASURE              send a question to something that
+                          count, do not guess    answers. "How many contracts name
+                                                 an artifact path?" -> 6, and 7 name
+                                                 none. That number opened QB6 §7.
+  REVISE  realization   ③ SKILL                write what the specimen taught into
+                          the contract, not      the ten contracts, then RE-MEASURE
+                          the specimen           with the same instrument: 6 -> 30.
+  CHECK   the judgment  ④ APPLICATION          run it on the real thing. The paper
+                          a real target, and     is the independent judge for the
+                          never your own read    same reason CHECK forbids the author
+                                                 judging: it does not know what you
+                                                 intended, so it cannot be lenient.
+```
+
+THE STEP THAT EARNS ITS KEEP IS ④, and its product is not a fixed paper. Applying `for-display` to the live MISQ paper on 260807 found 10 of 11 units already conforming and 4 defects in the SKILL's own tooling that one clean specimen could never expose, because a specimen has one unit and a real paper has eleven with months of history. Every one was fixed in the tool rather than worked around in the paper. A check whose alarms are two-thirds false stops being read, which costs more than the check was worth.
+
 This group is not an eleventh Delivery concern. It gives the reader nothing directly; every page in it is spent on writing something `QB1`-`QB10` deliver. `QB6` stays the hub that lists the types, admits new ones, and owns the checker debt; this group only shows each one written out.
 `QBt7` and `QBt8` were never used: no file, no `_archive/` entry and no `## Links` row anywhere under `skills/` carries either id, so the lane runs 1 to 6 and then 9 to 10.
 The `QD` block below rules the opposite for its own lane, that a lane is renumbered to close its gaps, because a reader cannot tell a gap from a missing page (JL 260801).
@@ -209,11 +236,6 @@ QB4 · what any page is      ◀── QBt1   for-stage                ──▶
 🔑 each page states the DELTA only; anything it does not mention, QB4 owns
 ```
 QBt1-for-stage.md
-QBt2-for-venue.md
-QBt3-for-display.md
-QBt4-for-literature.md
-QBt5-for-value.md
-QBt6-for-section.md
 QBt9-for-slide.md
 QBt10-for-design.md
 ### QC · Engine
@@ -250,13 +272,14 @@ QC3a-skill-to-page.md
 QC3b-meetingnote.md
 QC4-roundtrip.md
 QC4a-writepath.md
+QC5-identity-and-scope.md
 
 ### QCskill · Engine skills
 One synced mirror page per shipped unit, split out of QC on 260805; a mirror is GENERATED by `skillpage.py`, carries the unit's own bytes in managed spans, and is never counted in the settled total.
 The family took QC1b §2's shape on 260731, lost a unit on 260802 and gained one the same day: one door (Skill-0 haipipe-board), two loadable SPECS (Skill-3 page, Skill-6 the skill-page variant), the sentence which became a DOOR + SPEC on 260802 (Skill-4), and the write VERB (Skill-5 routing), which absorbed the board and group altitude when JL ruled the index merged into it; the retired Skill-1 is in `_archive/` and its id still resolves, and digest is named on the roster and unshipped.
-Skill-6 is `haipipe-board-page-for-skill`, opened because five roster Openings came out of one template: a Skill or Agent page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in what the page decides, left it with no question to ask.
+Skill-6 is `haipipe-page-for-skill`, opened because five roster Openings came out of one template: a Skill or Agent page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in what the page decides, left it with no question to ask.
 Skill-7 is `haipipe-writing`, the roster's first row for a unit OUTSIDE `skills/board/` (JL 260802), which widens QC3a's 260727 scope ruling; it belongs because it owns `ref/writing-rules.md`, the prose standard every page here is judged against, and where the new line falls is a Decision Now row on QC3a.
-Skill-8 is `haipipe-board-page-for-venue`, the SECOND variant of Skill-3 and the roster's second unit born by lifting a rule off the page that carried it (JL 260803, one day after Skill-6 was born the same way); it governs the QBv pages on the paper board, so it is the first roster row whose consumer is another board, and whether a variant of the base may ship beside the base when its consumer is elsewhere is the same open QC3a scope row that Skill-7 widened.
+Skill-8 is `haipipe-page-for-venue`, the SECOND variant of Skill-3 and the roster's second unit born by lifting a rule off the page that carried it (JL 260803, one day after Skill-6 was born the same way); it governs the QBv pages on the paper board, so it is the first roster row whose consumer is another board, and whether a variant of the base may ship beside the base when its consumer is elsewhere is the same open QC3a scope row that Skill-7 widened.
 An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer, Agent-2 the page creator, and Agent-3 the RUN orchestrator, one page each so N run at once.
 
 ```text
@@ -274,18 +297,18 @@ skillpage.py sync           ◀── Agent-2  the page creator, N at once   ─
 skillpage.py sync           ◀── Agent-3  the RUN orchestrator          ──▶  _runs/page/ receipts
 ```
 Skill-0-haipipe-board.md
-Skill-3-haipipe-board-page.md
-Skill-4-haipipe-board-sentence.md
+Skill-3-haipipe-page.md
+Skill-4-haipipe-sentence.md
 Skill-5-haipipe-board-routing.md
-Skill-6-haipipe-board-page-for-skill.md
+Skill-6-haipipe-page-for-skill.md
 Skill-7-haipipe-writing.md
-Skill-8-haipipe-board-page-for-venue.md
+Skill-8-haipipe-page-for-venue.md
 Agent-1-haipipe-board-reviewer-agent.md
 Agent-2-haipipe-board-creator-agent.md
-Agent-3-haipipe-board-page-orchestrator-agent.md
+Agent-3-haipipe-page-orchestrator-agent.md
 ### QD · Working with Chat
 How people and agents work on a live board.
-QD1 a session per question, QD2 the GUI chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, QD7 what a page costs to open and what we spend to make it less, and QD8 the generated address and what an agent acting on one is handed.
+QD1 a session per question, QD2 the GUI chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD5a linked Group and Page drawings with one source per owner, QD6 the status strip, QD7 what a page costs to open and what we spend to make it less, and QD8 the generated address and what an agent acting on one is handed.
 Numbers in this lane are POSITIONS, and the lane is renumbered to close its gaps (JL 260801: "为啥不按序号来排?").
 The earlier rule was the opposite, that a number is a permanent address and a retired page leaves a hole, which is how six live pages came to be numbered up to QD14; the holes were doing more damage than the renumbering they were meant to prevent, because a reader cannot tell a gap from a missing page.
 Renumbered 260801: QD14 (the terminal's form) became QD4 so it sits beside the engine it designs, and QD13 (the split workspace) became QD5; QD1, QD2, QD3 and QD6 did not move.
@@ -302,6 +325,7 @@ assets/board.js #chat      ◀── QD2   GUI · the chat box            ──
 serve.py                   ◀── QD3   terminal · raw + smooth panes ──▶  a real CLI session
 30-terminal.js             ◀── QD4   the terminal's FORM per device──▶  phone · desktop
 serve.py build.py          ◀── QD5   each pane refreshes on its own──▶  index · page · chat
+draw.py                    ◀── QD5a  linked drawings by owner       ──▶  Group · Page sources
 serve.py                   ◀── QD6   the reply status strip        ──▶  every reply's footer
 serve.py live/activity.py  ◀── QD7   what a page COSTS to open     ──▶  bytes · lanes · the browser
 ```
@@ -310,6 +334,7 @@ QD2-chat-sdk.md
 QD3-chat-terminal.md
 QD4-terminal-design.md
 QD5-split-workspace.md
+QD5a-linked-drawings.md
 QD6-session-status-strip.md
 QD7-pagecost.md
 QD8-sentence-address.md
@@ -357,7 +382,25 @@ This group ACCUMULATES, which is why it is a group rather than a few rows inside
 Meeting-1-260723-boardform-demo.md
 
 ## Links
+# the five paper-owned specimens moved to the paper board on 260809 (QB6 ruling A).
+# Declared here so every citation on this board still resolves and still clicks.
+QBt2                     ../01-haipipe-paper-260725/board/QBt/QBt2-for-venue.html
+QBt3                     ../01-haipipe-paper-260725/board/QBt/QBt3-for-display.html
+QBt4                     ../01-haipipe-paper-260725/board/QBt/QBt4-for-literature.html
+QBt5                     ../01-haipipe-paper-260725/board/QBt/QBt5-for-value.html
+QBt6                     ../01-haipipe-paper-260725/board/QBt/QBt6-for-section.html
+QBt2-for-venue.md        ../01-haipipe-paper-260725/QBt-page-types/QBt2-for-venue.md
+QBt3-for-display.md      ../01-haipipe-paper-260725/QBt-page-types/QBt3-for-display.md
+QBt4-for-literature.md   ../01-haipipe-paper-260725/QBt-page-types/QBt4-for-literature.md
+QBt5-for-value.md        ../01-haipipe-paper-260725/QBt-page-types/QBt5-for-value.md
+QBt6-for-section.md      ../01-haipipe-paper-260725/QBt-page-types/QBt6-for-section.md
 QBt11 ../../../../subjective-label/diagram/02-subjective-label-260722/QG-page-type/QG1-for-labeling.md
+draw.py              ../../board/haipipe-board/cli/draw.py
+test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
+live/xcal.py          ../../board/haipipe-board/live/xcal.py
+board.excalidraw      board.excalidraw
+QD-working/draw/group.excalidraw QD-working/draw/group.excalidraw
+QD-working/draw/QD5a.excalidraw QD-working/draw/QD5a.excalidraw
 QC5                 QC-engine/QC3-generate.md
 QC5a                QC-engine/QC3a-skill-to-page.md
 QC5b                QC-engine/QC3b-meetingnote.md

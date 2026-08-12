@@ -1,0 +1,27 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "page",
+    "page": {
+      "id": "QF4",
+      "markdown": "QF-execution-contract/QF4-library-mapping.md"
+    },
+    "migration": {
+      "source": "../../board.excalidraw",
+      "origin": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceIndexes": {}
+    }
+  }
+}

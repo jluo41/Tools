@@ -63,7 +63,7 @@
           'Separate mechanical consistency from human readability. Do not claim a rule is met unless you can name its evidence.'
         : 'QUALITY CHECK — answer only. Do not modify any file or run commands. ' +
           'First use Read to load the canonical evaluation contract at ' +
-          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board-page/SKILL.md and the cold-read rules at ' +
+          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-page/SKILL.md and the cold-read rules at ' +
           'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md. ' +
           'Resolve requirements in order: base contract; page-kind or consumer variant; this page\'s Writing Style ' +
           'and Stage Contract; then each local division purpose and paragraph job. Report any conflict instead of choosing silently. ' +

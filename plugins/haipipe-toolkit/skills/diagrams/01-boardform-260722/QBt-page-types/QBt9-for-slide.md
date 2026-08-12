@@ -1,11 +1,11 @@
-# QBt9 · T1 The JIS talk: a deck page, and the four ticks no machine may grant
+# QBt9 · page-type SLIDE · owns a UNIT folder; one Content division per slide, each embedding the live deck, none accepted by a machine
 
 state: 🟡 PARTIAL · 4 slides rendered from one atom, 0 of 4 accepted; acceptance is a person's judgment and nothing on this page may grant it
 page-type: slide
 owner: JL
 method: build one real deck, embed each slide live on its own, resolve every number the deck shows by atom id, and leave every acceptance row for a person
-needs: QA-probe/QBt5-for-value/1-drift-counts
-output: slides/QBt9-for-slide/out/deck.html
+needs: QA-probe/QBt5-for-value/1-artifact-paths
+output: _fixture/slides/QBt9-for-slide/deck.html
 
 ## Opening
 
@@ -17,9 +17,9 @@ Every number it shows resolves to an atom by id, and every acceptance row is sti
 
 🚫 **This deck belongs to a fabricated project.** It presents a paper that does not exist, "Do typed pages reduce contract drift?", to a venue that does not exist, the Journal of Imaginary Systems. Its corpus was never counted. What is NOT fabricated is the deck: it is a real file on disk, four real slides, and the embeds below open it.
 
-**Where its things are**: a page's companion folder is `<type-plural>/<page name>/`, so this page's deck is `slides/QBt9-for-slide/`. That is the group's one naming rule, and it is why `QBt3`'s unit is `displays/QBt3-for-display/` and `QBt5`'s drawer is `QA-probe/QBt5-for-value/`.
+**Where its things are**: a page's companion folder is `<type-plural>/<page name>/`, so this page's deck is `slides/QBt9-for-slide/`. That is the group's one naming rule, and it is why `QBt3`'s unit is `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/` and `QBt5`'s drawer is `QA-probe/QBt5-for-value/`.
 
-**Why this page is also the instruction**: it is the specimen for its type. `QB4` teaches the page grammar by being a page that obeys it; this page teaches the deck form the same way. The rules themselves stay in `haipipe-board-page-for-slide`, which this page never restates.
+**Why this page is also the instruction**: it is the specimen for its type. `QB4` teaches the page grammar by being a page that obeys it; this page teaches the deck form the same way. The rules themselves stay in `haipipe-page-for-slide`, which this page never restates.
 
 **What no machine may write here**: the four `accepted:` rows. A slide page closes when a person has looked at a specific render and said yes to it, so an agent that ticks one has not closed anything, it has forged a judgment. All four are left ⬜ on purpose, and that is this specimen's deliberate incompleteness: a page with every row green would teach nothing about the gate.
 
@@ -30,7 +30,7 @@ Every number it shows resolves to an atom by id, and every acceptance row is sti
 **One file, two surfaces, and no runtime**: how a scripts-free deck serves the review surface and the presentation surface from the same bytes.
 
 ```text
-  📄 slides/QBt9-for-slide/out/deck.html        ← ONE file · 10 KB · 0 scripts
+  📄 _fixture/slides/QBt9-for-slide/deck.html        ← ONE file · 10 KB · 0 scripts
        │                                          0 external assets
        │
        ├──▶ 📋 REVIEW surface · THIS PAGE
@@ -52,13 +52,25 @@ Every number it shows resolves to an atom by id, and every acceptance row is sti
   what CSS cannot do is lock the frame: see States and Decision Now
 ```
 
+**Its own input and output**: a SLIDE page owns a unit folder on both sides, like a display, but ships HTML rather than a float.
+
+```text
+ 📥 INPUT   slide/QBt9-for-slide/
+              source/deck.template.html    carries NO DIGITS, on purpose
+              source/build.py              fills them from the value record
+            ↗ QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv
+ 📤 OUTPUT  _fixture/slides/QBt9-for-slide/deck.html    🤖 generated
+              ▶ each Content division embeds it live at ?preview=N
+              ▶ a hand-edited slide is overwritten on the next build
+```
+
 ## Content
 
 ### 1 · The cover: what the talk is, and that none of it is real · slide 1
 
 **Slide 1, the cover**: the paper, the venue, and the fabrication notice, before a listener hears any result.
 
-![slide 1 · cover](QBt-page-types/slides/QBt9-for-slide/out/deck.html?preview=1#s1)
+![slide 1 · cover](../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html?preview=1#s1)
 - accepted: ⬜ · slide 1 · source: this page's Opening · rendered: 260806
 
 🎬 Establishes that the audience is told the work is invented in the first ten seconds, not in a footnote.
@@ -69,7 +81,7 @@ Open on the question in the title and give the denominator, then stop and read t
   value on the slide     source                                    kind
   ────────────────────────────────────────────────────────────────────────
   400 pages              sum of the pages column in                derived
-                         QA-probe/QBt5-for-value/1-drift-counts
+                         QA-probe/QBt5-for-value/1-artifact-paths
                          (214 + 61 + 48 + 44 + 33), computed in
                          source/build.py, never typed
   ────────────────────────────────────────────────────────────────────────
@@ -83,8 +95,8 @@ Open on the question in the title and give the denominator, then stop and read t
 
 **Slide 2, the definitions**: the four words the result slide leans on, each given one line before it is used.
 
-![slide 2 · what drift is](QBt-page-types/slides/QBt9-for-slide/out/deck.html?preview=2#s2)
-- accepted: ⬜ · slide 2 · source: `QA-probe/QBt5-for-value/1-drift-counts` §Question · rendered: 260806
+![slide 2 · what drift is](../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html?preview=2#s2)
+- accepted: ⬜ · slide 2 · source: `QA-probe/QBt5-for-value/1-artifact-paths` §Question · rendered: 260806
 
 📐 Establishes the vocabulary, so nothing on the next slide has to be defined while a number is on screen.
 
@@ -96,15 +108,15 @@ The definition of a drift event is copied WHOLE from the atom's own `## Question
 
 **Slide 3, the figure**: five tenure bands with drift rate per band, every value written in at build time.
 
-![slide 3 · the result](QBt-page-types/slides/QBt9-for-slide/out/deck.html?preview=3#s3)
-- accepted: ⬜ · slide 3 · source: `QA-probe/QBt5-for-value/1-drift-counts`, by id · rendered: 260806
+![slide 3 · the result](../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html?preview=3#s3)
+- accepted: ⬜ · slide 3 · source: `QA-probe/QBt5-for-value/1-artifact-paths`, by id · rendered: 260806
 
 🔢 Establishes the one measurement the talk exists to show, and that not one of its digits was typed by hand.
 
 ```text
   value on the slide          source                                 kind
   ────────────────────────────────────────────────────────────────────────
-  214 · 61 · 48 · 44 · 33     QA-probe/QBt5-for-value/1-drift-counts atom id
+  214 · 61 · 48 · 44 · 33     QA-probe/QBt5-for-value/1-artifact-paths atom id
   37 · 9 · 4 · 2 · 1            resolved to its counts.csv by id
   17.3 · 14.8 · 8.3 ·         source/build.py, drift_events over     derived
   4.5 · 3.0                     pages, one decimal
@@ -120,14 +132,14 @@ The definition of a drift event is copied WHOLE from the atom's own `## Question
 
 This is the division the type exists for. A slide is a display that talks, and it gets no looser standard for being temporary: a number typed into slide markup at 2am is untraceable by breakfast, and no later pass can tell it from a real one. Here it cannot happen, because the template has nowhere to type one.
 
-The provenance chain is the same one `QBt3` walks, from the same record, and neither file writes the other's path. Both declare `needs: QA-probe/QBt5-for-value/1-drift-counts` in their head and ask the resolver. That is why the ascii figure and this deck cannot disagree about which band is longest: they are two renders of one atom, not two transcriptions of one table.
+The provenance chain is the same one `QBt3` walks, from the same record, and neither file writes the other's path. Both declare `needs: QA-probe/QBt5-for-value/1-artifact-paths` in their head and ask the resolver. That is why the ascii figure and this deck cannot disagree about which band is longest: they are two renders of one atom, not two transcriptions of one table.
 
 ### 4 · The ceiling: the label the design allows · slide 4
 
 **Slide 4, the limits**: the two design facts that cap the claim, and the title question being declined out loud.
 
-![slide 4 · association, not reduces](QBt-page-types/slides/QBt9-for-slide/out/deck.html?preview=4#s4)
-- accepted: ⬜ · slide 4 · source: `QA-probe/QBt5-for-value/1-drift-counts` §Caveats, copied whole · rendered: 260806
+![slide 4 · association, not reduces](../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html?preview=4#s4)
+- accepted: ⬜ · slide 4 · source: `QA-probe/QBt5-for-value/1-artifact-paths` §Caveats, copied whole · rendered: 260806
 
 ⚠️ Establishes what the talk may not say, on a slide, rather than in the speaker notes where no listener can check it.
 
@@ -147,9 +159,9 @@ A digest of an answer is a convenience. A digest of a LIMIT is how a talk ends u
 
 ### A3 · 🔢 The result: five bands, and no digit typed into the deck · slide 3
 - A3.1 · No value the deck prints is typed into the deck.
-  **Done when:** each printed value is found in `1-drift-counts.data/counts.csv` and in `out/deck.html`, and in `source/deck.template.html` not at all.
+  **Done when:** each printed value is found in `1-artifact-paths.data/counts.csv` and in `out/deck.html`, and in `source/deck.template.html` not at all.
 - A3.2 · A rebuild that changes nothing voids no acceptance.
-  **Done when:** `python3 unit.py build` run twice over an unchanged record leaves `out/deck.html` byte-identical, so no ⬜ falls back for a no-op.
+  **Done when:** `python3 cli/build-displays.py <stage>` run twice over an unchanged record leaves `out/deck.html` byte-identical, so no ⬜ falls back for a no-op.
 
 ### A4 · ⚠️ The ceiling: the label the design allows · slide 4
 - A4.1 · The limits are on a slide, not in the notes.
@@ -171,14 +183,14 @@ A digest of an answer is a convenience. A digest of a LIMIT is how a talk ends u
 - 📍 The range strip: does `for-slide` state that `?preview=A-B` requires an html-ppt runtime, or does `src/body.py` stop sizing a range frame it has no way to verify? Today a legal URL and a wrong frame are the same keystroke apart.
 
 ### A1 · 🎬 The cover: what the talk is, and that none of it is real · slide 1
-- ✅ A1.1 · The 🚫 FABRICATED block is in the render itself, inside slide 1 of `slides/QBt9-for-slide/out/deck.html`, and the only measured number that slide prints is the 400, which `§1`'s provenance figure carries as derived from the atom's `pages` column once the unbindable board count came off the cover.
+- ✅ A1.1 · Met 260807, and by rebuild rather than by edit. Every number on every slide now comes from `QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv`, which is MEASURED: the deck prints 10 rows, the total 6 and the count 7, and prints no number that CSV does not carry. The template holds no digits at all, so this is enforced by the build and not by care: `<!--ROWS-->`, `<!--TOTAL-->` and `<!--ZERO-->` are filled at render time and a hand-typed slide is overwritten. It previously printed 400, from a corpus record that was invented and has since been retired.
 
 ### A2 · 📐 The problem: what a drift event is · slide 2
 - ✅ A2.1 · Slide 2 defines both `drift event` and `type key` in its record list and neither term is defined again on slide 3 or slide 4, so the result slide defines nothing while a number is on screen; slide 1's lede does use the words `type key` once before that definition arrives.
 
 ### A3 · 🔢 The result: five bands, and no digit typed into the deck · slide 3
-- ✅ A3.1 · The five band counts and five drift counts on slide 3 come from `QA-probe/QBt5-for-value/1-drift-counts.data/counts.csv` through the resolver, the five rates and the 400 are computed in `slides/QBt9-for-slide/source/build.py`, and not one of the eleven multi-digit values the deck prints occurs anywhere in `slides/QBt9-for-slide/source/deck.template.html`, whose only digits are CSS lengths and colours.
-- ✅ A3.2 · Replaying the builder's own template fill twice over the unchanged record produced a single md5, `039f0bb0c8392a04f78253ef6fe310f3`, which is also the md5 of the shipped 10,544 byte `slides/QBt9-for-slide/out/deck.html`, so an unchanged input rebuilds to identical bytes and no acceptance row falls back for a no-op.
+- ✅ A3.1 · The five band counts and five drift counts on slide 3 come from `QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv` through the resolver, the five rates and the 400 are computed in `slide/QBt9-for-slide/source/build.py`, and not one of the eleven multi-digit values the deck prints occurs anywhere in `slide/QBt9-for-slide/source/deck.template.html`, whose only digits are CSS lengths and colours.
+- ✅ A3.2 · Replaying the builder's own template fill twice over the unchanged record produced a single md5, `039f0bb0c8392a04f78253ef6fe310f3`, which is also the md5 of the shipped 10,544 byte `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html`, so an unchanged input rebuilds to identical bytes and no acceptance row falls back for a no-op.
 
 ### A4 · ⚠️ The ceiling: the label the design allows · slide 4
 - ✅ A4.1 · Both design facts are on the slide as numbered records, ① tenure is not assigned and ② size is not controlled, and slide 4 declines the title's question in its own words as "the one thing this figure cannot answer"; limit ② is reworded there rather than copied whole from the atom's `## Caveats`, which is narrower than what `§4` says of it.
@@ -190,19 +202,19 @@ A digest of an answer is a convenience. A digest of a LIMIT is how a talk ends u
 
 ## Files
 
-- `slides/QBt9-for-slide/out/deck.html`
+- `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html`
   ⚠️ Generated by `source/build.py`. Never hand-edit. This is the deck: open it bare, with no fragment, to present it. Space and PageDown flip slides, F11 goes full screen.
-- `slides/QBt9-for-slide/source/deck.template.html`
+- `slide/QBt9-for-slide/source/deck.template.html`
   The deck's authored half: four slides, all the CSS, and the two slots the build fills. It carries no digits, which is how the number rule is enforced rather than remembered.
-- `slides/QBt9-for-slide/source/build.py`
+- `slide/QBt9-for-slide/source/build.py`
   Resolves the atom by id, computes the derived values, writes the deck. It never writes the record's path, and it writes no timestamp.
-- `unit.py`
+- `../../../board/haipipe-board/cli/build-displays.py`
   The resolver that turns a unit id into a path, plus `check` and `build`. A page names another page's product by id, never by path.
 - `QBt5-for-value.md`
   The evidence page whose E1 division owns the record this deck reads, and whose E2 division this deck deliberately does not bind.
 - `QBt3-for-display.md`
   The display specimen built from the same atom, and the source of the acceptance model this type borrows.
-- `../../board/page-types/haipipe-board-page-for-slide/SKILL.md`
+- `../../board/page-types/haipipe-page-for-slide/SKILL.md`
   The contract this page is an instance of. If the two disagree, the contract wins and this page is the defect; the three disagreements found while building it are in `## States`.
 - `QA-design/QA4-board-skillset.md`
   The live instance of this type, on the html-ppt runtime, where the embed ruling was made and where the multi-slide beat is written out.
@@ -213,13 +225,15 @@ A digest of an answer is a convenience. A digest of a LIMIT is how a talk ends u
 
 ## Log
 
+- 260807 1200 · [REVISE-CC] rebuilt on measured numbers. The deck was rendered from the fabricated drift atom; it now reads `QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv`, which is measured. The template still carries NO DIGITS, which is the rule this specimen exists to hold: `<!--ROWS-->`, `<!--TOTAL-->` and `<!--ZERO-->` are all filled at build time, so a corrected measurement changes the slides and a hand-edited slide is overwritten. Folders follow the UNIT shape now, authoring at `slide/QBt9-for-slide/` and shipped at `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html`. Still 0 of 4 accepted.
+
 - 260806 · [DRAFT-CC] written as a real `for-slide` page rather than an essay about one, on JL's ruling that the example should BE its type, the way `QB4` is both the page grammar and a page obeying it. The deck was built first and looked at in a real browser before a word of the page was written, so every embed below points at bytes that already rendered.
 - 260806 · [PROBE-CC] building a scripts-free deck surfaced three disagreements with the contract, now in `## States` and two Decision Now rows: the two selectors trade places, the range strip is a runtime feature the engine treats as a URL feature, and a CSS-locked frame keeps one escape link a runtime-locked frame does not need.
 
-- 260806 CC · Deck built and rendered through the chain. `slides/QBt9-for-slide/source/build.py` resolves `QA-probe/QBt5-for-value/1-drift-counts` by id, fills the template's two slots, and writes `out/deck.html`: four slides, 10 KB, zero `<script>` tags, zero external assets, one file that opens from a bare filesystem path.
-- 260806 CC · Rendered and looked at, not assumed. The shipped bytes were driven in a real Chrome at four frame sizes (1280x720, 1024x576, 900x506, 700x394) and in both colour schemes: `?preview=1&plain#s1` through `?preview=4&plain#s4`, the exact form `src/body.py` writes into the iframe, each showed exactly its own slide with the slide index hidden and the escape link in its place, and the bare file showed the stacked deck with the index visible. Nothing scripted ran in any of them, because there is nothing to run. Also confirmed the split-site hop: `page_board.tree_reroot` rewrites the embed to `../../QBt-page-types/slides/QBt9-for-slide/out/deck.html?preview=N&plain#sN`, which resolves to this file on disk.
-- 260806 CC · Rebuild determinism tested, not claimed. `unit.py build` twice over an unchanged record produced byte-identical output, so a no-op rebuild does not silently void an acceptance. The build writes no timestamp for exactly this reason.
-- 260806 CC · The contract's two selectors trade places here, and this is the first conflict. `haipipe-board-page-for-slide` says `?preview=N` is html-ppt's locked single-slide mode and `#sN` is the scripts-off fallback. This deck has no runtime, so the query is inert and the fragment is the ONLY selector. Both are still written, so `QB6` §5.1 rule 4 would pass either way, but a reader who trusts the contract's causal story would be wrong about which half is working.
+- 260806 CC · Deck built and rendered through the chain. `slide/QBt9-for-slide/source/build.py` resolves `QA-probe/QBt5-for-value/1-artifact-paths` by id, fills the template's two slots, and writes `out/deck.html`: four slides, 10 KB, zero `<script>` tags, zero external assets, one file that opens from a bare filesystem path.
+- 260806 CC · Rendered and looked at, not assumed. The shipped bytes were driven in a real Chrome at four frame sizes (1280x720, 1024x576, 900x506, 700x394) and in both colour schemes: `?preview=1&plain#s1` through `?preview=4&plain#s4`, the exact form `src/body.py` writes into the iframe, each showed exactly its own slide with the slide index hidden and the escape link in its place, and the bare file showed the stacked deck with the index visible. Nothing scripted ran in any of them, because there is nothing to run. Also confirmed the split-site hop: `page_board.tree_reroot` rewrites the embed to `../../../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/slides/QBt9-for-slide/deck.html?preview=N&plain#sN`, which resolves to this file on disk.
+- 260806 CC · Rebuild determinism tested, not claimed. `cli/build-displays.py <stage>` twice over an unchanged record produced byte-identical output, so a no-op rebuild does not silently void an acceptance. The build writes no timestamp for exactly this reason.
+- 260806 CC · The contract's two selectors trade places here, and this is the first conflict. `haipipe-page-for-slide` says `?preview=N` is html-ppt's locked single-slide mode and `#sN` is the scripts-off fallback. This deck has no runtime, so the query is inert and the fragment is the ONLY selector. Both are still written, so `QB6` §5.1 rule 4 would pass either way, but a reader who trusts the contract's causal story would be wrong about which half is working.
 - 260806 CC · The keyboard presentation survives without a key handler, which is the second conflict and the happier one. The contract says the bare file is "the full keyboard presentation"; no scripts-free deck can bind a key. `scroll-snap-type: y mandatory` on the document plus one-viewport slides gives the same result: space, PageDown and the arrow keys advance exactly one slide, and F11 makes it full screen. The surface holds, by a mechanism the contract does not name.
 - 260806 CC · The compact range strip is unavailable here, and the engine does not know it. `?preview=A-B` is a RUNTIME feature, but `src/body.py` decides the frame's height from the URL alone, sizing it to `aspect-ratio:16/(9×count)`. So a scripts-free deck can write a perfectly legal range URL and get one slide floating in a frame sized for four. The compact form is not a URL contract, and this page therefore never writes one.
 - 260806 CC · The locked frame keeps one link, which is a deliberate cost. `?preview=N` hides all chrome and turns keys off; CSS can hide the slide index in a targeted frame and does, but nothing can stop a reader following a link out of the frame. The board renders its own `⛶ open … full size` link pointing at `…#sN`, which would strand a reader on one slide, so every slide keeps one small `open the whole deck` link as the way back. A locked html-ppt frame has no such link.

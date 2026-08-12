@@ -14,7 +14,7 @@ Two of its verbs are code, so a model never computes a diff and never places a r
 `rewrite` is the only step a model does, and it produces new prose beside the old.
 `apply` then computes the word-level diff in code and anchors a `✎` record under the sentence it changed, and `check` audits that every record is well formed and attached to something.
 That is four steps under three named verbs, because `apply` and `check` are both `wdiff.py`; the unit's own summary says three and its own figure numbers four.
-A `✎` record reads `> ✎ the sentence with ~removed~ *added* words · WHO · 260802 1720`, which is the same lane grammar `haipipe-board-sentence` owns.
+A `✎` record reads `> ✎ the sentence with ~removed~ *added* words · WHO · 260802 1720`, which is the same lane grammar `haipipe-sentence` owns.
 
 **Why it is not part of this family**: the test on `QC1b` §1 asks whether some consumer needs a unit's rules with no board open, and `haipipe-writing` passes it too easily.
 Its consumer is ANY authored prose in the repo: a board page, a `SKILL.md`, a README, a grant application section.
@@ -23,7 +23,7 @@ It is host-agnostic by construction, and `ref/change-record.md` §4 writes the b
 
 **Covered elsewhere**: `haipipe-board/ref/writing-rules.md` is the board's own prose standard and is what a board page is checked against; this skill is the verb that acts on prose anywhere.
 `haipipe-paper-revise-humanizer` rewrites ACADEMIC prose for a venue and keeps the venue's voice, so the two share machinery and not judgment: the humanizer calls `cli/wdiff.py` rather than writing its own diffs.
-`haipipe-board-sentence` owns what a `✎` line IS on a board, and since its 0.3.0 on 260802 it also RUNS an `edit` verb that writes one.
+`haipipe-sentence` owns what a `✎` line IS on a board, and since its 0.3.0 on 260802 it also RUNS an `edit` verb that writes one.
 So two units now produce the same record: that verb writes one when a person retypes a sentence in the browser, and `cli/wdiff.py apply` writes one when this skill rewrites prose anywhere.
 They agree today because both follow the same grammar, and nothing checks that they still will.
 
@@ -209,7 +209,7 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
         What to do about what you do not know: never invent, every hole names an owner, sweep after writing. Migrated 260801 out of the paper DRAFT phase.
 
 - 6 · 🔗 6 · It plugs into an apparatus that already exists
-      A `>` line under a sentence belongs to that sentence. `board/haipipe-board-sentence`
+      A `>` line under a sentence belongs to that sentence. `board/haipipe-sentence`
       owns that contract, and `QB4 §3.3.3` names its three kinds: eight ⚑ typed lanes, a
       💬 comment, and the ✎ change record this skill writes.
       **This skill owns one lane out of ten, and none of the machinery around it.**
@@ -269,7 +269,7 @@ tests/test_roundtrip.py     114 ln  What `apply` writes, `check` must accept. Ru
       The 260805-06 rebuild changed the ground: the paper family is one door now, `haipipe-paper-revise-content` and the old DRAFT phase sit in `paper/_old/`, the paper tree keeps no copy of the three, and the humanizer moved to `skills/writing/` beside this unit.
       What is left is for the owner to close this aim on that evidence.
 - [ ] ✎ The two producers of a `✎` record are checked against each other
-      `haipipe-board-sentence` 0.3.0 added an `edit` verb that writes a change record, and `cli/wdiff.py apply` here writes one too.
+      `haipipe-sentence` 0.3.0 added an `edit` verb that writes a change record, and `cli/wdiff.py apply` here writes one too.
       One grammar with two independent implementations is the shape `cli/agree.py` was built for, and it has never been pointed at this pair.
 - [ ] 📊 One `score` run picks what this board rewrites next
       The verb ranks prose against the weak-English test and it has never been pointed at this board's 57 pages.
@@ -287,7 +287,7 @@ Its `🟡 in flux` is about position rather than quality, because it absorbed th
   `QC3a`'s 260727 scope ruling said the roster covers `skills/board/` and nothing else, so this page is JL answering the row that page explicitly left open rather than an exception slipped past it.
   The reason it is a sound widening: this unit is not a stranger to the board, it owns the prose standard every page here is judged against.
 - 260802 CC · ✎ A second writer of its record appeared the same day
-  `QB8` closed and `haipipe-board-sentence` took three verbs, one of which writes the `✎` change record this skill also writes.
+  `QB8` closed and `haipipe-sentence` took three verbs, one of which writes the `✎` change record this skill also writes.
   `ref/change-record.md` §3 already keeps the board dialect and the LaTeX dialect in one file so they cannot drift; what is new is two implementations of the BOARD dialect, which that file was not written to cover.
 - 260802 CC · ⚖️ It was tested for membership in the board family once, and failed on purpose
   `QC1b` §1.3 applied the door test to it and sent it OUT: its consumer is any authored prose in the repo, so folding it in would have tied a general verb to one host.
@@ -296,8 +296,8 @@ Its `🟡 in flux` is about position rather than quality, because it absorbed th
 ## Log
 - 260806 2118 · [REVISE-CC] swept to the 260806 architecture; the two-dialect pointer now reads `ref/change-record.md` §4 (disk truth, §3 is placement), `cli/agree.py` is credited to 0.6.0 not the latest release, and the paper-family migration clauses now state the one-door outcome: no copies left in the paper tree, humanizer relocated to `skills/writing/`, plugin count 158
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "two days ago" migration clause now says 260801 and the board page count reads 57, with no 260805 change touching this unit.
-260802 2100 · Corrected one claim after `haipipe-board-sentence` reached 0.3.0: this page said that skill owns what a `✎` line IS while this one owns when it gets written, and its new `edit` verb now writes one too. Two producers of one record is a new Aim, and `cli/agree.py` is the obvious instrument since it already compares two statements of one fact
-260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-board-page-for-skill` 0.1.0. It is the first skill page for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`
+260802 2100 · Corrected one claim after `haipipe-sentence` reached 0.3.0: this page said that skill owns what a `✎` line IS while this one owns when it gets written, and its new `edit` verb now writes one too. Two producers of one record is a new Aim, and `cli/agree.py` is the obvious instrument since it already compares two statements of one fact
+260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-page-for-skill` 0.1.0. It is the first skill page for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`
 260802 2000 · page generated from `writing/haipipe-writing/` by `skillpage.py new`
 
 <!-- haipipe:skill:log:start f230e8df4faea9c7 writing/haipipe-writing -->
@@ -389,7 +389,7 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       comments as well? Did you ever considered about it?"). No, it had not been.
       The gap was that `ref/change-record.md` described `✎` as a standalone grammar,
       creating a SECOND authority on something already owned by
-      `board/haipipe-board-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
+      `board/haipipe-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
       lanes, a 💬 comment, and the ✎ record, with a badge naming the kind.
       - `ref/change-record.md` rewritten to CITE the owning contract instead of
         restating it. It now carries only what is this skill's: how the diff is

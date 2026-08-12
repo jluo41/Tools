@@ -99,8 +99,8 @@ def main():
         for pid, path, probe in [
             ("QB5", "QB/QB5-overview.html", "What still has its own page"),
             ("QD8", "QD/QD8-sentence-address.html", "the address a machine is handed"),
-            ("Skill-0", "QC/Skill-0-haipipe-board.html", "haipipe-board-sentence"),
-            ("Skill-4", "QC/Skill-4-haipipe-board-sentence.html", "comment"),
+            ("Skill-0", "QC/Skill-0-haipipe-board.html", "haipipe-sentence"),
+            ("Skill-4", "QC/Skill-4-haipipe-sentence.html", "comment"),
             ("QB5e", "QB/QB5e-sentence-details-lifecycle.html", "Sentence details"),
             ("QC1b", "QC/QC1b-subskills.html", "sub-skill"),
         ]:

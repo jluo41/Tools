@@ -1,0 +1,33 @@
+{
+  "acceptance": "waiting",
+  "artifact_status": "rendered",
+  "artifacts": {
+    "assets": "assets/",
+    "bibliography": "../../references.bib",
+    "float": "float.tex",
+    "preview_image": "preview.png",
+    "preview_pdf": "preview.pdf"
+  },
+  "body_bindings": [
+    "EC1",
+    "EC2",
+    "EC3",
+    "EC4"
+  ],
+  "display_digest": "c2baa5d3bd190cd462d68500f79ba1498f00928992f90735d3445e17cceb7f11",
+  "folder": "QBt1-Display2-trait-illustration",
+  "generated_by": "haipipe-view",
+  "handoff": {
+    "blockers": [
+      "View acceptance is waiting",
+      "Display acceptance is waiting"
+    ],
+    "eligible": false
+  },
+  "id": "QBt1-Display2",
+  "kind": "illustration",
+  "owner_view": "QBt1-for-view",
+  "reader_job": "Contrast construct meaning with the patient-perceived signal.",
+  "schema_version": 1,
+  "source_digest": "0256bb2b08391e7d0fd86e9b61e5cbf9190fdf5c44da9f395c749b68d51884a9"
+}

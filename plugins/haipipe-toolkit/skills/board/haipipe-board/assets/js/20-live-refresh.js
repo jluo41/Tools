@@ -156,6 +156,15 @@
               if (k) openKey[k] = 1;
             });
             old.replaceWith(nw);
+            /* SWAP THE POPCARDS TOO. They live OUTSIDE div.wrap, and every
+               page numbers its cards from pc1, so leaving the old ones behind
+               made `popovertarget="pc1"` on the NEW page resolve to the OLD
+               page's card: you changed page, clicked a chip, and read the
+               previous page's evidence. Reported by JL 260807 with a
+               screenshot of QBt5 showing QBt4's broken citation. */
+            var ncards = doc.querySelector('#popcards');
+            var ocards = document.querySelector('#popcards');
+            if (ncards && ocards) { ocards.replaceWith(ncards); }
             var newD = nw.querySelectorAll('details');
             if (newD.length === oldD.length) {
               // Same shape, so position is the exact identity: editing a

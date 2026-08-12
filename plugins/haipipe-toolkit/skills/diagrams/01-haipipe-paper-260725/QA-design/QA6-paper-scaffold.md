@@ -103,7 +103,7 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
         board.md/html   /haipipe-board            ③  CALLED by ①,
                         never typed (QA4)
         S-*.md          the door + create-page.py; shell from ③'s
-                        cli/stage.py; phases run by haipipe-board-page
+                        cli/stage.py; phases run by haipipe-page
         S03/S04         the door's PROBE, on the shared model of
           probes/       probe/haipipe-probe       ⑤
       2-src/            fn/compile.md

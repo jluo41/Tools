@@ -5,7 +5,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [0.1.2] — 2026-08-04
 
-- Layers the worker on the Stage Page Type and `haipipe-board-page-revise`.
+- Layers the worker on the Stage Page Type and `haipipe-page-revise`.
 - Defines REVISE by fixed purpose and Aims rather than by always following PROBE.
 - Routes changed intent to DRAFT and a consequential unknown to PROBE.
 

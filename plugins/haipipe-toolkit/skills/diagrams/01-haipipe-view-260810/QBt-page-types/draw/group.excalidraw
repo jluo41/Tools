@@ -1,0 +1,65 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QBt",
+      "name": "QBt · View Page and internal profiles"
+    },
+    "imports": [
+      {
+        "page": "QBt1",
+        "source": "QBt1.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QBt2",
+        "source": "QBt2.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QBt3",
+        "source": "QBt3.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QBt4",
+        "source": "QBt4.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {}
+    }
+  }
+}

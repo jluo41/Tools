@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Agreeableness trait-description table</title>
+  <desc id="desc">Three rows separate construct meaning, observable project signal, and the measurement boundary.</desc>
+  <rect width="1200" height="560" rx="28" fill="#f7f4ed"/>
+  <text x="54" y="58" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#252525">QBt1-Display1 · Trait-description table</text>
+  <rect x="54" y="92" width="1092" height="62" rx="12" fill="#315c56"/>
+  <g font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#ffffff">
+    <text x="78" y="131">Layer</text>
+    <text x="280" y="131">What the View says</text>
+    <text x="790" y="131">Evidence</text>
+    <text x="948" y="131">Boundary</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#252525">
+    <rect x="54" y="162" width="1092" height="106" rx="12" fill="#fffdf8" stroke="#d7d0c2"/>
+    <text x="78" y="203" font-weight="700">Construct</text>
+    <text x="280" y="197">Interpersonal warmth</text><text x="280" y="226">and cooperation</text>
+    <text x="790" y="211">EC1, EC2</text>
+    <text x="948" y="197">Illustrative,</text><text x="948" y="226">not exhaustive</text>
+
+    <rect x="54" y="278" width="1092" height="106" rx="12" fill="#eef5f3" stroke="#c6d9d5"/>
+    <text x="78" y="319" font-weight="700">Observable</text><text x="78" y="348" font-weight="700">signal</text>
+    <text x="280" y="313">Patient descriptions of</text><text x="280" y="342">patient-facing behavior</text>
+    <text x="790" y="327">EC3</text>
+    <text x="948" y="313">Patient-perceived</text><text x="948" y="342">signal</text>
+
+    <rect x="54" y="394" width="1092" height="106" rx="12" fill="#f5eaec" stroke="#dec9cd"/>
+    <text x="78" y="435" font-weight="700">Measurement</text><text x="78" y="464" font-weight="700">claim</text>
+    <text x="280" y="429">Review-derived manifestation</text><text x="280" y="458">of the construct</text>
+    <text x="790" y="443">EC3, EC4</text>
+    <text x="948" y="429">Not an error-free</text><text x="948" y="458">latent trait measure</text>
+  </g>
+  <text x="54" y="535" font-family="Arial, sans-serif" font-size="17" fill="#555">The measurement boundary remains visible in the same artifact as the construct description.</text>
+</svg>

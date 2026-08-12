@@ -5,8 +5,16 @@ import re
 
 # 状态标签用英文：OPEN / PARTIAL / SETTLED / ON HOLD 是 issue 追踪的通用词，
 # 一眼知道什么意思，不像自造的中文缩写要人猜。
+# 🗂 FOLDED is not a fifth degree of doneness, it is a different KIND of
+# closed (JL 260807). ON HOLD means paused and someone will come back; FOLDED
+# means this page's subject was merged into another page and nobody will. The
+# page is deliberately KEPT so the merge stays traceable and its assets stay
+# reachable, which is exactly why archiving it into `_archive/` is wrong: that
+# hides the decision the page was kept to record. So it stays a real page, it
+# stays linkable, and it only stops competing for room on the Index.
 ST = {"✅": ("done", "SETTLED"), "🟡": ("wip", "PARTIAL"),
-      "🔴": ("todo", "OPEN"), "⏸️": ("hold", "ON HOLD")}
+      "🔴": ("todo", "OPEN"), "⏸️": ("hold", "ON HOLD"),
+      "🗂": ("folded", "FOLDED")}
 STN = {k.replace("️", ""): v for k, v in ST.items()}
 # 段落名用英文（两边都认：新板写英文，老板写中文照样能读）
 # 一个槽位可以有多个段名：规范名 -> [别名…]。中文老名字一直认（老板子不用改就能重新生成），
@@ -44,7 +52,7 @@ def sec(d, key):
 # page-level escape hatch for a target that crosses divisions. Old checkbox
 # pages remain a first-class input and are counted by the same helper.
 # `Q-<unit><Kind>-<n>` is here because a CONTRACT prescribes it, not because a
-# page invented it: `haipipe-board-page-for-stage/SKILL.md:251` says the stage
+# page invented it: `haipipe-page-for-stage/SKILL.md:251` says the stage
 # owns the id pattern and names this shape, "NOT A<n>". Parsing only A/P meant
 # the engine could not read the ids its own contract required, so `QBt6`
 # rendered `1/2 Aims met` off the two P rows while its States judged eight, and

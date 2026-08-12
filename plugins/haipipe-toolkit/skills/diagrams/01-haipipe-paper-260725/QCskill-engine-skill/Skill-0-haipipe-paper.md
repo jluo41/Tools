@@ -3,7 +3,7 @@ state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
-**Now the one door (0.5.0, 260805).** Thin-paper phase 2 folded `haipipe-paper-enter`, `haipipe-paper-lifecycle`, and `haipipe-paper-stage` into this one skill: it owns `stages/index.yml` resolution, `create-page.py`, the `probe/` tooling, and `ref/` directly. Page work is handed to `haipipe-board-page` (WORK ON / RUN); `board/page-phases/` own DPRC. Each stage.md gained `checker:` and `craft:` fields, honored by `haipipe-board-page-for-stage` 0.5.0; the workers dissolved to stage data files.
+**Now the one door (0.5.0, 260805).** Thin-paper phase 2 folded `haipipe-paper-enter`, `haipipe-paper-lifecycle`, and `haipipe-paper-stage` into this one skill: it owns `stages/index.yml` resolution, `create-page.py`, the `probe/` tooling, and `ref/` directly. Page work is handed to `haipipe-page` (WORK ON / RUN); `board/page-phases/` own DPRC. Each stage.md gained `checker:` and `craft:` fields, honored by `haipipe-page-for-stage` 0.5.0; the workers dissolved to stage data files.
 
 ## Opening
 Why does the Paper family need one public front door, rather than asking a writer to know the lifecycle, stage, phase, delivery, and evidence workers in advance?
@@ -97,7 +97,7 @@ haipipe-paper/
   ─────────────────────────      ─────────────────────────       ──────────────────
   haipipe-paper  THE DOOR        haipipe-board   build · serve   task-folders
     stages/index.yml (roster)                    check · status  discovery folders
-    create-page.py · probe/      haipipe-board-page  THE ENGINE  QA/<n>-<slug>.md
+    create-page.py · probe/      haipipe-page  THE ENGINE  QA/<n>-<slug>.md
   S01-opening … S10-round/         page-types/  ten: for-stage,    the answer files
     stage.md  CONTRACT+CRAFT       for-literature, for-value,      everything else
     template.md · craft .md        for-display, for-section …      points at them
@@ -122,7 +122,7 @@ haipipe-paper/
         checker: probe/check-probe-cards.sh · craft:[citation, values]
    ③ page missing? create-page.py → board stage.py → S-Work-C-claims.md born
    │
-   ▼ 🧩 ENGINE  (haipipe-board-page takes the page)
+   ▼ 🧩 ENGINE  (haipipe-page takes the page)
    ④ TYPE from the filename   S-Work-C → for-stage
         (register route: → for-literature/-value · page-type: → for-display…)
    ⑤ PHASE by the authority test   promise→DRAFT · unknown→PROBE ·
@@ -155,9 +155,9 @@ haipipe-paper/
 - 📄 One stage as data (the claims example from figure 2)
   contract + craft [stage.md](../../paper/S02-work/claims/stage.md) · its skeleton [template.md](../../paper/S02-work/claims/template.md) · craft it declares: [citation-craft.md](../../paper/S03-literature/citation-craft.md) and [values-craft.md](../../paper/S04-value/values-craft.md)
 - 🧩 The engine
-  the base [haipipe-board-page/SKILL.md](../../board/haipipe-board-page/SKILL.md) · the stage type [for-stage/SKILL.md](../../board/page-types/haipipe-board-page-for-stage/SKILL.md) · the four phases [draft](../../board/page-phases/haipipe-board-page-draft/SKILL.md), [probe](../../board/page-phases/haipipe-board-page-probe/SKILL.md), [revise](../../board/page-phases/haipipe-board-page-revise/SKILL.md), [check](../../board/page-phases/haipipe-board-page-check/SKILL.md)
+  the base [haipipe-page/SKILL.md](../../board/haipipe-page/SKILL.md) · the stage type [for-stage/SKILL.md](../../board/page-types/haipipe-page-for-stage/SKILL.md) · the four phases [draft](../../board/page-phases/haipipe-page-draft/SKILL.md), [probe](../../board/page-phases/haipipe-page-probe/SKILL.md), [revise](../../board/page-phases/haipipe-page-revise/SKILL.md), [check](../../board/page-phases/haipipe-page-check/SKILL.md)
 - 🧩 The wall and the run
-  the topic-entry core [topic-entry-contract.md](../../board/haipipe-board/ref/topic-entry-contract.md) · the RUN receipts contract [page-run-contract.md](../../board/haipipe-board-page/ref/page-run-contract.md) · the rebuild [build.py](../../board/haipipe-board/cli/build.py)
+  the topic-entry core [topic-entry-contract.md](../../board/haipipe-board/ref/topic-entry-contract.md) · the RUN receipts contract [page-run-contract.md](../../board/haipipe-page/ref/page-run-contract.md) · the rebuild [build.py](../../board/haipipe-board/cli/build.py)
 
 ## Content
 <!-- haipipe:skill:body:start a07100b50455f7a8 paper/haipipe-paper -->
@@ -180,7 +180,7 @@ User-facing entry for the paper lifecycle, and since 2026-08-05 the ONLY paper r
 The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
 Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
-Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-board-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
+Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
 The stage's LaTeX-side craft lives in data files each `stage.md` declares under `craft:`; the phase contracts load them after the type contract.
 Canonical structure: `../README.md` at the paper skill root.
 
@@ -288,7 +288,7 @@ Resolution order (first match wins):
 4. a PAGE id or page path on the paper's board (S-<Family>-…, Q…, or a .md
    under 0-lifecycle/) with no stage verb    -> a stage page resolves its stage key first (board_family/unit)
                                                 and runs the STAGE step; any other page hands to
-                                                haipipe-board-page WORK ON directly, phase verb passed through.
+                                                haipipe-page WORK ON directly, phase verb passed through.
                                                 "work on <page>" is always legal at this door.
 5. no args, cwd inside a paper root          -> enter "."
 6. no args, no paper root                    -> chooser (below)
@@ -336,7 +336,7 @@ create a sidecar request or handoff file; unfinished work stays in the page's `#
 its current fact in `## States`.
 
 **Step 3 — hand the page to the page layer.**
-Phase driving is NOT this door's: with the page resolved, call `haipipe-board-page` (WORK ON to
+Phase driving is NOT this door's: with the page resolved, call `haipipe-page` (WORK ON to
 repair one page; RUN with a raw-material packet to drive it through its declared phases). The
 `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK; the shared probe model is
 `probe/haipipe-probe/SKILL.md` and the paper-side loop is `fn/probes.md`.
@@ -789,7 +789,7 @@ outline .md    > USER: comment      /      > CC: response underneath
       /haipipe-paper (the door)
               ├─► STAGE step        seed -> resource -> claims -> [venue] -> pitch ->
               │                     narrative -> display -> section-edit -> round (pages
-              │                     driven via haipipe-board-page)
+              │                     driven via haipipe-page)
               ├─► fn/ verbs         folder · conform · compile · diffpdf · project ·
               │                     to-overleaf · to-word (human-triggered, tooling in scripts/)
               │
@@ -969,7 +969,7 @@ Converted from the skill's own `CHANGELOG.md`: 39 releases.
         detail in the new `ref/enter-console.md`), and `haipipe-paper-lifecycle`
         (stage ordering, maturity rule, global-pass mode, phase-verb pass-through).
       - Phase driving is NOT restated: the door ensures the S page exists and hands it
-        to `haipipe-board-page` (WORK ON / RUN); `board/page-phases/` own DPRC.
+        to `haipipe-page` (WORK ON / RUN); `board/page-phases/` own DPRC.
       - `workers/` dissolved: page rules stayed in board/, the LaTeX craft became
         stage data files declared by each stage.md `craft:` list
         (S03 citation-craft.md · S04 values-craft.md · S05 draft-craft.md ·

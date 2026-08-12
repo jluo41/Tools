@@ -15,6 +15,12 @@ unit/intake/                 what this display was allowed to read
         └── unit/assets/     the promoted visual the paper actually shows
 ```
 
+A first-class View may be the caller and place this unit at
+`views/<ViewPageStem>/output/<PageID>-Display<n>-<slug>/`. That folder is the
+renderer unit itself, not an adapter copy. The View owns `output.md`, the
+reader job, evidence/Card bindings, and acceptance; the renderer still owns
+the recipe and promoted asset.
+
 `intake/` is not a second data store.
 For a data display it holds a small, approved summary extract plus a manifest
 that points back to the exact task holder and run that produced it.
@@ -122,7 +128,7 @@ deliverable.
 
 ```text
 Task / Case       produces the canonical aggregate and its run provenance.
-Paper Display     decides why the reader needs the display and owns placement.
+View or consumer  decides why the reader needs the display and owns placement.
 Display Intake    binds approved inputs to one unit and records their origins.
 Renderer           reads the intake, writes recipe/candidate/asset files, and refuses to guess.
 ```
@@ -139,4 +145,4 @@ Candidate rendering must not mutate `intake/`.
 - Every numeric visual element traces to a `role: values` source.
 - Every values source points to a task holder, run when applicable, and canonical artifact.
 - `recipe/` reads only declared intake inputs for values.
-- The paper's `S-Display-N` page points to the manifest as provenance link ②.
+- The owning View Display row or legacy Paper `S-Display-N` page points to the manifest as its provenance binding.

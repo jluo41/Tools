@@ -17,7 +17,7 @@ A board write decides which pages will exist, and the group letters it picks are
 Content part 1 states that separation, and `## Aims` carries it as the one open risk the merge introduced.
 
 **Covered elsewhere**: `haipipe-board` owns the machinery, `build.py`, `serve.py` and `check.py`, while this verb writes markdown only.
-`haipipe-board-page` says which section a write owes and `haipipe-board-sentence` says how the line must read; routing loads both, and the sentence spec writes nothing itself.
+`haipipe-page` says which section a write owes and `haipipe-sentence` says how the line must read; routing loads both, and the sentence spec writes nothing itself.
 The page engine is no longer write-free: at 0.21.0 its CREATE, WORK ON and RUN verbs produce and repair a page's own prose, so routing's claim is narrower now, the one verb that lands an outside input on a page that already exists.
 `haipipe-board`'s `open` action still describes propose and materialize too, which Content 2.2 declares on purpose, so those two descriptions have to be corrected together.
 `haipipe-board-index` held the board altitude until 260802; its folder is deleted and its page sits in `_archive/`.
@@ -81,8 +81,8 @@ WORKFLOW  two altitudes since 260802, two approval rules, one unit
               an id does not predict a folder, so never resolve by name
               ## Links resolves the older ids
         ▼
-  4 PICK      loads 📄 haipipe-board-page  · which section owes this
-              loads ✒️ haipipe-board-sentence · how the line must read
+  4 PICK      loads 📄 haipipe-page  · which section owes this
+              loads ✒️ haipipe-sentence · how the line must read
         ▼
   5 WRITE     append under the named ## heading, at the SECTION BOUNDARY
               never at a byte offset: a blind offset spliced QB4d's
@@ -131,8 +131,8 @@ Routing automates the claim (QC1b §4), which makes two existing failure modes m
 ```
 haipipe-board-routing            what it loads          what it never does
 ─────────────────────            ─────────────────      ─────────────────────
-propose a board's structure      haipipe-board-page     render, serve, check
-materialize it after approval    haipipe-board-sentence tick a human decision
+propose a board's structure      haipipe-page     render, serve, check
+materialize it after approval    haipipe-sentence tick a human decision
 find the owning location                                change a human page gate
 append the anchored write                               create a page silently
 keep each group's lane block                            materialize an
@@ -327,7 +327,7 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
       A page write lands on its own and a board write stops for a person, and nothing enforces that separation except the contract saying so.
       This is the specific risk the merge introduced: one unit, two rules, and the weaker one is the easy default under time pressure.
 - [ ] 🧪 The door test is run on this unit
-      `QC1b` §1.4 measured the test on `haipipe-board-page` and on nothing else: three fresh agents opened that door unaided at tool calls #5, #6 and #5.
+      `QC1b` §1.4 measured the test on `haipipe-page` and on nothing else: three fresh agents opened that door unaided at tool calls #5, #6 and #5.
       This unit has one caller in code, `haipipe-board/cli/meetingpage.py`, and no evidence yet that an agent handed a bare instruction chooses to open it.
 - [ ] 🔁 `haipipe-board-digest` ships or leaves the roster
       Digest is this verb fanned out over a session, one call per input, and it is named on the roster and not on disk.

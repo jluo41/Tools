@@ -12,7 +12,7 @@ Keeping only the note makes an archive, while routing only the decisions removes
 The split affects how readers revisit the meeting and how later pages explain why they changed.
 It succeeds when the note has one readable page and each consequence points to its owning page.
 
-**Covered elsewhere**: How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder. How one input becomes one anchored write: `Skill-5-haipipe-board-routing`. What a Meeting page itself owes, since 260805: `haipipe-board-page-for-meeting`, one of the ten Page Types under `board/page-types/`. The Related Folders fold that can open the file today without any of this: `QB2`. What a page's sections must contain once it exists: `QB4`.
+**Covered elsewhere**: How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder. How one input becomes one anchored write: `Skill-5-haipipe-board-routing`. What a Meeting page itself owes, since 260805: `haipipe-page-for-meeting`, one of the ten Page Types under `board/page-types/`. The Related Folders fold that can open the file today without any of this: `QB2`. What a page's sections must contain once it exists: `QB4`.
 
 ## Diagram
 
@@ -95,7 +95,7 @@ A meeting page is the same generator pointed at a different source, which makes 
                                                            Meeting-1-260723
 ```
 
-This is the half that matters, and since 260805 it has a written rule but still no routed meeting: the `haipipe-board-page-for-meeting` type contract rules that a decision spoken in a meeting is not RULED until it lands on the page that owns the subject.
+This is the half that matters, and since 260805 it has a written rule but still no routed meeting: the `haipipe-page-for-meeting` type contract rules that a decision spoken in a meeting is not RULED until it lands on the page that owns the subject.
 `Skill-5-haipipe-board-routing` is the verb that turns one input into one anchored write, and a meeting note is a batch of exactly that shape.
 
 ### §4 What the producing end actually emits
@@ -193,7 +193,7 @@ Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened 
 - [x] ⚙️ Generate it
       `meetingpage.py new|sync` ships; `Meeting-1-260723-boardform-demo.md` was generated from the real note and renders all six base sections.
 - [ ] 🔢 Decide whether a Meeting page counts
-      The type contract ruled it 260805 (`haipipe-board-page-for-meeting`: never counted in a board's settled total), but `page_board.py`'s counted tuples still exclude only `skill` and `agent`, so the Index has not been told.
+      The type contract ruled it 260805 (`haipipe-page-for-meeting`: never counted in a board's settled total), but `page_board.py`'s counted tuples still exclude only `skill` and `agent`, so the Index has not been told.
 
 ### Where it sits, and how you watch for new ones
 - [x] 📍 A meeting page lives in its own group, `QG · Meeting`
@@ -280,7 +280,7 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
   macOS helper: far-end audio through a CoreAudio process tap, spawned by the plugin and read over a local websocket.
 
 ## Log
-- 260806 2130 · [REVISE-CC] swept to the 260806 architecture; recorded `haipipe-board-page-for-meeting` (0.1.0, 260805, one of the ten Page Types): §3's "no machinery" claim replaced by the written routing rule, Aims 🧠 and 📐 closed against on-page and contract evidence, 🔢 note now says `page_board.py` still lacks the `meeting` exclusion
+- 260806 2130 · [REVISE-CC] swept to the 260806 architecture; recorded `haipipe-page-for-meeting` (0.1.0, 260805, one of the ten Page Types): §3's "no machinery" claim replaced by the written routing rule, Aims 🧠 and 📐 closed against on-page and contract evidence, 🔢 note now says `page_board.py` still lacks the `meeting` exclusion
 260801 0140 · Full renumber QC5b -> QC3b (JL forced 260801)
 260801 0130 · Reindexed QC10 -> QC5b under the new QC5 generator parent (JL 260801)
 260801 · `QG · Meeting` opened as the board's seventh group and `Meeting-1` moved into it; the group renders on the Index, in the page list, and as its own `board/QG/` folder in the tree. This face stays in QC. `meetingpage.py --group` defaults to QG

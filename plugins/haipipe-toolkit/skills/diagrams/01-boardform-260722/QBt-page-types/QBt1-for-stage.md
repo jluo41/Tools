@@ -1,4 +1,4 @@
-# QBt1 · S-Work-C Claims (FABRICATED): what this paper may defend, and the verbs every later stage inherits
+# QBt1 · page-type STAGE · owns NO folder; chains on requires/style-from/provides and closes at a human gate
 
 state: 🟡 PARTIAL · DRAFT complete, CHECK not requested; 1 of 3 Required Inputs does not resolve, so the ledger's resource column is empty on every row
 page-type: stage
@@ -21,9 +21,9 @@ One Required Input is missing from this board on purpose, and that is what keeps
 
 **What a stage page is, and what this one is**: a link in a chain. It may not open until the pages in `requires:` have passed their gates, its Content IS the artifact rather than an argument about one, and its `state:` is a gate position that only a person moves. This one is a CONTROL page: it holds the ledger and no claim's own prose, the same shape `S-Work-C-claims` has on the MISQ board.
 
-**Where its things are**: this type owns NO companion folder, and this page creates none. The group's one rule is that a page's companion is `<type-plural>/<page name>/`, which is why `QBt3`'s unit is `displays/QBt3-for-display/` and `QBt9`'s deck is `slides/QBt9-for-slide/`. A stage page has nothing to put in one: `haipipe-board-page-for-stage` rules that Content is the artifact and nothing else, and where a stage does write a file the path comes from its own `stage.md`, not from this rule. `QBt6` is that case and shows it: a section's product is one flat `sections/QBt6-for-section.tex`, named after the page and sitting in a shared folder rather than under one of its own. A claims ledger has no file at all. It is these three Content divisions.
+**Where its things are**: this type owns NO companion folder, and this page creates none. The group's one rule is that a page's companion is `<type-plural>/<page name>/`, which is why `QBt3`'s unit is `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/` and `QBt9`'s deck is `slides/QBt9-for-slide/`. A stage page has nothing to put in one: `haipipe-page-for-stage` rules that Content is the artifact and nothing else, and where a stage does write a file the path comes from its own `stage.md`, not from this rule. `QBt6` is that case and shows it: a section's product is one flat `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex`, named after the page and sitting in a shared folder rather than under one of its own. A claims ledger has no file at all. It is these three Content divisions.
 
-**Why this page is also the instruction**: it is the specimen for its type, the way `QB4` teaches the page grammar by being a page that obeys it. The rules stay in `haipipe-board-page-for-stage`, which this page never restates.
+**Why this page is also the instruction**: it is the specimen for its type, the way `QB4` teaches the page grammar by being a page that obeys it. The rules stay in `haipipe-page-for-stage`, which this page never restates.
 
 **What is deliberately unfinished**: one Required Input. `S-Work-R`, the resource stage, does not exist in this group, so the ledger's "the corpus can carry it" column is empty on all four rows and CHECK cannot be asked for. Writing a stand-in resource stage here would turn the chain green and hide the one thing a CHAINED page exists to show, which is what a page looks like when a link above it is missing. The group holds one specimen per type, not a whole paper.
 
@@ -48,7 +48,7 @@ One Required Input is missing from this board on purpose, and that is what keeps
 - [ ] `S-Work-R` · Stage Contract source not found
       Source: not on this board; gate state: unknown.
       **Provides:** the resource inventory and the availability verdicts, which are what say whether the corpus can carry each claim.
-- [x] `QBt4` · L01 Prior art on typed pages, every citation FABRICATED
+- [x] `QBt4` · L01 Prior art on typed pages, claiming four keys from the shared bank
       Source: `QBt-page-types/QBt4-for-literature.md`; gate state: 🟡 PARTIAL · 2 of 2 questions answered, 1 answer never became a citation binding.
       **Provides:** nothing on disk. It is a view over N records; what this ledger reads is its E1 citation binding.
 - [x] `QBt5` · V01 Drift evidence: what this project must PRODUCE, and who is waiting
@@ -87,14 +87,14 @@ This stage is venue-free, so there is no venue contract and no blueprint binds i
 **The chain**: what must pass before this page may open, what it hands down, and where the one broken link is.
 
 ```text
-  ⛓ ONE STAGE, CHAINED            🚫 FABRICATED paper · JIS 2026
+  ⛓ ONE STAGE, CHAINED            the specimen paper · _fixture/QBt-page-types.pdf
 
   ❌ S-Work-R · resources           NOT IN THIS GROUP · the one hole
        └── would say what the corpus can carry
   📚 QBt4 · L01 prior art           🟡 1 answer never became a binding
        └── E1 binding · novelty SUPPORTED, within a stated scope
   📋 QBt5 · V01 drift evidence      🟡 1 consumer still unbound
-       └── E1 atom · QA-probe/QBt5-for-value/1-drift-counts
+       └── E1 atom · QA-probe/QBt5-for-value/1-artifact-paths
                         │
                         ▼
   📒 QBt1 · S-Work-C claims   ◀── THIS PAGE
@@ -120,6 +120,16 @@ This stage is venue-free, so there is no venue contract and no blueprint binds i
   a machine may report evidence, propose a row, move one Aim's State
   a machine may not move the page gate
   ✅ GATED carries a date, because it is a claim about a person
+```
+
+**Its own input and output**: a STAGE page reads its upstreams and hands on what it provides. Neither is a folder.
+
+```text
+ 📥 INPUT   ↗ elsewhere · the `provides:` of every page in this page's `requires:`
+              a stage keeps a RECORD of what it takes, in `## Stage Contract`,
+              and never a copy: a copied rule goes a night out of date
+ 📤 OUTPUT  its own `### Provides`, which the next stage reads the same way
+ ✗ NO FOLDER of its own, and that is the type's whole shape (`QB6` §7)
 ```
 
 ## Content
@@ -272,24 +282,27 @@ It does not write around it, and a display or a slide that states a stronger ver
 
 ### P · The chain and the gate
 - P5 · The gate is passed by a person, on a dated line.
-  **Done when:** `state:` reads `✅ GATED <date>` and `## Log` carries the matching `[CHECK-JL]` line. No machine writes either.
+  **Done when:** `state:` reads `✅ GATED <date>` and `## Log
+
+- 260807 1200 · [REVISE-CC] the group was rebuilt to the shape `QB6 §7` states. This page's own shape is NONE: a stage page owns no folder, which is now true on disk rather than asserted. The group's companion folders sit beside it (`display/`, `slide/`, `QA-probe/`) and its paper root at `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/`, and the three tools it used to name as `unit.py` are the board engine's own, at `board/haipipe-board/cli/`.
+` carries the matching `[CHECK-JL]` line. No machine writes either.
 
 ## States
 
 - 260806 0057 CC · The hole is the chain, on purpose. `S-Work-R` is the one page a claims ledger cannot do without, because it is what says whether the corpus can carry a claim at all, and this group holds one specimen per type rather than a whole paper. `S-Work-R-resources` on the MISQ board has carried the same kind of open row since 260803, where a declared input was removed from the board by another group mid-split.
 - 260806 0057 CC · Rule 10 of `QB6` §5.1 is the checker rule written for this type: "the page declares venue-free or venue-aligned, and a venue-aligned page's `style-from:` resolves to a venue-pinned upstream page". This page declares venue-free in its Stage Record, so it satisfies the half of rule 10 that applies to it, and the rule does not exist, so nothing reports either half on any page today.
 - 260806 0057 CC · This page declares `page-type: stage` and the engine still calls it a question page, because `src/parse.py` derives `kind` from the FILENAME alone. Two consequences, both read out of the code: `src/stage_contract.py`'s `contract_status()` returns immediately when `kind != "stage"`, so the managed span and its hash are never verified here, and `cli/check.py`'s `missing-stage-section` rule fires only for a name starting with `S`, so nothing ever asks this page for its `## Stage Contract`. That is `QBt3`'s decorative-type-key finding one step worse: for stage the engine HAS the machinery and gates all of it on a filename. Rule 1 of `QB6` §5.1 is the fix.
-- 260806 0057 CC · The head keys collide, and two specimens hit the same key from opposite sides. `haipipe-board-page-for-stage` says a stage page carries `provides:`, "what this page hands downstream, in one line", and every S page on the MISQ board writes a sentence there. `unit.py` reads any `provides:` as ONE PATH relative to the page's folder and makes the file an atom, so the contract's own line would fail `check` with "product missing". This page declares none, because a control stage's artifact is prose on the page and no file can hold it. `QBt6` declares a real path and then has to say in its Stage Record that the path is not what `for-stage` means by the word.
-- 260806 0057 CC · A consumer-only page cannot declare a checked need, tested rather than assumed. `unit.py atoms()` skips every file with no `provides:`, so a `needs:` here would be indexed by nothing and verified by nothing. Proven by adding a scratch `.md` carrying a `needs:` line and no `provides:` to the group: `check` printed the same atom list as before and never mentioned it. The upstream is therefore named once, in `requires:`, and the two id spaces never meet: `requires:` takes the board page id `QBt5`, while a `needs:` would take the atom id `QA-probe/QBt5-for-value/1-drift-counts`.
+- 260806 0057 CC · The head keys collide, and two specimens hit the same key from opposite sides. `haipipe-page-for-stage` says a stage page carries `provides:`, "what this page hands downstream, in one line", and every S page on the MISQ board writes a sentence there. `../../../board/haipipe-board/cli/build-displays.py` reads any `provides:` as ONE PATH relative to the page's folder and makes the file an atom, so the contract's own line would fail `check` with "product missing". This page declares none, because a control stage's artifact is prose on the page and no file can hold it. `QBt6` declares a real path and then has to say in its Stage Record that the path is not what `for-stage` means by the word.
+- 260806 0057 CC · A consumer-only page cannot declare a checked need, tested rather than assumed. `unit.py atoms()` skips every file with no `provides:`, so a `needs:` here would be indexed by nothing and verified by nothing. Proven by adding a scratch `.md` carrying a `needs:` line and no `provides:` to the group: `check` printed the same atom list as before and never mentioned it. The upstream is therefore named once, in `requires:`, and the two id spaces never meet: `requires:` takes the board page id `QBt5`, while a `needs:` would take the atom id `QA-probe/QBt5-for-value/1-artifact-paths`.
 - 260806 0057 CC · The Aim id scheme the contract mandates is invisible to the counter. `src/common.py`'s `AIM_RE` parses only `A<n>` and `P<n>` rows, so the `PP1` row above, written in the id form the real claims stage uses for a ledger-wide probe, is not counted and not mirrored: the page reports 5 Aims where it carries 6. Both forms are on the page so the gap is visible instead of quiet. The same silence covers the group headings, since `check_group_names` compares only what it can see.
 - 260806 0057 CC · `contract-source-hash: e6751de27aec33fa` was computed by hand with `src/stage_contract.py`'s own recipe, because `stage.py sync` cannot run on a page the parser does not call a stage. Two facts travel with it: `contract_digest` hashes each source's ABSOLUTE resolved path along with its bytes, so the same page in another clone computes a different value, and this one goes stale the moment `QBt4` or `QBt5` is edited. Nothing here reports either, since `contract_status()` never runs on this page.
 - 260806 0057 CC · The divisions carry a caption and a face figure although the contract says a manuscript section should not. That conflict is already listed on the contract as one it does not own, since the base may add a rule to a variant and gives no variant a way to suppress one. It does not bite here anyway: a claims ledger is not a manuscript section, so the figures are the artifact rather than decoration on top of it.
-- 260806 0057 CC · `QBt6` §Required Inputs says `S-Work-C` "does not exist in this group". It does now: it is this page. Routed and not fixed, because `haipipe-board-page-for-stage` rules that a page whose plan rests on a sibling's stale line records the correction rather than editing the sibling.
-- 260806 CC · The value on the head's `page-type:` line is one the contract does not define, which is a step worse than the decorative-key finding under it. Step ③ of the base's resolution table admits `display`, `slide`, `design` and `section` and nothing else (`board/haipipe-board-page/SKILL.md` lines 52 to 55), a stage is meant to resolve at step ④ by an `S-<Family>-<unit>` filename, and this file wears `QBt1-`, so it matches exactly one key, step ⑤, and reads as a Q decision page. The key is inert as well: `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`, so nothing reads it on any page of any board, the same fact `QBt3` and `QBt9` record for `display` and `slide`. `QBt2-for-venue` carries the twin of this row with `venue`, and the choice for both is the last `### Decision Now` row below.
+- 260806 0057 CC · `QBt6` §Required Inputs says `S-Work-C` "does not exist in this group". It does now: it is this page. Routed and not fixed, because `haipipe-page-for-stage` rules that a page whose plan rests on a sibling's stale line records the correction rather than editing the sibling.
+- 260806 CC · The value on the head's `page-type:` line is one the contract does not define, which is a step worse than the decorative-key finding under it. Step ③ of the base's resolution table admits `display`, `slide`, `design` and `section` and nothing else (`board/haipipe-page/SKILL.md` lines 52 to 55), a stage is meant to resolve at step ④ by an `S-<Family>-<unit>` filename, and this file wears `QBt1-`, so it matches exactly one key, step ⑤, and reads as a Q decision page. The key is inert as well: `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`, so nothing reads it on any page of any board, the same fact `QBt3` and `QBt9` record for `display` and `slide`. `QBt2-for-venue` carries the twin of this row with `venue`, and the choice for both is the last `### Decision Now` row below.
 - 260806 CC · Half of the Aim id record above has gone stale, and it is this pass that made it stale. `PP1` now carries a State row under `### A3`, so the mirror a reader sees is complete and the words "not mirrored" no longer describe the page. The counting half stands unchanged: `src/common.py` line 46's `AIM_ID` matches `A<n>` and `P<n>` only, so `AIM_RE` skips the Aim and `AIM_STATE_RE` skips its row, and the page still reports 5 Aims where it carries 6.
 
 ### Decision Now
-- ✅ The `provides:` collision is settled, 260806, and neither option this row used to offer, renaming the stage contract's key or teaching `unit.py` to skip a promise with no file, is what settled it. The deciding fact was on disk the whole time: `S06-main/section-edit/stage.md:78` already declares `output: sections/*.tex` for the path-valued meaning. So the machine key here became `output:`, the stage contract keeps its prose `provides:` line untouched, and `unit.py` needed no special case for a promise with no file behind it. What it cost: 3 declarations, 2 QA records and 2 scripts in this group. What it saved: the 78 prose `provides:` lines on the live MISQ board, which never had to move.
+- ✅ The `provides:` collision is settled, 260806, and neither option this row used to offer, renaming the stage contract's key or teaching `../../../board/haipipe-board/cli/build-displays.py` to skip a promise with no file, is what settled it. The deciding fact was on disk the whole time: `S06-main/section-edit/stage.md:78` already declares `output: sections/*.tex` for the path-valued meaning. So the machine key here became `output:`, the stage contract keeps its prose `provides:` line untouched, and `../../../board/haipipe-board/cli/build-displays.py` needed no special case for a promise with no file behind it. What it cost: 3 declarations, 2 QA records and 2 scripts in this group. What it saved: the 78 prose `provides:` lines on the live MISQ board, which never had to move.
 - 📍 Required Input 1 is `S-Work-R`, which no page in this group provides. Write the resource specimen, or retire the row and let a claims ledger stand without a resource verdict. The page stays 🟡 until one of those happens, which is the behaviour being demonstrated.
 - 📍 `QBt6`'s Required Inputs row for `S-Work-C` is now stale. Correct it there, or rule that a specimen group does not maintain cross-page input rows at all. This page does not edit its sibling.
 - [ ] 🗣 Two pages in this group declare a `page-type:` value the contract does not define. Does the table grow, or do the keys go?
@@ -322,9 +335,9 @@ It does not write around it, and a display or a slide that states a stronger ver
   The outward evidence page. Its E1 citation binding carries C0, and its E2 is the answer that never became one.
 - `QBt6-for-section.md`
   The section that consumes this ledger, and the page whose Required Inputs row for `S-Work-C` this page corrects by routing rather than editing.
-- `unit.py`
+- `../../../board/haipipe-board/cli/build-displays.py`
   The resolver. `check` reports this page as a view, which is the correct reading of a stage whose artifact is its own Content.
-- `../../board/page-types/haipipe-board-page-for-stage/SKILL.md`
+- `../../board/page-types/haipipe-page-for-stage/SKILL.md`
   The contract this page is an instance of. Where the two disagree, the contract wins and this page is the defect.
 - `QB-delivery/QB4-overall.md`
   The page frame: the section set, their order, and the caption rule every division above obeys.
@@ -336,4 +349,4 @@ It does not write around it, and a display or a slide that states a stronger ver
 - 260806 0057 · [DRAFT-CC] written as the `for-stage` specimen on the ruling that an example must BE its type: this page is the claims stage of the fabricated JIS paper rather than an essay about stage pages, its Content is the ledger itself, and its Required Inputs quote real gate states off two sibling specimens. The claims stage was chosen over a section stage because `QBt6` already holds the section shape, and because a control page that is venue-free shows the half of this contract a section page cannot.
 - 260806 0057 · [PROBE-CC] no question was dispatched. Both evidence routes this ledger needs are already answered on `QBt4` and `QBt5` and are read by id, and `QBt5`'s E2 was left unconsumed so that sibling's open row stays open.
 - 260806 0057 · [CHECK-CC] `python3 unit.py check` green, and the gate did not move: `[CHECK-JL]` is the only line that may move it.
-- 260806 · [REVISE-CC] three cold-read repairs, no Aim text touched and no gate moved. The on-stage Opening was one bare question of 113 characters against the base's 4 to 5 sentences and roughly 450 characters (`board/haipipe-board-page/SKILL.md` line 320), so four sentences were added naming what a claims stage answers, that this page is the `for-stage` specimen, that its ledger is invented, and that one input is missing on purpose; the paragraph now measures 485 characters against the 520 ceiling. `## States` gained the four `### A<n>` group headings its Aims already carried and the missing `PP1` row: PP1 is 🧠 on a grep of the group for the C0 scope clause, which returns only this page and `QBt4` and finds the clause on both, with no consumer page repeating C0 yet and nothing checking it, which is the position P4 is already in. The five state rows moved below `### Decision Now` to reach their groups, which is the shape `QBt3-for-display` uses; the nine dated records above them were neither edited nor moved. One new dated record and one new `### Decision Now` row report that `page-type: stage` is not one of the four values step ③ of the resolution table defines and that `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`; the row recommends dropping the key and is left for a person.
+- 260806 · [REVISE-CC] three cold-read repairs, no Aim text touched and no gate moved. The on-stage Opening was one bare question of 113 characters against the base's 4 to 5 sentences and roughly 450 characters (`board/haipipe-page/SKILL.md` line 320), so four sentences were added naming what a claims stage answers, that this page is the `for-stage` specimen, that its ledger is invented, and that one input is missing on purpose; the paragraph now measures 485 characters against the 520 ceiling. `## States` gained the four `### A<n>` group headings its Aims already carried and the missing `PP1` row: PP1 is 🧠 on a grep of the group for the C0 scope clause, which returns only this page and `QBt4` and finds the clause on both, with no consumer page repeating C0 yet and nothing checking it, which is the position P4 is already in. The five state rows moved below `### Decision Now` to reach their groups, which is the shape `QBt3-for-display` uses; the nine dated records above them were neither edited nor moved. One new dated record and one new `### Decision Now` row report that `page-type: stage` is not one of the four values step ③ of the resolution table defines and that `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`; the row recommends dropping the key and is left for a person.

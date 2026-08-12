@@ -1,0 +1,159 @@
+{
+  "canonical_page": "../../QBt1-for-view.md",
+  "generated_by": "haipipe-view",
+  "outputs": [
+    "QBt1-for-view.tex",
+    "QBt1-for-view.pdf",
+    "QBt1-for-view.docx",
+    "manifest.json"
+  ],
+  "schema_version": 1,
+  "source_digest": "0256bb2b08391e7d0fd86e9b61e5cbf9190fdf5c44da9f395c749b68d51884a9",
+  "sources": [
+    {
+      "path": "QBt1-for-view.md",
+      "sha256": "44fc166d79fd6bea197d35569da721834ca62070eb17bf7955ad2bd8037a3014"
+    },
+    {
+      "path": "views/QBt1-for-view/input/QA-probes/1-canonical-definition.md",
+      "sha256": "3631e2d35a4a97b0be275d5726e8395295d5ddec9de1b42cb3259e637f471147"
+    },
+    {
+      "path": "views/QBt1-for-view/input/QA-probes/2-observable-signal.md",
+      "sha256": "4c13d954d4868881e6b90b30b97017986786595759033a0091079327a245414e"
+    },
+    {
+      "path": "views/QBt1-for-view/input/QA-probes/3-measurement-boundary.md",
+      "sha256": "121ded3d06a8dc58da9dceef79ded3252575ef962951783966c90dc1b56c4b3f"
+    },
+    {
+      "path": "views/QBt1-for-view/input/sources/references.bib",
+      "sha256": "dcedef19a0e6406359f01e3180e8d28a6b1098ceec7a2aa42584f9f4c9150e12"
+    },
+    {
+      "path": "views/QBt1-for-view/input/sources/source-manifest.md",
+      "sha256": "1725167e7474d740e010ba45c13b289d69017a544c9141965e59ac6bf1b9d107"
+    },
+    {
+      "path": "views/QBt1-for-view/manifest.json",
+      "sha256": "49ec4480cabbe22ad4cf359e1a6097a69d734d151bd4fe0f393b12ca44bf66a2"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/README.md",
+      "sha256": "b95ede92bd676f8e201d72e3e4705cb4ad864be463aeddc34204c48339e1613c"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/assets/table.tex",
+      "sha256": "84871c2a844c54f9bd8c24deadd26c645b09a765a6cd4ef0b7566314643718c2"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/candidates/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/float.tex",
+      "sha256": "a2a16e2b827dbeae99951200fd053ab907845b6f1e4cd5baef2b66d42d3efb66"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/intake/inputs/source_data.csv",
+      "sha256": "2a9bfe5707882a54c670cb084d76052b34df194bd8209641731fc5224a91e52c"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/intake/manifest.yaml",
+      "sha256": "0d72d44671300a1c5effa286136df938c74b1fc373c1226094a48347fb01dc08"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/intake/narrative-context.md",
+      "sha256": "250e9c7515b0e9e76127a6193144e98cd6adef15c6c3ac3c320263c6ec00d603"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/output.md",
+      "sha256": "a8b20c3c8f4a9ac4579ba3230468d21964133cdb571729403345e4609a1f7b59"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/preview.pdf",
+      "sha256": "842eb25564cab3f71482f7f6d6c9533c50bc744a25f4ddc059e8409505611537"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/preview.png",
+      "sha256": "a88e629fb50eeec526474e19535852fcbbf84ff3c4e17756830dd77f92d3454d"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/preview.tex",
+      "sha256": "4b4ae2b9267ae449ce458150bf1f38b806e185594422ca1a8ba657cc23961695"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/recipe/gen_table.py",
+      "sha256": "452be0bd4554b064c1f848083eeaf75e74ce887828c07583bad3e6a559390cb9"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/versions/legacy-artifact.md",
+      "sha256": "09ac5bba3e02b2236bbbfc927692cba029878b106f5289f6a2ee567e23a17d3b"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display1-trait-description-table/versions/legacy-table-preview.svg",
+      "sha256": "b12c48a8b8b6702dbadec4a778e66bdae4eaba969dfaaced2a3aaced169108d8"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/README.md",
+      "sha256": "73d28e32ee219d0bf33c6c367a07cf5c2760771754b192b2bf9466c33927d6b0"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/assets/figure-1.svg",
+      "sha256": "4e83bb611b73d3fbe5bd89de841dbcc0dfe97fa668d1e6fccd95d3c6a99727f8"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/assets/figure.pdf",
+      "sha256": "002afc9a62adcf015d722a8901fa3940c371c8e050c2a4ecab7c7d608c014ae6"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/candidates/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/float.tex",
+      "sha256": "de421a55b0382346a2b9d67a3ca39d29a36649cdbbb86deb30ce8d4faa112b17"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/intake/manifest.yaml",
+      "sha256": "83e2811b656dc74dd4e793f18775efab914f436444b1fd233e7befb51fb49373"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/intake/narrative-context.md",
+      "sha256": "aa7ffddb77e8df623fcecc7c2dc7d243d7d3b9ceab727867365a593ff7d19dbd"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/output.md",
+      "sha256": "4a31a56c5a5ea29e238d95118cd3a87972d29bd6867736bb9a47f0513d079e7d"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/preview.pdf",
+      "sha256": "e389aacdf317947cf5f67a10e6a07180e237dcf164952e82d2c1b60232657806"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/preview.png",
+      "sha256": "93d376e18ea34579d243a1135e2cd47612d2fadc531a813b7359c8ae2242a5a4"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/preview.tex",
+      "sha256": "12502f2a12b85d3070095a61784b126c1d246d2600264b488ed857c66b26ce1d"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/recipe/export.md",
+      "sha256": "36726fb1f73c3746c37f021bf39e66ed4886b1e6182a43496b51d7477fbc4a95"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/recipe/prompt.md",
+      "sha256": "a695e0706d09ad9edb4faae058a94e18f53edf6acece0c664ec342330855bf6d"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/recipe/review_log.json",
+      "sha256": "08b45cefae08240e3c98634d650870d05f872bec3c3e1a4244c05931b5b52b40"
+    },
+    {
+      "path": "views/QBt1-for-view/output/QBt1-Display2-trait-illustration/versions/legacy-root-figure-1.svg",
+      "sha256": "4e83bb611b73d3fbe5bd89de841dbcc0dfe97fa668d1e6fccd95d3c6a99727f8"
+    }
+  ],
+  "view": "QBt1-for-view"
+}

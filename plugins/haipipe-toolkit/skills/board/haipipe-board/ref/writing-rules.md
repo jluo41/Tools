@@ -37,7 +37,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Each part starts with a bold label saying what it answers, then its sentences, with a blank line between. The paragraph on stage is read straight through; `More details` is opened by someone hunting one specific thing, and a block of prose gives them no label to scan for.
 
 - **A change is finished when it is ON THE RENDERED PAGE** (JL 260801)
-  Do not stop mid-way to ask for approval. Write the source, propagate the rule to `ref/page-template.md` and `haipipe-board-page` so new pages inherit it, run `check.py`, then confirm the RENDER, not the markdown. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produce a correct file and a wrong page. A half-applied change is worse than either finishing or not starting.
+  Do not stop mid-way to ask for approval. Write the source, propagate the rule to `ref/page-template.md` and `haipipe-page` so new pages inherit it, run `check.py`, then confirm the RENDER, not the markdown. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produce a correct file and a wrong page. A half-applied change is worse than either finishing or not starting.
 
 
 - **No em-dashes** (JL 260724: "fuck em-dash")

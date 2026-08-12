@@ -92,7 +92,10 @@ if __name__ == "__main__":
     if meta.get("dialect", "").split("#", 1)[0].strip():
         try:
             from src import dialect_paper            # noqa: E402
-            boardbody.PAPER = dialect_paper.load(boardbody.BASE, meta)
+            # use_paper(), not a bare assignment: it also widens MARKER's unit
+            # branch to the units this board's paper actually has, so a unit
+            # named for its own page renders a card instead of staying plain.
+            boardbody.use_paper(dialect_paper.load(boardbody.BASE, meta))
         except ImportError:
             print("⚠️  dialect declared but no dialect module; markers stay plain text")
     else:

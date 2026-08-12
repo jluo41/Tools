@@ -563,7 +563,7 @@ owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-REPLACE THIS PARAGRAPH. Load `haipipe-board-page-for-skill` and write the three slots it names, in its order, in plain words: ❶ what `{name}` is and what it is FOR, ❷ when you reach for it rather than the ONE sibling you would otherwise pick, named, ❸ where it stands, meaning the one thing to know before trusting it.
+REPLACE THIS PARAGRAPH. Load `haipipe-page-for-skill` and write the three slots it names, in its order, in plain words: ❶ what `{name}` is and what it is FOR, ❷ when you reach for it rather than the ONE sibling you would otherwise pick, named, ❸ where it stands, meaning the one thing to know before trusting it.
 
 NEVER open a skill page with a question. This stub used to seed `{{name}} is a shipped unit: what does it still owe, and is it healthy?`, and on 260802 five pages generated from it all opened with the same rhetorical question in the same four-slot shape, because a skill page DECIDES NOTHING and so has nothing to ask.
 Delete these instructions once the paragraph is written; the FIRST BLANK LINE above is the split, and everything below it is the `More details` drawer, written as labelled parts.

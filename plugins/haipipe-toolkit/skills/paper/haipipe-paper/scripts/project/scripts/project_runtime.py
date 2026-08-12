@@ -34,6 +34,9 @@ CLASS_RE = re.compile(r"\\documentclass(?:\[[^\]]*\])?\s*\{([^}]+)\}")
 PACKAGE_RE = re.compile(r"\\usepackage(?:\[[^\]]*\])?\s*\{([^}]+)\}")
 CITE_RE = re.compile(r"\\cite[a-zA-Z*]*\s*(?:\[[^\]]*\]\s*){0,2}\{([^}]+)\}")
 QUESTION_RE = re.compile(r"\[Q-[A-Za-z0-9_.:@/-]+\]")
+# LaTeX rungs, shallowest first. A selection deeper than this collapses onto the
+# last one rather than emitting a command that misqdoc.cls does not define.
+TEX_LEVELS = ("section", "subsection", "subsubsection", "paragraph")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 
@@ -447,12 +450,74 @@ def manuscript_prose_markdown(markdown: str) -> str:
     return "\n".join(output).rstrip() + ("\n" if output else "")
 
 
-def markdown_to_tex(markdown: str, source_rel: str, selector: str) -> str:
+def heading_depths(markdown: str) -> list[int]:
+    """Depths of the headings this renderer will actually emit.
+
+    Board apparatus is excluded, because a heading that never reaches the .tex
+    must not decide what level the ones that do get rendered at.
+    """
+    depths: list[int] = []
+    in_comment = False
+    in_fence = False
+    for raw in markdown.splitlines():
+        stripped = raw.strip()
+        if stripped.startswith("<!--"):
+            in_comment = True
+        if in_comment:
+            if "-->" in stripped:
+                in_comment = False
+            continue
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        match = HEADING_RE.match(stripped)
+        if not match:
+            continue
+        title = match.group(2).strip()
+        if title == "Stage Record":
+            continue
+        if len(match.group(1)) >= 4 and re.match(r"^P\d+[.:]", title):
+            continue
+        if not clean_heading(title):
+            continue
+        depths.append(len(match.group(1)))
+    return depths
+
+
+def markdown_to_tex(
+    markdown: str, source_rel: str, selector: str, top_title: str | None = None
+) -> str:
+    """Render one selected Markdown region as the body of ONE .tex file.
+
+    HEADING LEVELS ARE RELATIVE, NOT ABSOLUTE. The old rule was `### -> section,
+    #### -> subsection` by raw markdown depth, and it is wrong in both
+    directions on a real paper. A main section page's `## Content` holds
+    `### §3.1`, `### §3.2`, `### §3.3`, which are the section's SUBSECTIONS; the
+    old rule emitted three `\\section{}` commands and silently renumbered the
+    manuscript. An appendix division selected by `heading:` lost its heading
+    line to the selector and emitted no `\\section{}` at all, so the appendix
+    letters disappeared. Only `main-1` was ever projected, and §1 happens to
+    have exactly one division, which is the single shape both bugs spare.
+
+    The rule now: ONE FILE, ONE `\\section{}`. `top_title` names it. Everything
+    the selection itself carries sits below that, at its own relative depth.
+    """
     output: list[str] = [
         f"%% GENERATED from {source_rel} ({selector}) by the haipipe-paper project verb.",
         "%% Do not hand-edit; backport changes to the S page and regenerate.",
         "",
     ]
+    depths = heading_depths(markdown)
+    base_depth = min(depths) if depths else 0
+    if top_title:
+        output.append(rf"\section{{{inline_markdown(top_title)}}}")
+        # The section title came from outside the selection, so the selection's
+        # own top level is one rung down from it.
+        offset = 1
+    else:
+        offset = 0
     paragraph: list[str] = []
     in_comment = False
     in_fence = False
@@ -503,8 +568,8 @@ def markdown_to_tex(markdown: str, source_rel: str, selector: str) -> str:
                 continue
             title = clean_heading(title)
             if title:
-                command = "section" if depth <= 3 else "subsection"
-                output.append(rf"\{command}{{{inline_markdown(title)}}}")
+                rung = min(depth - base_depth + offset, len(TEX_LEVELS) - 1)
+                output.append(rf"\{TEX_LEVELS[rung]}{{{inline_markdown(title)}}}")
             continue
 
         if stripped.startswith("Lifecycle:"):
@@ -525,6 +590,26 @@ def markdown_to_tex(markdown: str, source_rel: str, selector: str) -> str:
     flush_bullets()
     flush_paragraph()
     return "\n".join(output).rstrip() + "\n"
+
+
+def top_title_for(unit: dict[str, Any], output: dict[str, Any], selector: str) -> str | None:
+    """The name of the one `\\section{}` this output file opens with.
+
+    Two sources, in order, and neither of them guesses. An explicit
+    `section_title:` on the output or on the unit wins: a main section page's
+    `## Content` holds only the section's subdivisions, so the section's own
+    name exists nowhere in the selected region and has to be declared. Failing
+    that, a `heading:` selector already names the region, and `select_markdown`
+    drops that heading line from the body, so it is free to become the section
+    title. `select: content` with nothing declared yields None, and the file
+    opens with whatever the selection's own top level is.
+    """
+    declared = output.get("section_title") or unit.get("section_title")
+    if declared:
+        return str(declared)
+    if selector.startswith("heading:"):
+        return clean_heading(selector.split(":", 1)[1].strip()) or None
+    return None
 
 
 def render_unit(ctx: Context, unit_name: str, unit: dict[str, Any]) -> tuple[dict[str, bytes], dict[str, Any]]:
@@ -567,7 +652,9 @@ def render_unit(ctx: Context, unit_name: str, unit: dict[str, Any]) -> tuple[dic
             if not isinstance(selector, str):
                 raise ProjectionError(f"{unit_name}: selector for {rel} must be a string")
             selected = select_markdown(page_text, selector)
-            rendered_text = markdown_to_tex(selected, page_rel, selector)
+            rendered_text = markdown_to_tex(
+                selected, page_rel, selector, top_title_for(unit, output, selector)
+            )
             selections[rel] = sha256_bytes(selected.encode("utf-8"))
         rendered[rel] = rendered_text.encode("utf-8")
         manuscript_prose = manuscript_prose_markdown(selected) if selected else ""

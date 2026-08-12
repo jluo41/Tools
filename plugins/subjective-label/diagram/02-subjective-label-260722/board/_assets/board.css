@@ -1969,9 +1969,13 @@ table.bstat{border-collapse:collapse;font:12px ui-monospace,Menlo,monospace;
 .wf-step.live .wf-here {
   font-size: 10px; color: #2f6fd0; font-weight: 700; letter-spacing: .04em;
 }
-/* locked is COMPUTED (an earlier step is not ✅), never a stored state */
-.wf-step.locked { opacity: .45; cursor: default; }
-.wf-step.locked:hover { border-color: var(--line, #d8d8d8); }
+/* locked is COMPUTED (an earlier step is not ✅), never a stored state.
+   LOCKED MEANS "cannot be RUN", NOT "cannot be READ". The card still jumps to its
+   Content division, so it keeps a pointer: `cursor: default` said the click did
+   nothing while the click was in fact the most useful thing a locked step offers
+   (260808). Dimming already carries "not yet yours to run". */
+.wf-step.locked { opacity: .45; }
+.wf-step.locked:hover { opacity: .75; border-color: var(--line, #d8d8d8); }
 .wf-step .wf-lock { font-size: 11px; }
 
 .wf-detail {

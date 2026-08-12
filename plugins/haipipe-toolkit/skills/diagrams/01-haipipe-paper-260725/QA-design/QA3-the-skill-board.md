@@ -72,7 +72,7 @@ Writing only one is how a ruling gets applied to half of itself, twice on 260726
  QA4  the tool              create-page.py               the whole package
  QA8  who owns a region     create-page.py               stage.py · serve.py
  QA9  driving work          the door's STAGE step        page RUN · serve.py
- QA10 the prose verb        revise-humanizer             haipipe-board-sentence
+ QA10 the prose verb        revise-humanizer             haipipe-sentence
  QC2-3   adding a stage     index.yml · CONTRACT.md      —
  QC3b-d  the page written   create-page.py               stage.py
  QC4-4d  the four phases    the stages' craft: files     page-phases/

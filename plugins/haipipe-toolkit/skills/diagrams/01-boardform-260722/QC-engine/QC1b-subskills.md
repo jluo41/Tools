@@ -5,7 +5,7 @@ method: name every candidate and apply one test to each, then let JL rule the se
 
 ## Opening
 Which Board capabilities need their own loadable unit, and which stay inside the main manual?
-A loadable unit is a skill an agent opens on its own, such as `haipipe-board-page`, which says what a page is to a reader with no board open.
+A loadable unit is a skill an agent opens on its own, such as `haipipe-page`, which says what a page is to a reader with no board open.
 Cutting one is worth it only when some consumer needs those rules without the whole board workflow.
 Get it wrong and the same rule gets written twice, or a capability another workflow needs stays locked in the manual.
 
@@ -27,7 +27,7 @@ Get it wrong and the same rule gets written twice, or a capability another workf
    ✍️ anything that WRITES                              🖌 a page edit
         │                                                         │
         ▼                                                         ▼
-  🧭 haipipe-board-routing · both altitudes             📄 haipipe-board-page
+  🧭 haipipe-board-routing · both altitudes             📄 haipipe-page
      🗂 opening a board  Spine · Groups · Pages            TYPE x PHASE · sections
         canvas · lanes · writes NOTHING                 what a machine writes
         before approval                                          ▲
@@ -35,7 +35,7 @@ Get it wrong and the same rule gets written twice, or a capability another workf
         │                                                        │
         │  loads the spec it needs ─────────────────────────────┘
         │
-        └──▶ ✒️ haipipe-board-sentence
+        └──▶ ✒️ haipipe-sentence
                Evidence Card · Comment · Edit
 
   🔁 haipipe-board-digest  =  many recent turns, routing called once each
@@ -53,7 +53,7 @@ Get it wrong and the same rule gets written twice, or a capability another workf
    an agent CHOOSES to open it          a skill already inside points at it
    ✅ consumer has no board open        ✅ consumer is already in the workflow
    💰 costs a version surface           💰 costs nothing
-   🧪 haipipe-board-page                🧪 ref/page-template.md
+   🧪 haipipe-page                🧪 ref/page-template.md
 ```
 📌 One test decides every candidate, and this part records the test, the survey that applied it to every seam, and the reading it overturned.
 
@@ -62,9 +62,9 @@ So the test is not "is this a coherent topic", it is "does some consumer need th
 
 **1.1 · Every seam in `skills/board/`, walked once on 260729**
 
-- `haipipe-board-page`, the page contract: the strongest case.
+- `haipipe-page`, the page contract: the strongest case.
   `QD2`'s drawer keeps a hand-rolled copy of exactly these instructions in a Python string, and `QB8d` caught that copy describing a page shape that no longer existed, which is the rot duplication guarantees.
-- `haipipe-board-sentence`, the apparatus grammar: second, on the same consumer plus the paper family's evidence card.
+- `haipipe-sentence`, the apparatus grammar: second, on the same consumer plus the paper family's evidence card.
 - `haipipe-board-stage`, the S-page machinery: already consumed across families, because `create-page.py` in the paper skill calls the Board's `stage.py`.
   That consumer needs the SCRIPT, not the instructions, so it argues for keeping `stage.py` clean rather than for a skill.
 - the live layer (serve, chat, terminal) and the canvas (`xcal.py`): runtime, not instructions.
@@ -84,13 +84,13 @@ It stays its own unit rather than a verb inside the board family, because its co
 Folding it in would have tied a general writing verb to one host, so the test sent it out of the family rather than into it.
 
 #### 1.4 · The door test, measured rather than argued
-The test above says a door is a capability an agent CHOOSES to open, and until 260802 nobody had checked whether `haipipe-board-page` is actually chosen.
+The test above says a door is a capability an agent CHOOSES to open, and until 260802 nobody had checked whether `haipipe-page` is actually chosen.
 The 260731 fan-out could not answer it: its brief pasted the path to the skill's `SKILL.md` and named `QB4` as the worked example, so all five agents read the contract as a plain file and not one of them ever invoked it.
 The real test gave three fresh agents one sentence each and nothing else, with no path, no skill name and no example page.
 All three opened this door unaided, at tool calls #5, #6 and #5, including the one phrased "can you clean up QF5-sentence-run for me", whose words match no trigger in the skill's description.
 All three then drove their page from 15, 13 and 10 findings to zero, and the board fell from 210 findings to 171.
 The door test passes on evidence, and what failed instead was scope: the same three agents wrote to 15 files, 1 file and 2 files from the same instruction, because the skill said where to start and never where to stop.
-`haipipe-board-page` 0.10.0 adds that bound as steps 7 and 8 of the verb.
+`haipipe-page` 0.10.0 adds that bound as steps 7 and 8 of the verb.
 
 ### 2 · The roster, and what each unit owns
 
@@ -98,12 +98,12 @@ The door test passes on evidence, and what failed instead was scope: the same th
 
 ```
 🚪 haipipe-board          the operating manual you invoke to run a board
-📄 haipipe-board-page     THE ENGINE · Page = TYPE x PHASE · verbs CREATE /
+📄 haipipe-page     THE ENGINE · Page = TYPE x PHASE · verbs CREATE /
                                  WORK ON / RUN
    📚 page-types/         ten TYPE variants, for-design … for-venue
                                  (for-skill and for-stage among them)
    🌀 page-phases/        four PHASE contracts · draft · probe · revise · check
-✒️ haipipe-board-sentence SPEC · what one sentence carries · and a door
+✒️ haipipe-sentence SPEC · what one sentence carries · and a door
                                  for 3 verbs since 260802 (comment · edit · card)
 🧭 haipipe-board-routing  VERB · every write onto a board, at BOTH altitudes
                                  board.md's structure, and one input → one
@@ -117,10 +117,10 @@ That is the progressive-disclosure shape, so opening a Board loads Routing's boa
 
 **2.1 · What each unit owns**
 
-- `haipipe-board-page`, the Page layer.
+- `haipipe-page`, the Page layer.
   It owns the common Page frame, the Page Types under `page-types/` and the Page Phases under `page-phases/`, the section contracts, Aims, States, paths and closure semantics, and the three verbs CREATE, WORK ON and RUN.
   The name is singular because it defines the contract for any ONE page, where `pages` would sound like a batch operation.
-- `haipipe-board-sentence`, the atomic layer.
+- `haipipe-sentence`, the atomic layer.
   It owns sentence identity and the records attached to a sentence: Evidence Card, local Comment, Edit, Chat focus and lifecycle.
 - `haipipe-board-routing`, the write verb, at both altitudes since 260802.
   At the BOARD and GROUP altitude its first action is interactive: propose Spine, Close, Groups, Pages and their relationships, show one reviewable structure, and write nothing until the user confirms; after confirmation it materializes `board.md` and keeps each group's lane block current with `src/lanes.py`.
@@ -145,7 +145,7 @@ Index was filed as a CONTRACT on 260730 and was five verbs with no contract in i
 A unit is better described by what a reader DOES with it than by which column it was filed in, and every skill page now names both when both apply.
 That is why the two halves are named differently and versioned separately: a contract changes when the form changes, and an action changes when the workflow changes.
 That misfiling is why the duplication in `2.4` went two days without being seen, because a unit shelved as a contract is not compared against an action's verb list.
-The second failure runs the other way and cost nothing yet: `haipipe-board-sentence` reached 0.3.0 on 260802 with three verbs of its own, and this roster still called it a pure SPEC until its mirror page was rewritten the same evening.
+The second failure runs the other way and cost nothing yet: `haipipe-sentence` reached 0.3.0 on 260802 with three verbs of its own, and this roster still called it a pure SPEC until its mirror page was rewritten the same evening.
 
 #### 2.4 · The merge that removed a unit, and what it bought
 
@@ -161,17 +161,17 @@ One unit owning both altitudes settles that by construction, which is why the ro
 
 ```
 🚪 haipipe-board                  0.124.0   the DOOR · 16 cli · 13 src · live/
-📄 haipipe-board-page             0.21.0    THE ENGINE · 468 lines · CREATE /
+📄 haipipe-page             0.21.0    THE ENGINE · 468 lines · CREATE /
                                             WORK ON / RUN · receipts in _runs/
 📚 page-types/                    ten TYPE variants · for-design … for-venue
                                             incl. for-skill 0.4.2 · for-stage 0.5.0
 🌀 page-phases/                   four PHASE contracts · draft · probe ·
                                             revise · check
-✒️ haipipe-board-sentence         0.3.1     191 lines
+✒️ haipipe-sentence         0.3.1     191 lines
 🧭 haipipe-board-routing          0.9.1     both altitudes · src/lanes.py
 🤖 haipipe-board-reviewer-agent   0.7.0     read only, no write tools
 🤖 haipipe-board-creator-agent    0.6.0     no Bash, one page per dispatch
-🤖 haipipe-board-page-orchestrator-agent
+🤖 haipipe-page-orchestrator-agent
                                   0.1.0     runs one bounded Page RUN · first
                                             live RUN 260805 on QB8e
 🚧 haipipe-board-digest           not on disk
@@ -259,8 +259,8 @@ So digest is a skill whose execution belongs in a fresh context, which is what t
 #### 6.1 · The variant door came home: for-stage ships under `page-types/` since 260805
 
 `haipipe-paper-stage` was the form's second exit, the S page half shipping as a skill under `paper/`; it retired to `paper/_old/` on 260805 when the paper family collapsed to one door.
-The S page variant now ships inside this family as `page-types/haipipe-board-page-for-stage` (0.5.0), one of the ten Page Types.
-JL's base and variant model (ruled on `QB4`) read the old exit as the first variant door working as intended, and the prediction played out: the display variant it foresaw exists as `page-types/haipipe-board-page-for-display`, and all ten variants now extend the BASE contract `haipipe-board-page` ships.
+The S page variant now ships inside this family as `page-types/haipipe-page-for-stage` (0.5.0), one of the ten Page Types.
+JL's base and variant model (ruled on `QB4`) read the old exit as the first variant door working as intended, and the prediction played out: the display variant it foresaw exists as `page-types/haipipe-page-for-display`, and all ten variants now extend the BASE contract `haipipe-page` ships.
 So the spec has its second consumer beyond routing, the variant contracts, and the second exit is closed.
 
 #### 6.2 · The four rule strings in `live/chat.py` are the one real defect
@@ -282,14 +282,14 @@ The page door has since shipped and did not do it by itself, which proves the po
 ```
 🗂 Board structure + top canvas        →  haipipe-board-routing (board altitude)
 ✍️ incoming user question              →  haipipe-board-routing (page altitude)
-📄 Opening · Content · Aims · States   →  haipipe-board-page
-✒️ Evidence Card · Comment · Edit      →  haipipe-board-sentence
+📄 Opening · Content · Aims · States   →  haipipe-page
+✒️ Evidence Card · Comment · Edit      →  haipipe-sentence
 🔁 recent conversation reconciliation  →  haipipe-board-digest
 ```
 📌 The mapping is a support record, not a new skill per UI component, so a part of the board with no unit of its own is normal rather than a gap.
 
 The Board-level SkillSet declares the linked units once, while each owning Page or subsection may point at the exact capability that supports it.
-For example `QB8 · The sentence` should show `supported by haipipe-board-sentence · Evidence Card`.
+For example `QB8 · The sentence` should show `supported by haipipe-sentence · Evidence Card`.
 
 #### 7.1 · When a capability earns its own door instead of a support row
 
@@ -358,7 +358,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 ### A6 · 🧹 Three places the form ships from
 - A6.1 · The board form stops being restated in Python.
-  **Done when:** `live/chat.py`'s four rule strings load `haipipe-board-page` and `haipipe-board-sentence` instead of carrying their own prose copy.
+  **Done when:** `live/chat.py`'s four rule strings load `haipipe-page` and `haipipe-sentence` instead of carrying their own prose copy.
 
 ### A7 · 🧩 Which unit supports which part
 - A7.1 · A Page or subsection can name the unit that supports it without duplicating the Board-level SkillSet.
@@ -480,11 +480,11 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   Index was shelved with Page and Sentence as a contract on 260730 and it never was one: its `SKILL.md` was five verbs and no contract.
   A unit filed on the wrong side of that split is never compared against the right list, which is how the duplication went two days unseen.
 - 260729 JL · 🚪 **The roster is one door, two specs, two verbs**
-  `haipipe-board` stays the operating manual; `haipipe-board-page` and `haipipe-board-sentence` are SPECS that other units load; `haipipe-board-routing` and `haipipe-board-digest` are VERBS that consume them.
+  `haipipe-board` stays the operating manual; `haipipe-page` and `haipipe-sentence` are SPECS that other units load; `haipipe-board-routing` and `haipipe-board-digest` are VERBS that consume them.
   JL named the set directly, describing routing as "like an input, it will automatically find which page to go, to update the log and update the content as well" and digest as "the input will be the recent claude code content, update each haipipe page accordingly".
   `haipipe-board-index` joined on 260730 as the board and group altitude above the page.
 - 260729 CC · 🧪 **A candidate can fail the test only because its consumer has not been proposed yet**
-  CC recommended deferring `haipipe-board-page` and `haipipe-board-sentence` on the grounds that no consumer needed them with no board open.
+  CC recommended deferring `haipipe-page` and `haipipe-sentence` on the grounds that no consumer needed them with no board open.
   JL named routing and digest the same day and both are handed raw input with no board attached, so the consumer was never missing.
   Before rejecting a candidate, say who WOULD need it, not only who does today.
 - 260731 JL · 🤖 **A skill is LOADED, an agent is DISPATCHED**
@@ -495,8 +495,8 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 ## Log
 - 260806 2131 · [REVISE-CC] swept to the 260806 architecture; roster recounted against disk to 4 skills · 10 page-types · 4 page-phases · 3 agents (board 0.124.0, page 0.21.0 as the TYPE x PHASE engine, routing 0.9.1, sentence 0.3.1, orchestrator agent new, digest still named and unshipped), for-stage recorded as home from paper/ since 260805, chat.py rule strings repointed to lines 301-397
-260802 2030 · `QB8` closed and `haipipe-board-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
-260802 · 🚪 The sentence unit became a DOOR, on JL's read of the `haipipe-board-page` precedent ("we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?"). The precedent is precise about what migrates: the page skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. The sentence half had been the other way round, with the operating detail in `haipipe-board`'s SKILL.md and a 94-line spec carrying no verbs. `haipipe-board-sentence` 0.3.0 now holds three verbs (comment, edit, card), the boundary block, and the reader's controls, at 192 lines against the page skill's 299; `haipipe-board` 0.111.0 keeps only the two rules that bind the ENGINE rather than the contract, which are that a write needs `serve.py` and that a form closes before it asks for the repaint. The one-door table now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is the board skill's
+260802 2030 · `QB8` closed and `haipipe-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
+260802 · 🚪 The sentence unit became a DOOR, on JL's read of the `haipipe-page` precedent ("we migrate that part from haipipe-board to haipipe-sentence, just like haipipe-page, right?"). The precedent is precise about what migrates: the page skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. The sentence half had been the other way round, with the operating detail in `haipipe-board`'s SKILL.md and a 94-line spec carrying no verbs. `haipipe-sentence` 0.3.0 now holds three verbs (comment, edit, card), the boundary block, and the reader's controls, at 192 lines against the page skill's 299; `haipipe-board` 0.111.0 keeps only the two rules that bind the ENGINE rather than the contract, which are that a write needs `serve.py` and that a form closes before it asks for the repaint. The one-door table now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is the board skill's
 260802 1810 · JL ruled `B`, merge: `haipipe-board-index` is deleted and `haipipe-board-routing` 0.9.0 owns both write altitudes, with `src/lanes.py` moved into it. Two Decision Now rows closed on the one ruling, because the group-altitude landing rule was only ever blocked on which unit would own it. `haipipe-board` 0.109.0 corrects the family block and its heading, which had said "three specs" while one of the three was a verb set. `Skill-1` retires to `_archive/` and `Skill-5` absorbs the altitude
 260802 1710 · JL asked what `haipipe-board-index` is for, said it may not be needed, and proposed merging it with `haipipe-board-routing`. The question forced the first real `A2.2` audit and it found a duplication: three of the index's five verbs are the door's own `open`, `regroup.py` and `check.py` written a second time, and only `src/lanes.py` is code held nowhere else. Three options are on the row in Decision Now, and the recommendation is retiring the unit rather than merging it, because merging moves a script into a verb that holds none
 260802 1610 · The renumber carried through to everything citing it. Four shipped skills pointed at `QC6 §7/§8/§9/§10` for the door test, the roster shape, the anchored write and the two write laws; all now read `QC1b §1/§2/§4/§5`, and `haipipe-board` 0.104.1, `-page` 0.8.1, `-routing` 0.6.1 and `-sentence` 0.1.2 record why. `board.md`'s QC group intro and `QC1`'s "four of six" both corrected in the same pass
@@ -510,9 +510,9 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 260731 · Decision Now adopted (JL: proposals leave chat and land under the owning page's States); first rows here carry the two pending roster ticks, routing's group-altitude gap, and the home of routing's design questions
 260731 · Agent-2, the page creator, joined as the producer half of the pair; the family's first unit scoped by concurrency rather than by content, and the caller's fan-out half is still owed
 260731 · The reviewer separated from the skills as Agent-1, its own page kind below the Skill rows
-260731 · haipipe-board-page, haipipe-board-sentence, haipipe-board-routing created contract-first and registered (Skill-3/4/5, SKILL.md family block, family README); digest and the chat-rules de-dup remain
+260731 · haipipe-page, haipipe-sentence, haipipe-board-routing created contract-first and registered (Skill-3/4/5, SKILL.md family block, family README); digest and the chat-rules de-dup remain
 260730 · Added haipipe-board-index and the three-layer model: Index proposes and materializes the approved Board structure and top canvas; Page owns sections; Sentence owns Evidence Card and other sentence records; Routing and Digest consume those contracts
-260729 · JL's base/variant model (recorded on QB4) flips the reading of the form's second exit: haipipe-paper-stage is the first Content variant door rather than a leak, and haipipe-board-page would ship the base contract the variants extend
-260729 · Opened from JL's two same-day asks (haipipe-board-page, haipipe-board-sentence); CC's recommendation was defer until the page and sentence groups settle
+260729 · JL's base/variant model (recorded on QB4) flips the reading of the form's second exit: haipipe-paper-stage is the first Content variant door rather than a leak, and haipipe-page would ship the base contract the variants extend
+260729 · Opened from JL's two same-day asks (haipipe-page, haipipe-sentence); CC's recommendation was defer until the page and sentence groups settle
 260729 · Counted the family at two units and found the form shipping from two places outside it: `haipipe-paper-stage` under `paper/`, and `CHAT_RULES` plus `BOARD_CHAT_RULES` inside `serve.py`
 260729 · JL named `haipipe-board-routing` and `haipipe-board-digest`; they are the consumer the page and sentence doors were missing, so the defer recommendation is withdrawn

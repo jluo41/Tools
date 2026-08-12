@@ -13,13 +13,13 @@ It never performs CHECK, so producer and judge cannot collapse into one hidden p
 **The words in that paragraph**: A fresh context means the agent starts with no memory of the session that sent it, so everything it knows arrives in one assignment packet: the path, the id, the title, the sources it must read, and, for a new page, the siblings it must not overlap.
 The caller is whoever holds `haipipe-board` in the session that dispatches the batch, and it stays a single context precisely because the writes it keeps are the ones two writers would collide on.
 
-**Why the boundary is drawn by collision and not by subject**: Every other unit in this family is bounded by what it is about, the way `haipipe-board-page` owns one page and `haipipe-board-sentence` owns everything below a section.
+**Why the boundary is drawn by collision and not by subject**: Every other unit in this family is bounded by what it is about, the way `haipipe-page` owns one page and `haipipe-sentence` owns everything below a section.
 This one is bounded by what it touches, because N copies of it are awake at the same moment.
 So its limits are structural rather than advisory: it carries no Bash tool and cannot run `build.py`, `board.md` is out of scope so the one file every writer would collide on stays with the caller, and it may not read a sibling page, whose bytes may be mid-flight.
 
 **Covered elsewhere**: `Agent-1` is the other half of the pair and judges what this one produced; it is read-only and does hold Bash, so it runs the mechanical checker this agent cannot.
 `haipipe-board` keeps every shared write: registering the page in `board.md` `## Pages`, the lane block, one rebuild, one check.
-The prose standard travels in neither, since each writer loads `haipipe-board-page` itself and a skill page also loads `haipipe-board-page-for-skill`, which is what keeps a copied checklist in the packet from drifting away from the skill.
+The prose standard travels in neither, since each writer loads `haipipe-page` itself and a skill page also loads `haipipe-page-for-skill`, which is what keeps a copied checklist in the packet from drifting away from the skill.
 
 **What the first run does not yet settle**: Those six packets were assembled by hand.
 `haipipe-board`'s family section now states the dispatch policy, but its `open` and `add` actions still copy `ref/page-template.md` and write the page in the calling session, and nothing turns an approved page list into N packets.
@@ -95,13 +95,13 @@ independently approve.
 You are one of several agents writing at the same time, each holding a different
 page of the same board. Everything you must not touch below follows from that.
 
-Use the `Skill` tool to load `haipipe-board-page`, then follow the canonical
+Use the `Skill` tool to load `haipipe-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-board-page/SKILL.md` for what a Page is: the six Page Types, the
+1. `../haipipe-page/SKILL.md` for what a Page is: the six Page Types, the
    fixed Page spine, and the Page Type × Page Phase router.
-2. `../page-types/haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
+2. `../page-types/haipipe-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
    `Agent-<n>` skill page. Check the filename before you write a word. That
    variant inverts the base's Opening rule: a skill page mirrors a unit that
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
@@ -111,7 +111,7 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    `draft`, PROBE for `probe`, and REVISE for `revise` or `revise-opening` while
    purpose and Aims remain fixed. If revision changes either, stop the edit,
    route to DRAFT, and set `reopens_promise: true`.
-4. `../haipipe-board-sentence/SKILL.md` for how a line must read.
+4. `../haipipe-sentence/SKILL.md` for how a line must read.
 5. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
 6. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
@@ -145,7 +145,7 @@ duplicating each other's judgment.
               your report. It may
         remain as-is; this operation does not rename it.
       Own when `operation: draft | probe | revise`:
-      - Reading `haipipe-board-page/ref/page-run-contract.md` and the matching phase
+      - Reading `haipipe-page/ref/page-run-contract.md` and the matching phase
         contract before touching the target.
       - Performing exactly one phase, not continuing into the phase it recommends.
       - DRAFT: define or reopen purpose, Aims, and promised shape.
@@ -299,7 +299,7 @@ duplicating each other's judgment.
       Met 260802: six agents fanned out over six skill and agent pages of `01-boardform-260722`, one page each, and every one of them respected its scope.
       No two writers touched the same file, no agent edited `board.md`, and each returned a contract naming what it read and what it left alone.
 - [x] 📚 It knows to reach past the base contract for a skill page
-      0.4.0 added `haipipe-board-page-for-skill` as source 2, with an instruction to check the target filename before writing a word.
+      0.4.0 added `haipipe-page-for-skill` as source 2, with an instruction to check the target filename before writing a word.
       On 260802 the six writers only used that variant because the caller named it by hand in every packet, which is exactly the copied-checklist dependency this agent's own contract forbids.
 
 ## States
@@ -315,16 +315,16 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
   Each had already written its page before the limit hit, so the batch completed.
   Had they died a minute earlier the caller would have had three untouched pages and three return contracts it never received, with nothing on disk saying which was which.
 - 260802 CC · 📚 The packet carried a rule the agent should have loaded
-  Every one of the six packets named `haipipe-board-page-for-skill` by hand, because the agent's own source list did not mention it.
+  Every one of the six packets named `haipipe-page-for-skill` by hand, because the agent's own source list did not mention it.
   This agent's contract forbids exactly that, saying a copied checklist in the packet is not a substitute for loading the skill, so the caller broke the agent's rule to make up for the agent's gap.
   Fixed at 0.4.0. JL found it by asking whether these agents call any skills.
 
 ## Log
-- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; authored prose verified clean (skillpage.py sync already current), one unit-side debt recorded: the charter's own source list still says "six Page Types" where haipipe-board-page 0.21.0 ships ten, and the managed body span mirrors that unit staleness faithfully.
+- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; authored prose verified clean (skillpage.py sync already current), one unit-side debt recorded: the charter's own source list still says "six Page Types" where haipipe-page 0.21.0 ships ten, and the managed body span mirrors that unit staleness faithfully.
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the RUN producer half is no longer untried, the QB8e RUN exercised it for both REVISE phases as fresh-context claude -p subprocesses.
 260804 · Expanded the authored mirror from batch-only Page creation to the shared producer role: exactly one DRAFT, PROBE, or REVISE authority per RUN receipt, still with no rebuild or CHECK.
 260731 · The concurrency boundary was JL's ruling that day: the test is not whether a unit has its own trigger but whether a write touches a file another writer also touches
-260802 2100 · Synced to 0.4.0 and the authored half updated after its first real fan-out: six writers, six pages, no scope collision, three killed by a session limit after writing. The agent now loads `haipipe-board-page-for-skill` itself instead of depending on the caller naming it in the packet, which its own contract forbids
+260802 2100 · Synced to 0.4.0 and the authored half updated after its first real fan-out: six writers, six pages, no scope collision, three killed by a session limit after writing. The agent now loads `haipipe-page-for-skill` itself instead of depending on the caller naming it in the packet, which its own contract forbids
 260802 1720 · Health ruled from evidence rather than left as a placeholder Aim: `state:` moved from 🔴 to 🟡 in flux, because the unit is written and registered at 0.3.0 and has never been dispatched. The `🧠 Rule this skill's health` row was removed, since the three Aims below it are the real work
 260731 1530 · page generated from `board/agents/haipipe-board-creator-agent.md/` by `skillpage.py new`
 
@@ -341,7 +341,7 @@ Converted from the skill's own `CHANGELOG.md`: 9 releases.
 260801 · `0.3.0` · haipipe-board-creator-agent
       - Adds explicit `create-page` and `revise-opening` operations while preserving
         the one-agent, one-page write boundary.
-      - Makes the creator load `haipipe-board-page` directly, read a revision target
+      - Makes the creator load `haipipe-page` directly, read a revision target
         completely, edit only Opening, and self-check without approving its own work.
       - Keeps prose requirements in the canonical skill and reference instead of
         copying a sentence formula into each assignment packet.

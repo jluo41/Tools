@@ -5,7 +5,7 @@ owner: <who gates this topic; usually JL>
 method: <one line: how this topic binds every number it owns to the run that produced it>
 route: inward
 requires: <the S04 hub page this topic hangs off, e.g. S-Value-Dash; drop the line if there is none>
-<!-- RULE: the route: line is REQUIRED and lives HERE, in the metadata head right after owner:/method:. It is the machine-readable type key that resolves this page to page-types/haipipe-board-page-for-value (board/haipipe-board/ref/topic-entry-contract.md, "The head route line"). Without it the page's type is unresolvable and the page is defective. -->
+<!-- RULE: the route: line is REQUIRED and lives HERE, in the metadata head right after owner:/method:. It is the machine-readable type key that resolves this page to page-types/haipipe-page-for-value (board/haipipe-board/ref/topic-entry-contract.md, "The head route line"). Without it the page's type is unresolvable and the page is defective. -->
 
 ## Opening
 <!-- RULE: the lead is ONE question and it carries the topic's CLAIM DEPENDENCY: which claim rests on the numbers this topic owns, and what specification would count as producing them. "Get the regression results" is a chore, not a stake, and "produce an estimate near <x>" orders the answer in advance. After the lead, a blank line, then two or three More sentences, one sentence per line. -->

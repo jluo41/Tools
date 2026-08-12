@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-paper">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The first unified View specimen: QA inputs, readable body, Displays, and consumers</title>
+<link rel="stylesheet" href="../../../display/skills/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../display/skills/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../display/skills/html-ppt/assets/themes/academic-paper.css">
+<link rel="stylesheet" href="../../../display/skills/html-ppt/assets/animations/animations.css">
+<style>
+/* THE RATIO, not the sizes. html-ppt's `.h2` is sized for a five-word slide
+   title; a board division title sits above real prose, so at .58em the body read
+   as a footnote under a billboard (measured 1 : 6 on QBt1). Both move toward each
+   other rather than the body alone, or the title simply loses the page. */
+.slide .h2 { font-size: clamp(20px, 2.1vw, 34px); line-height: 1.18;
+             margin-bottom: .55em; }
+.slide .kicker { font-size: .8em; }
+.slide .sd-body { font-size: .80em; line-height: 1.62; }
+.slide pre, .slide pre.asc {
+  background: var(--surface, rgba(127,127,127,.08));
+  border: 1px solid var(--line, rgba(127,127,127,.22));
+  border-radius: 10px; padding: 14px 16px;
+  font-size: .82em; line-height: 1.45; overflow-x: auto; white-space: pre;
+}
+.slide .ph { font-weight: 700; margin: 14px 0 2px; }
+.slide .pj { opacity: .68; font-style: italic; margin: 0 0 8px; }
+.slide .blt { margin: 0 0 6px; }
+.slide .bt { font-weight: 600; }
+.slide .bd { opacity: .78; }
+.slide code { background: var(--surface, rgba(127,127,127,.10));
+  padding: 1px 5px; border-radius: 4px; font-size: .92em; }
+.slide details { margin: 0 0 8px; }
+.slide summary { font-weight: 600; cursor: default; list-style: none; }
+.slide summary::-webkit-details-marker { display: none; }
+.slide .sd-was-link { color: var(--accent, currentColor); }
+/* A board division can outrun any slide. html-ppt centres a slide and lets it
+   overflow; a deck that CLIPPED page text would say something the page does not,
+   which is the one thing a derived view may never do. */
+.slide { overflow-y: auto; }
+
+/* TOP, NOT MIDDLE. html-ppt centres a slide vertically, which is right for a
+   five-word title and wrong for a paragraph: a short body floated in the middle
+   of the screen with a third empty above and below it, and the eye had to hunt
+   for where the text began. Board slides start at a fixed top edge, so every
+   slide's first line is in the same place. */
+.deck .slide { justify-content: flex-start; align-content: flex-start; }
+.deck .slide > .kicker:first-child { margin-top: 4vh; }
+
+/* THE ONE SLIDE A SPLIT CANNOT RESCUE. A section whose single largest child is
+   already over the limit stays whole (see the reflow), so it is set smaller
+   instead. Measured on QBt1: 128% of the box before, inside it after. This is
+   the only place the deck trades type size for fit, and it does so on the
+   slides that would otherwise lose their last lines off the bottom. */
+.slide.dense { padding-top: 2vh; padding-bottom: 2vh; }
+.slide.dense .sd-body { font-size: .56em; line-height: 1.45; }
+.slide.dense pre, .slide.dense pre.asc { font-size: .62em; line-height: 1.3;
+  padding: 8px 10px; margin: 6px 0; }
+.slide.dense .h2 { font-size: clamp(16px, 1.5vw, 24px); margin-bottom: .3em; }
+.slide.dense .kicker { font-size: .7em; margin-bottom: 2px; }
+.slide.dense .deck-footer { font-size: .8em; }
+</style>
+</head>
+<body data-themes="academic-paper,minimal-white,editorial-serif,swiss-grid,arctic-cool,nord,tokyo-night,catppuccin-mocha" data-theme-base="../../../display/skills/html-ppt/assets/themes/">
+<div class="deck">
+  <section class="slide" data-title="The first unified View specimen: QA inputs, readable body, Displays, and consumers">
+    <p class="kicker">QBt1</p>
+    <h2 class="h2">The first unified View specimen: QA inputs, readable body, Displays, and consumers</h2>
+    <div class="sd-body"><p class="sd-state">🟡 PARTIAL · unified structure implemented; human acceptance remains open</p><p class="sd-meta">🧠 JL decides</p><p class="sd-meta">instantiate and validate one unified View end to end</p></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="1" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="Opening">
+    <h2 class="h2">Opening</h2>
+    <div class="sd-body"><details class="it row qd" open=""><summary><p class="qlead"><span class="qt">What should every View Page contain so that many kinds of subject matter can use one stable structure? A View connects answered QA Probes on the left to downstream consumers on the right through a human-readable body in the middle. The body holds topic-specific material rather than a fixed claim taxonomy. This specimen includes definitions, values, citations, interpretation, and limits. This specimen tests the unified structure itself: QA inputs, View body, Displays, consumers, validation state, and files.</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">More details</div><div class="cbody flat"><p><b>Application identity</b>: <span class="sd-was-link"><code>QBt1-for-view.md</code></span> is the only authored semantic source. The same-named resource folder holds inputs, Displays, and code; generated review and Paper-ready files live under <code>_fixture/</code>, with no duplicate <code>view.md</code>. Agreeableness is only the specimen subject; it does not define what every View must contain.</p>
+<p><b>Where this page sits</b>: QA1 defines the View boundary, QA2 defines Card storage and binding, and this Page proves both in a complete rendered specimen before the View skill ships.</p></div></div></details></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="2" data-total="25"></span></div>
+  </section>
+  <section class="slide dense" data-title="▧ ASCII">
+    <p class="kicker">🖼 Diagram</p>
+    <h2 class="h2">▧ ASCII</h2>
+    <div class="sd-body"><summary class="dsubh">▧ ASCII</summary><div class="dsubb"><p><b>The relation model</b>: multiple QA inputs enter one readable View, which may produce several Displays and serve several consumers.</p>
+<pre class="asc">LEFT · <span class="sd-was-link">QA</span> INPUTS                    MIDDLE · VIEW                       RIGHT · CONSUMERS
+
+Task / QA-bank ─▶ Probe 1 ─┐        QBt1-for-view.md                   ┌─▶ Paper Section
+Task / QA-bank ─▶ Probe 2 ─┼──────▶ ├─ View body                      ├─▶ Appendix
+Task / QA-bank ─▶ Probe 3 ─┘        ├─ Citation · Value · other Cards └─▶ Application
+                                    ├─ QBt1-Display1 · QBt1-Display2 · ...
+                                    └─ validation</pre>
+<p><b>Reader-facing orientation aid</b>: the same relation rendered as a visual explainer. It helps a new reader distinguish the human-readable View from its inputs, inspectable outputs, and independently gated consumers.</p>
+<p><img class="fig" alt="View hub overview" src="../../assets/view-hub-overview.png" loading="lazy"></p>
+<p><b>Unified tree</b>: the Page carries meaning once; its resource folder carries authored inputs and outputs, while <code>_fixture</code> carries only regenerated distribution artifacts.</p>
+<pre>QBt-page-types/
+├── QBt1-for-view.md
+├── views/QBt1-for-view/                  AUTHORED RESOURCES
+│   ├── manifest.json                     Page/resource/build contract
+│   ├── input/
+│   │   ├── QA-probes/
+│   │   │   ├── 1-canonical-definition.md
+│   │   │   ├── 2-observable-signal.md
+│   │   │   └── 3-measurement-boundary.md
+│   │   └── sources/
+│   │       ├── references.bib             human-editable source
+│   │       └── source-manifest.md
+│   ├── source/
+│   │   ├── build.py
+│   │   └── check_cards.py
+│   └── output/
+│       ├── QBt1-Display1-trait-description-table/
+│       │   ├── output.md · README.md
+│       │   ├── intake/{manifest.yaml,inputs/source_data.csv,narrative-context.md}
+│       │   ├── recipe/ · candidates/ · versions/
+│       │   └── assets/ · float.tex · preview.tex · preview.png · preview.pdf
+│       └── QBt1-Display2-trait-illustration/
+│           ├── output.md · README.md
+│           ├── intake/{manifest.yaml,narrative-context.md}
+│           ├── recipe/ · candidates/ · versions/
+│           └── assets/ · float.tex · preview.tex · preview.png · preview.pdf
+└── _fixture/                              GENERATED DISTRIBUTION
+    ├── views/QBt1-for-view/
+    │   ├── QBt1-for-view.tex
+    │   ├── QBt1-for-view.pdf
+    │   ├── QBt1-for-view.docx
+    │   ├── assets/
+    │   ├── manifest.json                safe consumer contract
+    │   └── build-manifest.json
+    ├── displays/
+    │   ├── QBt1-Display1-trait-description-table/
+    │   │   └── manifest.json · float.tex · assets/ · preview.png · preview.pdf
+    │   └── QBt1-Display2-trait-illustration/
+    │       └── manifest.json · float.tex · assets/ · preview.png · preview.pdf
+    ├── references.bib                     generated shared bibliography
+    └── .haipipe-view-build.json           ownership + freshness registry
+
+tasks/QV1-agreeableness/QA/
+└── 1-bound-source-count.md
+
+QS-consumers/
+└── S-Main-4-results.md</pre>
+<p><b>Generated distribution</b>: review formats and Paper-ready floats are projections of the canonical View, not another authored package.</p>
+<pre class="asc">QBt1-for-view.md ── build ──▶ _fixture/views/QBt1-for-view/{.tex,.pdf,.docx,manifest.json}
+       │
+       ├── selects Displays ─▶ _fixture/displays/&lt;DisplayFolder&gt;/
+       │                        manifest.json · float.tex · assets/ · preview.{png,pdf}
+       │
+       └── reads BibTeX ─────▶ _fixture/references.bib
+            input/sources/      generated shared citation surface
+
+_runs/browser/QBt1/
+├── report.json
+├── QBt1-input-card-open.png
+├── QBt1-citation-card-open.png
+├── QBt1-value-card-open.png
+├── QBt1-Display1-card-open.png
+├── QBt1-Display2-card-open.png
+└── QBt1-consumer-card-open.png</pre></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="3" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="✏️ Excalidraw">
+    <p class="kicker">🖼 Diagram</p>
+    <h2 class="h2">✏️ Excalidraw</h2>
+    <div class="sd-body"><summary class="dsubh">✏️ Excalidraw</summary><div class="dsubb"><p class="dsub-empty">No canvas attached yet.</p><div class="xadd"><div class="xadd-row" hidden=""><input type="text" placeholder="https://app.excalidraw.com/s/…"><span class="xerr"></span></div></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="4" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="1 · QA inputs">
+    <p class="kicker">📚 Content</p>
+    <h2 class="h2">1 · QA inputs</h2>
+    <div class="sd-body"><p class="sentence-target" data-sentence-id="C1.P1.S1" data-sentence-ref="QBt1.C1.P1.S1"><b>The incoming side</b>: one View may bind one or several answered Probes, and those Probes may come from one or several Task QA-banks.</p>
+<pre class="asc">QA-bank ─▶ answered Probe ─┐
+QA-bank ─▶ answered Probe ─┼─▶ View input collection
+QA-bank ─▶ answered Probe ─┘</pre>
+<p class="sentence-target" data-sentence-id="C1.P2.S1" data-sentence-ref="QBt1.C1.P2.S1">This specimen imports : a literature definition, a project-observable signal, and a construct boundary.</p>
+<p class="sentence-target" data-sentence-id="C1.P3.S1" data-sentence-ref="QBt1.C1.P3.S1">The value Probe resolves the checked count through its  rather than ending at a copied number.</p>
+<p class="sentence-target" data-sentence-id="C1.P4.S1" data-sentence-ref="QBt1.C1.P4.S1">The current View binds  source Probe records .</p>
+<p class="sentence-target" data-sentence-id="C1.P5.S1" data-sentence-ref="QBt1.C1.P5.S1">The Probe records remain the full answers; the View body selects and organizes what a person needs to read.</p></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="5" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="2 · View body">
+    <p class="kicker">📚 Content</p>
+    <h2 class="h2">2 · View body</h2>
+    <div class="sd-body"><p class="sentence-target" data-sentence-id="C2.P1.S1" data-sentence-ref="QBt1.C2.P1.S1"><b>The readable middle</b>: topic-specific subsections hold the actual substance, while Cards attach provenance and relationships to exact words.</p>
+<pre class="asc">readable sentence + exact-span Card ─▶ inspect evidence without leaving the body</pre>
+<div class="ph heading-target" data-heading-id="H1" data-heading-ref="QBt1.C2.H1">2.1 · Trait meaning<span class="haddr" title="Generated Heading address: QBt1.C2.H1">H1</span></div>
+<p class="sentence-target" data-sentence-id="C2.P2.S1" data-sentence-ref="QBt1.C2.P2.S1">Agreeableness is an  expressed through .</p>
+<p class="sentence-target" data-sentence-id="C2.P3.S1" data-sentence-ref="QBt1.C2.P3.S1">The literature-side construct frame resolves through the real bibliography .</p>
+<div class="ph heading-target" data-heading-id="H2" data-heading-ref="QBt1.C2.H2">2.2 · Observable project signal<span class="haddr" title="Generated Heading address: QBt1.C2.H2">H2</span></div>
+<p class="sentence-target" data-sentence-id="C2.P4.S1" data-sentence-ref="QBt1.C2.P4.S1">Review text records patient descriptions of patient-facing behavior, so this View treats review-derived scores as .</p>
+<div class="ph heading-target" data-heading-id="H3" data-heading-ref="QBt1.C2.H3">2.3 · Measurement boundary<span class="haddr" title="Generated Heading address: QBt1.C2.H3">H3</span></div>
+<p class="sentence-target" data-sentence-id="C2.P5.S1" data-sentence-ref="QBt1.C2.P5.S1">The score is .</p>
+<p class="sentence-target" data-sentence-id="C2.P6.S1" data-sentence-ref="QBt1.C2.P6.S1">The body is not a hidden evidence ledger.</p>
+<p class="sentence-target" data-sentence-id="C2.P7.S1" data-sentence-ref="QBt1.C2.P7.S1">It is the human-readable synthesis produced from the inputs; Citation, Value, and other Evidence Cards let the reader inspect why each exact phrase is present.</p></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="6" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="3 · Displays">
+    <p class="kicker">📚 Content</p>
+    <h2 class="h2">3 · Displays</h2>
+    <div class="sd-body"><p class="sentence-target" data-sentence-id="C3.P1.S1" data-sentence-ref="QBt1.C3.P1.S1"><b>The visible outputs</b>: a View produces one or several Displays only when a visual or tabular form helps a reader inspect or reuse part of the body.</p>
+<p class="sentence-target" data-sentence-id="C3.P2.S1" data-sentence-ref="QBt1.C3.P2.S1"> is the trait-description table. Its current raster is embedded below; click  and the same preview appears first, before its View-body bindings, files, and independent acceptance state.</p>
+<p><img class="fig" alt="" src="../../QBt-page-types/views/QBt1-for-view/output/QBt1-Display1-trait-description-table/preview.png" loading="lazy"></p>
+<p class="sentence-target" data-sentence-id="C3.P3.S1" data-sentence-ref="QBt1.C3.P3.S1"> is the two-panel illustration. Its current raster is embedded below; click  and the same preview appears first, before its panel bindings, files, and independent acceptance state.</p>
+<p><img class="fig" alt="" src="../../QBt-page-types/views/QBt1-for-view/output/QBt1-Display2-trait-illustration/preview.png" loading="lazy"></p>
+<p class="sentence-target" data-sentence-id="C3.P4.S1" data-sentence-ref="QBt1.C3.P4.S1">Each output also carries <code>preview.pdf</code> as the printable inspection surface. PNG is shown inline because it renders reliably in the Board browser; PDF remains linked in the Card at full fidelity.</p>
+<p class="sentence-target" data-sentence-id="C3.P5.S1" data-sentence-ref="QBt1.C3.P5.S1">Each authored output folder is also a complete generic renderer unit. <code>output.md</code> owns the View-level semantic judgment; <code>intake/</code> binds approved evidence or context; <code>recipe/</code> records reproducibility; <code>candidates/</code>, <code>assets/</code>, and <code>versions/</code> separate alternatives, the winner, and history. No second Display adapter folder is created.</p>
+<p class="sentence-target" data-sentence-id="C3.P6.S1" data-sentence-ref="QBt1.C3.P6.S1">The two Displays remain separate because a person can inspect and accept them independently.</p>
+<p class="sentence-target" data-sentence-id="C3.P7.S1" data-sentence-ref="QBt1.C3.P7.S1">They remain inside one View because both are outputs selected from the same named View body.</p>
+<p class="sentence-target" data-sentence-id="C3.P8.S1" data-sentence-ref="QBt1.C3.P8.S1"> and  are the only required outputs in this specimen; prose packs and evidence ledgers are optional outputs, not universal folders.</p></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="7" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="4 · Consumers">
+    <p class="kicker">📚 Content</p>
+    <h2 class="h2">4 · Consumers</h2>
+    <div class="sd-body"><p class="sentence-target" data-sentence-id="C4.P1.S1" data-sentence-ref="QBt1.C4.P1.S1"><b>The outgoing side</b>: consumers may link to the whole View or to selected Displays, and the View exposes that relationship before handoff.</p>
+<pre class="asc">View ─▶ whole-View consumer
+  └──▶ QBt1-Display1/2 consumer + placement + gate state</pre>
+<p class="sentence-target" data-sentence-id="C4.P2.S1" data-sentence-ref="QBt1.C4.P2.S1">The  plans to consume  for its construct-interpretation passage.</p>
+<p class="sentence-target" data-sentence-id="C4.P3.S1" data-sentence-ref="QBt1.C4.P3.S1">Other legal consumers include Appendix sections, Narrative pages, reports, and applications.</p>
+<p class="sentence-target" data-sentence-id="C4.P4.S1" data-sentence-ref="QBt1.C4.P4.S1">A consumer may still reach a Probe directly when its own contract allows it; the View route is the normal human-readable handoff, not a ban on every direct link.</p></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="8" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A1 · QA inputs">
+    <p class="kicker">🎯 Aims</p>
+    <h2 class="h2">A1 · QA inputs</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A1.1 · Bind several answered Probes without copying their full answers into the View.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> The Page names all three Probe files and the rich Q reference reaches the task QA-bank answer.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A1.2 · Keep one or several QA-bank groups legal under the same input structure.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> The contract uses a plural <code>input/QA-probes/</code> collection and no field assumes one bank.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="9" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A2 · View body">
+    <p class="kicker">🎯 Aims</p>
+    <h2 class="h2">A2 · View body</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A2.1 · Make the View body substantive rather than a manifest or evidence ledger.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> A reader can understand trait meaning, observable signal, and measurement boundary without opening a Card.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A2.2 · Make Citation, Value, and other Evidence Cards inspectable on exact words.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> Each marker opens the correct payload and source relationship while prose styling stays intact.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="10" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A3 · Displays">
+    <p class="kicker">🎯 Aims</p>
+    <h2 class="h2">A3 · Displays</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A3.1 · Produce two independently inspectable Displays from selected View-body content.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b>  and  each show a PNG in the Page, open the same preview first in their rich Display Card, link the printable PDF, and name their View-body bindings.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A3.2 · Keep the output contract minimal.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> Only  and  are mandatory in the specimen, while optional output kinds remain absent.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="11" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A4 · Consumers">
+    <p class="kicker">🎯 Aims</p>
+    <h2 class="h2">A4 · Consumers</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A4.1 · Make the downstream use relationship a clickable Consumer Card.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> The exact words “Main Results section” open C1 with a live S-Main-4 Page link, real target file, selected output, placement, and gate state.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">A4.2 · Keep consumer handoff gated independently from evidence validity and Display rendering.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> The review projection can be built and checked while C1 remains blocked on human acceptance.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="12" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="P · Unified folder and validation">
+    <p class="kicker">🎯 Aims</p>
+    <h2 class="h2">P · Unified folder and validation</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">✅</span> <span class="ttl">P1 · Prove one canonical Page and one resource structure.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> the View check, fixture-build check, Board check, and real-browser Card check all pass without <code>view.md</code>, root Display adapter Pages, or generated files inside the authored resource folder.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ti">🧠</span> <span class="ttl">P2 · Obtain human acceptance before extracting the shipping skill contract.</span><span class="cv"></span></div></summary><div class="bd"><p class="ld"><b>Done when:</b> JL accepts the View body, Card model, Display outputs, Consumer relation, and folder boundary.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="13" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="Architecture decision">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">Architecture decision</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">JL accepted one canonical View Page plus a same-named authored resource folder and a generated <code>_fixture</code> distribution. <code>view.md</code> and root Display adapter Pages remain retired; fixture artifacts never become semantic sources.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="14" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A1 · QA inputs">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">A1 · QA inputs</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A1.1 · The 45 of 45 browser run opens the QA-input Card, checked value, Probe Card, and task QA-bank target.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A1.2 · The structure uses plural Probe and source collections without imposing one QA-bank.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="15" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A2 · View body">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">A2 · View body</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A2.1 · Content 2 presents three readable topic-specific subsections before any Card is opened.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A2.2 · The 45 of 45 browser run opens all four exact-span Cards plus the real Citation and Value Cards while preserving prose styling.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="16" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A3 · Displays">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">A3 · Displays</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A3.1 ·  and  share the View Page index, embed both PNGs, and pass preview-first rich-Card acceptance.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A3.2 · The former O3 prose-support output was removed; only two actual Displays remain.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="17" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="A4 · Consumers">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">A4 · Consumers</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A4.1 · C1 points outward to the QS consumer group, uses , and passes live click-through acceptance.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">A4.2 · S-Main-4 owns the planned landing and remains blocked on View and Display acceptance.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="18" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="P · Unified folder and validation">
+    <p class="kicker">📍 States</p>
+    <h2 class="h2">P · Unified folder and validation</h2>
+    <div class="sd-body"><div class="blt"><div class="bt nod"><span class="ti">✅</span> <span class="ttl">P1 · Both authored Displays satisfy the native renderer-unit contract; <code>_fixture</code> contains current source-free View/Display manifests, floats, winning assets, previews, and bibliography.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ti">🧠</span> <span class="ttl">P2 · Human acceptance waits on JL after the rendered specimen is opened.</span></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="19" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="📥 Input files · what this View READS">
+    <p class="kicker">📁 Files</p>
+    <h2 class="h2">📥 Input files · what this View READS</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/QBt1-for-view.md</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The only authored semantic source for the View.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/input/QA-probes/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The three full Probe answers used by the View.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/input/sources/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The bibliography and source manifest.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="20" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="⚙️ Engines · what BUILDS and CHECKS this View">
+    <p class="kicker">📁 Files</p>
+    <h2 class="h2">⚙️ Engines · what BUILDS and CHECKS this View</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/manifest.json</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The identity, input, Display, consumer, acceptance, and fixture-build contract.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/source/build.py</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The generator and freshness checker.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/source/check_cards.py</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The real-browser self-reference check.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="21" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="📤 Output files · what this View AUTHORS and DISTRIBUTES">
+    <p class="kicker">📁 Files</p>
+    <h2 class="h2">📤 Output files · what this View AUTHORS and DISTRIBUTES</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/output/QBt1-Display1-trait-description-table/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Native table renderer unit with evidence intake, generation recipe, winning asset, float, and inspection previews.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/views/QBt1-for-view/output/QBt1-Display2-trait-illustration/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Native illustration renderer unit with concept intake, final brief, review log, winning assets, float, and inspection previews.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/_fixture/views/QBt1-for-view/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Generated <code>.tex</code>, <code>.pdf</code>, <code>.docx</code>, safe consumer manifest, embedded review assets, and freshness receipt.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/_fixture/displays/</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Generated safe Display manifests, Paper-ready floats, assets, and previews; no copied intake, recipe, <code>output.md</code>, or semantic adapters.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QBt-page-types/_fixture/references.bib</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Generated shared bibliography; edits belong in the canonical <code>input/sources/references.bib</code>.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>_runs/browser/QBt1/report.json</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The browser validation record.</p></div></details></div>
+<div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>_runs/fresh-review/S-Main-4-consumer-link.md</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The fresh-context read-only contract regression for C1-to-S-Main-4.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="22" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="📋 Contracts · what RECEIVES this View">
+    <p class="kicker">📁 Files</p>
+    <h2 class="h2">📋 Contracts · what RECEIVES this View</h2>
+    <div class="sd-body"><div class="blt"><details class="it row" open=""><summary><div class="bt nof"><span class="ttl"><span class="sd-was-link"><code>QS-consumers/S-Main-4-results.md</code></span></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The downstream Consumer Page reached directly from C1.</p></div></details></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="23" data-total="25"></span></div>
+  </section>
+  <section class="slide" data-title="💬 Discussion (0)">
+    <h2 class="h2">💬 Discussion (0)</h2>
+    <div class="sd-body"><div class="fb"><div class="dadd" data-file="QBt-page-types/QBt1-for-view.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select><option value="JL">JL</option><option value="CC">CC</option></select></div></div><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QBt-page-types/QBt1-for-view.md: <code>&gt; Comment JL …</code></p></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="24" data-total="25"></span></div>
+  </section>
+  <section class="slide dense" data-title="📜 Log (24)">
+    <h2 class="h2">📜 Log (24)</h2>
+    <div class="sd-body"><div class="fb"><div class="blt"><div class="bt nod"><span class="ttl">260810 2036 · [CHECK-CC] Rebuilt the Board after teaching rich Display Cards to prefer View-owned <code>output.md</code> over renderer <span class="sd-was-link"><code>README.md</code></span>; the real-browser suite passes 45/45 with both native previews, EC bindings, files, and independent acceptance gates visible.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 2034 · [BUILD-CC] Upgraded D1 and D2 into native generic renderer units with intake, recipe, candidates, winning assets, versions, float wrappers, and cropped PNG/PDF inspection surfaces.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 2034 · [CHECK-CC] Added safe View/Display fixture manifests and multi-View ownership tests; both Skill validators, 3/3 script regressions, specimen check, and fixture freshness check pass while all human gates remain waiting.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [RULING-JL] Moved all generated review and Paper-ready Display projections into <code>_fixture</code>; the same-named <code>views/</code> unit now contains authored resources only.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [BUILD-CC] Added per-View fixture ownership/freshness registry, deterministic shared BibTeX generation, transformed Paper float paths, and an optional <code>build --target</code> override.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] The revised Board passes all 45 real-browser Card checks; isolated QY4 default and override fixtures both pass source-free build freshness checks with View/Display human gates waiting.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-SONNET] Fresh QY3 regression created one canonical Page, complete Display/Consumer contracts, real review formats, and a Card containing both Binding and Files paths; all checks passed with human gates waiting.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] The adapter-free Board passes 8 pages with 0 error, 0 warning, and 0 gap; the Tailscale browser suite passes 45 of 45 Citation, Value, Probe, Display, and Consumer checks.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [BUILD-CC] Generated and validated <code>QBt1-for-view.tex</code>, <code>.pdf</code>, and <code>.docx</code>; both Display images are embedded in PDF and DOCX, while canonical <code>references.bib</code> remains untouched.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [RULING-JL] Accepted the single-source architecture: QBt1-for-view.md is canonical; its resource folder owns QA-probes, editable BibTeX, self-contained Displays, and generated TeX/PDF/Word review projections.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-SONNET] Fresh QZ1-for-view execution created QZ1-Display1, validated and packaged it without private inputs, and stopped with View and Display acceptance waiting.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CORRECTION-JL] Replaced the parallel QV1/D1/display01 naming with one owner chain: QBt1-for-view, QBt1-Display1, and QBt1-Display2; moved S-Main-4 into the separate QS consumer group.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] The owner-indexed specimen passes 45 of 45 real-browser checks, including both embedded previews, both Display Cards, and C1 navigation to QS/S-Main-4.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-SONNET] Fresh read-only regression independently found the live C1 href, opened S-Main-4, and reported no divergence from haipipe-sentence v0.4.1 or haipipe-page-for-view.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] The 45 of 45 real-browser run opens C1, finds its live S-Main-4 link, follows it, and verifies the consumer Page's QV1-D1 placement and blocked gate.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [REVISE-CC] Promoted the Main Results consumer from a hidden fixture file to the real S-Main-4 Board Page and added live Page navigation inside C1.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] Expanded real-browser acceptance passes 43 of 43, including inline D1/D2 PNG dimensions, preview-first Card ordering, and direct preview.pdf exposure.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [REVISE-CC] Added reproducible PNG/PDF previews for D1 and D2, embedded both rasters in Content 3, and changed rich Display Cards to lead with the inspection artifact instead of burying it below status prose.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] Unified specimen passed 40 of 40 real-browser checks across QA input, QA bank, Citation, Value, Probe, four exact-span Evidence Cards, two Displays, and one downstream Consumer Card.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [CHECK-CC] Generated View package is current with view.md plus D1/D2, excludes private inputs, and the Board passes 7 pages · 0 error · 0 warn · 0 gap.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [RULING-JL] Unified every View around QA inputs, a human-readable View body, one or several Displays, downstream consumers, validation state, and files; topic-specific body subsections remain flexible.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [RULING-JL] Cards are source annotations and resolver markers on exact words, not a separate <code>content/</code> folder; Consumer is a legal Card kind alongside Probe, Citation, Value, Evidence, and Display.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [REVISE-CC] Renamed the authored unit to <code>QV1-value-agreeableness-trait-description</code>, added <code>view.md</code> and optional Python <code>source/</code>, renamed outputs D1/D2, removed mandatory prose support, and added the Main Results Consumer target.</span></div></div>
+<div class="blt"><div class="bt nod"><span class="ttl">260810 · [RETRACTED-CC] DIKW and one-claim language were examples that CC incorrectly promoted into the universal View contract; neither is part of the unified structure.</span></div></div></div></div>
+    <div class="deck-footer"><span class="dim2">QBt1</span><span class="slide-number" data-current="25" data-total="25"></span></div>
+  </section>
+
+</div>
+<script src="../../../display/skills/html-ppt/assets/runtime.js"></script>
+</body>
+</html>

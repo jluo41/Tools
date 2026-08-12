@@ -1,0 +1,234 @@
+{
+  "page": "QBt1-for-view",
+  "view": "QBt1-for-view",
+  "url": "http://100.121.165.84:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-haipipe-view-260810/board/QBt/QBt1-for-view.html",
+  "passed": 45,
+  "total": 45,
+  "rows": [
+    {
+      "test": "Diagram lists the unified authored View tree",
+      "pass": true,
+      "detail": "🖼 Diagram\n⧉\nDiagram\n🤖\n▧ ASCII\n\nThe relation model: multiple QA inputs enter one readable View, which may produce several Displays and serve several consumers.\n\nLEFT · QA INPUTS                    MIDDLE · VIEW                       RIGHT · CONSUMERS\n\nTask / QA-bank ─▶ Probe 1 ─┐        QBt1-for-view.md                   ┌─▶ Paper Section\nTask / QA-bank ─▶ Probe 2 ─┼──────▶ ├─ View body                      ├─▶ Appendix\nTask / QA-bank ─▶ Probe 3 ─┘        ├─ Citation · Value · other Cards └─▶ Application\n                                    ├─ QBt1-Display1 · QBt1-Display2 · ...\n                                    └─ validation\n\nReader-facing orientation aid: the same relation rendered as a visual explainer. It helps a new reader distinguish the human-readable View from its inputs, inspectable outputs, and independently gated consumers.\n\nUnified tree: the Page carries meaning once; its resource folder carries authored inputs and outputs, while _fixture carries only regenerated distribution artifacts.\n\nQBt-page-types/\n├── QBt1-for-view.md\n├── views/QBt1-for-view/                  AUTHORED RESOURCES\n│   ├── manifest.json                     Page/resource/build contract\n│   ├── input/\n│   │   ├── QA-probes/\n│   │   │   ├── 1-canonical-definition.md\n│   │   │   ├── 2-observable-signal.md\n│   │   │   └── 3-measurement-boundary.md\n│   │   └── sources/\n│   │       ├── references.bib             human-editable source\n│   │       └── source-manifest.md\n│   ├── source/\n│   │   ├── build.py\n│   │   └── check_cards.py\n│   └── output/\n│       ├── QBt1-Display1-trait-description-table/\n│       │   ├── output.md · README.md\n│       │   ├── intake/{manifest.yaml,inputs/source_data.csv,narrative-context.md}\n│       │   ├── recipe/ · candidates/ · versions/\n│       │   └── assets/ · float.tex · preview.tex · preview.png · preview.pdf\n│       └── QBt1-Display2-trait-illustration/\n│           ├── output.md · README.md\n│           ├── intake/{manifest.yaml,narrative-context.md}\n│           ├── recipe/ · candidates/ · versions/\n│           └── assets/ · float.tex · preview.tex · preview.png · preview.pdf\n└── _fixture/                              GENERATED DISTRIBUTION\n    ├── views/QBt1-for-view/\n    │   ├── QBt1-for-view.tex\n    │   ├── QBt1-for-view.pdf\n    │   ├── QBt1-for-view.docx\n    │   ├── assets/\n    │   ├── manifest.json                safe consumer contract\n    │   └── build-manifest.json\n    ├── displays/\n    │   ├── QBt1-Display1-trait-description-table/\n    │   │   └── manifest.json · float.tex · assets/ · preview.png · preview.pdf\n    │   └── QBt1-Display2-trait-illustration/\n    │       └── manifest.json · float.tex · assets/ · preview.png · preview.pdf\n    ├── references.bib                     generated shared bibliography\n    └── .haipipe-view-build.json           ownership + freshness registry\n\ntasks/QV1-agreeableness/QA/\n└── 1-bound-source-count.md\n\nQS-consumers/\n└── S-Main-4-results.md\n\nGenerated distribution: review formats and Paper-ready floats are projections of the canonical View, not another authored package.\n\nQBt1-for-view.md ── build ──▶ _fixture/views/QBt1-for-view/{.tex,.pdf,.docx,manifest.json}\n       │\n       ├── selects Displays ─▶ _fixture/displays/<DisplayFolder>/\n       │                        manifest.json · float.tex · assets/ · preview.{png,pdf}\n       │\n       └── reads BibTeX ─────▶ _fixture/references.bib\n            input/sources/      generated shared citation surface\n\n_runs/browser/QBt1/\n├── report.json\n├── QBt1-input-card-open.png\n├── QBt1-citation-card-open.png\n├── QBt1-value-card-open.png\n├── QBt1-Display1-card-open.png\n├── QBt1-Display2-card-open.png\n└── QBt1-consumer-card-open.png\n✏️ Excalidraw\n\nNo canvas attached yet.\n\n🖌 Excalidraw Canvas"
+    },
+    {
+      "test": "Diagram lists review projections and Consumer target",
+      "pass": true,
+      "detail": "🖼 Diagram\n⧉\nDiagram\n🤖\n▧ ASCII\n\nThe relation model: multiple QA inputs enter one readable View, which may produce several Displays and serve several consumers.\n\nLEFT · QA INPUTS                    MIDDLE · VIEW                       RIGHT · CONSUMERS\n\nTask / QA-bank ─▶ Probe 1 ─┐        QBt1-for-view.md                   ┌─▶ Paper Section\nTask / QA-bank ─▶ Probe 2 ─┼──────▶ ├─ View body                      ├─▶ Appendix\nTask / QA-bank ─▶ Probe 3 ─┘        ├─ Citation · Value · other Cards └─▶ Application\n                                    ├─ QBt1-Display1 · QBt1-Display2 · ...\n                                    └─ validation\n\nReader-facing orientation aid: the same relation rendered as a visual explainer. It helps a new reader distinguish the human-readable View from its inputs, inspectable outputs, and independently gated consumers.\n\nUnified tree: the Page carries meaning once; its resource folder carries authored inputs and outputs, while _fixture carries only regenerated distribution artifacts.\n\nQBt-page-types/\n├── QBt1-for-view.md\n├── views/QBt1-for-view/                  AUTHORED RESOURCES\n│   ├── manifest.json                     Page/resource/build contract\n│   ├── input/\n│   │   ├── QA-probes/\n│   │   │   ├── 1-canonical-definition.md\n│   │   │   ├── 2-observable-signal.md\n│   │   │   └── 3-measurement-boundary.md\n│   │   └── sources/\n│   │       ├── references.bib             human-editable source\n│   │       └── source-manifest.md\n│   ├── source/\n│   │   ├── build.py\n│   │   └── check_cards.py\n│   └── output/\n│       ├── QBt1-Display1-trait-description-table/\n│       │   ├── output.md · README.md\n│       │   ├── intake/{manifest.yaml,inputs/source_data.csv,narrative-context.md}\n│       │   ├── recipe/ · candidates/ · versions/\n│       │   └── assets/ · float.tex · preview.tex · preview.png · preview.pdf\n│       └── QBt1-Display2-trait-illustration/\n│           ├── output.md · README.md\n│           ├── intake/{manifest.yaml,narrative-context.md}\n│           ├── recipe/ · candidates/ · versions/\n│           └── assets/ · float.tex · preview.tex · preview.png · preview.pdf\n└── _fixture/                              GENERATED DISTRIBUTION\n    ├── views/QBt1-for-view/\n    │   ├── QBt1-for-view.tex\n    │   ├── QBt1-for-view.pdf\n    │   ├── QBt1-for-view.docx\n    │   ├── assets/\n    │   ├── manifest.json                safe consumer contract\n    │   └── build-manifest.json\n    ├── displays/\n    │   ├── QBt1-Display1-trait-description-table/\n    │   │   └── manifest.json · float.tex · assets/ · preview.png · preview.pdf\n    │   └── QBt1-Display2-trait-illustration/\n    │       └── manifest.json · float.tex · assets/ · preview.png · preview.pdf\n    ├── references.bib                     generated shared bibliography\n    └── .haipipe-view-build.json           ownership + freshness registry\n\ntasks/QV1-agreeableness/QA/\n└── 1-bound-source-count.md\n\nQS-consumers/\n└── S-Main-4-results.md\n\nGenerated distribution: review formats and Paper-ready floats are projections of the canonical View, not another authored package.\n\nQBt1-for-view.md ── build ──▶ _fixture/views/QBt1-for-view/{.tex,.pdf,.docx,manifest.json}\n       │\n       ├── selects Displays ─▶ _fixture/displays/<DisplayFolder>/\n       │                        manifest.json · float.tex · assets/ · preview.{png,pdf}\n       │\n       └── reads BibTeX ─────▶ _fixture/references.bib\n            input/sources/      generated shared citation surface\n\n_runs/browser/QBt1/\n├── report.json\n├── QBt1-input-card-open.png\n├── QBt1-citation-card-open.png\n├── QBt1-value-card-open.png\n├── QBt1-Display1-card-open.png\n├── QBt1-Display2-card-open.png\n└── QBt1-consumer-card-open.png\n✏️ Excalidraw\n\nNo canvas attached yet.\n\n🖌 Excalidraw Canvas"
+    },
+    {
+      "test": "Content contains 1 · QA inputs",
+      "pass": true,
+      "detail": "1 · QA inputs"
+    },
+    {
+      "test": "Content contains 2 · View body",
+      "pass": true,
+      "detail": "2 · View body"
+    },
+    {
+      "test": "Content contains 3 · Displays",
+      "pass": true,
+      "detail": "3 · Displays"
+    },
+    {
+      "test": "Content contains 4 · Consumers",
+      "pass": true,
+      "detail": "4 · Consumers"
+    },
+    {
+      "test": "three answered QA Probes has an exact-span Card",
+      "pass": true,
+      "detail": "three answered QA Probes"
+    },
+    {
+      "test": "three answered QA Probes Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\nthree answered QA Probes\n\nQI1 · QA input · Bindings: `QBt-page-types/views/QBt1-for-view/input/QA-probes/1-canonical-definition.md`, `QBt-page-types/views/QBt1-for-view/input/QA-probes/2-observable-signal.md`, `QBt-page-types/views/QBt1-for-view/input/QA-probes/3-measurement-boundary.md`. Status: answered. Role: supply the material organized by this View."
+    },
+    {
+      "test": "three answered QA Probes Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "task QA-bank answer has an exact-span Card",
+      "pass": true,
+      "detail": "task QA-bank answer"
+    },
+    {
+      "test": "task QA-bank answer Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\ntask QA-bank answer\n\nQI2 · QA bank · Binding: `tasks/QV1-agreeableness/QA/1-bound-source-count.md`. Consumer question: Q-View-1. Status: answered."
+    },
+    {
+      "test": "task QA-bank answer Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "interpersonal trait has an exact-span Card",
+      "pass": true,
+      "detail": "interpersonal trait"
+    },
+    {
+      "test": "interpersonal trait Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\ninterpersonal trait\n\nEC1 · Literature · Finding: agreeableness is treated as an interpersonal construct. Bearing: supports. Boundary: trait description only. Binding: `QBt-page-types/views/QBt1-for-view/input/QA-probes/1-canonical-definition.md`. Freshness: current. Used by: QBt1-Display1 QBt1-Display2."
+    },
+    {
+      "test": "interpersonal trait Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "warmth and cooperation has an exact-span Card",
+      "pass": true,
+      "detail": "warmth and cooperation"
+    },
+    {
+      "test": "warmth and cooperation Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\nwarmth and cooperation\n\nEC2 · Literature · Finding: warmth and cooperation are the facets selected for this specimen. Bearing: supports. Boundary: illustrative, not exhaustive. Binding: `QBt-page-types/views/QBt1-for-view/input/QA-probes/1-canonical-definition.md`. Freshness: current. Used by: QBt1-Display1 QBt1-Display2."
+    },
+    {
+      "test": "warmth and cooperation Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "patient-perceived signals has an exact-span Card",
+      "pass": true,
+      "detail": "patient-perceived signals"
+    },
+    {
+      "test": "patient-perceived signals Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\npatient-perceived signals\n\nEC3 · Value · Finding: the project observes descriptions and evaluations of behavior. Bearing: qualifies. Boundary: observed signal, not direct latent trait. Binding: `QBt-page-types/views/QBt1-for-view/input/QA-probes/2-observable-signal.md`. Freshness: current. Used by: QBt1-Display1 QBt1-Display2."
+    },
+    {
+      "test": "patient-perceived signals Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "not treated as an error-free measure of latent personality has an exact-span Card",
+      "pass": true,
+      "detail": "not treated as an error-free measure of latent personality"
+    },
+    {
+      "test": "not treated as an error-free measure of latent personality Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\nnot treated as an error-free measure of latent personality\n\nEC4 · Construct · Finding: the current evidence does not justify direct latent-personality measurement. Bearing: bounds this specimen. Boundary: patient-perceived manifestation only. Binding: `QBt-page-types/views/QBt1-for-view/input/QA-probes/3-measurement-boundary.md`. Freshness: current. Used by: QBt1-Display1 QBt1-Display2."
+    },
+    {
+      "test": "not treated as an error-free measure of latent personality Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "Card words still read as prose",
+      "pass": true,
+      "detail": "{\"border\": \"none\", \"sameColor\": true, \"sameFont\": true, \"sameWeight\": true, \"underline\": \"underline\"}"
+    },
+    {
+      "test": "View body contains a Citation Card",
+      "pass": true,
+      "detail": "john1999bigfive"
+    },
+    {
+      "test": "Citation Card opens bibliography entry and source",
+      "pass": true,
+      "detail": "CITE · OK\njohn1999bigfive\n\nJohn et al. · 1999 · The Big-Five Trait Taxonomy: History, Measurement, and Theoretical Perspectives · Handbook of Personality: Theory and Research\n\n📄 references.bib:1\n🔗 pages.uoregon.edu/sanjay/pubs/bigfive.pdf\n🔎 Scholar\n@incollection{john1999bigfive,\n  author    = {John, Oliver P. and Srivastava, Sanjay},\n  title     = {The Big-Five Trait Taxonomy: History, Measurement, and Theoretical Perspectives},\n  editor    = {Pervin, Lawrence A. and John, Oliver P.},\n  booktitle = {Handbook of Personality: Theory and Research},\n  edition   = {2},\n  pages     = {102--138},\n  publisher = {Guilford Press},\n  address   = {New York},\n  year      = {1999},\n  url       = {https://pages.uoregon.edu/sanjay/pubs/bigfive.pdf}\n}"
+    },
+    {
+      "test": "QA inputs contain checked Value and Probe Cards",
+      "pass": true,
+      "detail": "3 [Q-View-1]"
+    },
+    {
+      "test": "Value Card resolves through the QA-bank chain",
+      "pass": true,
+      "detail": "NUM · OK\n3\n\n3 MATCHES the run.\n\nQA-probes/2-observable-signal answer · …nd-source-count.md **state**: answered #### A-executor The current View binds 3 source Probe records into one evidence judgment. Review text directly records p…\n\n📄 probe · input/QA-probes/2-observable-signal.md\n📄 answer · 1-bound-source-count.md\n📄 run · QV1-agreeableness/"
+    },
+    {
+      "test": "Probe Card opens its answered record and bank path",
+      "pass": true,
+      "detail": "QREF · OK\nQ-View-1\n\nQA-probes/2-observable-signal · Probe 2: observable project signal and bound source count\n\nANSWERED · The current View binds 3 source Probe records into one evidence judgment. Review text directly records patient descriptions and evaluations of patient-facing behavior, so the score is treated as a patient-perceived signa\n\n📄 probe · input/QA-probes/2-observable-signal.md\n📄 answer · 1-bound-source-count.md\n📄 run · QV1-agreeableness/"
+    },
+    {
+      "test": "Displays contains QBt1-Display1",
+      "pass": true,
+      "detail": "QBt1-Display1"
+    },
+    {
+      "test": "QBt1-Display1 opens its artifact and independent state",
+      "pass": true,
+      "detail": "DISP TAB · OWED\nQBt1-Display1\nAS THE FLOAT WILL PRINT · preview.png\nAS THE FLOAT WILL PRINT, caption included · preview.pdf · expand preview\nLIVE · table.tex\n\\begin{tabularx}{\\linewidth}{@{}p{0.16\\linewidth}X p{0.12\\linewidth}p{0.22\\linewidth}@{}}\n\\toprule\nLayer & What the View says & Evidence & Boundary \\\\\n\\midrule\nConstruct & Interpersonal warmth and cooperation & EC1, EC2 & Illustrative, not exhaustive \\\\\nObservable signal & Patient descriptions of patient-facing behavior & EC3 & Patient-perceived signal \\\\\nMeasurement claim & Review-derived manifestation of the construct & EC3, EC4 & Not an error-free latent trait measure \\\\\n\\bottomrule\n\\end{tabularx}\n\n📄 preview.png\n📄 preview.pdf\n📄 float.tex\n📄 output.md\n📄 README\n📄 source_data.csv\n📄 table.tex\n🎯 QBt1 / Content / 3 · Displays\n\nQBt1-Display1-trait-description-table · table · tab:agreeableness-trait-description\n\ntable.tex · 2 superseded\n\nQBt1-Display1 separates construct meaning, observable signal, and measurement boundary. Its three rows bind EC1 through EC4.\n\nNOT AGREED — QBt1-Display1 says `🔴 RENDERED · waiting for human acceptance`.\n\nDisk says OK, and the unit's own page outranks it: whether the assets are built is a different question from whether the paper may lean on them. Open QBt1-Display1 to see what it is waiting on."
+    },
+    {
+      "test": "QBt1-Display1 Card leads with its rendered PNG preview",
+      "pass": true,
+      "detail": "loaded=True first=True"
+    },
+    {
+      "test": "Displays contains QBt1-Display2",
+      "pass": true,
+      "detail": "QBt1-Display2"
+    },
+    {
+      "test": "QBt1-Display2 opens its artifact and independent state",
+      "pass": true,
+      "detail": "DISP FIG · OWED\nQBt1-Display2\nAS THE FLOAT WILL PRINT · preview.png\nLIVE · figure-1.svg\nLIVE · figure.pdf · expand preview\nAS THE FLOAT WILL PRINT, caption included · preview.pdf · expand preview\n📄 preview.png\n📄 preview.pdf\n📄 float.tex\n📄 output.md\n📄 README\n📄 figure-1.svg\n📄 figure.pdf\n🎯 QBt1 / Content / 3 · Displays\n\nQBt1-Display2-trait-illustration · figure · fig:agreeableness-trait-description\n\nfigure-1.svg, figure.pdf · 1 superseded\n\nPanel A expresses construct meaning; Panel B expresses the patient-perceived signal and its measurement boundary.\n\nNOT AGREED — QBt1-Display2 says `🔴 RENDERED · waiting for human acceptance`.\n\nDisk says OK, and the unit's own page outranks it: whether the assets are built is a different question from whether the paper may lean on them. Open QBt1-Display2 to see what it is waiting on."
+    },
+    {
+      "test": "QBt1-Display2 Card leads with its rendered PNG preview",
+      "pass": true,
+      "detail": "loaded=True first=True"
+    },
+    {
+      "test": "QBt1-Display1 PNG preview is embedded in the View Page",
+      "pass": true,
+      "detail": "{\"height\": 273, \"width\": 1325}"
+    },
+    {
+      "test": "QBt1-Display2 PNG preview is embedded in the View Page",
+      "pass": true,
+      "detail": "{\"height\": 721, \"width\": 1475}"
+    },
+    {
+      "test": "Main Results section has an exact-span Card",
+      "pass": true,
+      "detail": "Main Results section"
+    },
+    {
+      "test": "Main Results section Card opens the correct payload",
+      "pass": true,
+      "detail": "🪪 CARD\nMain Results section\n\nC1 · Consumer · Target Page: S-Main-4 · Binding: `QS-consumers/S-Main-4-results.md`. Uses: QBt1-Display1. Placement: Results / construct interpretation. Status: planned, blocked on View and Display acceptance."
+    },
+    {
+      "test": "Main Results section Card closes",
+      "pass": true,
+      "detail": "Escape closes the popover"
+    },
+    {
+      "test": "Consumer Card names the real target file",
+      "pass": true,
+      "detail": "🪪 CARD\nMain Results section\n\nC1 · Consumer · Target Page: S-Main-4 · Binding: `QS-consumers/S-Main-4-results.md`. Uses: QBt1-Display1. Placement: Results / construct interpretation. Status: planned, blocked on View and Display acceptance."
+    },
+    {
+      "test": "Consumer Card exposes a live S-Main-4 Page link",
+      "pass": true,
+      "detail": "../QS/S-Main-4-results.html?pane=page"
+    },
+    {
+      "test": "Specimen has one semantic source and a source-free fixture",
+      "pass": true,
+      "detail": "canonical Page plus authored resources and generated distribution"
+    },
+    {
+      "test": "Consumer Card navigates to the real Main Results Page",
+      "pass": true,
+      "detail": "🏠 Boards\n›\n🗂 Index\n›\nQS\n›\nS-Main-4\nS-Main-4\n🟡 PARTIAL · landing planned; waiting for View and Display acceptance\n🧠 JL decides\n· receive one accepted View output, place it in the construct-interpretation passage, and keep the handoff gate visible\nMAIN SECTION\nS-Main-4 S Main 4 · Results consumer handoff\n🧭 Opening\nOpening\n🤖\n\nHow should the Main Results section receive QBt1-Display1 without treating a planned View output as accepted evidence? This Page is the downstream consumer named by QBt1's Consumer Card. It owns the prose landing and its placement state, while QBt1 owns the View and QBt1-Display1 owns the rendered table. The handoff stays open until both the View and QBt1-Display1 pass their human gates.\n\nMore details\n\nSpecimen status: This is a real Board Page for the consumer relation, not a hidden generated package.\n\nWhere this page sits: QBt1 sends QBt1-Display1 here; this Page returns the placement and acceptance state that the View's Consumer Card reports.\n\nWriting Style\n\nLanguage and sentences: English only, one sentence per source line, with construct interpretation kept separate from measurement claims.\n\nEvidence boundary: Describe the patient-perceived signal shown by QBt1-Display1 without upgrading it to an error-free latent-trait measure.\n\nStage Contract\nRequired Inputs\n☑\nQBt1 · names QBt1-Display1, the construct-interpretation placement, and the blocked handoff.\n☐\nQBt1 View acceptance · must be ruled by a person on QBt1.\n☐\nQBt1-Display1 acceptance · must be ruled independently for the current table render.\nVenue contract\n\nThis skill-design specimen has no paper venue or allocation blueprint. The only binding placement is Results / construct interpretation; a real paper would replace this note with its generated venue contract.\n\nProvides\n\nOne inspectable Results-section landing for QBt1-Display1, with placement and handoff state visible to the source View.\n\n🖼 Diagram\nDiagram\n🤖\n▧ ASCII\n\nThe consumer handoff: the Card is the relation, while this Page owns the downstream landing.\n\n📄 QBt1 View Page\n   └── 🪪 Consumer Card ── uses QBt1-Display1 ──▶ 📄 S-Main-4 Results Page\n                                                   │\n                                                   ├── prose placement\n                                                   └── acceptance state\n✏️ Excalidraw\n\nNo canvas attached yet.\n\n🖌 Excalidraw Canvas\n📚 Content · Main 4 Results consumer handoff\nContent\n🤖\n4 · Construct interpretationC1\nC1\n⧉\n🤖\n\nThe landing surface: the incoming output stays planned until both upstream human gates pass.\n\nC1.P1.S1\n＋\n💬\n📥 incoming     QBt1-Display1\n📍 placement    Results / construct interpretation\n🚦 handoff      BLOCKED · View acceptance + Display1 acceptance\n📤 downstream   one construct-interpretation passage\n\nThis division owns what the Results reader will see and why QBt1-Display1 is cited there.\n\nC1.P2.S1\n＋\n💬\n4.1 · Planned landing sentenceH1\nthe sentence role reserved for the accepted table, not final manuscript prose\n\nThe Results section will use QBt1-Display1 to summarize agreeableness as patient-perceived warmth and cooperation while preserving the measurement boundary.\n\nC1.P3.S1\n＋\n💬\n4.2 · Acceptance boundaryH2\nthe state that must remain visible before the planned sentence can become a manuscript claim\n\nThe current relationship proves routing and placement only.\n\nC1.P4.S1\n＋\n💬\n\nIt does not accept the View, accept QBt1-Display1, or approve final prose.\n\nC1.P5.S1\n＋\n💬\n\nWhen either accepted upstream artifact changes, this landing returns to review without invalidating unrelated View evidence.\n\nC1.P6.S1\n＋\n💬\n🎯 Aims\n1/2\nexpand all\nAims\n🤖\nA4 · Construct interpretation 1/2\nA4\n⧉\n🤖\n✅\nA4.1 · Keep the View-to-section relation navigable in both directions.\n\nDone when: QBt1's Consumer Card opens this Page and this Page names QBt1-Display1.\n\n🧠\nA4.2 · Keep the prose landing distinct from upstream acceptance.\n\nDone when: placement is inspectable while the handoff remains blocked until both human gates pass.\n\n📍 States\nStates\n🤖\nA4 · Construct interpretation \nA4\n⧉\n🤖\n✅ A4.1 · QBt1 and S-Main-4 now form a reciprocal Page relation around QBt1-Display1.\n🧠 A4.2 · Placement is planned; View acceptance and QBt1-Display1 acceptance still wait on JL.\n📁 Files\nexpand all\nFiles\n🤖\nQBt-page-types/QBt1-for-view.md\n\nThe source View Page whose Consumer Card points here.\n\nQBt-page-types/views/QBt1-for-view/output/QBt1-Display1-trait-description-table/\n\nThe incoming Display and its current PNG/PDF inspection surfaces.\n\nQBt-page-types/views/QBt1-for-view/manifest.json\n\nThe resource contract carrying the same consumer relationship.\n\n💬 Discussion (0)\nJL\nCC\n➕ Add to discussion\n\nNo discussion yet — add a line under ## Discussion in QS-consumers/S-Main-4-results.md: > Comment JL …\n\n📜 Log (1)\n260810 · [REVISE-CC] Replaced the hidden consumer fixture with a real Section Page and kept the landing blocked on independent View and Display acceptance.\n← QBt4\n☰ Index\nQC1 →"
+    }
+  ]
+}

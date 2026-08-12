@@ -46,7 +46,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `does this change how care is organized or made safe`  ❌ `is this clinically important`
 
-**The venue-page contract is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`**, and it is loaded before this page is edited. `QBv1-misq.md` is its reference implementation and this page copies its shape:
+**The venue-page contract is `../../board/page-types/haipipe-page-for-venue/SKILL.md`**, and it is loaded before this page is edited. `QBv1-misq.md` is its reference implementation and this page copies its shape:
 
 ```text
   🖼 THREE FIGURES        what each one answers

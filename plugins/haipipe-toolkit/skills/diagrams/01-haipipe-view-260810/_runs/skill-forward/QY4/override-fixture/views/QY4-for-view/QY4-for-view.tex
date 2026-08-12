@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\setmainfont{Arial}
+\usepackage{graphicx}
+\usepackage{fvextra}
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\begin{document}
+
+\begin{center}\LARGE\textbf{Measurement-boundary regression}\end{center}
+\section*{1 · QA inputs}
+Two answered Probe records define the observable signal and its measurement boundary.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card two answered Probe records: QI1 · QA input · Bindings: input/QA-probes/Q1-observable-signal.md, input/QA-probes/Q2-measurement-boundary.md. Status: answered.\end{quote}
+\section*{2 · View body}
+\subsection*{2.1 · Observable signal}
+The source describes patient-perceived behavior rather than direct access to a latent trait (John et al., 1999).
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card patient-perceived behavior: EC1 · Value · Finding: observed descriptions are the signal. Binding: input/QA-probes/Q1-observable-signal.md. Freshness: current.\end{quote}
+\subsection*{2.2 · Measurement boundary}
+The interpretation must preserve the distinction between an observed description and an error-free latent measure.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card distinction: EC2 · Construct · Finding: direct latent measurement is not established. Binding: input/QA-probes/Q2-measurement-boundary.md. Freshness: current.\end{quote}
+\section*{3 · Displays}
+QY4-Display1 turns EC1 and EC2 into one inspection table while retaining independent acceptance.
+
+\begin{center}\includegraphics[width=0.94\linewidth]{assets/display-1.png}\end{center}
+\section*{4 · Consumers}
+The local Results consumer plans to use QY4-Display1 after human acceptance.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card local Results consumer: C1 · Consumer · Target: consumers/S-Results.md. Uses: QY4-Display1. Placement: Results / construct boundary. Status: planned.\end{quote}
+\section{References}\begin{itemize}
+\item John, Oliver P.; Srivastava, Sanjay (1999). The Big-Five Trait Taxonomy: History, Measurement, and Theoretical Perspectives. Handbook of Personality: Theory and Research
+\end{itemize}
+\end{document}

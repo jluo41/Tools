@@ -1,0 +1,65 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QA",
+      "name": "QA · Semantic contract"
+    },
+    "imports": [
+      {
+        "page": "QA0",
+        "source": "QA0.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QA1",
+        "source": "QA1.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QA2",
+        "source": "QA2.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QA3",
+        "source": "QA3.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {}
+    }
+  }
+}

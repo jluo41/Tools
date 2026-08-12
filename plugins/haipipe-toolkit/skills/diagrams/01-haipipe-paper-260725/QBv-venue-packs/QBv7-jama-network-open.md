@@ -43,7 +43,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `written for JAMA IM, submittable here unchanged`  ❌ `Network Open if IM rejects it`
 
-**This page is built to the venue-page contract** at `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, which owns the shape below. A rule changed on this page is changed in that file in the same pass, and `QBv1-misq.md` is the reference implementation to copy from.
+**This page is built to the venue-page contract** at `../../board/page-types/haipipe-page-for-venue/SKILL.md`, which owns the shape below. A rule changed on this page is changed in that file in the same pass, and `QBv1-misq.md` is the reference implementation to copy from.
 
 ```text
   🖼 THREE FIGURES        what each one answers

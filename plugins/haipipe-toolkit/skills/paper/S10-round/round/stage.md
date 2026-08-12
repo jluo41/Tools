@@ -72,6 +72,7 @@ artifact: 0-lifecycle/S10-round/S-Round-{board_unit}-{board_slug}.md
                           # Received material (a reviewer letter, a coauthor memo) is copied
                           # or linked BESIDE the page in S10-round/, only when supplied.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+displays: 0-lifecycle/S03-literature/display/L<n>-<topic>/ | 0-lifecycle/S04-value/display/V<n>-<topic>/  # audit candidate dispositions and selected units by claim
 checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage round
                           # run by CHECK before judging; path relative to the skills root
 craft:                    # data files the DRAFT/REVISE phases load after the type contract

@@ -205,6 +205,23 @@ QBe1-sentence-cite-value-display.md
 QBe2-display-folder-render-caption.md
 QBe3-content-latex-word-display.md
 
+### QBt · Page types this family owns
+One specimen per Page Type in `paper/page-types/`, on the rule that a specimen lives with the skill set that owns the contract (JL 260809).
+The five here are the types admitted on 260809: the four family dashes and narrative. Each points at its live instance on the MISQ paper rather than simulating one, because a real working page cannot rot without somebody noticing.
+The five older paper-owned types arrived from `01-boardform-260722` on 260809 (JL ruled option A on that board's `QB6`), and they kept their ids so their citations survived; the five newer ones took 11 to 15 rather than renumber ~40 references.
+`_fixture-qbt/` came with them: it is ONE compiled specimen paper, not a shared folder, and all ten pages plus the three that stayed behind demonstrate against it, which is why it moved whole. It is renamed from `_fixture` because this board root already has a `_fixture` of its own.
+QBt2-for-venue.md
+QBt3-for-display.md
+QBt4-for-literature.md
+QBt5-for-value.md
+QBt6-for-section.md
+QBt11-for-dash-section.md
+QBt12-for-dash-value.md
+QBt13-for-dash-display.md
+QBt14-for-dash-literature.md
+QBt15-for-narrative.md
+QBt16-display-construction.md
+QBt17-display-boundary.md
 ### QBv · Delivery Venue
 One page per VENUE TARGET, and nothing above it. A page is a specific journal, agency, or patent office: what that desk accepts, what it desk-rejects, and what it requires of every section and of the appendix. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
 A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QBe3 §3.
@@ -317,8 +334,8 @@ Q-Skill-haipipe-paper-revise   _archive/QCskill-retired-260806/Skill-5-haipipe-p
 Q-Skill-haipipe-board          _archive/QCskill-retired-260806/Skill-6-haipipe-board.md
 Q-Skill-haipipe-board-index    _archive/Skill-7-haipipe-board-index.md
 Skill-7              _archive/Skill-7-haipipe-board-index.md
-Q-Skill-haipipe-board-page     _archive/QCskill-retired-260806/Skill-8-haipipe-board-page.md
-Q-Skill-haipipe-board-sentence _archive/QCskill-retired-260806/Skill-9-haipipe-board-sentence.md
+Q-Skill-haipipe-page     _archive/QCskill-retired-260806/Skill-8-haipipe-board-page.md
+Q-Skill-haipipe-sentence _archive/QCskill-retired-260806/Skill-9-haipipe-board-sentence.md
 Q-Skill-haipipe-board-routing  _archive/QCskill-retired-260806/Skill-10-haipipe-board-routing.md
 Q-Skill-haipipe-writing        _archive/QCskill-retired-260806/Skill-11-haipipe-writing.md
 Legacy-QB1          QC-engine/QC2-stage-contract.md
@@ -386,8 +403,8 @@ writing/           ../../writing/
 haipipe-display/   ../../display/
 haipipe-board/     ../../board/haipipe-board/
 haipipe-board-routing/ ../../board/haipipe-board-routing/
-haipipe-board-page/ ../../board/haipipe-board-page/
-haipipe-board-sentence/ ../../board/haipipe-board-sentence/
+haipipe-page/ ../../board/haipipe-page/
+haipipe-sentence/ ../../board/haipipe-sentence/
 haipipe-board-routing/ ../../board/haipipe-board-routing/
 dialect_paper.py   ../../board/haipipe-board/src/dialect_paper.py
 haipipe-paper-probe          ../../paper/workers/haipipe-paper-probe/

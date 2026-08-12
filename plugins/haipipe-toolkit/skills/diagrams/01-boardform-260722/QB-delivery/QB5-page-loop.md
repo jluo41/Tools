@@ -321,7 +321,7 @@ If a phase later passes the split test, QB5 keeps the shared boundaries and tran
 **The skill composition**: the base resolves what the Page is and how the current work is acting on it.
 
 ```text
-📄 haipipe-board-page                   the shared Page contract and router
+📄 haipipe-page                   the shared Page contract and router
 ├── 📁 page-types/                      what kind of Page persists · ten types · QB6 owns the roster
 │   ├── for-stage
 │   ├── for-skill
@@ -339,14 +339,14 @@ one invocation = base + matching Page Type + current Page Phase + family worker
 
 #### 8.1 · `for-*` names only Page Types
 (the preposition says which persistent Page shape varies from the base)
-`haipipe-board-page-for-stage`, `-for-skill`, and `-for-venue` keep their names and move under `page-types/`.
+`haipipe-page-for-stage`, `-for-skill`, and `-for-venue` keep their names and move under `page-types/`.
 The roster has since grown to ten Page Types, and `QB6` owns the admission test and the list.
 The grouping folder is organizational and carries no `SKILL.md` of its own.
 A new Page Type is added only when a persistent Page needs a structural contract that the base does not provide.
 
 #### 8.2 · Phase skills use direct names
 (a phase is an active authority, not a Page variant)
-The phase contracts are `haipipe-board-page-draft`, `-probe`, `-revise`, and `-check` under `page-phases/`.
+The phase contracts are `haipipe-page-draft`, `-probe`, `-revise`, and `-check` under `page-phases/`.
 They apply across Page Types and therefore do not use `for-stage` in their names.
 The base first adopted the phase vocabulary without adding `ADVANCE`.
 The automatic router now earns a verb named `RUN`, because it may repeat, branch, HOLD, or return to DRAFT rather than advance in one direction.
@@ -356,7 +356,7 @@ The automatic router now earns a verb named `RUN`, because it may repeat, branch
 The target Page owns the stake-bearing Q-consumer.
 The PROBE phase strips the stake into a neutral Q-executor, binds the returned A-executor, and writes an A-consumer interpretation for each consumer.
 One Q-executor may serve several Q-consumers.
-`haipipe-probe` remains the shared crossing protocol, while `haipipe-board-page-probe` applies that protocol to a Board Page.
+`haipipe-probe` remains the shared crossing protocol, while `haipipe-page-probe` applies that protocol to a Board Page.
 
 ### 9 · RUN turns the phase grammar into a bounded loop
 **The executable flow**: one controller composes separate producer, builder, and judge roles without prescribing one phase sequence.
@@ -563,12 +563,12 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ### Contracts
 
-- `../../../board/haipipe-board-page/SKILL.md` · the base Page contract that may adopt the lifecycle vocabulary
-- `../../../board/haipipe-board-page/ref/page-run-contract.md` · the shared raw-material packet, phase receipt, role, version, and stop contract
-- `../../../board/page-phases/haipipe-board-page-draft/SKILL.md` · the DRAFT phase contract
-- `../../../board/page-phases/haipipe-board-page-probe/SKILL.md` · the PROBE phase contract
-- `../../../board/page-phases/haipipe-board-page-revise/SKILL.md` · the REVISE phase contract
-- `../../../board/page-phases/haipipe-board-page-check/SKILL.md` · the CHECK phase contract
+- `../../../board/haipipe-page/SKILL.md` · the base Page contract that may adopt the lifecycle vocabulary
+- `../../../board/haipipe-page/ref/page-run-contract.md` · the shared raw-material packet, phase receipt, role, version, and stop contract
+- `../../../board/page-phases/haipipe-page-draft/SKILL.md` · the DRAFT phase contract
+- `../../../board/page-phases/haipipe-page-probe/SKILL.md` · the PROBE phase contract
+- `../../../board/page-phases/haipipe-page-revise/SKILL.md` · the REVISE phase contract
+- `../../../board/page-phases/haipipe-page-check/SKILL.md` · the CHECK phase contract
 
 ### Input files
 
@@ -587,7 +587,7 @@ The final report therefore names the checked version, traversed branches, eviden
 ### Engines
 
 - `../../../board/haipipe-board/ref/page-lifecycle.workflow.js` · defines the bounded producer, builder, reviewer, and routing loop; not invocable without a Workflow harness, so the 260805 live RUN drove the controller by hand
-- `../../../board/agents/haipipe-board-page-orchestrator-agent.md` · dispatches one non-interactive RUN and stores its exact receipt
+- `../../../board/agents/haipipe-page-orchestrator-agent.md` · dispatches one non-interactive RUN and stores its exact receipt
 - `../../../board/agents/haipipe-board-creator-agent.md` · performs one DRAFT, PROBE, or REVISE phase without judging it
 - `../../../board/agents/haipipe-board-reviewer-agent.md` · performs fresh read-only CHECK on one exact version
 

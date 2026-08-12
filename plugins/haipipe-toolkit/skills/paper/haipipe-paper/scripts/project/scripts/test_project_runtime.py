@@ -89,6 +89,63 @@ class RuntimeTest(unittest.TestCase):
     def context(self) -> runtime.Context:
         return runtime.load_context(str(self.paper), None)
 
+    def test_one_file_gets_exactly_one_section_at_the_declared_name(self) -> None:
+        """A section page's Content divisions are SUBSECTIONS, not sections.
+
+        The rule used to be `### -> section` by raw markdown depth. On a page
+        whose Content holds `### §3.1`, `### §3.2`, `### §3.3` that emitted
+        three \\section commands and renumbered the manuscript, and it went
+        unnoticed because the only unit ever projected was §1, which has
+        exactly one division. Both shapes are checked here.
+        """
+        page = """# S Main 3 · Theory
+state: ✅ GATED 2026-07-30
+
+## Content
+### §3.1 Competing Predictions
+#### P1. first
+(a beat)
+
+Alpha.
+
+### §3.2 The Pathway
+#### P2. second
+(a beat)
+
+Beta.
+"""
+        rendered = runtime.markdown_to_tex(
+            runtime.select_markdown(page, "content"),
+            "page.md",
+            "content",
+            "Theoretical Framework",
+        )
+        self.assertEqual(rendered.count("\\section{"), 1)
+        self.assertIn("\\section{Theoretical Framework}", rendered)
+        self.assertIn("\\subsection{Competing Predictions}", rendered)
+        self.assertIn("\\subsection{The Pathway}", rendered)
+
+        # A `heading:` selector drops its own heading line from the region, so
+        # that heading is what names the section. Before the fix the appendix
+        # divisions rendered with no \section at all and the letters vanished.
+        appendix = """## Content
+### B. LLM Validation Details
+#### P2. cross-model
+(a beat)
+
+Gamma.
+"""
+        selector = "heading:B. LLM Validation Details"
+        unit = {"source": {"select": selector}}
+        rendered = runtime.markdown_to_tex(
+            runtime.select_markdown(appendix, selector),
+            "page.md",
+            selector,
+            runtime.top_title_for(unit, {}, selector),
+        )
+        self.assertEqual(rendered.count("\\section{"), 1)
+        self.assertIn("\\section{LLM Validation Details}", rendered)
+
     def test_generate_is_isolated_deterministic_and_checkable(self) -> None:
         ctx = self.context()
         self.assertEqual(runtime.validate_context(ctx)["G0"], "pass")
@@ -136,8 +193,11 @@ class RuntimeTest(unittest.TestCase):
     def test_g3_is_independent_of_renderer_output(self) -> None:
         original_renderer = runtime.markdown_to_tex
 
-        def dropping_renderer(markdown: str, source_rel: str, selector: str) -> str:
-            return original_renderer(markdown, source_rel, selector).replace(
+        def dropping_renderer(*args, **kwargs) -> str:
+            # Signature-transparent on purpose. Pinning the renderer's argument
+            # list here made this test fail for a reason that has nothing to do
+            # with what it checks, the moment markdown_to_tex gained top_title.
+            return original_renderer(*args, **kwargs).replace(
                 "\\citep{key-a,key-b} [Q-Test-1]", "renderer silently dropped bindings"
             )
 
