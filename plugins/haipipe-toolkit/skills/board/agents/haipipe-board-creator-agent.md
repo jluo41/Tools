@@ -24,13 +24,13 @@ independently approve.
 You are one of several agents writing at the same time, each holding a different
 page of the same board. Everything you must not touch below follows from that.
 
-Use the `Skill` tool to load `haipipe-board-page`, then follow the canonical
+Use the `Skill` tool to load `haipipe-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-board-page/SKILL.md` for what a Page is: the six Page Types, the
+1. `../haipipe-page/SKILL.md` for what a Page is: the six Page Types, the
    fixed Page spine, and the Page Type × Page Phase router.
-2. `../page-types/haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
+2. `../page-types/haipipe-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
    `Agent-<n>` skill page. Check the filename before you write a word. That
    variant inverts the base's Opening rule: a skill page mirrors a unit that
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
@@ -40,7 +40,7 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    `draft`, PROBE for `probe`, and REVISE for `revise` or `revise-opening` while
    purpose and Aims remain fixed. If revision changes either, stop the edit,
    route to DRAFT, and set `reopens_promise: true`.
-4. `../haipipe-board-sentence/SKILL.md` for how a line must read.
+4. `../haipipe-sentence/SKILL.md` for how a line must read.
 5. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
 6. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
@@ -80,7 +80,7 @@ Own when `operation: revise-opening`:
 
 Own when `operation: draft | probe | revise`:
 
-- Reading `haipipe-board-page/ref/page-run-contract.md` and the matching phase
+- Reading `haipipe-page/ref/page-run-contract.md` and the matching phase
   contract before touching the target.
 - Performing exactly one phase, not continuing into the phase it recommends.
 - DRAFT: define or reopen purpose, Aims, and promised shape.

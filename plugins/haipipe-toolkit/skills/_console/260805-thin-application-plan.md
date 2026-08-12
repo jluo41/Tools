@@ -30,7 +30,7 @@ application/
 2. NEW CONTRACT FIELD: `fires-per-venue:` in each stage.md — the channel gates which stages fire
    (today prose in the door's description; becomes a declared line the packet compiler reads).
    This is application's first contribution TO the shared stage grammar; add the field's rule to
-   haipipe-board-page-for-stage (one paragraph, versioned).
+   haipipe-page-for-stage (one paragraph, versioned).
 3. ROSTER: write stages/index.yml (paper's shape) with the ladder rungs as ordered rows.
 4. REFERENCE SWEEP: exact path strings only, verify target exists before writing, changelogs stay.
 5. REWRITE SOP-paper-alignment.md: the shared thing is the RECIPE (door + roster + workers on the

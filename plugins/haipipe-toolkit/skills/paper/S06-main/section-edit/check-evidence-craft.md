@@ -132,4 +132,4 @@ An item the human declines to fix does not evaporate: record it as a `{CONCERN:<
 Where the rest lives
 ---------------------
 
-Phase dispatch and the CHECK gate itself are owned by `board/page-phases/haipipe-board-page-check` (CHECK loads this file last, after the type contract); the proof-checker pack with the same conditional shape is `../../S09-build/proof-checker/`; the pass that applies the fixes this walk asks for is `revise-place-craft.md`.
+Phase dispatch and the CHECK gate itself are owned by `board/page-phases/haipipe-page-check` (CHECK loads this file last, after the type contract); the proof-checker pack with the same conditional shape is `../../S09-build/proof-checker/`; the pass that applies the fixes this walk asks for is `revise-place-craft.md`.

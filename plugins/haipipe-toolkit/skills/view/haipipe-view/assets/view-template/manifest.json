@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "id": "{{ID}}",
+  "page_id": "{{PAGE_ID}}",
+  "title": "{{TITLE}}",
+  "page_source": "../../{{ID}}.md",
+  "acceptance": "waiting",
+  "inputs": {
+    "qa_probes": [],
+    "sources": []
+  },
+  "displays": [],
+  "consumers": [],
+  "build": {
+    "fixture_root": "../../_fixture",
+    "formats": ["tex", "pdf", "docx"]
+  }
+}

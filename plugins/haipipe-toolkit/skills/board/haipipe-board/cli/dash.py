@@ -31,6 +31,7 @@ import pathlib
 import re
 import sys
 from collections import defaultdict
+from datetime import datetime
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
@@ -180,8 +181,12 @@ if __name__ == "__main__":
     if not args:
         sys.exit(__doc__)
     board = pathlib.Path(args[0]).resolve()
+    # Default to the REAL clock, not to "unknown date". The standing rule is
+    # never to invent a date, and reading one is the opposite of inventing it.
+    # A roll-up whose header says when it was measured, printing "unknown
+    # date", is the stale-aggregate failure these blocks exist to prevent.
     date = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--date=")),
-                "unknown date")
+                datetime.now().strftime("%y%m%d"))
     out = {}
     for (family, kind), g in sorted(groups(board).items()):
         block, rows = render(family, kind, g["control"], g["units"], date, board.name)

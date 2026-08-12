@@ -1,0 +1,4 @@
+interface:
+  display_name: "Haipipe View"
+  short_description: "Build canonical, review-ready View hubs"
+  default_prompt: "Use $haipipe-view to create and validate one canonical View Page with QA Probes, renderer-complete Display units, consumers, and a source-free `_fixture` distribution containing review formats and safe consumer manifests."

@@ -32,6 +32,7 @@ import json
 import re
 import statistics
 import sys
+from datetime import datetime
 from pathlib import Path
 
 QREF = re.compile(r"\[Q-[A-Za-z0-9]+-\d+\]")
@@ -333,8 +334,12 @@ def dashboard(main_dir, date):
 if __name__ == "__main__":
     argv = sys.argv[1:]
     args = [a for a in argv if not a.startswith("--")]
+    # Default to the REAL clock, not to "unknown date". The standing rule is
+    # never to invent a date, and reading one is the opposite of inventing it.
+    # A block whose whole job is to say when it was measured, printing "unknown
+    # date", is the stale-aggregate failure this script exists to prevent.
     date = next((a.split("=", 1)[1] for a in argv if a.startswith("--date=")),
-                "unknown date")
+                datetime.now().strftime("%y%m%d"))
     if not args:
         sys.exit(__doc__)
     if "--dashboard" in argv:

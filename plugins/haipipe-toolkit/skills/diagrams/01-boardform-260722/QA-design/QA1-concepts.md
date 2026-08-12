@@ -26,7 +26,7 @@ The `Board-Webpage-Index` is `board/index.html`; a `Board-Webpage-Page` is the f
 ### 2 · The page family
 page / face: one `Q*.md` or `S*.md`; Q is a decision (closes when its checkboxes close), S is a lifecycle stage (closes at its human gate); one layout serves both.
 Skill-<unit> / Agent-<unit>: the two mirror kinds (260731), both governed by the `for-skill` Page Type since the type split; a Skill page mirrors a LOADED unit and closes when it ships, an Agent page mirrors a DISPATCHED one, and neither counts toward settled.
-Page Type / Page Phase: one page combines a stable type with a current phase (260806); ten types live under `board/page-types/` (`QB6`), four phases DRAFT · PROBE · REVISE · CHECK under `board/page-phases/`, and the verbs CREATE / WORK ON / RUN are `haipipe-board-page`'s door (`QB5`).
+Page Type / Page Phase: one page combines a stable type with a current phase (260806); ten types live under `board/page-types/` (`QB6`), four phases DRAFT · PROBE · REVISE · CHECK under `board/page-phases/`, and the verbs CREATE / WORK ON / RUN are `haipipe-page`'s door (`QB5`).
 section: a `##` heading inside a page; the on-stage order is fixed (`QB4`), and the renderer knows sections only through `ALIAS` (`src/common.py`).
 Opening: the lead section's one name on every page kind (260731); `Question` survives only as a legacy alias, so older pages parse forever.
 group: a `###` heading in `## Pages`, one folder per group (`QB1`); since 260731 every page id matches its group letter (36 renames that day), and every earlier id stays resolvable as a declared Link.
@@ -71,7 +71,7 @@ These are the calls only JL can make; CC ticks nothing here.
 - [ ] 📖 Rule what `face` means, because two authorities disagree
       📍 Part 2 · The page family.
       🔔 Why now: this page's Part 2 `page / face` entry says they are the SAME thing, while
-      `haipipe-board-page/SKILL.md`'s glossary row says a face is `a page whose id carries its
+      `haipipe-page/SKILL.md`'s glossary row says a face is `a page whose id carries its
       parent's number` (`QB4a` under `QB4`). Both are still written down as definitions (260806).
       ⭐ A: they are synonyms, and a child page is a `child`, not a `face`.
       ⭐ B: `face` means only the child form, and a plain page is never called a face.

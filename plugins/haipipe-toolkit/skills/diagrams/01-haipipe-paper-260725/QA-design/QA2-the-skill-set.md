@@ -43,7 +43,7 @@ Scope: This page covers The layers, the direction of control, the anatomy of one
                          │             the filename and shell
                          │             → ⑧  S-<Family>-<unit>-<slug>.md
                          ▼
-   QC4-QC4d  QA9 ─▶ haipipe-board-page WORK ON / RUN. the page work is ③'s;
+   QC4-QC4d  QA9 ─▶ haipipe-page WORK ON / RUN. the page work is ③'s;
    (rented from ③)       │             each phase loads, in order: base page →
                          │             for-stage variant → phase contract → the
                          │             stage's craft: files
@@ -150,7 +150,7 @@ S10-round/           the round stage (round/stage.md + template.md) +
 venue/               seven playbook packs, consulted never commanded
 _old/                retired history, moved never deleted (see _old/README.md)
 ```
-The door resolves ONE stage and hands its S page to `haipipe-board-page`; the stage folders hold the data the door and the phases read; `fn/folder.md` and `fn/conform.md` scaffold and conform a paper folder. There is no `0-enter/` … `5-present/` bucket layer, no `workers/`, no container pair, and no second orchestrator anywhere in the chain. Canonical tree: `paper/README.md`.
+The door resolves ONE stage and hands its S page to `haipipe-page`; the stage folders hold the data the door and the phases read; `fn/folder.md` and `fn/conform.md` scaffold and conform a paper folder. There is no `0-enter/` … `5-present/` bucket layer, no `workers/`, no container pair, and no second orchestrator anywhere in the chain. Canonical tree: `paper/README.md`.
 
 ### What every stage runs
 The phases are RENTED, not owned. Since thin-paper phase 2 there are no paper phase workers: the four phase contracts, the ten Page Types, the three verbs (CREATE, WORK ON, RUN), and the RUN receipts all live in `board/`, and this folder adds only data.
@@ -159,14 +159,14 @@ what ③ owns (the rental)                what ① adds (the data)
 ─────────────────────────────────────   ──────────────────────────────────────
 4 phase contracts  board/page-phases/   craft:    .md files DRAFT/REVISE load
 10 Page Types      board/page-types/              LAST (citation · values ·
-3 verbs + receipts haipipe-board-page             display · placement · results
+3 verbs + receipts haipipe-page             display · placement · results
                                                   · evidence · proof-checker/)
                                         checker:  the script CHECK runs before
                                                   judging, declared per stage.md
 ```
-The load order, per phase, is fixed by `board/page-types/haipipe-board-page-for-stage/SKILL.md` ("checker: and craft:"):
+The load order, per phase, is fixed by `board/page-types/haipipe-page-for-stage/SKILL.md` ("checker: and craft:"):
 ```text
-base haipipe-board-page → for-stage variant → the phase contract → the
+base haipipe-page → for-stage variant → the phase contract → the
 stage's craft: files
 ```
 A stage runs the ordered `phases:` list its own stage.md declares; venue declares `[draft, probe, check]`, every other current stage all four.
@@ -255,7 +255,7 @@ This is the `② ──graduates──▶ ①` edge, made addressable. Every gro
  QA7  the paper board          the runtime 0-lifecycle/ layout ·
                                S10-round/round/stage.md
  QA8  who owns the page        create-page.py · haipipe-board/cli/stage.py
- QA9  how work is DRIVEN       the door's STAGE step · haipipe-board-page
+ QA9  how work is DRIVEN       the door's STAGE step · haipipe-page
                                WORK ON / RUN · haipipe-board/cli/serve.py
  QA10 the prose verb           writing/haipipe-writing/ (⑪, boarded here)
  ───────────────────────────   ─────────────────────────────────────────────

@@ -1,0 +1,79 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\setmainfont{Arial}
+\usepackage{graphicx}
+\usepackage{fvextra}
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\begin{document}
+
+\begin{center}\LARGE\textbf{Agreeableness evidence view: bound sources, observable signal, and measurement boundary}\end{center}
+\section*{1 · QA inputs}
+Input bindings: the answered Probes and QA-banks used by this View.
+
+\begin{Verbatim}[fontsize=\small]
+input/QA-probes/2-observable-signal.md   → observable signal + bound source-Probe count
+input/QA-probes/3-measurement-boundary.md → the strongest measurement claim this View may make
+\end{Verbatim}
+This View binds two answered Probes carried over from QBt1's own Probe set.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card two answered QA Probes: QI1 · QA input · Bindings: views/QY1-for-view/input/QA-probes/2-observable-signal.md, views/QY1-for-view/input/QA-probes/3-measurement-boundary.md. Status: answered. Role: supply the material organized by this View.\end{quote}
+Probe 2 resolves the bound source-Probe count through its own task QA-bank answer.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card task QA-bank answer: QI2 · QA bank · Binding: ../../tasks/QV1-agreeableness/QA/1-bound-source-count.md. Consumer question: Q-View-1. Status: answered.\end{quote}
+The current View binds 3 source Probe records into its underlying judgment [Q-View-1], even though only two of those Probe files are copied directly into this View's own input/QA-probes/.
+
+\section*{2 · View body}
+Readable body: the topic-specific material a person should understand.
+
+\begin{Verbatim}[fontsize=\small]
+observable signal + measurement boundary → one bounded reading of agreeableness evidence
+\end{Verbatim}
+\subsection*{2.1 · Observable project signal}
+Review text directly records patient descriptions and evaluations of patient-facing behavior, so the review-derived score is a patient-perceived signal rather than a direct instrument reading.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card patient-perceived signal: EC3 · Value · Finding: the project observes descriptions and evaluations of behavior, not the trait itself. Bearing: qualifies. Boundary: observed signal, not direct latent trait. Binding: views/QY1-for-view/input/QA-probes/2-observable-signal.md. Freshness: current. Used by: QY1-Display1.\end{quote}
+The literature-side construct frame for agreeableness rests on the standard trait taxonomy (John et al., 1999).
+
+\subsection*{2.2 · Measurement boundary}
+The strongest claim this View may support is that the score is a patient-perceived manifestation of agreeableness-related behavior.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card patient-perceived manifestation: EC4 · Construct · Finding: the two bound Probes do not justify a claim of error-free latent-personality measurement. Bearing: bounds this View. Boundary: manifestation only, not a validated latent-trait instrument. Binding: views/QY1-for-view/input/QA-probes/3-measurement-boundary.md. Freshness: current. Used by: QY1-Display1.\end{quote}
+Any stronger claim would require direct construct-validation evidence that these two Probes do not contain.
+
+The body is not a hidden evidence ledger; EC3 and EC4 let a reader inspect why each exact phrase is present.
+
+\section*{3 · Displays}
+Display outputs: each output selects View-body content and keeps an independent acceptance state.
+
+\begin{Verbatim}[fontsize=\small]
+EC3, EC4 → QY1-Display1 → owner-indexed evidence table
+\end{Verbatim}
+QY1-Display1 is the owner-indexed evidence table: one row per bound Probe, showing what it answers, its Card, and its boundary. Its current raster is embedded below; click QY1-Display1 and the same preview appears first, before its View-body bindings, files, and independent acceptance state.
+
+\begin{center}\includegraphics[width=0.94\linewidth]{assets/display-1.png}\end{center}
+\begin{quote}\footnotesize\textbf{Evidence card.} Card QY1-Display1: Display · Kind: table · Bindings: EC3, EC4 · Files: views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/output.md, views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/preview.png, views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/preview.pdf · State: rendered, acceptance waiting.\end{quote}
+preview.pdf carries the same table as the printable full-fidelity inspection surface: views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/preview.pdf.
+
+QY1-Display1 is the only Display in this specimen; no prose pack or evidence ledger is added as a separate optional output.
+
+\section*{4 · Consumers}
+Consumer bindings: downstream Pages or applications and what they use.
+
+\begin{Verbatim}[fontsize=\small]
+QY1-Display1 → Main Results section (S-Main-4) → Results / construct interpretation, planned
+\end{Verbatim}
+The Main Results section is the planned downstream reader for QY1-Display1's construct-interpretation row.
+
+\begin{quote}\footnotesize\textbf{Evidence card.} Card Main Results section: C1 · Consumer · Target Page: S-Main-4 · Binding: ../../QS-consumers/S-Main-4-results.md · Uses: QY1-Display1 · Placement: Results / construct interpretation · Status: planned, blocked on View and Display acceptance.\end{quote}
+S-Main-4-results.md is the live Board Page this Card points to; it is read here for reference only and is not modified by this View.
+
+A consumer may still reach a Probe directly when its own contract permits it; the View route remains the normal human-readable handoff.
+
+\section{References}\begin{itemize}
+\item John, Oliver P.; Srivastava, Sanjay (1999). The Big-Five Trait Taxonomy: History, Measurement, and Theoretical Perspectives. Handbook of Personality: Theory and Research
+\end{itemize}
+\end{document}

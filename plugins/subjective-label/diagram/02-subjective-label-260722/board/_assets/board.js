@@ -1858,7 +1858,7 @@ function boardDirPath() {
           'Separate mechanical consistency from human readability. Do not claim a rule is met unless you can name its evidence.'
         : 'QUALITY CHECK — answer only. Do not modify any file or run commands. ' +
           'First use Read to load the canonical evaluation contract at ' +
-          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board-page/SKILL.md and the cold-read rules at ' +
+          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-page/SKILL.md and the cold-read rules at ' +
           'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md. ' +
           'Resolve requirements in order: base contract; page-kind or consumer variant; this page\'s Writing Style ' +
           'and Stage Contract; then each local division purpose and paragraph job. Report any conflict instead of choosing silently. ' +
@@ -3769,7 +3769,7 @@ function boardDirPath() {
  * with exactly one cell live and everything after it locked.
  *
  * ⚠️ WHERE THIS FILE OUGHT TO LIVE. With its plugin, at
- * `subjective-label/skills/haipipe-board-page-for-labeling/`, beside the contract it
+ * `subjective-label/skills/haipipe-page-for-labeling/`, beside the contract it
  * serves. It sits in the board engine's assets only because `assets.py` concatenates
  * `assets/js/**` from THIS skill and has no way to load a file a plugin contributes.
  * That loader is owed; until it exists this file is a guest here, and the registration
@@ -3861,7 +3861,14 @@ function boardDirPath() {
     }
     steps.forEach(function (s, i) {
       s.live = (i === live);
-      s.locked = (live >= 0 && i > live && s.rank !== 3);
+      /* 🧠 IS NEVER LOCKED (measured 260808 on QG1). `locked` means an earlier step
+         has not finished, and the CSS draws that as dim and unclickable. But 🧠 means
+         a person owes an answer RIGHT NOW: QG1's A6 is a cold-reader test that no
+         earlier step blocks, and it was rendering as the one thing you cannot touch
+         when it was the one thing only a human could move. Dimming it tells the
+         reader there is nothing to do here, which is the surface stating a
+         precondition the page never declared. */
+      s.locked = (live >= 0 && i > live && s.rank !== 3 && s.rank !== 2);
     });
     return live;
   }
@@ -3991,14 +3998,25 @@ function boardDirPath() {
       };
     });
 
+    /* A CARD IS A JUMP, NOT A SELECTOR: it opens the step's own Content division and
+       scrolls to it. The detail box below always shows the LIVE step, because that is
+       the step the surface exists to answer "what now" about.
+
+       ⚠️ The selector was `.sect.col.content` and matched NOTHING, so every card click
+       was silently doing nothing at all: Content stayed shut and the page never moved
+       (measured 260808, clicking A6 and A3 on QG1 and reading scrollY back). Content
+       renders as `details.sect.content` — `col` belongs to the OTHER sections, and
+       States is `.sect.col.now`, which is why reading the steps worked the whole time
+       and only the jump was dead. A dead jump on a card that says `cursor: pointer` is
+       invisible: nothing errors, the click just goes nowhere. */
     host.querySelectorAll('.wf-step').forEach(function (b) {
       b.onclick = function () {
         var s = steps[+b.dataset.i];
         var d = divisionOf(s);
-        var t = page.querySelector('.sect.col.content');
+        var t = page.querySelector('.sect.content');
         if (t) t.open = true;
         if (d) {
-          var heads = page.querySelectorAll('.sect.col.content details.csec');
+          var heads = page.querySelectorAll('.sect.content details.csec');
           var want = heads[+d - 1];
           if (want) { want.open = true; want.scrollIntoView({ block: 'center' }); }
         }
@@ -4254,9 +4272,15 @@ function boardDirPath() {
        rendered as a title over nothing. */
     if (c.tagName === 'DETAILS') c.open = true;
     c.querySelectorAll('details').forEach(function (d) { d.open = true; });
-    c.querySelectorAll('.secall,.cpy,.copy,.sb-x,button').forEach(function (b) {
-      b.parentNode && b.parentNode.removeChild(b);
-    });
+    /* `.schatbar` and `.smenu` are the SENTENCE APPARATUS, injected after load and
+       therefore invisible in the HTML on disk. On the page they are quiet controls
+       beside a sentence; cloned into a deck they print as bare text, so every slide
+       of QBt1 carried a stack of "C1.P1.S1 / QBt1.C1.P1.S1" between its sentences
+       and half the slide was ids (JL 260810: "the quality is not that good"). They
+       are stripped by WRAPPER, not by the `.sidchip` inside, because removing the
+       chip alone leaves the empty bar holding its own vertical space. */
+    c.querySelectorAll('.secall,.cpy,.copy,.sb-x,.schatbar,.smenu,button')
+      .forEach(function (b) { b.parentNode && b.parentNode.removeChild(b); });
     /* Links keep their text but stop being links: a click inside the deck that
        navigated the frame away would look like the deck crashed. */
     c.querySelectorAll('a').forEach(function (a) {
@@ -4349,6 +4373,54 @@ function boardDirPath() {
       }
     });
 
+    return chunk(out);
+  }
+
+  /* A SECTION IS NOT A SLIDE, which the first version assumed. Measured on QBt1:
+     22 slides carrying 138 to 2231 characters, and the 2231 one rendered at 118%
+     of the box, so its foot was cut off. One heading can hold a paragraph or a
+     whole figure plus four subdivisions, and nothing in the page grammar bounds it.
+
+     So the split MEASURES instead of counting headings. An over-long body is cut at
+     its own TOP-LEVEL child boundaries, never inside one: a `<pre>` figure cut down
+     the middle is worse than a tall slide, because the reader cannot tell the halves
+     apart. A single child already over the limit therefore stays whole and overflows,
+     which the deck scrolls rather than clips. */
+  var LIMIT = 1500;   // characters of body text; about a screenful at deck size
+
+  function chunk(slides) {
+    var out = [];
+    slides.forEach(function (s) {
+      var b = s.body;
+      if (!b || txt(b).length <= LIMIT || b.children.length < 2) { out.push(s); return; }
+      /* A SPLIT THAT CANNOT HELP MUST NOT HAPPEN. When one child is already over
+         the limit, cutting at child boundaries only peels the small ones off it:
+         the first attempt turned QBt1's ASCII section into a 7-character slide
+         followed by a 2249-character one still at 127%, which is the original
+         problem plus a useless slide. A lone oversized figure stays whole and the
+         deck scrolls it. */
+      var big = 0;
+      Array.prototype.forEach.call(b.children, function (k) {
+        big = Math.max(big, (k.textContent || '').length);
+      });
+      if (big > LIMIT) { out.push(s); return; }
+      var parts = [], cur = document.createElement('div'), used = 0;
+      Array.prototype.slice.call(b.children).forEach(function (kid) {
+        var len = (kid.textContent || '').length;
+        if (used && used + len > LIMIT) {
+          parts.push(cur); cur = document.createElement('div'); used = 0;
+        }
+        cur.appendChild(kid.cloneNode(true));
+        used += len;
+      });
+      if (cur.children.length) parts.push(cur);
+      parts.forEach(function (p, i) {
+        out.push({ kicker: s.kicker, klass: s.klass, body: p,
+                   /* a continuation says so in the TITLE, because a reader who
+                      arrives mid-section otherwise reads it as a repeated heading */
+                   title: i === 0 ? s.title : s.title + ' (' + (i + 1) + ')' });
+      });
+    });
     return out;
   }
   /* ── the surface: an html-ppt deck, in an iframe ─────────────────────────────
@@ -4417,9 +4489,33 @@ function boardDirPath() {
      with no parser of its own. */
   function payload(page) {
     return build(page).map(function (s) {
+      var t = s.body ? txt(s.body) : '';
       return { kicker: s.kicker || '', title: s.title || '',
+               /* A slide the split could not rescue (one oversized child) is
+                  flagged so the deck can set it smaller rather than let it run
+                  off the bottom. Measured, not guessed: QBt1's ASCII figure was
+                  128% of the box. */
+               dense: t.length > LIMIT,
                body: s.body ? s.body.innerHTML : '' };
     });
+  }
+
+  /* SLIDES IS A MODE, NOT A PANE (JL 260810). Measured at 1600x970 it is
+     100% x 100% at z-index 120, so opening it left Draw and the workflow strip
+     alive and invisible underneath. One thing on screen is the entire point of
+     it, so the others are PUT AWAY rather than covered.
+     Each is closed through its OWN control, so its own teardown runs: Draw drops
+     its iframe on close for a reason (a hidden Excalidraw keeps a live editor and
+     an unsaved buffer), and reaching past that to hide the element would keep the
+     ghost this whole surface is trying not to create. */
+  function putOthersAway() {
+    var wf = document.getElementById('wfpanel');
+    if (wf && !wf.hidden) {
+      var wx = wf.querySelector('.wf-x');
+      if (wx) wx.click();
+    }
+    var dx = document.querySelector('.xp-x');
+    if (dx && dx.closest('[hidden]') === null) dx.click();
   }
 
   function open(page) {
@@ -4429,6 +4525,7 @@ function boardDirPath() {
     if (!d.hidden) return close();       // a second click puts it away
 
     var slides = payload(page);
+    putOthersAway();
     d.hidden = false;
     note(d, 'writing ' + slides.length + ' slides…');
     d.querySelector('.sd-open').hidden = true;
@@ -4706,6 +4803,10 @@ function boardDirPath() {
     });
   }
 
+  /* The SHELL needs the scene url to put this drawing in its right-hand tab, and
+     deriving it a second time up there would be a second answer to "which file
+     does this view save to". One export, one derivation (JL 260810). */
+  window.boardDrawOwner = owner;
   window.boardDrawOpen = open;   // for direct calls and for the tests
 })();
 
@@ -4867,6 +4968,15 @@ function boardDirPath() {
               if (k) openKey[k] = 1;
             });
             old.replaceWith(nw);
+            /* SWAP THE POPCARDS TOO. They live OUTSIDE div.wrap, and every
+               page numbers its cards from pc1, so leaving the old ones behind
+               made `popovertarget="pc1"` on the NEW page resolve to the OLD
+               page's card: you changed page, clicked a chip, and read the
+               previous page's evidence. Reported by JL 260807 with a
+               screenshot of QBt5 showing QBt4's broken citation. */
+            var ncards = doc.querySelector('#popcards');
+            var ocards = document.querySelector('#popcards');
+            if (ncards && ocards) { ocards.replaceWith(ncards); }
             var newD = nw.querySelectorAll('details');
             if (newD.length === oldD.length) {
               // Same shape, so position is the exact identity: editing a
@@ -6444,6 +6554,16 @@ document.addEventListener('click', function (ev) {
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
       if (!nw || !old) { location.href = url; return; }
       old.replaceWith(nw);
+      /* THE POPCARDS MUST TRAVEL WITH THE WRAP. They sit OUTSIDE div.wrap and
+         every page numbers its cards from pc1, so a swap that left them behind
+         made `popovertarget="pc1"` on the ARRIVING page resolve to the page we
+         just left: change page, click a chip, read the previous page's
+         evidence. JL 260807, screenshot of QBt5 showing QBt4's broken key.
+         This is the navigation path a reader actually takes; the auto-rebuild
+         path in 20-live-refresh.js carries the same two lines. */
+      var ncards = doc.querySelector('#popcards');
+      var ocards = document.querySelector('#popcards');
+      if (ncards && ocards) { ocards.replaceWith(ncards); }
       document.title = doc.title || document.title;
       if (push) history.pushState({ board: 1 }, '', url);
       /* A SWAP LEAVES THE DOCUMENT'S OWN STAMP BEHIND. The pane's refresh poll

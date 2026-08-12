@@ -68,7 +68,7 @@ It succeeds when one shared matcher handles decorated and repeated text and reje
       path." This face's title says ONE BROWSER EDIT. That scope is now
       too narrow: an agent's routed write wants the same anchor contract.
 
-   ✒️ the law is now RESTATED in a shipped skill. haipipe-board-sentence
+   ✒️ the law is now RESTATED in a shipped skill. haipipe-sentence
       0.3.0 carries "the anchor is an EXACT match on the source line; a
       miss FAILS VISIBLY" and "a write needs serve.py" under its own
       heading. That is this face's rule, written a second time, which is
@@ -185,7 +185,7 @@ Formatting is then never guessed at and never erased, the 44.8% refusal disappea
 - [ ] 🌐 Widen the contract past the browser
       This face is titled "one browser edit" and `haipipe-board-routing` (0.9.1 today) still names moving the write path behind one anchored-append endpoint so a routed agent write and a clicked comment share it.
       An agent write has no rendered `textContent` to normalize, so it enters the ladder at a different rung, and nothing states which.
-- [ ] 🔁 Take the law back from `haipipe-board-sentence`
+- [ ] 🔁 Take the law back from `haipipe-sentence`
       That skill's 0.3.1 still restates "the anchor is an EXACT match on the source line; a miss FAILS VISIBLY" and "a write needs serve.py" in its own words.
       This face owns the rule, so the skill should cite it rather than carry a second copy, which is the same defect `QC1b` spent two days finding in the index.
 - [ ] 🧪 Prove the refusals with a test
@@ -258,7 +258,7 @@ The sources behind §3, so every claim there is checkable.
 ## Log
 - 260806 2135 · [REVISE-CC] swept to the 260806 architecture; retired ids repointed (`QC6` §9 -> `QC1b` §4.2, `QC8` -> `QC2c`), §2 stopped claiming the fixed normalizer duplication as open, live figures moved to the 260802 remeasure (44.8%), `findAndWrap` repointed to `10-drawer/10-comment/00-highlight.js`, sentence/routing versions verified at 0.3.1/0.9.1, state line's ruling count corrected to 3
 260802 2200 · The decorated-sentence ruling moved to `QB8`, its real owner (JL: "I think it should be the QB8 question, right?"). It had been written here because CC anchored to `live/write.py` rather than to the page owning the gesture. What stays here is the shared mechanism: the normalizer, the ladder, the version token, and widening past the browser; what left is one writer's reader-facing behaviour
-260802 2130 · Remeasured against disk and the numbers all moved: 4908 to 7752 addressable lines, decorated 47.3% to 44.8% but 2321 to 3474 in absolute count, and the two normalizers are now ONE, so that Aim was met silently and is ticked. Three new Aims: the Chinese refusal message, widening the contract past the browser now that routing wants the same endpoint, and taking the law back from `haipipe-board-sentence` 0.3.0 which restates it. `state:` 🔴 to 🟡 PARTIAL
+260802 2130 · Remeasured against disk and the numbers all moved: 4908 to 7752 addressable lines, decorated 47.3% to 44.8% but 2321 to 3474 in absolute count, and the two normalizers are now ONE, so that Aim was met silently and is ticked. Three new Aims: the Chinese refusal message, widening the contract past the browser now that routing wants the same endpoint, and taking the law back from `haipipe-sentence` 0.3.0 which restates it. `state:` 🔴 to 🟡 PARTIAL
 260801 0140 · Full renumber QC7a -> QC4a (JL forced 260801)
 260801 0130 · Reindexed QC7 -> QC7a: the write path is now the return-half face of the QC7 round trip (JL 260801)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

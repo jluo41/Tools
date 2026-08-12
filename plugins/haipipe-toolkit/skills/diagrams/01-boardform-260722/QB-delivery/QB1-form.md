@@ -68,17 +68,17 @@ Rewording it here without touching the file it graduated into is how the board a
   │   ├── 🖥️  vendor/xterm               the terminal's front end          (QD3)
   │   └── 🧪 tests/        18 files     what proves a change              (QF1)
   │
-  ├── 📄 haipipe-board-page/            ENGINE · Page = TYPE x PHASE       (QB4)
+  ├── 📄 haipipe-page/            ENGINE · Page = TYPE x PHASE       (QB4)
   ├── 🎭 page-types/       10 types     one folder per Page Type           (QB6)
   ├── 🔄 page-phases/       4 phases    DRAFT · PROBE · REVISE · CHECK     (QB5)
-  ├── ✏️  haipipe-board-sentence/        SPEC · the atomic unit            (QB8)
+  ├── ✏️  haipipe-sentence/        SPEC · the atomic unit            (QB8)
   ├── 🔀 haipipe-board-routing/         VERB · BOTH altitudes             (QC4a)
   │      src/lanes.py                   board.md structure + one write
   │
   └── ⚖️  agents/                        DISPATCHED, never loaded
       ├── 🔍 haipipe-board-reviewer-agent.md    judges · ⛔ NO write tools
       ├── ✍️  haipipe-board-creator-agent.md     writes ONE page at a time
-      └── 🎬 haipipe-board-page-orchestrator-agent.md   runs ONE Page RUN
+      └── 🎬 haipipe-page-orchestrator-agent.md   runs ONE Page RUN
 
   💡 4 skills · 10 types · 4 phases · 3 agents ship today · roster → QC1b
 

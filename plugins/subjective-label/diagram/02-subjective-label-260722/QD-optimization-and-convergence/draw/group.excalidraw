@@ -1,0 +1,65 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "haipipe-board/draw.py",
+  "elements": [],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {},
+  "haipipe": {
+    "schema": "haipipe-linked-drawing/v1",
+    "kind": "group",
+    "group": {
+      "id": "QD",
+      "name": "QD · Optimization and convergence"
+    },
+    "imports": [
+      {
+        "page": "QD1",
+        "source": "QD1.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QD2",
+        "source": "QD2.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QD3",
+        "source": "QD3.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      },
+      {
+        "page": "QD4",
+        "source": "QD4.excalidraw",
+        "placement": {
+          "x": 0,
+          "y": 0,
+          "scale": 1
+        },
+        "sourceFrame": null
+      }
+    ],
+    "migration": {
+      "source": "../../board.excalidraw",
+      "sourceIndexes": {}
+    }
+  }
+}

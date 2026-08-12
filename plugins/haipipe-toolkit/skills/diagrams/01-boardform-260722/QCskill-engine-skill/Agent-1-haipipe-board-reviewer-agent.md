@@ -39,10 +39,10 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
         │
         ├─▶ LOADS, never restates:
         │     haipipe-board/SKILL.md        actions, states, sync
-        │     haipipe-board-page/SKILL.md   the base page contract
-        │     haipipe-board-page-for-skill/  the SKILL-PAGE variant, when the
+        │     haipipe-page/SKILL.md   the base page contract
+        │     haipipe-page-for-skill/  the SKILL-PAGE variant, when the
         │                                    page under review is Skill-/Agent-
-        │     page-phases/haipipe-board-page-check/  the CHECK judgment and
+        │     page-phases/haipipe-page-check/  the CHECK judgment and
         │                                    routing boundary inside RUN
         │     ref/writing-rules.md          the cold-read standard
         │     the target board.md           topic, groups, links, order
@@ -86,15 +86,15 @@ rules here. This file is a procedure, not a second copy of the contract, and a
 copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
-2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
-3. `../page-types/haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
+2. `../haipipe-page/SKILL.md` for the base page and evaluation contract.
+3. `../page-types/haipipe-page-for-skill/SKILL.md` WHENEVER a page under review is a
    `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
    judged against, and its Opening rule is the OPPOSITE of the base's: a roster
    page mirrors a unit that ships elsewhere and decides nothing, so it must
    INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
-4. `../page-phases/haipipe-board-page-check/SKILL.md` for the judgment and
+4. `../page-phases/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -149,7 +149,7 @@ copy is exactly what goes a night out of date while the contract moves:
       5. Cold-read the scoped pages using `ref/writing-rules.md`. Quote unreadable
          sentences, list undefined terms at first use, and name missing premises.
       6. Resolve applicable requirements in the order defined by
-         `haipipe-board-page`: base contract, page-kind/consumer variant, page-local
+         `haipipe-page`: base contract, page-kind/consumer variant, page-local
          Writing Style and Stage Contract, then the local division or paragraph job.
          Report contradictions as requirement conflicts; do not choose one silently.
       7. Review every present `##` section, direct `###` Content division, and `####`
@@ -244,9 +244,9 @@ copy is exactly what goes a night out of date while the contract moves:
       The row is on `QC1b`'s Decision Now and nothing here restates its options.
 - [ ] 🧑‍⚖️ It reads the eight roster Openings consecutively
       That pass is the reason 0.4.0 exists, it has never run on a real batch, and there is now a real batch waiting: eight roster Openings rewritten on 260802, seven of them the same afternoon.
-      This is the one check `haipipe-board-page-for-skill` names as decisive and says the author cannot perform.
+      This is the one check `haipipe-page-for-skill` names as decisive and says the author cannot perform.
 - [x] 📚 It knows to reach past the base contract for a skill page
-      0.5.0 added `haipipe-board-page-for-skill` as source 3, loaded whenever a page under review is a `Skill-<n>` or `Agent-<n>`.
+      0.5.0 added `haipipe-page-for-skill` as source 3, loaded whenever a page under review is a `Skill-<n>` or `Agent-<n>`.
       Without it this agent would have judged skill and agent pages by the base, whose Opening rule is the opposite one, marking correct prose wrong and passing the form letter the variant was written to catch.
 - [x] 🛡 The read-only promise is enforced rather than trusted
       Its frontmatter grants `Read`, `Grep`, `Glob`, `Bash` and `Skill` and no write tool at all, so "never edits" is a property of the dispatch rather than an instruction it could disobey.
@@ -261,7 +261,7 @@ It reached 0.7.0 on 260804 and was first exercised on this board on 260805, when
 Its review now has first results rather than only a procedure: two revise verdicts with file-and-line findings and one final pass that routed the run to CLOSE (receipt `_runs/page/QB8e/260805-0216-QB8e.json`).
 
 - 260802 CC · 📚 It did not know about a contract that had shipped hours earlier
-  `haipipe-board-page-for-skill` shipped on 260802 and this agent's source list was not updated with it, so it would have judged the eight skill and agent pages by the base contract whose Opening rule is the opposite one.
+  `haipipe-page-for-skill` shipped on 260802 and this agent's source list was not updated with it, so it would have judged the eight skill and agent pages by the base contract whose Opening rule is the opposite one.
   JL found it by asking whether these agents call any skills, which is the kind of question a source list never answers on its own.
   Fixed at 0.5.0. The general lesson is on the agents' changelog: shipping a variant is finished when every agent that loads the base knows when to reach past it, not when the variant exists.
 - 260802 CC · 🤖 The 260731 ruling argues against the retirement reading
@@ -273,10 +273,10 @@ Its review now has first results rather than only a procedure: two revise verdic
   That is precisely the input 0.4.0's consecutive-Openings pass was added to judge, and the session limit is the only reason it has not run.
 
 ## Log
-- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; the Diagram load list gains `page-phases/haipipe-board-page-check` (source 4 of six on disk since the RUN work) and the two "five sources/contracts" counts become six
+- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; the Diagram load list gains `page-phases/haipipe-page-check` (source 4 of six on disk since the RUN work) and the two "five sources/contracts" counts become six
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); "never yet dispatched" is over, the QB8e RUN exercised this judge three times as fresh-context claude -p subprocesses and its final CHECK pass closed the run.
 260804 · Updated the authored mirror for exact-version CHECK and the CLOSE, REVISE, PROBE, DRAFT, or HOLD route returned to Page RUN.
-260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
+260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the dispatch, the four loaded contracts, the three-step review and the empty write-tool list, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. Recorded that the 260731 skill-versus-agent ruling argues against the retirement reading of JL's 260729 remark
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
@@ -293,7 +293,7 @@ Converted from the skill's own `CHANGELOG.md`: 9 releases.
 260801 · `0.3.0` · haipipe-board-creator-agent
       - Adds explicit `create-page` and `revise-opening` operations while preserving
         the one-agent, one-page write boundary.
-      - Makes the creator load `haipipe-board-page` directly, read a revision target
+      - Makes the creator load `haipipe-page` directly, read a revision target
         completely, edit only Opening, and self-check without approving its own work.
       - Keeps prose requirements in the canonical skill and reference instead of
         copying a sentence formula into each assignment packet.

@@ -64,6 +64,16 @@
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
       if (!nw || !old) { location.href = url; return; }
       old.replaceWith(nw);
+      /* THE POPCARDS MUST TRAVEL WITH THE WRAP. They sit OUTSIDE div.wrap and
+         every page numbers its cards from pc1, so a swap that left them behind
+         made `popovertarget="pc1"` on the ARRIVING page resolve to the page we
+         just left: change page, click a chip, read the previous page's
+         evidence. JL 260807, screenshot of QBt5 showing QBt4's broken key.
+         This is the navigation path a reader actually takes; the auto-rebuild
+         path in 20-live-refresh.js carries the same two lines. */
+      var ncards = doc.querySelector('#popcards');
+      var ocards = document.querySelector('#popcards');
+      if (ncards && ocards) { ocards.replaceWith(ncards); }
       document.title = doc.title || document.title;
       if (push) history.pushState({ board: 1 }, '', url);
       /* A SWAP LEAVES THE DOCUMENT'S OWN STAMP BEHIND. The pane's refresh poll

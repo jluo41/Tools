@@ -1,0 +1,55 @@
+{
+  "canonical_page": "../../QY2-for-view.md",
+  "generated_by": "haipipe-view",
+  "outputs": [
+    "QY2-for-view.tex",
+    "QY2-for-view.pdf",
+    "QY2-for-view.docx",
+    "references.bib"
+  ],
+  "schema_version": 1,
+  "source_digest": "1bd28937ac3d7a9d5c0129305643843261f2198d1cf6e1b041e05fb0a1d5a5ee",
+  "sources": [
+    {
+      "path": "QY2-for-view.md",
+      "sha256": "2195ce54ee5b216ab1b2a724a34547e4089d9e018d338cdff2dba20b62e6d8ac"
+    },
+    {
+      "path": "views/QY2-for-view/input/QA-probes/1-canonical-definition.md",
+      "sha256": "3631e2d35a4a97b0be275d5726e8395295d5ddec9de1b42cb3259e637f471147"
+    },
+    {
+      "path": "views/QY2-for-view/input/QA-probes/2-observable-signal.md",
+      "sha256": "4c13d954d4868881e6b90b30b97017986786595759033a0091079327a245414e"
+    },
+    {
+      "path": "views/QY2-for-view/input/sources/references.bib",
+      "sha256": "dcedef19a0e6406359f01e3180e8d28a6b1098ceec7a2aa42584f9f4c9150e12"
+    },
+    {
+      "path": "views/QY2-for-view/manifest.json",
+      "sha256": "f338cc793dd578836fe0428948a413ab61dbfc29a20a665cd792adddde6b8ec3"
+    },
+    {
+      "path": "views/QY2-for-view/output/QY2-Display1-agreeableness-evidence-table/assets/table.png",
+      "sha256": "995f488a787afc291b1eb545b98a4df9f78c0f26778213fbe2872a3d5ff394ee"
+    },
+    {
+      "path": "views/QY2-for-view/output/QY2-Display1-agreeableness-evidence-table/float.tex",
+      "sha256": "d01add6440d123ab78cd66ecacb9a91f4a06be00af5e53d033e535d2c27b03f7"
+    },
+    {
+      "path": "views/QY2-for-view/output/QY2-Display1-agreeableness-evidence-table/output.md",
+      "sha256": "ee7597637bbced23e405a67106e610152d3782bc2f6fa4d89d428a81d2783f94"
+    },
+    {
+      "path": "views/QY2-for-view/output/QY2-Display1-agreeableness-evidence-table/preview.pdf",
+      "sha256": "6a57d02eee6a2518a8a8ea0f793141ca3d6556223230a0383be3161937b535a8"
+    },
+    {
+      "path": "views/QY2-for-view/output/QY2-Display1-agreeableness-evidence-table/preview.png",
+      "sha256": "995f488a787afc291b1eb545b98a4df9f78c0f26778213fbe2872a3d5ff394ee"
+    }
+  ],
+  "view": "QY2-for-view"
+}

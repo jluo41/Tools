@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "display_id": "QBt1-Display2",
+  "winner": "assets/figure-1.svg",
+  "checks": {
+    "construct_and_observation_are_separate": true,
+    "measurement_boundary_is_visible": true,
+    "numeric_claims_added": false,
+    "human_acceptance": "waiting"
+  }
+}

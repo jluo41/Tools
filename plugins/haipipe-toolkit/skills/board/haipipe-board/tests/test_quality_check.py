@@ -34,7 +34,7 @@ class QualityCheckContractTest(unittest.TestCase):
         self.assertNotIn("## Done when are still unchecked", self.client)
 
     def test_page_quality_check_uses_section_evaluation_contract(self):
-        self.assertIn("haipipe-board-page/SKILL.md", self.client)
+        self.assertIn("haipipe-page/SKILL.md", self.client)
         self.assertIn("Resolve requirements in order", self.client)
         self.assertIn("every direct ### Content division", self.client)
         self.assertIn("applicable requirements + source", self.client)

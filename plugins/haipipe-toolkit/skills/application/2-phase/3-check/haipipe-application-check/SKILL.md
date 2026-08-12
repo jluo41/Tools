@@ -6,7 +6,7 @@ metadata:
   argument_hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
   version: "0.4.3"
   last_updated: "2026-08-04"
-  summary: "Application-specific CHECK worker layered on haipipe-board-page-check; runs local checkers, seeds findings, and applies the application's declared human gate."
+  summary: "Application-specific CHECK worker layered on haipipe-page-check; runs local checkers, seeds findings, and applies the application's declared human gate."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-application-check (CHECK phase worker)
 
 CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-check/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-check/SKILL.md`.
 The generic contract owns judgment and phase routing.
 This file adds the application's deterministic checks, comment surface, and Gate Ledger.
 

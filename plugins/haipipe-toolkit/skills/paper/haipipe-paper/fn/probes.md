@@ -15,7 +15,7 @@ PROBE: entry copies the answer; topic page records paper interpretation
 
 The shared crossing model (stake stripping, the wall, the QA state-line
 contract, the two LAWS, derived states) is owned by `probe/haipipe-probe/SKILL.md`;
-the page-phase contract is `board/page-phases/haipipe-board-page-probe`. This
+the page-phase contract is `board/page-phases/haipipe-page-probe`. This
 file holds only how a PAPER runs the loop, plus the paper-side deltas.
 
 ## Runtime layout

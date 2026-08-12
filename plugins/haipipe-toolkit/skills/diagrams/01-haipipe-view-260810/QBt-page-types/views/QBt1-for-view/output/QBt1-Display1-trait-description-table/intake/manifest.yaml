@@ -1,0 +1,15 @@
+schema_version: 1
+display_id: QBt1-Display1
+kind: table
+mode: evidence-snapshot
+purpose: "Separate construct meaning, observable signal, and measurement boundary."
+sources:
+  - role: display-safe-evidence
+    origin_holder: QBt1-for-view
+    origin_artifacts:
+      - ../../input/QA-probes/1-canonical-definition.md
+      - ../../input/QA-probes/2-observable-signal.md
+      - ../../input/QA-probes/3-measurement-boundary.md
+    snapshot_path: inputs/source_data.csv
+    snapshot_sha256: 2a9bfe5707882a54c670cb084d76052b34df194bd8209641731fc5224a91e52c
+    permitted_use: specimen table only

@@ -1,0 +1,33 @@
+{
+  "acceptance": "waiting",
+  "artifact_status": "rendered",
+  "artifacts": {
+    "assets": "assets/",
+    "bibliography": "../../references.bib",
+    "float": "float.tex",
+    "preview_image": "preview.png",
+    "preview_pdf": "preview.pdf"
+  },
+  "body_bindings": [
+    "EC1",
+    "EC2",
+    "EC3",
+    "EC4"
+  ],
+  "display_digest": "40b892faa4f5f3d53b35eddb2f88cc36624ac496395be9074a212d4488e33fcd",
+  "folder": "QBt1-Display1-trait-description-table",
+  "generated_by": "haipipe-view",
+  "handoff": {
+    "blockers": [
+      "View acceptance is waiting",
+      "Display acceptance is waiting"
+    ],
+    "eligible": false
+  },
+  "id": "QBt1-Display1",
+  "kind": "table",
+  "owner_view": "QBt1-for-view",
+  "reader_job": "Separate construct meaning, observable signal, and measurement boundary.",
+  "schema_version": 1,
+  "source_digest": "0256bb2b08391e7d0fd86e9b61e5cbf9190fdf5c44da9f395c749b68d51884a9"
+}

@@ -5,7 +5,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [0.4.3] — 2026-08-04
 
-- Layers the application checker on the Stage Page Type and generic `haipipe-board-page-check` routing contract.
+- Layers the application checker on the Stage Page Type and generic `haipipe-page-check` routing contract.
 - Leaves application checkers, comment seeding, and the Gate Ledger local while the shared phase owns judgment boundaries.
 
 

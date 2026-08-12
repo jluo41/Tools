@@ -33,6 +33,7 @@ separate, deliberate act (`--into-sections`) rather than a side effect.
 """
 import argparse
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -59,8 +60,37 @@ def strip_number(title):
     return re.sub(r"^\d+(?:\.\d+)*\s+", "", title).strip()
 
 
+SECTION_TITLE = re.compile(r"(?m)^section_title:\s*(.+?)\s*$")
+# A caption or group title: `**Name**: what this shows.` on its own line. It is
+# SCAFFOLDING, exactly like the `(job)` line under a ####, and it usually
+# captions a fenced sketch that was already dropped. It reached the .tex as
+# literal `**bold**`, which LaTeX renders as asterisks around the words.
+GROUP_TITLE = re.compile(r"^\*\*[^*]+\*\*\s*[:：]")
+# A division's own summary line, `<emoji> Establishes …`. It tells a BOARD
+# reader what the division is for, which a paper's reader learns from the prose
+# itself. Same class as the group title above: scaffolding, not manuscript.
+ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
+# Inline code is markdown's, not LaTeX's: `x` reached the .tex as literal
+# backticks around the word.
+CODE_SPAN = re.compile(r"`([^`]+)`")
+
+
+def section_title_of(page):
+    """The name this page's `\\section{}` takes, if the page declares one.
+
+    The page TITLE has two readers with different needs: a board reader wants
+    to know what kind of page it is, and LaTeX wants the section's real name.
+    Making one string serve both produced `\\section{page-type SECTION · owns
+    ONE FLAT .tex ...}`. The head key lets each have its own.
+    """
+    head = pathlib.Path(page).read_text(encoding="utf-8", errors="ignore")[:1500]
+    m = SECTION_TITLE.search(head)
+    return m.group(1) if m else None
+
+
 def build_section(page, displays, report):
     blocks, nfenced = md2docx.parse_page(page)
+    declared = section_title_of(page)
     if nfenced:
         report.append(f"{os.path.basename(page)}: {nfenced} fenced sketch(es) dropped")
     out, buf, seen = [], [], set()
@@ -79,9 +109,15 @@ def build_section(page, displays, report):
         if b[0] == "h":
             flush()
             lvl = LEVEL[min(b[1], 3) - 1]
-            out.append("\n\\%s{%s}\n" % (lvl, strip_number(b[2])))
+            name = strip_number(b[2])
+            if b[1] == 1 and declared:
+                name = declared
+            out.append("\n\\%s{%s}\n" % (lvl, name))
             continue
-        buf.append(b[1])
+        line = b[1].strip()
+        if GROUP_TITLE.match(line) or ESTABLISHES.match(line):
+            continue
+        buf.append(CODE_SPAN.sub(r"\\texttt{\1}", b[1]))
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".

@@ -45,7 +45,7 @@ The theory folder is `MS-IS-theory-model/` on disk, which `stages/section-kinds.
 
 ✅ `what welfare consequence follows`  ❌ `what the theoretical implications are`
 
-**The contract this page answers to** is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and its reference implementation is `QBv1-misq.md`. Every rule in the block below belongs to that contract, not to this page, so a rule changed here is changed there in the same pass.
+**The contract this page answers to** is `../../board/page-types/haipipe-page-for-venue/SKILL.md`, and its reference implementation is `QBv1-misq.md`. Every rule in the block below belongs to that contract, not to this page, so a rule changed here is changed there in the same pass.
 
 ```text
   🖼 THREE FIGURES        what each one answers
@@ -1093,9 +1093,9 @@ No sentence of appendix prose is quoted anywhere in the pack.
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`
+- `../../board/page-types/haipipe-page-for-venue/SKILL.md`
   The venue-page contract: the three figures, the five Files groups, the `Sec-<n>` index, the two-source rule, and the reference-not-rulebook principle. This page reads that file rather than reading the reference page, so a rule this page discovers is written there in the same pass.
-- `../../board/haipipe-board-page/SKILL.md`
+- `../../board/haipipe-page/SKILL.md`
   The base frame that contract extends. Load it first; it owns the seven sections and their order.
 - `QBv1-misq.md`
   The contract's reference implementation, and the nearest sibling desk. Read it for the shape of a finished venue page, and for the MISQ side of every comparison `2` draws.

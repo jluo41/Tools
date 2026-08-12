@@ -24,7 +24,7 @@ haipipe-paper 0.7.0                   the only registered paper skill · intent 
 paper/S01-opening … S10-round         stage DATA · stage.md contract + craft + checker
      │ hands the S page over
      ▼
-haipipe-board-page 0.21.0             TYPE x PHASE · CREATE / WORK ON / RUN
+haipipe-page 0.21.0             TYPE x PHASE · CREATE / WORK ON / RUN
      ├── DRAFT                        stage Markdown · sentence apparatus
      ├── PROBE ──────────────────────▶ probe/haipipe-probe
      │                                  QA-probe to QA-bank; the stake never crosses
@@ -71,7 +71,7 @@ Their decisions did not vanish. Stage resolution and the lifecycle became intern
 One paper page remains, `Skill-0`, and the next one is due only when the paper family registers a second skill.
 
 ### What does not get a new page yet
-`haipipe-board-sentence` 0.3.1 owns the sentence apparatus, including `~~deleted~~` and `**added**` rendering, and `haipipe-board` 0.124.x renders it; both are mirrored on the Boardform board's own pages, not here. The MISQ and UTD-IS venue files under `../../paper/venue/playbook-utd-is/` are style sources, not executable skills; a page links to them rather than duplicating them. `check`, `check-evidence`, and the REVISE child workers never earned a page of their own, and on 260805-260806 they were retired into `../../paper/_old/` without ever getting one.
+`haipipe-sentence` 0.3.1 owns the sentence apparatus, including `~~deleted~~` and `**added**` rendering, and `haipipe-board` 0.124.x renders it; both are mirrored on the Boardform board's own pages, not here. The MISQ and UTD-IS venue files under `../../paper/venue/playbook-utd-is/` are style sources, not executable skills; a page links to them rather than duplicating them. `check`, `check-evidence`, and the REVISE child workers never earned a page of their own, and on 260805-260806 they were retired into `../../paper/_old/` without ever getting one.
 
 ## Aims
 - [x] 🗺️ Identify the first cohort
@@ -96,7 +96,7 @@ The cohort was rendered as six named skill pages and stands at one, `Skill-0`. I
   The one door at 0.7.0: intent, paper root, stage resolution from `stages/index.yml`, page handoff.
 - `../../paper/S01-opening/` through `../../paper/S10-round/`
   Stage data: one `stage.md` contract per stage, plus craft files, templates, and checker scripts.
-- `../../board/haipipe-board-page/`
+- `../../board/haipipe-page/`
   The page engine at 0.21.0, which now runs what four of the retired skills used to run.
 - `../../board/page-phases/`
   DRAFT, PROBE, REVISE, and CHECK as contracts rather than skills.

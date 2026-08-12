@@ -369,6 +369,11 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         rep.add(WARN, "open-with-met-aims", name,
                 f"state is OPEN with {met}/{total} Aim(s) met; "
                 "either the state is stale or the Aim State is (SKILL.md `sync`)")
+    elif st == "🗂":
+        # FOLDED is terminal by MERGE, not by completion, so a folded page is
+        # never nagged about open Aims: its subject moved to another page and
+        # its own rows will never close. Same exemption a Meeting page gets.
+        pass
     elif st == "🟡" and total and closed == total:
         rep.add(WARN, "partial-with-nothing-open", name,
                 "state is PARTIAL with every Aim closed; either it is SETTLED "
@@ -387,6 +392,8 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_canvas_frames(text, name, rep, path.parent)
     check_duplicate_sections(text, name, rep)
     check_retired_sections(text, name, rep)
+    check_evidence_pointer(text, name, rep)
+    check_fence_balance(text, name, rep)
 
 
 # QB4 §1 states seven rules for the Opening and NOT ONE of them was checked, so
@@ -442,7 +449,7 @@ def check_opening(text, name, rep):
     # 1 · the lead is an actual question, and it is the first thing on stage
     #
     # ...EXCEPT on a skill page. `Skill-<n>` and `Agent-<n>` mirror a unit that
-    # ships elsewhere and DECIDE NOTHING, so `haipipe-board-page-for-skill` rules
+    # ships elsewhere and DECIDE NOTHING, so `haipipe-page-for-skill` rules
     # the opposite: their Opening INTRODUCES the unit and may never open with a
     # question. Without this exemption the seven pages that obeyed that contract
     # each carried a WARN telling them to put the question back, and a writer
@@ -454,7 +461,7 @@ def check_opening(text, name, rep):
         if lead.endswith("?"):
             rep.add(WARN, "skillpage-opening-is-a-question", f"{name}:1",
                     "a skill page decides nothing, so its Opening INTRODUCES "
-                    "the unit and never asks (haipipe-board-page-for-skill); "
+                    "the unit and never asks (haipipe-page-for-skill); "
                     f"it reads {lead[:60]!r}")
     elif not lead.endswith("?"):
         rep.add(WARN, "opening-lead-not-a-question", f"{name}:1",
@@ -502,6 +509,100 @@ RETIRED_SECTIONS = {
     "Items to Finish": "renamed to `## Aims` (260731)",
     "Where we are": "renamed to `## States` (260731)",
 }
+
+
+def check_evidence_pointer(text, name, rep):
+    """An `### E<n>` division's QA-probe pointer must be able to BECOME a link.
+
+    A ```fence is CODE, and the renderer never links or chips anything inside
+    code. So a pointer written inside a figure is inert BY CONSTRUCTION: it
+    reads exactly like a working one and there is nothing to click.
+
+    `QBt4` shipped that way for a day. Its own Log records the decision that
+    caused it: the record anatomy makes `🔗 QA-probe:` the first line of an E
+    division and the caption rule makes `**Name**:` the first line of any
+    division, so to avoid printing the pointer twice it was moved INSIDE the
+    figure. That settled a FORMATTING collision and silently removed a
+    FUNCTION. `QBt5`, written the same week with the pointer above the fence,
+    rendered its link the whole time, which is what made the cause provable.
+
+    WHY THIS RULE HAD TO EXIST. Every other link check here answers "does this
+    href resolve". None of them can see a pointer that never became an href at
+    all: a dead link is visible and an ungenerated link is not. That blind spot
+    is the reason the same defect kept coming back, so the check is on the
+    SOURCE line rather than on the rendered anchor.
+    """
+    # SCOPED TO AN E DIVISION, because a page that DESCRIBES the pointer is not
+    # writing one. The first version flagged QC5, the page that documents this
+    # very defect, for quoting the string inside an example figure. A checker
+    # that fires on its own documentation is a checker people learn to ignore,
+    # which is worse than the defect it catches.
+    fence = in_e = False
+    divisions, pointers = [], []
+    for i, line in enumerate(text.split("\n"), 1):
+        if line.lstrip().startswith("```"):
+            fence = not fence
+            continue
+        if not fence and line.startswith("### "):
+            in_e = bool(re.match(r"^###\s+E\d+\s*·", line.strip()))
+            if in_e:
+                divisions.append((i, line.strip()[:60]))
+        if not fence and line.startswith("## "):
+            in_e = False
+        if in_e and "🔗 QA-probe:" in line:
+            pointers.append((i, fence))
+
+    buried = [i for i, f in pointers if f]
+    for i in buried:
+        rep.add(ERROR, "evidence-pointer-in-fence", f"{name}:{i}",
+                "the `🔗 QA-probe:` pointer sits inside a ``` fence, which is "
+                "code, so it can never render as a link and there is nothing "
+                "for a reader to click. Move it ABOVE the fence and backtick "
+                "the path.")
+    if divisions and not pointers:
+        rep.add(ERROR, "evidence-pointer-missing", f"{name}:{divisions[0][0]}",
+                f"{len(divisions)} `### E<n>` division(s) and no `🔗 QA-probe:` "
+                "pointer anywhere, so the page names no record to open.")
+
+
+def check_fence_balance(text, name, rep):
+    """An unclosed FENCE swallows the rest of the page, silently.
+
+    Everything after it renders as code: Aims, States, Files and Log come out
+    as raw markdown inside one grey box. The page still builds, still passes
+    every other check, and still reports 0 errors. JL found it by LOOKING at
+    the rendered `QBt5-for-value` on 260807, where a slice edit had removed one
+    fence's opening line and left its closing one, so parity was inverted from
+    that point to the end of the file.
+
+    Cheap to check and impossible to catch by reading, which is what earns it a
+    rule: the damage shows at the BOTTOM of the page and the cause is in the
+    middle.
+    """
+    opens, state, managed = [], False, False
+    for i, line in enumerate(text.split("\n"), 1):
+        st = line.lstrip()
+        # MANAGED SPANS ARE NOT THIS PAGE'S PROSE. A generated mirror page
+        # carries another unit's bytes verbatim, fences included, so counting
+        # them made parity odd on two pages that render perfectly. Measured
+        # 260807: the rule's first version flagged Skill-6 and Skill-8, and
+        # both were checked in the RENDERED html and found intact.
+        if st.startswith("<!--") and "haipipe:" in st:
+            managed = ":start" in st
+            continue
+        if managed:
+            continue
+        if st.startswith(FENCE):
+            state = not state
+            if state:
+                opens.append(i)
+            elif opens:
+                opens.pop()
+    if state and opens:
+        rep.add(ERROR, "fence-unclosed", "%s:%d" % (name, opens[-1]),
+                "a fence is never closed, so every section below it renders as "
+                "code. The page still builds and every other check still "
+                "passes, which is why this one exists.")
 
 
 def check_retired_sections(text, name, rep):
@@ -865,8 +966,8 @@ def check_one_canvas(text, name, rep):
 
 
 # ---- QB6 §5.1 rule 1: type resolution runs BEFORE any per-type rule ----
-# The base contract (`haipipe-board-page/SKILL.md`) resolves ① to ⑤ and stops
-# at the first key that matches. Step ③ is REQUIRED on its four types and BEATS
+# The base contract (`haipipe-page/SKILL.md`) resolves ① to ⑤ and stops
+# at the first key that matches. Step ③ is REQUIRED on its declared types and BEATS
 # the filename, which is what settles the two real collisions, `S-Display-4c`
 # (a stage filename, a display page) and `QA4` (a Q filename, a slide deck).
 #
@@ -875,8 +976,10 @@ def check_one_canvas(text, name, rep):
 # units are `Pitch`, `Seed`, `C`, `C0`, `R1`, `1a` and `Dash`; a first version
 # demanded a digit and reported 25 of 59 pages on the live MISQ paper as
 # claimed by nothing, which was the pattern being wrong, not the board.
+FENCE = "`" * 3
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
-PAGE_TYPE_VALUES = ("display", "slide", "design", "section", "labeling")
+PAGE_TYPE_VALUES = ("display", "slide", "design", "section", "labeling",
+                    "narrative", "dash", "view")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 

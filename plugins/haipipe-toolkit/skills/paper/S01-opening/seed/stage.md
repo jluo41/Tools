@@ -51,6 +51,7 @@ artifact_fallback: 0-lifecycle/0-seed/0-seed.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+displays: 0-lifecycle/S03-literature/display/L<n>-<topic>/ | 0-lifecycle/S04-value/display/V<n>-<topic>/  # candidate cards paired with probes; formal units remain in S05
 checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage seed
                           # run by CHECK before judging; path relative to the skills root
 template: template.md

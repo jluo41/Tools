@@ -6,7 +6,7 @@ metadata:
   argument_hint: "[stage <stage-name>] [intervention-path]"
   version: "0.1.6"
   last_updated: "2026-08-04"
-  summary: "Application-specific DRAFT worker layered on haipipe-board-page-draft: settle the stage promise and artifact, raise stake-bearing Q-consumers, and stop before every PROBE-side field."
+  summary: "Application-specific DRAFT worker layered on haipipe-page-draft: settle the stage promise and artifact, raise stake-bearing Q-consumers, and stop before every PROBE-side field."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,13 +15,13 @@ Skill: haipipe-application-draft (internal phase worker)
 
 DRAFT phase worker. A stage calls it whenever the Page router enters DRAFT. The calling stage passes its artifact spec (files, content structure, done-criteria); this worker turns intent into a settled stage doc.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-draft/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-draft/SKILL.md`.
 Those contracts own the Stage Page shape and DRAFT authority.
 This file adds only application artifact knowledge.
 
 ## Rules
 
-The DRAFT authority lives in `haipipe-board-page-draft`.
+The DRAFT authority lives in `haipipe-page-draft`.
 `../../../../probe/haipipe-probe/SKILL.md` supplies the Q-consumer vocabulary and evidence-wall boundary only.
 On a phase conflict, the Page Phase contract wins; application-specific additions are the steps below.
 

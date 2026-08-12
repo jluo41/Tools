@@ -1,0 +1,33 @@
+\begin{thebibliography}{4}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{{\tt #1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem[{Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
+  Neelakantan, Shyam, Sastry, Askell et~al.}]{brown2020language}
+Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J.~D., Dhariwal, P.,
+  Neelakantan, A., Shyam, P., Sastry, G., Askell, A., et~al. 2020.
+  \enquote{Language models are few-shot learners,} {\it Advances in neural
+  information processing systems\/} (33), pp. 1877--1901.
+
+\bibitem[{Hu et~al.(2024)Hu, He, Wang, Zhao, Shao, and Nie}]{hu2024llm}
+Hu, L., He, H., Wang, D., Zhao, Z., Shao, Y., and Nie, L. 2024. \enquote{Llm vs
+  small model? large language model based text augmentation enhanced
+  personality detection model,} in {\it Proceedings of the AAAI Conference on
+  Artificial Intelligence\/}, vol.~38, , vol.~38.
+
+\bibitem[{McGrath et~al.(2018)McGrath, Priestley, Zhou, and
+  Culligan}]{mcgrath2018validity}
+McGrath, R.~J., Priestley, J.~L., Zhou, Y., and Culligan, P.~J. 2018.
+  \enquote{The validity of online patient ratings of physicians: analysis of
+  physician peer reviews and patient ratings,} {\it Interactive Journal of
+  Medical Research\/} (7:1), p. e9350.
+
+\bibitem[{Nazi(2024)}]{Nazi2024LLMHealthcare}
+Nazi, K. 2024. \enquote{Large Language Models in Healthcare and Medical Domain:
+  Applications, Opportunities, and Challenges,} {\it Informatics\/} (11:3),
+  p.~57.
+\newline\urlprefix\url{https://www.mdpi.com/2227-9709/11/3/57}
+
+\end{thebibliography}

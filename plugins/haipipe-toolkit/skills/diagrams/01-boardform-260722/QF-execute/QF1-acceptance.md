@@ -257,7 +257,7 @@ Seven decisions or implementations remain open: a checker that can verify a 🧩
   Not repaired here: another session was editing `status.py` and `SKILL.md` during this run, and repairing a test under an active writer would race them. Reported instead, per the cross-board law.
 - 260802 CC · 🟢 Everything else deterministic passes
   `check.py` on this board: 52 pages, 0 error, 0 gap. `skillpage.py check`: all 8 skill and agent pages current. `haipipe-writing`'s `tests/test_roundtrip.py`: all round trips hold.
-  `cli/agree.py` reported one real defect, `haipipe-board-sentence` declaring 0.3.0 against a changelog stopping at 0.2.0, which was written up and now reports clean.
+  `cli/agree.py` reported one real defect, `haipipe-sentence` declaring 0.3.0 against a changelog stopping at 0.2.0, which was written up and now reports clean.
 - 260802 CC · 🟡 `agree.py` cannot tell an illustrative path from a dead one
   It reported 7 dead or non-resolving paths in `haipipe-board`'s `SKILL.md` and `ref/`, and the three checkable ones, `board/_assets/board.css`, `board/_assets/board.js` and `board/QA/`, all EXIST inside a real board folder.
   They are illustrative paths describing what a generated board contains, resolved by the tool against the skill directory instead.

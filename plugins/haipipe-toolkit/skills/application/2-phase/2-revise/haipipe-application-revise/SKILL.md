@@ -6,7 +6,7 @@ metadata:
   argument_hint: "[stage <stage-name>] [intervention-path]"
   version: "0.1.2"
   last_updated: "2026-08-04"
-  summary: "Application-specific REVISE worker layered on haipipe-board-page-revise, adding venue and audience quality under fixed Aims."
+  summary: "Application-specific REVISE worker layered on haipipe-page-revise, adding venue and audience quality under fixed Aims."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-application-revise (internal phase worker)
 
 REVISE phase worker. Runs whenever the Page router selects REVISE. Agent-only: change the text directly and leave a short why-comment in `_LOG`; never switch to comment-first mode.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-revise/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-revise/SKILL.md`.
 This file adds application quality rules to that fixed-promise authority.
 
 ## What REVISE means

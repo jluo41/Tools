@@ -65,6 +65,7 @@ artifact: 0-lifecycle/S06-main/S-{board_family}-{board_unit}-{board_slug}.md
                           # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
                           # Main vs Appendix and its reader order decides the number or letter.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+candidate_displays: 0-lifecycle/S03-literature/display/L<n>-<topic>/ | 0-lifecycle/S04-value/display/V<n>-<topic>/  # read selected/paper-bound cards; never create them here
 checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage section-edit
                           # run by CHECK before judging; path relative to the skills root
 craft:                    # data files the DRAFT/REVISE/CHECK phases load after the type
@@ -152,7 +153,7 @@ formatting:
   tables: "bullet lines, never markdown tables, anywhere in a Q-consumer record"
   template_residue: "grep -c '<tpl' {section}.md must print 0"
 
-displays: file-only       # JL ruling: this stage FILES a display request, it never CREATES one
+displays: file-only       # JL ruling: this stage FILES a formal display request, it never CREATES a candidate or unit
 display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # a DR row goes here; the units
                           # themselves come from displays/ and 0-lifecycle/S05-display/
 display_split: |          # BINDING, owned by ../../S05-display/display/stage.md (`display_split:`) — read it there.

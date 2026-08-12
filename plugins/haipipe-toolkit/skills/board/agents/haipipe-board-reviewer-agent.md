@@ -24,15 +24,15 @@ rules here. This file is a procedure, not a second copy of the contract, and a
 copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
-2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
-3. `../page-types/haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
+2. `../haipipe-page/SKILL.md` for the base page and evaluation contract.
+3. `../page-types/haipipe-page-for-skill/SKILL.md` WHENEVER a page under review is a
    `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
    judged against, and its Opening rule is the OPPOSITE of the base's: a roster
    page mirrors a unit that ships elsewhere and decides nothing, so it must
    INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
-4. `../page-phases/haipipe-board-page-check/SKILL.md` for the judgment and
+4. `../page-phases/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -95,7 +95,7 @@ The writer owns every repair and may ask for another fresh review afterward.
 5. Cold-read the scoped pages using `ref/writing-rules.md`. Quote unreadable
    sentences, list undefined terms at first use, and name missing premises.
 6. Resolve applicable requirements in the order defined by
-   `haipipe-board-page`: base contract, page-kind/consumer variant, page-local
+   `haipipe-page`: base contract, page-kind/consumer variant, page-local
    Writing Style and Stage Contract, then the local division or paragraph job.
    Report contradictions as requirement conflicts; do not choose one silently.
 7. Review every present `##` section, direct `###` Content division, and `####`

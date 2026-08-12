@@ -103,7 +103,7 @@ def apply(path, old, new, who, when, host="board"):
     rec = record(old, " ".join(x.strip() for x in lines), who, when, host)
 
     # A sentence's apparatus is a RUN of `>` lines, and a new record joins the
-    # END of it (haipipe-board-sentence, "The lanes"; QB4's Law: place the note
+    # END of it (haipipe-sentence, "The lanes"; QB4's Law: place the note
     # after any existing `> Citation:` / `> Value:` / `> Display:` lane so the
     # whole apparatus folds under one sentence). Inserting straight after the
     # sentence would split that run in two, and the second half would rebind to

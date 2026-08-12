@@ -52,9 +52,10 @@ artifact_fallback: 0-lifecycle/S01-opening/3-narrative.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
-display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
-                          # display, filed on this stage's behalf; the DISPLAY stage owns the file
-                          # and advances its statuses
+displays: 0-lifecycle/S03-literature/display/L<n>-<topic>/ | 0-lifecycle/S04-value/display/V<n>-<topic>/  # Narrative assigns claim role and selects candidates before S05 opens a unit
+display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # one DR row per SELECTED candidate,
+                          # filed on this stage's behalf; the DISPLAY stage owns the formal unit
+                          # and advances its acceptance statuses
 checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage narrative
                           # run by CHECK before judging; path relative to the skills root
 craft:                    # data files DRAFT loads after the type contract (ex workers/)
@@ -113,7 +114,7 @@ done_criteria:
   - "no [GAP] or [PENDING] beat without a Q-consumer Aim record and a nested question entry under S03 or S04"
   - "no placeholder without its bracket — a \\cite{TOADD} or {VAL:?} carrying no [Q-Narrative-<n>]
      is a hole no question will ever fill"
-  - "every beat needing a display carries a DR row in 0-lifecycle/S05-display/_DISPLAY_REQUEST.md"
+  - "every beat needing a display names a selected candidate card; only then does it carry a DR row in 0-lifecycle/S05-display/_DISPLAY_REQUEST.md"
   - "per-beat interrogation complete — an independent subagent ruled on every beat"
   - "Spine present, and every beat below it serves it"
   - "venue contract consulted for arc shaping (S-Venue-0-venue.md; pack fallback if absent)"
@@ -233,8 +234,9 @@ Narrative asks per BEAT — a beat that cannot be sourced is a beat that cannot 
                   Every [LIT] tag is this question, not yet asked.
 🕳️ gap beat      A [GAP] beat has no evidence at all. What would produce it, and is it worth
                   producing? Every [GAP] is a question or a cut — never a maybe.
-🖼️ display need  Does this beat need the reader to SEE something? Then it owes a DR row in
-                  0-lifecycle/S05-display/_DISPLAY_REQUEST.md, not a promise.
+🖼️ display need  Does this beat need the reader to SEE something? Select a same-numbered
+                  candidate card first, name its claim and role, then file its DR row in
+                  0-lifecycle/S05-display/_DISPLAY_REQUEST.md.
 🧵 arc break     Does the throughline survive this beat order, or does the argument need a fact
                   we have not established to get from here to there?
 ```

@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "QBt1-for-view",
+  "page_id": "QBt1",
+  "title": "The first unified View specimen",
+  "page_source": "../../QBt1-for-view.md",
+  "acceptance": "waiting",
+  "inputs": {
+    "qa_probes": [
+      "input/QA-probes/1-canonical-definition.md",
+      "input/QA-probes/2-observable-signal.md",
+      "input/QA-probes/3-measurement-boundary.md"
+    ],
+    "sources": [
+      "input/sources/references.bib",
+      "input/sources/source-manifest.md"
+    ]
+  },
+  "displays": [
+    {
+      "id": "QBt1-Display1",
+      "folder": "QBt1-Display1-trait-description-table",
+      "unit_contract": "display-unit-output-v1",
+      "kind": "table",
+      "reader_job": "Separate construct meaning, observable signal, and measurement boundary.",
+      "body_bindings": ["EC1", "EC2", "EC3", "EC4"],
+      "status": "rendered",
+      "acceptance": "waiting",
+      "preview_image": "preview.png",
+      "preview_pdf": "preview.pdf"
+    },
+    {
+      "id": "QBt1-Display2",
+      "folder": "QBt1-Display2-trait-illustration",
+      "unit_contract": "display-unit-output-v1",
+      "kind": "illustration",
+      "reader_job": "Contrast construct meaning with the patient-perceived signal.",
+      "body_bindings": ["EC1", "EC2", "EC3", "EC4"],
+      "status": "rendered",
+      "acceptance": "waiting",
+      "preview_image": "preview.png",
+      "preview_pdf": "preview.pdf"
+    }
+  ],
+  "consumers": [
+    {
+      "id": "C1",
+      "target": "../../consumer/S-Main-4-results.md",
+      "uses": ["QBt1-Display1"],
+      "placement": "Results / construct interpretation",
+      "status": "planned"
+    }
+  ],
+  "build": {
+    "fixture_root": "../../_fixture",
+    "formats": ["tex", "pdf", "docx"]
+  }
+}

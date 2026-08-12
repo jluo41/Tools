@@ -40,7 +40,7 @@ It succeeds when a newcomer can name each shipped unit and find every settled ru
 `QC1b` names every subskill candidate and applies one test to each: is it its own door, or a section of the manual?
 The roster took its shape on 260731: one door, the board+group altitude, two loadable SPECs, and the write-back VERB; `digest` is named and unshipped.
 Since 260802 the board+group altitude lives inside the write verb: `haipipe-board-routing` absorbed `haipipe-board-index`, so four skills ship today.
-The engine `haipipe-board-page` now carries Page = Type x Phase, with ten types under `page-types/` and four phases under `page-phases/` shipped as data, not as their own doors.
+The engine `haipipe-page` now carries Page = Type x Phase, with ten types under `page-types/` and four phases under `page-phases/` shipped as data, not as their own doors.
 
 ## Aims
 - [ ] 🧠 SKILL.md's cut line is written as a rule (QC1a)

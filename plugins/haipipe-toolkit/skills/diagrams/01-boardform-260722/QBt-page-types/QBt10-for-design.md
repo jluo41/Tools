@@ -1,4 +1,4 @@
-# QBt10 · The companion folder: one brief, three shapes, and the rule that won
+# QBt10 · page-type DESIGN · owns NO folder of its own; one Content division per CANDIDATE, closing on a SELECTION that keeps the losers
 
 state: 🟡 PARTIAL · selected 260806 by JL; the record's `downstream` line is still open and one criterion is unmet
 page-type: design
@@ -13,7 +13,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
 
 **What a companion folder is**: the folder a page owns, holding what that page produces. `QBt3-for-display` owns a build script and a rendered figure. `QBt5-for-value` owns two QA records and their extracts. None of that fits inside a `.md` file, so each page needs somewhere on disk, and that somewhere needs a name nobody has to keep true by hand.
 
-**Does a design brief own a companion?**: no, and this page has none. `haipipe-board-page-for-design` declares no companion folder and owns no scripts. A candidate here IS a folder layout, so each one is drawn whole inside its own division, which is what the contract asks for: the artifact itself, never a pointer to something that scrolls away. If this page ever did own a companion, the winning rule would name it `designs/QBt10-for-design/`, and nothing on disk claims that path today. `python3 unit.py check` reports this file as a view page, which is the correct reading: a design brief SELECTS, it does not PRODUCE.
+**Does a design brief own a companion?**: no, and this page has none. `haipipe-page-for-design` declares no companion folder and owns no scripts. A candidate here IS a folder layout, so each one is drawn whole inside its own division, which is what the contract asks for: the artifact itself, never a pointer to something that scrolls away. If this page ever did own a companion, the winning rule would name it `designs/QBt10-for-design/`, and nothing on disk claims that path today. `python3 unit.py check` reports this file as a view page, which is the correct reading: a design brief SELECTS, it does not PRODUCE.
 
 **Where candidates live on a real paper**: inside the display unit's own workspace, never in a folder belonging to the design page. On the MISQ paper, `0-lifecycle/S05-display/workspace/<unit>/candidates/` exists for all eleven units and two of them hold real files: `S-Display-1b-research-design/candidates/` carries `E-combined-design.png`, three `F-stepwise-icons.*`, `G-codex-4panel.png` and two `H-research-design.*`, and `S-Display-4c-discretion-gradient/candidates/` carries `C-enriched.pdf` and `.png`. Those letter prefixes are candidate names with no page anywhere saying what each one was trying to do or why the others lost. That gap is what this page type closes.
 
@@ -54,14 +54,27 @@ Where does a typed page keep the bytes it owns, and what names that folder?
   ├── QBt5-for-value.md                   route: inward
   ├── QA-probe/                           🔑 the value type's level
   │   └── QBt5-for-value/                 🏷 the page's filename, exactly
-  │       ├── 1-drift-counts.md
-  │       └── 1-drift-counts.data/        ♻️ candidate A, one level down
+  │       ├── 1-artifact-paths.md
+  │       └── 1-artifact-paths.data/        ♻️ candidate A, one level down
   │           └── counts.csv              ← that record's one output:
   ├── QBt10-for-design.md                 ← this page. No companion.
   └── unit.py
   ─────────────────────────────────────────────────────────────────────
   ⚠️ QA-probe is a ruled NAME, not the plural of value. The rule says
      <type-plural> and its second live instance does not obey it literally
+```
+
+**Its own input and output**: a DESIGN page owns no folder; its candidates live where the thing being designed lives.
+
+```text
+ 📥 INPUT   ↗ elsewhere, and WHICH elsewhere depends on the brief
+              a layout brief  → the group's own tree, which is this page's case
+              a render brief  → the downstream unit's own candidates/,
+                                e.g. display/QBt3-for-display/candidates/A-narrow.pdf
+ 📤 OUTPUT  a SELECTION record naming the winner, why, and each loser's
+            disposition, plus the winner promoted into the unit's assets/
+              ▶ a losing division is never silently deleted: the reason for
+                NOT choosing is part of the design record
 ```
 
 ## Content
@@ -79,8 +92,8 @@ Where does a typed page keep the bytes it owns, and what names that folder?
   │   └── out/assets/figure.txt
   ├── QBt5-for-value.md
   ├── QBt5-for-value.data/
-  │   ├── 1-drift-counts.md
-  │   └── 1-drift-counts.data/       a .data nested inside a .data
+  │   ├── 1-artifact-paths.md
+  │   └── 1-artifact-paths.data/       a .data nested inside a .data
   ├── QBt10-for-design.md
   └── … one more pair per page, forever, in one flat root
   ─────────────────────────────────────────────────────────────────
@@ -97,7 +110,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
 
 **What it fails**: the group root. Ten page types times one companion each puts every type's bytes in one flat listing, interleaved with the pages themselves, and there is then no way to ask "show me every display companion" without reading each page's head key first. A sweep that has to open files to find folders is not a sweep.
 
-**Where it went**: merged, and the merge is not a consolation prize. The suffix is on disk right now doing exactly the job it is good at, one level down: `QA-probe/QBt5-for-value/1-drift-counts.data/counts.csv` is a QA RECORD's companion, not a page's. At that level there is only one kind of thing in the drawer, so P2 never applies, and P1 and P3 still pay. `unit.py`'s `atoms()` skips every file under a `*.data` parent, which is the line that makes the suffix mean evidence for a person rather than an interface for a machine.
+**Where it went**: merged, and the merge is not a consolation prize. The suffix is on disk right now doing exactly the job it is good at, one level down: `QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv` is a QA RECORD's companion, not a page's. At that level there is only one kind of thing in the drawer, so P2 never applies, and P1 and P3 still pay. `../../../board/haipipe-board/cli/build-displays.py`'s `atoms()` skips every file under a `*.data` parent, which is the line that makes the suffix mean evidence for a person rather than an interface for a machine.
 
 ### 2 · Candidate B · one shared probes drawer keyed by a typed id · 🪦 DROPPED
 
@@ -109,7 +122,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
   📂 papers/<paper>/
   └── probes/                        one drawer for all evidence
       ├── V01-drift/                 ✍️ V01-drift is typed by a person
-      │   └── 1-drift-counts.md        requires: S-Value-1   ← the pairing
+      │   └── 1-artifact-paths.md        requires: S-Value-1   ← the pairing
       └── L03-<topic>/
           └── 2-<slug>.md              requires: S-Lit-3
   ─────────────────────────────────────────────────────────────────
@@ -129,7 +142,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
 
 **What killed it**: the id is a second name for one thing, and a second name is a thing that can disagree with the first. `V01-drift` matches no page's filename, so a reader holds two vocabularies at once, and a rename on either side leaves the other silently wrong. Worse, pairing through a typed id forced the PAGE to carry a stable id too, which is why `page_id()` required an `S-<Family>-<n>` prefix. That requirement refused every board that is not a paper. `QBt5-for-value` was refused by it, on the very board the specimens were being written for.
 
-**Where it went**: dropped, with one read-only tail. `PROBE_DIRS = ("QA-probe", "probes")` in `topic_entry_contract.py` still globs the old name so each paper migrates on its own clock, and `requires:` still WINS where a record declares it, on the stated reason that a stale declared line should be caught rather than quietly overridden by the folder it sits in. Neither of those is a partial win for B: both are migration surface, and P4 above is why they exist. A fossil is still readable in `displays/QBt3-for-display/source/build.py`, whose docstring points at `probes/V01-drift/1-drift-counts.md`, a path that has not existed since the rename.
+**Where it went**: dropped, with one read-only tail. `PROBE_DIRS = ("QA-probe", "probes")` in `topic_entry_contract.py` still globs the old name so each paper migrates on its own clock, and `requires:` still WINS where a record declares it, on the stated reason that a stale declared line should be caught rather than quietly overridden by the folder it sits in. Neither of those is a partial win for B: both are migration surface, and P4 above is why they exist. A fossil is still readable in `display/QBt3-for-display/source/gen_display_pipeline.py`, whose docstring points at `probes/V01-drift/1-artifact-paths.md`, a path that has not existed since the rename.
 
 ### 3 · Candidate C · a type level, then the page's own name · 🏆 WINNER
 
@@ -145,7 +158,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
           └── …                      whatever pages of that type own
   ─────────────────────────────────────────────────────────────────
   live in this folder, both of them
-    displays/QBt3-for-display/       the display type's level
+    _fixture/displays/QBt3-for-display/       the display type's level
     QA-probe/QBt5-for-value/         the value type's level
   ─────────────────────────────────────────────────────────────────
   fit to the brief                              🚫 criteria written after
@@ -178,7 +191,7 @@ Where does a typed page keep the bytes it owns, and what names that folder?
   ─────────────────────────────────────────────────────────────────
   loser A     merged          the .data suffix keeps its job one
                               level down, on a RECORD's companion:
-                              1-drift-counts.data/counts.csv
+                              1-artifact-paths.data/counts.csv
   ─────────────────────────────────────────────────────────────────
   loser B     dropped         a typed id is a second name for one
                               thing, and it forced the S-prefix that
@@ -221,10 +234,10 @@ These are page-level Aims, not `A<n>` groups, and on this Page Type they always 
 ## States
 
 - 260806 CC · This page declares no `provides:` and no `needs:`, and `python3 unit.py check` reports it as `👁 a view page, provides nothing, correct`. That is the right reading of the type: a design brief selects between candidates and produces nothing another page reads. `QBt3` is the opposite shape, an atom that provides a render; `QBt5` is a view over N atoms. Three pages, three shapes, one resolver.
-- 260806 CC · One defect found while writing, left for the page that owns it. `displays/QBt3-for-display/source/build.py` still points its docstring at `probes/V01-drift/1-drift-counts.md`, which has not existed since the 260806 rename; its `NEED` constant is correct. That file belongs to `QBt3`, so it was reported rather than edited.
+- 260806 CC · One defect found while writing, left for the page that owns it. `display/QBt3-for-display/source/gen_display_pipeline.py` still points its docstring at `probes/V01-drift/1-artifact-paths.md`, which has not existed since the 260806 rename; its `NEED` constant is correct. That file belongs to `QBt3`, so it was reported rather than edited.
 
 ### P · 🧾 The brief's criteria, and the record that closes them
-- ✅ P1 · Six live companions in this group each carry their page's filename exactly, `displays/QBt3-for-display/`, `QA-probe/QBt4-for-literature/`, `QA-probe/QBt5-for-value/`, `slides/QBt9-for-slide/`, `venue/QBt2-for-venue/` and the flat `sections/QBt6-for-section.tex`, and no file under `QA-probe/` carries a `requires:` line at all, so nothing in the group is typed twice.
+- ✅ P1 · Six live companions in this group each carry their page's filename exactly, `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/`, `QA-probe/QBt4-for-literature/`, `QA-probe/QBt5-for-value/`, `slides/QBt9-for-slide/`, `venue/QBt2-for-venue/` and the flat `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex`, and no file under `QA-probe/` carries a `requires:` line at all, so nothing in the group is typed twice.
 - ✅ P2 · One glob per type answers it without opening a page: `displays/*` is every display companion, `QA-probe/*` is every value and literature companion, `slides/*` and `venue/*` hold one each, and `python3 unit.py check` resolves 5 atoms and 5 view pages off those paths alone.
 - ✅ P3 · `topic_entry_contract.py:198` reads `topic_id = requires.group(1) if requires else relative.parts[-2]`, so both records under `QA-probe/QBt5-for-value/` pair to their page with no declared line anywhere in them, which is what commit `dd7998ee` bought.
 - 🔨 P4 · Neither half of the done-when is paid: `PROBE_DIRS = ("QA-probe", "probes")` still carries its second entry at `topic_entry_contract.py:39`, and nine topic folders still sit in three live `probes/` drawers, four under the MISQ paper's `S03-literature`, four under its `S04-value` and one under `Project-PhyPat-Simulation`, so no paper has migrated and the tail cannot drop yet.
@@ -237,11 +250,11 @@ These are page-level Aims, not `A<n>` groups, and on this Page Type they always 
 
 ## Files
 
-- `../../board/page-types/haipipe-board-page-for-design/SKILL.md`
+- `../../board/page-types/haipipe-page-for-design/SKILL.md`
   The contract this page is an instance of. If the two disagree, the contract wins and this page is the defect.
 - `../../board/haipipe-board/src/topic_entry_contract.py`
   Where the winner is implemented: `PROBE_DIRS` carries the loser's tail, `page_id()` carries the S-prefix removal, and the pairing comment states why a declared `requires:` still beats the folder.
-- `unit.py`
+- `../../../board/haipipe-board/cli/build-displays.py`
   The resolver. `check` reports this page as a view, and its `build_script` docstring is where the two companion levels, a page's and a record's, are written down in one place.
 - `QBt3-for-display.md`
   One of the two pages this brief was decided for, and the display specimen. Its Opening states the winning rule; its `source/build.py` still carries the loser's dead path in a docstring.
@@ -254,16 +267,19 @@ These are page-level Aims, not `A<n>` groups, and on this Page Type they always 
 
 ## Log
 
+- 260807 1215 · [REVISE-CC] CORRECTION to the 1200 row, which claimed this page's losing candidate was now a real file at `display/QBt3-for-display/candidates/A-narrow.pdf`. It is not. That file is real and reproducible (`gen_display_pipeline.py --candidate A` redraws it, and it lost because at 7.4 inches the third column falls outside the axis), but it belongs to a DIFFERENT brief: the figure's geometry. THIS page's brief is the folder layout, its three candidates are layouts rather than images, and its winner C is what the group now carries on disk as `QA-probe/QBt5-for-value/1-artifact-paths.data/`. Both briefs are genuine and the first row ran them together.
+- 260807 1200 · [REVISE-CC] shape confirmed as MIRROR: this page owns no folder of its own. A design page's artifacts live where the thing being designed lives, which for a layout brief is the group's own tree and for a render brief is the downstream display unit's `candidates/`. Verified after the rebuild: `QA-probe/<page name>/<n>-<slug>.data/` on disk is candidate C exactly as selected.
+
 - 260806 · [DRAFT-CC] written as the `for-design` specimen: a real brief, three real candidate shapes, and the selection JL ruled on 260806. Both losers keep their divisions with their dispositions, which is the one hard rule of this type. The reconstruction, the criteria and every fit mark are marked 🚫; the shapes, the ruling and the two commits behind it are not.
 - 260806 · [DRAFT-CC] the SELECTION record's `downstream` line left open on purpose and carried as a Decision Now row, because the contract wants a display unit page there and this winner is a naming rule that nothing renders.
 - 260806 CC · Written as the `for-design` specimen: a real brief with real candidates, not an essay about the type, the same way `QB4` is both the page grammar and a page obeying it. The subject is this group's own companion-folder question, chosen so the history could be checked against disk instead of invented.
-- 260806 CC · P1 ✅ and P2 ✅ are met by the two live companions, `displays/QBt3-for-display/` and `QA-probe/QBt5-for-value/`. P3 ✅ is met by commit `dd7998ee`, which made `page_id()` fall back to a file's stem and let the drawer name be the binding.
+- 260806 CC · P1 ✅ and P2 ✅ are met by the two live companions, `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/` and `QA-probe/QBt5-for-value/`. P3 ✅ is met by commit `dd7998ee`, which made `page_id()` fall back to a file's stem and let the drawer name be the binding.
 - 260806 CC · P4 🔨 is not met and is not close. `PROBE_DIRS = ("QA-probe", "probes")` still carries both names on purpose so each paper migrates on its own clock, and no paper has migrated yet. The loser's tail outliving the loser is normal; it stops being normal when nobody remembers why it is there, which is what division 2 exists to prevent.
 - 260806 CC · P5 ⬜ is the one thing left deliberately incomplete. The `downstream` line of the SELECTION record is open because the contract wants a display unit page there and this winner is a rule that no unit renders. Recorded as a Decision Now row rather than filled with an invented path.
 - 260806 CC · The reconstruction is marked rather than hidden. The three shapes, the winner, the date, the ruler and both commits are real and were read off git and off disk. The brief form, the four criteria, and every ✅ or ❌ in a fit block were written after the fact, which is the reverse of how the contract says a brief runs, and every one of them carries 🚫.
-- 260806 CC · Where the SELECTION record sits is this page's own proposal, not the contract's rule. `haipipe-board-page-for-design` says the record CLOSES the page and never says which section holds it. Written here as the last Content division, because a division is the only span Content offers and putting a dated ruling in States would turn a record into a status line. If the contract meant States, this page is the defect and not the contract.
+- 260806 CC · Where the SELECTION record sits is this page's own proposal, not the contract's rule. `haipipe-page-for-design` says the record CLOSES the page and never says which section holds it. Written here as the last Content division, because a division is the only span Content offers and putting a dated ruling in States would turn a record into a status line. If the contract meant States, this page is the defect and not the contract.
 - 260806 CC · ⚠️ SUPERSEDED, and kept for the failure mode it describes rather than for its opening claim. It was written while this page was unregistered; `board.md`'s `## Pages` now lists all eight QBt files including this one, so the dead-fragment damage below is repaired and no reader should act on the first sentence. What it said at the time: not registered in `board.md`'s `## Pages`, whose QBt list still names two files. Registration is the board's write, not this page's, and it was worth doing quickly: while any page is unregistered the build creates a group whose token is the glyph `⚠️`, `link_faces()` puts that token in `GROUP_IDS`, and every bare `⚠️` inside every ASCII figure on the board becomes `href="#group-<span class="eu">⚠️</span>"`. Fifteen pages now carry that dead fragment, including `QB1`, `QB2`, `QB4` and `QB8`, which nobody edited. The board's own baseline was two errors. One registration write clears all fifteen, and the boundary regex in `src/body.py` that lets a bare emoji be a linkable token is the defect underneath.
 - 260806 CC · This page's Aims are page-level `P` items rather than `A<n>` groups, and on this Page Type they always must be. `check_group_names()` reads `### A<n>` in Aims as the group of Content division `### <n>` and requires the two names to match; on a design page division `### 1` is a CANDIDATE and Aim 1 is a CRITERION, so the names can never match and every criterion would raise `group-name-drift`. `QB4` §0.5 already exempts `P`, so nothing needed changing in the engine, but the type contract says "Aims that ARE the brief's criteria" without saying which id shape survives that rule, and it should.
 - 260806 CC · The Content headings carry no backticked paths. A backticked path token inside a `###` heading renders a chip whose href skips `tree_reroot()`, which the 260806 sweep found on `QE5` and worked around at the source rather than in the renderer. The candidate paths therefore live in each division's caption and figure, where they read the same and break nothing.
-- 260806 1259 · [REVISE-CC] States now mirrors every Aim id; the nine dated records above moved out of States, which is where history belongs, and two stayed because they still describe right now. P1, P2 and P3 are ✅ on disk: six companions all named for their page, no `requires:` line under `QA-probe/` at all, and `topic_entry_contract.py:198` pairing off `relative.parts[-2]`. P4 is 🔨 with nine topic folders still in three `probes/` drawers. P5 is 🧠 on the first Decision Now row, never ✅, because `downstream` cannot be filled until the type rules whether a rule-shaped winner has a consumer. One moved record is now stale and was left as written: this page IS registered in `board.md`'s `## Pages`, and the checker reports no `not-in-pages` and no dead fragment on the board. One thing checked and worth writing down: `sections/` is the only type level with no page-named FOLDER, because a section's product is the flat file `sections/QBt6-for-section.tex` and its generator `sections/source/build.py` is shared by every section page, which `QBt6`'s Opening already rules is the type's answer rather than a breach of the winning rule.
+- 260806 1259 · [REVISE-CC] States now mirrors every Aim id; the nine dated records above moved out of States, which is where history belongs, and two stayed because they still describe right now. P1, P2 and P3 are ✅ on disk: six companions all named for their page, no `requires:` line under `QA-probe/` at all, and `topic_entry_contract.py:198` pairing off `relative.parts[-2]`. P4 is 🔨 with nine topic folders still in three `probes/` drawers. P5 is 🧠 on the first Decision Now row, never ✅, because `downstream` cannot be filled until the type rules whether a rule-shaped winner has a consumer. One moved record is now stale and was left as written: this page IS registered in `board.md`'s `## Pages`, and the checker reports no `not-in-pages` and no dead fragment on the board. One thing checked and worth writing down: `sections/` is the only type level with no page-named FOLDER, because a section's product is the flat file `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex` and its generator `../01-haipipe-paper-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex` is shared by every section page, which `QBt6`'s Opening already rules is the type's answer rather than a breach of the winning rule.
 - 260806 · [REVISE-CC] the stale record above is no longer left as written. A cold read hits "Not registered in `board.md`'s `## Pages`, whose QBt list still names two files" before it ever reaches the 1259 line admitting the opposite, so a top-down reader takes the false claim. `board.md`'s `## Pages` lists eight QBt files, `QBt10-for-design.md` among them, so the record is now marked SUPERSEDED at its head and its original wording is kept underneath as what it said at the time. Nothing else on the page changed; the dead-fragment mechanism it documents is still worth reading.

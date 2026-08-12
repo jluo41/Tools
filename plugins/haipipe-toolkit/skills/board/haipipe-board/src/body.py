@@ -113,6 +113,32 @@ def code_or_link(m):
 # that does not declare `dialect: paper` never pays for any of this.
 PAPER = None
 
+
+def use_paper(index):
+    """Install the dialect index AND widen the unit branch of MARKER to it.
+
+    WHY THIS IS NOT JUST AN ASSIGNMENT. `MARKER`'s unit branch was a fixed
+    naming pattern, `S-Display-<n>` or `display<NN>`, which is one paper's
+    convention rather than a rule about what a display unit is. A unit named
+    for its own page, which is what the folder rule has required since 260727,
+    only matched by luck: `S-Display-4c-…` did and `QBt3-for-display` did not,
+    so a correct unit on a board whose pages are not called `S-Display-*` could
+    never render an evidence card however finished it was. The names are known
+    at build time, so the branch is built FROM THE INDEX and matches exactly the
+    units that exist, which is both wider and stricter than a guess at a shape.
+    """
+    global PAPER, MARKER
+    PAPER = index
+    ids = {u.path.name for u in getattr(index, "displays", {}).values()
+           if getattr(u, "path", None)}
+    # A View-owned Display has a stable short id (`QBt1-Display1`) and a
+    # descriptive folder (`QBt1-Display1-main-table`). Both must open the same
+    # artifact Card; the paper dialect already maps the short id to the unit.
+    ids.update(getattr(index, "by_short", {}).keys())
+    ids = sorted(ids, key=len, reverse=True)
+    extra = ("|" + "|".join(re.escape(i) for i in ids)) if ids else ""
+    MARKER = re.compile(MARKER_SRC.replace("__UNITS__", extra))
+
 # The board's own Excalidraw host, set per build from board.md's `excalidraw:` key.
 EXCAL_HOST = ""
 
@@ -124,10 +150,9 @@ EXCAL_HOST = ""
 #                   The stage token may carry digits (a per-unit stage names
 #                   its unit in it), which is why it is [A-Za-z0-9]+ below.
 #   6 did           a display unit, in either layout and either length:
-#                   S-Display-4a · S-Display-4a-main-regression (workspace, the
-#                   folder is named for its page) · display02 · display02-x
-#                   (legacy). A page may write the SHORT form and a Section the
-#                   long one; both name the same unit.
+#                   S-Display-4a · display02 · QBt1-Display1 (short), or their
+#                   descriptive folder names (long). A page may write either;
+#                   both name the same unit.
 #                   ALWAYS A CARD, ruled by JL 260727. A unit name in prose
 #                   renders as the evidence card, never as a bare page link,
 #                   because the card already carries the owning page's anchor
@@ -140,12 +165,12 @@ EXCAL_HOST = ""
 # The bracket sits BESIDE its marker and is never fused into it.
 # The display id is fenced by lookarounds so `displays/display02-x/float.tex`
 # stays a path: no shorter prefix can satisfy the trailing guard either.
-MARKER = re.compile(
+MARKER_SRC = (
     r"\\cite[tp]?\*?\{([^}]*)\}(?:\s*\[(Q-[A-Za-z0-9]+-\d+)\])?"
     r"|\{VAL:\?([^}]*)\}(?:\s*\[(Q-[A-Za-z0-9]+-\d+)\])?"
     r"|\[(Q-[A-Za-z0-9]+-\d+)\]"
     r"|(?<![\w/-])((?:S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)"
-    r"(?:-[a-z0-9-]+)?)(?![\w/-])"
+    r"(?:-[a-z0-9-]+)?__UNITS__)(?![\w/-])"
     r"|\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}"
     r"|(?<![\w:/{-])((?:tab|fig):[a-z0-9_-]+)(?![\w-])"
     #   9 num  10 pct   a NUMBER in the prose. Last in the alternation on
@@ -156,6 +181,8 @@ MARKER = re.compile(
     #                   which is what scopes this to sentences that CLAIM
     #                   something measured (see cite_chips).
     r"|(?<![\w.,$/-])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+)(%)?(?![\w.,]*[\w])")
+
+MARKER = re.compile(MARKER_SRC.replace("__UNITS__", ""))
 
 # A year is a date, not a measurement, and a lone 0 or 1 is almost never a
 # finding. Skipping them is the difference between a highlight and a mess.
@@ -389,14 +416,30 @@ def _chip(kind, state, label, tip, meta=None, head=None):
     shown = (meta or {}).get("reference", "")
     rows = [x.strip() for x in tip.split("\n")
             if x.strip() and x.strip() != shown]
-    body = "".join(f"<p>{esc(x)}</p>" for x in rows)
+    # A source-authored span Card may name another Page as the thing it
+    # explains. Keep the payload plain, but make every exact Board Page id in
+    # it a real route. This is deliberately narrower than inline(): a popover
+    # must not recursively create citation/value/display buttons inside itself.
+    # The split-site writer relinks these fragments after it knows the target
+    # Page's generated path.
+    def card_row(x):
+        safe = esc(x)
+        return link_faces(safe) if kind == "card" else safe
+
+    body = "".join(f"<p>{card_row(x)}</p>" for x in rows)
+    sources = _sources(meta)
+    # A Display Card is opened to inspect the artifact. Put that inspection
+    # surface before the prose/status explanation so a short popover does not
+    # hide the image or table below its first scroll fold. Other Card kinds
+    # keep their established explanation-first order.
+    content = sources + body if kind.startswith("disp ") else body + sources
     CARDS.append(
         f'<div popover id="{cid}" class="chipcard {kind} {state}"'
         f' style="position-anchor:{anc}">'
         f'<div class="cch"><span class="cck">'
         f'{esc(head or f"{kind} · {state}")}</span>'
         f'<b>{esc(label)}</b></div>'
-        f'<div class="ccb">{body}</div>{_sources(meta)}</div>')
+        f'<div class="ccb">{content}</div></div>')
     return (f'<button type="button" class="chip {kind} {state}"'
             f' popovertarget="{cid}" style="anchor-name:{anc}"'
             f' title="{esc(tip)}">{esc(label)}</button>')
@@ -1530,4 +1573,3 @@ def render_thread(md):
         tops.append(cur)
     html = "".join(_thread_html(t)[0] for t in reversed(tops))
     return f'<div class="thread">{html}</div>'
-

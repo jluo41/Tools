@@ -42,7 +42,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `would a researcher outside this subfield stop scrolling`  ❌ `is the finding broadly significant`
 
-**The contract this page is written to** is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A venue page carries three figures in `## Diagram`, in this order, and a `## Files` section in these five groups:
+**The contract this page is written to** is `../../board/page-types/haipipe-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A venue page carries three figures in `## Diagram`, in this order, and a `## Files` section in these five groups:
 
 ```text
   🖼 THREE FIGURES        what each one answers
@@ -1197,9 +1197,9 @@ It is `Supplementary Figure N. Title.` as a bold title line, followed by a legen
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`
+- `../../board/page-types/haipipe-page-for-venue/SKILL.md`
   The venue-page contract: the three figures, the `Sec-<n>` index, the two-source rule, the five Files groups, the provenance stamp, and the rule that a slot neither source can fill is printed rather than left off. It is a loadable spec and never executes, which is why it is filed here and not under Engines. The link runs both ways: a rule changed on this page is changed in that file in the same pass.
-- `../../board/haipipe-board-page/SKILL.md`
+- `../../board/haipipe-page/SKILL.md`
   The base frame that contract extends. Load it first; it owns the seven sections and their order, the Aim form, and the Opening split.
 - `QBv-venue-packs/QBv1-misq.md`
   The contract's reference implementation, and the page this one copies its shape from. Read it before changing a shared structure here, because a divergence is either a deliberate outlet difference or drift, and only one of those is worth keeping.

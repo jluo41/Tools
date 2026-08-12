@@ -33,11 +33,11 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
        │     cli/              build.py check.py serve.py watch.py
        │                       xcal.py regroup.py skillpage.py stage.py
        │     status.py
-       ├── haipipe-board-page/                the ENGINE · Page = TYPE x PHASE
+       ├── haipipe-page/                the ENGINE · Page = TYPE x PHASE
        │                                      verbs CREATE / WORK ON / RUN
        ├── page-types/                        ten TYPE variants, one unit each
        ├── page-phases/                       four PHASE contracts
-       ├── haipipe-board-sentence/            SPEC · the atomic unit
+       ├── haipipe-sentence/            SPEC · the atomic unit
        ├── haipipe-board-routing/             VERB · BOTH altitudes
        │     SKILL.md · src/lanes.py          structure + anchored write-back
        ├── agents/                            reviewer · creator · orchestrator
@@ -55,7 +55,7 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
        board.excalidraw    the one scene, page frames + authored arrows
        fig/                image assets
        _archive/           retired pages, never deleted
-       _runs/              RUN receipts (haipipe-board-page RUN loop)
+       _runs/              RUN receipts (haipipe-page RUN loop)
        board/              📤 GENERATED site. never hand-edited
 
    ── ③ what ① renders ─────────────────────────────────────────────
@@ -219,14 +219,14 @@ These are the calls only JL can make; CC ticks nothing here.
   It absorbed the first subskill, `haipipe-board-index`, on 260802.
 - `../../board/agents/haipipe-board-reviewer-agent.md`
   The second subskill, an agent rather than a skill.
-  `agents/` now holds three: this reviewer, `haipipe-board-creator-agent.md`, and `haipipe-board-page-orchestrator-agent.md`.
+  `agents/` now holds three: this reviewer, `haipipe-board-creator-agent.md`, and `haipipe-page-orchestrator-agent.md`.
 
 ### This board folder
 - `board.md`
   This board's own manifest, whose `## Board Map` carries the short form of the folder lane.
 
 ## Log
-- 260806 2124 · [REVISE-CC] swept to the 260806 architecture; family map redrawn (haipipe-board-page is the ENGINE with page-types/ and page-phases/ beside it, scripts under cli/, three agents), eight group folders, rendered output is the board/ site not board.html, siblings down to two
+- 260806 2124 · [REVISE-CC] swept to the 260806 architecture; family map redrawn (haipipe-page is the ENGINE with page-types/ and page-phases/ beside it, scripts under cli/, three agents), eight group folders, rendered output is the board/ site not board.html, siblings down to two
 260731 · Data source shipped for the RELATED FOLDERS fold (haipipe-board 0.87.0): board.md's `## Related Folders` names the folders (① engine, ② this board) and the files each opens; `related_folders()` embeds only those `.md`/`.txt` at build; QC8's live endpoint deferred for oversized folders
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · JL settled the live layer's scope: SPACE-level, one server per repo root over every board under it, verified against the code; the checking consequence went to QF1 and the second-port question stays with QE6

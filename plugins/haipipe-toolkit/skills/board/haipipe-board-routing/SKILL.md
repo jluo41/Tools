@@ -19,8 +19,8 @@ Routing automates the claim (QC1b §4), which makes two existing failure modes m
 ```
 haipipe-board-routing            what it loads          what it never does
 ─────────────────────            ─────────────────      ─────────────────────
-propose a board's structure      haipipe-board-page     render, serve, check
-materialize it after approval    haipipe-board-sentence tick a human decision
+propose a board's structure      haipipe-page     render, serve, check
+materialize it after approval    haipipe-sentence tick a human decision
 find the owning location                                change a human page gate
 append the anchored write                               create a page silently
 keep each group's lane block                            materialize an

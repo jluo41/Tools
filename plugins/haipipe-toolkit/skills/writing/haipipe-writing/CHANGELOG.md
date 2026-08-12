@@ -104,7 +104,7 @@ comments as well? Did you ever considered about it?"). No, it had not been.
 
 The gap was that `ref/change-record.md` described `✎` as a standalone grammar,
 creating a SECOND authority on something already owned by
-`board/haipipe-board-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
+`board/haipipe-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
 lanes, a 💬 comment, and the ✎ record, with a badge naming the kind.
 
 - `ref/change-record.md` rewritten to CITE the owning contract instead of

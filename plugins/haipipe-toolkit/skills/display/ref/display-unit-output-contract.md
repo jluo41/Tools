@@ -10,6 +10,13 @@ wrapper is wanted, the approved caption/label/placement fields. The renderer fil
 This is what makes a rendered asset a first-class, reusable, inspectable display instead of a
 loose file.
 
+A View-owned unit lives directly at
+`views/<ViewPageStem>/output/<PageID>-Display<n>-<slug>/`. It may add
+`output.md` as the View-owned semantic brief. This is still the one generic
+unit directory: do not mirror it into a second renderer adapter folder. The
+View builder may project only `manifest.json`, `float.tex`, winning `assets/`,
+and inspection previews into a source-free consumer fixture.
+
 **This file is source-agnostic.** It says nothing about papers. A caller that has a paper maps
 this bundle into its own layout through its own adapter; the paper's is
 `paper/1-lifecycle/4-display/ref/paper-adapter.md`. A renderer never opens a paper, never

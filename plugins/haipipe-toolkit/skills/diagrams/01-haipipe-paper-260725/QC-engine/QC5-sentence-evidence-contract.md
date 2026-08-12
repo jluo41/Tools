@@ -11,7 +11,7 @@ A sentence has its own job and evidence boundary, but it also lives among siblin
 
 
 The approach is one sentence per source line, with anything attached to it bound by simple adjacency. What we want is to be able to hang a citation, a number, a display or a review thread on a sentence without inventing new syntax, so existing files gain the behaviour the moment they are rebuilt.
-Scope: This page is the Paper Board's writing-dialect contract: section purpose, paragraph job and progression, sentence job and evidence boundary, sibling-aware revision, and the adjacency rule every attachment type depends on. `haipipe-board-sentence` owns only the reusable atomic unit, address, lane, and evidence-card surface. Neighbouring pages cover What hangs on a sentence is one face per type: a citation is `QBe1 §4`, a value is `QBe1 §5`, a table is `QBe1 §6`, a figure is `QBe1 §7`. The page's two-level Content structure is `QA8`.
+Scope: This page is the Paper Board's writing-dialect contract: section purpose, paragraph job and progression, sentence job and evidence boundary, sibling-aware revision, and the adjacency rule every attachment type depends on. `haipipe-sentence` owns only the reusable atomic unit, address, lane, and evidence-card surface. Neighbouring pages cover What hangs on a sentence is one face per type: a citation is `QBe1 §4`, a value is `QBe1 §5`, a table is `QBe1 §6`, a figure is `QBe1 §7`. The page's two-level Content structure is `QA8`.
 
 ## Diagram
 ```

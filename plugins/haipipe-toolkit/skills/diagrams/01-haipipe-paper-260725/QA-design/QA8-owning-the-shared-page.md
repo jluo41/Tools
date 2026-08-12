@@ -93,7 +93,7 @@ The alternative was an adapter: the paper skill writes its own format, the board
 ```
 
 #### Paper dialect is not Board furniture
-The generic Board owns the reusable shape of a page and the mechanics of locating, rendering, and writing one. This Paper Board owns what a manuscript section, paragraph, and sentence must mean and prove inside that shape. `QC3` records the page-level split and `QC5` is the sole Paper-writing contract; neither requirement is copied into `haipipe-board-page` or `haipipe-board-sentence`.
+The generic Board owns the reusable shape of a page and the mechanics of locating, rendering, and writing one. This Paper Board owns what a manuscript section, paragraph, and sentence must mean and prove inside that shape. `QC3` records the page-level split and `QC5` is the sole Paper-writing contract; neither requirement is copied into `haipipe-page` or `haipipe-sentence`.
 
 #### The part that is real and unwritten
 The Stage Contract block is generated and will be overwritten. Everything else is authored and must never be. That rule exists in the code and in a comment inside the block, which reads "Refresh with stage.py sync; build.py never edits Markdown." The door's `SKILL.md` now names the managed `## Stage Contract` span and the `stage.py sync` command in its Board-mapping step, but no `stage.md` says the block is regenerated, and `stage.md` is what an agent writing a stage reads.

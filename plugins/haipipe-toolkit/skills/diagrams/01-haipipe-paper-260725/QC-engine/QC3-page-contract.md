@@ -124,7 +124,7 @@ This Paper Board supplies that second layer without changing Board grammar.
 | Paragraph | a `####` heading and addressable sibling prose | a paragraph job plus an intelligible claim → evidence → warrant → implication progression where applicable |
 | Sentence | one addressable source line with attachable lanes | a local claim or rhetorical job, traceable citation/value/display/owed evidence, and a sibling-aware revision check |
 
-`QC5` is the authority for this Paper overlay. `haipipe-board-page` and `haipipe-board-sentence` remain the reusable substrate; they must not inherit Paper's rhetoric, evidence states, or human gates.
+`QC5` is the authority for this Paper overlay. `haipipe-page` and `haipipe-sentence` remain the reusable substrate; they must not inherit Paper's rhetoric, evidence states, or human gates.
 
 ### Why this is the anchor rather than four unrelated faces
 `QC3a` to `QC3d` were four separate faces until 260726 and read as interchangeable, because each opened by describing the same file from a different angle. Naming the object once, here, lets each of them ask only its own question: what shapes it, what it is called, what a re-run does, what comes out.

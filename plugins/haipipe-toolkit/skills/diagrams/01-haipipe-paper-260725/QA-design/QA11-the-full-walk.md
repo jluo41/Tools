@@ -98,7 +98,7 @@ scene 9 · round      you: round (submit) … months later: rebuttal with the le
 ### §1 The loop every stage runs (stated once, referenced ten times)
 ```text
   door: verb → stages/index.yml → ONE stage.md → page exists (create-page.py)
-  engine: haipipe-board-page · TYPE for-stage · PHASE by authority
+  engine: haipipe-page · TYPE for-stage · PHASE by authority
     DRAFT   write Content per template.md; every unknown becomes an owned
             hole: a Q-consumer with its stake, an Aims row
     PROBE   only exit to evidence: Q-executor (stake stripped) → a QA-probe

@@ -5,7 +5,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [0.3.3] — 2026-08-04
 
-- Layers the worker on the Stage Page Type, `haipipe-board-page-probe`, and the shared `haipipe-probe` protocol.
+- Layers the worker on the Stage Page Type, `haipipe-page-probe`, and the shared `haipipe-probe` protocol.
 - Corrects the remaining text that said DRAFT authored ORGANIZE and MATCH; PROBE owns all five steps.
 - Calls the persisted QX artifact a Probe file and retains `entry` only as legacy implementation vocabulary.
 

@@ -1,0 +1,59 @@
+{
+  "acceptance": "waiting",
+  "consumers": [
+    {
+      "id": "C1",
+      "placement": "Results / construct interpretation",
+      "status": "planned",
+      "target": "../../../../../QS-consumers/S-Main-4-results.md",
+      "uses": [
+        "QZ1-Display1"
+      ]
+    }
+  ],
+  "displays": [
+    {
+      "acceptance": "waiting",
+      "body_bindings": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "folder": "QZ1-Display1-agreeableness-summary-table",
+      "id": "QZ1-Display1",
+      "kind": "table",
+      "preview_image": "preview.png",
+      "preview_pdf": "preview.pdf",
+      "status": "rendered"
+    }
+  ],
+  "files": [
+    {
+      "path": "outputs/QZ1-Display1-agreeableness-summary-table/artifact.svg",
+      "sha256": "34e6c0fa750d834d694058f3e7da1db3aef73250daa4a900febf7032fce5f4b8"
+    },
+    {
+      "path": "outputs/QZ1-Display1-agreeableness-summary-table/output.md",
+      "sha256": "4d158d43f1f51b55e666dfeef9f0c6119baac853056a0609890dcf75c2ac9ac4"
+    },
+    {
+      "path": "outputs/QZ1-Display1-agreeableness-summary-table/preview.pdf",
+      "sha256": "3acab89e0adce0491774062a2c6980e2adfc8ab2a9400e19c770a72f7dac375c"
+    },
+    {
+      "path": "outputs/QZ1-Display1-agreeableness-summary-table/preview.png",
+      "sha256": "2d2b38add31d8fd6c668ec20584ac70118424055fc9682525106a6c47f480cd5"
+    },
+    {
+      "path": "view.md",
+      "sha256": "f5717048127a08b96e81d1d8784b607608726ab04ef57f2a054f7fc0c0671a6c"
+    }
+  ],
+  "generated_by": "haipipe-view",
+  "id": "QZ1-for-view",
+  "inputs_distributed": false,
+  "page_id": "QZ1",
+  "schema_version": 1,
+  "source_distributed": false,
+  "title": "Agreeableness main association"
+}

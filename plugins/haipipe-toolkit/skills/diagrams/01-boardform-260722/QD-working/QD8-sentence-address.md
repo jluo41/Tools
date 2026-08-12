@@ -216,14 +216,14 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
   Generates the section and subsection breadcrumbs and holds `wireHeadingPaths`, `__boardWireSentenceChats`, and `__boardHeadingChat`.
 - `haipipe-board/assets/css/`
   Provides the quiet hover/focus layout.
-- `haipipe-board-sentence/SKILL.md`
+- `haipipe-sentence/SKILL.md`
   Holds the sentence contract these addresses serve, the dotted address and the per-location chat focus; `haipipe-board/SKILL.md` routes one-sentence work to it.
 
 ## Law
 All location Chat actions reuse the page's existing session. Fine structural addresses remain Content-only: `C` owns sibling terminal `H` nodes and prose `P.S` leaves, so `C1.H1` and `C1.P1.S1` are valid while `C1.H1.P1.S1` is not. Every page section and subsection may also expose a coarser human-readable breadcrumb with its source path. Both forms are generated UI metadata, not durable Markdown identity.
 
 ## Log
-- 260806 2142 · [REVISE-CC] swept to the 260806 architecture; Files now names the real split `10-address.js` / `20-breadcrumb.js` and the sentence contract's home `haipipe-board-sentence/SKILL.md`, and the dead `QB8-where-we-are.md` path plus the nonexistent `Current decision` breadcrumb were corrected
+- 260806 2142 · [REVISE-CC] swept to the 260806 architecture; Files now names the real split `10-address.js` / `20-breadcrumb.js` and the sentence contract's home `haipipe-sentence/SKILL.md`, and the dead `QB8-where-we-are.md` path plus the nonexistent `Current decision` breadcrumb were corrected
 260802 · 🔎 Brought to the current page contract after a fresh cold read. The Opening's blank line sat after the question, so the whole rationale rendered behind a click and the page opened as one bare sentence; the four sentences under it were also the named form-letter scaffold ("This page …", "The hard part is …", "The design succeeds when …"), so they were rewritten in this page's own order around the trade it actually makes, which is that a render address may focus a chat and may never key a record. Thirteen occurrences of `QAb3` still taught the page by an id two renames old, twelve worked examples cited `QB4e`, which is archived, and nine breadcrumbs showed the retired section name `Where we are` while this page's own new §1 figure already showed `States`. All of it now reads `QD8`, `QB8` and `States`
 260802 · Moved out of the sentence family to `QD8` when `QB8`'s five faces folded. A generated address is not an attachment: nothing is written under the sentence and nothing enters the file at all, because addresses are made at render time and stored nowhere. Its readers are the chat drawer and the routing verb, both in this lane, so it sits beside `QD1`'s one session per page. The old ids `QB8d` and `QD8` still resolve through `board.md`'s Links table
 260731 2015 · Heading focus BUILT: every `##` and `###` heading gains a hover-revealed page list (breadcrumb chip that copies address + source path, `⧉` for a subsection's text, `🤖` for page chat); `__boardHeadingChat` + a `kind` on the focus packet; recomputed by the existing rewire hook. All 5 remaining items ticked; the state line waits on JL

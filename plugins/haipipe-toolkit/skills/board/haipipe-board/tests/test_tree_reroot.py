@@ -1,9 +1,27 @@
 import unittest
+import tempfile
+from pathlib import Path
 
-from src.page_board import tree_reroot
+from src.page_board import group_canvas, tree_reroot
 
 
 class TreeRerootTest(unittest.TestCase):
+    def test_group_page_links_the_linked_group_scene_and_both_edit_modes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text("[project]\nname='fixture'\n")
+            board = root / "board-source"
+            scene = board / "QA-first" / "draw" / "group.excalidraw"
+            scene.parent.mkdir(parents=True)
+            scene.write_text("{}")
+            html = group_canvas(
+                {"dir": str(board), "excalidraw": "/_excalidraw"},
+                "QA · First", [{"file": "QA-first/QA1.md"}],
+            )
+            self.assertIn("board-source/QA-first/draw/group.excalidraw", html)
+            self.assertIn("mode=group-source", html)
+            self.assertIn("mode=arrange", html)
+
     def test_board_source_links_and_media_move_together(self):
         html = (
             '<a href="_fixture/readme.md">source</a>'

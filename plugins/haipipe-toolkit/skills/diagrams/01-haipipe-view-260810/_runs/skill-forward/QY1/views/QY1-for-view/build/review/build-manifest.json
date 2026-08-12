@@ -1,0 +1,55 @@
+{
+  "canonical_page": "../../QY1-for-view.md",
+  "generated_by": "haipipe-view",
+  "outputs": [
+    "QY1-for-view.tex",
+    "QY1-for-view.pdf",
+    "QY1-for-view.docx",
+    "references.bib"
+  ],
+  "schema_version": 1,
+  "source_digest": "9029b313ce0b40187cb094b2907c146db1ae6fac52dbc3334779bd6c73401c7b",
+  "sources": [
+    {
+      "path": "QY1-for-view.md",
+      "sha256": "cc658130c4126513d34e67322af51376021753b0a97891c0a9d5c922a982915e"
+    },
+    {
+      "path": "views/QY1-for-view/input/QA-probes/2-observable-signal.md",
+      "sha256": "4c13d954d4868881e6b90b30b97017986786595759033a0091079327a245414e"
+    },
+    {
+      "path": "views/QY1-for-view/input/QA-probes/3-measurement-boundary.md",
+      "sha256": "121ded3d06a8dc58da9dceef79ded3252575ef962951783966c90dc1b56c4b3f"
+    },
+    {
+      "path": "views/QY1-for-view/input/sources/references.bib",
+      "sha256": "dcedef19a0e6406359f01e3180e8d28a6b1098ceec7a2aa42584f9f4c9150e12"
+    },
+    {
+      "path": "views/QY1-for-view/manifest.json",
+      "sha256": "bc1652d6b1fa47c5fffb3b35b27b82b242632e46d77b4d7f1b365bb757874e66"
+    },
+    {
+      "path": "views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/assets/table.tex",
+      "sha256": "460dcff1c2a5c4d3538ea47b984a54f3731312851e7cef24527f5889001ddaae"
+    },
+    {
+      "path": "views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/float.tex",
+      "sha256": "87420275d348c65ca67882a2fca4c4021699faa3f676e491128c295cb4efe099"
+    },
+    {
+      "path": "views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/output.md",
+      "sha256": "381ad1ebfcb2c0107d8f7cfb7429c88cb3cf73efb9b1e7b729f11f04c4236c75"
+    },
+    {
+      "path": "views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/preview.pdf",
+      "sha256": "01fd4ff72c2559dd63d6bdd29c3c61c76b340f7b0e15043101b9c532cbb33601"
+    },
+    {
+      "path": "views/QY1-for-view/output/QY1-Display1-agreeableness-evidence-table/preview.png",
+      "sha256": "4a9de4fe8d5e6ea1a654f7a41540cece61c6c4b9813688bbe4ba3a50d598d721"
+    }
+  ],
+  "view": "QY1-for-view"
+}

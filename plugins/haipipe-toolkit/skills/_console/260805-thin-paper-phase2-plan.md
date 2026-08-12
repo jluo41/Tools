@@ -82,7 +82,7 @@ Merge 4 files (613 + 467 + 520 + 261 lines) into ONE door, target well under 700
 4. Absorb from -lifecycle: stage ordering / maturity rule / phase-verb pass-through.
    These are small once stage resolution is native.
 5. Phase driving is NOT restated: the door ensures the page exists then hands to
-   haipipe-board-page (WORK ON, or RUN with a packet); page-phases own DPRC.
+   haipipe-page (WORK ON, or RUN with a packet); page-phases own DPRC.
 6. Dispatch lines that said Skill("haipipe-paper-stage"|"haipipe-paper-enter"|
    "haipipe-paper-lifecycle") become internal steps of this one skill.
 
@@ -99,10 +99,10 @@ Fix any stage.md prose that references haipipe-paper-stage or workers/ paths.
 
 ## Board-side edits (small, versioned, ONE bump per skill at the END)
 
-- page-types/haipipe-board-page-for-stage: add one paragraph: stage.md MAY declare
+- page-types/haipipe-page-for-stage: add one paragraph: stage.md MAY declare
   `checker:` (CHECK runs it before judging) and `craft:` (DRAFT/REVISE load these data
   files last, in place of the old "family worker" skills). Bump 0.4.x → 0.5.0.
-- page-phases draft/probe/revise + base haipipe-board-page: reword the load-order slot
+- page-phases draft/probe/revise + base haipipe-page: reword the load-order slot
   "family worker" → "family craft: the stage's declared craft files (and for probe, the
   family door's probe tooling)". Minimal diffs. Patch bumps.
 - probe phase line "family workers own their persisted Probe Page shape and checker" →

@@ -26,6 +26,7 @@ mechanical form of "the board never assumes a paper". build.py asserts it.
 """
 
 import difflib
+import os
 import re
 from pathlib import Path
 from urllib.parse import quote_plus
@@ -93,7 +94,8 @@ IMG = (".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif")
 # such as ``display01a`` rather than retaining a misleading legacy sequence.
 S_DISPLAY_UNIT = re.compile(
     r"(?im)^\s*(?:registry\s+id|unit)\s*:\s*"
-    r"((?:S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)"
+    r"((?:S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?|"
+    r"Q[A-Za-z]*\d+[a-z]?-Display\d+)"
     r"(?:-[a-z0-9-]+)?)\b"
 )
 # any number as it is written in a probe answer: 1.21494 · 765,701 · 0.001
@@ -113,13 +115,36 @@ BIBKEY = re.compile(r"^[A-Za-z][A-Za-z'-]*\d{4}[a-z][a-z0-9-]*$")
 BANK_PATH = re.compile(r"^(?:tasks|discoveries)/\S+$")
 
 
+# The contract's own slot names, mapped to the keys this parser reads. The two
+# disagreed and neither side complained: `ref/topic-entry-contract.md` specifies
+# `#### consumer trace` while this parser split on `### ` and looked up
+# `q-consumer`, so a record written exactly to the contract parsed to an empty
+# `asks`, every `[Q-…]` on its page rendered `unowned`, and nothing anywhere
+# said why. Measured 260807 on QBt5: writing the record to the contract gave
+# asks=[]; changing the heading level alone still gave asks=[]; only changing
+# BOTH gave asks=['Q-Value-1']. Both spellings are accepted, because 28 records
+# on the live paper predate the contract and must keep parsing.
+SLOT_ALIAS = {"consumer trace": "q-consumer",
+              "bank binding": "bank binding",
+              "q-executor": "q-executor",
+              "a-executor": "a-executor"}
+
+
 def _sections(text):
-    """A probe file split on its `### ` headings, keyed lowercase."""
+    """A probe file split on its `###` or `####` headings, keyed lowercase.
+
+    BOTH LEVELS, because the contract writes the four slots at `####` and this
+    split only ever accepted `###`. A record obeying the contract produced no
+    sections at all, which is invisible: every downstream field falls back to
+    its default and the page renders as if the record simply said nothing.
+    """
     out, cur, buf = {}, "", []
     for ln in text.split("\n"):
-        if ln.startswith("### "):
+        h = ln.startswith("#### ") and 5 or (ln.startswith("### ") and 4 or 0)
+        if h:
             out[cur] = "\n".join(buf).strip()
-            cur, buf = ln[4:].strip().lower(), []
+            name = ln[h:].strip().lower()
+            cur, buf = SLOT_ALIAS.get(name, name), []
         else:
             buf.append(ln)
     out[cur] = "\n".join(buf).strip()
@@ -147,7 +172,11 @@ class Probe:
         secs = _sections(text)
         bind = secs.get("bank binding", "")
         self.path = path
-        self.rel = path.relative_to(root).as_posix()
+        # relpath, not relative_to: a specimen's records sit BESIDE its paper
+        # root rather than under it, where relative_to raises. Third site with
+        # this exact shape (see also `rel()` in src/display_unit.py and
+        # `disp_rel` above), which is itself worth noticing.
+        self.rel = os.path.relpath(path, root).replace('\\', '/')
         self.id = f"{path.parent.name.split('_')[0]}/{path.stem.split('_')[0]}"
         self.title = next((l.lstrip("# ").strip() for l in text.split("\n")
                            if l.startswith("#")), path.stem)
@@ -156,7 +185,20 @@ class Probe:
         self.route = _field(bind, "route")
         self.target = _field(bind, "target")
         self.answer = secs.get("a-executor", "")
-        self.text = text          # searched when checking a prose number
+        # FOLLOW THE TARGET. `self.text` is what a prose number is checked
+        # against, and it was this file only. Under the twin naming law the
+        # answer lives in the BANK and the probe keeps a digest, so the moment
+        # a record is written correctly every number it serves becomes `unver`,
+        # which reads as "matches nothing in the run" when the run is simply
+        # somewhere this never looked. Measured 260807 on QBt5: 4 of 6 number
+        # chips flipped from ok to unver the moment the bank was introduced.
+        self.text = text
+        bank = _field(bind, "target")
+        if bank:
+            b = (path.parent / bank).resolve()
+            if b.is_file() and b != path.resolve():
+                self.text = text + "\n" + b.read_text(encoding="utf-8",
+                                                      errors="replace")
         self.asks = sorted(set(QID.findall(secs.get("q-consumer", ""))))
 
     @property
@@ -292,7 +334,11 @@ def _short(uid):
     `S-Display-4a` for both, so `by_short` would keep whichever sorted first and
     the other would be unreachable by its short form (JL 260728).
     """
-    m = re.match(r"(S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)", uid)
+    m = re.match(
+        r"(S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?|"
+        r"Q[A-Za-z]*\d+[a-z]?-Display\d+)",
+        uid,
+    )
     return m.group(1) if m else uid.split("-", 1)[0]
 
 
@@ -378,7 +424,15 @@ class Display:
         # is labelled rather than hidden: the reader decides what to trust.
         self.preview_stale = bool(self.preview and newest
                                   and pv.stat().st_mtime < newest)
-        rd = d / "README.md"
+        # A View-owned Display keeps its human contract in output.md and also
+        # carries the generic renderer's README.md.  Prefer output.md for the
+        # owner-indexed View identity; otherwise the renderer README would hide
+        # the reader takeaway and View-body bindings from the rich Card.  Paper
+        # and legacy units continue to prefer README.md.
+        view_owned = bool(re.match(r"Q[A-Za-z]*\d+[a-z]?-Display\d+", self.id))
+        rd = d / ("output.md" if view_owned else "README.md")
+        if not rd.is_file():
+            rd = d / ("README.md" if view_owned else "output.md")
         txt = rd.read_text(encoding="utf-8", errors="replace") if rd.is_file() else ""
         self.takeaway = _para(txt, "Reader Takeaway")
         self.placement = _para(txt, "Placement")
@@ -424,8 +478,15 @@ class Paper:
         self.root = Path(root)
         self.bib = {}
         self.bib_files = []
-        for p in sorted(self.root.glob("*.bib")):
-            self.bib_files.append(p.name)
+        # A View owns its editable bibliography under input/sources/.  Paper
+        # roots historically kept .bib files at the root.  Read both shapes,
+        # while excluding generated review builds so a copied bibliography is
+        # never indexed twice.
+        for p in sorted(self.root.rglob("*.bib")):
+            if any(part in ("build", "_archive") or part.startswith(".")
+                   for part in p.relative_to(self.root).parts):
+                continue
+            self.bib_files.append(p.relative_to(self.root).as_posix())
             text = p.read_text(encoding="utf-8", errors="replace")
             for m in ENTRY.finditer(text):
                 key = m.group(1).strip()
@@ -455,14 +516,41 @@ class Paper:
         # and every display page silently fell back to the legacy `displays/`
         # tree, which rendered nine preview images at an href that resolves
         # nowhere. A group folder may be renamed again; `*/workspace` may not.
+        # BOTH names for the authoring folder, and the specimen layout too.
+        # This tried `workspace` ONLY. The folder was renamed to `display` on
+        # 260806 and nothing here noticed: the live MISQ paper fell through to
+        # the legacy `displays/display*` branch and indexed ZERO units, so every
+        # evidence card and every \ref chip on that board silently stopped
+        # resolving while each page still looked finished. Measured 260807.
         lc = self.root / "0-lifecycle"
-        ws = next((d / "workspace" for d in sorted(lc.glob("*display*"))
-                   if (d / "workspace").is_dir()), lc / "3-display" / "workspace")
-        if ws.is_dir():
-            self.disp_dir, self.disp_glob = ws, "S-Display-*"
+        ws = None
+        for d in (sorted(lc.glob("*display*")) if lc.is_dir() else []):
+            ws = next((d / n for n in ("display", "workspace")
+                       if (d / n).is_dir()), None)
+            if ws:
+                break
+        # A SPECIMEN root carries its own paper root under `_fixture/`, so the
+        # authoring folder is that root's SIBLING rather than its descendant.
+        if ws is None and (self.root.parent / "display").is_dir():
+            ws = self.root.parent / "display"
+        if ws is not None:
+            # `*` and not `S-Display-*`: the prefix is one paper's page-naming
+            # convention, and `float.tex` is what actually makes a folder a unit.
+            self.disp_dir, self.disp_glob = ws, "*"
         else:
-            self.disp_dir, self.disp_glob = self.root / "displays", "display*"
-        self.disp_rel = self.disp_dir.relative_to(self.root).as_posix()
+            # A legacy paper root may now contain owner-indexed View Displays
+            # such as `QBt1-Display1-main-table`. The float wrapper, not a
+            # filename prefix, is the authority for whether a child is a unit.
+            view_output = self.root / "output"
+            if view_output.is_dir():
+                self.disp_dir, self.disp_glob = view_output, "*"
+            else:
+                self.disp_dir, self.disp_glob = self.root / "displays", "*"
+        # `os.path.relpath`, not `relative_to`: on a real paper the authoring
+        # folder is BELOW the paper root, and on a specimen root it is beside
+        # it, where `relative_to` raises instead of walking up. Same fix, and
+        # the same reason, as `src/display_unit.py`'s `rel()`.
+        self.disp_rel = os.path.relpath(self.disp_dir, self.root).replace("\\", "/")
         # Path PARTS that hold a float and therefore declare rather than cite.
         # Under the workspace layout that is BOTH trees: the generated
         # `displays/` carries a copy of every float, so indexing it would
@@ -473,7 +561,10 @@ class Paper:
         self.by_short = {}      # "display02" -> the unit; the S-Display pages
         self.by_label = {}      # write the short form, a Section the long one
         for d in sorted(self.disp_dir.glob(self.disp_glob)):
-            if d.is_dir():
+            # `float.tex` IS the unit test, which is what makes the `*` glob
+            # above safe: `_archive/`, a README and any other stray sibling
+            # carry none and are skipped without needing a name rule.
+            if d.is_dir() and not d.name.startswith("_") and (d / "float.tex").is_file():
                 u = Display(d, self.root)
                 self.displays[u.id] = u
                 self.by_short.setdefault(_short(u.id), u)
@@ -503,7 +594,30 @@ class Paper:
             here = here.parent
         self.probes = []
         self.by_q = {}
-        for p in sorted((self.root / "1-probes").rglob("QX*.md")):
+        # FIND RECORDS BY SHAPE, not by one fixed path and one filename prefix.
+        # This read `(root/"1-probes").rglob("QX*.md")` and nothing else. The
+        # folder was renamed to `probes/<topic>/` on the live paper and to
+        # `QA-probe/<page>/` by JL's 260806 ruling, and the records are named
+        # `<n>-<slug>.md` by that same contract, so BOTH halves stopped matching
+        # and `rglob` returned []. Measured 260807: 0 probes on the MISQ paper,
+        # which has 28 of them, and 0 on the specimen, which has 2. Zero probes
+        # renders every `[Q-…]` on every page as `unowned`, and says nothing.
+        roots = [self.root]
+        # A specimen root carries its own paper root under `_fixture/`, so its
+        # records sit beside that root rather than under it.
+        if self.root.name == "_fixture":
+            roots.append(self.root.parent)
+        found = []
+        for base in roots:
+            for d in sorted(base.rglob("*")):
+                if not d.is_dir() or d.name not in (
+                    "probes", "QA-probe", "QA-probes", "1-probes"
+                ):
+                    continue
+                if any(x.startswith(("_", ".")) for x in d.parts):
+                    continue
+                found += [f for f in sorted(d.rglob("*.md")) if f.is_file()]
+        for p in found:
             pr = Probe(p, self.root)
             self.probes.append(pr)
             for q in pr.asks:
@@ -578,7 +692,7 @@ class Paper:
         """-> (state, label, tip, meta) for a value binding's provenance path.
 
         BOUND on the inward route means a run you can walk to
-        (haipipe-board-page-for-value), so the card carries the path as links:
+        (haipipe-page-for-value), so the card carries the path as links:
         the file itself and the run folder it belongs to, the same shape
         chain() gives a number chip. The label is the path's tail; the full
         path stays in the tip and on the card's 🎯 line.
@@ -798,6 +912,14 @@ class Paper:
         """
         out = []
         stale = " ⚠️ OLDER THAN THE ASSET" if u.preview_stale else ""
+        # The rasterized Current Float leads because it works in the VS Code
+        # browser where an embedded PDF may fall back to a link. This is the
+        # exact surface a person judges; the PDF remains available immediately
+        # below it at full fidelity.
+        if u.preview_img is not None:
+            out.append(("img",
+                        "AS THE FLOAT WILL PRINT · preview.png" + stale,
+                        u.preview_img, ""))
         # The ASSET leads, because it IS the figure, cropped to the artwork the
         # float sets. preview.* is a whole letter page with the figure adrift in
         # white, which reduced the actual evidence to a thumbnail. A .pdf asset
@@ -832,7 +954,10 @@ class Paper:
 
     def _dmeta(self, u):
         links = []
-        for name, p in (("float.tex", u.path / "float.tex"),
+        for name, p in (("preview.png", u.preview_img),
+                        ("preview.pdf", u.preview),
+                        ("float.tex", u.path / "float.tex"),
+                        ("output.md", u.path / "output.md"),
                         ("README", u.path / "README.md"),
                         (u.data.name if u.data else "", u.data)):
             if name and p and p.is_file():
@@ -889,6 +1014,16 @@ class Paper:
             sid = (f"S-Display-{m.group(1)}{m.group(2).upper()}" if m
                    else u.id)
             return (sid, st.group(1).strip() if st else "")
+
+        # VIEW LAYOUT: the Display is not another Board Page.  Its own
+        # output.md carries the independent acceptance line, so no same-named
+        # root adapter is needed merely to make a rich Display Card honest.
+        output = u.path / "output.md"
+        if output.is_file():
+            head = output.read_text(encoding="utf-8", errors="replace")[:1600]
+            st = re.search(r"^state:\s*(.+)$", head, re.M)
+            if st:
+                return (_short(u.id), st.group(1).strip())
 
         # LEGACY LAYOUT: derive the page name from the unit id. Kept so a paper
         # that has not migrated still builds; it is the fragile path and the

@@ -51,7 +51,7 @@ provides: one compact phrase naming the downstream handoff
        Opening -> Diagram -> Content -> Aims -> States -> Files.
      Each section answers ONE reader question, and that is the test for every sentence you
      write into it (JL 260801; the five-row contract per section, conveys · holds · source ·
-     rules · omit, lives in the design board's QB4 Content parts and in /haipipe-board-page):
+     rules · omit, lives in the design board's QB4 Content parts and in /haipipe-page):
        Opening: what is this page and why should I care? (never omit) · Diagram: can I see
        the whole subject at once? (delete when no figure helps) · Content: what does this
        page establish? (Q may omit, S never) · Aims: which durable target states should this

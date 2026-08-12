@@ -21,14 +21,14 @@ user types  /haipipe-board
           │
           ▼
       SKILL.md  771 lines (0.124.0, 260806): operations only, spec details never inlined
-          ├─ the family: one door, one Page base (haipipe-board-page), two contract catalogs
+          ├─ the family: one door, one Page base (haipipe-page), two contract catalogs
           ├─ the shape: what a board looks like (Q + S pages, group intros, embeds)
           ├─ eleven verbs: view · open · add · stage · build · sync · link · close  (offline)
           │                serve · excalidraw · comment                             (live)
-          │                plus routed verbs: one-page work goes to haipipe-board-page,
-          │                one-sentence work to haipipe-board-sentence
+          │                plus routed verbs: one-page work goes to haipipe-page,
+          │                one-sentence work to haipipe-sentence
           ├─ the metadata head + fixed section order of one Q/S page
-          │  (the full page contract lives in board/haipipe-board-page)
+          │  (the full page contract lives in board/haipipe-page)
           ├─ three writing rules (no invented terms / purge stale lines / fresh-agent cold read)
           ├─ the four prohibitions
           └─ board ↔ SKILL.md: the graduation mechanism
@@ -84,16 +84,16 @@ user types  /haipipe-board
   JL asked whether the Skill pages are up to date and dispatched the review as a fan-out, which is the first real use of the parallel pattern `Agent-2` was built for.
   Three agents took the two SPECs, the routing and index units, and this door skill; they returned 20, 16, and 19 actionable findings, and every one carried file-and-line evidence on both sides.
   All seven mirror pages were already in sync, so nothing was stale in the SENSE the generator can detect; what the reviewers found is drift the generator cannot see, between a contract's words and the code it claims to describe.
-  Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/page-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-board-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
+  Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/page-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
   Still open, and too large for one round: the door never mentions the `live/` package at all, so four of its five live-layer citations point at `serve.py` where the code no longer is; three sections describe Index elements that 0.78.0 removed; `Skill-<n>` and `Agent-<n>` are missing from its page-kind list while line 45 actively denies that such kinds ship here; and the `page` SPEC still says three page kinds when the code has four.
-  Since landed in the 0.124.x door: the `live/` package is documented file by file in its ref index, `cli/skillpage.py`'s `Skill-<n>` and `Agent-<n>` pages are named there, and the page contract now lives in `haipipe-board-page` (0.21.0) with ten Page Types under `board/page-types/`.
+  Since landed in the 0.124.x door: the `live/` package is documented file by file in its ref index, `cli/skillpage.py`'s `Skill-<n>` and `Agent-<n>` pages are named there, and the page contract now lives in `haipipe-page` (0.21.0) with ten Page Types under `board/page-types/`.
 
 - `SKILL.md`, 771 lines at 0.124.0 (260806)
   Operations only: the family (one door, one Page base, two contract catalogs), the shape (Q + S pages, group intros, embeds), eleven verbs (view / open / add / stage / build / sync / link / close offline, serve / excalidraw / comment live) plus the routed page and sentence verbs, the page head and section order, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
   Spec and prose details never inlined; it enters the context on every invocation, shorter is better.
   JL's 260731 shrink ruling (Decision Now, option B) has not yet landed as a smaller file: the door has grown past the 581 lines it was ruled on, as the family section, the routed verbs, and the live layer's real action sections moved in.
 - `ref/`, six files
-  `page-template.md`: the shared Q/S source template (renamed from `q-template.md` on 260801); the page contract it instantiates is owned by `haipipe-board-page`.
+  `page-template.md`: the shared Q/S source template (renamed from `q-template.md` on 260801); the page contract it instantiates is owned by `haipipe-page`.
   `board-form.md`, the full spec: folders, numbering, board.md, the section↔render mapping (§4), `## Links` (§4b), body syntax (§5), the generated Board-Webpage (§8), the invariant.
   `writing-rules.md`: hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
   `topic-entry-contract.md`: the evidence page contract from the 260806 redesign (head `route:` key, `### E<n>` divisions, `### E0` queue) and its nested `probes/` QA-probe records.

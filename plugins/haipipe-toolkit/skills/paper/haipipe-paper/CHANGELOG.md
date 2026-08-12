@@ -92,7 +92,7 @@ siblings retired to `../_old/phase3-260806/`, their jobs absorbed as internal st
   detail in the new `ref/enter-console.md`), and `haipipe-paper-lifecycle`
   (stage ordering, maturity rule, global-pass mode, phase-verb pass-through).
 - Phase driving is NOT restated: the door ensures the S page exists and hands it
-  to `haipipe-board-page` (WORK ON / RUN); `board/page-phases/` own DPRC.
+  to `haipipe-page` (WORK ON / RUN); `board/page-phases/` own DPRC.
 - `workers/` dissolved: page rules stayed in board/, the LaTeX craft became
   stage data files declared by each stage.md `craft:` list
   (S03 citation-craft.md · S04 values-craft.md · S05 draft-craft.md ·
