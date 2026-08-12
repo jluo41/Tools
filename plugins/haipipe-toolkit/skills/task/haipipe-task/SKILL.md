@@ -194,6 +194,54 @@ Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstri
 
 ---
 
+Guardrails (learned the hard way — do NOT skip)
+------------------------------------------------
+
+```
+GATE-1  PROVE A NEW GATE FAILS BEFORE YOU TRUST IT.
+        Any new check, assertion, or verification task must be run against a
+        KNOWN-BROKEN artifact FIRST and must report failure. A gate that has
+        never failed is not yet a gate; it is an unverified claim that happens
+        to print a tick.
+
+        Three real cases, one session (SMSR4 v4 shadow, 260807):
+          - A pipeline "reproducibility check" matched ANY score on one side to
+            ANY score on the other, across DIFFERENT labels, with the two sides
+            scaled 100x apart, and was non-fatal. It could not fail, and caught
+            none of three shipped defects.
+          - A newly written round-trip gate PASSED a known-broken live endpoint
+            14/14, because it compared argmax(model) with argmax(returned scores)
+            while the actual defect was in the SERVED label. Only running it
+            against the broken artifact exposed the hole.
+          - Fourteen test fixtures deliberately selected to have seven DIFFERENT
+            correct answers had been flattened upstream to one, so the suite
+            reported fourteen passes on something it could not observe.
+
+        Practical form: give the gate an `--expect-fail` flag, run it on the old
+        artifact, and only then run it on the new one. Record BOTH numbers.
+
+GATE-2  A "pass" that compares the output to NOTHING is a smoke test, not a
+        correctness test. Say which it is. "N/N passed" meaning "the response
+        parsed and did not raise" must never be reported as evidence that the
+        result is right.
+
+GATE-3  A NAME THAT DOES NOT RESOLVE MUST RAISE. Across this codebase the common
+        defect shape is a lookup that silently substitutes a default: an arm name
+        filtered out by membership, a column read via `safe_get(row, name,
+        default)`, a date falling back to `datetime.now()`. Each produces a
+        plausible value and no error, so the bug ships looking healthy. When
+        authoring or reviewing any task that reads names from a config, a schema,
+        or a frame, assert the declared set resolves before using it, and name the
+        missing entries in the message.
+
+GATE-4  When a fixture is de-identified or regenerated, re-check that it still
+        EXERCISES what it is meant to test. De-identification that pins a birth
+        date to a constant and nulls a zip code removed 18.6% of a model's input
+        and collapsed seven distinct expected answers into one.
+```
+
+---
+
 Step-by-Step Protocol
 ----------------------
 
