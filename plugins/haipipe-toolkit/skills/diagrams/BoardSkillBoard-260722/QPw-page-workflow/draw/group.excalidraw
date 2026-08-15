@@ -1,0 +1,45 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QPw",
+   "name": "QPw · Page-Workflow"
+  },
+  "imports": [
+   {
+    "page": "QPw1",
+    "source": "../QPw1-page-loop/draw/QPw1.excalidraw",
+    "placement": {
+     "x": 3085.0,
+     "y": 2475.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB5"
+   },
+   {
+    "page": "Design-6",
+    "source": "../Design-6-page-workflow/draw/Design-6.excalidraw",
+    "placement": {
+     "x": 12566.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Agent-1"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {}
+  }
+ }
+}

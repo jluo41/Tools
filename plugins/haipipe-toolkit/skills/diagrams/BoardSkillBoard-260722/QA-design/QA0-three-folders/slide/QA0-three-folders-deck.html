@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Three folders · three kinds of truth</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. Cover -->
+  <section id="s1" class="slide" data-title="Cover">
+    <p class="kicker">BoardSkillBoard · QA · generated from the page's Content</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">Three folders,<br><span class="gradient-text">three kinds of truth</span></h1>
+    <p class="lede">The skill family that SHIPS, the board where it IS ARGUED, and everything it RENDERS — and why mixing them up costs a decision, a history, or an edit</p>
+    <div class="deck-footer"><span class="dim2">QA0-three-folders · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+    <div class="notes">The opening problem: all three folders are casually called "the Board", but each carries a different kind of truth. This deck names them, draws the movements between them, and ends on the one-line test that keeps them honest.</div>
+  </section>
+
+  <!-- 2. The three -->
+  <section id="s2" class="slide" data-title="The three">
+    <p class="kicker">The map</p>
+    <h2 class="h2">Ships · argued · rendered</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>⚙️ ① the family</h4><p class="dim">skills/board/ — reusable procedure, read by a runtime. The door, the engine, the specs, the agents, each on its own version clock</p></div>
+      <div class="card"><h4>🗂 ② its board</h4><p class="dim">BoardSkillBoard-260722/ — the rulings that PRODUCED the family, read by people. One folder per group, board.md the manifest</p></div>
+      <div class="card"><h4>📤 ③ the rendered</h4><p class="dim">every board/ site the family builds — generated output, read by anyone, owned by no one. The next build erases any hand edit</p></div>
+    </div>
+    <p class="dim mt-m">② is itself one of ③'s inputs — it is numbered apart only because it is the one board whose CONTENT this family owns.</p>
+    <div class="notes">One number per folder on disk: the family is one folder and one roster entry, so subskills nest inside it rather than earning peer numbers. That collapse — seven numbers down to three — was JL's 260731 ruling.</div>
+  </section>
+
+  <!-- 3. Why it pays -->
+  <section id="s3" class="slide" data-title="Why it pays">
+    <p class="kicker">Lifetime decides</p>
+    <h2 class="h2">Each kind breaks in its own way</h2>
+    <pre class="mt-m">kind          lives              breaks how
+⚙️ ships      while anyone       a design argument leaks in — the skill
+              uses it            cannot ship without its own history
+🗂 argued     until the board    a runtime starts reading it — an OPEN
+              closes             question becomes a dependency
+📤 rendered   until the next     someone hand-edits it — the edit
+              build              vanishes silently</pre>
+    <p class="dim mt-m">Putting a file in the wrong layer leaves a decision nonbinding, ships working history as law, or loses an edit on the next build.</p>
+    <div class="notes">The distinction is not aesthetic. Each failure mode on this slide has a concrete victim: a nonbinding decision, history shipped as law, an edit lost silently. The model succeeds when a reader can place any new file without guessing.</div>
+  </section>
+
+  <!-- 4. Allowed movements -->
+  <section id="s4" class="slide" data-title="Allowed">
+    <p class="kicker">The crossings</p>
+    <h2 class="h2">Three movements are legal</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🎓 ② graduates → ①</h4><p class="dim">a page reaches ✅ and its Law is COPIED into the owning unit. The page stays; the skill gains the rule</p></div>
+      <div class="card"><h4>🏭 ① renders → ② ③</h4><p class="dim">build.py reads a board folder, writes its board/ site. The renderer reads FORM, never meaning</p></div>
+      <div class="card"><h4>✍️ ① writes back → ② ③</h4><p class="dim">serve.py turns a click into one line of markdown in a page — always the .md, never the .html</p></div>
+    </div>
+    <p class="dim mt-m">Inside ①, units stay separable: routing reads board.md and each page's title line, and never imports the engine's src/.</p>
+    <div class="notes">The fourth movement on the page — separability inside the family — is what makes subskills real: two units that ship on their own clocks. If routing ever imports haipipe-board/src/, they are one skill wearing two folders.</div>
+  </section>
+
+  <!-- 5. Forbidden + the test -->
+  <section id="s5" class="slide" data-title="Forbidden">
+    <p class="kicker">The two ✗</p>
+    <h2 class="h2">Delete the board; the family still runs</h2>
+    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>✗ ① → ②</h4><p class="dim">the family may never depend on the board that designs it — no runtime reads a Q page</p></div>
+      <div class="card"><h4>✗ anything → board/</h4><p class="dim">it is output; the next build erases you. Nothing is ever hand-written into a generated site</p></div>
+    </div>
+    <p class="lede mt-m">The whole test is one line: delete ② and every skill in ① still runs.</p>
+    <div class="notes">This is the slide to slow down on. The deletability test is the page's reason to exist, and it is also the part not yet enforced: check.py can prove a Law graduated, but nothing yet proves no shipped file cites a Q page.</div>
+  </section>
+
+  <!-- 6. Subskill law -->
+  <section id="s6" class="slide" data-title="Subskills">
+    <p class="kicker">Admission</p>
+    <h2 class="h2">A unit inside ①, never a folder beside it</h2>
+    <ul class="mt-m">
+      <li>A unit earns its own directory with its own trigger, its own contract, and its own version</li>
+      <li>That test admitted haipipe-board-index on 260730 — and the admission was reversed on 260802, when three of its five verbs turned out to be other units' work written twice</li>
+      <li>Membership on the board side is by PATH, never registration: moving a page is a pure git mv</li>
+    </ul>
+    <div class="notes">The reversal matters more than the admission: the trigger-contract-version test cannot detect duplicated work, only a person reading the verbs can. The index folded into routing for that reason.</div>
+  </section>
+
+  <!-- 7. One server -->
+  <section id="s7" class="slide" data-title="Serving">
+    <p class="kicker">Scope</p>
+    <h2 class="h2">One server, every board under the SPACE</h2>
+    <ul class="mt-m">
+      <li>A board folder is the unit of CONTENT, not the unit of SERVING</li>
+      <li>serve.py's --root is the repo root, so every board beneath it is live at once and none owns the process</li>
+      <li>Terminals key on the sha1 of a page's absolute path — two boards' QD3 can never collide</li>
+      <li>The bite: anything shared (assets, the engine) changes every board at once, so a change checked against one board has not been checked — QF1's problem</li>
+    </ul>
+    <div class="notes">Neither obvious alternative runs: not one server per board (opening a second board costs nothing), not one server per several SPACEs (only port 5599 is forwarded — QE6's decision, not this page's).</div>
+  </section>
+
+  <!-- 8. Closer -->
+  <section id="s8" class="slide" data-title="Closer">
+    <p class="kicker">Where it stands</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">Drawn, working,<br><span class="gradient-text">not yet ratified</span></h1>
+    <p class="lede">Two boards already run on the three-folder model — the map, the forbidden movements, and the _feedback/ question still await JL's four rulings.</p>
+    <div class="deck-footer"><span class="dim2">generated from QA0's Content · regenerate any time from the page</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+    <div class="notes">The four open rulings: ratify the three folders as drawn, ratify the two forbidden movements, place skills/diagrams/_feedback/ (CC proposes: it is ①'s inbox — a card graduates like a page's Law), and commission or defer the ✗-direction checker.</div>
+  </section>
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>

@@ -25,7 +25,7 @@ fence = fence.split("```text", 1)[1].split("```", 1)[0]
 rows, bad = [], []
 for line in fence.splitlines():
     # `line.split()[0] == "board"`, NOT `"board" in line`. The substring form
-    # matched the DATA row for `01-boardform-260722` and dropped it, and the
+    # matched the DATA row for `BoardSkillBoard-260722` and dropped it, and the
     # skip path is silent by design, so the table shipped two rows instead of
     # three and the totals were wrong with no error. Exactly the failure the
     # strict parse below exists to stop, arriving through the one door that

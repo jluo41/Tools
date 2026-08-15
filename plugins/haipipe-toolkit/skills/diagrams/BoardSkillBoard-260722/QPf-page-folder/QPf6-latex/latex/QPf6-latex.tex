@@ -1,0 +1,31 @@
+% GENERATED from QPf6-latex.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{The contract}
+\begin{verbatim}
+  <page>/latex/
+    <stem>.tex     md2tex's section . header says "do not hand-edit"
+    <stem>.pdf     the compiled look . what the tab frames
+  flat page fallback: <board>/latex/<stem>.* . the same fork deck.py takes
+\end{verbatim}
+A hand-edited file is overwritten on the next build, which is the derived-plugin rule and not a defect. \texttt{--paper-root} is discovered by walking up from the page toward \texttt{--root} for a \texttt{0-*.bib}; a page outside any paper compiles cite-less with \texttt{\textbackslash{}citep} printed as \texttt{[key]} rather than refusing. Inside a paper the master gains natbib, \texttt{plainnat}, and a \texttt{bibtex} pass against the paper's own bib.
+
+\section{What the writer inherits, and what it drops}
+\begin{verbatim}
+  ### 1 . title      -->  \section          the Content divisions map cleanly
+  #### block         -->  paragraph break
+  \citep{} \ref{}    -->  kept verbatim     already LaTeX
+  > lanes            -->  DROPPED           in Word they become comments;
+                                            here they have nowhere to go
+  refuse-to-regress  -->  inherited         a rewrite that loses citations
+                                            is refused, not silently written
+\end{verbatim}
+The proof run is \texttt{QPf4b}'s Content: eight divisions became a real four-page PDF, driven in a browser through the tab on 260815. What does not survive is the board's emoji-heavy ascii figures: xelatex drops glyphs its fonts lack, so a figure-dense page reads thinner in PDF than on stage, and A2 below is where that gap is measured rather than guessed.
+
+\section{The surface}
+\begin{verbatim}
+  82-plugin-exports.js --POST--> /_board/latex --runs--> md2tex + xelatex
+  tab.url()  names latex/<stem>.pdf . HEAD hit  > frame it
+  tab.write() builds on miss . lit-click       > REBUILD (derived refresh)
+  failure    > a view page: the .tex + the log tail . never a blank frame
+\end{verbatim}

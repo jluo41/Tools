@@ -22,7 +22,7 @@
  */
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9335';
 const BASE = process.env.CHECK_BASE
-  || 'http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board';
+  || 'http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board';
 /* Home is QD2 itself: the sessions this suite creates belong to the page whose
    chat it checks, and a scratch bench gets archived by whoever tidies next
    (which is what happened to QD7 on 260802). Override with CHECK_PAGE. */

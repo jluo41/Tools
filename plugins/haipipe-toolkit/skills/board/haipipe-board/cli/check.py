@@ -80,7 +80,6 @@ CONSTRUCTS = [
     ("aim count",            "n/m in the heading", r'\d+/\d+',                    r"(?m)^- (?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*) ·"),
     ("dated item",           "span.stmp",          r'class="stmp"',               r"^(?:- )?\d{6}(?: \d{4})? "),
     ("code block",           "details.codef",      r'<details class="it codef"',  r"^```"),
-    ("excalidraw canvas",    "div.xcal",           r'<div class="xcal"',          r"^(?:/_excalidraw/|https://app\.excalidraw\.com/)"),
 ]
 
 
@@ -96,6 +95,26 @@ class Report:
         for level, *_ in self.rows:
             c[level] = c.get(level, 0) + 1
         return c
+
+
+def outside_checkout(base, target):
+    """True when a relative target climbs out of the git checkout `base` is in.
+
+    A board may legitimately cite a neighbouring SPACE (`env.sh`, a platforms/
+    tree) that exists on the primary machine and not in a partial checkout.
+    From here such a path is UNVERIFIABLE rather than known-dead, and an ERROR
+    must mean known-dead (JL 260815). Resolution is lexical: the target's
+    `..` climb is compared against the checkout root without touching disk.
+    """
+    base = Path(base).resolve()
+    root = next((p for p in (base, *base.parents) if (p / ".git").exists()), None)
+    if root is None:
+        return False
+    try:
+        candidate = (base / target).resolve()
+    except OSError:
+        return False
+    return not str(candidate).startswith(str(root) + "/") and candidate != root
 
 
 def alias_names(canon):
@@ -195,7 +214,7 @@ def check_board(d, rep):
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
     pages = {p.name: p for p in page_files(d)}
-    listed = re.findall(r"^((?:[QS]|Agent-|Meeting-)[^\s/]*\.md)\s*$", text, re.M)
+    listed = re.findall(r"^((?:[QS]|Agent-|Meeting-|Design-)[^\s/]*\.md)\s*$", text, re.M)
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
@@ -218,8 +237,16 @@ def check_board(d, rep):
         if target.startswith(("http://", "https://")):
             continue
         if not (d / target).exists():
-            rep.add(ERROR, "dead-link", f"board.md -> {token}",
-                    f"declared Link target does not exist: {target}")
+            if outside_checkout(d, target):
+                # The target climbs out of this git checkout, so from here it
+                # is UNVERIFIABLE, not known-dead: on the machine that holds
+                # the neighbouring SPACE the same row resolves and stays
+                # checked (JL 260815). An ERROR must mean known-dead.
+                rep.add(WARN, "outside-checkout", f"board.md -> {token}",
+                        f"Link target lives outside this checkout: {target}")
+            else:
+                rep.add(ERROR, "dead-link", f"board.md -> {token}",
+                        f"declared Link target does not exist: {target}")
     return pages, links, decision_only
 
 
@@ -273,9 +300,21 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # action items and open questions and are equally quotations.
     quoted = bool(re.match(r"^Meeting-\d+-", Path(name).name))
     for lineno, ln in strip_fences(text, prose_only=True):
-        if "—" in ln and not quoted:
+        if ln.lstrip().startswith(">"):
+            # a sentence's comment or edit record is a quotation of what a
+            # person typed, and the record rule forbids editing it; nagging
+            # about a line nobody may fix is a checker defect (260815, the
+            # same reasoning that exempts Meeting pages above)
+            continue
+        bare = re.sub(r"`[^`]*`", "", ln)   # a code span quotes the machine
+        # a double-quoted span quotes a PERSON, and the board's own record
+        # rules value the exact words over the prose rules (JL 260815, the
+        # ruling that extended the Meeting exemption): "为啥不按序号来排?" stays
+        # verbatim, and the narration around it stays English and dash-free.
+        bare = re.sub(r'"[^"\n]*"|“[^”\n]*”', "", bare)
+        if "—" in bare and not quoted:
             rep.add(WARN, "em-dash", f"{name}:{lineno}", "em-dash in prose (JL 260724)")
-        if re.search(r"[一-鿿]", ln) and not quoted:
+        if re.search(r"[一-鿿]", bare) and not quoted:
             rep.add(WARN, "cjk", f"{name}:{lineno}", "CJK in a board that is English-only (JL 260724)")
 
     # One sentence per line: the page gives every prose line its own row, so a
@@ -722,7 +761,15 @@ def check_file_paths(text, name, rep, board_dir=None):
         d = Path(board_dir)
         # a Files row may be written relative to the PAGE's own folder, to the
         # board root, or to the repo root; all three are legitimate and in use.
-        roots += [d, d.parent]
+        # Climb to the board root instead of assuming it is one level up: a
+        # folded page (`<name>/<name>.md`, JL 260815) sits one level deeper,
+        # and the fixed `[d, d.parent]` silently dropped board-relative
+        # resolution for every folded page.
+        roots.append(d)
+        for p in d.resolve().parents:
+            roots.append(p)
+            if (p / "board.md").is_file():
+                break
         root = next((p for p in d.resolve().parents
                      if (p / "pyproject.toml").is_file()), None)
         if root:
@@ -744,6 +791,14 @@ def check_file_paths(text, name, rep, board_dir=None):
                     # (<path/to/thing.py>) names a shape, not a file. The template
                     # is copied for every new page, so its example rows must not
                     # arrive pre-broken (JL 260802).
+                    continue
+                if cand.split("/")[0].startswith("."):
+                    # runtime state (`.haipipe-board/activity.sqlite3`) exists
+                    # only after the server has run; its absence proves nothing
+                    continue
+                if board_dir and outside_checkout(Path(board_dir), cand):
+                    rep.add(WARN, "outside-checkout", f"{name} · Files",
+                            f"`{cand}` lives outside this checkout")
                     continue
                 rep.add(WARN, "dead-file-path", f"{name} · Files",
                         f"`{cand}` does not resolve from the engine, the board, "
@@ -978,8 +1033,10 @@ def check_one_canvas(text, name, rep):
 # claimed by nothing, which was the pattern being wrong, not the board.
 FENCE = "`" * 3
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
+# `stage` joined 260815: the restructure reduced this family's kinds to stage
+# and design, and QPs3's specimen declares `page-type: stage` explicitly.
 PAGE_TYPE_VALUES = ("display", "slide", "design", "section", "labeling",
-                    "narrative", "dash", "view")
+                    "narrative", "dash", "view", "stage")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 
@@ -1088,8 +1145,12 @@ def check_page(d, rep):
             # figure pasted into board.md with a space in its name).
             href = unquote(href)
             if not (html.parent / href).exists():
-                rep.add(ERROR, f"dead-{attr}", f"{name} -> {href}",
-                        f"rendered {attr} does not resolve")
+                if outside_checkout(html.parent, href):
+                    rep.add(WARN, "outside-checkout", f"{name} -> {href}",
+                            f"rendered {attr} target lives outside this checkout")
+                else:
+                    rep.add(ERROR, f"dead-{attr}", f"{name} -> {href}",
+                            f"rendered {attr} does not resolve")
 
         ids = re.findall(r'id="([^"]+)"', t)
         for fragment in sorted(set(re.findall(r'href="#([^"]+)"', bare))):

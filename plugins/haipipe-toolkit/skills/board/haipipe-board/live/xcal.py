@@ -665,11 +665,21 @@ class XcalMixin:
         except ValueError:
             return self.reply(403, {"ok": False, "err": "outside --root"})
         if not f.exists():
-            return self.reply(404, {"ok": False, "err": f"no {path}"})
-        try:
-            scene = json.loads(f.read_text(encoding="utf-8"))
-        except Exception as e:
-            return self.reply(400, {"ok": False, "err": f"{f.name} is not a scene: {e}"})
+            # 🪄 A PAGE SCENE IS MINTED THE FIRST TIME IT IS OPENED (QPf2 §3:
+            # an empty Page still gets a source file — existence never depends
+            # on whether someone has drawn the first shape). The 404 this used
+            # to return was worse than empty: the boot then skipped seeding and
+            # the app woke on BROWSER-STORAGE leftovers, so a new page's Draw
+            # split showed the LAST page's drawing, one armed save away from
+            # landing in the wrong file (JL 260815, seen on QPf4).
+            scene = self.mint_page_scene(f)
+            if scene is None:
+                return self.reply(404, {"ok": False, "err": f"no {path}"})
+        else:
+            try:
+                scene = json.loads(f.read_text(encoding="utf-8"))
+            except Exception as e:
+                return self.reply(400, {"ok": False, "err": f"{f.name} is not a scene: {e}"})
 
         try:
             linked = self.linked_runtime_scene(f, scene)
@@ -693,6 +703,40 @@ class XcalMixin:
         scene["elements"] = keep
         scene["files"] = self.hydrate_files(scene, keep, f.parent)
         return self.reply_scene(scene)
+
+    def mint_page_scene(self, f):
+        """<page>/draw/<id>.excalidraw, absent -> write it EMPTY and return it.
+
+        Only a real page's own scene qualifies: the file must sit in a `draw/`
+        folder whose parent is a page folder carrying `<name>/<name>.md`, and
+        `group.excalidraw` is never minted here (a group view is composed from
+        page sources, not authored). Anything else returns None and the caller
+        404s exactly as before. The write is the point: revision checks, the
+        shell's watcher, and the first save all want the file to be real."""
+        if f.suffix != ".excalidraw" or f.parent.name != "draw":
+            return None
+        if f.name == "group.excalidraw":
+            return None
+        page_dir = f.parent.parent
+        md = page_dir / f"{page_dir.name}.md"
+        if not md.is_file():
+            return None
+        try:
+            md_rel = str(md.resolve().relative_to(self.root.resolve()))
+        except ValueError:
+            md_rel = ""
+        scene = {"type": "excalidraw", "version": 2,
+                 "source": "haipipe-board/mint",
+                 "elements": [],
+                 "appState": {"gridSize": None,
+                              "viewBackgroundColor": "#ffffff"},
+                 "files": {},
+                 "haipipe": {"schema": "haipipe-linked-drawing/v1",
+                             "kind": "page",
+                             "page": {"id": f.stem, "markdown": md_rel}}}
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps(scene, indent=1), encoding="utf-8")
+        return scene
 
     def reply_scene(self, scene):
         body = json.dumps(scene).encode()

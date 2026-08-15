@@ -25,7 +25,7 @@ Every number and every citation in the manuscript arrives through this one door,
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Keep the ownership split explicit**: the shared Probe layer owns the execution model. This board owns the Paper overlay that locates a topic and requires the four entry sections. The executable version is `haipipe-board/ref/topic-entry-contract.md`; this page explains why it exists.
 

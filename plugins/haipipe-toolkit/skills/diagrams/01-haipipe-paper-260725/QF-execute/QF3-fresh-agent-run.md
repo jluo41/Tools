@@ -25,7 +25,7 @@ On the MISQ paper an agent wrote the line saying a gate had passed, which is exa
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Never report an artifact as evidence here**: this page's currency is what an agent did.
 "It produced a valid Seed page" is a QF1 mechanical record; "it stopped before DRAFT" is behavioural evidence and belongs here.

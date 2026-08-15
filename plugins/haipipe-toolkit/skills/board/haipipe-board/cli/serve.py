@@ -95,7 +95,10 @@ from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
                        spawn_pty, pty_pump, pty_resize, ws_send)
 from live.xcal import XcalMixin
 from live.shell import ShellMixin
-from live.deck import DeckMixin
+from live.export import ExportMixin
+from live.skillmap import SkillmapMixin
+from live.plugview import PlugViewMixin
+from live.folderstat import FolderStatMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
 # exactly as before (QE3's Law: one implementation, the console is a pipe).
@@ -108,7 +111,7 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
                        BOARD_CHAT_RULES, BOARD_FULL_RULES, READONLY, WRITE_TOOLS)
 
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, DeckMixin, SimpleHTTPRequestHandler):
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PlugViewMixin, FolderStatMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -200,6 +203,9 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         split = self.split_of(self.path)
         if split:
             return self.serve_shell(split)
+        if self.path.split("?", 1)[0] == "/_board/folderstat":
+            # 📂 the page-folder's live status (never stored, so never stale)
+            return self.folderstat_view()
         if self.path == "/_board/health":
             # checks/smoke.py 的探针：跑 chat 的是不是带 SDK 的解释器，只有
             # 进程自己答得出 —— ps 看到的是 venv 软链解析后的裸二进制，在外面
@@ -240,6 +246,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return self.serve_short(*short)
         if self.pane_of(self.path):
             return self.head_pane()
+        if self.path.split("?", 1)[0] == "/_board/folderstat":
+            return self.folderstat_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -274,6 +282,27 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             a["always"] = bool(p.get("always"))
             a["ev"].set()
             return self.reply(200, {"ok": True})
+        if self.path == "/_board/autodraw":
+            # ✨ the Draw tab's button: Claude authors this page's scene
+            # (JL 260815). Targets a .excalidraw, so it never reaches target().
+            # Threading server, so the minutes it thinks block nobody.
+            try:
+                from live.autodraw import autodraw
+                res = autodraw(self.root, p)
+            except Exception as e:
+                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
+            return self.reply(200 if res.get("ok") else 400, res)
+        if self.path == "/_board/autodeck":
+            # ✨ the Slides surfaces' button: Claude authors this page's deck
+            # (JL 260815: the deck is the AI deck, and a button regenerates it).
+            # Targets slide/<page>-deck.html, so it never reaches target().
+            # Threading server, so the minutes it thinks block nobody.
+            try:
+                from live.autodeck import autodeck
+                res = autodeck(self.root, p)
+            except Exception as e:
+                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
+            return self.reply(200 if res.get("ok") else 400, res)
         if self.path == "/_board/excalidraw-save":
             # Targets a .excalidraw file, not a Q file, so it never reaches
             # target(). Also the one endpoint sendBeacon posts, on unload.
@@ -336,8 +365,55 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/deck":       # write this page out as an html-ppt deck
-            res, err = self.deck(None, p)
+        # The DERIVED paper-facing plugins (haipipe-page-plugin roster):
+        # each writes into the page's own plugin folder and answers with the
+        # URL the right-pane tab frames. One route per plugin, one mixin.
+        if self.path == "/_board/latex":      # page -> latex/<stem>.tex + .pdf
+            res, err = self.export_latex(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/word":       # page -> word/<stem>.docx + PDF twin
+            res, err = self.export_word(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/bibex":      # refresh the page-owned bib + view
+            res, err = self.export_bibex(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/bibex-verify":   # the human ✓: one verified field
+            res, err = self.bibex_verify(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/bibex-entry":    # the pen: land a person's entry
+            res, err = self.bibex_entry(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        # 🛠 the skill map, bibex's twin (haipipe-page-plugin): the page's
+        # citations into the SKILL tree, one store + one workbench view.
+        if self.path == "/_board/skill":          # refresh: seed-scan + view
+            res, err = self.skillmap_refresh(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/skill-verify":   # the human ✓: aligned as of
+            res, err = self.skillmap_verify(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/skill-entry":    # the pen: declare a relation
+            res, err = self.skillmap_entry(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        # The EVIDENCE plugins' read-only surfaces (QPf5 · QPf9): the view
+        # lists the page's units or cards and writes nothing but itself.
+        if self.path == "/_board/folderstat":  # 📂 the tab spec's write() twin
+            res, err = self.plug_folderstat(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/display":    # list display/ units + previews
+            res, err = self.plug_display(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/probe":      # list probe/ cards + states
+            res, err = self.plug_probe(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/term-type":   # a surface types one line into the PTY
@@ -360,6 +436,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             res, err = self.sessions_list(f, p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/chat-keep":      # sessions land in the page's chat/ (QPf4, JL 260815)
+            return self.reply(200, self.keep_sessions(f, p))
         if self.path == "/_board/session-log":    # that session's transcript (JL 260801)
             res, err = self.session_log(f, p), None
             return self.reply(200, res)

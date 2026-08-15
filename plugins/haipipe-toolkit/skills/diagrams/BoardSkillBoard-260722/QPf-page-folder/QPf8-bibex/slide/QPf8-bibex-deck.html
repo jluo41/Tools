@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bibex · the page's own bib</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide" id="s1" data-title="cover">
+  <p class="kicker">QPf8-bibex · 🟡 PARTIAL · haipipe-board 0.129.0</p>
+  <h1 class="h1">Bibex: <span class="gradient-text">the page's own bib</span>, worked by hand</h1>
+  <p class="lede">Every page gets its own citation store, seeded from the paper's bib and worked through a card workbench — where the machine is a pen, and only a person ever writes the ✓.</p>
+  <div class="deck-footer"><span class="dim2">QPf8-bibex · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Open with the question the page opens with: where does a page's bibliography live, and how does a person actually work it? The answer shipped in 0.129.0, and the punchline is that the machine composes nothing — I'll keep coming back to that line.</div>
+</section>
+
+<section class="slide" id="s2" data-title="ruling">
+  <p class="kicker">The ruling · JL 260815</p>
+  <h2 class="h2">"The bib for this page only"</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🗃 Page-owned store</h4><p class="dim">The truth is <code>bibex/&lt;stem&gt;.bib</code> — not the paper's, not a board-level one.</p></div>
+    <div class="card"><h4>📥 Seeded, one way</h4><p class="dim">Entries are copied whole from the paper's <code>0-*.bib</code>, which is never written back.</p></div>
+    <div class="card"><h4>📚 A workbench over it</h4><p class="dim">The 📚 tab shows every entry as a card with status and links.</p></div>
+    <div class="card"><h4>✂️ Citation-craft holds</h4><p class="dim">The machine composes nothing; <code>citation-craft.md</code> is the law, and if they disagree, this plugin is the defect.</p></div>
+  </div>
+  <p class="dim mt-m">The same-day draft was extract-only; the page-owned-bib ruling superseded it, keeping extraction as the seeding half.</p>
+  <div class="notes">This ruling landed on the fifteenth and reshaped the page the same day. The key move: ownership. The paper's bib is upstream and read-only here — the page carries its own file, committed, and everything else is machinery around that one fact.</div>
+</section>
+
+<section class="slide" id="s3" data-title="contract">
+  <p class="kicker">The contract · a MIXED plugin, like display/</p>
+  <h2 class="h2">One primary file a person rules, one derived view</h2>
+  <pre>
+📄 ⟨page⟩/⟨stem⟩.md ── cite keys ──▶ the KEYS
+      │        keys in fences or backticks are
+      ▼        illustrations, stripped before the scan
+🗃 bibex/⟨stem⟩.bib       PRIMARY · committed · refresh
+      ▲ seeded whole from   only APPENDS, never overwrites
+      │ the paper's 0-*.bib  or deletes what is already here
+      ▼
+🖼 bibex/⟨stem⟩-bib.html  DERIVED · regenerated freely
+  </pre>
+  <p class="dim mt-m">An entry no longer cited stays, marked "not cited on this page" — removing a sentence never silently drops its source.</p>
+  <div class="notes">Two files, two owners. The .bib is the person's; a rebuild may only append to it, because a person may have edited any entry. The HTML view is the machine's and gets thrown away freely. And note the fence-strip: a figure showing cite syntax is an illustration, not a citation.</div>
+</section>
+
+<section class="slide" id="s4" data-title="doors">
+  <p class="kicker">Three doors, one truth</p>
+  <h2 class="h2">Seeding copies in, a person ticks and pastes, the view renders</h2>
+  <div class="grid g3">
+    <div class="card"><h4>↻ /_board/bibex</h4><p class="dim">Re-scan the page's keys, seed-import what resolves, re-render the view.</p></div>
+    <div class="card"><h4>✓ /_board/bibex-verify</h4><p class="dim">Writes <code>verified = {WHO YYMMDD}</code> into the entry itself — no sidecar to drift.</p></div>
+    <div class="card"><h4>✎ /_board/bibex-entry</h4><p class="dim">Lands a person's pasted bibtex verbatim, duplicate-guarded — the pen, never the author.</p></div>
+  </div>
+  <p class="dim mt-m">The view's own buttons POST the verify and entry routes and reload; a lit-click on the tab refreshes the derived half only.</p>
+  <div class="notes">Three routes, and each one has a different relationship to the truth file. Refresh may only add. Verify writes one field, on a person's click. Entry lands text a person wrote. Nothing in this list composes a citation — that's the whole design.</div>
+</section>
+
+<section class="slide" id="s5" data-title="card">
+  <p class="kicker">The workbench · what a person does on a card</p>
+  <h2 class="h2">Check, mark, fix, add</h2>
+  <ul>
+    <li>🔎 Scholar, 🔗 DOI, 📄 URL — the links the checking happens through</li>
+    <li>✅ checked with who and when, or ⬜ unchecked with the ✓ button — and undo</li>
+    <li>▸ raw bibtex behind an ✎ edit fold — fix a field, replace in place</li>
+    <li>🔴 missing key → 🔎 find it → 📋 paste its bibtex → it lands verbatim</li>
+    <li>＋ add takes a LINK too: DOI, arXiv, Scholar's cite link, or a paper URL — the bibtex is fetched whole into the box for review</li>
+    <li>The whole raw <code>.bib</code> sits one fold from the cards, path printed — hand-editing it is legal</li>
+  </ul>
+  <div class="notes">Walk one card slowly: parsed title, authors, year, then the three links, then the status. The ＋ box is the newest part — paste a paper link and four resolvers fetch the bibtex whole into the box, so fetching is copying and landing stays the person's second click. An unusable fetched key gets renamed surname-plus-year, because a key is a local handle, not metadata.</div>
+</section>
+
+<section class="slide" id="s6" data-title="law">
+  <p class="kicker">The law</p>
+  <h2 class="h2">The pen, never the author</h2>
+  <div class="grid g3">
+    <div class="card"><h4>🗃 The page owns its bib</h4><p class="dim">Nothing this plugin does ever writes the paper's <code>0-*.bib</code>.</p></div>
+    <div class="card"><h4>✂️ Verbatim or whole</h4><p class="dim">The machine lands pasted text or copies an upstream entry; a missing key is reported, never guessed.</p></div>
+    <div class="card"><h4>🧑 The ✓ is a person's</h4><p class="dim">No machine may write <code>verified</code> — the one demo tick that did was reverted the same hour.</p></div>
+  </div>
+  <p class="dim mt-m">The pen validates shape only — one balanced entry with a key, duplicates refused unless the save is an explicit replace.</p>
+  <div class="notes">This is the slide to slow down on. The line between a pen and an author is that the pen never composes, completes, or corrects the text. And the ✓ is the page's answer to "did I check this link myself" — we reverted a machine-written tick within the hour precisely to keep that field honest.</div>
+</section>
+
+<section class="slide" id="s7" data-title="state">
+  <p class="kicker">States · built and route-tested; the lived use remains</p>
+  <h2 class="h2">What shipped, what's open</h2>
+  <ul>
+    <li>✅ A1.1 · Store, seeding, safe refresh — lifecycle-tested 260815 on a synthetic paper</li>
+    <li>✅ A2.1 + A2.3 · Cards, tick, undo, pen, dup guard, link resolvers — all exercised through the routes</li>
+    <li>✅ A3.1 + A3.2 · View screenshot-verified; JL's own QPf4-chat add at 15:13 and its ✓ at 15:15, in a live browser</li>
+    <li>⬜ A1.2 · No real paper page has lived on its seeded bib yet</li>
+    <li>⬜ A2.2 · The first REAL checked entry must be JL's — every <code>verified</code> so far was a test's and was reverted</li>
+    <li>⬜ P1 · <code>check.py</code> does not yet know <code>bibex/</code> as a plugin folder</li>
+  </ul>
+  <div class="notes">Everything mechanical is green and tested — including a real browser round-trip by JL's own hands. What's open is deliberately human: a real paper living on its bib, and the first ✓ that means someone actually opened the link. The boundary item is small: teach the checker the folder's name.</div>
+</section>
+
+<section class="slide" id="s8" data-title="closer">
+  <p class="kicker">QPf8-bibex</p>
+  <h1 class="h1">A store the person rules, <span class="gradient-text">a ✓ only a person writes</span></h1>
+  <p class="lede">The workbench is built; the bib waits for its first lived entry — JL's own KDD paper already landed through the pen, and the first real ✓ is the next thing that happens here.</p>
+  <div class="deck-footer"><span class="dim2">QPf8-bibex · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Close on the asymmetry: the machine got every affordance it needs, and none of the authority. The remaining checkboxes can't be automated by design — that's not a gap, that's the contract working.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260815 1706 · ask: (page) -->

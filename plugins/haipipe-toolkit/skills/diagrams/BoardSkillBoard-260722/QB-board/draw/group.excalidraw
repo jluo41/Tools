@@ -1,0 +1,113 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [
+  {
+   "id": "t-group-1",
+   "type": "text",
+   "x": 0,
+   "y": 998.0,
+   "width": 200.2,
+   "height": 35.0,
+   "angle": 0,
+   "strokeColor": "#6a5acd",
+   "backgroundColor": "transparent",
+   "fillStyle": "solid",
+   "strokeWidth": 1,
+   "strokeStyle": "solid",
+   "roughness": 1,
+   "opacity": 100,
+   "groupIds": [],
+   "frameId": null,
+   "roundness": null,
+   "seed": 1309677297,
+   "version": 1,
+   "versionNonce": 448908983,
+   "isDeleted": false,
+   "boundElements": null,
+   "updated": 1,
+   "link": null,
+   "locked": false,
+   "text": "QB · Delivery",
+   "originalText": "QB · Delivery",
+   "fontSize": 28,
+   "fontFamily": 2,
+   "textAlign": "left",
+   "verticalAlign": "top",
+   "containerId": null,
+   "lineHeight": 1.25
+  }
+ ],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QB",
+   "name": "QB · Board"
+  },
+  "imports": [
+   {
+    "page": "QB1",
+    "source": "../QB1-form/draw/QB1.excalidraw",
+    "placement": {
+     "x": 0.0,
+     "y": 2475.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB1"
+   },
+   {
+    "page": "QB2",
+    "source": "../QB2-board-webpage-design/draw/QB2.excalidraw",
+    "placement": {
+     "x": 890.0,
+     "y": 2475.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB2"
+   },
+   {
+    "page": "QB2a",
+    "source": "../QB2a-sidebar/draw/QB2a.excalidraw",
+    "placement": {
+     "x": 1436.0,
+     "y": 1050.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB2a"
+   },
+   {
+    "page": "Design-1",
+    "source": "../Design-1-haipipe-board/draw/Design-1.excalidraw",
+    "placement": {
+     "x": 9013.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Skill-0"
+   },
+   {
+    "page": "Design-2",
+    "source": "../Design-2-haipipe-board-routing/draw/Design-2.excalidraw",
+    "placement": {
+     "x": 11683.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Skill-5"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {
+    "t-group-1": 13
+   }
+  }
+ }
+}

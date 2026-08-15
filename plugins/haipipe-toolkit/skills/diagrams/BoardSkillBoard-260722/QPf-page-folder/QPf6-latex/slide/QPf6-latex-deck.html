@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf6 · LaTeX, Compiled in Its Own Folder</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QPf6-latex · 🟡 PARTIAL · haipipe-board 0.128.0</p>
+  <h1 class="h1">The page compiled, <span class="gradient-text">in its own folder</span></h1>
+  <p class="lede">A page's <code>.md</code> is the source; its <code>.tex</code> and <code>.pdf</code> are DERIVED. The paper family's md2tex writes them by path — never copied — and a rebuild may overwrite them. This talk settles the plugin's contract and names what the 260815 build left open.</p>
+  <div class="deck-footer"><span class="dim2">QPf6-latex · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Open with the question the page opens with: where does a page's LaTeX projection live, and who is allowed to write it? The answer is the derived-plugin law — the page's own latex folder, regenerable at one click. Promise both halves: what shipped, and what's still owed.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Contract">
+  <p class="kicker">§1 · The contract</p>
+  <h2 class="h2">Two files, both derived, both regenerable</h2>
+  <pre>
+⟨page⟩/latex/
+  ⟨stem⟩.tex   ⚙️ md2tex's section · "do not hand-edit" header
+  ⟨stem⟩.pdf   ⚙️ the compiled look · what the tab frames
+
+flat page fallback: ⟨board⟩/latex/⟨stem⟩.*
+                    the same fork deck.py takes</pre>
+  <p class="dim mt-m">A hand-edited file is overwritten on the next build — that is the derived-plugin rule, not a defect.</p>
+  <div class="notes">Stress that overwrite-on-rebuild is the contract working as intended. If you hand-edit the tex, the next click erases you — and that's the rule from QPf1 that every derived plugin shares, not a bug in this one.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Pipeline">
+  <p class="kicker">§ Diagram · one source, four hops</p>
+  <h2 class="h2">Markdown to framed PDF, nothing typed by hand</h2>
+  <pre>
+📄 ⟨page⟩/⟨stem⟩.md              the SOURCE · haipipe-page owns it
+      │  POST /_board/latex      live/export.py
+      ▼
+🛠 md2tex.py ──▶ latex/⟨stem⟩.tex    ### → \section · lanes dropped
+      │          + ⟨stem⟩-master.tex  generic article master
+      ▼
+🧮 xelatex (+bibtex when a bib) ──▶ latex/⟨stem⟩.pdf
+      │          -master.* residue deleted after the run
+      ▼
+🖼 the 📜 tab frames the PDF · failure frames .tex + log tail</pre>
+  <div class="notes">Walk the four hops top to bottom. The twist worth saying aloud: md2tex's own --compile is bound to one paper's hand-written master, so the board wraps the generated section in a generic article master and compiles that instead — then deletes the master residue after every run.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Bibliography">
+  <p class="kicker">§1 · Where the citations come from</p>
+  <h2 class="h2">The page's own bib first, then the paper's, then none</h2>
+  <div class="grid g3">
+    <div class="card"><h4>📚 Page bib wins</h4><p class="dim">bibex/⟨stem⟩.bib is preferred when it holds an entry — JL 260815: the page's cites should compile.</p></div>
+    <div class="card"><h4>🚶 Walk-up discovery</h4><p class="dim">No page bib? --paper-root is found by walking up toward --root for a 0-*.bib.</p></div>
+    <div class="card"><h4>🕊 Cite-less, not refused</h4><p class="dim">Outside any paper, \citep prints as [key] and the export still compiles.</p></div>
+  </div>
+  <p class="dim mt-m">With either bib the master gains natbib, plainnat, and a bibtex pass — QPf8's PDF proved it: [Luo et al., 2026] inline plus a real References page.</p>
+  <div class="notes">This is a graceful-degradation ladder: the workbench's own store first, the surrounding paper second, and a legible fallback third. The design choice to defend is the last rung — the export never refuses, it just prints the key.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Grammar">
+  <p class="kicker">§2 · What the writer inherits, and what it drops</p>
+  <h2 class="h2">The grammar mostly coincides; the misses are recorded</h2>
+  <pre>
+### 1 · title      ──▶  \section        maps cleanly
+#### block         ──▶  paragraph break
+\citep{} \ref{}    ──▶  kept verbatim   already LaTeX
+&gt; lanes            ──▶  DROPPED         nowhere to go in TeX
+refuse-to-regress  ──▶  inherited       lost citations = refusal</pre>
+  <p class="dim mt-m">The gap: xelatex drops glyphs its fonts lack, so an emoji-heavy ascii figure reads thinner in PDF than on stage — A2.1 measures that loss instead of guessing it.</p>
+  <div class="notes">Note that lanes become comments in Word but simply vanish here — same writer, different ceilings per projection. And be honest that the proof run, QPf4b's four-page PDF, was prose-heavy and flattered the mapping; the figure-dense stress test hasn't run yet.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Surface">
+  <p class="kicker">§3 · The surface</p>
+  <h2 class="h2">The 📜 tab: the Slides sandwich, compiler as filling</h2>
+  <pre>
+82-plugin-exports.js ─POST─▶ /_board/latex ─runs─▶ md2tex + xelatex
+tab.url()    names latex/⟨stem⟩.pdf · HEAD hit ▶ frame it
+tab.write()  builds on miss · lit-click        ▶ REBUILD
+failure      ▶ a view page: the .tex + log tail · never blank</pre>
+  <p class="dim mt-m">A3.1 met 260815: QPf4b's four-page PDF framed live in a real browser, opened from the Plugin menu, closed by its own ✕ — driven, not assumed.</p>
+  <div class="notes">The one line to land here is the failure contract: a compile error never leaves a blank frame — you get the tex and the log tail as a page instead of silence. And the tab was proven by actually driving a browser through it, which is why A3 is checked.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Ledger">
+  <p class="kicker">§ States + Decision Now</p>
+  <h2 class="h2">Done and proven vs. owed — plus one ruling for JL</h2>
+  <ul>
+    <li>✅ A1.1 · Shipped 260815: /_board/latex, master wrap, residue cleanup, failure view.</li>
+    <li>⬜ A1.2 · The natbib paper-root path is reasoned, not run — both test pages sit outside any paper.</li>
+    <li>⬜ A2.1 · No figure-dense page exported yet; the glyph-loss list is unwritten.</li>
+    <li>⬜ P1 · check.py does not yet know latex/ by name.</li>
+    <li>🗣 Git ruling, for latex/ + word/ + bibex/ derived halves at once: A commit the artifacts, or ⭐B gitignore them whole — 🤖 default B, the machinery-under-the-delete-test ruling. bibex/⟨stem⟩.bib is PRIMARY and committed regardless.</li>
+  </ul>
+  <div class="notes">Read the ledger honestly: the writer half is done and proven, the measurement and boundary halves are owed. Then put the one open decision plainly — does git keep derived files? The starred default is B, gitignore, since every one of them regenerates from the page by one click, and the answer lands in the roster because it must cover three plugins at once.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">QPf6-latex · closing</p>
+  <h1 class="h1">One source, <span class="gradient-text">two projections</span></h1>
+  <p class="lede">Word and LaTeX stay two projections of one markdown because the writer is called by path and never copied. What remains: run the natbib path under a real paper root, measure a figure-dense export, teach check.py the folder's name — and take JL's git ruling.</p>
+  <div class="deck-footer"><span class="dim2">QPf6-latex · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Close on the design principle rather than the checklist: derived means regenerable, and regenerable is what makes the overwrite rule, the gitignore default, and the one-click rebuild all the same idea. Invite the git ruling as the only thing needing a human voice today.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260815 1700 · ask: (page) -->

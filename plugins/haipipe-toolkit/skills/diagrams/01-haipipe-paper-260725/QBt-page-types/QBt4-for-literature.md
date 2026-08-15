@@ -212,7 +212,7 @@ That is good news for the label and bad news for anyone hoping a citation would 
   The engine command that turns claims into the bibliography, and reports broken, unclaimed and unused keys.
 - `../../paper/page-types/haipipe-page-for-literature/SKILL.md`
   The contract this page is an instance of.
-- `../01-boardform-260722/QB-delivery/QB6-page-types.md`
+- `../BoardSkillBoard-260722/QPs-page-structure/QPs2-page-types/QPs2-page-types.md`
   §7 states the five on-disk shapes; this page is a worked QA-PROBE one.
 
 ## Log

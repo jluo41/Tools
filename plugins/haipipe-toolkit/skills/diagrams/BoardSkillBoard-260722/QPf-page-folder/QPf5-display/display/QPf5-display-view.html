@@ -1,0 +1,98 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🖼 Display · QPf5-display</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.ghost{opacity:.55;border-style:dashed}
+.badge{font-size:13px;margin-right:6px}
+object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radius:8px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;
+ scroll-behavior:smooth;padding:2px}
+.strip>.card{flex:0 0 100%;scroll-snap-align:start;margin:0;box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:8px;float:right}
+.nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
+ color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
+.nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
+ border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
+ background:var(--card)}
+.chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><span class='nav'><button id='prev'>◀</button><span class='pos' id='pos'></span><button id='next'>▶</button></span><h1>🖼 Display · QPf5-display</h1><div class='mut' style='margin:0 0 12px'>read-only · renderers write recipe/ and assets/; a person rules intake/ and ticks accepted: (QPf5 §3)</div><div class='chips'><a class='chip' href='#QPf5-Display1-pipeline-tikz'>QPf5-Display1-pipeline-tikz</a><a class='chip' href='#QPf5-Display2-small-paper-tikz'>QPf5-Display2-small-paper-tikz</a></div><div class='strip' id='strip'><div class='card' id='QPf5-Display1-pipeline-tikz'><b>QPf5-Display1-pipeline-tikz</b><div class='mut'><b style='color:var(--fg)'>claim</b>: a display unit is produced by five steps, intake to acceptance; a person owns intake, pick, and accept, machinery owns render and build, and a changed intake returns the acceptance to open</div><div class='mut'><b style='color:var(--fg)'>kind</b>: diagram, TeX-native (TikZ; the QPf5 §3 method whose recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: show the pipeline and whose hand moves each step, so a reader knows what a rebuild may and may not touch</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; the figure states no number, so no values intake is declared</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TikZ hand; rebuild = pdflatex preview.tex</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260815 CC · one candidate, clean on the first compile</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick</div><div class='mut'><b style='color:var(--fg)'>history</b>: born as QPf5-Display1-small-paper, an illustration unit blocked on the codex-image2 bridge; re-kinded to TikZ on JL's 260815 ruling that an empty block is wrong ("I think we should have a pdf here"); the illustration plan is preserved at versions/illustration-plan-prompt.md</div><object class='pdf' data='QPf5-Display1-pipeline-tikz/preview.pdf' type='application/pdf'><a href='QPf5-Display1-pipeline-tikz/preview.pdf'>preview.pdf</a></object><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── pipeline.tikz.tex
+├── ⚙️ versions/
+│   └── ⚙️ illustration-plan-prompt.md
+├── README.md
+├── float.tex
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPf5-Display2-small-paper-tikz'><b>QPf5-Display2-small-paper-tikz</b><div class='mut'><b style='color:var(--fg)'>claim</b>: a page is a small paper: its probe plugin asks a question once, the bank answers behind the wall, and both a display intake and a Content sentence cite the same card by id</div><div class='mut'><b style='color:var(--fg)'>kind</b>: diagram, TeX-native (TikZ; the QPf5 §3 method whose recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: show the ask-once-cite-twice mechanism so a cold reader sees why the binding has one home</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; the figure states no number, so no values intake is declared</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TikZ hand, this unit being the plugin's own demo; rebuild = pdflatex preview.tex</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260815 CC · one candidate, v2 after one refinement (the v1 bank box clipped at the page edge)</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick</div><object class='pdf' data='QPf5-Display2-small-paper-tikz/preview.pdf' type='application/pdf'><a href='QPf5-Display2-small-paper-tikz/preview.pdf'>preview.pdf</a></object><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── small-paper.tikz.tex
+├── README.md
+├── float.tex
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div></div><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/display', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/x", file: "QPf-page-folder/QPf5-display/QPf5-display.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script><script>
+(function () {
+  var s = document.getElementById('strip');
+  if (!s) return;
+  var cards = s.children.length;
+  var pos = document.getElementById('pos');
+  function at() { return Math.round(s.scrollLeft / s.clientWidth); }
+  function paint() { pos.textContent = (at() + 1) + ' / ' + cards; }
+  function go(d) { s.scrollTo({left: (at() + d) * s.clientWidth, behavior: 'smooth'}); }
+  document.getElementById('prev').onclick = function () { go(-1); };
+  document.getElementById('next').onclick = function () { go(1); };
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  function paintChips() {
+    var i = at();
+    chips.forEach(function (c, k) { c.className = 'chip' + (k === i ? ' on' : ''); });
+  }
+  s.addEventListener('scroll', function () {
+    requestAnimationFrame(function () { paint(); paintChips(); });
+  });
+  /* A CITATION or a chip lands here as #<unit-id>: shift the deck to that
+     unit, so a sentence citing a display arrives at the render it cites. */
+  function toHash() {
+    var h = decodeURIComponent((location.hash || '').slice(1));
+    var el = h && document.getElementById(h);
+    if (el && el.parentNode === s) s.scrollLeft = el.offsetLeft - s.offsetLeft;
+  }
+  window.addEventListener('hashchange', toHash);
+  toHash();
+  paint(); paintChips();
+})();
+</script></body></html>

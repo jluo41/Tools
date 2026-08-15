@@ -12,7 +12,7 @@
    HOLD. The one thing it cannot cover is a live stream, so the follow-not-yank
    assertion drives the renderer directly instead of paying for a real turn. */
 const BOARD = process.env.CHECK_BOARD_URL
-  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722';
+  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722';
 const HOSTPORT = process.env.CHECK_HOSTPORT || '127.0.0.1:5599';
 const BASE = `http://${HOSTPORT}${BOARD}/board`;
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9333';

@@ -449,6 +449,40 @@ explanation. Plain language, no invented jargon. Answer in English by default;
 only switch to another language if the user clearly writes to you in it."""
 
 
+def transcript_markdown(rows, head):
+    """One kept session -> the chat/ plugin's transcript.md (QPf4 §1, JL 260815).
+
+    `rows` are session_log's own rows ({"k": you|ai|tool, "t", "ts", ["name"]}),
+    so the record and the live replay can never disagree about what happened.
+    Pure function, so the formatter is testable without a server.
+    """
+    def hhmm(ts):
+        return (ts or "")[11:16]
+
+    name = head.get("name") or head.get("title") or head.get("id", "")[:8]
+    lines = [
+        f"# 💬 {name}",
+        f"session: {head.get('id', '')}",
+        f"kept: {head.get('kept', '')} · source: {head.get('source', '')}",
+        "",
+        "The digest is the reading path and this transcript is reference "
+        "(QPf4 Content §1); decisions made here are routed onto pages as "
+        "sentences, never left in this file.",
+        "",
+        "---",
+        "",
+    ]
+    for r in rows:
+        k = r.get("k")
+        if k == "tool":
+            lines.append(f"> 🔧 {r.get('name', '?')} · {r.get('t', '')}")
+        elif k == "you":
+            lines += [f"**You** · {hhmm(r.get('ts'))}", "", r.get("t", ""), ""]
+        else:
+            lines += [f"**Claude** · {hhmm(r.get('ts'))}", "", r.get("t", ""), ""]
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def oauth_token(root):
     """OAuth token for the SDK, or None to fall back to the ambient login."""
     tok = os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")
@@ -1253,6 +1287,20 @@ class ChatMixin:
         jp = self._jsonl_path(sid)
         if not jp.exists():
             return {"ok": True, "log": [], "hollow": True}
+        out, err = self._session_rows(sid)
+        if err:
+            return {"ok": False, "err": err}
+        # a very long session would blow up the drawer; keep the tail, which is
+        # what "continue where I left off" actually means
+        MAX = 300          # raised with tool rows: 120 was ~4 real turns
+        clipped = len(out) > MAX
+        return {"ok": True, "log": out[-MAX:], "clipped": clipped, "total": len(out)}
+
+    def _session_rows(self, sid):
+        """The full jsonl walk, unclipped -> (rows, err). session_log clips it
+        for the drawer; keep_sessions writes all of it, because a RECORD that
+        silently drops the first 300 rows is not a record (QPf4 §1)."""
+        jp = self._jsonl_path(sid)
 
         def text_of(msg):
             c = (msg or {}).get("content")
@@ -1310,12 +1358,49 @@ class ChatMixin:
                     else:
                         out.append({"k": "ai", "t": txt, "ts": o.get("timestamp")})
         except Exception as e:
-            return {"ok": False, "err": str(e)}
-        # a very long session would blow up the drawer; keep the tail, which is
-        # what "continue where I left off" actually means
-        MAX = 300          # raised with tool rows: 120 was ~4 real turns
-        clipped = len(out) > MAX
-        return {"ok": True, "log": out[-MAX:], "clipped": clipped, "total": len(out)}
+            return [], str(e)
+        return out, None
+
+    def keep_sessions(self, f, p):
+        """POST /_board/chat-keep {file} -> this page's sessions land in its
+        chat/ plugin (QPf4, JL 260815: "I want the chat history to be recorded
+        in the chat subfolder").
+
+        BOUNDED on purpose: only sessions the page has registered (the same
+        list the picker shows), never every stray conversation, which is the
+        bloat the page's own Decision row warned about. The folder name keys
+        on the session's FIRST timestamp plus the id's head, so a re-keep after
+        more chat refreshes the same folder instead of minting a new one.
+        transcript.md is DERIVED (the jsonl stays the source), so overwriting
+        on re-keep is the sync semantics every other derived block uses."""
+        f = Path(f)
+        if f.is_dir() or f.parent.name != f.stem:
+            return {"ok": False, "err": "chat/ needs a folded page "
+                                        "(<name>/<name>.md, QPf1)"}
+        listing, _ = self.sessions_list(f, p)
+        kept, skipped = [], 0
+        for row in listing.get("sessions", []):
+            if not row.get("landed"):
+                skipped += 1
+                continue
+            sid = row["id"]
+            rows, err = self._session_rows(sid)
+            if err or not rows:
+                skipped += 1
+                continue
+            first_ts = next((r.get("ts") for r in rows if r.get("ts")), "")
+            stamp = (first_ts[2:10].replace("-", "") + "-"
+                     + first_ts[11:16].replace(":", "")) if first_ts else "undated"
+            d = f.parent / "chat" / f"{stamp}-{sid[:8]}"
+            d.mkdir(parents=True, exist_ok=True)
+            head = {"id": sid, "name": row.get("name", ""),
+                    "title": row.get("title", ""),
+                    "kept": time.strftime("%y%m%d %H%M"),
+                    "source": str(self._jsonl_path(sid))}
+            (d / "transcript.md").write_text(
+                transcript_markdown(rows, head), encoding="utf-8")
+            kept.append(d.name)
+        return {"ok": True, "kept": kept, "skipped": skipped}
 
     def sessions_list(self, f, p):
         """POST /_board/sessions {file} → 这一题的会话清单：current 在第一行，

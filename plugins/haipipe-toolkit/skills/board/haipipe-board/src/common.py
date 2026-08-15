@@ -164,8 +164,13 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # `Meeting-<unit>-<slug>` is the third kind beside them (QC10, JL 260731): not
 # a decision and not a shipped unit, but the artifact a meeting leaves behind,
 # mirrored from an `echo-meeting` vault note by `meetingpage.py`.
+# `Design-<unit>-<slug>` replaced `Skill-<unit>-<slug>` on this family's own
+# board (JL 260815: "we don't have the page for the Skill anymore. It will be
+# the design"): a unit's page is a DESIGN page holding the argument plus the
+# unit's material in plugins. `Skill-` stays legal so archives and other
+# families' boards keep parsing.
 PAGENAME = re.compile(
-    r"^(?:[QS][A-Za-z0-9]*|Agent-\d+|Meeting-\d+)[-_A-Za-z0-9]*\.md$")
+    r"^(?:[QS][A-Za-z0-9]*|Agent-\d+|Meeting-\d+|Design-\d+)[-_A-Za-z0-9]*\.md$")
 
 
 def _vet_path(name, pattern):
@@ -194,6 +199,31 @@ def vet_pagepath(name):
     return _vet_path(name, PAGENAME)
 
 
+def _page_home(p):
+    """True when directory p is a folded page's home: `<name>/<name>.md`."""
+    return (p / f"{p.name}.md").is_file()
+
+
+def _in_plugin(p, d):
+    """True when p is not board material because a PLUGIN holds it.
+
+    Inside a folded page's folder every subfolder that is not itself a folded
+    page is a plugin (JL 260815: "each subfolder will also be the plugin in
+    that page"), and discovery never enters one. Child pages keep nesting, so
+    a lifecycle tree still works. A page file lying directly beside the page's
+    own md is a stray for the same reason. Without this rule a `skill/` plugin
+    holding a unit snapshot would surface as a ghost page, because
+    `PAGENAME.match("SKILL.md")` is true."""
+    parts = p.relative_to(d).parts
+    cur = d
+    for seg in parts[:-1]:
+        nxt = cur / seg
+        if cur != d and _page_home(cur) and not _page_home(nxt):
+            return True
+        cur = nxt
+    return cur != d and _page_home(cur) and p.name != f"{cur.name}.md"
+
+
 def q_files(d):
     """Q*.md at any depth under the board folder (QC3, JL 260724): a question
     may live INSIDE the folder it is about (its home folder), so a board can
@@ -203,15 +233,20 @@ def q_files(d):
         if any(s.startswith(("_", ".")) or s == "fig"
                for s in p.relative_to(d).parts[:-1]):
             continue
+        if _in_plugin(p, d):
+            continue
         yield p
 
 
 def page_files(d):
-    """Q, S, Skill, Agent and Meeting pages at any depth, same exclusions."""
-    for prefix in ("Q", "S", "Agent", "Meeting"):
+    """Q, S, Design, Agent and Meeting pages at any depth, same exclusions.
+    A legacy Skill-* page still rides the S glob."""
+    for prefix in ("Q", "S", "Agent", "Meeting", "Design"):
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):
+                continue
+            if _in_plugin(p, d):
                 continue
             if PAGENAME.match(p.name):
                 yield p

@@ -22,7 +22,7 @@ If a skill ever needs a Q page in order to run, something has been filed in the 
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Never state how many pairs or folders there are**: that number is `QA1`'s and it has changed twice.
 This page carried "the easiest of the eight" and "there are four such pairs" long after both were wrong, because a count restated away from its owner is a count nobody revisits.
@@ -215,7 +215,7 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `board.md`
   This board's index, its close condition, and the `state:` vocabulary this page rules.
-- `../01-boardform-260722/`
+- `../BoardSkillBoard-260722/`
   The board tool's own board, which rules what a board IS. Consulted here, never written.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule

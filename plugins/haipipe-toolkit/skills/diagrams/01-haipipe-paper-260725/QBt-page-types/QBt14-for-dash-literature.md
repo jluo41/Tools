@@ -14,7 +14,7 @@ The desk decides how much related work the paper owes and whether it sits in its
 
 **Covered here**: what this Page Type owns on disk, and the live page that proves it.
 
-**Covered elsewhere**: the contract itself is `../../paper/page-types/haipipe-page-for-dash-literature`. The interlocked specimen set for the board-owned types stays on `01-boardform-260722`'s `QBt` group.
+**Covered elsewhere**: the contract itself is `../../paper/page-types/haipipe-page-for-dash-literature`. The interlocked specimen set for the board-owned types stays on `BoardSkillBoard-260722`'s `QBt` group.
 
 ## Writing Style
 Plain English for a reader who has never opened this paper. One sentence per line, and no em-dashes.

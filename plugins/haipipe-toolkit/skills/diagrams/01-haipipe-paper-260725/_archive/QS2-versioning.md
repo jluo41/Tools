@@ -97,7 +97,7 @@ What is unsettled is the entry's contents and the minor-versus-patch line, and n
 ## Files
 - `CHANGELOG.md` beside every `SKILL.md`
   Skill-scoped, newest first, never loaded at invocation. 20 of the family's 35 carry a 2026-07-26 entry.
-- `../01-boardform-260722/QB-shipping-the-skill/QB1-skillmd.md`
+- `../BoardSkillBoard-260722/QB-shipping-the-skill/QB1-skillmd.md`
   The neighbouring subject: how the board tool's own manual is kept.
 
 ## Law

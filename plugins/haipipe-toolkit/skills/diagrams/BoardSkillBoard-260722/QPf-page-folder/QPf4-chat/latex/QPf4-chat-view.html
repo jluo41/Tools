@@ -1,0 +1,91 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf4-chat · latex</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.miss{border-color:#c66;}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPf4-chat</h1><p class='mut'>compiled by xelatex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf4-chat/latex/QPf4-chat.pdf' download>⬇ QPf4-chat.pdf</a></p><iframe src='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf4-chat/latex/QPf4-chat.pdf?t=1786826311677617206' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPf4-chat.tex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf4-chat/latex/QPf4-chat.tex' download>⬇ download</a></summary><pre>% GENERATED from QPf4-chat.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{The record contract, as far as it is ruled}
+\textbf{One page, one conversation store}: sessions accumulate under dated folders, like meetings.
+
+\begin{verbatim}
+  &lt;page&gt;/chat/&lt;YYMMDD-HHMM&gt;/ . one folder per kept session
+   meeting/ = spoken testimony .  chat/ = typed testimony . same grammar
+\end{verbatim}
+A kept session follows the meeting plugin's shape: the digest is the reading path, the raw transcript is reference, and decisions are routed onto pages as sentences, which is already the rule. The discovery boundary already protects it: a transcript full of \texttt{.md} files can never surface as ghost pages, because discovery never enters a plugin. The fold surfaced a prior signal for this contract: the session page had carried JL's 260731 line "maybe still in the home, but we can make the copy of them in the board folder", which is this plugin, four months early.
+
+
+\section{One surface, and the form chosen inside it}
+\textbf{The ruling}: GUI and TUI are two forms of one Chat, not two chats.
+
+\begin{verbatim}
+  before 260815 evening        after
+  QPf4b GUI page  +             one Chat . open it . pick
+  QPf4c TUI page  + two subjects    GUI or  TUI inside
+\end{verbatim}
+The split is a difference of FORM and never of permission: both forms carry the full permission tier by default, the rule JL overturned into "the same as the CLI" after the first off-the-cuff restriction. What each form is remains real and is held in the two divisions below; what died is the idea that each form needs its own page.
+
+
+\section{The session model}
+\textbf{One session per question}: the Law the surface obeys in either form (folded from \texttt{QPf4a}).
+
+\begin{verbatim}
+   one question, one session . one session, one window . N questions, N terminals
+\end{verbatim}
+Sessions open at the SPACE root, and the session id is recorded on the page's \texttt{session:} line while it runs. The two-agents-one-file collision and the session-copy question moved into this page's Aims when the face folded.
+
+
+\section{The GUI form}
+\textbf{The rebuilt chat box}: \texttt{claude\_agent\_sdk} turns in the drawer (folded from \texttt{QPf4b}).
+
+\begin{verbatim}
+   live/chat.py . 1332 lines . sessions . the SDK turn . three permission tiers
+\end{verbatim}
+The drawer sits outside \texttt{div.wrap}, so it survives the page swap. Its open questions, session reaping and the one-window-per-scope re-rule, are carried in Aims.
+
+
+\section{The TUI form}
+\textbf{The real CLI}: a PTY in the pane, raw and smooth views (folded from \texttt{QPf4c}, which had absorbed the smooth-view page on 260801).
+
+\begin{verbatim}
+   live/term.py . 857 lines . /_term/ PTY . parking . reattachment
+\end{verbatim}
+The re-key to (page, session), the web-chat rendering beside the raw pane, the fallback seam, the smoothness drop-test, and the written security boundary are carried in Aims.
+
+
+\section{The form per device}
+\textbf{Where typing happens}: what the pane shows when 80 columns will not fit (folded from \texttt{QPf4d}).
+
+\begin{verbatim}
+   phone .  desktop . what the page owes a reader who switches away and back
+\end{verbatim}
+The phone form, the desktop gap against the GUI form, and this division's exact scope are open rows carried in Aims.
+
+</pre></details><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/latex', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "QPf-page-folder/QPf4-chat/QPf4-chat.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script></body></html>

@@ -474,7 +474,7 @@ def _para(txt, heading):
 class Paper:
     """One paper's resolvable index. Built once per board build."""
 
-    def __init__(self, root):
+    def __init__(self, root, board_dir=None):
         self.root = Path(root)
         self.bib = {}
         self.bib_files = []
@@ -565,6 +565,25 @@ class Paper:
             # above safe: `_archive/`, a README and any other stray sibling
             # carry none and are skipped without needing a name rule.
             if d.is_dir() and not d.name.startswith("_") and (d / "float.tex").is_file():
+                u = Display(d, self.root)
+                self.displays[u.id] = u
+                self.by_short.setdefault(_short(u.id), u)
+                if u.label:
+                    self.by_label.setdefault(u.label, u)
+        # PAGE-PLUGIN units (haipipe-page-plugin, QPf5): a folded page owns its
+        # material, so a unit may also live at <page>/display/<unit>/ inside
+        # the BOARD folder. float.tex stays the one unit test, ids stay global,
+        # and a `> Display:` lane or inline id chips against them like any
+        # workspace unit. Deduped by id: a workspace unit wins over a stray
+        # same-named plugin copy, matching the source-over-build rule above.
+        if board_dir is not None and Path(board_dir).is_dir():
+            for f in sorted(Path(board_dir).rglob("display/*/float.tex")):
+                d = f.parent
+                if (d.name.startswith("_") or "_archive" in d.parts
+                        or "board" in d.relative_to(board_dir).parts[:1]):
+                    continue
+                if d.name in self.displays:
+                    continue
                 u = Display(d, self.root)
                 self.displays[u.id] = u
                 self.by_short.setdefault(_short(u.id), u)
@@ -1224,4 +1243,4 @@ def load(board_dir, meta):
     root = (Path(board_dir) / (_value(meta.get("paper_root")) or "..")).resolve()
     if not root.is_dir():
         return None
-    return Paper(root)
+    return Paper(root, board_dir=Path(board_dir))

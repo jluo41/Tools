@@ -24,7 +24,7 @@ That debt is one loss list, not one per adapter: both drop things, and while eac
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Demonstrate before explaining**: `### 1` is a test sheet, and this one is RUN rather than clicked.
 A section is a file the browser never builds, so the honest demonstration is a command and its expected output, never a button that does not exist.

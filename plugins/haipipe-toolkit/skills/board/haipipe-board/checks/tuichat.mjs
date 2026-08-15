@@ -15,8 +15,8 @@
  */
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9335';
 const BASE = process.env.CHECK_BASE
-  || 'http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board';
-const PAGE = process.env.CHECK_PAGE || 'QD/QD3-chat-terminal.html';
+  || 'http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board';
+const PAGE = process.env.CHECK_PAGE || 'QPf/QPf4-chat.html';
 const URL = `${BASE}/${PAGE}?split`;
 
 const tab = await (await fetch(`http://${CDP}/json/new`, { method: 'PUT' })).json();

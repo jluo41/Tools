@@ -21,7 +21,7 @@ import { spawn } from 'node:child_process';
 
 const HOST = process.argv[2] || 'http://127.0.0.1:5599';
 const BOARD = process.argv[3] ||
-  '/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board';
+  '/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board';
 const SETTLE_MS = 12000;     // generous: a slow endpoint must look slow, not absent
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 

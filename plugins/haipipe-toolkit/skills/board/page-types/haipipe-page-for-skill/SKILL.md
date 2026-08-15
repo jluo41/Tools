@@ -97,7 +97,7 @@ Three consequences, and every rule below comes from one of them:
 
 ## 🧭 The Opening a skill page owes (the rule this skill was opened for)
 
-**The failure, measured 260802.** Five skill and agent pages on `01-boardform-260722` had Openings in one shape:
+**The failure, measured 260802.** Five skill and agent pages on `BoardSkillBoard-260722` had Openings in one shape:
 
 ```
 line 1   Does `<name>` <verb> one <noun> for <consumers>?

@@ -10,7 +10,7 @@ The gap is not cosmetic, because the two surfaces are not equivalent renderings 
 
 JL ruled the shape on 260726: `/haipipe-task` is the single door, and `/haipipe-board` is CALLED rather than typed, exactly as `/haipipe-paper enter` now calls it. What is not yet ruled is the harder half. `/haipipe-paper` has an `enter` verb to hang this on and `/haipipe-task` has none: a bare path today means "run the full lifecycle on this", which is the most expensive thing the skill can do. So the door has to be named before it can be opened.
 
-**Covered elsewhere**: What a board IS, its face grammar, its live layer and its write-back are `④`'s, at `01-boardform-260722`, and this face may not rule any of them. What the board would be laid over is `QA7`. Who owns which REGION of a shared page is already ruled at `QA8@paper` and is inherited here, not re-argued. The same ruling on the paper side is `QA4@paper`.
+**Covered elsewhere**: What a board IS, its face grammar, its live layer and its write-back are `④`'s, at `BoardSkillBoard-260722`, and this face may not rule any of them. What the board would be laid over is `QA7`. Who owns which REGION of a shared page is already ruled at `QA8@paper` and is inherited here, not re-argued. The same ruling on the paper side is `QA4@paper`.
 
 ## Diagram
 ```

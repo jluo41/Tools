@@ -391,7 +391,7 @@ This section therefore reports an association and never a reduction, and every l
   The stage that produces pages of this kind, and the source of the `output:`, `prose_rule` and `section_kind` facts this page states.
 - `../../paper/haipipe-paper/stages/section-kinds.yml`
   The closed set `section_kind: results` is drawn from.
-- `../01-boardform-260722/QB-delivery/QB4-overall.md`
+- `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md`
   The page frame this page sits in, including the caption rule every Content division above obeys.
 
 ## Log

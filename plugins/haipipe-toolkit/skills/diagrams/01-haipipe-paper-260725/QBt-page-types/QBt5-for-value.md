@@ -89,8 +89,8 @@ The answer [Q-Value-1] is that 7 of the 10 contracts name no artifact path at al
 
 - ✅ `QBt9-for-slide` · needs every row for slide 3 and the two totals for slides 1 and 2.
   A-consumer: the deck's template carries NO DIGITS; `<!--ROWS-->`, `<!--TOTAL-->` and `<!--ZERO-->` are filled from this record's CSV at build time, so a corrected measurement changes the slides and a hand-edited slide is overwritten.
-  bound ✅ by path, `../01-boardform-260722/QBt-page-types/slide/QBt9-for-slide/source/build.py` reads `1-artifact-paths.data/counts.csv`.
-- ✅ `../01-boardform-260722/QB-delivery/QB6-page-types.md` · needs the two totals for `§7`'s opening claim.
+  bound ✅ by path, `../BoardSkillBoard-260722/QPs-page-structure/slide/QBt9-for-slide/source/build.py` reads `1-artifact-paths.data/counts.csv`.
+- ✅ `../BoardSkillBoard-260722/QPs-page-structure/QPs2-page-types/QPs2-page-types.md` · needs the two totals for `§7`'s opening claim.
   A-consumer: §7 states that the ten contracts name six artifact paths between them and that seven name none, which is this record's own bottom line.
   bound ✅ by prose, quoted with the producing run named.
 - ⬜ `QBt3-for-display` · open, and deliberately so.
@@ -208,11 +208,11 @@ Nine pages out of 146 declare a type key, six percent of the estate. All nine ar
   🏃 The producing run: it counts artifact-path mentions across the ten real page-type contracts.
 - `QA-probe/QBt5-for-value/1-artifact-paths.data/counts.csv`
   📤 The OUTPUT: parsed from the record's own fence, never retyped.
-- `../01-boardform-260722/QBt-page-types/slide/QBt9-for-slide/source/build.py`
+- `../BoardSkillBoard-260722/QPs-page-structure/slide/QBt9-for-slide/source/build.py`
   The consumer: it renders the deck from that CSV, and its template carries no digits at all.
 - `../../paper/page-types/haipipe-page-for-value/SKILL.md`
   The contract this page is an instance of.
-- `../01-boardform-260722/QB-delivery/QB6-page-types.md`
+- `../BoardSkillBoard-260722/QPs-page-structure/QPs2-page-types/QPs2-page-types.md`
   §7 states the five on-disk shapes; this page is a worked QA-PROBE one.
 
 ## Log

@@ -1,0 +1,75 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QS",
+   "name": "QS · Sentence"
+  },
+  "imports": [
+   {
+    "page": "QS1",
+    "source": "../QS1-overview/draw/QS1.excalidraw",
+    "placement": {
+     "x": 4475.0,
+     "y": 1050.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB8"
+   },
+   {
+    "page": "QS2",
+    "source": "../QS2-sentence-details-lifecycle/draw/QS2.excalidraw",
+    "placement": {
+     "x": 3935.0,
+     "y": 1050.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB5e"
+   },
+   {
+    "page": "QS3",
+    "source": "../QS3-sentence-address/draw/QS3.excalidraw",
+    "placement": {
+     "x": 5308.0,
+     "y": 4185.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QD8"
+   },
+   {
+    "page": "QS4",
+    "source": "../QS4-sentence-run/draw/QS4.excalidraw",
+    "placement": {
+     "x": 2264.0,
+     "y": 5460.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QF5"
+   },
+   {
+    "page": "Design-5",
+    "source": "../Design-5-haipipe-sentence/draw/Design-5.excalidraw",
+    "placement": {
+     "x": 10837.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Skill-4"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {}
+  }
+ }
+}

@@ -52,7 +52,7 @@ def free_port():
 
 
 def fixture():
-    src = SKILL.parent.parent / "diagrams" / "01-boardform-260722"
+    src = SKILL.parent.parent / "diagrams" / "BoardSkillBoard-260722"
     work = Path(tempfile.mkdtemp(prefix="board-ring-"))
     fx = work / "b" / src.name
     (work / "b").mkdir(parents=True)

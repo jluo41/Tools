@@ -149,7 +149,12 @@ class Bbl:
     natbib in-text label, set by the manuscript's own .bst. So the in-text
     form is READ, never formatted here."""
 
-    ENTRY = re.compile(r"\\bibitem\[\{(.*?)\}\]\{([^}]+)\}(.*?)(?=\\bibitem\[|\\end\{thebibliography\})",
+    # The braces around the label are the .bst's choice, not natbib's law:
+    # misq.bst emits `[{Author(2024)}]`, plainnat emits `[Author(2024)...]`
+    # bare. Both are read; demanding the braces made every plainnat .bbl
+    # parse to nothing and cites print bare keys (found via the board's
+    # page-owned bibex store, 2026-08-15).
+    ENTRY = re.compile(r"\\bibitem\[\{?(.*?)\}?\]\{([^}]+)\}(.*?)(?=\\bibitem\[|\\end\{thebibliography\})",
                        re.S)
 
     def __init__(self, path):
@@ -413,10 +418,15 @@ def detex(s):
 
 # --------------------------------------------------------------- page parse
 
-def parse_page(path):
+def parse_page(path, keep_fences=False):
     """Return the blocks of `## Content`, dropping what QC5's read-and-drop
     table drops. A `>` lane binds to the paragraph ABOVE it, which is QC0's
-    adjacency law."""
+    adjacency law.
+
+    `keep_fences` is the BOARD exporter's switch (JL 260815: a board page's
+    figure-only division exported as an empty section). A paper still drops
+    sketches, because its figures are display units; a board page's sketch IS
+    the content, so the board asks for `("fence", text)` blocks instead."""
     lines = open(path, encoding="utf-8", errors="replace").read().splitlines()
     try:
         start = next(i for i, l in enumerate(lines) if l.strip() == "## Content")
@@ -457,8 +467,12 @@ def parse_page(path):
             in_fence = not in_fence
             if in_fence:
                 fenced += 1
+                if keep_fences:
+                    blocks.append(("fence", []))
             continue
         if in_fence:
+            if keep_fences:
+                blocks[-1][1].append(line)
             continue
         s = line.strip()
 

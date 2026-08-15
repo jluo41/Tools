@@ -1,0 +1,85 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QPs",
+   "name": "QPs · Page-Structure"
+  },
+  "imports": [
+   {
+    "page": "QPs1",
+    "source": "../QPs1-overall/draw/QPs1.excalidraw",
+    "placement": {
+     "x": 2283.0,
+     "y": 2475.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB4"
+   },
+   {
+    "page": "QPs2",
+    "source": "../QPs2-page-types/draw/QPs2.excalidraw",
+    "placement": {
+     "x": 0,
+     "y": 0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   },
+   {
+    "page": "QPs3",
+    "source": "../QPs3-for-stage/draw/QPs3.excalidraw",
+    "placement": {
+     "x": 0,
+     "y": 0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   },
+   {
+    "page": "QPs4",
+    "source": "../QPs4-for-design/draw/QPs4.excalidraw",
+    "placement": {
+     "x": 0,
+     "y": 0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   },
+   {
+    "page": "Design-3",
+    "source": "../Design-3-haipipe-page/draw/Design-3.excalidraw",
+    "placement": {
+     "x": 10049.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Skill-3"
+   },
+   {
+    "page": "Design-4",
+    "source": "../Design-4-haipipe-writing/draw/Design-4.excalidraw",
+    "placement": {
+     "x": 14732.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-Skill-7"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {}
+  }
+ }
+}

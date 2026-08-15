@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Page Workflow · one design, three hands</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. Cover -->
+  <section id="s1" class="slide" data-title="Cover">
+    <p class="kicker">BoardSkillBoard · QPw · generated from the page's Content</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">One design,<br><span class="gradient-text">three hands</span></h1>
+    <p class="lede">Who runs a page's DRAFT, PROBE, REVISE and CHECK when no person is in the loop — and what may each hand never touch</p>
+    <div class="deck-footer"><span class="dim2">Design-6-page-workflow · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+    <div class="notes">One design answers the question with three dispatched agents, and the SPLIT is the design: the producer writes and never judges, the judge reads and never repairs, the controller routes and never edits prose. A single agent doing all three would approve its own work — the failure CHECK exists to prevent.</div>
+  </section>
+
+  <!-- 2. The loop -->
+  <section id="s2" class="slide" data-title="The loop">
+    <p class="kicker">Who acts where</p>
+    <h2 class="h2">One loop, bounded and receipted</h2>
+    <pre class="mt-m">        🔁 RUN · the controller, bounded, receipted
+        ┌───────────────────────────────────────────┐
+        │  ✍️ DRAFT / REVISE        🧑‍⚖️ CHECK        │
+        │  the creator, one page    the reviewer,    │
+        │  per fresh context        read-only, fresh │
+        │  never rebuilds ·         never repairs ·  │
+        │  never CHECKs             returns a verdict│
+        └───────────────────────────────────────────┘
+ 📦 skill/ holds each unit's contract surface, plugged and versioned</pre>
+    <div class="notes">The live units ship from board/agents/, one .md each; the page's skill/ plugin holds the three plugged snapshots its judgments are about. The versions in the page title are derived from those snapshots by skillpage.py plug — never typed by hand.</div>
+  </section>
+
+  <!-- 3. Three units -->
+  <section id="s3" class="slide" data-title="The units">
+    <p class="kicker">One rule each</p>
+    <h2 class="h2">The sentence a unit may never cross is its identity</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>✍️ creator v0.6.0</h4><p class="dim">writes ONE page in a fresh context; a batch is N creators, one page each. Self-checks are evidence, never approval</p></div>
+      <div class="card"><h4>🧑‍⚖️ reviewer v0.7.0</h4><p class="dim">the fresh-context judge: mechanics, cold-read, Openings in board order. CLOSE · REVISE · PROBE · DRAFT · HOLD — and no write tools at all</p></div>
+      <div class="card"><h4>🔁 orchestrator v0.1.0</h4><p class="dim">the non-interactive RUN target: drives the bounded Workflow, stores _runs/ receipts, calls the auditor</p></div>
+    </div>
+    <div class="notes">Maturity differs by hand: the creator is proven by a real six-page fan-out, the reviewer is proven but one pass has never run, and the orchestrator has never run as itself. That gradient is the whole States section.</div>
+  </section>
+
+  <!-- 4. The selection -->
+  <section id="s4" class="slide" data-title="Selection">
+    <p class="kicker">Content §2 · the record</p>
+    <h2 class="h2">One page per unit lost. One page per design won.</h2>
+    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🅰 one page per unit</h4><p class="dim">three pages saying one design's thoughts three times — the same disease that killed the mirror kind: shared subjects converge on one prose and decide nothing separately</p></div>
+      <div class="card"><h4>🅱 one page per DESIGN</h4><p class="dim">the design argued once, each unit a division, versions in the title refreshed by plug. The three pre-merge pages archived whole, ids resolving through ## Links</p></div>
+    </div>
+    <p class="dim mt-m">This page is the specimen of the 260815 ruling: a Design relates to several skills or agents.</p>
+    <div class="notes">The base selection that retired the mirror kind is recorded once, on Design-3's Content §2; this page adopts it by reference rather than restating it — the same anti-duplication rule at the prose level.</div>
+  </section>
+
+  <!-- 5. The creator's debt -->
+  <section id="s5" class="slide" data-title="Creator">
+    <p class="kicker">Proven — half of it</p>
+    <h2 class="h2">The creator ran; the caller still owes its half</h2>
+    <ul class="mt-m">
+      <li>✅ The 260802 fan-out drove six packets through six fresh creators — the unit is written and proven</li>
+      <li>🚚 Packet assembly is still done by hand: the caller's fan-out half has not landed in haipipe-board</li>
+      <li>🩹 A dispatch that dies mid-batch leaves the caller re-reading files to learn which packets completed</li>
+    </ul>
+    <div class="notes">Both open aims are the caller's debt, not the unit's: the unit's contract held on a real batch. What is missing is the machinery around it — assembly from an approved proposal table, and recoverability.</div>
+  </section>
+
+  <!-- 6. The reviewer's wait -->
+  <section id="s6" class="slide" data-title="Reviewer">
+    <p class="kicker">The independence mechanism</p>
+    <h2 class="h2">One pass has never run, one remark was never ruled</h2>
+    <ul class="mt-m">
+      <li>🧑‍⚖️ Fresh context, no write tools, verdict only — the family's independence mechanism</li>
+      <li>⏳ The consecutive-Openings pass — the reason v0.4.0 exists — has never run on a real batch; the eight roster Openings of 260802 are still waiting</li>
+      <li>🤖 A 260729 remark, "don't need to have the review agent", was said mid-dispatch and never ruled run-scoped or unit-scoped — three written things go stale together if it meant the unit</li>
+    </ul>
+    <div class="notes">The consecutive-Openings pass detects interchangeable, form-letter prose — exactly the disease the mirror kind died of. That it has never run on a real batch is the reviewer's one untested claim.</div>
+  </section>
+
+  <!-- 7. The orchestrator -->
+  <section id="s7" class="slide" data-title="Orchestrator">
+    <p class="kicker">Reasoned, unexercised</p>
+    <h2 class="h2">The charter has been emulated, never dispatched</h2>
+    <ul class="mt-m">
+      <li>🔁 The one live RUN, 260805, could not reach the Workflow tool — a session emulated the controller by hand</li>
+      <li>📜 Nothing has run the charter AS an agent, so its stop rules and return contract are design, not record</li>
+      <li>🧾 The stored receipt carries no audit: field — whether the auditor passed that run is not on the record</li>
+    </ul>
+    <div class="notes">This is the youngest hand at v0.1.0 and the honest state line says it: the orchestrator has never run as itself. The aims ask for exactly one thing — one RUN through the agent, exercising stop rules and the return contract, with the auditor's verdict landing in the receipt.</div>
+  </section>
+
+  <!-- 8. Closer -->
+  <section id="s8" class="slide" data-title="Closer">
+    <p class="kicker">state 🟡 · nothing contested</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">Everything here is<br><span class="gradient-text">waiting on a run</span></h1>
+    <p class="lede">Six open aims, all the same shape: a written contract that needs one real execution to become a record. The design is settled; the evidence lane is next.</p>
+    <div class="deck-footer"><span class="dim2">generated from Design-6's Content · regenerate any time from the page</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+    <div class="notes">Close on the distinction the board runs on: contract written and contract run are different states, and QF exists to keep them apart. Every aim on this page moves only when something actually executes.</div>
+  </section>
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>

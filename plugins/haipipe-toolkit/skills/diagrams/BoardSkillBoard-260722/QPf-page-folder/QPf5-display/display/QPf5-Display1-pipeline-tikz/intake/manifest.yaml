@@ -1,0 +1,12 @@
+# Concept-driven intake: narrative sources only, no values (the figure states no number).
+unit: QPf5-Display1-pipeline-tikz
+kind: diagram-tikz
+values_sources: []
+narrative_sources:
+  - role: concept
+    ref: ../QPf5-display.md
+    note: Content §4, the five-step pipeline and the three-hands rule this figure draws
+facts_the_image_may_state:
+  - the pipeline is intake, render, pick, build, accept, in that order
+  - a person owns steps 1, 3, 5; machinery owns steps 2 and 4
+  - a changed intake flows forward and the acceptance falls back to open

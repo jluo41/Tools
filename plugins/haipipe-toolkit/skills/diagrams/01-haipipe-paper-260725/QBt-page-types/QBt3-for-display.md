@@ -278,7 +278,7 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
   The evidence page whose record this unit's numbers would bind to.
 - `../../paper/page-types/haipipe-page-for-display/SKILL.md`
   The contract this page is an instance of. If the two disagree, the contract wins and this page is the defect.
-- `../01-boardform-260722/QB-delivery/QB6-page-types.md`
+- `../BoardSkillBoard-260722/QPs-page-structure/QPs2-page-types/QPs2-page-types.md`
   §7 states the five on-disk shapes; this page is the worked UNIT one.
 
 ## Log

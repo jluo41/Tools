@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One Chat, Chosen Inside</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide" id="s1" data-title="Chat">
+  <p class="kicker">QPf4-chat · design · ✅ settled</p>
+  <h1 class="h1">One Chat, <span class="gradient-text">its form chosen inside</span></h1>
+  <p class="lede">A page has ONE conversation surface. Opening it offers the TUI or the GUI — a choice made inside, never a second surface — and what is worth keeping lands in the page's own chat/ folder.</p>
+  <div class="deck-footer"><span class="dim2">QPf4-chat · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Start with the question the page opens on: where does a page's conversation live, and how many chat things does a page have? The answer is one — and everything else in this talk falls out of that single ruling. Tell them this page shipped and proved itself the same day it settled.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Ruling">
+  <p class="kicker">The ruling · JL, 260815</p>
+  <h2 class="h2">GUI and TUI are two forms of one Chat, not two chats</h2>
+  <pre>
+  before 260815 evening          after
+  QPf4b GUI page ┐               one 💬 Chat · open it,
+  QPf4c TUI page ┘ two subjects  pick 🖥 GUI or ⌨️ TUI inside
+</pre>
+  <p class="dim mt-m">The split is a difference of FORM and never of permission — both forms carry the full tier by default, "the same as the CLI."</p>
+  <div class="notes">Quote JL directly here: "just have one Chat in the plugin, not more ChatGUI or Chat TUI." The two face pages died the moment the mode became a runtime choice — GUI and TUI stopped being subjects. And stress the permission line, because it was ruled twice: form never means a reduced tier.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Flow">
+  <p class="kicker">One surface, two forms, one record</p>
+  <h2 class="h2">The mode is chosen after opening, and both forms feed the same record</h2>
+  <pre>
+           💬 CHAT · one surface per page
+                  │ open
+         ┌────────┴────────┐  choose a FORM
+         ▼                 ▼
+    GUI version 🖥     TUI version ⌨️
+    the SDK chat box   the real CLI
+         └────────┬────────┘
+                  ▼ keep (explicit)
+       📂 ⟨page⟩/chat/⟨YYMMDD-HHMM⟩/
+          digest.md · transcript.md
+</pre>
+  <div class="notes">Walk the arrows top to bottom: open first, choose second, keep last. The live session stays with the engine while it runs — this plugin only holds what was worth keeping afterwards. The reader should never see the terminal to find the record.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Record">
+  <p class="kicker">Content §1 · the record contract</p>
+  <h2 class="h2">A session is testimony, and testimony lands in the page's own folder</h2>
+  <div class="grid g2">
+    <div class="card"><h4>📂 Dated folders</h4><p class="dim">Sessions accumulate under &lt;page&gt;/chat/&lt;YYMMDD-HHMM&gt;/ — one folder per kept session, like meetings.</p></div>
+    <div class="card"><h4>🗣 Meeting shape</h4><p class="dim">Spoken and typed testimony share one grammar: digest is the reading path, transcript is reference, decisions route onto pages.</p></div>
+    <div class="card"><h4>👻 No ghost pages</h4><p class="dim">A transcript full of .md files can never surface as pages — discovery never enters a plugin.</p></div>
+    <div class="card"><h4>📜 Prior signal</h4><p class="dim">JL, 260731: "we can make the copy of them in the board folder" — this plugin, four months early.</p></div>
+  </div>
+  <div class="notes">The key move is the analogy: chat slash is to typed testimony what meeting slash is to spoken testimony — same grammar, no new invention. And point out the fold surfaced a line JL wrote back in July that already described this contract. The design was waiting to be found.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Faces">
+  <p class="kicker">Content §3–§6 · the four faces, folded in as divisions</p>
+  <h2 class="h2">What each form is stayed real — what died is one page per form</h2>
+  <div class="grid g2">
+    <div class="card"><h4>⚖️ Session model</h4><p class="dim">One question, one session; one session, one window; N questions, N terminals (from QPf4a).</p></div>
+    <div class="card"><h4>🖥 GUI form</h4><p class="dim">live/chat.py, 1332 lines — the claude_agent_sdk turn in the drawer, three permission tiers (from QPf4b).</p></div>
+    <div class="card"><h4>⌨️ TUI form</h4><p class="dim">live/term.py, 857 lines — a PTY in the pane, raw and smooth views, parking and reattachment (from QPf4c).</p></div>
+    <div class="card"><h4>📱 Form per device</h4><p class="dim">What the pane shows when 80 columns will not fit — phone, desktop, and the reader who switches away (from QPf4d).</p></div>
+  </div>
+  <p class="dim mt-m">Their 13 engine aims returned to the folded faces on close; this page's aims are the contract's alone.</p>
+  <div class="notes">Make clear nothing was lost in the fold — the four faces' full records sit in _archive, one file each, and their substance lives on as these divisions. The engine questions went home with the faces, so this page could close on the contract by itself.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Law">
+  <p class="kicker">The Law · each line signed by JL, 260815</p>
+  <h2 class="h2">Six rulings the surface obeys</h2>
+  <ul>
+    <li>💬 One Chat per page — the form is selected after opening, inside the surface.</li>
+    <li>🔓 The form split is never a permission split — both carry the full tier.</li>
+    <li>📂 A kept conversation is plugin material at &lt;page&gt;/chat/, in the meeting shape.</li>
+    <li>📄 What lands: the transcript, derived from the session's jsonl; the digest stays a later aim.</li>
+    <li>🔔 When: drawer close and session switch — registered sessions only, never every stray conversation.</li>
+    <li>✍️ Who writes: keep_sessions in live/chat.py behind POST /_board/chat-keep; a re-keep overwrites, jsonl stays the source.</li>
+  </ul>
+  <div class="notes">This is the page's spine — every line traces to a dated ruling, mostly from one evening. The bound on "when" matters most in practice: only sessions the page has registered land, at the moments a conversation stops being on screen. Nothing is hoovered up.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Proof">
+  <p class="kicker">States · shipped 260815 night</p>
+  <h2 class="h2">The contract holds its own first specimen</h2>
+  <ul>
+    <li>🧪 chat/260815-0457-82681719/transcript.md — the very conversation that designed this plugin, kept by POST /_board/chat-keep.</li>
+    <li>📋 List-first drawer: "We first show all the sessions name, and then select the specific session" — JL's words closed the last Decision rows.</li>
+    <li>🚪 One 💬 Chat tab shipped in the shell, GUI or TUI segment inside, opening in the last-used form.</li>
+    <li>⚠️ The earlier 8/8 suite had tested every gesture EXCEPT a turn — the venv fix and a real KEEP-TEST-OK reply closed the check for real.</li>
+  </ul>
+  <div class="notes">The best line of the whole page: the first kept transcript is the session that designed the keeper. Then own the lesson — eight green checks had exercised everything except an actual turn, and serve.py was running on a python with no SDK. The miss is recorded so it outlives the fix.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">✅ SETTLED · owner JL</p>
+  <h1 class="h1">One surface, a form picked inside, <span class="gradient-text">a record that stays with the page</span></h1>
+  <p class="lede">The design succeeds when a reader opens one Chat, picks a form, and later finds the kept session in the page folder — without ever seeing the terminal. All four aims are met.</p>
+  <div class="deck-footer"><span class="dim2">QPf4-chat · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Close by restating the success criterion as something you can watch a reader do. Engine work continues on the folded faces, but the contract this page owned is done — ruled, shipped, and proved on itself in a single day.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260815 1659 · ask: (page) -->

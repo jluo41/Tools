@@ -1,0 +1,55 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QPf",
+   "name": "QPf · Page-Folder"
+  },
+  "imports": [
+   {
+    "page": "QPf1",
+    "source": "../QPf1-folder/draw/QPf1.excalidraw",
+    "placement": {
+     "x": 1517.0,
+     "y": 2475.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QB3"
+   },
+   {
+    "page": "QPf2",
+    "source": "../QPf2-draw-attach/draw/QPf2.excalidraw",
+    "placement": {
+     "x": 0,
+     "y": 0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   },
+   {
+    "page": "QPf3",
+    "source": "../QPf3-slide/draw/QPf3.excalidraw",
+    "placement": {
+     "x": 0,
+     "y": 0,
+     "scale": 1
+    },
+    "sourceFrame": null
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {}
+  }
+ }
+}

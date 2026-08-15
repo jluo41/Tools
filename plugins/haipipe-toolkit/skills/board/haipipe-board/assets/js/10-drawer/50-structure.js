@@ -263,18 +263,14 @@
   // surface to the right and neither knows or cares where you are on the page, which
   // is exactly the line the Workflow menu is on the other side of.
   if (window.boardPlugins) {
+    /* ONE CHAT (JL 260815: "just have one Chat in the plugin, not more ChatGUI
+       or Chat TUI"). The registry stops selling the form: one entry, opening in
+       the last-used form, and the choice lives INSIDE the surface — the shell's
+       mode segment, or the drawer's own `>_` / back pair on a bare page. */
     window.boardPlugins.register({
-      id: 'gui', label: '\u{1F4AC} GUI Chat',
-      hint: 'the SDK drawer: gated edits, diffs, tool cards',
+      id: 'chat', label: '\u{1F4AC} Chat',
+      hint: 'this page’s conversation · pick GUI or TUI inside',
       open: function () {
-        try { localStorage.setItem(TUIKEY, '0'); } catch (e) {}
-        chatOpen(chatTarget() || 'board');
-      } });
-    window.boardPlugins.register({
-      id: 'tui', label: '⌨️ TUI Chat',
-      hint: 'the real CLI in a terminal: long jobs, skills',
-      open: function () {
-        try { localStorage.setItem(TUIKEY, '1'); } catch (e) {}
         chatOpen(chatTarget() || 'board');
       } });
   }
@@ -345,11 +341,11 @@
     });
   }
   function rewire() {
-    safewire([marks, paint, wireDadd, wireQBtns, wireStruct, wireXcal]);
+    safewire([marks, paint, wireDadd, wireQBtns, wireStruct]);
     try {
       if (window.__boardWireSentenceChats) window.__boardWireSentenceChats();
     } catch (e) { console.warn('board wire failed:', e); }
   }
   window.__boardRewire = rewire;
-  safewire([marks, paint, wireDadd, wireXcal]);
+  safewire([marks, paint, wireDadd]);
 })();

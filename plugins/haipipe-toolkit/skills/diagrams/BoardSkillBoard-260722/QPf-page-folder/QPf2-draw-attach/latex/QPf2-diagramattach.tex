@@ -1,0 +1,23 @@
+% GENERATED from QPf2-draw-attach.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{· The 260815 ruling, and what it retired}
+The attach button this page used to settle wrote one embed line into \texttt{## Diagram}, and with the embed gone the button's subject is gone. Its write path, the exact line, and the refusal rules are preserved in the archived page (\texttt{_archive/}, this page's Log names it), because a retired mechanism is recorded and never silently deleted. 61 page scenes moved into page \texttt{draw/} folders, each renamed to its page's current id.
+
+\section{· What the engine still owes this ruling}
+\texttt{cli/draw.py} still defines a group as the shared parent of its member files, which a folded board no longer has, and its manifests still point at the old sibling paths. \texttt{src/page_board.py}'s group canvas reads the same shared-parent assumption. The attach endpoint in the live layer still accepts a write whose target line no longer renders. Each of these is an Aim below, and none of them blocks the board: the scenes are ordinary files, and git carries them wherever they sit.
+
+\section{· One source for each owner}
+Each Page drawing is an ordinary Excalidraw scene and remains useful when opened by itself. The Group scene carries only Group-owned elements and an import manifest naming each Page source and its placement. An empty Page still gets a source file, and an empty Group still gets a Group source, so existence never depends on whether someone has drawn the first shape. The folder is named \texttt{../draw/} in lowercase, as JL ruled on 260807.
+
+\section{· Composition is a view, not another source}
+Opening a Group loads \texttt{group.excalidraw}, resolves every import, namespaces its element references by Page id, and applies the placement transform. The resulting scene can show every Page drawing at once without merging their source files. A Page save changes its revision and invalidates every composed Group that imports it. The next Group load or live refresh recomposes from sources, so there is no manual intake step.
+
+\section{· Two edit modes in the Group view}
+\texttt{Arrange Instance} treats an imported Page as one portal and never changes the Page source. \texttt{Edit Page Source} enters the selected Page's local source coordinates and saves only that Page scene. The editor must show the active owner before the first editable gesture and again while saving. Cross-owner selection is read-only until the person chooses which owner to enter.
+
+\section{· Revisions, conflicts, and Chat}
+Every source save carries the revision that was opened. The server accepts the write only when that revision is still current, which prevents a Group editor and a Page editor from silently replacing each other. Chat receives the same owner address as the canvas, so a request such as edit \texttt{QD1} from the Group view is routed to \texttt{QD1.excalidraw}, not to the composed result. The page status strip and Chat context can therefore name the Board, Group, Page, and drawing owner in one address.
+
+\section{· Migration and staged delivery}
+The migration reads the current \texttt{board.excalidraw} and never edits it. It refuses before writing anything if one target source already exists. Every new file is created exclusively, and a failed run removes the files it created before reporting the failure. An existing unframed relation enters a Group source when its explicit owner or its bound endpoints name one Group; an ownerless or cross-Group element stops the migration for a human ruling. For this Board it created nine Group folders and sixty-six initial Page sources, then \texttt{sync} additively created \texttt{QBt11} and \texttt{QC5} when the Board reached sixty-eight Pages. The current sources still restore all 175 legacy elements and zero embedded files exactly. The old scene remains the rollback path while the linked runtime is adopted.

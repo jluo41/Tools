@@ -67,14 +67,14 @@ def main():
     if work.exists():
         shutil.rmtree(work)
     (work / "b").mkdir(parents=True)
-    shutil.copytree(frozen, work / "b" / "01-boardform-260722")
+    shutil.copytree(frozen, work / "b" / "BoardSkillBoard-260722")
     s = socket.socket(); s.bind(("127.0.0.1", 0)); port = s.getsockname()[1]; s.close()
     proc = subprocess.Popen(
         [PY_EXE, str(HERE / "cli" / "serve.py"), "--root", str(work / "b"),
          "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-    base, board_url = f"http://127.0.0.1:{port}", "/01-boardform-260722/board.html"
-    page = "QA-design/QA0-three-folders.md"
+    base, board_url = f"http://127.0.0.1:{port}", "/BoardSkillBoard-260722/board.html"
+    page = "QA-design/QA0-three-folders/QA0-three-folders.md"
     try:
         for _ in range(80):
             try:

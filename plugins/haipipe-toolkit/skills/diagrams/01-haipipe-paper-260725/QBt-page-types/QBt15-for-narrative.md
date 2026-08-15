@@ -13,7 +13,7 @@ It is venue-aligned, so a retarget rewrites it, but the claim ledger stays its o
 
 **Covered here**: what this Page Type owns on disk, and the live page that proves it.
 
-**Covered elsewhere**: the contract itself is `../../paper/page-types/haipipe-page-for-narrative`. The interlocked specimen set for the board-owned types stays on `01-boardform-260722`'s `QBt` group.
+**Covered elsewhere**: the contract itself is `../../paper/page-types/haipipe-page-for-narrative`. The interlocked specimen set for the board-owned types stays on `BoardSkillBoard-260722`'s `QBt` group.
 
 ## Writing Style
 Plain English for a reader who has never opened this paper. One sentence per line, and no em-dashes.

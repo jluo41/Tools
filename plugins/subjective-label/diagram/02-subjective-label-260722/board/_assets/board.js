@@ -4599,7 +4599,7 @@ function boardDirPath() {
  * which is the repo root, which is also what `location.pathname` is relative to.
  * So the built page's own URL already carries the answer:
  *
- *   /Tools/…/01-boardform-260722/board/QD/QD5-split-workspace.html
+ *   /Tools/…/BoardSkillBoard-260722/board/QO/QO5-split-workspace.html
  *    └────────── board folder ─────────┘ └─ output ─┘
  *
  * Cut at the last `/board/` and the prefix IS the repo-relative board folder. Add

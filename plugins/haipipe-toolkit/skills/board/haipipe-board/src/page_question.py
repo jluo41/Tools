@@ -20,6 +20,128 @@ STAGE_LABELS = {
 }
 
 
+# ── 📚 the References block, from the page's own bib (QPf8, JL 260815) ───────
+# The INLINE half of a cite is body.py's: its chip + card own how `\citep{key}`
+# reads in a sentence. This owns the other half the reader expects of a page
+# that cites: a References block above the folds, one numbered entry per cited
+# key, resolved from the page's OWN `bibex/<stem>.bib` and never invented.
+# Keys are scanned from the SOURCE with fences and backticks stripped — the
+# same illustration rule the bibex workbench applies — and a key the bib lacks
+# is simply absent here (the workbench's red card already reports it).
+# The two small parsers mirror live/export.py's (the server side of the same
+# plugin).
+
+_CITE_RE = re.compile(r"\\cite(p|t)?\*?(?:\[[^\]]*\])*\{([^}]+)\}")
+
+
+def _bib_entries(raw):
+    out = {}
+    for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", raw):
+        key, depth = m.group(1), 0
+        j = raw.index("{", m.start())
+        for j in range(j, len(raw)):
+            if raw[j] == "{":
+                depth += 1
+            elif raw[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+        out[key] = raw[m.start():j + 1]
+    return out
+
+
+def _bib_field(entry, name):
+    m = re.search(r"\b%s\s*=\s*" % re.escape(name), entry, re.I)
+    if not m:
+        return ""
+    i = m.end()
+    if i < len(entry) and entry[i] == '"':
+        j = entry.find('"', i + 1)
+        return entry[i + 1:j] if j > 0 else ""
+    if i < len(entry) and entry[i] == "{":
+        depth = 0
+        for j in range(i, len(entry)):
+            if entry[j] == "{":
+                depth += 1
+            elif entry[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    return entry[i + 1:j]
+        return ""
+    j = entry.find(",", i)
+    return entry[i:j].strip() if j > 0 else entry[i:].strip()
+
+
+def _bib_clean(s):
+    return re.sub(r"[{}\\]", "", s or "").strip()
+
+
+def _cite_label(entry):
+    """(authors-part, year): 'Luo et al.', '2026' — mechanical, from fields."""
+    authors = [a.strip() for a in
+               _bib_clean(_bib_field(entry, "author")).split(" and ") if a.strip()]
+    def surname(a):
+        return a.split(",")[0].strip() if "," in a else (a.split() or ["?"])[-1]
+    year = re.sub(r"\D", "", _bib_field(entry, "year"))[:4] or "n.d."
+    if not authors:
+        return "?", year
+    if len(authors) == 1:
+        return surname(authors[0]), year
+    if len(authors) == 2:
+        return "%s and %s" % (surname(authors[0]), surname(authors[1])), year
+    return "%s et al." % surname(authors[0]), year
+
+
+def references_block(q):
+    """-> the References block html, or '' when the page cites nothing its
+    bib can resolve."""
+    stem = pathlib.Path(q.get("file") or "").stem
+    if not (_bd.PAGE_DIR and stem):
+        return ""
+    bib = _bd.PAGE_DIR / "bibex" / (stem + ".bib")
+    src = _bd.PAGE_DIR / (stem + ".md")
+    if not (bib.is_file() and src.is_file()):
+        return ""
+    entries = _bib_entries(bib.read_text(encoding="utf-8"))
+    text = src.read_text(encoding="utf-8")
+    text = re.sub(r"```.*?```", "", text, flags=re.S)
+    text = re.sub(r"`[^`\n]*`", "", text)
+    used = []
+    for m in _CITE_RE.finditer(text):
+        for k in m.group(2).split(","):
+            k = k.strip()
+            if k and k in entries and k not in used:
+                used.append(k)
+    if not used:
+        return ""
+
+    items = []
+    for k in used:
+        e = entries[k]
+        who, year = _cite_label(e)
+        title = _bib_clean(_bib_field(e, "title"))
+        venue = _bib_clean(_bib_field(e, "journal")
+                           or _bib_field(e, "booktitle")
+                           or _bib_field(e, "publisher"))
+        doi = _bib_clean(_bib_field(e, "doi"))
+        url = _bib_clean(_bib_field(e, "url"))
+        links = []
+        if doi:
+            links.append('<a href="https://doi.org/%s" target="_blank" '
+                         'rel="noopener">doi</a>' % esc(doi))
+        if url:
+            links.append('<a href="%s" target="_blank" rel="noopener">link</a>'
+                         % esc(url))
+        items.append(
+            '<li id="%s-ref-%s"><span class="ra">%s (%s).</span> %s.%s%s</li>'
+            % (q.get("id", "q"), esc(k), esc(_bib_clean(_bib_field(e, "author"))
+                                             or who), year, esc(title),
+               (" <i>%s</i>." % esc(venue)) if venue else "",
+               (" · " + " · ".join(links)) if links else ""))
+    return ('<div class="refs"><div class="rh">📚 References</div><ol>%s</ol>'
+            '</div>' % "".join(items))
+
+
 def det(label, inner, open_=False):
     if not inner:
         return ""
@@ -59,16 +181,13 @@ def sect(label, inner, cls="", open_=False):
             f'{chead(label, inner, tag="summary")}{inner}</details>')
 
 
-# ── 🖼 Diagram = two subsections (QA4, JL 260726) ──────────────────────────
-# The ASCII figure is the thing you almost always want, so it opens with the
-# section. The Excalidraw canvas is one more click away: it is heavy, it is
-# collaborative rather than referential, and inside a shut <details> its lazy
-# iframe never loads, so a board with N canvases no longer boots N of them.
-#
-# The SOURCE keeps one plain `## Diagram`. The split is a render decision, so
-# not one page had to be rewritten, and a page that later gains a canvas splits
-# itself. This is the same bargain as `![[...]]` and the bare URL line: the
-# markdown stays something a person types, the renderer does the arranging.
+# ── 🖼 Diagram = the ascii figure, alone (QPf2, JL 260815) ─────────────────
+# The canvas left the stage: a page's drawing is MATERIAL, so it lives in the
+# page's own `draw/` plugin and opens through the Draw split, never inline in
+# `## Diagram`. What renders here is the figure that survives every host with
+# scripts off. `split_diagram` still runs so a source that carries a leftover
+# bare canvas URL renders its figure clean instead of a naked link — the line
+# stays in the markdown untouched; it just no longer stages anything.
 XCAL_HOSTED = re.compile(r"^\s*https?://(?:app\.)?excalidraw\.com/\S+\s*$")
 
 
@@ -93,25 +212,13 @@ def split_diagram(txt):
 
 
 def render_diagram(txt):
-    """The 🖼 Diagram section: ▧ ASCII open, ✏️ Excalidraw shut."""
-    fig, canvas = split_diagram(txt)
-    parts = []
-    if fig.strip():
-        parts.append(
-            '<details class="dsub dsub-a" open>'
-            '<summary class="dsubh">▧ ASCII</summary>'
-            f'<div class="dsubb">{body(fig, fold_code=False)}</div></details>')
-    # The canvas row is emitted even when empty: it is where the 🖌 attach
-    # button lives, and scriptless it still says truthfully that none is there.
-    inner = (body(canvas, fold_code=False) if canvas.strip()
-             else '<p class="dsub-empty">No canvas attached yet.</p>')
-    parts.append(
-        '<details class="dsub dsub-x">'
-        '<summary class="dsubh">✏️ Excalidraw</summary>'
-        f'<div class="dsubb">{inner}</div></details>')
+    """The 🖼 Diagram section: the ascii figure, nothing else."""
+    fig, _canvas = split_diagram(txt)
+    if not fig.strip():
+        return ""
     return ('<details class="diagram-section">'
             '<summary class="ch"><span class="chl">🖼 Diagram</span></summary>'
-            f'<div class="dia">{"".join(parts)}</div>'
+            f'<div class="dia">{body(fig, fold_code=False)}</div>'
             '</details>')
 
 
@@ -817,7 +924,7 @@ def _render_question(q, prv, nxt):
     log = sort_log(sec(q["sec"], "Log").strip())
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
     folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
-    return (
+    html = (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
         f' data-session="{esc(q.get("session",""))}"'
@@ -846,3 +953,10 @@ def _render_question(q, prv, nxt):
         f'<h2 class="h2"><span class="hid">{q["id"]} </span>{inline(q["title"])}</h2>'
         + f'<div class="opening">{ask}{bnd}</div>' + dia + content
         + f'{fs}{fls}<div class="folds">{folds}</div>{nav}</section>')
+    # 📚 the References block lands above the folds, from the page's own
+    # bibex/ store (QPf8, JL 260815); the inline chips are body.py's half.
+    refs = references_block(q)
+    if refs:
+        html = html.replace('<div class="folds">',
+                            refs + '<div class="folds">', 1)
+    return html

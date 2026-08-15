@@ -1,0 +1,22 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "page",
+  "page": {
+   "id": "QA5",
+   "markdown": "QA-design/QA5-identity-and-scope/QA5-identity-and-scope.md"
+  },
+  "migration": {
+   "sourceIndexes": {}
+  }
+ }
+}

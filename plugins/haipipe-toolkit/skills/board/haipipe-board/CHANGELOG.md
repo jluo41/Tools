@@ -5,6 +5,89 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.132.0 - 2026-08-15
+
+- The WORD export cites from the page's own bib too (JL: "how about the
+  word? will we have the reference as well?"): when `bibex/<stem>.bib` holds
+  an entry, `cli/refs.py` compiles `.board-refs.bbl` in bibex/ (rebuilt when
+  the bib is newer) and md2docx is pointed there — the .docx and its PDF
+  twin gain the in-text "(Luo et al. 2026)" and a real References section,
+  from the same store as the chip, the block, and the LaTeX PDF. The paper
+  root stays the fallback for pages with no store.
+- md2docx's .bbl parser now reads plainnat's bare `\bibitem[label]{key}` as
+  well as misq's braced form — demanding the braces made every plainnat
+  bibliography parse to nothing and cites print bare keys (fixed in the
+  paper family's own script; the paper path benefits identically).
+
+## 0.131.0 - 2026-08-15
+
+- The LaTeX export cites from the PAGE'S OWN BIB (JL: "convert it to the
+  latex and this one to be cited as well"): the master's bibliography now
+  prefers `bibex/<stem>.bib` when it holds an entry, falling back to the
+  paper's `0-*.bib`, then cite-less. QPf8's PDF proves it end to end:
+  `\citep{luo2026eventglucose}` compiles to "[Luo et al., 2026]" inline
+  with a bibtex References page, one store feeding chip, block, and PDF.
+- Built pages gained a 📚 References block above the folds
+  (`src/page_question.py` + `assets/css/64-refs.css`): one numbered entry
+  per cited key, authors (year), title, venue, doi/link, resolved from the
+  page's own bib and never invented. The inline chip + card stay body.py's;
+  this is the other half of what a citing page owes its reader.
+
+## 0.130.0 - 2026-08-15
+
+- The BibEx ＋ box learned LINKS (JL: "could we paste the paper link"): a
+  DOI (doi.org content negotiation), an arXiv link or bare id (arxiv.org's
+  bibtex endpoint), Scholar's session-signed Cite → BibTeX link, or any
+  paper URL (Semantic Scholar fallback). The bibtex is fetched WHOLE from
+  the source — copying, never composing — and fills the box for the person
+  to review; landing stays their second click. An unusable fetched key
+  (doi.org's URL-as-key) is renamed surname+year, a local-handle repair.
+- The un-cited chip now reads "in the bib, not cited in the page text yet"
+  and carries 📋 copy \citep{key}, after "added but not synced" confusion.
+- The whole raw .bib renders in a fold at the view's foot with its on-disk
+  path — it is PRIMARY material and hand-editing it is legal.
+
+## 0.129.0 - 2026-08-15
+
+- BibEx became a CITATION WORKBENCH on a PAGE-OWNED bib (JL: "the bib for
+  this page only"). `bibex/<stem>.bib` is now PRIMARY — the page's own store,
+  seeded by copying entries whole from the paper's `0-*.bib`, which is read
+  and never written — and a refresh only appends imports, never overwriting
+  or deleting an entry a person may have edited.
+- The card view gained the working surface: parsed title/author/year, 🔎 a
+  Google Scholar link built from the title, 🔗 DOI and 📄 URL when carried,
+  ✅/⬜ checked status with a ✓ button, an ✎ edit fold per entry, and a ＋
+  paste box for new entries.
+- Two new doors beside `/_board/bibex`: `bibex-verify` writes the human ✓ as
+  a `verified = {WHO YYMMDD}` field INSIDE the entry (JL picked the field
+  over a sidecar; undo strips it), and `bibex-entry` is the pen — it lands a
+  person's pasted bibtex verbatim, validates shape only, guards duplicate
+  keys behind an explicit replace, and composes nothing (citation-craft.md).
+- The key scan strips code fences and backtick spans first: a cite in a
+  figure or a rule's quotation is an illustration, not a citation.
+
+## 0.128.0 - 2026-08-15
+
+- The right pane's tabs became an OPEN SET, per page (haipipe-page-plugin):
+  the strip renders from the set, a tab appears on an explicit click — the ＋
+  menu lists what the page could open, with ● where material already exists —
+  the active tab carries its own ✕ (out of the set, focus to the left
+  neighbour, last one closes the pane), and the pane's `✕ close` keeps meaning
+  the whole pane. The set persists per page in `board-split-tabs:<path>`.
+- Registry entries may carry `tab: {url(page), write(page,cb,err)}` and the
+  shell builds their tab from it, so plugin N+1 ships by registering; Draw and
+  Slides keep their window hooks for now.
+- Three DERIVED paper-facing plugins shipped through that spec
+  (`82-plugin-exports.js` + `live/export.py`): `/_board/latex` (md2tex + a
+  standalone xelatex master → `latex/<stem>.pdf`), `/_board/word` (md2docx +
+  docx2pdf's PDF twin → `word/<stem>.docx` + view), `/_board/bibex`
+  (extract-only subset of the paper's `0-*.bib` → `bibex/<stem>.bib` + cards;
+  never invents an entry, per citation-craft.md). `--paper-root` is discovered
+  by walking up for a `0-*.bib`; pages outside a paper export cite-less.
+- The contract itself is the new `board/haipipe-page-plugin` skill
+  (SKILL.md + ref/roster.md): a plugin is STORAGE + SURFACE + WRITER +
+  BOUNDARY, named once in the roster.
+
 ## 0.126.0 - 2026-08-09
 
 - The door's sub-skill roster now lists the FIVE Page Type variants this skill
@@ -582,7 +665,7 @@ quick actions now ask about open Aim States and never present the legacy
 
 ## 0.91.1 - 2026-08-01
 
-**checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `QD-working/QD3-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
+**checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
 
 ## 0.91.0 - 2026-07-31
 
@@ -718,7 +801,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 ## 0.66.0 - 2026-07-31
 
-**The sidebar gains a per-page section outline, accordion enforced.** JL, pasting the Structure rows ("🎯 Items to Finish · 2 done · 1 open …"): should the sections be in the left panel too, "and make sure that everytime, only one pages's section and subsection can be opened". The Structure map's counting logic moved out of `render_structure()` into a shared `structure_rows()` (page_question.py), and the sidebar now renders those same rows — section emoji + name + meta, plus one indented row per Content division — under every page, hidden by `.sb-out` until that page is the open one; `mark()` collapses every other page's outline on navigation, so exactly one page's sections show at a time. Clicking an outline row navigates, then opens the target `<details>` and scrolls to it (division rows open Content first). Because drawer and rail read one source, they can never disagree. Owned by the new design-board face QB2a-sidebar.md, opened on JL's ask this round.
+**The sidebar gains a per-page section outline, accordion enforced.** JL, pasting the Structure rows ("🎯 Items to Finish · 2 done · 1 open …"): should the sections be in the left panel too, "and make sure that everytime, only one pages's section and subsection can be opened". The Structure map's counting logic moved out of `render_structure()` into a shared `structure_rows()` (page_question.py), and the sidebar now renders those same rows — section emoji + name + meta, plus one indented row per Content division — under every page, hidden by `.sb-out` until that page is the open one; `mark()` collapses every other page's outline on navigation, so exactly one page's sections show at a time. Clicking an outline row navigates, then opens the target `<details>` and scrolls to it (division rows open Content first). Because drawer and rail read one source, they can never disagree. Owned by the new design-board face QB2a-sidebar/QB2a-sidebar.md, opened on JL's ask this round.
 
 ## 0.66.0 - 2026-07-31
 
@@ -786,7 +869,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 ## 0.54.0 - 2026-07-31
 
 - **Every page id now matches its group letter** (JL 260731: "I think you also need to align the Q name to the Q group as well").
-  36 of 43 pages on `01-boardform-260722` were renamed: `QA1a → QA1`, `QAa5 → QB9`, `QB5 → QC3`, `QE1 → QD7`, `QA9 → QE1`, and so on.
+  36 of 43 pages on `BoardSkillBoard-260722` were renamed: `QA1a → QA1`, `QAa5 → QB9`, `QB5 → QC3`, `QE1 → QD7`, `QA9 → QE1`, and so on.
   The rename is two-phase, because the map collides with itself: `QC3-folderq.md` must become `QB3-*` while `QB5-srcsplit.md` becomes `QC3-*`, so every file parks at a `__tmp__` name first and nothing ever lands on an occupied one.
   A NAMED family keeps its name: `Q-Skill-haipipe-board` is identified by which skill it mirrors, never by a position in a queue.
 - **An alias travels like a real address.** The rename stranded every older id in the figures that cite it: `QAa5` was suddenly not a page, so it rendered as dead text even though `## Links` knew exactly where it went.
@@ -1384,7 +1467,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 - Moved the skill package from `skills/0_utils/haipipe-board/` to
   `skills/board/haipipe-board/`, beside the paper, probe, and task families.
-- Kept the design Board at `skills/diagrams/01-boardform-260722/`; a working
+- Kept the design Board at `skills/diagrams/BoardSkillBoard-260722/`; a working
   design record still does not ship inside the skill.
 - Clarified Board placement: task, project, and paper Boards use the owning
   unit's `diagram/`; plugin skill-design Boards share the plugin's
@@ -1402,7 +1485,7 @@ The `dialect: paper` seam had exactly one silent failure: a board that writes `\
 
 **The trigger is the board's own CONTENT, never its folder name.** A dialect is deletable (QBc5) and `build.py` must not learn what a paper is, so it does not look for `0-lifecycle/`; it looks for marker syntax.
 
-**Code spans are stripped first, and that is the whole precision of the check.** A board that MEANS a marker writes it in prose; a board that DISCUSSES the syntax quotes it. Measured across the four real boards on 2026-07-26: `01-boardform-260722` has 13 mentions and `01-probe-qa-260726` has 2, all inside code fences or backticks, none meant. A naive raw match warned on both; stripping code first gives zero false positives on all four, while a real paper board with the two lines removed reports 429.
+**Code spans are stripped first, and that is the whole precision of the check.** A board that MEANS a marker writes it in prose; a board that DISCUSSES the syntax quotes it. Measured across the four real boards on 2026-07-26: `BoardSkillBoard-260722` has 13 mentions and `01-probe-qa-260726` has 2, all inside code fences or backticks, none meant. A naive raw match warned on both; stripping code first gives zero false positives on all four, while a real paper board with the two lines removed reports 429.
 
 Verified: `Paper-Personality2Opioid-MISQ2026/0-lifecycle` builds byte-identically (40 pages, 22 markers), and the same folder with `dialect:`/`paper-root:` deleted now warns loudly with the exact two lines to add.
 
@@ -1998,7 +2081,7 @@ Also in 0.12.1: **`scrub_cjk_comments` scoped to `<style>`/`<script>` blocks.** 
 - **`build.py <dir> --json`** — the parser half exposed as a service (the boardform board's QE3: one grammar, two render paths). Emits meta + per-question `{state, owner, done/total, comments_open/total, sections}` from the same code the HTML is built from, so JSON and HTML cannot disagree (asserted in the consumer's tests).
 - **first external consumer: `haichat-inlab`'s `boards_api.py`** (HAIChat-SPACE, branch `feat/haichat-board`) imports `build.py`/`serve.py` from this skill dir — SPACE mounting, board discovery, page serving, and the comment/discuss/resolve write-backs, none of it re-implemented. Design record: the boardform board's QE2/QE3.
 - **terminal smoothness (QD3 ①–④):** the drawer terminal now auto-reconnects with backoff (the xterm survives, scrollback intact; the post-auth resize makes claude repaint), sends a same-size resize op every 30s as keepalive, refits via ResizeObserver when the pane resizes, and pre-warms the xterm assets on ⌨ hover (assets only — never `POST /_board/term`, which takes HOLD).
-- the skill's own board (`diagram/01-boardform-260722/`, 23 questions) fully translated to English — body, JL quotes, comments, logs.
+- the skill's own board (`diagram/BoardSkillBoard-260722/`, 23 questions) fully translated to English — body, JL quotes, comments, logs.
 
 ## [0.6.0] — 2026-07-23
 
@@ -2060,7 +2143,7 @@ The single-Q slide layout (QA4) is settled and closed. The focus-mode slide got 
 
 The graduation mechanism — SKILL.md is now defined as the board's settled questions, distilled. Plus the live layer (serve.py) gets a foothold in the manual.
 
-- **板 ↔ SKILL.md, written down.** New SKILL.md section: this file is the crystallisation of the skill's own board (`diagram/01-boardform-260722/`). A question that reaches `✅ SETTLED` graduates its `## Law` into SKILL.md; questions still `🟡/🔴` do NOT enter the manual — so a "just-decided" rule never gets written as iron law (QD1's permission rule was written hard, then overturned — the cautionary case). SKILL.md is therefore always *the sum of settled rulings, no more*. The rule lives in QB1's `## Law`.
+- **板 ↔ SKILL.md, written down.** New SKILL.md section: this file is the crystallisation of the skill's own board (`diagram/BoardSkillBoard-260722/`). A question that reaches `✅ SETTLED` graduates its `## Law` into SKILL.md; questions still `🟡/🔴` do NOT enter the manual — so a "just-decided" rule never gets written as iron law (QD1's permission rule was written hard, then overturned — the cautionary case). SKILL.md is therefore always *the sum of settled rulings, no more*. The rule lives in QB1's `## Law`.
 - **serve.py enters the manual.** New `serve` action: one server serves the whole repo root (`serve.py --root <root>`), giving every board live commenting-to-disk plus chat/terminal per question. The old `comment` text ("stage in localStorage → Sync to md") was stale — QA6 shipped Save-immediately-writes-to-disk; the section now says so, with the browser Sync/Copy path demoted to the serve.py-not-running fallback.
 - **chat / terminal held as provisional.** The QD group (drawer via claude_agent_sdk, terminal via ttyd) is real and running but still `🟡` — SKILL.md carries only a pointer to it, not rules, per the graduation mechanism.
 - **actions regrouped** — offline (`open · add · build · sync · link · close`, needs only build.py) vs live (`serve · comment`, needs serve.py).
@@ -2078,7 +2161,7 @@ The graduation mechanism — SKILL.md is now defined as the board's settled ques
 - **titles are phrases, ≤14 chars** — the full question belongs in `## Question`. The board's own ten titles went from 43 chars at worst down to 8–15.
 - **the invariant replaced the rule.** 0.1.0 asserted "zero `<script>` in the output". That became false the moment commenting shipped, and it was never the real guarantee anyway. What is asserted now: **strip every `<script>` and each question plus the full prose is still there** (checked on every build). Scripts may only enhance.
 
-Known gaps (tracked on the board at `0_utils/diagram/01-boardform-260722/`): "Sync to md" has never been run end to end (QA6), no fresh-agent acceptance run (QB2), the two older boards are not migrated (QB3), and comments already written into md have no check for a broken anchor after the prose is edited.
+Known gaps (tracked on the board at `0_utils/diagram/BoardSkillBoard-260722/`): "Sync to md" has never been run end to end (QA6), no fresh-agent acceptance run (QB2), the two older boards are not migrated (QB3), and comments already written into md have no check for a broken anchor after the prose is edited.
 
 ## [0.1.0] — 2026-07-22
 
@@ -2094,4 +2177,4 @@ First working version. Board = a folder; `build.py` turns it into one static pag
 - **zero `<script>` in the output, asserted at build time.** Every question is a real `<section>`; collapsibles are native `<details>`; navigation is plain anchors. The page cannot render blank.
 - **focus mode is pure CSS** — `:target` + `:has()` show one question full-screen, unbounded (no card border/radius/fill), 38px title, prev/next/index links. Same file serves both reading and projecting; there is no separate `deck.html`.
 
-Known gaps (tracked on the board at `0_utils/diagram/01-boardform-260722/`): `SKILL.md` is not written (QB1), no fresh-agent acceptance run (QB2), the two older boards are not migrated (QB3), inline comments are half-built (QA6 — the md syntax parses, the CSS does not exist yet).
+Known gaps (tracked on the board at `0_utils/diagram/BoardSkillBoard-260722/`): `SKILL.md` is not written (QB1), no fresh-agent acceptance run (QB2), the two older boards are not migrated (QB3), inline comments are half-built (QA6 — the md syntax parses, the CSS does not exist yet).

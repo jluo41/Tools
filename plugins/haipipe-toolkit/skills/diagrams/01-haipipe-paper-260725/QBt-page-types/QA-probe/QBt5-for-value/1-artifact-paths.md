@@ -10,7 +10,7 @@ Across the ten page-type contracts under `board/page-types/`, count how many tim
 
 - [Q-Value-1] · `QBt5-for-value` E1 · the page's own claim that the contracts are silent about what their pages own.
 - [Q-Value-1] · `QBt9-for-slide` · the deck prints every row and both totals, and its template carries no digits.
-- [Q-Value-1] · `QB-delivery/QB6-page-types.md` §7 · the opening claim of that division.
+- [Q-Value-1] · `QB-delivery/QPs2-page-types.md` §7 · the opening claim of that division.
 
 #### bank binding
 

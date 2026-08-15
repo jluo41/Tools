@@ -5,6 +5,7 @@
     python3 skillpage.py sync <board> <page-id>          # refresh the managed block
     python3 skillpage.py sync <board> --all
     python3 skillpage.py check <board>                   # report staleness, never write
+    python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> skill/ plugin (JL 260815)
 
 WHAT THIS IS A SECOND COPY OF. `stage.py`, deliberately. It already solves
 "generate a page from a source that lives somewhere else, then keep it in sync
@@ -33,6 +34,7 @@ header can, which is what `check` is for (QC5 §4).
 import argparse
 import hashlib
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -793,6 +795,114 @@ def cmd_sync(a):
     return None
 
 
+# A snapshot carries the unit's CONTRACT SURFACE and nothing else: the root
+# .md files and ref/. Code, tests, assets and vendored trees say nothing about
+# the contract, and copying haipipe-board's ~27k lines into a page folder
+# would bury the page under its own material.
+def _contract_file(rel):
+    return (len(rel.parts) == 1 and rel.suffix == ".md") or rel.parts[0] == "ref"
+
+
+def snapshot(src, dst):
+    """Copy one unit's contract surface into a page's plugin, defused.
+
+    Every `SKILL.md` at any depth is renamed `SKILL.snapshot.md`, because two
+    walls both key on that exact name: the installer's `*/skills/*/SKILL.md`
+    glob would install the copy as a second skill under the unit's own
+    globally unique name, and `PAGENAME.match("SKILL.md")` is true so page
+    discovery would surface it as a ghost page. Discovery is also fenced by
+    the plugin boundary in `src/common.py`; the rename is the second lock.
+
+    An AGENT unit is one .md file whose changelog belongs to its folder
+    (JL 260727), so a file src snapshots as that file plus the shared
+    CHANGELOG.md.
+    """
+    if dst.exists():
+        shutil.rmtree(dst)
+    if src.is_file():
+        pairs = [(src, src.name)]
+        log = src.parent / "CHANGELOG.md"
+        if log.is_file():
+            pairs.append((log, log.name))
+        dst.mkdir(parents=True, exist_ok=True)
+        for p, name in pairs:
+            (dst / name).write_bytes(p.read_bytes())
+        return len(pairs)
+    copied = 0
+    for p in sorted(src.rglob("*")):
+        if p.is_dir() or not _contract_file(p.relative_to(src)):
+            continue
+        name = "SKILL.snapshot.md" if p.name == "SKILL.md" else p.name
+        out = dst / p.relative_to(src).parent / name
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(p.read_bytes())
+        copied += 1
+    return copied
+
+
+def cmd_plug(a):
+    """Write the unit's material into the page's `skill/` plugin (JL 260815).
+
+    The design-page shape: the page argues and settles, the plugin holds the
+    unit's bytes, and nothing derived is spliced into the .md any more. The
+    live unit keeps shipping from its own folder; the snapshot records what
+    this page's judgments were about (snapshot, never residence)."""
+    board = Path(a.board).resolve()
+    src = Path(a.skill).resolve()
+    if src.is_dir() and not (src / "SKILL.md").is_file():
+        return f"not a unit folder (no SKILL.md): {src}"
+    if src.is_file() and src.suffix != ".md":
+        return f"an agent unit is one .md file: {src}"
+    if not src.exists():
+        return f"no such unit: {src}"
+    page = next((p for p in page_files(board) if p.stem == a.page), None)
+    if page is None:
+        return f"no page with id {a.page!r} on {board.name}"
+    if page.parent.name != page.stem:
+        return (f"{page.name} is not a folded page; a plugin needs the page "
+                f"to own its folder first (QB3)")
+    unit_name = src.stem if src.is_file() else src.name
+    dst = page.parent / "skill" / unit_name
+    n = snapshot(src, dst)
+    retitle(page, src, unit_name)
+    print(f"🧩 {page.stem} · skill/{unit_name}/ · {n} files (SKILL.md renamed)")
+    return None
+
+
+def retitle(page, src, unit_name):
+    """Refresh this unit's version token in the Design title's parenthetical.
+
+    The ruled title grammar (JL 260815): `# Design-N · <Name> (Skill <unit>
+    v<x>, Agent <short> v<y>)` — one design, several units, each with the
+    version it shipped at. The NAME is the author's; the versions are derived
+    here so a stale one is impossible rather than merely discouraged. A page
+    whose H1 is not in the grammar is left alone.
+    """
+    fm = frontmatter(src / "SKILL.md" if src.is_dir() else src)
+    ver = (fm.get("version") or "").strip()
+    if not ver:
+        return
+    kind = "Skill" if src.is_dir() else "Agent"
+    # an agent's title token is its ROLE: haipipe-board-creator-agent -> creator
+    short = unit_name
+    if kind == "Agent":
+        short = re.sub(r"^haipipe-(?:board|page)-", "", unit_name)
+        short = re.sub(r"-agent$", "", short)
+    lines = page.read_text(encoding="utf-8").split("\n")
+    h1 = lines[0]
+    if not re.match(r"# Design-\d+ · .+\(.*\)\s*$", h1):
+        return
+    tok = rf"({kind} {re.escape(short)} v)[^,)]+"
+    if re.search(tok, h1):
+        h1 = re.sub(tok, rf"\g<1>{ver}", h1)
+    else:
+        h1 = re.sub(r"\)\s*$", f", {kind} {short} v{ver})", h1)
+    if h1 != lines[0]:
+        lines[0] = h1
+        page.write_text("\n".join(lines), encoding="utf-8")
+        print(f"🏷 title · {kind} {short} v{ver}")
+
+
 def cmd_check(a):
     board = Path(a.board).resolve()
     bad = 0
@@ -824,8 +934,11 @@ def main(argv=None):
     s = sub.add_parser("sync"); s.add_argument("board")
     s.add_argument("page", nargs="?", default=""); s.add_argument("--all", action="store_true")
     c = sub.add_parser("check"); c.add_argument("board")
+    g = sub.add_parser("plug"); g.add_argument("board")
+    g.add_argument("page"); g.add_argument("skill")
     a = ap.parse_args(argv)
-    err = {"new": cmd_new, "sync": cmd_sync, "check": cmd_check}[a.cmd](a)
+    err = {"new": cmd_new, "sync": cmd_sync, "check": cmd_check,
+           "plug": cmd_plug}[a.cmd](a)
     if err:
         print(f"❌ {err}", file=sys.stderr)
         return 1

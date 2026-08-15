@@ -11,7 +11,7 @@ The Board is the control plane and a coding session is an ephemeral worker, so e
 
 Four questions follow from that one stance: what the control plane is, what the queue is, where a finished item's result lives, and what the runner does when the Board hands it an item.
 
-Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QD1` one session per question, `QD2` the drawer, `QD3` the terminal, `QE4` in-page locking, THERE, not here).
+Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../BoardSkillBoard-260722/` (`QD1` one session per question, `QD2` the drawer, `QD3` the terminal, `QE4` in-page locking, THERE, not here).
 
 ## Diagram
 ```

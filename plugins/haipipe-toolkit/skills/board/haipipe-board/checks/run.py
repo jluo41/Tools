@@ -58,7 +58,7 @@ def post(base, path, payload, timeout=180):
 
 
 def full_tier():
-    src = SKILL.parent.parent / "diagrams" / "01-boardform-260722"
+    src = SKILL.parent.parent / "diagrams" / "BoardSkillBoard-260722"
     work = Path(tempfile.mkdtemp(prefix="board-checks-"))
     fx = work / "b" / src.name
     (work / "b").mkdir(parents=True)

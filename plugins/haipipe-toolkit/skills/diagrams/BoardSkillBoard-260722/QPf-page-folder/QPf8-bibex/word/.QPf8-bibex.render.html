@@ -1,0 +1,46 @@
+<!doctype html><meta charset='utf-8'><style>
+@page { size: letter; margin: 1in 1in 1in 1in; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 12pt;
+       line-height: 2.0; text-align: left; }
+/* The card FLOATS and stays in flow. It was `position: absolute` in one
+   container at top:0, which took all 239 out of flow and stacked every one of
+   them at the same y on page 1: a solid unreadable block beside the abstract
+   (JL 2026-07-28). Absolute positioning cannot work in a paged medium, because
+   the y a card belongs at is not known until the text above it has been laid
+   out and broken across pages. A float is laid out BY the flow, so it lands
+   beside its own paragraph and paginates for free. */
+.page { }
+p { margin: 0 0 0 0; text-indent: 0; }
+h1, h2, h3 { font-size: 12pt; font-weight: bold; line-height: 2.0;
+             margin: 1.5em 0 0 0; }
+h1 { text-transform: uppercase; text-align: center; }
+h2 { text-align: center; }
+h3 { text-align: left; }
+/* MIRRORS the .docx: full body width, centred, booktabs rules only (a top and
+   a bottom), a real gutter, single-spaced. It used to draw a full cell grid the
+   .docx never had, so the two projections disagreed about the same table. */
+table { border-collapse: collapse; font-size: 10pt; line-height: 1.15;
+        margin: 12pt auto; width: 100%; table-layout: fixed;
+        border-top: 0.75pt solid #000; border-bottom: 0.75pt solid #000; }
+td, th { padding: 1.5pt 5.4pt; vertical-align: top; }
+tr.hdr td, td.b { font-weight: bold; }
+img { max-width: 100%; }
+.cap { font-size: 10pt; line-height: 1.15; margin: 12pt 0; }
+.ref { margin-left: 0.5in; text-indent: -0.5in; line-height: 1.0;
+       margin-bottom: 0.15em; }
+/* an evidence card. Anchored text is tinted and the card sits in the margin,
+   numbered, so the pairing survives a print with no interaction. */
+.anchor { background: #eef2ff; }
+.mark { vertical-align: super; font-size: 8pt; color: #4338ca;
+        font-weight: bold; }
+.card { float: right; clear: right; width: 1.9in; margin: 0 0 6pt 0.22in;
+        font-size: 7pt; line-height: 1.3;
+        font-family: -apple-system, "Helvetica Neue", sans-serif;
+        color: #1f2937; background: #f8f9ff;
+        border-left: 2pt solid #4338ca; padding: 3pt 4pt;
+        /* a card must not be split across a page break, or half an evidence
+           record appears with no header saying which sentence it belongs to */
+        break-inside: avoid; page-break-inside: avoid; }
+.card b { color: #4338ca; }
+</style><div class='page'><h1>1 · The contract</h1><p>**A MIXED plugin, like display/**: one primary file a person rules, derived files a rebuild may replace.</p><p>Seeding resolves a cited key against the paper&#x27;s 0-*.bib upward and copies the entry whole into the page bib; the upstream file is read and never written.</p><p>A refresh re-scans the page&#x27;s keys, imports what has become resolvable, and regenerates the view; an entry already in the page bib is never overwritten and never deleted, because a person may have edited it.</p><p>An entry no longer cited on the page stays, marked not cited on this page, so removing a sentence never silently drops its source.</p><p>A cite inside a code fence or backticks is stripped before scanning: a figure showing the syntax is an illustration, not a citation.</p><h1>2 · The workbench</h1><p>**What a person does on a card**: check, mark, fix, add.</p><p>The ✓ is the page&#x27;s answer to &quot;did I check this link myself&quot;: nobody but a person clicks it, the field records who and when, and undo removes it.</p><p>The pen validates shape only, one balanced entry with a key, and refuses a duplicate key unless the save is an explicit replace; it never composes, completes, or corrects the text, which is the line between a pen and an author.</p><p>The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar&#x27;s Cite → BibTeX link, or a paper URL, and the bibtex is fetched WHOLE from that source into the box for review, so fetching is copying and landing stays the person&#x27;s second click.</p><p>An unusable fetched key, such as doi.org&#x27;s URL-as-key, is renamed to surname+year mechanically, because a key is a local handle and not metadata.</p><p>The whole raw .bib sits one fold from the cards, path printed, because the file is the person&#x27;s and hand-editing it is legal.</p><aside class="card"><b>1 · haipipe</b><br>Citation: Junjie Luo, Xuzhe Zhi, Rui Han, Abhimanyu Kumbara, Mansur E Shomali, Anand K Iyer, Ritu Agarwal, and Guodong Gordon Gao. Eventglucose: A benchmark for continuous glucose monitoring forecasting with behavioral event context. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2, pages 9510–9521, 2026.<br>    key=luo2026eventglucose</aside><p>The store&#x27;s first lived entry is JL&#x27;s own KDD paper (Luo et al. <span class="anchor">2026</span><span class="mark">1</span>), landed through the pen on 260815 and cited here so this very page renders the inline link and the References block the binding produces.</p><h1>3 · The surface</h1><p>**The 📚 tab**: the Slides sandwich, with the view carrying its own controls.</p><h1>References</h1><p class="ref">Junjie Luo, Xuzhe Zhi, Rui Han, Abhimanyu Kumbara, Mansur E Shomali, Anand K Iyer, Ritu Agarwal, and Guodong Gordon Gao. Eventglucose: A benchmark for continuous glucose monitoring forecasting with behavioral event context. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2, pages 9510–9521, 2026.</p></div>

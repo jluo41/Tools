@@ -16,7 +16,7 @@ The map pairs each thing with the board that governs it (`QA1`). This face is th
 That earns it a place on the map, and it earns the number by the same test that excluded the evidence banks. We rule nothing about what is inside `tasks/`, so the banks are a wall rather than a room. We rule a great deal about `haipipe-board`: who composes an S filename, who creates a page, what `## Items to Finish` means, what a `>` lane binds to, and how a citation chip resolves. Nine faces on this board already rule its behaviour. A thing you rule that much is not outside the map.
 
 The danger it creates is specific and it has already happened twice today. A ruling here can be applied to the paper skill and quietly not reach the tool, or shipped in the tool and never reflected here. Both directions were observed on 2026-07-26.
-Scope: This page covers What `haipipe-board` is to this skill, which of its behaviours this board may rule, the `dialect: paper` seam, and how a ruling reaches both halves. Neighbouring pages cover What a board IS, its face grammar, where it lives on disk, and its live layer are ruled on `④`, the board tool's OWN board at `diagrams/01-boardform-260722/`, 27 faces. `③` and `④` are a thing/board pair exactly as `①` and `②` are, which is why this face may rule the contract between us and never what a board is. The two boards it renders for us are `QA3` and `QA7`. Who owns a shared page is the `QA8` group; how work is driven from a page is `QA9`. Both are now under this face, as `QA8` and `QA9`.
+Scope: This page covers What `haipipe-board` is to this skill, which of its behaviours this board may rule, the `dialect: paper` seam, and how a ruling reaches both halves. Neighbouring pages cover What a board IS, its face grammar, where it lives on disk, and its live layer are ruled on `④`, the board tool's OWN board at `diagrams/BoardSkillBoard-260722/`, 27 faces. `③` and `④` are a thing/board pair exactly as `①` and `②` are, which is why this face may rule the contract between us and never what a board is. The two boards it renders for us are `QA3` and `QA7`. Who owns a shared page is the `QA8` group; how work is driven from a page is `QA9`. Both are now under this face, as `QA8` and `QA9`.
 
 ## Diagram
 ```
@@ -204,7 +204,7 @@ Two asymmetries follow, and both are load-bearing. `①` has no interface of its
 
  MAY NOT rule what a board IS, its face grammar, where it lives, how
               the live layer works. Those belong to the tool's own
-              board at diagrams/01-boardform-260722/, and this one
+              board at diagrams/BoardSkillBoard-260722/, and this one
               points at them rather than restating them.
 ```
 The line is ownership, not politeness. A rule about the paper dialect stated only here will not be found by someone working on the tool, and a rule about board grammar stated here will drift from the version that binds.
@@ -261,7 +261,7 @@ What is still missing is the mechanism connecting the two halves in the other di
 ## Files
 - `haipipe-board/`
   The tool: `cli/build.py`, `cli/stage.py`, `cli/serve.py`, `src/`.
-- `../01-boardform-260722/`
+- `../BoardSkillBoard-260722/`
   Its own board, which owns what a board IS.
 - `create-page.py`
   The one place this family reaches into it.

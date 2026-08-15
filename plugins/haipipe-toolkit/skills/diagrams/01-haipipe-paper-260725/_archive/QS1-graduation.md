@@ -106,7 +106,7 @@ The rule is stated in `haipipe-board`'s manual and practiced by hand. Nothing de
 The cost is measured rather than feared: three disagreements on 2026-07-26, in three different directions, none detected by any check. Two were found by a reader noticing a contradiction; the third was found only by running the skill against a real paper.
 
 ## Files
-- `../01-boardform-260722/QB-shipping-the-skill/QB1-skillmd.md`
+- `../BoardSkillBoard-260722/QB-shipping-the-skill/QB1-skillmd.md`
   How the board tool ships its own manual. The neighbouring subject, and worth reading before ruling here.
 - `QA4-the-board-tool.md`
   Carries the three failures in its Diagram, and the Law that came out of the third.
