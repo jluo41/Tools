@@ -200,7 +200,7 @@ Converted from the skill's own `CHANGELOG.md`: 2 releases.
         A new page arrives with `?`, which is honest and doubles as QAa7's to-do list; a retired page's row is dropped, the rule `xcal.py` already applies to a retired page's frame.
         A page's `# ` title only SEEDS a new row's name: the column is 29 characters and a real title rarely fits it ("How to design the haipipe-board folder structure?" truncates to noise where a person writes "the folder structure").
       - Kept cells are collected GLOBALLY (`collect_kept`), keyed by page id across the whole file, not per block.
-        Proven the same day by the Design → Delivery → Engine → Execute restructure of `01-boardform-260722`: 31 of 42 pages changed group, and every typed cell travelled with its page instead of resetting to `?`.
+        Proven the same day by the Design → Delivery → Engine → Execute restructure of `BoardSkillBoard-260722`: 31 of 42 pages changed group, and every typed cell travelled with its page instead of resetting to `?`.
         `dropped` is likewise judged against the whole roster: after a regroup a page has merely moved, and only a page in no group is gone.
       - Documents the B0-B9 index anatomy and, with it, the one CSS rule that decides which sections are board chrome and which are index-only: `body:has(.q:target)` hides `.idx .bar .board-map .activity h3.sec .foot`, and everything absent from that list stays, restyled muted.
         B0 B1 B4 B5 B6 stay; B2 B3 B7 B8 B9 do not.

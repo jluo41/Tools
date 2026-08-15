@@ -55,9 +55,11 @@ def strip_number(title):
     """`2.1 Physician Prescribing` -> `Physician Prescribing`.
 
     LaTeX numbers its own sections; carrying the number in the title too gives
-    "2.1 2.1 Physician Prescribing" in the compiled PDF.
+    "2.1 2.1 Physician Prescribing" in the compiled PDF. A board division
+    writes `1 · The contract`, so the separator dot goes with the number:
+    leaving it produced `\\section{· The contract}` (JL 260815, on QPf6).
     """
-    return re.sub(r"^\d+(?:\.\d+)*\s+", "", title).strip()
+    return re.sub(r"^\d+(?:\.\d+)*\s*(?:·\s*)?", "", title).strip()
 
 
 SECTION_TITLE = re.compile(r"(?m)^section_title:\s*(.+?)\s*$")
@@ -74,6 +76,60 @@ ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
 # backticks around the word.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 
+# What a code span QUOTES must never EXECUTE: `\citep` inside \texttt{} ran the
+# macro and printed "[]" in QPf6's compiled PDF (JL 260815). Backslash first,
+# then TeX's other specials; the placeholder keeps the escaped backslash's own
+# braces out of the second pass.
+_TEX_SPECIALS = [("\\", "\x00BS\x00"), ("{", "\\{"), ("}", "\\}"),
+                 ("\x00BS\x00", "\\textbackslash{}"),
+                 ("&", "\\&"), ("%", "\\%"), ("$", "\\$"), ("#", "\\#"),
+                 ("_", "\\_"), ("~", "\\textasciitilde{}"),
+                 ("^", "\\textasciicircum{}")]
+
+
+def code_span_tex(m):
+    s = m.group(1)
+    for a, b in _TEX_SPECIALS:
+        s = s.replace(a, b)
+    return "\\texttt{%s}" % s
+
+
+# xelatex's fonts lack the box glyphs and emoji a board sketch leans on; a
+# verbatim block full of .notdef blanks reads worse than plain ASCII. So a kept
+# fence is transliterated: box drawing to +-| art, arrows to ASCII, and any
+# glyph still outside Latin-1 dropped.
+_FENCE_MAP = str.maketrans({"─": "-", "━": "-", "│": "|", "┌": "+", "┐": "+",
+                            "└": "+", "┘": "+", "├": "+", "┤": "+", "┬": "+",
+                            "┴": "+", "┼": "+", "▶": ">", "◀": "<", "·": ".",
+                            "—": "-", "…": "...", "§": "S"})
+
+# A glyph PROSE points at may not die silently: with 🅰 dropped, "🅰 lost the
+# way…" fused onto the sentence before it and read as gibberish, and the
+# figure's two candidates lost their names (JL 260815, the QPf3 comparison).
+# Reference-bearing glyphs get a textual body, in FENCES and PROSE alike;
+# decorative emoji still fall out, because a page of [🔥][📦] is not a paper.
+_BADGE = {"🅰": "[A]", "🅱": "[B]", "🅲": "[C]", "🅳": "[D]",
+          "✅": "[x]", "⬜": "[ ]", "⭐": "*", "🛑": "[!]"}
+_BADGE.update({chr(0x2460 + i): "(%d)" % (i + 1) for i in range(20)})  # ①…⑳
+
+
+def badge_sub(s):
+    for a, b in _BADGE.items():
+        if a in s:
+            s = s.replace(a, b)
+    return s
+
+
+def fence_verbatim(rows):
+    out = []
+    for r in rows:
+        r = badge_sub(r).translate(_FENCE_MAP)
+        r = "".join(c for c in r if ord(c) < 256)
+        out.append(r.rstrip())
+    while out and not out[-1]:
+        out.pop()
+    return "\\begin{verbatim}\n%s\n\\end{verbatim}\n" % "\n".join(out)
+
 
 def section_title_of(page):
     """The name this page's `\\section{}` takes, if the page declares one.
@@ -88,20 +144,28 @@ def section_title_of(page):
     return m.group(1) if m else None
 
 
-def build_section(page, displays, report):
-    blocks, nfenced = md2docx.parse_page(page)
+def build_section(page, displays, report, keep_fences=False):
+    blocks, nfenced = md2docx.parse_page(page, keep_fences=keep_fences)
     declared = section_title_of(page)
-    if nfenced:
+    if nfenced and not keep_fences:
         report.append(f"{os.path.basename(page)}: {nfenced} fenced sketch(es) dropped")
     out, buf, seen = [], [], set()
 
     def flush():
         if buf:
-            out.append(" ".join(buf) + "\n")
+            # A BLANK line, not a bare newline: LaTeX ignores a single "\n",
+            # so every pbreak was flushing into the SAME printed paragraph and
+            # a three-paragraph division read as one run-on (JL 260815, the
+            # QPf3 comparison).
+            out.append(" ".join(buf) + "\n\n")
             buf.clear()
 
     for b in blocks:
         if b[0] == "skipped-lane":
+            continue
+        if b[0] == "fence":
+            flush()
+            out.append(fence_verbatim(b[1]))
             continue
         if b[0] == "pbreak":
             flush()
@@ -115,9 +179,25 @@ def build_section(page, displays, report):
             out.append("\n\\%s{%s}\n" % (lvl, name))
             continue
         line = b[1].strip()
-        if GROUP_TITLE.match(line) or ESTABLISHES.match(line):
+        if ESTABLISHES.match(line):
             continue
-        buf.append(CODE_SPAN.sub(r"\\texttt{\1}", b[1]))
+        if GROUP_TITLE.match(line):
+            # Scaffolding on the PAPER path, where the sketch it captions was
+            # dropped. On the keep-fences (board) path the sketch STAYS, so
+            # dropping its caption gave the worst of both: an unnamed figure
+            # (JL 260815, the QPf3 comparison). The caption rides as a bold
+            # lede paragraph; the paper path is byte-identical to before.
+            if not keep_fences:
+                continue
+            m = re.match(r"^\*\*([^*]+)\*\*\s*[:：]\s*(.*)$", line)
+            if m:
+                flush()
+                out.append(badge_sub(
+                    "\\textbf{%s}: %s" % (m.group(1),
+                                          CODE_SPAN.sub(code_span_tex,
+                                                        m.group(2)))) + "\n\n")
+            continue
+        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, b[1])))
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".
@@ -141,6 +221,10 @@ def main():
     ap.add_argument("-o", "--outdir")
     ap.add_argument("--compile", action="store_true",
                     help="run xelatex on the generated master and report pages")
+    ap.add_argument("--keep-fences", action="store_true",
+                    help="render ``` sketches as verbatim blocks instead of "
+                         "dropping them; the BOARD exporter's switch, a paper "
+                         "keeps the drop (JL 260815)")
     ap.add_argument("--into-sections", action="store_true",
                     help="write over sections/*.tex. Deliberate, not a default: "
                          "that tree has been hand-carried and sync is one-way.")
@@ -154,7 +238,7 @@ def main():
 
     for page in a.page:
         page = os.path.abspath(page)
-        body = build_section(page, displays, report)
+        body = build_section(page, displays, report, keep_fences=a.keep_fences)
         n = len(CITE.findall(body))
         total_cites += n
         stem = os.path.splitext(os.path.basename(page))[0]

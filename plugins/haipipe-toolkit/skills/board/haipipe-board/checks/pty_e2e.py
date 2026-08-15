@@ -20,8 +20,8 @@ import urllib.request
 HOST = os.environ.get("CHECK_HOST", "127.0.0.1")
 PORT = int(os.environ.get("CHECK_PORT", "5599"))
 BOARD = os.environ.get(
-    "CHECK_BOARD", "Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722")
-FILE = os.environ.get("CHECK_FILE", "QD-working/QD3-chat-terminal.md")
+    "CHECK_BOARD", "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722")
+FILE = os.environ.get("CHECK_FILE", "QPf-page-folder/QPf4-chat/QPf4-chat.md")
 
 
 def post(path, payload):

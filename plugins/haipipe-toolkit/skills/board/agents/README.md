@@ -46,7 +46,7 @@ Mechanical checks                     → ../haipipe-board/cli/check.py
 Page RUN packet and receipt           → ../haipipe-page/ref/page-run-contract.md
 Page RUN Workflow                     → ../haipipe-board/ref/page-lifecycle.workflow.js
 Lifecycle receipt audit               → ../haipipe-board/cli/pageflow.py
-Design rulings                        → ../../diagrams/01-boardform-260722/
+Design rulings                        → ../../diagrams/BoardSkillBoard-260722/
 ```
 
 Registration

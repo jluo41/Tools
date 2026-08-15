@@ -147,14 +147,14 @@ def run(save, diff_against):
     # a gate whose input moves cannot prove anything about the code.
     frozen = Path("/tmp/qc8-fixture")
     if not frozen.exists():
-        src = HERE.parent.parent / "diagrams" / "01-boardform-260722"
+        src = HERE.parent.parent / "diagrams" / "BoardSkillBoard-260722"
         shutil.copytree(src, frozen,
                         ignore=shutil.ignore_patterns("_archive", "fig", "*.excalidraw"))
     work = Path("/tmp/qc8-gate")
     if work.exists():
         shutil.rmtree(work)
     (work / "b").mkdir(parents=True)
-    fx = work / "b" / "01-boardform-260722"
+    fx = work / "b" / "BoardSkillBoard-260722"
     shutil.copytree(frozen, fx)
     port = free_port()
     proc = subprocess.Popen(
@@ -162,7 +162,7 @@ def run(save, diff_against):
          "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f"http://127.0.0.1:{port}"
-    board_url = "/01-boardform-260722/board/index.html"
+    board_url = "/BoardSkillBoard-260722/board/index.html"
     try:
         for _ in range(80):                      # wait for listen
             try:
@@ -173,7 +173,7 @@ def run(save, diff_against):
                     print("server died:\n" + proc.stderr.read().decode()[:3000])
                     return 2
                 time.sleep(0.25)
-        res = {"responses": script(base, "QA-design/QA0-three-folders.md", board_url)}
+        res = {"responses": script(base, "QA-design/QA0-three-folders/QA0-three-folders.md", board_url)}
         res["files"] = fixture_state(fx)
     finally:
         proc.terminate()

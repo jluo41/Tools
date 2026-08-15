@@ -173,7 +173,7 @@ haipipe-board/      ../../board/haipipe-board/
 haipipe-probe/      ../../probe/haipipe-probe/
 paper-board/        ../01-haipipe-paper-260725/
 probe-board/        ../01-probe-qa-260726/
-boardform-board/    ../01-boardform-260722/
+boardform-board/    ../BoardSkillBoard-260722/
 QA4@paper           ../01-haipipe-paper-260725/QA-design/QA4-the-board-tool.md
 QA6@paper           ../01-haipipe-paper-260725/QA-design/QA6-paper-scaffold.md
 QA7@paper           ../01-haipipe-paper-260725/QA-design/QA7-the-paper-board.md

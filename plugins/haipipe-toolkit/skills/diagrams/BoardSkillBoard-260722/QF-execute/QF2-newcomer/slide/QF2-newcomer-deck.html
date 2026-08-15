@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QF2 · Fresh-Agent Acceptance</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body><div class="deck">
+
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QF2-newcomer · 🟡 PARTIAL · owner CC</p>
+  <h1 class="h1">Can a fresh agent open a board from <span class="gradient-text">the written instructions alone</span>?</h1>
+  <p class="lede">Two acceptance runs, both YES — and both voided. The page contract left SKILL.md, and by this page's own rule, no verdict is current.</p>
+  <div class="deck-footer"><span class="dim2">QF2-newcomer · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Open with the paradox: this page has passed its test twice and still sits at yellow. That's not failure — it's the page enforcing its own re-run rule. Promise the audience the story of why passing twice isn't enough.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Method">
+  <p class="kicker">Why the author can't run this test</p>
+  <h2 class="h2">Self-testing reveals nothing — a clean agent reveals everything</h2>
+  <pre>
+┌ me, in this conversation ┐  a head full of things
+└──────────────────────────┘  not in SKILL.md → ✗
+
+┌ fresh agent ┐  given only SKILL.md + ref/ + one topic
+└──────┬──────┘
+       ▼
+  it opens a board on its own
+       │
+  compare: did its steps match the design?
+       ├─ match     → pass
+       └─ mismatch  → fix SKILL.md, run again  ⟲
+  </pre>
+  <p class="dim mt-m">Acceptance means: valid board, every gate respected, no guessed rule left unfixed.</p>
+  <div class="notes">Make the core argument here: the author fills documentation gaps from memory without noticing, so only an agent with no memory of this conversation can show what the skill forgot to say. What SKILL.md must contain is QC1a's question — this page only judges whether it suffices.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Run 1">
+  <p class="kicker">260723 · first run · verdict YES</p>
+  <h2 class="h2">GPU-cluster topic: it built first try, and matched the design</h2>
+  <div class="grid g3">
+    <div class="card"><h4>Board it built</h4><p class="dim">5 Qs — QB1 access, QA2 scheduling, QC1 storage, QF2 forbidden, QC1 admin — self-grouped into QA/QB/QC.</p></div>
+    <div class="card"><h4>Steps matched</h4><p class="dim">Read docs → draft spine → stopped at the "Q list needs a nod" gate → wrote pages → build. Never peeked at an existing board.</p></div>
+    <div class="card"><h4>One real gap</h4><p class="dim">`build.py` lives in the skill dir, not the board folder — how to invoke it was unclear. Fixed into SKILL.md.</p></div>
+  </div>
+  <p class="dim mt-m">Everything else was "which convention" minutiae — slug format, default state, owner — also written in.</p>
+  <div class="notes">Stress that the board structure was verified, not just trusted from the agent's own claim, and `build.py` succeeded on the first try. The one blocking gap — invoke build.py by its path, don't cd in — is exactly the kind of thing an author would never notice from memory.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Run 2">
+  <p class="kicker">260725 · after the Q/S merge · verdict YES</p>
+  <h2 class="h2">Second run passed — and paid for itself in S-page gaps</h2>
+  <ul>
+    <li>Topic forced both kinds: 4 Q pages in 2 groups <em>plus one S stage</em>, on lab data-retention rules.</li>
+    <li>Built first run: 5 pages discovered, index counted <code>0/4 questions settled · 0/1 stages gated</code>, Stage Record lifted into Opening.</li>
+    <li>Stopped at the right gate — it quoted the "Q list needs a nod" sentence and the question it would have asked.</li>
+    <li>Four things it had to guess were all about S pages: the <code>## Pages</code> listing, S state values, S missing from the open procedure, and a probe pointer to a path that doesn't exist on a standalone board.</li>
+    <li>All four fixed the same day in SKILL.md, ref/board-form.md, ref/page-template.md (0.16.0).</li>
+  </ul>
+  <div class="notes">This slide carries the page's best lesson: a Q-only run cannot detect a gap in the S instructions — the skill had only described S pages for the reading side. The run's value wasn't the YES, it was the four inventions it forced into the open.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Verified">
+  <p class="kicker">260725 · the cheap half of acceptance</p>
+  <h2 class="h2">The fixes were verified by a second fresh reader, not by us</h2>
+  <div class="grid g2">
+    <div class="card"><h4>A third agent</h4><p class="dim">Given only the docs, forbidden to read any board or source file, asked the five things the second agent had to guess — with "NOT DOCUMENTED" allowed as an answer.</p></div>
+    <div class="card"><h4>ALL DOCUMENTED</h4><p class="dim">It answered all five correctly and quoted the sentence behind each one. A read, not a build — what turns "we wrote something" into "the documents now say it".</p></div>
+  </div>
+  <p class="dim mt-m">One deliberate exception stands: SKILL.md and ref/board-form.md stay largely Chinese — JL's 260724 split, recorded rather than "fixed".</p>
+  <div class="notes">Point out the epistemics: letting the reader say NOT DOCUMENTED is what makes this test honest — it removes the pressure to guess an answer into existence. And name the bilingual exception as deliberate policy, not an open gap.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Voided">
+  <p class="kicker">260806 · why 🟡, not ✅</p>
+  <h2 class="h2">The page contract left SKILL.md — both verdicts expired</h2>
+  <ul>
+    <li>Run 2's verdict was earned against <code>haipipe-board</code> 0.16.0, when one skill held the whole grammar.</li>
+    <li>That door is now 0.124.0, and the page contract is its own skill: <code>haipipe-page</code> 0.21.0 — Page = Type x Phase, ten Page Types, four Page Phases, and the verbs CREATE, WORK ON and RUN.</li>
+    <li>The largest material change either run has seen — so the re-run rule voids the 260725 verdict.</li>
+    <li>It also changes what "complete material" means: an agent handed only SKILL.md + ref/ would stall at the line telling it to load <code>haipipe-page</code>.</li>
+  </ul>
+  <div class="notes">This is the hinge of the talk: the verdict expired, and this page is the only thing that says so. Every material structural change voids the previous result, because the workflow it proved no longer exists. Rules that only bind when convenient aren't rules.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Next run">
+  <p class="kicker">The open Aim · 🔁 re-run after 260806</p>
+  <h2 class="h2">The third run: a wider handover, the same discipline</h2>
+  <div class="grid g3">
+    <div class="card"><h4>Hand over three things</h4><p class="dim">SKILL.md, ref/, AND haipipe-page's SKILL.md — and nothing else. Existing boards stay forbidden.</p></div>
+    <div class="card"><h4>Force both kinds</h4><p class="dim">The topic must demand a Q page and an S page — a Q-only run is exactly what missed the gaps between 260723 and 260725.</p></div>
+    <div class="card"><h4>Fix before recording</h4><p class="dim">Every gap the run exposes is fixed in the same pass — a YES with unfixed gaps proves the agent could guess, not that the documents said it.</p></div>
+  </div>
+  <div class="notes">Close the argument loop: the acceptance is "open a board", not "read a board" — the agent must reach a successful build on its own. The two laws from prior runs still govern: gaps fixed before the verdict lands, and the run that's current gets logged.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">QF2-newcomer · where we are</p>
+  <h1 class="h1">Run twice, both YES — <span class="gradient-text">and neither verdict is current</span></h1>
+  <p class="lede">260723 proved the Q-only skill; 260725 proved the shared Q/S skill; 260806 moved the page grammar out of both. The test that keeps voiding itself is the test that's working.</p>
+  <div class="deck-footer"><span class="dim2">QF2-newcomer · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">End on the reframe: yellow state here is integrity, not backlog. The page tracks not just whether the skill works, but whether the proof is still about the skill that exists today. Until a third fresh agent builds a board with the new handover, no one gets to say YES.</div>
+</section>
+
+</div><script src="../../../../../display/html-ppt/assets/runtime.js"></script></body></html>
+<!-- autodeck: claude · 260815 1548 · ask: (page) -->

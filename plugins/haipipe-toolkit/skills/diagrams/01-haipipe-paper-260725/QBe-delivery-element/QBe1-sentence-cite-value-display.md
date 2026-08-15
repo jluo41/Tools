@@ -27,7 +27,7 @@ A table pointer is checkable on sight, while a figure pointer built from the wro
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 Read `QB4 § Writing Style` first; everything below is what this page adds.
 
 **Demonstrate before explaining**: `### 1` is a test sheet, and every type this page rules is a live marker somewhere below it.

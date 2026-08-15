@@ -52,7 +52,7 @@ Ten sections and 240 lines said what every slot must contain and never once show
 
 - **First cut**, opened on JL's ask: "this is skill page, and it is kind of special,
   how do we deal with it? Like should we have haipipe-page-for-skill?"
-- **The measurement that opened it.** Five skill and agent pages on `01-boardform-260722` had
+- **The measurement that opened it.** Five skill and agent pages on `BoardSkillBoard-260722` had
   Openings in one shape: `Does <name> <verb> one <noun>?` then own, hard-part,
   depend, healthy. Read alone each was clear; read consecutively they were one letter
   with the nouns swapped. JL caught it by eye before any reviewer ran.

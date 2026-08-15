@@ -1,0 +1,153 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [
+  {
+   "id": "t-group-2",
+   "type": "text",
+   "x": 0,
+   "y": 1853.0,
+   "width": 169.4,
+   "height": 35.0,
+   "angle": 0,
+   "strokeColor": "#6a5acd",
+   "backgroundColor": "transparent",
+   "fillStyle": "solid",
+   "strokeWidth": 1,
+   "strokeStyle": "solid",
+   "roughness": 1,
+   "opacity": 100,
+   "groupIds": [],
+   "frameId": null,
+   "roundness": null,
+   "seed": 146962540,
+   "version": 1,
+   "versionNonce": 527983956,
+   "isDeleted": false,
+   "boundElements": null,
+   "updated": 1,
+   "link": null,
+   "locked": false,
+   "text": "QC · Engine",
+   "originalText": "QC · Engine",
+   "fontSize": 28,
+   "fontFamily": 2,
+   "textAlign": "left",
+   "verticalAlign": "top",
+   "containerId": null,
+   "lineHeight": 1.25
+  }
+ ],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "group",
+  "group": {
+   "id": "QC",
+   "name": "QC · Engine"
+  },
+  "imports": [
+   {
+    "page": "QC1",
+    "source": "../QC1-codeshape/draw/QC1.excalidraw",
+    "placement": {
+     "x": 2407.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC2"
+   },
+   {
+    "page": "QC1a",
+    "source": "../QC1a-buildsplit/draw/QC1a.excalidraw",
+    "placement": {
+     "x": 3246.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC2a"
+   },
+   {
+    "page": "QC1b",
+    "source": "../QC1b-srcsplit/draw/QC1b.excalidraw",
+    "placement": {
+     "x": 4048.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC2b"
+   },
+   {
+    "page": "QC1c",
+    "source": "../QC1c-livesplit/draw/QC1c.excalidraw",
+    "placement": {
+     "x": 4498.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC2c"
+   },
+   {
+    "page": "QC2",
+    "source": "../QC2-generate/draw/QC2.excalidraw",
+    "placement": {
+     "x": 1821.0,
+     "y": 0.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC3"
+   },
+   {
+    "page": "QC2a",
+    "source": "../QC2a-skill-to-page/draw/QC2a.excalidraw",
+    "placement": {
+     "x": 6147.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC3a"
+   },
+   {
+    "page": "QC2b",
+    "source": "../QC2b-meetingnote/draw/QC2b.excalidraw",
+    "placement": {
+     "x": 6869.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC3b"
+   },
+   {
+    "page": "QC3",
+    "source": "../QC3-roundtrip/draw/QC3.excalidraw",
+    "placement": {
+     "x": 4752.0,
+     "y": 975.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC4"
+   },
+   {
+    "page": "QC3a",
+    "source": "../QC3a-writepath/draw/QC3a.excalidraw",
+    "placement": {
+     "x": 8306.0,
+     "y": 1905.0,
+     "scale": 1
+    },
+    "sourceFrame": "frame-QC4a"
+   }
+  ],
+  "migration": {
+   "source": "../../board.excalidraw",
+   "sourceIndexes": {
+    "t-group-2": 38
+   }
+  }
+ }
+}

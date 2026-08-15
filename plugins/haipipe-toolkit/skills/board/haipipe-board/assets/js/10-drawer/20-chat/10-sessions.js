@@ -129,6 +129,10 @@
       return;
     }
     var from = activeSid;
+    /* leaving a session is the other moment its record should land (QPf4) */
+    if (from && from !== sid && typeof window.__boardChatKeep === 'function') {
+      window.__boardChatKeep();
+    }
     activeSid = sid || '';
     chatSid = sid || 'new';            // what the NEXT message asks the server for
     if (name != null) sessName = sid ? '' : name;
@@ -445,7 +449,12 @@
       };
     });
     sp.hidden = false;
-    sp.open = rows.filter(function (r) { return r.landed; }).length > 1;
+    /* LIST FIRST (JL 260815): while the sessions view is the one on stage the
+       picker is always expanded, even with nothing but "+ new" to show —
+       an entry view that renders shut is not an entry view. Elsewhere the
+       old heuristic stands: expand only when there is a real choice. */
+    sp.open = utility.classList.contains('show-sessions')
+           || rows.filter(function (r) { return r.landed; }).length > 1;
     paintSessSummary(rows);
   }
   async function loadSessions() {

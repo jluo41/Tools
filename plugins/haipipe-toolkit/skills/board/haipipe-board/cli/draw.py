@@ -120,6 +120,14 @@ def board_inventory(board: Path):
         label = page.get("group") or "Ungrouped"
         gid = group_id(label)
         parent = Path(page["file"]).parent
+        # A folded page owns its folder (`<name>/<name>.md`, JL 260815), so its
+        # GROUP folder is one level up, and its scenes live in its own `draw/`
+        # plugin rather than the group's.
+        if parent.name == Path(page["file"]).stem:
+            page["dir"] = parent
+            parent = parent.parent
+        else:
+            page["dir"] = None
         entry = groups.setdefault(gid, {"id": gid, "label": label, "parent": parent, "pages": []})
         if entry["label"] != label or entry["parent"] != parent:
             raise DrawError(f"group {gid} spans more than one label or folder")
@@ -404,22 +412,28 @@ def split_plan(board: Path, source_path: Path):
             else:
                 selected, local = [], []
                 origin = {"x": 0, "y": 0}
+            # A folded page's scene lands in its own draw/ plugin; a flat
+            # page's stays beside the group scene. The manifest's `source` is
+            # relative to the group draw dir either way, so verify/compose/
+            # sync resolve both forms through the same join.
+            page_name = f"{page['id']}.excalidraw"
+            page_draw = (board / page["dir"] / "draw") if page.get("dir") else draw_dir
+            page_path = page_draw / page_name
             page_extension = {
                 "schema": SCHEMA,
                 "kind": "page",
                 "page": {"id": page["id"], "markdown": page["file"]},
                 "migration": {
-                    "source": os.path.relpath(source_path, draw_dir),
+                    "source": os.path.relpath(source_path, page_draw),
                     "origin": origin,
                     "sourceIndexes": {element["id"]: positions[element["id"]] for element in selected},
                 },
             }
             page_scene = scene_shell(source, local, page_files(source, selected), page_extension)
-            page_name = f"{page['id']}.excalidraw"
-            page_scenes.append((draw_dir / page_name, page_scene))
+            page_scenes.append((page_path, page_scene))
             imports.append({
                 "page": page["id"],
-                "source": page_name,
+                "source": os.path.relpath(page_path, draw_dir),
                 "placement": {"x": origin["x"], "y": origin["y"], "scale": 1},
                 "sourceFrame": frame["id"] if frame else None,
             })
@@ -506,7 +520,8 @@ def sync_plan(board: Path):
         additions = []
         for page in missing:
             page_name = f"{page['id']}.excalidraw"
-            page_path = group_path.parent / page_name
+            page_draw = (board / page["dir"] / "draw") if page.get("dir") else group_path.parent
+            page_path = page_draw / page_name
             if page_path.exists():
                 raise DrawError(
                     f"refusing to adopt unmanifested Page source: {page_path}"
@@ -521,7 +536,7 @@ def sync_plan(board: Path):
             additions.append((page_path, page_scene))
             by_page[page["id"]] = {
                 "page": page["id"],
-                "source": page_name,
+                "source": os.path.relpath(page_path, group_path.parent),
                 "placement": {"x": 0, "y": 0, "scale": 1, "visible": True},
                 "sourceFrame": None,
             }
@@ -600,7 +615,9 @@ def retire_plan(board: Path):
             name = item.get("source") or f"{item.get('page')}.excalidraw"
             src = group_path.parent / name
             if src.is_file():
-                moves.append((src, group_path.parent / "_retired" / name))
+                # a folded source's relative name carries `../`; the retired
+                # copy keeps only the basename so it stays under _retired/
+                moves.append((src, group_path.parent / "_retired" / Path(name).name))
         plans.append((gid, group_path, group_scene, updated, stale, moves))
     return plans
 

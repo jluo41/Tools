@@ -27,7 +27,7 @@ Only the titles have been compared, so this is a risk and not a finding, and the
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Demonstrate before explaining**: `### 1` is a test sheet, and `_fixture/displays/` holds two real units to run it on.
 A rule added here has to survive being checked against those units, not only described.

@@ -1,0 +1,46 @@
+<!doctype html><meta charset='utf-8'><style>
+@page { size: letter; margin: 1in 1in 1in 1in; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 12pt;
+       line-height: 2.0; text-align: left; }
+/* The card FLOATS and stays in flow. It was `position: absolute` in one
+   container at top:0, which took all 239 out of flow and stacked every one of
+   them at the same y on page 1: a solid unreadable block beside the abstract
+   (JL 2026-07-28). Absolute positioning cannot work in a paged medium, because
+   the y a card belongs at is not known until the text above it has been laid
+   out and broken across pages. A float is laid out BY the flow, so it lands
+   beside its own paragraph and paginates for free. */
+.page { }
+p { margin: 0 0 0 0; text-indent: 0; }
+h1, h2, h3 { font-size: 12pt; font-weight: bold; line-height: 2.0;
+             margin: 1.5em 0 0 0; }
+h1 { text-transform: uppercase; text-align: center; }
+h2 { text-align: center; }
+h3 { text-align: left; }
+/* MIRRORS the .docx: full body width, centred, booktabs rules only (a top and
+   a bottom), a real gutter, single-spaced. It used to draw a full cell grid the
+   .docx never had, so the two projections disagreed about the same table. */
+table { border-collapse: collapse; font-size: 10pt; line-height: 1.15;
+        margin: 12pt auto; width: 100%; table-layout: fixed;
+        border-top: 0.75pt solid #000; border-bottom: 0.75pt solid #000; }
+td, th { padding: 1.5pt 5.4pt; vertical-align: top; }
+tr.hdr td, td.b { font-weight: bold; }
+img { max-width: 100%; }
+.cap { font-size: 10pt; line-height: 1.15; margin: 12pt 0; }
+.ref { margin-left: 0.5in; text-indent: -0.5in; line-height: 1.0;
+       margin-bottom: 0.15em; }
+/* an evidence card. Anchored text is tinted and the card sits in the margin,
+   numbered, so the pairing survives a print with no interaction. */
+.anchor { background: #eef2ff; }
+.mark { vertical-align: super; font-size: 8pt; color: #4338ca;
+        font-weight: bold; }
+.card { float: right; clear: right; width: 1.9in; margin: 0 0 6pt 0.22in;
+        font-size: 7pt; line-height: 1.3;
+        font-family: -apple-system, "Helvetica Neue", sans-serif;
+        color: #1f2937; background: #f8f9ff;
+        border-left: 2pt solid #4338ca; padding: 3pt 4pt;
+        /* a card must not be split across a page break, or half an evidence
+           record appears with no header saying which sentence it belongs to */
+        break-inside: avoid; page-break-inside: avoid; }
+.card b { color: #4338ca; }
+</style><div class='page'><h1>1 · The 260815 ruling, and what it retired</h1><p>**What moved, what stayed, what died**: the drawing&#x27;s three homes before and after.</p><p>The attach button this page used to settle wrote one embed line into ## Diagram, and with the embed gone the button&#x27;s subject is gone.</p><p>Its write path, the exact line, and the refusal rules are preserved in the archived page (_archive/, this page&#x27;s Log names it), because a retired mechanism is recorded and never silently deleted.</p><p>61 page scenes moved into page draw/ folders, each renamed to its page&#x27;s current id.</p><h1>2 · What the engine still owes this ruling</h1><p>**Three stale readers**: each still assumes the pre-fold layout.</p><p>cli/draw.py still defines a group as the shared parent of its member files, which a folded board no longer has, and its manifests still point at the old sibling paths.</p><p>src/page_board.py&#x27;s group canvas reads the same shared-parent assumption.</p><p>The attach endpoint in the live layer still accepts a write whose target line no longer renders.</p><p>Each of these is an Aim below, and none of them blocks the board: the scenes are ordinary files, and git carries them wherever they sit.</p><h1>3 · One source for each owner</h1><p>**The source boundary**: the files a person may edit and what each one owns.</p><p>Each Page drawing is an ordinary Excalidraw scene and remains useful when opened by itself.</p><p>The Group scene carries only Group-owned elements and an import manifest naming each Page source and its placement.</p><p>An empty Page still gets a source file, and an empty Group still gets a Group source, so existence never depends on whether someone has drawn the first shape.</p><p>The folder is named ../draw/ in lowercase, as JL ruled on 260807.</p><h1>4 · Composition is a view, not another source</h1><p>**The composition boundary**: what is stored and what is derived.</p><p>Opening a Group loads group.excalidraw, resolves every import, namespaces its element references by Page id, and applies the placement transform.</p><p>The resulting scene can show every Page drawing at once without merging their source files.</p><p>A Page save changes its revision and invalidates every composed Group that imports it.</p><p>The next Group load or live refresh recomposes from sources, so there is no manual intake step.</p><h1>5 · Two edit modes in the Group view</h1><p>**The save target**: one visible mode decides which file receives a gesture.</p><p>Arrange Instance treats an imported Page as one portal and never changes the Page source.</p><p>Edit Page Source enters the selected Page&#x27;s local source coordinates and saves only that Page scene.</p><p>The editor must show the active owner before the first editable gesture and again while saving.</p><p>Cross-owner selection is read-only until the person chooses which owner to enter.</p><h1>6 · Revisions, conflicts, and Chat</h1><p>**The safe save**: the values checked before a write is accepted.</p><p>Every source save carries the revision that was opened.</p><p>The server accepts the write only when that revision is still current, which prevents a Group editor and a Page editor from silently replacing each other.</p><p>Chat receives the same owner address as the canvas, so a request such as edit QD1 from the Group view is routed to QD1.excalidraw, not to the composed result.</p><p>The page status strip and Chat context can therefore name the Board, Group, Page, and drawing owner in one address.</p><h1>7 · Migration and staged delivery</h1><p>**The first migration**: what this round writes and what it deliberately leaves alone.</p><p>The migration reads the current board.excalidraw and never edits it.</p><p>It refuses before writing anything if one target source already exists.</p><p>Every new file is created exclusively, and a failed run removes the files it created before reporting the failure.</p><p>An existing unframed relation enters a Group source when its explicit owner or its bound endpoints name one Group; an ownerless or cross-Group element stops the migration for a human ruling.</p><p>For this Board it created nine Group folders and sixty-six initial Page sources, then sync additively created QBt11 and QC5 when the Board reached sixty-eight Pages.</p><p>The current sources still restore all 175 legacy elements and zero embedded files exactly.</p><p>The old scene remains the rollback path while the linked runtime is adopted.</p></div>

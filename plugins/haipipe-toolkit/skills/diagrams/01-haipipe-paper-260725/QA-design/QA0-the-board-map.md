@@ -29,7 +29,7 @@ This page states the reading order and stops; a fact stated twice drifts.
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Name a group by what it ANSWERS, never by its letter alone**: a bare group letter means nothing to a reader who arrived from one link.
 Write "Delivery, what the reader gets" the first time in any division.

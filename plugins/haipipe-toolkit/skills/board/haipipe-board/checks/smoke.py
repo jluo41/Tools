@@ -25,7 +25,7 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent      # the skill dir
-DEFAULT_BOARD = "Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722"
+DEFAULT_BOARD = "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722"
 
 results = []
 

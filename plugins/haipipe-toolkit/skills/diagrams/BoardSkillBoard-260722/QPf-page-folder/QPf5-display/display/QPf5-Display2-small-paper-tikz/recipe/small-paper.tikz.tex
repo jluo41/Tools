@@ -1,0 +1,64 @@
+% The whole recipe: this file IS the figure (TikZ, TeX-native method, QPf5 §3).
+% A rebuild recompiles it; hand-editing the PDFs is pointless by construction.
+\definecolor{slate}{RGB}{62,92,132}
+\definecolor{ink}{RGB}{40,40,40}
+\definecolor{leaf}{RGB}{60,125,95}
+\definecolor{mist}{RGB}{120,120,118}
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  box/.style={draw=slate, fill=slate!6, rounded corners=3pt, line width=0.9pt,
+              align=left, inner sep=8pt},
+  sub/.style={draw=slate!60, fill=white, rounded corners=2pt, line width=0.6pt,
+              align=left, inner sep=5pt, font=\sffamily\footnotesize},
+  flow/.style={-{Stealth[length=3.2mm]}, line width=1.2pt, draw=ink},
+  cite/.style={-{Stealth[length=2.4mm]}, line width=0.7pt, draw=leaf},
+  lbl/.style={font=\sffamily\footnotesize, text=mist, align=center}
+]
+
+% ---- left · the board page --------------------------------------------
+\node[box] (page) at (0,0) {%
+  \textbf{Board page}\\[2pt]
+  \footnotesize claim: ``\ldots rises with tenure (PP01)''};
+\node[sub, below=3mm of page.south west, anchor=north west] (probetab) {probe/};
+\node[sub, right=2mm of probetab] (disptab) {display/};
+\node[lbl, below=11mm of page.south] {a page is a small paper};
+
+% ---- center · the probe card ------------------------------------------
+\node[box, line width=1.3pt, right=24mm of page] (card) {%
+  \textbf{probe/PP01 card}\\[2pt]
+  \footnotesize question\\
+  \footnotesize state: raised $\to$ working $\to$ bound\\
+  \footnotesize binding $\to$ QA/3};
+
+% ---- right · the wall and the bank ------------------------------------
+\node[box, right=26mm of card] (bank) {%
+  \textbf{the bank}\\[2pt]
+  \footnotesize tasks / discoveries\\
+  \footnotesize QA/3-drift.md + counts.csv};
+\path (card.east) -- (bank.west) coordinate[midway] (mid);
+\draw[dashed, line width=0.9pt, draw=mist]
+  ([yshift=16mm]mid) -- ([yshift=-22mm]mid) node[below, lbl] {the wall};
+
+% ---- below · the display unit -----------------------------------------
+\node[box, below=20mm of card] (unit) {%
+  \textbf{display/unit}\\[2pt]
+  \footnotesize intake: probe: PP01\\
+  \footnotesize recipe $\to$ assets $\to$ preview.pdf\\
+  \footnotesize a person accepts $\checkmark$};
+
+% ---- the flows ---------------------------------------------------------
+\draw[flow] ([yshift=5mm]card.east) -- ([yshift=5mm]bank.west)
+  node[midway, above=2.5mm, lbl] {question,\\general language};
+\draw[flow] ([yshift=-7mm]bank.west) -- ([yshift=-7mm]card.east)
+  node[midway, below=2.5mm, lbl] {answer,\\bound by id};
+
+% ---- ask once, cite twice ---------------------------------------------
+\draw[cite] (page.east) -- (card.west)
+  node[midway, above, lbl] {cited in\\a sentence};
+\draw[cite] (unit.north) -- (card.south)
+  node[midway, right=1mm, lbl] {cited by\\manifest};
+\node[lbl, text=leaf, font=\sffamily\footnotesize\itshape,
+      below=5mm of card.south west, anchor=east, xshift=2mm]
+  {ask once,\\cite twice};
+
+\end{tikzpicture}

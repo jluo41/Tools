@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Every Page Keeps Its Own Drawing</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide" id="s1" data-title="cover">
+  <p class="kicker">QPf2 · design · 🟡 PARTIAL</p>
+  <h1 class="h1">Every page keeps its <span class="gradient-text">own drawing</span></h1>
+  <p class="lede">One Excalidraw scene per page, living in the page's own draw/ folder — travelling with the page, versioned in git, opened beside the page in a split. The page body shows only ascii, readable anywhere.</p>
+  <div class="deck-footer"><span class="dim2">QPf2-draw-attach · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Start with the one-line contract: a drawing is a file the page owns, not something embedded in it. Everything else on this deck is a consequence of that ownership. Mention the state up front — the drawings are in place, two engine cleanups remain.</div>
+</section>
+
+<section class="slide" id="s2" data-title="homes">
+  <p class="kicker">The shape</p>
+  <h2 class="h2">Three homes: page shows, plugin holds, group composes</h2>
+  <pre>
+ 📋 the PAGE, on stage           🖌 the PLUGIN, beside it
+ ┌─────────────────────────┐     ┌──────────────────────────┐
+ │ ## Diagram              │     │ ⟨page⟩/draw/             │
+ │   ascii only · reads    │ tab │   ⟨id⟩.excalidraw        │
+ │   with scripts off      │ ──▶ │   the page's own scene,  │
+ │ ## Content ...          │     │   saved back on edit     │
+ └─────────────────────────┘     └──────────────────────────┘
+                                      │ composed, never copied
+                                      ▼
+ 🗂 ⟨group⟩/draw/group.excalidraw
+  </pre>
+  <div class="notes">Walk left to right: the page body carries only the ascii figure, so it reads with scripts off and there are no embeds anywhere. The real scene sits in the page's draw folder and opens in a split. The group drawing at the bottom composes every member's scene — it never copies their content.</div>
+</section>
+
+<section class="slide" id="s3" data-title="files">
+  <p class="kicker">Content §1</p>
+  <h2 class="h2">One scene per owner, in the owner's folder</h2>
+  <div class="grid g2">
+    <div class="card"><h4>📄 Page drawing</h4><p class="dim">⟨page⟩/draw/⟨id⟩.excalidraw — an ordinary file, useful opened by itself.</p></div>
+    <div class="card"><h4>🗺 Group drawing</h4><p class="dim">⟨group⟩/draw/group.excalidraw — layout plus an import list naming each page's scene.</p></div>
+    <div class="card"><h4>🧭 Board map</h4><p class="dim">board.excalidraw — the Index page's overview scene.</p></div>
+    <div class="card"><h4>🖼 Image bytes</h4><p class="dim">assets/⟨owner⟩/ — pasted images kept out of the scene file.</p></div>
+  </div>
+  <p class="dim mt-m">A page with no drawing yet gets an empty scene created on first open — never a missing file to trip over.</p>
+  <div class="notes">Four file kinds, and each has exactly one owner whose folder it lives in. Stress that the group file holds only its own layer and an import list — page content is referenced, never duplicated. The empty-scene-on-first-open rule means the split always has something to show.</div>
+</section>
+
+<section class="slide" id="s4" data-title="split">
+  <p class="kicker">Content §2</p>
+  <h2 class="h2">The Draw split: beside the page, never inside it</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🖌 Open</h4><p class="dim">Plugin ▾ → Draw, or the Draw tab in the right pane.</p></div>
+    <div class="card"><h4>✏️ Edit</h4><p class="dim">Draw on the canvas; saves go to this page's own scene file.</p></div>
+    <div class="card"><h4>✨ Generate</h4><p class="dim">The Draw-it button: Claude draws the page's ## Diagram; an ask is optional.</p></div>
+    <div class="card"><h4>🔄 Follow</h4><p class="dim">Navigate to another page and the canvas follows it.</p></div>
+  </div>
+  <p class="dim mt-m">The split shows which file it saves to before you draw — and Draw-it refuses to overwrite a drawing a person made by hand.</p>
+  <div class="notes">This is the one door to the real drawing in the viewer. The safety story matters more than the features: you always see the target file before a gesture lands, so nothing can end up in another page's scene. Generated scenes regenerate freely; hand-made ones are protected.</div>
+</section>
+
+<section class="slide" id="s5" data-title="composed">
+  <p class="kicker">Content §3</p>
+  <h2 class="h2">The group view is composed, never copied</h2>
+  <div class="grid g3">
+    <div class="card"><h4>💾 Stored</h4><p class="dim">Each page's scene, the group's own layer, and the placements.</p></div>
+    <div class="card"><h4>⚙️ Derived</h4><p class="dim">One composed view, rebuilt on every open.</p></div>
+    <div class="card"><h4>🔒 Identity</h4><p class="dim">Every element keeps its owner, so edits route home.</p></div>
+  </div>
+  <p class="dim mt-m">Editing happens in one visible mode at a time — arrange pages, edit the group layer, or enter one page's scene — and only that owner's file receives the save.</p>
+  <div class="notes">The composed view is a derivation, so there is nothing to merge or import by hand — a page save simply shows up on the group's next open. The mode discipline is what makes multi-file editing safe: at any moment exactly one file can receive your changes, and the canvas tells you which.</div>
+</section>
+
+<section class="slide" id="s6" data-title="saves">
+  <p class="kicker">Content §4</p>
+  <h2 class="h2">Saves are checked, never blind</h2>
+  <div class="grid g2">
+    <div class="card"><h4>📥 Opened</h4><p class="dim">The editor records the revision it loaded.</p></div>
+    <div class="card"><h4>📤 Save</h4><p class="dim">Carries owner, that revision, and the changed elements.</p></div>
+    <div class="card"><h4>✅ Accepted</h4><p class="dim">Only if the file has not moved since.</p></div>
+    <div class="card"><h4>⚠️ Conflict</h4><p class="dim">Someone else saved first — reload and compare.</p></div>
+  </div>
+  <p class="dim mt-m">The chat pane receives the same owner address as the canvas, so asking it to change a drawing routes to that drawing's own file.</p>
+  <div class="notes">Two people on the same drawing cannot silently overwrite each other, because every save declares where it started from. And note the last line — the chat and the canvas share one owner address, so Claude edits land in exactly the file you are looking at.</div>
+</section>
+
+<section class="slide" id="s7" data-title="state">
+  <p class="kicker">Aims · 🟡 PARTIAL</p>
+  <h2 class="h2">In place today, two cleanups remain</h2>
+  <ul>
+    <li>✅ 🚚 61 scenes moved into their pages' draw/ folders; only group.excalidraw stays at group level</li>
+    <li>✅ 🧹 Diagram is ascii-only — frame links stripped from all 19 pages that carried one</li>
+    <li>✅ 🖼 The group canvas renders again — server_root now accepts the repo's .git as the marker</li>
+    <li>⬜ ⚙️ draw.py learns the folded layout — manifests re-point, verify passes on this board</li>
+    <li>⬜ 🗑 The unused embed-write route retires — a write no page renders still exists</li>
+  </ul>
+  <div class="notes">Everything a user touches works today: scenes in place, split opens and follows, group composes. What remains is engine hygiene — teaching draw.py the folded layout and retiring the embed-write route nobody renders. Both are tracked in Aims on the page.</div>
+</section>
+
+<section class="slide" id="s8" data-title="close">
+  <p class="kicker">QPf2 · closing</p>
+  <h1 class="h1">A drawing that <span class="gradient-text">travels with its page</span></h1>
+  <p class="lede">Ascii on stage, the scene in the page's own folder, the group view composed on open, and every save checked against the revision it started from. Owner: CC · two Aims open.</p>
+  <div class="deck-footer"><span class="dim2">QPf2-draw-attach · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Close on the ownership idea: because the scene is a file the page owns, everything else — git history, safe saves, composition, chat routing — falls out for free. Invite questions on the two remaining Aims if the room wants to go deeper.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260815 1658 · ask: (page) -->

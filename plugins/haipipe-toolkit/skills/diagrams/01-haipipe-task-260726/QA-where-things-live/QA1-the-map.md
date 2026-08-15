@@ -39,7 +39,7 @@ The asymmetry with `/haipipe-paper` is the thing to get right, because the two l
    │ THE TASK     │   44 skills · 9 domains  │     task-260726/  19 faces  │
    │  SKILL       │   7,134 lines            │     WHAT IS ARGUED ← here   │
    ├──────────────┼──────────────────────────┼─────────────────────────────┤
-   │ reusable     │ ③ board/                 │ ④ diagrams/01-boardform-    │
+   │ reusable     │ ③ board/                 │ ④ diagrams/BoardSkillBoard- │
    │ THE HUMAN    │   haipipe-board/         │     260722/                 │
    │  CHANNEL     │   v0.30.0                │     READ-ONLY from here     │
    ├──────────────┼──────────────────────────┼─────────────────────────────┤
@@ -87,7 +87,7 @@ The asymmetry with `/haipipe-paper` is the thing to get right, because the two l
 ① task skill     settled, reusable procedure     skills/task/
 ② its board      the rulings that produced it    diagrams/01-haipipe-task-260726/
 ③ board tool     THE HUMAN CHANNEL               skills/board/haipipe-board/
-④ its board      the rulings that produced IT    diagrams/01-boardform-260722/
+④ its board      the rulings that produced IT    diagrams/BoardSkillBoard-260722/
 ⑤ probe layer    THE WALL, from the far side     skills/probe/haipipe-probe/
 ⑥ its board      the QA-file contract            diagrams/01-probe-qa-260726/
 ⑦ a task-group   67 of them, 107 folders         examples/*/tasks/{G}{NN}_*/

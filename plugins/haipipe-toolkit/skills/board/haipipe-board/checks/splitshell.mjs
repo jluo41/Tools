@@ -24,8 +24,8 @@
 */
 const HOSTPORT = process.env.CHECK_HOSTPORT || '127.0.0.1:5601';
 const BOARD = process.env.CHECK_BOARD_URL
-  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722';
-const PAGE = `${BOARD}/board/QD/QD5-split-workspace.html`;
+  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722';
+const PAGE = `${BOARD}/board/QO/QO1-split-workspace.html`;
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9334';
 const SHOT = process.env.CHECK_SHOT || '/tmp/qd5-split.png';
 
@@ -171,7 +171,7 @@ console.log('T1 · the shell serves three frames');
 ok('three iframes', F.n === 3, F.n);
 ok('named index · page · chat', F.names.join(',') === 'index,page,chat', F.names);
 ok('index frame loads the board index', /\/board\/index\.html\?pane=index$/.test(F.index), F.index);
-ok('page frame loads the page', F.page.endsWith('QD5-split-workspace.html?pane=page'), F.page);
+ok('page frame loads the page', F.page.endsWith('QO1-split-workspace.html?pane=page'), F.page);
 ok('chat frame loads the same page as a chat pane', F.chat.endsWith('?pane=chat'), F.chat);
 
 // ── T2 · the panes know they are panes ─────────────────────────────────────
@@ -199,7 +199,7 @@ const before = await pagePath();
 const clicked = await ev(`(function(){
   var d = frames.index.document;
   var a = [...d.querySelectorAll('.sidebar a[href*=".html"]')]
-            .find(x => !/QD5-split-workspace/.test(x.getAttribute('href')));
+            .find(x => !/QO1-split-workspace/.test(x.getAttribute('href')));
   if (!a) return null;
   var href = a.getAttribute('href');
   a.click();
@@ -214,7 +214,7 @@ const after = JSON.parse(await ev(`JSON.stringify({
   top: location.search
 })`));
 ok('the click had a target to hit', !!clicked, clicked);
-ok('page frame navigated', !after.page.endsWith('QD5-split-workspace.html'), after.page);
+ok('page frame navigated', !after.page.endsWith('QO1-split-workspace.html'), after.page);
 /* INVERTED 260802, and the inversion is the point. This asserted `=== false`,
    meaning a sidebar click must produce a NEW document in the page frame, which
    was the design on 260801: the router returned early in every pane, so a click
@@ -293,7 +293,7 @@ ok('page frame reloaded itself on the rebuild', took !== null, took);
    would have turned a real, named cost into a number nobody trusts. */
 console.log('     (took ' + took + ' ms — second shell in this tab, see C4 P6)');
 ok('chat frame untouched by the page reload', kept.chat === true);
-ok('page frame still shows the same page', /QD5-split-workspace/.test(kept.page), kept.page);
+ok('page frame still shows the same page', /QO1-split-workspace/.test(kept.page), kept.page);
 
 // ── T6 · the chat pane opened the drawer ───────────────────────────────────
 console.log('T6 · the chat pane opens the drawer on this page');

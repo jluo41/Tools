@@ -1,0 +1,3 @@
+source: ../../latex/QPf6-latex.tex
+compiled: ../../latex/QPf6-latex.pdf (xelatex, 260815 1530)
+approved-input: the three content divisions of QPf6-latex.md

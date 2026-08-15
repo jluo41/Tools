@@ -208,7 +208,7 @@ QBe3-content-latex-word-display.md
 ### QBt · Page types this family owns
 One specimen per Page Type in `paper/page-types/`, on the rule that a specimen lives with the skill set that owns the contract (JL 260809).
 The five here are the types admitted on 260809: the four family dashes and narrative. Each points at its live instance on the MISQ paper rather than simulating one, because a real working page cannot rot without somebody noticing.
-The five older paper-owned types arrived from `01-boardform-260722` on 260809 (JL ruled option A on that board's `QB6`), and they kept their ids so their citations survived; the five newer ones took 11 to 15 rather than renumber ~40 references.
+The five older paper-owned types arrived from `BoardSkillBoard-260722` on 260809 (JL ruled option A on that board's `QB6`), and they kept their ids so their citations survived; the five newer ones took 11 to 15 rather than renumber ~40 references.
 `_fixture-qbt/` came with them: it is ONE compiled specimen paper, not a shared folder, and all ten pages plus the three that stayed behind demonstrate against it, which is why it moved whole. It is renamed from `_fixture` because this board root already has a `_fixture` of its own.
 QBt2-for-venue.md
 QBt3-for-display.md
@@ -288,7 +288,7 @@ One mirror page per shipped unit the paper work runs on. Since the family collap
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
 skillpage.py new / sync     ◀── Skill-0  the paper family's ONE door ──▶  skills/paper/haipipe-paper/
 three managed spans             the other seven retired 260806      ──▶  _archive/QCskill-retired-260806/
-                                the Board substrate mirrors live    ──▶  01-boardform-260722/QCskill-engine-skill/
+                                the Board substrate mirrors live    ──▶  BoardSkillBoard-260722/_archive/
 ```
 Skill-0-haipipe-paper.md
 
@@ -425,16 +425,16 @@ paper-conform/     ../../paper/container/haipipe-paper-conform/
 paper-compile/     ../../paper/S09-build/haipipe-paper-compile/
 5-section-edit/    ../../paper/S06-main/section-edit/
 4-display/         ../../paper/S05-display/display/
-boardform-board/   ../01-boardform-260722/
+boardform-board/   ../BoardSkillBoard-260722/
 probe-board/       ../01-probe-qa-260726/
 display-board/     ../01-haipipe-display-260727/
 QB1@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB1-the-order.md
 QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
 QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
 QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
-QB4@boardform      ../01-boardform-260722/QB-delivery/QB4-overall.md
-QB9@boardform      ../01-boardform-260722/QB-delivery/QB9-page-loop.md
-QA8@boardform      ../01-boardform-260722/QB-delivery/_archive/QB5a-evidence-card.md
+QB4@boardform      ../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md
+QB9@boardform      ../BoardSkillBoard-260722/QB-board/QB9-page-loop.md
+QA8@boardform      ../BoardSkillBoard-260722/QB-board/_archive/QB5a-evidence-card.md
 QA1@display        ../01-haipipe-display-260727/QA-where-display-lives/QA1-display-map.md
 QA3@display        ../01-haipipe-display-260727/QA-where-display-lives/QA3-unit-page-and-unit-folder.md
 QB1@display        ../01-haipipe-display-260727/QB-one-display-unit/QB1-unit-contract.md
@@ -447,9 +447,9 @@ QC3@display        ../01-haipipe-display-260727/QC-renderers-and-projections/QC3
 QD1@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD1-task-to-intake.md
 QD2@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD2-paper-display-bridge.md
 QD3@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD3-sentence-and-projection.md
-QC1@boardform      ../01-boardform-260722/_archive/QC1-where.md
-QA2@boardform      ../01-boardform-260722/_archive/QA2-qtemplate.md
-QE4                ../01-boardform-260722/QE-sharing/QE4-editlock.md
+QC1@boardform      ../BoardSkillBoard-260722/_archive/QC1-where.md
+QA2@boardform      ../BoardSkillBoard-260722/_archive/QA2-qtemplate.md
+QE4                ../BoardSkillBoard-260722/QO-operating/QO7-editlock/QO7-editlock.md
 QX5                _fixture/1-probes/PP03_results-values/QX5_binary-exposure-flags.md
 QD1-display-ownership       _archive/QD1-display-ownership.md
 QD2-render-contract         _archive/QD2-render-contract.md

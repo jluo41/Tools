@@ -224,6 +224,13 @@ def parse_dir(d):
         # The grammar is the S grammar minus the family, `Skill-<unit>-<slug>`, so
         # the unit orders the roster and the slug still says which skill it is.
         skill_m = re.match(r"Skill-(\d+)-(.+)$", p.stem)
+        # A DESIGN page replaced the skill page (JL 260815: "we don't have the
+        # page for the Skill anymore. It will be the design"): the same grammar,
+        # but the prefix now names what the page DOES — argue the unit's design,
+        # settle on a selection, and carry the unit's bytes in its plugins —
+        # rather than the dead mirror kind. Skill-* stays parseable for
+        # archives and for boards that have not converted.
+        design_m = re.match(r"Design-(\d+)-(.+)$", p.stem)
         # An AGENT is not a skill (JL 260731: "we will call it Agent-1 ...
         # Below the skill"): a skill is LOADED into a context, an agent is
         # DISPATCHED into a fresh one. Same grammar, own prefix, sorts after
@@ -265,8 +272,14 @@ def parse_dir(d):
         )
         legacy_sm = re.match(r"(SM|SA|S)(\d+[a-z]?)", p.stem, re.I)
         sm = full_sm or legacy_sm
-        if qm or sm or named_qm or skill_m or agent_m or meeting_m:
-            if meeting_m:
+        if qm or sm or named_qm or skill_m or agent_m or meeting_m or design_m:
+            if design_m:
+                family = "design"
+                page_id = f"Design-{design_m.group(1)}"
+                # design rows sit where skill rows sat: after every lettered group
+                key = (0, "￾", int(design_m.group(1)), "")
+                kind = "design"
+            elif meeting_m:
                 family = "meeting"
                 page_id = f"Meeting-{meeting_m.group(1)}"
                 # sorts after every Skill and Agent row

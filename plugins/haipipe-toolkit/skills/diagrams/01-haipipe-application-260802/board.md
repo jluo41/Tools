@@ -217,7 +217,7 @@ QC4@paper           ../01-haipipe-paper-260725/QC-engine/QC4-phase-flow.md
 QF1@paper           ../01-haipipe-paper-260725/QF-execute/QF1-execution-map.md
 QF3@paper           ../01-haipipe-paper-260725/QF-execute/QF3-fresh-agent-run.md
 paper-board/        ../01-haipipe-paper-260725/
-boardform-board/    ../01-boardform-260722/
+boardform-board/    ../BoardSkillBoard-260722/
 README.md           ../../application/README.md
 PHILOSOPHY.md       ../../application/PHILOSOPHY.md
 SOP-paper-alignment.md ../../application/SOP-paper-alignment.md

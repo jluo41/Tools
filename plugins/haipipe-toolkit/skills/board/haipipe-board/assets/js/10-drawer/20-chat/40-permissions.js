@@ -222,6 +222,12 @@
     loadSessions();
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
+    /* LIST FIRST (JL 260815: "We first show all the sessions name, and then
+       select the specific session"). Opening a chat leads with the session
+       list, so picking where to continue is the first gesture, not a fold
+       hidden in the 🗂 tab. Choosing a row (or sending a message) proceeds
+       exactly as before. */
+    setUtility('sessions');
     /* Land on the NEWEST message, not the oldest (JL 260801: "它还是一直在最
        上面 ... 我还得往下面去翻"). bubble() already scrolls on every append,
        but the replay above runs while #chat is still display:none, where
@@ -232,7 +238,24 @@
 
     chat.querySelector('textarea').focus();
   }
+  /* KEEP = the page's sessions land in its chat/ plugin (QPf4, JL 260815:
+     "I want the chat history to be recorded in the chat subfolder").
+     Fire-and-forget: the jsonl on disk is the source and the server derives
+     from it, so a lost request costs nothing but a later re-keep. Fired at
+     the two moments a conversation stops being the one on screen: closing
+     the drawer, and switching sessions. */
+  function chatKeep() {
+    if (!cq || !cq.file || cq.file === 'board.md') return;
+    try {
+      fetch('/_board/chat-keep', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file }) })
+        .catch(function () {});
+    } catch (e) {}
+  }
+  window.__boardChatKeep = chatKeep;
   function chatClose() {
+    chatKeep();
     chat.classList.remove('on'); document.body.classList.remove('chaton');
   }
   chat.querySelector('.x').onclick = chatClose;

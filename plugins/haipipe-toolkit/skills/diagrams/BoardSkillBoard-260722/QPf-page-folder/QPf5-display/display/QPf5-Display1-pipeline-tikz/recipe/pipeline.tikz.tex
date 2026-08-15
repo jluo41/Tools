@@ -1,0 +1,46 @@
+% The whole recipe: this file IS the figure (TikZ, TeX-native method, QPf5 §3).
+% Subject: QPf5 §4's five-step pipeline, and whose hand moves each step.
+\definecolor{slate}{RGB}{62,92,132}
+\definecolor{ink}{RGB}{40,40,40}
+\definecolor{leaf}{RGB}{60,125,95}
+\definecolor{mist}{RGB}{120,120,118}
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  person/.style={draw=leaf, fill=leaf!8, rounded corners=3pt, line width=0.9pt,
+                 align=center, inner sep=7pt, minimum width=27mm, minimum height=17mm},
+  machine/.style={draw=slate, fill=slate!6, rounded corners=3pt, line width=0.9pt,
+                  align=center, inner sep=7pt, minimum width=27mm, minimum height=17mm},
+  flow/.style={-{Stealth[length=3mm]}, line width=1.2pt, draw=ink},
+  back/.style={-{Stealth[length=2.4mm]}, line width=0.7pt, draw=mist, dashed},
+  lbl/.style={font=\sffamily\footnotesize, text=mist, align=center}
+]
+
+\node[person]  (intake) at (0,0)
+  {\textbf{\char`\#1 INTAKE}\\[1pt]\footnotesize manifest.yaml\\\footnotesize provenance-bound};
+\node[machine, right=7mm of intake] (render)
+  {\textbf{\char`\#2 RENDER}\\[1pt]\footnotesize recipe/ +\\\footnotesize candidates/};
+\node[person,  right=7mm of render] (pick)
+  {\textbf{\char`\#3 PICK}\\[1pt]\footnotesize winner $\to$\\\footnotesize assets/};
+\node[machine, right=7mm of pick] (build)
+  {\textbf{\char`\#4 BUILD}\\[1pt]\footnotesize preview.tex $\to$\\\footnotesize preview.pdf};
+\node[person,  right=7mm of build] (accept)
+  {\textbf{\char`\#5 ACCEPT}\\[1pt]\footnotesize a person ticks\\\footnotesize accepted: $\checkmark$};
+
+\draw[flow] (intake) -- (render);
+\draw[flow] (render) -- (pick);
+\draw[flow] (pick) -- (build);
+\draw[flow] (build) -- (accept);
+
+% the reset rule: a changed intake voids the acceptance
+\draw[back] (intake.south) to[out=-25, in=-155]
+  node[midway, below=2mm, lbl]
+  {a changed intake flows forward, and the acceptance falls back to $\square$}
+  (accept.south);
+
+% legend
+\node[person,  minimum width=11mm, minimum height=6mm, inner sep=2pt,
+      below=16mm of intake.south west, anchor=west, font=\sffamily\footnotesize] (lp) {person};
+\node[machine, minimum width=11mm, minimum height=6mm, inner sep=2pt,
+      right=4mm of lp, font=\sffamily\footnotesize] (lm) {machine};
+
+\end{tikzpicture}

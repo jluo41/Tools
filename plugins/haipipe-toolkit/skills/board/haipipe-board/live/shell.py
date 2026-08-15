@@ -296,15 +296,50 @@ def _shell_doc(page_url, index_url):
   border-color:var(--line,#e4e4df);margin-bottom:-1px;padding-bottom:6px}
 .rpt[hidden]{display:none}
 .rp-sp{flex:1}
+/* the OPEN SET machinery (haipipe-page-plugin): the active tab's own ✕, the ＋
+   that lists what this page could open, and the ＋ menu with its ● material dot */
+#rp{position:relative}
+#rptset{display:flex;align-items:stretch;gap:2px}
+.rptx{margin-left:8px;color:var(--mut,#7c7c78);font-weight:700}
+.rptx:hover{color:#c94a4a}
+#rpplus{border:1px solid transparent;background:transparent;color:var(--mut,#7c7c78);
+  cursor:pointer;border-radius:7px 7px 0 0;padding:5px 9px;
+  font:700 13px/1 ui-monospace,Menlo,monospace}
+#rpplus:hover{background:var(--bg,#f1f3f5)}
+#rpmenu{position:absolute;top:32px;left:8px;z-index:95;min-width:240px;
+  background:var(--card,#fff);border:1px solid var(--line,#d8d8d8);border-radius:9px;
+  padding:4px;box-shadow:0 10px 30px rgba(0,0,0,.16)}
+#rpmenu[hidden]{display:none}
+#rpmenu .xrow{display:block;width:100%;text-align:left;border:0;background:none;
+  padding:7px 10px;border-radius:6px;cursor:pointer;color:var(--fg,#1c1c1c);
+  font:500 13px/1.35 ui-monospace,Menlo,monospace}
+#rpmenu button.xrow:hover{background:var(--bg,#f1f3f5)}
+#rpmenu .xrow .dot{float:right;color:#2a8a2a}
+/* the FORM segment: subordinate to the Chat tab, never a tab itself */
+#rpmode{display:flex;align-items:center;gap:2px;padding-bottom:4px}
+#rpmode[hidden]{display:none}
+.rpm{border:1px solid var(--line,#e4e4df);background:transparent;cursor:pointer;
+  color:var(--mut,#7c7c78);border-radius:6px;padding:3px 8px;
+  font:600 11px/1 ui-monospace,Menlo,monospace}
+.rpm:hover{background:var(--bg,#f1f3f5)}
+.rpm[aria-checked="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #rp iframe{flex:1 1 auto;min-height:0}
 #rp iframe[hidden]{display:none}
+/* ✨ the Draw and Slides tabs' control bars: one ask, one button, one status word */
+#drawbar,#slidebar{flex:0 0 auto;display:flex;gap:6px;align-items:center;padding:6px 8px;
+  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
+#drawbar[hidden],#slidebar[hidden]{display:none}
+#adask,#sdask{flex:1 1 auto;min-width:0;font:12px ui-monospace,Menlo,monospace;
+  padding:5px 8px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
+#adgo,#sdgo{flex:0 0 auto;font:600 12px/1 ui-monospace,Menlo,monospace;cursor:pointer;
+  padding:6px 10px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
+#adgo:hover,#sdgo:hover{background:var(--bg,#f1f3f5)}
+#adgo:disabled,#sdgo:disabled{opacity:.5;cursor:default}
+#adstat,#sdstat{flex:0 1 auto;font:11px ui-monospace,Menlo,monospace;color:var(--mut,#7c7c78);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #split.hc #rp{display:none}
-#cx{position:absolute;top:8px;right:12px;z-index:80;cursor:pointer;
-  font:500 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  padding:5px 10px;border-radius:6px;border:1px solid #d8d8d8;
-  background:#fff;color:#1e1e1e}
-#cx:hover{background:#f1f3f5}
-#split.hc #cx{display:none}
 #split{position:relative}
 #split.hc{grid-template-columns:var(--iw,250px) 5px 1fr 0 0}
   #split.hi.hc{grid-template-columns:0 0 1fr 0 0}
@@ -374,16 +409,56 @@ def _shell_doc(page_url, index_url):
        rather than destroyed, because two of them hold state nothing can rebuild:
        a live SDK session and a live PTY. -->
   <div id="rp">
+    <!-- 💬 ONE CHAT (JL 260815: "just have one Chat in the plugin, not more
+         ChatGUI or Chat TUI"). The tab strip stopped selling the form: Chat is
+         one tab, and the GUI/TUI choice appears INSIDE it, as the small mode
+         segment on the right of the strip, visible only while Chat is open.
+         The hidden #mtui/#mgui radio stays the single mode writer, so every
+         check that drives it and every localStorage key is untouched. -->
+    <!-- 🧩 TABS ARE AN OPEN SET, PER PAGE (haipipe-page-plugin, JL 260815): the
+         strip shows what this page has OPEN, ＋ lists what it COULD open (● =
+         material already on disk), the active tab carries its own ✕, and the
+         pane's "✕ close" keeps meaning the whole pane. Buttons are rendered
+         into #rptset from the set, so a new plugin never edits this markup. -->
     <div id="rptabs" role="tablist">
-      <button class="rpt" data-tab="gui" type="button" role="tab">💬 GUI</button>
-      <button class="rpt" data-tab="tui" type="button" role="tab">⌨️ TUI</button>
-      <button class="rpt" data-tab="draw" type="button" role="tab" hidden>🖌 Draw</button>
+      <span id="rptset"></span>
+      <button id="rpplus" type="button" title="open a plugin of this page">＋</button>
       <span class="rp-sp"></span>
+      <span id="rpmode" role="radiogroup" aria-label="Chat form" hidden>
+        <button class="rpm" data-mode="gui" type="button"
+          title="The SDK chat box: gated edits, diffs, tool cards">🖥 GUI</button>
+        <button class="rpm" data-mode="tui" type="button"
+          title="The real CLI in a terminal: long jobs, skills">⌨️ TUI</button>
+      </span>
+    </div>
+    <!-- ✨ THE DRAW TAB'S ONE CONTROL (JL 260815: "what I want is like a button,
+         and it can generate what we want"). Ask is optional: empty means draw
+         this page's ## Diagram. Claude authors the scene server-side
+         (/_board/autodraw) and the watcher below repaints the canvas. -->
+    <div id="drawbar" hidden>
+      <input id="adask" type="text" spellcheck="false"
+        placeholder="what to draw · empty = this page's ## Diagram">
+      <button id="adgo" type="button">✨ Draw it</button>
+      <span id="adstat"></span>
+    </div>
+    <!-- ✨ THE SLIDES TAB'S ONE CONTROL (JL 260815: "add a new button to it so
+         we can regenerate the slide"). Ask is optional: empty means present the
+         page's argument. Claude authors the deck server-side (/_board/autodeck)
+         and the frame reloads onto the fresh file. -->
+    <div id="slidebar" hidden>
+      <input id="sdask" type="text" spellcheck="false"
+        placeholder="what the talk should emphasize · empty = the page's argument">
+      <button id="sdgo" type="button">✨ Regenerate</button>
+      <span id="sdstat"></span>
     </div>
     <iframe name="chat"  id="fc" data-src="__CHAT__"  title="chat"></iframe>
     <iframe name="draw"  id="fd" title="drawing" referrerpolicy="no-referrer" hidden></iframe>
+    <iframe name="slides" id="fs" title="slides" referrerpolicy="no-referrer" hidden></iframe>
+    <!-- registry tabs get their frames on demand, appended here as fx-<id> -->
+    <div id="rpmenu" hidden role="menu"></div>
   </div>
-  <button id="cx" type="button" title="close the chat pane (Esc)">✕ close</button>
+  <!-- No pane-level ✕ (JL 260815): each tab carries its own, and closing the
+       last tab closes the pane. Esc keeps closing the whole pane. -->
 </div>
 <script>
 (function () {
@@ -444,6 +519,22 @@ def _shell_doc(page_url, index_url):
         }
       } catch (e) {}
       fc.setAttribute('src', wantSrc);
+    })();
+    /* THE DRAW FOLLOWS THE PAGE, for the chat's exact reason one block up
+       (JL 260815: "the split is not attached to the page, why?"): the canvas
+       was aimed when the tab opened and a router swap fires no load event, so
+       browsing QPf3 → QPf6 kept QPf3's scene on stage — and the ✨ button
+       would have redrawn the WRONG page's scene. Re-aim on the same mirror
+       the address bar and the chat already trust. A page with no drawing
+       yields no url; paintTabs prunes the tab and the stage moves on. */
+    (function () {
+      var fdEl = document.getElementById('fd');
+      if (!fdEl || fdEl.hidden) return;          // Draw not on stage: nothing aimed
+      var url = '';
+      try { url = drawURL(); } catch (e) {}
+      if (url && (fdEl.getAttribute('src') || '') !== url) {
+        fdEl.setAttribute('src', url);
+      }
     })();
     var t = '';
     try { t = fp.contentDocument.title || ''; } catch (e) {}
@@ -556,7 +647,8 @@ def _shell_doc(page_url, index_url):
              two doors inside the viewer, one of them the old overlay that eats the
              page column. On a BARE page there is no shell and no tab strip, so the
              menu entry is still the only door and still works. */
-          if (e.id === 'gui' || e.id === 'tui' || e.id === 'draw') return;
+          if (e.id === 'gui' || e.id === 'tui' || e.id === 'chat'
+              || e.id === 'draw' || e.id === 'slides' || e.tab) return;
           rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                       run: function () { e.open(w.boardPlugins.livePage()); } });
         });
@@ -570,12 +662,33 @@ def _shell_doc(page_url, index_url):
      so the lit-state and pane logic that was already written keeps working and is not
      reimplemented here. */
   function plugEntries() {
-    return [
-      { id: 'tui', label: '⌨️ TUI Chat', hint: 'the real CLI: long jobs, skills',
-        run: function () { document.getElementById('mtui').click(); } },
-      { id: 'gui', label: '💬 GUI Chat', hint: 'the SDK drawer: gated edits, diffs',
-        run: function () { document.getElementById('mgui').click(); } }
-    ].concat(pageEntries('plugin'));
+    /* ONE row for the one Chat (JL 260815): it opens in the last-used form and
+       the strip's segment is where the form is chosen, so the menu stops
+       selling GUI and TUI as two surfaces. */
+    var rows = [
+      { id: 'chat', label: '💬 Chat', hint: 'this page\\u2019s conversation \\u00b7 pick GUI or TUI inside',
+        run: function () { showTab('chat'); } }
+    ];
+    /* Draw is the shell's third surface (JL 260815): the tab strip only shows once
+       the right pane is open, so with the pane collapsed the menu is the one door a
+       reader can see. The row clicks the same showTab the strip uses — one opener,
+       one owner for which file the view saves to — and follows the strip's own
+       applies rule: no drawing on this page, no row. */
+    if (drawURL()) {
+      rows.push({ id: 'draw', label: '🖌 Draw', hint: 'this page’s drawing, in the right pane',
+                  run: function () { showTab('draw'); } });
+    }
+    if (slidesURL()) {
+      rows.push({ id: 'slides', label: '🎞 Slides', hint: 'this page as a deck, in the right pane',
+                  run: function () { showTab('slides'); } });
+    }
+    /* Registry tabs (haipipe-page-plugin): each row opens its right-pane tab
+       through the same showTab the strip uses — one opener, one owner. */
+    xdefs().forEach(function (e) {
+      rows.push({ id: e.id, label: e.label, hint: e.hint || '',
+                  run: function () { showTab(e.id); } });
+    });
+    return rows.concat(pageEntries('plugin'));
   }
   /* 🪜 WORKFLOW · steppers over THIS page, which open along the BOTTOM. The shell owns
      none of these: a workflow is gated on the page's declared type, so the page is the
@@ -637,9 +750,20 @@ def _shell_doc(page_url, index_url):
   /* Closing is "click the lit one", which is a path that already exists and already
      writes both localStorage keys. Reusing it means the ✕ can never drift from what the
      buttons do, which is the drift that produced the 260802 lit-strip bug. */
-  function closePane() { if (!hidden) want(liveMode()); }
-  var cx = document.getElementById('cx');
-  if (cx) cx.onclick = closePane;
+  function closePane() {
+    if (hidden) return;
+    /* On a non-chat tab, closing the PANE must not detour through want()'s
+       switch-to-chat normalization: put the pane away directly, state kept. */
+    if (tab !== 'chat') {
+      hidden = true;
+      try { localStorage.setItem('board-split-chat', '0'); } catch (e) {}
+      paint();
+      return;
+    }
+    want(liveMode());
+  }
+  /* The pane-level ✕ button is gone (JL 260815): each tab closes itself and
+     the last one takes the pane with it. Esc stays as the whole-pane close. */
   document.addEventListener('keydown', function (ev) {
     if (ev.key === 'Escape') closePane();
   });
@@ -653,7 +777,11 @@ def _shell_doc(page_url, index_url):
     });
   }
   function want(mode) {
-    if (!hidden && liveMode() === mode) { hidden = true; }   // the lit one = put it away
+    /* Another tab may be on stage; a chat ask means "switch to chat", never a
+       toggle-away of a pane that is showing something else. */
+    var away = tab !== 'chat';
+    if (away) { tab = 'chat'; ensureOpen('chat'); stage('chat'); }
+    if (!hidden && !away && liveMode() === mode) { hidden = true; }   // the lit one = put it away
     else { hidden = false; wanted = mode;
            try { if (frames.chat.__paneMode) frames.chat.__paneMode(mode); } catch (e) {} }
     try {
@@ -716,14 +844,16 @@ def _shell_doc(page_url, index_url):
   });
 
   /* ── 🗂 the tab strip ────────────────────────────────────────────────────────
-     GUI and TUI are NOT reimplemented here: their tabs click the same `want()`
-     the bar buttons use, so the lit-state, the localStorage keys and the session
-     hand-off keep their single writer. Only Draw is new, and it is new only in
-     WHERE it opens: the scene url still comes from the page's own plugin, so the
-     shell never learns how a drawing owner is derived. */
+     TABS ARE AN OPEN SET, PER PAGE (haipipe-page-plugin, JL 260815): the strip
+     shows what this page has OPEN, ＋ lists what it COULD open, the active tab
+     carries its own ✕, and the pane's "✕ close" keeps meaning the whole pane.
+     Chat is NOT reimplemented: its tab clicks the same `want()` the bar buttons
+     use. Draw and Slides keep their window hooks; every OTHER tab comes from a
+     registry entry carrying `tab: {url, write}`, so plugin N+1 ships by
+     registering and this shell is not edited for it. */
   var rp = document.getElementById('rp'), fd = document.getElementById('fd');
-  var tabs = [].slice.call(document.querySelectorAll('.rpt'));
-  var tab = 'chat';                 // 'chat' (gui|tui live inside it) or 'draw'
+  var fs = document.getElementById('fs');
+  var tab = 'chat';                 // 'chat' (gui|tui live inside it) · any open tab id
 
   function drawURL() {
     try {
@@ -734,21 +864,300 @@ def _shell_doc(page_url, index_url):
     } catch (e) { return ''; }
   }
 
+  /* THE SCENE FILE IS THE ONE TRUTH the dual stage watches. Chat's Claude (or
+     anything else) writes <page>/draw/<id>.excalidraw; the canvas here refetches
+     when the file's stamp moves, so a drawing asked for in the chat appears
+     without a gesture. It stays quiet while the canvas itself holds focus — a
+     person mid-stroke is the one writer a refetch could hurt. */
+  /* ✨ THE BUTTON. One POST; Claude authors the scene server-side; the watcher
+     below repaints the canvas when the file lands. The server refuses a
+     hand-drawn scene and the group view, and the refusal is shown, not eaten. */
+  (function () {
+    var go = document.getElementById('adgo'), askEl = document.getElementById('adask'),
+        st = document.getElementById('adstat');
+    if (!go) return;
+    function sceneRelNow() {
+      var m = /board=([^&]+)/.exec(fd.getAttribute('src') || '');
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+    function run(isRetry) {
+      var rel = sceneRelNow();
+      if (!rel) { st.textContent = 'no scene under this view'; return; }
+      go.disabled = true;
+      st.textContent = '🖌 Claude is drawing… (a minute or two)';
+      fetch('/_board/autodraw', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scene: rel, prompt: askEl.value.trim() })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        go.disabled = false;
+        st.textContent = j.ok ? '✅ drawn (' + j.elements + ' elements) — refreshing'
+                              : '✋ ' + (j.err || 'refused');
+      }).catch(function () {
+        /* A dropped CONNECTION is usually a serve.py restart mid-flight, and
+           the drawing may still have landed (the file writes server-side; the
+           watcher will show it). Retry once; after that, tell the truth. */
+        if (!isRetry) {
+          st.textContent = '⏳ server hiccuped (a restart?) — retrying…';
+          setTimeout(function () { run(true); }, 3000);
+          return;
+        }
+        go.disabled = false;
+        st.textContent = '✋ server unreachable — is serve.py running?';
+      });
+    }
+    go.addEventListener('click', run);
+    askEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+  })();
+
+  var sceneStamp = '';
+  var sceneDown = false;      // the server was unreachable on the last look
+  function reloadCanvas() {
+    var src = fd.getAttribute('src');
+    fd.setAttribute('src', '');
+    requestAnimationFrame(function () { fd.setAttribute('src', src); });
+  }
+  setInterval(function () {
+    if (hidden || tab !== 'draw' || fd.hidden) return;
+    var m = /board=([^&]+)/.exec(fd.getAttribute('src') || '');
+    if (!m) return;
+    var rel = decodeURIComponent(m[1]);
+    try { if (fd.contentWindow && fd.contentWindow.document.hasFocus()) return; }
+    catch (e) {}
+    fetch('/' + rel, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+      /* Coming back from a dead server, reload regardless of the stamp: a
+         canvas that booted while serve.py was restarting is an EMPTY canvas
+         over a scene that exists, and the stamp alone cannot tell it apart. */
+      var wasDown = sceneDown;
+      sceneDown = false;
+      if (!r.ok) return;
+      var s = rel + '·' + (r.headers.get('last-modified') || '')
+                  + '·' + (r.headers.get('content-length') || '');
+      if (wasDown) { sceneStamp = s; return reloadCanvas(); }
+      if (!sceneStamp || sceneStamp.indexOf(rel + '·') !== 0) { sceneStamp = s; return; }
+      if (s === sceneStamp) return;
+      sceneStamp = s;
+      reloadCanvas();
+    }).catch(function () { sceneDown = true; });
+  }, 2500);
+
+  /* Slides joins the strip the way Draw did (JL 260815: "why not together with
+     them"): the URL comes from the page's own plugin; the deck itself is
+     AUTHORED (JL 260815: "We will just have the AI deck"), so the shell only
+     locates, loads, and — through the ✨ bar — asks for a regeneration. */
+  function slidesURL() {
+    try {
+      var w = frames.page;
+      if (!w || !w.boardSlidesURL) return '';
+      return w.boardSlidesURL(w.boardPlugins && w.boardPlugins.livePage()) || '';
+    } catch (e) { return ''; }
+  }
+
+  /* ALWAYS RELOAD, cache-busted. Twice bitten on 260815: the iframe held a
+     deck loaded before its file was fixed, and "same src" meant reopening the
+     tab showed the stale document forever. Every open refetches. */
+  function loadDeck(surl) {
+    surl = surl || slidesURL();
+    if (!surl) return;
+    var noDeck = function () {
+      fs.removeAttribute('src');
+      fs.setAttribute('srcdoc',
+        '<body style="margin:0;display:flex;align-items:center;'
+        + 'justify-content:center;height:100vh;font:15px/1.7 ui-serif,'
+        + 'Georgia,serif;color:#444;background:#fff">'
+        + '<div style="max-width:34em;padding:2em;text-align:center">'
+        + '<div style="font-size:2.4em">🎞</div>'
+        + '<p>This page has no deck yet.</p>'
+        + '<p style="color:#888">Press ✨ Regenerate above and Claude will '
+        + 'author one from the page into its slide/ plugin.</p></div></body>');
+    };
+    fetch(surl, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+      if (r.ok) {
+        fs.removeAttribute('srcdoc');
+        fs.setAttribute('src', surl + '?plain&v=' + Date.now());
+        return;
+      }
+      noDeck();
+    }).catch(noDeck);
+  }
+
+  /* ✨ THE REGENERATE BUTTON (JL 260815: "add a new button to it so we can
+     regenerate the slide"). One POST; Claude authors the deck server-side
+     (/_board/autodeck); the frame reloads onto the fresh file. The page's .md
+     path is derived from the deck URL, so the shell still holds no list. */
+  (function () {
+    var go = document.getElementById('sdgo'), askEl = document.getElementById('sdask'),
+        st = document.getElementById('sdstat');
+    if (!go) return;
+    function run(isRetry) {
+      var surl = slidesURL();
+      if (!surl) { st.textContent = 'no page under this view'; return; }
+      var md = surl.replace(/\/slide\/([^\/]+)-deck\.html$/, '/$1.md');
+      if (md === surl) { st.textContent = 'cannot derive the page from ' + surl; return; }
+      go.disabled = true;
+      st.textContent = '🎞 Claude is authoring the deck… (a few minutes)';
+      fetch('/_board/autodeck', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file: md, prompt: askEl.value.trim() })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        go.disabled = false;
+        if (j.ok) {
+          st.textContent = '✅ ' + j.slides + ' slides — loading';
+          loadDeck(surl);
+        } else {
+          st.textContent = '✋ ' + (j.err || 'refused');
+        }
+      }).catch(function () {
+        /* A dropped connection is usually a serve.py restart mid-flight; the
+           deck may still land server-side. Retry the LOOK, not the write. */
+        if (!isRetry) {
+          st.textContent = '⏳ connection dropped — checking for the deck…';
+          setTimeout(function () { go.disabled = false; loadDeck(surl); }, 5000);
+          return;
+        }
+        go.disabled = false;
+        st.textContent = '✋ server unreachable — is serve.py running?';
+      });
+    }
+    go.addEventListener('click', function () { run(false); });
+    askEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(false); });
+  })();
+
+  /* Registry entries carrying a `tab` spec — the plugin contract's whole
+     interface to this shell. The registry lives in the page frame, so the
+     shell holds no list that could drift. */
+  function xdefs() {
+    var out = [];
+    try {
+      var w = pageWin();
+      if (w && w.boardPlugins) {
+        w.boardPlugins.all().forEach(function (e) {
+          if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides'].indexOf(e.id) < 0)
+            out.push(e);
+        });
+      }
+    } catch (e) {}
+    return out;
+  }
+  function defOf(id) {
+    var ds = xdefs();
+    for (var i = 0; i < ds.length; i++) if (ds[i].id === id) return ds[i];
+    return null;
+  }
+  function tabLabel(id) {
+    if (id === 'chat') return '💬 Chat';
+    if (id === 'draw') return '🖌 Draw';
+    if (id === 'slides') return '🎞 Slides';
+    var d = defOf(id);
+    return d ? d.label : id;
+  }
+  /* Never offer work that would be refused: draw needs a scene, slides needs a
+     namable deck (a folded page always can), a registry tab needs its entry. */
+  function offerable(id) {
+    if (id === 'chat') return true;
+    if (id === 'draw') return !!drawURL();
+    if (id === 'slides') return !!slidesURL();
+    return !!defOf(id);
+  }
+
+  /* THE OPEN SET, per page: a reader returns to the pane the way they left it. */
+  var openSet = null;
+  function tabsKey() { return 'board-split-tabs:' + (shownNow() || OPENED); }
+  function loadSet() {
+    openSet = ['chat'];
+    try {
+      var v = JSON.parse(localStorage.getItem(tabsKey()) || 'null');
+      if (Array.isArray(v) && v.length) openSet = v;
+    } catch (e) {}
+  }
+  function saveSet() {
+    try { localStorage.setItem(tabsKey(), JSON.stringify(openSet)); } catch (e) {}
+  }
+  function ensureOpen(id) {
+    if (openSet === null) loadSet();
+    if (openSet.indexOf(id) < 0) { openSet.push(id); saveSet(); }
+  }
+  loadSet();
+
+  /* Registry tabs get a frame on demand; like fc/fd/fs it is then HIDDEN on a
+     switch, never destroyed. */
+  function xframe(id) {
+    var f = document.getElementById('fx-' + id);
+    if (!f) {
+      f = document.createElement('iframe');
+      f.id = 'fx-' + id;
+      f.title = id;
+      f.referrerPolicy = 'no-referrer';
+      f.hidden = true;
+      rp.appendChild(f);
+    }
+    return f;
+  }
+  function extraFrames() {
+    return [].slice.call(rp.querySelectorAll('iframe[id^="fx-"]'));
+  }
+  function stage(id) {                       // exactly one frame on stage
+    document.getElementById('fc').hidden = id !== 'chat';
+    fd.hidden = id !== 'draw';
+    fs.hidden = id !== 'slides';
+    /* ✨ Draw's control bar rides above the canvas, only there (JL 260815: a
+       BUTTON generates the drawing — the full chat under the canvas was tried
+       and refused the same day). */
+    var bar = document.getElementById('drawbar');
+    if (bar) bar.hidden = id !== 'draw';
+    var sbar = document.getElementById('slidebar');
+    if (sbar) sbar.hidden = id !== 'slides';
+    extraFrames().forEach(function (f) { f.hidden = ('fx-' + id) !== f.id; });
+  }
+  function noteDoc(msg) {
+    return 'data:text/html;charset=utf-8,' + encodeURIComponent(
+      '<body style="margin:0;display:grid;place-items:center;height:100vh;'
+      + 'font:13px ui-monospace,Menlo,monospace;color:#7c7c78;background:#fbfbf9">'
+      + '<div style="max-width:80%;white-space:pre-wrap">' + msg + '</div></body>');
+  }
+
   function paintTabs() {
-    var url = drawURL();
-    var dt = document.querySelector('.rpt[data-tab="draw"]');
-    /* The Draw tab is DRAWN ONLY WHEN THIS PAGE HAS A DRAWING, which is the same
-       `applies` rule the menu uses one level up: never offer work that would be
-       refused. */
-    if (dt) dt.hidden = !url;
-    if (!url && tab === 'draw') showTab('gui');
-    var live = hidden ? '' : (tab === 'draw' ? 'draw' : liveMode());
-    tabs.forEach(function (b) {
-      b.setAttribute('aria-selected', String(b.dataset.tab === live));
-    });
+    if (openSet === null) loadSet();
+    /* Prune what this page cannot offer, without persisting the prune: the
+       stored set is the reader's choice and the next page may honour it. */
+    var set = openSet.filter(offerable);
+    if (!hidden && set.indexOf(tab) < 0) {
+      if (set.length) { showTab(set[set.length - 1]); return; }
+      hidden = true;
+      try { localStorage.setItem('board-split-chat', '0'); } catch (e) {}
+      split.classList.add('hc');
+    }
+    var live = hidden ? '' : tab;
+    var host = document.getElementById('rptset');
+    if (host) {
+      host.innerHTML = set.map(function (id) {
+        var on = id === live;
+        return '<button class="rpt" data-tab="' + id + '" type="button" role="tab"'
+          + ' aria-selected="' + on + '">' + tabLabel(id)
+          + (on ? '<span class="rptx" title="close this tab">✕</span>' : '')
+          + '</button>';
+      }).join('');
+      [].forEach.call(host.querySelectorAll('.rpt'), function (b) {
+        b.addEventListener('click', function (ev) {
+          if (ev.target && ev.target.classList
+              && ev.target.classList.contains('rptx')) closeTab(b.dataset.tab);
+          else showTab(b.dataset.tab);
+        });
+      });
+    }
+    /* The FORM segment shows only while Chat is the open tab (JL 260815: the
+       choice is made AFTER opening the Chat, inside it), and the lit half is
+       whatever mode is actually live, which want() alone decides. */
+    var seg = document.getElementById('rpmode');
+    if (seg) {
+      seg.hidden = hidden || tab !== 'chat';
+      [].forEach.call(seg.querySelectorAll('.rpm'), function (m) {
+        m.setAttribute('aria-checked', String(m.dataset.mode === liveMode()));
+      });
+    }
   }
 
   function showTab(which) {
+    ensureOpen(which);
     if (which === 'draw') {
       var url = drawURL();
       if (!url) return;
@@ -756,31 +1165,168 @@ def _shell_doc(page_url, index_url):
       hidden = false;
       split.classList.remove('hc');
       if (fd.getAttribute('src') !== url) fd.setAttribute('src', url);
-      fd.hidden = false;
-      document.getElementById('fc').hidden = true;
+      stage('draw');
       try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
       paint(); paintTabs();
       return;
     }
-    /* Coming BACK from Draw must not toggle the chat away: `want()` reads the lit
-       button and would treat this as "click the lit one". Reveal the frame first,
-       then only call want() if the mode is actually changing. */
-    var wasDraw = tab === 'draw';
-    tab = 'chat';
-    fd.hidden = true;
-    document.getElementById('fc').hidden = false;
-    if (wasDraw && liveMode() === which) { hidden = false; paint(); }
-    else want(which);
+    if (which === 'slides') {
+      var surl = slidesURL();
+      if (!surl) return;
+      tab = 'slides';
+      hidden = false;
+      split.classList.remove('hc');
+      stage('slides');
+      try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
+      paint(); paintTabs();
+      loadDeck(surl);
+      return;
+    }
+    if (which === 'chat') {
+      /* ONE CHAT TAB (JL 260815). Opening it resumes the LAST-USED form; the
+         segment beside it switches forms; clicking the lit tab puts the pane
+         away, which is the radio's own off position. Coming back from another
+         tab must not toggle the chat away, so reveal the frame first and only
+         call want() when something actually changes. */
+      var wasAway = tab !== 'chat';
+      tab = 'chat';
+      stage('chat');
+      if (wasAway) { hidden = false; paint(); paintTabs(); return; }
+      want(wanted);
+      paintTabs();
+      return;
+    }
+    /* A REGISTRY TAB (haipipe-page-plugin): frame the saved artifact, or ask
+       the page's own writer to build one. Clicking the lit tab REBUILDS — a
+       derived view's refresh — where chat's lit-click means "put away". */
+    var d = defOf(which);
+    if (!d) return;
+    var rebuild = tab === which && !hidden;
+    tab = which;
+    hidden = false;
+    split.classList.remove('hc');
+    var f = xframe(which);
+    stage(which);
+    try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
+    paint(); paintTabs();
+    var w = pageWin(), page = null;
+    try { page = w && w.boardPlugins && w.boardPlugins.livePage(); } catch (e) {}
+    function land(u) {
+      var src = u + (/\.html$/.test(u) ? '?plain' : '');
+      if (f.getAttribute('src') !== src) f.setAttribute('src', src);
+    }
+    function build() {
+      f.setAttribute('src', noteDoc('⏳ building ' + tabLabel(which) + '…'));
+      try {
+        d.tab.write(page, function (j) {
+          if (j.url) land(j.url);
+          else f.setAttribute('src', noteDoc('⚠ the writer returned no url'));
+        }, function (e) { f.setAttribute('src', noteDoc('⚠ ' + e)); });
+      } catch (e) { f.setAttribute('src', noteDoc('⚠ ' + e)); }
+    }
+    var u = '';
+    try { u = d.tab.url(page) || ''; } catch (e) {}
+    if (rebuild || !u) { build(); return; }
+    fetch(u, { method: 'HEAD' })
+      .then(function (r) { r.ok ? land(u) : build(); })
+      .catch(build);
+  }
+
+  /* ✕ ON THE ACTIVE TAB closes THAT TAB: out of the set, focus to its left
+     neighbour, and closing the last one closes the pane. Always visible and
+     only on the lit tab, because the phone has no hover (QPf4d) and a strip of
+     permanent close targets is a strip of accidents. Closing is safe by
+     construction: a derived view has nothing to lose, Draw saves on edit, and
+     a chat turn survives its reader through the ring. */
+  function closeTab(id) {
+    if (openSet === null) loadSet();
+    var i = openSet.indexOf(id);
+    if (i < 0) return;
+    openSet.splice(i, 1);
+    saveSet();
+    if (tab === id) {
+      var next = openSet[i - 1] || openSet[i] || openSet[0];
+      if (next) { showTab(next); return; }
+      hidden = true;                       // the last tab: the pane goes with it
+      try { localStorage.setItem('board-split-chat', '0'); } catch (e) {}
+      paint();
+    }
     paintTabs();
   }
 
-  tabs.forEach(function (b) {
-    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+  /* ＋ · WHAT THIS PAGE COULD OPEN (JL 260815: a tab appears on an explicit
+     click). One row per offerable-but-closed plugin; ● marks the ones whose
+     material is already on disk, and the offer stands either way. */
+  var plus = document.getElementById('rpplus');
+  var pmenu = document.getElementById('rpmenu');
+  function closePlus() {
+    if (!pmenu) return;
+    pmenu.hidden = true;
+    document.removeEventListener('pointerdown', plusAway, true);
+  }
+  function plusAway(ev) {
+    if (pmenu && !pmenu.contains(ev.target) && ev.target !== plus) closePlus();
+  }
+  if (plus && pmenu) plus.onclick = function () {
+    if (!pmenu.hidden) return closePlus();
+    if (openSet === null) loadSet();
+    var rows = [];
+    ['chat', 'draw', 'slides'].forEach(function (id) {
+      if (openSet.indexOf(id) < 0 && offerable(id)) rows.push({ id: id });
+    });
+    xdefs().forEach(function (e) {
+      if (openSet.indexOf(e.id) < 0) rows.push({ id: e.id, def: e });
+    });
+    if (!rows.length) {
+      pmenu.innerHTML = '<div class="xrow" style="cursor:default;color:var(--mut)">'
+        + 'every plugin of this page is open</div>';
+    } else {
+      pmenu.innerHTML = rows.map(function (r, i) {
+        return '<button class="xrow" type="button" data-i="' + i + '" data-id="'
+          + r.id + '">' + tabLabel(r.id) + '<span class="dot" hidden>●</span></button>';
+      }).join('');
+      [].forEach.call(pmenu.querySelectorAll('button.xrow'), function (b) {
+        b.onclick = function () { closePlus(); showTab(b.dataset.id); };
+        var r = rows[+b.dataset.i], u = '';
+        try {
+          if (r.id === 'draw') u = drawURL();
+          else if (r.id === 'slides') u = slidesURL();
+          else if (r.def) {
+            var w = pageWin();
+            u = r.def.tab.url(w && w.boardPlugins && w.boardPlugins.livePage()) || '';
+          }
+        } catch (e) {}
+        if (r.id === 'chat' || !u) return;
+        if (r.id === 'draw') { b.querySelector('.dot').hidden = false; return; }
+        fetch(u, { method: 'HEAD' }).then(function (resp) {
+          if (resp.ok) b.querySelector('.dot').hidden = false;
+        }).catch(function () {});
+      });
+    }
+    pmenu.hidden = false;
+    document.addEventListener('pointerdown', plusAway, true);
+  };
+
+  /* The segment's click is a MODE SWITCH, never a toggle-away: want() treats a
+     click on the live mode as "put it away", so a same-mode click is dropped
+     here rather than surprising the reader with a vanished pane. */
+  [].forEach.call(document.querySelectorAll('#rpmode .rpm'), function (m) {
+    m.addEventListener('click', function () {
+      if (hidden || liveMode() !== m.dataset.mode) want(m.dataset.mode);
+      paintTabs();
+    });
   });
-  /* The page frame decides whether Draw applies, so the strip is repainted when a
-     new page lands in it, not only at boot. */
+  /* The page frame decides what applies AND which set is this page's, so both
+     are re-read when a new page lands in it, not only at boot — and an open
+     non-chat tab is re-aimed at the new page's own artifact. */
   var fpEl = document.getElementById('fp');
-  if (fpEl) fpEl.addEventListener('load', function () { setTimeout(paintTabs, 300); });
+  if (fpEl) fpEl.addEventListener('load', function () {
+    setTimeout(function () {
+      loadSet();
+      if (!hidden && tab !== 'chat' && offerable(tab)) showTab(tab);
+      else paintTabs();
+    }, 300);
+  });
   setTimeout(paintTabs, 900);
   var _paint = paint;
   paint = function () { _paint(); paintTabs(); };

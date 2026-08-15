@@ -1,0 +1,27 @@
+{
+ "type": "excalidraw",
+ "version": 2,
+ "source": "haipipe-board/draw.py",
+ "elements": [],
+ "appState": {
+  "gridSize": null,
+  "viewBackgroundColor": "#ffffff"
+ },
+ "files": {},
+ "haipipe": {
+  "schema": "haipipe-linked-drawing/v1",
+  "kind": "page",
+  "page": {
+   "id": "QPs2",
+   "markdown": "QPs-page-structure/QPs2-page-types/QPs2-page-types.md"
+  },
+  "migration": {
+   "source": "../../../board.excalidraw",
+   "origin": {
+    "x": 0,
+    "y": 0
+   },
+   "sourceIndexes": {}
+  }
+ }
+}

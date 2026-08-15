@@ -23,7 +23,7 @@ Every mechanical check had been passing, because a path that resolves to nothing
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Measure, then state; never assert a core**: the 24-and-43 split came from counting all eight contracts on 260726.
 A claim about what contracts have in common is worth nothing unless it says how it was counted.

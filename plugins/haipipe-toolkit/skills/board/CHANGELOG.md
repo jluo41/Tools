@@ -4,6 +4,14 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-08-15 · The slide variant retires; a deck is plugin material
+
+`page-types/haipipe-page-for-slide/` leaves the family (JL, ruled on the design
+board's QPf3): a page's talk lives at `<page>/slide/<page>-deck.html`, authored
+by Claude through `/_board/autodeck` and regenerated on demand. `haipipe-page`
+0.26.0 drops the `page-type: slide` resolution key. The board engine's reflow
+deck writer (`live/deck.py`, `/_board/deck`) retired with it.
+
 ## 2026-08-09 · Five paper variants, and the dash rule corrected
 
 The paper family gains four DASH variants (`for-dash-section`, `-value`,
@@ -140,7 +148,7 @@ Also: `skills/_console/` did not exist, though `/haipipe-skill-diagnose` has wri
   retirement procedure.
 - It ships BESIDE the base rather than under a consumer family, which is the declared
   exception to the variant rule: for these two kinds the consumer IS the board family.
-- Opened because five skill and agent pages on `01-boardform-260722` had Openings from one
+- Opened because five skill and agent pages on `BoardSkillBoard-260722` had Openings from one
   template and JL caught it by eye. The base could not have prevented it: its
   noun-substitution test was already on the books, but its Opening shape asks what the
   page decides, and a skill page decides nothing.
@@ -193,5 +201,5 @@ Also: `skills/_console/` did not exist, though `/haipipe-skill-diagnose` has wri
 
 - Promoted Board from `skills/0_utils/haipipe-board/` to the first-class
   `skills/board/haipipe-board/` family beside paper, probe, and task.
-- Kept the design Board at `skills/diagrams/01-boardform-260722/`.
+- Kept the design Board at `skills/diagrams/BoardSkillBoard-260722/`.
 - Added the family-level, read-only `haipipe-board-reviewer-agent`.

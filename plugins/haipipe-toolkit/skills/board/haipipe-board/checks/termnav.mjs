@@ -8,7 +8,7 @@
 /* All overridable so checks/run.py can aim this at a throwaway fixture board
    and its own Chrome. Defaults = the family's design board on the live 5599. */
 const BOARD = process.env.CHECK_BOARD_URL
-  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722';
+  || '/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722';
 const HOSTPORT = process.env.CHECK_HOSTPORT || '127.0.0.1:5599';
 const BASE = `http://${HOSTPORT}${BOARD}/board`;
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9333';
@@ -115,7 +115,7 @@ const paint1 = await waitPaint();
 check('T9a group ⌨ paints', paint1.length > 80, true);
 
 /* ── T9b navigate group -> page WITH the terminal on ───────────── */
-await clickLink('QD/QD1-chat-per-question.html');
+await clickLink('QPf/QPf4-chat.html');
 await sleep(1500);                      // follow(): release old, open new
 let s = await evaluate(STATE);
 check('T9b drawer follows to QD1', s.qid, 'QD1');
@@ -159,10 +159,10 @@ await sleep(1500);
 s = await evaluate(STATE);
 check('T9d drawer follows to BOARD', s.qid, '🗂 BOARD');
 /* the QD1 page PTY must now be parked, and reopenable */
-const p = await apiTerm({ file: 'QD-working/QD1-chat-per-question.md' });
+const p = await apiTerm({ file: 'QPf-page-folder/QPf4-chat/QPf4-chat.md' });
 check('T9d page PTY reopenable', p.ok, true);
 check('T9d page PTY was parked (reused)', p.reused === true, true);
-await apiKill({ file: 'QD-working/QD1-chat-per-question.md' });
+await apiKill({ file: 'QPf-page-folder/QPf4-chat/QPf4-chat.md' });
 
 /* ── T9e close the board terminal, zero errors ─────────────────── */
 await clickTermBtn();                    // back to chat view = park board PTY

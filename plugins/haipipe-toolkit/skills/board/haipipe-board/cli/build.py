@@ -129,6 +129,23 @@ if __name__ == "__main__":
         files = render_tree(meta, qs, target / "board", only=only)
         print(f"✅ {target}/board · {len(files)} files "
               f"(one per page, one per group, plus index)")
+        # Orphan sweep (JL 260815: three rename rounds in one day each left
+        # ghost .html that check.py then reported as dead hrefs). Everything
+        # under board/ is derived, so any .html this FULL build did not just
+        # write is a retired page's ghost and goes. An `--only` build renders
+        # a subset on purpose, so it never sweeps.
+        if not only:
+            emitted = {Path(f).resolve() for f in files}
+            swept = 0
+            for ghost in sorted((target / "board").rglob("*.html")):
+                if ghost.resolve() not in emitted:
+                    ghost.unlink()
+                    swept += 1
+            for d in sorted((target / "board").rglob("*"), reverse=True):
+                if d.is_dir() and d.name != "_assets" and not any(d.iterdir()):
+                    d.rmdir()
+            if swept:
+                print(f"🧹 swept {swept} orphan html (renamed or retired pages)")
         if out.exists():
             out.unlink()
             print(f"🧹 removed the retired monolith {out.name}")

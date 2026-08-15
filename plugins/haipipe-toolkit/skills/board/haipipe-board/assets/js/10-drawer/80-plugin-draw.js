@@ -24,7 +24,7 @@
  * which is the repo root, which is also what `location.pathname` is relative to.
  * So the built page's own URL already carries the answer:
  *
- *   /Tools/…/01-boardform-260722/board/QD/QD5-split-workspace.html
+ *   /Tools/…/BoardSkillBoard-260722/board/QO/QO5-split-workspace.html
  *    └────────── board folder ─────────┘ └─ output ─┘
  *
  * Cut at the last `/board/` and the prefix IS the repo-relative board folder. Add
@@ -80,8 +80,20 @@
       return { url: h + '/?board=' + encodeURI(rel) + '&edit=1', label: id,
                rel: rel, kind: 'page' };
     }
-    /* A generated GROUP page: reuse the url its own composed canvas already has,
-       so the panel and the inline canvas can never name different files. */
+    /* A generated GROUP page: the build emits the owner ADDRESS, not a canvas
+       (JL 260815: no drawing inline on stage — the split is the one door). The
+       hidden marker carries the server-root-relative scene path the build
+       already verified exists. */
+    var g = document.querySelector('.group-draw-owner[data-scene]');
+    if (g) {
+      var grel = g.getAttribute('data-scene') || '';
+      if (!grel) return null;
+      return { url: h + '/?board=' + encodeURI(grel),
+               label: g.getAttribute('data-label') || 'this group',
+               rel: grel, kind: 'group' };
+    }
+    /* Boards built by an older engine still print the inline canvas: reuse its
+       url so the two can never name different files. */
     var f = document.querySelector('.group-canvas iframe[src*="_excalidraw"]');
     if (!f) return null;
     var src = f.getAttribute('src') || '';

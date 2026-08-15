@@ -21,6 +21,20 @@ from .page_stage import render_doc_slide
 # to mention this as well"). A reader who knows how the groups connect but not
 # which folder holds the engine still cannot act, so the heading names folders
 # first and pages second.
+def server_root(board_dir):
+    """The folder `/_excalidraw/?board=<rel>` paths are relative to.
+
+    The proxy resolves scene paths against the folder serve.py was started
+    in, and the convention (QO13) starts it at the repo root — so the root
+    marker is the repo's own: `.git`, with `pyproject.toml` kept for trees
+    that carry one above the boards. Returning None blanks every canvas that
+    needs it, which is the honest fallback on a bare static host.
+    """
+    return next((p for p in (board_dir, *board_dir.parents)
+                 if (p / "pyproject.toml").is_file() or (p / ".git").exists()),
+                None)
+
+
 MAP_HEAD = ('<div class="board-map-head">'
             '<div><span class="board-map-kicker">BOARD MAP</span>'
             '<h2 id="board-map-title">Folders, pages, and how they connect</h2></div>'
@@ -83,8 +97,7 @@ def board_map(meta):
         scene = board_dir / "fig" / "board.excalidraw"  # legacy Boards
     if not scene.is_file():
         return ""
-    root = next((p for p in (board_dir, *board_dir.parents)
-                 if (p / "pyproject.toml").is_file()), None)
+    root = server_root(board_dir)
     if root is None:
         return ""
     try:
@@ -111,36 +124,35 @@ def group_canvas(meta, group, members):
     board_dir = Path(meta.get("dir") or "")
     if not host or not board_dir.is_dir() or not members:
         return ""
-    parents = {Path(member.get("file") or "").parent for member in members}
-    if len(parents) != 1:
+    # The group folder is the members' shared FIRST path segment, not their
+    # files' shared parent: a folded page (`<name>/<name>.md`, JL 260815)
+    # gives every member a different parent, which silently blanked every
+    # group canvas until the 260815 restructure surfaced it.
+    heads = {Path(member.get("file") or "").parts[0]
+             for member in members if member.get("file")}
+    if len(heads) != 1:
         return ""
-    scene = board_dir / parents.pop() / "draw" / "group.excalidraw"
+    head = heads.pop()
+    if not (board_dir / head).is_dir():
+        return ""
+    scene = board_dir / head / "draw" / "group.excalidraw"
     if not scene.is_file():
         return ""
-    root = next((path for path in (board_dir, *board_dir.parents)
-                 if (path / "pyproject.toml").is_file()), None)
+    root = server_root(board_dir)
     if root is None:
         return ""
     try:
         rel = scene.relative_to(root).as_posix()
     except ValueError:
         return ""
-    url = f"{host}/?board={quote(rel, safe='/')}"
-    edit = f"{url}&edit=1&mode=group-source"
-    arrange = f"{url}&edit=1&mode=arrange"
-    return (
-        '<section class="board-map group-canvas" aria-label="Group drawing">'
-        '<div class="board-map-head"><div><span class="board-map-kicker">GROUP DRAW</span>'
-        f'<h2>{esc(group)} · linked Page sources</h2></div>'
-        '<p>Page drawings are composed live; the visible edit mode names the one save owner.</p></div>'
-        f'<iframe title="{esc(group)} Group drawing" src="{esc(url)}" '
-        'referrerpolicy="no-referrer"></iframe>'
-        '<div class="board-map-foot"><span>Live composition · Page sources stay independent</span>'
-        f'<a class="fp" href="{esc(edit)}" target="_blank" rel="noopener">✏️ Group layer</a>'
-        f'<a class="fp" href="{esc(arrange)}" target="_blank" rel="noopener">🧭 Arrange Pages</a>'
-        f'<a class="fp" href="{esc(url)}" target="_blank" rel="noopener">↗ Full drawing</a>'
-        '</div></section>'
-    )
+    # NO INLINE CANVAS ON STAGE (JL 260815: "I don't want the draw in here").
+    # The same ruling that took Excalidraw out of `## Diagram` applies one level
+    # up: a group page's body stays prose, and the composed drawing opens in the
+    # Draw split. What the page emits is only the OWNER ADDRESS, invisible, so
+    # the plugin can derive the scene without the build and the client keeping
+    # two copies of the path logic.
+    return (f'<div class="group-draw-owner" hidden data-scene="{esc(rel)}" '
+            f'data-label="{esc(group)}"></div>')
 
 
 RELATED_MAX_DEPTH = 4      # how deep the walk descends
@@ -172,8 +184,7 @@ def related_folders(meta, base=None):
     if not text:
         return ""
     board_dir = Path(meta.get("dir") or "")
-    root = next((p for p in (board_dir, *board_dir.parents)
-                 if (p / "pyproject.toml").is_file()), None)
+    root = server_root(board_dir)
     # A file row links to the real file (JL 260801: "I cannot click the files
     # if I want?"). The href is relative to the BOARD SOURCE folder, which is
     # the same convention every authored relative path on a board uses:

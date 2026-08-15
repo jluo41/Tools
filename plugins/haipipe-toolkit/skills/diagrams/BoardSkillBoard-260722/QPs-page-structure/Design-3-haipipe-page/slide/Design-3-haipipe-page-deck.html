@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>haipipe-page · the unit, as a talk</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. Cover -->
+  <section id="s1" class="slide" data-title="Cover">
+    <p class="kicker">BoardSkillBoard · QPs · generated from the page's Content</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">One page holds<br><span class="gradient-text">the unit's whole story</span></h1>
+    <p class="lede">haipipe-page · the spec one Board page is measured against, told by its own design page</p>
+    <div class="deck-footer"><span class="dim2">Design-3-haipipe-page · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+    <div class="notes">This deck was generated from Skill-3's Content by an agent, then kept in the page's slide/ plugin. It is the third tier: reflow shows the page's words, this one makes editorial choices, the authored path writes a talk from scratch.</div>
+  </section>
+
+  <!-- 2. What the unit is -->
+  <section id="s2" class="slide" data-title="The unit">
+    <p class="kicker">What ships</p>
+    <h2 class="h2">One door, three verbs, one spec</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🚪 CREATE</h4><p class="dim">scaffolds one persistent page from the template, and registers it</p></div>
+      <div class="card"><h4>🔧 WORK ON</h4><p class="dim">performs a known repair on an existing page, starting from the checker</p></div>
+      <div class="card"><h4>🔁 RUN</h4><p class="dim">bounded DRAFT · PROBE · REVISE · CHECK routes until CLOSE or HOLD</p></div>
+    </div>
+    <p class="dim mt-m">Loaded with no board open, it is a pure contract: what a page IS, section by section.</p>
+    <div class="notes">The line with haipipe-board: ask for a board and that skill renders it; ask for a page and this one decides what the page must contain, then calls those same scripts.</div>
+  </section>
+
+  <!-- 3. The selection -->
+  <section id="s3" class="slide" data-title="Selection">
+    <p class="kicker">Content §2 · the selection record</p>
+    <h2 class="h2">Mirror lost. Design page won.</h2>
+    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🅰 the MIRROR kind</h4><p class="dim">~640 derived lines spliced into the .md · decides nothing · five Openings out of one template, because a page with no question has nothing to ask</p></div>
+      <div class="card"><h4>🅱 the DESIGN page</h4><p class="dim">the argument stays authored · the unit's bytes live in the skill/ plugin · the page settles on this record like any Q page</p></div>
+    </div>
+    <p class="dim mt-m">JL 260815. The losing candidate is recorded, never silently deleted — for-design's own rule.</p>
+    <div class="notes">This page is the first specimen of the ruling: its own conversion is the selection it records. The other nine unit pages adopted it by reference rather than restating it.</div>
+  </section>
+
+  <!-- 4. The measured door test -->
+  <section id="s4" class="slide" data-title="Evidence">
+    <p class="kicker">260802 · measured, not argued</p>
+    <h2 class="h2">Three fresh agents, zero hints</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🚪 found the door</h4><p class="dim">all three opened this skill unaided, at tool calls #5, #6 and #5</p></div>
+      <div class="card"><h4>📉 findings to zero</h4><p class="dim">three pages driven from 15, 13 and 10 findings to 0</p></div>
+      <div class="card"><h4>🛑 the scope failure</h4><p class="dim">the same instruction wrote to 15, 1 and 2 files — the verb said where to start, never where to stop</p></div>
+    </div>
+    <div class="notes">A test that only confirms what you expected has told you less than one that fails somewhere you were not looking. The 0.10.0 scope bound exists because of the third card, and it has not been re-measured since.</div>
+  </section>
+
+  <!-- 5. The plugin -->
+  <section id="s5" class="slide" data-title="skill/">
+    <p class="kicker">The material half</p>
+    <h2 class="h2">The snapshot, defused twice</h2>
+    <pre class="mt-m">skill/haipipe-page/
+  ref/page-run-contract.md    the Page RUN contract
+  CHANGELOG.md                the unit's own history
+  SKILL.snapshot.md           SKILL.md, renamed at plug time</pre>
+    <div class="grid g2 mt-m anim-stagger-list" data-anim-target>
+      <div class="card"><h4>🔒 lock #1</h4><p class="dim">discovery stops at the page-folder boundary: a plugin can never surface as a ghost page</p></div>
+      <div class="card"><h4>🔒 lock #2</h4><p class="dim">the rename beats the installer's */skills/*/SKILL.md glob: the copy can never install as a second skill</p></div>
+    </div>
+    <div class="notes">Snapshot, never residence: the live unit keeps shipping from board/haipipe-page. The snapshot records what this page's judgments were ABOUT.</div>
+  </section>
+
+  <!-- 6. The reform ahead -->
+  <section id="s6" class="slide" data-title="Reform">
+    <p class="kicker">Ruled 260815 · unbuilt</p>
+    <h2 class="h2">One spec becomes three axes</h2>
+    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
+      <div class="card"><h4>📐 structure</h4><p class="dim">what a page SAYS: the sections, the kinds that change what closing means</p></div>
+      <div class="card"><h4>📂 folder</h4><p class="dim">where its files LIVE: the page folder, and every subfolder a plugin</p></div>
+      <div class="card"><h4>🔁 workflow</h4><p class="dim">how it MOVES: draft · probe · revise · check, and the agents that run them</p></div>
+    </div>
+    <p class="dim mt-m">haipipe-page survives as the door that composes the three.</p>
+    <div class="notes">The board's QPs, QPf and QPw groups mirror the three units before they exist — the debt is on the group intros, visibly.</div>
+  </section>
+
+  <!-- 7. Health -->
+  <section id="s7" class="slide" data-title="Health">
+    <p class="kicker">state: 🟡 in flux</p>
+    <h2 class="h2">Proven fastest, changing fastest</h2>
+    <ul class="mt-m">
+      <li>24 releases to 0.21.0 — and the only unit whose door test was measured rather than assumed</li>
+      <li>🟡 because the 0.10.0 scope bound has never had its second measured run</li>
+      <li>Ten page-type variants extend this contract, which is why a rule may never fork into a variant</li>
+      <li>Next: the nine sibling unit pages converted after this specimen was ruled</li>
+    </ul>
+    <div class="notes">In flux is a health judgment, not unsettledness: nothing about the contract is contested, and everything about it is moving.</div>
+  </section>
+
+  <!-- 8. Closer -->
+  <section id="s8" class="slide" data-title="Closer">
+    <p class="kicker">The point</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">Brief → candidates →<br><span class="gradient-text">selection → shipped bytes</span></h1>
+    <p class="lede">A unit's page is not a mirror of its files. It is the argument that produced them, with the artifact plugged in beside it.</p>
+    <div class="deck-footer"><span class="dim2">generated from Skill-3's Content · regenerate any time from the page</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+    <div class="notes">Close by pointing at the page itself: everything on these slides has an address there, and the deck goes stale the moment the page moves on — which is fine, because regenerating it is one click.</div>
+  </section>
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>

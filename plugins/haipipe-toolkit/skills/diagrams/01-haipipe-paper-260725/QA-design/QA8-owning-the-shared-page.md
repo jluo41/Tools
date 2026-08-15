@@ -11,7 +11,7 @@ Five seams were ruled separately and each for its own reason: who may write whic
 
 Five seams exist: who may write which section, which of two dependency declarations binds, where a paper's own state lives, who brings a page into being, and how far the board may go in running paper-specific code.
 
-Scope: This page covers What each skill may write on a shared page, which declaration is authoritative, where paper state lives, who creates a page, and how far the `dialect: paper` seam reaches. Neighbouring pages cover The collaboration as a whole is `QA4`; how work is DRIVEN from a page is `QA9`; what a board is, and its face grammar, belong to the tool's own board at `../01-boardform-260722/`.
+Scope: This page covers What each skill may write on a shared page, which declaration is authoritative, where paper state lives, who creates a page, and how far the `dialect: paper` seam reaches. Neighbouring pages cover The collaboration as a whole is `QA4`; how work is DRIVEN from a page is `QA9`; what a board is, and its face grammar, belong to the tool's own board at `../BoardSkillBoard-260722/`.
 
 ## Diagram
 ```
@@ -59,7 +59,7 @@ Scope: This page covers What each skill may write on a shared page, which declar
     a dialect holds GRAMMAR + RESOLUTION, never rendering, never writing.
     THE LAW IS A TEST: delete src/dialect_paper.py and every board that
     does not declare `dialect: paper` renders BYTE-IDENTICAL.
-    verified 260726 on 01-boardform-260722  138c274a ──► 138c274a  ✅
+    verified 260726 on BoardSkillBoard-260722  138c274a ──► 138c274a  ✅
     (this board declares a dialect of its OWN now, so the test
      moved to one that does not)
 
@@ -211,7 +211,7 @@ Since 260726 the design board declares `dialect: paper` against `_fixture`, a sm
 
 Turning it on was measured first, not assumed: every marker already written on this board sits inside a fence or backticks, so the collateral was exactly zero chips and only the new examples render.
 
-One consequence, stated rather than discovered later: the delete-test needs a board that declares NO dialect, and this board is no longer one. It runs against `01-boardform-260722`.
+One consequence, stated rather than discovered later: the delete-test needs a board that declares NO dialect, and this board is no longer one. It runs against `BoardSkillBoard-260722`.
 
 ## Aims
 - [x] 📄 One file, not two

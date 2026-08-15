@@ -10,7 +10,7 @@ That is the easy half. The hard half is that this board would be a third kind of
 
 So a task board's page DESCRIBES something it does not contain, and that is a failure mode neither existing board has. A design board cannot drift from its skill without a human noticing, because the skill is the only reader. A paper board cannot drift from the paper at all, because it is the source. A page that narrates a folder of code can be wrong about that folder from the moment the next commit lands, and nothing would say so.
 
-**Covered elsewhere**: What the folder being described contains is `QA6`; what makes a child a task-folder at all is `QB1`; the two gates whose passing a `state:` would report are `QB3` and `QB5`; who calls the board and when is `QA4`. What a board IS belongs to `01-boardform-260722` and is not ruled here. The opposite object, a board whose pages are the artifact, is `QA7@paper`.
+**Covered elsewhere**: What the folder being described contains is `QA6`; what makes a child a task-folder at all is `QB1`; the two gates whose passing a `state:` would report are `QB3` and `QB5`; who calls the board and when is `QA4`. What a board IS belongs to `BoardSkillBoard-260722` and is not ruled here. The opposite object, a board whose pages are the artifact, is `QA7@paper`.
 
 ## Diagram
 ```

@@ -688,7 +688,7 @@ At most desks the unfixable step is the length count, because it is a content de
   The contract this page is an instance of: the three figures in fixed order, the `Sec-<n>` index rule, the desk-outranks-pack rule, these five Files groups, and the rule that an unfillable slot is printed rather than dropped. If the two disagree, the contract wins and this page is the defect.
 - `../../board/haipipe-page/SKILL.md`
   The base frame that contract extends. It owns the section set and their order.
-- `../01-boardform-260722/QB-delivery/QB4-overall.md`
+- `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md`
   The page grammar every division above obeys: caption, then figure, then the one-line establish, then prose, and Aims groups carrying their division's id and exact name.
 
 ### 📥 Input files · what this page READS

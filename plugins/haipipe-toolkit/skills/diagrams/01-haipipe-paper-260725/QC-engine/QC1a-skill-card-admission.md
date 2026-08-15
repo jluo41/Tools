@@ -10,7 +10,7 @@ The paper folder contains many skills, but a one-page-per-folder catalog would b
 
 Six skills carried those six steps when this page was ruled. Since 260805 one skill carries them all, so the same rule now admits one paper page instead of six.
 
-Scope: This page covers The first skill-page cohort for a Board-first paper lifecycle and venue-grounded scientific prose, and the criterion for adding another page. Neighbouring pages cover Board interaction belongs to the Boardform board's own pages under `../01-boardform-260722/QCskill-engine-skill/`; venue packs remain knowledge sources rather than callable skills. How a ruling becomes shipped text had a face of its own until 260727, when JL retired the three governance faces (graduation, versioning, per-skill status) into `_archive/`; the graduation rule itself still lives in `haipipe-board`'s own manual, which is where it was always stated.
+Scope: This page covers The first skill-page cohort for a Board-first paper lifecycle and venue-grounded scientific prose, and the criterion for adding another page. Neighbouring pages cover Board interaction belongs to the Boardform board's own pages under `../BoardSkillBoard-260722/_archive/`; venue packs remain knowledge sources rather than callable skills. How a ruling becomes shipped text had a face of its own until 260727, when JL retired the three governance faces (graduation, versioning, per-skill status) into `_archive/`; the graduation rule itself still lives in `haipipe-board`'s own manual, which is where it was always stated.
 
 ## Diagram
 ```

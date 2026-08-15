@@ -123,8 +123,8 @@ QG1-for-labeling.md
 haipipe-page-for-labeling ../../skills/page-types/haipipe-page-for-labeling/SKILL.md
 template.md ../../skills/page-types/haipipe-page-for-labeling/template.md
 template-dash.md ../../skills/page-types/haipipe-page-for-labeling/template-dash.md
-QB4 ../../../haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB4-overall.md
-QB6 ../../../haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB6-page-types.md
+QB4 ../../../haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md
+QB6 ../../../haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPs-page-structure/QPs2-page-types/QPs2-page-types.md
 skills/subjective-label/SKILL.md ../../skills/subjective-label/SKILL.md
 skills/sl-init/SKILL.md ../../skills/sl-init/SKILL.md
 skills/sl-round/SKILL.md ../../skills/sl-round/SKILL.md

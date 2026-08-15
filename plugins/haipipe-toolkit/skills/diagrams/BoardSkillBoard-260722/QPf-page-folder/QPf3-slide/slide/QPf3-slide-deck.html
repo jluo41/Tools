@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf3 · The Authored Deck</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body><div class="deck">
+
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QPf3-slide · design · JL · 🟡 WORKING</p>
+  <h1 class="h1">Every page may have <span class="gradient-text">an authored deck</span></h1>
+  <p class="lede">One file beside the page, two doors to open it, and one ✨ button that re-authors it — so a talk is never more than one gesture behind its page.</p>
+  <div class="deck-footer"><span class="dim2">QPf3-slide · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Welcome — this is the Slide plugin as it runs today. The whole argument fits in one sentence: a page's talk lives in one derived file, and Claude, not a person, is its author. Everything else on these slides is how that stays honest and fresh.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Shape">
+  <p class="kicker">Opening · where a page's talk lives</p>
+  <h2 class="h2">One file, two doors, one button</h2>
+  <pre>
+📋 the PAGE                      🎞 the DECK (optional)
+┌───────────────────┐    tab    ┌────────────────────────┐
+│ ## Content ...    │ ────────▶ │ ⟨page⟩/slide/          │
+│ the page Claude   │           │   ⟨page⟩-deck.html     │
+│ reads + distills  │           │ html-ppt shell + notes │
+└─────────┬─────────┘           └───────────▲────────────┘
+          │                                 │ writes
+          │ ✨ Regenerate: POST /_board/autodeck
+          └────── runs claude -p ───────────┘
+</pre>
+  <p class="dim mt-m">The deck is optional, the way a scene in draw/ or a kept session in chat/ is — and it is the AI deck, JL's ruling.</p>
+  <div class="notes">Hold this picture; the next five slides just walk its three parts. The page's markdown is the only source, the deck sits beside it in slide/, and the sparkle button closes the loop between them. Note what is absent: no second author, no separate tier — "we will just have the AI deck" was the ruling.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Home">
+  <p class="kicker">The home · derived, never registered</p>
+  <h2 class="h2">Existence of the file is the whole state</h2>
+  <div class="grid g3">
+    <div class="card"><h4>📄 One path per page</h4><p class="dim">A folded page owns slide/, and the deck's name is the page stem plus -deck.html.</p></div>
+    <div class="card"><h4>🔑 Derived, not listed</h4><p class="dim">Both doors compute the path from the page they are on, the way Draw derives its owner.</p></div>
+    <div class="card"><h4>🕳 HEAD and know</h4><p class="dim">No manifest row, no registry — nothing keeps a list that could drift.</p></div>
+  </div>
+  <p class="dim mt-m">When the file is absent the surfaces say so and offer the button; nothing generates a deck behind your back.</p>
+  <div class="notes">The design move here is refusing to keep state. There is no row anywhere saying "this page has a deck" — you HEAD the derived path and you know. That means the surfaces can never disagree with the disk, because there is nothing to fall out of sync.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Doors">
+  <p class="kicker">The two doors · one loader behind both</p>
+  <h2 class="h2">Where a deck opens</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🚪 The Slides tab</h4><p class="dim">In the shell beside Chat and Draw, with the ✨ bar riding above the frame.</p></div>
+    <div class="card"><h4>🚪 The page's 🎞 panel</h4><p class="dim">A resizable right split, with ✨ regenerate in its header.</p></div>
+    <div class="card"><h4>🔑 ?plain</h4><p class="dim">Without it, the deck comes back wearing the operating shell.</p></div>
+    <div class="card"><h4>🔄 Cache-busted, always</h4><p class="dim">A freshly written deck appears on the next click; a stale iframe can never survive its file.</p></div>
+  </div>
+  <div class="notes">Two doors, but deliberately one behavior: both HEAD the derived path and either show the saved deck or point you at the sparkle button. The cache-busting matters more than it looks — regeneration overwrites in place, so the loader has to guarantee the next click shows the new file.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Regenerate">
+  <p class="kicker">✨ Regenerate · one click, one authored deck</p>
+  <h2 class="h2">The loop, and its guardrails</h2>
+  <ul>
+    <li>✨ click posts to /_board/autodeck; live/autodeck.py runs claude -p on the page's .md, ⏱ a few minutes.</li>
+    <li>The ask box is optional — empty means "present the page's argument"; a typed ask steers the emphasis.</li>
+    <li>The &lt;head&gt; is computed server-side from real paths, so the model's freedom starts at &lt;body&gt; and a deck can never 404 its own stylesheets.</li>
+    <li>Validation before write: a complete document, at least three slides, the asset links present — or the deck is refused and the old file stands.</li>
+    <li>Regeneration always overwrites, so a lasting correction belongs on the PAGE, which is what every regeneration reads.</li>
+  </ul>
+  <div class="notes">This is the heart of the contract. The server owns everything that must be correct — the head, the links, the validation gate — and the model owns everything editorial, from body onward. And the last point is the discipline: don't hand-fix a deck, fix the page, because the page is the only thing the button ever reads.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Form">
+  <p class="kicker">What a deck is · html-ppt's shell, this board's voice</p>
+  <h2 class="h2">Six to nine slides on a shared shell</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🎨 One theme, shared</h4><p class="dim">academic-report by default, T cycles the short gallery; the board contributes no CSS of its own.</p></div>
+    <div class="card"><h4>⌨️ Full runtime</h4><p class="dim">← → move, F fullscreen, O overview, S presenter mode.</p></div>
+    <div class="card"><h4>🗣 Notes on every slide</h4><p class="dim">Speaker guidance rides along, surfaced by S — a talk, not a caption reel.</p></div>
+    <div class="card"><h4>🛡 Survives blocked scripts</h4><p class="dim">No data-js stamp, and CSS flattens the deck to one fragment-picked slide — it still reads.</p></div>
+  </div>
+  <p class="dim mt-m">Decks link at the skill's assets by relative path, nothing copied — a theme improvement reaches every deck with no rebuild.</p>
+  <div class="notes">The html-ppt skill owns everything a deck looks like; this board only supplies the words. Because assets are linked, not copied, improving a theme once upgrades every deck ever written. And the no-JS fallback means even a locked-down viewer gets a readable talk, one slide at a time.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Remains">
+  <p class="kicker">States · proven, not described</p>
+  <h2 class="h2">What's live, what's left</h2>
+  <ul>
+    <li>✅ /_board/autodeck authored a real 8-slide deck for QF2-newcomer on its first live run; eight decks now sit in page slide/ folders.</li>
+    <li>✂️ live/deck.py retires — it has no caller; the /_board/deck route and the DeckMixin go with it.</li>
+    <li>🗑 haipipe-page-for-slide leaves page-types/, riding the family reorg; the shipped unit contradicts this contract while it remains.</li>
+    <li>🧾 QPs2's roster still lists for-slide; that row belongs to that page's overdue sweep.</li>
+    <li>👀 One ruling is JL's alone: does a deck shown to others need a person's acceptance before it is presented?</li>
+  </ul>
+  <div class="notes">The surface is done in the strongest sense — it ran for real, on its first try, and eight decks exist. What remains is subtraction: three retirements of things the old design left behind. The open ruling is the interesting one — Claude's deck makes editorial claims, and nothing today records that a person read it before it went in front of others.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">QPf3-slide · the working contract</p>
+  <h1 class="h1">Never more than <span class="gradient-text">one gesture behind</span></h1>
+  <p class="lede">A derived path instead of a registry, a server-owned head instead of broken links, and a ✨ button instead of a stale talk — open the Slides tab and watch the page speak.</p>
+  <div class="deck-footer"><span class="dim2">QPf3-slide · AI-generated deck, 260815</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">The design succeeds exactly as the page says: a reader opens the Slides tab, watches a real talk about the page, and refreshes it without leaving the browser. If the talk drifts from the truth, edit the page and press the button — that's the whole maintenance story. Thanks; questions welcome.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260815 1656 · ask: (page) -->

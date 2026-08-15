@@ -10,7 +10,7 @@ The mechanism that keeps them separate is graduation. A question reaches ✅ and
 
 The direction that is easy to get wrong is the other one. An unsettled page must NOT be copied into the skill, because a convenient improvisation written into a manual becomes a rule nobody chose. So the board's job is as much to hold things back as to hand them over.
 
-**Covered elsewhere**: What ships is `QA2`; the map that places this folder is `QA1`; what a board IS belongs to `01-boardform-260722`. The paper family's version of this face is `QA3@paper` and the two are deliberately the same argument.
+**Covered elsewhere**: What ships is `QA2`; the map that places this folder is `QA1`; what a board IS belongs to `BoardSkillBoard-260722`. The paper family's version of this face is `QA3@paper` and the two are deliberately the same argument.
 
 ## Diagram
 ```

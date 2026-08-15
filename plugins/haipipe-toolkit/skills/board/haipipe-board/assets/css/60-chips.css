@@ -200,18 +200,6 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
  border-radius:var(--radius-surface);background:#fff;
  box-shadow:0 0 0 1px var(--line)}
 .fightml .fsopen{display:inline-block;margin-top:6px;font-size:12.5px}
-.xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
-/* 🗑 removal (QD7, JL 260726) reads as the destructive one without shouting */
-.xadd-row .xrm{color:var(--mut)}
-.xadd-row .xrm:hover{color:var(--bad,#c0392b);border-color:currentColor}
-/* the bare control on a page that has no ## Diagram at all: it stands where the
-   section would render, so its own spacing has to substitute for the section's */
-.xadd.xadd-bare{margin:0 0 16px}
-.xadd-row .xnew:disabled{opacity:.5;cursor:default}
-
-/* [hidden] is display:none in the UA sheet, and .xadd-row's display:flex
-   outranks it, so the paste row was never hidden however often JS set it. */
-.xadd-row[hidden]{display:none}
 .xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
  word-break:break-all;user-select:all}
 

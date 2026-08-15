@@ -30,7 +30,7 @@ How a question actually crosses the evidence wall, and what it may cost, is `QC4
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Never put a count in the title or the lead**: it has gone wrong twice, four to eight on 260726 and eight to eleven on 260802, and each time the title outlived the fact.
 Name what the page is FOR, and let the number live in Content where it can be corrected without a rename.
@@ -102,7 +102,7 @@ Reading order is therefore imperfect and the table is what to read instead of th
    🧩 THE THING                        📋 ITS BOARD
    ───────────────────────────────     ──────────────────────────────
  ① 📄 paper skill    skills/paper/  ⟷  ② 01-haipipe-paper-260725  ← here
- ③ 👁 board tool     skills/board/  ⟷  ④ 01-boardform-260722      read-only
+ ③ 👁 board tool     skills/board/  ⟷  ④ BoardSkillBoard-260722   read-only
  ⑤ 🔎 probe layer    skills/probe/  ⟷  ⑥ retired 260804 · was 01-probe-qa-260726
  ⑦ 📝 one paper      Paper-X/       ⟷  ⑧ Paper-X/0-lifecycle/
  ⑨ 🖼 display layer  skills/display/⟷  ⑩ retired 260804 · was 01-haipipe-display-260727

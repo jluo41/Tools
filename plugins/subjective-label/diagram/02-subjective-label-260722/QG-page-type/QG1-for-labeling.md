@@ -22,7 +22,7 @@ So this specimen makes the lifecycle's five doors its own Content divisions.
 
 **Where the steps come from**: `QF1` on this same board names five doors and fixes the dispatch as state read, precondition check, one phase, authorized write, next state. This page invents no step and reorders none. It sits on this board rather than on the boardform board for exactly that reason: the steps are this plugin's, so the page that walks them is too.
 
-**Covered elsewhere**: what any board page is, and the section grammar this page obeys, belong to the boardform board at `../../../../haipipe-toolkit/skills/diagrams/01-boardform-260722`, whose `QB4` owns it and whose `QB6` admits the type. The variant contract is `haipipe-page-for-labeling`, in this plugin's own `skills/page-types/`, and its `template.md` is the copy-and-fill specimen; this page is the worked one.
+**Covered elsewhere**: what any board page is, and the section grammar this page obeys, belong to the boardform board at `../../../../haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722`, whose `QB4` owns it and whose `QB6` admits the type. The variant contract is `haipipe-page-for-labeling`, in this plugin's own `skills/page-types/`, and its `template.md` is the copy-and-fill specimen; this page is the worked one.
 
 ## Diagram
 

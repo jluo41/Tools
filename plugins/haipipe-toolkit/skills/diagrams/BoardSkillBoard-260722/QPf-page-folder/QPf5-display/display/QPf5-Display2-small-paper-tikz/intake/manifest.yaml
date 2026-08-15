@@ -1,0 +1,15 @@
+# Concept-driven intake: narrative sources only, no values (the figure states no number).
+unit: QPf5-Display2-small-paper-tikz
+kind: diagram-tikz
+values_sources: []
+narrative_sources:
+  - role: concept
+    ref: ../QPf5-display.md
+    note: the ask-once-cite-twice rule and the TikZ method row, both in this page
+  - role: concept
+    ref: ../../QPf9-probe/QPf9-probe.md
+    note: the card grammar (question, state, binding) and the wall
+facts_the_image_may_state:
+  - a page owns probe/ and display/ as sibling plugins
+  - the probe card holds the binding once; manifest and sentence cite it by id
+  - the bank answers in general language; the stake stays on the page side

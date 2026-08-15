@@ -115,7 +115,7 @@ consumer and an executor; the claim's status is authored by the consumer, in its
 The `board` bucket is a first-class cross-cutting family rather than a utility:
 `board/haipipe-board/` owns the format, renderer, local service, write-back, and
 checks; `board/agents/` owns the read-only fresh-context reviewer. The Board used
-to design that package remains at `diagrams/01-boardform-260722/`, because working
+to design that package remains at `diagrams/BoardSkillBoard-260722/`, because working
 design records and delivery skills have different lifecycles.
 
 There is no `narrative` bucket — narrative is a paper STAGE

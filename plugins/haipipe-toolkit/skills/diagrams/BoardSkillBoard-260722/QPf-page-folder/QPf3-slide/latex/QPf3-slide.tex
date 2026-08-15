@@ -1,0 +1,52 @@
+% GENERATED from QPf3-slide.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{The home: derived, never registered}
+\textbf{One path per page}: existence of the file is the whole state.
+
+\begin{verbatim}
+   <page>/slide/<page>-deck.html
+   derived from the page's own path, the way Draw derives its owner
+   no manifest row, no registry: HEAD the path and you know
+\end{verbatim}
+A folded page (\texttt{<name>/<name>.md}) owns the \texttt{slide/} folder, and the deck's filename is the page stem plus \texttt{-deck.html}. Both doors below derive this path from the page they are on, so nothing keeps a list that could drift. When the file is absent the surfaces say so and offer the button, and nothing generates a deck behind your back.
+
+
+\section{The two doors}
+\textbf{Where a deck opens}: the shell tab and the page panel, one loader behind both.
+
+\begin{verbatim}
+   the shell's  Slides tab      beside Chat and Draw, with the
+                                     bar riding above the frame
+   the page's  panel            a resizable right split, with
+                                     regenerate in its header
+   ?plain                         or the deck comes back wearing
+                                    the operating shell
+\end{verbatim}
+Both doors HEAD the derived path and show the saved deck, or a pointer to the ✨ button when none exists. Every load is cache-busted, so a freshly written deck appears on the next click and a stale iframe can never survive its file.
+
+
+\section{✨ Regenerate: one click, one authored deck}
+\textbf{The loop}: what the button does and what it overwrites.
+
+\begin{verbatim}
+   click --> POST /_board/autodeck {file, prompt?}
+           --> live/autodeck.py runs `claude -p` on the page's .md
+           -->  slide/<page>-deck.html replaced --> frame reloads
+   a few minutes . the status word says so while it thinks
+\end{verbatim}
+The ask box is optional: empty means present the page's argument, and a typed ask steers the talk's emphasis. The \texttt{<head>} with its asset hops is computed server-side from real paths, so the model's freedom starts at \texttt{<body>} and a generated deck can never 404 its own stylesheets. The server validates before writing: a complete document, at least three slides, the asset links present, or the deck is refused and the old file stands. Regeneration always overwrites, so a lasting correction belongs on the PAGE, which is what every regeneration reads.
+
+
+\section{What a deck is}
+\textbf{The form}: html-ppt's shell, this board's voice.
+
+\begin{verbatim}
+   academic-report theme . T cycles the short gallery
+     move . F fullscreen . O overview . S presenter mode
+   every slide carries speaker notes, surfaced by S
+   scripts blocked? a data-js stamp is absent and CSS flattens
+     the deck to one fragment-picked slide, so it still reads
+\end{verbatim}
+A deck is six to nine slides: a cover, a closer, and distilled middles built from the page's own emoji, numbers, and quoted rulings. The deck links at the html-ppt skill's assets by relative path, so a theme improvement reaches every deck with no rebuild. Nothing from the skill is copied into the board, and the board contributes no CSS of its own.
+

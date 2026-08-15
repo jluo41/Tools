@@ -24,7 +24,7 @@ The LaTeX path has a real bibliography and the Word path does not, so the same b
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md` and are not restated here.
 
 **Never specify the marker**: `\cite{TOADD}`, the chip, and the evidence card belong to QBe1 §4.
 This page says a citation must be bound and human-keyed; it does not say what the binding looks like on screen.

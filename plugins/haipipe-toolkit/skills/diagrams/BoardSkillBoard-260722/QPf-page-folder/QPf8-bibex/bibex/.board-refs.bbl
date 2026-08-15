@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Luo et~al.(2026)Luo, Zhi, Han, Kumbara, Shomali, Iyer, Agarwal, and
+  Gao]{luo2026eventglucose}
+Junjie Luo, Xuzhe Zhi, Rui Han, Abhimanyu Kumbara, Mansur~E Shomali, Anand~K
+  Iyer, Ritu Agarwal, and Guodong~Gordon Gao.
+\newblock Eventglucose: A benchmark for continuous glucose monitoring
+  forecasting with behavioral event context.
+\newblock In \emph{Proceedings of the 32nd ACM SIGKDD Conference on Knowledge
+  Discovery and Data Mining V. 2}, pages 9510--9521, 2026.
+
+\end{thebibliography}

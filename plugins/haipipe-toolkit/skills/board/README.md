@@ -28,8 +28,6 @@ reviewable set of question pages or lifecycle stages.
     question.
   - `haipipe-page-for-meeting/` is the VARIANT for `Meeting-<n>`: talk is
     recorded there and ruled elsewhere, and it is never counted as settled.
-  - `haipipe-page-for-slide/` is the VARIANT for a deck, one division per slide,
-    each embedding the one deck file live.
   - `haipipe-page-for-design/` is the VARIANT for a design brief: candidates side
     by side, closing on a SELECTION record.
   ⚠️ Moving a variant between skill sets does not move its installed symlink.
@@ -79,7 +77,6 @@ board/
 │   ├── haipipe-page-for-stage/
 │   ├── haipipe-page-for-skill/
 │   ├── haipipe-page-for-meeting/
-│   ├── haipipe-page-for-slide/
 │   └── haipipe-page-for-design/
 ├── page-phases/
 │   ├── haipipe-page-draft/
@@ -109,7 +106,7 @@ bounded cross-Page reads. `ref/page-lifecycle.workflow.js`,
 executable and auditable side of the Page-owned RUN contract.
 
 The design Board remains a working artifact at
-`../diagrams/01-boardform-260722/`. It does not ship inside the skill.
+`../diagrams/BoardSkillBoard-260722/`. It does not ship inside the skill.
 
 `page-types/` and `page-phases/` are organization folders, not skills of their
 own. The installer discovers every nested `SKILL.md` recursively, while each

@@ -284,7 +284,7 @@ Converted from the skill's own `CHANGELOG.md`: 11 releases.
         (roster generated from `## Pages`, every typed cell kept, a new page arrives with `?`,
         a retired page's row dropped); kept cells are collected GLOBALLY by page id, so a
         page that changes group carries its cells with it, proven when 31 of 42 pages moved
-        in the `01-boardform-260722` restructure; the board canvas shows how GROUPS connect
+        in the `BoardSkillBoard-260722` restructure; the board canvas shows how GROUPS connect
         and is never a second copy of the page roster; a group anchors at `#group-<token>`
         and is not a page.
 260802 · `0.8.0`
