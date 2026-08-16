@@ -15,7 +15,6 @@ import re
 import shutil
 import signal
 import socket
-import sqlite3
 import struct
 import subprocess
 import sys

@@ -1,155 +1,27 @@
-/* ── QD8 · activity timing and layout ───────────────────────────────────
-   Timing is runtime data, so it is enhancement-only by definition. The static
-   shell above still explains the measurement when this script or serve.py is
-   absent. HEAD polling never counts as activity. Only a visible, non-idle span
-   sends heartbeats, and the server stores completed seconds outside Git. */
-(function () {
-  var PULSE = 30000, IDLE = 5 * 60 * 1000;
-  var span = '', seq = 0, lastAction = Date.now(), changed = false;
-  var tab = '', spanContext = null, idleTimer = null;
-  try {
-    tab = sessionStorage.getItem('board-activity-tab') || '';
-    if (!tab) {
-      tab = (crypto.randomUUID ? crypto.randomUUID() :
-        Date.now().toString(36) + Math.random().toString(36).slice(2));
-      sessionStorage.setItem('board-activity-tab', tab);
-    }
-  } catch (e) {
-    tab = Date.now().toString(36) + Math.random().toString(36).slice(2);
-  }
+/* ── the Activity readout ───────────────────────────────────────────────
+   Runtime data, so it is enhancement-only by definition: the static shell
+   above still explains the measurement when this script or serve.py is
+   absent. One POST on load, one more whenever the page reports a write.
 
+   The FOCUS TIMER that used to live here was deleted on 260816 (JL: keep the
+   log tracker, drop the rest). It wrote browser spans into a SQLite file at
+   `.haipipe-board/activity.sqlite3` that nothing ever read back, and it was
+   also, accidentally, what fetched this readout: every heartbeat returned the
+   stats and the panel drew them. So the display had to be given a request of
+   its own before the timer could go, which is this. */
+(function () {
   function escAct(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function fmtAct(sec) {
-    sec = Math.max(0, Math.round(Number(sec) || 0));
-    if (sec < 60) return sec ? '<1m' : '0m';
-    var min = Math.round(sec / 60);
-    if (min < 60) return min + 'm';
-    var h = Math.floor(min / 60), rem = min % 60;
-    return h + 'h' + (rem ? ' ' + rem + 'm' : '');
-  }
-  function context() {
-    var id = (location.hash || '').slice(1);
-    var row = null;
-    document.querySelectorAll('a.ir[href^="#"]').forEach(function (r) {
-      if (r.getAttribute('href') === '#' + id) row = r;
-    });
-    if (!row) return { page: 'board', group: '', title: 'Whole board' };
-    var p = row.previousElementSibling;
-    while (p && !p.classList.contains('grp')) p = p.previousElementSibling;
-    return {
-      page: (row.querySelector('.i') || {}).textContent || id,
-      group: p ? p.getAttribute('data-g') || '' : '',
-      title: (row.querySelector('.t') || {}).textContent || id
-    };
-  }
-  function actor() {
-    try { return localStorage.getItem('board-user-last') || 'JL'; }
-    catch (e) { return 'JL'; }
-  }
-  function payload(op, active, reason, activeUntil) {
-    var c = spanContext || context();
-    var p = {
-      op: op, path: boardPath(), span: span, page: c.page,
-      group: c.group, title: c.title, actor: actor(),
-      active: active !== false, changed: changed, reason: reason || ''
-    };
-    if (activeUntil) p.active_until = activeUntil / 1000;
-    return p;
-  }
+
   function status(text, cls) {
     var s = document.getElementById('activity-status');
     if (!s) return;
     s.textContent = text;
     s.className = 'act-status' + (cls ? ' ' + cls : '');
   }
-  function post(p, beacon) {
-    var raw = JSON.stringify(p);
-    if (beacon && navigator.sendBeacon) {
-      navigator.sendBeacon('/_board/activity',
-        new Blob([raw], { type: 'application/json' }));
-      return;
-    }
-    fetch('/_board/activity', {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: raw
-    }).then(function (r) {
-      if (!r.ok) throw new Error(String(r.status));
-      return r.json();
-    }).then(function (data) {
-      if (p.changed && p.span === span) changed = false;
-      render(data);
-    }).catch(function () {
-      status('timing unavailable', '');
-    });
-  }
-  function begin() {
-    if (span || document.hidden) return;
-    spanContext = context();
-    span = tab + ':' + (++seq) + ':' + Date.now().toString(36);
-    post(payload('start', true), false);
-    scheduleIdle();
-  }
-  function clearIdle() {
-    if (idleTimer) window.clearTimeout(idleTimer);
-    idleTimer = null;
-  }
-  function scheduleIdle() {
-    clearIdle();
-    if (!span || document.hidden) return;
-    var due = lastAction + IDLE;
-    idleTimer = window.setTimeout(function stopAtIdleBoundary() {
-      idleTimer = null;
-      if (!span || document.hidden) return;
-      if (Date.now() < due) {
-        scheduleIdle();
-        return;
-      }
-      finish(false, 'idle', due);
-      status('paused', '');
-    }, Math.max(0, due - Date.now()));
-  }
-  function finish(beacon, reason, activeUntil) {
-    if (!span) return;
-    var p = payload('stop', true, reason || 'stop', activeUntil);
-    span = '';
-    spanContext = null;
-    changed = false;
-    clearIdle();
-    post(p, beacon);
-  }
-  function pulse() {
-    if (document.hidden || Date.now() - lastAction >= IDLE) {
-      finish(false, document.hidden ? 'hidden' : 'idle',
-        document.hidden ? 0 : lastAction + IDLE);
-      status('paused', '');
-      return;
-    }
-    if (!span) begin();
-    else post(payload('pulse', true), false);
-  }
-  function touch() {
-    lastAction = Date.now();
-    if (!span && !document.hidden) begin();
-    else scheduleIdle();
-  }
-  ['pointerdown','keydown','wheel','touchstart','scroll'].forEach(function (name) {
-    window.addEventListener(name, touch, { passive: true });
-  });
-  window.addEventListener('hashchange', function () {
-    finish(false, 'page-change'); lastAction = Date.now(); begin();
-  });
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) finish(true, 'hidden');
-    else { lastAction = Date.now(); begin(); }
-  });
-  window.addEventListener('pagehide', function () { finish(true, 'pagehide'); });
-  window.addEventListener('board:updated', function () {
-    changed = true;
-    if (span) post(payload('pulse', true), false);
-  });
 
   /* ── the dashboard counts UPDATES, not time (QD8 -> QC2, JL 260726) ──────
      "I don't care about the time. What I care is about the numbers of
@@ -276,7 +148,19 @@
   }
 
 
+  function load() {
+    fetch('/_board/activity', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: 'stats', path: boardPath() })
+    }).then(function (r) {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json();
+    }).then(render).catch(function () {
+      status('counts unavailable', '');
+    });
+  }
+  window.addEventListener('board:updated', load);
+
   status('reading logs', '');
-  begin();
-  setInterval(pulse, PULSE);
+  load();
 })();
