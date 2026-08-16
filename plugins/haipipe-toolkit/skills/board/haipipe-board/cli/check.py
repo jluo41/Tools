@@ -237,7 +237,9 @@ def check_group_order(d, text, rep):
     if len(bare) == len(found):
         rep.add(WARN, "groups-not-numbered", "board.md",
                 f"{len(found)} group folders carry no reading-order number "
-                f"(JL 260816); `python3 cli/regroup.py <board> --apply` numbers them")
+                f"(JL 260816); rename each to `<N>-<folder>` in ## Pages order "
+                f"and rewrite the paths that cite them. regroup.py numbers a "
+                f"board it is still FOLDING and cannot renumber this one")
         return
     for f in bare:
         rep.add(ERROR, "group-number-missing", f,
