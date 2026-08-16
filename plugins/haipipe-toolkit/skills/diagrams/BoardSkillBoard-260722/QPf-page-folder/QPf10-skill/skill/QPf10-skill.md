@@ -4,6 +4,6 @@
      in the 🛠 tab. A refresh only APPENDS newly scanned names at the bottom;
      a `removed` row is a person's ✕ and is never re-seeded. -->
 
-- haipipe-plugin-skill · note: CC declaration awaiting JL: the skill was extracted from this page
+- haipipe-plugin-skill · note: the skill was extracted from this page
 - haipipe-board
 - haipipe-plugin

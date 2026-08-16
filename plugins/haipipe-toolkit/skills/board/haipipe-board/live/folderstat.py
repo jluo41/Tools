@@ -70,8 +70,13 @@ tr.files>td{{padding:2px 8px 10px 34px;border-bottom:1px solid var(--line)}}
  border-radius:9px;cursor:pointer}}
 .rb:hover{{background:var(--warn);color:var(--card)}}
 .rb[disabled]{{opacity:.5;cursor:default}}
+.rball{{float:right;margin-top:2px;padding:4px 12px;cursor:pointer;
+ font:500 12px -apple-system,sans-serif;color:var(--fg);
+ background:var(--card);border:1px solid var(--line);border-radius:10px}}
+.rball:hover{{border-color:var(--warn);color:var(--warn)}}
+.rball[disabled]{{opacity:.5;cursor:default}}
 </style></head><body>
-<h1>📂 {title}</h1>
+{allbtn}<h1>📂 {title}</h1>
 <div class="mut">the page's own folder · rendered live, never stored ·
 source .md edited {md_age}</div>
 <table><tr><th></th><th>plugin</th><th>holds</th><th>newest</th><th>state</th></tr>

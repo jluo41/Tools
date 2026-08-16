@@ -5,16 +5,15 @@ method: adopt the display family's unit contract verbatim at `<page>/display/<un
 session: fe4afd59-043c-45ba-8555-ef7175b384ee
 
 ## Opening
-Where does a page's display live, now that every subfolder of a page is a plugin?
-A display is one rendered unit, such as a table or a figure.
-Each unit is a folder carrying its sources, its recipe, and the winning asset.
-The display family already fixed that folder's shape in a source-agnostic contract.
-So this page adopts that contract at `<page>/display/<unit>/` rather than designing a new one.
-It decides only the page side: how units are found, shown, and accepted.
+Where does a page keep its figures and tables, now that every subfolder of a page is a plugin?
+A display here is one finished figure or table, living in its own folder, called a unit.
+A unit holds the approved inputs, the script that draws them, and the picture that came out.
+The display skills already fixed this folder shape for papers, so the page reuses it instead of inventing a second one.
+This page decides only the page side: where units live, how they show, how text cites them, and who approves.
 
-**What a unit is**: one folder per rendered thing, such as `display/QPf5-Display1-drift-bands/`, holding `intake/` (the approved numbers), `recipe/` (the script that renders), `assets/` (the winning render), and `preview.pdf` (what a person looks at).
-**Why adopt rather than design**: the contract says of itself that a caller "maps this bundle into its own layout through its own adapter"; the page is one more caller, and a second unit grammar would fork every renderer.
-**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; `QPf2` is the draw plugin and `QPf3` the slide plugin, whose own line "a slide is a display that talks" names their kinship; the paper's adapter for the same contract is `S05-display` with `cli/build-displays.py`.
+**What a unit is**: one folder per rendered thing, such as this page's own `display/QPf5-Display1-pipeline-tikz/`. Inside it, `intake/` holds the inputs a person approved, `recipe/` the script that draws, `assets/` the winning picture, and `preview.pdf` the compiled look a person opens.
+**Why reuse rather than redesign**: papers already make display units in this exact folder shape, and the contract file itself invites it, saying each caller "maps this bundle into its own layout through its own adapter". The page is simply one more caller. A second folder shape would force every drawing skill to learn two.
+**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; `QPf2` is the drawing plugin and `QPf3` the slides plugin, whose own line "a slide is a display that talks" names the kinship; the paper's version of this same adoption is the `S05-display` stage with `cli/build-displays.py`.
 
 ## Diagram
 **One contract, two callers**: the paper stage and the page adopt the same unit folder; only the adapter differs.
@@ -54,28 +53,28 @@ It decides only the page side: how units are found, shown, and accepted.
         versions/      superseded variants, kept for history
       <PageID>-Display2-<slug>/        the next unit, same shape
 ```
-The layout above is `display-unit-output-contract.md`, quoted rather than redesigned.
-`intake/` and `recipe/` are primary material a person rules; `assets/` and `preview.pdf` are derived and a rebuild may overwrite them.
-The one page-side change is the address: the unit root is the page's own `display/` folder, so the unit travels with the page it illustrates.
+The layout above is the display family's own contract file, `display-unit-output-contract.md`, copied as it stands rather than redesigned.
+The folders split into two halves: `intake/` and `recipe/` are the SOURCES, written by people and by drawing skills, while `assets/` and `preview.pdf` are BUILT from those sources, so a rebuild may overwrite the built half but never the sources.
+The only page-side change is the address: the unit sits inside the page's own `display/` folder, so when the page moves, its figures move with it.
 
 ### 2 · The surface: one card per unit in the right pane
 **The tab**: what a reader sees when they open 🖼 Display on a page.
 ```text
   right pane · 🖼 Display
     ┌─────────────────────────────────────────┐
-    │ 📊 QPf5-Display1-drift-bands            │
+    │ 📊 QPf5-Display1-pipeline-tikz          │
     │    preview.pdf, framed (body.py ccpdf)  │
     │    README status · 🔄 rebuild            │
     │    accepted: ⬜ · shown, NOT tickable    │
     └─────────────────────────────────────────┘
     one card per unit · empty display/ = empty state, not an error
 ```
-The tab is the Slides sandwich with a different filling: a drawer plugin posts to a `live/` endpoint, the endpoint lists the page's units, and the pane frames each `preview.pdf` through the PDF object path `src/body.py` already renders.
-🔄 rebuild runs the unit's recipe and refreshes the derived half; it never touches `intake/` and never touches an acceptance row.
-A unit is EVIDENCE the content cites, and the citation lives IN the sentence: the unit's id named in prose chips as the evidence card in place, carrying its acceptance state and linking its block in the strip.
-The `> Display:` lane beside `> Citation:` and `> Value:` stays the FILING surface: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there.
-Either surface naming a ⬜ unit binds a pending render, not accepted evidence.
-The projections inherit the citation (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph, built from the winning asset and the unit's own caption, and the word export embeds the rasterized figure with an inline figure number and a 🖼 Display comment on the sentence.
+The tab is built the same way the Slides tab is: a small button in the page's toolbar asks the server for this page's units, and the server writes a view that frames each unit's `preview.pdf`.
+🔄 rebuild redraws the built half from the sources; it never changes the inputs, and it never changes an approval.
+A unit is EVIDENCE: when a sentence names a unit's id in plain text, the id becomes a small button in that sentence, and clicking it opens the unit's card with its picture and its approval state.
+There is a second way to attach the same evidence, for machines: a `> Display:` line written UNDER a sentence, beside the `> Citation:` and `> Value:` lines, so a program can add evidence without ever editing a person's prose.
+Citing a unit that has no render yet is allowed with either form: the button then says a render is still owed.
+The exports keep the evidence too (JL 260816): the LaTeX PDF prints a cited unit as a real figure after the paragraph that cites it, and the Word file embeds the picture with its caption and adds a 🖼 comment note on the sentence.
 
 ### 3 · The writers, and the row no machine may tick
 **Who writes what**: three hands on one unit, each confined to its half.
@@ -85,8 +84,9 @@ The projections inherit the citation (JL 260816): the latex export embeds a cite
   🧑 a person          rules intake/ and ticks accepted:
   🖼 the pane          shows everything · writes NOTHING
 ```
-The renderers are the display family's existing skills, dispatched the way `task-for-display` already dispatches them; this page adds no renderer.
-Acceptance follows the model the slide plugin already borrowed: a ✅ means a person looked at a specific render and said yes, so a machine that ticks one has forged a judgment, not saved time.
+The renderers are the display family's existing drawing skills; this page adds none of its own.
+The approval row is the one rule with teeth: a ✅ on `accepted:` means a person looked at one specific picture and said yes.
+A machine that ticks it has forged a judgment, not saved time, so no machine may.
 
 **The four renderers**: which skill draws which kind, and what each one's recipe is.
 ```text
@@ -100,9 +100,9 @@ Acceptance follows the model the slide plugin already borrowed: a ✅ means a pe
      🎨 -illustration  image-gen prompt ▶ concept figure · recipe = prompt + receipts
   🧩 -poster · -slides  composites, assembling units the renderers above made
 ```
-A data-driven renderer may not recompute from raw data; it reads the approved extract in `intake/` and nothing else.
-A concept-driven renderer carries no numbers, so its intake is the spec it draws.
-The rebuild differs the same way: a figure rebuild reruns its python script, a diagram rebuild is deterministic from its spec, and an illustration rebuild replays a receipted prompt.
+A data-driven renderer draws numbers, and it may not go back to the raw data: it reads only the small approved extract in `intake/`.
+A concept-driven renderer draws an idea, so it carries no numbers at all; its input is the sketch it draws.
+Rebuild follows the kind: a python figure reruns its script, a diagram redraws from its spec, and an AI illustration replays its saved prompt.
 
 ### 4 · How a unit is generated
 **The pipeline**: five steps from approved numbers to an accepted render, and who moves each one.
@@ -117,9 +117,9 @@ The rebuild differs the same way: a figure rebuild reruns its python script, a d
                      --check reports a stale unit instead of hiding it
   ⑤ 🧠 ACCEPT     a person reads the render and ticks accepted:
 ```
-The pipeline never starts at ②: a renderer given no ruled `intake/` has nothing provenance-bound to draw, which is what `display-intake-contract.md` exists to refuse.
-Steps ① ③ ⑤ are a person's and steps ② ④ are machinery, the split of hands QPf5-Display1 draws; 🔄 rebuild on the tab is step ④ alone, rerun.
-A changed `intake/` flows forward, ② to ⑤, and the acceptance falls back to ⬜ because the bytes a person said yes to are gone.
+Drawing never comes first: with no approved inputs there is nothing safe to draw, and the intake contract exists to refuse exactly that.
+Steps ① ③ ⑤ belong to a person and steps ② ④ to machinery, the split of hands QPf5-Display1 draws; the tab's 🔄 rebuild is step ④ alone, run again.
+If the inputs change, the work flows forward again from ② to ⑤, and the old approval drops back to ⬜, because the picture a person said yes to no longer exists.
 
 **Where ①'s numbers come from**: the evidence chain behind an intake, id-bound at every hop.
 ```text
@@ -130,10 +130,11 @@ A changed `intake/` flows forward, ② to ⑤, and the acceptance falls back to 
   📥 intake/manifest.yaml      ▶ cites that holder BY ID · carries only a
                                  small approved extract in inputs/
 ```
-`intake/` is not a second data store: the task output stays canonical, and the manifest points back at the exact holder and run that produced it.
-A unit names its evidence by id, never by path, and never types a number; QPf5-Display2 draws this ask-once-cite-twice move.
-The slide plugin already walks this chain on `QPf3`: its deck declares `needs: QA-probe/QBt5-for-value/1-artifact-paths`, the resolver turns the id into the artifact's path, and the template carries no digits, so a hand-typed value has nowhere to live.
-A1's adapter is what makes the same id resolution work for a unit under a page.
+A probe is a question card: the page asks its question once, the answer lands in the shared task bank, and from then on everyone cites the card's id instead of asking again.
+`intake/` is therefore not a second copy of the data: the task's own output stays the single source, and the manifest only points at it, by id.
+A unit names its evidence by id, never by a file path, and never types a number with its own hands; QPf5-Display2 draws this ask-once-cite-twice move.
+The slides plugin already works this way on `QPf3`: its deck asks for an id, a resolver turns the id into the file's real path, and the template holds no digits, so a hand-typed number has nowhere to live.
+Aim A1 asks for that same id lookup to work for units that live under a page.
 
 ## Aims
 ### A1 · 🧾 The contract, adopted and not forked
