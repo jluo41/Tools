@@ -1,0 +1,11 @@
+% Standalone wrapper that \inputs float.tex, per the unit contract.
+% This package list IS the unit's dependency declaration: a document that wants
+% to \input float.tex copies these lines into its own preamble.
+\documentclass[11pt]{article}
+\usepackage[margin=8mm, paperwidth=224mm, paperheight=132mm]{geometry}
+\usepackage[linesnumbered, ruled, vlined]{algorithm2e}
+\usepackage{amsmath, amssymb}
+\pagestyle{empty}
+\begin{document}
+\input{float.tex}
+\end{document}

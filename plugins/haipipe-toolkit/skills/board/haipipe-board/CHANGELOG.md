@@ -5,6 +5,60 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.139.1 - 2026-08-16
+
+- 🗑 THE VIEW BOARD IS RETIRED (JL 260816). `01-haipipe-view-260810` and its
+  212 files are gone, and nothing replaces them: while the refold gave every
+  other board a new name — `ApplicationSkillBoard-260802`,
+  `PaperSkillBoard-260725`, `TaskSkillBoard-260726`,
+  `SubjectiveLabelBoard-260722`, and `BoardSkillBoard-260722` renumbered in
+  place — this one was not carried across. That is the decision, not an
+  oversight, and it is written down here because a board that simply stops
+  appearing in `diagrams/` otherwise looks like a board someone lost.
+  The skill it documented is untouched and still ships at
+  `skills/view/haipipe-view/`. To read the retired board, check out any commit
+  up to `671847d6`.
+
+## 0.139.0 - 2026-08-16
+
+- 📁 `cli/refold.py`: ONE PAGE, ONE FOLDER, as a command. The shape was ruled on
+  260815 and the engine has read it ever since (`_page_home()` is
+  `<name>/<name>.md`, `_in_plugin()` keeps discovery out of every other
+  subfolder, and `check.py` climbs to the board root so a folded page's
+  board-relative Files rows still resolve). What was missing was the migration,
+  so a board that wanted the shape had to be moved by hand, page by page, and
+  the paper board's 73 pages were still flat a day later. `regroup.py` decides
+  which GROUP a page belongs to; this decides that the page gets a home of its
+  own, which is what gives its plugins somewhere to live.
+  It moves the page-keyed material in with the page — the group had been
+  holding it side by side, `display/<page>/`, `QA-probe/<page>/`,
+  `draw/<id>.excalidraw` — and preserves the INNER path rather than flattening
+  it, because a display unit is addressed by its own folder name and a QA-probe
+  record names its evidence page by the drawer it sits in
+  (`src/topic_entry_contract.py` reads `parts[-2]`). Re-parent, never rename:
+  renaming belongs to whoever owns that contract.
+  Then the paths. A page one level deeper is a page whose every relative path is
+  one level short, so the rewrite is part of the command: a token is re-anchored
+  when it RESOLVES today, from the file (broken by the move even when its target
+  never moved) or from the board root (survives the move, breaks only when its
+  target moved). A path that answers to neither anchor is already dead and is
+  left exactly as it is, because guessing at what it meant is how a dead path
+  becomes a plausible wrong one. That one test is also what keeps prose in
+  backticks from being mistaken for a path: prose does not resolve.
+  Run on the paper board: 83 moves, 49 files rewritten, same 73 pages
+  discovered, no new error, and five `stray-scene` warnings gone because a
+  page's drawing is now inside the page. Verified against a copy first, by
+  diffing the check output before and after in the same location.
+
+## 0.138.1 - 2026-08-16
+
+- 🔡 `check.py`'s group-heading pattern reads a lowercase TAIL, not one
+  lowercase letter. `### QCskill · Engine skills` on the paper board was read as
+  key `QCs`, which matched no folder, so that group dropped out of the count and
+  every folder after it was told it was numbered one too high
+  (`8-QF-execute` "numbered 8 but QF is #7"). `regroup.py` had always accepted
+  the wider key, so the two writers of the same rule disagreed; they now match.
+
 ## 0.138.0 - 2026-08-16
 
 - 🔢 A GROUP FOLDER CARRIES ITS PLACE IN `## Pages` (JL 260816, on finding

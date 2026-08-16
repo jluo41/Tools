@@ -135,7 +135,7 @@ silently replace what a document currently shows.
 | typeset LaTeX table (booktabs) | `haipipe-display-table` |
 | deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display-diagram` |
 | AI concept illustration | `haipipe-display-illustration` |
-| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | no skill: `recipe/<name>.tex`, hand-authored, `\input` by `float.tex` |
+| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | `haipipe-display-tex` (hand-authored: the writer is a person, not a script) |
 
 `haipipe-display` is the DOOR over this table: a caller who knows the kind may call a renderer
 directly, and a caller who does not says what they want to the door.

@@ -1,14 +1,14 @@
 ---
 name: haipipe-display
-description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Four renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration; the ✒️ TeX-native tikz method is authored by hand into the unit's recipe/. Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
+description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
 argument-hint: "[what to display, or a unit/intake path]"
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-08-16"
-  summary: "Pure router (JL 260816): table and figure stay full skills; poster and slides retired; the door only decides which renderer draws."
+  summary: "The ✒️ tex kind gained its skill (JL 260816), so the door now routes five renderers and names none as unowned."
 ---
 
-# /haipipe-display · one door, four renderers, one unit contract
+# /haipipe-display · one door, five renderers, one unit contract
 
 Every display is one UNIT: a folder holding the approved inputs, the recipe that draws, and the winning render, per `../ref/display-unit-output-contract.md`.
 This door decides only WHICH renderer draws it.
@@ -23,14 +23,14 @@ numbers as a typeset table       📊 table         haipipe-display-table
 numbers as a plot                📈 figure        haipipe-display-figure
 a concept as an editable SVG     📐 diagram       haipipe-display-diagram
 a concept as an AI illustration  🎨 illustration  haipipe-display-illustration
-a concept in the paper's own TeX ✒️ tikz          no skill: author
-                                                  recipe/<name>.tikz.tex by hand,
-                                                  float.tex \inputs it
+a figure in the document's TeX   ✒️ tex           haipipe-display-tex
+  (or an algorithm block,                           hand-authored: the writer
+   or a display equation)                           is a person, not a script
 ```
 
 Data kinds (📊 📈) read ONLY the approved extract in the unit's `intake/`, never the raw data; what a caller owes that folder is `../ref/display-intake-contract.md`.
 Concept kinds (📐 ✒️ 🎨) carry no numbers at all; their input is the spec or prompt they draw.
-Pick ✒️ tikz when the figure should share the paper's own fonts and math; pick 📐 diagram when it should stay editable as SVG.
+Pick ✒️ tex when the figure should share the document's own fonts and math, or when it IS math; pick 📐 diagram when it should stay editable as SVG.
 
 ## 🚪 Where the unit lands
 

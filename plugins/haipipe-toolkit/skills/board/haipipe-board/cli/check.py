@@ -186,7 +186,11 @@ def declared_links(board_md):
     return out
 
 
-GROUP_HEAD = re.compile(r"^###\s+Q([0-9][a-z]|[A-Z]+[a-z]?)\b", re.M)
+# A key's lowercase tail may be a WORD, not one letter: the paper board declares
+# `### QCskill · Engine skills`, and a one-letter tail read that heading as `QCs`,
+# which matched no folder. The group then vanished from the count and every folder
+# after it was told it was numbered one too high.
+GROUP_HEAD = re.compile(r"^###\s+Q([0-9][a-z]|[A-Z]+[a-z]*)\b", re.M)
 
 
 def check_group_order(d, text, rep):

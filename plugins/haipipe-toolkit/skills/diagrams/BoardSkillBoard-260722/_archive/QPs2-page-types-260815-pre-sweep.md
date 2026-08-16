@@ -329,7 +329,7 @@ That split is not new and does not need its own vocabulary: it is QA-bank agains
 (so the ten specimens run the real scripts rather than a copy of them)
 `QPs-page-structure/` plays S03, S04, S05, S06 and S08 at once: it holds the ten pages and their authoring companions, `display/`, `slide/` and `QA-probe/`, and no scripts.
 What a stage folder cannot hold is the paper root it ships TO, which on a real paper is `../..`, so the group carries `_fixture/` for it: `sections/`, `displays/`, `slides/`, the generated `.bib`, the venue `.cls` and `.bst`, and a small `.tex` that compiles.
-The name and the wiring are the sibling board's, `01-haipipe-paper-260725/board.md:5` declaring `paper-root: _fixture` under the discipline its README states, the same code path and the same failure modes. One rule differs and is stated in ours: prose lives in this fixture, because here the shipped `.tex` IS the specimen, where there the fixture holds only what a marker resolves against.
+The name and the wiring are the sibling board's, `../PaperSkillBoard-260725/board.md:5` declaring `paper-root: _fixture` under the discipline its README states, the same code path and the same failure modes. One rule differs and is stated in ours: prose lives in this fixture, because here the shipped `.tex` IS the specimen, where there the fixture holds only what a marker resolves against.
 
 #### 7.2 · Two facts about the SECTION shape that a natural guess gets wrong
 (both measured on the live paper, and the first was guessed wrong in this pass before it was checked)
@@ -508,7 +508,7 @@ A copy in the specimen group would be copy number two and would drift, and a fix
 
 - `QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md` · the Type-against-Phase axis split and the admission law this page extends
 - `../../../../paper/haipipe-paper/probe/topic-entry-contract.md` · the paper projection showing what a family layer adds (moved 260805, thin-paper phase 2)
-- `../../../01-haipipe-paper-260725/_fixture/README.md` · the `paper-root:` precedent `§7.1` follows, and the one rule it states that ours breaks
+- `../PaperSkillBoard-260725/_fixture/README.md` · the `paper-root:` precedent `§7.1` follows, and the one rule it states that ours breaks
 - `../../../../paper/S05-display/display/stage.md` · names the stage tool it does not hold, and the argument shape `§7.3` implements
 
 ### Checks

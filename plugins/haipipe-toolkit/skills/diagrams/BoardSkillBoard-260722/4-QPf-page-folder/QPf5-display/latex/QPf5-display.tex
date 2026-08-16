@@ -1,0 +1,115 @@
+% GENERATED from QPf5-display.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{The same folder shape as a paper, at a new address}
+\textbf{The plugin's full tree}: one \texttt{display/} per page, one folder per unit, every unit the same shape.
+
+\begin{verbatim}
+  <page>/
+    <page>.md                          the page, on stage
+    display/                            the plugin . discovery never enters
+      <PageID>-Display1-<slug>/        ONE rendered unit
+        README.md      claim . kind . caption-job . fragility . status
+        intake/         caller-owned, provenance-bound values
+          manifest.yaml
+          inputs/      small approved summary CSV or JSON extracts only
+        recipe/         renderer-owned script, spec, receipts
+        float.tex      caption + label + asset reference
+        preview.tex    standalone wrapper that inputs float.tex
+        preview.pdf     compiled look, what the tab frames
+        assets/         the WINNING render
+        candidates/    pre-decision renders
+        versions/      superseded variants, kept for history
+      <PageID>-Display2-<slug>/        the next unit, same shape
+\end{verbatim}
+📌 A page keeps its figures in the same folder shape a paper uses, so nobody has to learn a second one. The tree above is copied from the display family's own rules file, \texttt{display-unit-output-contract.md}, word for word. The folders split in two. \texttt{intake/} and \texttt{recipe/} are yours to write, filled by people and by drawing skills. \texttt{assets/} and \texttt{preview.pdf} are rebuilt for you from those two. So a rebuild may replace the built half, and it never touches the half you wrote. The one page-side change is the address. The unit sits inside the page's own \texttt{display/} folder, so when the page moves, its figures move with it.
+
+
+\section{Every unit shows as a card, and a sentence can point at it}
+\textbf{The tab}: what a reader sees when they open 🖼 Display on a page.
+
+\begin{verbatim}
+  right pane .  Display
+    +-----------------------------------------+
+    |  QPf5-Display1-pipeline-tikz          |
+    |    preview.pdf, framed (body.py ccpdf)  |
+    |    README status .  rebuild            |
+    |    accepted: [ ] . shown, NOT tickable    |
+    +-----------------------------------------+
+    one card per unit . empty display/ = empty state, not an error
+\end{verbatim}
+📌 Each unit shows as one card in the right pane, and naming its id in a sentence turns that id into a button. The tab is built the way the Slides tab is. A small button in the page's toolbar asks the server for this page's units. The server then writes a view that frames each unit's \texttt{preview.pdf}. 🔄 builds \texttt{preview.pdf} again from \texttt{preview.tex}. It never reruns the recipe, never changes the inputs, and never changes a yes. A unit is EVIDENCE. Name a unit's id in plain text, and that id turns into a small button in the sentence. Click it, and the unit's card opens with its picture and its yes-or-no state. There is a second way to attach the same evidence, made for machines. It is a \texttt{> Display:} line under a sentence, beside the \texttt{> Citation:} and \texttt{> Value:} lines. That way a program can add evidence without ever editing a person's words. You may point at a unit that has no picture yet, in either form. The button then says a drawing is still owed. The exports carry the evidence too. The LaTeX PDF prints a named unit as a real figure, right after the paragraph that names it. The Word file puts the picture in with its caption, and adds a 🖼 comment note on the sentence.
+
+
+\section{Three hands touch a unit, and only one may say yes}
+\textbf{Who writes what}: three hands touch one unit, and each stays in its own half.
+
+\begin{verbatim}
+   renderer skills   haipipe-display-table . -figure . -diagram . -illustration
+                       write recipe/ . assets/ . preview.pdf
+   a person          rules intake/ and ticks accepted:
+   the pane          shows everything . writes NOTHING
+\end{verbatim}
+📌 Drawing skills fill the folder, but the yes on a picture is always a person's click. The drawing skills already belong to the display family, and this page adds none of its own. The \texttt{accepted:} row is the one rule with teeth. A [x] there means a person looked at one exact picture and said yes. A machine that ticks it has faked a judgment, not saved time, so no machine may tick it.
+
+\textbf{The kinds, and who draws them}: one door sends the ask to five drawing skills, four scripted and one written by hand.
+
+\begin{verbatim}
+   haipipe-display . the DOOR . say the ask, it picks the renderer
+   data-driven . needs a ruled intake/ of numbers
+      -table         aggregated CSV/JSON > booktabs LaTeX . recipe = the spec
+      -figure        results > plot . recipe = the python script
+   concept-driven . the intake is a spec, not numbers
+      -diagram       FigureSpec JSON > deterministic editable SVG
+      -tex           .tex recipe > vector PDF . TeX-native . a person writes it
+      -illustration  image-gen prompt > concept figure . recipe = prompt + receipts
+\end{verbatim}
+A data-driven skill draws numbers, and it may not go back to the raw data. It reads only the small approved copy in \texttt{intake/}. A concept-driven skill draws an idea, so it holds no numbers at all, and its input is the sketch itself. The ✒️ row is the one whose writer is a person: someone writes the \texttt{.tex} by hand, which is how both units on this page were drawn. It earns a row because it is written in TeX itself, so it picks up the document's fonts and math and \texttt{float.tex} can pull it in directly. Its skill is named after that MECHANISM rather than one package, so \texttt{haipipe-display-tex} covers a TikZ figure, an algorithm block, and a display equation alike (JL 260816). Such a unit still owes a compiled \texttt{assets/figure.pdf}, because a document that includes it rarely carries the author's own preamble. Drawing a unit again from its recipe depends on the kind. A python figure reruns its script, a diagram redraws from its spec, and an AI picture replays its saved prompt.
+
+
+\section{The order of the work, and which steps need a person}
+\textbf{The five steps}: from approved numbers to a picture a person accepts, and who moves each step.
+
+\begin{verbatim}
+  (1)  INTAKE      the caller fills intake/: manifest.yaml + small
+                     approved extracts, every value provenance-bound
+  (2)  RENDER     the matching renderer skill runs, dispatched through
+                     task-for-display; it fills recipe/ + candidates/
+  (3)  PICK       a person picks the winner; it moves to assets/,
+                     the losers stay in candidates/ or versions/
+  (4)  BUILD      preview.tex compiles to preview.pdf; the adapter's
+                     --check reports a stale unit instead of hiding it
+  (5)  ACCEPT     a person reads the render and ticks accepted:
+\end{verbatim}
+📌 Nothing is drawn before a person approves the numbers, and nothing is finished before a person looks. Drawing never comes first. With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that. Steps (1) (3) (5) belong to a person, and steps (2) (4) belong to the machine. QPf5-Display1 draws that split of hands. The tab's 🔄 reruns step (4)'s build alone, never step (2)'s drawing skill. If the inputs change, the work runs forward again from (2) to (5). The old yes drops back to [ ], because the picture a person agreed to no longer exists.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.85\linewidth]{../display/QPf5-Display1-pipeline-tikz/assets/figure.pdf}
+\caption{The display pipeline: five steps from approved intake to an accepted
+  render. Green steps belong to a person, blue steps to machinery, and a changed
+  intake returns the acceptance to open.}
+\label{fig:qpf5-pipeline}
+\end{figure}
+
+\textbf{Where step (1)'s numbers come from}: each hop points at the one before it by id, never by a copy.
+
+\begin{verbatim}
+   the page needs a number   > raised as a PROBE . the page's own probe/ plugin (QPf9)
+   probe orchestrator        > sweeps the bank . reuse | enrich | fresh
+   haipipe-task runs         > answer lands in <task-folder>/QA/<n>-<slug>.md
+                                 + the run's artifact, e.g. counts.csv . CANONICAL
+   intake/manifest.yaml      > cites that holder BY ID . carries only a
+                                 small approved extract in inputs/
+\end{verbatim}
+A probe is a question card. The page asks its question once, the answer lands in the shared task list, and after that everyone points at the card's id instead of asking again. So \texttt{intake/} is not a second copy of the data. The task's own output stays the one source, and the manifest only points at it, by id. A unit names its evidence by id, never by a file path, and it never types a number by hand. QPf5-Display2 draws that move: ask once, point at it twice. The slides plugin already works this way on \texttt{QPf3}. Its deck asks for an id, a small helper turns the id into the file's real path, and the template holds no digits at all. So a hand-typed number has nowhere to live. That id lookup already reaches units under a page, because the citation index finds a unit by id wherever the unit sits. Aim A1 asks for the other half. The build adapter should accept a page's \texttt{display/} as a unit root, so \texttt{--check} can report an out-of-date page unit instead of hiding it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.85\linewidth]{../display/QPf5-Display2-small-paper-tikz/assets/figure.pdf}
+\caption{A page as a small paper: the probe plugin asks a question once, the
+  bank answers behind the wall, and both the display intake and the page's own
+  sentence cite the same card by id.}
+\label{fig:qpf5-small-paper}
+\end{figure}
+

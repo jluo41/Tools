@@ -1,0 +1,30 @@
+% A rebuild is deterministic: recompiling this recipe gives the same PDF.
+%
+% The drawing only. No \documentclass, no preamble.
+%
+% Every set below is transcribed from src/page_lifecycle.py, never from memory:
+%   PHASES          = {DRAFT, PROBE, REVISE, CHECK}
+%   TERMINAL_ROUTES = {CLOSE, HOLD}
+%   LEGAL_ROUTES    = the four rows this relation states in two.
+\begin{align*}
+  \Phi &= \{\textsc{Draft},\ \textsc{Probe},\ \textsc{Revise},\ \textsc{Check}\}
+  &&\text{the four phases}\\[2pt]
+  T &= \{\textsc{Close},\ \textsc{Hold}\}
+  &&\text{the two terminals}\\[6pt]
+  R(\varphi) &= \Phi \cup \{\textsc{Hold}\}
+  &&\text{for } \varphi \in \Phi \setminus \{\textsc{Check}\}\\[2pt]
+  R(\textsc{Check}) &= \bigl(\Phi \setminus \{\textsc{Check}\}\bigr) \cup T
+  &&\text{the judge's own row}
+\end{align*}
+
+\medskip
+
+\noindent Two consequences follow from the second pair of lines alone:
+
+\begin{align*}
+  \textsc{Close} \in R(\varphi)
+    &\iff \varphi = \textsc{Check}
+  &&\text{only a judge may close}\\[2pt]
+  \textsc{Check} &\notin R(\textsc{Check})
+  &&\text{no version is judged twice untouched}
+\end{align*}
