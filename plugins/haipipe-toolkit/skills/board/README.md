@@ -31,7 +31,7 @@ reviewable set of question pages or lifecycle stages.
   - `haipipe-page-for-design/` is the VARIANT for a design brief: candidates side
     by side, closing on a SELECTION record.
   ⚠️ Moving a variant between skill sets does not move its installed symlink.
-  Re-run `Tools/install.sh --global` afterwards or the skill stops resolving.
+  Re-run `install.sh --global` (repo root) afterwards or the skill stops resolving.
 - `page-workflows/` holds the page WORKFLOW: `haipipe-page-workflow` is its
   HEAD (the RUN router, the packet + receipt contract), and beside it sit the
   four host-agnostic phase contracts `haipipe-page-draft`, `haipipe-page-probe`,

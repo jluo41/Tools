@@ -159,7 +159,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - Records the per-skill-set ownership rule (JL 260809) and both superseded
   rules, so neither returns.
 - Adds the operational warning the move exposed: relocating a variant does not
-  relocate its installed symlink, so `Tools/install.sh --global` must be re-run
+  relocate its installed symlink, so `install.sh --global` (repo root) must be re-run
   or the skill silently stops resolving. Five skills were dead this way between
   the move and the reinstall.
 

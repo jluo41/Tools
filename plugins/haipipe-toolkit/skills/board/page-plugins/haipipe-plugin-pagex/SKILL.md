@@ -1,11 +1,11 @@
 ---
 name: haipipe-plugin-pagex
 description: >-
-  The pagex/ plugin of a Board page: the page's borrow LIST at <page>/pagex/<stem>.md (PRIMARY) — one row per FILE taken from another page anywhere in the repo, where the ORDER of the rows IS the person's rank — materialized as relative symlinks so the borrowed material is read live and never copied. Owns the three-route contract (seed-and-re-mint, drag-order, pen), the vet a target must pass, and its two laws: pagex links files and never a page's home folder, and the scan seeds while the person ranks. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: pagex plugin, seed borrows from the prose, borrow a file from another page, reference other pages, reuse a component from another page, symlink plugin, page citations into pages, dangling borrow, pagex tab, /haipipe-plugin-pagex.
+  The pagex/ plugin of a Board page: the page's borrow LIST at <page>/pagex/<stem>.md (PRIMARY) — one row per FILE taken from another page anywhere in the repo, where the ORDER of the rows IS the person's rank — materialized as relative symlinks so the borrowed material is read live and never copied. Owns the three-route contract (seed-and-re-mint, drag-order, pen), the vet a target must pass, and its two laws: pagex links files and never a page's home folder, and the scan seeds while the person ranks. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: pagex plugin, which parts of that page do we use, folder inventory, seed borrows from the prose, borrow a file from another page, reference other pages, reuse a component from another page, symlink plugin, page citations into pages, dangling borrow, pagex tab, /haipipe-plugin-pagex.
 metadata:
-  version: "0.2.1"
+  version: "0.3.0"
   last_updated: "2026-08-16"
-  summary: "A borrow opens as the rendered BOARD PAGE, not raw markdown (JL 260816), and the repo path moved off stage into a `where` fold."
+  summary: "A card is now a source PAGE with its folder inventory, marking which parts are in use (JL 260816), and opening one frames it under a way back."
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages
 
@@ -59,9 +59,13 @@ The ＋-by-path pen, folded shut under the cards, is how a deeper file or anothe
 POST /_board/pagex          seed from the prose · re-mint every live row's
                             symlink · rebuild the view
 POST /_board/pagex-order    the drag: the store keeps exactly the sent order
-POST /_board/pagex-entry    the pen: `borrow` a file (note optional, lands at
-                            the TOP) · ✕ remove (tombstone) · ↩ restore
+POST /_board/pagex-entry    the pen: `borrow` one path OR a list (note
+                            optional, lands at the TOP) · ✕ remove
+                            (tombstone) · ↩ restore
+GET  /_board/pagexview      one borrow, framed under ← ☰ → over the list
 ```
+
+`borrow` takes a list so one gesture can move a batch: a card's ✕ drops every row of that source page, and a folder's ＋ use takes every file in it.
 
 The pen's field is `borrow`, not `path`: every view merges the board context `{path, file}` into its POST body, so a borrowed file sent as `path` is overwritten by the board's own path.
 
@@ -71,10 +75,12 @@ A target that resolves outside the repo root, is a folder, or already has a real
 
 ## 📡 Surface · the 🔗 tab
 
-One card per borrow, in the person's order. On stage: the SOURCE PAGE's name as the title, its live `state:`, which file was borrowed, the note, ⠿ and ✕. Folded under `where`: the repo-relative path and a link to the raw file.
+ONE CARD PER SOURCE PAGE, in the person's rank, not one per borrowed file (JL 260816: "每一个 page folder 我们用了它的哪些 information … 这个 sub-folder 用了，那个 sub-folder 没有用").
+On stage: the page's name as the title, its live `state:`, then its WHOLE folder as an inventory — `using N of M`, ✅ on each part in use, ⬜ on each part not, every ⬜ carrying ＋ use, which takes that folder's files in one click. Under it, the files actually borrowed, each with its own ✕; the card's ✕ drops the page entirely.
+A borrow list alone cannot tell a deliberate one-file borrow from a page nobody opened, which is the question the inventory answers.
 
-**The title opens the BOARD PAGE, not the file** (JL 260816: "when I open them, why not the page in the board, but the raw markdown????").
-A borrow is taken to be read, and reading happens on the rendered page with its prose, comments, and rail; a served `.md` is raw text. A borrowed page md resolves to `board/<group>/<stem>.html` by walking up for board.md, and anything that is not a page keeps the served file as its door.
+**The title opens the BOARD PAGE, framed with a way back** (JL 260816: "why not the page in the board, but the raw markdown????" and "我点进去之后，怎么退回来呢？").
+A borrow is taken to be read, and reading happens on the rendered page with its prose, comments, and rail; a served `.md` is raw text. A borrowed page md resolves to `board/<group>/<stem>.html` by walking up for board.md, and `GET /_board/pagexview` frames it under ← ☰ →: ☰ returns to the cards, the arrows walk the borrows in ranked order, and `open on its own` escapes the frame. The page is served untouched inside it, never rewritten.
 A borrow whose source has moved shows ⚠ dangling with what it pointed at, which is the whole reason this is a link and not a copy.
 Under the cards sits one folded ＋, the by-path pen; nothing on stage asks a person to choose before the scan has run.
 

@@ -6,31 +6,36 @@ session: 62ed99a0-fe6c-4a9b-8ad7-a3a97425adb2
 
 ## Opening
 Can a Board page live beside the files it describes without breaking discovery or safe write-back?
-Boards were born flat: every page sat at the board root, so a real project tree needed a mirrored page folder kept in step by hand.
-Discovery, ordering, and comment write-back all leaned on that flat layout.
-The shipped rule replaces it: a `Q*.md` at any depth is a page, its folder is its home, and a flat board behaves exactly as before.
+Boards were born flat: every page sat at the board root, so a project tree needed a mirror folder kept in step by hand.
+The shipped rule replaces it: a page file at any depth is a page, unless a plugin folder holds it, and its folder is its home.
+Write-back stays safe because the page sends a board-relative path that the server refuses if it is absolute or climbs with `..`.
+Flat boards behave as before.
 
-**Covered elsewhere**: `QB1` owns where the Board-Folder itself lives and what it is named. `QB2` owns how the Board-Webpage-Index orders and groups the pages it finds.
+**Covered elsewhere**: `QB1` owns where the Board-Folder itself lives and what it is named.
+`QB2` owns how the Board-Webpage-Index orders and groups the pages it finds.
 
-**No page wrapper for loose documents**: a folder's own files are shown by embedding them into a real page with `![[path]]` (`ref/board-form.md` §5). The retired ids behind these rules are traced in Log.
+**No page wrapper for loose documents**: a folder's own files are shown by embedding them into a real page with `![[path]]` (`ref/board-form.md` §5).
+The retired ids behind these rules are traced in Log.
 
 ## Content
 ### 1 · The folder shows itself first
 **The 📂 tab**: the rail's first surface renders what this page's own folder holds, live on every open.
 ```text
   🗂 QPf1-folder/                     📂 Folder tab (first on the rail)
+  ├── bibex/  0 files  ────▶   📚 bibex/   derived · empty · reads ✅ fresh
   ├── draw/   1 file   ────▶   🖌 draw/    age shown · never flagged
   ├── skill/  2 files  ────▶   ⚙️ skill/   age shown · never flagged
-  ├── slide/  1 file   ────▶   🎞 slide/   ⚠️ STALE only when older than the .md
+  ├── slide/  1 file   ────▶   🎬 slide/   ⚠️ STALE only when its files predate the .md
   └── QPf1-folder.md   ← the clock every DERIVED plugin is read against
-                                     ⬜ not present: latex · word · bibex · chat …
+                               ⬜ not present: chat · latex · word · display · meeting
 ```
 
 #### 1.1 · What the tab answers
 The tab answers what the rail alone cannot: whether "no deck" means never built or built-and-unopened, and whether a compiled artifact still matches the prose it came from.
 
 #### 1.2 · Staleness is claimed narrowly
-Only a DERIVED plugin (latex, word, bibex, slide, display) can be ⚠️ STALE, exactly when its newest file predates the page's `.md`.
+Only a DERIVED plugin (latex, word, bibex, slide, display) can be ⚠️ STALE, and only when it holds files whose newest one predates the page's `.md`.
+An empty derived folder is never flagged: this page's own `bibex/` holds nothing, so its row reads ✅ fresh.
 Source material gets an age, never a warning, because a drawing older than the prose is healthy.
 
 #### 1.3 · Rendered live, never stored
@@ -64,11 +69,11 @@ This keeps the tab honest as both gauge and door: the same walk that measures th
 
 ## Aims
 - [x] 📂 §1 The folder shows itself before any surface does
-      The rail's first tab renders the page-folder's live contents with per-plugin freshness; a derived plugin older than the .md is flagged, and the first run caught QPf6's stale latex/ for real.
+      The rail's first tab renders the page-folder's live contents with per-plugin freshness; a derived plugin holding files older than the .md is flagged, and the first run caught QPf6's stale latex/ for real.
 - [x] 🔍 Recursive discovery shipped
-      `q_files()` in `src/common.py`: `rglob("Q*.md")`, skipping path segments that start with `_` or `.` and `fig/`.
+      `page_files()` in `src/common.py` finds Q, S, Agent, Meeting, and Design pages at any depth, skipping `_`/`.`/`fig/` segments and every path `_in_plugin()` places inside a plugin folder; `q_files()` is the Q-only twin with the same skips.
 - [x] 💬 Comment plumbing carries the relative path
-      The page's data-file attribute holds the board-relative posix path; `vet_qpath()` rejects absolute and `..`.
+      The page's data-file attribute holds the board-relative posix path; the comment and discuss writes resolve it through `target()`, whose `vet_pagepath()` rejects absolute and `..`.
 - [x] 👀 watch.py recursion
       The whole tree is watched with the same segment filter.
 - [x] 🧪 Flat regression passed
@@ -79,36 +84,71 @@ This keeps the tab honest as both gauge and door: the same walk that measures th
       Clicking a plugin row in the 📂 tab unfolds that folder's files in place, each a link to the served file.
 
 ## States
-§1 Shipped 260724.
+§1 The 📂 Folder tab is live and registers first on the rail: it renders this page's own folder on every open, one row per directory beside the `.md`, which today is `bibex/`, `draw/`, `skill/`, and `slide/`.
+§1 A DERIVED plugin holding files older than the `.md` reads ⚠️ STALE and carries ♻ rebuild when its writer is mechanical; latex, word, chat, display, and meeting have no folder here, so the tab lists them as not present.
+§2 Every plugin row unfolds in place as a tree: the files a level owns come first, then one 📁 branch per folder under it with its own file count, each file a link to the served file and each symlink marked 🔗.
+Discovery runs on `page_files()` in `src/common.py`: Q, S, Agent, Meeting, and Design pages at any depth, minus `_`/`.`/`fig/` segments and minus every path `_in_plugin()` places inside a plugin folder, which is why this page's own `skill/QPf1-folder.md` is not a second page.
 Flat boards are untouched; nested pages work end to end including comment write-back (smoke-tested against the MISQ paper's 0-lifecycle board, `4-display/QD2-d01-iv-reporting.md`).
-Discovery has since widened to `page_files()` in `src/common.py`: S, Agent, and Meeting pages join Q pages at any depth, same `_`/`.`/`fig/` exclusions.
 The original flat-birth rule (a new page always created at the board root) was superseded 260726 (QA1): `add_question` in `live/structure.py` now creates the new page in its group's home folder, falls back to the board root only when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Files
 - `cli/build.py`
   Thin entry; discovery lives in `src/common.py` + `src/parse.py`.
 - `cli/serve.py`
-  Routes the write endpoints; `target()` now lives in `live/base.py` and `add_question` / `archive_question` in `live/structure.py`, all on board-relative paths (`vet_qpath()` in `src/common.py`).
+  Routes the write endpoints; `target()` now lives in `live/base.py` and vets the payload with `vet_pagepath()`, while `add_question` / `archive_question` in `live/structure.py` stay on the Q-only `vet_qpath()`, both in `src/common.py` and both on board-relative paths.
 - `cli/watch.py`
   Recursive stamp with the same exclusions.
+- `live/folderstat.py`
+  Renders the 📂 tab: `folder_status()` walks the page folder and emits one row per directory, and the view turns each row into a tree of links.
 
 ## Law
-- A question is a `Q*.md` file at ANY depth under the board folder; membership stays by path.
-- Path segments starting with `_` or `.` (archives, previews) and `fig/` are not part of the board.
-- The Pages keeps listing bare filenames; a duplicate basename anywhere in the tree warns and keeps the first.
-- The page carries the board-relative posix path; serve.py vets it (no absolute, no `..`, basename must match `Q*.md`).
-- Archiving a nested page flattens it into the board's top-level `_archive/`.
-- New questions born from the page are created in the group's home folder; the board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
+- 🔍 A page is a page file at ANY depth, unless a plugin folder holds it
+      Membership stays by path, and the walk is `page_files()` in `src/common.py`.
+      It globs `Q`, `S`, `Agent`, `Meeting`, and `Design` under the board folder and keeps every name `PAGENAME` matches, so a page may sit inside the folder it is about instead of at the root.
+      `q_files()` is the Q-only twin, kept for the routes that are about questions alone, and it applies the same skips.
+- 🚫 `_` and `.` segments, `fig/`, and every plugin folder are outside the board
+      Archives and previews (`_`, `.`) and `fig/` are skipped by segment name; a plugin folder is skipped by `_in_plugin()` in `src/common.py`.
+      That function treats every subfolder of a folded page's home that is not itself a folded page as a plugin, and it also drops a page file lying directly beside the page's own `.md`.
+      This page is the live proof: `skill/QPf1-folder.md` matches the page name pattern exactly, and it renders inside the ⚙️ skill tab rather than as a ghost second page.
+- 📇 The Pages listing keeps bare filenames
+      A duplicate basename anywhere in the tree warns and keeps the first (`src/parse.py`).
+      So the file name stays a page's identity no matter how deep its folder sits, and `board.md` never has to be rewritten when a page moves.
+- 🛂 The page carries the board-relative posix path and the server vets it
+      `target()` in `live/base.py` runs the payload through `vet_pagepath()`, which rejects an absolute path and any `..` and requires the basename to look like a page name.
+      `add_question` and `archive_question` in `live/structure.py` still use the Q-only `vet_qpath()`, because those two routes create and retire questions.
+- 🗄 Archiving a nested page flattens it
+      The file moves to the board's top-level `_archive/` whatever depth it was written at, and a name collision there is resolved with a timestamped stem.
+      Archive never deletes: the file stays recoverable by hand.
+- 🏠 A new page is born in its group's home folder
+      `add_question` reads where the group's pages already live and writes the new file there.
+      The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
-- 260816 · [RULE-JL] the unfold became a TREE (JL: "我觉得这个 folder 是不是应该加一个 folder structure？… 这个排版不是非常按照我们的思路来排的"). It had listed the walk's relative paths flat and alphabetically, which is a fine way to enumerate files and a poor way to show a folder: `pagex/` read as six unrelated rows with its own store and view wedged between four borrowed pages, and `display/` spelled every unit's inner path on every line. Now a level's own files come first, then one 📁 branch per subfolder carrying its file count, indented by depth. Same round the rows got readable at all: 12px monospace went to 13px on a 1.6 line, sizes take tabular figures so they align, and a symlink wears a bare 🔗 with its target on hover. Proven on `pagex/` and on `display/`, which nests three deep.
+- ✍️ 260816 · [REVISE-CC] second reviewer pass: the bibex row, discovery's real boundary, and the Law shape
+      Ten findings worked, and the first of them was a dismissal this page had written down as fact.
+      The previous pass claimed disk contradicted the reviewer's `bibex/` row and dropped it from the §1 figure.
+      Disk says otherwise: reading `QPf1-folder/bibex` fails with `EISDIR: illegal operation on a directory`, while reading `QPf1-folder/latex` fails with `File does not exist`, and a glob of `bibex/**` returns nothing.
+      So `bibex/` exists and is empty, `folder_status()` emits a row for every directory beside the `.md` (`live/folderstat.py`), and the real tab shows four rows: bibex, draw, skill, slide.
+      The row reads ✅ fresh rather than ⚠️ STALE because the stale test also requires `bool(files)`, so an empty derived folder is never flagged; §1.2 now says that, and the figure's slide row wears the tab's own 🎬 instead of the Slides rail's 🎞.
+      The not-present line was rebuilt from the code's own gap list and now reads chat · latex · word · display · meeting.
+      Discovery was restated everywhere it appeared: Opening, Law, Aims, and States now name `page_files()` and the `_in_plugin()` skip, and this page's own `skill/QPf1-folder.md` is the example of a page-named file that discovery refuses.
+      States gained one §1 row for the Folder tab and one §2 row for the unfolding rows, and the old `§1 Shipped 260724` tag went with the mistake it carried: 260724 was nested discovery, and the tab shipped 260815.
+      Law rows became icon headings with their sentences indented beneath, the shape Log already had, and the vetting row was corrected to `vet_pagepath()`, which is what `target()` in `live/base.py` actually calls.
+      The Opening now says what makes a write safe, and both drawer parts sit one sentence per line.
+      Three siblings of the named findings were swept with them: the comment-plumbing Aim still credited `vet_qpath()` for a path that `target()` vets, the §1 figure's slide row still said STALE means older than the .md, and the RULE-JL entry below was still one long line while the rest of Log had been reshaped.
+- 🌲 260816 · [RULE-JL] the unfold became a TREE
+      JL: "我觉得这个 folder 是不是应该加一个 folder structure？… 这个排版不是非常按照我们的思路来排的".
+      It had listed the walk's relative paths flat and alphabetically, which is a fine way to enumerate files and a poor way to show a folder: `pagex/` read as six unrelated rows with its own store and view wedged between four borrowed pages, and `display/` spelled every unit's inner path on every line.
+      Now a level's own files come first, then one 📁 branch per subfolder carrying its file count, indented by depth.
+      Same round the rows got readable at all: 12px monospace went to 13px on a 1.6 line, sizes take tabular figures so they align, and a symlink wears a bare 🔗 with its target on hover.
+      Proven on `pagex/` and on `display/`, which nests three deep.
 - ✍️ 260816 · [REVISE-CC] reviewer pass: Opening, Law, figure, numbering, Log shape
-      Worked the reviewer's nine findings; one was contradicted by disk and is noted below.
+      Worked the reviewer's nine findings; the one dismissed here was in fact correct, and the entry above records the correction.
       The Opening's blank line moved below the rationale, so the question and a rewritten four-sentence rationale stand on stage as one block, without the house-skeleton stems.
       The Covered elsewhere drawer now names the live ids QB1 and QB2 in short labelled parts.
       The genealogy those ids carried moved here: QC1 was absorbed into QB1 and QC2 into QB2 on 260729, and the former QF group's doc-line ruling (QF2 of that era) was retired 260726, its id belonging to Execute's newcomer page today.
       The Law's flat-birth row was rewritten to the current home-folder rule; States and this Log keep the 260726 supersession story.
-      The §1 figure was redrawn from the real folder: draw/, skill/, and slide/ exist beside the .md, and nothing else, so the reviewer's claim that bibex/ exists is contradicted by disk and the figure lists latex, word, bibex, and chat as not present.
+      The §1 figure was redrawn from the real folder, but that redraw missed the empty `bibex/` and this entry dismissed the reviewer's row on the strength of it.
       §1.4 was also brought up to the 0155 ruling below, which the old prose predated: display sits in the curable set now and slide is the only pointer row.
       The smoke-test line in States names the owning board before the path, the last Aim row lost its attribution parenthetical, Content paragraphs carry #### numbering, and every Log entry below was reshaped into a bulleted heading with its story indented beneath.
 - 🖼 260816 0155 · [JL ruled] display's staleness stays and becomes curable

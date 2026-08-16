@@ -66,7 +66,7 @@
      the full heading (`QC · Engine`). DELETE when the file is named. -->
 
 <!-- RULE · SHIPPING THE UNIT IS NOT THE SAME AS LINKING IT. A new skill folder is
-     invisible to every agent until `cd Tools && ./install.sh --global` links it
+     invisible to every agent until `./install.sh --global` links it
      into the roster. A session already running keeps its old roster. This bit
      `haipipe-page-for-skill` itself, which sat unlinked for a day after it
      shipped. DELETE when the unit resolves by name in a NEW session. -->

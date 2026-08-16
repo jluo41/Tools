@@ -1,5 +1,14 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.3.0 · 2026-08-16
+
+A card stopped being a borrowed file and became a source PAGE with its inventory.
+
+- JL: "每一个 page folder 我们用了它的哪些 information … 这个 sub-folder 用了，那个 sub-folder 没有用之类的？" One card per source page now, carrying that page's whole folder as `using N of M` with ✅ on each part in use and ⬜ on each part not. A list of what was taken could not distinguish a deliberate one-file borrow from a page nobody opened.
+- Every ⬜ row carries ＋ use, which takes that folder's files in one click; the picker ruling of 0.2.0 binds here, so there is no dropdown and nothing to type.
+- `GET /_board/pagexview` frames a borrowed page under ← ☰ →. JL: "我点进去之后，怎么退回来呢？我进去之后好像没法退回来了" — the bare link had replaced the tab with a full board page and left no exit.
+- `pagex-entry` accepts a list, so a card's ✕ drops a whole page and a folder's ＋ takes a whole folder in one POST.
+
 ## 0.2.1 · 2026-08-16
 
 Two surface defects, both about landing where a person came for.

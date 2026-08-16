@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🖼 Display · QD4-stopping-criteria</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.ghost{opacity:.55;border-style:dashed}
+.badge{font-size:13px;margin-right:6px}
+object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radius:8px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;
+ scroll-behavior:smooth;padding:2px}
+.strip>.card{flex:0 0 100%;scroll-snap-align:start;margin:0;box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:8px;float:right}
+.nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
+ color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
+.nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
+ border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
+ background:var(--card)}
+.chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>🖼 Display · QD4-stopping-criteria</h1><div class='mut' style='margin:0 0 12px'>read-only · renderers write recipe/ and assets/; a person rules intake/ and ticks accepted: (QPf5 §3) · 🔄 recompiles each unit's preview</div><div class='card' id='QD4-Display1-stop-gate'><b>QD4-Display1-stop-gate</b><div class='mut'><b style='color:var(--fg)'>claim</b>: calibration stops only when quality, stability, coverage and risk all hold at once — the rule is a conjunction, so a strong overall score cannot buy a failed class, an unmeasured region, or an unowned high-severity risk</div><div class='mut'><b style='color:var(--fg)'>kind</b>: equation, TeX-native (✒️ tex; `amsmath align*`, the recipe IS the float body)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: state in one object what QD4 §1–§3 spend three sections saying in prose, so a reader can see that the gates are ANDed rather than traded off, and so a later page cannot quietly turn the rule into a weighted score</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; every threshold appears as a symbol (`q_min`, `K`, `ε`, `n_min`) because QD4 §2.1 fixes them as project configuration chosen before the sequence is read — a number typed in here would invent a threshold the page refuses to fix</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand; rebuild = `xelatex preview.tex` from this folder</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260816 CC · second candidate; the first gave every conjunct its own alignment column and the top line ran off the page, so it was rebuilt with one alignment point</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick</div><div class='mut'><b style='color:var(--fg)'>history</b>: first equation unit on this board, built beside QA0-Display1 so one algorithm and one equation could be judged together before more are authored</div><object class='pdf' data='QD4-Display1-stop-gate/preview.pdf' type='application/pdf'><a href='QD4-Display1-stop-gate/preview.pdf'>preview.pdf</a></object><pre>├── ⚙️ assets/
+├── ⚙️ candidates/
+├── intake/
+│   └── inputs/
+├── recipe/
+│   └── stop-gate.tex
+├── ⚙️ versions/
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/display', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/plugins/subjective-label/diagram/SubjectiveLabel-260722/board/QD/QD4-stopping-criteria.html", file: "QD-optimization-and-convergence/QD4-stopping-criteria/QD4-stopping-criteria.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script></body></html>

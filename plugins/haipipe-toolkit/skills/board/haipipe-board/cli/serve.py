@@ -234,6 +234,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return
         if self.path.startswith("/_board/skillview"):  # 🛠 the WHOLE skill, one page
             return self.serve_skillview()
+        if self.path.startswith("/_board/pagexview"):  # 🔗 a borrow, with ← ☰ →
+            return self.serve_pagexview()
         if self.path.startswith("/_board/mdview"):   # 🛠 a .md, rendered to read
             return self.serve_mdview()
         if self.path.startswith("/_board/asset/"):

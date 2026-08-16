@@ -2,6 +2,7 @@
 spine: Settle a human-grounded subjective-labeling system in which one identified person is the semantic authority, repeated Calibration Rounds jointly improve human-confirmed labels and an executable annotation policy, and a sealed final test selects how the remaining corpus is completed.
 close: Every active Q reaches ✅ SETTLED or ⏸️ ON HOLD, the settled laws are reflected in the subjective-label skill family, and the resulting workflow passes a fresh-context end-to-end test.
 excalidraw: /_excalidraw
+dialect: paper
 
 ## Topic
 A large corpus of reviews has no outcome label, and the target trait begins as a vague subjective idea rather than a fixed ontology.

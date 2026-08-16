@@ -36,6 +36,8 @@ This page fixes the four-part gate, consecutive-round rule, human signoff, and t
 
 ## Content
 
+The four gates below are ANDed, never traded off against one another, and QD4-Display1 states that rule exactly.
+
 ### 1 · Quality gate
 **Minimum performance**: representative audit evidence must clear the project threshold before plateau can matter.
 

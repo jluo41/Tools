@@ -319,6 +319,8 @@ Region changes must be versioned rather than overwritten without history.
 🤖 execution on unseen items
 ```
 
+The figure above shows the coupling; the round that produces it, step by step and in the order it happens, is stated as QA0-Display1.
+
 #### 8.1 · Human-side adaptation
 (Describes the legitimate change occurring inside the annotator.)
 The human may begin with only an intuitive sense of the trait.

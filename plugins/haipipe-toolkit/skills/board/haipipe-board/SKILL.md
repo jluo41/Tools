@@ -118,7 +118,7 @@ view/page-types/          for-view
 `for-stage` stays here although only paper and application have lifecycles, because a stage page is a BOARD mechanism (the chain, the managed contract span, the human gate) that both families instantiate.
 The five that left describe a paper's own artifacts, so they belong to the paper.
 Two earlier rules failed here and are recorded so neither returns: "ships under its CONSUMER, never here" broke when venue pages turned out to be consumed by the paper family and maintained by this one, and "ships WHERE THE BOARD FAMILY MAINTAINS IT" (JL 260803) held only while one family owned every variant.
-⚠️ Moving a variant does not move its installed symlink: re-run `Tools/install.sh --global` afterwards, or the skill silently stops resolving.
+⚠️ Moving a variant does not move its installed symlink: re-run `install.sh --global` (repo root) afterwards, or the skill silently stops resolving.
 
 **The Page Types, and how each one is CREATED**: six filename shapes, two procedures.
 
