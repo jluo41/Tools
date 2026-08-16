@@ -1,0 +1,49 @@
+% GENERATED from QPf2-draw-attach.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{Where a drawing lives}
+\textbf{The files}: one scene per owner, each in its owner's folder.
+
+\begin{verbatim}
+ page drawing     <page>/draw/<id>.excalidraw    the page's own scene
+ group drawing    <group>/draw/group.excalidraw  layout + relations over the pages
+ board map        board.excalidraw               the Index page's overview scene
+ image bytes      assets/<owner>/                pasted images, kept out of the scene
+\end{verbatim}
+Each page drawing is an ordinary Excalidraw file that is useful opened by itself. A page that has no drawing yet gets an empty scene created the first time its Draw split opens, so there is never a missing file to trip over. The group drawing holds only group-level layout and an import list naming each page's scene; it never copies their content.
+
+
+\section{Opening, editing, and generating}
+\textbf{The Draw split}: the drawing opens beside the page, never inside it.
+
+\begin{verbatim}
+ open        Plugin   Draw, or the Draw tab in the right pane
+ edit        draw on the canvas; saves go to this page's own scene file
+ generate    the Draw-it button: Claude draws the page's ## Diagram for you
+ follow      navigate to another page and the canvas follows it
+\end{verbatim}
+The split shows which file it saves to before you draw, so a gesture can never land in another page's scene. The Draw-it button takes an optional ask; left empty, it draws the page's ascii figure as a real scene. A generated scene may be regenerated freely, but the button refuses to overwrite a drawing a person made by hand.
+
+
+\section{The group view is composed, never copied}
+\textbf{One large drawing from many small ones}: what is stored and what is derived.
+
+\begin{verbatim}
+ stored     each page's scene . the group's own layer . placements
+ derived    one composed view, rebuilt on every open
+ identity   every element keeps its owner, so edits route home
+\end{verbatim}
+Opening a group's drawing loads the group scene, pulls in every member page's scene, and places them by the stored layout. Editing inside the composed view happens in one visible mode at a time: arrange the pages, edit the group's own layer, or enter one page's scene; only that owner's file receives the save. A page save updates the composed view on its next open; nothing is ever merged or imported by hand.
+
+
+\section{Saves are checked, never blind}
+\textbf{The safe save}: what the server verifies before writing.
+
+\begin{verbatim}
+ opened     the revision the editor loaded
+ save       owner . that revision . the changed elements
+[x] accepted   the file has not moved since
+ conflict   someone else saved first . reload and compare
+\end{verbatim}
+Every save carries the revision it started from, so two people editing the same drawing cannot silently overwrite each other. The chat pane receives the same owner address as the canvas, so asking it to change a drawing routes to that drawing's own file.
+

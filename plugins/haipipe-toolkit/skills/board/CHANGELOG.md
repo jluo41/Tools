@@ -4,6 +4,19 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-08-15 · The display plugin gets its skill; the roster catches up
+
+`page-plugins/haipipe-plugin-display/` joins draw, latex, and word (JL 260815:
+"we might have the page-plugins in skills/board/page-plugins"). Display is the
+first FAMILY-WRITER variant: its writer is a routing decision across five
+renderer kinds plus the human `accepted:` tick, which is exactly the knowledge
+a roster row cannot hold and QPf5 could only hold with the board open. The
+skill owns the page-side delta (unit address, kind→renderer routing, the
+five-step walk, the `> Display:` evidence lane) and cites the display family's
+unit contract verbatim, never forking it. The roster's stale `display/` row
+(DERIVED · planned · declared) is corrected to MIXED · 🟢 built 260815, and
+`probe/` gets its missing row (🟡 surface built; QPf9 aims open).
+
 ## 2026-08-15 · The slide variant retires; a deck is plugin material
 
 `page-types/haipipe-page-for-slide/` leaves the family (JL, ruled on the design

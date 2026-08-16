@@ -21,14 +21,24 @@ skill) is often older than the prose and that is healthy, so it gets an age,
 never a warning.
 """
 import html
+import json
 import time
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
         "meeting": "🗣", "probe": "🧪", "_runs": "🧾", "_fixture": "📦"}
 DERIVED = {"latex", "word", "bibex", "slide", "display"}
+# STALE rows a click may cure IN PLACE (JL 260816: "could we update them
+# along the time?"): only the MECHANICAL writers — one POST, seconds, no
+# judgment. slide is AUTHORED (claude -p, minutes, money) and display walks
+# a human-gated pipeline, so their rows say where to go instead of doing it:
+# a compile may be a button reflex, an authored artifact never is.
+MECHANICAL = {"latex": "/_board/latex", "word": "/_board/word",
+              "bibex": "/_board/bibex"}
+POINTER = {"slide": "✨ regenerate in the 🎞 Slides tab",
+           "display": "rebuilt by the display walk, unit by unit"}
 
 _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -46,6 +56,20 @@ td,th{{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;
 th{{color:var(--mut);font-weight:500;font-size:11px;text-transform:uppercase}}
 .stale{{color:var(--warn);font-weight:600}} .fresh{{color:var(--ok)}}
 .absent{{color:var(--mut)}} code{{font:12px ui-monospace,Menlo,monospace}}
+tr.plug{{cursor:pointer}} tr.plug:hover td{{background:var(--card)}}
+.caret{{display:inline-block;width:1em;color:var(--mut);
+ transition:transform .12s}} tr.open .caret{{transform:rotate(90deg)}}
+tr.files{{display:none}} tr.files.show{{display:table-row}}
+tr.files>td{{padding:2px 8px 10px 34px;border-bottom:1px solid var(--line)}}
+.f{{display:flex;gap:10px;padding:2px 0;font:12px ui-monospace,Menlo,monospace}}
+.f a{{color:var(--fg);text-decoration:none;flex:1;min-width:0;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.f a:hover{{text-decoration:underline}} .f .mut{{flex:none}}
+.rb{{margin-left:8px;padding:1px 8px;font:11px -apple-system,sans-serif;
+ color:var(--warn);background:none;border:1px solid var(--warn);
+ border-radius:9px;cursor:pointer}}
+.rb:hover{{background:var(--warn);color:var(--card)}}
+.rb[disabled]{{opacity:.5;cursor:default}}
 </style></head><body>
 <h1>📂 {title}</h1>
 <div class="mut">the page's own folder · rendered live, never stored ·
@@ -53,6 +77,33 @@ source .md edited {md_age}</div>
 <table><tr><th></th><th>plugin</th><th>holds</th><th>newest</th><th>state</th></tr>
 {rows}</table>
 <div class="mut" style="margin-top:10px">{absent}</div>
+<script>
+var TARGET={target};
+document.querySelectorAll('tr.plug').forEach(function(tr){{
+  tr.addEventListener('click',function(){{
+    tr.classList.toggle('open');
+    var d=tr.nextElementSibling;
+    if(d&&d.classList.contains('files'))d.classList.toggle('show');
+  }});
+}});
+/* ♻ cure a MECHANICAL stale row in place: the same POST the tab's writer
+   uses, then re-render this live view. The click stays on the button. */
+document.querySelectorAll('.rb').forEach(function(b){{
+  b.addEventListener('click',function(ev){{
+    ev.stopPropagation();
+    b.disabled=true; b.textContent='⏳';
+    fetch(b.dataset.route,{{method:'POST',
+      headers:{{'Content-Type':'application/json'}},
+      body:JSON.stringify(TARGET)}})
+      .then(function(r){{return r.json();}})
+      .then(function(j){{
+        if(j.ok){{location.reload();return;}}
+        b.disabled=false; b.textContent='✋ '+(j.err||'refused');
+      }})
+      .catch(function(){{b.disabled=false;b.textContent='✋ server?';}});
+  }});
+}});
+</script>
 </body></html>"""
 
 
@@ -75,7 +126,8 @@ def folder_status(page_src):
     for d in sorted(page_dir.iterdir()):
         if not d.is_dir():
             continue
-        files = [f for f in d.rglob("*") if f.is_file()]
+        files = sorted((f for f in d.rglob("*") if f.is_file()),
+                       key=lambda f: str(f.relative_to(d)))
         newest = max((f.stat().st_mtime for f in files), default=0)
         rows.append({
             "name": d.name,
@@ -85,6 +137,7 @@ def folder_status(page_src):
             "newest": newest,
             "derived": d.name in DERIVED,
             "stale": d.name in DERIVED and bool(files) and newest < md_mtime,
+            "list": [(str(f.relative_to(d)), f) for f in files],
         })
     return page_dir.name, md_mtime, rows
 
@@ -111,18 +164,42 @@ class FolderStatMixin:
         page_src = Path(board) / f
         now = time.time()
         title, md_mtime, rows = folder_status(page_src)
+        root = self.root.resolve()
         present, absent = [], []
         for r in rows:
-            state = ('<span class="stale">⚠️ STALE · older than the .md</span>'
-                     if r["stale"] else
-                     ('<span class="fresh">✅ fresh</span>' if r["derived"]
-                      else '<span class="mut">source material</span>'))
+            if r["stale"]:
+                state = '<span class="stale">⚠️ STALE · older than the .md</span>'
+                if r["name"] in MECHANICAL:
+                    state += ('<button class=rb type=button data-route="%s">'
+                              '♻ rebuild</button>' % MECHANICAL[r["name"]])
+                elif r["name"] in POINTER:
+                    state += ' <span class="mut">· %s</span>' % POINTER[r["name"]]
+            elif r["derived"]:
+                state = '<span class="fresh">✅ fresh</span>'
+            else:
+                state = '<span class="mut">source material</span>'
             present.append(
-                "<tr><td>%s</td><td><code>%s/</code></td><td>%d file%s · %s</td>"
+                "<tr class=plug><td><span class=caret>▸</span>%s</td>"
+                "<td><code>%s/</code></td><td>%d file%s · %s</td>"
                 "<td>%s</td><td>%s</td></tr>" % (
                     r["icon"], html.escape(r["name"]), r["files"],
                     "s"[:r["files"] != 1], _fmt_bytes(r["bytes"]),
                     _age(r["newest"], now), state))
+            items = []
+            for rel, f in r["list"]:
+                try:
+                    href = "/" + quote(str(f.resolve().relative_to(root)))
+                except ValueError:
+                    continue
+                items.append(
+                    '<div class=f><a href="%s" target="_blank" rel="noopener">'
+                    '%s</a><span class=mut>%s · %s</span></div>' % (
+                        href, html.escape(rel),
+                        _fmt_bytes(f.stat().st_size),
+                        _age(f.stat().st_mtime, now)))
+            present.append(
+                "<tr class=files><td colspan=5>%s</td></tr>"
+                % ("".join(items) or '<span class="mut f">empty</span>'))
         known = {r["name"] for r in rows}
         gaps = [n for n in ("draw", "slide", "chat", "latex", "word", "bibex",
                             "display", "skill", "meeting")
@@ -130,6 +207,8 @@ class FolderStatMixin:
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))
         page = _PAGE.format(title=html.escape(title),
+                            target=json.dumps({"path": p["path"],
+                                               "file": p["file"]}),
                             md_age=_age(md_mtime, now),
                             rows="".join(present) or
                                  "<tr><td colspan=5 class=mut>no plugin folders yet</td></tr>",

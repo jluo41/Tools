@@ -13,7 +13,7 @@ The same card opens into an editor for fixing an entry or pasting a new one in.
 The machine composes nothing, keeping citation-craft's law whole.
 
 **What the person gets per card**: the parsed title, authors, and year; 🔎 a Google Scholar search built from the title; 🔗 DOI and 📄 URL when the entry carries them; ✅ checked with who and when, or ⬜ unchecked with the ✓ button; and the raw bibtex behind an ✎ edit fold.
-**Covered elsewhere**: `QPf1` rules the folder; the roster row is `../../board/haipipe-page-plugin/ref/roster.md`; the siblings are `QPf6` (latex) and `QPf7` (word), and `QPf6`'s Decision row rules git's treatment of the DERIVED files while the page bib itself is committed; the law's source is `S03-literature/citation-craft.md`.
+**Covered elsewhere**: `QPf1` rules the folder; the roster row is `../../board/haipipe-plugin/ref/roster.md`; the siblings are `QPf6` (latex) and `QPf7` (word), and `QPf6`'s Decision row rules git's treatment of the DERIVED files while the page bib itself is committed; the law's source is `S03-literature/citation-craft.md`.
 
 ## Diagram
 **The page bib is the truth; three doors work it**: seeding copies in, a person ticks and pastes, the view only renders.
@@ -137,6 +137,7 @@ The store and the workbench are built and route-tested; what remains is the firs
   This page's own store, empty and honest: no key is cited here outside illustrations, and no tick is anyone's but a person's.
 
 ## Log
+- 260815 1900 · [JL via CC] `haipipe-plugin-bibex` drafted under `page-plugins/`, round 2 of the thin-door migration: delta-only over `haipipe-plugin`.
 - 260815 · [REVISE-CC] the ＋ box learned links on JL's ask ("could we paste the paper link"): four resolvers fetch bibtex whole from the source into the box for review, an unusable fetched key is renamed surname+year, the un-cited chip gained 📋 copy-`\citep{key}` after "not synced" confusion, and the raw `.bib` gained its own fold with the on-disk path ("how could I see the raw files").
 - 260815 · [RULE-JL] the write target is the PAGE's own bib, not the paper's and not a board-level one; the workbench built the same hour: status cards with Scholar/DOI/URL links, the ✓ as a `verified` field inside the entry (JL picked the field over a sidecar), the pen for pasted entries, and the code-fence strip that keeps figure syntax out of the key scan. The demo entry and its machine-written tick were reverted so A2.2 stays a person's.
 - 260815 · [DRAFT-CC] page born in the plugin round as the extract-only subset; superseded the same day by the page-owned-bib ruling above, which keeps extraction as the SEEDING half.

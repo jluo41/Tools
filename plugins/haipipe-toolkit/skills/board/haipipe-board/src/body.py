@@ -433,9 +433,16 @@ def _chip(kind, state, label, tip, meta=None, head=None):
     # hide the image or table below its first scroll fold. Other Card kinds
     # keep their established explanation-first order.
     content = sources + body if kind.startswith("disp ") else body + sources
+    # THE EVIDENCE SHOWS ITSELF ON CLICK (JL 260816: "when we click it, how to
+    # make it show the display directly as default?"): opening the card expands
+    # its FIRST preview fold. Lazily and one fold only, so the 260806 ruling
+    # holds: nothing loads at page load, and the file links stay above the
+    # card's scroll fold instead of being buried under two stacked objects.
     CARDS.append(
         f'<div popover id="{cid}" class="chipcard {kind} {state}"'
-        f' style="position-anchor:{anc}">'
+        f' style="position-anchor:{anc}"'
+        f" ontoggle=\"if(this.matches(':popover-open'))"
+        f"{{var d=this.querySelector('details.ccfold');if(d)d.open=true}}\">"
         f'<div class="cch"><span class="cck">'
         f'{esc(head or f"{kind} · {state}")}</span>'
         f'<b>{esc(label)}</b></div>'

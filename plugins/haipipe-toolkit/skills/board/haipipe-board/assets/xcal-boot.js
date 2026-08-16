@@ -110,6 +110,24 @@
   if (x.status === 200) { try { scene = JSON.parse(x.responseText); } catch (e) {} }
   if (!scene) {
     console.error("[haipipe] could not load " + scene_url + " (HTTP " + x.status + ")");
+    /* NEVER fall back to the browser's leftover buffer. Booting the app here
+       without a shim let it read the real localStorage — the last drawing some
+       OTHER page edited — and present it as this page's scene (the QPf4 ghost,
+       and again JL 260816 on QPf6). A scene that cannot be loaded shows as an
+       empty, storage-shimmed canvas: wrong is blank, never someone else's. */
+    var gmem = {};
+    gmem["excalidraw"] = "[]";
+    gmem["excalidraw-state"] = JSON.stringify({ viewBackgroundColor: "#ffffff" });
+    var gshim = {
+      getItem: function (k) { return k in gmem ? gmem[k] : null; },
+      setItem: function (k, v) { gmem[k] = String(v); },
+      removeItem: function (k) { delete gmem[k]; },
+      clear: function () { gmem = {}; },
+      key: function (i) { return Object.keys(gmem)[i] || null; }
+    };
+    Object.defineProperty(gshim, "length", { get: function () { return Object.keys(gmem).length; } });
+    try { Object.defineProperty(window, "localStorage", { value: gshim, configurable: true }); }
+    catch (e) {}
     return start();
   }
   var runtime = (scene.haipipe && scene.haipipe.runtime) || null;

@@ -28,11 +28,11 @@ methodology.
 ### Routing (topic categories)
 
 ```
-  init, seed, setup, scaffold       -> sl-init
-  iterate, loop, batch, panel       -> sl-iterate
-  validate, benchmark, kappa, ceil  -> sl-validate
-  scale, cascade, tier, batch-label -> sl-scale
-  status, dashboard, trajectory     -> sl-status
+  init, seed, setup, scaffold       -> label-init
+  iterate, loop, batch, panel       -> label-round
+  validate, benchmark, kappa, ceil  -> label-evaluate
+  scale, cascade, tier, batch-label -> label-complete
+  status, dashboard, trajectory     -> label-status
   sampler, sampling, pool           -> agent: sampler
   embedder, embed, cluster, FAISS   -> agent: embedder
   classifier, train, uncertainty    -> agent: classifier

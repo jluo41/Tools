@@ -6,19 +6,19 @@ The scales have different units and closure rules and must not be collapsed into
 ## 1. Project lifecycle
 
 ```text
-/sl-init
+/label-init
     ↓
-/sl-round × N
+/label-round × N
     ↓ four-gate stop + human signoff
 freeze G*
     ↓
-/sl-evaluate
+/label-evaluate
     ↓ eligible production policy
-/sl-complete
+/label-complete
     ↓ final corpus audit
 complete
 
-/sl-status reads every state without mutation
+/label-status reads every state without mutation
 ```
 
 Canonical states:
@@ -40,7 +40,7 @@ Any semantic change after `calibration_stopped` returns the project to `calibrat
 
 ## 2. Initialization
 
-`/sl-init` performs these responsibilities in order:
+`/label-init` performs these responsibilities in order:
 
 1. Validate one corpus snapshot with stable ids and text.
 2. Record the vague trait seed and the identified human semantic authority.
@@ -158,7 +158,7 @@ It does not complete the corpus.
 
 ## 9. Final evaluation
 
-`/sl-evaluate` requires `calibration_stopped` and a valid sealed-test manifest.
+`/label-evaluate` requires `calibration_stopped` and a valid sealed-test manifest.
 It performs:
 
 1. authorized test-text release after the freeze;
@@ -173,7 +173,7 @@ They cannot replace the project-specific sealed human test.
 
 ## 10. Corpus completion
 
-`/sl-complete` selects one frozen production policy from eligible scorecards and the predefined quality-risk-cost rule.
+`/label-complete` selects one frozen production policy from eligible scorecards and the predefined quality-risk-cost rule.
 It then:
 
 1. runs a preflight sample;
@@ -189,12 +189,13 @@ Complete means every in-scope item has a terminal disposition and the final audi
 ## 11. Compatibility commands
 
 ```text
-/sl-iterate  → /sl-round
-/sl-validate → /sl-evaluate
-/sl-scale    → /sl-complete
+/sl-init     → /label-init        /sl-status   → /label-status
+/sl-round    → /label-round       /sl-iterate  → /label-round
+/sl-evaluate → /label-evaluate    /sl-validate → /label-evaluate
+/sl-complete → /label-complete    /sl-scale    → /label-complete
 ```
 
-Aliases announce the canonical command before dispatch.
+The router resolves legacy names and announces the canonical command before dispatch.
 They do not preserve old panel-consensus, public-kappa, or static-cascade semantics.
 
 ## 12. Implementation status

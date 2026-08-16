@@ -5,7 +5,7 @@
  * (md2tex, md2docx, docx2pdf, the bibex extractor), reached through one
  * /_board/<plugin> route each (live/export.py). No export is authored here.
  *
- * THE `tab` SPEC is the shell's whole interface (haipipe-page-plugin): the
+ * THE `tab` SPEC is the shell's whole interface (haipipe-plugin): the
  * shell reads registry entries carrying `tab: {url, write}` and builds its
  * right-pane tab from them, so plugin N+1 ships by registering — the shell is
  * never edited for it. Draw and Slides predate the spec and still use their

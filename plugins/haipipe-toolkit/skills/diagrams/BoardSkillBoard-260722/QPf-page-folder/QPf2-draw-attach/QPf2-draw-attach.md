@@ -95,6 +95,7 @@ The drawings themselves are in place: every page scene sits in its page's folder
 Two engine cleanups remain and are listed in Aims.
 
 ## Log
+- 260815 1800 · [JL via CC] this plugin's own skill shipped: `haipipe-plugin-draw` under `page-plugins/` (the thin-door round, two specimens); the door's 67-line excalidraw section became this unit, corrected to the page-folder layout on the way.
 - 260815 1650 · [REVISE-CC, JL asked] title, Opening, and Content rewritten to the present contract in plain words; the history that lived there (the ruling, the retired attach button, the migration record) stays in this Log and the archive. The rule itself is now in `ref/writing-rules.md` and `ref/page-template.md`: the page says what IS, the Log keeps the story.
 - 260815 1610 · [FIX-CC] the group canvas renders again: `page_board`'s three root probes looked for a `pyproject.toml` no tree here carries, so every GROUP DRAW section (and the Index map's canvas path) blanked silently; the shared `server_root()` now accepts the repo's `.git` as the marker (QO13: serve starts at the repo root). Verified live on QPw: composed canvas + 🖌 Draw tab, owner `this group`.
 - 260815 1530 · [REVISE-CC, JL ruled] the renderer follows the ruling: `## Diagram` stages the ascii figure alone (no `✏️ Excalidraw` fold, no attach button: `render_diagram` flattened, `50-xcal.js` deleted); the drawing's one door in the viewer is the 🖌 Draw split, now also a row in the shell's Plugin menu. Excalidraw itself runs locally (docker, 127.0.0.1:5610) behind serve.py's `/_excalidraw` proxy.

@@ -1096,6 +1096,41 @@ def check_group_names(text, name, rep):
                         f"{want.strip()!r} (QB4 §0.5: same id, same name)")
 
 
+def check_draw_folders(d, rep):
+    """Every draw/ holds exactly what its owner may own (QPf2's contract).
+
+    A page's draw/ holds that page's own scene(s), named by the page id the
+    folder name starts with; a group's draw/ holds group.excalidraw. Anything
+    else is a STRAY — the trace an archive or merge leaves behind (found
+    260816: QPf2a's stub sat in QPf2's draw/ for a day, and Design-7/8's
+    scenes hid in Design-6's). Underscore entries (_retired, _archive) are a
+    person's deliberate parking and stay unjudged; the generated board/ site
+    is not source and is skipped.
+    """
+    for draw in sorted(d.rglob("draw")):
+        if not draw.is_dir():
+            continue
+        parts = draw.relative_to(d).parts
+        if "board" in parts or any(p.startswith("_") for p in parts):
+            continue
+        page = draw.parent
+        is_page = (page / f"{page.name}.md").is_file()
+        for f in sorted(draw.iterdir()):
+            if f.name.startswith("_") or (f.name == "assets" and f.is_dir()):
+                continue
+            where = str(f.relative_to(d))
+            if f.suffix != ".excalidraw":
+                rep.add(WARN, "stray-in-draw", where,
+                        "not a scene; draw/ holds scenes, assets/, and _parked")
+                continue
+            ok = (f.name == "group.excalidraw") if not is_page else \
+                (page.name == f.stem or page.name.startswith(f.stem + "-"))
+            if not ok:
+                rep.add(WARN, "stray-scene", where,
+                        f"scene stem does not name this {'page' if is_page else 'group'}"
+                        " — a leftover from an archive or merge?")
+
+
 def check_page(d, rep):
     """The built site: local hrefs resolve, tags balance, ids are unique.
 
@@ -1326,6 +1361,7 @@ def main():
     for name, p in sorted(pages.items()):
         check_face(p, name, rep, links, page_ids, decision_only)
     check_topic_entries(d, pages, rep)
+    check_draw_folders(d, rep)
     check_page(d, rep)
     check_css(rep)
     if not a.no_template:

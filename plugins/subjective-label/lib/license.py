@@ -11,7 +11,7 @@ label set), compute the human ceiling (Krippendorff α among raters) and the
 agent-vs-consensus agreement, and issue PASS / BELOW.
 
 Downloading the datasets + running the engine + projecting labels is orchestration
-(sl-validate); it is network/compute-heavy and run when a license is established.
+(label-evaluate); it is network/compute-heavy and run when a license is established.
 
 Usage:
     python lib/license.py assess --agent agent.jsonl --raters raters.jsonl \

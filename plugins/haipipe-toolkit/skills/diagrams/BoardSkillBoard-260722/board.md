@@ -11,6 +11,8 @@ Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues 
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
+- 260816 · [FOLD-CC, JL ruled] QA00 became the introduction chapter: QA0 (the folders) and QA1 (the words) folded in as its §5 and §4, and the chapter now opens on why a board exists, told as a plain story (JL chose no metaphor).
+  Both pages archived whole with their plugins; their open rulings carried into QA00's Decision Now; QA0, QA1, and QA1a resolve through `## Links`.
 - 260815 · [FOLD-CC, JL ruled] "just have one Chat in the plugin": QPf4's four faces folded into its Content the evening they were born, GUI and TUI became a form choice inside the one surface, 13 open aims carried with source tags, full face records archived, then restored as 🗂 FOLDED pages the same night when the FOLDED state shipped (a fold stays linkable, it only stops competing for room).
 - 260815 · [MIGRATE-CC, JL ruled] the chat pages joined the plugin that keeps their record: the morning's QO1-QO4 became QPf4a-QPf4d, faces of the new QPf4-chat contract page, and the QO lane renumbered contiguous (260801 rule).
   QPf2a was archived in a parallel session with its scene kept under QPf2; its Links row points at the archive.
@@ -34,7 +36,7 @@ Every earlier id stays resolvable as a declared Link, so a citation written unde
 ## Board Map
 Which folders this board works with, how its groups connect, and the cross-group page edges that really exist.
 Every id here is a link: a group token opens the index at that group, a page id opens the page.
-`QA0` argues the folder map in full.
+`QA00` §5 argues the folder map in full.
 
 ```text
 ─────────  ① the folders this board works with  ────────────────────────────────────
@@ -73,7 +75,7 @@ Every id here is a link: a group token opens the index at that group, a page id 
 
 ─────────  ③ cross-group page edges  ───────────────────────────────────────────────
 
-  QA0  ──places───▶  every folder above     QPs1 ──defines──▶ the base page
+  QA00 ──places───▶  every folder above     QPs1 ──defines──▶ the base page
   QB2  ──renders──▶  this Index             QPf1 ──rules───▶  <name>/<name>.md
   QPw1 ──times────▶  every page's loop      QS1  ──owns────▶  the atomic unit
   QF1  ──proves───▶  every page change      QA6  ──lists───▶  every shipped unit
@@ -84,7 +86,7 @@ Every id here is a link: a group token opens the index at that group, a page id 
 [↗ the same map as a shared Excalidraw canvas](https://app.excalidraw.com/s/1JWkKv8oMIX/8OmxTBT2e1m?element=_Q20Q1taxY2jiainH_Y57)
 
 ## Related Folders
-The folders this board touches: the engine that renders it, and what a board folder itself looks like. Open a folder and navigate it, the way you would browse a directory. QB2 owns the fold, QA0 owns which roots are listed; everything below a root is what is actually on disk.
+The folders this board touches: the engine that renders it, and what a board folder itself looks like. Open a folder and navigate it, the way you would browse a directory. QB2 owns the fold, QA00 §5 owns which roots are listed; everything below a root is what is actually on disk.
 @ ../../board/haipipe-board | ⚙️ haipipe-board · the engine that ships
 @ . | 🗂 BoardSkillBoard-260722 · what a board folder looks like
 
@@ -122,11 +124,9 @@ With scripts on the router swaps that page into the current document so chat and
 ## Pages
 ### QA · Design
 What the Board system IS, before any piece of it is built, plus the family's roster.
-QA00 is the board's chapter 1: pointers and invariants only, with the deck as its `slide/` plugin (absorbed from QA4, archived 260815).
-QA1 owns the words; QA2 owns how a topic becomes pages and groups; QA3 owns the round's closing gate; QA5 owns identity and scope; QA6 lists every shipped unit (QA6a what SKILL.md must say, QA6b the sub-skill roster).
+QA00 is the introduction chapter (260816): why a board exists, the words (absorbed QA1, its §4), the folder geography (absorbed QA0, its §5), and the tour of the chapters, with the deck as its `slide/` plugin.
+QA2 owns how a topic becomes pages and groups; QA3 owns the round's closing gate; QA5 owns identity and scope; QA6 lists every shipped unit (QA6a what SKILL.md must say, QA6b the sub-skill roster).
 QA00-overview.md
-QA0-three-folders.md
-QA1-concepts.md
 QA2-question-group-design.md
 QA3-the-round.md
 QA5-identity-and-scope.md
@@ -136,7 +136,7 @@ QA6b-subskills.md
 ### QB · Board
 The Board altitude, and the units that ship it.
 QB1 the board folder; QB2 the webpage and its Index; QB2a the sidebar rail.
-Skill-0 is the door and engine's design page, its `skill/` plugin the contract surface and its `meeting/` plugin the 260723 demo note; Skill-5 is the write verb at both altitudes.
+Design-1 is the door and engine's design page, its `skill/` plugin the contract surface and its `meeting/` plugin the 260723 demo note; Design-2 is the write verb at both altitudes.
 QB1-form.md
 QB2-board-webpage-design.md
 QB2a-sidebar.md
@@ -146,18 +146,16 @@ Design-2-haipipe-board-routing.md
 What a page SAYS: the sections in their fixed order, and the kinds that change what closing means.
 
 ```text
-📐 the base            QPs1  the sections · five rows · the folds
+📐 the base            QPs1  the sections · five rows · the folds · carries the
+                             haipipe-page skill/ plugin (QPs00 folded in, JL 260816)
 🏷 the kinds           QPs2  what closes a page: Q · stage · design
 🧪 the specimens       QPs3  for-stage · QPs4  for-design
-🧩 the units           Skill-3 haipipe-page ✅ · Skill-7 the prose standard
 ⬜ debt                Skill-9 page-structure, when the unit ships
 ```
 QPs1-overall.md
 QPs2-page-types.md
 QPs3-for-stage.md
 QPs4-for-design.md
-Design-3-haipipe-page.md
-Design-4-haipipe-writing.md
 ### QPf · Page-Folder
 Where a page's files LIVE: the folder that carries the page, and the plugins inside it.
 A page is `<name>/<name>.md` and every subfolder of it is a plugin (JL 260815); discovery never enters one.
@@ -207,12 +205,13 @@ Design-6-page-workflow.md
 ### QS · Sentence
 The atomic unit: one line, its lanes, its card, and everything written onto it.
 QS1 the sentence; QS2 the details lifecycle; QS3 the generated address; QS4 the sentence run, every shape crossed with every operation.
-Skill-4 is the sentence unit's design page.
+Design-5 is the sentence unit's design page; Design-4 is the prose standard's, moved here from QPs because its product is the ✎ sentence lane (JL 260816).
 QS1-overview.md
 QS2-sentence-details-lifecycle.md
 QS3-sentence-address.md
 QS4-sentence-run.md
 Design-5-haipipe-sentence.md
+Design-4-haipipe-writing.md
 ### QC · Engine
 How the delivery is produced and shipped, renumbered contiguous on 260815 (the roster pages left for QA6).
 QC1 the code's shape under one Law (QC1a build, QC1b src, QC1c live); QC2 generating a page from outside the board (QC2a a skill folder, QC2b a meeting note); QC3 the round trip md to html and back (QC3a the write path's anchor).
@@ -268,10 +267,16 @@ Skill-0              QB-board/Design-1-haipipe-board/Design-1-haipipe-board.md
 Skill-0-haipipe-board.md             QB-board/Design-1-haipipe-board/Design-1-haipipe-board.md
 Skill-5              QB-board/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
 Skill-5-haipipe-board-routing.md     QB-board/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
-Skill-3              QPs-page-structure/Design-3-haipipe-page/Design-3-haipipe-page.md
-Skill-3-haipipe-page.md              QPs-page-structure/Design-3-haipipe-page/Design-3-haipipe-page.md
-Skill-7              QPs-page-structure/Design-4-haipipe-writing/Design-4-haipipe-writing.md
-Skill-7-haipipe-writing.md           QPs-page-structure/Design-4-haipipe-writing/Design-4-haipipe-writing.md
+# QPs00 folded into QPs1 (JL 260816): the grammar page carries the unit's skill/ plugin; QPs00, Design-3 and Skill-3 all resolve there. The archived page sits at _archive/QPs00-haipipe-page/.
+Skill-3              QPs-page-structure/QPs1-overall/QPs1-overall.md
+Skill-3-haipipe-page.md              QPs-page-structure/QPs1-overall/QPs1-overall.md
+Design-3             QPs-page-structure/QPs1-overall/QPs1-overall.md
+Design-3-haipipe-page.md             QPs-page-structure/QPs1-overall/QPs1-overall.md
+QPs00                QPs-page-structure/QPs1-overall/QPs1-overall.md
+QPs00-haipipe-page.md                QPs-page-structure/QPs1-overall/QPs1-overall.md
+# Design-4 moved QPs → QS (JL 260816): haipipe-writing's product is the ✎ sentence lane, so its page lives with the sentence chapter.
+Skill-7              QS-sentence/Design-4-haipipe-writing/Design-4-haipipe-writing.md
+Skill-7-haipipe-writing.md           QS-sentence/Design-4-haipipe-writing/Design-4-haipipe-writing.md
 Skill-4              QS-sentence/Design-5-haipipe-sentence/Design-5-haipipe-sentence.md
 Skill-4-haipipe-sentence.md          QS-sentence/Design-5-haipipe-sentence/Design-5-haipipe-sentence.md
 # 260815 evening fold: the chat faces, one file each, whole.
@@ -350,7 +355,7 @@ test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
 live/xcal.py          ../../board/haipipe-board/live/xcal.py
 board.excalidraw      board.excalidraw
 QO-operating/draw/group.excalidraw QO-operating/draw/group.excalidraw
-QPf2a.excalidraw    QPf-page-folder/QPf2-draw-attach/draw/QPf2a.excalidraw
+QPf2a.excalidraw    QPf-page-folder/QPf2-draw-attach/draw/QPf2.excalidraw
 QC5                 QC-engine/QC2-generate/QC2-generate.md
 QC5a                QC-engine/QC2a-skill-to-page/QC2a-skill-to-page.md
 QC5b                QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
@@ -390,7 +395,14 @@ Q-Skill-haipipe-board-index          _archive/Skill-1-haipipe-board-index.md
 Skill-1              _archive/Skill-1-haipipe-board-index.md
 Q-Skill-haipipe-board-reviewer-agent _archive/Design-6-haipipe-board-reviewer-agent.md
 Skill-2              _archive/Design-6-haipipe-board-reviewer-agent.md
-QA1a                QA-design/QA1-concepts/QA1-concepts.md
+# QA0 and QA1 folded into QA00, the introduction chapter (JL 260816):
+# the words are its §4, the folders its §5. The archived pages sit whole
+# at _archive/QA0-three-folders/ and _archive/QA1-concepts/.
+QA0                  QA-design/QA00-overview/QA00-overview.md
+QA0-three-folders.md _archive/QA0-three-folders/QA0-three-folders.md
+QA1                  QA-design/QA00-overview/QA00-overview.md
+QA1-concepts.md      _archive/QA1-concepts/QA1-concepts.md
+QA1a                 QA-design/QA00-overview/QA00-overview.md
 QA2b                QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
 QAa0                QPs-page-structure/QPs1-overall/QPs1-overall.md
 QAa1                QB-board/_archive/QB4a-opening.md

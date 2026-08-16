@@ -33,7 +33,7 @@ it digests the CURRENT session instead.
        - gotchas about LLM behavior, statistics, embeddings, datasets
        - anything that would save time if known BEFORE starting
      FEEDBACK signals (skill defects — route to feedback/):
-       - "sl-iterate is too slow because it retrains every time"
+       - "label-round is too slow because it retrains every time"
        - "the init dialogue didn't ask about my purpose"
        - "the trajectory plot is hard to read"
        - complaints about the TOOL, not the methodology
@@ -69,7 +69,7 @@ it digests the CURRENT session instead.
 ```
 digest routes to TWO destinations:
   methodology gotcha  "personas order-bias the first option"          -> lesson/
-  skill defect        "sl-init doesn't ask about purpose"             -> feedback/
+  skill defect        "label-init doesn't ask about purpose"             -> feedback/
   global pref         "always show me a diagram instead of prose"     -> PREFERENCES.md
 ```
 

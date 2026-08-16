@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf1 · A Page Inside Its Own Folder</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QPf1-folder · ✅ SETTLED · shipped 260724</p>
+  <h1 class="h1">One page inside <span class="gradient-text">one folder it owns</span></h1>
+  <p class="lede">Can a Board page live beside the files it describes — discovered, ordered, and edited safely — while flat Boards behave exactly as before?</p>
+  <div class="deck-footer"><span class="dim2">QPf1-folder · AI-generated deck, 260816</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Open with the one-line stakes: this page let a real project tree become a Board without a mirrored copy. It was ruled by JL on 260724 and shipped the same day — so this is a settled story, told from the finish line.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Problem">
+  <p class="kicker">The question</p>
+  <h2 class="h2">Flat-only was a tax on every lifecycle tree</h2>
+  <div class="grid g2">
+    <div class="card"><h4>Trees serve directly</h4><p class="dim">An existing project tree becomes a Board — no mirrored page folder.</p></div>
+    <div class="card"><h4>Root-only assumptions</h4><p class="dim">Discovery, ordering, and server writes all assumed pages sat at the Board root.</p></div>
+    <div class="card"><h4>Hand-kept copies</h4><p class="dim">The flat-only rule forced lifecycle trees to be duplicated and synced by hand.</p></div>
+    <div class="card"><h4>Success criterion</h4><p class="dim">Nested pages work end to end; flat Boards notice nothing.</p></div>
+  </div>
+  <p class="dim mt-m">Where the Board-Folder lives is QB1's question; how the Index orders pages is QB2's. This page owns only the nesting.</p>
+  <div class="notes">Stress that the pain was duplication: keeping a copied page tree in step by hand. Then name the bar we set — nested pages must be first-class, and flat boards must be provably untouched. Point at the boundary note so nobody asks the QB1 or QB2 questions here.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Discovery">
+  <p class="kicker">The mechanism</p>
+  <h2 class="h2">rglob("Q*.md"), with three exclusions</h2>
+  <pre>
+ board/
+ ├─ Q1-flat.md ............ flat page, works as before
+ ├─ stage/
+ │    └─ deeper/
+ │         └─ Q7-nested.md . found at ANY depth
+ ├─ _archive/ .............. skipped: segment starts "_"
+ ├─ .preview/ .............. skipped: segment starts "."
+ └─ fig/ ................... skipped: figures folder
+  </pre>
+  <p class="dim mt-m">Discovery lives in <code>q_files()</code> in <code>src/common.py</code>; <code>build.py</code> stays a thin entry.</p>
+  <div class="notes">Walk the tree top to bottom: one rule, three exclusions. A question is any Q-star markdown file at any depth, and membership stays by path. The underscore, dot, and fig exclusions are the whole safety story for archives and previews.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Aims">
+  <p class="kicker">Aims · all six landed</p>
+  <h2 class="h2">Shipped end to end, then proved</h2>
+  <div class="grid g3">
+    <div class="card"><h4>📂 Folder shows first</h4><p class="dim">The rail's first tab renders the page-folder's live contents with per-plugin freshness.</p></div>
+    <div class="card"><h4>🔍 Recursive discovery</h4><p class="dim"><code>q_files()</code> in <code>src/common.py</code>: rglob at any depth, exclusions applied.</p></div>
+    <div class="card"><h4>💬 Path plumbing</h4><p class="dim">The page's data-file carries the board-relative posix path; <code>vet_qpath()</code> rejects absolute and dot-dot.</p></div>
+    <div class="card"><h4>👀 Watch recursion</h4><p class="dim"><code>watch.py</code> stamps the whole tree with the same segment filter.</p></div>
+    <div class="card"><h4>🧪 Flat regression</h4><p class="dim">The skill's own board rebuilt with an unchanged question set; the script-free invariant held.</p></div>
+    <div class="card"><h4>🎴 First consumer</h4><p class="dim">The MISQ <code>0-lifecycle/</code> board: 22 questions, pages in stage folders down to depth 2.</p></div>
+  </div>
+  <div class="notes">Six aims, six checkmarks — read them as build, prove, deploy. The regression card is the flat-boards-untouched promise made testable, and the MISQ board is the proof it works on a real paper, not a toy.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Law">
+  <p class="kicker">Law</p>
+  <h2 class="h2">The rules that make nesting safe</h2>
+  <ul>
+    <li>A question is a <code>Q*.md</code> file at ANY depth; membership stays by path.</li>
+    <li>Segments starting <code>_</code> or <code>.</code>, and <code>fig/</code>, are not part of the board.</li>
+    <li>Pages list bare filenames; a duplicate basename warns and keeps the first.</li>
+    <li>The page carries the board-relative posix path; serve.py vets it — no absolute, no <code>..</code>, basename must match <code>Q*.md</code>.</li>
+    <li>Archiving a nested page flattens it into the top-level <code>_archive/</code>.</li>
+  </ul>
+  <p class="dim mt-m">The vetting line is the write-back guarantee: comments can only ever land inside the board.</p>
+  <div class="notes">Slow down on the vetting rule — it's what lets a server accept a path from a browser and still write safely. The duplicate-basename rule is the one people trip on: the Pages list stays flat-looking even when the tree isn't.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Since">
+  <p class="kicker">States · what moved after 260724</p>
+  <h2 class="h2">The design widened without breaking</h2>
+  <div class="grid g2">
+    <div class="card"><h4>Discovery widened</h4><p class="dim"><code>page_files()</code> now finds S, Agent, and Meeting pages at any depth — same exclusions.</p></div>
+    <div class="card"><h4>Flat-birth superseded</h4><p class="dim">260726, QA1: new pages are born in their group's home folder, root only when the group's pages disagree.</p></div>
+    <div class="card"><h4>Write-back smoke-tested</h4><p class="dim">Nested comment write-back proven against <code>4-display/QD2-d01-iv-reporting.md</code>.</p></div>
+    <div class="card"><h4>Ops relocated</h4><p class="dim"><code>target()</code> to <code>live/base.py</code>; add and archive to <code>live/structure.py</code> — all on board-relative paths.</p></div>
+  </div>
+  <div class="notes">The point of this slide is that the design held under growth: three later changes rode on the same path rules without reopening the ruling. Note the flat-birth Law line is the one part that got superseded — new pages now follow their group home.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Fresh">
+  <p class="kicker">Log · 260815</p>
+  <h2 class="h2">The folder now shows itself first</h2>
+  <ul>
+    <li>📂 Folder registers FIRST on the rail — <code>06-plugin-folder.js</code>.</li>
+    <li><code>GET /_board/folderstat</code> renders the page-folder's live status — <code>live/folderstat.py</code>.</li>
+    <li>A DERIVED plugin older than the .md is flagged STALE.</li>
+    <li>Rendered live and never stored — "a stale page about staleness would be absurd."</li>
+    <li>First run caught a real one: QPf6's <code>latex/</code> predated its .md.</li>
+  </ul>
+  <div class="notes">This is the payoff of owning a folder: the page can now audit its own home, live. Land the quote — freshness data is computed on request precisely because storing it would recreate the problem it detects. And it earned its keep on day one by catching QPf6.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">✅ SETTLED · ruled by JL 260724, shipped same day</p>
+  <h1 class="h1">One rule, any depth, <span class="gradient-text">flat boards untouched</span></h1>
+  <p class="lede">A Q*.md at any depth is a page; underscore, dot, and fig/ stay out; every write is vetted against the board-relative path. The MISQ lifecycle board runs on it today.</p>
+  <div class="deck-footer"><span class="dim2">QPf1-folder · AI-generated deck, 260816</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Close by compressing the whole page into the one rule plus its guardrails. If there's a question left, it's probably QB1 or QB2 territory — where the folder lives and how the index orders it — and both are settled on their own pages.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260816 0016 · ask: (page) -->

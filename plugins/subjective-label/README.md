@@ -22,11 +22,11 @@ Convergence is proved against public datasets (GoEmotions, MFTC, POPQuorn, DICES
 | Command              | What it does                                                                |
 |----------------------|-----------------------------------------------------------------------------|
 | `/subjective-label`  | Router — lists sub-commands                                                 |
-| `/sl-init`           | Create project, define topic + boundaries via Moderator + Prober dialogue   |
-| `/sl-iterate`        | One iteration: Prober picks batch → Panel labels → Analyzer → researcher    |
-| `/sl-validate`       | Benchmark against a public dataset, compute κ, issue verdict                |
-| `/sl-scale`          | Batch-label full corpus using converged gallery (single / panel / cascade) |
-| `/sl-status`         | Show state, κ trajectory, gallery stats, next step                          |
+| `/label-init`           | Create project, define topic + boundaries via Moderator + Prober dialogue   |
+| `/label-round`        | One iteration: Prober picks batch → Panel labels → Analyzer → researcher    |
+| `/label-evaluate`       | Benchmark against a public dataset, compute κ, issue verdict                |
+| `/label-complete`          | Batch-label full corpus using converged gallery (single / panel / cascade) |
+| `/label-status`         | Show state, κ trajectory, gallery stats, next step                          |
 
 ---
 
@@ -94,7 +94,7 @@ This plugin operates at three nested scales — see `ref/ref-stages.md` for deta
 
 **BIG loop (project lifecycle)**
 ```
-/sl-init  →  /sl-iterate × N  →  /sl-validate  →  /sl-scale
+/label-init  →  /label-round × N  →  /label-evaluate  →  /label-complete
                   ▲                    │
                   └── STALLED / refine ┘
 ```
@@ -105,7 +105,7 @@ Sampler → Prober → Panel → Analyzer → Moderator (talk to researcher)
      → Gallery Keeper → Classifier.train (ready for next iter)
 ```
 
-**SMALL loop (cascade inside /sl-scale)**
+**SMALL loop (cascade inside /label-complete)**
 ```
 Tier 0: Embedder k-NN         ~$0.00001/item    ~60-80% of items
 Tier 1: Trained classifier    ~$0.0001/item     ~10-30% of remaining

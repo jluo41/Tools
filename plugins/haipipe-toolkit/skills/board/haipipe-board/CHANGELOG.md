@@ -5,6 +5,40 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.135.0 - 2026-08-16
+
+- 🛠 Skill FLATTENED to a ranked list (JL: "maybe we don't need to have
+  these concept … we just need to show these skills and the user can drag
+  and rank them themselves"): the uses/designs relations, the aligned ✓
+  with drift dates, and ↑ designs came out of `live/skillmap.py` whole.
+  The store is now `- <name>` rows whose ORDER is the person's rank (top =
+  most related); the index cards carry a ⠿ handle and drag-to-rank saves
+  through the new `POST /_board/skill-order`; `/_board/skill-verify` is
+  removed; the pen (`/_board/skill-entry`) now does add-at-top, ✕ remove
+  (the ` · removed` tombstone a refresh never re-seeds), ↩ restore, and
+  note. Old-grammar stores parse cleanly and migrate on the next write;
+  all 15 live stores were migrated in place, preserving the designs-first
+  order the person saw as the initial rank.
+
+## 0.134.0 - 2026-08-15
+
+- 🔍 Skill: the whole split, one skill, with ← → (JL: "open a new small tab,
+  the whole split should be the skill, like the display split, with ← and →").
+  The 🛠 workbench card's NAME now posts to the shell instead of expanding an
+  inline iframe; the shell stages a 🔍 Skill pseudo-tab framing
+  `/_board/skillview`, remembered per page and offered from ＋ once staged.
+  `serve_skillview` gains `?map=<the page's store>` and renders a ← → bar
+  walking the page's skills in card order (designs first, then uses), with
+  arrow keys live, the way a deck walks its slides. A standalone workbench
+  falls back to opening the view in a browser tab.
+
+## 0.133.0 - 2026-08-15
+
+- The WORD export reads paragraph per paragraph (JL: "it should not be the
+  sentence per paragraph"): `--join-paragraphs` rides every board export,
+  so the source's one-sentence-per-line grammar stops at the writer and a
+  coauthor gets flowing prose. QPf7 carries the ruling as contract.
+
 ## 0.132.0 - 2026-08-15
 
 - The WORD export cites from the page's own bib too (JL: "how about the
@@ -68,7 +102,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 0.128.0 - 2026-08-15
 
-- The right pane's tabs became an OPEN SET, per page (haipipe-page-plugin):
+- The right pane's tabs became an OPEN SET, per page (haipipe-plugin):
   the strip renders from the set, a tab appears on an explicit click — the ＋
   menu lists what the page could open, with ● where material already exists —
   the active tab carries its own ✕ (out of the set, focus to the left
@@ -84,7 +118,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   (extract-only subset of the paper's `0-*.bib` → `bibex/<stem>.bib` + cards;
   never invents an entry, per citation-craft.md). `--paper-root` is discovered
   by walking up for a `0-*.bib`; pages outside a paper export cite-less.
-- The contract itself is the new `board/haipipe-page-plugin` skill
+- The contract itself is the new `board/haipipe-plugin` skill
   (SKILL.md + ref/roster.md): a plugin is STORAGE + SURFACE + WRITER +
   BOUNDARY, named once in the roster.
 

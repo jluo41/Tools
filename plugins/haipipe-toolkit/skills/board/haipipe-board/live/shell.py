@@ -240,6 +240,7 @@ def _shell_doc(page_url, index_url):
    right for one button and would be wrong for every one added after it. */
 .pmenu{position:absolute;top:38px;left:150px;z-index:90;
   min-width:260px;max-width:320px;
+  max-height:calc(100vh - 96px);overflow-y:auto;overscroll-behavior:contain;
   background:#fff;border:1px solid #d8d8d8;border-radius:9px;padding:4px;
   box-shadow:0 10px 30px rgba(0,0,0,.16)}
 .pmenu[hidden]{display:none}
@@ -296,7 +297,7 @@ def _shell_doc(page_url, index_url):
   border-color:var(--line,#e4e4df);margin-bottom:-1px;padding-bottom:6px}
 .rpt[hidden]{display:none}
 .rp-sp{flex:1}
-/* the OPEN SET machinery (haipipe-page-plugin): the active tab's own ✕, the ＋
+/* the OPEN SET machinery (haipipe-plugin): the active tab's own ✕, the ＋
    that lists what this page could open, and the ＋ menu with its ● material dot */
 #rp{position:relative}
 #rptset{display:flex;align-items:stretch;gap:2px}
@@ -415,7 +416,7 @@ def _shell_doc(page_url, index_url):
          segment on the right of the strip, visible only while Chat is open.
          The hidden #mtui/#mgui radio stays the single mode writer, so every
          check that drives it and every localStorage key is untouched. -->
-    <!-- 🧩 TABS ARE AN OPEN SET, PER PAGE (haipipe-page-plugin, JL 260815): the
+    <!-- 🧩 TABS ARE AN OPEN SET, PER PAGE (haipipe-plugin, JL 260815): the
          strip shows what this page has OPEN, ＋ lists what it COULD open (● =
          material already on disk), the active tab carries its own ✕, and the
          pane's "✕ close" keeps meaning the whole pane. Buttons are rendered
@@ -536,6 +537,14 @@ def _shell_doc(page_url, index_url):
         fdEl.setAttribute('src', url);
       }
     })();
+    /* ...AND SO DOES EVERY OTHER TAB (JL 260816: "when I change the page, the
+       plugin is not changed accordingly — it is not attached to the focal
+       page"). Chat and draw each earned a follow block above, one incident at
+       a time; slides, the skill viewer, and every registry tab (folder, latex,
+       word, bibex, skill, display, probe) were aimed only when SHOWN, and a
+       router swap fires no load event, so navigating QPf1 → QPf6 kept QPf1's
+       folder view on stage. One shared re-aim instead of a fourth incident. */
+    try { reaimTabs(); } catch (e) {}
     var t = '';
     try { t = fp.contentDocument.title || ''; } catch (e) {}
     document.title = t || 'board · split';
@@ -666,7 +675,7 @@ def _shell_doc(page_url, index_url):
        the strip's segment is where the form is chosen, so the menu stops
        selling GUI and TUI as two surfaces. */
     var rows = [
-      { id: 'chat', label: '💬 Chat', hint: 'this page\\u2019s conversation \\u00b7 pick GUI or TUI inside',
+      { id: 'chat', label: '💬 Chat', hint: 'this page’s conversation · pick GUI or TUI inside',
         run: function () { showTab('chat'); } }
     ];
     /* Draw is the shell's third surface (JL 260815): the tab strip only shows once
@@ -682,7 +691,7 @@ def _shell_doc(page_url, index_url):
       rows.push({ id: 'slides', label: '🎞 Slides', hint: 'this page as a deck, in the right pane',
                   run: function () { showTab('slides'); } });
     }
-    /* Registry tabs (haipipe-page-plugin): each row opens its right-pane tab
+    /* Registry tabs (haipipe-plugin): each row opens its right-pane tab
        through the same showTab the strip uses — one opener, one owner. */
     xdefs().forEach(function (e) {
       rows.push({ id: e.id, label: e.label, hint: e.hint || '',
@@ -844,7 +853,7 @@ def _shell_doc(page_url, index_url):
   });
 
   /* ── 🗂 the tab strip ────────────────────────────────────────────────────────
-     TABS ARE AN OPEN SET, PER PAGE (haipipe-page-plugin, JL 260815): the strip
+     TABS ARE AN OPEN SET, PER PAGE (haipipe-plugin, JL 260815): the strip
      shows what this page has OPEN, ＋ lists what it COULD open, the active tab
      carries its own ✕, and the pane's "✕ close" keeps meaning the whole pane.
      Chat is NOT reimplemented: its tab clicks the same `want()` the bar buttons
@@ -918,6 +927,19 @@ def _shell_doc(page_url, index_url):
   }
   setInterval(function () {
     if (hidden || tab !== 'draw' || fd.hidden) return;
+    /* ATTACHMENT IS RE-CHECKED EVERY TICK, not only at open and at mirror():
+       every stale path found so far (router swap with the tab hidden, a shell
+       loaded before a fix, a restored tab strip) ends the same way — the
+       staged scene is not this page's scene (JL 260816: "still it s not well
+       attached"). The watcher already knows both addresses; comparing them
+       here makes the mismatch impossible to keep for more than one tick. */
+    var want = '';
+    try { want = drawURL(); } catch (e) {}
+    if (want && (fd.getAttribute('src') || '') !== want) {
+      sceneStamp = '';
+      fd.setAttribute('src', want);
+      return;
+    }
     var m = /board=([^&]+)/.exec(fd.getAttribute('src') || '');
     if (!m) return;
     var rel = decodeURIComponent(m[1]);
@@ -1051,7 +1073,10 @@ def _shell_doc(page_url, index_url):
     return d ? d.label : id;
   }
   /* Never offer work that would be refused: draw needs a scene, slides needs a
-     namable deck (a folded page always can), a registry tab needs its entry. */
+     namable deck (a folded page always can), a registry tab needs its entry.
+     (The second 🔍 Skill staging tab retired 260816 — JL: "maybe just one":
+     the 🛠 tab opens on the skill INDEX, a name opens the skill in the same
+     frame, and the viewer's ☰ walks back to the index.) */
   function offerable(id) {
     if (id === 'chat') return true;
     if (id === 'draw') return !!drawURL();
@@ -1156,6 +1181,59 @@ def _shell_doc(page_url, index_url):
     }
   }
 
+  /* RE-AIM the staged tab at the page now in the frame, WITHOUT the lit-click
+     rebuild: navigation is a look, never a request to recompile. An existing
+     artifact lands; a missing one shows an invitation, the way the deck's own
+     "no deck yet" body already does — auto-building here would fire a latex
+     compile or a claude run as a side effect of browsing. */
+  function aimTab(which) {
+    if (which === 'slides') { loadDeck(); return; }
+    var d = defOf(which);
+    if (!d) return;
+    var f = xframe(which);
+    var w = pageWin(), page = null;
+    try { page = w && w.boardPlugins && w.boardPlugins.livePage(); } catch (e) {}
+    var u = '';
+    try { u = d.tab.url(page) || ''; } catch (e) {}
+    function invite() {
+      f.setAttribute('src', noteDoc('⬜ nothing built for this page yet — click the '
+        + tabLabel(which) + ' tab to build it'));
+    }
+    if (!u) { invite(); return; }
+    fetch(u, { method: 'HEAD' }).then(function (r) {
+      if (!r.ok) { invite(); return; }
+      landFrame(f, u);
+    }).catch(function () {});
+  }
+
+  /* LANDING IS FRESH BY CONTRACT (JL 260816: "make sure the folder plugin
+     refreshes every time"). "Same src, do nothing" was the rule here, and for
+     a LIVE view it is exactly wrong: /_board/folderstat keeps one URL per
+     page, so coming back to a page — or clicking the lit 📂 tab — kept the
+     snapshot from before, while latex compiled and files landed unseen. The
+     server already says no-store; the frame was the stale half. Same src now
+     means RELOAD; a changed src navigates as before. */
+  function landFrame(f, u) {
+    var src = u + (/\.html$/.test(u) ? '?plain' : '');
+    if (f.getAttribute('src') !== src) { f.setAttribute('src', src); return; }
+    try { f.contentWindow.location.reload(); }
+    catch (e) { f.setAttribute('src', src); }
+  }
+
+  /* The one follow-the-page entry: re-read this page's own tab set, let
+     paintTabs prune and possibly switch, then re-aim whatever survived on
+     stage. Guarded until the tab machinery below has finished booting,
+     because mirror() runs once before it has. */
+  var reaimOK = false;
+  function reaimTabs() {
+    if (!reaimOK) return;
+    loadSet();
+    var prev = tab;
+    paintTabs();                 // may switch via showTab, which aims itself
+    if (!hidden && tab === prev && tab !== 'chat' && tab !== 'draw'
+        && offerable(tab)) aimTab(tab);
+  }
+
   function showTab(which) {
     ensureOpen(which);
     if (which === 'draw') {
@@ -1196,7 +1274,7 @@ def _shell_doc(page_url, index_url):
       paintTabs();
       return;
     }
-    /* A REGISTRY TAB (haipipe-page-plugin): frame the saved artifact, or ask
+    /* A REGISTRY TAB (haipipe-plugin): frame the saved artifact, or ask
        the page's own writer to build one. Clicking the lit tab REBUILDS — a
        derived view's refresh — where chat's lit-click means "put away". */
     var d = defOf(which);
@@ -1211,10 +1289,7 @@ def _shell_doc(page_url, index_url):
     paint(); paintTabs();
     var w = pageWin(), page = null;
     try { page = w && w.boardPlugins && w.boardPlugins.livePage(); } catch (e) {}
-    function land(u) {
-      var src = u + (/\.html$/.test(u) ? '?plain' : '');
-      if (f.getAttribute('src') !== src) f.setAttribute('src', src);
-    }
+    function land(u) { landFrame(f, u); }   // fresh-by-contract, one rule
     function build() {
       f.setAttribute('src', noteDoc('⏳ building ' + tabLabel(which) + '…'));
       try {
@@ -1318,15 +1393,15 @@ def _shell_doc(page_url, index_url):
   });
   /* The page frame decides what applies AND which set is this page's, so both
      are re-read when a new page lands in it, not only at boot — and an open
-     non-chat tab is re-aimed at the new page's own artifact. */
+     non-chat tab is re-aimed at the new page's own artifact. Through
+     reaimTabs, the same path router swaps take via mirror(): the old
+     showTab(tab) here hit the lit-click branch, whose meaning is REBUILD, so
+     every full page load recompiled whatever derived tab was open. */
   var fpEl = document.getElementById('fp');
   if (fpEl) fpEl.addEventListener('load', function () {
-    setTimeout(function () {
-      loadSet();
-      if (!hidden && tab !== 'chat' && offerable(tab)) showTab(tab);
-      else paintTabs();
-    }, 300);
+    setTimeout(reaimTabs, 300);
   });
+  reaimOK = true;
   setTimeout(paintTabs, 900);
   var _paint = paint;
   paint = function () { _paint(); paintTabs(); };

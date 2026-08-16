@@ -1,12 +1,12 @@
 /* 🛠 Skill map · the page's citations into the SKILL tree (bibex's twin).
  *
  * WHAT THIS FILE OWNS, one thing: WHERE the map's view lives and which door
- * writes it. The store, the seed-scan, the aligned tick, and the pen all live
- * server-side in live/skillmap.py; the view carries its own workbench
- * controls, so this entry only names the saved view and the refresh door —
- * the same split the bibex entry holds.
+ * writes it. The store, the seed-scan, the drag-rank, and the pen all live
+ * server-side in live/skillmap.py; the view carries its own controls, so
+ * this entry only names the saved view and the refresh door — the same
+ * split the bibex entry holds.
  *
- * Registered with the `tab: {url, write}` spec (haipipe-page-plugin), so the
+ * Registered with the `tab: {url, write}` spec (haipipe-plugin), so the
  * shell builds the 🛠 tab without being edited.
  */
 (function () {
@@ -51,7 +51,7 @@
     window.boardPlugins.register({
       id: 'skill',
       label: '🛠 Skill',
-      hint: 'the skills this page uses or designs, with the aligned tick',
+      hint: 'the skills related to this page, ranked by you',
       menu: 'plugin',
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {

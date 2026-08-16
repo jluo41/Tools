@@ -50,7 +50,7 @@ The live units ship from `board/agents/`, one .md each; this page's `skill/` plu
 ```
 This page is the specimen of the 260815 ruling that a Design relates to several skills or agents.
 🅰 lost the same way the mirror kind lost: pages that share one subject converge on one prose and decide nothing separately.
-The base selection that retired the mirror kind is recorded once, on `Design-3-haipipe-page` Content §2, and this page adopts it.
+The base selection that retired the mirror kind is recorded once, on `QPs1-overall` Content §11.2, and this page adopts it.
 Disposition of 🅰: the three pre-merge pages are archived whole, and their ids resolve through `## Links`.
 
 ### 3 · The creator, and what the caller still owes

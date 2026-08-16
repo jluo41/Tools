@@ -13,7 +13,7 @@ These are about the METHODOLOGY being surprising, not about the skill docs being
 wrong (that's feedback). A lesson is a "don't touch the stove" note for future
 labeling projects.
 
-The key contract: BEFORE starting /sl-init, /sl-iterate, or /sl-validate, the
+The key contract: BEFORE starting /label-init, /label-round, or /label-evaluate, the
 agent MUST scan the lesson/ folder for relevant lessons and flag any that apply.
 Lessons are guardrails, not just history.
 
@@ -119,6 +119,6 @@ exact mistakes. The whole point is to not repeat them.
   lesson   "LLM personas order-bias the first label option"
            -> about the METHODOLOGY being surprising -> lesson/
 
-  feedback "sl-iterate retrains the classifier every time, too slow"
+  feedback "label-round retrains the classifier every time, too slow"
            -> about the SKILL being clunky -> feedback/
 ```

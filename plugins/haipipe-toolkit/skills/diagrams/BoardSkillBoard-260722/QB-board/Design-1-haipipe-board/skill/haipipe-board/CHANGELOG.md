@@ -5,6 +5,96 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.133.0 - 2026-08-15
+
+- The WORD export reads paragraph per paragraph (JL: "it should not be the
+  sentence per paragraph"): `--join-paragraphs` rides every board export,
+  so the source's one-sentence-per-line grammar stops at the writer and a
+  coauthor gets flowing prose. QPf7 carries the ruling as contract.
+
+## 0.132.0 - 2026-08-15
+
+- The WORD export cites from the page's own bib too (JL: "how about the
+  word? will we have the reference as well?"): when `bibex/<stem>.bib` holds
+  an entry, `cli/refs.py` compiles `.board-refs.bbl` in bibex/ (rebuilt when
+  the bib is newer) and md2docx is pointed there — the .docx and its PDF
+  twin gain the in-text "(Luo et al. 2026)" and a real References section,
+  from the same store as the chip, the block, and the LaTeX PDF. The paper
+  root stays the fallback for pages with no store.
+- md2docx's .bbl parser now reads plainnat's bare `\bibitem[label]{key}` as
+  well as misq's braced form — demanding the braces made every plainnat
+  bibliography parse to nothing and cites print bare keys (fixed in the
+  paper family's own script; the paper path benefits identically).
+
+## 0.131.0 - 2026-08-15
+
+- The LaTeX export cites from the PAGE'S OWN BIB (JL: "convert it to the
+  latex and this one to be cited as well"): the master's bibliography now
+  prefers `bibex/<stem>.bib` when it holds an entry, falling back to the
+  paper's `0-*.bib`, then cite-less. QPf8's PDF proves it end to end:
+  `\citep{luo2026eventglucose}` compiles to "[Luo et al., 2026]" inline
+  with a bibtex References page, one store feeding chip, block, and PDF.
+- Built pages gained a 📚 References block above the folds
+  (`src/page_question.py` + `assets/css/64-refs.css`): one numbered entry
+  per cited key, authors (year), title, venue, doi/link, resolved from the
+  page's own bib and never invented. The inline chip + card stay body.py's;
+  this is the other half of what a citing page owes its reader.
+
+## 0.130.0 - 2026-08-15
+
+- The BibEx ＋ box learned LINKS (JL: "could we paste the paper link"): a
+  DOI (doi.org content negotiation), an arXiv link or bare id (arxiv.org's
+  bibtex endpoint), Scholar's session-signed Cite → BibTeX link, or any
+  paper URL (Semantic Scholar fallback). The bibtex is fetched WHOLE from
+  the source — copying, never composing — and fills the box for the person
+  to review; landing stays their second click. An unusable fetched key
+  (doi.org's URL-as-key) is renamed surname+year, a local-handle repair.
+- The un-cited chip now reads "in the bib, not cited in the page text yet"
+  and carries 📋 copy \citep{key}, after "added but not synced" confusion.
+- The whole raw .bib renders in a fold at the view's foot with its on-disk
+  path — it is PRIMARY material and hand-editing it is legal.
+
+## 0.129.0 - 2026-08-15
+
+- BibEx became a CITATION WORKBENCH on a PAGE-OWNED bib (JL: "the bib for
+  this page only"). `bibex/<stem>.bib` is now PRIMARY — the page's own store,
+  seeded by copying entries whole from the paper's `0-*.bib`, which is read
+  and never written — and a refresh only appends imports, never overwriting
+  or deleting an entry a person may have edited.
+- The card view gained the working surface: parsed title/author/year, 🔎 a
+  Google Scholar link built from the title, 🔗 DOI and 📄 URL when carried,
+  ✅/⬜ checked status with a ✓ button, an ✎ edit fold per entry, and a ＋
+  paste box for new entries.
+- Two new doors beside `/_board/bibex`: `bibex-verify` writes the human ✓ as
+  a `verified = {WHO YYMMDD}` field INSIDE the entry (JL picked the field
+  over a sidecar; undo strips it), and `bibex-entry` is the pen — it lands a
+  person's pasted bibtex verbatim, validates shape only, guards duplicate
+  keys behind an explicit replace, and composes nothing (citation-craft.md).
+- The key scan strips code fences and backtick spans first: a cite in a
+  figure or a rule's quotation is an illustration, not a citation.
+
+## 0.128.0 - 2026-08-15
+
+- The right pane's tabs became an OPEN SET, per page (haipipe-plugin):
+  the strip renders from the set, a tab appears on an explicit click — the ＋
+  menu lists what the page could open, with ● where material already exists —
+  the active tab carries its own ✕ (out of the set, focus to the left
+  neighbour, last one closes the pane), and the pane's `✕ close` keeps meaning
+  the whole pane. The set persists per page in `board-split-tabs:<path>`.
+- Registry entries may carry `tab: {url(page), write(page,cb,err)}` and the
+  shell builds their tab from it, so plugin N+1 ships by registering; Draw and
+  Slides keep their window hooks for now.
+- Three DERIVED paper-facing plugins shipped through that spec
+  (`82-plugin-exports.js` + `live/export.py`): `/_board/latex` (md2tex + a
+  standalone xelatex master → `latex/<stem>.pdf`), `/_board/word` (md2docx +
+  docx2pdf's PDF twin → `word/<stem>.docx` + view), `/_board/bibex`
+  (extract-only subset of the paper's `0-*.bib` → `bibex/<stem>.bib` + cards;
+  never invents an entry, per citation-craft.md). `--paper-root` is discovered
+  by walking up for a `0-*.bib`; pages outside a paper export cite-less.
+- The contract itself is the new `board/haipipe-plugin` skill
+  (SKILL.md + ref/roster.md): a plugin is STORAGE + SURFACE + WRITER +
+  BOUNDARY, named once in the roster.
+
 ## 0.126.0 - 2026-08-09
 
 - The door's sub-skill roster now lists the FIVE Page Type variants this skill

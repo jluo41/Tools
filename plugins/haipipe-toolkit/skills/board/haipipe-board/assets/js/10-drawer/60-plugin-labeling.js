@@ -117,8 +117,8 @@
 
   /* QF1 §1's five doors, in Aim-group order. `null` means the step closes on a human
      signoff and no command may stand in for it (QF1 §3.1), so the surface offers none. */
-  var DOOR = { '1': '/sl-init', '2': '/sl-round', '3': null,
-               '4': '/sl-evaluate', '5': '/sl-complete' };
+  var DOOR = { '1': '/label-init', '2': '/label-round', '3': null,
+               '4': '/label-evaluate', '5': '/label-complete' };
 
   /* Each door's own options, asked BEFORE it runs (JL 260808: "provide the option and
      run"). A field is only here when the door genuinely takes it: inventing a knob the
@@ -134,7 +134,7 @@
 
   /* ⚠️ The map above is by Aim NUMBER, so it is only true on a page whose Aim groups ARE
      the five doors. A page organized by SUBJECT has an A1 that means the policy, not
-     init, and offering `/sl-init` there would hand a person the wrong command with a
+     init, and offering `/label-init` there would hand a person the wrong command with a
      straight face. So the surface checks first and says nothing rather than lying.
      The two shapes disagree today, which is an open Decision Now row on QG1; this
      check is what keeps that disagreement from becoming a wrong button. */

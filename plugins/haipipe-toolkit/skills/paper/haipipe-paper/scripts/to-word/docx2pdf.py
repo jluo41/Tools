@@ -37,6 +37,11 @@ import subprocess
 import zipfile
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+# The DRAWINGML namespace: <a:blip> lives here, not in W. The image handler
+# below compared against W+"blip", which no real blip ever carries, so every
+# embedded figure silently vanished from the twin while its caption printed
+# (JL 260816: "the display are not shown in the word").
+A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 
 CSS = """
 @page { size: letter; margin: 1in 1in 1in 1in; }
@@ -153,7 +158,7 @@ def main():
                 pieces.append(html.escape(el.text or ""))
             elif tag == W + "br":
                 pieces.append("<br>")
-            elif tag == W + "blip":
+            elif tag in (A + "blip", W + "blip"):
                 emb = el.get("{http://schemas.openxmlformats.org/officeDocument"
                              "/2006/relationships}embed")
                 tgt = (rels.get(emb) or "").split("/")[-1]

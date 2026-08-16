@@ -1,10 +1,11 @@
 # skill map · QPf6-latex
-<!-- PRIMARY: this page's declared skill relations (haipipe-page-plugin).
-     Edit here or through the 🛠 tab; a refresh only APPENDS newly scanned
-     names and never removes a row. The seed claims `uses` at most —
-     `designs` is always a person's word. -->
+<!-- PRIMARY: this page's skills, ranked (haipipe-plugin).
+     The ORDER is the person's rank: top = most related. Edit here or drag
+     in the 🛠 tab. A refresh only APPENDS newly scanned names at the bottom;
+     a `removed` row is a person's ✕ and is never re-seeded. -->
 
-- haipipe-board · relation: uses
-- haipipe-page · relation: uses
-- haipipe-page-plugin · relation: designs
-- haipipe-paper · relation: uses
+- haipipe-plugin-latex
+- haipipe-plugin
+- haipipe-board
+- haipipe-page
+- haipipe-paper

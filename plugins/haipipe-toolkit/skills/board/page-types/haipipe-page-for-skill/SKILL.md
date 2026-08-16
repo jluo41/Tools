@@ -14,7 +14,7 @@ metadata:
 **LOAD `haipipe-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the numbering, and the evaluation contract.
 This file adds only what a skill page needs and a decision page does not.
 It never repeats a base rule, because a copied rule is the thing that goes a night out of date while the contract moves.
-After resolving this Page Type, load the current contract from `page-phases/`; generated spans constrain the phase write surface but do not replace the phase authority test.
+After resolving this Page Type, load the current contract from `page-workflows/`; generated spans constrain the phase write surface but do not replace the phase authority test.
 
 **The two kinds this variant covers**: both mirror something that ships elsewhere.
 

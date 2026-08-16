@@ -43,7 +43,7 @@ Board operations and synchronization  → ../haipipe-board/SKILL.md
 Board source and rendering grammar    → ../haipipe-board/ref/board-form.md
 Cold-read rules and prompt            → ../haipipe-board/ref/writing-rules.md
 Mechanical checks                     → ../haipipe-board/cli/check.py
-Page RUN packet and receipt           → ../haipipe-page/ref/page-run-contract.md
+Page RUN packet and receipt           → ../page-workflows/haipipe-page-workflow/ref/page-run-contract.md
 Page RUN Workflow                     → ../haipipe-board/ref/page-lifecycle.workflow.js
 Lifecycle receipt audit               → ../haipipe-board/cli/pageflow.py
 Design rulings                        → ../../diagrams/BoardSkillBoard-260722/

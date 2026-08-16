@@ -184,7 +184,7 @@ class Displays:
     """Every display unit on disk, by \\label. Kind comes from the unit's own
     float.tex, per QC3: the board does not guess table from figure."""
 
-    def __init__(self, paper_root):
+    def __init__(self, paper_root, extra_root=None):
         self.by_label, self.by_unit = {}, {}
         base = None
         for cand in ("displays", "0-displays"):
@@ -192,8 +192,17 @@ class Displays:
             if os.path.isdir(p):
                 base = p
                 break
-        if not base:
-            return
+        if base:
+            self._scan(base)
+        # A SECOND unit root, for callers whose units live outside the paper
+        # convention: a board page's plugin folder is `<page>/display/` (the
+        # page-as-small-paper contract, QPf5), and without this hook every
+        # projection of such a page shipped its evidence citations as plain
+        # text (JL 260816: "both word and latex didn't include the display?").
+        if extra_root and os.path.isdir(extra_root):
+            self._scan(extra_root)
+
+    def _scan(self, base):
         for unit in sorted(os.listdir(base)):
             f = os.path.join(base, unit, "float.tex")
             if not os.path.exists(f):
@@ -681,8 +690,24 @@ class Docx:
         self.cid = 0
 
     # -- runs and paragraphs
+    @classmethod
+    def run(cls, t, bold=False, style=None):
+        """`**bold**` arrives from the board's markdown and Word has no
+        markers, so the run splits and the words go BOLD (JL 260816: the twin
+        printed the asterisks literally). Only a BALANCED pair converts; an
+        odd count (a pair cut in half by a comment-range boundary) passes
+        through unchanged, which is exactly what the twin printed before."""
+        t = str(t)
+        if "**" in t:
+            parts = t.split("**")
+            if len(parts) % 2 == 1:
+                return "".join(cls._run1(seg, bold=bold or (i % 2 == 1),
+                                         style=style)
+                               for i, seg in enumerate(parts) if seg)
+        return cls._run1(t, bold, style)
+
     @staticmethod
-    def run(t, bold=False, style=None):
+    def _run1(t, bold=False, style=None):
         rpr = ""
         if bold or style:
             rpr = "<w:rPr>" + ("<w:b/>" if bold else "") + \
@@ -1066,6 +1091,10 @@ def main():
                          "paragraph is the point.")
     ap.add_argument("--no-displays", action="store_true",
                     help="skip embedding tables and figures")
+    ap.add_argument("--display-root",
+                    help="an EXTRA folder of display units (each subfolder a "
+                         "unit with float.tex), scanned beside the paper's "
+                         "displays/: a board page's <page>/display/ plugin")
     ap.add_argument("--lanes", default="Citation",
                     help="which EVIDENCE lanes become comments, comma-separated: "
                          "Citation, Value, Display. Default Citation only. All "
@@ -1116,7 +1145,7 @@ def main():
                 f"{', '.join(gap[:6])}{' …' if len(gap) > 6 else ''}. "
                 f"Regenerate: python3 <haipipe-board>/refs.py <paper-root>"))
     bbl = Bbl(bbl_path)
-    disp = Displays(root)
+    disp = Displays(root, extra_root=a.display_root)
     inline = Inline(bbl, disp, num, report)
     d = Docx()
 

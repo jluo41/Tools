@@ -11,7 +11,7 @@ The writer is the paper family's `md2tex.py`, called by path and never copied, s
 This page settles the plugin's contract and records what the 260815 build left open.
 
 **Why the board wraps its own master**: `md2tex --compile` is bound to one paper's hand-written master, so `live/export.py` wraps the generated section in a generic article master and compiles that instead.
-**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; the roster row is `../../board/haipipe-page-plugin/ref/roster.md`; the sibling derived plugins are `QPf3` (slide), `QPf7` (word), and `QPf8` (bibex); the tab machinery they all share is the registry's `tab: {url, write}` spec.
+**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; the roster row is `../../board/haipipe-plugin/ref/roster.md`; the sibling derived plugins are `QPf3` (slide), `QPf7` (word), and `QPf8` (bibex); the tab machinery they all share is the registry's `tab: {url, write}` spec.
 
 ## Diagram
 **One source, four hops**: from the page's markdown to a framed PDF, nothing typed by hand.
@@ -116,6 +116,7 @@ The writer half is done and proven; the measurement and boundary halves are owed
   The first export: four pages, compiled 260815, framed live through the tab.
 
 ## Log
+- 260815 1800 · [JL via CC] this plugin's own skill shipped: `haipipe-plugin-latex` under `page-plugins/` (the thin-door round, two specimens); the DERIVED specimen: a caller contract over the paper family's writer, holding no copy.
 - 260815 · [REVISE-CC] the master's bibliography prefers the page-owned bibex store (JL: "this one to be cited as well"); QPf8's PDF is the proof: [Luo et al., 2026] inline and a bibtex References page, from `bibex/QPf8-bibex.bib`.
 - 260815 1610 · [JL via CC] Display1-latex-proof accepted (JL: "please just do them for me"); preview renders all three divisions.
 - 260815 1605 · [REVISE-CC] the three export defects fixed in md2tex.py and re-compiled through POST /_board/latex: section titles lose their `N ·` whole, a code span's TeX specials are escaped so `\citep` prints instead of running, and --keep-fences renders sketches as transliterated verbatim so a figure-only division no longer exports empty.
