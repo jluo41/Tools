@@ -1,0 +1,15 @@
+task: 01_probe_landing_path_scan
+run: run_scan
+status: complete
+inputs:
+  toolkit_root: plugins/haipipe-toolkit
+  files_scanned: 572
+outputs:
+  results/run_scan/grep-live.txt: 300 live-file occurrences of "1-probes/"
+  results/run_scan/grep-history.txt: 127 occurrences in CHANGELOGs, _old/ archives, test fixtures
+  results/run_scan/file-inventory.txt: the 572 probe-mentioning files scanned
+finding: >
+  The literal segment "1-probes/" is hard-coded in the live probe-dispatch
+  instructions and code; only the consumer root above it (paper_root /
+  intervention_root) is caller-supplied. No surface accepts a caller-supplied
+  landing directory for probe records. Digest: QA/1-probe-landing-path-hardcoding.md
