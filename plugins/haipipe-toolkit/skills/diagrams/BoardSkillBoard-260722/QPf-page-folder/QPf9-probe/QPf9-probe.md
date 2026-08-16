@@ -1,27 +1,32 @@
 # Probe · a page's evidence questions, asked once and cited by id
 state: 🟡 PARTIAL · ruled, cards bound · open: 1-probes retirement, citation hop, tab, exclusion
 owner: JL
-method: give every page its own `probe/` pool with the PPNN card grammar kept whole, retire the paper's `1-probes/`, make the page the one address a probe run lands in, and let every consumer cite the card by id
+method: every page gets its own `probe/` pool, the PPNN card shape stays whole, `1-probes/` retires, and every citer names the card by id
 
 ## Opening
-Where does a page ask its evidence questions?
-In its own `probe/` folder: the `1-probes/` pool is ruled retired, and moving the orchestrators to the new address is A1.2's open work.
-A probe is one evidence question with a state and, once answered, a binding to the bank's QA file.
-A paper used to pool them far from the sentences that needed them; now a paper's stages are pages, so each page asks for itself.
-This page owns the plugin that replaces the pool: the card, its states, its citers, and its tab.
+Where does a page ask the questions it needs evidence for?
+In its own `probe/` folder.
+The old shared `1-probes/` pool is ruled dead, and moving the probe tools to the new address is open work (A1.2).
+A probe is one question, its state, and a link to the answer once it lands.
+A paper used to keep its questions far from the sentences that needed them.
+Stages are pages now, so each page asks for itself.
+This page owns the plugin that replaces the pool: the card, its states, who cites it, and its tab.
 
-**What a card is**: one folder per question, such as this page's own `probe/PP01-pool-census/`, holding the question in the page's own words, a `state:` line, and the binding the run fills when the answer lands.
+**What a card is**: one folder per question, like this page's own `probe/PP01-pool-census/`.
+It holds the question in the page's own words, a `state:` line, and a `binding:` line, which is the link to the answer file that the run fills in.
 
-**What the bank is**: the shared task and discovery layers that answer questions in general language, landing each answer in a `<task-folder>/QA/<n>-<slug>.md` file with its data artifact.
+**What the bank is**: the shared task and discovery layers that answer questions in plain, general words.
+Each answer lands in a `<task-folder>/QA/<n>-<slug>.md` file, next to the data it came from.
 
-**What retires**: the paper-level `1-probes/` pool, ruled in this page's Law.
-The PPNN card grammar survives, and the numbering now runs per page.
-The paper family's probe skills must relearn their landing address, which A1.2 tracks.
+**What goes away**: the paper-wide `1-probes/` pool, ruled in this page's Law.
+The PPNN card shape stays, and the numbers start again on each page.
+The paper family's probe skills must learn the new address, and A1.2 tracks that.
 
-**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; `QPf5` is the display plugin whose `intake/` cites a card by id, and its Law carries the ruling that births this page.
+**Covered elsewhere**: `QPf1` rules that a page owns its folder, and that every subfolder is a plugin.
+`QPf5` is the display plugin whose `intake/` cites a card by id, and its Law holds the ruling that started this page.
 
 ## Diagram
-**Two plugins, one binding**: the example card PP07, the two citers stacked under it, and the bank behind the wall.
+**Two plugins, one link**: the example card PP07, the two places that cite it, and the bank behind the wall.
 ```text
   <page>/
     probe/PP07-drift-rate/card.md          🚪 THE ASK, once
@@ -34,12 +39,13 @@ The paper family's probe skills must relearn their landing address, which A1.2 t
   ──────────────────────────────────────────────────────────
   🧪 the BANK  tasks/ · discoveries/  answers in general language
 ```
-Everything above the line belongs to the page and everything below it belongs to the bank; §3 says what may cross.
-PP07 is a worked example, not one of this page's live cards, which are PP01, PP02 and PP03.
+Everything above the line belongs to the page, and everything below it belongs to the bank.
+§3 says what may cross.
+PP07 is a worked example, not one of this page's real cards, which are PP01, PP02 and PP03.
 
 ## Content
-### 1 · The card, and the pool it retires
-**The card's shape**: the PPNN grammar kept whole, at its one address.
+### 1 · One question, one folder, on the page that needs it
+**The card's shape**: the same PPNN layout as before, now at one address.
 ```text
   <page>/probe/PP<NN>-<slug>/
     card.md
@@ -52,41 +58,60 @@ PP07 is a worked example, not one of this page's live cards, which are PP01, PP0
       ## bank binding  route · the bank verdict · where the target stands
       ## A-executor  a COPY of the QA answer, written at harvest
 ```
-The grammar is the shape the retired `1-probes/PPNN` pool taught the orchestrators, taken whole so they speak it without relearning anything.
-A `haipipe-probe` entry has four parts, and the card folds in three of them: the executor-facing `Q-executor` and `A-executor`, plus the `bank binding` that records where the answer landed.
-It drops the fourth, the review-only `Q-consumer` map, because the card's own `question:` and `stake:` lines already hold the consumer side of the one question the card exists for.
-What retires is the address, not the grammar: there is no paper-level pool, the pool is each page's own `probe/` folder, and `PP` numbers run per page.
-A card is small on purpose: the probe layer is communication, not judgment, so the card carries a question, its crossing, and a binding, and no review gate.
-The stake stays in the card's own `stake:` line and never enters `## Q-executor`, because an executor that knows what the asker hopes for shapes the answer around the hope.
+📌 Each question gets its own small folder on the page that needs it, and the paper-wide pool is gone.
 
-### 2 · Ask once, cite twice
-**The one-home rule**: the binding lives in the card, and every consumer points at the card.
+This is the same layout the old `1-probes/PPNN` pool taught the probe tools, kept whole so they do not have to learn a new one.
+A `haipipe-probe` entry has four parts, and the card carries three of them.
+It carries `Q-executor` and `A-executor`, the two parts the bank sees, plus the `bank binding` that records where the answer landed.
+It drops the fourth part, the review-only `Q-consumer` map.
+The card's own `question:` and `stake:` lines already say what the asking side wants.
+What goes away is the address, not the layout.
+There is no paper-wide pool now: the pool is each page's own `probe/` folder, and `PP` numbers start again on each page.
+A card is small on purpose.
+The probe layer passes messages, it does not judge, so a card holds a question, the plain version that crosses to the bank, and a link, and no review step.
+Why the page wants the answer stays in the card's own `stake:` line, and it never enters `## Q-executor`.
+Someone who knows what the asker hopes for will bend the answer toward that hope.
+
+### 2 · The answer is written once, and everyone points at it
+**One home**: the link lives in the card, and everyone else points at the card.
 ```text
   🚪 probe/PP07-drift-rate/card.md   the ONLY place the binding is written
         ▲ one hop up, by id · never a copy of the binding
   📥 intake/manifest.yaml            probe: PP07
   📋 a Content sentence              cites PP07 beside its number
 ```
-Before this plugin, a display unit's manifest bound the answer itself, so a second consumer of the same number would have duplicated the binding.
-Now the manifest names the card and the card names the holder, one hop each.
-A citer never copies the binding, so a re-answered question changes one file and every citer follows.
-This page walks its own rule with three live cards in its own `probe/` folder, all bound: the migration's census (PP01), the orchestrators' landing constraint (PP02), and the family's own skill count (PP03).
-All three crossed through `haipipe-probe`'s loop for real: the stake-stripped Q-executors went out through the collector agent, the task bank claimed and answered each in its own `tasks/<folder>/QA/` file, and the bindings carry the paths the collector returned.
-The sentences that need those answers cite the ids instead of restating the questions.
+📌 The path to an answer is written in one file only, so re-answering a question updates every place that cites it.
 
-### 3 · The states, and who moves each one
-**Three states, three hands**: the consumer asks, the orchestrator claims, the collector binds.
+Before this plugin, a display figure's manifest held the answer's path itself.
+A second user of the same number would then have kept a copy of that path.
+Now the manifest names the card, and the card names the file that holds the answer.
+Nobody keeps a copy of the path, so a re-answered question changes one file and everyone follows.
+This page follows its own rule, with three real cards in its own `probe/` folder, all of them answered.
+They are the migration count (PP01), the landing address limit (PP02), and the family's own skill count (PP03).
+All three really went through the `haipipe-probe` loop.
+The questions went out through the collector agent with the page's own reasons stripped off.
+The task bank claimed each one and answered it in its own `tasks/<folder>/QA/` file.
+The links in the cards are the paths the collector handed back.
+The sentences that need those answers cite the ids instead of asking again.
+
+### 3 · Three states, and one owner for each move
+**Three states, three hands**: the page asks, the runner claims, the collector writes the link.
 ```text
-  ⬜ raised    🧑/📄 the consumer writes the card: the question, no binding
-  🔨 working   🚪 the orchestrator claims it before the lifecycle runs
-  ✅ bound     🚪 the collector writes the binding when the QA file lands
+  ⬜ raised    🧑/📄 the page writes the card: the question, no link yet
+  🔨 working   🚪 the runner claims it before the lifecycle starts
+  ✅ bound     🚪 the collector writes the link when the QA file lands
 ```
-A `working` card means someone is already on it: a second session reads the state line and waits rather than re-running the bank.
-The stake never crosses the wall: the card holds why the page needs the number, and the question reaches the bank stripped to general language.
-A card may also close negative: a bank answer of "not supported" is still a binding, and the citing claim inherits that verdict rather than hiding it.
+📌 A card is raised, then claimed, then linked, and each of those three moves has exactly one owner.
 
-### 4 · The surface: the probe tab
-**The tab**: the display split's structure, carrying cards instead of units.
+A `working` card means someone is already on it.
+A second session reads that state line and waits, instead of asking the bank again.
+Why the page wants the number never crosses the wall.
+The card keeps that reason, and the bank sees only the question in plain, general words.
+A card may also close with a no.
+A bank answer of "not supported" is still an answer, and the sentence citing it must carry that no rather than hide it.
+
+### 4 · A tab that shows every card, and changes nothing
+**The tab**: the same layout the display tab uses, carrying cards instead of figures.
 ```text
   right pane · 🚪 Probe
     PP01 · PP02 · PP03                 ← the chip row, one per card
@@ -99,68 +124,85 @@ A card may also close negative: a bank answer of "not supported" is still a bind
       ◀ one card fills the pane · shift right for the next ▶
     a citing chip lands on #PP<NN> · the tab writes NOTHING
 ```
-The structure is the display split's, taken whole: a horizontal strip of blocks, one per card, a chip row naming every id, and per-card anchors so a citation lands on the card it names.
-The filling is probe's own: the state badge, the question, the binding, and the card folder's tree.
-The tab is still the Slides sandwich: a drawer plugin asks a `live/` endpoint, the endpoint globs the page's `probe/`, and each block renders from the card's own state line.
-It writes nothing, because every state transition already has an owner in §3.
+📌 One tab shows every card on the page, with its state and its link, and it changes nothing.
+
+The layout is the display tab's, taken whole.
+It is a sideways strip of blocks, one block per card, with a row of chips naming every id.
+Each card has its own mark in the page, so a citation lands on the card it names.
+What fills a block is probe's own: the state badge, the question, the link, and the card folder's file tree.
+The wiring is the same three-layer one the Slides tab uses.
+A tab plugin asks a `live/` endpoint, the endpoint scans the page's `probe/` folder, and each block is drawn from the card's own state line.
+It writes nothing, because §3 already gives every state change an owner.
 
 ## Aims
-### A1 · 🧾 The card, and the pool it retires
-- A1.1 · A card raised in a page's own `probe/` reaches the bank and comes back bound.
-  **Done when:** a question raised on this page's own card comes back bound, with the QA path written by the collector and not by hand.
-- A1.2 · The paper family retires `1-probes/`.
-  **Done when:** no probe skill or orchestrator names `1-probes/` as a landing address, and a paper's stage pages ask through their own `probe/` folders.
+### A1 · 🧾 One question, one folder, on the page that needs it
+- A1.1 · A card raised in a page's own `probe/` reaches the bank and comes back with a link to the answer.
+  **Done when:** a question raised on this page's own card comes back answered, with the QA path written by the collector and not by hand.
+- A1.2 · The paper family stops using `1-probes/`.
+  **Done when:** no probe skill or runner names `1-probes/` as a place to land, and a paper's stage pages ask through their own `probe/` folders.
 
-### A2 · 🔗 Ask once, cite twice
-- A2.1 · An intake manifest resolves a card by id.
-  **Done when:** a `QPf5` unit's `manifest.yaml` says `probe: PP<NN>` and the build resolves card and binding to the holder without a path anywhere.
+### A2 · 🔗 The answer is written once, and everyone points at it
+- A2.1 · An intake file finds a card by its id alone.
+  **Done when:** a `QPf5` figure's `manifest.yaml` says `probe: PP<NN>`, and the build finds the card and the answer with no path written anywhere.
 
-### A4 · 🚪 The surface: the probe tab
-- A4.1 · The tab ships through the Slides sandwich.
-  **Done when:** a page with one card shows 🚪 Probe in the right pane with the card's real state, verified in a real browser.
+### A4 · 🚪 A tab that shows every card, and changes nothing
+- A4.1 · The tab ships on the same wiring the Slides tab uses.
+  **Done when:** a page with one card shows 🚪 Probe in the right pane with the card's real state, seen in a real browser.
 
-### P · 🚧 The boundary
-- P1 · `probe/` joins the plugin exclusion.
-  **Done when:** discovery never lists a file under any page's `probe/` and `check.py` names `probe/` a known plugin folder.
+### P · 🚧 What page discovery must skip
+- P1 · `probe/` is skipped when pages are found.
+  **Done when:** no file under any page's `probe/` is ever listed as a page, and `check.py` knows `probe/` as a plugin folder.
 
 ## States
-The ruling, the card grammar, and the crossing to the bank are the settled half; the `1-probes/` sweep, the citation hop, the tab's browser check, and the discovery exclusion stay open.
+Settled: the ruling, the card shape, and the crossing to the bank.
+Still open: the `1-probes/` clean-up, the citation hop, the tab's browser check, and the skip rule for `probe/`.
 
-### A1 · 🧾 The card, and the pool it retires
-- ✅ A1.1 · Met 260816: three questions raised on this page's own cards went out stake-stripped through the collector agent, the task bank claimed and answered each, and the bindings carry the QA paths the collector returned, not paths written by hand; where the orchestrators themselves write is A1.2's, and PP02 says that address is still hard-coded.
-- ⬜ A1.2 · The sweep has not started, and PP01 and PP02 have scoped it: no live paper or application carries a `1-probes/` pool (all three surviving directories are fixtures), `1-probes/` is a fixed path segment in about 300 live occurrences and no agent accepts a caller-supplied landing directory, and the paper family already retired `1-probes/` for papers, so the shared probe skill disagrees with the paper checker today.
+### A1 · 🧾 One question, one folder, on the page that needs it
+- ✅ A1.1 · Met 260816: three questions raised on this page's own cards went out through the collector agent with the page's own reasons stripped off.
+  The task bank claimed and answered each one, and the links in the cards are the paths the collector returned, not paths typed by hand.
+  Where the probe tools themselves write is A1.2's job, and PP02 says that address is still fixed in the code.
+- ⬜ A1.2 · The clean-up has not started, and PP01 and PP02 have measured it.
+  No live paper or application carries a `1-probes/` pool, because all three surviving folders are fixtures.
+  `1-probes/` is a fixed path in about 300 live places, and no agent takes a landing folder from its caller.
+  The paper family already dropped `1-probes/` for papers, so the shared probe skill and the paper checker disagree today.
 
-### A2 · 🔗 Ask once, cite twice
-- ⬜ A2.1 · `manifest.yaml` has no `probe:` line yet; `QPf5` A1 shares this seam.
+### A2 · 🔗 The answer is written once, and everyone points at it
+- ⬜ A2.1 · `manifest.yaml` has no `probe:` line yet, and `QPf5` A1 sits on the same join.
 
-### A4 · 🚪 The surface: the probe tab
-- 🧠 A4.1 · `plugview.py` and the drawer row exist, the strip structure landed, and the page's three cards render in it, ✅ PP01 ✅ PP02 ✅ PP03 with their bindings shown; the real-browser check waits on a server restart, which is outside this page.
+### A4 · 🚪 A tab that shows every card, and changes nothing
+- 🧠 A4.1 · `plugview.py` and the tab row exist, the strip layout landed, and the page's three cards show in it: ✅ PP01 ✅ PP02 ✅ PP03, each with its link.
+  The real-browser check waits on a server restart, which is outside this page.
 
-### P · 🚧 The boundary
-- ⬜ P1 · Discovery's exclusion list does not know `probe/` by name.
+### P · 🚧 What page discovery must skip
+- ⬜ P1 · The skip list does not know `probe/` by name yet.
 
 ## Files
 ### ⚙️ Engines
 - `../../board/haipipe-board/live/plugview.py`
-  The probe endpoint A4.1 ships in: `plug_probe` globs the page's `probe/` and lays the cards out as a strip.
+  The endpoint A4.1 ships in.
+  `plug_probe` scans the page's `probe/` folder and lays the cards out as a strip.
 - `../../board/haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
-  The drawer file that registers the 🚪 Probe tab, A4.1's client half.
+  The file that registers the 🚪 Probe tab, A4.1's browser half.
 
 ### 📋 Contracts
 - `QPf-page-folder/QPf5-display/QPf5-display.md`
-  The display plugin whose `intake/` is this plugin's first citer; its Law carries the birth ruling.
+  The display plugin whose `intake/` is the first thing to cite a card.
+  Its Law holds the ruling that started this page.
 
 ### 🧪 Checks
 - `../../board/haipipe-board/cli/check.py`
-  Where P1's exclusion and the plugin-folder validation land.
+  Where P1's skip rule and the plugin-folder check will land.
 
 ## Law
-- 260816 JL · 🚪 There is no `1-probes/`: a page's `probe/` is the only pool
-      Every evidence question lives on the page that needs it, at `<page>/probe/PP<NN>-<slug>/card.md`; the paper-level pool retires, because a paper's stages are pages and a second home would give one question two addresses.
+- 260816 JL · 🚪 There is no `1-probes/`, and a page's own `probe/` is the only pool
+      Every evidence question lives on the page that needs it, at `<page>/probe/PP<NN>-<slug>/card.md`.
+      The paper-wide pool goes away, because a paper's stages are pages now, and a second home would give one question two addresses.
       JL's words: "we will have no 1-probes... The opening is totally wrong."
-      Rejected: keeping `1-probes/` beside the plugin for consumers that are not pages, because once stages are pages every asker IS a page, and the mirror framing made the pool look permanent.
+      Rejected: keeping `1-probes/` beside the plugin for askers that are not pages.
+      Once stages are pages, every asker is a page, and calling `probe/` a mirror made the old pool look permanent.
 
 ## Log
+- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我他妈真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 20 sentences flagged before, 9 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260816 · [REVISE-CC] 🔍 the page stopped contradicting its own cards
       A cold reader found the page saying one thing and its three cards on disk saying another, so this pass moved the page onto the cards.
       A1.1 claimed "the orchestrators land in a page's `probe/`, and nowhere else", which is the opposite of what this page's own PP02 answer reports: `1-probes/` is a fixed path segment in about 300 live occurrences and no agent accepts a caller-supplied landing directory.

@@ -82,7 +82,8 @@ Shortcuts are written as relative paths, so the repo still works after it is cop
 The board finds its pages by walking the folders.
 `_in_plugin` in `src/common.py` tells it to stop as soon as it reaches `pagex`, and to skip everything under it.
 So a borrowed `Q*.md` never appears as a second, ghost page, and neither does the list file itself.
-The one shape that would test this hardest is a shortcut to a whole page FOLDER, and that shape is never made: this plugin borrows files only, and both the rebuild and the ＋ button refuse a folder outright.
+The hardest case would be a shortcut to a whole page FOLDER.
+That shape is never made: this plugin borrows files only, and both the rebuild and the ＋ button refuse a folder.
 
 ### 4 · The list fills itself; you put it in order
 **The machine suggests, you rank**: the same rule the skill list already follows.
@@ -101,7 +102,9 @@ The one shape that would test this hardest is a shortcut to a whole page FOLDER,
 A page cannot lean on another page in secret.
 It says so in its own words, in the "Covered elsewhere" line and in every sentence that names another page.
 The borrow is therefore already written down, and asking someone to type it again is asking them to say the same thing twice.
-The first build got this backwards. It shipped a picker: choose a page, open a list of its files, type a reason, press ＋. JL threw it out the hour it appeared ("I don't think the filter should be there, it should not be manually added").
+The first build got this backwards.
+It shipped a picker: choose a page, open a list of its files, type a reason, press ＋.
+JL threw it out the hour it appeared ("I don't think the filter should be there, it should not be manually added").
 
 What the machine must NOT decide is your order.
 A suggested line lands at the bottom, and everything above it is where you put it, the same rule `QPf10` follows for skills.
@@ -229,8 +232,8 @@ Its own folder holds a four-line list and four live shortcuts, so everything bel
 - [ ] 🗣 Does a seed ever go DEEPER than the named page's own `.md`?
       📍 `Part` §4, the seeding
       🔔 `Why now` the ask that opened this page was about reusing a component or a display from inside another page, and a seed that stops at the page md never reaches one
-      ⭐ `A ·` stay shallow: a seed takes the named page's md, and a deeper file is the ＋-by-path pen's job, which invents nothing, because the prose named a PAGE and not a file inside it
-      `B ·` seed a page's PRIMARY plugin files too, its `skill/` list and its `draw/` scene, so a named page arrives with the parts a builder reuses, at the price of the machine choosing what you meant
+      ⭐ `A ·` stay shallow. A suggestion takes the named page's own file, and anything deeper is added with the ＋ button. The writing named a PAGE, not a file inside it, so nothing is guessed.
+      `B ·` also suggest a page's own working files, its skill list and its drawing. A named page then arrives with the parts a builder reuses, but the machine is choosing what you meant.
       `C ·` seed shallow, then offer a one-click "go deeper" on the card: no dropdown and no note, just the named page's files listed under it once you ask
       🛑 `Blocks` nothing; the pen already reaches any file, and §5's ＋ use reaches a whole folder
       🤖 `If nobody answers` A. That is what shipped.
@@ -293,7 +296,7 @@ Its own folder holds a four-line list and four live shortcuts, so everything bel
 - 🌍 The reach is the whole repo, not one board (JL 260816); the refresh vets every target under the repo root.
 - 📄 Pagex links FILES, never a page's home folder: the minter and the pen each refuse a folder, so the one shape that could hand discovery a page home never gets made.
 - ✂️ The scan SEEDS, the person RANKS (JL 260816: "I don't think the filter should be there, it should not be manually added"): `QPf10`'s law adopted whole: a refresh borrows every page this page's prose names, appends it at the bottom, and never edits, reorders, or re-seeds a row; the ＋-by-path pen is for depth, not for the common case, and its note is optional.
-      This overturns CC's own note-required gate of the same day, which had made a person type by hand what the page already said.
+      This overturns CC's own rule from the same day, which had asked a person to type by hand what the page already said.
 - 🧭 A minted link keeps the source page's INNER path (`pagex/<source-stem>/<inner path>`): a flat layout collides the moment two files come from one page, since QPs1's page md and its skill list both sit under the basename `QPs1-overall.md`.
 - 🗃 The store is the only truth: symlinks and the view are re-minted from it, and a refresh never edits, reorders, or removes a row a person wrote.
 
