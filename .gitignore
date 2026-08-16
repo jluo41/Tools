@@ -35,3 +35,8 @@ plugins/haipipe-toolkit/skills/diagrams/*/board/
 *.tar
 *.tar.gz
 *.tgz
+
+# The served board's local state: the activity database and the session
+# sidecar. Both are per-machine (sessions.json stores absolute paths) and
+# both self-create when missing, so they are never shared.
+.haipipe-board/
