@@ -47,7 +47,8 @@ from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
-from src.common import (ALIAS, STN, AIM_STATE_RE, aim_ids, aim_progress,  # noqa: E402
+from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
+                        aim_ids, aim_progress, group_stem,
                         page_files)
 from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
@@ -185,6 +186,73 @@ def declared_links(board_md):
     return out
 
 
+GROUP_HEAD = re.compile(r"^###\s+Q([0-9][a-z]|[A-Z]+[a-z]?)\b", re.M)
+
+
+def check_group_order(d, text, rep):
+    """The group folders must read on disk in board.md's `## Pages` order.
+
+    `## Pages` is the ONLY authority on order; the number a folder carries is
+    derived from it (JL 260816). Letters carry identity and cannot carry order,
+    which is how `QC-engine/` came to sort four rows above `QPs-page-structure/`
+    on a board that read them the other way round.
+
+    A board is numbered or it is not, and the middle is the only real defect: one
+    numbered folder among bare ones means two orderings disagree and a reader
+    cannot tell which is live. A wholly unnumbered board is the pre-260816 shape,
+    reported as a WARN so it gets migrated rather than blocked.
+
+    A folder is a GROUP folder only when its name, minus any number, starts with
+    a `Q<key>` that board.md declares. That is what keeps a paper's
+    `0-lifecycle/` out of this check: `0-seed/`, `1-work/` and `3-display/` are
+    SUBJECT folders whose numbers carry lifecycle order, and they answer to a
+    different rule entirely.
+    """
+    names = "|".join(re.escape(n) for n in alias_names("Pages"))
+    m = re.search(rf"^##\s+({names})\s*$", text, re.M)
+    if not m:
+        return
+    end = text.find("\n## ", m.end())
+    keys = GROUP_HEAD.findall(text[m.end():end if end != -1 else len(text)])
+    if not keys:
+        return
+    pos = {k: i + 1 for i, k in enumerate(keys)}
+    # longest key first, so QAa wins over QA on `QAa-something/`
+    by_len = sorted(keys, key=len, reverse=True)
+
+    found = []                      # (folder, key, declared number or None)
+    for p in sorted(d.iterdir()):
+        if not p.is_dir() or p.name.startswith(("_", ".")) or p.name in ("board", "fig"):
+            continue
+        num = NUMBERED_GROUP.match(p.name)
+        stem = group_stem(p.name)
+        key = next((k for k in by_len
+                    if stem == f"Q{k}" or stem.startswith(f"Q{k}-")), None)
+        if key:
+            found.append((p.name, key, int(num.group(1)) if num else None))
+    if not found:
+        return
+
+    bare = [f for f, _, n in found if n is None]
+    if len(bare) == len(found):
+        rep.add(WARN, "groups-not-numbered", "board.md",
+                f"{len(found)} group folders carry no reading-order number "
+                f"(JL 260816); `python3 cli/regroup.py <board> --apply` numbers them")
+        return
+    for f in bare:
+        rep.add(ERROR, "group-number-missing", f,
+                "some group folders are numbered and this one is not, so the "
+                "folder listing declares two different orders")
+    for f, key, n in found:
+        if n is None:
+            continue
+        want = pos[key]
+        if n != want:
+            rep.add(ERROR, "group-number-order", f,
+                    f"numbered {n} but Q{key} is #{want} in ## Pages; "
+                    f"board.md decides the order, the folder follows it")
+
+
 def check_board(d, rep):
     bmd = d / "board.md"
     if not bmd.exists():
@@ -223,6 +291,7 @@ def check_board(d, rep):
         if name not in listed:
             rep.add(WARN, "not-in-pages", name,
                     "on disk but not in ## Pages, so it renders under the ⚠️ group")
+    check_group_order(d, text, rep)
     seen = {}
     for name in sorted(pages):
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)

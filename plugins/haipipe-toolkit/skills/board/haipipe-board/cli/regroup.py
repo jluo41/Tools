@@ -9,10 +9,19 @@ The ruling is "one folder per group, on every board, from page one", so the
 move has to be a command rather than a habit: a rule enforced by hand drifts the
 first time somebody is in a hurry.
 
-WHY THE FOLDER CARRIES A NAME. It is `Q<key>-<slug of the group title>`, never a
-bare `QA/`. `QA/` writes the id a second time, and the id is already the prefix
-of every filename inside; the group's SUBJECT is the half a reader cannot
+WHY THE FOLDER CARRIES A NAME. It is `<N>-Q<key>-<slug of the group title>`,
+never a bare `QA/`. `QA/` writes the id a second time, and the id is already the
+prefix of every filename inside; the group's SUBJECT is the half a reader cannot
 recover from those filenames, so it is the half the folder name owes them.
+
+WHY IT CARRIES A NUMBER (JL 260816). Letters carry identity and cannot carry
+order: `QC-engine/` sorted four rows above `QPs-page-structure/` while board.md
+read them the other way round, and a folder that contradicts the board it stores
+is a folder nobody trusts. `N` is this group's position among board.md's `###`
+headings, so the folder listing IS the reading order. `## Pages` stays the only
+authority and `check.py` fails when the two disagree. This tool always numbers,
+because it lays down the whole set at once; `＋Q`, which opens one folder into an
+existing set, follows whatever the board already does.
 
 WHAT IS DELIBERATELY NOT MOVED. A board whose folders are already its groups is
 left alone, which is the paper `0-lifecycle/` case: `0-seed/ 1-work/ 3-display/`
@@ -56,12 +65,17 @@ def slug(text):
 
 
 def groups_of(board):
-    """-> [(key, title)] from board.md's `### Q<key> · <title>` headings."""
+    """-> [(key, title, n)] from board.md's `### Q<key> · <title>` headings.
+
+    `n` is the heading's 1-based position in READING order, which is the number
+    the folder carries (JL 260816). It is captured before the sort below,
+    because that sort is for MATCHING and would otherwise destroy the only
+    ordering the board actually declares."""
     out = []
     for ln in (board / "board.md").read_text(encoding="utf-8").split("\n"):
         m = HEAD.match(ln.strip())
         if m:
-            out.append((m.group(1), m.group(2)))
+            out.append((m.group(1), m.group(2), len(out) + 1))
     # longest key first, so QAa wins over QA on `QAa3-foo.md`
     return sorted(out, key=lambda g: -len(g[0]))
 
@@ -80,8 +94,8 @@ def plan(board):
         if not hit:
             skipped.append((p.name, "matches no group key"))
             continue
-        key, title = hit
-        dest = board / f"{key}-{slug(title)}" / p.name
+        key, title, n = hit
+        dest = board / f"{n}-{key}-{slug(title)}" / p.name
         (moves if not dest.exists() else skipped).append(
             (p, dest) if not dest.exists() else (p.name, "destination exists"))
     return moves, skipped, ""

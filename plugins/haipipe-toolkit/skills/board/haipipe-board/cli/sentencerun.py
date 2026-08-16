@@ -38,7 +38,7 @@ HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives
 sys.path.insert(0, str(HERE))
 
 from live.write import WriteMixin        # noqa: E402  — ③, imported not copied
-from src.common import page_files        # noqa: E402
+from src.common import group_stem, page_files        # noqa: E402
 
 # Ask the page itself what it would send. `.sentence-target` is what the
 # address pass marks as writable, and a summary's <p> is the same thing once a
@@ -133,7 +133,9 @@ def tree_url(base, board, root, page):
     pages SKIPPED, which looks exactly like a run nobody bothered to read.
     """
     rel = page.relative_to(board)
-    group = rel.parts[0].split("-", 1)[0] if len(rel.parts) > 1 else ""
+    # The SOURCE folder may carry an ordering number (`7-QC-engine`, JL 260816);
+    # the GENERATED route never does, so strip it before building the URL.
+    group = group_stem(rel.parts[0]).split("-", 1)[0] if len(rel.parts) > 1 else ""
     name = rel.stem + ".html?pane=page"
     stem = board.resolve().relative_to(root.resolve()).as_posix()
     return f"{base}/{stem}/board/{group}/{name}" if group else f"{base}/{stem}/board/{name}"

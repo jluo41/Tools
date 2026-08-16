@@ -3,7 +3,7 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.137.0"
+  version: "0.138.0"
   last_updated: "2026-08-16"
   summary: "📄 Page phases panel joins the 🪜 Workflow menu (index left, content right), and both bottom panels gained a drag-to-resize grip."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -146,13 +146,14 @@ A GENERATED Page Type is never copied from the template: the generator writes it
   board.md                    title · spine · close · ## Topic · ## Pipeline
                               · optional ## Board Map · ## Board Structure
                               · ## Pages
-  QA-<group-title-slug>/      ← one group, one folder (the default, JL 260726)
+  1-QA-<group-title-slug>/    ← one group, one folder (the default, JL 260726)
+                              the 1- is its place in ## Pages (JL 260816)
     draw/group.excalidraw     the group's own scene + import manifest
     QA1-<slug>/               ← one page, one FOLDER it owns (JL 260815)
       QA1-<slug>.md           the page, the only discoverable file inside
       draw/ slide/ latex/ …   its plugins; every subfolder is one, and
                               haipipe-plugin owns the roster and the law
-  QB-<group-title-slug>/
+  2-QB-<group-title-slug>/
     S-Seed-0-<slug>/          a named lifecycle page (only with a lifecycle)
     Design-1-<slug>/          a unit design page, its unit's bytes in skill/
                               (the Skill-/Agent- mirror kinds retired 260815)
@@ -165,11 +166,17 @@ A GENERATED Page Type is never copied from the template: the generator writes it
   fig/
 ```
 
-The descriptive source folder (`QA-<group-title-slug>/`) and the compact generated route (`board/QA/`) are deliberately different. The source folder explains itself on disk; the generated token keeps page URLs short and stable.
+The descriptive source folder (`1-QA-<group-title-slug>/`) and the compact generated route (`board/QA/`) are deliberately different. The source folder explains itself on disk; the generated token keeps page URLs short and stable. The number belongs to the source folder only and is stripped before anything reads the letter.
 
 - **The group folder is the default (JL ruled 260726).**
-  From the first page onward, one group gets one folder, named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`), **never a bare `QA/`**.
+  From the first page onward, one group gets one folder, named `<N>-Q<group-letter>-<group-title-slug>` (`1-QA-defining-a-board/`), **never a bare `QA/`**.
   Writing only `QA/` just copies the id a second time; the half a reader cannot recognize is precisely the title half.
+- **The number is the group's place in `## Pages` (JL ruled 260816).**
+  Letters carry identity and cannot carry order: on the board that found this, `QC-engine/` sorted four rows above `QPs-page-structure/` while board.md read them the other way round, and a folder listing that contradicts the board it stores is one nobody trusts.
+  `## Pages` stays the only authority on order and the number is DERIVED from it, so you change the order by moving a `###` block and then renaming the folder, never the reverse.
+  `check.py` reports `group-number-order` when the two disagree, `group-number-missing` when only some folders carry a number, and one `groups-not-numbered` WARN for a board still on the pre-260816 shape.
+  A board is numbered or it is not: `regroup.py` always numbers because it lays the whole set down at once, and ＋Q opening one new group follows whatever the board already does.
+  A paper's `0-lifecycle/` is untouched by all of this — `0-seed/ 1-work/` are SUBJECT folders whose numbers carry lifecycle order, and the check only looks at folders whose name, minus the number, starts with a `Q<letter>` board.md declares.
   Membership has looked only at the path, not at a registry, since 260722, so moving pages into folders is a plain `mv`: `## Pages` still writes bare filenames only, board.md needs not one word changed, and the render is identical except for the path attribute used for write-back (verified across 30 pages).
   The ＋Q on the page writes into the folder its group already lives in; a newly opened group gets a named folder opened by its first page.
   To move a whole existing board: `python3 <skill>/cli/regroup.py <board-folder> --apply` (omit `--apply` for a dry run).

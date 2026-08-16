@@ -5,6 +5,42 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.138.0 - 2026-08-16
+
+- 🔢 A GROUP FOLDER CARRIES ITS PLACE IN `## Pages` (JL 260816, on finding
+  `QC-engine/` sitting four rows above `QPs-page-structure/` in a listing whose
+  board.md read them the other way round). Letters carry identity and cannot
+  carry order, so the folder is now `<N>-Q<letter>-<slug>`, `7-QC-engine/`.
+  What was weighed and rejected first: renaming the LETTERS so ASCII sorts them
+  (`QC→QT`, `QO→QU`) touches 1594 id mentions across 43 pages, needs 43 `##
+  Links` rows to keep the old ids resolving, cannot order `QPs`/`QPf`/`QPw`
+  without destroying the s/f/w mnemonic, and spends all of it on the one thing
+  colleagues actually cite. Numbering touches 206 path strings and nothing
+  cites a folder.
+  `## Pages` stays the ONLY authority; the number is DERIVED from it. New in
+  `src/common.py`: `group_stem()` strips the number before anything reads the
+  letter (so an unnumbered board keeps working with no migration) and
+  `board_is_numbered()` answers whether this board opted in. Four readers strip
+  through it — `live/chat.py` `group_folder()` + the group session prefix,
+  `live/term.py`'s group terminal title, `cli/sentencerun.py`'s page URL — and
+  the generated route is unchanged, `7-QC-engine/` still renders to `board/QC/`.
+  Two writers, one rule each: `cli/regroup.py` always numbers, because it lays
+  the whole set down at once and `groups_of()` now carries each heading's
+  reading-order position; `＋Q` in `live/structure.py` numbers only when the
+  board already does, so a legacy board never grows one numbered folder among
+  eight bare ones. A board is numbered or it is not, and no writer may
+  manufacture the middle.
+  `cli/check.py` `check_group_order()` holds board.md and disk together:
+  `group-number-order` when a folder's number disagrees with `## Pages`,
+  `group-number-missing` on partial numbering, one `groups-not-numbered` WARN
+  for the pre-260816 shape. A paper's `0-lifecycle/` is exempt by construction:
+  a folder counts as a GROUP folder only when its name minus the number starts
+  with a `Q<letter>` board.md declares, so `0-seed/` and `1-work/`, whose
+  numbers carry lifecycle order, answer to a different rule and are not read
+  here. Verified on four fixtures (wrong number, partial, lifecycle, flat
+  regroup) and against the four live design boards, which report the migration
+  WARN and no errors. Recorded on the board as QPf1.
+
 ## 0.137.0 - 2026-08-16
 
 - ↕ A BOTTOM PANEL CAN BE RESIZED (JL 260816: "我好像没有办法按照上下的幅度去

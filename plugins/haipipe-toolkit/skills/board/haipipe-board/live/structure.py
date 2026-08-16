@@ -206,9 +206,18 @@ def structure_op(board, p):
             # heading>` (JL 260726: group folders are the default, and "I want
             # the QA-xx with some names, not just QA"). A bare `QA/` is a second
             # copy of the id; the title is the part a reader cannot reconstruct.
+            #
+            # On a NUMBERED board the folder is born `<N>-Q<letter>-<slug>`
+            # (JL 260816), where N is this heading's position in `## Pages`, so
+            # the disk keeps reading in the board's order. On a board that does
+            # not number, it is born bare: `＋Q` follows what the board already
+            # does rather than leaving one numbered folder among eight bare ones.
             slug = re.sub(r"[^a-z0-9]+", "-",
                           heading.split("·", 1)[-1].strip().lower()).strip("-")
-            home = board / (f"Q{letter}-{slug}" if slug else f"Q{letter}")
+            name = f"Q{letter}-{slug}" if slug else f"Q{letter}"
+            if board_is_numbered(board):
+                name = f"{[h[0] for h in heads].index(hi) + 1}-{name}"
+            home = board / name
         f = home / fname
         if f.exists():
             return None, f"{f.relative_to(board).as_posix()} already exists"

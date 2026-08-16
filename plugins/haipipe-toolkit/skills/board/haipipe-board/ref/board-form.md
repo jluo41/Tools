@@ -11,10 +11,11 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 <plugin>/skills/diagrams/<NN>-<topic>-<YYMMDD>/   # plugin skill-design Board
   board.md                  global: title · spine · close · Topic · Pipeline
                             · optional Board Map · Board Structure · Pages
-  QA-<group-title-slug>/    one folder per group (default, JL 260726)
+  1-QA-<group-title-slug>/  one folder per group (default, JL 260726),
+                            numbered by its place in ## Pages (JL 260816)
     QA1-<slug>.md           one file per question
     QA2-<slug>.md
-  QB-<group-title-slug>/
+  2-QB-<group-title-slug>/
     QB1-<slug>.md
     S-Seed-0-<slug>.md      named lifecycle page (write only when a lifecycle exists)
   board/                    generated, do not hand-edit
@@ -53,7 +54,7 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 - Pages still lists only **filenames**; filenames are unique across the whole board, a duplicate warns on the command line and only the first one found is honored.
 - Page write-back (comments, archiving) carries **a path relative to the board root**; archiving flattens a nested question into the board root's `_archive/`.
 - A question newly added from a page **follows its own group** (QA1, JL 260726): `＋Q` looks at where that group's existing pages already live, and if they agree, writes into that folder.
-  When the group has no page yet, it opens a new `Q<letter>-<slug>/` on the spot from `### Q<letter> · <title>`.
+  When the group has no page yet, it opens a new `Q<letter>-<slug>/` on the spot from `### Q<letter> · <title>`, numbered `<N>-Q<letter>-<slug>/` if the board already numbers its group folders.
   Only when the group itself is already scattered across two places does it fall back to the board root (better to leave a scar than to guess blind).
 - A Q file's own path references **stay relative to the board root** (exactly as in a flat layout), regardless of where the question itself lives.
 
@@ -74,6 +75,16 @@ Membership has been path-based, not registration-based, since 260722, and `## Pa
 
 **JL ruled on 260726: the group folder is the default, from the very first page, on every board.**
 The folder is named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`, `QD-working-on-the-board/`); **it must never be just `QA/`**, because that copies the id twice, and the group title is the half a reader cannot recover from the filename.
+
+**JL ruled on 260816: the folder also carries the group's place in `## Pages`, `<N>-Q<letter>-<slug>`.**
+Letters carry identity and cannot carry order. On the board that found this, `QC-engine/` sorted four rows above `QPs-page-structure/` while board.md read them the other way round, and `QPs`/`QPf` were inverted against each other for the same reason, so the folder listing told a reader one story and the Index another.
+The number fixes the listing without touching a single page id: nobody cites a folder, and 206 path strings move where renaming the letters would have moved 1594 id mentions across 43 pages.
+
+`## Pages` remains the ONLY authority on order and the number is derived from it. You change the order by moving a `###` block, then renaming the folder to match; never the reverse.
+`check.py` holds the two together: `group-number-order` when a folder's number disagrees with `## Pages`, `group-number-missing` when only some folders carry one, and a single `groups-not-numbered` WARN for a board still on the pre-260816 shape.
+A board is numbered or it is not, and no writer may manufacture the middle state: `regroup.py` always numbers because it lays the whole set down at once, while `＋Q` opening one new group asks `board_is_numbered()` first and follows what the board already does.
+Everything that reads a group folder strips the number first through `group_stem()` in `src/common.py`, so the letter stays the group's identity and an unnumbered board keeps working with no migration.
+The generated route never carries the number: `7-QC-engine/` still renders to `board/QC/`.
 
 Only Board-level source and derived artifacts stay at the Board root: `board.md`, optional `board.excalidraw`, `fig/`, `_archive/`, and generated `board/`.
 `## Pages` does not change a single character; it still lists only bare filenames.

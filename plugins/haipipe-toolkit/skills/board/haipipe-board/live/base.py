@@ -29,7 +29,8 @@ from http.server import SimpleHTTPRequestHandler
 
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # noqa: E402
+from src.common import (QNAME, group_stem, page_files, q_files,  # noqa: E402
+                        vet_pagepath, vet_qpath)
 
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
