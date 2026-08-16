@@ -177,8 +177,8 @@ def main():
                      f"in the division lens, want 1")
     if "class=now" not in html:
         fails.append("the state lost its `now` label under its aim")
-    if "🗣 waiting on a person · 1" not in html:
-        fails.append("the unanswered ask is not shown as waiting")
+    if "🗣 1 waiting on you" not in html:
+        fails.append("the unanswered ask is not counted in the header")
     print("   1 page · ok")
 
     # A reader who cannot hold six paragraphs at once, in a language that is

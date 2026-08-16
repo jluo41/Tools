@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🖼 Display · QA0-the-revised-conception</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.ghost{opacity:.55;border-style:dashed}
+.badge{font-size:13px;margin-right:6px}
+object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radius:8px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;
+ scroll-behavior:smooth;padding:2px}
+.strip>.card{flex:0 0 100%;scroll-snap-align:start;margin:0;box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:8px;float:right}
+.nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
+ color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
+.nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
+ border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
+ background:var(--card)}
+.chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>🖼 Display · QA0-the-revised-conception</h1><div class='mut' style='margin:0 0 12px'>read-only · renderers write recipe/ and assets/; a person rules intake/ and ticks accepted: (QPf5 §3) · 🔄 recompiles each unit's preview</div><div class='card' id='QA0-Display1-dual-optimization'><b>QA0-Display1-dual-optimization</b><div class='mut'><b style='color:var(--fg)'>claim</b>: one calibration round is a DUAL optimization — the human concept `H_t` and the external annotation policy `Θ_t` improve together, and the seal is what keeps the machine's prelabels diagnostic rather than authoritative</div><div class='mut'><b style='color:var(--fg)'>kind</b>: algorithm, TeX-native (✒️ tex; `algorithm2e`, the recipe IS the float body)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: give a reader the whole round in one object, in the order it happens, so the pages that own each step (QC1 · QC3 · QB2 · QB3 · QD4) can be read as parts of it rather than as five separate procedures</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; the algorithm states no count, capacity or threshold, and `m_t` appears as a name the caller supplies — QA0 fixes no value, and the unit contract calls an invented number a defect</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand; rebuild = `xelatex preview.tex` from this folder</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260816 CC · one candidate, clean on the first compile</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick</div><div class='mut'><b style='color:var(--fg)'>history</b>: the first display unit on this board; it replaces nothing — QA0 §8 keeps its ASCII `H_t ⇄ Θ_t` figure, and this unit states the round precisely beside it so the two can be compared before any ASCII is retired</div><object class='pdf' data='QA0-Display1-dual-optimization/preview.pdf' type='application/pdf'><a href='QA0-Display1-dual-optimization/preview.pdf'>preview.pdf</a></object><pre>├── ⚙️ assets/
+├── ⚙️ candidates/
+├── intake/
+│   └── inputs/
+├── recipe/
+│   └── dual-optimization.tex
+├── ⚙️ versions/
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/display', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/plugins/subjective-label/diagram/SubjectiveLabel-260722/board/QA/QA0-the-revised-conception.html", file: "QA-semantic-contract/QA0-the-revised-conception/QA0-the-revised-conception.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script></body></html>

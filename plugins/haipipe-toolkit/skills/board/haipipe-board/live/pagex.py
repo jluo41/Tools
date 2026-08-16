@@ -26,6 +26,7 @@ import os
 import re
 from collections import Counter
 from pathlib import Path
+from urllib.parse import parse_qs, quote as _q, urlparse
 
 from live.export import _VIEW, _esc
 
@@ -120,6 +121,35 @@ class PagexMixin:
                 return self._url_of(hit[0]) if hit else None
             d = d.parent
         return None
+
+    def _page_inventory(self, home, used_paths, root):
+        """What a source page HOLDS, and which of it this page is using.
+
+        JL 260816: "每一个 page folder 我们用了它的哪些 information … 这个
+        sub-folder 用了，那个 sub-folder 没有用". A borrow list says what was
+        taken and is silent on what was there, so a reader cannot tell a
+        deliberate one-file borrow from never having looked. The inventory
+        makes the WHOLE source page visible and marks the part in use."""
+        out = []
+        md = home / (home.name + ".md")
+        if md.is_file():
+            rel = self._url_of(md)
+            out.append({"kind": "md", "name": md.name, "n": 1,
+                        "used": bool(rel) and rel.lstrip("/") in used_paths,
+                        "files": [md]})
+        for d in sorted(home.iterdir()):
+            if not d.is_dir() or d.name.startswith((".", "_")):
+                continue
+            files = sorted(f for f in d.rglob("*")
+                           if f.is_file() and not f.name.startswith("."))
+            if not files:
+                continue
+            rels = [self._url_of(f) for f in files]
+            rels = [r.lstrip("/") for r in rels if r]
+            out.append({"kind": "dir", "name": d.name + "/", "n": len(files),
+                        "used": any(r in used_paths for r in rels),
+                        "files": files})
+        return out
 
     @staticmethod
     def _head_state(page_md):
@@ -284,9 +314,21 @@ class PagexMixin:
         st, err = self._pagex_state(p)
         if err:
             return None, err
-        path = (p.get("borrow") or "").strip().lstrip("/")
-        if not path:
+        many = p.get("borrow")
+        many = many if isinstance(many, list) else [many or ""]
+        many = [x.strip().lstrip("/") for x in many if x and x.strip()]
+        if not many:
             return None, "no borrow path given"
+        if len(many) > 1:
+            # A card's ✕ drops a whole source page and a folder's ＋ takes
+            # every file in it, so the pen speaks in batches; one path is
+            # just the batch of one.
+            for one in many:
+                res, err = self.pagex_entry(dict(p, borrow=one))
+                if err:
+                    return None, err
+            return {"ok": True, "n": len(many)}, None
+        path = many[0]
         if path in st["rows"]:
             if p.get("remove"):
                 st["rows"][path]["removed"] = True
@@ -309,6 +351,79 @@ class PagexMixin:
         self._pagex_write(st)
         self._pagex_view(st, self._pagex_mint(st))
         return {"ok": True, "path": path}, None
+
+    # ---- GET /_board/pagexview?p=<rendered page>&from=<store> -----------
+    def serve_pagexview(self):
+        """The borrowed page, WITH A WAY BACK (JL 260816: "我点进去之后，怎么
+        退回来呢？我进去之后好像没法退回来了").
+
+        A bare link put a full board page into the pagex frame and left no
+        exit. This frames that page under a thin bar carrying ☰ back to the
+        borrows plus ← and → across them, which is the two-depth shape the
+        skill map already ships. The page itself is untouched: it is served
+        as it always was, inside an iframe, so nothing here can drift from
+        what the board built."""
+        q = parse_qs(urlparse(self.path).query)
+        page = (q.get("p") or [""])[0]
+        store = (q.get("from") or [""])[0]
+        if not page:
+            return self.reply(400, {"ok": False, "err": "no page"})
+
+        sibs, here = [], -1
+        root = Path(self.root).resolve()
+        sp = root / store if store else None
+        if sp and sp.is_file():
+            for line in sp.read_text(encoding="utf-8").splitlines():
+                m = _ROW.match(line.strip())
+                if not m or m.group("removed"):
+                    continue
+                tgt = (root / m.group("path")).resolve()
+                home, _i = self._page_home_of(tgt, root)
+                if not home or tgt.name != "%s.md" % home.name:
+                    continue
+                u = self._rendered_url(tgt)
+                if u and all(u != s[1] for s in sibs):
+                    sibs.append((home.name, u))
+        for i, (_n, u) in enumerate(sibs):
+            if u.lstrip("/") == page.lstrip("/"):
+                here = i
+                break
+
+        def door(i, glyph, label):
+            if not (0 <= i < len(sibs)):
+                return "<span class='off'>%s</span>" % glyph
+            return ("<a href='/_board/pagexview?p=%s&from=%s' title='%s'>%s</a>"
+                    % (_q(sibs[i][1].lstrip("/")), _q(store),
+                       _esc(sibs[i][0]), glyph))
+
+        name = sibs[here][0] if here >= 0 else Path(page).stem
+        bar = ("<div class=bar>%s<a class=idx href='%s'>☰ the borrows</a>%s"
+               "<b>%s</b><span class=sp></span>"
+               "<a href='/%s' target=_blank>open on its own</a></div>"
+               % (door(here - 1, "←", "previous"),
+                  _esc("/" + store.rsplit("/", 1)[0] + "/"
+                       + Path(store).stem + "-view.html") if store else "#",
+                  door(here + 1, "→", "next"), _esc(name), _q(page)))
+        html = ("<!doctype html><meta charset=utf-8><title>%s</title><style>"
+                "html,body{height:100%%;margin:0}"
+                ".bar{display:flex;gap:12px;align-items:center;height:34px;"
+                "padding:0 12px;border-bottom:1px solid #dedeb8;"
+                "font:13px -apple-system,sans-serif;background:#fbfbf9}"
+                "@media(prefers-color-scheme:dark){.bar{background:#161719;"
+                "border-color:#2c2e33;color:#e8e8e6}.bar a{color:#7fb2ea}}"
+                ".bar a{color:#1f5aa8;text-decoration:none}"
+                ".bar a:hover{text-decoration:underline}"
+                ".bar .off{color:#b6b6b0}.bar .sp{flex:1}"
+                "iframe{width:100%%;height:calc(100%% - 35px);border:0}"
+                "</style>%s<iframe src='/%s'></iframe>"
+                % (_esc(name), bar, _q(page)))
+        body = html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
 
     def _scan_route(self, st):
         """ROUTE A · the page ids this page's own md NAMES, ranked by how often
@@ -337,48 +452,96 @@ class PagexMixin:
         removed = [m for m in minted if m["state"] == "removed"]
         bad = [m for m in shown if m["state"] != "ok"]
 
-        rows_html = []
+        # ONE CARD PER SOURCE PAGE, not per borrowed file (JL 260816:
+        # "每一个 page folder 我们用了它的哪些 information"). A per-file list
+        # says what was taken and stays silent on what was there, so a
+        # one-file borrow and a never-looked-at page read identically. The
+        # card now carries the source page's whole inventory with the part in
+        # use marked, which is the question a person actually has.
+        root = Path(self.root).resolve()
+        used = {m["path"] for m in shown}
+        groups, order = {}, []
         for m in shown:
+            g = groups.get(m["src"])
+            if g is None:
+                g = groups[m["src"]] = {"src": m["src"], "rows": [],
+                                        "state": m["srcstate"],
+                                        "page_url": "", "home": None}
+                order.append(m["src"])
+            g["rows"].append(m)
+            g["page_url"] = g["page_url"] or m["page_url"]
+            g["state"] = g["state"] or m["srcstate"]
+            if g["home"] is None:
+                home, _inner = self._page_home_of(
+                    (root / m["path"]).resolve(), root)
+                g["home"] = home
+
+        rows_html = []
+        for src in order:
+            g = groups[src]
+            paths = [r["path"] for r in g["rows"]]
+            title = _esc(src or "?")
+            if g["page_url"]:
+                # ONE TAB, TWO DEPTHS, and a way back (JL 260816: "我点进去
+                # 之后，怎么退回来呢?"). The bare link replaced this frame with
+                # a full board page and stranded the person there; the viewer
+                # wraps it with ← ☰ → over the borrow list, the shape the
+                # skill map already ships.
+                title = ("<a class='snm' href='/_board/pagexview?p=%s&from=%s'>"
+                         "%s</a>"
+                         % (_q(g["page_url"].lstrip("/")),
+                            _q(self._url_of(st["store"]).lstrip("/")), title))
+            state = ("<span class='st'>%s</span>" % _esc(g["state"][:52])
+                     if g["state"] else "")
+            worst = ("dangling" if any(r["state"] == "dangling"
+                                       for r in g["rows"])
+                     else "refused" if any(r["state"] == "refused"
+                                           for r in g["rows"]) else "ok")
             badge = {"ok": "<span class='ok'>🔗 linked</span>",
                      "dangling": "<span class='bad'>⚠ dangling</span>",
-                     "refused": "<span class='bad'>⛔ refused</span>"}[m["state"]]
-            # THE TITLE IS THE BOARD PAGE. A borrow is taken to be READ, and
-            # the rendered page is where reading happens; the raw file sits
-            # behind a small secondary link for the times you want the bytes.
-            title = _esc(m["src"] or m["inner"])
-            if m["page_url"]:
-                title = ("<a class='snm' href='%s'>%s</a>"
-                         % (m["page_url"], title))
-            elif m["url"]:
-                title = ("<a class='snm' href='%s' target='_blank'>%s</a>"
-                         % (m["url"], _esc(m["inner"])))
-            else:
-                title = "<b>%s</b>" % _esc(m["inner"])
-            state = ("<span class='st'>%s</span>" % _esc(m["srcstate"][:52])
-                     if m["srcstate"] else "")
-            # The repo path is an ADDRESS, not reading matter: it went from a
-            # wrapped three-line block on stage into a fold (JL 260816: "very
-            # ugly"). What stays visible is the file actually borrowed.
-            what = ("<div class='dsc mut'>borrowed: <code>%s</code></div>"
-                    % _esc(m["inner"]))
-            addr = ("<details class='addr'><summary class='mut'>where</summary>"
-                    "<code>%s</code>%s</details>"
-                    % (_esc(m["path"]),
-                       (" · <a href='%s' target='_blank'>open the raw file</a>"
-                        % m["url"]) if m["url"] else ""))
-            why = ("<div class='dsc bad'>%s</div>" % _esc(m["why"])
-                   if m["why"] else "")
-            note = ("<div class='dsc mut'>%s</div>" % _esc(m["note"])
-                    if m["note"] else "")
+                     "refused": "<span class='bad'>⛔ refused</span>"}[worst]
+
+            inv, used_n, all_n = [], 0, 0
+            for item in (self._page_inventory(g["home"], used, root)
+                         if g["home"] else []):
+                all_n += 1
+                icon = "📄" if item["kind"] == "md" else "📁"
+                if item["used"]:
+                    used_n += 1
+                    inv.append("<div class='iv on'>✅ %s <b>%s</b>"
+                               "<span class='mut'>%d file%s</span></div>"
+                               % (icon, _esc(item["name"]), item["n"],
+                                  "" if item["n"] == 1 else "s"))
+                else:
+                    take = ",".join(
+                        (self._url_of(f) or "").lstrip("/")
+                        for f in item["files"])
+                    inv.append("<div class='iv off'>⬜ %s %s"
+                               "<span class='mut'>%d file%s</span>"
+                               "<button class='take' data-t='%s'>＋ use</button>"
+                               "</div>"
+                               % (icon, _esc(item["name"]), item["n"],
+                                  "" if item["n"] == 1 else "s", _esc(take)))
+            files = "".join(
+                "<div class='iv f'>· <code>%s</code>"
+                "<button class='rm' data-n='%s' title='drop this file'>✕"
+                "</button></div>" % (_esc(r["inner"]), _esc(r["path"]))
+                for r in g["rows"])
+            why = "".join("<div class='dsc bad'>%s</div>" % _esc(r["why"])
+                          for r in g["rows"] if r["why"])
+            inv_block = (
+                "<details class='inv' open><summary>using <b>%d of %d</b> "
+                "in this page's folder</summary>%s</details>"
+                % (used_n, all_n, "".join(inv)) if inv else "")
             rows_html.append(
-                "<div class='row' draggable='true' data-n='%s'>"
+                "<div class='row' draggable='true' data-n='%s' data-all='%s'>"
                 "<div class='rl'><span class='grip' title='drag to rank'>⠿"
                 "</span>%s %s</div>"
-                "<div class='rr'><button class='rm' data-n='%s' title='remove "
-                "this borrow'>✕</button></div>"
-                "<div class='dsc'>%s</div>%s%s%s%s</div>"
-                % (_esc(m["path"]), title, badge, _esc(m["path"]),
-                   state, what, note, why, addr))
+                "<div class='rr'><button class='rmall' data-all='%s' "
+                "title='drop this page entirely'>✕</button></div>"
+                "<div class='dsc'>%s</div>%s%s%s</div>"
+                % (_esc(paths[0]), _esc(",".join(paths)), title, badge,
+                   _esc(",".join(paths)), state, inv_block, files, why))
         cards = ("<div id='cards'>%s</div>" % "".join(rows_html) if rows_html
                  else "<p class='mut'>nothing borrowed yet — open 🔍 find "
                       "below to shortlist candidates.</p>")
@@ -434,6 +597,11 @@ document.addEventListener('click', function (ev) {
     return post('pagex-entry', {
       borrow: document.getElementById('newpath').value,
       note: document.getElementById('newnote').value});
+  if (b.className === 'take')
+    return post('pagex-entry', {borrow: b.dataset.t.split(','),
+                                note: 'taken from the folder view'});
+  if (b.className === 'rmall')
+    return post('pagex-entry', {borrow: b.dataset.all.split(','), remove: true});
   if (!b.dataset || !b.dataset.n) return;
   if (b.className === 'rm')  return post('pagex-entry', {borrow: b.dataset.n, remove: true});
   if (b.className === 'rst') return post('pagex-entry', {borrow: b.dataset.n, restore: true});
@@ -461,8 +629,10 @@ document.addEventListener('dragend', function () {
   drag.classList.remove('drag');
   drag = null;
   if (!moved) return;
-  post('pagex-order', {order: Array.prototype.map.call(
-    document.querySelectorAll('#cards .row'), function (r) { return r.dataset.n; })});
+  var out = [];
+  Array.prototype.forEach.call(document.querySelectorAll('#cards .row'),
+    function (r) { out = out.concat(r.dataset.all.split(',')); });
+  post('pagex-order', {order: out});
 });
 </script>"""
         script = (script.replace("__PATH__", self._json(st["ctx"]["path"]))
@@ -492,9 +662,16 @@ document.addEventListener('dragend', function () {
                ".snm{font:600 14px ui-monospace,Menlo,monospace;"
                "text-decoration:none;color:#1f5aa8}"
                ".st{font-size:12px;color:var(--mut)}"
-               ".addr{flex-basis:100%;margin:2px 0 0}"
-               ".addr summary{font-size:11.5px;margin:0}"
-               ".addr code{font-size:11px;word-break:break-all;color:var(--mut)}"
+               ".inv{flex-basis:100%;margin:4px 0 0}"
+               ".inv summary{font-size:12.5px;color:var(--mut);margin:0 0 4px}"
+               ".iv{display:flex;gap:8px;align-items:baseline;padding:2px 0 2px 6px;"
+               "font:12.5px/1.6 ui-monospace,Menlo,monospace}"
+               ".iv .mut{margin-left:auto;font-size:11.5px}"
+               ".iv.off{color:var(--mut)}"
+               ".iv.f{padding-left:6px;color:var(--mut)}"
+               ".iv code{font-size:12px}"
+               ".iv button{margin-left:8px;padding:1px 8px;font-size:11.5px}"
+               ".take{color:#1f5aa8}"
                ".ok{color:#2c7a4b;font-size:12px}"
                ".bad{color:#c0392b;font-size:12px}"
                "summary{cursor:pointer;margin:8px 0}"

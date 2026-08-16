@@ -151,134 +151,94 @@ LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(/usr/local/texlive/2025/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
-Invalid UTF-8 byte or sequence at line 284 replaced by U+FFFD.
-Invalid UTF-8 byte or sequence at line 299 replaced by U+FFFD.
-Invalid UTF-8 byte or sequence at line 550 replaced by U+FFFD.
-Package: algorithm2e 2017/07/18 v5.2 algorithms environments
-\c@AlgoLine=\count282
-
-(/usr/local/texlive/2025/texmf-dist/tex/latex/base/ifthen.sty
-Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
-)
-\algocf@hangindent=\skip54
-
-(/usr/local/texlive/2025/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
-Package: ifoddpage 2022/10/18 v1.2 Conditionals for odd/even page detection
-\c@checkoddpage=\count283
-)
-(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/xspace.sty
-Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
-)
-(/usr/local/texlive/2025/texmf-dist/tex/latex/relsize/relsize.sty
-Package: relsize 2013/03/29 ver 4.1
-)
-\skiptotal=\skip55
-\skiplinenumber=\skip56
-\skiprule=\skip57
-\skiphlne=\skip58
-\skiptext=\skip59
-\skiplength=\skip60
-\algomargin=\skip61
-\skipalgocfslide=\skip62
-\algowidth=\dimen153
-\inoutsize=\dimen154
-\inoutindent=\dimen155
-\interspacetitleruled=\dimen156
-\interspacealgoruled=\dimen157
-\interspacetitleboxruled=\dimen158
-\algocf@ruledwidth=\skip63
-\algocf@inoutbox=\box56
-\algocf@inputbox=\box57
-\AlCapSkip=\skip64
-\AlCapHSkip=\skip65
-\algoskipindent=\skip66
-\algocf@nlbox=\box58
-\algocf@hangingbox=\box59
-\algocf@untilbox=\box60
-\algocf@skipuntil=\skip67
-\algocf@capbox=\box61
-\algocf@lcaptionbox=\skip68
-\algoheightruledefault=\skip69
-\algoheightrule=\skip70
-\algotitleheightruledefault=\skip71
-\algotitleheightrule=\skip72
-\c@algocfline=\count284
-\c@algocfproc=\count285
-\c@algocf=\count286
-\algocf@algoframe=\box62
-\algocf@algobox=\box63
-)
 (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen159
-\captionmargin=\dimen160
-\caption@leftmargin=\dimen161
-\caption@rightmargin=\dimen162
-\caption@width=\dimen163
-\caption@indent=\dimen164
-\caption@parindent=\dimen165
-\caption@hangindent=\dimen166
+\caption@tempdima=\dimen153
+\captionmargin=\dimen154
+\caption@leftmargin=\dimen155
+\caption@rightmargin=\dimen156
+\caption@width=\dimen157
+\caption@indent=\dimen158
+\caption@parindent=\dimen159
+\caption@hangindent=\dimen160
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count287
-\c@continuedfloat=\count288
+\c@caption@flags=\count282
+\c@continuedfloat=\count283
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count284
+\float@exts=\toks24
+\float@box=\box56
+\@float@everytoks=\toks25
+\@floatcapt=\box57
 )
 (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 File: l3backend-xetex.def 2024-05-08 L3 backend support: XeTeX
-\g__graphics_track_int=\count289
-\l__pdf_internal_box=\box64
-\g__pdf_backend_annotation_int=\count290
-\g__pdf_backend_link_int=\count291
+\g__graphics_track_int=\count285
+\l__pdf_internal_box=\box58
+\g__pdf_backend_annotation_int=\count286
+\g__pdf_backend_link_int=\count287
 )
 (./preview.aux)
 \openout1 = `preview.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
 Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
- (./float.tex (./recipe/dual-optimization.tex
-LaTeX Font Info:    Trying to load font information for U+msa on input line 16.
+ (./float.tex (./recipe/stop-gate.tex
+LaTeX Font Info:    Trying to load font information for U+msa on input line 23.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 16.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 23.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-1.
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 4
+7.
 
-(/usr/local/texlive/2025/texmf-dist/tex/latex/lm/t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+(/usr/local/texlive/2025/texmf-dist/tex/latex/lm/t1lmss.fd
+File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-
-LaTeX Font Warning: Font shape `T1/lmr/m/scit' undefined
-(Font)              using `T1/lmr/m/scsl' instead on input line 44.
+Overfull \hbox (52.87378pt too wide) detected at line 47
+[]
+ []
 
 ))
+
+Package varwidth Warning: Failed to reprocess entire contents on input line 10.
+
+
+
+Package varwidth Warning: Failed to reprocess entire contents on input line 10.
+
+
+
 
 [1
 
@@ -289,12 +249,12 @@ L3 programming layer <2025-01-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5106 strings out of 473832
- 84593 string characters out of 5729481
- 480992 words of memory out of 5000000
- 28140 multiletter control sequences out of 15000+600000
- 576949 words of font info for 51 fonts, out of 8000000 for 9000
+ 4130 strings out of 473832
+ 67919 string characters out of 5729481
+ 454223 words of memory out of 5000000
+ 27167 multiletter control sequences out of 15000+600000
+ 606819 words of font info for 72 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 69i,15n,117p,455b,608s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 69i,14n,117p,481b,474s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on preview.pdf (1 page).

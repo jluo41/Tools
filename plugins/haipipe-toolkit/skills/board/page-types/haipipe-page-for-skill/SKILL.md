@@ -218,7 +218,7 @@ The base marks `Files` "allowed, advised against"; for this kind it is simply om
 A new skill folder is invisible to every agent until it is linked into the skill roster. The variant this file describes shipped on 260802 and was NOT linked, so `Skill(haipipe-page-for-skill)` failed for a whole day while the folder sat on disk. A blind door test found it: the agent concluded the skill did not exist and fell back to the base contract, which is exactly the failure this variant was written to prevent.
 
 ```bash
-cd Tools && ./install.sh --global      # links every plugin skill; the documented step
+./install.sh --global      # links every plugin skill; the documented step
 # or, minimally, mirror what it does for one unit:
 ln -s <repo>/Tools/plugins/haipipe-toolkit/skills/<family>/<unit> ~/.claude/skills/<unit>
 ```

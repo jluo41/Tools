@@ -638,13 +638,17 @@ def retire(board: Path, apply: bool) -> int:
     replaced = []
     try:
         for _, group_path, original, updated, _, moves in plans:
+            # Read what is ON DISK, the way sync does. Re-serializing `original`
+            # compares FORMATTING, not change: a scene the browser wrote indents
+            # by one space where scene_text() indents by two, so every retire
+            # against an edited scene failed as a phantom conflict (JL 260816).
+            original_bytes = group_path.read_bytes()
             for src, dst in moves:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 if dst.exists():
                     raise DrawError(f"refusing to overwrite a retired source: {dst}")
                 src.replace(dst)
                 moved.append((src, dst))
-            original_bytes = scene_text(original).encode("utf-8")
             if group_path.read_bytes() != original_bytes:
                 raise DrawError(f"Group source changed during retire: {group_path}")
             write_scene_atomic(group_path, updated)

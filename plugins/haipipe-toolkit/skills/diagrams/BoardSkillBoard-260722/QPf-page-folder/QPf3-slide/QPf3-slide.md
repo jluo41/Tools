@@ -1,5 +1,5 @@
 # Slide · every page may have a deck, and the deck is authored
-state: 🟡 PARTIAL · plugin-only deck, 3 Aims closed · open: install.sh --global re-run
+state: ✅ SETTLED · one authored deck per page, owned by the slide plugin · open: none
 owner: JL
 page-type: design
 method: describe the plugin as it runs today; history lives in Log and `_archive/`
@@ -88,11 +88,14 @@ Nothing from the skill is copied into the board, and the board contributes no CS
 ### 5 · SELECTION: why the authored deck, and what lost
 **The record**: the three ways a page could have had a deck, and the one left standing.
 ```text
-  SELECTION · 260815 · JL ruled
+  SELECTION · 260815 · JL ruled: "We will just have the AI deck"
   🏆 winner       the authored deck · claude -p writes it from the page's .md
-  🪦 loser        the reflow projection · live/deck.py · dropped
-  🪦 loser        the slide page-type · one page per deck · dropped
-  📤 downstream   page-plugins/haipipe-plugin-slide · every page's slide/
+                  it won on six real talks written the hour of the ruling
+  🪦 loser        the reflow projection · live/deck.py
+                  dropped · it copied a division instead of distilling it
+  🪦 loser        the slide page-type · one page per deck
+                  dropped · a second page to keep beside the page it was about
+  📤 downstream   ../../board/page-plugins/haipipe-plugin-slide/
 ```
 The authored deck won on evidence rather than argument: six decks were written the hour of the ruling, and the first live `/_board/autodeck` run produced a real talk for `QF2-newcomer`.
 The reflow projection lost because it copied rather than distilled, so a division came back as its own paragraphs in a box; it was dropped whole, endpoint and route with it, and nothing in the board projects a page into slides now.
@@ -101,21 +104,21 @@ The slide page-type lost because it asked for a second page to maintain beside t
 ## Aims
 - [x] ✂️ `live/deck.py` retires
       Deleted 260815 with its `/_board/deck` route and the DeckMixin; the ✨ path is the only writer.
-- [ ] 🗑 `haipipe-page-for-slide` leaves `page-types/` everywhere it is installed
-      The source tree is already clean: the variant folder was deleted and `haipipe-page` 0.26.0 dropped the `page-type: slide` key.
-      The aim stays open until `Tools/install.sh --global` has been re-run, because a moved or deleted variant leaves its old global symlink behind.
+- [x] 🗑 `haipipe-page-for-slide` leaves `page-types/`
+      The variant folder is deleted and `haipipe-page` 0.26.0 dropped the `page-type: slide` key, so no page can declare a type the board no longer has.
+      A deleted variant leaves its old global symlink behind, and `install.sh --global` sweeps that dangling link on its next run.
 - [x] 🧾 `QPs2`'s roster drops for-slide
       The hub was swept to the two-kind world the same day; its pre-sweep record is archived whole.
-- [x] 👀 A deck needs no acceptance gate (CC ruled under JL's delegation, "check it yourself")
+- [x] 👀 A deck needs no acceptance gate
       The presenter is responsible for having read what they present, and regeneration is one click, so a gate would add friction with no consumer.
       The ruling is reversible: the day a deck misleads someone, a gate goes back on.
 
 ## States
 - ✅ ✂️ `live/deck.py` retires
       Met: `haipipe-board/live/` holds `autodeck.py` and no `deck.py`, and the `/_board/deck` route went with it.
-- 🧠 🗑 `haipipe-page-for-slide` leaves `page-types/` everywhere it is installed
-      `board/page-types/` now holds four variants, for-design, for-meeting, for-skill, and for-stage, and no for-slide resolves in the loaded skill roster.
-      Waiting on a person to run `Tools/install.sh --global`; nothing on this page can show that it has happened, so the aim is not called met.
+- ✅ 🗑 `haipipe-page-for-slide` leaves `page-types/`
+      Met: `board/page-types/` holds four variants, for-design, for-meeting, for-skill, and for-stage, and no for-slide folder is among them.
+      No `haipipe-page-for-slide` resolves in the installed skill roster either, where its siblings load from `~/.claude/skills/`, and the stale-link sweep in `install.sh --global` removes any symlink still pointing at the deleted folder.
 - ✅ 🧾 `QPs2`'s roster drops for-slide
       Met: the pre-sweep hub stands whole at `_archive/QPs2-page-types-260815-pre-sweep.md`, and the live `QPs2` carries the two-kind roster.
 - ✅ 👀 A deck needs no acceptance gate
@@ -134,9 +137,15 @@ The slide page-type lost because it asked for a second page to maintain beside t
   The skill that owns what a deck looks like; every deck links at its assets.
 
 ## Log
+- ✅ 260816 · [REVISE-CC, JL ruled] the fourth aim closed on evidence, and its heading narrowed back
+      JL ruled the earlier reopening wrong on both counts: "everywhere it is installed" widened the aim instead of clarifying it, and the evidence for the aim was on disk the whole time.
+      The heading went back to the repo fact, `haipipe-page-for-slide` leaves `page-types/`, and the aim is ticked again with a ✅ State row: `board/page-types/` holds for-design, for-meeting, for-skill and for-stage and nothing else, no `haipipe-page-for-slide` resolves in the installed skill roster, and the stale-link sweep in `install.sh --global` removes any symlink still pointing at the deleted folder.
+      With all four aims met the `state:` line is ✅ SETTLED again.
+      Three smaller repairs rode along: the installer is repo-root `install.sh`, so the folder prefix two lines used to hang in front of it is gone; the `SELECTION` record now writes its `downstream` path board-relative like every `Files` row and says why the winner won and why each loser lost; and the acceptance aim dropped its attribution parenthetical so the Aims and States headings read the same, the delegation staying here in the Log where attribution belongs.
+      One thing this pass could not do: the writer had no shell, so the symlink timestamps JL cited were not re-read, and the ✅ rests on the page-types tree and the loaded skill roster instead.
 - 🩹 260816 · [REVISE-CC] the page made honest again, and the selection written down
       A review found the page saying SETTLED while its own second aim said a re-run was still owed, so the status was corrected instead of the sentence.
-      That aim is open again with a 🧠 State row: the variant folder and the `page-type: slide` key are gone from the source tree, but nothing here can show that `Tools/install.sh --global` has been re-run, so the aim waits rather than recording a run that may never have happened.
+      That aim was reopened with a 🧠 State row and its heading widened to every place the skill is installed, on the ground that an `install.sh --global` re-run was still owed.
       The `state:` line became a row under 110 characters with an `open:` part, and States became one row per aim carrying its own evidence.
       The tier choice moved out of this Log into a `SELECTION` division, which is what a `page-type: design` page closes on and what the 260815 2010 rewrite had swept away.
       Smaller repairs in the same pass: the blank line that had pushed the whole rationale into the drawer is gone, the drawer's parts carry bold labels, the Files row for the html-ppt skill lost one `../`, and these records were split into headings with folded explanations.

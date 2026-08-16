@@ -21,16 +21,16 @@ The paper family's probe skills must relearn their landing address, which A1.2 t
 **Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; `QPf5` is the display plugin whose `intake/` cites a card by id, and its Law carries the ruling that births this page.
 
 ## Diagram
-**Two plugins, one binding**: an example card, PP07, the display unit that cites it, and the bank behind the wall.
+**Two plugins, one binding**: the example card PP07, the two citers stacked under it, and the bank behind the wall.
 ```text
   <page>/
-    probe/PP07-drift-rate/          🚪 THE ASK, once
-      card.md   question · state: raised → working → bound
-                binding: → tasks/T12/QA/3-drift.md
-        ▲ cite by id          ▲ cite by id
-    display/<unit>/intake/    <page>.md, a Content claim
-      manifest.yaml            "…17.3% (PP07)"
-      probe: PP07
+    probe/PP07-drift-rate/card.md          🚪 THE ASK, once
+        question · stake
+        state:   raised → working → bound
+        binding: → tasks/T12/QA/3-drift.md
+              ▲ both citers point here, by id
+    display/<unit>/intake/manifest.yaml    📥 probe: PP07
+    <page>.md, a Content claim             📋 "…17.3% (PP07)"
   ──────────────────────────────────────────────────────────
   🧪 the BANK  tasks/ · discoveries/  answers in general language
 ```
@@ -43,15 +43,18 @@ PP07 is a worked example, not one of this page's live cards, which are PP01, PP0
 ```text
   <page>/probe/PP<NN>-<slug>/
     card.md
-      question       in the page's own words, stake included
+      question:      in the page's own words
       state:         raised → working → bound
       binding:       → <task-folder>/QA/<n>-<slug>.md   filled when answered
+      stake:         why this page needs the answer; stays on this side
       ## Q-executor  the SAME question in general language, stake stripped;
                      the ONLY part that ever crosses to the bank
       ## bank binding  route · the bank verdict · where the target stands
       ## A-executor  a COPY of the QA answer, written at harvest
 ```
-The grammar is the shape the retired `1-probes/PPNN` pool taught the orchestrators, taken whole so they speak it without relearning anything, and the three `##` sections are `haipipe-probe`'s own entry parts folded into one card.
+The grammar is the shape the retired `1-probes/PPNN` pool taught the orchestrators, taken whole so they speak it without relearning anything.
+A `haipipe-probe` entry has four parts, and the card folds in three of them: the executor-facing `Q-executor` and `A-executor`, plus the `bank binding` that records where the answer landed.
+It drops the fourth, the review-only `Q-consumer` map, because the card's own `question:` and `stake:` lines already hold the consumer side of the one question the card exists for.
 What retires is the address, not the grammar: there is no paper-level pool, the pool is each page's own `probe/` folder, and `PP` numbers run per page.
 A card is small on purpose: the probe layer is communication, not judgment, so the card carries a question, its crossing, and a binding, and no review gate.
 The stake stays in the card's own `stake:` line and never enters `## Q-executor`, because an executor that knows what the asker hopes for shapes the answer around the hope.
@@ -59,10 +62,10 @@ The stake stays in the card's own `stake:` line and never enters `## Q-executor`
 ### 2 · Ask once, cite twice
 **The one-home rule**: the binding lives in the card, and every consumer points at the card.
 ```text
-  🚪 probe/PP07/card.md      the ONLY place the binding is written
-        ▲                          ▲
-  📥 intake/manifest.yaml    📋 a Content sentence
-     probe: PP07                cites PP07 beside its number
+  🚪 probe/PP07-drift-rate/card.md   the ONLY place the binding is written
+        ▲ one hop up, by id · never a copy of the binding
+  📥 intake/manifest.yaml            probe: PP07
+  📋 a Content sentence              cites PP07 beside its number
 ```
 Before this plugin, a display unit's manifest bound the answer itself, so a second consumer of the same number would have duplicated the binding.
 Now the manifest names the card and the card names the holder, one hop each.
@@ -103,7 +106,7 @@ It writes nothing, because every state transition already has an owner in §3.
 
 ## Aims
 ### A1 · 🧾 The card, and the pool it retires
-- A1.1 · The orchestrators land in a page's `probe/`, and nowhere else.
+- A1.1 · A card raised in a page's own `probe/` reaches the bank and comes back bound.
   **Done when:** a question raised on this page's own card comes back bound, with the QA path written by the collector and not by hand.
 - A1.2 · The paper family retires `1-probes/`.
   **Done when:** no probe skill or orchestrator names `1-probes/` as a landing address, and a paper's stage pages ask through their own `probe/` folders.
@@ -122,10 +125,18 @@ It writes nothing, because every state transition already has an owner in §3.
 
 ## States
 The ruling, the card grammar, and the crossing to the bank are the settled half; the `1-probes/` sweep, the citation hop, the tab's browser check, and the discovery exclusion stay open.
-- ✅ A1.1 · Met 260816: three questions raised on this page's own cards went out stake-stripped through the collector agent, the task bank claimed and answered each, and the bindings carry the QA paths the collector returned, not paths written by hand.
-- ⬜ A1.2 · The sweep has not started, and PP01 and PP02 have scoped it: no live paper or application carries a `1-probes/` pool (all three surviving directories are fixtures), the hard-coding is about 300 occurrences of instruction text, and the paper family already retired `1-probes/` for papers, so the shared probe skill disagrees with the paper checker today.
+
+### A1 · 🧾 The card, and the pool it retires
+- ✅ A1.1 · Met 260816: three questions raised on this page's own cards went out stake-stripped through the collector agent, the task bank claimed and answered each, and the bindings carry the QA paths the collector returned, not paths written by hand; where the orchestrators themselves write is A1.2's, and PP02 says that address is still hard-coded.
+- ⬜ A1.2 · The sweep has not started, and PP01 and PP02 have scoped it: no live paper or application carries a `1-probes/` pool (all three surviving directories are fixtures), `1-probes/` is a fixed path segment in about 300 live occurrences and no agent accepts a caller-supplied landing directory, and the paper family already retired `1-probes/` for papers, so the shared probe skill disagrees with the paper checker today.
+
+### A2 · 🔗 Ask once, cite twice
 - ⬜ A2.1 · `manifest.yaml` has no `probe:` line yet; `QPf5` A1 shares this seam.
+
+### A4 · 🚪 The surface: the probe tab
 - 🧠 A4.1 · `plugview.py` and the drawer row exist, the strip structure landed, and the page's three cards render in it, ✅ PP01 ✅ PP02 ✅ PP03 with their bindings shown; the real-browser check waits on a server restart, which is outside this page.
+
+### P · 🚧 The boundary
 - ⬜ P1 · Discovery's exclusion list does not know `probe/` by name.
 
 ## Files
@@ -150,6 +161,15 @@ The ruling, the card grammar, and the crossing to the bank are the settled half;
       Rejected: keeping `1-probes/` beside the plugin for consumers that are not pages, because once stages are pages every asker IS a page, and the mirror framing made the pool look permanent.
 
 ## Log
+- 260816 · [REVISE-CC] 🔍 the page stopped contradicting its own cards
+      A cold reader found the page saying one thing and its three cards on disk saying another, so this pass moved the page onto the cards.
+      A1.1 claimed "the orchestrators land in a page's `probe/`, and nowhere else", which is the opposite of what this page's own PP02 answer reports: `1-probes/` is a fixed path segment in about 300 live occurrences and no agent accepts a caller-supplied landing directory.
+      Its `Done when` never asked for that, so A1.1 was restated as the thing actually proved, a card raised here reaching the bank and coming back bound, and its State row now hands the orchestrators' address to A1.2 by name instead of quietly disagreeing with it.
+      §1's card-grammar figure said the stake rides inside `question`, while all three cards on disk carry their own `stake:` line, so the figure gained that row and lost the claim.
+      §1 also called the card's three `##` sections "`haipipe-probe`'s own entry parts"; that entry has four, so the sentence now names the three the card folds in and says it drops the review-only `Q-consumer` map, because the card head already carries the consumer side.
+      §2's figure wrote `probe/PP07/card.md`, dropping the slug that §1's own grammar and the Diagram both require, and it is now the full `PP07-drift-rate/` address.
+      The Diagram and §2 both drew their two citers side by side, which dies on paste, so each figure is now one stacked tree.
+      `## States` was a flat list of five rows against four Aims groups, so it gained the `### A1 · 🧾`, `### A2 · 🔗`, `### A4 · 🚪` and `### P · 🚧` headings and the rows moved under them.
 - 260816 · [REVISE-CC] 🧹 the page's citations and states caught up with what is on disk
       A review found the page describing files and progress it does not have, so this pass fixed the claims rather than the promise.
       The Engines group pointed at `live/deck.py`, which does not exist: the deck endpoint is `autodeck.py` and the probe tab's own endpoint is `plugview.py`, so both rows were repointed at the files that really serve the tab, `plugview.py` and `84-plugin-evidence.js`.

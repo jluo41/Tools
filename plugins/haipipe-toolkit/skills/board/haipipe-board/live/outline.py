@@ -526,16 +526,11 @@ def render(title, o):
     else:
         chip = '<span class=ok>✅ every line is placed</span>'
 
+    # The pending asks used to get a card of their own here, above everything.
+    # It was cut (JL 260816: "我们大概不需要吧"): the header line already says
+    # `🗣 1 waiting on you`, so the card repeated a number the reader had just
+    # read and spent four lines explaining what "waiting" means.
     cards = []
-    waiting = [d for d in o.get("decisions", []) if not d["answered"]]
-    if waiting:
-        cards.append(
-            '<div class=card><h2>🗣 waiting on a person · %d</h2>'
-            '<div class=brief>a decision this page cannot make for itself; '
-            'until it is answered, the aims below are held.</div>%s</div>'
-            % (len(waiting),
-               "".join('<div class=row><span class=x>%s</span></div>'
-                       % _e(w["text"]) for w in waiting)))
     for d in o["divs"]:
         n = d["n"]
         name = _e(d["title"]) if d["title"] else (

@@ -65,7 +65,7 @@ subjective-label/skills/page-types/    for-labeling
   why its variant needed no argument to stay outside the board.
 - ⚠️ **Moving a variant does not move its installed symlink.** Between the move
   and the reinstall, five skills resolved to a directory that no longer existed
-  and silently failed to load. Re-run `Tools/install.sh --global` after any
+  and silently failed to load. Re-run `install.sh --global` (repo root) after any
   folder move; it repoints and reports.
 - Rosters corrected in `haipipe-page` 0.23.0, `haipipe-board` 0.126.0,
   `board/README.md`, and `paper/README.md`, which had also called `haipipe-paper`

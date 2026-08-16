@@ -130,7 +130,7 @@ page-types/                                     Displays → downstream consumer
 ```
 
 `for-stage` stays on the board side even though only paper and application have lifecycles, because a stage page is a BOARD mechanism (chain, managed contract span, human gate) that both families instantiate; `for-section` and the rest describe a paper's own artifacts, so they left with the paper.
-When a variant moves, its installed symlink still points at the old folder, so re-run `Tools/install.sh --global` or the skill silently stops resolving.
+When a variant moves, its installed symlink still points at the old folder, so re-run `install.sh --global` (repo root) or the skill silently stops resolving.
 
 The last seven were admitted 260805 (JL, ruled on the design board's QB6).
 A slide deck is NOT a Page Type: a page's talk is plugin material at `<page>/slide/<page>-deck.html`, authored by an agent and regenerated on demand (JL 260815, ruled on QPf3; the retired variant's specimen is archived on that board).

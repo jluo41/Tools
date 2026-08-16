@@ -1,5 +1,5 @@
 # Skill · the page's citations into the skill tree
-state: ✅ SETTLED · the list, the index, agent rows, and the boundary are lived in · open: none
+state: ✅ SETTLED · the list, the index, agent rows, and the boundary are lived in · open: QPf6 git ruling
 owner: JL
 method: give each page its own ranked skill list, seed it by scanning the page for skill names, and let the person drag the cards so the order itself is the judgment
 
@@ -9,8 +9,8 @@ The shape is bibex's twin: bibex holds the page's references into the literature
 The store is the PAGE's own `skill/<stem>.md`, one row per skill, seeded by scanning the page for names it actually writes.
 The 🛠 tab is an index of cards over that store, and its center is the ORDER: the person drags a card to its rank, and top means most related.
 
-**What the person gets per card**: the skill's name, version, description, and `last_updated` read from its own SKILL.md; a ⠿ handle to drag the card to its rank; an open-the-skill link; a note when the row carries one; and ✕, which removes the name and keeps it removed.
-**What the name does**: the 🛠 tab opens on the card INDEX, clicking a card's name or `open the skill` shows that skill in the SAME frame, and the skill's bar carries ← and → walking this page's skills in ranked order plus ☰ back to the index; an earlier separate 🔍 tab was retired, see Log.
+**What the person gets per card**: the name; the description and the meta the card reads from the skill's own SKILL.md, its version and `last_updated`, where an agent row shows the single word `agent` instead; a ⠿ handle to drag the card to its rank; a door that opens the skill, or opens the agent on an agent row; a note when the row carries one; and ✕, which removes the name and keeps it removed.
+**What the name does**: the 🛠 tab opens on the card INDEX, clicking a card's name or `open the skill` shows that skill in the SAME frame, and the skill's bar carries ← and → walking this page's skills in ranked order plus ☰ back to the index; an agent's name opens its definition in the markdown view, which stands outside that walk; an earlier separate 🔍 tab was retired, see Log.
 **Covered elsewhere**: `QPf1` rules the folder; the roster row is `../../board/haipipe-plugin/ref/roster.md`; the twin whose grammar this adopts is `QPf8` (bibex); `QPf6`'s own list is the first live consumer.
 
 ## Diagram
@@ -58,24 +58,25 @@ The git fate of the DERIVED view follows `QPf6`'s one Decision row.
 ### 2 · The rank
 **The one judgment**: where a name sits, and who put it there.
 ```text
-  ⠿ TOP        most related          🧑 the person drags
-  ⠿ ...        the ranked middle     🧑 the person drags
-  ⠿ BOTTOM     newly scanned names   🤖 the scan appends here
-  ─────────────────────────────────────────────────────────
-  🏷 no badge · no ✓ · no drift flag: the ORDER carries it all
+  ⠿ TOP        most related           🧑 the person drags
+  ＋ TOP       added by hand          🧑 the pen · adding says "this matters"
+  ⠿ MIDDLE     the ranked middle      🧑 the person drags
+  ⠿ BOTTOM     newly scanned names    🤖 the scan appends here
+  ✕ OFF        into the removed fold  🧑 the person's ✕ · ↩ restores
 ```
 #### 2.1 · Order is the judgment
 The order of the list is the one judgment the plugin records: top means most related.
 Dragging a card saves that order to the store, and a scanned name lands at the bottom until the person ranks it.
-A reader of the cards never meets a badge, a tick, or a drift flag; how those left the vocabulary is in the Log.
 
 ### 3 · The surface
 **The 🛠 tab, two depths**: the index of cards, and the skill it opens onto, one frame for both.
 ```text
   83-plugin-skillmap.js ──POST──▶ /_board/skill ──▶ scan + INDEX view
   tab.url()  names skill/<stem>-skill.html · HEAD hit ▶ frame it
-  depth 1 · THE INDEX     one card per skill: ⠿ · name · meta ·
-            description · open the skill · ✕ · drag anywhere to rank
+  depth 1 · THE INDEX     one card per row: ⠿ · name · meta · description ·
+            the open door · ✕ · drag anywhere to rank
+            🛠 a skill row   meta v<version> · updated <date> · open the skill
+            🤖 an agent row  meta agent · open the agent · outside ← →
   depth 2 · THE SKILL     same frame, /_board/skillview?p&map:
             ← prev · ☰ back to the index · next → (arrow keys too)
             header card + related-skill chips, then ONE fold grammar:
@@ -89,26 +90,28 @@ Clicking the lit tab refreshes only the derived view.
 
 ## Aims
 ### A1 · 🗃 The contract
-- [x] A1.1 · The store, the scan, and the safe refresh shipped.
-      Shipped 260815 and lifecycle-tested on `QPf6`; flattened 260816 to the ranked-list grammar, with old-grammar stores parsing cleanly and migrating on their next write, and all 15 live stores migrated in place.
-- [x] A1.2 · One page's list carries a person's own order, not a machine's.
-      Done 260815 in the first vocabulary and preserved through the 260816 migration: the rows JL worked on `QPf3` lead that page's list as its top ranks.
+- A1.1 · The store, the scan, and the safe refresh shipped.
+  Shipped 260815 and lifecycle-tested on `QPf6`; flattened 260816 to the ranked-list grammar, with old-grammar stores parsing cleanly and migrating on their next write, and all 15 live stores migrated in place.
+- A1.2 · One page's list carries a person's own order, not a machine's.
+  Done 260815 in the first vocabulary and preserved through the 260816 migration: the rows JL worked on `QPf3` lead that page's list as its top ranks.
 
 ### A2 · 🧑 The rank
-- [x] A2.1 · The cards, the pen, and the typo guard shipped; the rank became the one judgment.
-      Shipped: the ⠿ drag with `/_board/skill-order` is the one judgment the index saves.
-- [x] A2.2 · The first REAL judgment on a list is JL's.
-      Done 260815: JL worked two `QPf3` rows through the browser, and the migration carried that judgment forward as those rows' position at the top.
+- A2.1 · The cards, the pen, and the typo guard shipped; the rank became the one judgment.
+  Shipped: the ⠿ drag with `/_board/skill-order` is the one judgment the index saves.
+- A2.2 · The first REAL judgment on a list is JL's.
+  Done 260815: JL worked two `QPf3` rows through the browser, and the migration carried that judgment forward as those rows' position at the top.
 
 ### A3 · 🖼 The surface
-- [x] A3.1 · One workbench action round-trips in a real browser.
-      Done 260815: JL's clicks landed through the view's own buttons, the POST, and the reload, on the address JL uses.
+- A3.1 · One workbench action round-trips in a real browser.
+  Done 260815: JL's clicks landed through the view's own buttons, the POST, and the reload, on the address JL uses.
 
 ### P · 🚧 The boundary
-- [x] P1 · Discovery treats `skill/` as plugin material and warns on nothing inside it.
-      Done by construction: `src/common.py`'s `_in_plugin` boundary makes EVERY non-page subfolder of a folded page invisible to discovery, names `skill/` as its motivating case, and the board builds clean with live skill/ folders on QPf3 and QPf6; a name list would have been the weaker rule.
+- P1 · Discovery treats `skill/` as plugin material and warns on nothing inside it.
+  Done by construction: `src/common.py`'s `_in_plugin` boundary makes EVERY non-page subfolder of a folded page invisible to discovery, names `skill/` as its motivating case, and the board builds clean with live skill/ folders on QPf3 and QPf6; a name list would have been the weaker rule.
 
 ## States
+One thing still waits on a person: the DERIVED view's git fate follows `QPf6`'s Decision row, which nobody has ticked yet.
+
 ### A1 · 🗃 The contract
 - ✅ A1.1 · Lifecycle-tested 260815 on QPf6; the 260816 migration rewrote all 15 live stores to the ranked-list grammar in place.
 - ✅ A1.2 · QPf3's list leads with the rows JL worked 260815, carried into position by the migration.
@@ -132,7 +135,7 @@ Clicking the lit tab refreshes only the derived view.
 
 ### 🧪 Evidence
 - `../QPf6-latex/skill/QPf6-latex.md`
-  The first live list, migrated 260816: five names in ranked order, the two the page designs from on top.
+  The first live list, migrated 260816: five names in ranked order, with `haipipe-plugin-latex` and `haipipe-plugin` at the top.
 
 ## Law
 - 🤖 The list holds AGENTS beside skills (JL 260816: "我们的 Plug、我们的 Skill 其实也是包括 Agent 相关的。所以如果 Agent 跟它们相关，你也可以加上去")
@@ -140,9 +143,12 @@ Clicking the lit tab refreshes only the derived view.
       The first consumer is `QPf9`, whose cards crossed to the bank through two agents the map now names.
       Rejected: keeping agents in a skill row's note, because a relation buried in another row's note cannot be ranked, removed, or opened on its own.
 - ✂️ The scan seeds, the person RANKS (JL 260816: "we just need to show these skills and the user can drag and rank them themselves")
-      A scanned name lands at the bottom of the list; the order is the person's judgment, ✕ is the person's removal, and a refresh never edits, reorders, or removes a row it finds.
+      A scanned name lands at the bottom of the list; the order is the person's judgment, and ✕ is the person's removal.
+      A refresh never edits, reorders, or removes a row it finds, and a scan never re-seeds a name whose row ends ` · removed`.
 
 ## Log
+- 260816 · [REVISE-CC] the second review round landed: Law's ✂️ row states the whole tombstone rule again, that a scan never re-seeds a name whose row ends ` · removed`, which the earlier de-duplication had reduced to the bare noun; the state line and States both carry the one leftover the 0056 entry claims, the DERIVED view's git fate waiting on `QPf6`; §2's figure gained the ＋ and ✕ rows its caption promises and lost the retired badge/tick/drift row together with §2.1's sentence naming them; the Opening and §3 now say a card reads its meta from the skill's own SKILL.md while an agent row shows `agent` with an open-the-agent door outside the ← → walk; and the QPf6 evidence row names the two skills at the top of that list instead of teaching the retired `designs` relation.
+      The leftover sits as States' lead line rather than as a second `A1.1` row, because `check.py`'s `check_state_mirrors_aims` warns `aim-stated-twice` when one Aim id carries two rows, and no Aim on this page owns the git question.
 - 260816 · [REVISE-CC] the page caught up with its own flattening: §2 now states the rank rule in the present tense and the migration story lives only in the [RULE-JL] row below, the refresh rule is stated once in Law with the Diagram and §1 fences cut to label · value rows, Content paragraphs took #### numbers, Files moved above Law into the template order, States gained the A1/A2/A3/P group headings and dropped its narrative line, the git-fate row moved into §1.3, and A2.1's evidence was trimmed to the shipped result.
 - 260816 · [RULE-JL] agents joined the list (JL: "我们的 Skill 其实也是包括 Agent 相关的"): the index now offers every `agents/<name>-agent.md` beside the SKILL.md folders, an agent card wears 🤖 with the live markdown view as its door, the scan seeds agent names a page writes, and the ← → walk stays skills-only because mdview has no map bar; `QPf9` is the first consumer, ranking the collector and the bank door its probe cards crossed through. The earlier agent-in-a-note workaround on QPf9's map is superseded and the Law row records why.
 - 260816 · [RULE-JL] the judgment vocabulary came out whole (JL: "what does the design mean? I didn't get it? … maybe we don't need to have these concept … we just need to show these skills and the user can drag and rank them themselves"): relations, the aligned ✓, and drift dates left the store and the cards, the order became the one judgment saved by dragging through the new /_board/skill-order, /_board/skill-verify was removed, all 15 live stores migrated in place with the designs-first display order preserved as the initial rank, and the extracted skill moved to 0.2.0 the same hour.

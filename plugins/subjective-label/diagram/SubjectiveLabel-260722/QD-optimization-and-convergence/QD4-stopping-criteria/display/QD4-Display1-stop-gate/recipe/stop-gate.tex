@@ -1,0 +1,57 @@
+% Hand-authored TeX-native unit · ✒️ tex kind · no renderer skill.
+% QD4's stopping rule, written as the conjunction it is.
+%
+% THIS FILE IS THE BODY ONLY. The \caption and \label are the caller's and live in
+% ../float.tex.
+%
+% WHY A CONJUNCTION AND NOT A SCORE. QD4 \S1-\S3 are four gates that must ALL hold, and
+% \S2.2 says in words that a plateau below the quality floor does not pass. Written as
+% one product or one weighted score, a strong quality number could buy a failed
+% coverage gate; written as an AND, it cannot. The shape IS the claim.
+%
+% EVERY THRESHOLD IS A SYMBOL. QD4 \S2.1 fixes K and epsilon as project configuration
+% chosen before the sequence is read, and \S1 leaves the quality floor to the project.
+% So no number appears here. Writing one in would invent a threshold QD4 refuses to
+% fix, which the unit contract calls a defect.
+%
+% ONE ALIGNMENT POINT, NOT EIGHT. The first draft gave every conjunct its own column,
+% which spread the top line clean off the page: eight alignment columns is a table
+% pretending to be an equation. Aligning only at `=` keeps every gate readable at the
+% measure a float actually has.
+% Use \S, never a literal section sign: under xelatex with T1 fontenc the literal
+% character came out as `g`-breve (measured 260816).
+\begin{align*}
+\textsc{StopGate}(D_t, G_t) \;=\;&
+  \textsf{Quality}_t \;\wedge\; \textsf{Stability}_t
+  \;\wedge\; \textsf{Coverage}_t \;\wedge\; \textsf{Risk}_t \\[8pt]
+%
+\textsf{Quality}_t \;=\;&
+  q(A_t) \geq q_{\min}
+  \;\;\wedge\;\; \min_{c \in \{\textsf{H},\textsf{L},\textsf{N}\}} q_c(A_t) \geq q^{\text{class}}_{\min}
+  \;\;\wedge\;\; \min_{r \in \mathcal{R}} q_r(A_t) \geq q^{\text{region}}_{\min} \\[6pt]
+%
+\textsf{Stability}_t \;=\;&
+  \max_{\,j \,\in\, [\,t-K+1,\;t\,]} \Delta q_j \;\leq\; \varepsilon
+  \;\;\wedge\;\; \text{edits editorial only}
+  \;\;\wedge\;\; \text{no unresolved concept revision} \\[6pt]
+%
+\textsf{Coverage}_t \;=\;&
+  \forall\, r \in \mathcal{R} \;:\;\;
+  n_r(D_t) \geq n_{\min}(r)
+  \;\;\vee\;\; \text{an accepted scarcity note} \\[6pt]
+%
+\textsf{Risk}_t \;=\;&
+  \forall\, \rho \in \text{ledger} \;:\;\;
+  \text{severity}(\rho) = \text{high}
+  \;\Rightarrow\; \rho \text{ has an owner, a mitigation, or a recorded acceptance}
+\end{align*}
+
+\vspace{-4pt}
+\noindent\footnotesize
+$\mathcal{R} = \{\textsf{H},\textsf{L},\textsf{N},\textsf{HL},\textsf{LN},\textsf{HN},\textsf{HLN}\}$
+are the seven diagnostic regions.
+$A_t$ is QD2's comparable audit sample, never a challenge batch, and $\Delta q_j$ is the
+audit gain at round $j$.
+$K$, $\varepsilon$ and every $\min$ threshold are project configuration fixed before the
+sequence is read (QD4 \S2.1).
+A gate that fails does not lower the bar: it reopens the round.

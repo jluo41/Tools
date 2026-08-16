@@ -1,21 +1,20 @@
 # Chat · one Chat, its record in the folder, its form chosen inside
 state: ✅ SETTLED · one Chat, form inside, chat/ holds a real turn · open: none here (faces carry theirs)
 owner: JL
-page-type: design
 session: 82681719-498a-4c69-bf7f-5b221a925062
 method: contract ruled 260815; the four face pages folded the same evening (JL: "just have one Chat in the plugin"), their substance carried here as divisions while each face keeps its own full record
 
 ## Opening
 Where does a page's conversation live, and how many chat things does a page have?
 One: a page has ONE Chat, and opening it offers the TUI form or the GUI form, a choice made inside the surface.
-A kept conversation is material, and material lands in the page's own plugin folder, so it goes to `<page>/chat/`.
-The live session stays with the engine; the plugin holds what was kept.
-A reader opens one Chat, picks a form, and later finds that session in the page folder.
+A kept conversation is one of the page's own files, so it lands in the page's folder at `<page>/chat/`.
+The live session stays with the engine; the plugin folder holds what was kept.
+A reader opens one Chat, picks a form, and finds that session on disk afterwards.
 
 **Why one Chat and not two**: GUI and TUI stopped being separate subjects the moment the form became a choice made after opening.
 The four face pages that carried them are folded into Content §3 to §6.
 
-**What material means here**: a plugin folder holds a page's own files, so `chat/<YYMMDD-HHMM>/` sits beside `draw/` and `meeting/` and follows the meeting plugin's shape.
+**Where a kept session sits**: `chat/<YYMMDD-HHMM>/` sits beside `draw/` and `meeting/` in the page's folder and follows the meeting plugin's shape; a folder of a page's own files is what the board calls plugin material.
 
 **Covered elsewhere**: the engine work stays on the folded faces, the session model on `QPf4a`, the SDK chat box on `QPf4b`, the PTY pane on `QPf4c`, and the phone form on `QPf4d`.
 
@@ -55,7 +54,7 @@ The fold surfaced a prior signal for this contract: the session page had carried
   QPf4b GUI page  ┐            💬 one Chat · open it · pick
   QPf4c TUI page  ┘ two subjects   🖥 GUI or ⌨️ TUI inside
 ```
-The split is a difference of FORM and never of permission: both forms carry the full permission tier by default, the same tier the CLI carries, and neither form is narrowed for being the smaller surface.
+The split is a difference of FORM and never of permission: both forms carry the full tier by default, and neither form is narrowed for being the smaller surface.
 What each form is remains real and is held in the two divisions below; what died is the idea that each form needs its own page.
 
 ### 3 · The session model
@@ -69,15 +68,16 @@ Its open question, the two-agents-one-file rule across nested scopes, stays on `
 ### 4 · The GUI form
 **The rebuilt chat box**: `claude_agent_sdk` turns in the drawer (folded from `QPf4b`).
 ```text
-  🖥 live/chat.py · 1332 lines · sessions · the SDK turn · three permission tiers
+  🖥 live/chat.py · sessions · the SDK turn · three permission tiers
 ```
 The drawer sits outside `div.wrap`, so it survives the page swap.
-Its open questions (session reaping, the one-window-per-scope re-rule) stay on `QPf4b`'s Aims.
+Nine Aims are still open on `QPf4b`: A4.2 to A4.5 under what matching the extension costs, and A8.2, A8.4, A8.5, A8.6 and A8.7 under what a drawn interface has to be given.
+Two calls sit in that page's `### Decision Now` and wait on JL: how a held session is reaped, and whether `QD1` re-rules one window per scope.
 
 ### 5 · The TUI form
 **The real CLI**: a PTY in the pane, raw and smooth views (folded from `QPf4c`, which had absorbed the smooth-view page on 260801).
 ```text
-  ⌨️ live/term.py · 857 lines · /_term/ PTY · parking · reattachment
+  ⌨️ live/term.py · /_term/ PTY · parking · reattachment
 ```
 Its open questions stay on `QPf4c`'s Aims: the re-key to (page, session), the web-chat rendering beside the raw pane, the fallback seam, the smoothness drop-test, and the written security boundary.
 
@@ -86,7 +86,8 @@ Its open questions stay on `QPf4c`'s Aims: the re-key to (page, session), the we
 ```text
   📱 phone · 💻 desktop · what the page owes a reader who switches away and back
 ```
-Its open questions (the phone's ruled form, the width at which the raw grid is abandoned, the gesture audit) stay on `QPf4d`'s Aims.
+Most of `QPf4d`'s Aims are still open, and A2.1 is the one this caption is about: typing on a phone still rides xterm's hidden textarea.
+The phone's form is still a `### Decision Now` row there, blocking A3.1's width ruling, while A5.1's gesture audit and the four A6 rows on how the pane looks stay open too.
 
 ## Aims
 - [x] 📦 The landing shape is ruled
@@ -103,7 +104,6 @@ Its open questions (the phone's ruled form, the width at which the raw grid is a
 - ✅ 🔔 The keep trigger is ruled: the engine keeps on drawer close and on session switch, bounded to the sessions the page has registered.
 - ✅ ✍️ The writer is named: `keep_sessions` in `live/chat.py`, behind `POST /_board/chat-keep`.
 - ✅ 🧪 One real session is kept: `chat/260815-0457-82681719/transcript.md` holds the conversation that designed this plugin and reads back cold.
-- The four faces' full records are the 🗂 FOLDED pages the Files section links, each keeping its own Aims.
 
 ## Files
 - `../../board/haipipe-board/live/chat.py`
@@ -122,6 +122,7 @@ Its open questions (the phone's ruled form, the width at which the raw grid is a
 - A kept conversation is plugin material at `<page>/chat/`, in the meeting shape (JL 260815).
 
 ## Log
+- 260816 · [REVISE-CC] round 3, and every claim it touched was checked against disk first: `page-type: design` left the head on JL's ruling, because this page carries no candidate divisions and no SELECTION record, so it could never close under the for-design contract and its ✅ SETTLED is honest only as a plain Q page; §2 stopped saying the two forms carry "the same tier the CLI carries", which is a false equivalence, since `QPf4b`'s P2 records the browser default as `bypass` from JL's 260802 full·auto ruling while `QPf4a` ruled the CLI tier as ask-when-due; §4 now names `QPf4b`'s nine open Aims (A4.2 to A4.5, A8.2, A8.4 to A8.7) and puts the reaping and one-window calls in that page's `### Decision Now` at lines 485 and 491, where both rows actually live; §6 added A2.1, the phone typing row this division's caption is about, and stopped reading as a full list; the two engine line counts went, since `live/chat.py` is 1469 lines and `live/term.py` is 889, not 1332 and 857, and the capability lists stayed; States dropped the row that mirrored no Aim and only repeated Files; and the Opening's stage block now states the plain fact, that a kept conversation is one of the page's own files, leaving the board term "material" to the drawer.
 - 260816 · [REVISE-CC] the page caught up with the close: §3 to §6 now point at each folded face's own Aims instead of claiming carried aims, States became one current-fact row per aim and dropped the false `_archive/` claim (the four faces stand as live 🗂 FOLDED pages), the Opening's rationale came back on stage with labelled drawer parts, the `state:` line became a row again, the two engine paths in Files were written in their resolving form `../../board/haipipe-board/live/*.py`, and Law stopped promising a digest aim that no Aims row carries.
 - 260815 1900 · [JL via CC] `haipipe-plugin-chat` drafted under `page-plugins/`, round 2 of the thin-door migration: delta-only over `haipipe-plugin` (the landing rule stays this page's open Decision; the skill records the boundary instead of freezing it).
 - 260815 1330 · [CHECK-CC] closed on JL's ruling after the loop was proven for real: a live SDK turn through the drawer (the venv fix below), its reply KEEP-TEST-OK landing in this page's own chat/ transcript. The earlier 8/8 suite had tested every gesture EXCEPT a turn, and serve.py had been started on the system python with no SDK; both are fixed (.venv created, serve restarted on it) and the miss is recorded here so the lesson outlives the fix.

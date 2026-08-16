@@ -35,7 +35,7 @@ plugin material at `<page>/slide/<page>-deck.html`, authored by an agent
 - Type resolution drops the step-③ key `page-type: slide`.
 - `page-types/haipipe-page-for-slide/` removed from the family; its specimen
   is archived on the design board (`_archive/QBt9-for-slide.md`).
-- Sixteen variants ship. Re-run `Tools/install.sh --global` so the removed
+- Sixteen variants ship. Re-run `install.sh --global` (repo root) so the removed
   variant's symlink stops resolving.
 
 ## 0.24.0 - 2026-08-09
