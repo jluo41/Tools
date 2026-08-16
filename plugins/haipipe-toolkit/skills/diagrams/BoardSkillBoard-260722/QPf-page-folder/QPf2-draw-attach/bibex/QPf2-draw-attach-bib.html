@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf2-draw-attach · bibex</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.miss{border-color:#c66;}
+</style></head><body><style>textarea{width:100%;min-height:110px;font:12px/1.4 ui-monospace,Menlo,monospace;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px}#newbib{field-sizing:content;min-height:38px;height:38px;max-height:45vh;resize:vertical}button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:3px 9px;font:500 12px -apple-system,sans-serif}.ok{color:#2a8a2a}.st{float:right}</style><h1>📚 QPf2-draw-attach · 0 entries · 0 cited</h1><p class='mut'>this page's own bib · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf2-draw-attach/bibex/QPf2-draw-attach.bib' download>⬇ QPf2-draw-attach.bib</a> · <button id='refresh'>↻ refresh</button></p><p class='mut'>no keys cited and no entries yet; add the first one below.</p><div class='card'><b>＋ add a citation</b><div class='mut'>paste BIBTEX, a DOI, an arXiv link, Scholar's Cite → BibTeX link, or a paper URL. A link is fetched from its source and shown here first; add lands it verbatim.</div><textarea id='newbib' placeholder='@article{key, ...}  ·  10.1234/abcd  ·  arxiv.org/abs/…  ·  scholar.bib?…'></textarea><button id='addbib'>add entry</button> <span id='addnote' class='mut'></span></div><details class='card'><summary><b>📄 the raw QPf2-draw-attach.bib</b> <span class='mut'>· plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf2-draw-attach/bibex/QPf2-draw-attach.bib · hand-editing is fine, it is yours</span></summary><pre>%% This PAGE's citation store (JL 260815: the bib for this page only).
+%% PRIMARY material: edit through the 📚 tab or by hand; a refresh only
+%% APPENDS newly resolvable imports and never overwrites or deletes an entry.
+%% The paper's 0-*.bib is read for seeding and never written.
+
+
+</pre></details>
+<script>
+var CTX = {path: "/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md"};
+function post(route, body, done) {
+  Object.assign(body, CTX);
+  fetch('/_board/' + route, {method: 'POST',
+    headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.ok) { alert('⚠ ' + (j.err || route)); return; }
+      /* a resolved LINK fills the box for review; landing is the next click */
+      if (j.resolved) {
+        document.getElementById('newbib').value = j.resolved;
+        document.getElementById('addnote').textContent =
+          'fetched from the source · review it (the key too), then add';
+        return;
+      }
+      location.reload();
+    })
+    .catch(function (e) { alert('⚠ ' + e); });
+}
+document.addEventListener('click', function (ev) {
+  var b = ev.target;
+  if (b.id === 'refresh') return post('bibex', {});
+  if (b.id === 'addbib')
+    return post('bibex-entry', {bibtex: document.getElementById('newbib').value});
+  if (!b.dataset || !b.dataset.k) return;
+  if (b.className === 'cpy') {
+    navigator.clipboard.writeText('\\citep{' + b.dataset.k + '}')
+      .then(function () { b.textContent = '📋 copied'; });
+    return;
+  }
+  if (b.className === 'ver')   return post('bibex-verify', {key: b.dataset.k});
+  if (b.className === 'unver') return post('bibex-verify', {key: b.dataset.k, undo: true});
+  if (b.className === 'save')
+    return post('bibex-entry', {replace: true, key: b.dataset.k,
+      bibtex: document.querySelector('textarea[data-k=\'' + b.dataset.k + '\']').value});
+});
+</script></body></html>

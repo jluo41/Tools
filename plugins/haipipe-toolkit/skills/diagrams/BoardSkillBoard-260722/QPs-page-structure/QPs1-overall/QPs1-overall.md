@@ -1,7 +1,7 @@
 # Page · the template: one grammar every page kind obeys
-state: ✅ SETTLED · JL closed it 260802. 12 of 15 Aims met (A6.1 arrived and was met 260804); 3 explicitly HELD with the reason on each row, which is what the contract asks of a closed page
+state: 🟡 REOPENED 260816 · the grammar half stands as JL closed it 260802 (12 of 15 Aims met, 3 HELD with reasons); reopened when QPs00 folded in (JL 260816), so the unit lane `A11` now carries one met, one unmeasured, and three open Aims
 owner: CC
-method: one page grammar, one fixed on-stage order; each section's own rules live in this page's matching Content division
+method: one page grammar, one fixed on-stage order; each section's own rules live in this page's matching Content division; the unit that ships the grammar is judged in §11, its snapshot plugged in `skill/`
 session: 67eb4e34-029f-4986-9d6e-645e16f23267
 ## Opening
 How can pages of different kinds feel familiar without forcing them to carry the same content?
@@ -1474,6 +1474,59 @@ Then open the rendered page and read what a reader opens. Source-is-correct is n
 When a fix reveals a rule that was never written down, write it in three places: here, in `ref/page-template.md` so new pages inherit it, and in `haipipe-page` so the verbs apply it.
 That is `### 6.1.1`'s question in reverse, and it is what turns one page's repair into every page's default.
 
+### 11 · The unit that ships this grammar
+**Live and plugged**: the skill that carries this contract, and where its judged copy sits on this page.
+
+```
+  ⚙️ board/haipipe-page/            📋 this page's skill/ plugin
+     the LIVE unit, ships    ──▶       the SNAPSHOT, judged here
+     SKILL.md · CHANGELOG      plug    SKILL.snapshot.md · CHANGELOG
+     (0.27.0: the RUN contract moved to page-workflows' ref/)
+
+  🚪 one door, three verbs, one spec load
+     📄 CREATE scaffold · 🔧 WORK ON repair · 🔁 RUN the bounded loop
+     📖 loaded as a SPEC by routing and by variant authors, writing nothing
+
+  ⚖️ judged HERE          identity · health · door test · scope bound
+  ⚖️ judged ELSEWHERE     🔁 the RUN lifecycle on QPw · 📂 the folder law on QPf
+```
+⚙️ Establishes which skill enforces this grammar, where its snapshot lives, how its trigger surface was measured, and the record of how its page shape was selected.
+This division absorbed `QPs00-haipipe-page`, the unit's own page, when JL folded it in on 260816: the grammar and the unit that ships it are one subject, so they close on one page.
+
+#### 11.1 · The skill and its snapshot
+(the grammar ships as `haipipe-page`; this page carries its plugged copy)
+`haipipe-page` is the loadable spec for one board page and the door for CREATE, WORK ON, and RUN.
+The live unit ships from `board/haipipe-page/` and keeps shipping from there.
+The copy this page judges sits in `skill/haipipe-page/`, written by `skillpage.py plug` and renamed to `SKILL.snapshot.md` so neither the installer glob nor page discovery can mistake it for the live unit.
+This division owns the unit's identity and health only.
+The RUN lifecycle is judged on QPw and the folder contract on QPf, even though the snapshot bytes sit here.
+
+#### 11.2 · Selection record · how the unit's page shape was chosen
+(the 260815 ruling that retired the mirror kind, recorded once, here)
+Two candidate shapes were argued for the unit's page, and the design shape won on 260815.
+- 🅰 the MIRROR kind, which lost.
+  Three managed spans spliced about 640 derived lines into the page, and the page decided nothing.
+  The measured failure was already on record: five skill and agent pages had Openings out of one template, because a page that decides nothing has no question to ask.
+- 🅱 the DESIGN page with a `skill/` plugin, which won.
+  The argument stays authored in the .md, the unit's bytes live in `skill/`, and the page settles on a selection record like any Q page.
+Disposition of 🅰: the span machinery in `skillpage.py` keeps serving the nine unconverted pages and retires with the last of them.
+A losing candidate is recorded and never silently deleted, which is `for-design`'s own rule.
+The specimen of that ruling was `QPs00-haipipe-page` itself; on 260816 JL folded it into this page, and this division is where its record now lives.
+
+#### 11.3 · The measured door test, and the bound it exposed
+(the trigger surface is proven; the scope bound is written but unmeasured)
+The 260802 test removed every hint: three fresh agents were given one sentence each, with no path, no skill name, and no example page, and all three opened the skill unaided at tool calls #5, #6 and #5.
+One was phrased "can you clean up QF5-sentence-run for me", whose words match no trigger in the skill's description, and it opened the door anyway.
+They drove three pages from 15, 13 and 10 findings to zero.
+The same run exposed what nobody had questioned: from that one instruction they wrote to 15 files, 1 file and 2 files, so the verb said where to start and never where to stop.
+`0.10.0` wrote that bound in as steps 7 and 8 of the skill, and no second run has measured it.
+
+#### 11.4 · One base, many doors
+(every variant loads this spec and restates nothing)
+A type loads this base and never restates it, which is why variants are doors over this spec instead of forks.
+`haipipe-paper-stage` proved the variant model from outside the family and retired into `page-types/haipipe-page-for-stage` on 260805.
+A variant ships under the `page-types/` folder of the skill set that owns it (JL 260809).
+
 ## Aims
 ### A0 · 📋 The page protocol
 - A0.1 · The fixed page sequence separates intent, substance, fact, and continuation.
@@ -1515,6 +1568,18 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 
 - A9.2 · The files that carry these rules are audited against this page, not trusted.
   **Done when:** A fresh-context audit of `ref/page-template.md`, `ref/writing-rules.md`, `ref/board-form.md`, the four board SKILL.md files and the two agents reports zero statements this page contradicts.
+
+### A11 · ⚙️ The unit that ships this grammar
+- A11.1 · The door test passes on evidence rather than on argument.
+  **Done when:** Fresh agents given one hint-free sentence each open `haipipe-page` unaided and drive real pages to zero findings.
+- A11.2 · The scope bound holds on a second measured run.
+  **Done when:** A re-run of the hint-free test produces a tighter file-write spread than the 15 · 1 · 2 the first run measured, with steps 7 and 8 in force.
+- A11.3 · `live/chat.py` loads this spec instead of restating it.
+  **Done when:** The four rule strings that teach the page and board contracts in Python prose are replaced by one function that loads the contract, and no restated rule remains to drift.
+- A11.4 · A page can name the unit that supports it.
+  **Done when:** A ruled syntax lets a page say `supported by haipipe-sentence` without duplicating the board-level roster, and at least one page carries it.
+- A11.5 · The nine remaining mirror pages convert to design pages.
+  **Done when:** Each of the nine carries its unit's snapshot in a `skill/` plugin with an authored rewrite, and the span machinery in `skillpage.py` retires with the last of them.
 
 ### P · 🏁 Page-level validation
 - P1 · A fresh reader can distinguish Aim, Plan, State, and Content while recognizing the plural Aims/States section labels.
@@ -1563,6 +1628,13 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 
 - ❄️ A9.2 · HELD 260802 on JL's close. The Done when asks for a FRESH-CONTEXT audit of the template, the writing rules, the board form, four `SKILL.md` files and the two agents. Three fresh agents ran against `haipipe-page` on 260802 and found the scope gap, but that tested one file and one verb, not the set this Aim names.
 
+### A11 · ⚙️ The unit that ships this grammar
+- ✅ A11.1 · Met 260802. Three hint-free agents opened the skill at tool calls #5, #6 and #5, one from a prompt matching no trigger word, and drove three pages from 15, 13 and 10 findings to zero, taking the board from 210 findings to 171.
+- ⬜ A11.2 · `0.10.0` shipped the bound as steps 7 and 8, and no second run has measured it, so the fix is reasoning until a re-run produces a tighter spread than 15 · 1 · 2.
+- ⬜ A11.3 · The four rule strings still sit in `live/chat.py`, and `QB8d` already caught one describing a page shape that no longer existed; the fix costs one function and adds no version surface.
+- ⬜ A11.4 · The syntax is unruled and no page carries one.
+- 🔨 A11.5 · The specimen conversion is done and folded into this page (260816); the nine mirror pages remain, one plug and one authored rewrite each, and they follow only after JL rules each shape.
+
 ### P · 🏁 Page-level validation
 - ✅ P1 · The final fresh-context reviewer found the Opening, ownership boundaries, extension points, evaluation rubric, and Aims/States coherent after the conflict repairs.
 - ✅ P2 · Met 260802 by JL's ruling A. The Excalidraw history moved to `QB7 ### 4`; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places. Routed and recorded, which is exactly what the Done when allows.
@@ -1571,6 +1643,7 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 The canonical Aims/States model is independently validated across the source contract, renderer, and public generation paths.
 The section-by-section evaluation path is implemented and independently validated.
 Nothing waits in Decision Now; the three ❄️ Aims are explicitly HELD on JL's 260802 close, each with its reason on the row.
+The `A11` lane is why the page reopened on 260816: it carries the unit's health rows, folded in from `QPs00`, and the grammar lanes above it stand as closed.
 The dated implementation history lives in Log, so this section stays a current snapshot.
 
 ## Files
@@ -1599,6 +1672,8 @@ The dated implementation history lives in Log, so this section stays a current s
   The file copied for every new page. Every rule stated here is written into it, or no new page ever inherits it.
 - `haipipe-page/SKILL.md`
   The page contract as a loadable spec, so a reviewer with no board open applies the same rules.
+- `skill/haipipe-page/SKILL.snapshot.md`
+  ⚠️ Generated by `skillpage.py plug`. The plugged copy of the live unit that `### 11` judges; re-plug it, never hand-edit it.
 - `ref/writing-rules.md`
   The prose standard a page author loads before writing.
 - `ref/board-form.md`
@@ -1931,6 +2006,8 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0804: yes. The Page now declares relation, phase, target Page, and `page`/`§n` scope under one fixed group. A scoped division brings its target Opening and matching Aims/States, the reader follows one hop, and the checker rejects a dead Page or scope before an agent works without it.
 
 ## Log
+- 260816 · [PLUG-CC] the snapshot re-plugged fresh at `haipipe-page` 0.27.0: two files now, because 0.27.0 moved the RUN contract to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`, so the old snapshot's `ref/` copy left with it.
+- 260816 · [JL via CC] QPs00 folded into this page: JL ruled the unit page away ("no more QPs00-haipipe-page"), the grammar and the unit that ships it now close on one page. `skill/haipipe-page/` moved here as this page's plugin, the selection record, door-test evidence and open unit aims carried into `### 11` and the `A11` lanes, the page reopened ✅ → 🟡 to hold them, and `QPs00-haipipe-page` (with its `draw/` and `slide/`) archived; the ids QPs00, Design-3 and Skill-3 resolve here through board.md's alias map.
 - 260815 1615 · [JL via CC] Aims shape ruled: checkbox Aims (`- [ ]` with an emoji) are blessed as the first-class form, and the id form (`- A3.1 ·` with States mirroring ids) stays available for machine-tracked pages; writing-rules.md amended to match. The written contract and the living practice disagreed on every page, and the practice won (reviewer finding, 260815).
 - 260806 2059 · [REVISE-CC] swept to the 260806 architecture; §3.4.2's three-fixed-kinds roster corrected to the ten Page Types under `board/page-types/` (QB6 carries the catalog), and §7.1.4 now carries the ruled Log line grammar
 260804 2246 · The post-fix fresh-context trial passed the behavioral gate: without this discussion it loaded the base Page and CHECK contracts, read QB4 whole, selected exactly QB5 §8 from ALL and §10 from CHECK, measured the packet at 139 lines / 9,127 characters, saw QB5 identity and Opening exactly once, followed no second-hop link, ran all ten context tests, and reported zero `related-*` checker findings. It made no edits and did not claim the Files design itself was semantically approved.

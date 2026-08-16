@@ -1,4 +1,4 @@
-# Design-1 · The Board (Skill haipipe-board v0.127.0)
+# Design-1 · The Board (Skill haipipe-board v0.133.0)
 state: 🟡 in flux · 168 releases in 15 days, 3 open defects
 owner: JL
 page-type: design
@@ -104,11 +104,11 @@ The live unit ships from `board/haipipe-board/` with `cli/`, `src/`, `live/`, `a
 ### 2 · Selection record · adopted from the specimen
 **Where the record lives**: one argument, one home, adopted by reference.
 ```text
-  🅰🅱 the candidates + full record ──▶ Design-3-haipipe-page · Content §2
+  🅰🅱 the candidates + full record ──▶ QPs1-overall · Content §11.2
   📄 this page keeps only what is its own: health · aims · snapshot
 ```
 This page converted to a for-design page under the 260815 ruling that retired the mirror kind.
-The candidates and the full record are written once, on the specimen: `Design-3-haipipe-page` Content §2.
+The candidates and the full record are written once, on `QPs1-overall` Content §11.2.
 This page adopts that selection rather than restating it, because seven copies of one argument would recreate the form-letter failure the ruling killed.
 What is page-specific stays here: the Opening, the Aims, the States judgment on the unit's health, and the plugged snapshot above.
 
@@ -145,6 +145,7 @@ Two of its three open Aims are defects other pages found and correctly sent here
   The page went from 4,132 rendered characters to 132,256 once the embeds resolved.
 
 ## Log
+- 260815 1930 · [JL via CC] round 3, the door's last thinning: the plugin catalog joined the family roster, Shape moved to the folded-page era, the page anatomy handed whole to haipipe-page, and serve's plugin prose became pointers; 761 -> 706 lines, snapshot refreshed.
 - 260815 1230 · [REVISE-CC] converted to a for-design page (JL 260815): the three managed spans left the file, `skillpage.py plug` wrote the unit's contract surface to `skill/haipipe-board/`, and Content §2 adopts the selection recorded on the specimen.
 - 260806 2115 · [REVISE-CC] swept to the 260806 architecture; managed spans resynced to 0.124.0 and the authored counts corrected from "0.120.1 after 160 releases" to 0.124.0 after 168 releases (state line, Opening, Aims, States)
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the managed spans resynced to 0.120.1 and the authored counts read 160 releases, 771 lines, 16 cli scripts, 12 src modules, replacing the 0.113.0-era figures.

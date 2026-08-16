@@ -3,8 +3,8 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.127.0"
-  last_updated: "2026-08-10"
+  version: "0.133.0"
+  last_updated: "2026-08-15"
   summary: "The Page Type roster now includes the first-class View hub owned by view/page-types: QA inputs to readable body and Cards to Displays to consumers."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -43,16 +43,23 @@ page-types/              the FIVE variants this skill set owns; the other six
                          TYPE · Skill-<n> and Agent-<n> mirror pages
   haipipe-page-for-meeting
                          TYPE · Meeting-<n> pages · never counted
-  haipipe-page-for-slide
-                         TYPE · one division per slide, deck embedded live
   haipipe-page-for-design
                          TYPE · candidates side by side, closes on a SELECTION
-page-phases/
+page-workflows/
+  haipipe-page-workflow
+                         HEAD · the RUN router and its packet + receipt contract
   haipipe-page-draft
   haipipe-page-probe
   haipipe-page-revise
   haipipe-page-check
                          PHASES · promise, inquiry, realization, judgment
+haipipe-plugin     SPEC · every subfolder of a page's folder is a plugin:
+                         storage · surface · writer · boundary; the roster in
+                         its ref/roster.md is the single list of names
+page-plugins/            the NINE per-plugin skills, each delta-only over that
+                         contract: draw · slide · chat · latex · word · bibex ·
+                         display · probe · skill (meeting · logging · _fixture
+                         join when their rows go live)
 ref/topic-entry-contract.md
                          LEGACY IMPLEMENTATION SPEC · the persisted Probe Page
                          shape used by the current topic checker; not another
@@ -97,10 +104,11 @@ orchestrator stores the exact result under `_runs/page/` and audits it; it never
 writes Page prose, and the reviewer never cures its own finding.
 **A Page Type variant ships under the `page-types/` folder of the SKILL SET THAT OWNS IT (JL 260809).**
 Every skill set carries its own `page-types/`, so the folder a variant sits in is what names its owner.
-Seventeen variants ship across four skill sets: five here, ten in `paper/page-types/`, one in `subjective-label/skills/page-types/`, and one in `view/page-types/`.
+Sixteen variants ship across four skill sets: four here, ten in `paper/page-types/`, one in `subjective-label/skills/page-types/`, and one in `view/page-types/`.
+(`for-slide` retired 260815: a deck is `slide/` plugin material, written by `/_board/autodeck` under the `haipipe-plugin` contract.)
 
 ```
-board/page-types/         for-stage · for-skill · for-meeting · for-slide · for-design
+board/page-types/         for-stage · for-skill · for-meeting · for-design
 paper/page-types/         for-venue · for-narrative · for-section · for-display
                           for-literature · for-value · four family DASHES
 subjective-label/…/       for-labeling
@@ -139,13 +147,15 @@ A GENERATED Page Type is never copied from the template: the generator writes it
                               · optional ## Board Map · ## Board Structure
                               · ## Pages
   QA-<group-title-slug>/      ← one group, one folder (the default, JL 260726)
-    QA1-<slug>.md             one question, one file
-    QA2-<slug>.md
+    draw/group.excalidraw     the group's own scene + import manifest
+    QA1-<slug>/               ← one page, one FOLDER it owns (JL 260815)
+      QA1-<slug>.md           the page, the only discoverable file inside
+      draw/ slide/ latex/ …   its plugins; every subfolder is one, and
+                              haipipe-plugin owns the roster and the law
   QB-<group-title-slug>/
-    QB1-<slug>.md
-    S-Seed-0-<slug>.md        a named lifecycle page (only when there is a lifecycle)
-    Skill-1-<slug>.md         a skill skill page
-    Agent-1-<slug>.md         an agent skill page
+    S-Seed-0-<slug>/          a named lifecycle page (only with a lifecycle)
+    Design-1-<slug>/          a unit design page, its unit's bytes in skill/
+                              (the Skill-/Agent- mirror kinds retired 260815)
   board/                      ← generated by build.py, never hand-edit
     index.html                Board-Webpage-Index
     QA.html                   one Board-Webpage-Group
@@ -304,6 +314,9 @@ That is 11 verbs here, plus six routed actions this skill does not run itself.
 "why does <page> fail the checker"                ▸ haipipe-page
 "run / audit the lifecycle of <page>"             ▸ haipipe-page
 
+"attach / edit a drawing on <page>"                ▸ haipipe-plugin-draw
+"compile <page> to pdf / rebuild the tex"         ▸ haipipe-plugin-latex
+
 "comment on / edit <sentence>"                    ▸ haipipe-sentence
 "put a card on <these words>"                     ▸ haipipe-sentence
 "what may attach to a sentence"                   ▸ haipipe-sentence
@@ -336,7 +349,7 @@ When the user says "open `<board folder>`", do these three steps, and **do not j
 **Resolving a board URL in a shell**: how the deep link is built.
 
 ```bash
-BD=<board folder path relative to the repo root>   # e.g. Tools/plugins/.../diagram/BoardSkillBoard-260722
+BD=<board folder path relative to the repo root>   # e.g. Tools/plugins/.../diagram/01-boardform-260722
 BOARD_BASE_URL="${HAIPIPE_BOARD_URL:-$(sed -n 's/^[[:space:]]*export[[:space:]]*HAIPIPE_BOARD_URL=//p' env.sh | tail -1)}"
 BOARD_BASE_URL="${BOARD_BASE_URL:-http://127.0.0.1:5599}"
 S=$(ls -t "$TMPDIR"/vscode-ipc-*.sock 2>/dev/null | head -1)
@@ -486,80 +499,19 @@ One server handles every board: it serves the repo root, not one board.
 If the reader URL is a Tailscale IP, you must pass the same `--host <tailscale-ip>` explicitly at startup.
 The Board has no authentication and `/_term/` is a real shell, so the listener in shared source stays on loopback by default.
 
-Once it is running, the board is not only readable: **comments land directly on disk** (the next section depends on it), you can **open a chat or a terminal on one question and work there**, and you can **attach an excalidraw canvas** to a question's 🖼 Diagram (what gets written into the md is the line the author typed by hand; `QB8` is still taking shape).
+Once it is running, the board is not only readable: **comments land directly on disk**, and every page's plugin surfaces come alive in the right pane, the tab rail leading with 📂 Folder.
 ⚖️ One question, one session · one session, one window · N questions, N terminals.
-The details are in the board's `QD1` `## Law`.
+The chat forms are `haipipe-plugin-chat`'s to state and the canvas is `haipipe-plugin-draw`'s; the door only starts the server they ride on.
 
 > The SDK chat version (`QD2`) and the TUI chat version, a real CLI (`QD3`), are **still taking shape in the QD group**, and the terminal's form on a phone or a desktop is `QD4`.
 > They are not restricted versus unrestricted: `QD2` carries three permission tiers and defaults to the full one, so the split is a difference of FORM, a rebuilt chat box against the CLI itself.
 > Treat those questions as the authority on how they are used, and do not take them as fixed rules (see "the board ↔ SKILL.md" at the end).
 
-### excalidraw · one source per Page, one composition per Group
+### excalidraw · anything about ONE PAGE'S DRAWING (routed)
 
-**A Group and each Page own different source files.**
-The Group source expresses relationships and placement; a Page source holds the drawing that belongs to that Page.
-The composed Group view is a runtime result, never a second editable copy of Page content.
-
-```text
-QX-group/
-├── QX1-page.md
-├── QX2-page.md
-└── draw/
-    ├── group.excalidraw       Group-owned elements + import manifest
-    ├── QX1.excalidraw         Page-owned source
-    ├── QX2.excalidraw         Page-owned source
-    └── assets/                group/ and QXn/ owner-scoped image bytes
-```
-
-`draw/` is lowercase everywhere.
-Every Group has one `group.excalidraw`, including a Group whose own canvas is empty.
-Every Page has one source file, including a Page whose drawing is still empty.
-
-**The ownership rule prevents silent divergence.**
-
-```text
-surface             edit target
-────────────────────────────────────────────────────────────
-Page drawing         that Page's QXn.excalidraw
-Group own layer      group.excalidraw
-Page instance move   group.excalidraw placement only
-Page source edit     QXn.excalidraw, then every Group recomposes
-```
-
-The Group editor therefore has two explicit modes.
-`Arrange Instance` changes only the imported Page's placement, scale, visibility, and crop in the Group manifest.
-`Edit Page Source` opens that Page source as the write target; saving it invalidates every composition that imports it.
-A gesture never writes both files, and the UI must always show which owner will receive the save.
-
-**The migration and composition commands are safe to run offline.**
-
-```bash
-python3 <skill>/cli/draw.py split <board folder>             # read-only plan
-python3 <skill>/cli/draw.py split <board folder> --apply     # new draw/ files only
-python3 <skill>/cli/draw.py sync <board folder>              # plan newly declared Pages
-python3 <skill>/cli/draw.py sync <board folder> --apply      # add only missing Page sources
-python3 <skill>/cli/draw.py compose <board folder> --output /tmp/board.excalidraw
-python3 <skill>/cli/draw.py verify <board folder>            # exact legacy round trip
-```
-
-`split --apply` preflights every target and refuses the whole operation if any linked source already exists.
-Each create uses an exclusive filesystem open, and a failure rolls back every source created by that run.
-It never changes or deletes the legacy `board.excalidraw`.
-An existing unframed relation belongs to the one Group named by `customData.haipipeOwner` or by both of its bound endpoints; a cross-Group or ownerless element stops migration instead of being guessed into a source.
-Each Page is normalized around its own origin; the Group import records where that Page instance belongs.
-`compose` prefixes element ids and every binding reference with the Page owner, so independent sources cannot collide when loaded together.
-`verify` preserves original ids and source order long enough to prove that the migration reconstructs every legacy element and file exactly.
-
-The live editor in `live/xcal.py` recognizes linked sources by schema while preserving the legacy `board.excalidraw` route for old Boards.
-Opening a Group source returns a fresh composition with imported Page elements locked and owner-tagged.
-`Group layer` saves only Group-owned elements; `Arrange Instance` writes only one import's placement, scale, and visibility; `Edit Page Source` enters the ordinary Page scene and returns to the Group afterward.
-Every linked save carries the revision opened by the browser, and a stale revision receives a visible conflict instead of overwriting a newer source.
-Loading and toolbar navigation never arm autosave: the linked editor snapshots Excalidraw's normalized load state at the first non-toolbar human gesture, so merely entering or leaving an owner cannot rewrite either source.
-Pasted image bytes land under `draw/assets/<owner>/`, while the scene keeps a relative pointer.
-Generated Group pages expose the live composition, Group-layer editor, and Arrange entry directly in the Work pane.
-Group and Page Chat prompts receive that same drawing-owner path and explicitly forbid editing the derived composition, so discussion and canvas gestures route to one source contract.
-`cli/xcal.py` is now a legacy scene seeder for old Boards, not the source contract for new drawing work.
-`QD5a` owns this handoff and its browser acceptance check.
+Routed to `haipipe-plugin-draw` (page-plugins/), which owns the draw plugin whole: one scene per owner, the ownership rule, the two group-editor modes, and the split/sync/compose/verify commands.
+The engine files stay here (`cli/draw.py`, `live/xcal.py`); the contract lives there.
+Same routing for every material plugin: slide, chat, latex, word, bibex, probe, skill, and display each own a `haipipe-plugin-<name>` under `page-plugins/`, delta-only over `haipipe-plugin`; the roster in `haipipe-plugin/ref/roster.md` stays the single list.
 
 ### comment / edit / card · anything about ONE SENTENCE (routed)
 
@@ -638,79 +590,15 @@ Q and S use the same set of states, but the evidence for flipping to ✅ differs
 The index counts the ✅ among S pages separately per named family.
 The sentence in `close:` IS the closing condition, so write it so that it can be accepted, not as "close enough".
 
-## 📐 One page
+## 📐 One page (routed)
 
-**A page's metadata head**: the four top lines, and what each renders into.
+A page's whole anatomy — the metadata head, the fixed on-stage order Opening → Diagram → Content → Aims → States, Files, and the folded tail — is `haipipe-page`'s to state, with the kinds under `page-types/` and the workflow under `page-workflows/`.
+The door keeps only the two facts its own verbs depend on:
 
-```markdown
-# Short title (a phrase, not a sentence)
-state: 🔴 OPEN     first token is ✅ / 🟡 / 🔴 / ⏸️; a readable note may follow
-owner: CC          JL renders as 🧠 (rules on it), anyone else renders as 🔧
-method: one line on how it gets done
+- A NEW page is always `state: 🔴 OPEN`, and the first emoji of `state:` is the machine state (✅ · 🟡 · 🔴 · ⏸️ · 🗂 FOLDED); a readable note may follow, never replacing it.
+- A Q closes when every Aim is met or explicitly held; an S closes only at its human gate, and the index counts S pages per family on that basis.
 
-## Opening         the lead question, then the visible paragraph, which ends      ┐ 🧭 Opening
-                   at the FIRST BLANK LINE; everything after it → More details    ┘
-## Stage Contract  required on S; upstream inputs + Venue, managed block          ┐
-## Diagram         ascii figure (may be omitted); its own section, folded by      │
-                   default                                                        │
-## Content         required on S, optional on Q; `###` is a division that folds   │ fixed
-                   on its own, `####` is one paragraph                            │
-## Aims             durable targets linked to Content; header derives met/total   │
-## States           one factual current State per Aim                             │
-## Files           action map + scoped related Page context (optional, advised)   ┘
-## Law          the rules this question ruled  ┐
-## Lesson       the traps this question hit    │
-## Glossary     this page's new words          ├ optional · folded, off stage
-## Discussion   loose discussion               │  delete the whole section when unused
-## Log          260723 1030 · what changed     ┘
-```
-
-**The order of what stands on stage is fixed**, and it is the same for Q and S:
-`Opening → Diagram → Content → Aims → States` (Files follows the state sections).
-Opening carries the visible paragraph, which ends at the FIRST BLANK LINE of `## Opening`; its drawer begins with the rendered “More details” row, which is everything after that blank line (JL 260801, renamed from “Why this matters”).
-The optional Diagram is a section of its own, folded by default, and it expands only when the section name is clicked.
-Everything after `## Opening`'s first blank line automatically becomes the "More details" row inside its drawer, identically for Q and S (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q put it in the first section of Content).
-An S page's Opening also holds the whole `## Stage Contract`, which is the stage's ONE contract section (JL 260801 retired `### Stage Record`; a legacy one still under Content is lifted into the contract as its opening lines), and **all of those lines are folded by default** (JL 260725: only the question sentence stays on stage), so Stage Contract no longer occupies a section of its own.
-The rest of an S's Content still lives in `📚 Content`, and the section title shows the stage name (`📚 Content · Main 7 §6 Results`) instead of counting subsections; a Q's explicit Content is optional and its title still shows the count.
-That title is derived from `# Short title`, so when the artifact's own numbering does not line up with the board's index, write the title as `S Main 7 · §6 Results`, putting both numbers on display.
-**An S's `## Content` holds only what this stage itself produces** (JL 260725): Required Inputs and Venue belong in `## Stage Contract`; prose rules belong in `## Writing Style`; a correction already decided belongs in `## States`; and the intended outcome belongs in `## Aims`.
-A new board writes `## Opening`. The `## Question` written by old boards still PARSES, so no old page breaks, but it is retired: `check.py` reports it as `retired-section` and a page being worked on should be renamed.
-
-**One layout, two workflows:**
-
-- `Q*.md` = decision.
-  Only after every Aim is met or explicitly held may it be `✅ SETTLED`.
-- `S*.md` = lifecycle stage.
-  `## Content` is the stage substance (required on S); former Q-consumer questions become recognizable Aims inside `## Aims`; stage closes only at its human gate, which is to say that an S's `✅` means the gate passed, and the index counts by family on that basis.
-- An S's `## Stage Contract` is not part of Content.
-  It carries the acceptance conditions of the explicit `requires` upstreams and the Venue references from `style-from`; `stage.py` writes the managed part and the author owns `### Provides`.
-  The prose rules resolved from `style-from` are materialized in the page's own `## Writing Style`, inside a separate managed block.
-  The order of Pages is never dependency inference.
-- Both page kinds **share the same four machine states**, decided by the first emoji of `state:`: a new page is always 🔴, 🟡 is in progress, ⏸️ is an explicit hold, and the evidence for ✅ is whichever of the two rules above applies.
-  A readable note may follow the emoji, for example `✅ SETTLED`, `✅ PINNED · MISQ 2026`, `🟡 rendered · awaiting gate`; these are not a fifth state.
-  The first emoji may never be omitted or replaced, and the note after it may never change its meaning.
-- A Q-consumer Aim reaches ✅ only after the answer landed, was interpreted, and was woven into Content.
-  A deferred Aim closes only after its forward pointer is recorded.
-- `## States` summarizes the actual stage state through one current State per Aim.
-  It does not copy every consumer answer.
-
-Inside `## Files`, `### 🔗 Related Board Pages` is the checked, selective context map for another Page. Its rows declare relation + Page Phase + Page id + `page`/`§n` scope + Board-root-relative source path. `haipipe-page` owns the row contract; `cli/pagecontext.py` materializes only the current phase's rows, one hop, and `cli/check.py` rejects malformed or dead references. This is Page context, not configuration inheritance and not inferred stage order.
-
-Long content in the prose is always written as **`- heading` plus a two-space-indented explanation**, never as one loose sentence after another.
-A whole line in bold `**…**` is a **group title** (it leads a run of items).
-
-**Every page's `## Content` structure is its own** (JL 260729): the names of the divisions, their numbering, and how many there are is decided by that page's own topic, and the manuscript form numbered with `§` is only the default look, not a requirement.
-There are only two mechanical constraints, and they never change: `###` is a division that can be folded on its own, and `####` is one paragraph inside it, always at that level.
-A page folds one level only: one level deeper and the whole section is squashed into a single box.
-A division is written only when it really has content of its own: a flat section writes one `### §1 Introduction` leading its paragraphs, and a section that has subsections starts straight at `### §6.1`.
-The benefit is that you can verify it without reading the prose: the number of `###` headings carrying a dot is the number of subsections.
-`####` **carries no icon**: 🔹 belongs to group titles, so do not write `**…**` as a paragraph title.
-A whole line of `(…)` immediately after a `####` is that paragraph's job, kept on stage in grey italic as a scan hook.
-Add a question by copying `ref/page-template.md` (every section is marked required or optional); the full syntax table is in `ref/board-form.md`.
-
-> Old section names are all still recognized: `## Done when` / `## Items to Finish` = `## Aims`; `## State` / `## Now` / `## Where we are` = `## States`; the Chinese names likewise.
-> `## Why here` is retired: its job merged into `## Opening`'s explanation paragraph and renders into Content.
-> An old section still written on an old board is still collected into the fold at the bottom.
+Old section names keep parsing forever (`## Question`, `## Done when`, `## Where we are`, the Chinese names); `check.py` reports retired ones on pages being worked.
 
 ## ✍️ Writing (the part most often skipped)
 
@@ -741,7 +629,7 @@ It is read-only and never substitutes for the fresh reviewer at the final gate.
 
 ## 📖 The board ↔ SKILL.md: how they stay in sync
 
-This SKILL.md was not written out of thin air: it is **the crystallization of the settled questions** on a board (this skill's own `diagram/BoardSkillBoard-260722/`).
+This SKILL.md was not written out of thin air: it is **the crystallization of the settled questions** on a board (this skill's own `diagram/01-boardform-260722/`).
 
 **Skill and board side by side**: what each holds, and where they meet.
 
@@ -814,5 +702,5 @@ It has no write tools; after the author has fixed things, start another new revi
 The bounded non-interactive runner: `../agents/haipipe-page-orchestrator-agent.md`.
 It stores the Workflow result under `_runs/page/` and calls `cli/pageflow.py`; it never edits Page prose.
 
-A live example: `Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/`, this skill's own board (the flat form).
+A live example: `Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/`, this skill's own board (the flat form).
 A live example of the nested form (Q decisions + S stages): `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`.

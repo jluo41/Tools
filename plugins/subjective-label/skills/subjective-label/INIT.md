@@ -441,7 +441,7 @@ process is working.
   Trajectory shape       Meaning                     Action
   ────────────────       ───────                     ──────
   Monotonically up       Process is working           Keep going
-  Plateau                Guideline has converged      Ready for /sl-validate
+  Plateau                Guideline has converged      Ready for /label-evaluate
   Drop after a change    That change hurt             Revert or investigate
   Oscillating            Rules contradict each other  Step back, simplify
 ```
@@ -576,7 +576,7 @@ The Full Picture
   └─────────┘   └──────────┘   └──────────┘   └──────────────────────────┘
                                                         │
                                                         ↓
-                                                  ALL PASS → /sl-scale
+                                                  ALL PASS → /label-complete
                                                   ANY FAIL → back to PROCESS
 ```
 
@@ -590,4 +590,4 @@ Init is complete when ALL FOUR evaluations pass:
   E3: Guideline + LLM reproduces gold labels at or above human ceiling
   E4: Process converged efficiently, user confirms intent was captured
 
-Then: /sl-iterate (for further refinement) or /sl-scale (for full corpus).
+Then: /label-round (for further refinement) or /label-complete (for full corpus).

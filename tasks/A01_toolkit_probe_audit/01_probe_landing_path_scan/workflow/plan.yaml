@@ -1,0 +1,21 @@
+task: 01_probe_landing_path_scan
+group: A01_toolkit_probe_audit
+type: other
+inputs:
+  toolkit_root: plugins/haipipe-toolkit
+  scope: >
+    Probe-related agent definitions and skill files: files under the toolkit's
+    agents/ directory and skills/ tree whose names or content concern probe
+    dispatch (the probe skill family, its agent definitions, and the paper /
+    application probe-phase surfaces).
+process: >
+  Grep the in-scope files for the literal path token "1-probes/", recording
+  file and line for every occurrence in LIVE instruction/code files
+  (archives under _old/, CHANGELOG history, and test fixtures reported
+  separately). Then read the probe skill, the q-executor agent definition,
+  and the paper/application probe-phase files to determine whether any
+  surface accepts a caller-supplied landing directory for probe records.
+outputs:
+  - results/run_scan/grep-live.txt
+  - results/run_scan/grep-history.txt
+  - results/run_scan/file-inventory.txt

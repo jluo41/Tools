@@ -11,7 +11,7 @@ the skill improves. The one writer authored HERE is the bibex extractor, because
 citation-craft.md forbids generating bibtex: it may only SUBSET a `.bib` a person
 already wrote, so it is thirty lines of copying and belongs to no other family.
 
-WHERE AN EXPORT LANDS is the plugin contract (haipipe-page-plugin): a folded page
+WHERE AN EXPORT LANDS is the plugin contract (haipipe-plugin): a folded page
 owns its material, so `<page-dir>/<plugin>/<stem>.<ext>`; a flat page falls back
 to the board-level `<board>/<plugin>/`, exactly as deck.py does for slide/.
 
@@ -80,7 +80,7 @@ class ExportMixin:
         page_src = Path(board) / f
         if not page_src.is_file() or page_src.suffix != ".md":
             return None, None, None, "not a page .md: %s" % f
-        # A folded page owns its material (haipipe-page-plugin); a flat page
+        # A folded page owns its material (haipipe-plugin); a flat page
         # keeps the board-level fallback, the same fork deck.py takes.
         if page_src.parent.name == page_src.stem:
             out_dir = page_src.parent / plugin
@@ -106,6 +106,33 @@ class ExportMixin:
             if d == root or d.parent == d:
                 return None
             d = d.parent
+
+    def _page_units(self, page_src):
+        """[(short, rec)] for every display unit under `<page>/display/`
+        (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
+        the id the page's prose cites; rec reads the unit's OWN float.tex for
+        label, kind, and caption, never composing a second one."""
+        out = []
+        ddir = page_src.parent / "display"
+        if not ddir.is_dir():
+            return out
+        for f in sorted(ddir.glob("*/float.tex")):
+            d = f.parent
+            tex = f.read_text(encoding="utf-8", errors="replace")
+            lab = re.search(r"\\label\{([^}]+)\}", tex)
+            kind = re.search(r"\\begin\{(table|figure)", tex)
+            cap, i = "", tex.find("\\caption{")
+            if i >= 0:
+                k, depth = i + 9, 1
+                while k < len(tex) and depth:
+                    depth += (tex[k] == "{") - (tex[k] == "}")
+                    k += 1
+                cap = tex[i + 9:k - 1].strip()
+            out.append(("-".join(d.name.split("-")[:2]),
+                        {"dir": d, "label": lab.group(1) if lab else None,
+                         "kind": kind.group(1) if kind else "figure",
+                         "caption": cap}))
+        return out
 
     def _run(self, cmd, timeout, cwd=None, env=None):
         try:
@@ -181,6 +208,45 @@ document.getElementById('rebuild').onclick = function () {
         tex = out_dir / (stem + ".tex")
         if not tex.is_file():
             return None, "md2tex wrote no .tex:\n" + log[-1500:]
+
+        # THE PAGE'S OWN EVIDENCE PRINTS (JL 260816: "both word and latex
+        # didn't include the display?"): a unit the prose cites by short id
+        # (QPf5's in-sentence citation) is embedded as a real float after the
+        # citing paragraph — MISQ's first-reference rule, the same one md2tex
+        # applies to \ref — re-aimed at the unit's WINNING asset so the
+        # wrapper master needs no tikz or renderer package knowledge.
+        units = self._page_units(page_src)
+        if units:
+            body = tex.read_text(encoding="utf-8")
+            for short, u in units:
+                rel = os.path.relpath(u["dir"], out_dir).replace(os.sep, "/")
+                lab = "\\label{%s}\n" % u["label"] if u["label"] else ""
+                if (u["kind"] == "table"
+                        and (u["dir"] / "assets" / "table-body.tex").is_file()):
+                    block = ("\\begin{table}[t]\n\\centering\n"
+                             "\\input{%s/assets/table-body}\n"
+                             "\\caption{%s}\n%s\\end{table}"
+                             % (rel, u["caption"], lab))
+                elif (u["dir"] / "assets" / "figure.pdf").is_file():
+                    block = ("\\begin{figure}[t]\n\\centering\n"
+                             "\\includegraphics[width=.85\\linewidth]"
+                             "{%s/assets/figure.pdf}\n\\caption{%s}\n%s"
+                             "\\end{figure}" % (rel, u["caption"], lab))
+                else:
+                    continue          # ⬜ no winning render yet: nothing to print
+                for m in re.finditer(r"(?<![\w-])%s(?![\w-])"
+                                     % re.escape(short), body):
+                    # a mention inside a verbatim fence is an illustration,
+                    # not a citation — the bibex scanner's own rule
+                    before = body[:m.start()]
+                    if (before.count("\\begin{verbatim}")
+                            > before.count("\\end{verbatim}")):
+                        continue
+                    at = body.find("\n\n", m.end())
+                    at = len(body) if at < 0 else at
+                    body = body[:at] + "\n\n" + block + body[at:]
+                    break
+            tex.write_text(body, encoding="utf-8")
 
         # The wrapper master: article + the few packages a board section uses.
         # natbib only when a real .bib is in reach; a cite-less page needs none.
@@ -299,11 +365,58 @@ document.getElementById('rebuild').onclick = function () {
                           env=dict(os.environ, PATH=_TEXBIN + ":"
                                    + os.environ.get("PATH", "")))
             proot = own.parent
-        cmd = [sys.executable, str(_SCRIPTS / "md2docx.py"), str(page_src),
-               "-o", str(docx)]
+        # THE PAGE'S OWN EVIDENCE RIDES ALONG (JL 260816: "both word and latex
+        # didn't include the display?"): md2docx embeds a float on \ref and the
+        # board cites by short id, so the bridge is a TEMP copy of the page
+        # with `(\ref{<label>})` appended to each unit's first prose mention.
+        # The page source is never edited; the temp is deleted after the run.
+        units = [(s, u) for s, u in self._page_units(page_src) if u["label"]]
+        src_for_docx, tmp = page_src, None
+        if units:
+            lines = page_src.read_text(encoding="utf-8").split("\n")
+            fence, done = False, set()
+            for i, ln in enumerate(lines):
+                if ln.lstrip().startswith("```"):
+                    fence = not fence
+                    continue
+                if fence or ln.lstrip().startswith(">"):
+                    continue
+                for short, u in units:
+                    if short in done:
+                        continue
+                    m = re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(short), ln)
+                    if m:
+                        lines[i] = (ln[:m.end()] + " (\\ref{%s})" % u["label"]
+                                    + ln[m.end():])
+                        done.add(short)
+                        ln = lines[i]
+            if done:
+                tmp = out_dir / (stem + ".export.md")
+                tmp.write_text("\n".join(lines), encoding="utf-8")
+                src_for_docx = tmp
+        # --join-paragraphs: the board's .md is ONE SENTENCE PER LINE, and
+        # rendering each line as its own Word paragraph reads as chopped rows
+        # (JL 260815: "make it the normal paragraph"). The writer joins each
+        # block's sentences into one flowing paragraph instead.
+        cmd = [sys.executable, str(_SCRIPTS / "md2docx.py"), str(src_for_docx),
+               "-o", str(docx), "--join-paragraphs"]
+        if units:
+            # the unit index for the page address, and the Display comment
+            # bubble beside the Citation ones — the docx's evidence card
+            cmd += ["--display-root", str(page_src.parent / "display"),
+                    "--lanes", "Citation,Display"]
         if proot:
             cmd += ["--paper-root", str(proot)]
+        elif units:
+            # md2docx caches rasterized figures under <root>/3-dist/.media;
+            # with no paper root, aim that at the DERIVED plugin folder
+            cmd += ["--paper-root", str(out_dir)]
         code, log = self._run(cmd, timeout=120)
+        if tmp is not None:
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
         if not docx.is_file():
             return None, "md2docx wrote no .docx:\n" + log[-1500:]
         pdf = out_dir / (stem + ".pdf")

@@ -11,7 +11,7 @@ The admission law is that one sentence: a kind survives only if it changes what 
 Five kinds reduced to two on 260815 under that law, and this page's table says where each one's job lives now.
 The hub succeeds when a writer with a new page knows in one read whether it is a Q, a stage, a design, or just material for a plugin.
 
-**Covered elsewhere**: `QPs1` owns the sections every kind shares; `QPs3` and `QPs4` are the two living specimens; `QPf1` owns the plugin law the reduced kinds fell into; the `haipipe-page` unit (plugged on `Design-3`) owns type resolution across all families, including the paper dialect's own variants.
+**Covered elsewhere**: `QPs1` owns the sections every kind shares; `QPs3` and `QPs4` are the two living specimens; `QPf1` owns the plugin law the reduced kinds fell into; the `haipipe-page` unit (plugged on `QPs1`) owns type resolution across all families, including the paper dialect's own variants.
 
 ## Diagram
 **Three kinds, three meanings of closed**: what a page must be measured against.
@@ -54,7 +54,7 @@ The paper family ships its own dialect of variants (venue, section, display, lit
 **The table of departures**: every job survived, no kind did.
 ```text
   was a kind        now                              ruled
-  mirror (Skill-n)  a design page + skill/ plugin    260815 · Design-3 §2
+  mirror (Skill-n)  a design page + skill/ plugin    260815 · QPs1 §11.2
   for-skill         the skill/ plugin                260815
   for-meeting       the meeting/ plugin              260815
   for-slide         the slide/ plugin + ✨ autodeck   260815 · QPf3
@@ -81,7 +81,7 @@ What remains is enforcement, which is the first and third aim, and the two strag
 - `QPs-page-structure/QPs4-for-design/QPs4-for-design.md`
   The design specimen.
 - `../../board/haipipe-page/SKILL.md`
-  Type resolution across all families; its plugged snapshot sits on `Design-3`.
+  Type resolution across all families; its plugged snapshot sits on `QPs1`.
 - `_archive/QPs2-page-types-260815-pre-sweep.md`
   This page's full pre-sweep record: the ten-type world, the QBt specimen lane, and the application-step findings.
 

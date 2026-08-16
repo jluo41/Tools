@@ -40,7 +40,7 @@ HOLD into CLOSE.
 ## Input
 
 Load `../haipipe-page/SKILL.md` and
-`../haipipe-page/ref/page-run-contract.md`. Require:
+`../page-workflows/haipipe-page-workflow/ref/page-run-contract.md`. Require:
 
 ```text
 run_id · board · page · start_phase · intent

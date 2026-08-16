@@ -570,7 +570,7 @@ class Paper:
                 self.by_short.setdefault(_short(u.id), u)
                 if u.label:
                     self.by_label.setdefault(u.label, u)
-        # PAGE-PLUGIN units (haipipe-page-plugin, QPf5): a folded page owns its
+        # PAGE-PLUGIN units (haipipe-plugin, QPf5): a folded page owns its
         # material, so a unit may also live at <page>/display/<unit>/ inside
         # the BOARD folder. float.tex stays the one unit test, ids stay global,
         # and a `> Display:` lane or inline id chips against them like any

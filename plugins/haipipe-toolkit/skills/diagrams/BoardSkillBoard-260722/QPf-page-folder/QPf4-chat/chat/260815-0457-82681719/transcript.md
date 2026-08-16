@@ -214,7 +214,7 @@ My recommendation: **fold kind into structure, keep plugin for capabilities, and
 ## ❓ Three forks I'd want settled before touching anything
 
 1. **Does `kind` become a fourth axis, or fold into structure?** I recommend folding it in — otherwise `haipipe-page-structure` owns only six section names and isn't worth a skill.
-2. **`haipipe-page-folder` or `haipipe-page-plugin`?** Not alternatives, they're different jobs: folder = layout, plugin = the admission contract for a capability. I'd ship **`haipipe-page-plugin`**, because layout is *derived* from the roster — what dirs exist is answered by which plugins are admitted. That's also what cleanly replaces `page-types/`.
+2. **`haipipe-page-folder` or `haipipe-plugin`?** Not alternatives, they're different jobs: folder = layout, plugin = the admission contract for a capability. I'd ship **`haipipe-plugin`**, because layout is *derived* from the roster — what dirs exist is answered by which plugins are admitted. That's also what cleanly replaces `page-types/`.
 3. **Does the board get rewritten in the new shape, or described in it first?** QB4/QB6 and the entire `QBt` group are premised on type-per-page; `page-phases/` still has no roster row. Rewriting `board.md` under the new axes is the cheap half; migrating 55 page folders is the expensive half, and they don't have to happen together.
 
 Tell me which of those three you want to settle and I'll start there — or if you'd rather, I'll draft the new `board.md` group structure under the four-axis reading so you can see it before committing to any migration.
@@ -244,7 +244,7 @@ The drawing's axes don't need a new group — they map onto existing settled pag
 | `<PageName>/` page-as-folder | **QB3** (page · its home folder) | ✅ settled 260724 — its Law was already superseded once, so reopening has precedent |
 | `haipipe-page-structure` sections | **QB4** (the base page) | ✅ — absorbed 7 faces on 260801 |
 | `haipipe-page-workflow` draft·probe·revise·check | **QB5** (the page loop) | the four `page-phases/` skills shipped but have no roster row |
-| `haipipe-page-plugin` sidecars | **QB6** (page types) | the hub that admits types — becomes the hub that admits plugins |
+| `haipipe-plugin` sidecars | **QB6** (page types) | the hub that admits types — becomes the hub that admits plugins |
 
 And the plan's *shape* is the board's own QBt method at skill altitude — ① SPECIMEN → ② MEASURE → ③ SKILL → ④ APPLICATION — because that method was established precisely for changes like this (JL 260807: "you cannot write a contract for a shape you have never built").
 
@@ -300,7 +300,7 @@ Plugin roster from the drawing: `display slide draw skill chat latex bibex word 
 - `haipipe-page` — stays the one SPEC door every consumer loads; now composes three axes
 - `haipipe-page-structure` — NEW: 6 sections × 5 rows + the kind registry
 - `haipipe-page-workflow` — NEW: folds the four `page-phases/` skills into one; owns `page-run-contract.md`
-- `haipipe-page-plugin` — NEW: the roster, the admission rule, per-plugin material contracts, and the discovery-exclusion contract with the engine
+- `haipipe-plugin` — NEW: the roster, the admission rule, per-plugin material contracts, and the discovery-exclusion contract with the engine
 - `page-types/` shrinks to kind variants; ⚠️ re-run `Tools/install.sh --global` after (README's own warning)
 
 ## 1️⃣ R1 · SPECIMEN — build one by hand, this board, one session
@@ -363,7 +363,7 @@ Board-level closers: rewrite `## Board Structure` + Related Folders to the folde
 | D4 | QB4 | Loggings keeps `### Law/Lesson/Glossary/Discussion/Log` subheads? | yes — content preserved, one fold |
 | D5 | QB4 | Related-Board-Pages rows → frontmatter `reads:`? | yes — always machine-read, never prose |
 | D6 | QB5 | four page-phases skills fold into one `haipipe-page-workflow`? | yes |
-| D7 | QB6 | name: `haipipe-page-plugin`, not `-folder`? | plugin — the roster is the contract; layout is derived |
+| D7 | QB6 | name: `haipipe-plugin`, not `-folder`? | plugin — the roster is the contract; layout is derived |
 | D8 | QB6 | which kinds thin out | ruled on R2's count, not guessed |
 | D9 | QB6 | meeting raw note → `chat/` plugin, or `meeting/` stays group-level? | defer; keep `meeting/` |
 | D10 | QB6 | QBt7/8 gap — renumber or keep | pre-existing open row; rides along |
@@ -521,7 +521,7 @@ Engine:
 - **g.** `meetingpage.py` — `new` writes the note into the page folder's `meeting/`; `sync` tolerates the moved stamp.
 - **h.** `cli/regroup.py --pagefold` — per page: mkdir, `git mv` (md + scenes + plugin dirs), rewrite page-relative refs. Dry-run default. Engine-owned because regroup already owns "pages move."
 
-Skills: `haipipe-page-structure` (mostly *extraction* from QB4/`haipipe-page`, not new writing), `haipipe-page-workflow` (folds the four `page-phases/` skills into one, owns `page-run-contract.md`), `haipipe-page-plugin` (10-entry roster, admission rule, the discovery-exclusion contract), `haipipe-page` rewritten to compose three axes, `page-types/` thinned to 5 kinds, `ref/page-template.md`, `ref/board-form.md`, README, agents. ⚠️ Re-run `Tools/install.sh --global` — README's own warning is that moving a variant doesn't move its symlink.
+Skills: `haipipe-page-structure` (mostly *extraction* from QB4/`haipipe-page`, not new writing), `haipipe-page-workflow` (folds the four `page-phases/` skills into one, owns `page-run-contract.md`), `haipipe-plugin` (10-entry roster, admission rule, the discovery-exclusion contract), `haipipe-page` rewritten to compose three axes, `page-types/` thinned to 5 kinds, `ref/page-template.md`, `ref/board-form.md`, README, agents. ⚠️ Re-run `Tools/install.sh --global` — README's own warning is that moving a variant doesn't move its symlink.
 
 Gates: pytest green · **QF2 fresh-agent usability** · re-run R2's instrument with the same tool · JL ruling.
 
@@ -546,7 +546,7 @@ Closers: rewrite `## Board Structure` + Related Folders to the folder grammar; d
 | D5b | QB4 | canonical names become Aims/States (today `check.py` canon is "Done when"/"Now") | yes — ratifies the drawing |
 | D5c | QB4 | `Report` is a kind-scoped alias for Content, not a rename | yes |
 | D6 | QB5 | four `page-phases/` skills fold into one `haipipe-page-workflow` | yes |
-| D7 | QB6 | `haipipe-page-plugin`, not `-folder` | plugin — the roster is the contract, layout is derived |
+| D7 | QB6 | `haipipe-plugin`, not `-folder` | plugin — the roster is the contract, layout is derived |
 | D8 | QB6 | which kinds thin out | ruled on R2's count |
 | D9 | QB6 | ~~meeting deferred~~ → **meeting is a plugin** | ✅ ruled by the drawing |
 | D10 | QB6 | QBt7/8 gap — renumber or keep | pre-existing open row, rides along |
@@ -927,7 +927,7 @@ This is the real yield. Each was invisible until 62 pages moved:
 
 ## 🧩 `haipipe-page-folder`: a separate skill — and I've changed my recommendation
 
-Earlier I argued for `haipipe-page-plugin`. Having now read the family and run the migration, I think **`haipipe-page-folder`, separate from `haipipe-page`**, and the plugin roster lives *inside* it.
+Earlier I argued for `haipipe-plugin`. Having now read the family and run the migration, I think **`haipipe-page-folder`, separate from `haipipe-page`**, and the plugin roster lives *inside* it.
 
 **Why separate, not inside `haipipe-page`:**
 

@@ -80,7 +80,7 @@ Own when `operation: revise-opening`:
 
 Own when `operation: draft | probe | revise`:
 
-- Reading `haipipe-page/ref/page-run-contract.md` and the matching phase
+- Reading `page-workflows/haipipe-page-workflow/ref/page-run-contract.md` and the matching phase
   contract before touching the target.
 - Performing exactly one phase, not continuing into the phase it recommends.
 - DRAFT: define or reopen purpose, Aims, and promised shape.

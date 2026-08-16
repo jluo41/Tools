@@ -189,12 +189,15 @@ class PlugViewMixin:
 
     # ---- POST /_board/probe ------------------------------------------
     def plug_probe(self, p):
+        """The display split's structure, carrying cards instead of units
+        (JL 260816): one card fills the pane, shift right for the next, a
+        chip row of ids, per-card anchors. The filling is probe's own."""
         page_src, out_dir, _, err = self._export_target(p, "probe")
         if err:
             return None, err
-        cards = []
         srcs = sorted(d / "card.md" for d in out_dir.iterdir() if d.is_dir())
         srcs += sorted(f for f in out_dir.glob("PP*.md"))
+        cards, names = [], []
         for card in srcs:
             if not card.is_file():
                 continue
@@ -209,15 +212,29 @@ class PlugViewMixin:
                         q = ln.strip()
                         break
             name = card.parent.name if card.name == "card.md" else card.stem
-            cards.append(
-                "<div class='card'><span class='badge'>%s</span><b>%s</b>"
-                "<div>%s</div><div class='mut'>%s</div></div>"
-                % (badge, _esc(name), _esc(q),
-                   _esc("binding: " + binding if binding else "no binding yet")))
+            names.append(name)
+            body = ("<div style='margin:6px 0'>%s</div>"
+                    "<div class='mut'>%s</div>"
+                    % (_esc(q), _esc("binding: " + binding if binding
+                                     else "no binding yet")))
+            if card.name == "card.md":
+                body += "<pre>%s</pre>" % _esc(_tree(card.parent))
+            cards.append("<div class='card' id='%s'><span class='badge'>%s"
+                         "</span><b>%s</b>%s</div>"
+                         % (_esc(name), badge, _esc(name), body))
+        # The chip row: every card by its PP id, clicking one shifts the
+        # strip there — the display split's name list, id-sized.
+        chips = ""
+        if len(names) > 1:
+            chips = "<div class='chips'>%s</div>" % "".join(
+                "<a class='chip' href='#%s'>%s</a>"
+                % (_esc(n), _esc(n.split("-", 1)[0] if n.startswith("PP") else n))
+                for n in names)
         return self._plug_page(p, out_dir, "probe", "🚪 Probe",
                                cards or [_GHOST_PROBE],
                                "read-only · the consumer raises, the orchestrator claims, "
-                               "the collector binds (QPf9 §3)")
+                               "the collector binds (QPf9 §3)",
+                               strip=True, head=chips)
 
     # ---- shared page writer ------------------------------------------
     def _plug_page(self, p, out_dir, route, label, cards, footer, strip=False, head=""):

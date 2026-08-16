@@ -68,6 +68,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Write the title, Opening, and Content for someone who arrived today: the current contract, in plain words, standing on its own.
   Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `## Log` (and the board's Pipeline), where a reader goes when they want the story.
   The test: if a sentence needs a date or a name to stay true, it is a Log line, not Content.
+  The commonest leak is the attribution parenthetical: a prose sentence ending in `(JL 260816)` is jargon to a cold reader (JL 260816, on QPf9's render); state the rule plainly and let Law or Log carry who ruled it and when. `check.py` warns on the Opening form; in Content the writer catches it.
 - **Clear out stale text**
   When the board changes, old descriptions elsewhere become wrong. Real case: QA4 said "side by side" long after the layout had been stacked. A zero-background reader catches these self-contradictions on the first pass.
 

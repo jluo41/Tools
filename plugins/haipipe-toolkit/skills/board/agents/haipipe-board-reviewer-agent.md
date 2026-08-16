@@ -32,7 +32,7 @@ copy is exactly what goes a night out of date while the contract moves:
    INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
-4. `../page-phases/haipipe-page-check/SKILL.md` for the judgment and
+4. `../page-workflows/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.

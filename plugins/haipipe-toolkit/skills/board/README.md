@@ -32,10 +32,13 @@ reviewable set of question pages or lifecycle stages.
     by side, closing on a SELECTION record.
   ⚠️ Moving a variant between skill sets does not move its installed symlink.
   Re-run `Tools/install.sh --global` afterwards or the skill stops resolving.
-- `page-phases/` holds the four host-agnostic phase contracts:
-  `haipipe-page-draft`, `haipipe-page-probe`,
+- `page-workflows/` holds the page WORKFLOW: `haipipe-page-workflow` is its
+  HEAD (the RUN router, the packet + receipt contract), and beside it sit the
+  four host-agnostic phase contracts `haipipe-page-draft`, `haipipe-page-probe`,
   `haipipe-page-revise`, and `haipipe-page-check`.
-  They are selected by authority rather than by edit operation or a rigid order.
+  Phases are selected by authority rather than by edit operation or a rigid
+  order; one folder, one head skill, its members beside it is the shape every
+  family's `page-workflows/` follows.
 - `haipipe-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
   the evidence card, and the archive-never-delete record lifecycle.
 - `haipipe-board-routing/` is the WRITE VERB, at both altitudes. Board and group:
@@ -72,13 +75,14 @@ board/
 │   ├── haipipe-board-reviewer-agent.md
 │   └── haipipe-page-orchestrator-agent.md
 ├── haipipe-page/
-│   └── ref/page-run-contract.md
 ├── page-types/          the five variants THIS skill set owns
 │   ├── haipipe-page-for-stage/
 │   ├── haipipe-page-for-skill/
 │   ├── haipipe-page-for-meeting/
 │   └── haipipe-page-for-design/
-├── page-phases/
+├── page-workflows/
+│   ├── haipipe-page-workflow/
+│   │   └── ref/page-run-contract.md
 │   ├── haipipe-page-draft/
 │   ├── haipipe-page-probe/
 │   ├── haipipe-page-revise/
@@ -108,9 +112,9 @@ executable and auditable side of the Page-owned RUN contract.
 The design Board remains a working artifact at
 `../diagrams/BoardSkillBoard-260722/`. It does not ship inside the skill.
 
-`page-types/` and `page-phases/` are organization folders, not skills of their
-own. The installer discovers every nested `SKILL.md` recursively, while each
-skill keeps its globally unique name.
+`page-types/` and `page-workflows/` are organization folders, not skills of
+their own. The installer discovers every nested `SKILL.md` recursively, while
+each skill keeps its globally unique name.
 
 Every Board-attached session makes its attachment public at the end of each
 reply: Board, page-group queue, board/group/page focus, work mode, next action,

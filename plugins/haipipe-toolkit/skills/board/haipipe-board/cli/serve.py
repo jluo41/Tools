@@ -223,6 +223,10 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             self.end_headers()
             self.wfile.write(body)
             return
+        if self.path.startswith("/_board/skillview"):  # 🛠 the WHOLE skill, one page
+            return self.serve_skillview()
+        if self.path.startswith("/_board/mdview"):   # 🛠 a .md, rendered to read
+            return self.serve_mdview()
         if self.path.startswith("/_board/asset/"):
             return self.serve_asset()
         if self.path.startswith("/_term/"):
@@ -365,7 +369,7 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        # The DERIVED paper-facing plugins (haipipe-page-plugin roster):
+        # The DERIVED paper-facing plugins (haipipe-plugin roster):
         # each writes into the page's own plugin folder and answers with the
         # URL the right-pane tab frames. One route per plugin, one mixin.
         if self.path == "/_board/latex":      # page -> latex/<stem>.tex + .pdf
@@ -388,17 +392,17 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             res, err = self.bibex_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        # 🛠 the skill map, bibex's twin (haipipe-page-plugin): the page's
+        # 🛠 the skill map, bibex's twin (haipipe-plugin): the page's
         # citations into the SKILL tree, one store + one workbench view.
         if self.path == "/_board/skill":          # refresh: seed-scan + view
             res, err = self.skillmap_refresh(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/skill-verify":   # the human ✓: aligned as of
-            res, err = self.skillmap_verify(p)
+        if self.path == "/_board/skill-order":    # the drag: rank = the order
+            res, err = self.skillmap_order(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/skill-entry":    # the pen: declare a relation
+        if self.path == "/_board/skill-entry":    # the pen: add · ✕ · restore
             res, err = self.skillmap_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})

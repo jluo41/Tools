@@ -14,7 +14,7 @@ metadata:
 **LOAD `haipipe-page` FIRST.** It owns the base: the sections and their fixed order, the Opening split, the numbering, the `## Stage Contract` markers, the rule that an S page's Content is the stage's real product, and the evaluation contract.
 This file adds only what a stage page needs and an ordinary decision page does not.
 It never repeats a base rule, because a copied rule goes a night out of date while the contract moves.
-After resolving this Page Type, load the current contract from `page-phases/`; this file does not imply a fixed phase order.
+After resolving this Page Type, load the current contract from `page-workflows/`; this file does not imply a fixed phase order.
 
 **The kind this variant covers**: one page per lifecycle stage, in any family.
 

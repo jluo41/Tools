@@ -9,21 +9,24 @@ Route the request to the smallest canonical command that can advance the project
 
 ## Canonical commands
 
+The five workflow members live in `../page-workflows/`.
+
 | command | responsibility |
 |---|---|
-| `/sl-init` | initialize corpus, seal final-test ids, embed the development pool, run random Round 1, and close the first checkpoint |
-| `/sl-round` | run or resume one later calibration round from candidate retrieval through checkpoint |
-| `/sl-evaluate` | freeze `G*`, create blind human gold on the sealed test, and score registered executors |
-| `/sl-complete` | run a validated production policy over the remaining corpus, reconcile outcomes, and perform final audit |
-| `/sl-status` | inspect current state, evidence, holds, and next valid action without writing |
+| `/label-init` | initialize corpus, seal final-test ids, embed the development pool, run random Round 1, and close the first checkpoint |
+| `/label-round` | run or resume one later calibration round from candidate retrieval through checkpoint |
+| `/label-evaluate` | freeze `G*`, create blind human gold on the sealed test, and score registered executors |
+| `/label-complete` | run a validated production policy over the remaining corpus, reconcile outcomes, and perform final audit |
+| `/label-status` | inspect current state, evidence, holds, and next valid action without writing |
 
-Compatibility aliases:
+Legacy names (retired 2026-08-15, the router resolves them; no alias skills exist):
 
-- `/sl-iterate` routes to `/sl-round`;
-- `/sl-validate` routes to `/sl-evaluate`;
-- `/sl-scale` routes to `/sl-complete`.
+- `/sl-init` → `/label-init`; `/sl-status` → `/label-status`
+- `/sl-round` and `/sl-iterate` → `/label-round`
+- `/sl-evaluate` and `/sl-validate` → `/label-evaluate`
+- `/sl-complete` and `/sl-scale` → `/label-complete`
 
-Explain the changed semantics when an alias is used. Do not reproduce the legacy
+Explain the changed semantics when a legacy name is used. Do not reproduce the legacy
 panel-majority, public-dataset convergence, or k-NN inheritance workflow.
 
 Knowledge commands remain available when installed: `lesson`, `feedback`, and `digest`.

@@ -90,6 +90,7 @@ How does <the thing this page decides> work, and why does it need settling now?
 Those words are this board's own, so say what each one is in one clause with a real example.
 Name what makes it hard, in one sentence a reader can feel.
 Then say what this page decides about it.
+Write the title, this Opening, and Content for someone who arrived today: the current contract in plain words, with no decision dates, no people's names, and no retired mechanisms; that story lives in `## Log`.
 
 **Where this page sits**: the neighbouring page the reader most likely came from, and what it handles.
 
@@ -159,11 +160,7 @@ A ROW IS A LABEL AND ITS VALUE, NEVER A CLAUSE (JL 260801, asking why the figure
 It renders as its own `🖼 Diagram` section, collapsed by default. The heading remains visible;
 the figure appears only after the reader clicks it.
 
-For a richer figure, put an excalidraw share link on **its own line** below the ascii; it embeds as an interactive excalidraw (`https://app.excalidraw.com/s/...`), with a fallback link underneath.
-**Keep the ascii figure:** it has zero dependencies and stays when the excalidraw fails to load.
-
-Opening the section shows `▧ ASCII` and leaves `✏️ Excalidraw` shut, one more click away (JL 260726).
-**Write one `## Diagram`, never `###` subheadings for the two halves:** the split is computed from the rule above (a bare excalidraw URL alone on a line is the canvas, everything else is the figure), and a `###` in here is not a recognized construct, so it would land as prose inside the figure.
+`## Diagram` holds the ascii figure and nothing else (JL 260815). A drawing is MATERIAL: it lives as a scene file in the page's own `draw/` folder and opens through the 🖌 Draw split beside the page, never inline in this section. The ascii is the half with zero dependencies — it renders with scripts off and survives every host.
 
 **Name of the figure**: what this diagram shows.
 
@@ -171,9 +168,7 @@ Opening the section shows `▧ ASCII` and leaves `✏️ Excalidraw` shut, one m
 source question ──▶ decision or stage ──▶ observable handoff
 ```
 
-https://app.excalidraw.com/s/replace-this-share-link
-
-Replace both examples with this page's real figure and share link, or delete the share-link line when no canvas exists.
+Replace the example with this page's real figure.
 
 ## Content
 S required · Q optional. The page's substantive material after orientation. Delete this explicit section in a Q that needs no additional material.

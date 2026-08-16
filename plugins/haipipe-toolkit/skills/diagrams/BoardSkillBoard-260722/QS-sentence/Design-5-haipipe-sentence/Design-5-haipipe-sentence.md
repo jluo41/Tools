@@ -92,11 +92,11 @@ The live unit ships from `board/haipipe-sentence/`.
 ### 2 · Selection record · adopted from the specimen
 **Where the record lives**: one argument, one home, adopted by reference.
 ```text
-  🅰🅱 the candidates + full record ──▶ Design-3-haipipe-page · Content §2
+  🅰🅱 the candidates + full record ──▶ QPs1-overall · Content §11.2
   📄 this page keeps only what is its own: health · aims · snapshot
 ```
 This page converted to a for-design page under the 260815 ruling that retired the mirror kind.
-The candidates and the full record are written once, on the specimen: `Design-3-haipipe-page` Content §2.
+The candidates and the full record are written once, on `QPs1-overall` Content §11.2.
 This page adopts that selection rather than restating it, because seven copies of one argument would recreate the form-letter failure the ruling killed.
 What is page-specific stays here: the Opening, the Aims, the States judgment on the unit's health, and the plugged snapshot above.
 

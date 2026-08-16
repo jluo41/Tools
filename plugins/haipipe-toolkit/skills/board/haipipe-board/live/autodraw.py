@@ -45,9 +45,12 @@ THE PAGE (markdown):
 Rules for the drawing:
 - If the page has a `## Diagram` ascii figure and no other ask, draw THAT figure \
 faithfully: same boxes, same arrows, same labels (emoji included).
-- Layout left-to-right / top-down, total span roughly 900x600 starting near (0,0).
+{ascii_line}
+- Layout left-to-right / top-down, total span roughly 900x600 starting near (0,{y0}).
 - Every box is a rectangle with a BOUND text label; every arrow BINDS its two ends.
-- Palette: stroke #1e1e1e; fills from #ffec99 #b2f2bb #a5d8ff #ffd8a8 #eebefa; \
+- Palette: stroke #1e1e1e; backgroundColor "transparent" on every shape \
+(JL 260816: boxes stay unfilled); a shape that must stand out may use a colored \
+STROKE from #e8590c #2f9e44 #1971c2 #9c36b5 instead of a fill; \
 notes in #666666. fontFamily 8 on EVERY text element (Comic Shanns Mono, JL 260815). Keep it under 40 elements.
 
 Element contract (follow exactly; ids are yours to invent, keep them short):
@@ -74,6 +77,39 @@ Element contract (follow exactly; ids are yours to invent, keep them short):
 
 def _fail(msg):
     return {"ok": False, "err": msg}
+
+
+def ascii_figure(md):
+    """The page's `## Diagram` fenced figure, verbatim, or ''."""
+    m = re.search(r"^## Diagram\b.*?^```[a-z]*\n(.*?)^```", md,
+                  flags=re.S | re.M)
+    return m.group(1).rstrip("\n") if m else ""
+
+
+def ascii_element(fig):
+    """The figure as ONE monospace text element at the top of the scene.
+
+    Placed by the SERVER, never retyped by the model (JL 260816: "copy the
+    diagram's ascii to the draw as well, and then draw its own version") —
+    ascii art round-tripped through a generation comes back subtly bent,
+    and Comic Shanns Mono renders the verbatim copy true. Returns
+    (element, y_where_the_drawing_starts)."""
+    lines = fig.split("\n")
+    size = 14                                   # px; wide figures still fit
+    w = int(max(len(x) for x in lines) * size * 0.6) + 8
+    h = int(len(lines) * size * 1.25) + 8
+    el = {"id": "ascii-figure", "type": "text", "x": 0, "y": 0,
+          "width": w, "height": h, "angle": 0,
+          "strokeColor": "#666666", "backgroundColor": "transparent",
+          "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+          "roughness": 1, "opacity": 100, "groupIds": [], "frameId": None,
+          "roundness": None, "seed": 261608, "version": 1,
+          "versionNonce": 261608, "isDeleted": False, "boundElements": [],
+          "updated": 1, "link": None, "locked": False,
+          "text": fig, "originalText": fig, "fontSize": size,
+          "fontFamily": 8, "textAlign": "left", "verticalAlign": "top",
+          "containerId": None, "autoResize": False, "lineHeight": 1.25}
+    return el, h + 100
 
 
 def autodraw(root, payload):
@@ -107,7 +143,16 @@ def autodraw(root, payload):
     pid = f.stem
     ask_line = f"THE ASK: {ask}" if ask else \
         "THE ASK: draw this page's ## Diagram figure (or, if none, its core idea)."
-    prompt = PROMPT.format(pid=pid, ask_line=ask_line, md=md or "(no markdown found)")
+    fig = ascii_figure(md)
+    fig_el, y0 = (None, 0)
+    ascii_line = "- (this page carries no ascii figure)"
+    if fig:
+        fig_el, y0 = ascii_element(fig)
+        ascii_line = (f"- The ascii original is ALREADY placed on the canvas "
+                      f"above y={y0}; do not retype it. Draw your version "
+                      f"BELOW it, starting at y={y0}.")
+    prompt = PROMPT.format(pid=pid, ask_line=ask_line, ascii_line=ascii_line,
+                           y0=y0, md=md or "(no markdown found)")
 
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
     try:
@@ -151,6 +196,9 @@ def autodraw(root, payload):
                            if md_path.is_file() else ""})
     hp["autodraw"] = {"by": "claude", "at": dt.datetime.now().strftime("%y%m%d %H%M"),
                       "prompt": ask or "## Diagram"}
+    if fig_el:
+        elements = [e for e in elements if e.get("id") != "ascii-figure"]
+        elements.insert(0, fig_el)
     base["elements"] = elements
 
     tmp = f.with_suffix(".excalidraw.tmp")

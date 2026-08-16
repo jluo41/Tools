@@ -1,0 +1,31 @@
+{
+  "scanned_at": "2026-08-16T01:26",
+  "repo_root": "/Users/floydluo/Desktop/Tools-SPACE",
+  "target_basename": "1-probes",
+  "dirs_found": 3,
+  "records": [
+    {
+      "probes_dir": "plugins/haipipe-toolkit/skills/diagrams/01-haipipe-application-260802/_fixture/1-probes",
+      "owner": "plugins/haipipe-toolkit/skills/diagrams/01-haipipe-application-260802/_fixture",
+      "pp_count": 0,
+      "pp_entries": []
+    },
+    {
+      "probes_dir": "plugins/haipipe-toolkit/skills/diagrams/01-haipipe-paper-260725/_fixture/1-probes",
+      "owner": "plugins/haipipe-toolkit/skills/diagrams/01-haipipe-paper-260725/_fixture",
+      "pp_count": 2,
+      "pp_entries": [
+        "PP01_seed-feasibility",
+        "PP03_results-values"
+      ]
+    },
+    {
+      "probes_dir": "plugins/haipipe-toolkit/skills/probe/haipipe-probe/test/fixture/proj/papers/Paper-Fx/1-probes",
+      "owner": "plugins/haipipe-toolkit/skills/probe/haipipe-probe/test/fixture/proj/papers/Paper-Fx",
+      "pp_count": 1,
+      "pp_entries": [
+        "PP01_states"
+      ]
+    }
+  ]
+}

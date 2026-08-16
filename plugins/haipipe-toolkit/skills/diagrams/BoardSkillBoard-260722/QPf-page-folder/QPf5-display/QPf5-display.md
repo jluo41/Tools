@@ -72,8 +72,10 @@ The one page-side change is the address: the unit root is the page's own `displa
 ```
 The tab is the Slides sandwich with a different filling: a drawer plugin posts to a `live/` endpoint, the endpoint lists the page's units, and the pane frames each `preview.pdf` through the PDF object path `src/body.py` already renders.
 🔄 rebuild runs the unit's recipe and refreshes the derived half; it never touches `intake/` and never touches an acceptance row.
-A unit is EVIDENCE a sentence binds with a `> Display:` lane, the typed card that lands under the anchor sentence beside `> Citation:` and `> Value:`.
-The lane names the unit, carries its acceptance state, and links its block in the strip; a lane naming a ⬜ unit binds a pending render, not accepted evidence.
+A unit is EVIDENCE the content cites, and the citation lives IN the sentence: the unit's id named in prose chips as the evidence card in place, carrying its acceptance state and linking its block in the strip.
+The `> Display:` lane beside `> Citation:` and `> Value:` stays the FILING surface: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there.
+Either surface naming a ⬜ unit binds a pending render, not accepted evidence.
+The projections inherit the citation (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph, built from the winning asset and the unit's own caption, and the word export embeds the rasterized figure with an inline figure number and a 🖼 Display comment on the sentence.
 
 ### 3 · The writers, and the row no machine may tick
 **Who writes what**: three hands on one unit, each confined to its half.
@@ -116,9 +118,8 @@ The rebuild differs the same way: a figure rebuild reruns its python script, a d
   ⑤ 🧠 ACCEPT     a person reads the render and ticks accepted:
 ```
 The pipeline never starts at ②: a renderer given no ruled `intake/` has nothing provenance-bound to draw, which is what `display-intake-contract.md` exists to refuse.
-Steps ① ③ ⑤ are a person's; steps ② ④ are machinery, and 🔄 rebuild on the tab is step ④ alone, rerun.
+Steps ① ③ ⑤ are a person's and steps ② ④ are machinery, the split of hands QPf5-Display1 draws; 🔄 rebuild on the tab is step ④ alone, rerun.
 A changed `intake/` flows forward, ② to ⑤, and the acceptance falls back to ⬜ because the bytes a person said yes to are gone.
-> Display: QPf5-Display1 · draws these five steps and their three hands
 
 **Where ①'s numbers come from**: the evidence chain behind an intake, id-bound at every hop.
 ```text
@@ -130,8 +131,7 @@ A changed `intake/` flows forward, ② to ⑤, and the acceptance falls back to 
                                  small approved extract in inputs/
 ```
 `intake/` is not a second data store: the task output stays canonical, and the manifest points back at the exact holder and run that produced it.
-A unit names its evidence by id, never by path, and never types a number.
-> Display: QPf5-Display2 · draws the ask-once-cite-twice mechanism this chain rests on
+A unit names its evidence by id, never by path, and never types a number; QPf5-Display2 draws this ask-once-cite-twice move.
 The slide plugin already walks this chain on `QPf3`: its deck declares `needs: QA-probe/QBt5-for-value/1-artifact-paths`, the resolver turns the id into the artifact's path, and the template carries no digits, so a hand-typed value has nowhere to live.
 A1's adapter is what makes the same id resolution work for a unit under a page.
 
@@ -186,6 +186,8 @@ Nothing page-side is built; the adopted contract is the settled half and every a
   The unit layout this page adopts verbatim; if the two disagree, that file wins.
 - `../../display/ref/display-intake-contract.md`
   What a caller owes `intake/` before any renderer runs.
+- `../../board/page-plugins/haipipe-plugin-display/SKILL.md`
+  This page's rules as a loadable skill, for a consumer with no board open.
 
 ### 🧪 Checks
 - `../../board/haipipe-board/cli/check.py`
@@ -203,6 +205,10 @@ Nothing page-side is built; the adopted contract is the settled half and every a
       The rejected option was a `for-display` page kind beside the plugin; it fell because displays are material every page carries, not a subject a page argues, so a kind would give one word two meanings.
 
 ## Log
+- 260816 · [RULE-JL] a clicked card shows its display at once (JL: "how to make it show the display directly as default?"): opening an evidence card now expands its first preview fold, lazily and one fold only, so the 260806 ruling that folded previews (two stacked objects buried the links) still holds at page load.
+- 260816 · [BUILD-CC] the projections now carry the evidence (JL: "both word and latex didn't include the display?"): the latex export embeds each cited unit as a float after its citing paragraph (winning asset + authored caption, no tikz needed in the master), and the word export bridges the grammar gap with a temp ref injection plus md2docx's new `--display-root`, landing the figure, the inline number, and the 🖼 Display comment; verified on this page's own PDF and docx, both units present in both.
+- 260816 · [RULE-JL] the display citation moved into the content sentence (JL: "it should be in the content sentence, right?", after the render showed a lane latched onto the wrong sentence): §4's two lane rows became ids named in prose, chipping in place by the always-a-card rule, and §2's grammar now names the sentence as the citation's home with the `> Display:` lane kept as the machine's filing surface.
+- 260815 · [BUILD-CC] the page's rules became a loadable skill (JL: "we might have the page-plugins in skills/board/page-plugins"): `page-plugins/haipipe-plugin-display` born beside draw/latex/word, owning only the page-side delta (unit address, kind routing, the five-step walk, the `> Display:` lane) and citing the unit contract verbatim; the roster's stale display row corrected to 🟢 MIXED and probe got its missing row. This page stays the design record; the skill is the door a consumer loads with no board open.
 - 260815 · [REVISE-CC] the page now cites its own cards (JL: "why are they not cited as the evidence cards in the content?"): §4 cites D1 at the pipeline it draws and D2 at the evidence chain, §2 rules the `D<n>` citation grammar with the pending-render caveat; the strip gained the indented folder tree and the unit name-list chips the same hour.
 - 260815 · [BUILD-CC] Display1 got its render (JL: "I think we should have a pdf here"): re-kinded from the bridge-blocked illustration to TikZ as `Display1-pipeline-tikz`, now drawing §4's five steps; the illustration plan is preserved in its `versions/`. The strip gained per-unit anchors, so a citation can land on the exact unit it names.
 - 260815 · [BUILD-CC] the demo unit shipped and A4.1 closed: `Display2-small-paper-tikz` walked ① to ④ with the TeX-native method (JL asked for tikz), one refinement round, deterministic rebuild by pdflatex; §3's taxonomy gained the ✒️ tikz row the same hour. Acceptance ⑤ stays JL's.
