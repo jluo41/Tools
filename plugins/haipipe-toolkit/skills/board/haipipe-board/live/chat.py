@@ -27,7 +27,7 @@ from urllib.parse import unquote
 
 from . import base
 from . import turnring
-from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, page_files
+from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from .structure import page_id_of
 
 
@@ -130,16 +130,19 @@ def status_strip_context(board, focus, root):
 
 
 def group_folder(board, gname):
-    """「QC · Engine」→ 这块板里的 QC-engine/ 文件夹（组的会话身份就是这个目录）。
-    组标题的头一个词就是字母 id；文件夹按 <字母>- 前缀找，兼容裸字母目录。"""
+    """「QC · Engine」→ 这块板里的 7-QC-engine/ 文件夹（组的会话身份就是这个目录）。
+    组标题的头一个词就是字母 id；文件夹先剥掉排序用的 `N-` 前缀（JL 260816），
+    再按 <字母>- 前缀找，兼容裸字母目录和 260816 之前没编号的板。"""
     m = re.match(r"\s*([QS][A-Za-z]*\d*)", gname or "")
     if not m:
         return None
     letter = m.group(1)
     board = Path(board)
     for d in sorted(board.iterdir()):
-        if d.is_dir() and not d.name.startswith(("_", ".")) \
-                and (d.name == letter or d.name.startswith(letter + "-")):
+        if not d.is_dir() or d.name.startswith(("_", ".")):
+            continue
+        stem = group_stem(d.name)
+        if stem == letter or stem.startswith(letter + "-"):
             return d
     return None
 
@@ -198,7 +201,7 @@ def group_prime_context(f, board, root):
     """组级会话的开场定位（JL 260731：每个 question group 也要能聊）：
     这组是干嘛的、有哪些页、各自什么状态 —— 视野是一组，不是一页也不是整板。"""
     f = Path(f)
-    letter = f.name.split("-")[0]
+    letter = group_stem(f.name).split("-")[0]
     bmd = Path(board) / "board.md"
     btxt = bmd.read_text(encoding="utf-8", errors="ignore") if bmd.exists() else ""
     bm = re.search(r"^#\s+(.*)$", btxt, re.M)
@@ -1420,7 +1423,7 @@ class ChatMixin:
                 names[sid] = r["name"].strip()
         # 页面 id 前缀（JL 260731：Qxxx-这是干嘛的）：名字显示成 QD3m-fix-black-screen
         if Path(f).is_dir():
-            prefix = Path(f).name.split("-")[0]        # QC-engine → QC
+            prefix = group_stem(Path(f).name).split("-")[0]   # 7-QC-engine → QC
         else:
             m = re.match(r"((?:[QS][A-Za-z0-9]+|Skill-\d+|Agent-\d+))", Path(f).name)
             prefix = m.group(1) if m else Path(f).stem

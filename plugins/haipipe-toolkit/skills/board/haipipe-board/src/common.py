@@ -1,7 +1,22 @@
 """Shared constants + tiny helpers (QB5). Used by every page module AND by
 serve.py — keep this file dependency-free (stdlib only, no intra-src imports)."""
 import html
+import json
 import re
+from pathlib import Path
+
+
+def scene_text(scene) -> str:
+    """The ONE way an Excalidraw scene is serialized (JL 260816).
+
+    Two writers used to disagree: `cli/draw.py` wrote `indent=2` with raw
+    UTF-8, `live/xcal.py` wrote `indent=1` with escapes, so a scene the split
+    had saved never round-tripped through the CLI and every `draw.py retire`
+    read the difference as a phantom concurrent edit. Both call this now, so a
+    scene keeps one shape whichever hand last touched it. Raw UTF-8 keeps a
+    Chinese label readable in a diff; the trailing newline keeps git quiet."""
+    return json.dumps(scene, indent=2, ensure_ascii=False) + "\n"
+
 
 # 状态标签用英文：OPEN / PARTIAL / SETTLED / ON HOLD 是 issue 追踪的通用词，
 # 一眼知道什么意思，不像自造的中文缩写要人猜。
@@ -250,3 +265,41 @@ def page_files(d):
                 continue
             if PAGENAME.match(p.name):
                 yield p
+
+
+GROUPNUM = re.compile(r"^\d+-")
+NUMBERED_GROUP = re.compile(r"^(\d+)-Q")
+
+
+def group_stem(name):
+    """`7-QC-engine` -> `QC-engine`. The NUMBER orders the folder on disk, the
+    LETTER is still the group's identity, so every reader strips the number
+    first (JL 260816).
+
+    The number exists because letters carry identity and cannot carry order: on
+    disk `QC-engine/` sorted four rows above `QPs-page-structure/` while board.md
+    read them the other way round, and a folder that contradicts the board it
+    stores is a folder nobody trusts. `## Pages` order stays the only authority;
+    the number is DERIVED from it and `check.py` fails when the two disagree.
+
+    An unnumbered folder passes through unchanged, so a board written before
+    260816 keeps working with no migration."""
+    return GROUPNUM.sub("", str(name))
+
+
+def board_is_numbered(board):
+    """Does this board already number its group folders?
+
+    A board is numbered or it is not; there is no useful third state, and the
+    WRITERS must not manufacture one. `＋Q` opening a single new group asks this
+    first and follows whatever the board already does, so a legacy board never
+    grows one numbered folder among eight bare ones. `regroup.py` is the
+    exception and always numbers, because it lays down the whole set at once.
+
+    The test requires `<N>-Q`, not a bare `<N>-`, because a paper's
+    `0-lifecycle/` is numbered for an entirely different reason: `0-seed/`,
+    `1-work/`, `3-display/` are SUBJECT folders whose numbers carry lifecycle
+    order. Reading those as group numbering would have `＋Q` renumbering a
+    board that never opted in."""
+    return any(d.is_dir() and NUMBERED_GROUP.match(d.name)
+               for d in Path(board).iterdir())

@@ -26,7 +26,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from . import base as _base
-from .base import HERE, HOLD, RING_CAP, TERMS, TERM_DIR
+from .base import HERE, HOLD, RING_CAP, TERMS, TERM_DIR, group_stem
 from .chat import prime_context
 
 
@@ -621,7 +621,7 @@ class TermMixin:
         # 不占一个回合、不让它自动跑，用户一开终端 claude 就已经知道自己在干嘛。
         prime = prime_context(f, board, self.root)
         if Path(f).is_dir():                     # 组级终端（JL 260731）：目录没有 # 标题
-            ttl = (f.name.split("-")[0] + " · " + f.name)[:60]
+            ttl = (group_stem(f.name).split("-")[0] + " · " + f.name)[:60]
         else:
             m = re.match(r"(Q[A-Za-z0-9]+)", f.name)
             tm = re.search(r"^#\s+(.*)$", f.read_text(encoding="utf-8", errors="ignore"), re.M)
