@@ -64,7 +64,6 @@ import os
 import shutil
 import signal
 import re
-import sqlite3
 import subprocess
 import sys
 import threading

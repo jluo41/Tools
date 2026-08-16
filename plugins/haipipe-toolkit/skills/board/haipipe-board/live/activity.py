@@ -1,7 +1,10 @@
-"""QC8 · focus time (QD6): the SQLite span store and its aggregates.
+"""The Activity readout: board updates counted from every page's `## Log`.
 
 Moved out of serve.py on 2026-07-31 under the gate_live.py response-identical gate.
 QC3's Law: a refactor moves code, features never ride along.
+
+The SQLite focus-time store this file was originally built for was deleted on
+260816; what is left reads markdown and keeps no state of its own.
 """
 
 import base64
@@ -15,7 +18,6 @@ import re
 import shutil
 import signal
 import socket
-import sqlite3
 import struct
 import subprocess
 import sys
@@ -45,106 +47,7 @@ class ActivityMixin:
             return None, None, f"{board} has no board.md"
         return board, rel, None
 
-    def activity_conn(self):
-        """One short SQLite connection per request keeps ThreadingHTTPServer safe."""
-        d = self.root / ".haipipe-board"
-        d.mkdir(exist_ok=True)
-        db = sqlite3.connect(d / "activity.sqlite3", timeout=10)
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA journal_mode=WAL")
-        db.execute("""
-            CREATE TABLE IF NOT EXISTS activity_spans (
-              span_id TEXT PRIMARY KEY,
-              board TEXT NOT NULL,
-              board_title TEXT NOT NULL,
-              group_name TEXT NOT NULL DEFAULT '',
-              page TEXT NOT NULL DEFAULT 'board',
-              page_title TEXT NOT NULL DEFAULT '',
-              actor TEXT NOT NULL DEFAULT '',
-              source TEXT NOT NULL DEFAULT 'browser',
-              started_at REAL NOT NULL,
-              last_seen_at REAL NOT NULL,
-              ended_at REAL,
-              active_seconds REAL NOT NULL DEFAULT 0,
-              changed INTEGER NOT NULL DEFAULT 0,
-              change_count INTEGER NOT NULL DEFAULT 0,
-              stop_reason TEXT NOT NULL DEFAULT ''
-            )
-        """)
-        columns = {row["name"] for row in db.execute("PRAGMA table_info(activity_spans)")}
-        if "stop_reason" not in columns:
-            db.execute(
-                "ALTER TABLE activity_spans "
-                "ADD COLUMN stop_reason TEXT NOT NULL DEFAULT ''"
-            )
-        db.execute("""
-            CREATE TABLE IF NOT EXISTS activity_ticks (
-              span_id TEXT NOT NULL,
-              day TEXT NOT NULL,
-              seconds REAL NOT NULL DEFAULT 0,
-              PRIMARY KEY (span_id, day),
-              FOREIGN KEY (span_id) REFERENCES activity_spans(span_id)
-            )
-        """)
-        db.execute("CREATE INDEX IF NOT EXISTS activity_board_idx "
-                   "ON activity_spans(board, started_at)")
-        for row in db.execute("""
-            SELECT s.span_id, s.started_at, COALESCE(s.ended_at, s.last_seen_at) AS ended_at,
-                   s.active_seconds
-            FROM activity_spans AS s
-            WHERE s.active_seconds > 0
-              AND NOT EXISTS (
-                SELECT 1 FROM activity_ticks AS t WHERE t.span_id=s.span_id
-              )
-        """).fetchall():
-            for day, seconds in self.activity_day_parts(
-                    row["started_at"], row["ended_at"], row["active_seconds"]):
-                db.execute("""
-                    INSERT INTO activity_ticks (span_id, day, seconds)
-                    VALUES (?, ?, ?)
-                    ON CONFLICT(span_id, day)
-                    DO UPDATE SET seconds=seconds+excluded.seconds
-                """, (row["span_id"], day, seconds))
-        db.commit()
-        return db
 
-    @staticmethod
-    def activity_num(row, key):
-        return int(round(float(row[key] or 0)))
-
-    @staticmethod
-    def activity_day_parts(started_at, ended_at, seconds):
-        """Split counted seconds across local calendar days.
-
-        Heartbeats cap long gaps. In that case the counted interval is the tail
-        nearest ``ended_at`` rather than an invented continuous idle interval.
-        """
-        start = float(started_at or 0)
-        end = max(start, float(ended_at or start))
-        total = max(0.0, float(seconds or 0))
-        if total <= 0:
-            return []
-        elapsed = end - start
-        if elapsed <= 0:
-            return [(dt.datetime.fromtimestamp(end).date().isoformat(), total)]
-        if total < elapsed:
-            start = end - total
-            elapsed = total
-
-        parts = []
-        cursor = start
-        allocated = 0.0
-        while cursor < end:
-            local = dt.datetime.fromtimestamp(cursor)
-            next_day = local.date() + dt.timedelta(days=1)
-            midnight = time.mktime(dt.datetime.combine(next_day, dt.time.min).timetuple())
-            boundary = min(end, midnight)
-            duration = max(0.0, boundary - cursor)
-            share = total - allocated if boundary >= end else total * duration / elapsed
-            parts.append((local.date().isoformat(), share))
-            allocated += share
-            cursor = boundary
-        return parts
 
     @staticmethod
     def log_day_iso(stamp):
@@ -257,7 +160,7 @@ class ActivityMixin:
             pass
         return path.name
 
-    def activity_stats(self, db, current_board):
+    def activity_stats(self, current_board):
         """Board activity measured in UPDATES, counted from every page's `## Log`.
 
         JL 260726: "I don't care about the time. What I care is about the
@@ -358,89 +261,22 @@ class ActivityMixin:
         }
 
     def activity(self, payload):
+        """The Activity readout: how many UPDATES, counted from every `## Log`.
+
+        There is one op and it is the only one there has ever needed to be.
+        Until 260816 this route also carried a browser FOCUS TIMER whose
+        `start`/`pulse`/`stop` ops wrote spans into `.haipipe-board/
+        activity.sqlite3`. Nothing read them back: the two SELECTs against
+        those tables were the timer reading its own rows to write the next
+        one, and `activity_stats` was handed the connection and never touched
+        it. JL 260726 had already ruled the unit is updates rather than time,
+        so the timer had been measuring the wrong thing AND storing it for
+        nobody. It is gone, with its two tables and the beacon that fed them.
+        """
         board, brel, err = self.activity_board(payload)
         if err:
             return None, err
-        db = self.activity_conn()
-        try:
-            op = (payload.get("op") or "stats").strip().lower()
-            if op == "stats":
-                return self.activity_stats(db, brel), None
-            if op not in ("start", "pulse", "stop"):
-                return None, f"unknown activity op: {op}"
-            span = (payload.get("span") or "").strip()
-            if not re.fullmatch(r"[A-Za-z0-9._:-]{8,160}", span):
-                return None, "invalid activity span id"
-            page = (payload.get("page") or "board").strip()
-            if page != "board" and not re.fullmatch(
-                    r"(?:Q[A-Za-z0-9]+|S[A-Za-z0-9]+|S-[A-Za-z]+-[A-Za-z0-9]+)",
-                    page):
-                return None, "invalid activity page id"
-            def clean(v, n):
-                return re.sub(r"[\x00-\x1f]+", " ", str(v or "")).strip()[:n]
-            group = clean(payload.get("group"), 160)
-            page_title = clean(payload.get("title"), 200)
-            actor = clean(payload.get("actor"), 8).upper()
-            if not re.fullmatch(r"[A-Z0-9]{1,8}", actor):
-                actor = "JL"
-            stop_reason = clean(payload.get("reason"), 24).lower()
-            allowed_reasons = {"idle", "hidden", "pagehide", "page-change", "stop"}
-            if op == "stop" and stop_reason not in allowed_reasons:
-                stop_reason = "stop"
-            elif op != "stop":
-                stop_reason = ""
-            bm = (board / "board.md").read_text(encoding="utf-8", errors="ignore")
-            mt = re.search(r"^#\s+(.+)$", bm, re.M)
-            board_title = clean(mt.group(1) if mt else board.name, 240)
-            received_at = time.time()
-            row = db.execute("SELECT * FROM activity_spans WHERE span_id=?", (span,)).fetchone()
-            if row is None:
-                db.execute("""
-                    INSERT INTO activity_spans
-                    (span_id,board,board_title,group_name,page,page_title,actor,source,
-                     started_at,last_seen_at,ended_at,active_seconds,changed,change_count,
-                     stop_reason)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """, (span, brel, board_title, group, page, page_title, actor, "browser",
-                      received_at, received_at, received_at if op == "stop" else None, 0,
-                      1 if payload.get("changed") else 0,
-                      int(bool(payload.get("changed"))), stop_reason))
-            else:
-                now = received_at
-                if op == "stop" and stop_reason == "idle":
-                    try:
-                        active_until = float(payload.get("active_until"))
-                    except (TypeError, ValueError):
-                        active_until = received_at
-                    if float(row["started_at"]) <= active_until <= received_at + 1:
-                        now = max(float(row["last_seen_at"]),
-                                  min(received_at, active_until))
-                delta = 0
-                tick_start = now
-                if row["ended_at"] is None and bool(payload.get("active", True)):
-                    delta = min(max(now - float(row["last_seen_at"]), 0), 45)
-                    tick_start = now - delta
-                db.execute("""
-                    UPDATE activity_spans
-                    SET board_title=?, actor=?,
-                        last_seen_at=CASE WHEN ended_at IS NULL THEN ? ELSE last_seen_at END,
-                        ended_at=CASE WHEN ?='stop' AND ended_at IS NULL THEN ? ELSE ended_at END,
-                        active_seconds=active_seconds+?,
-                        changed=CASE WHEN changed=1 OR ? THEN 1 ELSE 0 END,
-                        change_count=change_count+?,
-                        stop_reason=CASE WHEN ?='stop' THEN ? ELSE stop_reason END
-                    WHERE span_id=?
-                """, (board_title, actor, now, op, now, delta,
-                      1 if payload.get("changed") else 0,
-                      int(bool(payload.get("changed"))), op, stop_reason, span))
-                for day, seconds in self.activity_day_parts(tick_start, now, delta):
-                    db.execute("""
-                        INSERT INTO activity_ticks (span_id, day, seconds)
-                        VALUES (?, ?, ?)
-                        ON CONFLICT(span_id, day)
-                        DO UPDATE SET seconds=seconds+excluded.seconds
-                    """, (span, day, seconds))
-            db.commit()
-            return self.activity_stats(db, brel), None
-        finally:
-            db.close()
+        op = (payload.get("op") or "stats").strip().lower()
+        if op != "stats":
+            return None, f"unknown activity op: {op}"
+        return self.activity_stats(brel), None

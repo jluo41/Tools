@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""Focused regression tests for QD8 board activity timing."""
+"""Regression tests for the Activity readout: updates counted from `## Log`.
+
+These replaced six timer tests on 260816. Those tests protected a browser
+focus-timer that wrote SQLite spans nobody read back, and they asserted things
+the panel never printed: how seconds split across midnight, which heartbeat a
+capped gap was allocated to, whether a late idle request honoured its deadline.
+JL had already ruled on 260726 that the unit is UPDATES rather than time, so the
+one behaviour on this route that a reader can actually see — counting dated
+`## Log` lines — was the one behaviour with no test at all.
+"""
 
 import datetime as dt
-import sqlite3
 import sys
 import tempfile
-import time
 import unittest
 from pathlib import Path
-from unittest import mock
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
@@ -18,7 +24,12 @@ sys.path.insert(0, str(HERE / "cli"))          # the CLI moved into cli/ (260801
 import serve as board_serve  # noqa: E402
 
 
-class ActivityTimingTest(unittest.TestCase):
+def stamp(days_ago):
+    """A `## Log` date written the way a page writes it: YYMMDD."""
+    return (dt.date.today() - dt.timedelta(days=days_ago)).strftime("%y%m%d")
+
+
+class ActivityCountsTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -30,148 +41,62 @@ class ActivityTimingTest(unittest.TestCase):
         )
         self.handler = object.__new__(board_serve.Handler)
         self.handler.root = self.root
-        self.base = time.time()
+        self.handler._log_cache = {}
+        board_serve.Handler._boards_cache = (0.0, None)
 
     def tearDown(self):
         self.temp.cleanup()
 
-    def send(self, op, at, **extra):
-        payload = {
-            "op": op,
-            "path": "/work/diagram/01-board/board.html",
-            "span": "activity-test-span",
-            "page": "QD8",
-            "group": "QD · Working",
-            "title": "Activity timing",
-            "actor": "JL",
-            "active": True,
-            "changed": False,
-            **extra,
-        }
-        with mock.patch.object(board_serve.time, "time", return_value=at):
-            result, error = self.handler.activity(payload)
+    def page(self, name, log_lines):
+        (self.board / name).write_text(
+            "# A page\n\nstate: 🟡 PARTIAL\n\n## Log\n" +
+            "".join(f"- {line}\n" for line in log_lines),
+            encoding="utf-8",
+        )
+
+    def stats(self):
+        result, error = self.handler.activity(
+            {"op": "stats", "path": "/work/diagram/01-board/board.html"})
         self.assertIsNone(error)
         return result
 
-    def test_span_accumulates_once_and_records_stop_reason(self):
-        self.send("start", self.base)
-        self.send("pulse", self.base + 30, changed=True)
-        self.send("stop", self.base + 50, reason="idle")
+    def test_one_dated_log_line_is_one_update(self):
+        self.page("QD8-test.md", [f"{stamp(0)} · did a thing",
+                                  f"{stamp(0)} · did another thing",
+                                  f"{stamp(1)} · did a thing yesterday"])
+        s = self.stats()
+        self.assertEqual(s["unit"], "updates")
+        self.assertEqual(s["totals"]["updates"], 3)
+        self.assertEqual(s["totals"]["today"], 2)
 
-        # The DASHBOARD stopped reporting time on 260726 (JL: "I don't care
-        # about the time"), so these assertions read the stored span instead of
-        # the stats payload. The recorder is still exact; it is simply no
-        # longer what the page shows.
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        row = db.execute("""
-            SELECT active_seconds, stop_reason
-            FROM activity_spans WHERE span_id='activity-test-span'
-        """).fetchone()
-        tick_seconds = db.execute("""
-            SELECT SUM(seconds) FROM activity_ticks
-            WHERE span_id='activity-test-span'
-        """).fetchone()[0]
-        db.close()
-        self.assertAlmostEqual(row[0], 50)
-        self.assertEqual(row[1], "idle")
-        self.assertAlmostEqual(tick_seconds, 50)
+    def test_an_undated_line_is_not_an_update(self):
+        self.page("QD8-test.md", [f"{stamp(0)} · dated, so counted",
+                                  "no date here, so not counted"])
+        self.assertEqual(self.stats()["totals"]["updates"], 1)
 
-        self.send("pulse", self.base + 80)
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        replayed = db.execute(
-            "SELECT active_seconds FROM activity_spans "
-            "WHERE span_id='activity-test-span'").fetchone()[0]
-        db.close()
-        self.assertAlmostEqual(replayed, 50)   # a stopped span never resumes
-
-    def test_cross_midnight_seconds_land_on_both_days(self):
-        start = dt.datetime(2026, 7, 26, 23, 59, 50).timestamp()
-        end = dt.datetime(2026, 7, 27, 0, 0, 20).timestamp()
-        self.send("start", start)
-        self.send("stop", end, reason="pagehide")
-
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        parts = db.execute("""
-            SELECT day, seconds FROM activity_ticks
-            WHERE span_id='activity-test-span' ORDER BY day
-        """).fetchall()
-        db.close()
-
-        self.assertEqual([day for day, _ in parts], ["2026-07-26", "2026-07-27"])
-        self.assertAlmostEqual(parts[0][1], 10)
-        self.assertAlmostEqual(parts[1][1], 20)
-        self.assertAlmostEqual(sum(seconds for _, seconds in parts), 30)
-
-    def test_capped_gap_is_allocated_nearest_the_heartbeat(self):
-        start = dt.datetime(2026, 7, 26, 23, 0, 0).timestamp()
-        end = dt.datetime(2026, 7, 27, 0, 0, 15).timestamp()
-        parts = board_serve.Handler.activity_day_parts(start, end, 45)
-
-        self.assertEqual([day for day, _ in parts], ["2026-07-26", "2026-07-27"])
-        self.assertAlmostEqual(parts[0][1], 30)
-        self.assertAlmostEqual(parts[1][1], 15)
-
-    def test_late_idle_request_uses_the_exact_activity_deadline(self):
-        self.send("start", self.base)
-        for seconds in range(30, 271, 30):
-            self.send("pulse", self.base + seconds)
-        self.send(
-            "stop",
-            self.base + 329,
-            reason="idle",
-            active_until=self.base + 300,
+    def test_only_the_log_section_is_read(self):
+        """A dated line outside `## Log` is prose, and prose is not a change."""
+        (self.board / "QD8-test.md").write_text(
+            f"# A page\n\n## States\n- {stamp(0)} · status prose, not a change\n"
+            f"\n## Log\n- {stamp(0)} · the one real update\n",
+            encoding="utf-8",
         )
+        self.assertEqual(self.stats()["totals"]["updates"], 1)
 
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        ended_at, stop_reason = db.execute("""
-            SELECT ended_at, stop_reason FROM activity_spans
-            WHERE span_id='activity-test-span'
-        """).fetchone()
-        db.close()
-        self.assertAlmostEqual(ended_at, self.base + 300)
-        self.assertEqual(stop_reason, "idle")
+    def test_the_route_takes_no_op_but_stats(self):
+        """The timer's start/pulse/stop went with the SQLite store (260816)."""
+        self.page("QD8-test.md", [f"{stamp(0)} · a thing"])
+        for op in ("start", "pulse", "stop"):
+            result, error = self.handler.activity(
+                {"op": op, "path": "/work/diagram/01-board/board.html"})
+            self.assertIsNone(result)
+            self.assertIn(op, error)
 
-    def test_page_change_cannot_reassign_the_span(self):
-        self.send("start", self.base)
-        self.send(
-            "stop",
-            self.base + 10,
-            page="QA1",
-            group="QA · Defining",
-            title="Destination page",
-            reason="page-change",
-        )
-
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        page, group_name = db.execute("""
-            SELECT page, group_name FROM activity_spans
-            WHERE span_id='activity-test-span'
-        """).fetchone()
-        db.close()
-        self.assertEqual(page, "QD8")
-        self.assertEqual(group_name, "QD · Working")
-
-    def test_legacy_stage_ids_are_accepted(self):
-        for index, page in enumerate(("S0", "SM1", "SA1"), start=1):
-            span = f"legacy-stage-span-{index}"
-            self.send("start", self.base + index, span=span, page=page)
-            self.send(
-                "stop",
-                self.base + index + 1,
-                span=span,
-                page=page,
-                reason="pagehide",
-            )
-
-        db = sqlite3.connect(self.root / ".haipipe-board" / "activity.sqlite3")
-        pages = [
-            row[0]
-            for row in db.execute(
-                "SELECT page FROM activity_spans ORDER BY span_id"
-            ).fetchall()
-        ]
-        db.close()
-        self.assertEqual(pages, ["S0", "SM1", "SA1"])
+    def test_no_state_is_written_anywhere(self):
+        """The readout reads markdown and keeps nothing of its own."""
+        self.page("QD8-test.md", [f"{stamp(0)} · a thing"])
+        self.stats()
+        self.assertFalse((self.root / ".haipipe-board").exists())
 
 
 if __name__ == "__main__":
