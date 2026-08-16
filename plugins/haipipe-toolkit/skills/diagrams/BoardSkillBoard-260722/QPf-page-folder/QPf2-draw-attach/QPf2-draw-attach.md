@@ -1,21 +1,23 @@
 # Draw · every page keeps its own drawing
-state: 🟡 PARTIAL · scenes in page draw/, split + compose live · open: draw.py layout, mint route retire
+state: 🟡 PARTIAL · scenes in page draw/, split + group view live · open: draw.py layout, old link route
 owner: CC
 method: one Excalidraw scene per page in the page's own draw/ folder; the page body carries only the ascii figure
 session: da5c5ec9-ee25-4017-bd12-49324c28ae43
 
 ## Opening
 Where does a page's drawing live, and how do you work on it?
-Every page can have a drawing: an Excalidraw scene anyone can open, edit, and talk over.
-The scene is a file in the page's own `draw/` folder, so it travels with the page and lives in git like everything else.
-The page body itself shows only the ascii figure in `## Diagram`, which reads anywhere, even with scripts off.
-To see or edit the real drawing, open the page's Draw split; the group page composes every member's drawing into one large view.
+Every page can have a drawing.
+It is an Excalidraw scene, one file anyone can open, edit, and talk over.
+The file sits in the page's own `draw/` folder, so it travels with the page and lives in git like every other file.
+The page body shows only the ascii figure in `## Diagram`, which reads anywhere, even with scripts off.
+To see or edit the real drawing, open the page's Draw split.
+A group page pulls every member's drawing into one large view.
 
 **Where this page sits**: `QPf1` says a page owns its folder and every subfolder is a plugin; this page owns the `draw/` plugin.
 `QO5` owns the split workspace a drawing opens in, and `QO11` owns two people editing at once.
 
 ## Diagram
-**The drawing's three homes**: the page shows ascii, the plugin holds the scene, the group composes.
+**The drawing's three homes**: the page shows ascii, the draw folder holds the scene, the group builds one view from them all.
 ```text
   📋 the PAGE, on stage                 🖌 the PLUGIN, beside it
   ┌───────────────────────────┐        ┌──────────────────────────┐
@@ -29,79 +31,106 @@ To see or edit the real drawing, open the page's Draw split; the group page comp
   🗂 GROUPDIR/draw/group.excalidraw    ◀──────┘
      relationships + layout · import manifest over the page sources
 ```
-The arrow into the group file runs one way: the group scene stores placements and an import list, so a page's scene is read into the composed view and never copied into it.
+The arrow into the group file runs one way.
+The group scene keeps only where each drawing goes and a list of which drawings to pull in.
+So a page's scene is read into the group view, never copied into it.
 
 ## Content
-### 1 · Where a drawing lives
-**The files**: one scene per owner, each in its owner's folder.
+### 1 · Every drawing has one file, and one owner
+**The files**: one drawing per owner, each in its owner's folder.
 ```text
 📄 page drawing     PAGEDIR/draw/PAGEID.excalidraw    the page's own scene
 🗺 group drawing    GROUPDIR/draw/group.excalidraw    layout + relations over the pages
 🧭 board map        board.excalidraw                  the Index page's overview scene
 🖼 image bytes      draw/assets/OWNER/                pasted images, kept out of the scene
 ```
-The two page tokens are different on purpose: the folder is named for the page id plus its slug, while the scene file's stem is the page id alone.
-This page sits in `QPf2-draw-attach/` and its scene is `draw/QPf2.excalidraw`.
-Each page drawing is an ordinary Excalidraw file that is useful opened by itself.
-Pasted image bytes land under the owner's `draw/assets/` and the scene keeps a relative pointer to them.
-A page that has no drawing yet gets an empty scene created the first time its Draw split opens, so there is never a missing file to trip over.
-The group drawing holds only group-level layout and an import list naming each page's scene; it never copies their content.
-`board.excalidraw` stays at the board root as the Index page's overview map, and the folded layout owns everything below it: one scene per page, one per group.
+📌 This part says which file holds which drawing, so you always know what to open.
 
-### 2 · Opening, editing, and generating
-**The Draw split**: the drawing opens beside the page, never inside it.
+The two page names in that list are different on purpose.
+The folder is named for the page id plus its slug.
+The scene file is named for the page id alone.
+This page sits in `QPf2-draw-attach/` and its scene is `draw/QPf2.excalidraw`.
+Each page drawing is a plain Excalidraw file, and it is still useful opened on its own.
+A pasted image is saved under the owner's `draw/assets/`, and the scene keeps a relative path to it.
+A page with no drawing yet gets an empty scene the first time its Draw split opens.
+So there is never a missing file to trip over.
+The group drawing holds only the group's own layout and a list naming each page's scene.
+It never copies what those scenes contain.
+`board.excalidraw` stays at the board root as the Index page's overview map.
+Everything below it follows the new layout: one scene per page, one per group.
+
+### 2 · You draw beside the page, never inside it
+**The Draw split**: the drawing opens next to the page, never inside it.
 ```text
 🖌 open        Plugin ▾ → Draw, or the Draw tab in the right pane
 ✏️ edit        draw on the canvas; saves go to this page's own scene file
 ✨ generate    the Draw-it button: Claude draws the page's ## Diagram for you
 🔄 follow      navigate to another page and the canvas follows it
 ```
-The split shows which file it saves to before you draw, so a gesture can never land in another page's scene.
-The Draw-it button takes an optional ask; left empty, it draws the page's ascii figure as a real scene.
-A generated scene may be regenerated freely, but the button refuses to overwrite a drawing a person made by hand.
+📌 This part says how to open a drawing, how to edit it, and how to ask Claude to draw it for you.
 
-### 3 · The group view is composed, never copied
-**One large drawing from many small ones**: what is stored and what is derived.
+The split names the file it will save to before you draw.
+So a stroke can never land in another page's scene.
+The Draw-it button takes an optional ask.
+Leave it empty, and it turns the page's ascii figure into a real drawing.
+A drawing Claude made can be drawn again as often as you like.
+The button refuses to overwrite a drawing a person made by hand.
+
+### 3 · The big group picture is built from the page files, not copied from them
+**One large drawing from many small ones**: what is kept, and what is built for you.
 ```text
-💾 stored     each page's scene · the group's own layer · placements
-⚙️ derived    one composed view, rebuilt on every open
-🔒 identity   every element keeps its owner, so edits route home
+💾 kept       each page's scene · the group's own layer · where each one goes
+⚙️ built      one group view, built again on every open
+🔒 owner      every shape keeps its owner, so an edit goes back to the right file
 ```
-Opening a group's drawing loads the group scene, pulls in every member page's scene, and places them by the stored layout.
-Editing inside the composed view happens in one visible mode at a time: arrange the pages, edit the group's own layer, or enter one page's scene; only that owner's file receives the save.
-A page save updates the composed view on its next open; nothing is ever merged or imported by hand.
+📌 This part says the group picture is put together from the page files each time it opens.
 
-### 4 · Saves are checked, never blind
-**The safe save**: what the server verifies before writing.
+Opening a group's drawing loads the group scene, pulls in every member page's scene, and places them where the layout says.
+Inside the group view you work in one mode at a time.
+You can arrange the pages, edit the group's own layer, or step into one page's scene.
+Only that owner's file receives the save.
+Save a page, and the group view shows the change the next time it opens.
+Nothing is ever merged or pulled in by hand.
+
+### 4 · Two people cannot wipe out each other's work
+**The safe save**: what the server checks before it writes.
 ```text
 📥 opened     the revision the editor loaded
 📤 save       owner · that revision · the changed elements
 ✅ accepted   the file has not moved since
 ⚠️ conflict   someone else saved first · reload and compare
 ```
-Every save carries the revision it started from, so two people editing the same drawing cannot silently overwrite each other.
-The chat pane receives the same owner address as the canvas, so asking it to change a drawing routes to that drawing's own file.
+📌 This part says every save is checked first, so nobody quietly loses work.
+
+Every save carries the version it started from.
+So two people on the same drawing cannot quietly overwrite each other.
+The chat pane gets the same owner address as the canvas.
+So asking chat to change a drawing writes to that drawing's own file.
 
 ## Aims
-- [x] 🚚 Every page scene lives in its page's draw/ plugin
-      61 scenes moved and renamed to current page ids; only group.excalidraw remains at group level.
-- [x] 🧹 No ## Diagram embeds an Excalidraw canvas
-      The frame links are stripped from all 19 pages that carried one; Diagram is ascii-only.
-- [ ] ⚙️ draw.py learns the folded layout
-      Group = the group folder, page scene = the page's draw/; manifests re-point; verify passes on this board.
-- [x] 🖼 The group canvas renders again
-      page_board.group_canvas anchors on the group folder instead of the members' shared parent.
-- [ ] 🗑 The unused Excalidraw+ mint route retires
-      `/_board/excalidraw` writes a hosted scene link into `## Diagram` that no page renders; `/_board/excalidraw-save`, the live page-scene save, is a different route and stays.
+- [x] 🚚 Every page's drawing sits in that page's own draw/ folder
+      61 scenes moved and renamed to current page ids, and only group.excalidraw is left at group level.
+- [x] 🧹 No page puts an Excalidraw canvas inside ## Diagram
+      The frame links are gone from all 19 pages that carried one, and Diagram holds ascii only.
+- [ ] ⚙️ draw.py works with the new folder layout
+      The group scene is the group folder's, each page scene is its own, the import lists point at the new paths, and verify passes on this board.
+- [x] 🖼 The group picture shows up again
+      page_board.group_canvas now starts from the group folder instead of the members' shared parent.
+- [ ] 🗑 The unused Excalidraw+ route is switched off
+      `/_board/excalidraw` writes a hosted scene link into `## Diagram` that no page draws, and it goes; `/_board/excalidraw-save` saves a page's own scene, and it stays.
 
 ## States
-The drawings themselves are in place: every page scene sits in its page's folder, the split opens and follows the page, and the group view composes.
-`## Diagram` is ascii-only on every live page; the one surviving Excalidraw link sits in `_archive/QA0-board-map.md`.
-draw.py's verify still round-trips the legacy `board.excalidraw` at the board root instead of the folded page layout.
-A nearer blocker sits in front of it: `draw.py verify` on this board aborts with "Group QA imports do not match board.md", because `QA-design/draw/group.excalidraw` still imports the QA0 and QA1 scenes after both pages left the roster, so §3's composition does not run for that group today.
-serve.py still accepts `/_board/excalidraw`, the Excalidraw+ mint route that writes a hosted scene link into `## Diagram` that no page renders; the live page-scene save at `/_board/excalidraw-save` is in daily use and is not the route to retire.
+The drawings themselves are in place: every page scene sits in its page's folder, the split opens and follows the page, and the group view builds.
+`## Diagram` holds ascii only on every live page, and the one Excalidraw link left sits in `_archive/QA0-board-map.md`.
+draw.py's verify still checks the old `board.excalidraw` at the board root instead of the new page layout.
+One blocker sits in front of that: `draw.py verify` stops on this board with "Group QA imports do not match board.md".
+The cause is `QA-design/draw/group.excalidraw`, which still pulls in the QA0 and QA1 scenes after both pages left the list.
+So §3's group view does not build for that group today.
+serve.py still accepts `/_board/excalidraw`, the old Excalidraw+ route that writes a hosted scene link into `## Diagram` that no page draws.
+The other route, `/_board/excalidraw-save`, saves a page's own scene, is in daily use, and is not the one to switch off.
 
 ## Log
+- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我他妈真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 12 sentences flagged before, 7 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260816 · [REVISE-CC] second findings pass
       Seven findings applied, each checked against the engine source before the sentence was written.
       JL ruled the `page-type: design` line off the head: this page is a settled contract that never weighed candidates, so it is a plain Q decision page and must not close under the design contract.

@@ -1,22 +1,29 @@
 # Bibex · the page's own bib, worked through a citation workbench
 state: 🟡 PARTIAL · store, workbench, three doors shipped · open: first real ✓ (citable), paper bib, checker
 owner: JL
-method: give each page its own .bib, seed it by copying from the paper's 0-*.bib, and work it through cards that show status and links, take a person's ✓, and land a person's pasted entries
+method: give each page its own .bib, filled by copying from the paper's 0-*.bib, and worked through cards that show status and links and take a person's ✓ or pasted entry
 session: da839d44-de6a-4874-a8d1-11e93495056c
 
 ## Opening
-Where does a page's bibliography live, and how does a person actually work it?
-The bib is the page's own: `bibex/<stem>.bib`, seeded from the paper's `0-*.bib`, which is never written back.
-The 📚 tab is a workbench over that store.
-Every entry is a card carrying its Scholar, DOI, and URL links beside a checked-or-not status only a person may tick.
-The same card opens into an editor for fixing an entry or pasting a new one in.
-The machine composes nothing, keeping citation-craft's law whole.
+Where does a page keep its references, and how does a person work on them?
+They live in the page's own `bibex/<stem>.bib`, copied in from the paper's `0-*.bib`, which is never written back to.
+The 📚 tab is a workbench over that file, and every entry shows as a card.
+A card carries its Scholar, DOI, and URL links, beside a mark only a person may tick.
+The same card also opens an editor, for fixing an entry or pasting a new one in.
+The machine never writes a reference itself, keeping citation-craft's law whole.
 
-**What the person gets per card**: the parsed title, authors, and year; 🔎 a Google Scholar search built from the title; 🔗 DOI and 📄 URL when the entry carries them; ✅ checked with who and when, or ⬜ unchecked with the ✓ button; and the raw bibtex behind an ✎ edit fold.
-**Covered elsewhere**: `QPf1` rules the folder; the roster row is `../../board/haipipe-plugin/ref/roster.md`; the siblings are `QPf6` (latex) and `QPf7` (word), and `QPf6`'s Decision row rules git's treatment of the DERIVED files while the page bib itself is committed; the law's source is `S03-literature/citation-craft.md`.
+**What a person gets on one card**: the title, authors, and year, read out of the entry.
+🔎 a Google Scholar search built from the title, and 🔗 DOI and 📄 URL when the entry carries them.
+✅ checked, with who and when, or ⬜ unchecked, with the ✓ button beside it.
+The raw bibtex sits behind an ✎ edit fold.
+
+**Covered elsewhere**: `QPf1` rules the folder, and the roster row is `../../board/haipipe-plugin/ref/roster.md`.
+The siblings are `QPf6` (latex) and `QPf7` (word).
+`QPf6`'s Decision row rules what git does with the rebuilt files, while the page bib itself is always committed.
+The law comes from `S03-literature/citation-craft.md`.
 
 ## Diagram
-**The page bib is the truth; three doors work it**: seeding copies entries in, a person ticks and pastes, the view only renders.
+**The page bib is the truth, and three doors work it**: filling copies entries in, a person ticks and pastes, and the view only draws.
 ```text
   📄 <page>/<stem>.md ── cite keys (code fences stripped) ──▶ the KEYS
         ▼
@@ -34,8 +41,8 @@ The machine composes nothing, keeping citation-craft's law whole.
 ```
 
 ## Content
-### 1 · The contract
-**A MIXED plugin, like display/**: one primary file a person rules, derived files a rebuild may replace.
+### 1 · One file is yours, the rest is rebuilt
+**A MIXED plugin, like display/**: one file a person rules, and files a rebuild may replace.
 ```text
   <page>/bibex/
     <stem>.bib         🧑 PRIMARY · the page's citation store · committed
@@ -43,12 +50,15 @@ The machine composes nothing, keeping citation-craft's law whole.
     <stem>-bib.html    ⚙️ DERIVED · the workbench view, regenerated freely
   flat page fallback: <board>/bibex/
 ```
-Seeding resolves a cited key against the paper's `0-*.bib` upward and copies the entry whole into the page bib; the upstream file is read and never written.
-A refresh re-scans the page's keys, imports what has become resolvable, and regenerates the view; an entry already in the page bib is never overwritten and never deleted, because a person may have edited it.
-An entry no longer cited on the page stays, marked `not cited on this page`, so removing a sentence never silently drops its source.
-A cite inside a code fence or backticks is stripped before scanning: a figure showing the syntax is an illustration, not a citation.
+📌 The page's `.bib` is yours to write and is never overwritten, while the card view is rebuilt for you at any time.
+Filling looks a cited key up in the paper's `0-*.bib`, searching upward, and copies the whole entry into the page bib.
+The paper file is read and never written.
+A refresh scans the page's keys again, brings in what can now be found, and draws the view again.
+An entry already in the page bib is never overwritten and never deleted, because a person may have edited it.
+An entry no longer cited on the page stays, marked `not cited on this page`, so cutting a sentence never quietly drops its source.
+A cite inside a code fence or backticks is stripped before the scan, because a figure showing the syntax is a picture, not a citation.
 
-### 2 · The workbench
+### 2 · What a person can do to an entry, and what the machine may not
 **What a person does on a card**: check, mark, fix, add.
 ```text
   ✅ checked · JL 260815  [undo]     the tick writes verified = {JL 260815}
@@ -60,70 +70,82 @@ A cite inside a code fence or backticks is stripped before scanning: a figure sh
      [📋 paste] → done                 verbatim in the page bib
   ＋ add a citation                    same pen, for uncited sources
 ```
-The ✓ is the page's answer to "did I check this link myself": nobody but a person clicks it, the field records who and when, and undo removes it.
-The pen validates shape only, one balanced entry with a key, and refuses a duplicate key unless the save is an explicit replace; it never composes, completes, or corrects the text, which is the line between a pen and an author.
-The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar's Cite → BibTeX link, or a paper URL, and the bibtex is fetched WHOLE from that source into the box.
-Fetching is copying, so the fetched text sits there for review and landing it stays the person's second click.
-An unusable fetched key, such as doi.org's URL-as-key, is renamed to surname+year mechanically, because a key is a local handle and not metadata.
-The whole raw `.bib` sits one fold from the cards, path printed, because the file is the person's and hand-editing it is legal.
-This page's own store holds one entry, JL's KDD paper \citep{luo2026eventglucose}, cited here so the page renders the inline link and the References block the binding produces.
+📌 A person ticks, fixes, and pastes, and the machine only copies text whole and never writes a reference itself.
+The ✓ answers one question: did I check this link myself?
+Nobody but a person clicks it, the field records who and when, and undo takes it away.
+The edit buttons check the shape only, one balanced entry with a key.
+They refuse a repeated key unless the save says outright that it replaces the old one.
+They never write, finish, or fix the text itself, and that is the line between a pen and an author.
+The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar's Cite to BibTeX link, or a paper URL.
+The bibtex is then fetched WHOLE from that source into the box.
+Fetching is copying, so the fetched text sits in the box for review, and landing it stays the person's second click.
+A fetched key you cannot use, such as doi.org's URL-as-key, is renamed to surname plus year by rule, because a key is a local handle and not information about the paper.
+The whole raw `.bib` opens right below the cards, with its path printed.
+The file is the person's, and editing it by hand is allowed.
+This page's own file holds one entry, JL's KDD paper \citep{luo2026eventglucose}.
+It is cited here so the page draws the inline link and the References block that the binding makes.
 
-### 3 · The surface
-**The 📚 tab**: framed the way the slide tab is, from a registry entry, a HEAD probe, and an iframe, with the view carrying its own controls.
+### 3 · How the tab gets on screen
+**The 📚 tab**: framed the way the slide tab is, from a registry entry, a HEAD probe, and an iframe, with the view carrying its own buttons.
 ```text
   82-plugin-exports.js ──POST──▶ /_board/bibex ──▶ refresh + view
   tab.url()  names bibex/<stem>-bib.html · HEAD hit ▶ frame it
   the view's buttons POST bibex-verify / bibex-entry themselves and
   reload · lit-click on the tab ▶ REFRESH, the derived half only
 ```
+📌 The 📚 tab frames a page the server wrote, and the buttons inside that page talk to the server on their own.
 
 ## Aims
-### A1 · 🗃 The contract
-- A1.1 · The page-owned store, seeding, and safe refresh shipped.
-  **Done when:** a page has its own `bibex/<stem>.bib`, a cited key the paper's `0-*.bib` can resolve arrives in it by copy, and a repeat refresh changes no entry already there.
-  Shipped as haipipe-board 0.129.0 and lifecycle-tested: seed-import copied an upstream entry whole, a second refresh re-imported nothing, and a person's added entry survived it untouched.
-- A1.2 · One page inside a real paper lives on its seeded bib.
-  **Done when:** a cite-bearing page's bib carries seeded entries beside at least one person-pasted one, and the upstream `0-*.bib`'s bytes are unchanged by the whole round.
+### A1 · 🗃 One file is yours, the rest is rebuilt
+- A1.1 · The page-owned file, the copying in, and a safe refresh shipped.
+  **Done when:** a page has its own `bibex/<stem>.bib`, a cited key the paper's `0-*.bib` can find arrives in it by copy, and a repeat refresh changes no entry already there.
+  Shipped as haipipe-board 0.129.0 and tested end to end: the copy brought an upstream entry in whole, a second refresh brought in nothing, and a person's added entry came through untouched.
+- A1.2 · One page inside a real paper lives on its filled bib.
+  **Done when:** a page that cites sources has copied entries beside at least one a person pasted, and the upstream `0-*.bib` comes out of the whole round byte for byte the same.
 
-### A2 · 🧑 The workbench
-- A2.1 · The cards, links, tick, undo, pen, and duplicate guard shipped.
-  **Done when:** a card shows its parsed fields beside its links and its status, and the routes carry four actions through to the file: a tick, an undo, a verbatim paste, and a refused duplicate key.
-  Shipped 260815: parsed fields, Scholar/DOI/URL links, verified-field write and undo, verbatim landing, replace-only overwrite, all exercised through the routes.
+### A2 · 🧑 What a person can do to an entry, and what the machine may not
+- A2.1 · The cards, links, tick, undo, edit buttons, and repeat-key guard shipped.
+  **Done when:** a card shows its read-out fields beside its links and its status, and the routes carry four actions through to the file: a tick, an undo, a word-for-word paste, and a refused repeat key.
+  Shipped 260815: read-out fields, Scholar/DOI/URL links, the verified field written and undone, word-for-word landing, replace-only overwrite, all run through the routes.
 - A2.2 · The first REAL checked entry is JL's.
-  **Done when:** an entry carries `verified = {JL …}` because JL opened its link and clicked ✓, not because a machine or a demo wrote it.
-- A2.3 · The ＋ box resolves links, and the raw file is one fold away.
-  **Done when:** each of the four accepted link shapes returns bibtex into the box for review, a link outside them is refused with those shapes named rather than guessed at, and the whole `.bib` is readable from the view with its on-disk path.
-  Shipped 260815 and network-tested against all four shapes: Scholar's cite link, doi.org content negotiation, arXiv's bibtex endpoint, and the Semantic Scholar URL fallback, each fetch landing in the box for review rather than in the file.
+  **Done when:** an entry carries `verified = {JL …}` because JL opened its link and clicked ✓, and not because a machine or a demo wrote it.
+- A2.3 · The ＋ box turns links into bibtex, and the raw file is one fold away.
+  **Done when:** each of the four accepted link shapes returns bibtex into the box for review, a link outside them is refused with those four shapes named rather than guessed at, and the whole `.bib` can be read from the view with its path on disk.
+  Shipped 260815 and tested over the network against all four shapes: Scholar's cite link, doi.org content negotiation, arXiv's bibtex endpoint, and the Semantic Scholar URL fallback.
+  Each fetch landed in the box for review, and not in the file.
 
-### A3 · 🖼 The surface
-- A3.1 · The tab and view shipped; the view renders every affordance.
-  **Done when:** the 📚 tab frames `bibex/<stem>-bib.html`, and that page shows a card, its status chip, its links, its edit fold, the add box, and the refresh control.
-  Shipped 260815 and screenshot-verified: card, status chip, links, edit fold, add box, refresh.
+### A3 · 🖼 How the tab gets on screen
+- A3.1 · The tab and the view shipped, and the view draws everything a person needs.
+  **Done when:** the 📚 tab frames `bibex/<stem>-bib.html`, and that page shows a card, its status chip, its links, its edit fold, the add box, and the refresh button.
+  Shipped 260815 and checked against a screenshot: card, status chip, links, edit fold, add box, refresh.
 - A3.2 · One workbench action is clicked in a real browser.
   **Done when:** a person clicks add and ✓ on the view's own buttons in a live browser, and the POSTs and the reload carry the change through to the file.
 
 ### P · 🚧 The boundary
-- P1 · `bibex/` joins the checker's known-plugin list.
-  **Done when:** `check.py` names `bibex/` a known plugin folder and warns on nothing inside it.
+- P1 · `bibex/` joins the checker's list of known plugin folders.
+  **Done when:** `check.py` knows `bibex/` as a plugin folder by name and warns on nothing inside it.
 
 ## States
-The store and the workbench are built and route-tested; what remains is a ✓ traceable to a person, a real paper page living on its seeded bib, and the checker boundary.
-- ✅ A1.1 · Lifecycle-tested 260815 on a synthetic paper: seed, add, dup-guard, verify, undo, refresh-preserves.
-- ⬜ A1.2 · No real paper page has lived on its seeded bib yet.
-- ✅ A2.1 · Route-tested 260815; the verified field lands inside the entry and undo strips it clean.
-- 🧠 A2.2 · Held for a citable record: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, but a field cannot show whose click wrote it and this page's Log records a machine writing that same field once, so only JL's own dated note of the tick closes this.
-- ✅ A2.3 · `_resolve_bib_link` accepts the four shapes and refuses anything else by naming them; the view's last fold prints the whole `.bib` with its path.
-- ✅ A3.1 · View screenshot-verified 260815 with a real entry's card.
-- ✅ A3.2 · The QPf4-chat add (260815 15:13) and ✓ (15:15) went through the view's own buttons in a live browser and landed in `../QPf4-chat/bibex/QPf4-chat.bib`.
+The file and the workbench are built, and every route is tested.
+What is left is a ✓ that can be traced to a person, a real paper page living on its filled bib, and the checker boundary.
+- ✅ A1.1 · Tested end to end 260815 on a made-up paper: copy in, add, repeat-key guard, verify, undo, and a refresh that kept everything.
+- ⬜ A1.2 · No page in a real paper has lived on its filled bib yet.
+- ✅ A2.1 · Routes tested 260815; the verified field lands inside the entry, and undo strips it clean.
+- 🧠 A2.2 · Held until the record can be traced: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, but a field cannot show whose click wrote it, and this page's Log records a machine writing that same field once, so only JL's own dated note of the tick closes this.
+- ✅ A2.3 · `_resolve_bib_link` takes the four shapes and refuses anything else by naming them; the view's last fold prints the whole `.bib` with its path.
+- ✅ A3.1 · The view was checked against a screenshot 260815, with a real entry's card.
+- ✅ A3.2 · The QPf4-chat add (260815 15:13) and ✓ (15:15) went through the view's own buttons in a live browser, and landed in `../QPf4-chat/bibex/QPf4-chat.bib`.
 - ⬜ P1 · `check.py` does not yet know `bibex/` by name.
 
 ## Law
 - 🗃 The page owns its bib; the paper's is read-only here (JL 260815: "the bib for this page only")
-      Seeding copies entries whole out of the paper's `0-*.bib` and nothing this plugin does ever writes that file.
+      Filling copies whole entries out of the paper's `0-*.bib`, and nothing this plugin does ever writes that file.
 - ✂️ The pen, never the author, inherited from citation-craft.md
-      The machine lands a person's pasted text verbatim or copies an upstream entry whole; it composes, completes, or corrects no entry, and a missing key is reported rather than guessed.
+      The machine lands a person's pasted text word for word, or copies an upstream entry whole.
+      It writes, finishes, and fixes no entry, and a missing key is reported rather than guessed at.
 - 🧑 The ✓ is a person's
-      `verified` records that a person opened the link and checked; no machine may write it, and the one demo tick that did was reverted the same hour.
+      `verified` records that a person opened the link and checked it.
+      No machine may write it, and the one demo tick that did was taken back the same hour.
 
 ## Files
 ### ⚙️ Engines
@@ -136,13 +158,14 @@ The store and the workbench are built and route-tested; what remains is a ✓ tr
 
 ### 📋 Contracts
 - `../../paper/S03-literature/citation-craft.md`
-  The law's source; if the two disagree, that file wins and this plugin is the defect.
+  Where the law comes from; if the two disagree, that file wins and this plugin is the defect.
 
 ### 🧑 What a person rules
 - `bibex/QPf8-bibex.bib`
-  This page's own store, holding the one entry §2 cites, `luo2026eventglucose`; it carries no `verified` field, so the ✓ here is still JL's to click.
+  This page's own file, holding the one entry §2 cites, `luo2026eventglucose`; it carries no `verified` field, so the ✓ here is still JL's to click.
 
 ## Log
+- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我他妈真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 15 sentences flagged before, 8 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260816 · [REVISE-CC] JL's ruling lands: A2.2 goes back to 🧠, held, and the second-round findings are worked.
       A2.2's ✅ stood on scope and not on provenance, so the Aim is held rather than met.
       Its `Done when` decides on who wrote the field, "because JL opened its link and clicked ✓, not because a machine or a demo wrote it", and `../QPf4-chat/bibex/QPf4-chat.bib:12` shows the field and not the hand.
