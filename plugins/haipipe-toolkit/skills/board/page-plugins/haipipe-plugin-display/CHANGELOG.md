@@ -9,3 +9,6 @@
 
 ## 0.1.2 · 2026-08-16
 - The projections inherit the citation: the latex export embeds a cited unit as a float (winning asset + authored caption), the word export embeds the rasterized figure with inline (Figure n) and a 🖼 Display comment; mechanics recorded in the latex/word variant skills, this file only names the rule.
+
+## 0.1.3 · 2026-08-16
+- The display family consolidated behind its `haipipe-display` door (JL 260816): the kind→renderer table now routes table and figure through the door's `ref/table.md` and `ref/figure.md`; the retired `-table` and `-figure` skill names left the table.

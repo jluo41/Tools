@@ -1,5 +1,5 @@
 # serve.py: splitting the live layer
-state: 🟡 PARTIAL · split shipped 260731 (gate + mixin move + thin serve.py); QD2 M1 landed in live/chat.py the same day, so what is left is retiring the serve.py shims and promoting navtest.mjs
+state: 🟡 PARTIAL · split shipped 260731, QD2 M1 landed the same day · open: serve.py shims, navtest.mjs
 owner: JL
 method: QC1b's Law verbatim, a mechanical move under a response-identical gate; mixins so no signature changes; the areas that stopped moving go first
 

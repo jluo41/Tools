@@ -1,11 +1,11 @@
 ---
 name: haipipe-plugin-display
 description: >-
-  The display/ plugin of a Board page: the page treated as a small paper, shipping figure and table UNITS at <page>/display/<stem>-DisplayN-<slug>/ under the display family's unit contract adopted verbatim. Owns the page-side delta only: the unit address and naming, routing a claim to the right renderer skill by kind, the five-step walk whose accepted: tick is human-only, and the citation move: a unit's id named in the content sentence chips as an evidence card in place, with the > Display: lane as the machine's filing surface. Loads haipipe-plugin for the four-facet contract and never restates it; cites the display family's unit contract and never forks it. Trigger: display plugin, page display, display unit, make a figure for this page, tikz unit, display tab, evidence card, > Display lane, cite a display, accepted tick, /haipipe-plugin-display.
+  The display/ plugin of a Board page: the page treated as a small paper, shipping figure and table UNITS at <page>/display/<stem>-DisplayN-<slug>/ under the display family's unit contract adopted verbatim. Owns the page-side delta only: the unit address and naming, routing a claim to the right renderer skill by kind, the five-step walk whose accepted: tick is human-only, and the citation move: a unit's id named in the content sentence chips as an evidence card in place, with the > Display: lane as the machine's filing surface. Loads haipipe-plugin for the four-facet contract and never restates it; cites the display family's unit contract and never forks it. Trigger: display plugin, page display, display unit, make a figure for this page, tikz unit, algorithm block, equation float, display tab, evidence card, > Display lane, cite a display, accepted tick, /haipipe-plugin-display.
 metadata:
-  version: "0.1.2"
+  version: "0.1.3"
   last_updated: "2026-08-16"
-  summary: "The projections inherit the citation (JL 260816): latex and word both embed a cited unit after its citing paragraph."
+  summary: "The renderer family consolidated (JL 260816): data kinds route through the haipipe-display door's recipes; the routing table updated."
 ---
 # /haipipe-plugin-display · the page as a small paper, its figures as accepted units
 
@@ -41,9 +41,17 @@ driven by   kind             renderer                          recipe holds
 data        📊 table         haipipe-display-table             the build script
 data        📈 figure        haipipe-display-figure            the python + receipts
 concept     📐 diagram       haipipe-display-diagram           the FigureSpec JSON → SVG
-concept     ✒️ tikz          TeX-native, authored directly     the .tikz.tex source
+concept     ✒️ tex           no skill, authored by hand        the .tex source
 concept     🎨 illustration  haipipe-display-illustration      the prompt + review log
 ```
+
+The ✒️ row is named after the MECHANISM, not after one package (JL 260816): tikz, an
+`algorithm2e` block, and a display equation are one kind, because they share the writer (a
+person), the recipe (a hand-authored `.tex` that `float.tex` inputs), and the fact that there
+is no renderer skill to route to. Three names for one mechanism would be the drift.
+
+`haipipe-display` is the DOOR over that table (JL 260816): say what you want shown and it picks the renderer, or name the renderer directly when the kind is already clear.
+The family retired its poster and slides renderers the same day; a page's talk is the slide plugin's deck, never a display unit.
 
 Data-driven kinds take their numbers ONLY through `intake/` citing the task bank by id — ask once, cite twice (QPf5 §4); a render never invents a value.
 Every unit walks the same five steps, and the hands alternate:

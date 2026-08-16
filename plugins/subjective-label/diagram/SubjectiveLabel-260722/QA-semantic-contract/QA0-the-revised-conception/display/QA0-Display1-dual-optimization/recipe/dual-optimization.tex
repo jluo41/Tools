@@ -1,0 +1,47 @@
+% Hand-authored TeX-native unit · ✒️ tex kind · no renderer skill.
+% The dual optimization loop of QA0 §8, as one round of the calibration procedure.
+%
+% THIS FILE IS THE BODY ONLY. The `algorithm` wrapper, the \caption and the \label are
+% the caller's and live in ../float.tex, because the unit contract puts the title in the
+% caller-owned caption and never inside the rendered thing.
+%
+% WHAT IT MAY AND MAY NOT SAY. Every symbol here is QA0's own: H_t the human latent
+% concept, Theta_t the external annotation policy, C_t the candidate pool, P_t the sealed
+% weak prelabels, B_t the human batch, Y*_t the human final labels, D_t the cumulative
+% confirmed gold, G_t the closed guideline version. No count, capacity or threshold is
+% written in: QA0 fixes none, and the unit contract calls an invented number a defect.
+% The one quantity named, m_t, is a NAME the caller supplies, never a value.
+\DontPrintSemicolon
+\SetAlgoLined
+\KwIn{closed $G_{t-1}$, closed $D_{t-1}$, development pool, human capacity $m_t$}
+\KwOut{closed $D_t$, closed $G_t$, stop verdict}
+
+\BlankLine
+\textbf{$\rhd$ the machine proposes} \;
+$C_t \leftarrow$ candidates drawn across the seven diagnostic regions \;
+$P_t \leftarrow$ independent weak-executor prelabels under $G_{t-1}$, \emph{sealed} \;
+$B_t \leftarrow$ challenge items $\cup$ stratified consensus audit, within $m_t$ \;
+
+\BlankLine
+\textbf{$\rhd$ the human rules, blind to $P_t$} \;
+\ForEach{item $i \in B_t$}{
+  $Y^{*}_t(i) \leftarrow$ human class, region, uncertainty, rationale \;
+}
+\tcp{$P_t$ opens only after $Y^{*}_t$ is fixed, so it can diagnose the guideline
+     without ever standing in for gold}
+
+\BlankLine
+\textbf{$\rhd$ both learners adapt} \;
+$H_t \leftarrow H_{t-1}$ sharpened by the comparisons just made \;
+$\Theta_t \leftarrow$ revise $\Theta_{t-1}$ to express $H_t$, using $P_t$ as error evidence \;
+
+\BlankLine
+\textbf{$\rhd$ checkpoint} \;
+$D_t \leftarrow D_{t-1} \cup Y^{*}_t$ \;
+$G_t \leftarrow$ close $\Theta_t$ as a version \;
+\uIf{\textsc{StopGate}$(D_t, G_t)$ holds}{
+  \Return $D_t$, $G_t$, \textbf{stop} \tcp*{$G^{*} \leftarrow G_t$; the sealed test may open}
+}
+\Else{
+  \Return $D_t$, $G_t$, \textbf{continue} \tcp*{$t \leftarrow t+1$}
+}

@@ -1,5 +1,5 @@
 # Slide · every page may have a deck, and the deck is authored
-state: ✅ SETTLED · the surface is live end to end and all four aims closed 260815; the slide's only home is the plugin, everywhere
+state: 🟡 PARTIAL · plugin-only deck, 3 Aims closed · open: install.sh --global re-run
 owner: JL
 page-type: design
 method: describe the plugin as it runs today; history lives in Log and `_archive/`
@@ -7,11 +7,16 @@ session: 65d477e7-b493-49d7-b508-2b0f7ea0772c
 
 ## Opening
 Where does a page's talk live, and how does it stay fresh?
+Every page MAY have one deck at `slide/<page>-deck.html`, optional, like a `draw/` scene or a kept `chat/` session.
+The deck is authored, not projected: Claude reads the page's markdown and writes a real talk onto the html-ppt shell.
+A ✨ Regenerate button on both doors re-authors it in one click.
+So the talk you give is never more than one click behind the page, and no deck is maintained by hand.
 
-Every page MAY have one deck at `slide/<page>-deck.html`, optional the way a scene in `draw/` or a kept session in `chat/` is.
-The deck is the AI deck, JL's ruling: Claude reads the page's markdown, makes editorial choices, and writes the file on the html-ppt shell.
-A ✨ Regenerate button on both doors re-authors it in one click, so a deck is never more than one gesture behind its page.
-The design succeeds when a reader opens the Slides tab, watches a real talk about the page, and can refresh it without leaving the browser.
+**What a deck is here**: one self-navigating html file of six to nine slides, opened bare to present, or framed in the 🎞 tab to read.
+
+**Why authored and not projected**: a projection pastes a page's prose into boxes, and prose a reader skims is not a talk a presenter can speak, so the model is allowed to cut, reorder, and quote instead.
+
+**Where a correction belongs**: the deck is derived and overwritten whole, so a hand edit to it dies at the next ✨ click; a lasting fix goes on the page, which is what every regeneration reads.
 
 **Covered elsewhere**: `QPf1` rules that every subfolder of a page is a plugin; `QPf2` and `QPf4` are the sibling plugins this one is shaped like; the html-ppt skill (`display/html-ppt`) owns everything a deck looks like.
 
@@ -80,19 +85,41 @@ A deck is six to nine slides: a cover, a closer, and distilled middles built fro
 The deck links at the html-ppt skill's assets by relative path, so a theme improvement reaches every deck with no rebuild.
 Nothing from the skill is copied into the board, and the board contributes no CSS of its own.
 
+### 5 · SELECTION: why the authored deck, and what lost
+**The record**: the three ways a page could have had a deck, and the one left standing.
+```text
+  SELECTION · 260815 · JL ruled
+  🏆 winner       the authored deck · claude -p writes it from the page's .md
+  🪦 loser        the reflow projection · live/deck.py · dropped
+  🪦 loser        the slide page-type · one page per deck · dropped
+  📤 downstream   page-plugins/haipipe-plugin-slide · every page's slide/
+```
+The authored deck won on evidence rather than argument: six decks were written the hour of the ruling, and the first live `/_board/autodeck` run produced a real talk for `QF2-newcomer`.
+The reflow projection lost because it copied rather than distilled, so a division came back as its own paragraphs in a box; it was dropped whole, endpoint and route with it, and nothing in the board projects a page into slides now.
+The slide page-type lost because it asked for a second page to maintain beside the page it was about, with one division per slide and an embedded frame each; it was dropped, and its specimen is archived whole at `_archive/QBt9-for-slide.md`, where the reason it lost stays readable.
+
 ## Aims
 - [x] ✂️ `live/deck.py` retires
       Deleted 260815 with its `/_board/deck` route and the DeckMixin; the ✨ path is the only writer.
-- [x] 🗑 `haipipe-page-for-slide` leaves `page-types/`
-      Removed 260815; `haipipe-page` 0.26.0 drops the `page-type: slide` key, `plug` refreshed `Design-3`'s title, and `install.sh --global` is owed a re-run.
+- [ ] 🗑 `haipipe-page-for-slide` leaves `page-types/` everywhere it is installed
+      The source tree is already clean: the variant folder was deleted and `haipipe-page` 0.26.0 dropped the `page-type: slide` key.
+      The aim stays open until `Tools/install.sh --global` has been re-run, because a moved or deleted variant leaves its old global symlink behind.
 - [x] 🧾 `QPs2`'s roster drops for-slide
       The hub was swept to the two-kind world the same day; its pre-sweep record is archived whole.
 - [x] 👀 A deck needs no acceptance gate (CC ruled under JL's delegation, "check it yourself")
-      The presenter is responsible for having read what they present, and regeneration is one click, so a gate would add friction with no consumer; reversible the day a deck misleads someone.
+      The presenter is responsible for having read what they present, and regeneration is one click, so a gate would add friction with no consumer.
+      The ruling is reversible: the day a deck misleads someone, a gate goes back on.
 
 ## States
-All four aims closed on 260815: three by subtraction (the endpoint, the shipped unit, the hub's roster) and one by ruling.
-The surface is proven, not described: `/_board/autodeck` authored a real deck for `QF2-newcomer` on its first live run, and JL's own ✨ click regenerated this page's deck the same evening.
+- ✅ ✂️ `live/deck.py` retires
+      Met: `haipipe-board/live/` holds `autodeck.py` and no `deck.py`, and the `/_board/deck` route went with it.
+- 🧠 🗑 `haipipe-page-for-slide` leaves `page-types/` everywhere it is installed
+      `board/page-types/` now holds four variants, for-design, for-meeting, for-skill, and for-stage, and no for-slide resolves in the loaded skill roster.
+      Waiting on a person to run `Tools/install.sh --global`; nothing on this page can show that it has happened, so the aim is not called met.
+- ✅ 🧾 `QPs2`'s roster drops for-slide
+      Met: the pre-sweep hub stands whole at `_archive/QPs2-page-types-260815-pre-sweep.md`, and the live `QPs2` carries the two-kind roster.
+- ✅ 👀 A deck needs no acceptance gate
+      Met by ruling on 260815 and unchallenged since; neither door carries a gate, and the ✨ button writes without asking anyone to accept the result.
 
 ## Files
 - `../../board/haipipe-board/live/autodeck.py`
@@ -103,13 +130,35 @@ The surface is proven, not described: `/_board/autodeck` authored a real deck fo
   The Slides tab and its ✨ bar; one loader, cache-busted.
 - `../../display/html-ppt/assets/academic-report-extras.css`
   The house style, including the monospace carve-out that keeps ascii figures aligned inside a Times deck.
-- `../../../display/html-ppt/`
+- `../../display/html-ppt/`
   The skill that owns what a deck looks like; every deck links at its assets.
 
 ## Log
-- 260815 1900 · [JL via CC] `haipipe-plugin-slide` drafted under `page-plugins/`, round 2 of the thin-door migration: delta-only over `haipipe-plugin`.
-- 260815 2100 · [CHECK-CC, JL delegated] all four aims closed ("you should check it yourself, we will just keep the things with slides like the plugin"): `live/deck.py` + its route deleted; `haipipe-page-for-slide` removed and `haipipe-page` bumped to 0.26.0 (Design-3 re-plugged, title refreshed); `QPs2` swept to the two-kind hub; the acceptance question ruled no-gate by CC under delegation. Same pass: ascii figures inside decks render aligned again, a monospace carve-out in `academic-report-extras.css` where strict Times had crushed them, plus figure-alignment rules in autodeck's prompt.
-- 260815 2010 · [REVISE-CC, JL asked] rewritten to the working contract only ("focus on how current slide plugin work"); the dead type's story, the tier history, and the selection record left this page for `_archive/QBt9-for-slide.md` and this Log, where the board keeps history.
-- 260815 1930 · [REVISE-CC, JL asked] the ✨ Regenerate button shipped on both doors: `POST /_board/autodeck` runs `claude -p` server-side and writes the deck; deck loads became cache-busted; the display plugin's move (`display/skills/html-ppt` to `display/html-ppt`) was repaired across all decks; the runtime-vs-fallback freeze (only slide 1 visible) was fixed with the `data-js` stamp.
-- 260815 1730 · [REVISE-CC, JL ruled] the slide page-type retired ("the slide will just be the plugin version"): every page may have one optional deck in `slide/`; the QBt9 specimen archived whole; the third kind reduced to material after for-skill and for-meeting.
-- 260815 1700 · [REVISE-CC, JL ruled] the deck tier collapsed to the AI deck ("We will just have the AI deck"); the browser reflow retired from client and shell; six decks authored the same hour.
+- 🩹 260816 · [REVISE-CC] the page made honest again, and the selection written down
+      A review found the page saying SETTLED while its own second aim said a re-run was still owed, so the status was corrected instead of the sentence.
+      That aim is open again with a 🧠 State row: the variant folder and the `page-type: slide` key are gone from the source tree, but nothing here can show that `Tools/install.sh --global` has been re-run, so the aim waits rather than recording a run that may never have happened.
+      The `state:` line became a row under 110 characters with an `open:` part, and States became one row per aim carrying its own evidence.
+      The tier choice moved out of this Log into a `SELECTION` division, which is what a `page-type: design` page closes on and what the 260815 2010 rewrite had swept away.
+      Smaller repairs in the same pass: the blank line that had pushed the whole rationale into the drawer is gone, the drawer's parts carry bold labels, the Files row for the html-ppt skill lost one `../`, and these records were split into headings with folded explanations.
+- 🗳 260815 2100 · [CHECK-CC, JL delegated] the four aims worked through in one pass
+      JL delegated the check ("you should check it yourself, we will just keep the things with slides like the plugin") and CC closed three aims by subtraction and one by ruling.
+      `live/deck.py` was deleted with its `/_board/deck` route and the DeckMixin; `haipipe-page-for-slide` was removed and `haipipe-page` bumped to 0.26.0, with `Design-3` re-plugged and its title refreshed; `QPs2` was swept to the two-kind hub.
+      The acceptance question was ruled no-gate by CC under that delegation, on the ground that a presenter is responsible for having read what they present.
+      Same pass: ascii figures inside decks render aligned again, through a monospace carve-out in `academic-report-extras.css` where strict Times had crushed them, plus figure-alignment rules in autodeck's prompt.
+- ✂️ 260815 2010 · [REVISE-CC, JL asked] rewritten to the working contract only
+      JL asked to "focus on how current slide plugin work", so the page stopped narrating a type that no longer exists.
+      The dead type's story and the tier history left for `_archive/QBt9-for-slide.md` and this Log, where the board keeps history.
+      The selection record left with them, which is the gap the 260816 pass repaired.
+- ✨ 260815 1930 · [REVISE-CC, JL asked] the ✨ Regenerate button shipped on both doors
+      `POST /_board/autodeck` runs `claude -p` server-side and writes the deck, so a talk is re-authored without leaving the browser.
+      Deck loads became cache-busted, and the display plugin's move from `display/skills/html-ppt` to `display/html-ppt` was repaired across every deck.
+      The runtime-versus-fallback freeze, where only slide 1 was ever visible, was fixed with the `data-js` stamp.
+- 🚪 260815 1900 · [JL via CC] `haipipe-plugin-slide` drafted under `page-plugins/`
+      Round 2 of the thin-door migration: the new skill is delta-only over `haipipe-plugin` and restates none of the four-facet contract.
+- 🗑 260815 1730 · [REVISE-CC, JL ruled] the slide page-type retired
+      JL ruled it plainly: "the slide will just be the plugin version".
+      Every page may now have one optional deck in `slide/`, the QBt9 specimen was archived whole, and the third kind was reduced to material sitting after for-skill and for-meeting.
+- 🏆 260815 1700 · [REVISE-CC, JL ruled] the deck tier collapsed to the authored deck
+      JL's words were "We will just have the AI deck", which retired the browser reflow from both the client and the shell.
+      Six decks were authored the same hour, which is the evidence that the authored tier could carry the board on its own.
+      This is the ruling the `SELECTION` division now records.

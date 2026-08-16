@@ -1,6 +1,6 @@
 # QBt1 · page-type STAGE · owns NO folder; chains on requires/style-from/provides and closes at a human gate
 
-state: 🟡 PARTIAL · DRAFT complete, CHECK not requested; 1 of 3 Required Inputs does not resolve, so the ledger's resource column is empty on every row
+state: 🟡 PARTIAL · DRAFT complete, CHECK not requested · open: 1 of 3 Inputs dead, resource column empty
 page-type: stage
 owner: JL
 method: write one row per claim, bind each row to the record that carries it, rule the verbs every later stage inherits, and stop at the human gate

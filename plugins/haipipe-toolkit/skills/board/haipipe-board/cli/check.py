@@ -277,6 +277,11 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                 f"state is {m.group(1)!r}; its first token must be one of "
                 + " · ".join(f"{emoji} {label}" for emoji, label in STATE_LABELS.items())
                 + "; an optional human-readable suffix may follow")
+    elif len(m.group(0)) > 110:
+        rep.add(WARN, "state-line-long", f"{name}:{text[:m.start()].count(chr(10)) + 1}",
+                f"state line is {len(m.group(0))} chars; the row grammar (JL 260816, QPs1 §8) keeps it "
+                "under 110: status word, what stands, then `open:` with a short list or a count; "
+                "facts belong in States, reasons in Log")
 
     if not re.search(r"^owner:\s*\S", text, re.M):
         rep.add(ERROR, "no-owner", name, "no `owner:` line, so nobody is named as responsible")
@@ -1086,7 +1091,12 @@ def check_group_names(text, name, rep):
         found.update(groups(sec_name, r"^### C(\d+) · (.+)$"))
         for gid, gname in found.items():
             want = divs.get(gid)
+            # The contract says a group takes the NUMBER, NAME and EMOJI of its
+            # Content part (haipipe-page §241), so the part may carry one too:
+            # strip both sides or an emoji'd division reads as drift (JL 260816).
             gname = re.sub(r"^\W+\s*", "", gname)   # the group's own emoji
+            if want is not None:
+                want = re.sub(r"^\W+\s*", "", want)
             if want is None:
                 rep.add(WARN, "group-no-division", f"{name} · {sec_name} C{gid}",
                         f"`C{gid}` names no Content division on this page")

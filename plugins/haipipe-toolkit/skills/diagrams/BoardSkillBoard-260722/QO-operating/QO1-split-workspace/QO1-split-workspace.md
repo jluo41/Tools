@@ -1,6 +1,6 @@
 # Operating the board: index, page, and chat, each refreshing on its own
 
-state: ✅ SETTLED · built 260801-02 and driven end to end in a real browser; 15 of 16 Aims ✅, and the one that is not is held with its reason
+state: ✅ SETTLED · built and driven end to end in a browser 260801-02 · 15 of 16 Aims ✅, the last one held
 owner: CC
 method: three same-origin iframes inside one shell page, so a refresh is a frame re-fetch and no pane's reload can reach another
 session: 232f5bbd-3a8c-4887-964a-778765a44c6c

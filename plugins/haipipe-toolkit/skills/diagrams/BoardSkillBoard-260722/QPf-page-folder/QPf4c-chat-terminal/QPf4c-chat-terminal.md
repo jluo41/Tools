@@ -1,5 +1,5 @@
 # Chat · the TUI version, the real CLI
-state: 🗂 FOLDED · into QPf4-chat §5 the TUI form (JL 260815); the division carries the substance, this page keeps the full record
+state: 🗂 FOLDED · into QPf4-chat §5 the TUI form (JL 260815) · the full record stays here
 owner: JL
 method: serve.py owns the PTY and terminates /_term/<key>/ws itself through 5599 (ttyd is the --ttyd fallback); claude opens at the SPACE root, one session per question
 session: d650c47e-0d7d-464d-8405-a98a545fe552

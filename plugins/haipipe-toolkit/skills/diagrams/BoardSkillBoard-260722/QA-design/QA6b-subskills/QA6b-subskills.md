@@ -1,5 +1,5 @@
 # Sub-skills: what else this family ships
-state: 🟡 PARTIAL · roster ruled 260731, index merged out 260802, page engine grew ten Page Types, four Page Phases and a third agent by 260806
+state: 🟡 PARTIAL · roster ruled 260731, index merged out 260802 · open: roster owes the 260806 engine growth
 owner: JL
 method: name every candidate and apply one test to each, then let JL rule the set; a shipped skill follows settled decisions, never precedes them
 

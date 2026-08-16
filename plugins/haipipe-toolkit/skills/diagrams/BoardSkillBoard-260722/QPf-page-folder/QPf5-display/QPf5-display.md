@@ -1,5 +1,5 @@
 # Display · adopted unit folders, shown and accepted on the page
-state: 🟡 PARTIAL · the unit contract is adopted from the display family; the page adapter, the tab, and the boundary are open aims
+state: 🟡 PARTIAL · contract adopted, both units real · open: --check seam, live verify, P1, git ruling
 owner: JL
 method: adopt the display family's unit contract verbatim at `<page>/display/<unit>/`, build the page adapter and the pane tab on the Slides pattern, and keep acceptance a person's tick
 session: fe4afd59-043c-45ba-8555-ef7175b384ee
@@ -11,9 +11,18 @@ A unit holds the approved inputs, the script that draws them, and the picture th
 The display skills already fixed this folder shape for papers, so the page reuses it instead of inventing a second one.
 This page decides only the page side: where units live, how they show, how text cites them, and who approves.
 
-**What a unit is**: one folder per rendered thing, such as this page's own `display/QPf5-Display1-pipeline-tikz/`. Inside it, `intake/` holds the inputs a person approved, `recipe/` the script that draws, `assets/` the winning picture, and `preview.pdf` the compiled look a person opens.
-**Why reuse rather than redesign**: papers already make display units in this exact folder shape, and the contract file itself invites it, saying each caller "maps this bundle into its own layout through its own adapter". The page is simply one more caller. A second folder shape would force every drawing skill to learn two.
-**Covered elsewhere**: `QPf1` rules that a page owns its folder and every subfolder is a plugin; `QPf2` is the drawing plugin and `QPf3` the slides plugin, whose own line "a slide is a display that talks" names the kinship; the paper's version of this same adoption is the `S05-display` stage with `cli/build-displays.py`.
+**What a unit is**: one folder per rendered thing, such as this page's own `display/QPf5-Display1-pipeline-tikz/`.
+Inside it, `intake/` holds the inputs a person approved and `recipe/` the script that draws them.
+Beside those, `assets/` holds the winning picture and `preview.pdf` is the compiled look a person opens.
+
+**Why reuse rather than redesign**: papers already make display units in this exact folder shape.
+The contract file itself invites it, saying each caller "maps this bundle into its own layout through its own adapter".
+The page is simply one more caller.
+A second folder shape would force every drawing skill to learn two.
+
+**Covered elsewhere**: `QPf1` rules that a page owns its folder and that every subfolder of it is a plugin.
+`QPf2` is the drawing plugin and `QPf3` the slides plugin, whose own line "a slide is a display that talks" names the kinship.
+The paper's version of this same adoption is the `S05-display` stage with `cli/build-displays.py`.
 
 ## Diagram
 **One contract, two callers**: the paper stage and the page adopt the same unit folder; only the adapter differs.
@@ -74,12 +83,12 @@ The tab is built the same way the Slides tab is: a small button in the page's to
 A unit is EVIDENCE: when a sentence names a unit's id in plain text, the id becomes a small button in that sentence, and clicking it opens the unit's card with its picture and its approval state.
 There is a second way to attach the same evidence, for machines: a `> Display:` line written UNDER a sentence, beside the `> Citation:` and `> Value:` lines, so a program can add evidence without ever editing a person's prose.
 Citing a unit that has no render yet is allowed with either form: the button then says a render is still owed.
-The exports keep the evidence too (JL 260816): the LaTeX PDF prints a cited unit as a real figure after the paragraph that cites it, and the Word file embeds the picture with its caption and adds a 🖼 comment note on the sentence.
+The exports keep the evidence too: the LaTeX PDF prints a cited unit as a real figure after the paragraph that cites it, and the Word file embeds the picture with its caption and adds a 🖼 comment note on the sentence.
 
 ### 3 · The writers, and the row no machine may tick
 **Who writes what**: three hands on one unit, each confined to its half.
 ```text
-  🎨 renderer skills   haipipe-display-table · -figure · -diagram · …
+  🎨 renderer skills   haipipe-display-table · -figure · -diagram · -illustration
                        write recipe/ · assets/ · preview.pdf
   🧑 a person          rules intake/ and ticks accepted:
   🖼 the pane          shows everything · writes NOTHING
@@ -88,8 +97,9 @@ The renderers are the display family's existing drawing skills; this page adds n
 The approval row is the one rule with teeth: a ✅ on `accepted:` means a person looked at one specific picture and said yes.
 A machine that ticks it has forged a judgment, not saved time, so no machine may.
 
-**The four renderers**: which skill draws which kind, and what each one's recipe is.
+**The kinds and who draws them**: one door routes to four renderers, plus one method with no skill.
 ```text
+  🚪 haipipe-display · the DOOR · say the ask, it picks the renderer
   🎲 data-driven · needs a ruled intake/ of numbers
      📊 -table         aggregated CSV/JSON ▶ booktabs LaTeX · recipe = the spec
      📈 -figure        results ▶ plot · recipe = the python script
@@ -97,8 +107,8 @@ A machine that ticks it has forged a judgment, not saved time, so no machine may
      📐 -diagram       FigureSpec JSON ▶ deterministic editable SVG
      ✒️ tikz           .tikz.tex recipe ▶ vector PDF · TeX-native: the paper's
                        fonts, math labels, and float.tex may input it directly
+                       NO SKILL: authored by hand, as both units on this page were
      🎨 -illustration  image-gen prompt ▶ concept figure · recipe = prompt + receipts
-  🧩 -poster · -slides  composites, assembling units the renderers above made
 ```
 A data-driven renderer draws numbers, and it may not go back to the raw data: it reads only the small approved extract in `intake/`.
 A concept-driven renderer draws an idea, so it carries no numbers at all; its input is the sketch it draws.
@@ -142,7 +152,7 @@ Aim A1 asks for that same id lookup to work for units that live under a page.
   **Done when:** a unit under a QPf page builds and `--check` passes, and the paper stage path still builds unchanged.
 
 ### A2 · 🖼 The surface: one card per unit in the right pane
-- A2.1 · The tab ships through the Slides sandwich.
+- A2.1 · The tab ships on the Slides tab pattern: a toolbar button plus a server-written view.
   **Done when:** a page with one unit shows 🖼 Display in the right pane and frames its `preview.pdf`, verified in a real browser at the address JL uses.
 
 ### A3 · 🧠 The writers, and the row no machine may tick
@@ -158,29 +168,41 @@ Aim A1 asks for that same id lookup to work for units that live under a page.
   **Done when:** discovery never lists a file under any page's `display/` and `check.py` names `display/` a known plugin folder.
 
 ## States
-Nothing page-side is built; the adopted contract is the settled half and every aim below is open.
-- ⬜ A1.1 · `build-displays.py` still anchors on a paper stage directory.
-- ⬜ A2.1 · No drawer plugin and no `live/` endpoint exist for display.
-- ⬜ A3.1 · Holds vacuously today; it must still hold once A2.1 ships.
-- ✅ A4.1 · Met 260815 by `display/QPf5-Display2-small-paper-tikz/`, the TeX-native walk: concept intake ①, the TikZ recipe authored and compiled ②, the v2 candidate picked after the v1's clipped bank box ③, and `preview.pdf` (68,506 bytes) plus `assets/figure.pdf` built by pdflatex ④; only ⑤ waits, and its ⬜ is in the unit's README where no machine may tick it. The sibling `Display1` unit stays a planned illustration, still blocked on the codex-image2 bridge.
-- ⬜ P1 · Discovery's exclusion list does not know `display/` by name.
+The contract, both demo units, and the citation surfaces are real; the remaining opens are the `--check` seam, the live-browser verification behind a server restart, and the boundary row.
+
+### A1 · 🧾 The contract, adopted and not forked
+- 🔨 A1.1 · The id lookup works for page units where it matters most: the citation index (`dialect_paper.py`) and both exports resolve `<page>/display/` units (260815-16). `build-displays.py` itself still anchors on a paper stage directory, so `--check` for a page unit is still owed.
+
+### A2 · 🖼 The surface: one card per unit in the right pane
+- 🔨 A2.1 · The strip view and the `/_board/display` route are written in `live/plugview.py`, and the drawer's client half in `assets/js/10-drawer/84-plugin-evidence.js`, which registers the 🖼 Display tab (260815-16). The Done-when's real-browser check waits on the server restart that loads them.
+
+### A3 · 🧠 The writers, and the row no machine may tick
+- 🧠 A3.1 · Waiting on A2.1's live check, and on nothing else. The written pane is read-only by construction: `plug_display` prints each unit's README rows and frames its `preview.pdf`, its 🔄 recompiles only the derived preview, and no route anywhere edits an `accepted:` row.
+
+### A4 · 🏭 How a unit is generated
+- ✅ A4.1 · Met 260815 by `display/QPf5-Display2-small-paper-tikz/`, the TeX-native walk: concept intake ①, the TikZ recipe authored and compiled ②, the v2 candidate picked after the v1's clipped bank box ③, and `preview.pdf` plus `assets/figure.pdf` built by pdflatex ④; only ⑤ waits, and its ⬜ is in the unit's README where no machine may tick it. The sibling `Display1` re-kinded to TikZ and rendered the same day (`Display1-pipeline-tikz`); its illustration plan waits in the unit's `versions/`.
+
+### P · 🚧 The boundary
+- 🔨 P1 · Discovery already stays out, and not by a list: `src/common.py`'s `_in_plugin` skips every subfolder of a folded page, so nothing under any `display/` can surface as a page. What is owed is the by-name half of the Done-when: `check.py` validates `draw/` by name in `check_draw_folders` and has no equivalent that knows `display/`.
 
 ### Decision Now
 - [ ] 🗣 What does git keep of a unit?
       The paper commits its built `displays/`; a page unit's `candidates/` and `versions/` can grow heavy.
       A · commit the whole unit, history and all, so the board is self-contained.
       ⭐B · commit sources plus the winning `assets/` and `float.tex`; gitignore `preview.pdf`, `candidates/`, `versions/`.
-      🛑 Blocks: nothing until the first real unit lands.
+      🛑 Blocks: live now, both units landed 260815 with a `preview.pdf` and an `assets/figure.pdf` each, and one keeps a `versions/`.
       🤖 If nobody answers: B, matching the paper's machinery-under-the-delete-test ruling.
 
 ## Files
 ### ⚙️ Engines
 - `../../board/haipipe-board/cli/build-displays.py`
   The resolver A1 teaches to accept a page root; the paper stage keeps its path.
-- `../../board/haipipe-board/live/deck.py`
-  The Slides endpoint A2 copies; the display endpoint sits beside it.
+- `../../board/haipipe-board/live/plugview.py`
+  A2's server half: `plug_display` recompiles each preview, then writes the read-only 🖼 Display view.
+- `../../board/haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
+  A2's client half: it registers the 🖼 Display tab and opens the written view in the right pane.
 - `../../board/haipipe-board/assets/js/10-drawer/70-plugin-slides.js`
-  The drawer plugin A2 copies for its client half.
+  The Slides tab this surface was patterned on: a toolbar button, then a view the server writes.
 
 ### 📋 Contracts
 - `../../display/ref/display-unit-output-contract.md`
@@ -206,6 +228,9 @@ Nothing page-side is built; the adopted contract is the settled half and every a
       The rejected option was a `for-display` page kind beside the plugin; it fell because displays are material every page carries, not a subject a page argues, so a kind would give one word two meanings.
 
 ## Log
+- 260816 · [REVISE-CC] the page's claims re-checked against disk, and States regrouped: the Engines row naming `live/deck.py` repointed to `live/plugview.py`, which really carries `plug_display` and the `/_board/display` route, with `84-plugin-evidence.js` added as the client half that landed; States gained the `### A<n>` group headings mirroring Aims; A3.1 moved ⬜ ▶ 🧠 because it waits only on A2.1's live check; A4.1 dropped its stale byte count; P1 restated as owed only in `check.py`'s by-name validation, since `src/common.py`'s `_in_plugin` already excludes every page subfolder generically; the Decision Now blocker corrected, the units having landed; and Content's `(JL 260816)` parentheticals moved out of the prose, where this Log is their home.
+- 260816 · [RULE-JL] the display family cut to four renderers and a door (JL, in two steps: "只保留一个就行了" then, on seeing the shape, "figure 和 table 是不是也可以保留呢" and "poster 和 slides 我们都不要了"): `haipipe-display` stays as a pure router, table and figure return as full skills, and the poster and slides renderers retire with their paper-side doors and the content-plan spec that served them alone, parked under `_todo/`. §3's taxonomy now names ✒️ tikz as the method with no skill, which is how both of this page's units were drawn.
+- 260816 · [REVISE-CC] the page rewrote for a cold reader (JL: "if I am a new person, I don't know what you are talking about"): every section now says its thing in plain words and defines a term before leaning on it, the invented drift-bands example became the page's real units, and States caught up with the Log it contradicted: A1.1 and A2.1 read 🔨 with what actually landed, and A4.1's stale Display1-blocked note corrected to the TikZ render that shipped.
 - 260816 · [RULE-JL] a clicked card shows its display at once (JL: "how to make it show the display directly as default?"): opening an evidence card now expands its first preview fold, lazily and one fold only, so the 260806 ruling that folded previews (two stacked objects buried the links) still holds at page load.
 - 260816 · [BUILD-CC] the projections now carry the evidence (JL: "both word and latex didn't include the display?"): the latex export embeds each cited unit as a float after its citing paragraph (winning asset + authored caption, no tikz needed in the master), and the word export bridges the grammar gap with a temp ref injection plus md2docx's new `--display-root`, landing the figure, the inline number, and the 🖼 Display comment; verified on this page's own PDF and docx, both units present in both.
 - 260816 · [RULE-JL] the display citation moved into the content sentence (JL: "it should be in the content sentence, right?", after the render showed a lane latched onto the wrong sentence): §4's two lane rows became ids named in prose, chipping in place by the always-a-card rule, and §2's grammar now names the sentence as the citation's home with the `> Display:` lane kept as the machine's filing surface.

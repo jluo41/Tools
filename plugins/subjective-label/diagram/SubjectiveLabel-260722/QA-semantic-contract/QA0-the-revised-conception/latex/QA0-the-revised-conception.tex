@@ -1,0 +1,653 @@
+% GENERATED from QA0-the-revised-conception.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{The revised conception}
+\textbf{The center of the method}: the system elicits and externalizes a subjective decision function rather than discovering an existing objective label.
+
+\begin{verbatim}
+ vague human concept
+        |  concrete cases + dialogue
+
+ clearer internal boundary H_t
+        |  externalization
+
+ executable annotation policy _t
+        |  unseen-item execution
+
+ labels that match the human authority
+\end{verbatim}
+The corpus does not arrive with an objective outcome label that the system can recover. The target is the judgment of one identified human for one subjective trait in one stated labeling project. The process learns how that person distinguishes HIGH, LOW, and NONE, including the boundaries and exceptions that were initially hard for the person to verbalize. The final guideline is the external, inspectable form of that learned decision policy.
+
+A vague trait name does not specify what evidence counts, how strong evidence must be, or what to do when two interpretations compete. Concrete reviews force those hidden choices to become visible. The strong labeling agent uses dialogue to ask for the reason behind a judgment, test counterexamples, and turn repeated judgments into general rules. The human remains the semantic authority throughout this process.
+
+The process approaches convergence when the human's stable judgment, the written annotation policy, and a model's execution of that policy agree on unseen items. This agreement must coexist with adequate quality, boundary coverage, and low unresolved risk. A stable but poor guideline is not converged.
+
+
+\section{What changed from the previous edition}
+\textbf{The edition change}: the revised system moves authority from model consensus to one human and moves evaluation onto sealed unseen data.
+
+\begin{verbatim}
+ PREVIOUS EDITION               REVISED EDITION
+ panel stands in for people    one human is semantic authority
+ model chooses first cases     Round 1 starts random
+[x] consensus auto-passes         consensus receives random audit
+ one gallery score             audit + challenge + sealed test
+ cascade decides labels        scorer first ranks candidates
+\end{verbatim}
+The previous skill description framed a panel of language models as a substitute for a team of human annotators. The revised conception does not accept model agreement as the source of semantic truth. One human defines the target construct through repeated judgments, and every model is evaluated against that person's final decisions.
+
+The previous QA1 rejected a random first batch and asked a strong model to retrieve relevant items before the concept existed. The revised design starts Round 1 with a random development batch of roughly 50 to 60 items. Those items have no prior class labels or region assignments. Their labels, regions, reasons, and first guideline draft are produced during Human-AI dialogue.
+
+The previous QA2 allowed unanimous model labels to pass without human attention. The revised design treats unanimity as committee consensus, not as gold. A stratified random sample from the consensus pool enters every human review batch so that shared model blind spots can be measured.
+
+The previous design relied heavily on gallery agreement and an external engine-level license. The revised design keeps round-level audit and challenge measurements for development, then reserves a sealed item test for the final guideline and model scorecard. External public-data validation may remain useful, but it answers a different generalization question and does not replace the project-specific human gold test.
+
+
+\section{Inputs}
+\textbf{The complete input contract}: the process begins with a corpus, a vague concept, one human, and a labeling agent rather than with labels.
+
+\begin{verbatim}
+ C = {x1 ... xN}    trait seed z
+         \             /
+          \           /
+
+             human h
+                +
+             strong agent a
+                |
+
+           calibration system
+\end{verbatim}
+The corpus is a collection of N review texts drawn from one stated target population. Each review has a stable item identifier and may carry source metadata, but it has no required outcome label at entry. The corpus must be large enough that only a small fraction can receive direct human attention during calibration.
+
+The trait seed may be only a phrase such as openness, empathy, dismissiveness, or perceived conscientiousness. It may include an initial intuition, but it need not contain operational thresholds or complete boundary rules. The process is responsible for turning that vague seed into an executable policy.
+
+One person participates repeatedly and owns the meaning of the labels for this project. The design does not average that person's judgment with the models. If the project later wants a population-level human consensus, that becomes a different study with multiple annotators and a separate adjudication contract.
+
+The strong labeling agent organizes the dialogue, asks clarifying questions, drafts rules, tracks versions, and proposes checks. Candidate weak language models execute a frozen guideline during pre-labeling and final evaluation. The strong agent may analyze their errors, but it cannot override the human's semantic decision.
+
+
+\section{Outputs}
+\textbf{The delivery contract}: the project ends with labels, an executable policy, a test set, model scores, and an audit trail.
+
+\begin{verbatim}
+ FINAL DELIVERIES
++--  D*   full corpus with labels + provenance
++--  G*   frozen human-readable and machine-readable guideline
++--  T*   sealed human-gold evaluation set
++--  S*   one scorecard per candidate LM
++--  A*   round history, reasons, versions, and audits
+\end{verbatim}
+Every corpus item receives a final class label and a provenance state. Human-confirmed items, audited-machine labels, validated machine-accepted labels, and unresolved items must remain distinguishable. The project may call the corpus complete only after the unresolved and high-risk queues satisfy the completion policy. The cumulative human-confirmed development gold at the stopping checkpoint is \texttt{D\_cal*}. It is an intermediate calibration artifact and must not be confused with the completed corpus \texttt{D*}, which exists only after production, reconciliation, and audit.
+
+The final policy must be readable by a person and executable by a model. It contains label definitions, evidence rules, boundary tests, a decision procedure, uncertainty handling, and a small casebook. It must not require access to the development chat history in order to be used.
+
+Each candidate weak language model receives the same frozen guideline and the same sealed test items. Its predictions are compared with human gold using one shared protocol. The scorecard reports absolute performance, class and region errors, stability, and guideline uplift over a minimal instruction.
+
+The project preserves round membership, pre-labels, human revisions, reasons, guideline versions, model identities, selection probabilities, and final provenance. This record makes it possible to reconstruct how a label or rule entered the system.
+
+
+\section{Human semantic authority}
+\textbf{The authority boundary}: models surface patterns and inconsistencies, while the human decides what the trait means.
+
+\begin{verbatim}
+ propose evidence -+
+ expose conflicts -+-->  human decision -->  gold label
+ draft rule       -+          |
+                                +-->  accepted guideline rule
+\end{verbatim}
+The human decides the final HIGH, LOW, or NONE label for reviewed items. The human decides whether an item is typical, pairwise ambiguous, or ambiguous across all three labels. The human also decides whether a proposed guideline change clarifies the existing intention or changes the construct itself.
+
+The strong agent can compare cases, locate contradictions, propose generalized language, ask counterfactual questions, and record reasons. It can warn when the same reasoning has produced incompatible labels. It can also identify which previous items may be affected by a new rule. These actions improve consistency and memory, but they do not create gold without human confirmation.
+
+Clarification preserves the human's intended construct and makes an implicit boundary explicit. Concept revision changes what the human means by HIGH, LOW, or NONE. A concept revision triggers a backward impact review of older labels and guideline rules. The system must not silently treat a semantic change as a harmless wording edit.
+
+
+\section{Label and uncertainty schema}
+\textbf{Three separate fields}: class, region, and uncertainty answer different questions and must never be collapsed.
+
+\begin{verbatim}
+ class y      = HIGH | LOW | NONE
+ region r     = H | L | N | HL | LN | HN | HLN
+ uncertainty  = confidence + reason + review state
+
+ NONE  uncertain
+ boundary region  final class
+\end{verbatim}
+The final class is one of HIGH, LOW, or NONE. HIGH and LOW must be defined in trait-specific evidence terms rather than as positive and negative sentiment. NONE means the review lacks sufficient evidence of the target trait.
+
+NONE records absence of trait evidence. Annotator uncertainty belongs in confidence, rationale, disagreement state, or unresolved status. Using NONE as an uncertainty bucket would mix semantic absence with procedural doubt and corrupt both training and evaluation.
+
+An H-N boundary item still receives a final class of H or N after human judgment. The region says why the item was informative and which boundary it probes. This second label supports sampling, diagnostic scoring, and guideline maintenance.
+
+
+\section{The seven-region map}
+\textbf{The diagnostic geometry}: three centers, three pairwise boundaries, and one triple junction organize evidence discovery.
+
+\begin{verbatim}
+                   H center
+                 /           \
+           H-L boundary    H-N boundary
+             /                   \
+        L center -  L-N -  N center
+                  \      /
+                   H-L-N junction
+\end{verbatim}
+The H, L, and N center regions contain cases that clearly instantiate one class under the current human concept. These examples provide prototypes, simple rules, and sanity checks. They are useful for coverage and production auditing even though they usually yield less new boundary information.
+
+The H-L region contains cases where trait presence is clear but intensity or direction is difficult to distinguish. The L-N region tests weak evidence against true absence. The H-N region tests strong apparent evidence against absence, irony, irrelevant praise, or other confounds.
+
+The H-L-N region contains cases for which all three labels remain plausible before adjudication. These items often expose a missing prerequisite in the decision procedure rather than a single bad threshold. They should be rare but explicitly represented.
+
+Round 1 region assignments are human interpretations formed during dialogue. As the concept becomes clearer, a previous boundary case may become typical, or a typical case may reveal a hidden ambiguity. Region changes must be versioned rather than overwritten without history.
+
+
+\section{The dual optimization process}
+\textbf{Two coupled learners}: the human clarifies an internal boundary while the external policy learns to express it.
+
+\begin{verbatim}
+ H_t  human latent concept
+   |
+   | cases   | model errors + counterexamples
+            |
+ _t  external annotation policy
+   |
+
+ execution on unseen items
+\end{verbatim}
+The human may begin with only an intuitive sense of the trait. Repeated comparisons force the person to notice which evidence is decisive, which evidence is irrelevant, and where intensity thresholds lie. The person's internal decision boundary becomes more explicit and often more consistent.
+
+The annotation policy is revised after each round to encode the human's current boundary. It accumulates definitions, tests, exceptions, and examples only when they improve execution on new cases. Its quality is judged operationally by transfer to unseen items and unseen executors.
+
+The two learners are coupled but not equal. The model may reveal that a rule is unclear, but the human decides whether to rewrite the rule or retain the concept and accept that the model is weak. The optimization objective is human fidelity, not model convenience alone.
+
+
+\section{The annotation policy as the optimized object}
+\textbf{A structured policy}: the learned object contains rules, cases, procedures, and uncertainty handling rather than one prose block.
+
+\begin{verbatim}
+_t
++--  G_t   core definitions and evidence rules
++--  R_t   pairwise and triple boundary rules
++--  E_t   compact canonical casebook
++--  Q_t   ordered decision procedure
++--  U_t   uncertainty and escalation policy
+\end{verbatim}
+The core guideline states the trait definition, label meanings, positive and negative evidence, exclusions, and boundary tests. It should remain concise enough that a smaller language model can follow it without losing the hierarchy. It must distinguish semantic rules from model-specific formatting instructions.
+
+The casebook contains a small set of typical examples, counterexamples, and boundary pairs. Each case includes the final label, region, decisive evidence, rejected alternative, and human reason. The casebook is selected for explanatory value rather than for exhaustive coverage of development items.
+
+The policy tells an executor which question to ask first, how to apply boundary tests, and when to report uncertainty. An uncertain executor still predicts H, L, or N when required, but it also reports confidence and a reason. Production routing may escalate low-confidence or conflicting predictions to human review.
+
+
+\section{Corpus preparation}
+\textbf{The stable preprocessing layer}: embeddings make search cheap and repeatable without defining the labels.
+
+\begin{verbatim}
+ N reviews
+    |
+
+ sentence embedding
+    |
+    +-->  retrieval
+    +-->  deduplication
+    +-->  coverage
+    +-->  region scoring
+
+ vector distance alone never creates gold
+\end{verbatim}
+Every review is converted into a sentence-level embedding and stored with a stable model identifier and item identifier. The vectors may be reused across rounds because the representation model is frozen during one project unless an explicit migration occurs. This step is cheaper than repeatedly asking a language model to read the whole corpus.
+
+Embeddings support nearest-neighbor search, diversity sampling, duplicate detection, coverage diagnostics, and candidate ranking. They also support simple region prototypes or a lightweight classifier trained on human-confirmed items. These uses decide which items deserve attention, not what their final labels are.
+
+Semantically similar sentences can carry opposite trait evidence. Boundary regions are therefore hypotheses produced by a scorer and confirmed by human judgment. An embedding score is called region confidence or retrieval confidence, never label quality.
+
+
+\section{Versioned round artifacts}
+\textbf{The round state}: every selected item, model prediction, human decision, and guideline version has a distinct name.
+
+\begin{verbatim}
+ G_(t-1) closed
+        |
+
+ C_t candidate pool -->  P_t sealed pre-labels
+        |                         |
+        +----------+--------------+
+
+               B_t human batch
+                   |
+
+           Y*_t +  G_t draft
+                   |
+
+           D_t +  G_t closed
+\end{verbatim}
+C_t is the broad candidate pool generated for Round t, such as 200 items. B_t is the smaller set that actually enters Human-AI review, such as 50 items. Y*_t is the final human-confirmed annotation for B_t. D_t is the cumulative human-confirmed data after Round t.
+
+G_(t-1) closed is the frozen guideline used for pre-labeling Round t. G_t draft changes during the Human-AI session. G_t closed is frozen at the checkpoint and becomes the input to Round t+1.
+
+P_t contains every weak model's predicted class, confidence, structured reason, and model version. The predictions are created before Human-AI review and then sealed. After human labels are locked, P_t is compared with Y*_t to measure transfer and diagnose guideline failure.
+
+
+\section{Round, Session, and Checkpoint}
+\textbf{The unit hierarchy}: a calibration round owns one complete update, while sessions are only conversations inside it.
+
+\begin{verbatim}
+ CALIBRATION ROUND t
++--  prepare candidate pool
++--  create sealed pre-labels
++--  Human-AI Session 1
++--  optional Session 2
++--  checkpoint closes data + guideline
+\end{verbatim}
+A Calibration Round begins with a closed prior state and ends with a new closed state. It has one candidate-generation policy, one pre-label record, one human-reviewed batch, and one checkpoint. Round numbers are the primary version axis for the method.
+
+A Session is one continuous interaction between the human and strong agent. One round may contain one session or several sessions if the batch is split across time. A session does not close the round until its labels and guideline changes pass the checkpoint.
+
+The checkpoint confirms unresolved cases, freezes the cumulative gold data, freezes the next guideline version, computes round metrics, and records open risks. Only checkpoint artifacts may be used as the prior state for the next round.
+
+
+\section{Round 1 cold start}
+\textbf{The first batch}: random development items acquire labels, regions, reasons, and the first guideline through dialogue.
+
+\begin{verbatim}
+ development corpus
+        |
+
+ random B1, about 50 to 60
+        |  no prior y . no prior r . no prior G
+
+ human + strong agent
+        |
+        +-->  Y*_1
+        +-->  seven-region assignments
+        +-->  reasons and chat history
+        +-->  G_1 draft  closed
+\end{verbatim}
+Before any human-confirmed labels exist, the seven regions are unknown. A model-guided first batch would encode an unvalidated model interpretation of the vague trait into the evidence the human sees. A random development batch gives the first concept elicitation a visible sampling basis and exposes ordinary corpus language.
+
+Round 1 does not assume class labels, region labels, prototypes, a trained classifier, or a reliable guideline. The strong agent may organize and compare the random items, but it cannot claim that an item belongs to a region before the dialogue establishes that interpretation.
+
+The human and agent assign a final H, L, or N label to each reviewed item. They also assign a diagnostic region, record the human's reason, and revise a guideline draft. Chat history preserves the questions, label changes, rule changes, and unresolved points that produced the checkpoint.
+
+
+\section{Inside the Human-AI Session}
+\textbf{The interaction loop}: one item creates a judgment, a reason, a boundary test, and an update candidate.
+
+\begin{verbatim}
+ review x
+    |
+
+ initial judgment
+    |
+
+ clarify evidence + contrast alternatives
+    |
+
+ final class +  region +  reason
+    |
+    +-->  keep, revise, or add guideline rule
+\end{verbatim}
+For Round 2 onward, weak-model pre-labels remain hidden while the human makes the initial judgment. The strong agent may ask questions about the review, but it should not reveal the committee vote or confidence before the human label is recorded. This preserves the value of comparing pre-label with post-session gold.
+
+The agent asks which words or implications support the chosen label. It asks why the strongest alternative was rejected and what change to the review would flip the label. These answers supply evidence rules, exclusions, and boundary tests.
+
+The human may revise an initial label after comparing it with another case or noticing an inconsistent rule. Every revision remains in the trace, while the final human decision becomes Y*_t. The agent records whether the revision reflects clarification, concept revision, or correction of a momentary mistake.
+
+
+\section{The round checkpoint}
+\textbf{The closure gate}: the checkpoint turns a conversation into stable data, a stable policy, and measurable deltas.
+
+\begin{verbatim}
+ session outputs
+      |
+
+ CHECKPOINT
++--  adjudicate unresolved items
++--  lock Y*_t and update D_t
++--  review G_t draft and freeze G_t closed
++--  compare P_t with Y*_t
++--  record regression and migration risks
+\end{verbatim}
+Every reviewed item must have a final class or an explicit unresolved state. Boundary assignments and reasons must agree with the final class. Any unresolved item that affects a general rule remains visible rather than being forced into consensus.
+
+The human reviews substantive rule changes and confirms that they preserve the intended concept. The checkpoint distinguishes semantic edits from editorial edits. The frozen version receives a stable identifier and cannot be changed in place.
+
+Every substantive guideline change is tested against affected earlier gold items. If the human concept changed, the system identifies old items near the changed boundary for re-review. The cumulative gold set is versioned with the policy that produced it.
+
+
+\section{Candidate generation after Round 1}
+\textbf{The broad funnel}: later rounds retrieve many region-conditioned candidates before deciding which few deserve human attention.
+
+\begin{verbatim}
+ D_(t-1) +  G_(t-1) +  region anchors
+                         |
+
+                  remaining corpus
+                         |
+
+              region retrieval and ranking
+                         |
+
+                   C_t, about 200
+\end{verbatim}
+C_t is deliberately larger than the set a human will inspect. It provides enough candidates for all seven regions, confidence bands, novelty checks, and committee comparison. B_t is created only after pre-labeling and audit selection.
+
+The system retrieves candidates near each of the seven region prototypes or decision patterns. Typical regions may contribute many inexpensive candidates, while rare boundaries may contribute fewer but more informative ones. Quotas remain configurable because corpus prevalence and learning goals differ by round.
+
+Candidate generation reserves capacity for regions that have little confirmed evidence. It also includes items far from every known prototype or poorly represented cluster. Novelty is a diagnostic reason for review, not a new class label.
+
+
+\section{Region scoring and ranking}
+\textbf{The first-stage scorer}: a lightweight model ranks region membership without claiming final correctness.
+
+\begin{verbatim}
+ frozen embeddings
+        +
+ D_(t-1) region labels
+        |
+
+ region scorer
++--  prototype similarity
++--  linear margin
++--  optional MLP after more data
++--  novelty distance
+        |
+
+ seven ranked candidate lists
+\end{verbatim}
+With roughly 50 confirmed items, nearest prototypes, nearest neighbors, or a linear probe are easier to interpret and less likely to overfit than an MLP. An MLP may become useful after cumulative gold data grows. Attention is not a default when the input is already one pooled embedding vector.
+
+An H-center candidate has high similarity to the H prototype and a large margin over L and N. An H-L boundary candidate has similar H and L scores, with both stronger than N. An H-L-N candidate has low margins among all three scores. The scorer can rank these patterns even before a dedicated seven-class model is trained.
+
+The scorer may report region score, margin, or prototype similarity. These numbers describe how strongly an item matches the current selection model. Only human confirmation creates a gold region and class label.
+
+
+\section{Multi-model pre-labeling}
+\textbf{The second-stage reader panel}: several weak language models independently apply the previous closed guideline to the candidate pool.
+
+\begin{verbatim}
+ G_(t-1) closed
+        |
+        +-->  LM A -+
+        +-->  LM B -+--> P_t
+        +-->  LM C -+
+
+P_t = class . confidence . reason . model/version
+\end{verbatim}
+Each model receives the same frozen guideline and candidate item without seeing another model's answer. The models use a fixed output schema. Their identities, versions, prompt wrapper, and decoding settings are recorded.
+
+Each pre-label includes the predicted class, cited evidence, applied rule, rejected alternative, and confidence. The system does not require hidden chain-of-thought. A concise structured rationale is sufficient for comparing the model's interpretation with the human reason.
+
+P_t is generated before the Human-AI session and hidden from the human during first-pass labeling. It is opened only after Y*_t is locked. This turns pre-labeling into both a selection mechanism and a valid transfer measurement.
+
+
+\section{Disagreement, consensus, and diagnostic pools}
+\textbf{Three branches}: committee disagreement, committee consensus, and geometry-model mismatch carry different information.
+
+\begin{verbatim}
+ C_t +  P_t
+        |
+        +-->  D_t^disagree   models choose different classes
+        +-->  S_t^consensus  models choose the same class
+        +-->  M_t^mismatch   scorer, models, or novelty conflict
+\end{verbatim}
+An item enters the disagreement pool when committee members predict different classes or apply incompatible rules. These cases are likely to reveal unclear boundaries, missing rules, model-specific failure, or genuine ambiguity. They receive high priority for human review.
+
+An item enters the consensus pool when all required committee members predict the same class. Consensus increases confidence that the current guideline is executable. It does not prove correctness because models may share training biases, prompt interpretations, or missing rules.
+
+An item enters the mismatch pool when the region scorer predicts one area but the committee reasons as if it belongs elsewhere. It also enters when the item is novel relative to every known region. These cases diagnose selection-model failure, representation limits, and missing concept coverage.
+
+
+\section{Building the human review batch}
+\textbf{The final Batch t}: challenge cases, consensus audit, and novelty are composed under explicit quotas.
+
+\begin{verbatim}
+ disagreement sample -+
+ mismatch/novelty   --+-->  B_t human review
+ consensus audit    --+
+
+example capacity 50
+  25 to 30 challenge . 10 to 15 consensus audit . remainder novelty/coverage
+\end{verbatim}
+If the disagreement pool fits within the human budget, all disagreement items may enter. If it exceeds capacity, the system samples across labels, seven regions, confidence bands, and novel patterns. No one difficult region should consume the whole round.
+
+The system randomly samples consensus items within strata defined by predicted class, region, and optionally confidence. Sampling occurs before human outcomes are known. Selection probabilities are preserved so consensus error estimates can be weighted back to the candidate pool.
+
+A guideline-refinement round may oversample disagreement and boundaries. A reliability-estimation round may allocate more capacity to representative consensus audit. The batch report states its composition so challenge performance is never mistaken for population performance.
+
+
+\section{Guideline update and optimization}
+\textbf{The update mechanism}: human corrections and model reasoning failures become generalized policy changes.
+
+\begin{verbatim}
+ human gold +  human reason
+          versus
+ weak prediction +  applied rule
+                |
+
+ strong-agent diagnosis
++-- unclear definition
++-- missing boundary test
++-- misleading example
++-- executor formatting problem
++-- weak-model capability limit
+                |
+
+ human accepts, rejects, or reframes patch
+\end{verbatim}
+The strong agent compares the human reason with the weak model's cited evidence and applied rule. It classifies whether the error comes from guideline ambiguity, missing knowledge, model incapability, prompt formatting, or random execution. Only errors that the guideline can legitimately prevent become core guideline patches.
+
+The strong agent may rewrite a rule into simpler language, add an ordered test, or replace a misleading example. The human confirms that the patch still expresses the intended subjective boundary. The system optimizes executor compatibility subject to human semantic fidelity.
+
+The core guideline contains the stable concept and decision rules. An execution wrapper may specify output JSON, reasoning fields, token limits, or model-specific formatting. Improving the wrapper should not silently change the core concept.
+
+
+\section{Generalizing from examples}
+\textbf{The knowledge extraction rule}: development cases motivate rules, while only selected anchors remain in the casebook.
+
+\begin{verbatim}
+ concrete development case
+        |
+
+ decisive evidence + rejected alternative
+        |
+
+ counterfactual flip condition
+        |
+
+ generalized boundary rule
+        |
+        +-->  keep case only if it is canonical
+\end{verbatim}
+Copying many training reviews into the prompt lets a model match surface language without learning the intended boundary. It increases context cost and makes the guideline difficult to inspect. It may also leak evaluation-like cases into later execution.
+
+For each influential example, the agent records the decisive evidence, strongest rejected label, and smallest counterfactual change that would flip the decision. Repeated patterns become a concise rule with scope and exceptions. The rule is tested against earlier confirmed cases before checkpoint closure.
+
+A case remains in the casebook when it uniquely demonstrates a typical pattern, a counterexample, or a difficult boundary. Near-duplicate examples are removed. Every retained case states why it is needed and which rule it illustrates.
+
+
+\section{Round-level measurements}
+\textbf{Two score families}: audit metrics support quality claims, while challenge metrics support learning.
+
+\begin{verbatim}
+ AUDIT SLICE                  CHALLENGE SLICE
+representative/weighted        selected for difficulty
+comparable across rounds       intentionally changes each round
+quality + stopping             discovery + refinement
+
+L_t = 1 - agreement(P_t, Y*_t)
+\end{verbatim}
+Round correction loss is the disagreement between sealed pre-labels and final human labels. It may be summarized with macro-F1, balanced accuracy, kappa, or a task-appropriate agreement measure. Human correction rate provides a direct operational interpretation.
+
+Audit loss is measured on a random or weighted slice that represents a declared population. The same sampling protocol is used across rounds. Its improvement estimates whether the prior guideline transfers better to ordinary unseen items.
+
+Challenge metrics are reported separately because each round deliberately seeks harder or novel cases. The important quantities include new-rule yield, new-boundary yield, consensus-failure yield, and unresolved rate. A falling challenge score may reflect a harder batch rather than a worse guideline.
+
+Each checkpoint counts substantive rule additions, deletions, boundary changes, example changes, and editorial-only changes. It also records the performance difference between G_(t-1) and G_t on the current audit protocol. These values make guideline stability observable rather than impressionistic.
+
+
+\section{Stopping criteria}
+\textbf{The double gate}: the system stops calibration only when quality is sufficient and improvement has saturated.
+
+\begin{verbatim}
+ QUALITY GATE                  STABILITY GATE
+audit score  target            gain  epsilon
+correction  target             few new semantic rules
+coverage complete               low new-edge yield
+unresolved risk acceptable      repeated for K rounds
+             \                 /
+              \               /
+
+                 [!] stop calibration
+\end{verbatim}
+Audit performance must exceed a predefined quality floor. Human correction and unresolved rates must be acceptably low. Important classes and seven-region areas must meet minimum coverage and must not hide a systematic NONE error.
+
+Audit improvement must remain below epsilon for K consecutive rounds. New edge cases must produce few substantive rules, and guideline edits must be mostly editorial. One easy batch cannot close the process.
+
+All seven regions require a minimum evidence count or an explicit reason why the corpus does not contain that region. Consensus-failure clusters and concept-revision impacts must be resolved. The remaining risk queue must satisfy the project's acceptance policy.
+
+Calibration stops when the concept and policy are good enough and stable enough. Corpus completion occurs later when every item has a final label or an explicitly accepted unresolved disposition. Assigning a machine label to every row is not by itself evidence that the corpus is reliable.
+
+
+\section{The sealed final test set}
+\textbf{Reserve early, label late}: test items are isolated before development and receive human gold only after the concept is stable.
+
+\begin{verbatim}
+ raw corpus
+   +-->  development pool
+   |       B1 ... Bt . guideline updates . stop decisions
+   |
+   +-->  sealed T item ids
+               |  never inspected during calibration
+                after G* freeze
+           blind human labeling
+
+           final gold Y*_T
+\end{verbatim}
+The safest design reserves test item identifiers at project initialization. Their text is not inspected, retrieved, pre-labeled, or used in any stopping decision. After calibration terminates and G* is frozen, the human labels them using the mature concept.
+
+The human labels test items without seeing any candidate weak-model output. The final guideline may be available because it is the external form of the human's finalized concept. Ambiguous test items may receive a second human pass or adjudication, but model outputs remain sealed until gold is locked.
+
+A representative random test estimates expected performance on the target corpus distribution. An optional region-stratified diagnostic test ensures that all boundaries receive enough examples for analysis. Diagnostic oversampling must not be folded into an unweighted population accuracy claim.
+
+If test results are used to revise the guideline, prompt wrapper, thresholds, or executor choice, that test has become validation data. A new sealed test is required for a new final claim.
+
+
+\section{Final guideline and model evaluation}
+\textbf{The executor exam}: every candidate model applies the same frozen policy to the same unseen human-gold items.
+
+\begin{verbatim}
+ G* +  T*
+       |
+       +-->  LM A -->  Score_A
+       +-->  LM B -->  Score_B
+       +-->  LM C -->  Score_C
+
+comparison ruler =  Y*_T
+\end{verbatim}
+Each model's test predictions are compared with human gold using macro-F1, balanced accuracy, per-class precision and recall, confusion matrix, and an agreement statistic. The report includes class prevalence and uncertainty intervals. Region-level metrics show where a model fails even when overall accuracy is high.
+
+Each model is also tested under a minimal trait instruction or another predefined baseline. Guideline uplift is the frozen-guideline score minus the baseline score for the same model. This difference estimates how much the learned policy contributes beyond the executor's prior knowledge.
+
+Models used repeatedly during calibration are seen executors. At least one model or model family that did not participate in guideline optimization should be held out for final transfer evaluation. A guideline that works only for the optimization committee is not model-portable.
+
+If an executor is stochastic, the evaluation may repeat predictions under a frozen run policy. The scorecard reports variation across runs and the rate of label flips. Deterministic settings remain preferable when they are supported and do not reduce task quality.
+
+
+\section{Completing the large N corpus}
+\textbf{The production pass}: final evaluation selects an executor policy, then risk routing completes the remaining items.
+
+\begin{verbatim}
+ final scorecard
+        |
+
+ choose executor or ensemble
+        |
+
+ apply G* to remaining corpus
+        |
+        +-->  accepted machine labels
+        +-->  disagreement / low confidence / novelty
+                         |
+
+                     human review
+        |
+
+ final random corpus audit   D*
+\end{verbatim}
+The production executor may be one model, a committee, or a cost-aware routing policy. Selection considers test quality, class-specific risk, runtime, cost, and stability. The selection rule is recorded before the production corpus is labeled.
+
+Model disagreement, low confidence, unsupported evidence, novelty, and known consensus-failure neighborhoods enter a human queue. Thresholds are chosen from validation and audit evidence rather than arbitrary defaults. The system never converts procedural uncertainty into NONE.
+
+A random or stratified probability sample from the completed corpus is labeled blind by the human. Audit estimates are weighted to the production distribution. If error exceeds the acceptance threshold, the affected stratum returns to review or the production policy is revised.
+
+
+\section{Reliability claims and provenance}
+\textbf{Three levels of evidence}: human gold, audited-machine labels, and validated machine-accepted labels support different claims.
+
+\begin{verbatim}
+ human-confirmed gold
+      strongest item-level evidence
+
+ audited machine label
+      accepted through tested policy + population audit
+
+ validated machine-accepted label
+      exact tested route passed its frozen acceptance rule
+
+ unresolved
+      no final quality claim
+\end{verbatim}
+The human-confirmed subset is reliable relative to the identified human authority, subject to that person's own consistency. The machine-labeled remainder is supported by sealed-test performance, risk review, and final corpus audit. The final report states the share of items in each provenance tier.
+
+After concept stabilization, the human may re-label a random subset of earlier items without seeing prior answers. Test-retest agreement estimates intra-rater consistency. Low consistency signals that the concept or decision procedure is not yet stable enough for a strong corpus claim.
+
+Guideline quality is the ability of humans and models to reproduce the final human concept on unseen items. It includes executor accuracy, guideline uplift, model-family transfer, boundary performance, and low ambiguity. A clear-looking document with poor transfer is not high quality.
+
+
+\section{Failure modes and guardrails}
+\textbf{The main threats}: the system records each failure where it can be detected and corrected.
+
+\begin{verbatim}
+ selection bias          representative audit
+ unanimous model error   consensus audit
+ concept drift           backward impact review
+ example memorization    abstract rules + sealed test
+ model-family overfit    held-out executor
+ test leakage            invalidate and replace test
+ NONE misuse             separate uncertainty field
+\end{verbatim}
+Later batches are selected because they are difficult, novel, or inconsistent. Their error rate is expected to exceed the corpus average. Representative audit samples and known selection probabilities are required for population claims.
+
+Models may share training data, architecture families, prompt interpretations, and cultural assumptions. One consensus failure triggers a local search for similar items and an expanded audit of the affected stratum. Repeated consensus failures lower the amount of automatic acceptance allowed.
+
+A rule written to fix one review may encode irrelevant wording or source-specific detail. Every substantive patch should state its scope, counterexample, and regression impact. The sealed test and held-out executor are the final defenses against development overfitting.
+
+Each round resembles an optimization step, but the selected data distribution changes. Raw challenge loss cannot be read like training loss from identical independent batches. Audit loss supplies the comparable validation series, while challenge yield supplies the active-learning signal.
+
+
+\section{Open settings and migration map}
+\textbf{The remaining work}: the conception is fixed at method level, while numeric settings and older artifacts still need explicit reconciliation.
+
+\begin{verbatim}
+[x] SETTLED METHOD
+  authority . artifacts . round loop . B2 funnel . stop logic . final test
+
+ OPEN SETTINGS
+  batch sizes . quotas . thresholds . K . test size . LM panel . risk budget
+
+ MIGRATION TARGETS
+  QA1 QA2 QA3 . QB1 QB2 QB3 . QC1 QC2 QC3 . QD1 QD2 QD3 QD4
+  subjective-label SKILL.md . architecture . stages . schema . contract
+\end{verbatim}
+Open settings include Round 1 size, candidate-pool size, human-batch size, seven-region quotas, consensus-audit fraction, and novelty allocation. They also include quality floors, epsilon, K consecutive stable rounds, unresolved-risk thresholds, final test size, and confidence intervals. These settings must be recorded in configuration after pilot evidence exists.
+
+The project still needs an embedding model, initial region scorer, strong labeling agent, weak pre-label committee, held-out executor, and production executor policy. The initial region scorer may be prototype-based or linear, with an MLP considered after more human-confirmed data exists. Model identities and versions must be frozen for every reported comparison.
+
+QA now fixes the human-grounded system, label-region-uncertainty separation, and structured policy. QB now defines random Round 1, the blind Human-AI Session, and Checkpoint closure. QC now separates broad candidate pool C_t, sealed pre-labeling, mixed human Batch composition, and blind adjudication. QD now separates policy optimization, audit versus challenge metrics, coverage, concept stability, and conjunctive stopping. QE now owns the sealed final test, executor scorecards, validated corpus completion, final audit, and provenance. QF now owns command skills, artifacts, agent topology, deferred library mapping, and acceptance tests.
+
+The router now exposes init, round, evaluate, complete, and status under one-human semantic authority. Iterate, validate, and scale remain thin compatibility aliases rather than active legacy procedures. The architecture and agent prompts now keep the human in every calibration batch, seal weak evidence, and reserve canonical writes for the checkpoint keeper. The lifecycle, schema, metric, embedding, production, dataset, configuration, artifact, and output references now carry the seven-region, sealed-test, provenance, and HOLD contracts. The current libraries are deliberately unchanged and remain mapped as implementation work in QF4.
+
+JL confirmed that QA0 captures the discussion closely enough to govern the next edition on 260806. That acceptance did not choose the remaining numeric settings. The approved six-group migration now revises each page and skill contract against this source rather than against a disappearing chat transcript.
+

@@ -18,3 +18,6 @@
 
 ## 0.1.0 · 2026-08-15
 - Initial draft, round 2 of the thin-door migration (JL 260815): every live QPf plugin gains its skill; delta-only over haipipe-plugin.
+
+## 0.2.1 · 2026-08-16
+- Agents joined the list (JL 260816: "我们的 Skill 其实也是包括 Agent 相关的"): an `agents/<name>-agent.md` is a first-class 🤖 row with the same rank, ✕, and note; its open door is the live markdown view, and the ← → walk stays skills-only. First consumer: QPf9, ranking the collector and bank-door agents its probe cards crossed through.

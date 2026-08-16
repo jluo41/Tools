@@ -1,19 +1,26 @@
 # Chat · one Chat, its record in the folder, its form chosen inside
-state: ✅ SETTLED · the contract shipped and proved itself: one Chat, list-first, form inside, and this page's chat/ holds a real turn end to end; engine work lives on the folded faces
+state: ✅ SETTLED · one Chat, form inside, chat/ holds a real turn · open: none here (faces carry theirs)
 owner: JL
 page-type: design
 session: 82681719-498a-4c69-bf7f-5b221a925062
-method: contract ruled 260815; the four face pages folded in the same evening (JL: "just have one Chat in the plugin"), their full records archived, their substance carried as divisions
+method: contract ruled 260815; the four face pages folded the same evening (JL: "just have one Chat in the plugin"), their substance carried here as divisions while each face keeps its own full record
 
 ## Opening
 Where does a page's conversation live, and how many chat things does a page have?
+One: a page has ONE Chat, and opening it offers the TUI form or the GUI form, a choice made inside the surface.
+A kept conversation is material, and material lands in the page's own plugin folder, so it goes to `<page>/chat/`.
+The live session stays with the engine; the plugin holds what was kept.
+A reader opens one Chat, picks a form, and later finds that session in the page folder.
 
-One: a page has ONE Chat, and the Law below records who ruled it.
-Opening it offers the TUI version or the GUI version, so the form is a choice made inside the surface, never a second surface.
-A session is testimony, testimony is material, and material is a plugin, so a kept conversation lands in the page's own `chat/` subfolder.
-The live session stays with the engine while it runs; this plugin holds what was worth keeping afterwards.
-This page owned four faces for a few hours on 260815; they folded the same evening because GUI and TUI stopped being subjects the moment the mode became a runtime choice.
-The design succeeds when a reader opens one Chat, picks a form, and later finds the kept session in the page folder without ever seeing the terminal.
+**Why one Chat and not two**: GUI and TUI stopped being separate subjects the moment the form became a choice made after opening.
+The four face pages that carried them are folded into Content §3 to §6.
+
+**What material means here**: a plugin folder holds a page's own files, so `chat/<YYMMDD-HHMM>/` sits beside `draw/` and `meeting/` and follows the meeting plugin's shape.
+
+**Covered elsewhere**: the engine work stays on the folded faces, the session model on `QPf4a`, the SDK chat box on `QPf4b`, the PTY pane on `QPf4c`, and the phone form on `QPf4d`.
+
+**What this page decides**: the record contract, one Chat per page, the form chosen inside it, and what a keep writes.
+How either engine is built is not decided here.
 
 ## Diagram
 **One surface, two forms, one record**: the mode is chosen after opening, and both forms feed the same record.
@@ -22,12 +29,12 @@ The design succeeds when a reader opens one Chat, picks a form, and later finds 
                           │ open
                  ┌────────┴────────┐  choose a FORM
                  ▼                 ▼
-          🖥 GUI version     ⌨️ TUI version
+          🖥 GUI form        ⌨️ TUI form
           the SDK chat box   the real CLI
                  └────────┬────────┘
                           ▼ keep (explicit)
               📂 <page>/chat/<YYMMDD-HHMM>/
-              digest.md · transcript.md
+              transcript.md · digest.md not built
 ```
 
 ## Content
@@ -37,7 +44,7 @@ The design succeeds when a reader opens one Chat, picks a form, and later finds 
   <page>/chat/<YYMMDD-HHMM>/ · one folder per kept session
   🗣 meeting/ = spoken testimony · 💬 chat/ = typed testimony · same grammar
 ```
-A kept session follows the meeting plugin's shape: the digest is the reading path, the raw transcript is reference, and decisions are routed onto pages as sentences, which is already the rule.
+A kept session follows the meeting plugin's shape: the digest is the reading path once one is written, the raw transcript is reference, and decisions are routed onto pages as sentences, which is already the rule.
 The discovery boundary already protects it: a transcript full of `.md` files can never surface as ghost pages, because discovery never enters a plugin.
 The fold surfaced a prior signal for this contract: the session page had carried JL's 260731 line "maybe still in the home, but we can make the copy of them in the board folder", which is this plugin, four months early.
 
@@ -48,7 +55,7 @@ The fold surfaced a prior signal for this contract: the session page had carried
   QPf4b GUI page  ┐            💬 one Chat · open it · pick
   QPf4c TUI page  ┘ two subjects   🖥 GUI or ⌨️ TUI inside
 ```
-The split is a difference of FORM and never of permission: both forms carry the full permission tier by default, the rule JL overturned into "the same as the CLI" after the first off-the-cuff restriction.
+The split is a difference of FORM and never of permission: both forms carry the full permission tier by default, the same tier the CLI carries, and neither form is narrowed for being the smaller surface.
 What each form is remains real and is held in the two divisions below; what died is the idea that each form needs its own page.
 
 ### 3 · The session model
@@ -57,7 +64,7 @@ What each form is remains real and is held in the two divisions below; what died
   ⚖️ one question, one session · one session, one window · N questions, N terminals
 ```
 Sessions open at the SPACE root, and the session id is recorded on the page's `session:` line while it runs.
-The two-agents-one-file collision and the session-copy question moved into this page's Aims when the face folded.
+Its open question, the two-agents-one-file rule across nested scopes, stays on `QPf4a`'s Aims.
 
 ### 4 · The GUI form
 **The rebuilt chat box**: `claude_agent_sdk` turns in the drawer (folded from `QPf4b`).
@@ -65,21 +72,21 @@ The two-agents-one-file collision and the session-copy question moved into this 
   🖥 live/chat.py · 1332 lines · sessions · the SDK turn · three permission tiers
 ```
 The drawer sits outside `div.wrap`, so it survives the page swap.
-Its open questions, session reaping and the one-window-per-scope re-rule, are carried in Aims.
+Its open questions (session reaping, the one-window-per-scope re-rule) stay on `QPf4b`'s Aims.
 
 ### 5 · The TUI form
 **The real CLI**: a PTY in the pane, raw and smooth views (folded from `QPf4c`, which had absorbed the smooth-view page on 260801).
 ```text
   ⌨️ live/term.py · 857 lines · /_term/ PTY · parking · reattachment
 ```
-The re-key to (page, session), the web-chat rendering beside the raw pane, the fallback seam, the smoothness drop-test, and the written security boundary are carried in Aims.
+Its open questions stay on `QPf4c`'s Aims: the re-key to (page, session), the web-chat rendering beside the raw pane, the fallback seam, the smoothness drop-test, and the written security boundary.
 
 ### 6 · The form per device
 **Where typing happens**: what the pane shows when 80 columns will not fit (folded from `QPf4d`).
 ```text
   📱 phone · 💻 desktop · what the page owes a reader who switches away and back
 ```
-The phone form, the desktop gap against the GUI form, and this division's exact scope are open rows carried in Aims.
+Its open questions (the phone's ruled form, the width at which the raw grid is abandoned, the gesture audit) stay on `QPf4d`'s Aims.
 
 ## Aims
 - [x] 📦 The landing shape is ruled
@@ -92,22 +99,22 @@ The phone form, the desktop gap against the GUI form, and this division's exact 
       A first conversation lands in some page's `chat/` and reads back cold.
 
 ## States
-The carried engine aims returned to their folded faces on close (JL 260815 "close the plugin"): `QPf4a` to `QPf4d` keep their own Aims in full, so this page's aims are the CONTRACT's alone, and all four are met.
-The record SHIPPED on 260815 night and this page holds its own first specimen: `chat/260815-0457-82681719/transcript.md` is the very conversation that designed this plugin, kept by `POST /_board/chat-keep`.
-The three Decision rows closed with JL's words "We first show all the sessions name, and then select the specific session, and I also want the chat history to be recorded in the chat subfolder" and the session list is now the drawer's opening view.
-The one-Chat DOOR shipped on 260815 evening: the split shell's tab strip shows one 💬 Chat tab with the GUI or TUI segment inside it, the Plugin menu and the bare-page picker each offer one Chat entry opening in the last-used form, and the hidden mode radio stayed the single writer so every existing check still drives it.
-The four faces' full records are in `_archive/`, one file each, and every carried Aim names its source division.
+- ✅ 📦 The landing shape is ruled: a kept session writes `<page>/chat/<YYMMDD-HHMM>/`, and Content §1 carries it.
+- ✅ 🔔 The keep trigger is ruled: the engine keeps on drawer close and on session switch, bounded to the sessions the page has registered.
+- ✅ ✍️ The writer is named: `keep_sessions` in `live/chat.py`, behind `POST /_board/chat-keep`.
+- ✅ 🧪 One real session is kept: `chat/260815-0457-82681719/transcript.md` holds the conversation that designed this plugin and reads back cold.
+- The four faces' full records are the 🗂 FOLDED pages the Files section links, each keeping its own Aims.
 
 ## Files
-- `live/chat.py`
+- `../../board/haipipe-board/live/chat.py`
   The GUI form's engine; §4 owns its design.
-- `live/term.py`
+- `../../board/haipipe-board/live/term.py`
   The TUI form's engine; §5 owns its design.
 - `QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md` · `QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md` · `QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md` · `QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md`
-  The folded faces' full records, kept whole.
+  The four folded faces, each holding its own full record and its own open Aims.
 
 ## Law
-- What lands: the transcript, derived from the session's jsonl by the same walk the drawer replays; the digest stays a later aim (JL 260815, option C's transcript half).
+- What lands: the transcript, derived from the session's jsonl by the same walk the drawer replays; the digest half is not built and this page carries no aim for it (JL 260815, option C's transcript half).
 - When: at the moments a conversation stops being on screen, drawer close and session switch, and bounded to sessions the page has registered, never every stray conversation (JL 260815: "I want the chat history to be recorded").
 - Who writes: the engine, `keep_sessions` in `live/chat.py` behind `POST /_board/chat-keep`; the jsonl stays the source and transcript.md is derived, so a re-keep overwrites (JL 260815).
 - One Chat per page; the TUI or GUI form is selected after opening, inside the surface (JL 260815).
@@ -115,6 +122,7 @@ The four faces' full records are in `_archive/`, one file each, and every carrie
 - A kept conversation is plugin material at `<page>/chat/`, in the meeting shape (JL 260815).
 
 ## Log
+- 260816 · [REVISE-CC] the page caught up with the close: §3 to §6 now point at each folded face's own Aims instead of claiming carried aims, States became one current-fact row per aim and dropped the false `_archive/` claim (the four faces stand as live 🗂 FOLDED pages), the Opening's rationale came back on stage with labelled drawer parts, the `state:` line became a row again, the two engine paths in Files were written in their resolving form `../../board/haipipe-board/live/*.py`, and Law stopped promising a digest aim that no Aims row carries.
 - 260815 1900 · [JL via CC] `haipipe-plugin-chat` drafted under `page-plugins/`, round 2 of the thin-door migration: delta-only over `haipipe-plugin` (the landing rule stays this page's open Decision; the skill records the boundary instead of freezing it).
 - 260815 1330 · [CHECK-CC] closed on JL's ruling after the loop was proven for real: a live SDK turn through the drawer (the venv fix below), its reply KEEP-TEST-OK landing in this page's own chat/ transcript. The earlier 8/8 suite had tested every gesture EXCEPT a turn, and serve.py had been started on the system python with no SDK; both are fixed (.venv created, serve restarted on it) and the miss is recorded here so the lesson outlives the fix.
 - 260815 1900 · [REVISE-CC] the recorder shipped: list-first drawer opening, `chat-keep` endpoint, keep hooks on close and session switch, and this page's own `chat/` holds the first kept transcript, the session that designed it. The three Decision rows closed into Law with JL's words. The four folded faces returned as 🗂 FOLDED pages when that state shipped.

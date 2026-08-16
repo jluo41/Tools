@@ -2,7 +2,7 @@
 <html lang="en" data-theme="academic-report">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The board, in one chapter</title>
+<title>QA00 · The Introduction</title>
 <link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
 <link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
 <link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
@@ -24,111 +24,113 @@ html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
 <body>
 <div class="deck">
 
-  <!-- 1. Cover -->
-  <section id="s1" class="slide" data-title="Cover">
-    <p class="kicker">BoardSkillBoard · QA00 · the front door, as a talk</p>
-    <h1 class="h1 anim-fade-up" data-anim="fade-up">The board,<br><span class="gradient-text">in one chapter</span></h1>
-    <p class="lede">One topic becomes one folder, one page per decision, one generated site anyone can open and comment on — and since 260815 the groups are the system's own ladder</p>
-    <div class="deck-footer"><span class="dim2">QA00-overview · AI-generated deck, 260815</span><span class="slide-number" data-current="1" data-total="9"></span></div>
-    <div class="notes">This deck presents the same introduction the QA00 page gives a zero-background reader: what the system is, how to read the board, and where every rule lives. The page never restates a contract — it points, because pointers are machine-checked and paraphrases are not.</div>
-  </section>
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QA00-overview · 🟡 PARTIAL · owner JL · reopened 260816</p>
+  <h1 class="h1">Why this board exists, <span class="gradient-text">and how to read it</span></h1>
+  <p class="lede">Design talk with an agent is smart and forgetful. A board gives every decision an address instead: one topic is one folder, one decision is one page with a state anyone can read. This chapter is the front door.</p>
+  <div class="deck-footer"><span class="dim2">QA00-overview · AI-generated deck, 260816</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">This is the introduction chapter of the whole board — the first page of QA and of everything. Two former pages were folded in today: the glossary is now section 4, the folder map is now section 5. Tell the room they can finish this cold, with no prior context.</div>
+</section>
 
-  <!-- 2. How to read -->
-  <section id="s2" class="slide" data-title="Three passes">
-    <p class="kicker">The reading order</p>
-    <h2 class="h2">The words, the ladder, the lanes</h2>
-    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
-      <div class="card"><h4>① 🧭 the words</h4><p class="dim">QA first: the vocabulary (QA1), the folders (QA0), the round (QA3) — so terms mean what the pages mean</p></div>
-      <div class="card"><h4>② 🪜 the ladder</h4><p class="dim">QB → QPs → QPf → QPw → QS, the altitudes in order, one chapter division per group</p></div>
-      <div class="card"><h4>③ 🔦 the lanes</h4><p class="dim">QC · QO · QF — entered only when your question is about code, the live surface, or evidence</p></div>
-    </div>
-    <div class="notes">Reading the board in order IS the tour of the system — that is what the 260815 regroup bought. Support lanes are deliberately out of the main walk.</div>
-  </section>
+<section class="slide" id="s2" data-title="Why">
+  <p class="kicker">§1 · Why a board</p>
+  <h2 class="h2">A decision that lives only in a chat is already lost</h2>
+  <div class="grid g2">
+    <div class="card"><h4>💨 The problem</h4><p class="dim">The next session starts from nothing — the choice gets re-argued, quietly reversed, or forgotten. The loudest most recent chat wins.</p></div>
+    <div class="card"><h4>🏠 The fix</h4><p class="dim">One topic = one folder, one decision = one page, with a state line (🔴 🟡 ✅ ⏸️) anyone can read without reading the page.</p></div>
+    <div class="card"><h4>🎓 The loop</h4><p class="dim">Argue on a page, settle, graduate: the Law is copied into the skill that ships, and only then binds. The chat can be forgotten because the page cannot.</p></div>
+    <div class="card"><h4>🧪 The stranger test</h4><p class="dim">A stranger opens the generated site and knows: what is decided, what is open, and where to argue. Counts are computed on every build, so the front door cannot lie.</p></div>
+  </div>
+  <p class="dim mt-m">This board's own history is the evidence: "the work is finished" came apart three times in one day before QA3 gave the round a gate.</p>
+  <div class="notes">Start with the failure, because everyone in the room has lived it: a good conversation, a real decision, and then a new session that remembers none of it. The board is not machinery for its own sake — it exists so "what did we decide about X" has an answer with an address.</div>
+</section>
 
-  <!-- 3. The ladder -->
-  <section id="s3" class="slide" data-title="The ladder">
-    <p class="kicker">Nine groups</p>
-    <h2 class="h2">Each group mirrors the unit it argues</h2>
-    <pre class="mt-m">  🧭 QA · Design      the system's meta: words · folders · round · roster
-        │
-  🏛 QB · Board  ──▶  📐 QPs · Page-Structure   what a page SAYS
-        │            📂 QPf · Page-Folder      where its files LIVE
-        │            🔁 QPw · Page-Workflow    how a page MOVES
-        │                       │
-        └───────────────────────┴──▶  ✏️ QS · Sentence   the atomic unit
+<section class="slide" id="s3" data-title="Reading">
+  <p class="kicker">§2 · How to read this board</p>
+  <h2 class="h2">Three passes: this chapter, the ladder, the lanes</h2>
+  <pre>
+① 🧭 read this chapter    the reason (§1) · the words (§4) ·
+                          the folders (§5)
 
-  support: ⚙️ QC engine · 🖥 QO operating · ✅ QF execute</pre>
-    <div class="notes">The board altitude at the top, the sentence at the bottom, and the page split into its three axes in between. The three page axes mirror three units that do not all exist yet — the board carries that as visible debt, on purpose.</div>
-  </section>
+② 🪜 walk the ladder      QB ──▶ QPs ──▶ QPf ──▶ QPw ──▶ QS
+                          the altitudes, in order
 
-  <!-- 4. The laws -->
-  <section id="s4" class="slide" data-title="The laws">
-    <p class="kicker">Invariants</p>
-    <h2 class="h2">Six rules hold everywhere</h2>
-    <pre class="mt-m">⚖️ one board = one folder · one page = one decision      QB1
-📂 a page owns its folder; every subfolder is a plugin   QPf1
-📝 markdown is the only source; board/ is derived        QC3
-✏️ a sentence is archived, never deleted                 QS2
-🎓 settled Law graduates into SKILL.md, no more no less  QA6
-🗣 a decision lives on a page, never only in a chat      QA3</pre>
-    <p class="dim mt-m">Each law names the page that rules it — this page never restates one.</p>
-    <div class="notes">These are the rules that survived every round. The plugin-boundary law's own page is still owed in QPf, recorded as visible debt rather than a stub — a debt page is born when content exists, not before.</div>
-  </section>
+③ 🔦 enter a lane         QC · QO · QF — only when your
+                          question is code, the live board,
+                          or evidence
+  </pre>
+  <p class="dim mt-m">Read this chapter first so the words mean what the pages mean.</p>
+  <div class="notes">The order matters: vocabulary before ladder, ladder before lanes. Most readers never need pass three — the support lanes are for questions about the engine, the served site, or what actually ran, not for understanding the design.</div>
+</section>
 
-  <!-- 5. QA + QB -->
-  <section id="s5" class="slide" data-title="QA · QB">
-    <p class="kicker">Chapters 1–2</p>
-    <h2 class="h2">The constitution, then the board altitude</h2>
-    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
-      <div class="card"><h4>🧭 QA · six premises</h4><p class="dim">geography · language · birth · the round · identity · the roster. No page owns a deliverable — delete one and nothing breaks today; a reader gets lost tomorrow</p></div>
-      <div class="card"><h4>🏛 QB · one folder, one board</h4><p class="dim">board.md is the only authored thing at this altitude; the Index is DERIVED on every build, so the front door cannot lie. Design-1 and Design-2 hold the shipping units</p></div>
-    </div>
-    <div class="notes">QA's cautionary tale is QA5: one defect class reported four times in different clothes, because identity lived in names and empty lookups stayed silent. QA3 exists because "work finished" and "board ready to hand back" came apart three times in one day.</div>
-  </section>
+<section class="slide" id="s4" data-title="Laws">
+  <p class="kicker">§3 · The laws that hold everywhere</p>
+  <h2 class="h2">Six invariants, each a pointer to the page that rules it</h2>
+  <pre>
+⚖️ one board = one folder · one page = one decision    QB1
+📂 a page owns its folder; subfolders are plugins      QPf1
+📝 markdown is the only source; board/ is derived      QC3
+✏️ a sentence is archived, never deleted               QS2
+🎓 settled Law graduates into SKILL.md, no more        QA6
+🗣 a decision lives on a page, never only in a chat    QA3
+  </pre>
+  <p class="dim mt-m">This slide establishes nothing new — a pointer is machine-checked on every build, a paraphrase is not. The plugin boundary's own page is still owed in QPf, recorded as visible debt.</p>
+  <div class="notes">Resist the urge to explain each law here — that is the ruling page's job, and restating it would create a second source that drifts. The one honest admission on this slide is the open debt in QPf: the board records it rather than papering over it with a stub.</div>
+</section>
 
-  <!-- 6. The page's three axes -->
-  <section id="s6" class="slide" data-title="QPs · QPf · QPw">
-    <p class="kicker">Chapters 3–5 · the page</p>
-    <h2 class="h2">What it says, where it lives, how it moves</h2>
-    <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
-      <div class="card"><h4>📐 QPs · structure</h4><p class="dim">the fixed sections, and the two kinds that change what closing means — five kinds became two on 260815</p></div>
-      <div class="card"><h4>📂 QPf · folder</h4><p class="dim">the plugin law: draw, slide, chat, display… material lands in plugins, and discovery never enters one</p></div>
-      <div class="card"><h4>🔁 QPw · workflow</h4><p class="dim">draft · probe · revise · check, and the dispatched agents that run them — one writer, one page</p></div>
-    </div>
-    <p class="dim mt-m">The mirror kind died of a measured disease: five Openings out of one template, because a page that decides nothing has no question to ask.</p>
-    <div class="notes">QPs works specimen-first: build one real page, then write the contract it taught you. QPw was born owing its debt on purpose — the four phase contracts ship as skills with no page arguing them yet.</div>
-  </section>
+<section class="slide" id="s5" data-title="Words">
+  <p class="kicker">§4 · The words this family uses</p>
+  <h2 class="h2">Four word families — nothing defined here for the first time</h2>
+  <div class="grid g2">
+    <div class="card"><h4>📦 4.1 The Board family</h4><p class="dim">family ▸ skill ▸ folder ▸ source ▸ site: from skills/board/ down through board.md to the generated board/ webpage, never hand-edited.</p></div>
+    <div class="card"><h4>📄 4.2 The page family</h4><p class="dim">group ▸ page ▸ kind × phase ▸ state ▸ section: Q decides, S stages, Design settles on a SELECTION record; phases are DRAFT · PROBE · REVISE · CHECK.</p></div>
+    <div class="card"><h4>✏️ 4.3 The sentence family</h4><p class="dim">sentence ▸ lane ▸ comment ▸ edit ▸ card: one source line is the atomic row (QS1), and typed lanes bind to it by adjacency.</p></div>
+    <div class="card"><h4>⚖️ 4.4 The working words</h4><p class="dim">decision · standing · spine / close · sync · managed span · Skills row — six words, each naming one thing.</p></div>
+  </div>
+  <p class="dim mt-m">A coined word is a defect: every entry is the source documents' own word, and every entry names the page or file that defines it.</p>
+  <div class="notes">This is the absorbed glossary — QA1's substance carried whole, with its history left to the archive. The rule to stress is the defect rule: the glossary never invents, it only collects, so it can never become a second source that contradicts the pages.</div>
+</section>
 
-  <!-- 7. QS + QC -->
-  <section id="s7" class="slide" data-title="QS · QC">
-    <p class="kicker">Chapters 6–7</p>
-    <h2 class="h2">The sentence, and the round trip</h2>
-    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
-      <div class="card"><h4>✏️ QS · sentence-grained memory</h4><p class="dim">the smallest thing with an address, a record, and a card — archived, never deleted. It is why the 260815 restructure moved most of the board while every old citation still resolves</p></div>
-      <div class="card"><h4>⚙️ QC · md in, site out</h4><p class="dim">markdown → build → board/ → a reader's click → one line of markdown back. HTML never travels into markdown; every generated byte is disposable</p></div>
-    </div>
-    <div class="notes">QC's founding ruling was JL's, on seeing 25 loose scripts: "这个结构很差" — and the top level emptied into cli/ and tests/ the same day. The write path lands exactly one line in one file; QS4 exists to prove every shape of that claim.</div>
-  </section>
+<section class="slide" id="s6" data-title="Folders">
+  <p class="kicker">§5 · The three folders</p>
+  <h2 class="h2">The ground: three folders, three kinds of truth</h2>
+  <div class="grid g3">
+    <div class="card"><h4>⚙️ ① skills/board/</h4><p class="dim">SHIPS — read by a runtime. The family the whole world uses; only graduated Law lives here.</p></div>
+    <div class="card"><h4>🗂 ② this board folder</h4><p class="dim">ARGUED — read by people. Where decisions are made and kept; what is argued is kept.</p></div>
+    <div class="card"><h4>📤 ③ every board/ site</h4><p class="dim">RENDERED — read by anyone. Generated on every build; what is generated is disposable.</p></div>
+  </div>
+  <p class="dim mt-m">This board's subject IS the board — a board used to define boards — so a reader meets each idea twice: as this board's practice, and as the shipped contract. §5 keeps the two from being confused.</p>
+  <div class="notes">This is the absorbed folder map, formerly QA0. The self-reference is the trap to defuse out loud: when someone asks "which rule applies to me," the answer is always the shipped folder, never this board's own working practice — the two look alike by design.</div>
+</section>
 
-  <!-- 8. QO + QF -->
-  <section id="s8" class="slide" data-title="QO · QF">
-    <p class="kicker">Chapters 8–9</p>
-    <h2 class="h2">The served board, and the evidence lane</h2>
-    <div class="grid g2 mt-l anim-stagger-list" data-anim-target>
-      <div class="card"><h4>🖥 QO · two audiences, one server</h4><p class="dim">you working (split workspace, status strip) and others arriving (hosting, mounts). The bind address is the only access control there is — the listener stays on loopback</p></div>
-      <div class="card"><h4>✅ QF · what actually ran</h4><p class="dim">the gate after every change, a zero-context agent finding the door, a real browser, a real chat turn. Mechanical checks catch state; only a fresh reader catches prose</p></div>
-    </div>
-    <div class="notes">QF's founding incident: a whole feature was built and running on 260726 while its page still said nothing is built — the board and the machine told two different stories. Every gate here pairs a mechanical check with a fresh reading.</div>
-  </section>
+<section class="slide" id="s7" data-title="Tour">
+  <p class="kicker">§6 · The tour</p>
+  <h2 class="h2">The ladder: nine groups in reading order</h2>
+  <pre>
+🧭 QA · Design           the system's meta: this chapter +
+                         birth, round, identity, roster
+🏛 QB · Board            the board altitude
+📐 QPs · Page-Structure  what a page SAYS
+📂 QPf · Page-Folder     where its files LIVE
+🔁 QPw · Page-Workflow   how a page MOVES
+✏️ QS · Sentence         the atomic unit
 
-  <!-- 9. Closer -->
-  <section id="s9" class="slide" data-title="Closer">
-    <p class="kicker">The close condition</p>
-    <h1 class="h1 anim-fade-up" data-anim="fade-up">Five questions,<br><span class="gradient-text">zero page ids</span></h1>
-    <p class="lede">This page closes when a fresh agent, holding only this page, routes five questions to the owning page each time — the front door proven as a door.</p>
-    <div class="deck-footer"><span class="dim2">generated from QA00's Content · regenerate any time from the page</span><span class="slide-number" data-current="9" data-total="9"></span></div>
-    <div class="notes">The other standing aim: every pointer on this page resolves on every build, held by the build's dead-link and unresolved-id checks. This deck follows the chapter divisions §3–§11 of the page, one slide per rung or pair of rungs.</div>
-  </section>
+support lanes, entered when needed:
+⚙️ QC · Engine   🖥 QO · Operating   ✅ QF · Execute
+  </pre>
+  <p class="dim mt-m">One tour rung per group — each chapter is toured without its contract being repeated here.</p>
+  <div class="notes">Walk it top to bottom: board, then what a page says, where its files live, how it moves, down to the single sentence. The three lanes at the bottom are side doors, not steps — code, the live served board, and evidence of what actually ran.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Close">
+  <p class="kicker">What closes this page</p>
+  <h1 class="h1">The front door is done when <span class="gradient-text">a stranger needs no guide</span></h1>
+  <p class="lede">This page closes on the fresh-agent routing test — given only this chapter, find the owning page for any question — and on the rulings carried in from QA1 and QA0, whose full records rest in _archive/.</p>
+  <div class="deck-footer"><span class="dim2">QA00-overview · AI-generated deck, 260816</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">End where the page's own close condition ends: not "we wrote an introduction" but "a cold reader can route from it." Until that test passes and the carried rulings settle, the state line stays honestly yellow.</div>
+</section>
+
 </div>
 <script src="../../../../../display/html-ppt/assets/runtime.js"></script>
 </body></html>
+<!-- autodeck: claude · 260816 0136 · ask: The page was rebuilt today as the introduction chapter: why a board exists (1), how to read (2), the laws (3), the words (4), the three folders (5), the tour (6). One slide per division rung; plain human words, no jargon. -->
