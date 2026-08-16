@@ -9,3 +9,6 @@
 - Reversed the fold, kept the door (JL 260816: "figure 和 table 是不是也可以保留呢?"): `haipipe-display-table` and `haipipe-display-figure` return as full skills and the door's `ref/` recipes are gone; the door is now a pure router.
 - `haipipe-display-poster` and `haipipe-display-slides` retired (JL: "poster 和 slides 我们都不要了"), with their paper-side doors `paper-poster`/`paper-slides` and the `content-plan-spec.md` they alone used; all parked under `_todo/`.
 - Four renderers remain: table · figure · diagram · illustration. The ✒️ tikz method is named in the routing table as hand-authored, since no skill covers it.
+
+## 0.3.0 · 2026-08-16
+- The ✒️ row stopped being skill-less: `haipipe-display-tex` was born the same day (JL), so the door now routes FIVE renderers and names none as unowned. The 0.2.0 note above is superseded on that one point.

@@ -27,7 +27,7 @@ from urllib.parse import unquote
 
 from . import base
 from cli.draw import (DrawError, SCHEMA, compose_group_data, read_scene,
-                      reference_ids, write_scene_atomic)
+                      reference_ids, scene_text, write_scene_atomic)
 
 
 _DRAW_LOCK_GUARD = threading.Lock()
@@ -630,7 +630,7 @@ class XcalMixin:
             scene["elements"] = rest + slice_
         imgs = self.stash_files(scene, d.get("files"), f.parent / "assets")
         tmp = f.with_name(f.name + ".tmp")
-        tmp.write_text(json.dumps(scene, indent=1), encoding="utf-8")
+        tmp.write_text(scene_text(scene), encoding="utf-8")
         tmp.replace(f)
         return {"ok": True, "wrote": len(els), "total": len(scene["elements"]),
                 "images": imgs, "frame": frame or "(whole board)"}
@@ -735,7 +735,7 @@ class XcalMixin:
                              "kind": "page",
                              "page": {"id": f.stem, "markdown": md_rel}}}
         f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(json.dumps(scene, indent=1), encoding="utf-8")
+        f.write_text(scene_text(scene), encoding="utf-8")
         return scene
 
     def reply_scene(self, scene):

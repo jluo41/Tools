@@ -1,6 +1,6 @@
 # display · the family map
 
-One door, four renderers, one constitution, and the tooling beside them.
+One door, five renderers, one constitution, and the tooling beside them.
 A display is one UNIT: a folder holding the approved inputs, the recipe that draws, and the winning render.
 
 ```
@@ -10,8 +10,8 @@ haipipe-display-table/      📊 renderer · aggregated CSV/JSON → booktabs La
 haipipe-display-figure/     📈 renderer · results → plot (line/bar/scatter/heatmap)
 haipipe-display-diagram/    📐 renderer · FigureSpec JSON → editable SVG
 haipipe-display-illustration/ 🎨 renderer · AI concept figure via the codex bridge
-                            ✒️ tikz has NO skill: author recipe/<name>.tikz.tex by
-                               hand and let float.tex \input it (QPf5's own units)
+haipipe-display-tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
+                               blocks, display equations · the writer is a person
 ref/                        📜 THE CONSTITUTION · display-unit-output-contract.md
                                + display-intake-contract.md; every renderer obeys them
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's

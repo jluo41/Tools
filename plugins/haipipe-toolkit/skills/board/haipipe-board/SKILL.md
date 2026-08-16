@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.138.0"
+  version: "0.139.1"
   last_updated: "2026-08-16"
-  summary: "📄 Page phases panel joins the 🪜 Workflow menu (index left, content right), and both bottom panels gained a drag-to-resize grip."
+  summary: "📁 cli/refold.py gives every page on a board its own folder and re-anchors the paths that move with it."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -180,6 +180,11 @@ The descriptive source folder (`1-QA-<group-title-slug>/`) and the compact gener
   Membership has looked only at the path, not at a registry, since 260722, so moving pages into folders is a plain `mv`: `## Pages` still writes bare filenames only, board.md needs not one word changed, and the render is identical except for the path attribute used for write-back (verified across 30 pages).
   The ＋Q on the page writes into the folder its group already lives in; a newly opened group gets a named folder opened by its first page.
   To move a whole existing board: `python3 <skill>/cli/regroup.py <board-folder> --apply` (omit `--apply` for a dry run).
+  To give every page on that board its own folder afterwards: `python3 <skill>/cli/refold.py <board-folder> --apply` (same dry run by default).
+  The two are one migration in two steps, and each has its own command because they answer different questions: `regroup` decides which GROUP a page belongs to, `refold` gives the page a home of its own so its plugins have somewhere to live.
+  `refold` moves the plugin material in with its page — the group had been holding it keyed by page name, `display/<page>/` and `draw/<id>.excalidraw` — and preserves the inner path rather than flattening it, because a display unit is addressed by its own folder name and a QA-probe record names its page by the drawer it sits in.
+  It then re-anchors every path that RESOLVES today, from the file or from the board root, and leaves an already-dead path exactly as it is: guessing at what a dead path meant is how it becomes a plausible wrong one.
+  Run it against a copy first if the board is large; on the 73-page paper board it moved 83 things and rewrote 49 files.
   **⚠️ Run `check.py` once after moving.**
   `## Pages` writing bare filenames is unaffected, but `## Links` writes real paths, and any that point across boards into someone else's page will break (moving 154 pages on 260726 broke 17 links; all were fixed).
   **Never re-fold a board that is already sorted into folders**, for example a paper's `0-lifecycle/`: `0-seed/ 1-work/ 3-display/` is already both a subject folder and an S family, so it already satisfies this rule, and the numbering additionally carries lifecycle order.
@@ -695,6 +700,7 @@ The scripts and packages in the skill root:
 | `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
 | `status.py` | Derive the visible session status strip at the end of every reply from Board, page group, and page; read-only, writes no state file. **The one script still at the top level, deliberately**: the reply-footer automation invokes it by absolute path, so moving it into `cli/` would silently break every board attachment |
 | `cli/regroup.py` | Move a board's root pages into one named folder per group; a dry run without `--apply` |
+| `cli/refold.py` | Give every page its own folder (`<name>/<name>.md`, JL 260815), move the group's page-keyed plugin material in with it, and re-anchor every path that still resolves; a dry run without `--apply` |
 | `cli/refs.py` | Render a paper's real bibliography once into a cache the board can read; it is a separate command because running BibTeX writes |
 | `cli/draw.py` | Split a legacy scene into lowercase Group `draw/` folders without overwriting, add newly declared Pages with additive `sync`, compose linked Page sources with namespaced references, and verify an exact round trip |
 | `cli/xcal.py` | Legacy one-scene seeder for old Boards; not the source contract for new linked drawing work |

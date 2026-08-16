@@ -6,7 +6,11 @@ from src.page_board import group_canvas, tree_reroot
 
 
 class TreeRerootTest(unittest.TestCase):
-    def test_group_page_links_the_linked_group_scene_and_both_edit_modes(self):
+    def test_group_page_emits_only_the_owner_address_no_canvas_on_stage(self):
+        """JL 260815, "I don't want the draw in here": a group page's body stays
+        prose and the composed drawing opens in the Draw split, so the build
+        emits the OWNER ADDRESS alone. This asserts the ruling, not just the
+        path: the two edit-mode links it replaced must not come back."""
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "pyproject.toml").write_text("[project]\nname='fixture'\n")
@@ -19,8 +23,12 @@ class TreeRerootTest(unittest.TestCase):
                 "QA · First", [{"file": "QA-first/QA1.md"}],
             )
             self.assertIn("board-source/QA-first/draw/group.excalidraw", html)
-            self.assertIn("mode=group-source", html)
-            self.assertIn("mode=arrange", html)
+            self.assertIn('class="group-draw-owner"', html)
+            self.assertIn("hidden", html)
+            self.assertIn('data-label="QA · First"', html)
+            self.assertNotIn("mode=group-source", html)
+            self.assertNotIn("mode=arrange", html)
+            self.assertNotIn("<iframe", html)
 
     def test_board_source_links_and_media_move_together(self):
         html = (

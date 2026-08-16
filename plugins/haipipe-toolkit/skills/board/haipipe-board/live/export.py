@@ -1,6 +1,6 @@
 """📜📝📚 Export · a page's DERIVED paper-facing plugins: latex/, word/, bibex/.
 
-THE DIVISION OF LABOUR, the same one deck.py drew for slide/:
+THE DIVISION OF LABOUR between a writer and a door:
 
   the writers (skills/paper/haipipe-paper/scripts/to-word/)   HOW an export is made
   this file                                                   WHERE it lands, and the door
@@ -13,7 +13,8 @@ already wrote, so it is thirty lines of copying and belongs to no other family.
 
 WHERE AN EXPORT LANDS is the plugin contract (haipipe-plugin): a folded page
 owns its material, so `<page-dir>/<plugin>/<stem>.<ext>`; a flat page falls back
-to the board-level `<board>/<plugin>/`, exactly as deck.py does for slide/.
+to the board-level `<board>/<plugin>/`. The fallback is this door's own: the
+slide plugin has none, because `autodeck.py` refuses a flat page outright.
 
 WHY EVERY OUTPUT GETS AN .html BESIDE IT when the artifact itself cannot be
 framed: the surface is a right-pane TAB, and a tab needs a URL a browser can
@@ -33,7 +34,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# The writers, found beside this engine the way deck.py finds html-ppt:
+# The writers, found beside this engine the way autodeck.py finds html-ppt:
 # live/ -> haipipe-board -> board -> skills, then the paper family.
 _SCRIPTS = (Path(__file__).resolve().parents[3]
             / "paper" / "haipipe-paper" / "scripts" / "to-word")
@@ -81,7 +82,7 @@ class ExportMixin:
         if not page_src.is_file() or page_src.suffix != ".md":
             return None, None, None, "not a page .md: %s" % f
         # A folded page owns its material (haipipe-plugin); a flat page
-        # keeps the board-level fallback, the same fork deck.py takes.
+        # keeps the board-level fallback, which is this door's own.
         if page_src.parent.name == page_src.stem:
             out_dir = page_src.parent / plugin
         else:

@@ -56,7 +56,8 @@ def read_scene(path: Path) -> dict:
 
 
 def scene_text(scene: dict) -> str:
-    return json.dumps(scene, indent=2, ensure_ascii=False) + "\n"
+    from src.common import scene_text as _canonical   # the one serializer
+    return _canonical(scene)
 
 
 def write_scene(path: Path, scene: dict) -> None:

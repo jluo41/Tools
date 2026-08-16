@@ -11,6 +11,25 @@ Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues 
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
+- 260816 · [RESTRUCTURE-CC, JL ruled] the Design kind folded into the Q series across QB, QPw and QS: a unit rides the Q page that argues its contract, and where no Q page argued it, the Design page became one.
+  `Design-6` became `QPw2-the-hands`, keeping its three agent snapshots, its deck and its scene; `Design-4` became `QS5-writing`, keeping `haipipe-writing`; `Design-5` folded into `QS1`, whose contract it ships, and is archived whole.
+  Both converted pages were brought to the Q page contract in the same round: a question lead, `## Writing Style`, `## Files`, face figures and numbered paragraphs per division, `A<n>` Aim groups with `Done when`, one State row per Aim, and each page's unruled question as a `### Decision Now` with its options.
+  `QPw1` gained a `skill/` list naming the five `page-workflows` units, which closes the debt line that said the phase contracts had no page arguing them.
+- 260816 · [RENUMBER-CC, JL ruled] every group folder now carries its place in `## Pages`: `QC-engine/` became `7-QC-engine/`, and the folder listing finally reads in the board's own order.
+  A letter says WHICH group and cannot say which comes FIRST, so the three support lanes floated to the top of every listing and `QPs`/`QPf` sat inverted against each other, telling a reader one story while the Index told another.
+  Renaming the letters was weighed and refused: it moves 1594 id mentions across 43 pages, needs a `## Links` row each to keep the old ids alive, and cannot order the page rung without spending the s, f and w that say structure, folder and workflow. Numbering moved 197 path strings and no id at all, because nobody cites a folder.
+  The rule graduated into the skill the same day (`haipipe-board` 0.138.0): `group_stem()` strips the number before any reader sees the letter, `regroup.py` numbers a whole board, `＋Q` follows what a board already does, and `check.py` fails when a folder and `## Pages` disagree. `QA00 §5.4` carries the law, `QPf1` the ＋Q behaviour.
+- 260816 · [RESTRUCTURE-CC, JL ruled] the QB group went to four pages, on JL's call for few pages.
+  `QB1`'s standing rule split out as `QB1a`: the page read as settled while the group's one open decision, what may be written into a board we render but do not own, was buried inside it and invisible on the roster. The vacated `### 4` became the board folder's own plugins, `board.excalidraw`, `fig/`, `_archive/`, `_runs/` and the generated `board/`.
+  Both Design pages dissolved the way `QPs00` dissolved into `QPs1`: `haipipe-board` and the 260723 meeting note now ride `QB1`, `haipipe-board-routing` rides `QB1a`, and the prose is archived whole with its `draw/`.
+  `QB2` lost `### 14`, which only said what the page did not own, and gained the group page, `board/<GROUP>.html`, which Board Structure has declared since it was written and no page argued.
+  Numbers are sub-letters rather than new ones: `QB3` to `QB10` are burned ids from the old QB group's split into the page rung, and `QB4` alone is still cited in 161 files.
+- 260816 · [RULE-CC, JL delegated] the close's second half was ruled on QA2 §7, after JL answered "make the decision yourself": a closed board folder STAYS with a `closed:` line in its head, `close` REPORTS every settled Law that names no landing site instead of refusing, and a graduated Law row now carries `→ landed in <file>`.
+  The third ruling was wrong once and JL caught it in one line ("who said so???"): CC had banned reopening a closed board while `QPw1`, both shipped agents and `QA00`'s own state line all reopen things, so the ban was struck and only the record survives, `closed:` kept and `reopened: YYMMDD · why` added.
+- 260816 · [RESTRUCTURE-CC, JL ruled] the QA group became the CONSTITUTION, one page per rung of the loop it describes: why (QA00), the life of a board (QA2), the round (QA3), what ships (QA6).
+  Seven pages became four. The identity page left for `QC4`, because what it rules is engine code and QA holds no deliverable; QA6a and QA6b folded into QA6 whole; QA2 absorbed the close, the hole nobody owned, and became `QA2-board-life`.
+  The group was renamed because "Design" already means a page kind here (`Design-<n>`), and its folder is `1-QA-constitution/`.
+  Numbers were left alone rather than renumbered contiguous: `QA3` is cited as a law row on the front page, so the gaps at 1, 4 and 5 stay and resolve through `## Links`; `QC4` is a reuse under the 260801 precedent and the round trip stays `QC3`.
 - 260816 · [FOLD-CC, JL ruled] QA00 became the introduction chapter: QA0 (the folders) and QA1 (the words) folded in as its §5 and §4, and the chapter now opens on why a board exists, told as a plain story (JL chose no metaphor).
   Both pages archived whole with their plugins; their open rulings carried into QA00's Decision Now; QA0, QA1, and QA1a resolve through `## Links`.
 - 260815 · [FOLD-CC, JL ruled] "just have one Chat in the plugin": QPf4's four faces folded into its Content the evening they were born, GUI and TUI became a form choice inside the one surface, 13 open aims carried with source tags, full face records archived, then restored as 🗂 FOLDED pages the same night when the FOLDED state shipped (a fold stays linkable, it only stops competing for room).
@@ -23,7 +42,7 @@ What makes this board unusual: its subject IS the board itself, a board used to 
   QD and QE merged as QO - Operating; QC renumbered contiguous; the roster pages joined QA.
   Reused numbers follow the 260801 precedent; every other retired id resolves through `## Links`.
   Debt made visible instead of stubbed (QA rule: a page is born when its content exists): the four phase contracts and run receipts (QPw), the plugin boundary + skill/meeting/chat/fixture plugin pages (QPf), and the three reform units' pages (Skill-9/10/11).
-- 260806 · [REVISE-CC] the `QBt` figure was frozen at one built specimen while eight sit in the roster twelve lines below it. Corrected against `ls QPs-page-structure/`: eight pages on disk (QBt1 QBt2 QBt3 QBt4 QBt5 QBt6 QBt9 QBt10), each row now carrying the head key that page really declares, and only `for-skill` and `for-meeting` left unbuilt. The `QBt7`/`QBt8` gap is recorded too: a grep for either id across `skills/` returns nothing, so the numbers were never used, which contradicts the `QD` renumbering ruling below and is now an open row on `QB6`.
+- 260806 · [REVISE-CC] the `QBt` figure was frozen at one built specimen while eight sit in the roster twelve lines below it. Corrected against `ls 3-QPs-page-structure/`: eight pages on disk (QBt1 QBt2 QBt3 QBt4 QBt5 QBt6 QBt9 QBt10), each row now carrying the head key that page really declares, and only `for-skill` and `for-meeting` left unbuilt. The `QBt7`/`QBt8` gap is recorded too: a grep for either id across `skills/` returns nothing, so the numbers were never used, which contradicts the `QD` renumbering ruling below and is now an open row on `QB6`.
 260802: QB8's five faces folded. QB8a, QB8b and QB8c became QB8's own `### 3` to `### 6` and were archived; QB8d moved to QD8, because a generated address is how a machine POINTS AT a location rather than a thing attached to a sentence; QB8e stayed its own page, since nothing in it is built and its identity question is open. Same shape and same answer as QB4's seven section faces on 260801.
 Since 260731 every page id matches its group letter, and a parent page may carry faces as sub-letters. Neither QB4 nor QB8 does any more: QB4's seven section faces folded into its Content on 260801 and QB8's five followed on 260802, which is now the answer whenever a face stops carrying a subject of its own.
 Every earlier id stays resolvable as a declared Link, so a citation written under any older naming still lands on the right page.
@@ -57,21 +76,23 @@ Every id here is a link: a group token opens the index at that group, a page id 
 
 ─────────  ② the groups ARE the ladder  ────────────────────────────────────────────
 
-   the system's meta            the altitudes, in reading order
-  ┌──────────────┐   ┌──────────────────────────────────────────────────┐
-  │ QA · Design  │   │ 🏛 QB · Board ──▶ 📐 QPs · Page-Structure        │
-  │ concepts ·   │   │                   📂 QPf · Page-Folder & plugins │
-  │ folders ·    │   │                   🔁 QPw · Page-Workflow         │
-  │ round ·      │   │                              ──▶ ✏️ QS · Sentence │
-  │ roster     9 │   │ each group holds its contract pages AND the      │
-  └──────────────┘   │ unit that ships it (skill/ plugin on the page)   │
-                     └──────────────────────────────────────────────────┘
+   what holds first             the altitudes, in reading order
+  ┌────────────────┐ ┌──────────────────────────────────────────────────┐
+  │ QA·Constitution│ │ 🏛 QB · Board ──▶ 📐 QPs · Page-Structure        │
+  │ why · life ·   │ │                   📂 QPf · Page-Folder & plugins │
+  │ round · ships  │ │                   🔁 QPw · Page-Workflow         │
+  │              4 │ │                              ──▶ ✏️ QS · Sentence │
+  │ one page per   │ │ each group holds its contract pages AND the      │
+  │ rung of the    │ │ unit that ships it (skill/ plugin on the page)   │
+  │ loop           │ └──────────────────────────────────────────────────┘
+  └────────────────┘
    the support lanes
   ┌───────────────────┐ ┌────────────────────┐ ┌───────────────────┐
-  │ ⚙️ QC · Engine     │ │ 🖥 QO · Operating  │ │ ✅ QF · Execute   │
-  │ the code's shape 9│ │ you working · them │ │ what actually RAN │
-  └───────────────────┘ │ arriving        13 │ │ with evidence   4 │
-                        └────────────────────┘ └───────────────────┘
+  │ ⚙️ QC · Engine    │ │ 🖥 QO · Operating  │ │ ✅ QF · Execute   │
+  │ the code's shape  │ │ you working · them │ │ what actually RAN │
+  │ + the defect   10 │ │ arriving        13 │ │ with evidence   4 │
+  │ class that returns│ └────────────────────┘ └───────────────────┘
+  └───────────────────┘
 
 ─────────  ③ cross-group page edges  ───────────────────────────────────────────────
 
@@ -102,7 +123,7 @@ The map is part of the Board-Webpage-Index, not a third peer object, not another
 ```
 
 **Board-Folder — what exists and can be changed**
-The folder `BoardSkillBoard-260722/` contains `board.md` as the Board-level manifest, one descriptive group folder for each page group, one Markdown file per Q/S page, `board.excalidraw` as the local whole-Board scene, `fig/` for image assets, `_archive/` for retired pages, and generated `board/`.
+The folder `BoardSkillBoard-260722/` contains `board.md` as the Board-level manifest, one numbered descriptive group folder for each page group (`7-QC-engine/`, the number being its place in `## Pages`), one Markdown file per Q/S page, `board.excalidraw` as the local whole-Board scene, `fig/` for image assets, `_archive/` for retired pages, and generated `board/`.
 Markdown decides which pages exist and what they say.
 The canvas only records their visual placement and deliberately drawn relationship arrows.
 Everything under `board/` is derived and is never hand-edited.
@@ -111,7 +132,7 @@ Everything under `board/` is derived and is never hand-edited.
 `board/index.html` begins with title, Spine, and Close condition.
 Its Board Map makes relationships visible; Related Folders opens declared source files; the Section Matrix derives every page's section state; the textual roster remains the searchable way to choose work; Activity closes the Index.
 Topic, Pipeline, and this Board Structure remain source-only documentation in `board.md`.
-`QB2` owns it.
+`QB2` owns it, and its `§14` owns the group page one rung below.
 
 **Board-Webpage-Group — understand one group before entering a page**
 `board/<GROUP>.html` shows the group's purpose, expandable explanation or lane diagram, progress, and page rows.
@@ -119,29 +140,46 @@ Topic, Pipeline, and this Board Structure remain source-only documentation in `b
 **Board-Webpage-Page — work on one page**
 Opening a Q or S row goes to `board/<GROUP>/<page>.html`, one focused page with the shared sidebar.
 With scripts on the router swaps that page into the current document so chat and terminal attachment survive; with scripts off the same link navigates normally.
-`QB4`'s Content specifies each page section; `QB8` owns the sentence and everything written onto it, and `QB8e` owns the record lifecycle.
+`QPs1`'s Content specifies each page section; `QS1` owns the sentence and everything written onto it, and `QS2` owns the record lifecycle.
 
 ## Pages
-### QA · Design
-What the Board system IS, before any piece of it is built, plus the family's roster.
+### QA · Constitution
+What must hold before any piece of the system is built: one page per rung of the loop the board runs on, argue ▸ settle ▸ graduate.
 QA00 is the introduction chapter (260816): why a board exists, the words (absorbed QA1, its §4), the folder geography (absorbed QA0, its §5), and the tour of the chapters, with the deck as its `slide/` plugin.
-QA2 owns how a topic becomes pages and groups; QA3 owns the round's closing gate; QA5 owns identity and scope; QA6 lists every shipped unit (QA6a what SKILL.md must say, QA6b the sub-skill roster).
+
+```text
+🧭 ① WHY        QA00  why a board exists · the words · the folders · the tour
+🌱 ② LIFE       QA2   a topic becomes pages · and what must be true to END
+                      (the close joined birth 260816; §7 holds its three holes)
+🔁 ③ ROUND      QA3   when an agent may hand the board back            ✅
+🎓 ④ SHIPS      QA6   the unit roster · the SKILL.md cut line
+                      (QA6a and QA6b folded in 260816)
+✕ the identity page left for QC4 (260816): it rules engine code
+```
 QA00-overview.md
-QA2-question-group-design.md
+QA2-board-life.md
 QA3-the-round.md
-QA5-identity-and-scope.md
 QA6-skillfamily.md
-QA6a-skillmd.md
-QA6b-subskills.md
 ### QB · Board
-The Board altitude, and the units that ship it.
-QB1 the board folder; QB2 the webpage and its Index; QB2a the sidebar rail.
-Design-1 is the door and engine's design page, its `skill/` plugin the contract surface and its `meeting/` plugin the 260723 demo note; Design-2 is the write verb at both altitudes.
+The Board altitude: what a board IS on disk, and what it SHOWS on screen.
+The two Design pages dissolved on 260816, the way QPs00 dissolved into QPs1: each unit now rides the Q page that argues its contract, and both ids still resolve through `## Links`.
+
+```text
+📂 the folder      QB1   ① ships and binds · ② argues · where a board
+                         lives · group folders · what sits beside board.md
+                         carries haipipe-board + the 260723 meeting note
+⚖️ the outside     QB1a  what may be written into a board we render but
+                         do not own: mechanical · editorial · who broke it
+                         carries haipipe-board-routing, the write verb
+                         🔴 the group's one open decision
+🌐 the webpage     QB2   the Index a reader lands on · rows · ordering ·
+                         the group page · the map · activity · the dials
+📑 the rail        QB2a  every page, and the open page's own parts
+```
 QB1-form.md
+QB1a-standing.md
 QB2-board-webpage-design.md
 QB2a-sidebar.md
-Design-1-haipipe-board.md
-Design-2-haipipe-board-routing.md
 ### QPs · Page-Structure
 What a page SAYS: the sections in their fixed order, and the kinds that change what closing means.
 
@@ -203,24 +241,46 @@ QPf10-skill.md
 QPf11-pagex.md
 QPf12-outline.md
 ### QPw · Page-Workflow
-How a page MOVES: draft, probe, revise, check, and the hands that run them.
-QPw1 is the page's time axis; the three agents are the workflow's dispatched units, one design page each.
-Debt on show: the four phase contracts ship as skills with no page arguing them, and the `_runs/` receipt contract has no page either.
+How a page MOVES: the loop, and the hands that run it when no person is in the room.
+Design-6 became QPw2 on 260816, when the Design kind folded into the Q series: the unit rides the Q page that argues it.
+
+```text
+🔁 the loop        QPw1  DRAFT · PROBE · REVISE · CHECK, the time axis
+                        carries the five page-workflows units in skill/:
+                        the head that owns RUN, plus one per phase
+🤲 the hands       QPw2  the three dispatched agents, each named by the
+                        act it may never do: the producer never judges,
+                        the judge never repairs, the controller never
+                        edits prose · carries all three in skill/
+⬜ debt            the `_runs/` receipt contract still has no page
+```
 QPw1-page-loop.md
-Design-6-page-workflow.md
+QPw2-the-hands.md
 ### QS · Sentence
 The atomic unit: one line, its lanes, its card, and everything written onto it.
-QS1 the sentence; QS2 the details lifecycle; QS3 the generated address; QS4 the sentence run, every shape crossed with every operation.
-Design-5 is the sentence unit's design page; Design-4 is the prose standard's, moved here from QPs because its product is the ✎ sentence lane (JL 260816).
+Both Design pages left on 260816: Design-5 folded into QS1, whose contract it ships, and Design-4 became QS5, since no page argued the prose standard.
+
+```text
+✏️ the unit        QS1   one source line · the card · the `>` lanes
+                        carries the haipipe-sentence skill/ plugin
+                        (Design-5 folded in 260816)
+🗃 the records     QS2   how attached records age: typed views, states,
+                        archive-first cleanup with restore
+📍 the address     QS3   the generated C/H/P/S address an agent is handed
+✅ the proof       QS4   every shape a sentence takes, crossed with
+                        every operation that writes one
+✎ the rewrite     QS5   the verb that rewrites prose and records every
+                        word it changed · carries haipipe-writing
+                        (Design-4, and it ships from outside the family)
+```
 QS1-overview.md
 QS2-sentence-details-lifecycle.md
 QS3-sentence-address.md
 QS4-sentence-run.md
-Design-5-haipipe-sentence.md
-Design-4-haipipe-writing.md
+QS5-writing.md
 ### QC · Engine
 How the delivery is produced and shipped, renumbered contiguous on 260815 (the roster pages left for QA6).
-QC1 the code's shape under one Law (QC1a build, QC1b src, QC1c live); QC2 generating a page from outside the board (QC2a a skill folder, QC2b a meeting note); QC3 the round trip md to html and back (QC3a the write path's anchor).
+QC1 the code's shape under one Law (QC1a build, QC1b src, QC1c live); QC2 generating a page from outside the board (QC2a a skill folder, QC2b a meeting note); QC3 the round trip md to html and back (QC3a the write path's anchor); QC4 the defect class that keeps returning, identity read from a NAME and lookups that return EMPTY (arrived from QA on 260816; the number is reused per the 260801 rule and the round trip is QC3).
 QC1-codeshape.md
 QC1a-buildsplit.md
 QC1b-srcsplit.md
@@ -230,6 +290,7 @@ QC2a-skill-to-page.md
 QC2b-meetingnote.md
 QC3-roundtrip.md
 QC3a-writepath.md
+QC4-identity-and-scope.md
 ### QO · Operating
 The live, served board: you working on it, and others arriving at it.
 Working (260731's QD): QO1 the split workspace, QO2 the status strip, QO3 what a page costs.
@@ -256,8 +317,11 @@ QF4-talk-run.md
 ## Links
 # Design-6/7/8 folded into one Page-Workflow design (JL 260815:
 # one Design relates to several skills or agents).
-Design-7             QPw-page-workflow/Design-6-page-workflow/Design-6-page-workflow.md
-Design-8             QPw-page-workflow/Design-6-page-workflow/Design-6-page-workflow.md
+# Design-6 became QPw2 on 260816 (the Design kind folded into the Q series).
+Design-6             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
+Design-6-page-workflow.md            5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
+Design-7             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
+Design-8             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
 Design-6-haipipe-board-reviewer-agent.md         _archive/Design-6-haipipe-board-reviewer-agent.md
 Design-7-haipipe-board-creator-agent.md          _archive/Design-7-haipipe-board-creator-agent.md
 Design-8-haipipe-page-orchestrator-agent.md      _archive/Design-8-haipipe-page-orchestrator-agent.md
@@ -269,134 +333,143 @@ Agent-2-haipipe-board-creator-agent.md       _archive/Design-7-haipipe-board-cre
 Agent-3              _archive/Design-8-haipipe-page-orchestrator-agent.md
 Agent-3-haipipe-page-orchestrator-agent.md   _archive/Design-8-haipipe-page-orchestrator-agent.md
 # Skill-* became Design-* (JL 260815); the old ids stay resolvable.
-Skill-0              QB-board/Design-1-haipipe-board/Design-1-haipipe-board.md
-Skill-0-haipipe-board.md             QB-board/Design-1-haipipe-board/Design-1-haipipe-board.md
-Skill-5              QB-board/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
-Skill-5-haipipe-board-routing.md     QB-board/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
+# Design-1 and Design-2 archived 260816; every id still resolves.
+Design-1              _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
+Design-2              _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
+Skill-0              _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
+Skill-0-haipipe-board.md             _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
+Skill-5              _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
+Skill-5-haipipe-board-routing.md     _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
 # QPs00 folded into QPs1 (JL 260816): the grammar page carries the unit's skill/ plugin; QPs00, Design-3 and Skill-3 all resolve there. The archived page sits at _archive/QPs00-haipipe-page/.
-Skill-3              QPs-page-structure/QPs1-overall/QPs1-overall.md
-Skill-3-haipipe-page.md              QPs-page-structure/QPs1-overall/QPs1-overall.md
-Design-3             QPs-page-structure/QPs1-overall/QPs1-overall.md
-Design-3-haipipe-page.md             QPs-page-structure/QPs1-overall/QPs1-overall.md
-QPs00                QPs-page-structure/QPs1-overall/QPs1-overall.md
-QPs00-haipipe-page.md                QPs-page-structure/QPs1-overall/QPs1-overall.md
-# Design-4 moved QPs → QS (JL 260816): haipipe-writing's product is the ✎ sentence lane, so its page lives with the sentence chapter.
-Skill-7              QS-sentence/Design-4-haipipe-writing/Design-4-haipipe-writing.md
-Skill-7-haipipe-writing.md           QS-sentence/Design-4-haipipe-writing/Design-4-haipipe-writing.md
-Skill-4              QS-sentence/Design-5-haipipe-sentence/Design-5-haipipe-sentence.md
-Skill-4-haipipe-sentence.md          QS-sentence/Design-5-haipipe-sentence/Design-5-haipipe-sentence.md
+Skill-3              3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+Skill-3-haipipe-page.md              3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+Design-3             3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+Design-3-haipipe-page.md             3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+QPs00                3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+QPs00-haipipe-page.md                3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+# Design-4 moved QPs → QS (JL 260816), then became QS5 the same day when the Design kind folded into the Q series.
+Design-4             6-QS-sentence/QS5-writing/QS5-writing.md
+Design-4-haipipe-writing.md          6-QS-sentence/QS5-writing/QS5-writing.md
+Skill-7              6-QS-sentence/QS5-writing/QS5-writing.md
+Skill-7-haipipe-writing.md           6-QS-sentence/QS5-writing/QS5-writing.md
+# Design-5 folded into QS1 (260816): the sentence contract page carries the unit's skill/ plugin. The archived page sits at _archive/Design-5-haipipe-sentence/.
+Design-5             6-QS-sentence/QS1-overview/QS1-overview.md
+Design-5-haipipe-sentence.md         6-QS-sentence/QS1-overview/QS1-overview.md
+Skill-4              6-QS-sentence/QS1-overview/QS1-overview.md
+Skill-4-haipipe-sentence.md          6-QS-sentence/QS1-overview/QS1-overview.md
 # 260815 evening fold: the chat faces, one file each, whole.
-QPf4a                    QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
-QPf4b                    QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
-QPf4c                    QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
-QPf4d                    QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
-QA4                  QA-design/QA00-overview/QA00-overview.md
+QPf4a                    4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
+QPf4b                    4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
+QPf4c                    4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
+QPf4d                    4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
+QA4                  1-QA-constitution/QA00-overview/QA00-overview.md
 QA4-board-skillset.md _archive/QA4-board-skillset.md
 # 260815 evening: the chat migration. QO ids were REUSED in-lane
 # (260801 precedent); the chat pages' morning ids resolve here.
-QO1-chat-per-question.md QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
-QO2-chat-sdk.md          QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
-QO3-chat-terminal.md     QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
-QO4-terminal-design.md   QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
-QO10                     QO-operating/QO6-whereitruns/QO6-whereitruns.md
-QO11                     QO-operating/QO7-editlock/QO7-editlock.md
-QO12                     QO-operating/QO8-consolescope/QO8-consolescope.md
-QO13                     QO-operating/QO9-bindaddress/QO9-bindaddress.md
+QO1-chat-per-question.md 4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
+QO2-chat-sdk.md          4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
+QO3-chat-terminal.md     4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
+QO4-terminal-design.md   4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
+QO10                     8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
+QO11                     8-QO-operating/QO7-editlock/QO7-editlock.md
+QO12                     8-QO-operating/QO8-consolescope/QO8-consolescope.md
+QO13                     8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
 QPf2a               _archive/QPf2a-linked-drawings.md
 # 260815 restructure (JL): the ladder regroup. Every retired id
 # resolves here; a reused number follows the 260801 precedent.
-QB3                  QPf-page-folder/QPf1-folder/QPf1-folder.md
-QB4                  QPs-page-structure/QPs1-overall/QPs1-overall.md
-QB5                  QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
-QB6                  QPs-page-structure/QPs2-page-types/QPs2-page-types.md
-QB7                  QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
-QB8                  QS-sentence/QS1-overview/QS1-overview.md
-QB8e                 QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
-QBt1                 QPs-page-structure/QPs3-for-stage/QPs3-for-stage.md
+QB3                  4-QPf-page-folder/QPf1-folder/QPf1-folder.md
+QB4                  3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+QB5                  5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
+QB6                  3-QPs-page-structure/QPs2-page-types/QPs2-page-types.md
+QB7                  4-QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
+QB8                  6-QS-sentence/QS1-overview/QS1-overview.md
+QB8e                 6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
+QBt1                 3-QPs-page-structure/QPs3-for-stage/QPs3-for-stage.md
 # The slide TYPE died 260815 (JL: the slide is the plugin version, optional on
 # every page); its QBt9 specimen is archived whole and QPf3 is now the plugin's page.
 # The same evening QPs2 swept to the two-kind hub; its ten-type record is archived whole.
 QBt9                 _archive/QBt9-for-slide.md
 QBt9-for-slide.md    _archive/QBt9-for-slide.md
 QPs2-page-types-260815-pre-sweep.md   _archive/QPs2-page-types-260815-pre-sweep.md
-QBt10                QPs-page-structure/QPs4-for-design/QPs4-for-design.md
-QC2c                 QC-engine/QC1c-livesplit/QC1c-livesplit.md
-QC3b                 QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
-QC4                  QC-engine/QC3-roundtrip/QC3-roundtrip.md
-QC4a                 QC-engine/QC3a-writepath/QC3a-writepath.md
-QD1                  QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
-QD2                  QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
-QD3                  QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
-QD4                  QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
-QD5                  QO-operating/QO1-split-workspace/QO1-split-workspace.md
+QBt10                3-QPs-page-structure/QPs4-for-design/QPs4-for-design.md
+QC2c                 7-QC-engine/QC1c-livesplit/QC1c-livesplit.md
+QC3b                 7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
+# QC4 was the round trip's id in the 260815 renumber and is now a LIVE page
+# (the identity class, arrived from QA5 on 260816); the round trip is QC3.
+QC4a                 7-QC-engine/QC3a-writepath/QC3a-writepath.md
+QD1                  4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
+QD2                  4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
+QD3                  4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
+QD4                  4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
+QD5                  8-QO-operating/QO1-split-workspace/QO1-split-workspace.md
 QD5a                _archive/QPf2a-linked-drawings.md
-QD6                 QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
-QD7                  QO-operating/QO3-pagecost/QO3-pagecost.md
-QD8                  QS-sentence/QS3-sentence-address/QS3-sentence-address.md
-QE1                  QO-operating/QO4-hosting/QO4-hosting.md
-QE2                  QO-operating/QO5-mountspace/QO5-mountspace.md
-QE3                  QO-operating/QO6-whereitruns/QO6-whereitruns.md
-QE4                  QO-operating/QO7-editlock/QO7-editlock.md
-QE5                  QO-operating/QO8-consolescope/QO8-consolescope.md
-QE6                  QO-operating/QO9-bindaddress/QO9-bindaddress.md
-QF5                  QS-sentence/QS4-sentence-run/QS4-sentence-run.md
+QD6                 8-QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
+QD7                  8-QO-operating/QO3-pagecost/QO3-pagecost.md
+QD8                  6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
+QE1                  8-QO-operating/QO4-hosting/QO4-hosting.md
+QE2                  8-QO-operating/QO5-mountspace/QO5-mountspace.md
+QE3                  8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
+QE4                  8-QO-operating/QO7-editlock/QO7-editlock.md
+QE5                  8-QO-operating/QO8-consolescope/QO8-consolescope.md
+QE6                  8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
+QF5                  6-QS-sentence/QS4-sentence-run/QS4-sentence-run.md
 Meeting-1            _archive/Meeting-1-260723-boardform-demo.md
 Skill-6              _archive/Skill-6-haipipe-page-for-skill.md
 Skill-8              _archive/Skill-8-haipipe-page-for-venue.md
 # the five paper-owned specimens moved to the paper board on 260809 (QB6 ruling A).
 # Declared here so every citation on this board still resolves and still clicks.
-QBt2                     ../01-haipipe-paper-260725/board/QBt/QBt2-for-venue.html
-QBt3                     ../01-haipipe-paper-260725/board/QBt/QBt3-for-display.html
-QBt4                     ../01-haipipe-paper-260725/board/QBt/QBt4-for-literature.html
-QBt5                     ../01-haipipe-paper-260725/board/QBt/QBt5-for-value.html
-QBt6                     ../01-haipipe-paper-260725/board/QBt/QBt6-for-section.html
-QBt2-for-venue.md        ../01-haipipe-paper-260725/QBt-page-types/QBt2-for-venue.md
-QBt3-for-display.md      ../01-haipipe-paper-260725/QBt-page-types/QBt3-for-display.md
-QBt4-for-literature.md   ../01-haipipe-paper-260725/QBt-page-types/QBt4-for-literature.md
-QBt5-for-value.md        ../01-haipipe-paper-260725/QBt-page-types/QBt5-for-value.md
-QBt6-for-section.md      ../01-haipipe-paper-260725/QBt-page-types/QBt6-for-section.md
-QBt11 ../../../../subjective-label/diagram/SubjectiveLabel-260722/QG-page-type/QG1-for-labeling/QG1-for-labeling.md
+QBt2                     ../PaperSkillBoard-260725/board/QBt/QBt2-for-venue.html
+QBt3                     ../PaperSkillBoard-260725/board/QBt/QBt3-for-display.html
+QBt4                     ../PaperSkillBoard-260725/board/QBt/QBt4-for-literature.html
+QBt5                     ../PaperSkillBoard-260725/board/QBt/QBt5-for-value.html
+QBt6                     ../PaperSkillBoard-260725/board/QBt/QBt6-for-section.html
+QBt2-for-venue.md        ../PaperSkillBoard-260725/4-QBt-page-types/QBt2-for-venue/QBt2-for-venue.md
+QBt3-for-display.md      ../PaperSkillBoard-260725/4-QBt-page-types/QBt3-for-display/QBt3-for-display.md
+QBt4-for-literature.md   ../PaperSkillBoard-260725/4-QBt-page-types/QBt4-for-literature/QBt4-for-literature.md
+QBt5-for-value.md        ../PaperSkillBoard-260725/4-QBt-page-types/QBt5-for-value/QBt5-for-value.md
+QBt6-for-section.md      ../PaperSkillBoard-260725/4-QBt-page-types/QBt6-for-section/QBt6-for-section.md
+QBt11 ../../../../subjective-label/diagram/SubjectiveLabelBoard-260722/7-QG-page-type/QG1-for-labeling/QG1-for-labeling.md
 draw.py              ../../board/haipipe-board/cli/draw.py
 test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
 live/xcal.py          ../../board/haipipe-board/live/xcal.py
 board.excalidraw      board.excalidraw
-QO-operating/draw/group.excalidraw QO-operating/draw/group.excalidraw
-QPf2a.excalidraw    QPf-page-folder/QPf2-draw-attach/draw/QPf2.excalidraw
-QC5                 QC-engine/QC2-generate/QC2-generate.md
-QC5a                QC-engine/QC2a-skill-to-page/QC2a-skill-to-page.md
-QC5b                QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
-QC7                 QC-engine/QC3-roundtrip/QC3-roundtrip.md
-QC7a                QC-engine/QC3a-writepath/QC3a-writepath.md
-QC6                 QA-design/QA6b-subskills/QA6b-subskills.md
-QC8                 QC-engine/QC1c-livesplit/QC1c-livesplit.md
-QC9                 QC-engine/QC3-roundtrip/QC3-roundtrip.md
-QC10                QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
-QD3m                QO-operating/_archive/QD3m-smooth-terminal.md
-QDa1                QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
-QDa2                QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
-QDa3                QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
-QDa4                QO-operating/_archive/QD4-liveupdate.md
-QD4-liveupdate      QO-operating/_archive/QD4-liveupdate.md
-QDa5                QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
-QB9                 QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
-QB10                QPs-page-structure/QPs2-page-types/QPs2-page-types.md
-QD13                QO-operating/QO1-split-workspace/QO1-split-workspace.md
-QC5-pagecost        QO-operating/QO3-pagecost/QO3-pagecost.md
-QD8-pagecost        QO-operating/QO3-pagecost/QO3-pagecost.md
-QD14                QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
-QDa6                QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
-QDa7                QO-operating/_archive/QD7-boardagent.md
-QDb1                QO-operating/QO4-hosting/QO4-hosting.md
-QDb2                QO-operating/QO5-mountspace/QO5-mountspace.md
-QDb3                QO-operating/QO6-whereitruns/QO6-whereitruns.md
-QDb4                QO-operating/QO7-editlock/QO7-editlock.md
-QDb5                QO-operating/QO8-consolescope/QO8-consolescope.md
-QDb6                QO-operating/QO9-bindaddress/QO9-bindaddress.md
-QD9                 QO-operating/QO6-whereitruns/QO6-whereitruns.md
-QD10                QO-operating/QO7-editlock/QO7-editlock.md
-QD11                QO-operating/QO8-consolescope/QO8-consolescope.md
-QD12                QO-operating/QO9-bindaddress/QO9-bindaddress.md
-Q-Skill-haipipe-board                QB-board/Design-1-haipipe-board/Design-1-haipipe-board.md
+8-QO-operating/draw/group.excalidraw 8-QO-operating/draw/group.excalidraw
+QPf2a.excalidraw    4-QPf-page-folder/QPf2-draw-attach/draw/QPf2.excalidraw
+QC5                 7-QC-engine/QC2-generate/QC2-generate.md
+QC5a                7-QC-engine/QC2a-skill-to-page/QC2a-skill-to-page.md
+QC5b                7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
+QC7                 7-QC-engine/QC3-roundtrip/QC3-roundtrip.md
+QC7a                7-QC-engine/QC3a-writepath/QC3a-writepath.md
+QC6                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
+QC8                 7-QC-engine/QC1c-livesplit/QC1c-livesplit.md
+QC9                 7-QC-engine/QC3-roundtrip/QC3-roundtrip.md
+QC10                7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
+QD3m                8-QO-operating/_archive/QD3m-smooth-terminal.md
+QDa1                4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
+QDa2                4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
+QDa3                4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
+QDa4                8-QO-operating/_archive/QD4-liveupdate.md
+QD4-liveupdate      8-QO-operating/_archive/QD4-liveupdate.md
+QDa5                4-QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
+QB9                 5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
+QB10                3-QPs-page-structure/QPs2-page-types/QPs2-page-types.md
+QD13                8-QO-operating/QO1-split-workspace/QO1-split-workspace.md
+QC5-pagecost        8-QO-operating/QO3-pagecost/QO3-pagecost.md
+QD8-pagecost        8-QO-operating/QO3-pagecost/QO3-pagecost.md
+QD14                4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
+QDa6                8-QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
+QDa7                8-QO-operating/_archive/QD7-boardagent.md
+QDb1                8-QO-operating/QO4-hosting/QO4-hosting.md
+QDb2                8-QO-operating/QO5-mountspace/QO5-mountspace.md
+QDb3                8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
+QDb4                8-QO-operating/QO7-editlock/QO7-editlock.md
+QDb5                8-QO-operating/QO8-consolescope/QO8-consolescope.md
+QDb6                8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
+QD9                 8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
+QD10                8-QO-operating/QO7-editlock/QO7-editlock.md
+QD11                8-QO-operating/QO8-consolescope/QO8-consolescope.md
+QD12                8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
+Q-Skill-haipipe-board                _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
 Q-Skill-haipipe-board-index          _archive/Skill-1-haipipe-board-index.md
 Skill-1              _archive/Skill-1-haipipe-board-index.md
 Q-Skill-haipipe-board-reviewer-agent _archive/Design-6-haipipe-board-reviewer-agent.md
@@ -404,46 +477,57 @@ Skill-2              _archive/Design-6-haipipe-board-reviewer-agent.md
 # QA0 and QA1 folded into QA00, the introduction chapter (JL 260816):
 # the words are its §4, the folders its §5. The archived pages sit whole
 # at _archive/QA0-three-folders/ and _archive/QA1-concepts/.
-QA0                  QA-design/QA00-overview/QA00-overview.md
+QA0                  1-QA-constitution/QA00-overview/QA00-overview.md
 QA0-three-folders.md _archive/QA0-three-folders/QA0-three-folders.md
-QA1                  QA-design/QA00-overview/QA00-overview.md
+QA1                  1-QA-constitution/QA00-overview/QA00-overview.md
 QA1-concepts.md      _archive/QA1-concepts/QA1-concepts.md
-QA1a                 QA-design/QA00-overview/QA00-overview.md
-QA2b                QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
-QAa0                QPs-page-structure/QPs1-overall/QPs1-overall.md
-QAa1                QB-board/_archive/QB4a-opening.md
-QAa2                QB-board/_archive/QB4b-diagram.md
-QAa3                QB-board/_archive/QB4c-content.md
-QAa4                QB-board/_archive/QB4d-items.md
-QAa5                QB-board/_archive/QB4e-where-we-are.md
-QAa7                QB-board/_archive/QB4f-files.md
-QAa6                QB-board/_archive/QB4g-folds.md
-QB8a                QB-board/_archive/QB5a-evidence-card.md
-QB8b                QB-board/_archive/QB5b-comments.md
-QB8c                QB-board/_archive/QB5c-editing.md
-QB5a                QB-board/_archive/QB5a-evidence-card.md
-QB5b                QB-board/_archive/QB5b-comments.md
-QB5c                QB-board/_archive/QB5c-editing.md
-QB5e                QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
-QB8d                QS-sentence/QS3-sentence-address/QS3-sentence-address.md
-QAb1                QB-board/_archive/QB5a-evidence-card.md
-QAb2                QB-board/_archive/QB5c-editing.md
-QAb3                QS-sentence/QS3-sentence-address/QS3-sentence-address.md
-QB4a                QB-board/_archive/QB4a-opening.md
-QB4b                QB-board/_archive/QB4b-diagram.md
-QB4c                QB-board/_archive/QB4c-content.md
-QB4d                QB-board/_archive/QB4d-items.md
-QB4e                QB-board/_archive/QB4e-where-we-are.md
-QB4f                QB-board/_archive/QB4f-files.md
-QB4g                QB-board/_archive/QB4g-folds.md
-QAb0                QS-sentence/QS1-overview/QS1-overview.md
-QA6                 QB-board/_archive/QB5b-comments.md
-QAb4                QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
-QA9                 QF-execute/QF1-acceptance/QF1-acceptance.md
-QA10                QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
-QA4a                QB-board/_archive/QB4b-diagram.md
-QA8                 QB-board/_archive/QB5a-evidence-card.md
-QA8a                QS-sentence/QS3-sentence-address/QS3-sentence-address.md
+QA1a                 1-QA-constitution/QA00-overview/QA00-overview.md
+# The QA restructure (JL 260816): QA became the CONSTITUTION, one page per
+# rung. QA5 moved to QC4 (it rules engine code), QA6a and QA6b folded into
+# QA6 whole, and QA2 absorbed the close as QA2-board-life.
+QA5                  7-QC-engine/QC4-identity-and-scope/QC4-identity-and-scope.md
+QA5-identity-and-scope.md 7-QC-engine/QC4-identity-and-scope/QC4-identity-and-scope.md
+QA6a                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
+QA6b                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
+QA6a-skillmd.md      _archive/QA6a-skillmd/QA6a-skillmd.md
+QA6b-subskills.md    _archive/QA6b-subskills/QA6b-subskills.md
+QA2-question-group-design.md 1-QA-constitution/QA2-board-life/QA2-board-life.md
+QA2b                2-QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
+QAa0                3-QPs-page-structure/QPs1-overall/QPs1-overall.md
+QAa1                2-QB-board/_archive/QB4a-opening.md
+QAa2                2-QB-board/_archive/QB4b-diagram.md
+QAa3                2-QB-board/_archive/QB4c-content.md
+QAa4                2-QB-board/_archive/QB4d-items.md
+QAa5                2-QB-board/_archive/QB4e-where-we-are.md
+QAa7                2-QB-board/_archive/QB4f-files.md
+QAa6                2-QB-board/_archive/QB4g-folds.md
+QB8a                2-QB-board/_archive/QB5a-evidence-card.md
+QB8b                2-QB-board/_archive/QB5b-comments.md
+QB8c                2-QB-board/_archive/QB5c-editing.md
+QB5a                2-QB-board/_archive/QB5a-evidence-card.md
+QB5b                2-QB-board/_archive/QB5b-comments.md
+QB5c                2-QB-board/_archive/QB5c-editing.md
+QB5e                6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
+QB8d                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
+QAb1                2-QB-board/_archive/QB5a-evidence-card.md
+QAb2                2-QB-board/_archive/QB5c-editing.md
+QAb3                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
+QB4a                2-QB-board/_archive/QB4a-opening.md
+QB4b                2-QB-board/_archive/QB4b-diagram.md
+QB4c                2-QB-board/_archive/QB4c-content.md
+QB4d                2-QB-board/_archive/QB4d-items.md
+QB4e                2-QB-board/_archive/QB4e-where-we-are.md
+QB4f                2-QB-board/_archive/QB4f-files.md
+QB4g                2-QB-board/_archive/QB4g-folds.md
+QAb0                6-QS-sentence/QS1-overview/QS1-overview.md
+# (the row mapping QA6 to QB5b-comments left 260816: QA6 is a live page, and
+#  the comments face still resolves through QB5b and QB8b below.)
+QAb4                6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
+QA9                 9-QF-execute/QF1-acceptance/QF1-acceptance.md
+QA10                2-QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
+QA4a                2-QB-board/_archive/QB4b-diagram.md
+QA8                 2-QB-board/_archive/QB5a-evidence-card.md
+QA8a                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
 SKILL.md            ../../board/haipipe-board/SKILL.md
 build.py            ../../board/haipipe-board/cli/build.py
 check.py            ../../board/haipipe-board/cli/check.py
@@ -462,14 +546,14 @@ board-family/       ../../board/
 board-agents/       ../../board/agents/
 haipipe-board-reviewer-agent.md ../../board/agents/haipipe-board-reviewer-agent.md
 env.sh              ../../../../../../env.sh
-paper-board/        ../01-haipipe-paper-260725/
-QC0@paper           ../01-haipipe-paper-260725/QC-engine/QC5-sentence-evidence-contract.md
-QC1@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
-QC2@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
-QC3@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
-QC4@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
-QA1@paper           ../01-haipipe-paper-260725/QA-design/QA1-the-folder-map.md
-QA4@paper           ../01-haipipe-paper-260725/QA-design/QA4-the-board-tool.md
+paper-board/        ../PaperSkillBoard-260725/
+QC0@paper           ../PaperSkillBoard-260725/6-QC-engine/QC5-sentence-evidence-contract/QC5-sentence-evidence-contract.md
+QC1@paper           ../PaperSkillBoard-260725/3-QBe-delivery-element/QBe1-sentence-cite-value-display/QBe1-sentence-cite-value-display.md
+QC2@paper           ../PaperSkillBoard-260725/3-QBe-delivery-element/QBe1-sentence-cite-value-display/QBe1-sentence-cite-value-display.md
+QC3@paper           ../PaperSkillBoard-260725/3-QBe-delivery-element/QBe1-sentence-cite-value-display/QBe1-sentence-cite-value-display.md
+QC4@paper           ../PaperSkillBoard-260725/3-QBe-delivery-element/QBe1-sentence-cite-value-display/QBe1-sentence-cite-value-display.md
+QA1@paper           ../PaperSkillBoard-260725/1-QA-design/QA1-the-folder-map/QA1-the-folder-map.md
+QA4@paper           ../PaperSkillBoard-260725/1-QA-design/QA4-the-board-tool/QA4-the-board-tool.md
 src/dialect_paper.py ../../board/haipipe-board/src/dialect_paper.py
 src/common.py       ../../board/haipipe-board/src/common.py
 src/body.py         ../../board/haipipe-board/src/body.py
@@ -482,7 +566,7 @@ fig/board-mark-palettes.svg fig/board-mark-palettes.svg
 haipipe-board/assets/js/ ../../board/haipipe-board/assets/js/
 haipipe-paper-stage/ ../../paper/_old/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
-SubjectiveLabel-260722/ ../../../../subjective-label/diagram/SubjectiveLabel-260722/
+SubjectiveLabelBoard-260722/ ../../../../subjective-label/diagram/SubjectiveLabelBoard-260722/
 haichat-inlab/      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/
 main.py             ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/main.py
 console_api.py      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/console_api.py

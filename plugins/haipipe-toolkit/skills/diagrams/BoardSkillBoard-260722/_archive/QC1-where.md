@@ -52,7 +52,7 @@ This board lives at `Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoa
 skills/
   diagrams/                 ← every board in this plugin lives here
     BoardSkillBoard-260722/ ← this board
-    01-haipipe-paper-260725/
+    ../PaperSkillBoard-260725/
   board/                    ← first-class family beside paper, probe, and task
     agents/                 ← thin, clean-context Board roles
     haipipe-board/          ← the skill itself (the deliverable package)
@@ -97,7 +97,7 @@ Task, project, and paper Boards use that unit's `diagram/`; plugin skill-design 
 ## Log
 260726 · promoted the delivery package from `skills/0_utils/haipipe-board/` to the first-class `skills/board/haipipe-board/`; the design Board stayed at `skills/diagrams/BoardSkillBoard-260722/`
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
-260726 · JL moved every board to `skills/diagrams/`: this one from `0_utils/diagram/BoardSkillBoard-260722/`, alongside `01-haipipe-paper-260725/`. The folder is one level shallower, so all 21 declared paths in `## Links` were re-resolved against the new location and verified to exist; `SKILL.md` and `ref/board-example.md` had their live pointers repointed
+260726 · JL moved every board to `skills/diagrams/`: this one from `0_utils/diagram/BoardSkillBoard-260722/`, alongside `../PaperSkillBoard-260725/`. The folder is one level shallower, so all 21 declared paths in `## Links` were re-resolved against the new location and verified to exist; `SKILL.md` and `ref/board-example.md` had their live pointers repointed
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 0919 · Renumbered Q7 → QC1; state → ✅ SETTLED, 3/3
