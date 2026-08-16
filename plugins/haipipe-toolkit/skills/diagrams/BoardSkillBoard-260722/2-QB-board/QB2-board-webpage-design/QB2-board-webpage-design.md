@@ -631,14 +631,15 @@ The panel is authored, not inferred: which folders count as related and what eac
       `B ·` open by default, so status is the first thing a reader sees and nobody has to know the fold exists.
       🛑 `Blocks` nothing.
       🤖 `If nobody answers` A takes effect, which is today's behaviour.
-- [ ] 🗣 Rule what happens to the timing recorder
+- [x] 🗣 Rule what happens to the timing recorder → **A, ruled by JL 260816**
       📍 `Part` `### 8 · Activity, count what changed, and where`
       🔔 `Why now` `serve.py` still records browser spans into `.haipipe-board/activity.sqlite3` and nothing reads them any more, and six regression tests protect a number the page does not print.
       ⭐ `A ·` delete the recorder and its schema. CC recommends it, because a measurement nobody reads is a maintenance cost that looks like a feature.
       `B ·` keep it silently, for a later "who is looking at this board right now".
       `C ·` keep it and show it as a secondary readout beside the update counts.
       🛑 `Blocks` A8.3.
-      🤖 `If nobody answers` B takes effect, which is today's behaviour.
+      🗣 JL's words: "should we remove all the things related to haipipe-board, but still keep the activity tracker for the logs?"
+      ✅ Done the same day: the two tables, `activity_conn`, the 282-line beacon and the `start`/`pulse`/`stop` ops are gone, `.haipipe-board/activity.sqlite3` deleted, and the readout kept. Two things surfaced on the way out. The beacon was also what FETCHED the readout, so the panel had to be given a request of its own first. And the counter had been reading `^\d{6}` with no list marker allowed, so every `- 260806 · …` line was dropped: 1260 counted, 276 silently missed, a panel showing 82% of the work. Six timer tests were replaced by five that test the number the panel prints.
 - [ ] 🗣 Set the board design read and dials
       📍 `Part` `### 9 · The board's design read, and its dials`
       🔔 `Why now` Every later visual prototype is measured against these numbers, and they are currently CC's proposal rather than anyone's ruling.
