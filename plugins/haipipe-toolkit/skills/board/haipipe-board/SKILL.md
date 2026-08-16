@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.139.1"
+  version: "0.140.0"
   last_updated: "2026-08-16"
-  summary: "📁 cli/refold.py gives every page on a board its own folder and re-anchors the paths that move with it."
+  summary: "🗑 The focus timer and its SQLite store are deleted; the Activity readout keeps counting ## Log lines, and now counts the `- ` ones too."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

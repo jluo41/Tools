@@ -22,6 +22,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "cli"))          # the CLI moved into cli/ (260801)
 
 import serve as board_serve  # noqa: E402
+from live import activity  # noqa: E402
 
 
 def stamp(days_ago):
@@ -42,7 +43,11 @@ class ActivityCountsTest(unittest.TestCase):
         self.handler = object.__new__(board_serve.Handler)
         self.handler.root = self.root
         self.handler._log_cache = {}
-        board_serve.Handler._boards_cache = (0.0, None)
+        # `log_boards()` shares one 2-second walk across every request, and the
+        # cache lives on the MIXIN. Each test builds a fresh temp root, so it
+        # must be cleared where it is actually read or the second test in a run
+        # counts the first test's deleted directory and sees nothing.
+        activity.ActivityMixin._boards_cache = (0.0, None)
 
     def tearDown(self):
         self.temp.cleanup()

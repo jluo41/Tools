@@ -5,6 +5,43 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.140.0 - 2026-08-16
+
+- 🗑 THE FOCUS TIMER IS DELETED (JL 260816: "remove all the things related to
+  .haipipe-board, but still keep the activity tracker for the logs"). This
+  closes QB2's standing Decision Now row on option A. Gone: the
+  `activity_spans` and `activity_ticks` tables, `activity_conn`,
+  `activity_num`, `activity_day_parts`, the `start`/`pulse`/`stop` ops, the
+  282-line browser beacon in `assets/js/50-activity.js`, and the 576K
+  `.haipipe-board/activity.sqlite3` itself. `live/activity.py` 446 → 283
+  lines, the script 282 → 167.
+  The evidence it was dead: every SELECT against those two tables was the
+  timer reading its OWN rows to write the next one, and `activity_stats` was
+  handed the connection on every request and never touched it. JL had ruled on
+  260726 that the unit is UPDATES, not time, so it had been measuring the
+  wrong thing and storing it for nobody for three weeks.
+  `import sqlite3` then went from seven files — `serve.py`, `base.py`,
+  `chat.py`, `structure.py`, `term.py`, `write.py`, `xcal.py` — where it was
+  already unused in all seven, a leftover of the copied import header from the
+  260731 serve.py split. SQLite had entered this codebase only for the timer
+  and now leaves with it. `.haipipe-board/` keeps `sessions.json`, which is
+  chat and terminal session history and has nothing to do with any of this.
+- 🐛 THE READOUT WAS SHOWING 82% OF THE WORK, and the deletion is what found
+  it. `LOG_LINE` matched `^(\d{6})` with no list marker allowed, so a
+  `## Log` written `- 260806 2215 · [REVISE-CC] swept` did not count while
+  `260803 · EXECUTED` did. Both shapes are written on live boards: 1260
+  counted, 276 dropped across the five skill boards. Now `^[-*]?\s*`.
+  Nothing caught it because all six tests on this route tested the timer.
+  They are replaced by five that test what the panel prints: one dated line is
+  one update, an undated line is not, a dated line outside `## Log` is prose,
+  the route takes no op but `stats`, and no state is written anywhere. The
+  last one is the guard that keeps `.haipipe-board/` from growing a database
+  again.
+  One coupling had to be undone first: the beacon was also what FETCHED the
+  readout — every heartbeat returned the stats and the panel drew them — so
+  the display was given a request of its own, one POST on load and one on
+  `board:updated`.
+
 ## 0.139.1 - 2026-08-16
 
 - 🗑 THE VIEW BOARD IS RETIRED (JL 260816). `01-haipipe-view-260810` and its

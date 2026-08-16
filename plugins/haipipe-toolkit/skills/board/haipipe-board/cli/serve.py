@@ -126,7 +126,13 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
     # series: inventing minutes from a timestamp would make the strip look
     # complete by making it false, which is the same fabrication the reload
     # rule already refuses.
-    LOG_LINE = re.compile(r"^(\d{6})(?:\s+\d{3,4})?\s*·")
+    # A LIST MARKER IS OPTIONAL (260816). Both shapes are written on live
+    # boards — `260803 · EXECUTED` and `- 260806 2215 · [REVISE-CC] swept` —
+    # and only the bare one matched, so the readout was quietly showing 82% of
+    # the updates (1260 counted, 276 dropped across the five skill boards).
+    # Nothing caught it because the tests on this route all tested the focus
+    # timer, which is now deleted, rather than the number the panel prints.
+    LOG_LINE = re.compile(r"^[-*]?\s*(\d{6})(?:\s+\d{3,4})?\s*·")
     _log_cache = {}
     protocol_version = "HTTP/1.1"      # WebSocket 升级需要 1.1
     # The self-hosted Excalidraw runs in its own container on its own port, and
