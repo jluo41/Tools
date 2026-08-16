@@ -11,9 +11,9 @@ description: >-
   folder plugin, folder tab, page-folder status, what does this page hold,
   stale plugin, folder status, first tab, /haipipe-plugin-folder.
 metadata:
-  version: "0.1.3"
+  version: "0.2.0"
   last_updated: "2026-08-16"
-  summary: "Created the day after the tab shipped (JL 260816: 'where is the plugin for the folder?'): the meta-plugin gets its skill — no storage, no writer, staleness claimed narrowly."
+  summary: "The unfold shows a folder's STRUCTURE, not a flat path list (JL 260816): owned files first, one branch per subfolder, symlinks marked."
 ---
 # /haipipe-plugin-folder · the folder is the truth, the first tab shows it
 
@@ -37,9 +37,12 @@ Widening the flag to source folders would train readers to ignore it, which is t
 The 📂 tab is registered FIRST on purpose (the asset sorts at `06-`, right after the registry): the rail shows the surfaces someone built, and the first tab shows what the folder actually holds, so a reader can tell "no deck" from "deck built, tab unopened".
 It applies only to a FOLDED page (`<stem>/<stem>.md`); a flat page has no folder to show.
 `GET /_board/folderstat?path=…&file=…` renders one row per subfolder — icon · name · file count and weight · newest age · state (⚠️ STALE / ✅ fresh / source material) — plus a ⬜ not-present line for roster names the folder lacks.
-A row is a door, not just a gauge (JL 260816): clicking it unfolds the folder's files in place, ▸ turning ▾, and every file is a link that opens the served file itself in a new browser tab — the status view is also the folder's browser.
+A row is a door, not just a gauge (JL 260816): clicking it unfolds the folder in place, ▸ turning ▾, and every file is a link that opens the served file itself in a new browser tab, so the status view is also the folder's browser.
+The unfold shows STRUCTURE, not a path list: files a level owns come first, then one 📁 branch per subfolder with its own file count, indented by depth (JL 260816: a flat alphabetical list buried a folder's shape, and `display/` spelled every unit's inner path on every line).
+A file that is a symlink wears a bare 🔗 with its full target on hover, because the row reports the RESOLVED file and a borrowed page md would otherwise read as duplicated bytes.
 Fresh is a two-layer contract (JL 260816): the server sends no-store, and the shell's landing reloads the frame even when the URL is unchanged — one URL per page means "same src" is the common case, and skipping it is how a live view goes stale in the frame while staying fresh on the wire.
-A ⚠️ STALE row of a MECHANICAL writer (latex, word, bibex) carries ♻ rebuild: one click fires that plugin's own POST and re-renders (JL 260816: "could we update them along the time?"). slide and display instead say where to go — a compile may be a button reflex, an authored or human-gated artifact never is, so the gauge cures what is mechanical and only points at what is not.
+A ⚠️ STALE row of a MECHANICAL writer (latex, word, bibex, display) carries ♻ rebuild: one click fires that plugin's own POST and re-renders (JL 260816: "could we update them along the time?"). display joined the same day (JL: "I want to add the rebuild button"): its POST recompiles each unit's DERIVED preview.tex ▶ preview.pdf and touches no intake, recipe, or accepted: tick. slide alone stays a pointer — a compile may be a button reflex, an AUTHORED artifact (claude -p, minutes, money) never is.
+The header carries the same pill the Word and LaTeX views wear: 🔄 rebuild stale (n) walks every curable row in sequence — never in parallel, the writers share the folder and xelatex is not a thing to race — and the pill renders only while something mechanical is actually stale (JL 260816).
 
 ## ⚙️ Writer · a twin that writes nothing
 

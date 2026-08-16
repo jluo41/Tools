@@ -1,0 +1,46 @@
+<!doctype html><meta charset='utf-8'><style>
+@page { size: letter; margin: 1in 1in 1in 1in; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 12pt;
+       line-height: 2.0; text-align: left; }
+/* The card FLOATS and stays in flow. It was `position: absolute` in one
+   container at top:0, which took all 239 out of flow and stacked every one of
+   them at the same y on page 1: a solid unreadable block beside the abstract
+   (JL 2026-07-28). Absolute positioning cannot work in a paged medium, because
+   the y a card belongs at is not known until the text above it has been laid
+   out and broken across pages. A float is laid out BY the flow, so it lands
+   beside its own paragraph and paginates for free. */
+.page { }
+p { margin: 0 0 0 0; text-indent: 0; }
+h1, h2, h3 { font-size: 12pt; font-weight: bold; line-height: 2.0;
+             margin: 1.5em 0 0 0; }
+h1 { text-transform: uppercase; text-align: center; }
+h2 { text-align: center; }
+h3 { text-align: left; }
+/* MIRRORS the .docx: full body width, centred, booktabs rules only (a top and
+   a bottom), a real gutter, single-spaced. It used to draw a full cell grid the
+   .docx never had, so the two projections disagreed about the same table. */
+table { border-collapse: collapse; font-size: 10pt; line-height: 1.15;
+        margin: 12pt auto; width: 100%; table-layout: fixed;
+        border-top: 0.75pt solid #000; border-bottom: 0.75pt solid #000; }
+td, th { padding: 1.5pt 5.4pt; vertical-align: top; }
+tr.hdr td, td.b { font-weight: bold; }
+img { max-width: 100%; }
+.cap { font-size: 10pt; line-height: 1.15; margin: 12pt 0; }
+.ref { margin-left: 0.5in; text-indent: -0.5in; line-height: 1.0;
+       margin-bottom: 0.15em; }
+/* an evidence card. Anchored text is tinted and the card sits in the margin,
+   numbered, so the pairing survives a print with no interaction. */
+.anchor { background: #eef2ff; }
+.mark { vertical-align: super; font-size: 8pt; color: #4338ca;
+        font-weight: bold; }
+.card { float: right; clear: right; width: 1.9in; margin: 0 0 6pt 0.22in;
+        font-size: 7pt; line-height: 1.3;
+        font-family: -apple-system, "Helvetica Neue", sans-serif;
+        color: #1f2937; background: #f8f9ff;
+        border-left: 2pt solid #4338ca; padding: 3pt 4pt;
+        /* a card must not be split across a page break, or half an evidence
+           record appears with no header saying which sentence it belongs to */
+        break-inside: avoid; page-break-inside: avoid; }
+.card b { color: #4338ca; }
+</style><div class='page'><h1>1 · Where a drawing lives</h1><p>The files: one scene per owner, each in its owner&#x27;s folder. Each page drawing is an ordinary Excalidraw file that is useful opened by itself. A page that has no drawing yet gets an empty scene created the first time its Draw split opens, so there is never a missing file to trip over. The group drawing holds only group-level layout and an import list naming each page&#x27;s scene; it never copies their content.</p><h1>2 · Opening, editing, and generating</h1><p>The Draw split: the drawing opens beside the page, never inside it. The split shows which file it saves to before you draw, so a gesture can never land in another page&#x27;s scene. The Draw-it button takes an optional ask; left empty, it draws the page&#x27;s ascii figure as a real scene. A generated scene may be regenerated freely, but the button refuses to overwrite a drawing a person made by hand.</p><h1>3 · The group view is composed, never copied</h1><p>One large drawing from many small ones: what is stored and what is derived. Opening a group&#x27;s drawing loads the group scene, pulls in every member page&#x27;s scene, and places them by the stored layout. Editing inside the composed view happens in one visible mode at a time: arrange the pages, edit the group&#x27;s own layer, or enter one page&#x27;s scene; only that owner&#x27;s file receives the save. A page save updates the composed view on its next open; nothing is ever merged or imported by hand.</p><h1>4 · Saves are checked, never blind</h1><p>The safe save: what the server verifies before writing. Every save carries the revision it started from, so two people editing the same drawing cannot silently overwrite each other. The chat pane receives the same owner address as the canvas, so asking it to change a drawing routes to that drawing&#x27;s own file.</p></div>

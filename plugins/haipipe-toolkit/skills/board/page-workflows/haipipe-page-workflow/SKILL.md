@@ -3,8 +3,8 @@ name: haipipe-page-workflow
 description: >-
   The RUN router of the page family: the head skill of page-workflows/, combining the four phase contracts DRAFT, PROBE, REVISE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under <board>/_runs/page/, the producer/judge role separation, and the stop rules; the four sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DPRC, page workflow head, /haipipe-page-workflow.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-15"
+  version: "0.1.1"
+  last_updated: "2026-08-16"
   summary: "Born 260815 by MOVING haipipe-page's RUN verb here, so the workflow has one nameable head beside its four members."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -85,7 +85,8 @@ through CHECK before CLOSE.
 
 `<board>/_runs/page/<page-id>/<run-id>.json` is where a run's history lives, in the exact shape `ref/page-run-contract.md` fixes.
 A surface that shows where a page stands in its lifecycle reads these receipts and nothing else, the same way the labeling stepper reads `## States`.
-A page with no receipts is not an error: its next authority is the contract's own default, CHECK for an existing page, DRAFT for a new one.
+That surface ships: the 🪜 Workflow menu's `📄 Page phases` stepper (`haipipe-board/assets/js/10-drawer/65-plugin-pageflow.js`) draws the loop along the bottom of the split viewer, fed by `GET /_board/pageruns` (`live/pageruns.py`), which matches receipts by their own `page` field.
+A page with no receipts is not an error: its next authority is the contract's own default, CHECK for an existing page, DRAFT for a new one, and the stepper states exactly that.
 
 ## 📂 Files
 

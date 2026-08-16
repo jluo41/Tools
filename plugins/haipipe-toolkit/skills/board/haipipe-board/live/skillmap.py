@@ -50,8 +50,11 @@ class SkillmapMixin:
 
     # ---- the skill index ---------------------------------------------
     def _skill_index(self):
-        """name -> {dir, name, description, version, last_updated}, from every
-        SKILL.md in the toolkit tree. Archives and parked work are not offers."""
+        """name -> {dir, skillmd, agent?}, from every SKILL.md in the toolkit
+        tree PLUS every agent definition (JL 260816: "our Skill 其实也是包括
+        Agent 相关的" — the map lists agents beside skills). An agent row is
+        `agents/<name>-agent.md`: no SKILL.md folder, so its open door is
+        mdview and its icon 🤖. Archives and parked work are not offers."""
         base = Path(__file__).resolve().parents[3]
         out = {}
         for f in base.rglob("SKILL.md"):
@@ -62,6 +65,12 @@ class SkillmapMixin:
             if "-" not in name:          # every real skill name carries one;
                 continue                 # bare words would match everywhere
             out[name] = {"dir": f.parent, "skillmd": f}
+        for f in base.rglob("agents/*-agent.md"):
+            parts = f.relative_to(base).parts
+            if any(s.startswith("_") or s == "node_modules" for s in parts):
+                continue
+            if f.stem not in out:        # a skill name always outranks
+                out[f.stem] = {"dir": f.parent, "skillmd": f, "agent": True}
         return out
 
     @staticmethod
@@ -192,9 +201,9 @@ class SkillmapMixin:
                 st["rows"][name]["note"] = p.get("note").strip()
         else:
             if name not in index:
-                return None, ("%r resolves to no SKILL.md in the toolkit "
-                              "tree; the pen adds real skills, not new ones"
-                              % name)
+                return None, ("%r resolves to no SKILL.md and no agent "
+                              "definition in the toolkit tree; the pen adds "
+                              "real skills and agents, not new ones" % name)
             st["rows"][name] = {"removed": False,
                                 "note": (p.get("note") or "").strip()}
             st["order"].insert(0, name)
@@ -221,7 +230,15 @@ class SkillmapMixin:
             known = index.get(name)
             meta = self._skill_meta(known["skillmd"]) if known else {}
             upd = meta.get("last_updated", "")
-            if known:
+            if known and known.get("agent"):
+                # an AGENT row (JL 260816): 🤖, and the door is mdview —
+                # an agent is one .md, not a folder with a SKILL.md
+                href = ("/_board/mdview?p=%s"
+                        % _up.quote(self._url_of(known["skillmd"]).lstrip("/")))
+                nm = "<a class='snm' href='%s'>\U0001f916 %s</a>" % (href,
+                                                                     _esc(name))
+                open_link = "<a href='%s'>open the agent</a>" % href
+            elif known:
                 href = ("/_board/skillview?p=%s&map=%s"
                         % (_up.quote(self._url_of(known["dir"]).lstrip("/")),
                            _up.quote(map_rel)))
@@ -236,18 +253,22 @@ class SkillmapMixin:
             # the judgment chrome: name, meta, the description, "open the
             # skill" beside ✕ — and ⠿, because the ORDER is
             # the judgment (JL 260816).
+            if known and known.get("agent"):
+                meta_line = "agent"
+            else:
+                meta_line = "v%s · updated %s" % (meta.get("version") or "?",
+                                                  upd or "?")
             rows_html.append(
                 "<div class='row' draggable='true' data-n='%s'>"
                 "<div class='rl'><span class='grip' title='drag to rank'>"
-                "⠿</span>%s <span class='mut'>v%s · updated %s"
+                "⠿</span>%s <span class='mut'>%s"
                 "</span></div>"
                 "<div class='rr'><button class='rm' data-n='%s' title="
                 "'remove: off the index, never re-seeded'>✕</button>"
                 "</div>"
                 "<div class='dsc mut'>%s</div>"
                 "<div class='dsc'>%s</div>%s</div>"
-                % (_esc(name), nm, _esc(meta.get("version") or "?"),
-                   _esc(upd or "?"), _esc(name),
+                % (_esc(name), nm, _esc(meta_line), _esc(name),
                    _esc(meta.get("description", "")),
                    open_link,
                    ("<div class='dsc mut'>note: %s</div>"
@@ -422,7 +443,10 @@ document.addEventListener('dragend', function () {
                     if m.group("removed") or m.group("rel") == "ignored":
                         continue
                     names.append(m.group("name"))
-                stops = [(n, index[n]["dir"]) for n in names if n in index]
+                # ← → walks SKILLS only: an agent row's door is mdview,
+                # which has no map bar to walk back out of
+                stops = [(n, index[n]["dir"]) for n in names
+                         if n in index and not index[n].get("agent")]
                 here = next((i for i, s in enumerate(stops)
                              if s[1].resolve() == d), None)
                 if here is not None and len(stops) > 1:
@@ -485,6 +509,12 @@ document.addEventListener('dragend', function () {
             if n == d.name:
                 continue
             if re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(n), text):
+                if sidx[n].get("agent"):
+                    chips.append("<a class='chip' href='/_board/mdview?p=%s'>"
+                                 "\U0001f916 %s</a>"
+                                 % (self._url_of(sidx[n]["skillmd"])
+                                    .lstrip("/"), _esc(n)))
+                    continue
                 keep_map = ("&map=" + urllib.parse.quote(mrel)) if mrel else ""
                 chips.append("<a class='chip' href='/_board/skillview?p=%s%s'>"
                              "\U0001f6e0 %s</a>"

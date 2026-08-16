@@ -1,5 +1,5 @@
 # The round trip: md to html, and html back to md
-state: 🟡 PARTIAL · the canonical board/ tree, per-page rebuild, fragment serving, rerooting, and checks ship; push versus poll remains open
+state: 🟡 PARTIAL · tree, per-page rebuild, fragments, rerooting and checks ship · open: push versus poll
 owner: JL
 method: draw the whole loop in both directions first, then rule the unit of change, the output layout, and what refreshes when
 

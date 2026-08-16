@@ -97,8 +97,11 @@ from live.xcal import XcalMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
+from live.pagex import PagexMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
+from live.outline import OutlineMixin
+from live.pageruns import PageRunsMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
 # exactly as before (QE3's Law: one implementation, the console is a pipe).
@@ -111,7 +114,7 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
                        BOARD_CHAT_RULES, BOARD_FULL_RULES, READONLY, WRITE_TOOLS)
 
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PlugViewMixin, FolderStatMixin, SimpleHTTPRequestHandler):
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -206,6 +209,12 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         if self.path.split("?", 1)[0] == "/_board/folderstat":
             # 📂 the page-folder's live status (never stored, so never stale)
             return self.folderstat_view()
+        if self.path.split("?", 1)[0] == "/_board/outline":
+            # 🧭 the page re-read per division (QPf12), same live contract
+            return self.outline_view()
+        if self.path.split("?", 1)[0] == "/_board/pageruns":
+            # 🪜 one page's lifecycle receipts, for the Page phases stepper
+            return self.pageruns_view()
         if self.path == "/_board/health":
             # checks/smoke.py 的探针：跑 chat 的是不是带 SDK 的解释器，只有
             # 进程自己答得出 —— ps 看到的是 venv 软链解析后的裸二进制，在外面
@@ -252,6 +261,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return self.head_pane()
         if self.path.split("?", 1)[0] == "/_board/folderstat":
             return self.folderstat_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/outline":
+            return self.outline_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -406,10 +417,28 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             res, err = self.skillmap_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        # 🔗 pagex, the THIRD citation twin (QPf11): the page's borrowings
+        # from other pages, one store + symlinks re-minted from it.
+        if self.path == "/_board/pagex":          # re-mint the links + view
+            res, err = self.pagex_refresh(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/pagex-order":    # the drag: rank = the order
+            res, err = self.pagex_order(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/pagex-entry":    # the pen: borrow · ✕ · ↩
+            res, err = self.pagex_entry(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
         # The EVIDENCE plugins' read-only surfaces (QPf5 · QPf9): the view
         # lists the page's units or cards and writes nothing but itself.
         if self.path == "/_board/folderstat":  # 📂 the tab spec's write() twin
             res, err = self.plug_folderstat(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/outline":     # 🧭 the same live twin (QPf12)
+            res, err = self.plug_outline(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/display":    # list display/ units + previews

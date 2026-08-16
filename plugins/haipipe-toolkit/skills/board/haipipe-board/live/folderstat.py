@@ -22,6 +22,7 @@ never a warning.
 """
 import html
 import json
+import os
 import time
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
@@ -32,13 +33,13 @@ ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
 DERIVED = {"latex", "word", "bibex", "slide", "display"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
-# judgment. slide is AUTHORED (claude -p, minutes, money) and display walks
-# a human-gated pipeline, so their rows say where to go instead of doing it:
-# a compile may be a button reflex, an authored artifact never is.
+# judgment. display joined the same day (JL: "I want to add the rebuild
+# button"): its POST recompiles each unit's DERIVED preview.tex ▶ pdf and
+# touches no intake, recipe, or accepted: tick. slide stays a pointer —
+# AUTHORED by claude -p (minutes, money), never a button reflex.
 MECHANICAL = {"latex": "/_board/latex", "word": "/_board/word",
-              "bibex": "/_board/bibex"}
-POINTER = {"slide": "✨ regenerate in the 🎞 Slides tab",
-           "display": "rebuilt by the display walk, unit by unit"}
+              "bibex": "/_board/bibex", "display": "/_board/display"}
+POINTER = {"slide": "✨ regenerate in the 🎞 Slides tab"}
 
 _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -60,11 +61,17 @@ tr.plug{{cursor:pointer}} tr.plug:hover td{{background:var(--card)}}
 .caret{{display:inline-block;width:1em;color:var(--mut);
  transition:transform .12s}} tr.open .caret{{transform:rotate(90deg)}}
 tr.files{{display:none}} tr.files.show{{display:table-row}}
-tr.files>td{{padding:2px 8px 10px 34px;border-bottom:1px solid var(--line)}}
-.f{{display:flex;gap:10px;padding:2px 0;font:12px ui-monospace,Menlo,monospace}}
+tr.files>td{{padding:6px 8px 12px 30px;border-bottom:1px solid var(--line)}}
+.f{{display:flex;gap:10px;padding:3px 0;align-items:baseline;
+ font:13px/1.6 ui-monospace,Menlo,monospace}}
 .f a{{color:var(--fg);text-decoration:none;flex:1;min-width:0;
  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-.f a:hover{{text-decoration:underline}} .f .mut{{flex:none}}
+.f a:hover{{text-decoration:underline}}
+.f .mut{{flex:none;font-size:12px;font-variant-numeric:tabular-nums}}
+.f.dir{{color:var(--mut);margin-top:5px;font-weight:600}}
+.f.dir .mut{{font-weight:400}}
+.lnk{{color:var(--mut);font-size:12px;flex:none;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis;max-width:44%}}
 .rb{{margin-left:8px;padding:1px 8px;font:11px -apple-system,sans-serif;
  color:var(--warn);background:none;border:1px solid var(--warn);
  border-radius:9px;cursor:pointer}}
@@ -93,6 +100,30 @@ document.querySelectorAll('tr.plug').forEach(function(tr){{
 }});
 /* ♻ cure a MECHANICAL stale row in place: the same POST the tab's writer
    uses, then re-render this live view. The click stays on the button. */
+function fire(route){{
+  return fetch(route,{{method:'POST',
+    headers:{{'Content-Type':'application/json'}},
+    body:JSON.stringify(TARGET)}}).then(function(r){{return r.json();}});
+}}
+/* 🔄 the header pill, the Word/LaTeX views' own affordance (JL 260816:
+   "add the button like rebuild like this"): one click walks every stale
+   MECHANICAL row in turn, then re-renders. Sequential on purpose — the
+   writers share the page's folder and xelatex is not a thing to race. */
+var all=document.querySelector('.rball');
+if(all)all.addEventListener('click',function(){{
+  var routes=all.dataset.routes.split(',').filter(Boolean);
+  all.disabled=true;
+  var i=0;
+  (function step(){{
+    if(i>=routes.length){{location.reload();return;}}
+    all.textContent='⏳ '+(i+1)+'/'+routes.length;
+    fire(routes[i]).then(function(j){{
+      if(!j.ok){{all.textContent='✋ '+(j.err||'refused');
+                 all.disabled=false;return;}}
+      i++;step();
+    }}).catch(function(){{all.textContent='✋ server?';all.disabled=false;}});
+  }})();
+}});
 document.querySelectorAll('.rb').forEach(function(b){{
   b.addEventListener('click',function(ev){{
     ev.stopPropagation();
@@ -147,6 +178,34 @@ def folder_status(page_src):
     return page_dir.name, md_mtime, rows
 
 
+def _as_tree(pairs):
+    """[(rel, path)] -> [(depth, kind, label, payload)] in reading order.
+
+    Files a level OWNS come before the folders under it, so the eye meets the
+    thing itself before its parts; a folder carries its own file count, which
+    is what makes a collapsed branch still worth reading."""
+    tree = {}
+    for rel, f in pairs:
+        *dirs, name = rel.split("/")
+        node = tree
+        for seg in dirs:
+            node = node.setdefault(seg, {})
+        node.setdefault("\0", []).append((name, f))
+
+    def walk(node, depth):
+        out = []
+        for name, f in sorted(node.get("\0", [])):
+            out.append((depth, "file", name, f))
+        for seg in sorted(k for k in node if k != "\0"):
+            sub = walk(node[seg], depth + 1)
+            n = sum(1 for r in sub if r[1] == "file")
+            out.append((depth, "dir", seg, "%d file%s" % (n, "s"[:n != 1])))
+            out.extend(sub)
+        return out
+
+    return walk(tree, 0)
+
+
 def _fmt_bytes(n):
     for unit in ("B", "KB", "MB"):
         if n < 1024:
@@ -190,16 +249,57 @@ class FolderStatMixin:
                     r["icon"], html.escape(r["name"]), r["files"],
                     "s"[:r["files"] != 1], _fmt_bytes(r["bytes"]),
                     _age(r["newest"], now), state))
+            # A FOLDER IS A TREE, not a sorted list of path strings (JL
+            # 260816: "是不是应该加一个 folder structure … 这个排版不是非常
+            # 按照我们的思路来排的"). Flat, `pagex/` read as six unrelated
+            # rows with its own store and view wedged alphabetically between
+            # four borrowed pages; nested, the same six say what the folder IS
+            # — two files it owns, then one folder per page it borrows from.
             items = []
-            for rel, f in r["list"]:
+            for depth, kind, label, f in _as_tree(r["list"]):
+                pad = "style='padding-left:%dpx'" % (depth * 18)
+                if kind == "dir":
+                    items.append("<div class='f dir' %s>📁 %s<span class=mut>"
+                                 "%s</span></div>"
+                                 % (pad, html.escape(label + "/"), f))
+                    continue
                 try:
                     href = "/" + quote(str(f.resolve().relative_to(root)))
                 except ValueError:
                     continue
+                rel = label
+                # A SYMLINK MUST NOT READ AS A COPY (JL 260816: "are they
+                # copied or are they the symlink?"). The row reports the
+                # RESOLVED file, so a borrowed 13KB page md looked exactly
+                # like 13KB of duplicated bytes; pagex's whole claim is that
+                # it copies nothing, and the one surface that shows the folder
+                # was quietly denying it.
+                #
+                # The first fix said so with the whole repo path inline, which
+                # crushed the filename out of the flex row and wrapped over
+                # three lines ("very ugly", same day). A link needs ONE mark
+                # and a SHORT target: the source page plus the file, which is
+                # what a person is actually identifying it by.
+                mark = ""
+                if f.is_symlink():
+                    try:
+                        t = f.resolve().relative_to(root)
+                        short = "/".join(t.parts[-2:])
+                    except ValueError:
+                        short = os.readlink(f).split("/")[-1]
+                    # pagex mints links whose place MIRRORS the source, so the
+                    # short target usually repeats the row's own name. Saying
+                    # it twice is the noise the first fix was trying to cure;
+                    # the bare mark carries the whole point, and the full
+                    # target lives on hover.
+                    mark = ('<span class=lnk title="%s">🔗%s</span>'
+                            % (html.escape(str(f.resolve())),
+                               "" if short == rel else " " + html.escape(short)))
                 items.append(
-                    '<div class=f><a href="%s" target="_blank" rel="noopener">'
-                    '%s</a><span class=mut>%s · %s</span></div>' % (
-                        href, html.escape(rel),
+                    '<div class=f %s><a href="%s" target="_blank" '
+                    'rel="noopener">%s</a>%s<span class=mut>%s · %s</span>'
+                    '</div>' % (
+                        pad, href, html.escape(rel), mark,
                         _fmt_bytes(f.stat().st_size),
                         _age(f.stat().st_mtime, now)))
             present.append(
@@ -211,7 +311,13 @@ class FolderStatMixin:
                 if n not in known]
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))
+        cures = [MECHANICAL[r["name"]] for r in rows
+                 if r["stale"] and r["name"] in MECHANICAL]
+        allbtn = ('<button class=rball type=button data-routes="%s">'
+                  '🔄 rebuild stale (%d)</button>' % (",".join(cures), len(cures))
+                  if cures else "")
         page = _PAGE.format(title=html.escape(title),
+                            allbtn=allbtn,
                             target=json.dumps({"path": p["path"],
                                                "file": p["file"]}),
                             md_age=_age(md_mtime, now),

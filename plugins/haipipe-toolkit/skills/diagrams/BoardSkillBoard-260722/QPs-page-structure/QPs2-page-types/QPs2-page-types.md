@@ -1,5 +1,5 @@
 # Page · the kinds: Q, stage, design, and what admits one
-state: 🟡 WORKING · the two-kind roster is ruled and both specimens exist; the engine still resolves nothing from the `page-type:` key
+state: 🟡 WORKING · two-kind roster ruled, both specimens exist · open: the engine reads no `page-type:`
 owner: JL
 method: the admission law first, one division per surviving kind, and one table saying where every reduced kind lives now; the pre-sweep record is archived whole
 

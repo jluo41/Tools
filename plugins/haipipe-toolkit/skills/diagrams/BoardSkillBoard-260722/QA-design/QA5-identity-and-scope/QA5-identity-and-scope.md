@@ -1,6 +1,6 @@
 # QC5 · Why "it points at nothing" keeps coming back: identity by NAME, and lookups that return EMPTY
 
-state: 🟡 PARTIAL · two instances fixed 260807 with guards that were watched to fire; 15 of 20 name-pattern sites and 508 unguarded lookups remain
+state: 🟡 PARTIAL · two instances fixed 260807, guards watched to fire · open: 15 name sites, 508 lookups
 owner: JL
 method: treat every "X does not point at Y" report as one defect class, measure the class rather than patch the instance, and require a guard that has been SEEN to fire
 

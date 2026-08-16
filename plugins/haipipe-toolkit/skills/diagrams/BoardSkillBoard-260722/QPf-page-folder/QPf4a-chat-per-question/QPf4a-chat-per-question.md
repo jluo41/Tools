@@ -1,5 +1,5 @@
 # Chat · a session per question
-state: 🗂 FOLDED · into QPf4-chat §3 the session model (JL 260815); the division carries the substance, this page keeps the full record
+state: 🗂 FOLDED · into QPf4-chat §3 the session model (JL 260815) · the full record stays here
 owner: JL
 method: settle the levels, the read/write permissions, and where conversations go; implementation split to QD2 / QD3
 session: e4ac2dc0-af0d-46cc-972c-c19582f2ba62

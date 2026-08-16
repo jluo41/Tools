@@ -1,5 +1,5 @@
 # Fresh-agent acceptance test
-state: 🟡 PARTIAL · both runs said YES and both are voided; the page contract left SKILL.md and nobody has re-run since
+state: 🟡 PARTIAL · both runs said YES and both are voided · open: a re-run since the contract left SKILL.md
 owner: CC
 method: start an agent with no memory of this conversation and hand it only the shipped material: haipipe-board's SKILL.md and ref/, plus haipipe-page
 

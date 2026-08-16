@@ -22,7 +22,7 @@
         versions/      superseded variants, kept for history
       <PageID>-Display2-<slug>/        the next unit, same shape
 \end{verbatim}
-The layout above is \texttt{display-unit-output-contract.md}, quoted rather than redesigned. \texttt{intake/} and \texttt{recipe/} are primary material a person rules; \texttt{assets/} and \texttt{preview.pdf} are derived and a rebuild may overwrite them. The one page-side change is the address: the unit root is the page's own \texttt{display/} folder, so the unit travels with the page it illustrates.
+The layout above is the display family's own contract file, \texttt{display-unit-output-contract.md}, copied as it stands rather than redesigned. The folders split into two halves: \texttt{intake/} and \texttt{recipe/} are the SOURCES, written by people and by drawing skills, while \texttt{assets/} and \texttt{preview.pdf} are BUILT from those sources, so a rebuild may overwrite the built half but never the sources. The only page-side change is the address: the unit sits inside the page's own \texttt{display/} folder, so when the page moves, its figures move with it.
 
 
 \section{The surface: one card per unit in the right pane}
@@ -31,30 +31,31 @@ The layout above is \texttt{display-unit-output-contract.md}, quoted rather than
 \begin{verbatim}
   right pane .  Display
     +-----------------------------------------+
-    |  QPf5-Display1-drift-bands            |
+    |  QPf5-Display1-pipeline-tikz          |
     |    preview.pdf, framed (body.py ccpdf)  |
     |    README status .  rebuild            |
     |    accepted: [ ] . shown, NOT tickable    |
     +-----------------------------------------+
     one card per unit . empty display/ = empty state, not an error
 \end{verbatim}
-The tab is the Slides sandwich with a different filling: a drawer plugin posts to a \texttt{live/} endpoint, the endpoint lists the page's units, and the pane frames each \texttt{preview.pdf} through the PDF object path \texttt{src/body.py} already renders. 🔄 rebuild runs the unit's recipe and refreshes the derived half; it never touches \texttt{intake/} and never touches an acceptance row. A unit is EVIDENCE the content cites, and the citation lives IN the sentence: the unit's id named in prose chips as the evidence card in place, carrying its acceptance state and linking its block in the strip. The \texttt{> Display:} lane beside \texttt{> Citation:} and \texttt{> Value:} stays the FILING surface: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there. Either surface naming a [ ] unit binds a pending render, not accepted evidence. The projections inherit the citation (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph, built from the winning asset and the unit's own caption, and the word export embeds the rasterized figure with an inline figure number and a 🖼 Display comment on the sentence.
+The tab is built the same way the Slides tab is: a small button in the page's toolbar asks the server for this page's units, and the server writes a view that frames each unit's \texttt{preview.pdf}. 🔄 rebuild redraws the built half from the sources; it never changes the inputs, and it never changes an approval. A unit is EVIDENCE: when a sentence names a unit's id in plain text, the id becomes a small button in that sentence, and clicking it opens the unit's card with its picture and its approval state. There is a second way to attach the same evidence, for machines: a \texttt{> Display:} line written UNDER a sentence, beside the \texttt{> Citation:} and \texttt{> Value:} lines, so a program can add evidence without ever editing a person's prose. Citing a unit that has no render yet is allowed with either form: the button then says a render is still owed. The exports keep the evidence too: the LaTeX PDF prints a cited unit as a real figure after the paragraph that cites it, and the Word file embeds the picture with its caption and adds a 🖼 comment note on the sentence.
 
 
 \section{The writers, and the row no machine may tick}
 \textbf{Who writes what}: three hands on one unit, each confined to its half.
 
 \begin{verbatim}
-   renderer skills   haipipe-display-table . -figure . -diagram . ...
+   renderer skills   haipipe-display-table . -figure . -diagram . -illustration
                        write recipe/ . assets/ . preview.pdf
    a person          rules intake/ and ticks accepted:
    the pane          shows everything . writes NOTHING
 \end{verbatim}
-The renderers are the display family's existing skills, dispatched the way \texttt{task-for-display} already dispatches them; this page adds no renderer. Acceptance follows the model the slide plugin already borrowed: a [x] means a person looked at a specific render and said yes, so a machine that ticks one has forged a judgment, not saved time.
+The renderers are the display family's existing drawing skills; this page adds none of its own. The approval row is the one rule with teeth: a [x] on \texttt{accepted:} means a person looked at one specific picture and said yes. A machine that ticks it has forged a judgment, not saved time, so no machine may.
 
-\textbf{The four renderers}: which skill draws which kind, and what each one's recipe is.
+\textbf{The kinds and who draws them}: one door routes to four renderers, plus one method with no skill.
 
 \begin{verbatim}
+   haipipe-display . the DOOR . say the ask, it picks the renderer
    data-driven . needs a ruled intake/ of numbers
       -table         aggregated CSV/JSON > booktabs LaTeX . recipe = the spec
       -figure        results > plot . recipe = the python script
@@ -62,10 +63,10 @@ The renderers are the display family's existing skills, dispatched the way \text
       -diagram       FigureSpec JSON > deterministic editable SVG
       tikz           .tikz.tex recipe > vector PDF . TeX-native: the paper's
                        fonts, math labels, and float.tex may input it directly
+                       NO SKILL: authored by hand, as both units on this page were
       -illustration  image-gen prompt > concept figure . recipe = prompt + receipts
-   -poster . -slides  composites, assembling units the renderers above made
 \end{verbatim}
-A data-driven renderer may not recompute from raw data; it reads the approved extract in \texttt{intake/} and nothing else. A concept-driven renderer carries no numbers, so its intake is the spec it draws. The rebuild differs the same way: a figure rebuild reruns its python script, a diagram rebuild is deterministic from its spec, and an illustration rebuild replays a receipted prompt.
+A data-driven renderer draws numbers, and it may not go back to the raw data: it reads only the small approved extract in \texttt{intake/}. A concept-driven renderer draws an idea, so it carries no numbers at all; its input is the sketch it draws. Rebuild follows the kind: a python figure reruns its script, a diagram redraws from its spec, and an AI illustration replays its saved prompt.
 
 
 \section{How a unit is generated}
@@ -82,7 +83,7 @@ A data-driven renderer may not recompute from raw data; it reads the approved ex
                      --check reports a stale unit instead of hiding it
   (5)  ACCEPT     a person reads the render and ticks accepted:
 \end{verbatim}
-The pipeline never starts at (2): a renderer given no ruled \texttt{intake/} has nothing provenance-bound to draw, which is what \texttt{display-intake-contract.md} exists to refuse. Steps (1) (3) (5) are a person's and steps (2) (4) are machinery, the split of hands QPf5-Display1 draws; 🔄 rebuild on the tab is step (4) alone, rerun. A changed \texttt{intake/} flows forward, (2) to (5), and the acceptance falls back to [ ] because the bytes a person said yes to are gone.
+Drawing never comes first: with no approved inputs there is nothing safe to draw, and the intake contract exists to refuse exactly that. Steps (1) (3) (5) belong to a person and steps (2) (4) to machinery, the split of hands QPf5-Display1 draws; the tab's 🔄 rebuild is step (4) alone, run again. If the inputs change, the work flows forward again from (2) to (5), and the old approval drops back to [ ], because the picture a person said yes to no longer exists.
 
 \begin{figure}[t]
 \centering
@@ -103,7 +104,7 @@ The pipeline never starts at (2): a renderer given no ruled \texttt{intake/} has
    intake/manifest.yaml      > cites that holder BY ID . carries only a
                                  small approved extract in inputs/
 \end{verbatim}
-\texttt{intake/} is not a second data store: the task output stays canonical, and the manifest points back at the exact holder and run that produced it. A unit names its evidence by id, never by path, and never types a number; QPf5-Display2 draws this ask-once-cite-twice move. The slide plugin already walks this chain on \texttt{QPf3}: its deck declares \texttt{needs: QA-probe/QBt5-for-value/1-artifact-paths}, the resolver turns the id into the artifact's path, and the template carries no digits, so a hand-typed value has nowhere to live. A1's adapter is what makes the same id resolution work for a unit under a page.
+A probe is a question card: the page asks its question once, the answer lands in the shared task bank, and from then on everyone cites the card's id instead of asking again. \texttt{intake/} is therefore not a second copy of the data: the task's own output stays the single source, and the manifest only points at it, by id. A unit names its evidence by id, never by a file path, and never types a number with its own hands; QPf5-Display2 draws this ask-once-cite-twice move. The slides plugin already works this way on \texttt{QPf3}: its deck asks for an id, a resolver turns the id into the file's real path, and the template holds no digits, so a hand-typed number has nowhere to live. Aim A1 asks for that same id lookup to work for units that live under a page.
 
 \begin{figure}[t]
 \centering

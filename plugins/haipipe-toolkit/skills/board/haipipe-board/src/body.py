@@ -322,6 +322,7 @@ def _sources(meta):
     # linking to it, and every image is labelled LIVE or CANDIDATE (QC4's law).
     # A table's evidence is its rows, so the body is shown as text (QC3).
     prev = []
+    first_pdf = True
     for kind, label, path, text in meta.get("preview", []):
         href = _rel(path)
         cap = f'<figcaption>{esc(label)}</figcaption>'
@@ -333,12 +334,16 @@ def _sources(meta):
             # <object>, not <img>: a browser renders a PDF natively and this
             # stays script-free. The link inside is the fallback a viewer-less
             # browser shows, so the evidence is never a blank rectangle.
-            # CLOSED by default (JL 260806, "the evidence card doesn't work"):
-            # two stacked 24em objects buried the file links below the card's
-            # scroll fold, and the PDF plugin eats the wheel, so the open card
-            # read as dead. The caption is the summary; one click expands.
+            # THE FIRST FOLD SHIPS OPEN (JL 260816: "直接自动 display 出来,
+            # 而不是等我们点了那个展开按钮"): a card is opened to SEE the
+            # evidence, so the LIVE render is visible at once, in the HTML
+            # itself with no script. The SECOND fold stays closed, which is
+            # what the 260806 ruling was really protecting: two stacked 24em
+            # objects buried the file links below the card's scroll fold.
+            op = " open" if first_pdf else ""
+            first_pdf = False
             prev.append(f'<figure class="ccprev">'
-                        f'<details class="ccfold"><summary>{esc(label)}'
+                        f'<details class="ccfold"{op}><summary>{esc(label)}'
                         f' · expand preview</summary>'
                         f'<object class="ccpdf" data="{esc(href)}" '
                         f'type="application/pdf">'

@@ -1,5 +1,11 @@
 # Changelog · haipipe-page-workflow
 
+## 0.1.1 · 2026-08-16
+
+- The receipt section now names its shipped reader: the 🪜 Workflow menu's
+  `📄 Page phases` stepper (`65-plugin-pageflow.js` + `GET /_board/pageruns`),
+  read-only, fed by `_runs/page/` and nothing else.
+
 ## 0.1.0 · 2026-08-15
 
 - Born by MOVING, not adding: `haipipe-page`'s RUN verb and its

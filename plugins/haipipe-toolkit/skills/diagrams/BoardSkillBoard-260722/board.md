@@ -175,10 +175,14 @@ A page is `<name>/<name>.md` and every subfolder of it is a plugin (JL 260815); 
                        shipped 0.128.0 · derived, regenerable
 📝 word                QPf7  the word plugin · coauthor .docx + the
                        PDF twin the tab frames
-📚 bibex               QPf8  the bibex plugin · extract-only subset
-                       of the paper's .bib, never invented
-🛠 skill               QPf10 the skill plugin · bibex's twin into the
-                       skill tree: uses/designs rows, drift on the card
+📚 bibex               QPf8  the bibex plugin · the page-owned bib,
+                       fetched whole by key, JL's ✓ (ruled 260815)
+🛠 skill               QPf10 the skill plugin · the ranked skill list,
+                       the drag is the one judgment (flattened 260816)
+🔗 pagex               QPf11 the pagex plugin · the third citation twin:
+                       borrow FILES from other pages as symlinks
+🧭 outline             QPf12 the outline meta-surface · the page re-read
+                       per division from §N anchors, live, storage-less
 ⬜ debt                the boundary page · meeting · fixture
                        plugin pages, born as each contract is written
 ```
@@ -196,6 +200,8 @@ QPf7-word.md
 QPf8-bibex.md
 QPf9-probe.md
 QPf10-skill.md
+QPf11-pagex.md
+QPf12-outline.md
 ### QPw · Page-Workflow
 How a page MOVES: draft, probe, revise, check, and the hands that run them.
 QPw1 is the page's time axis; the three agents are the workflow's dispatched units, one design page each.
@@ -349,7 +355,7 @@ QBt3-for-display.md      ../01-haipipe-paper-260725/QBt-page-types/QBt3-for-disp
 QBt4-for-literature.md   ../01-haipipe-paper-260725/QBt-page-types/QBt4-for-literature.md
 QBt5-for-value.md        ../01-haipipe-paper-260725/QBt-page-types/QBt5-for-value.md
 QBt6-for-section.md      ../01-haipipe-paper-260725/QBt-page-types/QBt6-for-section.md
-QBt11 ../../../../subjective-label/diagram/02-subjective-label-260722/QG-page-type/QG1-for-labeling.md
+QBt11 ../../../../subjective-label/diagram/SubjectiveLabel-260722/QG-page-type/QG1-for-labeling/QG1-for-labeling.md
 draw.py              ../../board/haipipe-board/cli/draw.py
 test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
 live/xcal.py          ../../board/haipipe-board/live/xcal.py
@@ -476,7 +482,7 @@ fig/board-mark-palettes.svg fig/board-mark-palettes.svg
 haipipe-board/assets/js/ ../../board/haipipe-board/assets/js/
 haipipe-paper-stage/ ../../paper/_old/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
-02-subjective-label-260722/ ../../../../subjective-label/diagram/02-subjective-label-260722/
+SubjectiveLabel-260722/ ../../../../subjective-label/diagram/SubjectiveLabel-260722/
 haichat-inlab/      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/
 main.py             ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/main.py
 console_api.py      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/console_api.py

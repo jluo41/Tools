@@ -1,5 +1,5 @@
 # Page · the loop: draft, probe, revise, and check
-state: 🟡 IN PROGRESS · contracts and audit harness pass · first live RUN closed 260805 (QB8e) · 12 RUN-contract ambiguities owed fixes; Workflow-harness invocation still pending
+state: 🟡 IN PROGRESS · contracts and audit pass, first live RUN closed 260805 · open: 12 gaps, the harness
 owner: JL
 method: define each phase by its authority over one persistent Page, execute the routes with versioned receipts, and test both legal branches and injected failures
 

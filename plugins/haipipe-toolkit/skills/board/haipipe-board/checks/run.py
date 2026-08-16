@@ -173,9 +173,16 @@ def main():
     ap.add_argument("--port", default="5599")
     a = ap.parse_args()
 
-    print("── smoke (the live server) " + "─" * 40)
+    # The outline sweep runs FIRST and needs no server: it reads every page of
+    # every board offline, so a parser that would swallow an aim on one page is
+    # caught before anything is served (QPf12 · P2).
+    print("── outline (every page, offline) " + "─" * 34)
+    rc0 = subprocess.run([sys.executable, str(HERE / "outline.py")]).returncode
+
+    print("\n── smoke (the live server) " + "─" * 40)
     rc = subprocess.run([sys.executable, str(HERE / "smoke.py"),
                          "--host", a.host, "--port", a.port]).returncode
+    rc = rc0 or rc
     if not a.full:
         return rc
     rc2 = full_tier()

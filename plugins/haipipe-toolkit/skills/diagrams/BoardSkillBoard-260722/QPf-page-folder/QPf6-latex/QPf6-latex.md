@@ -1,5 +1,5 @@
 # Latex · the page compiled, in its own folder
-state: 🟡 PARTIAL · the writer, the route, and the tab shipped in haipipe-board 0.128.0; the boundary, the git ruling, and the grammar's limits are open
+state: 🟡 PARTIAL · writer, route, tab shipped 0.128.0 · open: natbib run, figure export, checker, git ruling
 owner: CC
 method: call the paper family's md2tex by path, wrap its section in a standalone master, compile with xelatex, and land both halves in the page's own latex/ folder
 session: 6698437b-fe7e-4d6f-9e68-4b37e1d80f15
@@ -25,8 +25,7 @@ This page settles the plugin's contract and records what the 260815 build left o
   🧮 xelatex (+bibtex when a bib)  ──▶  latex/<stem>.pdf
         │            -master.* residue deleted after the run
         ▼
-  🖼 the 📜 LaTeX tab frames the PDF · compile failure frames a view
-     page carrying the .tex and the log tail instead of silence
+  🖼 📜 tab frames the PDF · failure ▶ .tex + log-tail view
 ```
 
 ## Content
@@ -36,10 +35,10 @@ This page settles the plugin's contract and records what the 260815 build left o
   <page>/latex/
     <stem>.tex    ⚙️ md2tex's section · header says "do not hand-edit"
     <stem>.pdf    ⚙️ the compiled look · what the tab frames
-  flat page fallback: <board>/latex/<stem>.* · the same fork deck.py takes
+  flat page fallback: <board>/latex/<stem>.* · the same fork the slide plugin takes
 ```
 A hand-edited file is overwritten on the next build, which is the derived-plugin rule and not a defect.
-The bibliography prefers the PAGE'S OWN `bibex/<stem>.bib` when it holds an entry (JL 260815: the page's cites should compile), so the PDF cites exactly what the page cites from the one store the workbench maintains.
+The bibliography prefers the page's bibex/ store (QPf8): when `bibex/<stem>.bib` holds an entry, the PDF cites exactly what the page cites.
 With no page bib, `--paper-root` is discovered by walking up toward `--root` for a `0-*.bib`; outside any paper the export compiles cite-less with `\citep` printed as `[key]` rather than refusing.
 With either bib the master gains natbib, `plainnat`, and a `bibtex` pass.
 
@@ -54,7 +53,7 @@ With either bib the master gains natbib, `plainnat`, and a `bibtex` pass.
   refuse-to-regress  ──▶  inherited         a rewrite that loses citations
                                             is refused, not silently written
 ```
-The proof run is `QPf4b`'s Content: eight divisions became a real four-page PDF, driven in a browser through the tab on 260815.
+The proof run is `QPf4b`'s Content: eight divisions became a real four-page PDF, driven in a browser through the tab.
 What does not survive is the board's emoji-heavy ascii figures: xelatex drops glyphs its fonts lack, so a figure-dense page reads thinner in PDF than on stage, and A2 below is where that gap is measured rather than guessed.
 
 ### 3 · The surface
@@ -65,6 +64,7 @@ What does not survive is the board's emoji-heavy ascii figures: xelatex drops gl
   tab.write() builds on miss · lit-click       ▶ REBUILD (derived refresh)
   failure    ▶ a view page: the .tex + the log tail · never a blank frame
 ```
+A failed compile never answers with silence: the tab frames a view page carrying the generated `.tex` and the log tail, so the defect is readable where the PDF would have been.
 
 ## Aims
 ### A1 · 🧾 The contract
@@ -79,7 +79,7 @@ What does not survive is the board's emoji-heavy ascii figures: xelatex drops gl
 
 ### A3 · 🖼 The surface
 - [x] A3.1 · The 📜 tab shipped and was driven, not assumed.
-      **Done when:** met 260815: `QPf4b`'s four-page PDF framed live in a real browser, opened from the Plugin menu, closed by its own ✕.
+      **Done when:** the 📜 tab frames this page's PDF in a live browser.
 
 ### P · 🚧 The boundary
 - [ ] P1 · `latex/` joins the checker's known-plugin list.
@@ -90,13 +90,13 @@ The writer half is done and proven; the measurement and boundary halves are owed
 - ✅ A1.1 · Built 260815: endpoint, master wrap, residue cleanup, failure view.
 - ⬜ A1.2 · Both test pages sit outside any paper root, so the natbib path has only been reasoned, not run.
 - ⬜ A2.1 · No figure-dense page has been exported yet; `QPf4b` was prose-heavy and flattered the mapping.
-- ✅ A3.1 · Browser-verified 260815 through the driven CDP run.
+- ✅ A3.1 · Browser-verified 260815: `QPf4b`'s four-page PDF framed through the driven CDP run, opened from the Plugin menu, closed by its own ✕.
 - ⬜ P1 · `check.py` does not yet know `latex/` by name.
 
 ### Decision Now
 - [ ] 🗣 What does git keep of a DERIVED plugin folder?
       This row rules for `latex/`, `word/`, and `bibex/`'s derived half at once and lands in the roster, because one answer must cover them.
-      The page-owned `bibex/<stem>.bib` is PRIMARY since JL's 260815 ruling and is committed regardless; only the view and export files are in question.
+      The page-owned `bibex/<stem>.bib` is PRIMARY and committed regardless; only the view and export files are in question.
       A · commit the artifacts, so the board is self-contained offline.
       ⭐B · gitignore the derived files whole; every one of them regenerates from the page by one click.
       🛑 Blocks: nothing; the folders exist either way.
@@ -116,6 +116,7 @@ The writer half is done and proven; the measurement and boundary halves are owed
   The first export: four pages, compiled 260815, framed live through the tab.
 
 ## Log
+- 260816 · [REVISE-CC] the review pass landed under fixed Aims: the state line compressed to the row shape, the dead `deck.py` name replaced by the slide plugin (the writer on disk is `live/autodeck.py`), the 260815 dates and the JL attribution moved out of Content into this Log, A3.1's Done when restored as a condition with States keeping the met evidence, and the Diagram's wrapped clause compressed to a row with its sentence moved to §3 prose.
 - 260815 1800 · [JL via CC] this plugin's own skill shipped: `haipipe-plugin-latex` under `page-plugins/` (the thin-door round, two specimens); the DERIVED specimen: a caller contract over the paper family's writer, holding no copy.
 - 260815 · [REVISE-CC] the master's bibliography prefers the page-owned bibex store (JL: "this one to be cited as well"); QPf8's PDF is the proof: [Luo et al., 2026] inline and a bibtex References page, from `bibex/QPf8-bibex.bib`.
 - 260815 1610 · [JL via CC] Display1-latex-proof accepted (JL: "please just do them for me"); preview renders all three divisions.

@@ -1,6 +1,6 @@
 # QBt10 · page-type DESIGN · owns NO folder of its own; one Content division per CANDIDATE, closing on a SELECTION that keeps the losers
 
-state: 🟡 PARTIAL · selected 260806 by JL; the record's `downstream` line is still open and one criterion is unmet
+state: 🟡 PARTIAL · selected 260806 by JL · open: the record's `downstream` line, one unmet criterion
 page-type: design
 owner: JL
 method: write the brief first, draw each candidate whole beside the others, and close on one selection record that keeps every loser and the reason it lost

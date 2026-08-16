@@ -6,7 +6,7 @@
 
 - haipipe-plugin-display · note: JL 260815 asked this page's rules to ship as a loadable skill; born under page-plugins/ in the thin-door round, and this page is its design record
 - haipipe-board
-- haipipe-display-table
+- haipipe-display
 - haipipe-task
 - haipipe-paper
 - haipipe-plugin

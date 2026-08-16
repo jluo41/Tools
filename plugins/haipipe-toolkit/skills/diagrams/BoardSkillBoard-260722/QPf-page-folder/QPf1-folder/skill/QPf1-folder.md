@@ -8,3 +8,6 @@
 - haipipe-plugin-folder
 - haipipe-board
 - haipipe-page
+- haipipe-plugin-draw
+- haipipe-plugin-latex
+- haipipe-plugin-word

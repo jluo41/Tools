@@ -1,5 +1,5 @@
 # Draw · every page keeps its own drawing
-state: 🟡 PARTIAL · drawings live in each page's draw/ folder and open in the split; two engine cleanups remain in Aims
+state: 🟡 PARTIAL · scenes in page draw/, split + compose live · open: draw.py layout, embed-write retire
 owner: CC
 page-type: design
 method: one Excalidraw scene per page in the page's own draw/ folder; the page body carries only the ascii figure
@@ -20,27 +20,29 @@ To see or edit the real drawing, open the page's Draw split; the group page comp
 ```text
   📋 the PAGE, on stage                 🖌 the PLUGIN, beside it
   ┌───────────────────────────┐        ┌──────────────────────────┐
-  │ ## Diagram                │        │ <page>/draw/             │
-  │   ascii only · scripts-   │        │   <id>.excalidraw        │
-  │   off readable            │  tab   │   the page's own scene,  │
-  │ ## Content …              │ ──────▶│   opened in a split,     │
-  │   (no embeds anywhere)    │  🖌     │   saved back on edit     │
+  │ ## Diagram                │        │ PAGE/draw/               │
+  │   ascii only · scripts-   │        │   PAGE.excalidraw        │
+  │   off readable            │  tab   │   scene · page-owned     │
+  │ ## Content …              │ ──────▶│   edit · in the split    │
+  │   (no embeds anywhere)    │  🖌     │   save · to this file    │
   └───────────────────────────┘        └──────────────────────────┘
                                               │ composed, never copied
-  🗂 <group>/draw/group.excalidraw  ◀─────────┘
+  🗂 GROUP/draw/group.excalidraw    ◀─────────┘
      relationships + layout · import manifest over the page sources
 ```
+The scene is the page's own, it opens in a split beside the page, and every edit saves back to that one file.
 
 ## Content
 ### 1 · Where a drawing lives
 **The files**: one scene per owner, each in its owner's folder.
 ```text
-📄 page drawing     <page>/draw/<id>.excalidraw    the page's own scene
-🗺 group drawing    <group>/draw/group.excalidraw  layout + relations over the pages
+📄 page drawing     PAGE/draw/PAGE.excalidraw      the page's own scene
+🗺 group drawing    GROUP/draw/group.excalidraw    layout + relations over the pages
 🧭 board map        board.excalidraw               the Index page's overview scene
-🖼 image bytes      assets/<owner>/                pasted images, kept out of the scene
+🖼 image bytes      draw/assets/OWNER/             pasted images, kept out of the scene
 ```
 Each page drawing is an ordinary Excalidraw file that is useful opened by itself.
+Pasted image bytes land under the owner's `draw/assets/` and the scene keeps a relative pointer to them.
 A page that has no drawing yet gets an empty scene created the first time its Draw split opens, so there is never a missing file to trip over.
 The group drawing holds only group-level layout and an import list naming each page's scene; it never copies their content.
 
@@ -92,10 +94,12 @@ The chat pane receives the same owner address as the canvas, so asking it to cha
 
 ## States
 The drawings themselves are in place: every page scene sits in its page's folder, the split opens and follows the page, and the group view composes.
-Two engine cleanups remain and are listed in Aims.
+draw.py's verify still round-trips the legacy board.excalidraw at the board root instead of the folded page layout.
+serve.py still accepts the embed-write save at `/_board/excalidraw`, which writes a scene link into `## Diagram` that no page renders.
 
 ## Log
-- 260815 1800 · [JL via CC] this plugin's own skill shipped: `haipipe-plugin-draw` under `page-plugins/` (the thin-door round, two specimens); the door's 67-line excalidraw section became this unit, corrected to the page-folder layout on the way.
+- 260816 · [REVISE-CC] findings pass: fence placeholders de-bracketed to PAGE/GROUP/OWNER tokens so the renderer stops mangling them into dead anchors, state: line cut to a row with an open: part, the image-bytes row corrected to the shipped `draw/assets/` home, States now names the two engine facts instead of pointing at Aims, the split box rows turned into label · value with the clause moved below the figure, and the Log's coined terms said plainly.
+- 260815 1800 · [JL via CC] this plugin's own skill shipped: `haipipe-plugin-draw` under `page-plugins/` (the round that shipped one small skill per plugin); `haipipe-plugin`'s 67-line excalidraw section became this unit, corrected to the page-folder layout on the way.
 - 260815 1650 · [REVISE-CC, JL asked] title, Opening, and Content rewritten to the present contract in plain words; the history that lived there (the ruling, the retired attach button, the migration record) stays in this Log and the archive. The rule itself is now in `ref/writing-rules.md` and `ref/page-template.md`: the page says what IS, the Log keeps the story.
 - 260815 1610 · [FIX-CC] the group canvas renders again: `page_board`'s three root probes looked for a `pyproject.toml` no tree here carries, so every GROUP DRAW section (and the Index map's canvas path) blanked silently; the shared `server_root()` now accepts the repo's `.git` as the marker (QO13: serve starts at the repo root). Verified live on QPw: composed canvas + 🖌 Draw tab, owner `this group`.
 - 260815 1530 · [REVISE-CC, JL ruled] the renderer follows the ruling: `## Diagram` stages the ascii figure alone (no `✏️ Excalidraw` fold, no attach button: `render_diagram` flattened, `50-xcal.js` deleted); the drawing's one door in the viewer is the 🖌 Draw split, now also a row in the shell's Plugin menu. Excalidraw itself runs locally (docker, 127.0.0.1:5610) behind serve.py's `/_excalidraw` proxy.

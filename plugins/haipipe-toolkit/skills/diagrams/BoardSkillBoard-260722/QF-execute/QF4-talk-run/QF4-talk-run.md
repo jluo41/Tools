@@ -1,5 +1,5 @@
 # Driving the talk layer: the SDK chat version and the TUI chat version
-state: 🟡 PARTIAL · both chat versions have suites checked into `checks/`; only two tiers run from one command, and nothing dispatches them
+state: 🟡 PARTIAL · both chat versions have suites in `checks/` · open: 2 tiers unwired, no dispatcher
 owner: JL
 method: list the talk failures that shipped green through every existing instrument, then name the axes a run has to cover
 

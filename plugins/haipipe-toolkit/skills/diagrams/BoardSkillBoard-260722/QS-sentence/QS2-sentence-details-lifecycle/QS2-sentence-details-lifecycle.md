@@ -1,5 +1,5 @@
 # Sentence · the details lifecycle
-state: 🟡 PARTIAL · rules recorded through the 260805 RUN; two Decision Now rulings and all implementation remain
+state: 🟡 PARTIAL · rules recorded through the 260805 RUN · open: 2 Decision Now rulings, all implementation
 owner: JL
 method: give the sentence panel typed views, explicit record states, and a previewed archive-first cleanup path
 session: 12fb5622-ff63-4e49-b5a3-9efbcb113613

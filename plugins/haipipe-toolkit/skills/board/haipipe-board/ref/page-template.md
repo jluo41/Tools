@@ -41,6 +41,11 @@ provides: one compact phrase naming the downstream handoff
          the suffix is not a fifth state and may not contradict the emoji. A new page of either
          kind starts `🔴 OPEN`. What ✅ means differs: on Q every Aim is met or explicitly held, on S that
          page's human gate passed (the index counts it under its named family).
+       - the state line is a row, not a paragraph (JL 260816): after the status word come at
+         most two ` · ` parts, what stands and then `open:` with a short list or a count, the
+         whole line under 110 characters. A part that could end in a period is prose: the
+         facts belong in States and the reason in Log.
+         Good: `🟡 PARTIAL · ruled, card grammar adopted · open: landing address, citation hop, tab`
        - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
      Section names (Opening / Content / Aims / States, etc.) must be kept verbatim.
      `## Question` is still accepted as a legacy alias for `## Opening`, but the template

@@ -5,10 +5,15 @@ THE DIVISION OF LABOUR, the same one export.py drew for latex/word/bibex:
   the writers (renderer skills · the probe orchestrator)   HOW material is made
   this file                                                WHERE the tab looks, read-only
 
-Nothing here writes material. A display unit is written by its renderer and
+Nothing here writes MATERIAL. A display unit is written by its renderer and
 accepted by a person (QPf5); a probe card is raised by its consumer and bound
 by the collector (QPf9). This surface SHOWS both and writes neither, which is
 each contract's own rule: "the pane shows everything · writes NOTHING".
+One carve-out, ruled JL 260816 ("I want to add the rebuild button, so that we
+can have a new list"): display's 🔄 recompiles each unit's DERIVED preview
+(preview.tex ▶ preview.pdf, the unit README's own rebuild contract) before
+re-rendering the list. intake/, recipe/, and the accepted: tick stay a
+person's and are never touched — a preview is a projection, not material.
 
 THE VIEW IS DERIVED, like every export view: `<plugin>/<stem>-view.html` is
 regenerated on each open and never hand-edited. An EMPTY plugin renders the
@@ -16,6 +21,7 @@ contract's ghost scaffold instead of a blank, so an empty tab teaches what
 belongs there (JL 260815).
 """
 import json
+import os
 import re
 from pathlib import Path
 
@@ -153,6 +159,21 @@ class PlugViewMixin:
         page_src, out_dir, _, err = self._export_target(p, "display")
         if err:
             return None, err
+        # 🔄 the rebuild recompiles every unit's derived preview first
+        # (JL 260816): preview.tex ▶ preview.pdf in the unit's own dir, the
+        # contract line each unit README already states. A unit without a
+        # preview.tex is skipped whole — nothing is invented for it.
+        fails = []
+        env = dict(os.environ,
+                   PATH="/Library/TeX/texbin:" + os.environ.get("PATH", ""))
+        for unit in sorted(d for d in out_dir.iterdir() if d.is_dir()):
+            if not (unit / "preview.tex").is_file():
+                continue
+            code, log = self._run(
+                ["xelatex", "-interaction=nonstopmode", "preview.tex"],
+                timeout=120, cwd=unit, env=env)
+            if code != 0 or not (unit / "preview.pdf").is_file():
+                fails.append(unit.name)
         cards = []
         for unit in sorted(d for d in out_dir.iterdir() if d.is_dir()):
             rows = _readme_rows(unit / "README.md")
@@ -181,10 +202,13 @@ class PlugViewMixin:
                 "<a class='chip' href='#%s'>%s</a>"
                 % (_esc(u), _esc(u[len(stem) + 1:] if u.startswith(stem + "-") else u))
                 for u in units)
+        footer = ("read-only · renderers write recipe/ and assets/; "
+                  "a person rules intake/ and ticks accepted: (QPf5 §3) · "
+                  "🔄 recompiles each unit's preview")
+        if fails:
+            footer += " · ⚠️ preview failed: " + ", ".join(fails)
         return self._plug_page(p, out_dir, "display", "🖼 Display",
-                               cards or [_GHOST_DISPLAY],
-                               "read-only · renderers write recipe/ and assets/; "
-                               "a person rules intake/ and ticks accepted: (QPf5 §3)",
+                               cards or [_GHOST_DISPLAY], footer,
                                strip=True, head=chips)
 
     # ---- POST /_board/probe ------------------------------------------

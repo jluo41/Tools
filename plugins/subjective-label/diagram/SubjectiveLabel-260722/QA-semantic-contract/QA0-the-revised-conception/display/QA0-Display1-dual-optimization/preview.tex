@@ -1,0 +1,12 @@
+% Standalone wrapper · compiles from THIS folder, walks up to no paper root.
+% `varwidth` keeps the algorithm at a readable measure instead of one long line.
+\documentclass[varwidth=15cm, border=10pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage[linesnumbered, ruled, vlined]{algorithm2e}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf}
+% `algorithm` is algorithm2e's own environment; [H] needs float, which it loads itself.
+\begin{document}
+\input{float.tex}
+\end{document}

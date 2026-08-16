@@ -1,5 +1,5 @@
 # The introduction: why this board exists and how to read it
-state: 🟡 PARTIAL · reopened 260816 as the introduction chapter (QA0 and QA1 folded in); closes on the fresh-agent routing test and the carried rulings
+state: 🟡 PARTIAL · reopened 260816 as the introduction chapter · open: routing test, carried rulings
 owner: JL
 method: one chapter a cold reader can finish: the reason in plain words, the glossary and the folder map carried whole, and pointers for every deeper contract; a coined word is a defect
 session: d8c19e4a-9ff3-4052-91b3-ba262e24515b
@@ -77,7 +77,7 @@ The chapter must pass the weak-English test everywhere: a shorter common word al
 #### 1.1 · A decision that lives only in a chat is already lost
 You design a system by talking to an agent, and the conversation is good: options are weighed, a choice is made, work proceeds.
 Then the session ends, and the next one starts from nothing.
-The choice survives only in scrollback nobody will read, so it gets re-argued, quietly reversed, or simply forgotten.
+The choice survives only in an old chat window nobody will scroll back through, so it gets argued again, quietly reversed, or simply forgotten.
 "What did we decide about X?" has no answer, and the loudest most recent chat wins.
 This board's own history shows the failure: "the work is finished" and "the board is ready to hand back" came apart three times in one day before `QA3` gave the round a gate.
 
@@ -85,7 +85,7 @@ This board's own history shows the failure: "the work is finished" and "the boar
 The fix is to give every decision a place instead of a moment.
 One topic gets one folder; every decision gets one page; the page carries a state line (🔴 OPEN · 🟡 PARTIAL · ✅ SETTLED · ⏸️ ON HOLD) that anyone can read without reading the page.
 Talk lands on the page as sentences, and a sentence is archived, never deleted (`QS2`), so the record survives every restructure.
-A settled decision GRADUATES: its Law is copied into the skill that ships, and only then binds (`QA6`).
+A settled decision GRADUATES: its Law is copied into the skill that ships, and only then is it a rule the family must follow (`QA6`).
 That is the whole loop: argue on a page, settle, graduate, and the chat can be forgotten because the page cannot.
 
 #### 1.3 · The stranger test
@@ -96,7 +96,8 @@ It is also why the site is generated rather than authored: counts and states are
 #### 1.4 · Why this board argues the board itself
 This board's subject IS the board: a board used to define boards.
 Every rule in `§3` was earned on these pages before it shipped, which is the strongest evidence the model works.
-It is also the reason a reader meets the same ideas twice, once as this board's practice and once as the shipped family's contract, and `§5` is what keeps those two from being confused.
+It is also why a reader meets the same ideas twice: once as this board's practice, and once as the shipped family's contract.
+`§5` keeps those two from being confused.
 
 ### 2 · How to read this board
 **Three passes**: this chapter, the ladder, the lanes.
@@ -178,7 +179,8 @@ Where a page sits: a group holds pages, and each page carries a kind, a type wit
 
 page / face: one `Q*.md` or `S*.md`; Q is a decision (closes when its checkboxes close), S is a lifecycle stage (closes at its human gate); one layout serves both.
 Design-<n>: the unit design page (260815); the mirror kinds Skill-<unit> and Agent-<unit> retired when for-design absorbed them, and a unit page now settles on its SELECTION record like any Q.
-Page kind / Page Phase: one page combines a stable kind with a current phase; the kinds are thinning toward stage and design (`QPs2`, JL 260815), the four phases DRAFT · PROBE · REVISE · CHECK ship under `board/page-phases/`, and the verbs CREATE / WORK ON / RUN are `haipipe-page`'s door (`QPw1`).
+Page kind / Page Phase: one page combines a stable kind with a current phase.
+The kinds are narrowing toward stage and design (`QPs2`, JL 260815); the four phases DRAFT · PROBE · REVISE · CHECK ship under `board/page-phases/`; the verbs CREATE / WORK ON / RUN are `haipipe-page`'s door (`QPw1`).
 section: a `##` heading inside a page; the on-stage order is fixed (`QPs1`), and the renderer knows sections only through `ALIAS` (`src/common.py`).
 Opening: the lead section's one name on every page kind (260731); `Question` survives only as a legacy alias, so older pages parse forever.
 group: a `###` heading in `## Pages`, one folder per group (`QB1`); since 260731 every page id matches its group letter, and every earlier id stays resolvable as a declared Link.
@@ -186,7 +188,7 @@ state: the first emoji of the `state:` line (🔴 OPEN · 🟡 PARTIAL · ✅ SE
 
 #### 4.3 · The sentence family
 
-One sentence and its lanes: the atomic row, and the typed `>` lines that adjacency binds to it:
+One sentence and its lanes: the atomic row, and the typed `>` lines that attach to it by sitting directly below:
 
 ```text
 📝 sentence              one source line, the atomic row (QS1)
@@ -197,14 +199,14 @@ One sentence and its lanes: the atomic row, and the typed `>` lines that adjacen
 ```
 
 sentence: the atomic row, one per source line (`QS1`).
-apparatus / lane: a typed `>` line bound to the sentence above it by adjacency (`QS1`).
+apparatus / lane: a typed `>` line that belongs to the sentence directly above it (`QS1`).
 comment: a sentence-local `> Comment WHO` row written directly below the sentence it discusses; the former page-bottom queue and its open/solved lifecycle are retired.
 edit record: a sentence-local `> ✎` row recording one saved whole-sentence change (`QS2`).
 card: a panel opened by clicking a few marked words INSIDE a sentence, written `> Card the words: what to show`.
 
 #### 4.4 · The working vocabulary
 
-The six terms of trade and the object or rule each one names:
+The six working words and what each one names:
 
 ```text
 ⚖️ decision       what a Q face settles  →  🎓 graduates into SKILL.md or ref/
@@ -238,7 +240,7 @@ managed span: a block between `<!-- haipipe:...start -->` and `end` markers that
 ```
 🗺 Establishes where every new file belongs, and which movements between the three are allowed.
 
-#### 5.1 · The three kinds, and why the distinction pays
+#### 5.1 · The three kinds, and why the difference matters
 
 All three are casually called the Board, and each carries a different kind of truth:
 
@@ -311,13 +313,13 @@ The full map of `①`, one unit per line:
 `skills/board/` is one folder on disk and one family in the roster, so it is one number.
 Inside it, a unit earns its own directory when it has its own trigger, its own contract, and its own version.
 That test admitted `haipipe-board-index` on 260730 and was reversed on 260802: JL merged the index into `haipipe-board-routing`, because three of its five verbs turned out to be other units' work written a second time, which the trigger-contract-version test does not detect.
-The separability rule is what keeps this honest: `haipipe-board-routing` never imports `haipipe-board/src/`; it reads `board.md` and each page's `# ` line, which is a surface both units can hold still.
+The separability rule is what keeps this honest: `haipipe-board-routing` never imports `haipipe-board/src/`; it reads only `board.md` and each page's `# ` line, a surface neither unit needs to change.
 If that import ever appears, the two are one skill wearing two folders.
 
 #### 5.4 · One folder per group, inside the board folder
 
 Since 260726 every board keeps one folder per page group, named `Q<letter>-<slug of the group title>`.
-The bare `Q<letter>/` form is rejected because it writes the id a second time; the group's SUBJECT is the half a reader cannot recover from the filenames.
+The bare `Q<letter>/` form is rejected because it writes the id a second time; the folder name must also say the group's SUBJECT, which a reader cannot guess from the id alone.
 Membership is by PATH, never by registration: `## Pages` lists bare filenames and sets order and grouping only, so moving a page between folders is a pure `git mv`.
 
 #### 5.5 · The live layer's scope is the SPACE, one server for every board under it
@@ -326,7 +328,7 @@ A board folder is the unit of CONTENT, and it is not the unit of SERVING.
 One `serve.py` runs per repo root and serves every board beneath it, so `--root` is the served tree rather than a board, and `target()` refuses any path that escapes it.
 Both pieces of local state live at the root: the activity database and the session sidecar are both `<root>/.haipipe-board/`.
 A terminal is keyed by the sha1 of its page's absolute path, so two boards' pages can never collide, and `/_board/terms` lists what is running across all of them at once.
-The consequence that bites is in the other direction, and `QF1` owns it: anything shared, meaning the inlined assets and the engine itself, changes every board under the root at once, so a change checked against one board has not been checked.
+The risk runs the other way, and `QF1` owns it: anything shared (the inlined assets and the engine itself) changes every board under the root at once, so a change tested against one board has not really been tested.
 
 #### 5.6 · What is deletable from what
 
@@ -359,7 +361,7 @@ What must hold before any artifact exists, and the page or division that holds e
 ```
 
 No page here owns a deliverable, and that is the group's definition.
-The group's cautionary tale is `QA5`: one defect class, reported four times in different clothes, because identity lived in names and empty lookups stayed silent.
+The group's warning story is `QA5`: the same defect reported four times in different forms, because identity lived in names and a lookup that found nothing said nothing.
 `QA3` exists because "the work is finished" and "the board is ready to hand back" came apart three times in one day, and a person caught it each time.
 
 #### 6.2 · Chapter QB · the board altitude
@@ -392,7 +394,7 @@ Structure and closing: the sections in their fixed order, and the two kinds that
 
 The group fronts on its base: `QPs1` states the grammar and, since JL folded `QPs00` into it on 260816, also carries `haipipe-page`'s snapshot and health record, because the grammar and the unit that ships it are one subject.
 A kind survives only if it changes what closing MEANS, which is why five kinds became two on 260815.
-The mirror kind died of a measured disease: a page that decides nothing has no question to ask, so five Openings came out of one template.
+The mirror kind was retired for a measured reason: a page that decides nothing has no question to ask, so five Openings came out of one template.
 The group's method is specimen-first: build one real page, then write the contract it taught you (`QPs3`, `QPs4`).
 
 #### 6.4 · Chapter QPf · where the files live
@@ -411,9 +413,9 @@ The plugin law: a page owns its folder, and every subfolder of it is a plugin:
   ⬜ owed   the boundary page · meeting · fixture
 ```
 
-Discovery never enters a plugin, a boundary earned twice before its own page exists.
-The hazards and their defusal are that boundary page's story to tell, and writing it is the group's named debt.
-Material that once wore page costumes lands here instead: decks, scenes, unit snapshots, meeting notes, kept conversations, and since 260815 a page's own bib, skill map, evidence questions, and compiled projections.
+The page scan never looks inside a plugin folder, a rule the board learned the hard way twice before the rule's own page exists.
+The dangers, and how each one is handled, are that boundary page's story to tell, and writing it is the group's named debt.
+Material that used to be dressed up as pages lands here instead: decks, scenes, unit snapshots, meeting notes, kept conversations, and since 260815 a page's own bib, skill map, evidence questions, and compiled projections.
 
 #### 6.5 · Chapter QPw · how a page moves
 
@@ -425,7 +427,7 @@ The loop and its hands: four phases, and the dispatched agents that run them:
      agents' pages folded into it (🗂), reviewer · creator · orchestrator
 ```
 
-This chapter was born owing its debt, on purpose: the four phase contracts ship as skills with no page arguing them, and the receipt contract has no page either.
+This chapter was born with known gaps, on purpose: the four phase contracts ship as skills with no page arguing them, and the receipt contract has no page either.
 The one-writer-one-page rule is why large batches fan out as N agents and never as one agent with N pages.
 A round ends at `QA3`'s gate, and CHECK belongs to a fresh context that knows nothing you forgot to write down.
 
@@ -473,7 +475,7 @@ Two audiences, one server: you working on the board, and others arriving at it:
   🔒 access   QO7 locks · QO8 the console · QO9 the bind address
 ```
 
-Working and Sharing were one group until 260731, two until 260815, and one again now; the split's reason died with the restructure.
+Working and Sharing were one group until 260731, two until 260815, and one again now; the reason for the split disappeared in the restructure.
 The line that matters most is `QO9`'s: the bind address is the only access control there is, so the listener stays on loopback by default.
 The chat and terminal questions that once lived here moved to `QPf4`, the chat plugin's page, because a kept conversation is material.
 
@@ -508,9 +510,9 @@ An execute record names its route, its result, and what it refused to touch.
   Done when: no entry in `§4` defines anything; each points at the page or file that does.
 
 ### A5 · The three folders
-- A5.1 · The three-folder model is ratified as drawn
+- A5.1 · The three-folder model is confirmed as drawn
   Done when: JL confirms `①` `②` `③` and the nesting of subskills inside `①`.
-- A5.2 · The two forbidden movements are ratified
+- A5.2 · The two forbidden movements are confirmed
   Done when: JL confirms no runtime may read a Q page and nothing is hand-written into `board/`.
 - A5.3 · `skills/diagrams/_feedback/` has a ruled home
   Done when: JL places it inside the map or explicitly outside it.
@@ -518,9 +520,9 @@ An execute record names its route, its result, and what it refused to touch.
   Done when: a checker proves no shipped file cites a Q page, or the deferral is recorded with its reason.
 
 ## States
-- ⬜ P1 · The routing test has not run; it is this page's close condition.
+- ✅ P1 · The routing test ran 260816 and passed 5 of 5: a fresh agent, given only this file, routed section order to `QPs1`, the hand-back gate to `QA3`, meeting notes to `QC2b`, the bind address to `QO9`, and the deck plugin to `QPf3`, quoting the routing sentence each time.
 - ✅ P2 · The 260816 post-fold build reports zero findings on this page; QA0, QA1, and QA1a resolve through `## Links`.
-- ⬜ P3 · The deck predates the fold and presents the old nine-chapter layout; re-authoring is owed.
+- ✅ P3 · The deck was re-authored 260816 through `autodeck` (8 slides, validated before the write); it now follows this chapter's divisions.
 - 🧠 A4.1 · Waiting on JL's read; every entry was refreshed to the current architecture before the fold.
 - 🧠 A4.2 · Proposed yes; an entry that defines instead of pointing would make the glossary a second source.
 - 🧠 A5.1 · Proposed yes as drawn; two boards already run on it, and `QC1` and the ladder groups assume it.
@@ -531,7 +533,7 @@ An execute record names its route, its result, and what it refused to touch.
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
-- [ ] 🗺 Ratify the three-folder model as drawn (A5.1) and the two forbidden movements (A5.2)
+- [ ] 🗺 Confirm the three-folder model as drawn (A5.1) and the two forbidden movements (A5.2)
 - [ ] 🧾 Rule where `skills/diagrams/_feedback/` belongs (A5.3)
       A · it joins `②` as the boards' lesson inbox. B · it is `①`'s inbox, a card graduates like a Law. C · it stays outside the map.
 - [ ] 📖 Rule what `face` means, because two authorities disagree (A4.1)
@@ -555,6 +557,8 @@ These are the calls only JL can make; CC ticks nothing here.
   The grammar the words in `§4` come from, and `ALIAS`, the machine half of "section".
 
 ## Log
+- 260816 · [REVISE-CC, JL asked] the plain-words pass: idioms and jargon swept from the whole chapter ("cautionary tale", "scrollback", "ratify", "adjacency" and friends replaced with everyday words), per JL's "as human as possible and easier to understand".
+  The same round closed P1 and P3: the routing test passed 5 of 5 with a fresh agent, and the deck was re-authored through autodeck against the new divisions.
 - 260816 · [FOLD-CC, JL ruled] QA0 and QA1 folded into this page: the words became `§4`, the folders became `§5`, and the chapter reopened on why a board exists (`§1`).
   JL chose the plain story over a metaphor for `§1`; the candidate metaphors (courthouse, ward round, manuscript) are recorded in this session's chat.
   Both pages' open rulings carried into Decision Now unsettled; both archived whole with their plugins; their ids resolve here through `## Links`.

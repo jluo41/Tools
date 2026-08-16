@@ -1,5 +1,5 @@
 # Chat · the GUI version, a chat box in the page
-state: 🗂 FOLDED · into QPf4-chat §4 the GUI form (JL 260815); the division carries the substance, this page keeps the full record
+state: 🗂 FOLDED · into QPf4-chat §4 the GUI form (JL 260815) · the full record stays here
 owner: CC
 method: claude_agent_sdk + serve.py's /_board/chat; three selectable permission tiers (restricted / full·ask / full·auto)
 session: 8c9903ba-dadb-4f00-bdd1-823986cac937

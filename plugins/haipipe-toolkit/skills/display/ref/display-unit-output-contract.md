@@ -135,13 +135,18 @@ silently replace what a document currently shows.
 | typeset LaTeX table (booktabs) | `haipipe-display-table` |
 | deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display-diagram` |
 | AI concept illustration | `haipipe-display-illustration` |
+| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | no skill: `recipe/<name>.tex`, hand-authored, `\input` by `float.tex` |
+
+`haipipe-display` is the DOOR over this table: a caller who knows the kind may call a renderer
+directly, and a caller who does not says what they want to the door.
 
 The two data renderers read a caller's aggregated intake only; the two concept renderers take no
 values input, though a schematic still carries real counts.
 
 ## Notes
 
-- Slides and posters consume the same bundle through `content-plan-spec.md` in this directory.
+- The poster and slides renderers retired 2026-08-16 (JL), with the `content-plan-spec.md` that
+  fed them; both are parked under `_todo/`. A board page's talk is the slide plugin's deck.
 - `haipipe-task-for-display` produces a canonical display-ready aggregate and its provenance.
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
   they are not canonical paper assets until a display unit accepts and renders them.

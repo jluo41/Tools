@@ -7,6 +7,14 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.28.0 - 2026-08-16
+
+**The `state:` line is a row, not a paragraph** (JL 260816, ruled on the design
+board's QPs1 after reading QPf9's four-clause line): after the status word, at
+most two ` · ` parts — what stands, then `open:` with a short list or a count —
+and the whole line under 110 characters. `check.py` gained a `state-line-long`
+warning; `ref/page-template.md` carries the same rule beside the title contract.
+
 ## 0.27.0 - 2026-08-15
 
 **RUN moved out to `page-workflows/haipipe-page-workflow`** (JL 260815, ruled in

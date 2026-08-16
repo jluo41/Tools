@@ -5,6 +5,34 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.137.0 - 2026-08-16
+
+- ↕ A BOTTOM PANEL CAN BE RESIZED (JL 260816: "我好像没有办法按照上下的幅度去
+  change 这个 workflow split size"). The shell's columns each got a hairline
+  grabber the day the split shipped; the bottom panels never did, so both
+  opened at a fixed 58vh — too tall for a four-row index, too short for a long
+  run trail. `07-panel-resize.js` gives one top-edge grip to both `#wfpanel`
+  and `#pfpanel`, drag to size, height persisted per panel id the way the
+  column widths already are, double-click to reset. One owner, both panels: a
+  second copy of drag-and-persist is how the two would drift.
+
+- 📄 Page phases PANEL: the 🪜 Workflow menu's second member arrives, the one
+  the registry reserved the seat for. `65-plugin-pageflow.js` shows the
+  DRAFT/PROBE/REVISE/CHECK loop with the INDEX on the LEFT and content on the
+  RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开" — the first cut
+  put each phase's job sentence inside its strip cell and scrolled off the
+  screen): the index holds ①–④ phase names only, marks ▲ here / · next, and a
+  ×n visit count; the right column holds the selected phase's job + contract
+  and the run record. Reads ONLY the RUN receipts under `_runs/page/` through
+  the new `GET /_board/pageruns` (`live/pageruns.py`, matched by the receipt's
+  own `page` field, never the folder name). No receipts is an answer, not an
+  error: the panel states the run contract's entry rule (existing page →
+  CHECK, new page → DRAFT). NO locks — the loop has none. v1 is read-only; its
+  one action is the labeling stepper's smallest — the
+  `/haipipe-page-workflow run …` command shown and copyable, never executed.
+  `#pfpanel` wears the same wf-* frame as `#wfpanel`; the two bottom panels
+  close each other (one bottom, one occupant). Tests: `test_pageruns.py`.
+
 ## 0.135.0 - 2026-08-16
 
 - 🛠 Skill FLATTENED to a ranked list (JL: "maybe we don't need to have

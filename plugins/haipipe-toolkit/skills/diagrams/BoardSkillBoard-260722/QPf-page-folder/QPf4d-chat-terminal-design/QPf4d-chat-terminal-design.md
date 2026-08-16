@@ -1,6 +1,6 @@
 # Chat · the terminal's form on the device holding it
 
-state: 🗂 FOLDED · into QPf4-chat §6 the form per device (JL 260815); the division carries the substance, this page keeps the full record
+state: 🗂 FOLDED · into QPf4-chat §6 the form per device (JL 260815) · the full record stays here
 owner: JL
 method: design the terminal's FORM against a device's four constraints: how many columns it has, how a keystroke arrives, what a pointer can do, and whether the page is allowed to stay awake
 session: 63917036-5db1-4fb5-9d55-a1edfc554596

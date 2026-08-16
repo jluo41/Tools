@@ -1,0 +1,123 @@
+% GENERATED from QG1-for-labeling.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{Step ① init}
+\textbf{🟡 PART}: four of the five units ran on 260808; the fifth is a capability that has not shipped, and \texttt{QF1 §3.2} says to say so rather than fabricate it.
+
+\begin{verbatim}
+needs      a corpus that resolves, and a human authority named
+produces   project dir . config.yaml . corpus manifest . .state.json
+           . the seal reserved BEFORE any embedding
+           . the random round 1 batch
+state       PART . runs/acibench-authority/ exists
+ran        corpus validated . seal reserved . dev table built . B_1 frozen
+missing    embeddings . torch, sentence-transformers, faiss are not installed
+next       the round-1 Human-AI Session, which needs no index
+\end{verbatim}
+The corpus was validated at 5,896 turns with unique ids and no empty text, sha256 \texttt{cb30a6140b95b1fe}, and 4,683 of them are eligible. The seal was reserved first: 1,213 ids written to \texttt{test/sealed/manifest.protected.jsonl} at mode \texttt{400} inside a \texttt{700} directory, with an access log opened, and the development table then built with every sealed row carrying \texttt{text: null}. \texttt{B\_1} is 60 items drawn by \texttt{random.Random(42)} from the eligible pool at inclusion probability \texttt{0.012812}, containing no sealed row and none of the five seed cases. What refused is \texttt{--embed bge-m3}: the environment has none of \texttt{torch}, \texttt{sentence\_transformers}, or \texttt{faiss}, so \texttt{cache/embeddings/} holds a \texttt{HOLD.md} and no vector, and the honest consequence is that round 2 cannot start rather than that round 1 cannot.
+
+\texttt{QC1 §3.2} and the embedder's own contract both exclude sealed ids from development embedding, indexing, deduplication and retrieval. Embedding the whole corpus first and filtering afterwards leaves the sealed items inside the index, where retrieval will surface them into a candidate pool with nothing raising an error. Because the exclusion is a field test, \texttt{split != test3}, a manifest can be checked for leakage after the fact; a promise could not be.
+
+
+\section{Step ② round}
+\textbf{🟢 ready}: this is the only step a person actually works inside, and it is resumable across all four of its phases.
+
+\begin{verbatim}
+needs      step (1) done, and a closed policy for round 2 onward
+produces   the policy G_t, the human gold, and one checkpoint
+state       ready for round 1 .  locked for round 2 by the embedding HOLD
+\end{verbatim}
+\begin{verbatim}
+  2.1 candidate   C_t   round 1 skips this: QB1 requires a random draw
+  2.2 prelabel    P_t   round 1 skips this: there is no policy to pre-label with
+  2.3 session     B_t    THE ONLY THING THE PERSON DOES . 60 items, frozen, waiting
+  2.4 checkpoint        closes G_t and makes it available to the next round
+\end{verbatim}
+\texttt{QB1} requires round 1 to be a random draw, so no candidate pool is generated and no embedding is needed to start. There is also no closed policy, so there is nothing for a weak executor to pre-label and nothing to seal. Round 1 is therefore a session and a checkpoint, which is the whole reason the embedding HOLD does not block starting work. Later rounds run all four phases, and only then does step (1) need to have produced an index. This stopped being a hypothetical on 260808: the embedding unit refused, round 1 was frozen anyway, and the claim that the first round is cheap enough to start without an index is now a thing that happened rather than a thing the page asserts.
+
+In the session the person is shown items one at a time and gives a class, a region, an uncertainty and a reason. A machine may show, order, and record; it may not decide, and a proposed class is never gold until the session confirms it. The reasons are what become boundary rules, so a session that collects classes and discards reasons has produced labels and no policy.
+
+Rounds are strictly ordered, so round 4 cannot be approved while round 3 is refused, and they fail the per-unit test that decides what earns a page or a heading. Each closed round therefore adds a four-line record here, newest first, and moves no heading:
+
+\begin{verbatim}
+ 0 rounds closed . 0 items in cumulative gold . no policy is open
+
+(this is where the first record lands)
+**Round 1** . closed <date> . no prior policy . 60 items
+   challenge  not applicable, there was no policy to challenge
+   audit      not applicable, there were no predictions to audit
+   diff       first guideline written
+   coverage   which of the seven regions were seen at all
+\end{verbatim}
+Once round 1 closes, the classes and boundary rules for the target belong here, in the words the person used. Until then the honest content is the proposal below, which no round has confirmed.
+
+\begin{verbatim}
+ G_0 . PROPOSED, not closed . target: authority appeal
+    HIGH   the turn offers the speaker's own standing as the reason to accept
+    LOW    adjacent but not it: an instruction, or a reason that is not standing
+    NONE   the turn does no persuasive work at all
+\end{verbatim}
+Real turns, verbatim, proposed by CC and confirmed by nobody:
+
+\begin{verbatim}
+H   D2N023  "the biggest issue I'VE SEEN ... your peaks are getting greater than 1,500"
+HL  D2N069  "after MY EXAM ... on the x-ray and your exam ... MY RECOMMENDATION would be"
+L   D2N006  "i want you to continue on the omeprazole , 40 milligrams , once a day"
+N   D2N001  "hi , martha . how are you ?"
+\end{verbatim}
+\texttt{D2N069} is the one a person has to rule, and both readings are defensible, which is what makes it an HL item rather than a hard one.
+
+
+\section{Step ③ gates}
+\textbf{🔒 locked by (2)}: four conditions, all conjunctive, and the signoff is a person's.
+
+\begin{verbatim}
+needs      at least two closed checkpoints
+produces   a stop-or-continue decision, and the freeze authorization
+state       locked . no round has closed
+
+ quality     comparable audit stratum clears its floor        [ ]
+ stability   two consecutive checkpoints hold that floor      [ ]
+ coverage    every thin region carries a disposition          [ ]
+ risk        the routed fraction is small enough to work      [ ]
+\end{verbatim}
+\texttt{QD4} makes the four conditions conjunctive and gives the signoff to a person, so the step's product is a decision rather than a measurement. The stability gate is the one that usually blocks, because a single good round proves nothing and a second is the only thing that can tell a level from a lucky batch. The coverage gate is the one that waits on a person, because narrowing a target is a semantic act no default may take.
+
+
+\section{Step ④ evaluate}
+\textbf{🔒 locked by (3)}: the seal opens here and nowhere earlier.
+
+\begin{verbatim}
+needs      a QD4 stop AND a frozen G*
+produces   late human gold on T*, and one scorecard per candidate executor
+state       locked . nothing is frozen
+
+ G*   not frozen
+ T*   split == test3 . 1,213 turns . sealed and unread
+ S*   no executor scored
+\end{verbatim}
+Every row above says what has not happened, and a missing heading could not say that. When the gates pass, these three rows are replaced by the frozen version id, the labeled test, and one row per scored executor.
+
+
+\section{Step ⑤ complete}
+\textbf{🔒 locked by (4)}: the last door, and the only one that touches the whole corpus.
+
+\begin{verbatim}
+needs      an eligible production policy and a selected executor
+produces   D* . the risk queue . the final audit
+state       locked . no policy is eligible
+
+ D*            [ ]  4,683 development turns wait
+ risk queue    [ ]
+ final audit   [ ]
+\end{verbatim}
+
+\section{The specimen's own test}
+\textbf{Does the shape work}: the one thing this page cannot answer about itself.
+
+\begin{verbatim}
+ does a cold reader name the next action unprompted?    only JL can say
+ does any step render as done that has not run?         [x] no
+\end{verbatim}
+The claim this page makes is that a stepper Content lets a person see where to start. The author of a stepper always knows where to start, so reading it back proves nothing. The test is a person new to the project opening the page and naming the next action without being told, which is \texttt{A6.1} and is why it waits on JL rather than on work.
+

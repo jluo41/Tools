@@ -3,7 +3,7 @@ name: haipipe-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary DRAFT, PROBE, REVISE, CHECK. Page Type variants live under page-types/; the workflow lives under page-workflows/, whose head skill haipipe-page-workflow owns RUN. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN hands off to haipipe-page-workflow, which drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, page contract, page grammar, page sections, Page Type, Page Phase, draft probe revise check, rewrite Opening, section evaluation, quality check, which section, base page, /haipipe-page.
 metadata:
-  version: "0.27.0"
+  version: "0.28.0"
   last_updated: "2026-08-15"
   summary: "RUN moved out to page-workflows/haipipe-page-workflow, the workflow's nameable head; this skill keeps CREATE, WORK ON, and the page contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -328,6 +328,8 @@ Verify on the artifact a reader opens, because source-is-correct is not page-is-
 The page's own source is what keeps a rewritten Opening from promising something the rest of the page does not establish.
 
 The title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801, ruled on the design board's QB4 §8). Capitalize the first word and proper nouns and nothing else; a defined term keeps its capitals. A colon may carry a short subtitle, and that is usually where the purpose lands: `The page template: one grammar every page kind obeys` rather than `Page Template design`, which mixes two cases and names only a topic. On the Index the title is the only line a reader gets before choosing, so a title naming its subject alone makes them open the page to learn what the page was for. Sentence case is a string test a checker can own; whether the title states a purpose is a judgment and belongs to the Evaluation contract below.
+
+The `state:` line is a row, not a paragraph (JL 260816, ruled on the design board's QPs1). After the status word come at most two ` · ` parts: what stands, then `open:` with a short list or a count. Keep the whole line under 110 characters; `check.py` warns past that. A part that could end in a period is prose: the facts belong in States and the reason in Log, so the line only points. Good: `🟡 PARTIAL · ruled, card grammar adopted · open: landing address, citation hop, tab`.
 
 An Opening keeps one fixed physical shape: one real question paragraph, then one plain rationale paragraph.
 

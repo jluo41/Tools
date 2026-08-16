@@ -2,7 +2,7 @@
    The strip scrolls sideways rather than wrapping, because a lifecycle that wraps
    stops reading as an order. Colours come from the board's own tokens. */
 
-#wfpanel {
+#wfpanel, #pfpanel {
   position: fixed; right: 0; bottom: 0; left: 0; z-index: 60;
   max-height: 58vh; overflow: auto;
   background: var(--bg, #fff);
@@ -10,58 +10,75 @@
   box-shadow: 0 -8px 28px rgba(0, 0, 0, .13);
   padding: 14px 18px 20px;
 }
-#wfpanel[hidden] { display: none; }
+#wfpanel[hidden], #pfpanel[hidden] { display: none; }
 
-#wfpanel .wf-x {
+#wfpanel .wf-x, #pfpanel .wf-x {
   position: absolute; top: 8px; right: 10px;
   border: 1px solid var(--line, #d8d8d8); border-radius: 6px;
   background: var(--bg, #fff); cursor: pointer;
   width: 26px; height: 26px; line-height: 1; font-size: 13px;
 }
 
+/* ↕ the top-edge grip (07-panel-resize.js). A HAIRLINE, not a bar: the 7px is the
+   grab area a drag needs; what the eye sees is the panel's own border until the
+   pointer is on it, the same language the shell's column grabbers speak. */
+#wfpanel .wf-grip, #pfpanel .wf-grip {
+  position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  cursor: row-resize; touch-action: none; z-index: 4;
+}
+#wfpanel .wf-grip:hover, #pfpanel .wf-grip:hover,
+#wfpanel .wf-grip.on, #pfpanel .wf-grip.on {
+  box-shadow: inset 0 2px 0 var(--accent, #2f6fd0);
+}
+
 .wf-head { font-size: 13px; margin: 0 0 10px; }
 .wf-head .mut { opacity: .6; font-weight: 400; }
 
-/* one row, sideways-scrolling: the order is the message */
-.wf-strip {
-  display: flex; align-items: center; gap: 3px;
-  overflow-x: auto; padding: 0 0 8px;
+/* 🪜 THE WORKFLOW LAYOUT · INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在
+   最左边，放在最左边的 index…跟具体的内容分开"). SHARED BY BOTH MEMBERS of the 🪜
+   menu — 🏷 Labeling's ladder and 📄 Page phases' loop — because the ruling is about
+   what a workflow surface IS, not about one of them.
+
+   WHAT IT REPLACED, IN BOTH. A horizontal strip, one cell per step, each cell
+   carrying its own state sentence and count. Five cells were five sentences: the
+   strip scrolled sideways off the screen and the order it was supposed to show was
+   the first thing lost. The index holds step NAMES only; the state sentence, the
+   rows, the contract and the run record live in the right column, so no cell can
+   ever grow a sentence again. */
+.wf-cols { display: flex; gap: 18px; align-items: flex-start; }
+.wf-index {
+  flex: 0 0 auto; min-width: 150px;
+  display: flex; flex-direction: column; gap: 5px;
+  border-right: 1px solid var(--line, #d8d8d8); padding-right: 14px;
 }
-.wf-arrow { align-self: center; opacity: .35; font-size: 18px; }
-
-.wf-step {
-  flex: 0 0 auto; min-width: 0; max-width: none;
-  display: flex; align-items: baseline; gap: 7px;
-  text-align: left; cursor: pointer;
-  padding: 5px 10px;
-  border: 1px solid var(--line, #d8d8d8); border-radius: 7px;
-  background: var(--bg, #fff); font: inherit; white-space: nowrap;
+.wf-ix {
+  display: flex; align-items: baseline; gap: 6px; text-align: left;
+  font: inherit; font-size: 12.5px; white-space: nowrap;
+  padding: 5px 9px; cursor: pointer;
+  border: 1px solid transparent; border-radius: 7px;
+  background: none;
 }
-.wf-step .wf-n { display: none; }          /* the order is the strip itself */
-.wf-step:hover { border-color: #9aa0a6; }
-
-.wf-step .wf-t { font-size: 12.5px; font-weight: 600; line-height: 1.2; }
-.wf-step .wf-s { font-size: 11px; opacity: .7; }
-.wf-step .wf-c { font-size: 10px; opacity: .5; }
-.wf-step.unknown { border-style: dashed; }
-
-.wf-step.done  { background: color-mix(in srgb, #29a745 9%, transparent); }
-.wf-step.live  { border-color: #2f6fd0; border-width: 2px; padding: 4px 9px; }
-.wf-step.live .wf-here {
+.wf-ix:hover { border-color: var(--line, #d8d8d8); }
+.wf-ix.sel { border-color: var(--line, #d8d8d8); background: var(--bg, #fff); }
+.wf-ix.live { border-color: #2f6fd0; }
+.wf-ix.done { background: color-mix(in srgb, #29a745 9%, transparent); }
+.wf-ix.unknown { border-style: dashed; border-color: var(--line, #d8d8d8); }
+/* locked is COMPUTED (an earlier step is not ✅), never a stored state.
+   LOCKED MEANS "cannot be RUN", NOT "cannot be READ": the row still selects and
+   still shows its own rows on the right, which is the most useful thing a locked
+   step offers. Dimming carries "not yet yours to run" on its own. */
+.wf-ix.locked { opacity: .45; }
+.wf-ix.locked:hover, .wf-ix.locked.sel { opacity: .85; }
+.wf-ix .wf-ixn { opacity: .45; font-size: 11px; }
+.wf-ix .wf-ixc { opacity: .5; font-size: 10.5px; }
+.wf-ix .wf-ixmark {
+  margin-left: auto; padding-left: 10px;
   font-size: 10px; color: #2f6fd0; font-weight: 700; letter-spacing: .04em;
 }
-/* locked is COMPUTED (an earlier step is not ✅), never a stored state.
-   LOCKED MEANS "cannot be RUN", NOT "cannot be READ". The card still jumps to its
-   Content division, so it keeps a pointer: `cursor: default` said the click did
-   nothing while the click was in fact the most useful thing a locked step offers
-   (260808). Dimming already carries "not yet yours to run". */
-.wf-step.locked { opacity: .45; }
-.wf-step.locked:hover { opacity: .75; border-color: var(--line, #d8d8d8); }
-.wf-step .wf-lock { font-size: 11px; }
+.wf-ixnote { font-size: 10.5px; opacity: .5; padding: 4px 9px 0; white-space: nowrap; }
+.wf-main { flex: 1 1 auto; min-width: 0; }
 
-.wf-detail {
-  border-top: 1px dashed var(--line, #d8d8d8); padding-top: 10px; margin-top: 2px;
-}
+.wf-detail { margin-top: 0; }
 .wf-dh { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .wf-rows { margin: 0 0 8px; padding-left: 0; list-style: none; }
 .wf-rows li { font-size: 12.5px; line-height: 1.5; margin: 0 0 3px; }
@@ -70,8 +87,21 @@
 .wf-empty { font-size: 13px; opacity: .75; }
 
 @media (max-width: 620px) {
-  #wfpanel { max-height: 72vh; padding: 12px 12px 16px; }
-  .wf-step { min-width: 132px; }
+  #wfpanel, #pfpanel { max-height: 72vh; padding: 12px 12px 16px; }
+}
+
+/* 📄 Page phases · what only the LOOP member needs. */
+.pf-run {
+  border-top: 1px dashed var(--line, #d8d8d8);
+  padding-top: 10px; margin-top: 10px;
+}
+@media (max-width: 620px) {
+  .wf-cols { flex-direction: column; gap: 10px; }
+  .wf-index { flex-direction: row; flex-wrap: wrap; border-right: 0;
+              border-bottom: 1px solid var(--line, #d8d8d8);
+              padding: 0 0 8px; min-width: 0; }
+  .wf-ix .wf-ixmark { margin-left: 6px; padding-left: 0; }
+  .wf-ixnote { display: none; }
 }
 
 /* 🗂 FOLDED (JL 260807): the page stays real, linkable and unchanged; it only
@@ -107,7 +137,7 @@ li.folded, tr.folded { font-size: .92em; }
 .wf-human { font-size: 12.5px; opacity: .8; }
 
 /* the way out must be unmissable: a labelled button, above everything in the panel */
-#wfpanel .wf-x { width:auto; padding:3px 10px; font-size:12px; z-index:5;
+#wfpanel .wf-x, #pfpanel .wf-x { width:auto; padding:3px 10px; font-size:12px; z-index:5;
                  background:#fff; color:#1e1e1e; }
 
 /* the options a door takes, asked before it runs */
