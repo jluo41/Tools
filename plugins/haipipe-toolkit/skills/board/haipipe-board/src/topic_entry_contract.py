@@ -40,7 +40,7 @@ DISPLAY_POINTER = re.compile(
 # the twin law reads off the filesystem rather than only out of this contract;
 # `probes` is the pre-rename name and stays readable while each paper migrates.
 # Both are globbed; new work writes the first.
-PROBE_DIRS = ("QA-probe", "probes")
+EVIDENCE_DIRS = ("QA-probe", "probes")
 
 
 def page_id(path: Path) -> str:
@@ -177,9 +177,9 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
 
     entries: dict[Path, None] = {}
     for path in pages.values():
-        if set(PROBE_DIRS) & set(path.relative_to(board_dir).parts):
+        if set(EVIDENCE_DIRS) & set(path.relative_to(board_dir).parts):
             entries[path] = None
-    found = [p for d in PROBE_DIRS for p in board_dir.rglob(f"{d}/*/*.md")]
+    found = [p for d in EVIDENCE_DIRS for p in board_dir.rglob(f"{d}/*/*.md")]
     for path in sorted(found):
         parts = path.relative_to(board_dir).parts
         if any(s.startswith(("_", ".")) for s in parts[:-1]):
@@ -239,7 +239,7 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
                        f"a QA-probe belongs to exactly one `### E<n>` division of "
                        f"{topic_id}; {len(owners)} division(s) point at it")
 
-        # A topic page may opt into the paired PROBE -> DISPLAY workflow with
+        # A topic page may opt into the paired EVIDENCE -> DISPLAY workflow with
         # `display: companion` in its metadata head.  New Value and Literature
         # pages do this.  Old pages remain readable while they migrate.
         if head_key(topic_text, "display") == "companion":

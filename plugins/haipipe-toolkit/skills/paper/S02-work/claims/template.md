@@ -47,7 +47,7 @@ Q-consumer
      `- P<n> · Q-Claim-<n>` Aim record there, with Done when / Description / Reason / Probe / Answer.
      · ANSWERABLE + SPECIFIC — each question is a CONCRETE check a task/discovery can answer with a definite result. Decompose a big claim into SEVERAL such small questions, each a different angle (fit, eval, robustness, placebo, IV, external, …); name the angle in the title, e.g. "· physician-clustered SE (eval)". NEVER a broad, ambiguous question like "is the effect real?".
      · M:N — a claim is settled by several questions, and a question may settle several claims. Cite each question in the `Evidence:` line of EVERY claim it bears on (forward link); `Reason` names which `C<n>`(s) it settles — possibly more than one (back link). If one question needs another's answer first, say so in its `Reason`.
-     · Description = the specific thing it checks. Reason = which `C<n>`(s) it settles + why it matters. Answer = empty in DRAFT; PROBE fills it with the verdict + `[source: PP<nn>]`.
+     · Description = the specific thing it checks. Reason = which `C<n>`(s) it settles + why it matters. Answer = empty in DRAFT; EVIDENCE fills it with the verdict + `[source: PP<nn>]`.
      · Route (task/discovery) + approver are decided at APPROVE, into the probe file — not here. At REVISE each Answer feeds the status of every claim it settles. -->
 
 - P<n> · Q-Claim-<n> · <question title — name the angle, e.g. main coefficient (fit)>
@@ -55,7 +55,7 @@ Q-consumer
   **Description:** <the specific, answerable check — one sentence per line>
   **Reason:** <which `C<n>`(s) it settles, and why it matters if unanswered>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT — PROBE fills it: the verdict + [source: PP<nn>]>
+  **Answer:** <empty in DRAFT — EVIDENCE fills it: the verdict + [source: PP<nn>]>
 
 <!-- second worked example, showing M:N — one question settling TWO claims. Numbering is
      sequential in the real file; the gap here is only to show the ids are independent. -->
@@ -65,4 +65,4 @@ Q-consumer
   **Description:** <the specific check.>
   **Reason:** <settles C2 and C3 — a shared angle bearing on two claims.>
   **Probe:** not opened yet
-  **Answer:** <filled at PROBE.>
+  **Answer:** <filled at EVIDENCE.>

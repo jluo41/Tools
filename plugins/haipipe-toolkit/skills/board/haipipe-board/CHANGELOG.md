@@ -1,9 +1,54 @@
+
+## Unreleased — 2026-08-16
+
+The page lifecycle's phase token and the first check on built page artifacts.
+
+- `src/page_lifecycle.py`: `PHASES`/`LEGAL_ROUTES` speak EVIDENCE; `phase_token()`
+  normalizes the retired `PROBE` on every phase and route read, including
+  `traversed_edges`, so receipts written before the rename audit identically.
+- `src/page_context.py`: `Related Board Pages` rows parse `EVIDENCE` and `PROBE`
+  and both resolve to the same phase.
+- `assets/js/10-drawer/65-plugin-pageflow.js`: the stepper's second door is
+  EVIDENCE, every phase read goes through `phaseId()`, and each door's job line
+  now says what that phase DELIVERS.
+- NEW `src/page_evidence.py`, wired into `cli/check.py`'s per-page pass: reports
+  the gap between what a page promised and what it built. Seven findings across
+  two independent axes plus `display-declared-no-claim`: VISIBILITY (declared-not-rendered, cited-not-embedded,
+  rendered-not-cited) and PROVENANCE (intake-unfrozen, accept-stale), plus
+  latex-untitled and projection-stale. Driving it against the two live CMS
+  boards is what separated the axes and what taught it the second legal
+  citation form (`<stem>-DisplayN`), which the first draft called uncited.
+  Written from the QV2-lbp-regression-results failure, which passed every
+  existing check while shipping three of five tables to nobody.
+- The unit README parser reads all FOUR dialects on disk (`- claim:`,
+  `claim:`, `**Claim**:`, `- **Kind:**`) and aliases `Reader job`/`Evidence` to
+  the contract's `caption-job`/`intake`. Reading only the bullet form called 25
+  correctly-documented units litter and hid every `accepted:` tick, one of which
+  is genuinely stale. ⚠️ `live/plugview.py:122 _readme_rows` still has the
+  bullet-only rule, so the 🖼 tab shows those units with no claim, kind, or
+  acceptance state; left alone because that file is another session's open work,
+  and the two should share one parser.
+- NEW `tests/test_page_evidence.py` (18 cases) reproduces that failure as a
+  fixture; `tests/test_page_lifecycle.py` gains EVIDENCE coverage and an
+  alias-equivalence case. 204 pass.
+
 haipipe-board — Changelog
 =========================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
+
+## 0.140.1 - 2026-08-17
+
+- Updated the cross-family Page Type roster to sixteen variants across six
+  owners: Task adds Insight; Application adds Brief, Intervention, and Artifact.
+- Recorded the global-key rule behind the names: Application does not reuse
+  Paper Opening or Board Design.
+- Extended `cli/check.py`'s executable Page Type registry with the previously
+  omitted Paper `venue` plus `insight`, `brief`, `intervention`, and `artifact`,
+  so declared Pages resolve through step ③ instead of silently falling back to
+  filename inference.
 
 ## 0.140.0 - 2026-08-16
 
@@ -41,6 +86,15 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   readout — every heartbeat returned the stats and the panel drew them — so
   the display was given a request of its own, one POST on load and one on
   `board:updated`.
+
+## 0.139.2 - 2026-08-17
+
+- Corrected the live Page Type roster to twelve variants across five owning
+  skill sets: Board 4, Paper 5, Task 1, Subjective Label 1, and View 1.
+- Added Paper Opening and the previously omitted Task type; removed the retired
+  Paper display, literature, value, and per-family dash types from the roster.
+- `cli/check.py` now recognizes `page-type: opening` and `page-type: task` rather
+  than warning that those live contracts are unknown.
 
 ## 0.139.1 - 2026-08-16
 

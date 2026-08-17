@@ -58,7 +58,8 @@ body { font-family: "Times New Roman", Times, serif; font-size: 12pt;
 .page { }
 p { margin: 0 0 0 0; text-indent: 0; }
 h1, h2, h3 { font-size: 12pt; font-weight: bold; line-height: 2.0;
-             margin: 1.5em 0 0 0; }
+             margin: 1.5em 0 0 0;
+             break-after: avoid; page-break-after: avoid; }
 h1 { text-transform: uppercase; text-align: center; }
 h2 { text-align: center; }
 h3 { text-align: left; }

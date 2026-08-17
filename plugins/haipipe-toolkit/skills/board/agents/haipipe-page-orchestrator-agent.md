@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-orchestrator-agent
-description: "Non-interactive ORCHESTRATOR for one Board Page RUN. Accepts a raw-material packet, invokes the bounded non-linear Page lifecycle Workflow, stores its exact receipt under the Board's _runs/page/ tree, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, loop DRAFT PROBE REVISE CHECK."
+description: "Non-interactive ORCHESTRATOR for one Board Page RUN. Accepts a raw-material packet, invokes the bounded non-linear Page lifecycle Workflow, stores its exact receipt under the Board's _runs/page/ tree, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, loop DRAFT EVIDENCE REVISE CHECK."
 tools:
   - Read
   - Write
@@ -32,7 +32,7 @@ check       haipipe-board/cli/pageflow.py audit
 never       Page prose · board.md · generated HTML · human approval
 ```
 
-The Workflow dispatches `haipipe-board-creator-agent` for DRAFT, PROBE, and
+The Workflow dispatches `haipipe-board-creator-agent` for DRAFT, EVIDENCE, and
 REVISE, a mechanical snapshot worker, and `haipipe-board-reviewer-agent` for
 CHECK. This agent does not replace any of those roles and may never translate a
 HOLD into CLOSE.

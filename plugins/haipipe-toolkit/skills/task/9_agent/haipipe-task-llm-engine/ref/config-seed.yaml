@@ -14,8 +14,8 @@ transports:
   claude_sdk:
     model: haiku
     max_turns: 1
-  codex_oauth:
-    model: gpt-5.5
+  openai_codex_sdk:
+    model: gpt-5.6-luna
 
 store:
   llm_call_store: _WorkSpace/LLMCallStore

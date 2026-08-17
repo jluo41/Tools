@@ -15,7 +15,7 @@ Skill: haipipe-application-check (CHECK phase worker)
 
 CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-check/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-check/SKILL.md`.
 The generic contract owns judgment and phase routing.
 This file adds the application's deterministic checks, comment surface, and Gate Ledger.
 
@@ -52,11 +52,11 @@ A mechanical ❌/FAIL is not a judgment call: no persona preset, no `--unattende
 Locating the probe-file checker
 ================================
 
-Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-probe/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
+Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-evidence/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
 
 ```sh
 CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4  \
-        -path "*haipipe-application-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
+        -path "*haipipe-application-evidence*" -name check-probe-cards.sh 2>/dev/null | head -1)
 [ -n "$CHK" ] || { echo "FAIL: application probe-file checker not found"; exit 1; }
 
 sh "$CHK" <intervention_root>    # whole-pool section pass
@@ -72,7 +72,7 @@ Every flagged item that lives in a 0-lifecycle stage doc (0-seed.md, 1a-descript
 
 0-artifacts/*.md are NEVER annotated: the artifact IS the deliverable text (unlike paper's .tex, where % comments never render), so a seeded comment would ship. Artifact-level findings go into the Gate Ledger notes column instead, quoted with file:line so they stay actionable (R2c RULED, JL 2026-07-07).
 
-The human replies `> USER:` under each thread. On revise, the restarted phase (DRAFT/PROBE/REVISE) reads the stage-doc `> CHECK:` threads + their `> USER:` replies and responds to each -- an unanswered `> CHECK:` comment is surfaced back, never silently dropped. Resolved threads archive to the stage `_LOG`.
+The human replies `> USER:` under each thread. On revise, the restarted phase (DRAFT/EVIDENCE/REVISE) reads the stage-doc `> CHECK:` threads + their `> USER:` replies and responds to each -- an unanswered `> CHECK:` comment is surfaced back, never silently dropped. Resolved threads archive to the stage `_LOG`.
 
 Gate Ledger (STATUS.md)
 ========================

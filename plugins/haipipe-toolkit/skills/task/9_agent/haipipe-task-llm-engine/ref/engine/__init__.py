@@ -4,7 +4,7 @@ LLM Engine -- unified LLM call runtime with OAuth-first transport selection.
 Transports:
   claude_sdk    OAuth via ~/.claude (free under subscription)
   claude_api    ANTHROPIC_API_KEY (metered)
-  codex_oauth   OAuth via ~/.codex/auth.json (free under ChatGPT subscription)
+  openai_codex_sdk  OAuth via ~/.codex/auth.json
 
 Usage:
   from llm_engine import llm_call, batch_call, LLMResult
@@ -18,6 +18,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -60,7 +61,7 @@ async def llm_call(
         system_prompt: system message
         user_message: user message
         model: model string (see router.py for conventions)
-        transport: "auto" | "claude_sdk" | "claude_api" | "codex_oauth"
+        transport: "auto" | "claude_sdk" | "claude_api" | "openai_codex_sdk"
         store_path: if set, write input/response/meta.json here
         sdk_session_dir: where Claude SDK writes .jsonl sessions
         **kwargs: passed to the transport (e.g. max_tokens, timeout, api_key)
@@ -73,16 +74,27 @@ async def llm_call(
         except FileNotFoundError:
             sdk_session_dir = "/tmp"
 
+    isolated_sdk_home = (
+        Path(sdk_session_dir)
+        / re.sub(r"[^A-Za-z0-9._+-]+", "-", transport_name)
+        / re.sub(r"[^A-Za-z0-9._+-]+", "-", resolved_model)
+    )
+
     if transport_name == "claude_sdk":
         from .transports.claude_sdk import call
         result = await call(system_prompt, user_message, resolved_model,
-                            sdk_session_dir=sdk_session_dir)
+                            sdk_session_dir=isolated_sdk_home)
     elif transport_name == "claude_api":
         from .transports.claude_api import call
         result = await call(system_prompt, user_message, resolved_model, **kwargs)
-    elif transport_name == "codex_oauth":
-        from .transports.codex_oauth import call
-        result = await call(system_prompt, user_message, resolved_model)
+    elif transport_name == "openai_codex_sdk":
+        from .transports.codex_sdk import call
+        result = await call(
+            system_prompt,
+            user_message,
+            resolved_model,
+            sdk_session_dir=isolated_sdk_home,
+        )
     else:
         result = LLMResult(
             transport=transport_name, model=resolved_model,

@@ -171,7 +171,7 @@ Pre-ladder interventions (scaffolded before 2026-07-09) show `0-lifecycle/1-clai
 1. rename 0-lifecycle/1-claims/ -> 0-lifecycle/1c-claims/
    (inside: 1-claims.md -> 1c-claims.md, _LOG_1-claims.md -> _LOG_1c-claims.md)
 2. scaffold the missing rungs 1a-descriptions/ 1b-themes/ 1d-advice/
-3. migrate any legacy per-stage `_PROBE/` cards into the flat pool `1-probes/`
+3. migrate any legacy per-stage `_EVIDENCE/` cards into the flat pool `1-probes/`
    in the new section shape; a section's `serves:` sets its rung affinity
    (data-profile questions serve 1a-descriptions, settling D ids; claim
    questions serve 1c-claims) -- the path no longer carries the stage

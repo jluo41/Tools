@@ -66,7 +66,7 @@ DPRC composition pass
 
 ```
 COMPOSE (draft)   fill the template/assembly from lifecycle inputs
-PROBE             trace every number to its task-result/card anchor; flag what does not
+EVIDENCE             trace every number to its task-result/card anchor; flag what does not
 REVISE            style-profile + audience pass (length limits, tone, reading level)
                   via the shared revise worker's rules
 CHECK             run the venue self-review checklist; then hand to

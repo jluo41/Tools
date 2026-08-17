@@ -1,117 +1,100 @@
 ---
 name: haipipe-task-llm-engine
-description: "Owns code/haiutils/llm_engine/ -- the unified LLM call runtime for agent task-folders. Two OAuth transports (Claude Agent SDK + Codex OAuth) with API-key fallback. On trigger: CHECK the deployed code exists, CREATE from ref/engine/ if missing, EVALUATE if present, UPDATE if stale."
-trigger: llm engine, llm call, llm transport, oauth engine, call claude, call codex, engine test, engine status
-metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-04"
-  summary: "Owner of code/haiutils/llm_engine/ — unified LLM call runtime for agent task-folders."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+description: Inspect, maintain, and run Physician-SPACE native LLM Agent SDK runtimes. Use for LLM engine status, Claude, Codex, or DeepSeek calls, OAuth/API-key model routing, LLMRec A1/A2/B search-and-recommend campaigns, SDK-session isolation, CallStore recovery, adding models or scales, and validating LLM task folders. Route existing LLMRec work to its project adapter; deploy the generic engine only when explicitly requested.
 ---
 
-# haipipe-task-llm-engine
+# LLM engine task specialist
 
-Skill that **owns and maintains** the LLM engine at `code/haiutils/llm_engine/`.
+Use provider-native SDKs and preserve auditable session evidence. Inspect before
+changing anything; a status or explanation request is read-only.
 
-The engine is a Python package that any agent task `.py` script imports to make LLM calls.
-This skill carries the reference implementation in `ref/engine/` and manages the deployed copy.
+## Route to the correct runtime
 
-## What the engine provides
+| Context | Runtime | Rule |
+|---|---|---|
+| Physician LLMRec | `examples/Project-LLMRec-Physician/tasks/llmrec_agent_sdk.py` | This is the active experiment runtime. Never replace it with `ref/engine/`. |
+| Generic agent task | `code/haiutils/llm_engine/` | Maintain only when that package exists or the user explicitly asks to create it. |
+| Generic reference | `ref/engine/` | Template for generic tasks, not an LLMRec protocol implementation. |
 
-```python
-from haiutils.llm_engine import llm_call, batch_call, LLMResult
+For LLMRec details, read [references/llmrec-native-sdk.md](references/llmrec-native-sdk.md).
 
-result = await llm_call(
-    system_prompt = "...",
-    user_message  = "...",
-    model         = "opus",           # or "codex/gpt-5.5"
-    transport     = "auto",           # sdk | api | codex_oauth | auto
-)
-result.text        # str
-result.meta        # dict (full provider telemetry)
-result.cost_usd    # float (equivalent cost, $0 under OAuth subscription)
-result.transport   # "claude_sdk" | "claude_api" | "codex_oauth"
-```
+## Status workflow
 
-## Transports
+1. Run `scripts/status.py --root <repository-root>`.
+2. Identify the active runtime and installed SDK versions.
+3. Inspect configs and immutable audit receipts for actual model support; do not
+   infer account access from aliases or documentation alone.
+4. Report status without creating packages, changing credentials, starting
+   calls, or modifying queues unless the user requested those actions.
 
-```
-Transport       Auth source              Billing            Package
-──────────────  ───────────────────────  ─────────────────  ────────────────
-claude_sdk      ~/.claude OAuth          $0 (subscription)  claude_agent_sdk
-claude_api      ANTHROPIC_API_KEY        $$$ (metered)      anthropic
-codex_oauth     ~/.codex/auth.json       $0 (ChatGPT sub)   codex_oauth
-```
+## LLMRec invariants
 
-## Model routing (transport="auto")
+- Use `claude-agent-sdk` for Claude and DeepSeek's official
+  Anthropic-compatible route; use official `openai-codex` for Codex.
+- Never fall back to a provider CLI or API-key route inside an SDK campaign.
+- Give every provider/model/protocol campaign a separate SDK home and output
+  directory. Seed OAuth credentials into that home with mode `0600` for OAuth
+  providers. For DeepSeek, inject only the required Anthropic-compatible child
+  environment from `DEEPSEEK_API_KEY`; never persist the key in the SDK home.
+  Never expose `env.sh` or unrelated research secrets to the child runtime.
+- Run from a neutral working directory outside the repository. Disable shell,
+  file, memory, plugin, app, browser, computer-use, and multi-agent tools.
+- A1 requires live web search. A2 resumes exactly the matching A1 session with
+  every tool disabled. B starts a fresh session and requires live web search.
+- Preserve raw SDK events, tool traces, model identity, usage, rollout path,
+  session id, prompts, and immutable manifests.
+- Treat `turn_journals/status=needs_recovery` as a manual recovery gate. Never
+  delete a journal or make an automatic duplicate provider call.
+- Call a scale complete only when its `audit_receipt_v5.json` verdict is `pass`.
 
-```
-model string               transport
-─────────────────────────  ─────────────────
-"opus" / "sonnet" / "haiku"  claude_sdk (OAuth)
-"claude-opus-4-8"            claude_sdk (OAuth)
-"codex/gpt-5.5"              codex_oauth
-"api:claude-opus-4-8"        claude_api (force API key)
-```
+## Current validated model arms
 
-## Data storage
+Treat this list as project evidence dated 2026-08-17, not a permanent provider
+guarantee:
 
-All per-call artifacts go to `_WorkSpace/LLMCallStore/`:
+- Claude: `claude-sonnet-5`, `claude-haiku-4-5-20251001`, `claude-opus-5`
+- Codex: `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-sol`
+- DeepSeek: `deepseek-v4-pro`, `deepseek-v4-flash`
 
-```
-_WorkSpace/LLMCallStore/
-├── .sdk_sessions/                    SDK .jsonl (isolated from user sessions)
-└── <project>/<group>/<task>/<run>/
-    └── <case_id>/
-        ├── input.json                prompt + context sent
-        ├── response.json             raw model output
-        └── meta.json                 transport, model, cost, timing
-```
-
-Task `results/` holds only aggregated outputs (summaries, tables), not raw per-call data.
-
-## Claude SDK gotchas
-
-- Set `cwd` to `_WorkSpace/LLMCallStore/.sdk_sessions/` so SDK session .jsonl files don't pollute the user's real session list
-- Set `allowed_tools=[]` to prevent tool-use attempts
-- System prompt should include "Do NOT use any tools" to avoid `stop_reason: tool_use`
-
-## Codex OAuth notes
-
-- Only `gpt-5.5` works via the ChatGPT backend; smaller models (gpt-4.1-mini, o4-mini) are rejected
-- Package installed from github: `pip install -e /tmp/codex_oauth` (not on PyPI)
-- Requires `httpx`; reads `~/.codex/auth.json` written by `codex login`
-
-## Anthropic billing status (as of 2026-06-27)
-
-Anthropic planned to meter Agent SDK usage starting June 15, 2026 (separate credit pool at API rates: Max=$100-200/mo).
-This change was PAUSED.
-OAuth is still free under subscription.
-The engine tracks `cost_usd` for when it flips.
+Before adding a model to a fold, run the isolated smoke1 A1 → cards → A2 → B
+gate and issue its receipt. Never use an alias such as `opus` when experimental
+identity requires an exact model id.
 
 ## Commands
 
-```
-/haipipe-task-llm-engine              check status of deployed code
-/haipipe-task-llm-engine create       create code/haiutils/llm_engine/ from ref/engine/
-/haipipe-task-llm-engine update       update deployed code from ref/engine/
-/haipipe-task-llm-engine evaluate     audit deployed code vs ref/ spec
-/haipipe-task-llm-engine test         run the smoke test task
+From the repository root:
+
+```bash
+# Read-only engine status
+.venv/bin/python .codex/skills/haipipe-task-llm-engine/scripts/status.py --root .
+
+# Deterministic LLMRec contract validation; no provider call
+.venv/bin/python examples/Project-LLMRec-Physician/tasks/verify_llmrec_agent_sdk.py
+
+# Isolated DeepSeek smoke1 gates (A1 -> cards -> A2 -> independent B -> receipt)
+examples/Project-LLMRec-Physician/tasks/run_llmrec_model_smoke1.sh \
+  <deepseek_v4_pro|deepseek_v4_flash>
+
+# One configured model/scale cell
+examples/Project-LLMRec-Physician/tasks/run_llmrec_model_scale.sh \
+  <claude_sonnet|claude_haiku|claude_opus|codex_luna|codex_terra|codex_sol> \
+  <smoke50|fold00|fold01>
 ```
 
-## On trigger
+Run a provider call only when the user asked to execute or continue a campaign.
+Prefer durable, sequential provider queues over launching many concurrent agents.
 
-1. CHECK `code/haiutils/llm_engine/` exists
-   - missing  -> CREATE from `ref/engine/`
-   - exists   -> EVALUATE (compare against ref/, check imports, test auth)
-   - stale    -> UPDATE (diff ref/ vs deployed, apply changes)
-2. Return status + usage instructions
+## Generic engine maintenance
 
-## Proof-of-concept
+If the request is specifically about a generic agent task:
 
-Working test at:
-```
-examples/ProjC-LLMRecPhysicain/tasks/B01_llm_open_rec/00_llm_engine_test/
-```
-Both transports PASS.
-Claude ~5s/call, Codex ~50s/call.
+1. Check whether `code/haiutils/llm_engine/` exists.
+2. If absent, report that fact. Create it from `ref/engine/` only when explicitly
+   asked to build or deploy the generic runtime.
+3. If present, compare structure and behavior with `ref/engine/`; preserve local
+   extensions and update only the stale pieces in scope.
+4. Validate imports and router behavior without making a provider call. Run a
+   live smoke only when requested.
+
+The generic engine offers one-shot `llm_call`/`batch_call`; it does not implement
+LLMRec's A1/A2 session protocol or receipt auditor.

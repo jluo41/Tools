@@ -1,13 +1,15 @@
-# Page · the loop: draft, probe, revise, and check
-state: 🟡 IN PROGRESS · contracts and audit pass, first live RUN closed 260805 · open: 12 gaps, the harness
+# Page · the loop: outline, draft, probe, evidence, revise, compile, check
+state: 🟡 IN PROGRESS · the loop is SEVEN phases since 260817; §1-§4 still describe the four · open: 13
 owner: JL
 method: define each phase by its authority over one persistent Page, execute the routes with versioned receipts, and test both legal branches and injected failures
 
 ## Opening
-How does one Page move through DRAFT, PROBE, REVISE, and CHECK without turning the phases into four kinds of edits?
+How does one Page move through its phases without turning them into that many kinds of edits?
 The Page persists while each phase changes the authority of the work.
 Adding, deleting, moving, or rewriting does not identify the phase, and the loop may restart after revision.
 This page defines what each phase owns, how a round moves, when returning to DRAFT begins a new round, and how an automatic RUN is audited.
+
+⚠️ **The loop is SEVEN phases since 260817, and the Content divisions below still describe the four it had on 260804.** The splits and the failure each one allowed are in `haipipe-page-workflow` §"Why each split"; the new Diagram is correct and §1 to §4 are owed a REVISE round. `PROBE` also changed MEANING twice: it was the whole evidence phase until 260816, then EVIDENCE's old name, and since 260817 it is the phase that raises the card and asks.
 
 **Where this page sits**: `QB4` owns the Page's fixed reading structure.
 This page owns the Page's lifecycle, from choosing what it promises through deciding whether its current version can close.
@@ -44,16 +46,29 @@ Keep implementation choices in States until JL rules them, then close the row an
                          📄 ONE PERSISTENT PAGE
                                   │
                                   ▼
-  ✍️ DRAFT ─────▶ 🔎 PROBE ─────▶ 🧵 REVISE ─────▶ 🧑 CHECK
-      ↺ repeat       ↺ branch         ↺ repeat          ├──▶ ✅ close round
-      │              │                ▲                 ├──▶ 🧵 revise
-      │              └────────────────┘                 ├──▶ 🔎 probe
-      └────────────── 🔁 new round ◀────────────────────┘
+  🧭 OUTLINE ─▶ ✍️ DRAFT ─▶ 📮 PROBE ─▶ 🔎 EVIDENCE ─▶ 🧵 REVISE ─▶ 📄 COMPILE ─▶ 🧑 CHECK
+     🚧 gate       │          (skippable)                 │            │           │
+     ▲            │                                       │            │           ├──▶ ✅ close
+     │            └───── CHECK routes back to any of them ┴────────────┴───────────┤
+     └────────────────────────── 🔁 new round ◀───────────────────────────────────┘
 
   🔒 one round   purpose + Aims fixed
   🔁 new round   purpose or Aims reopened
   🛠 operation   add · delete · move · rewrite
+  🚧 gate        a PERSON ticks `approved:` on the outline; no machine may
 ```
+
+**Where an evidence card is born**, because that was the question three contracts answered three ways until 260817:
+
+```text
+  🧭 OUTLINE   the MARK   `- B4 · the four coordinates   🔢`   nothing on disk
+  ✍️ DRAFT     the AIM    what the page loses if it stays a hole
+  📮 PROBE     the CARD   probe/PP<NN>-<slug>/ · serves: C4.P1.B4 · dispatched
+  🔎 EVIDENCE  the ANSWER binding: <QA path> · proof/ pulled · state: bound
+  🧵 REVISE    the SENTENCE cites the card by id, never restates it
+```
+
+A plan is rejectable in ten seconds and must leave nothing behind, so OUTLINE may not open the file; the mark IS the proposal, so a card at DRAFT would be a second copy of it. The deciding reason is the STAKE: a card's `consumer/` side carries what the page loses, that is an Aim, and Aims are written at DRAFT.
 
 ## Content
 
@@ -530,7 +545,7 @@ The final report therefore names the checked version, traversed branches, eviden
 - 🔨 A1.1 · Written in Content with mature-Page and repeated-DRAFT cases; awaiting the human check of the model.
 
 ### A2 · 🔎 PROBE resolves what the Page cannot know
-- 🔨 A2.1 · Written in Content with a separate evidence surface and explicit return boundary; awaiting human check.
+- 🧠 A2.1 · STALE since 260817. §2 describes PROBE as the whole evidence phase, which is its 260804 meaning; the phase now called PROBE raises the card and asks, and landing the answer is EVIDENCE. The Diagram and the Opening are corrected, §1 to §4 are owed a REVISE round.
 - 🧠 A2.2 · Waiting on the open Decision Now row. Sections 2.4 and 2.5 state the origin-owned, one-active-Page alternative and the Paper S03/S04 case that exposed the ambiguity.
 - 🧠 A2.3 · Waiting on A2.2. The Board already supports live Markdown embeds and scoped Related Board Pages, but no single Probe reference drives display, context, dependency identity, and CHECK.
 
@@ -641,6 +656,7 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ## Log
 
+- 260817 0738 · [DRAFT-CC] the loop became SEVEN phases and this page's Diagram now draws them; §1 to §4 still describe the four and are owed a REVISE round. The round's real question was JL's: "具体的 proof 应该由谁来做？我还没想好这部分是在 draft 阶段来做，还是在 outline 阶段来做？" Three contracts answered it three ways: `haipipe-page-draft` §🃏 said DRAFT creates the card in OWED state, `haipipe-page-evidence` §🧾 said a card "may arrive already PROPOSED" by DRAFT, and `haipipe-plugin-outline` §📐 said "the card is created at PROBE". **Ruled: PROBE creates it**, on the stake argument, and PROBE finally has its own contract at `page-workflows/haipipe-page-probe` instead of borrowing EVIDENCE's. Also settled without a separate round: one mark is not one card (many bullets may share one, `PP04` on QC1-visitlbp serves three), 🖼 display units are created at EVIDENCE and not earlier because their `intake/` freezes FROM a `proof/` that does not exist until an answer does, and 🧮 proof earns NO folder, closing `haipipe-plugin-outline`'s open ⬜. The 🧭 Page-phases stepper now draws seven, and its `PROBE` token resolves against the RECEIPT'S OWN DATE rather than a global alias, which would have relabelled every future PROBE as EVIDENCE.
 - 260806 2107 · [REVISE-CC] swept to the 260806 architecture; state line now records the 260805 QB8e live RUN instead of calling it pending, dead `paper/workers/` path repointed at `paper/haipipe-paper/fn/`, §8 tree shows all ten Page Types with QB6 owning the roster, and live prose now says QA-probe with capitalized Q-executor/A-consumer slot words
 - 260806 0210 · [PROBE-CC] a 12th RUN-contract ambiguity, found by re-auditing the QB8e bundle a day later: `pageflow.py audit` now reports `artifact-version-mismatch` on the RENDER hash alone, because later innocent rebuilds changed the html while the source hash still matches `final_version`. The receipt treats source:render as one identity; the contract must say the SOURCE hash is the version's identity and the render hash is advisory (a rebuild is not a mutation), or every rebuild retroactively breaks every closed run. Also: the bundle carries no `audit` key at all, so "audit PASS" survives only in session history, which is item ⑩'s snapshot-has-no-receipt-home problem wearing a second face.
 260805 · FIRST LIVE RUN, `260805-0216-QB8e`: CLOSE, audit PASS, and the run's second product is a defect list for this page's own contract, 11 items recorded in the bundle and owed fixes here. The sharpest six: ① the workflow controller is not invocable outside a Workflow harness and the contract never says what a bare caller may do; ② the producer prompt omits the judge's findings, so a strict REVISE guesses (the controller forwarded them as a disclosed deviation); ③ "the local closing rule" is ambiguous for a mid-life Q page whose Decision rows wait on JL by design, so the contract must say run-level CLOSE certifies THE VERSION, not the page's decisions; ④ `mechanical_errors` scope is undefined, and board-scoped counting would let one foreign dead link forbid CLOSE forever; ⑤ warnings do not gate CLOSE, so the semantic judge is the only defense on a WARN-only page; ⑥ fresh judges oscillate (r1s1 waived unnumbered paragraphs, r1s3 raised them), and max_steps is the only brake. Also surfaced: no run_id minting rule, no concurrency rule while a foreign session rebuilds board/, the pre-run snapshot has no receipt home, extra bundle keys pass unaudited, and the Decision Now row shape diverges between the base and page-template.md.

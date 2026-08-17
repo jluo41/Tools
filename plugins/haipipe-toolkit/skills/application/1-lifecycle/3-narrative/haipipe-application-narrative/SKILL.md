@@ -21,7 +21,7 @@ Same role as paper's narrative.
                        ^ THIS STAGE (venue-gated)
 ```
 
-Read first: `../../../PHILOSOPHY.md`, and the probe layer's `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md`.
+Read first: `../../../PHILOSOPHY.md`, and the probe layer's `../../../2-phase/1-evidence/haipipe-application-evidence/ref/per-stage-dispatch.md`.
 
 
 ## What's special: three things frame the arc
@@ -46,9 +46,9 @@ A beat exposing a NEW evidence gap routes BACK to 1c-claims (raises a question S
 DRAFT   read 1d-advice.md (the A entries the arc composes), 1c-claims.md (the evidence backstop),
         2-pitch.md (primary claim + theory of change anchor), 2-venue.md Artifact Principles;
         map each load-bearing claim/advice to an arc position per the venue's arc rules (haipipe-application-draft)
-PROBE   rarely fires; a beat exposing a NEW evidence gap raises it as a question SECTION in
+EVIDENCE   rarely fires; a beat exposing a NEW evidence gap raises it as a question SECTION in
         1-probes/PPNN_<topic>/ (serves: 3-narrative), routed back to claims — never gathered here
-        (haipipe-application-probe)
+        (haipipe-application-evidence)
 REVISE  arc coherence + register pass (haipipe-application-revise)
 CHECK   3-narrative.md exists (when the venue requires it); every load-bearing claim mapped to an arc
         position; no beat anchored on a GAP claim; arc follows the venue's rules -> Gate Ledger row in

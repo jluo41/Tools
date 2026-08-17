@@ -3,9 +3,9 @@ name: haipipe-plugin-latex
 description: >-
   The latex/ plugin of a Board page: the page's Content compiled to a PDF in <page>/latex/, DERIVED and regenerable, written only by the /_board/latex route calling the paper family's md2tex.py plus xelatex. Owns the caller contract: paper-root discovery, the board's --keep-fences default, the wrapper master, staleness, and what a failure shows. Loads haipipe-plugin for the four-facet contract and never restates it; holds no copy of any writer. Trigger: latex plugin, compile the page, page pdf, tex export, latex tab, rebuild the tex, keep fences, /haipipe-plugin-latex.
 metadata:
-  version: "0.1.1"
+  version: "0.2.0"
   last_updated: "2026-08-16"
-  summary: "The page's display evidence prints (JL 260816): a short-id citation embeds the unit's float after the citing paragraph."
+  summary: "The compiled document now opens with the Page's complete canonical H1 title and embeds every cited rendered Display."
 ---
 # /haipipe-plugin-latex · the page compiled, by the paper family's own writer
 
@@ -40,7 +40,8 @@ Three caller rules, each earned on 260815:
 - `--paper-root` is DISCOVERED, never demanded: walk up from the page toward `--root` for a `0-*.bib`.
   A page outside any paper compiles cite-less, with `\citep` shown literally; inside a paper the master gains natbib, `plainnat`, and a bibtex pass.
 - A code span QUOTES and never EXECUTES: backticked TeX commands are escaped on the way out, so `\citep` prints instead of running.
-- THE PAGE'S DISPLAY EVIDENCE PRINTS (JL 260816): a unit under `<page>/display/` that the prose cites by short id is embedded as a real float after the citing paragraph, MISQ's first-reference rule.
+- **The Page title prints**: the standalone master opens with the complete canonical H1, TeX-escaped as plain text. The title is document identity, not a Content division, so it is emitted independently of numbered `###` manuscript headings.
+- THE PAGE'S DISPLAY EVIDENCE PRINTS (JL 260816): a unit under `<page>/display/` that the prose cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN` is embedded once as a real float after the citing paragraph, in citation order, under MISQ's first-reference rule.
   The float is built from the unit's WINNING asset plus its own authored caption and label, so the wrapper master needs no tikz or renderer package; a ⬜ unit with no render is skipped, and a mention inside a verbatim fence is an illustration, not a citation.
 
 ## 📡 Surface · the tab, and what a failure shows

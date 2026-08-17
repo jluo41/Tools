@@ -1,4 +1,4 @@
-# haipipe-application-check · v0.4.2
+# haipipe-application-check · v0.4.3
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -14,15 +14,17 @@ The generated sections answer what it IS; only this one can answer whether it is
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 5e6ecb5dac5c08ae application/2-phase/3-check/haipipe-application-check -->
+<!-- haipipe:skill:tree:start 60d19b76ffbf1d2c application/2-phase/3-check/haipipe-application-check -->
+
+**What `haipipe-application-check` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-application-check/
   attendance-modes.md   122 ln  Attendance Modes — Who Clicks "Accept" at Each CHECK
-  CHANGELOG.md           39 ln  haipipe-application-check — Changelog
+  CHANGELOG.md           44 ln  haipipe-application-check — Changelog
   checks.sh             160 ln
   gate-persona.md       112 ln  Gate Persona — Reviewer Voice for SOFT Gates
-  SKILL.md              163 ln  Skill: haipipe-application-check (CHECK phase worker)
+  SKILL.md              167 ln  Skill: haipipe-application-check (CHECK phase worker)
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -35,13 +37,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 5e6ecb5dac5c08ae application/2-phase/3-check/haipipe-application-check -->
+<!-- haipipe:skill:body:start 60d19b76ffbf1d2c application/2-phase/3-check/haipipe-application-check -->
 
-**haipipe-application-check** · `0.4.2` · last shipped 2026-07-17
+**haipipe-application-check** · `0.4.3` · last shipped 2026-08-04
 
 - folder   `application/2-phase/3-check/haipipe-application-check/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill
-- summary  The intervention's CHECK-phase worker and the only human gate — runs ./checks.sh + the probe-file checker (any ❌/FAIL blocks green), seeds > CHECK: threads in stage docs, writes the Gate Ledger row on approval. History: ./CHANGELOG.md.
+- summary  Application-specific CHECK worker layered on haipipe-page-check; runs local checkers, seeds findings, and applies the application's declared human gate.
 
 ### SKILL.md
 
@@ -51,6 +53,10 @@ Skill: haipipe-application-check (CHECK phase worker)
 ======================================================
 
 CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-check/SKILL.md`.
+The generic contract owns judgment and phase routing.
+This file adds the application's deterministic checks, comment surface, and Gate Ledger.
 
 ```
 approve   → Gate Ledger row + advance current_layer to the next non-skipped stage
@@ -85,11 +91,11 @@ A mechanical ❌/FAIL is not a judgment call: no persona preset, no `--unattende
 Locating the probe-file checker
 ================================
 
-Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-probe/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
+Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-evidence/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
 
 ```sh
 CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4  \
-        -path "*haipipe-application-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
+        -path "*haipipe-application-evidence*" -name check-probe-cards.sh 2>/dev/null | head -1)
 [ -n "$CHK" ] || { echo "FAIL: application probe-file checker not found"; exit 1; }
 
 sh "$CHK" <intervention_root>    # whole-pool section pass
@@ -105,7 +111,7 @@ Every flagged item that lives in a 0-lifecycle stage doc (0-seed.md, 1a-descript
 
 0-artifacts/*.md are NEVER annotated: the artifact IS the deliverable text (unlike paper's .tex, where % comments never render), so a seeded comment would ship. Artifact-level findings go into the Gate Ledger notes column instead, quoted with file:line so they stay actionable (R2c RULED, JL 2026-07-07).
 
-The human replies `> USER:` under each thread. On revise, the restarted phase (DRAFT/PROBE/REVISE) reads the stage-doc `> CHECK:` threads + their `> USER:` replies and responds to each -- an unanswered `> CHECK:` comment is surfaced back, never silently dropped. Resolved threads archive to the stage `_LOG`.
+The human replies `> USER:` under each thread. On revise, the restarted phase (DRAFT/EVIDENCE/REVISE) reads the stage-doc `> CHECK:` threads + their `> USER:` replies and responds to each -- an unanswered `> CHECK:` comment is surfaced back, never silently dropped. Resolved threads archive to the stage `_LOG`.
 
 Gate Ledger (STATUS.md)
 ========================
@@ -223,10 +229,13 @@ gate-persona.md         112 ln  Gate Persona — Reviewer Voice for SOFT Gates
 ## Log
 260802 1200 · page generated from `application/2-phase/3-check/haipipe-application-check/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 5e6ecb5dac5c08ae application/2-phase/3-check/haipipe-application-check -->
+<!-- haipipe:skill:log:start 60d19b76ffbf1d2c application/2-phase/3-check/haipipe-application-check -->
 
-Converted from the skill's own `CHANGELOG.md`: 8 releases.
+Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
+260804 · `0.4.3`
+      - Layers the application checker on the Stage Page Type and generic `haipipe-page-check` routing contract.
+      - Leaves application checkers, comment seeding, and the Gate Ledger local while the shared phase owns judgment boundaries.
 260724 · `0.4.2`
       Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 4.2.0; older entries below keep their original numbers).
 260717 · `4.2.0`

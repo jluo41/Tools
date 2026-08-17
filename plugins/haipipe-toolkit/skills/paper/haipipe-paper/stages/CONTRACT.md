@@ -28,7 +28,7 @@ any of them is incomplete.
 
  EXECUTION       phases         the ordered phase list; it must end with `check`
                  gates          which phases stop for a human; the default is [check]
-                 probe_depth    the ceiling PROBE may spend on, on the bank's ladder (0..3)
+                 probe_depth    the ceiling EVIDENCE may spend on, on the bank's ladder (0..3)
                  runs           `once` for a single-artifact stage, `per-unit` otherwise
                  needs_paper    whether a paper root is required to run at all
                  on_rerun       what a SECOND run does to a page a human has edited.

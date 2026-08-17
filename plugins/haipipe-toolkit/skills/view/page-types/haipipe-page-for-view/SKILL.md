@@ -10,6 +10,11 @@ description: >-
   same-named View resource folders, generated review or Paper-ready artifacts,
   or checks that evidence freshness, Display acceptance, fixture freshness,
   and consumer handoff remain separate.
+metadata:
+  outline:
+    mode: fixed          # fixed | grammar | resolved
+    source: "this SKILL.md"
+    shape: "1 QA inputs · 2 View body · 3 Displays · 4 Consumers; topic subsections only under 2"
 ---
 
 # Haipipe Page for View

@@ -14,8 +14,14 @@ from .common import ALIAS, PAGENAME
 from .parse import parse_dir
 
 
-PHASES = ("DRAFT", "PROBE", "REVISE", "CHECK")
+# PROBE was renamed EVIDENCE on 260816. A row keeps parsing under either token
+# and both resolve to the same phase, because these rows live in hand-written
+# board pages across every project: a checker that turned a working row into an
+# error on the day of a rename would be reporting the rename, not a defect.
+PHASE_ALIASES = {"PROBE": "EVIDENCE"}
+PHASES = ("DRAFT", "EVIDENCE", "REVISE", "CHECK")
 ROW_PHASES = PHASES + ("ALL",)
+READABLE_ROW_PHASES = ROW_PHASES + tuple(PHASE_ALIASES)
 RELATIONS = ("reads", "constrained by", "continues", "contrasts")
 
 RELATED_HEADING_RE = re.compile(
@@ -23,7 +29,7 @@ RELATED_HEADING_RE = re.compile(
 )
 RELATED_ROW_RE = re.compile(
     r"^\s*[-*]\s+`(?P<relation>reads|constrained by|continues|contrasts)"
-    r"\s+·\s+(?P<phase>DRAFT|PROBE|REVISE|CHECK|ALL)`\s+·\s+"
+    r"\s+·\s+(?P<phase>DRAFT|EVIDENCE|PROBE|REVISE|CHECK|ALL)`\s+·\s+"
     r"\[(?P<page_id>[A-Za-z][A-Za-z0-9-]*)\s+"
     r"(?P<scope>page|§\d+(?:\.\d+)*)\]"
     r"\((?P<path>[^)\s]+)\)\s*$"
@@ -131,11 +137,15 @@ def scan_related_rows(text):
         if not match:
             findings.append(RelatedFinding(
                 "ERROR", "related-row-form", line_no,
-                "use `- `reads · PROBE` · [QB7 §3](group/QB7-page.md)` "
+                "use `- `reads · EVIDENCE` · [QB7 §3](group/QB7-page.md)` "
                 "with a supported relation, Page Phase, Page id, scope, and Board-relative path",
             ))
             continue
-        refs.append(RelatedPageRef(line=line_no, **match.groupdict()))
+        row = match.groupdict()
+        # A row written `· PROBE ·` selects the same phase as `· EVIDENCE ·`,
+        # so the retired token never silently stops matching its own rows.
+        row["phase"] = PHASE_ALIASES.get(row["phase"], row["phase"])
+        refs.append(RelatedPageRef(line=line_no, **row))
     return refs, findings
 
 
@@ -274,6 +284,7 @@ def extract_scope(target_text, scope, include_frame=True):
 def related_context_packet(source_path, phase):
     """Build a one-hop Markdown packet for rows matching ``phase`` or ``ALL``."""
     phase = (phase or "").upper()
+    phase = PHASE_ALIASES.get(phase, phase)
     if phase not in PHASES:
         raise RelatedContextError(
             f"phase must be one of {', '.join(PHASES)}; got {phase or '<empty>'}"

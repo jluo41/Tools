@@ -21,7 +21,7 @@ A skill-dev session aligned the `application` skill family to `paper` and the sh
 
 ## Verified vs NOT verified
 
-**Verified (static only):** routing resolves, no dead routes, no proxy verbs; PROBE is the only bank door; both human gates present; F1 glob in place; zero stale `Probes`/`_venue`/`_audience`/`3-build-*`/insight-route tokens; every SKILL's section list matches its template; Q-consumer migration left no downstream breakage in probe-worker / enter / dashboard.
+**Verified (static only):** routing resolves, no dead routes, no proxy verbs; EVIDENCE is the only bank door; both human gates present; F1 glob in place; zero stale `Probes`/`_venue`/`_audience`/`3-build-*`/insight-route tokens; every SKILL's section list matches its template; Q-consumer migration left no downstream breakage in probe-worker / enter / dashboard.
 
 **NOT verified (needs a real run):**
 - No intervention has actually been driven seed → deploy. The whole model is untested against a live folder.
@@ -51,7 +51,7 @@ Start CHEAP, then go DEEP.
 ## Open risks to watch DURING the real run
 
 1. **APPROVE → 1-probes/.** After each DRAFT, confirm the `## Q` blocks in the stage doc's Q-consumer section actually become sections in `1-probes/PPNN_<topic>/` (state `planned`, a real `q-executor:`). If they don't, the Q-consumer migration is name-only and the door is broken.
-2. **PROBE reads what it needs (claims-A).** With the full PP plan now in `1-probes/` and only lean `## Q` in the stage doc, check `haipipe-application-probe` still has mode/route/Refutes-if to work with.
+2. **EVIDENCE reads what it needs (claims-A).** With the full PP plan now in `1-probes/` and only lean `## Q` in the stage doc, check `haipipe-application-evidence` still has mode/route/Refutes-if to work with.
 3. **CHECK's F1 glob resolves.** Confirm the check worker finds `check-probe-cards.sh` via the glob and FAILs loudly if absent (not a silent skip).
 4. **Audience tone hole.** When `draft`/`revise` reach for tone-by-audience, see whether the venue pack actually supplies it or the rule dead-ends. If it dead-ends, the audience tone rules need to be authored into the venue packs (the deferred content move).
 5. **seed feasibility flow.** Watch whether seed's Q-consumer (questions) + takeaway-into-content actually produces a usable go/no-go, or leaves the feasibility answer homeless.

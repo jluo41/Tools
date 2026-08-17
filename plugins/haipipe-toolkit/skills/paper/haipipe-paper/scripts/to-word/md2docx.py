@@ -407,7 +407,10 @@ def detex(s):
     # inline math, before the catch-all command strip. `$\times$` used to lose
     # \times to the strip and leave the bare `$$`, which shipped as
     # "a person$$ situation perspective" (JL, 2026-07-27).
-    for cmd, ch in (("times", "\u00d7"), ("le", "\u2264"), ("ge", "\u2265"),
+    # Replace longer command names first.  Otherwise ``\\geq`` is partially
+    # consumed by ``\\ge`` and ships as the visible residue ``≥q``.
+    for cmd, ch in (("times", "\u00d7"), ("leq", "\u2264"), ("geq", "\u2265"),
+                    ("le", "\u2264"), ("ge", "\u2265"),
                     ("pm", "\u00b1"), ("approx", "\u2248"), ("alpha", "\u03b1"),
                     ("beta", "\u03b2"), ("kappa", "\u03ba"), ("mu", "\u03bc")):
         s = s.replace("\\" + cmd + " ", ch).replace("\\" + cmd, ch)
@@ -638,8 +641,19 @@ class Inline:
         t = self.REF.sub(self._ref, t)
         t = self.BRACKET_REF.sub(self._bracket_ref, t)
         t = self.QREF.sub("", t)                 # the bracket is bookkeeping
-        t = re.sub(r"`([^`]*)`", r"\1", t)
+        # Inline code is operational text, not typography. Stash it before the
+        # prose smart-dash pass so CLI flags such as `--execute` remain exactly
+        # executable in the DOCX and its PDF twin.
+        code_spans = []
+
+        def _stash_code(m):
+            code_spans.append(m.group(1))
+            return f"\ue000CODE{len(code_spans) - 1}\ue001"
+
+        t = re.sub(r"`([^`]*)`", _stash_code, t)
         t = t.replace("--", "\u2013")
+        for i, code in enumerate(code_spans):
+            t = t.replace(f"\ue000CODE{i}\ue001", code)
         # `~` is a non-breaking space, and body prose is not detex'd, so it was
         # printing as a literal tilde inside every "Table~5" (JL 2026-07-28).
         t = t.replace("~", "\u00a0")
@@ -805,6 +819,10 @@ class Docx:
     def heading(self, level, text):
         self.para(text, style=f"Heading{level}")
 
+    def title(self, text):
+        """Emit a document title independently of the manuscript heading walk."""
+        self.para(text, style="Title")
+
     # -- a real, EDITABLE table. A picture of a table is the wrong answer
     #    because the coauthor cannot fix a typo in it (QC6).
     def table(self, rows, caption=None, align=""):
@@ -969,6 +987,9 @@ STYLES = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/>
 <w:pPr><w:outlineLvl w:val="0"/><w:spacing w:before="480" w:after="0" w:line="480" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>
 <w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:caps/><w:sz w:val="24"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/>
+<w:pPr><w:keepNext/><w:spacing w:before="0" w:after="360" w:line="300" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>
+<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:sz w:val="32"/></w:rPr></w:style>
 <w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/>
 <w:pPr><w:outlineLvl w:val="1"/><w:spacing w:before="480" w:after="0" w:line="480" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>
 <w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:sz w:val="24"/></w:rPr></w:style>
@@ -1000,6 +1021,58 @@ STYLES = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 # --------------------------------------------------------------- table parse
 
+def _braced_arg(text, pos):
+    """Return (content, next_pos) for one balanced braced argument."""
+    while pos < len(text) and text[pos].isspace():
+        pos += 1
+    if pos >= len(text) or text[pos] != "{":
+        return None, pos
+    start, depth, pos = pos + 1, 1, pos + 1
+    while pos < len(text) and depth:
+        depth += (text[pos] == "{") - (text[pos] == "}")
+        pos += 1
+    return (text[start:pos - 1], pos) if depth == 0 else (None, pos)
+
+
+def _environment_body(raw):
+    """Extract tabular or tabularx with balanced width/column arguments."""
+    for env, nargs in (("tabularx", 2), ("tabular", 1)):
+        token = "\\begin{%s}" % env
+        start = raw.find(token)
+        if start < 0:
+            continue
+        pos, args = start + len(token), []
+        # tabular may carry a vertical-position option before its column spec.
+        while pos < len(raw) and raw[pos].isspace():
+            pos += 1
+        if pos < len(raw) and raw[pos] == "[":
+            close = raw.find("]", pos + 1)
+            pos = close + 1 if close >= 0 else pos
+        for _ in range(nargs):
+            arg, pos = _braced_arg(raw, pos)
+            if arg is None:
+                break
+            args.append(arg)
+        if len(args) != nargs:
+            continue
+        end = raw.find("\\end{%s}" % env, pos)
+        if end >= 0:
+            return args[-1], raw[pos:end]
+    return "", raw
+
+
+def _command_args(text, command, count):
+    """Parse balanced braced arguments when a table cell is one TeX command."""
+    if not text.startswith(command):
+        return None
+    pos, args = len(command), []
+    for _ in range(count):
+        arg, pos = _braced_arg(text, pos)
+        if arg is None:
+            return None
+        args.append(arg)
+    return args if not text[pos:].strip() else None
+
 def parse_table_body(path):
     """A booktabs tabular body into rows of (text, bold, gridspan).
 
@@ -1008,22 +1081,22 @@ def parse_table_body(path):
     that would have needed a vertical merge."""
     if not os.path.exists(path):
         return None
-    raw = open(path, encoding="utf-8", errors="replace").read()
+    with open(path, encoding="utf-8", errors="replace") as handle:
+        raw = handle.read()
     raw = re.sub(r"(?m)^\s*%.*$", "", raw)                       # comments
     # Take ONLY the tabular body. The first version fed the whole file to the
     # cell splitter, so \renewcommand{\arraystretch}{1.15} and the column spec
     # survived detex as the literal "1.15 tabularl r r r" glued to the front of
     # the first cell, which also stopped \multicolumn from matching at ^.
-    m = re.search(r"\\begin\{tabular\}\s*(?:\[[^\]]*\])?\s*\{([^}]*)\}(.*?)\\end\{tabular\}",
-                  raw, re.S)
-    align = ""
-    if m:
-        align, raw = m.group(1), m.group(2)
+    align, body = _environment_body(raw)
+    if body is not raw:
+        raw = body
     else:
         raw = re.sub(r"\\renewcommand\s*\{[^}]*\}\s*\{[^}]*\}", "", raw)
     raw = re.sub(r"\\(?:top|mid|bottom)rule\b", "", raw)
     raw = re.sub(r"\\cmidrule\s*(\([^)]*\))?\s*\{[^}]*\}", "", raw)
-    raw = re.sub(r"\\(?:addlinespace|noalign|centering|small|footnotesize)\b", "", raw)
+    raw = re.sub(r"\\addlinespace(?:\[[^\]]*\])?", "", raw)
+    raw = re.sub(r"\\(?:noalign|centering|small|footnotesize)\b", "", raw)
     rows = []
     for line in raw.split(r"\\"):
         line = re.sub(r"^\s*\[[0-9.]+\s*[a-z]*\]", "", line.strip())   # \\[2pt]
@@ -1034,9 +1107,9 @@ def parse_table_body(path):
         cells = []
         for cell in split_cells(line):
             span, text, bold = 1, cell.strip(), False
-            m = re.match(r"\\multicolumn\{(\d+)\}\{[^}]*\}\{(.*)\}$", text, re.S)
-            if m:
-                span, text = int(m.group(1)), m.group(2)
+            multi = _command_args(text, r"\multicolumn", 3)
+            if multi:
+                span, text = int(multi[0]), multi[2]
             if "\\textbf" in text:
                 bold = True
             cells.append((detex(text), bold, span))
@@ -1076,6 +1149,9 @@ def main():
                          "in order can get them right (QC6's section-only rows).")
     ap.add_argument("-o", "--out")
     ap.add_argument("--paper-root")
+    ap.add_argument("--document-title",
+                    help="optional full-document title emitted before Content; "
+                         "Board passes the page's canonical H1")
     ap.add_argument("--author", default=AUTHOR,
                     help='comment author. Default "haipipe" keeps QC6\'s '
                          'partition in the author field; pass a person\'s name '
@@ -1148,6 +1224,8 @@ def main():
     disp = Displays(root, extra_root=a.display_root)
     inline = Inline(bbl, disp, num, report)
     d = Docx()
+    if a.document_title:
+        d.title(a.document_title)
 
     placed, npara, skipped, held = set(), 0, {}, {}
     for page in pages:

@@ -87,4 +87,4 @@ all three.
 Everything that knows what a manuscript is: grepping the `.bib` before writing a
 key, the `\citep{}` vs `\cite{TOADD}` decision, DR rows and display inboxes, the
 `1-probes/` boundary, the stage contracts, and the rule that real evidence lands
-only through the PROBE phase. None of that generalizes, and none of it moved.
+only through the EVIDENCE phase. None of that generalizes, and none of it moved.

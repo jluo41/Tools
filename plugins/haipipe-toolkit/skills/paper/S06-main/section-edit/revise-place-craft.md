@@ -12,7 +12,7 @@ Source: converted from `workers/haipipe-paper-revise-place/SKILL.md` on 2026-08-
 > `[Q-X-n]` is ONE join key shared by all of them, ruled once on `QC2@paper`, and
 > it sits BESIDE its marker and is never fused into it.
 
-DRAFT marked the holes and named their owners. PROBE brought the answers back into each entry's `#### A-executor`. This pass does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
+DRAFT marked the holes and named their owners. EVIDENCE brought the answers back into each entry's `#### A-executor`. This pass does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
 
 
 Why it runs FIRST
@@ -120,4 +120,4 @@ Done criteria
 Where the rest lives
 ---------------------
 
-Phase dispatch and load order are owned by `board/page-phases/` (REVISE loads this file last, after the type contract); the DRAFT lanes that marked the holes are `../../S03-literature/citation-craft.md`, `../../S04-value/values-craft.md`, and `../../S05-display/display/draft-craft.md`; the probe loop that landed the answers is `../../haipipe-paper/probe/`; the humanizer that runs after this pass is `writing/haipipe-paper-revise-humanizer`; results narration is `revise-results-craft.md`.
+Phase dispatch and load order are owned by `board/page-workflows/` (REVISE loads this file last, after the type contract); the DRAFT lanes that marked the holes are `../../S03-literature/citation-craft.md`, `../../S04-value/values-craft.md`, and `../../S05-display/display/draft-craft.md`; the probe loop that landed the answers is `../../haipipe-paper/probe/`; the humanizer that runs after this pass is `writing/haipipe-paper-revise-humanizer`; results narration is `revise-results-craft.md`.

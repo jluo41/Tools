@@ -17,7 +17,8 @@ The caller supplies facts and authority, not a proposed paragraph formula.
 run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
 page: /absolute/path/to/QB5-page-loop.md
-start_phase: CHECK              # DRAFT | PROBE | REVISE | CHECK
+  start_phase: CHECK              # OUTLINE | DRAFT | PROBE | EVIDENCE |
+                                  # REVISE | COMPILE | CHECK
 intent: audit and improve the automatic Page loop
 sources:                       # exact files the run may rely on
   - /absolute/path/to/source.md
@@ -96,7 +97,7 @@ snapshot. Every receipt's `version_before` must equal the preceding receipt's
 must be checked again.
 
 `reason` names the authority exercised, not merely the file operation. A route
-to DRAFT from PROBE, REVISE, or CHECK is legal ONLY as a reopen: the receipt
+to DRAFT from EVIDENCE, REVISE, or CHECK is legal ONLY as a reopen: the receipt
 names the reopened purpose or Aim, sets `reopens_promise: true`, and increments
 the round, which is the same "only when purpose or an Aim reopened" rule the
 base and QB5 (the loop page, QB9 until 260805) state; a cross-phase route to DRAFT that reopens nothing is an
@@ -106,10 +107,19 @@ promise does not increment.
 ## Legal routes
 
 ```text
-from DRAFT    → DRAFT | PROBE | REVISE | CHECK | HOLD
-from PROBE    → PROBE | REVISE | DRAFT | CHECK | HOLD
-from REVISE   → REVISE | PROBE | DRAFT | CHECK | HOLD
-from CHECK    → CLOSE | REVISE | PROBE | DRAFT | HOLD
+from OUTLINE  → OUTLINE | DRAFT | HOLD
+from DRAFT    → DRAFT | PROBE | EVIDENCE | REVISE | CHECK | HOLD
+from PROBE    → PROBE | EVIDENCE | REVISE | HOLD
+from EVIDENCE → EVIDENCE | REVISE | DRAFT | CHECK | HOLD
+from REVISE   → REVISE | COMPILE | EVIDENCE | DRAFT | CHECK | HOLD
+from COMPILE  → COMPILE | CHECK | REVISE | HOLD
+from CHECK    → CLOSE | OUTLINE | REVISE | PROBE | EVIDENCE | DRAFT | HOLD
+
+`PROBE` is a live phase: it performs PageX/MATCH, raises cards, and dispatches
+the neutral Q-executor. `EVIDENCE` starts when the answer comes back and lands
+the value, citation, proof, or Display intake. Receipts from the short 260816
+rename that used PROBE as EVIDENCE remain auditable through the auditor's
+legacy-shape compatibility rule.
 ```
 
 Only CHECK may CLOSE. CLOSE is a route, not a fifth Page Phase. HOLD is also a
@@ -121,7 +131,8 @@ was achieved.
 
 ```text
 controller   chooses and records the next legal route; edits no Page prose
-producer     performs DRAFT, PROBE, or REVISE; may not approve its own version
+  producer     performs OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, or COMPILE;
+               may not approve its own version
 builder      rebuilds, runs mechanical checks, and identifies the version
 judge        performs CHECK read-only against that exact version
 human        supplies any ruling required by the Page Type or local contract
@@ -155,9 +166,11 @@ well-formed receipt still fails if the files currently on disk do not equal its
 wrote the same claimed hash into several fields.
 
 Do not append a CHECK result to the Page's own Log after approval: that would
-change the just-checked version. DRAFT, PROBE, and REVISE may update the Page
-Log as part of the version they produce; terminal CHECK evidence stays in the
-audit bundle or the Page Type's declared review surface.
+change the just-checked version. OUTLINE owns its versioned plan; DRAFT,
+EVIDENCE, and REVISE may update the Page Log as part of the version they
+produce; PROBE owns its card folders; COMPILE owns only derived build outputs.
+Terminal CHECK evidence stays in the audit bundle or the Page Type's declared
+review surface.
 
 ## What the audit can prove
 
@@ -183,8 +196,10 @@ the gate and its evidence.
 The shipped harness must exercise at least these cases:
 
 ```text
-happy paths     DRAFT→CHECK→CLOSE; DRAFT→PROBE→REVISE→CHECK→CLOSE
-legal loops     CHECK→REVISE→CHECK; CHECK→PROBE; CHECK→DRAFT(new round)
+  happy paths     OUTLINE→DRAFT→PROBE→EVIDENCE→REVISE→COMPILE→CHECK→CLOSE
+                  DRAFT→CHECK→CLOSE
+  legal loops     CHECK→REVISE→CHECK; CHECK→PROBE; CHECK→EVIDENCE;
+                  CHECK→OUTLINE; CHECK→DRAFT(new round)
 faults          producer=self-judge; version changed after CHECK; illegal route
 gates           required human approval absent; explicit HOLD
 bounds          max steps reached; non-terminal trace; failed or blocked worker

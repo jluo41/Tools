@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-draft
-description: "Application-specific DRAFT phase worker (internal). Called whenever a stage enters DRAFT to define or reopen its purpose, Aims, and artifact shape, then raise stake-bearing Q-consumers for what it cannot answer. It writes no Probe record or executor-side field. Content decisions happen here; evidence collection is PROBE's job, realization under fixed Aims is REVISE's. Users invoke stage skills, not this skill directly."
+description: "Application-specific DRAFT phase worker (internal). Called whenever a stage enters DRAFT to define or reopen its purpose, Aims, and artifact shape, then raise stake-bearing Q-consumers for what it cannot answer. It writes no Probe record or executor-side field. Content decisions happen here; evidence collection is EVIDENCE's job, realization under fixed Aims is REVISE's. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent
 metadata:
   argument_hint: "[stage <stage-name>] [intervention-path]"
@@ -15,7 +15,7 @@ Skill: haipipe-application-draft (internal phase worker)
 
 DRAFT phase worker. A stage calls it whenever the Page router enters DRAFT. The calling stage passes its artifact spec (files, content structure, done-criteria); this worker turns intent into a settled stage doc.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-draft/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-draft/SKILL.md`.
 Those contracts own the Stage Page shape and DRAFT authority.
 This file adds only application artifact knowledge.
 
@@ -40,7 +40,7 @@ On a phase conflict, the Page Phase contract wins; application-specific addition
                 against it. Every spot where the draft needs evidence it does
                 not have becomes a stake-bearing `Q-<Stage>-<n>` in the stage
                 doc's Q-consumer. DRAFT writes no Probe file, Q-executor, route,
-                bank, target, or A-executor. PROBE owns the whole five-step loop.
+                bank, target, or A-executor. EVIDENCE owns the whole five-step loop.
 4b. SELF-REVIEW a fresh-context sub-agent checks the draft + Q-consumer shape
                 before handoff (creator/reviewer split — the drafter
                 does not grade its own work). Report-only; the drafter fixes.
@@ -49,7 +49,7 @@ On a phase conflict, the Page Phase contract wins; application-specific addition
 5. HAND OFF     record the draft, raised Q-consumers, and self-review verdict.
                 If the local stage contract declares a DRAFT gate, present them
                 and wait there. Otherwise route immediately: consequential
-                questions go to PROBE; a version ready for judgment may go to
+                questions go to EVIDENCE; a version ready for judgment may go to
                 CHECK; more promise work remains in DRAFT.
 ```
 
@@ -82,7 +82,7 @@ Agent(general-purpose, prompt="
 
 Issues → FIX them, then re-run (bounded: at most 2 rounds). The self-review PRECEDES the human gate; it never replaces it.
 
-DRAFT settles WHAT the doc says. It does NOT collect evidence (PROBE), polish prose (REVISE), or approve anything (CHECK).
+DRAFT settles WHAT the doc says. It does NOT collect evidence (EVIDENCE), polish prose (REVISE), or approve anything (CHECK).
 
 ## Template registry (WRITE reads the stage's canonical template)
 
@@ -110,7 +110,7 @@ At WRITE, read TWO things from `../../../1-lifecycle/`: the calling stage's SKIL
 - Never invent evidence: an unbacked statement is written as a raised question, not asserted.
 - Stage docs are markdown, one physical line per paragraph/bullet.
 
-## DRAFT may search; PROBE must dispatch
+## DRAFT may search; EVIDENCE must dispatch
 
 Inline WebSearch/WebFetch is ALLOWED in DRAFT -- as drafting fuel, NOT as evidence.
 
@@ -119,10 +119,10 @@ DRAFT may search the web to orient (is this intervention space crowded? what res
 1. **PROSE** in the stage doc (Opportunity, Mechanism hypothesis, beat text, ...) -- phrased as orientation, never as settled fact; anything load-bearing stays a raised question.
 2. **A RAISED QUESTION** -- a gap the search reveals goes through step 4 RAISE+PLAN like any other question, with no special status. The entry contract lives there, not here.
 
-FORBIDDEN in DRAFT: writing an `### a-executor` (the ANSWER -- that is PROBE's ⑤ harvest), or treating an inline result as landed evidence. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
+FORBIDDEN in DRAFT: writing an `### a-executor` (the ANSWER -- that is EVIDENCE's ⑤ harvest), or treating an inline result as landed evidence. Real evidence lands ONLY via the EVIDENCE phase dispatching `haipipe-application-evidence` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the EVIDENCE phase did not happen."
 
 DRAFT writes no `target:` or Probe state at all.
-Only PROBE may create the persisted Probe record, write `### a-executor`, and advance its derived state.
+Only EVIDENCE may create the persisted Probe record, write `### a-executor`, and advance its derived state.
 
 ## Return contract
 
@@ -130,7 +130,7 @@ Only PROBE may create the persisted Probe record, write `### a-executor`, and ad
 status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path written>
-needs:     <count of Q-consumers raised for PROBE>
+needs:     <count of Q-consumers raised for EVIDENCE>
 questions:<each raised Q-consumer id + question; or "none">
-next:      <PROBE | REVISE | CHECK | DRAFT, chosen by the Page router>
+next:      <EVIDENCE | REVISE | CHECK | DRAFT, chosen by the Page router>
 ```

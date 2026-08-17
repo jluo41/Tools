@@ -21,9 +21,9 @@ dashboard: board/haipipe-board/cli/display-report.py <this stage's dir>
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
-                           # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
-                           # This is safe only because PROBE cannot spend: see probe_depth.
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+                           # Default is ONE, at CHECK. DRAFT/EVIDENCE/REVISE run unattended.
+                           # This is safe only because EVIDENCE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
                            # consumer's `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -200,7 +200,7 @@ A1.<n> output Aim              a known outcome — materialized intake, approved
 ```
 
 Do not disguise a known repair as a Q-consumer, and do not leave an uncertainty as an unlabeled
-build item. The distinction keeps PROBE responsible for answers and the renderer responsible for
+build item. The distinction keeps EVIDENCE responsible for answers and the renderer responsible for
 execution. Because displays now gate per unit, the Q id includes that unit (`Q-Display1A-1`),
 not a paper-wide ambiguous `Q-Display-1`.
 

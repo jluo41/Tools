@@ -1,0 +1,4 @@
+interface:
+  display_name: "Haipipe LLM Engine"
+  short_description: "Inspect and run native Claude/Codex SDK campaigns"
+  default_prompt: "Use $haipipe-task-llm-engine to inspect the active LLM runtime and validate its campaign status without making provider calls."

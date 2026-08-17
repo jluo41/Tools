@@ -25,9 +25,9 @@ dashboard: none
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
-                           # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
-                           # This is safe only because PROBE cannot spend: see probe_depth.
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+                           # Default is ONE, at CHECK. DRAFT/EVIDENCE/REVISE run unattended.
+                           # This is safe only because EVIDENCE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
                            # consumer's `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -148,14 +148,14 @@ questions are worth paying for. Raising stays free; only PAYING is gated.
 There is NO CAP on how many questions a seed raises. The count that matters is how many it
 DISPATCHES, and the gate sets that — not this document.
 
-DRAFT may search; PROBE must bind
+DRAFT may search; EVIDENCE must bind
 ---------------------------------
 
 Inline WebSearch is legitimate DRAFT fuel — orientation that becomes prose plus `planned`
 Q-executor entries. It is NEVER evidence.
 
-PROBE must ALWAYS run the real worker. An inline result binds to nothing.
-DRAFT raises the Q-consumer question; PROBE alone opens the entry, MATCHes it,
+EVIDENCE must ALWAYS run the real worker. An inline result binds to nothing.
+DRAFT raises the Q-consumer question; EVIDENCE alone opens the entry, MATCHes it,
 dispatches within the ceiling, and harvests `#### A-executor`.
 
 Profiling OUR OWN data belongs in RESOURCE. Such a question may well have been RAISED here — it

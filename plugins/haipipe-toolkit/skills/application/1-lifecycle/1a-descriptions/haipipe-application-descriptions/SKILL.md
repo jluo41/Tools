@@ -31,12 +31,12 @@ Interventions live on DYNAMIC data (iterate keeps refreshing it) and the artifac
 **1. Anchored summaries ONLY — the doc quotes what landed, it never computes.**
 One Description is a subsection — a topic title plus one anchored line, e.g. `## Description 3 · engagement timing` then `median engagement gap 41d -> tasks/A_message_design/results/summary.csv (as-of 2026-07-08)`.
 Every number carries a pointer to a project-side artifact (task result, discovery source) and an as-of date; no raw data, no tables of rows, no inline computation or estimation.
-There is no sidecar here: the Description subsections ARE the anchored entries, and the rich landed detail (arm-by-arm rates, distributions, the field inventory) stays in the task/discovery result the entry points to — the PROBE `values:` lane lands the anchored one-liner + pointer, not a sidecar copy.
+There is no sidecar here: the Description subsections ARE the anchored entries, and the rich landed detail (arm-by-arm rates, distributions, the field inventory) stays in the task/discovery result the entry points to — the EVIDENCE `values:` lane lands the anchored one-liner + pointer, not a sidecar copy.
 Each Description carries a short id (Description 3 -> `D3`) that is ladder-local (1b cites `T1 (D3)`, 1c `C2 (T1; D3)`) and unrelated to PP numbers — spelled out where DEFINED, short where CITED.
 
 **2. Rounds are the GROW saturation engine, not a formality.**
 The roster GROWS because LANDED numbers feed the next round's questions — round 2's best questions cannot be asked until round 1's numbers exist.
-Each round: GENERATE (a question storm per `ref/interrogation-battery.md`, the lens ROTATED per round) -> FILTER (answerable from existing D entries? discard : new D slot + a probe question) -> RELEASE MENU (user picks; PROBE dispatches picks) -> LAND (numbers land as D entries + DS sheets) -> REVISE -> SELF-TEST (answer the blind battery from D entries ONLY, one D id per answer; any stumble is next round's topic).
+Each round: GENERATE (a question storm per `ref/interrogation-battery.md`, the lens ROTATED per round) -> FILTER (answerable from existing D entries? discard : new D slot + a probe question) -> RELEASE MENU (user picks; EVIDENCE dispatches picks) -> LAND (numbers land as D entries + DS sheets) -> REVISE -> SELF-TEST (answer the blind battery from D entries ONLY, one D id per answer; any stumble is next round's topic).
 The lens rotates: round 1 SCHEMA, round 2 DISTRIBUTION ("click 1.9% — concentrated where? missing how?"), round 3 CROSSING / SURPRISE, until a DRY storm + a passed self-test says SATURATED.
 Log every lap `[ROUND n]` in `_LOG`; the dry-stop bar is venue-scaled (Stage Gate Protocol: light = one clean round, medium = one dry round, full = two consecutive dry rounds).
 
@@ -57,17 +57,17 @@ DRAFT   FIRST consume seed's forward pointers — grep seed's _LOG_0-seed.md for
         a DDL, or a schema-only probe) into the DS sheet's Field Disposition (every field group profiled |
         waived | excluded-PHI), sweep the six coverage facets, run this round's lens-rotated question storm,
         turn each unanswerable question into a D slot + a probe question; end with the release menu
-PROBE   dispatch via haipipe-application-probe (task-profile: "profile the cohort", "pull
+EVIDENCE   dispatch via haipipe-application-evidence (task-profile: "profile the cohort", "pull
         engagement summary"); the values: lane lands anchored numbers into Description entries (with as-of dates) — the rich
         detail stays in the task result the entry points to (no sidecar). Routing mechanics are the probe layer's:
-        ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md
 REVISE  tighten entry wording, group by dataset, dedupe
 CHECK   exit gate (may be BATCHED into the ladder gate per the venue, Stage Gate Protocol): every entry anchored +
         dated, pointers resolve, no unconsumed FORWARD pointer, no unresolved STALE tag, the last [ROUND n]
         DRY + self-test passed
 ```
 
-Descriptions RECEIVES evidence, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-probe` binds them.
+Descriptions RECEIVES evidence, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-evidence` binds them.
 Announce every phase boundary (reply line + `[PHASE]` in `_LOG`); skip a phase only by an explicit logged verdict; CHECK is never implicit — batching changes WHERE approval happens, not whether.
 CHECK is part of the loop, not only its exit: the gate presents the saturation evidence AND asks "which data topics are still missing?" — the user is the strongest lens, a `grow` verdict converts the answers to new D slots and re-opens DRAFT as `[ROUND n+1]`, and approve means saturated AND the user added nothing.
 Mid-phase back-routing stays legal (`[ROUTE -> seed]` for feasibility holes).

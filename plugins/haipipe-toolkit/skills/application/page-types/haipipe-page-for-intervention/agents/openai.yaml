@@ -1,0 +1,4 @@
+interface:
+  display_name: "Application Intervention Page"
+  short_description: "Map settled insights into mechanisms, components, and variants"
+  default_prompt: "Use $haipipe-page-for-intervention to design the intervention from settled Insight pages."

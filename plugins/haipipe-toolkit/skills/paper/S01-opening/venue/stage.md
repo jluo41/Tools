@@ -26,16 +26,16 @@ dashboard: none
 phases: [draft, probe, check]
                           # THREE phases — no REVISE. Venue produces a CONTRACT (a scored
                           # decision + a transcribed blueprint), not prose, so there is
-                          # nothing for REVISE to polish. But it DOES run PROBE: it raises
+                          # nothing for REVISE to polish. But it DOES run EVIDENCE: it raises
                           # `## Q-Venue-<n>` questions (recent-publications, editor and
                           # competing-paper checks) as real nested S03/S04 entries, and
-                          # template.md states "Answer: empty in DRAFT — PROBE
+                          # template.md states "Answer: empty in DRAFT — EVIDENCE
                           # fills it: the finding + [source: PP<nn>]".
                           # The invariant is only that `phases` ends with `check`.
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
-                           # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
-                           # This is safe only because PROBE cannot spend: see probe_depth.
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+                           # Default is ONE, at CHECK. DRAFT/EVIDENCE/REVISE run unattended.
+                           # This is safe only because EVIDENCE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
                            # consumer's `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -127,7 +127,7 @@ formatting:
 
 q_id_pattern: "- P<n> · Q-Venue-<n> · <title>"
 q_anchor: "[Q-Venue-<n>] cited inline in the Venue Decision sentence it rests on"
-closed_when: "PROBE writes the finding + [source: <nested-entry>] into the Answer field. That is where
+closed_when: "EVIDENCE writes the finding + [source: <nested-entry>] into the Answer field. That is where
               the loop closes for this stage — there is no REVISE to weave it back into prose,
               because the artifact is a contract, not prose. A landed Answer that changes the
               pick re-opens DRAFT rather than being woven in."

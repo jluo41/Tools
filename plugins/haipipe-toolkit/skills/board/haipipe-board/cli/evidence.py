@@ -31,7 +31,7 @@ from collections import Counter
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-from src.topic_entry_contract import PROBE_DIRS, head            # noqa: E402
+from src.topic_entry_contract import EVIDENCE_DIRS, head            # noqa: E402
 
 # One marker pair PER GENERATOR. A shared pair means the last writer
 # silently deletes every other block on the page, which is what a shared
@@ -66,7 +66,7 @@ def topics(board):
         s = str(page)
         if any(x in s for x in ("/board/", "/_archive/", "/_old/")):
             continue
-        if any(d in page.parts for d in PROBE_DIRS):
+        if any(d in page.parts for d in EVIDENCE_DIRS):
             continue
         text = page.read_text(errors="ignore")
         route = ROUTE.search(head(text))

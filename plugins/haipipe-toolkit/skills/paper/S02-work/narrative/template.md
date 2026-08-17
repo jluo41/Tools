@@ -176,7 +176,7 @@ Q-consumer
      · ANCHORED, not detached — every question spot-checks a SPECIFIC beat above; cite its id inline in the beat(s) it hangs on, e.g. [Q-Narrative-1]. One question may be cited from several beats.
      · A BEAT THAT EXPOSES AN EVIDENCE GAP RAISES A QUESTION HERE — it never gathers the evidence inline. The arc COMPOSES; it does not collect.
      · A beat tagged [PENDING] or [INFER] whose readiness depends on an unlanded fact must carry a question; that is what makes the tag auditable.
-     · Description = what the question wants to know. Reason = every beat it is cited from + what happens to the arc if that beat's assumption is wrong. Answer = empty in DRAFT; PROBE fills it from the answering QA file.
+     · Description = what the question wants to know. Reason = every beat it is cited from + what happens to the arc if that beat's assumption is wrong. Answer = empty in DRAFT; EVIDENCE fills it from the answering QA file.
      · The loop closes at REVISE: the answer is woven back into every beat citing [Q-Narrative-<n>], the readiness tag is re-evaluated, and the bracket is discharged. -->
 
 - P<n> · Q-Narrative-<n> · <question title>
@@ -184,4 +184,4 @@ Q-consumer
   **Description:** <what the question wants to know — one sentence per line>
   **Reason:** <which beat(s) above cite this id, and what happens to the arc if that beat's assumption is wrong>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]>
+  **Answer:** <empty in DRAFT — EVIDENCE fills it from the answering QA file, anchored [source: PPnn]>

@@ -232,9 +232,11 @@ QBe3-content-latex-word-display.md
 
 ### QBt · Page types this family owns
 One specimen per Page Type in `paper/page-types/`, on the rule that a specimen lives with the skill set that owns the contract (JL 260809).
-The five here are the types admitted on 260809: the four family dashes and narrative. Each points at its live instance on the MISQ paper rather than simulating one, because a real working page cannot rot without somebody noticing.
-The five older paper-owned types arrived from `BoardSkillBoard-260722` on 260809 (JL ruled option A on that board's `QB6`), and they kept their ids so their citations survived; the five newer ones took 11 to 15 rather than renumber ~40 references.
-`_fixture-qbt/` came with them: it is ONE compiled specimen paper, not a shared folder, and all ten pages plus the three that stayed behind demonstrate against it, which is why it moved whole. It is renamed from `_fixture` because this board root already has a `_fixture` of its own.
+The live Paper roster is now five contracts: Opening, Venue, Narrative, Section, and one merged Dash whose `dash_family:` field selects its payload.
+Opening hands an accepted identity and venue position to Narrative; Narrative hands one reader-ordered row to each Section page.
+PageX reads existing Pages while Probe separately reaches Task and Discovery folders through their owning evidence Pages.
+Older Display, Literature, Value, and per-family Dash specimen pages remain here as history; their contracts are archived and are not installed.
+`_fixture-qbt/` is the compiled historical specimen paper carried with those earlier pages.
 QBt2-for-venue.md
 QBt3-for-display.md
 QBt4-for-literature.md
@@ -247,6 +249,7 @@ QBt14-for-dash-literature.md
 QBt15-for-narrative.md
 QBt16-display-construction.md
 QBt17-display-boundary.md
+QBt18-for-opening.md
 ### QBv · Delivery Venue
 One page per VENUE TARGET, and nothing above it. A page is a specific journal, agency, or patent office: what that desk accepts, what it desk-rejects, and what it requires of every section and of the appendix. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
 A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QBe3 §3.

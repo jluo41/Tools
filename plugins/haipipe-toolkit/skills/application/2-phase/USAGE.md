@@ -1,7 +1,7 @@
 2-phase — how to use it (application)
 ======================================
 
-Concrete recipes for the application phase engine (thin mirror of `../../paper/2-phase/USAGE.md`). You never invoke a phase worker directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → PROBE → REVISE internally, then stops at CHECK for you. Worker contracts live in each worker's SKILL.md; this page is a map. Paths below use a real bench intervention:
+Concrete recipes for the application phase engine (thin mirror of `../../paper/2-phase/USAGE.md`). You never invoke a phase worker directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → EVIDENCE → REVISE internally, then stops at CHECK for you. Worker contracts live in each worker's SKILL.md; this page is a map. Paths below use a real bench intervention:
 
 ```
 INT=examples/ProjApp-SMSDesign/applications/04_bench_timing_report
@@ -11,7 +11,7 @@ TL;DR
 -----
 
 ```
-1. /haipipe-application claims                 → stage skill runs DRAFT → PROBE → REVISE (automatic)
+1. /haipipe-application claims                 → stage skill runs DRAFT → EVIDENCE → REVISE (automatic)
 2. It stops at CHECK: checker output (check-probe-cards.sh + checks.sh) + probe flags
 3. You reply in the stage doc as  > USER: …  threads, or decide: proceed / restart / accept / park
 4. Ask to apply → the stage restarts the affected phase, re-runs everything downstream, re-CHECKs
@@ -23,8 +23,8 @@ Same engine behind every stage: `seed | descriptions | themes | claims | advice 
 A. Run a stage (the normal path)
 ---------------------------------
 
-- **DRAFT** 🤖 — `haipipe-application-draft` settles structure + sentences in the stage doc (`$INT/0-lifecycle/<stage>/<stage>.md`); it may WebSearch as DRAFT-only scoping fuel and RAISES what it cannot answer as `state: planned` question ENTRIES in the flat pool `1-probes/` ("DRAFT may search; PROBE must dispatch"). Content decisions are negotiated with you here.
-- **PROBE** 🤖 — `haipipe-application-probe` runs the five-step loop over those entries: ORGANIZE → MATCH → DISPATCH (`Agent(haipipe-probe-q-executor-agent)`, the stake-free collector) → POINT → INTERPRET (venue-scaled harvest lanes, see `README.md`), then VERIFY (`check-probe-cards.sh`). Agent-only; nothing gates on you.
+- **DRAFT** 🤖 — `haipipe-application-draft` settles structure + sentences in the stage doc (`$INT/0-lifecycle/<stage>/<stage>.md`); it may WebSearch as DRAFT-only scoping fuel and RAISES what it cannot answer as `state: planned` question ENTRIES in the flat pool `1-probes/` ("DRAFT may search; EVIDENCE must dispatch"). Content decisions are negotiated with you here.
+- **EVIDENCE** 🤖 — `haipipe-application-evidence` runs the five-step loop over those entries: ORGANIZE → MATCH → DISPATCH (`Agent(haipipe-probe-q-executor-agent)`, the stake-free collector) → POINT → INTERPRET (venue-scaled harvest lanes, see `README.md`), then VERIFY (`check-probe-cards.sh`). Agent-only; nothing gates on you.
 - **REVISE** 🤖 — `haipipe-application-revise` changes the text directly for venue + audience fit, leaving why-comments. No comment-first pause.
 - **CHECK** 🧑 — `haipipe-application-check` re-runs the probe-file checker + runs `checks.sh`, seeds `> CHECK:` threads in the STAGE DOC (artifact findings go to Gate Ledger notes), and presents the gate. This is where you come in.
 
@@ -43,7 +43,7 @@ Gate depth is venue-scaled (`../haipipe-application/SKILL.md` Stage Gate Protoco
 C. Restart a phase after CHECK feedback
 ----------------------------------------
 
-Phase order is fixed (draft → probe → revise → check), so a restart re-runs the named phase **and everything downstream**. Restarting DRAFT reopens content decisions with you; PROBE/REVISE restarts run automatic and land back at CHECK.
+Phase order is fixed (draft → probe → revise → check), so a restart re-runs the named phase **and everything downstream**. Restarting DRAFT reopens content decisions with you; EVIDENCE/REVISE restarts run automatic and land back at CHECK.
 
 D. The effort dial
 -------------------
@@ -55,7 +55,7 @@ D. The effort dial
 E. Boundaries (always true)
 ----------------------------
 
-- DRAFT is the only phase that negotiates content with you; PROBE and REVISE never wait on a human.
-- No number is invented and no inline search happens in PROBE — evidence dispatches through the collector per section, and you verify in CHECK.
+- DRAFT is the only phase that negotiates content with you; EVIDENCE and REVISE never wait on a human.
+- No number is invented and no inline search happens in EVIDENCE — evidence dispatches through the collector per section, and you verify in CHECK.
 - Unresolved `> USER:` threads keep a stage open; silence is not consent.
 - `> CHECK:` threads live in stage docs only; `0-artifacts/*.md` stay clean — artifact findings land in the Gate Ledger notes column.

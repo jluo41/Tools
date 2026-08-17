@@ -1,11 +1,14 @@
-# Delivery Opening: why the intervention exists, where it ships, and what it promises
-state: 🔴 OPEN
+# Brief: why the intervention exists, where it ships, and what it promises
+state: 🟡 PARTIAL
 owner: JL
 method: bind the seed wager, the venue pin, and the pitch into one reader-facing concern, mirroring QB1@paper without copying its paper-only stage order
 session: 238a70b8-04b7-4c27-ad56-7c1932584c06
 
 ## Opening
-What does a reader get as an intervention's Opening: the seed wager, the venue pin, and the pitch, and where does each live?
+What does a reader get in an Application Brief, and where does each part live?
+
+**Naming ruling (260817)**: Application's formal Page Type is `Brief`, not `Opening`. Paper keeps the globally unique `Opening` type. This folder retains the historical board id `QB1-opening` so old links remain readable; its Seed + Venue + Pitch material migrates into one Brief Page.
+
 The seed says why it might work, the pin says which channel ships it, and the pitch says what it promises there.
 Each is settled at a different moment, with the whole evidence ladder between the first two, so the three drift into three folders.
 This page binds them into one concern and names the file home of each answer.
@@ -60,7 +63,7 @@ A sentence about whether an Opening answer is settled belongs here.
 
 ## Content
 
-### 1 · One Opening, three homes
+### 1 · One legacy opening concern, one Brief Page
 **Promise and refuter, per answer**: what downstream reads, and what knocks each answer down.
 
 ```text
@@ -73,7 +76,7 @@ A sentence about whether an Opening answer is settled belongs here.
 ```
 🧾 This part states what the three answers promise the stages after them, and the concrete thing that knocks each one down.
 
-#### 1.1 · What the Opening promises downstream
+#### 1.1 · What the Brief promises downstream
 (after the pin, every stage reads two files, and this page says which two)
 After the pin, any stage can name its channel contract, its skipped stages, and its settlement bar from two files: the three rows in `STATUS.md` and the Artifact Principles in `2-venue.md`.
 The pitch sells only what the ladder settled, so a downstream reader never meets an unanchored promise.
@@ -197,7 +200,7 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 
 ## Aims
 
-### A1 · 🧾 One Opening, three homes
+### A1 · 🧾 One legacy opening concern, one Brief Page
 - A1.1 · Every downstream stage can find the three answers from this page alone.
   **Done when:** each answer names its exact artifact path here, and all three paths resolve on a pinned intervention without editing this page.
 - A1.2 · Each answer's refuter is stated beside its promise.
@@ -236,7 +239,7 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
       🛑 `Blocks` nothing today; the fixture has not run rung 1a
       🤖 `If nobody answers` A takes effect
 
-### A1 · 🧾 One Opening, three homes
+### A1 · 🧾 One legacy opening concern, one Brief Page
 - 🔨 A1.1 · Written into `§1.1` and the Diagram; the fixture holds only `0-seed.md` today, so two of the three homes cannot be opened yet.
 - 🔨 A1.2 · `§1.2` names a refuter per answer; the wager's own refutation waits on the Decision Now row above.
 
@@ -272,6 +275,8 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 
 ## Law
 
+- 260817 JL · ⚖️ The formal Application Page Type is Brief. `Opening` is reserved for Paper; legacy Seed + Venue + Pitch fold into Brief.
+
 - 260729 JL · ⚖️ The venue decision is Opening's, and the venue catalog is not
       The pin and its downstream contract live on this page; per-venue pack knowledge takes its own group and no page restates it.
       Ruled on the paper board (QB1@paper) on 260729 and sharpened in that board's QBv group note on 260802 when the catalog group opened; mirrored onto this board by the 260802 assignment. Rejected: a separate venue concern, because it made the work read as though it chose a channel after deciding what it argued.
@@ -288,5 +293,6 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 - 🔗 **QB1@paper**: the paper board's Delivery Opening page, written as a plain token so it never links as this board's own QB1.
 
 ## Log
+260817 · Renamed the formal Page Type to Brief, preserved `QB1-opening` as a legacy board id, and mapped Seed/Venue/Pitch into the Brief contract.
 260802 · Page created from the assignment packet: seed, pin, and pitch bound as one Opening concern mirroring QB1@paper, and the wager-refutation fork opened in Decision Now.
 260802 · The retarget rule, a re-pin reopens the pitch and leaves the seed, mirrored from QB1@paper into `## Law` with its rejected options; `§3.3` anchored to it and A2.1's State updated, because `A2.1`'s done-when rested on a ruling this board had not recorded. Provenance of the 260729 entry corrected to the paper board's QBv group note, and `§1.2`'s pin refuter reworded from refused to refuted.

@@ -3,6 +3,14 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.7.0] — 2026-08-17
+
+- Added the `insight` knowledge door and `fn/insight.md`.
+- Separated execution from interpretation: P-B-E-R and QA remain source-side;
+  the Task/Insights Board owns consumer-neutral DIKW Pages.
+- Paper and Application now consume settled Insight handoffs through PageX rather
+  than entering Task folders or rebuilding DIKW inside their own lifecycles.
+
 ## [0.6.3] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 6.3.0; older entries below keep their original numbers).

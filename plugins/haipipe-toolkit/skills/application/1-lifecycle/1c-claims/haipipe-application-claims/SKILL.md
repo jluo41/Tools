@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.7.6"
   last_updated: "2026-07-19"
-  summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as entries in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
+  summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the EVIDENCE phase (questions raised as entries in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-claims
@@ -49,15 +49,15 @@ There is NO Hypotheses section (application delta vs paper): the mechanism lives
 DRAFT   re-mine last round's Declined reservoir, read 1b-themes.md (hooks = claim candidates)
         and 1a-descriptions.md (the grounding floor); CONSUME every hook; give every primary a
         Rival; write Claims (short, theme-tagged), Q-consumer (the evidence questions), Evidence Campaign
-PROBE   one worker call; the five-step loop raises each GAP/weak claim as a SECTION in 1-probes/
+EVIDENCE   one worker call; the five-step loop raises each GAP/weak claim as a SECTION in 1-probes/
         and COLLECTS — the claim status FLIPS at INTERPRET, numbers land INLINE on the claim (+ resolving pointer).
-        Routing mechanics are the probe layer's: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        Routing mechanics are the probe layer's: ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md
 REVISE  refine claim statements, probe-plan clarity, campaign ordering
 CHECK   settlement bar vs the campaign table; every hook consumed; every primary has a Rival +
         Refutes-if; every settled claim traced to a RESOLVING QA file; no aspirational anchors; no STALE tags
 ```
 
-Claims RECEIVES evidence, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-probe` binds them.
+Claims RECEIVES evidence, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-evidence` binds them.
 `--backfill <PPNN>` flips a claim from a landed answer: `supported` -> supported · `refuted` -> drop or reword · `inconclusive` -> stays weak/GAP with the caveat recorded.
 Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> themes|descriptions]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 Seed's `[FORWARD -> CLAIMS]` pointers are consumed by rung 1a, which seeds this doc's questions; this rung no longer greps seed's `_LOG` itself.

@@ -1,21 +1,21 @@
 # Paper probe routing
 
 The Paper layer owns why a question matters. The task and discovery layers own
-the evidence. PROBE is the durable path between them:
+the evidence. EVIDENCE is the durable path between them:
 
 ```text
 DRAFT: direct topic page owns the Q-consumer and paper stake
   ↓
-PROBE: one nested entry owns the Q-executor and bank binding
+EVIDENCE: one nested entry owns the Q-executor and bank binding
   ↓
 EXECUTOR: task or discovery produces a QA file
   ↓
-PROBE: entry copies the answer; topic page records paper interpretation
+EVIDENCE: entry copies the answer; topic page records paper interpretation
 ```
 
 The shared crossing model (stake stripping, the wall, the QA state-line
 contract, the two LAWS, derived states) is owned by `probe/haipipe-probe/SKILL.md`;
-the page-phase contract is `board/page-phases/haipipe-page-probe`. This
+the page-phase contract is `board/page-workflows/haipipe-page-evidence`. This
 file holds only how a PAPER runs the loop, plus the paper-side deltas.
 
 ## Runtime layout
@@ -74,7 +74,7 @@ under `0-lifecycle/_archive/1-probes/`.
 /haipipe-paper probe run <topic-id>     run one topic, for example literature-1
 ```
 
-All commands go through the door's PROBE step; the stages never touch the bank
+All commands go through the door's EVIDENCE step; the stages never touch the bank
 themselves.
 
 ## The five-step loop
@@ -136,13 +136,13 @@ bank: new    = depth 3   open a new task-folder          costs most
 Deferring is a correct outcome, not a failure; declare it on the entry as
 `**state**: deferred` plus a `**deferred**: depth-<n> · <reason>` line, never
 as silence. The `--depth` spend-authority rule itself lives in the door
-(`../SKILL.md`, "The PROBE ceiling"): never raise the ceiling on your own
+(`../SKILL.md`, "The EVIDENCE ceiling"): never raise the ceiling on your own
 initiative.
 
 ### ③ DISPATCH goes through the collector
 
 Hand the still-collecting SET to `Agent(haipipe-probe-q-executor-agent)` with
-`project_root`, the QA-probes, and each one's PROBE-authored `route`
+`project_root`, the QA-probes, and each one's EVIDENCE-authored `route`
 (task|discovery, AUTHORITATIVE). The agent's clean context IS the wall: it
 sends each `Q-executor` VERBATIM to the task or discovery orchestrator agent
 and returns `{ entry → target: QA-path | in-flight | failed }`. A stage or the
@@ -171,7 +171,7 @@ harvested now, not at its eta.
   bibtex, NEVER touch `.bib`. Display links only for units that EXIST or whose
   DR row is `done`.
 - Placing anything INTO manuscript prose is REVISE's job
-  (`../../S06-main/section-edit/revise-place-craft.md`), not PROBE's.
+  (`../../S06-main/section-edit/revise-place-craft.md`), not EVIDENCE's.
 
 ### VERIFY
 
@@ -179,7 +179,7 @@ harvested now, not at its eta.
 sh paper/haipipe-paper/probe/check-probe-cards.sh <paper_root> [--stage <key>]
 ```
 
-The FAIL codes are probe's. Never report a green PROBE over a FAIL.
+The FAIL codes are probe's. Never report a green EVIDENCE over a FAIL.
 
 ## Reference
 

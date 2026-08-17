@@ -22,7 +22,7 @@ It answers: what content element carries each claim, and what job does each unit
 5-section-edit  does each section's prose do its job
 ```
 
-Read first: `../../../PHILOSOPHY.md`, the probe layer's `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md` (the 4-display lane wording).
+Read first: `../../../PHILOSOPHY.md`, the probe layer's `../../../2-phase/1-evidence/haipipe-application-evidence/ref/per-stage-dispatch.md` (the 4-display lane wording).
 
 
 ## What's special: three things make a display a display
@@ -39,7 +39,7 @@ The available element types come from the venue stage doc's Artifact Principles 
 **3. Display is the ONE stage that commissions its own units.**
 A missing unit raised from narrative or a section is NOT commissioned there — it becomes a request row this stage later fulfills, and that section closes `answered-local`.
 Only THIS stage commissions render/materialization work for its own accepted units; every other stage's display lane merely LINKs what landed.
-A unit whose data source does not exist yet is an evidence need: it is raised as a question SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and dispatched through PROBE — display never runs `/haipipe-task` or renders inline (LAW 1).
+A unit whose data source does not exist yet is an evidence need: it is raised as a question SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and dispatched through EVIDENCE — display never runs `/haipipe-task` or renders inline (LAW 1).
 The rendered output lands task-side; the unit's Data source field points at it.
 
 
@@ -49,14 +49,14 @@ The rendered output lands task-side; the unit's Data source field points at it.
 DRAFT   read 3-narrative.md (the arc, if it fired), 1d-advice.md (what each element carries), 1c-claims.md
         (the evidence anchor behind each element), and the venue profile's element types; map every
         primary claim to >=1 display UNIT, each with Type / Claim / Job / Content / Data source
-PROBE   one worker call; an unmaterialized data source is raised as a SECTION in 1-probes/ and, uniquely,
+EVIDENCE   one worker call; an unmaterialized data source is raised as a SECTION in 1-probes/ and, uniquely,
         commissioned by this stage; the display lane LINKs landed units. Routing is the probe layer's:
-        ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md (4-display lane in ref/per-stage-dispatch.md)
+        ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md (4-display lane in ref/per-stage-dispatch.md)
 REVISE  unit-set coherence: one job per unit, no orphan units, types match the venue's element set
 CHECK   the done list below vs the unit set -> Gate Ledger row in STATUS.md
 ```
 
-Display PLANS and LINKs units; it never computes, renders, or hand-authors an asset (LAW 1) — materialization is task work reached through the PROBE phase, which binds each question to a QA file in the task/discovery bank.
+Display PLANS and LINKs units; it never computes, renders, or hand-authors an asset (LAW 1) — materialization is task work reached through the EVIDENCE phase, which binds each question to a QA file in the task/discovery bank.
 
 
 ## The artifact

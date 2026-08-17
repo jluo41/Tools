@@ -14,7 +14,7 @@ What it does NOT do
 --------------------
 
 - It does NOT edit prose. It reports, and it seeds `> CHECK:` comments at the exact spot. Fixes go back through REVISE. CHECK verifies; the human decides; REVISE changes.
-- It does NOT fill a hole. An unresolved `\cite{TOADD} [Q-X-n]` is DRAFT's marker and PROBE's debt, not a defect for this pass.
+- It does NOT fill a hole. An unresolved `\cite{TOADD} [Q-X-n]` is DRAFT's marker and EVIDENCE's debt, not a defect for this pass.
 - It does NOT batch. See the cadence rule below.
 
 
@@ -132,4 +132,4 @@ An item the human declines to fix does not evaporate: record it as a `{CONCERN:<
 Where the rest lives
 ---------------------
 
-Phase dispatch and the CHECK gate itself are owned by `board/page-phases/haipipe-page-check` (CHECK loads this file last, after the type contract); the proof-checker pack with the same conditional shape is `../../S09-build/proof-checker/`; the pass that applies the fixes this walk asks for is `revise-place-craft.md`.
+Phase dispatch and the CHECK gate itself are owned by `board/page-workflows/haipipe-page-check` (CHECK loads this file last, after the type contract); the proof-checker pack with the same conditional shape is `../../S09-build/proof-checker/`; the pass that applies the fixes this walk asks for is `revise-place-craft.md`.

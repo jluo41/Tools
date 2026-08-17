@@ -79,7 +79,7 @@ move the resolved thread from its content position down into its own `## Log`.
 the new entry slots between `## Log` and that entry.
 
 **Entry headings carry date + HH:MM**
-(`### 2026-07-05 13:29 — [PHASE] PROBE — START`), so the S page
+(`### 2026-07-05 13:29 — [PHASE] EVIDENCE — START`), so the S page
 doubles as a coarse on-disk timeline. Legacy undated entries stay as-is.
 
 ```markdown

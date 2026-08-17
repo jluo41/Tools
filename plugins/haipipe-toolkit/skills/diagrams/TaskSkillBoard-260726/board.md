@@ -159,13 +159,15 @@ QC2-light-vs-heavy.md
 QC3-two-notebooks.md
 
 ### QD · What leaves the bank
-Small on purpose. This layer produces a great deal and almost none of it may leave: one readable
-digest per direction explored, written in general language for nobody in particular, and nothing
-else. The QA file's own contract, its state line and its checker, belong to `haipipe-probe`
-and are linked rather than restated; these two pages own only the executor's half, which is what
-we write and what we refuse to let anyone read.
+Two boundaries now sit here. A Task `QA/` digest is the readable source-side answer from one
+Task Folder. A settled Insight Page is the reusable knowledge wall above one or more Task or
+Discovery sources: one consumer-neutral D→I→K→W chain that Paper and Application read through
+PageX. Raw `results/` still never leave. QD3 defines the Insight Page; QD4 fixes the direction:
+Probe comes in here, PageX goes out, and downstream delivery boards never enter Task folders.
 QD1-the-qa-digest.md
 QD2-nothing-else-leaves.md
+QD3-the-insight-page.md
+QD4-probe-in-pagex-out.md
 
 ### QE · Shipping the skill
 Hand it over so a fresh agent can enter a group and run a folder without us. Last, because it is

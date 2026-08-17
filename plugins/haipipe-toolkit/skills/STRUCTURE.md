@@ -33,7 +33,7 @@ The probe, in five lines
 ========================
 
 ```
-A PROBE IS A PAPER-LEVEL DOCUMENT. Nothing else.
+A EVIDENCE IS A PAPER-LEVEL DOCUMENT. Nothing else.
     papers/<P>/1-probes/PPNN_<topic>/    ·    applications/<A>/1-probes/PPNN_<topic>/
 One file per TOPIC; each question is one SECTION: serves / target / state / Q-executor/A-consumer.
 Plus one '## Why' per file — the STAKE. It NEVER leaves the file.

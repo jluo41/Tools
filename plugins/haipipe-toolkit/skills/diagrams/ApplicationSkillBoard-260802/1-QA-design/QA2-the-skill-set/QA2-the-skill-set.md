@@ -1,14 +1,15 @@
 # The skill set: what ships
-state: 🔴 OPEN
+state: ✅ SETTLED
 owner: JL
 method: count the tree from each SKILL.md frontmatter, group by the README's layers, judge the collapse against QA2@paper
+session: 5899f0e6-efd1-438d-8554-4972188ea833
 
 ## Opening
-What does the Application family ship today, and which of it does round 3 collapse into stage data?
-On disk the family is 23 callable skills plus 8 venue packs under `skills/application/`.
-Ten of the 23 are per-stage skills in `1-lifecycle/` that each restate one lifecycle shape.
-The paper family already folded its per-stage skills into data files under one engine.
-This page counts the roster, with versions, and puts that collapse in front of JL.
+What does the Application family ship, and which shape is canonical now?
+
+The 260802 roster below remains the historical baseline. On 260817 JL selected a Page-first target: one Application door plus three globally unique Page Types: `Brief`, `Intervention`, and `Artifact`. On disk there are now 26 Application `SKILL.md` files: four canonical skills (door + three Page Types) and 22 legacy lifecycle/phase/delivery skills retained as compatibility readers during migration.
+
+**Current ruling**: the old ten-stage ladder is not the target architecture and is not collapsed into ten `stage.md` files. Its evidence-building rungs move upstream to consumer-neutral Task/Insight Pages. Application consumes settled Insight Pages through PageX and recomposes them as Brief → Intervention → Artifact. The old roster remains below so migration has an auditable source, not because it remains the menu.
 
 **What the words mean**: A layer is one top-level folder of the family tree, such as `1-lifecycle/` or `2-phase/`.
 A stage orchestrator is a user-facing skill that owns one lifecycle stage's deliverable, such as `haipipe-application-claims` owning the 1c claim ledger.
@@ -35,10 +36,10 @@ This page counts what ships and holds the one decision about it.
 **The page at a glance**: what ships, what round 3 would move, and who rules it.
 
 ```text
- 📦 ships       23 skills across 6 layers · 8 venue packs beside them
- 🔻 candidates  10 per-stage skills, all inside 1-lifecycle/
- ⚙️ proposal    one haipipe-application-stage engine + stage.md ×10 (option A)
- 🗣 decision    JL rules it in States · Decision Now
+ 📦 260802      23 skills across 6 layers · 8 venue packs
+ 📦 260817      26 skills: 4 canonical · 22 compatibility
+ ✅ target      Brief → Intervention → Artifact
+ 🔌 boundary    PageX reads settled Insight Pages · Application owns no Probe
 ```
 
 ## Content
@@ -137,12 +138,15 @@ QA2@paper states the closing rule this page inherits: a ruling that reaches ✅ 
 For option A the landing list is: a new `1-lifecycle/haipipe-application-stage/SKILL.md`, ten `stages/<dir>/stage.md` files, the ten retired skill folders removed from the tree, the README's Skill-tree layout rewritten, and the door's router table repointed.
 A ruling recorded only as architecture prose on this board would be exactly the drift that rule exists to stop.
 
+#### 2.4 · The selected fourth option: replace the ladder with Pages
+JL selected a Page-first option that the original A/B/C row did not contain. The canonical files are `haipipe-application/SKILL.md` plus `page-types/haipipe-page-for-{brief,intervention,artifact}/SKILL.md`. The door folds legacy Seed/Venue/Pitch into Brief, Narrative/Display into Intervention, and Section Edit/Draft into Artifact. Descriptions/Themes/Claims/Advice do not become Application stages: missing knowledge routes to `/haipipe-task insight`.
+
 ## Aims
-### A1 · 📦 The roster
+### A1 · 📦 The roster: 23 skills and 8 packs
 - A1.1 · The roster on this page matches the tree on disk.
   **Done when:** Every version in Part 1 equals the `metadata.version` in that skill's SKILL.md frontmatter, and the 🔻 rows count exactly ten.
 
-### A2 · 🔻 The collapse
+### A2 · 🔻 The round-3 collapse
 - A2.1 · JL rules the round-3 collapse question.
   **Done when:** The Decision Now row is answered, the ruling sits in a dated Law entry, and this Aim's State names the chosen option.
 - A2.2 · The ruling lands in concrete files.
@@ -150,21 +154,22 @@ A ruling recorded only as architecture prose on this board would be exactly the 
 
 ## States
 ### Decision Now
-- [ ] 🗣 Do the ten 1-lifecycle stage skills collapse into stage data under one engine in round 3?
+- [x] 🗣 Do the ten 1-lifecycle stage skills collapse into stage data under one engine in round 3?
       📍 `Part` 2 · the round-3 collapse
       🔔 `Why now` round 3 is being scoped and the family has not moved since 2026-07-19, so the collapse can land before new stage edits pile up
       ⭐ `A ·` collapse all ten: add `haipipe-application-stage`, write ten `stages/<dir>/stage.md` files, retire the ten skill folders, rewrite the README and the door's routing; CC recommends A because ten SKILL.md files restating one shape drift ten ways and the paper engine has already carried this exact move
       `B ·` keep the ten callable and share their common shape through one ref file; cheaper this round, and the ten-way drift risk stays
       `C ·` defer past round 3 until the paper engine has survived a full paper cycle; nothing moves this round
+      ✅ `D · selected 260817` replace the ladder as the canonical model with Brief → Intervention → Artifact Pages; retain old stage skills only as compatibility readers while evidence work moves to Task/Insight
       🛑 `Blocks` the round-3 restructure of `1-lifecycle/`; the roster in Part 1 stays correct either way
       🤖 `If nobody answers` C in effect: the tree stays as counted and the ten stay callable
 
-### A1 · 📦 The roster
+### A1 · 📦 The roster: 23 skills and 8 packs
 - ✅ A1.1 · Met on 260802; the 23 frontmatters were read for this page, the table carries their versions verbatim, and the 🔻 rows count ten.
 
-### A2 · 🔻 The collapse
-- 🧠 A2.1 · Waiting on JL; the Decision Now row above carries the three options.
-- ⬜ A2.2 · Not started; it opens the moment A2.1 is answered.
+### A2 · 🔻 The round-3 collapse
+- ✅ A2.1 · JL selected D on 260817: Page-first Application, not a ten-contract stage engine.
+- ✅ A2.2 · Landed in the Application door, three Page Type skills, four router functions, README, preferences, Page resolver, and the QBt Page Type group; legacy stage skills remain compatibility readers rather than being deleted during a dirty-tree migration.
 
 ## Files
 ### ⚙️ Engines
@@ -185,6 +190,12 @@ A ruling recorded only as architecture prose on this board would be exactly the 
 - 🎒 **venue pack**: a knowledge folder under `venue/`, a README plus a style-profile, consulted by venue-aligned stages and never a lifecycle verb.
 - 🗂 **stage data**: a `stages/<dir>/stage.md` contract file one engine reads, replacing a per-stage SKILL.md; the paper family's current shape.
 - 🔁 **round 3**: the rework pass this board is scoping; this page marks which skills that pass would collapse.
+- 💡 **Insight Page**: a consumer-neutral D→I→K→W record owned by the Task/Insights Board and read by Application through PageX.
+- 🧾 **Brief**: Application's formal opening-concern Page Type; this unique name prevents collision with Paper `Opening`.
+
+## Law
+- 260817 JL · ⚖️ Application uses three globally unique Page Types: Brief, Intervention, Artifact. It consumes settled Task/Insight Pages through PageX and owns no evidence Probe.
 
 ## Log
+260817 · Superseded the A/B/C stage-collapse proposal with the implemented Page-first ruling; retained the 260802 roster as migration history.
 260802 · Page opened: counted 23 skills and 8 venue packs from the frontmatters and the README, marked the ten 🔻 collapse candidates, and raised the collapse decision for JL.

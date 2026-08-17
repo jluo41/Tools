@@ -7,7 +7,7 @@ Venue: <pinned venue>
 Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
 The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
-Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and, uniquely among stages, commissioned by this stage through the PROBE phase to a task; this doc plans and links.
+Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and, uniquely among stages, commissioned by this stage through the EVIDENCE phase to a task; this doc plans and links.
 
 
 
@@ -43,7 +43,7 @@ Unit -> section mapping (sectioned venues)
 Q-consumer
 ----------
 
-<Materialization needs — uniquely, this stage commissions these to a task via PROBE; the display lane LINKs what landed. One ## Q-Disp-<n> block each.>
+<Materialization needs — uniquely, this stage commissions these to a task via EVIDENCE; the display lane LINKs what landed. One ## Q-Disp-<n> block each.>
 
 ## Q-Disp-1 · materialize U<nn>
 

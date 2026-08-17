@@ -24,7 +24,7 @@ All stages are markdown (argument documents need no compilation). Each stage ans
 | 2-pitch | What is this intervention selling? (one minute, to the pinned venue + audience) |
 | 3-narrative | How do claims compose into the output's arc? |
 | 4-display | What content element carries each claim, and what job does each unit do? |
-| 5-section-edit | Does each section's prose do its job? (per-section DRAFT-PROBE-REVISE-CHECK) |
+| 5-section-edit | Does each section's prose do its job? (per-section DRAFT-EVIDENCE-REVISE-CHECK) |
 
 Stage 1 is the **evidence ladder** — Descriptions/Themes/Claims/Advice echo D→I→K→W. The manuscript form carries D/I in its own Methods/Results sections, so paper stops its stage 1 at claims (paper delivers K); an intervention artifact carries none of the ladder in its body and lives on dynamic data, so the application climbs one more rung to advice (application delivers W). Each rung is independently re-runnable: iterate's fresh A/B data backfills 1a, staleness tags propagate down the citation chain (A ← C ← T ← D), and only affected rungs reopen.
 
@@ -38,7 +38,7 @@ Seed and the evidence ladder are venue-FREE: data truth, patterns, claims, and c
 
 ## Evidence routing
 
-For claim-related evidence, the application always routes through probe (the single evidence door). Stages RAISE questions as entries in the flat pool `1-probes/PPNN_<topic>/`, and each stage's PROBE phase worker binds every entry to a bank answer through the stake-free collector agent — never calling task/discover directly. Direct task/discover for non-claim utility work only.
+For claim-related evidence, the application always routes through probe (the single evidence door). Stages RAISE questions as entries in the flat pool `1-probes/PPNN_<topic>/`, and each stage's EVIDENCE phase worker binds every entry to a bank answer through the stake-free collector agent — never calling task/discover directly. Direct task/discover for non-claim utility work only.
 
 The application does not execute code, search literature directly, or store raw results.
 
@@ -105,7 +105,7 @@ any other), 0-sections/, 0-artifacts/<slug>-v{N}.md,
 Preserve boundaries:
 - for claim-related evidence, the application routes through probe (which
   calls task/discover during Gather); direct task/discover for non-claim only
-- stages RAISE questions as entries in the flat pool 1-probes/, and the PROBE
+- stages RAISE questions as entries in the flat pool 1-probes/, and the EVIDENCE
   worker binds each to a bank answer via the stake-free collector agent
 - the application does not execute code, search literature, or store raw results
 ```

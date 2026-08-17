@@ -19,7 +19,7 @@
  * the category now describes something real instead of anticipating it.
  *
  * A WORKFLOW IS NOT ALWAYS A LADDER. Labeling's five doors are ordered and each is
- * locked by the one before. Page's DRAFT/PROBE/REVISE/CHECK is a loop whose CHECK
+ * locked by the one before. Page's DRAFT/EVIDENCE/REVISE/CHECK is a loop whose CHECK
  * routes BACKWARD ("RUN is deliberately not ADVANCE"), so it has a current phase and
  * legal next phases and no locks at all. Each surface computes its own dimming; the
  * registry holds no step model, which is what lets both live in one menu.

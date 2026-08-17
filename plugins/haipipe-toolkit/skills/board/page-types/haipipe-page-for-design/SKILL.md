@@ -6,6 +6,10 @@ metadata:
   version: "0.1.2"
   last_updated: "2026-08-06"
   summary: "Ships template.md: the contract in fillable form, with the P-only Aims ruling that keeps a criterion from colliding with a candidate division, and the SELECTION record placed as the last Content division."
+  outline:
+    mode: fixed          # fixed | grammar | resolved
+    source: "./template.md"
+    shape: "one division per CANDIDATE artifact, then the SELECTION record last"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

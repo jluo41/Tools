@@ -1,149 +1,145 @@
 ---
 name: haipipe-page-for-narrative
 description: >-
-  The VARIANT contract for the NARRATIVE page, one per paper: the page that holds what the paper claims, why this desk should care, the order those claims are argued in, and the section-by-section outline every Section page then executes. It loads haipipe-page for the base frame and haipipe-page-for-stage for the chain and gate, then adds only what narrative carries: the merged seed, claims and pitch material, the arc that decides which claim peaks, and the outline that applies the venue blueprint's allocation to that arc. It is venue-ALIGNED, so a retarget rewrites it. Use when writing or fixing a narrative page, when the argument order does not match what the desk rewards, when a claim has no section to land in, or when a section page is executing an outline nobody wrote. Trigger: narrative page, S-Work-N, argument order, arc, claim order, outline, seed, pitch, claims ledger, retarget, venue structure, /haipipe-page-for-narrative.
+  The VARIANT contract for the NARRATIVE page, exactly one per paper. It reads the accepted Opening plus venue structure and existing source Pages, then designs the paper's claim roles, argument arc, reader journey, section-by-section map, PageX source allocation, display moments, and handoff to Section pages. It does not absorb Opening, write section prose, or rediscover evidence. Use when deciding argument order, repairing a section map, assigning existing Pages to claims or sections, retargeting the story, or checking what each Section page must execute. Trigger: narrative page, paper arc, reader journey, section map, claim order, PageX allocation, page-type narrative, /haipipe-page-for-narrative.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-10"
-  summary: "Narrative owns the claim-to-display selection gate: it selects Value or Literature candidates, while formal Paper Display retains acceptance and placement."
+  version: "0.2.0"
+  last_updated: "2026-08-17"
+  summary: "Narrative is the story architecture between Opening and Section: it maps claims and existing Pages into reader order without owning Opening, evidence discovery, or prose."
+  outline:
+    mode: grammar
+    source: "Opening handoff + venue blueprint + PageX source Pages"
+    shape: "promise → claim roles → arc → reader journey → section map → source allocation → display moments → Section handoff"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-for-narrative · the claims, their order, and the outline that follows
+# /haipipe-page-for-narrative · turn the promise into reader order
 
-**LOAD TWO CONTRACTS FIRST.** `haipipe-page` owns the base frame; `haipipe-page-for-stage` owns the chain, the managed Stage Contract span, the venue transfer tiers, and the human gate. This file adds only the narrative overlay.
+**LOAD `haipipe-page` FIRST.** It owns the shared Page frame and lifecycle. Load `haipipe-page-for-stage` when Narrative is an S page, `haipipe-page-for-opening` for its upstream contract, and `haipipe-plugin-pagex` when resolving existing source Pages.
 
-**The kind this variant covers**: one narrative per paper.
-
-```
-kind        subject                                closes when
-──────────────────────────────────────────────────────────────────────
-Narrative   what the paper claims · in what order  its human gate passes ·
-            · and the outline that follows         one page, never per unit
-```
-
-**The type key.** A narrative page declares `page-type: narrative` in its frontmatter, and the line is REQUIRED: it wears an ordinary stage filename (`S-Work-N-narrative.md`) and IS a stage, so without the key it resolves as a plain stage page and loses this overlay. The `page-type:` key beats the filename (base, type resolution step ③), the same way a section unit declares `page-type: section`.
-
-## 🎯 One page, four things that used to be four pages
-
-JL merged seed, claims and pitch into narrative on 260809. The merge is not tidying: those four were always one act, split across four pages that each held a quarter of an argument and could not check themselves against the other three.
-
-```
-🌱 WHAT IS TRUE     the idea, and what the work actually establishes   (was seed)
-📊 WHAT IS CLAIMED  the claim ledger: C1, C2, C3, each testable        (was claims)
-📣 WHY THIS DESK    why these claims matter to THIS outlet's reader    (was pitch)
-🎼 IN WHAT ORDER    the arc: which claim peaks, which sets it up,      (narrative)
-                    which bounds it
-📐 AND THEN         the section-by-section outline that follows
-```
-
-The real page already argued this before the merge was written. Its Opening asks: *"What argument order makes C1 the paper's peak while using C2 and C3 to establish consequence and boundary?"* That question cannot be answered without the ledger and cannot be asked without the desk, so the page was already carrying all four.
-
-## 🆓📌 The venue-free core stays visible inside a venue-aligned page
-
-`haipipe-page-for-stage` splits the lifecycle into venue-free and venue-aligned, and the merge crosses that line. Narrative as a whole is VENUE-ALIGNED: a retarget rewrites it. But part of what it now holds is true wherever the paper goes, and that part must stay separable or a retarget costs the idea as well as the arc.
-
-```
-🆓 SURVIVES A RETARGET   the claim ledger, and what the work establishes
-                         ↳ its own Content division, and a retarget REREADS
-                           it rather than rewriting it
-🎯 REWRITTEN ON RETARGET the pitch, the arc, and the whole outline
-                         ↳ these were written FOR one desk
-```
-
-A narrative page that cannot say which of its divisions survive a retarget has lost the property the old seed page existed to protect. State it on the page.
-
-## 📐 The outline is where the blueprint meets the arc
-
-This is what narrative hands downstream, and it is the reason narrative reads the venue rather than merely mentioning it.
-
-```
-S-Open-Venue      the blueprint · the section list and each section's allocation
-      +
-   the arc        which claim peaks, and what has to be true before it lands
-      ▼
-📐 THE OUTLINE    one row per section, in reader order:
-                    which claim this section carries
-                    what it must establish before the next one
-                    its allocation from the blueprint
-      ▼
-S-Section-<unit>  each section page executes ITS row
-```
-
-The outline is the one arithmetic no other page can do: the venue stage knows the allocation but not the argument, and a section page knows its own row but not what the section before it established. A section written against no outline row is a section whose place in the arc nobody decided.
-
-`stage.md` already declares this binding, so the contract only names it:
-
-```
-venue_aligned: true
-venue_contract:
-  read_first: S01-opening/S-Open-Venue.md   # Structural Blueprint beats + Writing Principles
-```
-
-## 🚫 What narrative may NOT do
-
-```
-🚫 write the prose      a section's sentences belong to its own page
-🚫 bind a number        a value binding is the Value route's, by path
-🚫 place a display      the display's placement record is its own
-✅ decide the ORDER, and say what each section owes the one after it
-```
-
-The test: if a line would still be true after the sections were reordered, it is not narrative's line.
-
-## 🎭 Phases, and the one that matters here
-
-The base's four phases apply. PROBE is the one worth naming: an arc frequently depends on a fact the paper does not yet have, and the temptation is to write the arc as though the answer went the way you hope.
-
-```
-DRAFT   propose the ledger and the arc
-PROBE   the arc rests on an unknown result · raise it and STOP
-REVISE  land the answer, then re-cut the order if the answer changed it
-CHECK   a human gate: does this order sell these claims to THIS desk
-```
-
-An arc built on an assumed result is the most expensive defect in the lifecycle, because every section executes it before anyone notices.
-
-## 🖼 Claim-to-display selection, not evidence copying
-
-Narrative does not carry raw evidence, binds no number, and places no float. It reads the candidate
-Display cards paired with Value and Literature probes, then makes the rhetorical judgment that no
-evidence page can make: whether a reader must **see** this result to understand a named claim.
-
-```
-candidate card       probe-linked table · figure · matrix · map, or not-displayable
-        │
-Narrative selection  name C<n> + role (punchline | support | boundary | background)
-        │
-Paper Display         requested formal unit, then sourced → rendered → human accepted → placed
-```
-
-The selection is a line in the relevant outline row: candidate path, claim id, role, and decision
-(`selected` or `parked`). A selected card must already say what it lets the reader see. No card,
-no selection; `not-displayable` is a decision Narrative respects rather than overrides.
-
-## 📥📤 What this page reads, and what it hands on
-
-**A page is a unit of work** (`QB6` §7).
+This variant covers exactly one Narrative per paper.
 
 ```text
- 📥 INPUT   S-Open-Venue's blueprint: the section list and each allocation
-            the Value and Literature dashes, for what is actually established,
-            still owed, and available to show as a candidate display
-
- 📤 OUTPUT  ✗ no folder and no .tex. The output is the ORDER plus the outline:
-              → every Section page reads its own outline row
-              → selected candidate cards may open formal Paper Display requests
-              → the Round stage reopens this page when a reviewer attacks
-                the argument rather than a number
+kind       subject                                  closes when
+─────────────────────────────────────────────────────────────────────────
+Narrative  the paper's claims in reader order and   a person accepts the
+           the section map that executes that order  Section handoff
 ```
 
-## 📂 Files
+Declare `page-type: narrative`. The key is required and beats the filename under the base Page resolver.
 
+## 🧭 Boundary
+
+```text
+Opening     establishes identity, venue position, promise, and hard limit
+Narrative   decides claim roles, order, transitions, sections, and source allocation
+Section     writes and revises prose against one assigned row
 ```
+
+Narrative is not `for-argument` and not `for-paper-map`. Those are two views of the same Narrative responsibility and do not receive separate Page Types.
+
+Narrative does not absorb Seed, Claims, Venue, or Pitch content. It reads the Opening handoff and keeps only the architecture needed downstream. A canonical Claims control page may still own claim status; Narrative assigns rhetorical roles and landing points without becoming a second ledger.
+
+## 📥 Preferred and compatibility inputs
+
+Preferred input is one accepted Opening page plus the venue blueprint and existing source Pages.
+
+```text
+Opening handoff + venue blueprint + PageX source Pages
+                         ▼
+                     Narrative
+                         ▼
+               one assignment per Section page
+```
+
+Until old runtimes migrate, synthesize the Opening input read-only from legacy Seed, Venue, Pitch, and Claims pages. Do not paste those pages into Narrative and do not delete them during compatibility reads.
+
+## 🧬 Grammar Content outline
+
+Every Narrative must perform the following roles, but the number and titles of divisions may follow the paper's actual logic.
+
+```text
+Promise           restate the accepted Opening handoff and hard limit
+Claim roles       peak · setup · consequence · mechanism · boundary · support
+Argument arc      what must be understood before each claim can land
+Reader journey    what the reader believes, asks, and learns in sequence
+Section map       one row per reader-ordered manuscript or appendix section
+Source allocation which existing Pages support each claim and section
+Display moments   what must be seen, not merely stated, and where it earns attention
+Section handoff   the exact packet each Section page executes
+```
+
+The instance outline is a grammar, not a fixed list. A short empirical paper may combine roles; a theory paper may repeat setup and consequence. It is defective only when a role needed for handoff has no home.
+
+## 📐 The Section map is the governing artifact
+
+Write one row per section in reader order:
+
+```text
+section-id | reader job | claim role | must establish | PageX sources |
+display moment | allocation/limit | enters from | hands to
+```
+
+- `reader job` says what changes for the reader.
+- `must establish` is a proposition, not a topic label.
+- `PageX sources` names existing Pages, never copied raw evidence.
+- `display moment` may say `none`; Narrative requests attention but does not render or place a float.
+- `enters from` and `hands to` make transitions inspectable.
+
+A Section page must point to exactly one current row. Reordering rows reopens every affected Section assignment.
+
+## 🔎 PageX and Probe are parallel
+
+Narrative normally allocates existing Board Pages through PageX. It may inspect their internal probes and displays through those Page boundaries, but it does not redo their discovery.
+
+Probe remains the direct route to Task and Discovery folders. If a required claim has no existing Page, Narrative records the gap and routes it to the owning Probe workflow; it does not create a local evidence investigation.
+
+```text
+existing Board Page ── PageX ──▶ source allocation
+Task / Discovery folder ─ Probe ─▶ owning Page ─ PageX ─▶ Narrative
+```
+
+This is the current clean separation. PageX and Probe remain parallel contracts until a later design decision changes their relationship.
+
+## 🎯 Retargeting
+
+Narrative is venue-aligned and normally rewrites on retarget:
+
+- Reread Opening's venue-free identity and newly aligned promise.
+- Re-resolve section kinds and allocations from the new venue blueprint.
+- Preserve source Page identities unless their relevance changed.
+- Recut claim roles, arc, reader journey, display moments, and Section rows.
+
+Do not protect an old order merely because prose already exists. Existing Sections become inputs to revision, not authority over the new map.
+
+## 📥📤 Runtime shape
+
+```text
+<NarrativePage>.md
+├── outline/    Narrative outline and section-map material
+└── pagex/      bindings to existing source Pages
+```
+
+Narrative owns no `probe/`, `proof/`, manuscript `.tex`, bibliography bank, or display unit.
+
+**Output:** the accepted Section map and one bounded handoff packet per Section page. It may open display requests through the display plugin, but formal rendering, acceptance, and placement remain with the owning Page and Section.
+
+## ✅ Closing checks
+
+- The Narrative promise matches Opening and does not exceed its hard limit.
+- Every important claim has a rhetorical role and a landing section.
+- Every Section row names a reader job, required establishment, and downstream handoff.
+- Every source allocation resolves to an existing Page or is explicitly marked as a routed gap.
+- Display moments serve named claims rather than decorating topics.
+- No legacy control-page prose, raw evidence, local Probe work, or section prose has been copied into Narrative.
+- A Section agent can execute its row without inventing the paper's global order.
+
+## 📂 Skill files
+
+```text
 haipipe-page-for-narrative/
-├── SKILL.md            this variant contract
-└── CHANGELOG.md        version history
+├── SKILL.md
+└── CHANGELOG.md
 ```
 
-Owns no scripts. The base is `haipipe-page`; the chain and gate are `haipipe-page-for-stage`; the sections that execute the outline are `haipipe-page-for-section`; the blueprint it reads is written by the venue stage and catalogued by `haipipe-page-for-venue`; the live specimen is the MISQ paper's `0-lifecycle/S02-work/S-Work-N-narrative.md`.
+This variant owns no scripts.

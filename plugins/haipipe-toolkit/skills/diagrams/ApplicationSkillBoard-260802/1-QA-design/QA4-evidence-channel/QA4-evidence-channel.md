@@ -1,10 +1,12 @@
 # The evidence channel: the application cut of the wall
 
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: JL
 method: read the two application probe documents and the checker against the paper twin, keep only the deltas, and put the one open ruling to JL
 
 ## Opening
+**Current ruling (260817)**: this page is now a legacy analysis of the old Application-local evidence channel. The canonical Application family owns no Probe and no evidence pool. Probe lives on Task/Insight Pages, where it reads Task and Discovery folders. Application reads only settled Insight Pages through PageX; an unresolved factual need routes back to `/haipipe-task insight` instead of creating an Application probe.
+
 How does an intervention's question cross the wall into the task/discovery bank, and what is the application's own in that crossing?
 The wall is a clean context: the question leaves as a stake-stripped string, and the answer returns as a file bound by path.
 That model belongs to /haipipe-probe, and the paper already ruled its own cut of it as QA5@paper.
@@ -224,7 +226,7 @@ Whether those links get their own teeth is JL's call, and the `### Decision Now`
 ## States
 
 ### Decision Now
-- [ ] 🗣 Do the ladder's consumption links get hard checker teeth, or stay prose-enforced?
+- [x] 🗣 Do the ladder's consumption links get hard checker teeth, or stay prose-enforced? **Superseded:** the canonical Application path has no ladder-local consumption links to check.
       📍 `Part` 4 · the teeth
       🔔 `Why now` this page records that every existing tooth bites inside 1-probes/ or the bank, so a green PROBE can sit over an answer nobody consumed
       ⭐ `A ·` extend check-probe-cards.sh with set-diff checks (a read entry has its stage-doc a-consumer, a claim-serving entry has its 1c line flipped), committing the checker to opening stage docs and the ledger; CC recommends A because the prose-only links are exactly where a false green lives, and the checker already opens targets for the same reason
@@ -244,7 +246,7 @@ Whether those links get their own teeth is JL's call, and the `### Decision Now`
 - ⬜ A3.1 · Not started; both triples are in print, recorded in §3.2.
 
 ### A4 · 🦷 The teeth: one hard set, and the links without one
-- 🧠 A4.1 · Waiting on JL; the Decision Now row above carries the options and the default.
+- ✅ A4.1 · Superseded on 260817. Insight acceptance and source consumption are checked on the Task/Insight Page; Application checks PageX binding plus Brief/Intervention/Artifact traceability.
 
 ### P · 🏁 Page-level
 - 🔨 P1 · Written to the rule; a fresh reviewer has not yet read the page against it.
@@ -252,11 +254,13 @@ Whether those links get their own teeth is JL's call, and the `### Decision Now`
 ## Files
 
 ### ⚙️ Engines · what RUNS this page's subject
-- `../../application/2-phase/1-probe/haipipe-application-probe/SKILL.md`
-  The PROBE-phase worker: the loop's application HOW, the collector-agent rule, T1 LOCAL, and the no-sidecar harvest. Open it to change how an application runs the loop, and to repair the §2.4 drift.
+- `../../application/haipipe-application/SKILL.md`
+  The canonical Application door: it reads settled Insight Pages through PageX and routes missing knowledge to `/haipipe-task insight`.
+- `../../task/page-types/haipipe-page-for-insight/SKILL.md`
+  The current home of the D→I→K→W evidence contract and the Probe-in/PageX-out boundary.
 
 ### 🧪 Checks · what CATCHES a rule breaking
-- `../../application/2-phase/1-probe/haipipe-application-probe/check-probe-cards.sh`
+- `../../application/2-phase/1-evidence/haipipe-application-evidence/check-probe-cards.sh`
   The only hard teeth this page names; §4's split of checked against prose-only is read off this file, and option A of the Decision Now row lands here.
 
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -275,6 +279,10 @@ Whether those links get their own teeth is JL's call, and the `### Decision Now`
 - 🏠 **answered-local**: an entry closed against the intervention's own registries, with no dispatch.
 - 🎚 **The settlement bar**: the depth, light or medium or full, that the pinned venue demands of the evidence campaign.
 
+## Law
+- 260817 JL · ⚖️ Application owns no Probe. Task/Insight owns evidence work against Task/Discovery; Application consumes settled Insight Pages through PageX.
+
 ## Log
 
+260817 · Superseded the Application-local evidence channel and closed the checker-teeth decision as not applicable to the canonical path.
 260802 · Created: the application cut of QA5@paper's crossing, with three source drifts recorded (pool shape §1.2, ①② ownership §2.4, status triple §3.2) and the hardening gap put to JL as a Decision Now row.

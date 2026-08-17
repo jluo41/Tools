@@ -1,12 +1,11 @@
 ---
 name: haipipe-task
-description: "Internal-execution EXECUTOR: runs the 4-phase lifecycle (Plan → Build → Execute → Report) on a task-folder, iterates it over a task-group, or dispatches to a type specialist to scaffold; the `qa` verb is its one question door (fn/qa.md). Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, state, /haipipe-task."
-argument-hint: "[scope] [args...] | qa \"<question>\" [<task-folder>] [--check-only]"
+description: "Task-family door for execution and reusable insight. It runs Plan → Build → Execute → Report on task-folders, iterates task-groups, dispatches type specialists, answers source questions through `qa`, and creates or resumes consumer-neutral DIKW Insight Pages on the Task/Insights Board through `insight`. Use for task execution, Task Board status, QA files, result interpretation, DIKW synthesis, or an Insight Page that Paper/Application will consume through PageX. Trigger: task, task folder, task group, Task Board, Insights Board, plan, build, execute, report, run, scan-status, qa, insight, DIKW, /haipipe-task."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.6.3"
-  last_updated: "2026-07-19"
-  summary: "Build orchestrator: the 4-phase code lifecycle (Plan → Build → Execute → Report) for task-folders and task-groups, plus the `qa` question door. v6.x — the task layer is CONSUMER-UNAWARE, and a QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by), claimed at the qa gate's ③ decision and completed at Report. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*. Full contract: fn/qa.md."
+  version: "0.7.0"
+  last_updated: "2026-08-17"
+  summary: "Task now has two surfaces: P-B-E-R executes work; the Task/Insights Board turns Task/Discovery evidence into consumer-neutral DIKW Insight Pages. QA remains the source-side question door."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,7 +25,7 @@ project           examples/Proj{...}/
               and C3-Visual-ForecastScaling. Detect a task-folder by STRUCTURE, never by name.
 ```
 
-This skill owns **task-folder** and **task-group** scope. 
+This skill owns **task-folder**, **task-group**, and the Task/Insights Board entry surface.
 For a task-folder, it runs the 4-phase code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
 For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. Type specialists (one per type):
 
@@ -82,6 +81,7 @@ Each verb's full contract lives in its own `fn/` file (cited below) — read tha
 /haipipe-task scan-status [project-path]              status scan across task-groups (fn/scan-status.md)
 
 /haipipe-task qa "<question>" [<task-folder>]         THE QUESTION DOOR: one general question in, a QA-file PATH out (fn/qa.md)
+/haipipe-task insight "<question-or-topic>" [<board>]  create or resume one DIKW Insight Page (fn/insight.md)
 
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
@@ -126,6 +126,8 @@ The `workflow/` folder is the task's observability surface: Plan = intent, Repor
 A task ends at Report: it produces `results/` and stops. 
 
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
+
+**Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task Page reads one run against one task question; an Insight Page may synthesize several Task Pages, QA answers, Discovery Pages, or prior Insight Pages around one consumer-neutral question. It carries the trace `D → I → K → W` and closes under `haipipe-page-for-insight`. Paper and Application read its settled handoff through PageX and never enter a Task Folder directly.
 
 ---
 
@@ -259,6 +261,7 @@ Step 2: Resolve scope. Cascade:
   (0.5) UTILITY VERB `scan-status` — first positional is `scan-status` → read `fn/scan-status.md` and run it inline. Stop.
   (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; remaining args = the question, an OPTIONAL task-folder, OPTIONAL `--check-only`). Not a lifecycle scope: do not continue to Step 3. Stop.
         `--check-only` = DETECTION only (report the path, write nothing incl. NO CLAIM, never fall through to ③) — the probe MATCH step's free pass. Gate ①'s state-line branches, the strip-any-external-id rule, and the identical discovery-twin spelling all live in `fn/qa.md`.
+  (0.7) KNOWLEDGE DOOR `insight` — first positional is `insight` → read `fn/insight.md`, resolve the Task/Insights Board, and create or resume one `page-type: insight` Page through `haipipe-page`. This is not P-B-E-R scope: do not continue to Step 3. Stop.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-phase on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).

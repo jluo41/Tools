@@ -2,14 +2,15 @@
  *
  * THE SECOND MEMBER. The registry's Workflow group was reserved for exactly this
  * (05-plugins.js: "Page's four phases arrive as the second member"). Labeling is a
- * LADDER — each door locked by the one before; this is a LOOP — DRAFT/PROBE/REVISE/
- * CHECK selected by authority, CHECK routes backward, and only CHECK may CLOSE. So
- * this surface lights the last acted phase and names where it routed; it draws no
- * locks, because the loop has none.
+ * LADDER — each door locked by the one before; this is a LOOP — OUTLINE/DRAFT/PROBE/
+ * EVIDENCE/REVISE/COMPILE/CHECK selected by authority, CHECK routes backward, and
+ * only CHECK may CLOSE. So this surface lights the last acted phase and names where
+ * it routed; it draws no locks, because the loop has none. SEVEN since 260817, four
+ * before it: haipipe-page-workflow §"Why each split" carries the reason for each.
  *
  * INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开").
- * The LEFT column is an index — ① ✏️ DRAFT, ② 🔍 PROBE, ③ 🖊 REVISE, ④ ✅ CHECK,
- * names only — and the RIGHT column holds the selected phase's content plus the run
+ * The LEFT column is an index — ① 🧭 OUTLINE … ⑦ ✅ CHECK, names only, one row per
+ * phase — and the RIGHT column holds the selected phase's content plus the run
  * record, the same left-index-right-content language the board itself speaks. The
  * layout classes (`wf-cols` / `wf-index` / `wf-ix` / `wf-main`) live in
  * 85-workflow.css and are SHARED with 🏷 Labeling: the ruling was about what a
@@ -34,16 +35,38 @@
   'use strict';
 
   var PHASES = [
+    { id: 'OUTLINE', icon: '🧭', name: 'OUTLINE', skill: 'haipipe-page-outline',
+      job: 'agree the SHAPE: sections, paragraphs, bullets, and what each owes' },
     { id: 'DRAFT',  icon: '✏️',  name: 'DRAFT',  skill: 'haipipe-page-draft',
-      job: 'define or reopen the purpose, Aims, and promised shape' },
-    { id: 'PROBE',  icon: '🔍', name: 'PROBE',  skill: 'haipipe-page-probe',
-      job: 'resolve a consequential unknown across the evidence wall' },
+      job: 'plan it: purpose, Aims, and each division’s own promise' },
+    { id: 'PROBE',  icon: '📮', name: 'PROBE', skill: 'haipipe-page-probe',
+      job: 'turn each outline mark into a card, point it at its bullets, and ask' },
+    { id: 'EVIDENCE', icon: '🔍', name: 'EVIDENCE', skill: 'haipipe-page-evidence',
+      job: 'land every promised claim\u2019s card: citation, value, display intake' },
     { id: 'REVISE', icon: '🖊', name: 'REVISE', skill: 'haipipe-page-revise',
-      job: 'improve the realization while purpose and Aims stay fixed' },
+      job: 'write the prose, citing every landed card by id' },
+    { id: 'COMPILE', icon: '📄', name: 'COMPILE', skill: 'haipipe-page-revise',
+      job: 'rebuild latex, pdf and word from that prose' },
     { id: 'CHECK',  icon: '✅',       name: 'CHECK',  skill: 'haipipe-page-check',
-      job: 'judge one version and route its next authority; only CHECK may CLOSE' }
+      job: 'judge the BUILT version and route its authority; only CHECK may CLOSE' }
   ];
-  var NUM = ['①', '②', '③', '④'];
+  /* PROBE means two different phases depending on WHEN the receipt was written:
+     it was EVIDENCE's name from 260816 until 260817, when PROBE became a phase
+     of its own again (raise the card and ask; EVIDENCE lands what comes back).
+     Receipts on disk are immutable, so the token resolves against the run's own
+     date rather than through a global alias, which would relabel every future
+     PROBE as EVIDENCE. An unparseable date reads as CURRENT. */
+  var PROBE_SPLIT = 260817;
+  function runDate(run) {
+    var m = /^(\d{6})/.exec((run && run.run_id) || '');
+    return m ? parseInt(m[1], 10) : PROBE_SPLIT;
+  }
+  function phaseId(v, run) {
+    v = String(v || '').toUpperCase();
+    if (v === 'PROBE' && runDate(run) < PROBE_SPLIT) return 'EVIDENCE';
+    return v;
+  }
+  var NUM = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
 
   function pageFile(page) {
     return (page && page.getAttribute('data-file')) || '';
@@ -79,8 +102,9 @@
      last route when one exists and is a phase; else CHECK, the run contract's
      default for an existing page whose next need is unknown. */
   function nextPhase(run) {
-    if (run && run.last && PHASES.some(function (p) { return p.id === run.last.route; })) {
-      return run.last.route;
+    var last = run && run.last ? phaseId(run.last.route, run) : '';
+    if (last && PHASES.some(function (p) { return p.id === last; })) {
+      return last;
     }
     return 'CHECK';
   }
@@ -90,8 +114,8 @@
     var file = pageFile(page);
     var runs = (data && data.runs) || [];
     var cur = runs[0] || null;
-    var lastPhase = cur && cur.last ? cur.last.phase : '';
-    var route = cur && cur.last ? cur.last.route : '';
+    var lastPhase = cur && cur.last ? phaseId(cur.last.phase, cur) : '';
+    var route = cur && cur.last ? phaseId(cur.last.route, cur) : '';
     var closed = cur && (cur.status === 'closed' || route === 'CLOSE');
     var next = nextPhase(cur);
     var sel = lastPhase || next;      // the phase whose content opens first
@@ -99,7 +123,7 @@
     function visits(pidPhase) {
       if (!cur) return 0;
       return (cur.trail || []).filter(function (r) {
-        return String(r.phase).toUpperCase() === pidPhase;
+        return phaseId(r.phase, cur) === pidPhase;
       }).length;
     }
 
@@ -147,9 +171,9 @@
       var runBlock;
       if (cur) {
         var edges = (cur.trail || []).map(function (r) {
-          return esc(r.phase) + (r.verdict ? '(' + esc(r.verdict) + ')' : '');
+          return esc(phaseId(r.phase, cur)) + (r.verdict ? '(' + esc(r.verdict) + ')' : '');
         });
-        if (cur.last && cur.last.route) edges.push(esc(cur.last.route));
+        if (cur.last && cur.last.route) edges.push(esc(phaseId(cur.last.route, cur)));
         runBlock =
           '<div class="pf-run">'
           + '<div class="wf-dh">' + (closed ? '🏁' : '🧭') + ' '
@@ -284,7 +308,7 @@
     window.boardPlugins.register({
       id: 'pageflow',
       label: '📄 Page phases',
-      hint: 'where this page stands in DRAFT · PROBE · REVISE · CHECK',
+      hint: 'where this page stands in DRAFT · EVIDENCE · REVISE · CHECK',
       menu: 'workflow',
       applies: function (page) {
         var name = pageFile(page).split('/').pop();

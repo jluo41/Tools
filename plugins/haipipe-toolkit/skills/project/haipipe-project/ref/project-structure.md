@@ -101,7 +101,7 @@ prohibition, because this skill is the thing that creates folders.
        · Applies to BOTH banks — task and discovery are both executors.
 
   📄 THE CONSUMER holds the questions: papers|applications/<X>/1-probes/PPNN_<topic>/
-     (renamed from 1-probe-plans/ on 2026-07-14). Created by the consumer's own PROBE phase,
+     (renamed from 1-probe-plans/ on 2026-07-14). Created by the consumer's own EVIDENCE phase,
      never by this skill. Bound to the bank BY PATH — no id ever crosses.
 
 ---

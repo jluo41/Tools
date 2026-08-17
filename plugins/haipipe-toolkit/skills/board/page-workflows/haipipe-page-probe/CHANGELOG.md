@@ -1,67 +1,53 @@
 haipipe-page-probe · Changelog
 ==============================
 
-Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
-SKILL.md frontmatter `version:`. Newest first.
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions
+match SKILL.md frontmatter `version:`. Newest first.
 
-**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
-never reaches `1.0.0` without JL's explicit say-so.
+## 0.3.0 — 2026-08-17
 
-## 0.4.0 - 2026-08-06
+Adds PageX/MATCH as the first read-only reuse lookup before QA-bank work. Exact
+reuse keeps the existing QA path or Display id; similarity alone never closes
+a question.
 
-The lifecycle runs COLLECT-first on evidence pages (JL 260806): collect the
-new Q-consumer into the owning topic's E0 queue → translate it into an E<n>
-division + its QA-probe (① ORGANIZE) → dispatch → copy the A-executor back
-into the QA-probe → write each A-consumer under the division's `####
-consumers` rows (⑤ INTERPRET). Vocabulary finalized: QA-probe / QA-bank, four
-capital slot words; the write-surfaces table names the E0 queue and E<n>
-division parts explicitly.
+## 0.1.0 — 2026-08-17
 
-## 0.3.3 - 2026-08-06
+First contract. PROBE was listed as a phase in `haipipe-page-workflow` 0.2.0 but
+had no file of its own and borrowed `haipipe-page-evidence`, so three skills gave
+three different answers to the same question (JL 260817: "具体的 proof 应该由谁来
+做？我还没想好这部分是在 draft 阶段来做，还是在 outline 阶段来做？"):
 
-Wording sweep for JL ruling B (260806: "an entry is a source file the topic
-page points at, like a PDF; the board renders the topic page, never the
-entry"): the persisted surface's vocabulary entry is now the probe QA (the
-entry record), a hidden `<n>-<slug>.md` source record below the topic page's
-probes/ folder, never a board page; one conversation, two QAs: the bank QA is
-the original, the probe QA is the consumer's copy that points at it. The
-family-contract and Files closings name the probe QA instead of a Probe Page.
+```
+haipipe-page-draft §🃏        DRAFT creates the card in OWED state
+haipipe-page-evidence §🧾     "a card may arrive already PROPOSED" by DRAFT
+haipipe-plugin-outline §📐    "the card is created at PROBE"
+```
 
-## 0.3.2 - 2026-08-05
+**The ruling: PROBE creates it. Never OUTLINE, never DRAFT.**
 
-Load-order slot reworded for thin-paper phase 2: the last slot is the family
-DOOR's probe tooling (paper: `paper/haipipe-paper/probe/`), and the family DOOR
-owns the persisted Probe Page shape and checker (was: "family workers own...").
+- OUTLINE may not, because a plan is rejectable in ten seconds and must leave
+  nothing on disk; a card for a plan nobody approved is litter with an id.
+- DRAFT may not, because the mark IS the proposal, and a second file saying the
+  same thing is `haipipe-page-workflow` §🪞's duplication rule.
+- The deciding reason is the STAKE: a card's `consumer/` side carries what the
+  page loses if the answer never comes, that is an Aim, and Aims are written at
+  DRAFT. PROBE is the earliest phase at which a complete card can exist.
 
-## 0.3.1 - 2026-08-05
+Also fixed here rather than left open:
 
-- The description leads with the plain job before the four coined Q/A terms, per the no-undefined-jargon rule.
+- **One mark is not one card.** Many bullets may share one card (`PP04` on
+  QC1-visitlbp serves three), one bullet may need two, and a mark already
+  covered gets its address appended to the existing card's `serves:` rather
+  than a second card.
+- **Which marks PROBE acts on**: 🔢 always; 📚 only when the key is unknown;
+  🖼 never (its intake freezes FROM a `proof/` that does not exist yet, so
+  EVIDENCE creates the unit); 🧮 never, which settles `haipipe-plugin-outline`'s
+  open "⬜ whether 🧮 earns a folder" as NO: a proof is prose, resting on a
+  pulled file that already lives in a probe card's `proof/`.
+- **`coverage:` in the receipt**: how many marked bullets actually got a card.
+  Declaring is free; this is the count that makes a gap a HOLD.
 
-## 0.3.0 - 2026-08-04
-
-- Adds the shared RUN receipt boundary: PROBE records the unknown, executor and
-  consumer artifacts, evidence bindings, limits, and one legal route.
-- Allows an unchanged target-Page hash only when the separate probe artifacts
-  make the work auditable; PROBE still cannot CLOSE.
-
-## 0.2.0 - 2026-08-04
-
-- Renamed from `haipipe-board-page-for-probe-entry` and moved under `page-phases/`.
-- PROBE is now a Page phase rather than an Entry Page Type.
-- Retains the canonical Q-consumer, Q-executor, A-executor, and A-consumer model from `haipipe-probe`, including one Q-executor serving several Q-consumers.
-- Uses `Probe Page` for the optional persisted Board surface and treats older `entry` labels as implementation vocabulary rather than another lifecycle concept.
-
-## 0.1.0 - 2026-08-04
-
-**Created** (JL: "ok, I agree, please go ahead and make them.").
-
-Split out of the family workers so the four-phase loop has ONE rulebook instead of
-one per family. Measured 260804: the paper and application families each shipped
-their own draft/probe/revise/check hubs (1,263 lines against 531), and NONE of the
-eight loaded `haipipe-page` at all, so each had copied the page grammar from
-memory. `haipipe-paper-draft` still named `## Items to Finish` five times, a
-section renamed that morning.
-
-- Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
-  adds its artifact knowledge and obeys this file.
-- Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+Siblings changed in the same pass: `haipipe-page-draft` 0.6.0 (§🃏 deleted),
+`haipipe-page-evidence` 0.6.0 (the "DRAFT proposes" paragraph replaced),
+`haipipe-page-workflow` 0.3.0 (the member table points here), `haipipe-page`
+0.4.0 (seven phases in the lifecycle table).

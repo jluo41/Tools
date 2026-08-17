@@ -118,7 +118,7 @@ section-edit, section, §N               -> haipipe-application-section-edit
 lifecycle orchestration                 -> haipipe-application-lifecycle
 draft, write, generate SMS, the message,
   artifact, compose                     -> haipipe-application-artifact
-probe, evidence dispatch, PPNN card     -> haipipe-application-probe
+probe, evidence dispatch, PPNN card     -> haipipe-application-evidence
 review                                  -> haipipe-application-review
 deploy, ship, send, go live             -> haipipe-application-deploy
 claim-audit, evidence check             -> haipipe-application-claim-audit
@@ -182,7 +182,7 @@ haipipe-application-section-edit  1-lifecycle/5-section-edit/haipipe-application
 haipipe-application-venue         1-lifecycle/haipipe-application-venue/feedback/
 haipipe-application-lifecycle     1-lifecycle/haipipe-application-lifecycle/feedback/
 haipipe-application-draft         2-phase/0-draft/haipipe-application-draft/feedback/
-haipipe-application-probe         2-phase/1-probe/haipipe-application-probe/feedback/
+haipipe-application-evidence         2-phase/1-evidence/haipipe-application-evidence/feedback/
 haipipe-application-revise        2-phase/2-revise/haipipe-application-revise/feedback/
 haipipe-application-check         2-phase/3-check/haipipe-application-check/feedback/
 haipipe-application-artifact      3-deliver/haipipe-application-artifact/feedback/

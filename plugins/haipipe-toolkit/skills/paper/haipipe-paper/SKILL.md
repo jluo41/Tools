@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
+description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through EVIDENCE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.7.0"
@@ -17,7 +17,7 @@ User-facing entry for the paper lifecycle, and since 2026-08-05 the ONLY paper r
 The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
 Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
-Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
+Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-workflows/` contracts own DRAFT, EVIDENCE, REVISE, and CHECK.
 The stage's LaTeX-side craft lives in data files each `stage.md` declares under `craft:`; the phase contracts load them after the type contract.
 Canonical structure: `../README.md` at the paper skill root.
 
@@ -32,16 +32,16 @@ A stage runs the ordered `phases:` list in its own `stage.md`. Most current
 stages declare all four slots:
 
 ```text
-   DRAFT ──▶ PROBE ──▶ REVISE ──▶ CHECK
+   DRAFT ──▶ EVIDENCE ──▶ REVISE ──▶ CHECK
    write &   collect    weave in    human
    raise     evidence   the answer  gate
 ```
 
-PROBE is the ONLY phase that touches the bank, and it reaches it only through a probe file and a clean-context agent — the paper session never runs bank work itself.
+EVIDENCE is the ONLY phase that touches the bank, and it reaches it only through a probe file and a clean-context agent — the paper session never runs bank work itself.
 Venue currently declares `draft → probe → check`, so its REVISE slot is shown
 as `--`. Never invent a phase that the stage did not declare.
 There is no generic `discover` or `task` lifecycle verb: a claim-bearing bank need goes through
-PROBE, not an inline paper run. The narrow display exception is a missing, non-claim display-ready
+EVIDENCE, not an inline paper run. The narrow display exception is a missing, non-claim display-ready
 aggregate; it is recorded in the Display request and goes to `haipipe-task-for-display`.
 A standalone utility question a human wants (a quick lit scan, a data check) goes to the bank's OWN door — `/haipipe-task qa` or `/haipipe-discovery qa` — typed by a person, never proxied by the paper.
 
@@ -97,7 +97,7 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 
 **Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — it names which declared phase the page work drives (e.g. `/haipipe-paper section-edit 4-llmtrait revise` → the section's page runs its REVISE phase).
 Stage runs stop only at the human gates declared in `gates:`. All current
-stages declare `[check]`: DRAFT, PROBE, and (when declared) REVISE run
+stages declare `[check]`: DRAFT, EVIDENCE, and (when declared) REVISE run
 unattended, then CHECK asks for explicit approval. Never invent or auto-advance
 a gate.
 
@@ -175,7 +175,7 @@ its current fact in `## States`.
 **Step 3 — hand the page to the page layer.**
 Phase driving is NOT this door's: with the page resolved, call `haipipe-page` (WORK ON to
 repair one page; RUN with a raw-material packet to drive it through its declared phases). The
-`board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK; the shared probe model is
+`board/page-workflows/` contracts own DRAFT, EVIDENCE, REVISE, and CHECK; the shared probe model is
 `probe/haipipe-probe/SKILL.md` and the paper-side loop is `fn/probes.md`.
 Two declarations in the stage.md feed that hand-off:
 
@@ -191,7 +191,7 @@ checker:   the script CHECK runs before judging (see Step 4)
 - `runs: per-unit` means the phase list runs once PER UNIT (section-edit's grain; the unit is
   positional 2, after the stage key).
 - `gates:` declares this stage's HUMAN stops, the same way `phases:` declares its phases. The
-  default is `[check]` — ONE gate, at the end. DRAFT, PROBE and REVISE run unattended.
+  default is `[check]` — ONE gate, at the end. DRAFT, EVIDENCE and REVISE run unattended.
   Never open a gate a stage did not declare, and never skip one it did.
 - `commissions:` names worker skills this stage hands units to (display → the four renderers).
   Those workers stay independently registered and are invoked by name.
@@ -201,8 +201,8 @@ checker:   the script CHECK runs before judging (see Step 4)
   `## Stage Contract` span with `haipipe-board/cli/stage.py`, and run explicit `stage.py sync`
   before CHECK if the board reports a stale contract.
 
-**Step 3a — the PROBE ceiling.**
-`probe_depth:` is what makes a single CHECK gate safe: PROBE may only dispatch work whose cost
+**Step 3a — the EVIDENCE ceiling.**
+`probe_depth:` is what makes a single CHECK gate safe: EVIDENCE may only dispatch work whose cost
 sits at or below the ceiling, so an unattended run cannot spend.
 
 ```text
@@ -258,12 +258,12 @@ and miss shared gating dependencies:
 ```text
 ① DRAFT SWEEP     draft ALL stages in pipeline order, no human stop (placeholders fine;
                   venue still pins BEFORE the venue-ALIGNED drafts)
-② PROBE-PLAN      probe plan — merge duplicate questions, author the dispatch DAG
+② EVIDENCE-PLAN      probe plan — merge duplicate questions, author the dispatch DAG
                   [HUMAN GATE — present the campaign, stop]
 ③ DISPATCH BATCH  probe run — MATCH first; dispatch only what MATCH cannot close, per
                   the DAG; a dependent entry waits until its upstream QA file EXISTS
 ④ RUN             the task/discovery orchestrators write <task-folder>/QA/<n>-<slug>.md
-⑤ HARVEST         a PROBE re-run lands A-executors + per-consumer A-consumer rows +
+⑤ HARVEST         a EVIDENCE re-run lands A-executors + per-consumer A-consumer rows +
                   the S02 claims-page flips, then each stage runs its remaining phases
 ```
 
@@ -440,7 +440,7 @@ Rules:
 3. **Resolved comments move to the owning S page's `## Log`**, grouped by
    phase and date. The comment thread is preserved verbatim.
 4. **Session comments that represent decisions** are written into the working document so they enter the same lifecycle. Ephemeral chat that is not a decision disappears with the session.
-5. **Active comments may cross internal phase boundaries.** DRAFT, PROBE, and
+5. **Active comments may cross internal phase boundaries.** DRAFT, EVIDENCE, and
    REVISE are not human gates in the current stage contracts. CHECK reviews
    unresolved threads and either resolves them or restarts the appropriate
    phase.
@@ -495,7 +495,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent (t
 ```
 1. Command   paper hits a claim gap -> the agent runs
              /haipipe-paper probe "<question>" (opens one nested QA-probe in the
-             owning S03 or S04 topic). PROBE owns the whole five-step loop, MATCH
+             owning S03 or S04 topic). EVIDENCE owns the whole five-step loop, MATCH
              before DISPATCH (fn/probes.md).
 2. Disk      paper writes the need on its owning S page or claim ledger; the executor
    (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the entry's
@@ -508,12 +508,12 @@ Who owns which format: the evidence page owns the paper NEED and its E<n> divisi
 
 ### When to record a need
 
-Only when the problem is EVIDENCE, not wording. A wording/structure problem loops back inside the paper lifecycle (claims / pitch / narrative / display / section-edit). A need leaves the paper for an evidence worker, and it travels the loop above: paper GAP -> a Q-consumer COLLECTED into the evidence page's E0 queue -> PROBE translates it into an E<n> division and MATCHes its QA-probe -> DISPATCH only what MATCH could not close -> the answering QA-bank file -> `#### A-executor` -> the A-consumer row under `#### consumers` -> the paper backfills its claim page. Do NOT route through a project-level narrative layer (there isn't one).
+Only when the problem is EVIDENCE, not wording. A wording/structure problem loops back inside the paper lifecycle (claims / pitch / narrative / display / section-edit). A need leaves the paper for an evidence worker, and it travels the loop above: paper GAP -> a Q-consumer COLLECTED into the evidence page's E0 queue -> EVIDENCE translates it into an E<n> division and MATCHes its QA-probe -> DISPATCH only what MATCH could not close -> the answering QA-bank file -> `#### A-executor` -> the A-consumer row under `#### consumers` -> the paper backfills its claim page. Do NOT route through a project-level narrative layer (there isn't one).
 
 ### Routes
 
 ```
-claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a nested S03/S04 entry; PROBE does MATCH first, and dispatches only what MATCH cannot close)
+claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a nested S03/S04 entry; EVIDENCE does MATCH first, and dispatches only what MATCH cannot close)
 figure/table lacks its verified display-ready aggregate           -> /haipipe-task-for-display <need>
 figure/table has a verified aggregate and needs a paper asset     -> the display stage → Intake → matching Display renderer
 settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/S02-work/S-Work-C-claims.md (the ONLY home of a claim's status; the
@@ -525,10 +525,10 @@ standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-ta
 
 Two entry rules (who the delivery calls):
 
-- a CLAIM need (a claim's status is at stake) -> raise a question ENTRY and let the PROBE phase route it. The paper never calls a raw compute agent for a claim-bearing need, and never executes bank work inline (LAW 1).
+- a CLAIM need (a claim's status is at stake) -> raise a question ENTRY and let the EVIDENCE phase route it. The paper never calls a raw compute agent for a claim-bearing need, and never executes bank work inline (LAW 1).
 - a pure RENDER need (no claim at stake, e.g. re-render a figure) -> return to the Paper Display stage; it reuses the approved Intake and commissions the renderer. Call `/haipipe-task-for-display` only when the display-ready aggregate itself is missing or must change.
 
-ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly.
+ALL evidence enters through a stage's EVIDENCE phase; the paper never calls the bank directly.
 Resolved evidence backfills into claims, display, sections, or round logs.
 Evidence workers never own the paper story.
 
@@ -557,7 +557,7 @@ The console is a derive-from-disk, resumable loop body. To drive a delivery to d
 LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
   1. enter    derive frontier + open needs from disk (the queue)
   2. pick     the next actionable need (skip server-blocked)
-  3. route    claim -> a question ENTRY (the PROBE phase dispatches it) ;
+  3. route    claim -> a question ENTRY (the EVIDENCE phase dispatches it) ;
               missing aggregate -> task-for-display ; render -> Display → Intake → renderer ; prose -> edit
   4. execute  write the artifact locally, or wait for the dispatched QA file
   5. backfill update the slot/display/entry; mark the need returned
@@ -608,10 +608,10 @@ a. STOP investigating the data. Do not grep do-files, re-derive variables, or
 b. MARK the claim with \needprobe{description of what needs settling}.
 c. RECORD a delivery NEED (per Delivery Need Routing above): the claim under test
    and what an answer would have to establish.
-d. RAISE it as a Q-consumer question. The stage's PROBE phase opens the entry,
+d. RAISE it as a Q-consumer question. The stage's EVIDENCE phase opens the entry,
    MATCHes it against the bank, and dispatches only what MATCH cannot
    close. The paper TRIGGERS; it never runs the analysis (LAW 1).
-e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
+e. BACKFILL: when the answering QA file lands, EVIDENCE writes the entry's
    `#### A-executor`, the owning E<n> division records the A-consumer, the
    claim's status flips in its claims page, and the \needprobe{} flag comes out.
 ```
@@ -622,7 +622,7 @@ e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
 /haipipe-paper probe <need-description>
 ```
 
-opens one nested QA-probe in the right S03/S04 topic. The PROBE phase is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the QA-probe's `#### Q-executor` block and nothing else. The paper stays a story layer; the executor does the work. Anatomy + campaign + the paper-side loop: `fn/probes.md`.
+opens one nested QA-probe in the right S03/S04 topic. The EVIDENCE phase is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the QA-probe's `#### Q-executor` block and nothing else. The paper stays a story layer; the executor does the work. Anatomy + campaign + the paper-side loop: `fn/probes.md`.
 
 A HEAVY probe (reading a lot of code/logs, e.g. cohort construction from Stata do-files) is
 dispatched with `run_in_background=true` so the paper session keeps doing paper work: mark the
@@ -687,7 +687,7 @@ Composing with Evidence Workers
         │
         │   evidence path (a claim hits a gap):
         └─► S03-literature/probes/ or S04-value/probes/ — one QA-probe per Q-executor
-                 │   PROBE runs ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
+                 │   EVIDENCE runs ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
                  └─► ③ DISPATCH the `#### Q-executor` VERBATIM, only for what MATCH missed:
                           Agent(haipipe-probe-q-executor-agent)   ← its clean context IS the wall
                                ├─► Agent(haipipe-task-orchestrator-agent)
@@ -695,5 +695,5 @@ Composing with Evidence Workers
                      ④ POINT **target** ─► the answering QA file
                      ⑤ INTERPRET ─► `#### A-executor` ─► `#### consumers` A-consumer rows
 
-        a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
+        a stage reaches the bank ONLY through its EVIDENCE phase — no direct discover/task verb
 ```

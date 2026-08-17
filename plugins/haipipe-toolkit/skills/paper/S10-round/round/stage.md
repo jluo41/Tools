@@ -25,16 +25,16 @@ phases: [draft, probe, revise, check]
 # The phase list above runs once PER ROUND, not once for the paper. Phase mapping:
 #   DRAFT   intake + triage: land the received material verbatim, atomize it into the
 #           coverage ledger, record accepted decisions; routes work, never executes it
-#   PROBE   evidence for ledger items the paper cannot answer from disk (a reviewer-demanded
+#   EVIDENCE   evidence for ledger items the paper cannot answer from disk (a reviewer-demanded
 #           robustness check, a prior-art claim); MATCH before DISPATCH, ceiling below
 #   REVISE  apply: route each accepted item to its owning stage/page, record what changed and
 #           which item it closes; draft the response/rebuttal when the round answers external
 #           reviewers (craft: ../rebuttal-craft.md)
 #   CHECK   close: every item applied or explicitly parked with a reason, close receipt
 
-gates: [check]             # ONE human gate, at close. DRAFT/PROBE/REVISE run unattended.
-                           # Safe only because PROBE cannot spend: see probe_depth.
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+gates: [check]             # ONE human gate, at close. DRAFT/EVIDENCE/REVISE run unattended.
+                           # Safe only because EVIDENCE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md), mapping 1:1 onto the consumer's
                            # `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -87,7 +87,7 @@ read_order:               # optional DRAFT orientation; dependencies live on the
   claims:        0-lifecycle/S02-work/S-Work-C-claims.md
   board:         0-lifecycle/board.md and the affected S pages' `state:` lines
 
-exit_when: "an item needs NEW evidence beyond the ceiling -> the owning stage + its PROBE
+exit_when: "an item needs NEW evidence beyond the ceiling -> the owning stage + its EVIDENCE
             (record the deferral on the ledger row); an item with no target cannot close"
 
 sections:                 # logical parts; Q-consumer adapts to Board Aims
@@ -115,7 +115,7 @@ q_id_pattern: "- P<n> · Q-Round<unit>-<n> · <title>"
                                             # from the S page filename S-Round-<unit>-<slug>.md.
 q_anchor: "[Q-Round<unit>-<n>] beside the ledger row or response sentence that needs the
            evidence; the entry's Reason names the reviewer point or decision that raised it"
-closed_when: "PROBE writes the Answer + the target: QA-file path; CHECK's human verifies;
+closed_when: "EVIDENCE writes the Answer + the target: QA-file path; CHECK's human verifies;
               the ledger row it serves flips to answered and the response sentence cites the
               evidence, never a promise"
 
@@ -165,19 +165,19 @@ Every ledger item names ONE target. Triage does not execute the work.
 
 ```text
 claim unsupported / too strong      0-lifecycle/S02-work/S-Work-C-claims.md, then that
-                                    stage's PROBE
+                                    stage's EVIDENCE
 display missing / stale             a DR row in the Display stage's request inbox
                                     (0-lifecycle/S05-display/)
 paragraph placement unclear         the owning 0-lifecycle/S06-main/ section page
 appendix issue                      the owning 0-lifecycle/S07-appendix/ page
 wording / flow / style              the owning S page, then its declared REVISE/CHECK sequence
-citation / value evidence           the owning Q-consumer, then that stage's PROBE route
+citation / value evidence           the owning Q-consumer, then that stage's EVIDENCE route
 reviewer response text              this page's Response division (craft: ../rebuttal-craft.md)
 build / package for resubmission    the door's build verbs (fn/compile.md · fn/diffpdf.md ·
                                     fn/project.md)
 ```
 
-Evidence always enters through a stage's PROBE phase; a round never runs bank work inline. A
+Evidence always enters through a stage's EVIDENCE phase; a round never runs bank work inline. A
 reviewer-demanded experiment is a question ENTRY first: MATCH against the bank often closes
 it (the run already exists), and only what MATCH cannot close is a spend decision, made by a
 human raising the ceiling.

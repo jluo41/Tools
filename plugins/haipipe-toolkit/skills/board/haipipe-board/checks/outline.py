@@ -27,12 +27,13 @@ QPf12 · P2 is the aim this check closes.
 """
 import argparse
 import sys
+import tempfile
 import traceback
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent      # the engine dir
 sys.path.insert(0, str(HERE))
-from live.outline import parse_outline, render, _anchors   # noqa: E402
+from live.outline import parse_outline, plan_card, render, _anchors   # noqa: E402
 
 # (line, leading anchors, trailing anchors) · every row is a real shape seen on
 # a real page, or the exact shape the contract promises to read.
@@ -56,7 +57,7 @@ CASES = [
     ("- `serve.py` §2", [], [2]),
     ("- `f.py` §12", [], [12]),
     ("- `unanchored.py`", [], []),
-    ("- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)", [], []),
+    ("- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)", [], []),
     ("- The display page whose `§4 Placement` record names this", [], []),
 ]
 
@@ -181,11 +182,58 @@ def main():
         fails.append("the unanswered ask is not counted in the header")
     print("   1 page · ok")
 
+    print("⑤ a Point exposes a derived Evidence Bundle")
+    with tempfile.TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        page = root / "QF1-page.md"
+        page.write_text(
+            "# QF1\n\nC1.P1.S1 · The headline effect is <VALUE HOLE>. "
+            "<!-- realizes: C1.P1.B1 -->\n",
+            encoding="utf-8",
+        )
+        outline = page.parent / "outline"
+        outline.mkdir()
+        (outline / "QF1-page-outline-v1.md").write_text(
+            "# QF1 · outline v1\noutline-version: v1\n"
+            "approved: ✅\n\n## C1 · Result\n\n"
+            "### C1.P1 · Headline\n- B1 · the headline effect 🔢\n"
+            "- B2 · the headline display 🖼 Display2\n",
+            encoding="utf-8",
+        )
+        probe = page.parent / "probe" / "PP01-headline-effect"
+        probe.mkdir(parents=True)
+        (probe / "card.md").write_text(
+            "# PP01-headline-effect\nstate: read\n"
+            "read: ✅\nserves: C1.P1.B1\n"
+            "question: what is the headline effect?\n",
+            encoding="utf-8",
+        )
+        display = page.parent / "display" / "QF1-page-Display2-headline"
+        (display / "assets").mkdir(parents=True)
+        (display / "intake").mkdir()
+        (display / "intake" / "manifest.yaml").write_text(
+            "card: PP01-headline-effect\n", encoding="utf-8"
+        )
+        (display / "assets" / "plot.pdf").write_bytes(b"pdf")
+        (display / "preview.pdf").write_bytes(b"pdf")
+        (display / "README.md").write_text(
+            "claim the headline display\nrenderer: haipipe-display-figure\n"
+            "intake: frozen · intake/manifest.yaml\n"
+            "serves: C1.P1.B2\naccepted: ✅\n",
+            encoding="utf-8",
+        )
+        bundle_html = plan_card(page)
+        for wanted in ("Evidence Bundles", "C1.P1.B1", "C1.P1.S1", "needs-probe",
+                       "feedback PP01: read", "feedback Display2: accepted"):
+            if wanted not in bundle_html:
+                fails.append(f"derived bundle omitted {wanted!r}")
+    print("   1 Point · ok")
+
     # A reader who cannot hold six paragraphs at once, in a language that is
     # not their first, has to get the answer before the detail (JL 260816: "我
     # 读完之后 no idea，不知道在干嘛"). Three things carry that, and each is a
     # thing the page already says, so none can be lost to a later edit.
-    print("⑤ the answer arrives before the detail")
+    print("⑥ the answer arrives before the detail")
     o = parse_outline("## Opening\nWhat is this page for, in one question?\n"
                       "## Content\n### 1 · One\n📌 the brief.\n"
                       "## Aims\n### A1 · One\n- A1.1 · a done aim\n"
@@ -207,7 +255,7 @@ def main():
         fails.append("finished work is printed before the work still to do")
     print("   1 page · ok")
 
-    print("⑥ every page of every board")
+    print("⑦ every page of every board")
     roots = ([Path(b) for b in args.boards] if args.boards else
              sorted({p.parent for p in
                      (HERE / "../../../..").resolve().rglob("board.md")

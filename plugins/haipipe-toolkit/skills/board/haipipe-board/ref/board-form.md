@@ -288,12 +288,12 @@ provides:       → contract    a short delivery note this page gives downstream
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)
   Why this Page needs that target fragment in this phase.
 ```
 
 - Relation is one of `reads`, `constrained by`, `continues`, or `contrasts`.
-- Phase is `DRAFT`, `PROBE`, `REVISE`, `CHECK`, or `ALL`.
+- Phase is `DRAFT`, `EVIDENCE`, `REVISE`, `CHECK`, or `ALL` (`EVIDENCE` still parses as EVIDENCE).
 - The Markdown target is relative to the Board root, even when the source Page lives in a group folder. The label's Page id must match that source.
 - Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims/States group; several scopes on one target share one identity and Opening in the packet.
 - `cli/pagecontext.py` filters by phase and follows one hop only. It does not infer dependencies or recursively traverse target rows.

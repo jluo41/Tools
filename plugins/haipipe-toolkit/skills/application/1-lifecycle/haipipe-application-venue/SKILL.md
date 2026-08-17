@@ -64,10 +64,10 @@ DRAFT   read 1c-claims.md (the campaign shapes which venues fit) + 1d-advice.md 
         pros/cons (evidence depth vs venue demands, audience fit); on the user's confirm PIN the
         three STATUS rows and write 2-venue.md (Artifact Principles + Fit Assessment against the
         campaign). --no-pin = recommend only, write nothing.
-PROBE   often skipped — venue-level questions only (channel capability, compliance
+EVIDENCE   often skipped — venue-level questions only (channel capability, compliance
         constraints, prior sends on this channel), raised as entries in 1-probes/PPNN_<topic>/
         and dispatched via Agent(haipipe-probe-q-executor-agent). Routing mechanics are the probe
-        layer's: ../../2-phase/1-probe/haipipe-application-probe/SKILL.md (see its
+        layer's: ../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md (see its
         ref/per-stage-dispatch.md, the "2-venue" entry).
 REVISE  tighten Artifact Principles into concrete specs (no "see pack" hand-waves); sharpen the
         Fit Assessment's settlement delta.

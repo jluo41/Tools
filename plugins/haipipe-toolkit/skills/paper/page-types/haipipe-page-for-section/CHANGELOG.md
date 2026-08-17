@@ -1,3 +1,22 @@
+
+## Unreleased — 2026-08-16
+
+The outline this type supplies is RESOLVED, and it is now reachable in one step.
+
+- Declares `outline: mode: resolved` and names the path:
+  `paper/venue/playbook-<pack>/<venue>/<venue>-<kind>/template.md`, with a one-
+  line `ls` that resolves it from the page's own two keys. Verified against five
+  (venue × kind) pairs; 95 templates are on disk.
+- Says what arrives: a fillable skeleton, not a description. The MISQ
+  introduction hands over `### P1. Phenomenon hook`, `### P2. (optional) Deepen
+  the stakes`, `### P3. What is known`, each with its paragraph budget and its
+  named anti-pattern. DRAFT chooses the variant and the ¶ counts; it does not
+  invent an arc.
+- A `(venue × kind)` that resolves to nothing is a HOLE the venue pack owes, and
+  copying a sibling section's shape is the failure this type exists to prevent.
+- This type read as thinner than the others because its outline lived elsewhere.
+  It is the RICHEST of the ten; only the path was missing.
+
 haipipe-page-for-section · Changelog
 ====================================
 

@@ -223,7 +223,7 @@ def consumer_aim(body, q_id):
         f"  **Description:** {field('Description', '<what must be learned, using the consumer wording>')}",
         f"  **Reason:** {field('Reason', '<which Content assertion depends on it and what breaks if it fails>')}",
         f"  **Probe:** {field('Probe', 'not opened yet')}",
-        f"  **Answer:** {field('Answer', '<empty until PROBE lands, interprets, and weaves the answer>')}",
+        f"  **Answer:** {field('Answer', '<empty until EVIDENCE lands, interprets, and weaves the answer>')}",
     ])
 
 

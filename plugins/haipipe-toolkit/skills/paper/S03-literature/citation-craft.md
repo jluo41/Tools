@@ -5,7 +5,7 @@ Source: converted from `workers/haipipe-paper-draft-citation/SKILL.md` on 2026-0
 
 One job: **no assertion leaves DRAFT owing a source to nobody.**
 
-This lane is READ-ONLY. It walks and reports; the DRAFT phase writes the manuscript and collects Q-consumers into the evidence page's E0 queue, and PROBE alone writes the E<n> divisions and their nested QA-probes.
+This lane is READ-ONLY. It walks and reports; the DRAFT phase writes the manuscript and collects Q-consumers into the evidence page's E0 queue, and EVIDENCE alone writes the E<n> divisions and their nested QA-probes.
 
 
 What this lane does NOT do
@@ -14,7 +14,7 @@ What this lane does NOT do
 - It does NOT search. Finding a paper is a question's job: the nested entry's `#### Q-executor` goes to `Agent(haipipe-discovery-orchestrator-agent)`.
 - It does NOT generate bibtex and NEVER touches `0-*.bib`. Generated bibtex means hallucinated authors, wrong years, wrong journals, wrong pages — the failure is silent and survives into the submitted PDF.
 - It does NOT verify a source (does the DOI resolve? does the paper actually say this?). That is the check-evidence craft (`../S06-main/section-edit/check-evidence-craft.md`).
-- It does NOT WRITE, anywhere. It walks and reports; the DRAFT phase writes the manuscript and the collected Q-consumers, PROBE writes nested S03/S04 QA-probes, and the revise-place craft places landed keys later.
+- It does NOT WRITE, anywhere. It walks and reports; the DRAFT phase writes the manuscript and the collected Q-consumers, EVIDENCE writes nested S03/S04 QA-probes, and the revise-place craft places landed keys later.
 
 
 AUDIT — what owes a source
@@ -78,7 +78,7 @@ Finding the right `[Q-<Stage>-<n>]`, cheapest first:
        anchors the prose is missing.
 2. nothing would produce it
      → REPORT it back to the DRAFT phase as UNOWNED, naming the assertion and
-       what would settle it. The hub raises the `## Q-<Stage>-<n>`; PROBE later
+       what would settle it. The hub raises the `## Q-<Stage>-<n>`; EVIDENCE later
        finds or opens the entry. This lane writes neither file.
 ```
 
@@ -98,4 +98,4 @@ Done criteria
 Where the rest lives
 ---------------------
 
-Phase dispatch and load order are owned by `board/page-phases/` (DRAFT loads this file last, after the type contract); the sibling lanes are `../S04-value/values-craft.md` (numbers), `../S05-display/display/draft-craft.md` (displays), `../S06-main/section-edit/revise-place-craft.md` (placement), and `../S06-main/section-edit/check-evidence-craft.md` (pre-submission verification); the probe loop that answers raised questions is `../haipipe-paper/probe/`.
+Phase dispatch and load order are owned by `board/page-workflows/` (DRAFT loads this file last, after the type contract); the sibling lanes are `../S04-value/values-craft.md` (numbers), `../S05-display/display/draft-craft.md` (displays), `../S06-main/section-edit/revise-place-craft.md` (placement), and `../S06-main/section-edit/check-evidence-craft.md` (pre-submission verification); the probe loop that answers raised questions is `../haipipe-paper/probe/`.

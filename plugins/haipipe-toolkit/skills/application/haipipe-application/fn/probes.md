@@ -2,7 +2,7 @@ Probe files (application)
 ==========================
 
 The intervention accumulates its open QUESTIONS as **probe files** during lifecycle work (seed, the 1a–1d evidence ladder, pitch, narrative, display, section-edit).
-The DRAFT phase RAISES the questions AND authors their probe plan (① ORGANIZE + ② MATCH: q-executor / route / bank / target); the PROBE phase runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET) and binds each one to an answer.
+The DRAFT phase RAISES the questions AND authors their probe plan (① ORGANIZE + ② MATCH: q-executor / route / bank / target); the EVIDENCE phase runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET) and binds each one to an answer.
 
 The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md`.
 Read that; this file only carries the application-side paths and verbs.
@@ -19,11 +19,11 @@ Location — one FLAT pool, one file per TOPIC
     └── README.md                 a GENERATED board (see below); the files win
 ```
 
-- `1-probes/` — NOT `1-probe-plans/`, NOT a per-stage `_PROBE/` folder. Both are RETIRED.
+- `1-probes/` — NOT `1-probe-plans/`, NOT a per-stage `_EVIDENCE/` folder. Both are RETIRED.
 - Stage affinity is a `### q-consumer` bullet's stage-doc id, never the file's path. One flat cross-stage pool.
 - PP numbers are **intervention-local footnote numbers**. `ls 1-probes/` is the numbering authority.
   There is no ledger, and no PP id ever crosses to the task/discovery bank — so two interventions may both carry a PP03 with nothing to reconcile, the way two books both carry a footnote 4.
-- **Legacy migration (on first touch):** a file found in `1-probe-plans/` or `0-lifecycle/<stage>/_PROBE/` is rewritten into `1-probes/` in the new shape by whatever verb touched it.
+- **Legacy migration (on first touch):** a file found in `1-probe-plans/` or `0-lifecycle/<stage>/_EVIDENCE/` is rewritten into `1-probes/` in the new shape by whatever verb touched it.
   Log the move in the stage `_LOG`. Do not migrate what you did not touch.
   There are NO stage-owned sidecar docs — the answer + its numbers live in the entry's `### a-executor`, anchored to `target:`. `_LOG` is the only kept sidecar.
 
@@ -106,9 +106,9 @@ Commands
 /haipipe-application probe run PP01       run it for one probe file
 ```
 
-All four go through `haipipe-application-probe` (the PROBE phase worker) — the single door.
+All four go through `haipipe-application-evidence` (the EVIDENCE phase worker) — the single door.
 
-The loop — DRAFT authors ①②; haipipe-application-probe runs ③④⑤
+The loop — DRAFT authors ①②; haipipe-application-evidence runs ③④⑤
 -----------------------------------------------------------------
 
 ```
@@ -121,7 +121,7 @@ DRAFT authors the plan (① ORGANIZE + ② MATCH):
                setting `target` (an existing path, or `NEW <path>`).
                → most entries should stop HERE. A NEW dispatch is the EXCEPTION, not the norm.
   ── ONE human gate reviews draft + probe plan together ──
-PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-decided):
+EVIDENCE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-decided):
   ③ DISPATCH   target: NEW only, via Agent(haipipe-probe-q-executor-agent), which hands the
                `### q-executor` VERBATIM to Agent(haipipe-task-orchestrator-agent) /
                Agent(haipipe-discovery-orchestrator-agent) in stake-free clean context —
@@ -130,7 +130,7 @@ PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-d
   ⑤ INTERPRET  `### a-executor` (the copy, numbers inline) → stage-doc a-consumer → 1c-claims.md flips
 ```
 
-⛔ **MATCH BEFORE DISPATCH — both at PROBE, in that order.** The bank fills AUTONOMOUSLY from the executor side, so in a healthy project most answers already exist before anyone asks.
+⛔ **MATCH BEFORE DISPATCH — both at EVIDENCE, in that order.** The bank fills AUTONOMOUSLY from the executor side, so in a healthy project most answers already exist before anyone asks.
 A probe file whose every entry is NEW-to-dispatch is a SMELL — either the MATCH was lazy, or the bank is starving. Say which, in the reply.
 
 Lifecycle Integration
@@ -147,5 +147,5 @@ Relation to the direct task / discover verbs
 ---------------------------------------------
 
 The umbrella keeps `task` and `discover` as direct verbs for NON-claim utility work ("just pull the click rates", "find benchmark papers").
-Anything tied to an intervention claim or evidence need goes through a stage's PROBE phase — the probe file preserves the claim-evidence chain and makes the backlog visible.
+Anything tied to an intervention claim or evidence need goes through a stage's EVIDENCE phase — the probe file preserves the claim-evidence chain and makes the backlog visible.
 A question with no intervention behind it does not need a probe file at all — hand it straight to the executor's own door (`/haipipe-task qa` / `/haipipe-discovery qa`); if the answer later matters, open an entry whose `target:` points at the already-written QA file (a T2 REUSE — nothing re-runs).

@@ -1,11 +1,11 @@
 ---
 name: haipipe-page
 description: >-
-  The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary DRAFT, PROBE, REVISE, CHECK. Page Type variants live under page-types/; the workflow lives under page-workflows/, whose head skill haipipe-page-workflow owns RUN. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN hands off to haipipe-page-workflow, which drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, page contract, page grammar, page sections, Page Type, Page Phase, draft probe revise check, rewrite Opening, section evaluation, quality check, which section, base page, /haipipe-page.
+  The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK. Page Type variants live under page-types/; the workflow lives under page-workflows/, whose head skill haipipe-page-workflow owns RUN. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN hands off to haipipe-page-workflow, which drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, page contract, Page Type, Page Phase, outline draft probe evidence revise compile check, seven phases, which phase, rewrite Opening, section evaluation, which section, base page, /haipipe-page.
 metadata:
-  version: "0.28.0"
-  last_updated: "2026-08-15"
-  summary: "RUN moved out to page-workflows/haipipe-page-workflow, the workflow's nameable head; this skill keeps CREATE, WORK ON, and the page contract."
+  version: "0.32.0"
+  last_updated: "2026-08-17"
+  summary: "Sixteen globally unique Page Type variants now ship across six skill sets, including Task Insight and Application Brief, Intervention, and Artifact."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -47,34 +47,36 @@ step  machine-readable key                            Page Type             cont
 ①     filename Skill-<n>- or Agent-<n>-               Skill / Agent mirror  for-skill
       filename Meeting-<n>-                           Meeting               for-meeting
       filename QBv<n>-                                QBv venue             for-venue
-②     head line `route: outward`                      Literature evidence   for-literature
-      head line `route: inward`                       Value evidence        for-value
-③     frontmatter `page-type: display`                Display unit          for-display
-      frontmatter `page-type: design`                 Design brief          for-design
+②     ─ retired 260816 · `route:` is a PLUGIN key now, not a type key ─
+③     frontmatter `page-type: design`                 Design brief          for-design
+      frontmatter `page-type: opening`                Paper opening         for-opening
       frontmatter `page-type: section`                Section unit          for-section
       frontmatter `page-type: narrative`              Narrative             for-narrative
-      frontmatter `page-type: dash`                   Family dash           for-dash-*
-                                                      ↳ the FAMILY in the filename
-                                                        picks which of the four
+      frontmatter `page-type: insight`                DIKW insight          for-insight
+      frontmatter `page-type: brief`                  Application brief     for-brief
+      frontmatter `page-type: intervention`           Intervention design   for-intervention
+      frontmatter `page-type: artifact`               Application artifact for-artifact
+      frontmatter `page-type: dash`                   Family dash           for-dash
+                                                      ↳ `dash_family:` says WHICH
+                                                        family · it is a field now
       frontmatter `page-type: view`                   View hub              for-view
 ④     filename S-<Family>-<unit>-<slug>               Stage                 for-stage
 ⑤     filename Q<group><n>[<face>]-<slug>             Q decision            base only
 ```
 
-Step ③ carries two keys that resolve to a FAMILY of contracts rather than to one.
-`page-type: dash` says the page is a rollup and the `S-<Family>-Dash` filename says which family, so `S-Value-Dash` loads `haipipe-page-for-dash-value`.
-This is the only place a key and a filename cooperate instead of one beating the other, and it is deliberate: four dash contracts share one key because they share one rule, that a dash measures a family against the venue and rules nothing.
+**Every step-③ key now resolves to exactly ONE contract (JL 260816).** `page-type: dash` used to resolve to a family of four, with the `S-<Family>-Dash` filename picking between them. Those four contracts stated one closing rule between them, character for character, so they were merged into `haipipe-page-for-dash` and the family became a FIELD:
 
-**A page wearing the key without a stage filename declares the family itself.**
-A SPECIMEN of a dash lives in a design board's `QBt` group and wears a Q filename, so there is no `S-<Family>-Dash` to read, and `page-type: dash` alone would resolve to four contracts at once.
-Such a page adds one line, `dash_family: section | value | display | literature`, and the resolver reads it instead of the filename.
-This mirrors what the section specimen already does: `QBt6-for-section` wears `page-type: section` plus `section_kind: results`, because a type key alone does not say which instance of the type the specimen is.
-A dash page carrying a stage filename must NOT declare `dash_family:`, since two keys that can disagree is exactly the defect this table exists to prevent.
+```
+page-type: dash
+dash_family: section | value | display | literature      ← REQUIRED on every dash
+```
+
+`dash_family:` was a specimen-only fallback while four contracts existed and a filename could pick between them. With one contract the filename picks nothing, so the field is now required on every dash, including one wearing a `S-<Family>-Dash` filename, where the two must agree. This is the shape `QBt6-for-section` already uses with `section_kind: results`: a type key says which contract, and a field says which instance of it.
 
 EXACTLY ONE step may claim a page, or the page is defective: a page no key matches, or one carrying two keys that disagree, is fixed on the page, never in the resolver.
-Step ②'s key is ONE line in the page's metadata head, right after `owner:`/`method:` (JL 260806; it replaced the retired register marker): an evidence page wears a stage-shaped filename, so only the head `route:` line separates the two evidence routes from a plain stage page. The line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
+**Step ② is retired (JL 260816).** `route: outward` / `route: inward` no longer resolve a Page Type, because literature and value are PLUGINS now, not types. The head line SURVIVES unchanged: `src/topic_entry_contract.py` still trusts it, and it still says which evidence lane a page's cards belong to. What it no longer does is pick a contract, so a page carrying `route:` falls through to ④ or ⑤ and is resolved by its filename like any other page.
 Step ③'s `page-type:` line is REQUIRED on every type listed at that step, and it BEATS the filename.
-That order settles the two real collisions: `S-Display-4c` wears a stage filename and is a display unit, so `page-type: display` resolves it at ③ before ④ can claim it; `QA4` wears a Q filename and is a slide deck, so `page-type: slide` resolves it before ⑤.
+That order settles the real collision: `QBt10-for-design` wears a Q filename and is a design brief, so `page-type: design` resolves it at ③ before ⑤ can claim it.
 Each type's contract states how it closes; the base's own type, the Q decision page, closes when every Aim is met or explicitly held, and mirror and Meeting pages are NEVER counted in a board's settled totals.
 
 `src/common.py` globs four filename prefixes, `Q`, `S`, `Agent` and `Meeting`, and that glob decides only what counts as a page at all; a `Skill-` page starts with the letter S, so it rides the `S` glob.
@@ -88,7 +90,7 @@ Every skill set carries its own `page-types/`, holding the page versions that sk
 This skill owns the BASE those variants extend, and it owns only the variants that are not about any one artifact.
 The rule replaced "ships WHERE THE BOARD FAMILY MAINTAINS IT" (JL 260803), which was true only while one family held every variant; the moment the paper family took the five that describe its own artifacts, a single home stopped being able to say who maintains what.
 
-SEVENTEEN Page Type variants ship across four skill sets, and one of them must be loaded before you write the Page it governs:
+SIXTEEN Page Type variants ship across six skill sets, and one of them must be loaded before you write the Page it governs:
 
 ```
 owner            variant                        governs
@@ -102,28 +104,36 @@ page-types/                                     stage of a paper or application
                  haipipe-page-for-design        one division per candidate, closes
                                                 on a SELECTION record
 
-paper/           haipipe-page-for-venue         QBv<n> · one place a paper goes
-page-types/      haipipe-page-for-narrative     the claims, their order, and the
-  the kinds                                     section-by-section outline
-  only a paper   haipipe-page-for-section       one reader-ordered unit, bound to
+paper/           haipipe-page-for-opening       one per paper · identity, venue
+page-types/                                     position, promise, Narrative handoff
+  the kinds      haipipe-page-for-venue         QBv<n> · one place a paper goes
+  only a paper   haipipe-page-for-narrative     claim roles, reader order, source
+  has                                           allocation, and the Section map
+                 haipipe-page-for-section       one reader-ordered unit, bound to
   has                                           its venue allocation · INCLUDES
                                                 appendix units, lettered
-                 haipipe-page-for-display       a unit a person must ACCEPT:
-                                                figure, table, diagram
-                 haipipe-page-for-literature    evidence, outward route: what is
-                                                already KNOWN
-                 haipipe-page-for-value         evidence, inward route: what this
-                                                project HAS and PRODUCES
-                                                (absorbed resource, JL 260809)
-                 ─ the four family DASHES, one per multi-unit family above ─
-                 haipipe-page-for-dash-section  which unit to work on next
-                 haipipe-page-for-dash-value    binding rule · staleness · inventory
-                 haipipe-page-for-dash-display  the wiring map · reader-order rehearsal
-                 haipipe-page-for-dash-literature  the gap contract · topic map
+                 ─ display · literature · value RETIRED 260816: every page
+                   has them, so they are PLUGINS, not types (see below) ─
+                 haipipe-page-for-dash          EVERY unit of one family at once,
+                                                measured against the venue · never
+                                                closes · `dash_family:` says which
+                                                (four per-family dashes merged 260816)
 
 subjective-      haipipe-page-for-labeling      one corpus × one label target,
 label/                                          run by a human authority
 page-types/
+
+task/            haipipe-page-for-task          one task-folder · closes when a
+page-types/                                     person reads a run-bound result
+                 haipipe-page-for-insight       one consumer-neutral DIKW chain;
+                                                Probe reaches Task/Discovery here
+
+application/     haipipe-page-for-brief         one application identity, audience,
+page-types/                                     venue, promise, and source selection
+                 haipipe-page-for-intervention  settled Insights → mechanisms,
+                                                components, variants, Artifact map
+                 haipipe-page-for-artifact      one independently approvable delivery
+                                                unit, bound to handoff + render version
 
 view/            haipipe-page-for-view          QA inputs → readable View body →
 page-types/                                     Displays → downstream consumers
@@ -132,44 +142,47 @@ page-types/                                     Displays → downstream consumer
 `for-stage` stays on the board side even though only paper and application have lifecycles, because a stage page is a BOARD mechanism (chain, managed contract span, human gate) that both families instantiate; `for-section` and the rest describe a paper's own artifacts, so they left with the paper.
 When a variant moves, its installed symlink still points at the old folder, so re-run `install.sh --global` (repo root) or the skill silently stops resolving.
 
-The last seven were admitted 260805 (JL, ruled on the design board's QB6).
+Opening was admitted 260817 as the paper's identity-and-position page upstream of Narrative. On the same date Task admitted Insight and Application admitted Brief, Intervention, and Artifact. Their keys are globally unique: Application uses Brief rather than Opening and Intervention rather than generic Design, so step ③ never needs family context to resolve a contract.
 A slide deck is NOT a Page Type: a page's talk is plugin material at `<page>/slide/<page>-deck.html`, authored by an agent and regenerated on demand (JL 260815, ruled on QPf3; the retired variant's specimen is archived on that board).
 `-for-section` loads `-for-stage` the way the topic types load the topic core.
 It adds the section kind, the venue contract block, and the landing surface where citation, value, and display bindings reach prose.
 A section reads the venue BLUEPRINT, never the QBv catalog.
 `-for-meeting` closed a gap this section itself used to record: `Meeting-<n>` pages had a generator and no contract.
 Its one owned rule is that a spoken decision is not ruled until routed to the owning page.
-The two evidence types resolve by the head `route:` line, the same key `src/topic_entry_contract.py` already trusts.
-Their filenames look like stage-page filenames, which is why a filename cannot resolve them.
-Both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer.
-A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping.
-That is why it does not load `-for-skill`.
-A slide page shares that acceptance model at deck grain: one division per slide.
+**Display, literature and value are NOT Page Types (JL 260816).** They failed the admission law the same way the slide deck did, and for the plainest possible reason: EVERY page has them. A page shows something, a page cites something, a page states a number. A property every page carries cannot tell one kind of page from another, so it decides nothing about how a page closes, and a kind that changes no closing rule is plugin material.
+Each already had a plugin lane shipping beside its type, which is what made the duplication visible: `<page>/display/` (QPf5), `<page>/bibex/` (QPf8), and `<page>/probe/` (QPf9) on the design board.
+The three retired contracts are archived whole at `paper/page-types/_archive/`. The DASH over each family survives, because a dash rolls up what pages CARRY and never what type they wear.
+**The four per-family dashes merged into one on the same day** (JL 260816, "maybe just one thing for all"). Their `closes when` cells were identical, character for character, all four reading `never · a dash has no gate and is regenerated each run`, and so were their type key, their venue rule, their generated-versus-authored split, and their empty-cell rule. Four contracts stating one closing rule is one type whose family is a field.
+A slide page shares the deck grain the same way: one division per slide.
 Each division embeds the ONE deck file live, via html-ppt's `?preview=N` single-slide mode.
 The same file opened bare is the presentation.
 JL ruled the embed must be the html itself, and the boardform board's QA4 is the proving page (260805).
 A design page is the brief itself: its Opening states audience, goal, and constraints, and each Content division carries one CANDIDATE artifact.
 It closes on a SELECTION record naming the winner and each loser's disposition.
-It sits UPSTREAM of `-for-display`: design selects the candidate, display accepts its render.
+It sits UPSTREAM of the display PLUGIN: design selects the candidate, and `<page>/display/` renders the winner.
 
 Load the matching one before writing or fixing any Page of those types.
 `haipipe-page-for-stage` names the ONE stage that reads a `QBv` Page and the four tiers deciding what crosses from that catalog into a draft.
 The first two listed types also do NOT take the `create a new page` steps below: they are GENERATED by `haipipe-board/cli/skillpage.py new`, which writes the Page from its own stub and registers it in `board.md` itself, so copying `ref/page-template.md` and registering by hand produces a Page with no managed spans that the checker then reports as broken forever.
 `haipipe-page-for-skill` exists because a mirror page DECIDES NOTHING, so this skill's Opening shape, which ends in `what this page decides`, leaves it with no question to ask; five skill and agent pages filled that empty slot with the same rhetorical question on 260802.
 
-## 🎭 Four Page Phases, independent of Page Type
+## 🎭 Seven Page Phases, independent of Page Type
 
 A Page persists while the authority acting on it changes.
 The current phase is not another Page Type and is not inferred from the edit operation.
+There were four until 260817; the three splits and the failure each one allowed are in `page-workflows/haipipe-page-workflow`.
 
 ```text
 phase       authority                                     load
 ─────────────────────────────────────────────────────────────────────────────
+OUTLINE 🚧  agree the SHAPE, exit only on a person's tick page-workflows/haipipe-page-outline
 DRAFT       define or reopen purpose, Aims, promised shape page-workflows/haipipe-page-draft
-PROBE       resolve a consequential unknown across the evidence wall
-                                                         page-workflows/haipipe-page-probe
+PROBE       turn each outline mark into a card and ask     page-workflows/haipipe-page-probe
+EVIDENCE    land every promised claim's card across the evidence wall
+                                                         page-workflows/haipipe-page-evidence
 REVISE      improve the current promise while purpose and Aims stay fixed
                                                          page-workflows/haipipe-page-revise
+COMPILE     rebuild latex · pdf · word from that prose    page-workflows/haipipe-page-revise
 CHECK       judge one version and route its next authority page-workflows/haipipe-page-check
 ```
 
@@ -182,17 +195,19 @@ base Page contract
   → family craft: the stage's declared craft files (and for probe, the family door's probe tooling), when paper or application adds artifact knowledge
 ```
 
-The four phases form a routing grammar, not a conveyor belt.
-Each may repeat, PROBE may be skipped when no consequential unknown exists, and CHECK may route to REVISE, PROBE, or DRAFT.
+The seven phases form a routing grammar, not a conveyor belt.
+Each may repeat, PROBE and EVIDENCE may be skipped when the Page promises no claim it cannot support, and CHECK may route to any earlier phase.
 Returning to DRAFT because purpose or Aims changed starts a new round on the same Page.
 
 Use the authority test when the visible operation is ambiguous:
 
 ```text
-purpose or Aims change                 → DRAFT
-an unanswered consequential fact moves → PROBE
-the same purpose and Aims are improved  → REVISE
-a concrete version is judged            → CHECK
+the section list itself is being agreed  → OUTLINE
+purpose or Aims change                   → DRAFT
+a marked hole has no card open for it    → PROBE
+a card is open and its answer must land  → EVIDENCE
+the same purpose and Aims are improved   → REVISE
+a concrete version is judged             → CHECK
 ```
 
 Adding, deleting, moving, and rewriting may be DRAFT or REVISE.
@@ -244,11 +259,11 @@ An Aims or States group is `### A<n> · <emoji> <name>`, taking the NUMBER, NAME
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)
   Read the evidence boundary before resolving this Page's consequential unknown.
 ```
 
-The four relations are `reads`, `constrained by`, `continues`, and `contrasts`. The phase is `DRAFT`, `PROBE`, `REVISE`, `CHECK`, or `ALL`. The target is a Board-root-relative Page source. Its visible id must match that Page. Scope is `page` or one direct Content division such as `§3` or `§3.2`; a division read automatically carries the target Page's identity, Opening, and matching Aims/States group so the fragment does not arrive without its promise and current state. When one packet selects several divisions from the same target Page, identity and Opening are emitted once rather than repeated per row.
+The four relations are `reads`, `constrained by`, `continues`, and `contrasts`. The phase is `DRAFT`, `EVIDENCE`, `REVISE`, `CHECK`, or `ALL` (`EVIDENCE` still parses as EVIDENCE). The target is a Board-root-relative Page source. Its visible id must match that Page. Scope is `page` or one direct Content division such as `§3` or `§3.2`; a division read automatically carries the target Page's identity, Opening, and matching Aims/States group so the fragment does not arrive without its promise and current state. When one packet selects several divisions from the same target Page, identity and Opening are emitted once rather than repeated per row.
 
 Read the current Page whole first. Then run `python3 <board-skill>/cli/pagecontext.py <current-page.md> --phase <PHASE>` and load only the returned packet. The reader follows one hop: it never traverses Related Board Pages declared by a target Page. Cycles are therefore harmless, context stays bounded, and a phase sees only rows written for it or for `ALL`. `check.py` rejects a malformed row, a path outside the Board, a dead Page, a mismatched Page id, or a missing scope before an agent can silently work without that context.
 
@@ -373,7 +388,7 @@ Resolve applicable requirements in this order:
 
 1. The base section contract in this skill and `ref/page-template.md`.
 2. The Page Type variant, when one exists.
-3. The current Page Phase contract, when the review concerns work performed under DRAFT, PROBE, REVISE, or CHECK.
+3. The current Page Phase contract, when the review concerns work performed under DRAFT, EVIDENCE, REVISE, or CHECK.
 4. The Page's own `## Writing Style`; on S Pages, also its `## Stage Contract`.
 5. The local `###` division purpose and each `####` heading's immediately following `(job line)`, when present.
 

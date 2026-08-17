@@ -9,14 +9,47 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-PHASES = {"DRAFT", "PROBE", "REVISE", "CHECK"}
+# PROBE is a live phase again: it raises and dispatches the card, while
+# EVIDENCE lands what comes back. Receipts written during the short 260816
+# rename used `phase: PROBE` for the widened EVIDENCE phase; `_legacy_probe`
+# below recognizes that old shape (PROBE → REVISE) without sacrificing the new
+# phase for current runs.
+PHASE_ALIASES = {}
+PHASES = {"OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK"}
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
 LEGAL_ROUTES = {
-    "DRAFT": {"DRAFT", "PROBE", "REVISE", "CHECK", "HOLD"},
-    "PROBE": {"PROBE", "REVISE", "DRAFT", "CHECK", "HOLD"},
-    "REVISE": {"REVISE", "PROBE", "DRAFT", "CHECK", "HOLD"},
-    "CHECK": {"CLOSE", "REVISE", "PROBE", "DRAFT", "HOLD"},
+    "OUTLINE": {"OUTLINE", "DRAFT", "HOLD"},
+    "DRAFT": {"DRAFT", "PROBE", "EVIDENCE", "REVISE", "CHECK", "HOLD"},
+    "PROBE": {"PROBE", "EVIDENCE", "REVISE", "HOLD"},
+    "EVIDENCE": {"EVIDENCE", "REVISE", "DRAFT", "CHECK", "HOLD"},
+    "REVISE": {"REVISE", "COMPILE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
+    "COMPILE": {"COMPILE", "CHECK", "REVISE", "HOLD"},
+    "CHECK": {"CLOSE", "OUTLINE", "REVISE", "PROBE", "EVIDENCE", "DRAFT", "HOLD"},
 }
+
+
+def phase_token(value: Any) -> Any:
+    """Normalize one phase or route token without collapsing live PROBE."""
+    if isinstance(value, str):
+        return PHASE_ALIASES.get(value.strip().upper(), value.strip().upper())
+    return value
+
+
+def _legacy_probe(receipts: list[Any]) -> bool:
+    """Detect the short-lived PROBE-as-EVIDENCE receipt shape."""
+    return any(
+        isinstance(r, dict)
+        and str(r.get("phase", "")).strip().upper() == "PROBE"
+        and str(r.get("route", "")).strip().upper() == "REVISE"
+        for r in receipts
+    )
+
+
+def _trace_token(value: Any, legacy_probe: bool = False) -> Any:
+    token = phase_token(value)
+    return "EVIDENCE" if legacy_probe and token == "PROBE" else token
+
+
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -166,6 +199,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             _finding("missing-receipts", "run", "receipts must be a non-empty list")
         )
         return findings
+    legacy_probe = _legacy_probe(receipts)
 
     limits = run.get("limits") if isinstance(run.get("limits"), dict) else {}
     max_steps = limits.get("max_steps")
@@ -194,13 +228,13 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 )
             )
 
-    start_phase = str(packet.get("start_phase", "")).upper()
+    start_phase = _trace_token(str(packet.get("start_phase", "")), legacy_probe)
     if start_phase and start_phase not in PHASES:
         findings.append(
             _finding("unknown-start-phase", "run", f"unknown packet start_phase {start_phase}")
         )
     if start_phase and isinstance(receipts[0], dict):
-        first_phase = str(receipts[0].get("phase", "")).upper()
+        first_phase = _trace_token(str(receipts[0].get("phase", "")), legacy_probe)
         if first_phase != start_phase:
             findings.append(
                 _finding(
@@ -222,8 +256,8 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(_finding("receipt-not-object", index, "receipt must be an object"))
             continue
         receipt = raw
-        phase = str(receipt.get("phase", "")).upper()
-        route = str(receipt.get("route", "")).upper()
+        phase = _trace_token(str(receipt.get("phase", "")), legacy_probe)
+        route = _trace_token(str(receipt.get("route", "")), legacy_probe)
         role = str(receipt.get("role", "")).lower()
         status = str(receipt.get("status", "")).lower()
         actor = str(receipt.get("actor", "")).strip()
@@ -371,7 +405,9 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                         "a pass may only CLOSE or HOLD for a gate",
                     )
                 )
-            if verdict == "revise" and route not in {"DRAFT", "PROBE", "REVISE"}:
+            if verdict == "revise" and route not in {
+                "OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE"
+            }:
                 findings.append(
                     _finding(
                         "revise-without-worker",
@@ -424,7 +460,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(
                 _finding("reopen-without-draft", index, "reopens_promise requires route=DRAFT")
             )
-        if phase != "DRAFT" and route == "DRAFT" and not reopens:
+        if phase not in {"DRAFT", "OUTLINE"} and route == "DRAFT" and not reopens:
             findings.append(
                 _finding(
                     "draft-without-reopen",
@@ -434,8 +470,8 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             )
 
         if previous is not None:
-            previous_route = str(previous.get("route", "")).upper()
-            previous_phase = str(previous.get("phase", "")).upper()
+            previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
+            previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
             if previous_route in TERMINAL_ROUTES:
                 findings.append(
                     _finding("receipt-after-terminal", index, f"receipt follows {previous_route}")
@@ -464,7 +500,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             current_round = receipt.get("round")
             should_increment = (
                 previous_route == "DRAFT"
-                and previous_phase != "DRAFT"
+                and previous_phase not in {"DRAFT", "OUTLINE"}
                 and previous.get("reopens_promise") is True
             )
             expected_round = (
@@ -503,7 +539,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         previous = receipt
 
     final = receipts[-1] if isinstance(receipts[-1], dict) else {}
-    final_route = str(final.get("route", "")).upper()
+    final_route = _trace_token(str(final.get("route", "")), legacy_probe)
     if final_route not in TERMINAL_ROUTES:
         findings.append(
             _finding("trace-not-terminal", "run", "final receipt must route to CLOSE or HOLD")
@@ -543,8 +579,10 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
 
 def traversed_edges(receipts: Iterable[dict[str, Any]]) -> list[str]:
     """Return phase-to-route edges in execution order for audit summaries."""
-
+    receipts = list(receipts)
+    legacy_probe = _legacy_probe(receipts)
     return [
-        f"{str(r.get('phase', '')).upper()}->{str(r.get('route', '')).upper()}"
+        f"{_trace_token(str(r.get('phase', '')), legacy_probe)}->"
+        f"{_trace_token(str(r.get('route', '')), legacy_probe)}"
         for r in receipts
     ]
