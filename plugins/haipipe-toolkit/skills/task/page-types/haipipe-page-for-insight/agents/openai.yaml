@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Insight Page"
+  short_description: "Trace one DIKW insight from evidence to reusable knowledge"
+  default_prompt: "Use $haipipe-page-for-insight to create or repair a DIKW Insight page on the Task Board."

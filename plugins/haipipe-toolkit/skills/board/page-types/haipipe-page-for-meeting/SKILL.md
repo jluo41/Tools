@@ -6,6 +6,10 @@ metadata:
   version: "0.1.0"
   last_updated: "2026-08-05"
   summary: "First cut, on JL's 260805 admission; closes the gap QB6 §1.1 had recorded since the page existed."
+  outline:
+    mode: fixed          # fixed | grammar | resolved
+    source: "./template.md"
+    shape: "one division per agenda item"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -50,6 +50,27 @@ _STORE_HEAD = """# pagex · %s
 
 """
 
+_MATCH_TOKEN = re.compile(r"[a-z0-9][a-z0-9_-]{2,}")
+
+
+def _pagex_match_score(question, text):
+    """Return a transparent candidate score; never declare reuse.
+
+    PageX MATCH is a read-only shortlist for PROBE. Token overlap helps a
+    person/agent find the right borrowed file, but an answer is reusable only
+    after the candidate is opened and read as an exact QA answer. Keeping this
+    helper pure makes that safety boundary testable and prevents the route from
+    quietly becoming a second QA bank.
+    """
+    q = set(_MATCH_TOKEN.findall((question or "").lower()))
+    body = set(_MATCH_TOKEN.findall((text or "").lower()))
+    if not q:
+        return {"overlap": 0, "total": 0, "score": 0.0, "all_terms": False}
+    overlap = len(q & body)
+    return {"overlap": overlap, "total": len(q),
+            "score": round(overlap / float(len(q)), 3),
+            "all_terms": overlap == len(q)}
+
 
 class PagexMixin:
 
@@ -352,6 +373,62 @@ class PagexMixin:
         self._pagex_view(st, self._pagex_mint(st))
         return {"ok": True, "path": path}, None
 
+    # ---- POST /_board/pagex-match · the read-only MATCH shortlist --------
+    def pagex_match(self, p):
+        """Rank borrowed files for a PROBE question without closing it.
+
+        This is deliberately a candidate finder, not an answer matcher. The
+        caller must open the returned file, verify that it literally answers
+        the neutral Q-executor, and write `reuse`/`no exact match` to the PROBE
+        receipt. No store row, symlink, QA bank, or card is changed here.
+        """
+        st, err = self._pagex_state(p)
+        if err:
+            return None, err
+        question = str(p.get("question") or "").strip()
+        if not question:
+            return None, "no probe question given"
+        root = Path(self.root).resolve()
+        matches = []
+        for path in st["order"]:
+            row = st["rows"].get(path, {})
+            if row.get("removed"):
+                continue
+            target = root / path.lstrip("/")
+            try:
+                resolved = target.resolve()
+            except OSError:
+                continue
+            if resolved != root and root not in resolved.parents:
+                # Match is read-only, but it must keep the same root boundary
+                # as the symlink minter; a hand-edited `../outside` row is not
+                # a legitimate PageX candidate.
+                continue
+            if not resolved.is_file():
+                continue
+            try:
+                body = resolved.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            score = _pagex_match_score(question, body)
+            if not score["overlap"]:
+                continue
+            home, _inner = self._page_home_of(resolved, root)
+            matches.append({
+                "path": path,
+                "source_page": home.name if home else resolved.parent.name,
+                "score": score["score"],
+                "overlap": "%d/%d" % (score["overlap"], score["total"]),
+                "all_terms": score["all_terms"],
+                "state": self._head_state(home / (home.name + ".md"))
+                         if home else "",
+                "excerpt": re.sub(r"\s+", " ", body).strip()[:420],
+                "decision": "inspect exact answer before reuse",
+            })
+        matches.sort(key=lambda x: (-x["score"], x["path"]))
+        return {"ok": True, "question": question, "matches": matches[:12],
+                "audit": "candidate-only; PROBE must read and record reuse or no exact match"}, None
+
     # ---- GET /_board/pagexview?p=<rendered page>&from=<store> -----------
     def serve_pagexview(self):
         """The borrowed page, WITH A WAY BACK (JL 260816: "我点进去之后，怎么
@@ -568,6 +645,14 @@ class PagexMixin:
                   "Type a path only for a file it never mentions, most often "
                   "on another board.</p></details>")
 
+        matcher = ("<details><summary class='mut'>🔎 MATCH a Probe question"
+                    "</summary><div class='pick'>"
+                    "<input id='matchq' placeholder='neutral Q-executor question' "
+                    "style='min-width:52%'><button id='runmatch'>match</button>"
+                    "</div><div id='matches'></div>"
+                    "<p class='mut'>Candidates are ranked for inspection only. "
+                    "Read the exact answer before recording reuse.</p></details>")
+
         rmv = ""
         if removed:
             rmv = ("<details><summary class='mut'>🚫 removed · %d</summary>%s"
@@ -579,6 +664,8 @@ class PagexMixin:
 
         script = """<script>
 var CTX = {path: __PATH__, file: __FILE__};
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>\"]/g,
+  function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]; }); }
 function post(route, body) {
   Object.assign(body, CTX);
   fetch('/_board/' + route, {method: 'POST',
@@ -593,6 +680,27 @@ function post(route, body) {
 document.addEventListener('click', function (ev) {
   var b = ev.target;
   if (b.id === 'refresh') return post('pagex', {});
+  if (b.id === 'runmatch') {
+    var body = {question: document.getElementById('matchq').value};
+    Object.assign(body, CTX);
+    fetch('/_board/pagex-match', {method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var box = document.getElementById('matches');
+        if (!j.ok) { box.innerHTML = '<div class="dsc bad">⚠ ' +
+          esc(j.err || 'match failed') + '</div>'; return; }
+        if (!j.matches.length) { box.innerHTML =
+          '<div class="dsc">no borrowed candidate — inspect the QA bank next.</div>'; return; }
+        box.innerHTML = j.matches.map(function (m) {
+          return '<div class="matchrow"><b>' + esc(m.path) + '</b> '
+            + '<span class="mut">' + esc(m.overlap) + ' · score ' + m.score
+            + (m.all_terms ? ' · all terms' : '') + '</span><br><span class="mut">'
+            + esc(m.decision) + '</span><br>' + esc(m.excerpt) + '</div>';
+        }).join('');
+      }).catch(function (e) { alert('⚠ ' + e); });
+    return;
+  }
   if (b.id === 'addborrow')
     return post('pagex-entry', {
       borrow: document.getElementById('newpath').value,
@@ -678,13 +786,15 @@ document.addEventListener('dragend', function () {
                "h3{font-size:13px;margin:14px 0 6px}"
                ".find{border-left:2px solid var(--line);padding-left:12px}"
                ".cand{padding:7px 0;border-bottom:1px solid var(--line)}"
+               ".matchrow{padding:7px 0;border-bottom:1px solid var(--line);"
+               "font:12px/1.5 ui-monospace,Menlo,monospace;overflow-wrap:anywhere}"
                ".brd{font:600 11.5px ui-monospace,Menlo,monospace;"
                "color:var(--mut);margin:12px 0 2px;text-transform:none}"
                ".pick{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}"
                "</style>")
         view = st["dir"] / (st["stem"] + "-view.html")
         view.write_text(_VIEW.format(title=_esc(st["stem"] + " · pagex"),
-                                     body=css + head + cards + finder + rmv
+                                     body=css + head + cards + matcher + finder + rmv
                                      + script),
                         encoding="utf-8")
         return self._url_of(view)

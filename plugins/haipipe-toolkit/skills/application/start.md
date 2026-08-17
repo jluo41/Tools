@@ -24,7 +24,7 @@ Important Application-specific behavior to preserve:
 - Its venue is an output modality such as SMS, email, dashboard, UI card, or report.
 - Its evidence ladder is descriptions -> themes -> claims -> advice.
 - Venue selection can skip stages and change the required settlement depth.
-- Evidence must enter through the PROBE phase rather than being produced inside Application.
+- Evidence must enter through the EVIDENCE phase rather than being produced inside Application.
 - Application continues through artifact, review, deploy, and iterate.
 
 The desired working model is:

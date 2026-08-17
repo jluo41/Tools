@@ -1,7 +1,7 @@
 """🪜 Page runs · one page's lifecycle receipts, served as JSON.
 
 WHAT THIS ANSWERS: the 📄 Page phases stepper (65-plugin-pageflow.js) has to
-say where ONE page stands in DRAFT/PROBE/REVISE/CHECK. That truth is not in
+say where ONE page stands in DRAFT/EVIDENCE/REVISE/CHECK. That truth is not in
 the rendered page: the run contract (haipipe-page-workflow) writes it to
 `<board>/_runs/page/<page-id>/<run-id>.json`, one receipt trail per RUN. So
 the stepper asks this route, and this route reads those files and nothing

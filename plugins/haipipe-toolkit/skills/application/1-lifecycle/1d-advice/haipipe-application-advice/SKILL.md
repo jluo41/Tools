@@ -55,16 +55,16 @@ Explore is a strategy, not a loophole: the visible tag, the named settling C, an
 DRAFT   re-mine last round's Rejected reservoir (did a refuting C flip?), read 1c-claims.md (statuses +
         campaign) and 1b-themes.md, elicit taste on guidance priorities; CONSUME every supported/weak C —
         an A entry, a Rejected entry, or a No-action line with a why; consider explore bets on promising weak/GAP
-PROBE   rarely fires: derivation is in-stage work. An entry exposing a NEW evidence gap routes BACK to 1c-claims
+EVIDENCE   rarely fires: derivation is in-stage work. An entry exposing a NEW evidence gap routes BACK to 1c-claims
         (raised there as a question SECTION in 1-probes/), never gathers here. Mechanics:
-        ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md
 REVISE  actionability pass (every A survives the test), scope tightening, caveat wording
 CHECK   the LADDER GATE for light/medium venues (batched per the Stage Gate Protocol): every exploit A meets the venue's
         settlement bar, every explore A is tagged + names its settling C + states rails, actionability passed,
         every supported/weak C consumed, no unresolved STALE tags; user confirms -> Gate Ledger row(s) -> advance
 ```
 
-Advice RARELY probes: a new evidence gap is not gathered here but routed back to 1c-claims, whose PROBE phase binds it.
+Advice RARELY probes: a new evidence gap is not gathered here but routed back to 1c-claims, whose EVIDENCE phase binds it.
 Each phase runs its worker (`haipipe-application-draft` / `-probe` / `-revise` / `-check`); announce every phase boundary and never let CHECK go implicit.
 Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> claims]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 The ladder doc (`1d-advice.md`) is the record; adopted/declined A-ids with a why live there.

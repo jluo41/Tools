@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.140.0"
-  last_updated: "2026-08-16"
-  summary: "🗑 The focus timer and its SQLite store are deleted; the Activity readout keeps counting ## Log lines, and now counts the `- ` ones too."
+  version: "0.140.1"
+  last_updated: "2026-08-17"
+  summary: "The Page Type roster now reflects sixteen live variants across six owners, adding Task Insight and Application Brief, Intervention, and Artifact."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -35,7 +35,7 @@ The rest of this board family (`../`) is what other agents LOAD or CALL without 
 ```
 haipipe-page       SPEC + ROUTER · the shared Page frame and the
                          Page Type × Page Phase composition
-page-types/              the FIVE variants this skill set owns; the other six
+page-types/              the FOUR variants this skill set owns; the other eight
                          live in the skill set that owns them (see below)
   haipipe-page-for-stage
                          TYPE · S-<Family>-<unit> lifecycle pages
@@ -49,7 +49,7 @@ page-workflows/
   haipipe-page-workflow
                          HEAD · the RUN router and its packet + receipt contract
   haipipe-page-draft
-  haipipe-page-probe
+  haipipe-page-evidence
   haipipe-page-revise
   haipipe-page-check
                          PHASES · promise, inquiry, realization, judgment
@@ -98,24 +98,27 @@ changed Openings consecutively in Board order; interchangeable or form-letter
 prose fails even when every page is locally clear.
 For an automatic one-Page lifecycle, dispatch
 `haipipe-page-orchestrator-agent` instead. It invokes the Page Workflow,
-which calls the same creator for exactly one DRAFT, PROBE, or REVISE authority,
+which calls the same creator for exactly one DRAFT, EVIDENCE, or REVISE authority,
 then a mechanical builder/version snapshot, then the reviewer for CHECK. The
 orchestrator stores the exact result under `_runs/page/` and audits it; it never
 writes Page prose, and the reviewer never cures its own finding.
 **A Page Type variant ships under the `page-types/` folder of the SKILL SET THAT OWNS IT (JL 260809).**
 Every skill set carries its own `page-types/`, so the folder a variant sits in is what names its owner.
-Sixteen variants ship across four skill sets: four here, ten in `paper/page-types/`, one in `subjective-label/skills/page-types/`, and one in `view/page-types/`.
+Sixteen variants ship across six skill sets: four here, five in `paper/page-types/`, two in `task/page-types/`, three in `application/page-types/`, one in `subjective-label/skills/page-types/`, and one in `view/page-types/`.
 (`for-slide` retired 260815: a deck is `slide/` plugin material, written by `/_board/autodeck` under the `haipipe-plugin` contract.)
 
 ```
 board/page-types/         for-stage · for-skill · for-meeting · for-design
-paper/page-types/         for-venue · for-narrative · for-section · for-display
-                          for-literature · for-value · four family DASHES
+paper/page-types/         for-opening · for-venue · for-narrative · for-section
+                          · for-dash
+task/page-types/          for-task · for-insight
+application/page-types/   for-brief · for-intervention · for-artifact
 subjective-label/…/       for-labeling
 view/page-types/          for-view
 ```
 
-`for-stage` stays here although only paper and application have lifecycles, because a stage page is a BOARD mechanism (the chain, the managed contract span, the human gate) that both families instantiate.
+Application's names are intentionally unique across the global resolver: Brief does not reuse Paper Opening, and Intervention does not reuse Board Design.
+`for-stage` stays here although only paper and legacy application runtimes have lifecycles, because a stage page is a BOARD mechanism (the chain, the managed contract span, the human gate) that more than one family can instantiate.
 The five that left describe a paper's own artifacts, so they belong to the paper.
 Two earlier rules failed here and are recorded so neither returns: "ships under its CONSUMER, never here" broke when venue pages turned out to be consumed by the paper family and maintained by this one, and "ships WHERE THE BOARD FAMILY MAINTAINS IT" (JL 260803) held only while one family owned every variant.
 ⚠️ Moving a variant does not move its installed symlink: re-run `install.sh --global` (repo root) afterwards, or the skill silently stops resolving.
@@ -339,7 +342,7 @@ index, serving, the round trip
 
 Route by SCOPE at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board and its structure are this skill's.
 
-Inside the one-Page route, `haipipe-page` resolves the stable Page Type and the current DRAFT, PROBE, REVISE, or CHECK authority.
+Inside the one-Page route, `haipipe-page` resolves the stable Page Type and the current DRAFT, EVIDENCE, REVISE, or CHECK authority.
 The one-Page contract now owns `RUN`, backed by `ref/page-lifecycle.workflow.js`.
 It is not `ADVANCE`: the router may repeat, branch, HOLD, or begin a new DRAFT round.
 The non-interactive dispatch target is `haipipe-page-orchestrator-agent`; the Board door still owns no separate phase verb.

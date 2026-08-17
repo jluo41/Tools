@@ -43,7 +43,7 @@ from src.common import group_stem, page_files        # noqa: E402
 # Ask the page itself what it would send. `.sentence-target` is what the
 # address pass marks as writable, and a summary's <p> is the same thing once a
 # sentence has gained apparatus (that shape is exactly what broke).
-PROBE = """
+EVIDENCE = """
 (() => {
   const read = window.__boardSentenceText;
   if (!read) return {err: 'this page has no __boardSentenceText'};
@@ -174,7 +174,7 @@ def main():
         # a clean board (260801, a socket timeout on the sixth page).
         try:
             br.open(tree_url(a.url, board, root, p))
-            r = br.js(PROBE)
+            r = br.js(EVIDENCE)
         except Exception as e:                    # noqa: BLE001
             unreadable.append((p.name, f"{type(e).__name__}: {e}"))
             try:

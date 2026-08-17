@@ -1,0 +1,73 @@
+% GENERATED from QA2-the-skill-set.md by md2tex.py. Do not hand-edit: sync is
+% one-way and the next run overwrites this file.
+
+\section{📦 The roster: 23 skills and 8 packs}
+\textbf{Counts by layer}: the family tree as it sits on disk today.
+
+\begin{verbatim}
+  door         1 skill    the router and console front door
+ 0 0-enter      2 skills   enter . round
+ 1 1-lifecycle  11 skills  1 orchestrator + 10 per-stage
+ 2 2-phase      4 skills   draft . probe . revise . check
+ 3 3-deliver    4 skills   artifact . review . claim-audit . deploy
+ 4 4-iterate    1 skill    post-deploy A/B refinement
+  venue/       8 packs    knowledge, not stages
+\end{verbatim}
+📌 This part is the count itself: every callable skill with its version, plus the venue packs beside them, read from disk on 260802. The layer grouping follows the Skill-tree layout in the family README, which is the canonical structure file.
+
+\textbf{The roster, grouped by layer}: ver is the skill's own \texttt{metadata.version}, updated is its \texttt{last\_updated}.
+
+\begin{verbatim}
+ layer         skill                              ver      updated
+ -----------   --------------------------------   ------   ----------
+  door       haipipe-application                0.6.10   2026-07-19
+ 0-enter       haipipe-application-enter          0.2.3    2026-07-19
+               haipipe-application-round          0.1.1    2026-07-06
+ 1-lifecycle   haipipe-application-lifecycle      0.4.4    2026-07-19
+    stage    haipipe-application-seed           0.6.1    2026-07-19
+    stage    haipipe-application-descriptions   0.2.6    2026-07-19
+    stage    haipipe-application-themes         0.2.7    2026-07-19
+    stage    haipipe-application-claims         0.7.6    2026-07-19
+    stage    haipipe-application-advice         0.1.9    2026-07-19
+    stage    haipipe-application-venue          0.3.4    2026-07-19
+    stage    haipipe-application-pitch          0.5.4    2026-07-19
+    stage    haipipe-application-narrative      0.5.4    2026-07-19
+    stage    haipipe-application-display        0.4.8    2026-07-19
+    stage    haipipe-application-section-edit   0.5.4    2026-07-19
+ 2-phase       haipipe-application-draft          0.1.5    2026-07-19
+               haipipe-application-probe          0.3.2    2026-07-19
+               haipipe-application-revise         0.1.1    2026-07-19
+               haipipe-application-check          0.4.2    2026-07-17
+ 3-deliver     haipipe-application-artifact       0.3.1    2026-07-17
+               haipipe-application-review         0.1.1    2026-07-06
+               haipipe-application-claim-audit    0.1.2    2026-07-17
+               haipipe-application-deploy         0.1.1    2026-07-06
+ 4-iterate     haipipe-application-iterate        0.2.0    2026-07-17
+ -----------   --------------------------------   ------   ----------
+               23 skills .  ×10 = round-3 collapse candidate
+\end{verbatim}
+The ten 🔻 rows are the per-stage skills of \texttt{1-lifecycle/}: the nine numbered stage folders plus \texttt{haipipe-application-venue}, which pins the modality between the ladder and pitch. The orchestrator \texttt{haipipe-application-lifecycle} is the eleventh skill in that layer and is not a candidate; it is the seat the engine proposal builds beside.
+
+Under \texttt{venue/} sit eight packs: sms, email, push, reminder, checklist, dashboard, report, and ui-card. Each is a README plus a style-profile, with a shared \texttt{\_SCHEMA.md} beside them, and the family README calls them knowledge, not stages. They carry no version and no trigger, so they ship with the family without being part of the 23.
+
+Nothing has reached 1.0: the highest version anywhere is \texttt{haipipe-application-claims} at 0.7.6, and seven skills are still 0.1.x. Sixteen of the 23 last moved on 2026-07-19 and nothing has moved since, so this count is stable rather than mid-flight. The naming is uniform: all 23 carry the \texttt{haipipe-application-} prefix, which QA2@paper could not say of its family, where four skills dropped the prefix. The ladder's wear is uneven: \texttt{haipipe-application-claims} sits at 0.7.6 while \texttt{haipipe-application-advice} sits at 0.1.9, because the 1d rung was renamed from \texttt{1d-principles} to \texttt{1d-advice} only on 2026-07-09 and its skill is weeks old.
+
+
+\section{🔻 The round-3 collapse}
+\textbf{Before and after the collapse}: the shapes option A trades between.
+
+\begin{verbatim}
+  today      1-lifecycle/ = 1 orchestrator + 10 per-stage SKILL.md
+ [x] option A   1-lifecycle/ = orchestrator + 1 engine + stage.md ×10
+  precedent  paper: haipipe-paper-stage + 8 stage contracts (QA2@paper)
+\end{verbatim}
+📌 This part names what round 3 would move, the precedent it copies, and the files a yes must land in.
+
+The ten candidates are all of \texttt{1-lifecycle/} except the orchestrator: seed, descriptions, themes, claims, advice, venue, pitch, narrative, display, and section-edit. Each would stop shipping a SKILL.md and become one \texttt{stages/<dir>/stage.md} data file under a new \texttt{haipipe-application-stage} engine. The door, the 0-enter pair, the four phase workers, the four deliver skills, iterate, and the lifecycle orchestrator stay callable, so the family lands at 14 skills. The venue packs are untouched: they are knowledge the aligned stages consult, whichever form the stages take.
+
+The paper family took this shape in its 260719 refactor: per-stage skills became stage contracts under one runner. QA2@paper's roster shows the result, \texttt{haipipe-paper-stage} at 0.6.0, and its Files row carries \texttt{stages/index.yml}, the eight contracts, and \texttt{CONTRACT.md}. The application README declares the two families structural twins, same spine, same phases, same probe door, so a shape proven on one side is the default proposal for the other.
+
+QA2@paper states the closing rule this page inherits: a ruling that reaches [x] has to land somewhere concrete or it has not graduated. For option A the landing list is: a new \texttt{1-lifecycle/haipipe-application-stage/SKILL.md}, ten \texttt{stages/<dir>/stage.md} files, the ten retired skill folders removed from the tree, the README's Skill-tree layout rewritten, and the door's router table repointed. A ruling recorded only as architecture prose on this board would be exactly the drift that rule exists to stop.
+
+JL selected a Page-first option that the original A/B/C row did not contain. The canonical files are \texttt{haipipe-application/SKILL.md} plus \texttt{page-types/haipipe-page-for-\{brief,intervention,artifact\}/SKILL.md}. The door folds legacy Seed/Venue/Pitch into Brief, Narrative/Display into Intervention, and Section Edit/Draft into Artifact. Descriptions/Themes/Claims/Advice do not become Application stages: missing knowledge routes to \texttt{/haipipe-task insight}.
+

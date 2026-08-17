@@ -1,7 +1,7 @@
 # Outline · read a page one part at a time
-state: 🟡 BUILT · tab works, both views live (260816) · open: marks on old pages, plugin skill
+state: 🟡 REOPENED 260817 · OUTLINE is now a phase, the plan is a FILE · open: 16 QPf plans unapproved, bibex read one-way
 owner: CC
-method: a line says which part it belongs to; the tab reads that and regroups the page; no AI when you open it
+method: a line says which part it belongs to; the tab reads that and regroups the page; since 260817 it also reads the page's own PLAN file and what each bullet owes; no AI when you open it
 session: 190ceaff-4d09-4915-8536-5ce0f28913ec
 
 ## Opening
@@ -164,6 +164,46 @@ An AI suggests a mark for each goal and progress line, the suggestion is written
 After that pass the answer lives in the page, and no AI runs when you open the tab.
 New pages take their marks as they are written, because whoever writes a goal knows which part it serves.
 
+### 4 · The plan is a FILE now, and OUTLINE is a phase
+**Two rulings on 260817**: the plan stopped being something read out of the page, and started being something written before it.
+
+```text
+  ❌ until 260816   the tab DERIVED a plan from the page's own headings
+                    → a plan could not exist before the page did
+  ✅ from 260817    <page>/outline/<stem>-outline-v<N>.md   AUTHORED · versioned
+                    🚧 exits only when a person ticks `approved:`
+```
+📌 A plan you can reject in ten seconds now sits in front of every expensive phase.
+
+The phase contract is `page-workflows/haipipe-page-outline` 0.1.0, and it took the outline authority OUT of `haipipe-page-draft`, whose §🗂 had owned it.
+This page had ruled the opposite on 260816, in these words: "there is no outline phase and no outline file".
+What overturned it was a real failure the same week: one phase owned both agreeing the shape and writing the page, so one done-report covered both, and a plan ended up pasted into a page's own `## Content` where it went stale at the next edit.
+
+**A bullet is a POINT, not a sentence** (JL 260817).
+Its address is `C<n>.P<n>.B<n>`, and one `B` becomes one or more `S` when it is drafted, so the plan and the page count different units and say so.
+`C<n>.P<n>` is shared with the sentence address, so the link survives; `C` stays because Aims use `A` and page-wide uses `P` in that same slot.
+The `C` prints once on the section heading and the rows carry only `P<n>.B<n>`.
+
+**A bullet with no mark is the normal case.**
+Requiring a mark on every line made the plan unreadable and buried the few lines that owed something, so a mark is now the exception, written at the END of a bullet where the card will hang on the real sentence.
+Six marks: 🎯 aim · ✅ have it · 📚 citation · 🔢 value · 🖼 display · 🧮 proof.
+
+### 5 · What the tab shows now, and the two halves it had never labelled
+**The join runs both ways**: what the plan promised, against what is on disk.
+
+```text
+  🧭 THE PLAN      the file · one row per bullet · each ref opens as a card
+  ▸ 📄 THE PAGE NOW  folded · the page's own divisions, as written today
+```
+📌 Both halves were on screen unlabelled, and a reader could not tell them apart.
+
+The tab reads three things now: the plan file, the page `.md`, and the page's sibling plugin folders.
+It still writes nothing, caches nothing and calls no model; storage-less was the old invariant and only "markdown-only" was given up.
+Each 📚, 🔢 and 🖼 renders as the board's own evidence card: a chip in the line and a popover holding the THING itself, the reference as printed, the card's own question, the unit's own claim.
+Three counts are computed separately and never collapsed: **owed**, **landed**, **accepted**.
+The reverse direction is drawn too: a card on disk that no bullet cites shows as 🎈, which caught its own first defect within a minute of shipping.
+`📄 THE PAGE NOW` folds shut, because on a page whose aims carry no ids it was nine empty cards in the way.
+
 ## Aims
 ### A1 · How a line says which part it belongs to
 - A1.1 · The rule for the mark is written down in one place.
@@ -189,6 +229,16 @@ New pages take their marks as they are written, because whoever writes a goal kn
 - A3.1 · The other pages on this board carry their marks.
   **Done when:** Each one shows its goals under the right parts instead of one 🌐 card.
 
+### A4 · The plan is a FILE now, and OUTLINE is a phase
+- A4.1 · Every page that needs a plan has one, and no machine approved any of them.
+  **Done when:** each such page carries `outline/<stem>-outline-v1.md` with `approved: ⬜` until a person ticks it.
+
+### A5 · What the tab shows now, and the two halves it had never labelled
+- A5.1 · A reader can tell the plan from the page, and see what each bullet owes.
+  **Done when:** the two halves are labelled, each ref opens as a card, and owed/landed/accepted are three separate numbers.
+- A5.2 · Every kind of evidence is read from disk, not asserted.
+  **Done when:** probe, display AND bibex all resolve; a 📚 that names a board page is caught.
+
 ### P · Page-level
 - P1 · It works on a real page.
   **Done when:** QPf1 shows its two parts correctly, checked by hand against the file.
@@ -204,6 +254,13 @@ New pages take their marks as they are written, because whoever writes a goal kn
       `B ·` write it into `ref/page-template.md` and `/haipipe-page` now; every new page marks from birth, but a later change means editing the rule twice
       🛑 `Blocks` nothing
       🤖 `If nobody answers` A
+
+### A4 · The plan is a FILE now, and OUTLINE is a phase
+- 🔨 A4.1 · 16 of this group's 17 pages have a generated `v1`, 426 bullets, every one read from that page's own sentences. All 16 are `approved: ⬜`. `QPf4a-chat-per-question` has none and says why: it has no `## Content` and no `### N ·` divisions, so there was nothing to read a plan out of.
+
+### A5 · What the tab shows now, and the two halves it had never labelled
+- ✅ A5.1 · Shipped. Both halves labelled, `📄 THE PAGE NOW` folds, refs open as chip-and-popover cards, and the header reads `14 owed · 7 landed · 0 accepted` on the specimen page.
+- 🔨 A5.2 · probe, display and bibex all resolve; a 📚 naming a board page is caught. ⬜ Open: bibex is read one way only in the sense that `verified` is not modelled, and the probe reader still expects `answer/` while `haipipe-plugin-probe` 0.4.0 renamed it `proof/`.
 
 ### A1 · How a line says which part it belongs to
 - ✅ A1.1 · Done. §1 holds the whole rule, and adds nothing to the page template.
@@ -265,6 +322,10 @@ New pages take their marks as they are written, because whoever writes a goal kn
       Cutting `## Log` into parts loses its story. Not ruled by JL, but not opposed either.
 
 ## Log
+- 260817 · [JL ruled] the plan became a FILE and OUTLINE became a phase, overturning this page's own 260816 ruling that "there is no outline phase and no outline file". `page-workflows/haipipe-page-outline` 0.1.0 ships; `haipipe-page-draft` 0.5.0 lost its §🗂; `haipipe-plugin-outline` 0.4.0 keeps only the material and the surface. A bullet is a POINT addressed `C<n>.P<n>.B<n>`, and a bullet with no mark is the normal case.
+- 260817 · [CC shipped] the tab reads the plan file and joins it to disk: each 📚 🔢 🖼 opens as the board's own chip-and-popover evidence card, `owed · landed · accepted` are three separate counts, a card on disk that no bullet cites shows as 🎈, and `📄 THE PAGE NOW` folds. Driving it found four of its own defects: figure captions read as bullets, two bad Content slices that produced empty outlines on four pages, and a bullet with two bib keys registering only the first — that last one was caught BY the 🎈 row, minutes after it shipped.
+- 260817 · [CC shipped] 16 QPf pages got a generated `v1` plan, 426 bullets, each read from that page's own divisions, captions and sentences. Nothing was invented and nothing was approved.
+- 260816 2307 · [CC shipped] the plugin skill this page was owed is written: `board/page-plugins/haipipe-plugin-outline/SKILL.md` 0.1.0, registered globally. It records the four facets as built (storage none, writer nobody, the two lenses, off the roster on purpose) and adds the link JL asked for the same day: the 🧭 tab is WHERE a DRAFT outline is read and approved, so there is no outline phase and no outline file. Its one-click test: a page whose tab is one big 🌐 card has no plan yet, only prose. Checked on the two CMS boards, 111 pages, all pass.
 - 260816 · [JL ruled] this page was rewritten in plain words, and the 🗣 card was cut ("我们大概不需要吧" · "我他妈真的读不下去"). The tab was working; what it showed was badly written, and it showed that faithfully. `score.py` found 21 sentences worth a second look, the worst 50 words long, and every one of them was mine. Titles, the one-line summaries, goals, and progress lines were all rewritten short, because those are exactly the lines the tab puts on screen. House words went with them: `division` became `part`, `anchor` became `mark`, `render` became `read` or `draw`. The 🗣 card was cut for repeating a number the header already gives and spending four lines explaining the word "waiting".
 - 260816 · [JL ruled] the tab must answer before it explains. The page's own question and a count of done, left, and waiting now sit at the top; each card carries its own count and a one-line summary; unfinished goals stay in sight and finished ones fold. Nothing hidden, nothing summarized by a machine: only the order changed. QPf11 went from a wall of twelve goals to four cards on one screen.
 - 260816 · [JL ruled] a card must not print the same sentence twice, seen on QPf11 where a goal and its progress both started `A1.1 ·` and both wore a ✅. Reading that page for the fix found a defect it had been hiding: `### 🗣 Decision Now` carries its emoji before the name, so the block went unrecognized and its open question was counted as progress.

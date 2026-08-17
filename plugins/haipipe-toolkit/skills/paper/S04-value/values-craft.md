@@ -5,7 +5,7 @@ Source: converted from `workers/haipipe-paper-draft-values/SKILL.md` on 2026-08-
 
 One job: **no number leaves DRAFT without a traceable origin or an owner.**
 
-This lane is READ-ONLY. It walks and reports; the DRAFT phase holds the pen for the manuscript and collects Q-consumers into the evidence page's E0 queue, and PROBE owns the E<n> divisions and their nested QA-probes.
+This lane is READ-ONLY. It walks and reports; the DRAFT phase holds the pen for the manuscript and collects Q-consumers into the evidence page's E0 queue, and EVIDENCE owns the E<n> divisions and their nested QA-probes.
 
 
 What this lane does NOT do
@@ -95,4 +95,4 @@ Done criteria
 Where the rest lives
 ---------------------
 
-Phase dispatch and load order are owned by `board/page-phases/` (DRAFT loads this file last, after the type contract); the sibling lanes are `../S03-literature/citation-craft.md` (sources), `../S05-display/display/draft-craft.md` (displays), `../S06-main/section-edit/revise-place-craft.md` (placement), and `../S06-main/section-edit/check-evidence-craft.md` (re-derivation); the probe loop that answers raised questions is `../haipipe-paper/probe/` (its harvest greps each value against its named source before accepting it).
+Phase dispatch and load order are owned by `board/page-workflows/` (DRAFT loads this file last, after the type contract); the sibling lanes are `../S03-literature/citation-craft.md` (sources), `../S05-display/display/draft-craft.md` (displays), `../S06-main/section-edit/revise-place-craft.md` (placement), and `../S06-main/section-edit/check-evidence-craft.md` (re-derivation); the probe loop that answers raised questions is `../haipipe-paper/probe/` (its harvest greps each value against its named source before accepting it).

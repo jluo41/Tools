@@ -49,14 +49,14 @@ Evidence is RECEIVED here, never produced (LAW 1): the ladder settled it upstrea
 DRAFT   read 1d-advice.md (the entries it sells), 1c-claims.md (the evidence backstop), 0-seed.md,
         the pinned 2-venue.md Artifact Principles + the audience profile; settle the one-minute goal
         + theory of change with the user; designate the [primary] claim for THIS venue; write the pitch
-PROBE   rare — a CITATION LANE only: anchor evidence for a theory-of-change link the ledger
+EVIDENCE   rare — a CITATION LANE only: anchor evidence for a theory-of-change link the ledger
         lacks, raised as a SECTION in 1-probes/PPNN_<topic>/. Most pitches skip it (logged in _LOG).
 REVISE  venue + audience framing pass — register, the ask, one-minute readability
 CHECK   exit criteria below → Gate Ledger row
 ```
 
-Pitch RECEIVES evidence, never produces it inline: a PROBE section binds through `haipipe-application-probe`, which hands the stake-stripped `q-executor:` to `Agent(haipipe-probe-q-executor-agent)` and points the section's `target:` at an answering QA file — there is no gateway skill and no per-stage `_PROBE/` folder.
-Routing mechanics are the probe layer's: `../../../2-phase/1-probe/haipipe-application-probe/SKILL.md` (see its `ref/per-stage-dispatch.md`, the "2-pitch" rung).
+Pitch RECEIVES evidence, never produces it inline: a EVIDENCE section binds through `haipipe-application-evidence`, which hands the stake-stripped `q-executor:` to `Agent(haipipe-probe-q-executor-agent)` and points the section's `target:` at an answering QA file — there is no gateway skill and no per-stage `_EVIDENCE/` folder.
+Routing mechanics are the probe layer's: `../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md` (see its `ref/per-stage-dispatch.md`, the "2-pitch" rung).
 A beat that exposes a NEW evidence gap routes back to `1c-claims`, never gathers here.
 
 

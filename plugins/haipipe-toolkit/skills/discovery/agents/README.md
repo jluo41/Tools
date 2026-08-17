@@ -4,7 +4,7 @@ discovery — Agent Roster
 Three agents forming the orchestrator / creator / reviewer triad,
 plus one Haiku-tier mechanical worker for search fan-out.
 The orchestrator is THE dispatch target for every discovery-shaped
-commission — a consumer's PROBE phase calls it DIRECTLY, and its clean
+commission — a consumer's EVIDENCE phase calls it DIRECTLY, and its clean
 context is the wall. Creator produces artifacts. Reviewer evaluates.
 
 ```
@@ -53,7 +53,7 @@ Cross-layer dispatch — DIRECT, and the context is the wall
 ----------------------------------------------------------
 
 ```
-📄 a paper/application PROBE phase                  ⚙️ this layer
+📄 a paper/application EVIDENCE phase                  ⚙️ this layer
    holds the question + the STAKE                      never saw a paper
    ("## Why: C6 dies if …")            🧱 WALL
         │                                │

@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-section-edit
-description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venues only — report, dashboard spec; skipped for sms/push/reminder/checklist/email unless the venue profile says otherwise). Per-section DRAFT-PROBE-REVISE-CHECK on the sections the VENUE PROFILE declares, syncing prose to 0-sections/. Renamed from haipipe-application-section-editing; the hardcoded 6-section report list moved to venue/venue-report (venue knowledge, not skill logic). Trigger: section-edit, section, §N, edit sections, refine sections, /haipipe-application section-edit."
+description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venues only — report, dashboard spec; skipped for sms/push/reminder/checklist/email unless the venue profile says otherwise). Per-section DRAFT-EVIDENCE-REVISE-CHECK on the sections the VENUE PROFILE declares, syncing prose to 0-sections/. Renamed from haipipe-application-section-editing; the hardcoded 6-section report list moved to venue/venue-report (venue knowledge, not skill logic). Trigger: section-edit, section, §N, edit sections, refine sections, /haipipe-application section-edit."
 argument-hint: "[section-name-or-§N] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.5.4"
   last_updated: "2026-07-19"
-  summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>/. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
+  summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → EVIDENCE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its EVIDENCE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>/. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-section-edit
@@ -14,7 +14,7 @@ Skill: haipipe-application-section-edit
 
 The **section-edit** stage (stage 5, venue-ALIGNED) turns each section into venue-quality prose, one section at a time — for **sectioned venues only** (report, dashboard spec).
 It answers: does each section's prose do its assigned job?
-Each section runs its own DRAFT → PROBE → REVISE → CHECK, with the edited prose living in `0-sections/`.
+Each section runs its own DRAFT → EVIDENCE → REVISE → CHECK, with the edited prose living in `0-sections/`.
 
 Read first: `../../../PHILOSOPHY.md`, `../../../haipipe-application/SKILL.md` (Stage Gate Protocol + Delivery Need Routing sections).
 
@@ -28,9 +28,9 @@ The display stage's per-unit jobs say what each section must carry; this stage m
 **2. Venue-ALIGNED, so it rewrites on retarget.**
 The pinned venue sets the style-profile and length limits each section conforms to; a new venue re-sections and re-writes, while the evidence ladder (1a–1d) underneath stays put.
 
-**3. Its PROBE is a full-document probe.**
+**3. Its EVIDENCE is a full-document probe.**
 values + citation lanes fire per section, and a display lane fires where the section references units.
-The per-lane wording is the probe layer's — see `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md`, "Section-edit worker logic".
+The per-lane wording is the probe layer's — see `../../../2-phase/1-evidence/haipipe-application-evidence/ref/per-stage-dispatch.md`, "Section-edit worker logic".
 
 
 ## The four phases, in section-edit
@@ -38,10 +38,10 @@ The per-lane wording is the probe layer's — see `../../../2-phase/1-probe/haip
 ```text
 DRAFT   settle the section's outline + draft sentences against its assigned job, and end the outline with
         the evidence gaps it raises (haipipe-application-draft).  ⛔ STOP for the user's structure review.
-PROBE   trace numbers to task results and claims to the 1c ledger / K-W anchors; raise each real gap as a
+EVIDENCE   trace numbers to task results and claims to the 1c ledger / K-W anchors; raise each real gap as a
         SECTION in the flat pool 1-probes/PPNN_<topic>/ (values + citation lanes per section, display lane
         where units are referenced), MATCH the bank, dispatch only what MATCH cannot close
-        (haipipe-application-probe; routing is the probe layer's).
+        (haipipe-application-evidence; routing is the probe layer's).
 REVISE  the comment → reply → apply cycle (below) + venue style-profile + audience conformance
         (haipipe-application-revise).
 CHECK   ⛔ per-section exit: prose does its job, no open comments, flags resolved or parked
@@ -50,7 +50,7 @@ CHECK   ⛔ per-section exit: prose does its job, no open comments, flags resolv
 ```
 
 Users invoke this stage; it dispatches the `2-phase/` workers.
-Only DRAFT and CHECK involve the human; PROBE and REVISE are agent-only.
+Only DRAFT and CHECK involve the human; EVIDENCE and REVISE are agent-only.
 
 
 ## The comment → reply → apply cycle (REVISE convention)

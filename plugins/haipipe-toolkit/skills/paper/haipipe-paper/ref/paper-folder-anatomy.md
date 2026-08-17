@@ -102,7 +102,7 @@ the page whose gate it was.
 | `2-pitch` | cover letter / one-minute story (venue-ALIGNED) | story needs an arc |
 | `3-narrative` | shape this paper's story | story needs a display map |
 | `4-display` | map displays to claims | display output/source is missing or ready |
-| `5-section-edit` | per-section DRAFT-PROBE-REVISE-CHECK | sections converge to submission |
+| `5-section-edit` | per-section DRAFT-EVIDENCE-REVISE-CHECK | sections converge to submission |
 
 The lifecycle is not linear. If a paragraph reveals an unsupported claim, loop
 back to `1-claims`. If a display cannot carry the claim, loop back to

@@ -1,7 +1,7 @@
 SOP — Application Paper-Alignment, Round 2 (2026-07-07)
 =========================================================
 
-> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _PROBE/ folders, the 1-probe-plans/ index, the _PROBE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
+> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _EVIDENCE/ folders, the 1-probe-plans/ index, the _EVIDENCE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
 
 Status: PHASES 1+2 EXECUTED (JL approved "can we apply it now", 2026-07-07). Remaining: full DPRC bench exams (§8; mechanical validation done) + archive this SOP into haipipe-application/CHANGELOG.md and delete (round-1 convention).
 Owner: JL. Executor: CC.
@@ -20,9 +20,9 @@ probe 3.1.0: BOOKKEEP→DISPATCH→TRANSLATE→VERIFY      probe 1.x: BOOKKEEP�
 check 1.7.0: checks.sh (8 mechanical checks);        check 3.0.0: persona/attendance gate, prose
   probe-card FAIL blocks the gate green;               criteria only; no deterministic checks; no
   > CHECK: comments seeded in working docs             probe-card wiring; READ-ONLY on artifacts
-draft 3.5.0: WebSearch = DRAFT-only orientation      draft 1.0.0: no WebSearch; the DRAFT/PROBE
+draft 3.5.0: WebSearch = DRAFT-only orientation      draft 1.0.0: no WebSearch; the DRAFT/EVIDENCE
   fuel; buffers `status: planned` skeletons;           evidence line exists only as prose
-  "DRAFT may search; PROBE must dispatch"
+  "DRAFT may search; EVIDENCE must dispatch"
 seed 3.5.0 + claims 4.1.0: seed probes =             seed 3.1.0 + claims 5.0.0: seed probe scope
   feasibility only; internal-data needs →              unscoped; no FORWARD pointer contract either
   [FORWARD → CLAIMS] pointer; claims DRAFT             side
@@ -34,16 +34,16 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 ------------------------------------
 
 - Round-1 invariants all stand: four evidence principles; application deltas (_audience/, venue-gated stages, settlement depth, 0-artifacts/ markdown, deploy/iterate tail, in-project folders); insight boundary; stage-owns-WHAT / phase-worker-owns-HOW; zero upstream contract changes to probe/discovery/task/insight.
-- PPNN card anatomy, `_PROBE/` folder name, `0-lifecycle/<stage>/_PROBE/` tree, 1-probe-plans/README.md index: identical to paper (this is what makes checker reuse cheap).
+- PPNN card anatomy, `_EVIDENCE/` folder name, `0-lifecycle/<stage>/_EVIDENCE/` tree, 1-probe-plans/README.md index: identical to paper (this is what makes checker reuse cheap).
 - Application keeps NO probe sub-workers (citation/values/display stay venue-scaled hooks inside the one probe worker); `_VALUES_` always, `_CITATION_` sectioned venues only.
 - Bench evidence folders (examples/ProjApp-SMSDesign/applications/03, 04) stay as round-1 validation history; round-2 exams may reuse them but not rewrite their round-1 artifacts.
 
 3. Design resolutions (proposed; JL vetoes here at review)
 ----------------------------------------------------------
 
-- R1 — probe VERIFY, ported: application probe worker gains paper's STEP 4 (run the card checker; FAIL on `status: planned|dispatched|failed`, dangling refs, OWED lanes) and the four PROOF blocks (project-root listing, literal Agent dispatch calls, refs+ls resolution, checker output). Checker = a FORK of paper's check-probe-cards.sh (stage-strip.sh precedent: same conventions, family-local copy): same `0-lifecycle/*/_PROBE/PP*.md` tree and brace-aware ref expansion; lane scan venue-scaled — `_VALUES_` lane always checked, `_CITATION_` lane only when the pinned venue is sectioned, `_DISPLAY_` lane only if the venue's artifact has display units. Paper's ref/per-stage-dispatch.md is re-derived for the application spine (which stage dispatches which mode); harvest-acceptance greps adopted for whichever lanes fire.
+- R1 — probe VERIFY, ported: application probe worker gains paper's STEP 4 (run the card checker; FAIL on `status: planned|dispatched|failed`, dangling refs, OWED lanes) and the four PROOF blocks (project-root listing, literal Agent dispatch calls, refs+ls resolution, checker output). Checker = a FORK of paper's check-probe-cards.sh (stage-strip.sh precedent: same conventions, family-local copy): same `0-lifecycle/*/_EVIDENCE/PP*.md` tree and brace-aware ref expansion; lane scan venue-scaled — `_VALUES_` lane always checked, `_CITATION_` lane only when the pinned venue is sectioned, `_DISPLAY_` lane only if the venue's artifact has display units. Paper's ref/per-stage-dispatch.md is re-derived for the application spine (which stage dispatches which mode); harvest-acceptance greps adopted for whichever lanes fire.
 - R2 — check enforcement, ported venue-scaled: application check worker gains (a) gate wiring — step 1 runs the R1 card checker, any FAIL blocks the gate green; (b) a family-local checks.sh with the MARKDOWN-SAFE subset only: em-dash (❌, house rule), AI-voice tells (mawk-safe 1.7.0 grep), TODO/FIXME, bibtex-in-markdown guard; tex checks (\cite, \ref, \label, Pn.Sn, --compile) deliberately NOT ported; (c) `> CHECK:` comment seeding in 0-lifecycle STAGE DOCS ONLY — 0-artifacts/*.md stay clean because the artifact IS the deliverable text (unlike paper's .tex, where % comments never render); artifact-level findings go to the Gate Ledger notes column. RULED: JL 2026-07-07 (stage-docs-only over artifact HTML-comments and over keeping check fully read-only); persona/attendance machinery unchanged on top.
-- R3 — DRAFT/PROBE evidence line, ported: draft worker gains WebSearch+WebFetch as DRAFT-only orientation fuel — findings may shape prose and buffer `status: planned` PPNN skeletons, never write refs/findings into cards; the R1 checker is what makes the rule mechanical (planned cards surviving to CHECK = FAIL). PREFERENCES.md gains the family-generic "always run the REAL probe in the PROBE phase" entry (JL 2026-07-07, paper-side origin, applies verbatim here).
+- R3 — DRAFT/EVIDENCE evidence line, ported: draft worker gains WebSearch+WebFetch as DRAFT-only orientation fuel — findings may shape prose and buffer `status: planned` PPNN skeletons, never write refs/findings into cards; the R1 checker is what makes the rule mechanical (planned cards surviving to CHECK = FAIL). PREFERENCES.md gains the family-generic "always run the REAL probe in the EVIDENCE phase" entry (JL 2026-07-07, paper-side origin, applies verbatim here).
 - R4 — seed feasibility + FORWARD handoff, ported: seed probe scope narrows to feasibility (novelty + external-data obtainability); internal-data needs register as `[FORWARD -> CLAIMS] PPNN_<slug>` pointer lines in _LOG_0-seed.md; claims DRAFT opens by grepping seed's _LOG for pointers and materializing or explicitly declining each; unconsumed pointer fails claims CHECK. For application, "internal data" = the intervention's own cohort/engagement data — same split as paper.
 - R5 — revise and sub-workers, NOT ported: single revise worker stands (round-1 ruling; paper's weaving-into-content merge is a paper-internal consolidation, and weaving/humanizer-catalog knowledge is pulled in only when a sectioned-venue artifact demands it). No citation/values/display sub-skills; instead the probe worker's venue-hook section states the 2.0.0 contract those hooks must follow when they fire: pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search.
 - R6 — standing alignment watch: paper drifted the SAME DAY as the round-1 port; to stop chasing, haipipe-application/PREFERENCES.md gains one line — any commit touching paper/2-phase/ or paper/1-lifecycle/{0-seed,1-claims} triggers an application port review before the next application work round. (Cheap: a grep of `git log` at enter time is enough; no automation proposed.)
@@ -53,13 +53,13 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 
 | # | File | Change |
 |---|------|--------|
-| 1 | 2-phase/1-probe/haipipe-application-probe/SKILL.md → 2.0.0 | STEP 4 VERIFY; PROOF 1-4 blocks; lane debts `harvest: OWED` (venue-scaled lanes per R1); harvester vocabulary (ACQUIRE→HARVEST, one pipeline); explicit `0-lifecycle/<stage>/_PROBE/` path contract; venue-hook contract per R5; fix frontmatter 1.0.0 vs CHANGELOG 1.1.0 mismatch |
-| 2 | 2-phase/1-probe/haipipe-application-probe/check-probe-cards.sh | NEW fork of paper's checker: same tree + expand_ref; venue-scaled lane scan (reads pinned venue from 2-venue.md / STATUS) |
-| 3 | 2-phase/1-probe/haipipe-application-probe/ref/{per-stage-dispatch,harvest-acceptance}.md | NEW, re-derived for the application spine + venue-scaled lanes |
+| 1 | 2-phase/1-evidence/haipipe-application-evidence/SKILL.md → 2.0.0 | STEP 4 VERIFY; PROOF 1-4 blocks; lane debts `harvest: OWED` (venue-scaled lanes per R1); harvester vocabulary (ACQUIRE→HARVEST, one pipeline); explicit `0-lifecycle/<stage>/_EVIDENCE/` path contract; venue-hook contract per R5; fix frontmatter 1.0.0 vs CHANGELOG 1.1.0 mismatch |
+| 2 | 2-phase/1-evidence/haipipe-application-evidence/check-probe-cards.sh | NEW fork of paper's checker: same tree + expand_ref; venue-scaled lane scan (reads pinned venue from 2-venue.md / STATUS) |
+| 3 | 2-phase/1-evidence/haipipe-application-evidence/ref/{per-stage-dispatch,harvest-acceptance}.md | NEW, re-derived for the application spine + venue-scaled lanes |
 | 4 | 2-phase/3-check/haipipe-application-check/SKILL.md → 4.0.0 | Gate wiring (card-checker FAIL blocks green); checks.sh invocation in step 1; `> CHECK:` seeding in stage docs only, artifact findings → Gate Ledger notes (R2c as ruled); persona/attendance untouched |
 | 5 | 2-phase/3-check/haipipe-application-check/checks.sh | NEW markdown-safe subset (em-dash ❌, AI-voice mawk-safe, TODO/FIXME, bibtex-in-md); ✅/⚠️/❌ report lines; exit 0 = no ❌ |
-| 6 | 2-phase/0-draft/haipipe-application-draft/SKILL.md → 1.1.0 | + WebSearch, WebFetch in allowed-tools; DRAFT-only fuel rule + buffered planned skeletons + "DRAFT may search; PROBE must dispatch" principle |
-| 7 | 1-lifecycle/0-seed/haipipe-application-seed/SKILL.md → 3.2.0 | Probe scope = feasibility only; [FORWARD → CLAIMS] pointer registration in _LOG_0-seed.md; PROBE must dispatch the real worker |
+| 6 | 2-phase/0-draft/haipipe-application-draft/SKILL.md → 1.1.0 | + WebSearch, WebFetch in allowed-tools; DRAFT-only fuel rule + buffered planned skeletons + "DRAFT may search; EVIDENCE must dispatch" principle |
+| 7 | 1-lifecycle/0-seed/haipipe-application-seed/SKILL.md → 3.2.0 | Probe scope = feasibility only; [FORWARD → CLAIMS] pointer registration in _LOG_0-seed.md; EVIDENCE must dispatch the real worker |
 | 8 | 1-lifecycle/1-claims/haipipe-application-claims/SKILL.md → 5.1.0 | DRAFT opens with FORWARD-pointer reader (materialize or decline each); unconsumed pointer added to CHECK done-criteria |
 | 9 | haipipe-application/PREFERENCES.md | + real-probe entry (R3) + alignment-watch line (R6) |
 | 10 | 2-phase/README.md | + ONE-pipeline/HARVEST architecture note (mirrors paper 2-phase/README.md lines 61-76, venue-scaled) |

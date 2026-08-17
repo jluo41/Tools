@@ -1,7 +1,7 @@
-# /haipipe-application: Design → Delivery → Engine → Execute
+# /haipipe-application: Insight Pages → Brief → Intervention → Artifact
 
-spine: An intervention is a delivery system for design advice. Design first fixes what the Application system is and who owns it; Delivery names what the intervention's consumers receive — the data → insight → design ladder and the shipped artifact; Engine supplies the callable skill routes; Execute records what actually ran and whether it reopens an owner.
-close: Every Delivery target has an owning Engine route and Execute evidence or an explicit open gap; every design question is ruled or deliberately parked; a fresh agent can run a stage from the board alone.
+spine: Application is a composition system, not a second evidence pipeline. It reads settled consumer-neutral Insight Pages through PageX, fixes the opportunity and promise in a Brief, maps insights into mechanisms and components in an Intervention, and realizes each independently approvable delivery unit as an Artifact.
+close: Brief, Intervention, and every Artifact have an owning Page Type, explicit PageX lineage, and a reviewable acceptance state; missing knowledge is routed back to the Task/Insights Board rather than probed inside Application.
 session: 9bab8e87-20eb-4ebf-8e73-b23cec29ad11
 
 ## Topic
@@ -9,65 +9,52 @@ session: 9bab8e87-20eb-4ebf-8e73-b23cec29ad11
 This is a **Skill-Board** for the Application family, organized like the Paper family's Skill-Board at `paper-board/` and citing it wherever a ruling is family-generic.
 Cast: JL = the one who decides. CC = Claude Code, who does the work.
 
-- **QA · Design** defines the Application system: its folders, its ownership boundaries, the intervention board it will run on, and the evidence wall it shares with the bank.
-- **QB · Delivery** defines what an intervention's consumers receive, in consumer order: Opening, then the venue-FREE evidence ladder (Data → Insight → Claims → Design), then the venue-ALIGNED tail (Display → Artifact → Deploy → Iterate).
-- **QBv · Delivery Venue** holds what each venue TARGET knows, one page per pack under `application/venue/`: sms, email, dashboard, report, push, reminder, checklist, ui-card. `QB1` owns which venue an intervention picks; this group owns what that venue gates, rewards, and requires.
-- **QC · Engine** defines the reusable skills and contracts that can produce those deliveries, including the round-3 stage engine that replaces ten per-stage skill folders with stage data.
+- **QA · Design** defines the Application system and the ownership wall: Task/Insight owns evidence; Application owns recomposition.
+- **QB · Delivery** preserves the old ladder as migration history. New applications do not copy it.
+- **QBt · Page Types** is the canonical Application roster: Brief, Intervention, Artifact.
+- **QBv · Delivery Venue** holds channel knowledge used by Brief and downstream Artifact constraints.
+- **QC · Engine** records the old engine proposal and the compatibility routes that must eventually fold into the Page-first door.
 - **QF · Execute** records bounded runs, checks, receipts, and fresh-agent evidence against `_fixture/`.
 
-`QD · Working` and `QE · Sharing` are intentionally absent: live Board interaction, hosting, and mounts are owned by `/haipipe-board`, and this board uses that shared substrate instead of duplicating it.
-The application deltas this board must NOT flatten (round-2 invariants): the 1a-1d ladder, venue-gated stages with settlement depth, markdown artifacts in `0-artifacts/`, the deploy/iterate tail, no phase sub-workers, and interventions as plain in-project folders.
+`QD · Working` and `QE · Sharing` are intentionally absent: live Board interaction, hosting, and mounts are owned by `/haipipe-board`. DIKW work is also absent by design; it lives on the Task/Insights Board.
 
 ## Pipeline
 
 ```text
-QA · DESIGN     what the Application system is and who owns its boundaries
-       │ shapes
+Task/Discovery folders
+       │ Probe · owned by Task/Insight
        ▼
-QB · DELIVERY   what the intervention's consumers receive
-       Opening → Data → Insight → Claims → Design
-       → Display → Artifact → Deploy → Iterate
-       │ ◀── reads ── QBv · DELIVERY VENUE  one page per pack TARGET
-       │ served by
+Task/Insights Board · D → I → K → W
+       │ settled Insight Pages through PageX
        ▼
-QC · ENGINE     which reusable Application / Probe / Display route may produce
-                each delivery, on the shared Board substrate; the stage engine
-                (stages/<dir>/stage.md + index.yml) is the round-3 port decision
-       │ demonstrated by
-       ▼
-QF · EXECUTE    what actually ran, passed, failed, or reopened work
+QBt · APPLICATION PAGE TYPES
+       Brief → Intervention → Artifact unit(s)
+         │         │              │
+         │         │              └─ review → deploy → iterate
+         │         └─ mechanism · components · variants · safety
+         └─ opportunity · audience · outcome · venue · promise
+       ▲
+       └── QBv · venue pack constraints
 ```
 
-Delivery order is the consumer-facing concern order; the ladder runs as a flywheel with legal back-edges, and execution order remains declared by the relevant skill contract.
+An Application Page may ask for a missing insight, but it cannot answer that question locally. The door opens or reuses an Insight Page on the Task Board, waits for settlement, then refreshes the PageX binding.
 
 ## Board Map
 
 ```text
-      what the Application system IS      what a consumer GETS          how it is MADE
-      ┌────────────────────────┐         ┌───────────────────────────┐ ┌─────────────────────┐
-      │ QA · Design            │──shapes▶│ QB · Delivery             │◀│ QC · Engine         │
-      │ QA0 map · QA1 folders  │         │ QB1 Opening               │ │ QC1 route map       │
-      │ QA2 skills · QA3 the   │         │ QB2-QB5 the ladder        │ │ QC2 stage engine    │
-      │ intervention BOARD     │         │  Data→Insight→Claims→     │ │ Skill-0..5 mirrors  │
-      │ QA4 evidence wall      │         │  Design (D→I→K→W)         │ │ + Board substrate   │
-      └────────────────────────┘         │ QB6-QB9 venue-aligned     │ └──────────┬──────────┘
-                                         │  Display→Artifact→        │            │
-                    reads ──────────────▶│  Deploy→Iterate           │            │
-      ┌────────────────────────┐         └────────────┬──────────────┘            │
-      │ QBv · Venue packs      │                      │                           │
-      │ QBv1-QBv8, one TARGET  │                      ▼                           ▼
-      │ each: sms email dash   │         ┌──────────────────────────────────────────┐
-      │ report push reminder   │         │ QF · Execute                             │
-      │ checklist ui-card      │         │ QF1 run map · QF2 fresh-agent · _fixture │
-      └────────────────────────┘         │ failure → reopen the owning page         │
-                                         └──────────────────────────────────────────┘
+      evidence owner                 composition owner                 delivery tail
+┌────────────────────────┐    ┌────────────────────────────┐    ┌────────────────────┐
+│ Task/Insights Board    │    │ Application Board          │    │ review/deploy       │
+│ Probe → Task/Discovery │    │ QBt1 Brief                 │    │ iterate              │
+│ Insight D→I→K→W        │───▶│ QBt2 Intervention          │───▶│ runtime receipts     │
+│ settled PageX export   │    │ QBt3 Artifact × n          │    │ reopen owning Page   │
+└────────────────────────┘    └─────────────┬──────────────┘    └────────────────────┘
+                                           ▲
+                                  ┌────────┴────────┐
+                                  │ QBv venue packs │
+                                  └─────────────────┘
 
-QA3   is the round-3 core ruling: an intervention's 0-lifecycle becomes a BOARD
-      (S pages + Stage Contracts) and the STATUS.md Gate Ledger moves into S-page States.
-QB2-QB5 are the evidence ladder as delivery concerns: rung = concern, D→I→K→W.
-QC2   collapses ten per-stage skill folders into stages/<dir>/stage.md data,
-      cut over rung by rung with migrated: flags, exactly as paper did on 260719.
-QF1-QF2 prove or block a Delivery × Engine route; they never become a second authoring tree.
+QB1-QB9 and QC1-QC2 remain migration evidence. They do not override the QBt contracts.
 ```
 
 ## Related Folders
@@ -109,7 +96,9 @@ Every page then owns a folder carrying its own name, with that name on it twice,
 ## Pages
 
 ### QA · Design
-What the Application system is before a delivery is produced: the reading order, folder law, the skill roster, the intervention board, and the evidence wall.
+What the Application system is before a delivery is produced: one Page-first delivery Board that
+reads settled Task/Insight Pages through PageX. The 260802 stage-spine pages remain the migration
+record; the 260817 target is Brief → Intervention → Artifact and owns no evidence Probe.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record            📂 FOLDER
@@ -127,8 +116,12 @@ QA3-the-intervention-board.md
 QA4-evidence-channel.md
 
 ### QB · Delivery
-What one intervention must give its consumers, read top to bottom. QB0 shows the whole thing in miniature: the S-page spine a real application's design lifecycle board carries. Then QB1 Opening, the venue-FREE ladder QB2-QB5 (Data → Insight → Claims → Design, echoing D→I→K→W), then the venue-ALIGNED tail QB6-QB9 (Display → Artifact → Deploy → Iterate).
-On this design board these are Q-concerns; on a real application's design lifecycle board the same rungs are S-stages (S-Opening → S-Description → S-Themes → S-Claims → S-Advice). QB0 is where the two vocabularies meet; QA3 owns the migration that renders the board.
+The historical delivery concerns are kept here so the old Application ladder can be migrated
+without losing its reasoning. The target no longer runs Data → Insight → Claims → Advice inside
+each Application. Those DIKW concerns belong to the Task/Insights Board. Application selects
+their settled Pages, then re-expresses them through Brief → Intervention → Artifact. QB1-QB9 are
+therefore compatibility inputs, not the Page roster new applications copy; the live Page Type
+contracts and specimens are in QBt below.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record            📂 FOLDER
@@ -199,6 +192,24 @@ fresh application agent    ◀── QF2  fresh-agent run on the fixture    ─�
 QF1-execution-map.md
 QF2-fresh-agent-run.md
 
+### QBt · Page types this family owns
+Three globally unique Page Types define the target Application Board. Brief is the Application
+opening concern without colliding with Paper Opening. Intervention is the delivery architecture
+without colliding with Board's generic Design type. Artifact is one independently approvable
+delivery unit. All evidence arrives from settled Task/Insight Pages through PageX; missing
+knowledge routes back to that Board.
+
+```text
+⚙️ ENGINE                      📋 PAGES · the working record            📂 FOLDER
+─────────────────────────      ─────────────────────────────────────    ────────────────────────
+Page + PageX                ◀── QBt1  Brief: why, who, venue, promise ──▶ pagex/
+Page + PageX + outline      ◀── QBt2  Intervention: insight→component ──▶ pagex/ · outline/
+Page + output plugins       ◀── QBt3  Artifact: one accepted unit     ──▶ display/ · word/
+```
+QBt1-for-brief.md
+QBt2-for-intervention.md
+QBt3-for-artifact.md
+
 ## Links
 QA0@paper           ../PaperSkillBoard-260725/1-QA-design/QA0-the-board-map/QA0-the-board-map.md
 QA1@paper           ../PaperSkillBoard-260725/1-QA-design/QA1-the-folder-map/QA1-the-folder-map.md
@@ -242,7 +253,7 @@ haipipe-application-pitch/     ../../application/1-lifecycle/2-pitch/haipipe-app
 haipipe-application-narrative/ ../../application/1-lifecycle/3-narrative/haipipe-application-narrative/
 haipipe-application-display/   ../../application/1-lifecycle/4-display/haipipe-application-display/
 haipipe-application-section-edit/ ../../application/1-lifecycle/5-section-edit/haipipe-application-section-edit/
-haipipe-application-probe/     ../../application/2-phase/1-probe/haipipe-application-probe/
+haipipe-application-evidence/  ../../application/2-phase/1-evidence/haipipe-application-evidence/
 haipipe-application-draft/     ../../application/2-phase/0-draft/haipipe-application-draft/
 haipipe-application-revise/    ../../application/2-phase/2-revise/haipipe-application-revise/
 haipipe-application-check/     ../../application/2-phase/3-check/haipipe-application-check/

@@ -27,8 +27,8 @@ requires: <the S04 hub page this topic hangs off, e.g. S-Value-Dash; drop the li
 <Where the manuscript prints each figure, and whether the printed copy agrees with the run.>
 
 ### E0 · incoming
-<!-- RULE: the standing collect queue, always present. A Q-consumer born on ANY page is COLLECTED here first: one row per waiting question, source page id + the stake in one line. PROBE promotes each row into a new E<m> division and opens its QA-probe; a promoted row leaves this queue. The page cannot close while a row waits here. Write <empty> when nothing waits. -->
-- ⬜ `Q-<Stage>-<n>` · from `<source-page-id>` · <the claim dependency, one line, waiting for PROBE to translate it>
+<!-- RULE: the standing collect queue, always present. A Q-consumer born on ANY page is COLLECTED here first: one row per waiting question, source page id + the stake in one line. EVIDENCE promotes each row into a new E<m> division and opens its QA-probe; a promoted row leaves this queue. The page cannot close while a row waits here. Write <empty> when nothing waits. -->
+- ⬜ `Q-<Stage>-<n>` · from `<source-page-id>` · <the claim dependency, one line, waiting for EVIDENCE to translate it>
 
 ### E<m> · <the executor question, in a few words>
 <!-- RULE: ONE division per Q-executor conversation, id grammar `### E<m> · <question>`; one division owns exactly one QA-probe (1:1). The pointer line comes first and carries the record's bank-binding state. -->
@@ -61,4 +61,4 @@ requires: <the S04 hub page this topic hangs off, e.g. S-Value-Dash; drop the li
 ## Log
 
 - <date> · [DRAFT-CC] evidence page opened: <n> Q-consumers collected into E0 from <where the claim dependencies came from, e.g. the claim ledger>
-<!-- RULE: Log lines wear the ruled grammar `- <date> [<time>] · [<PHASE>-<actor>] <what moved> [→ <pointer>]`, PHASE one of DRAFT PROBE REVISE CHECK. Typical lines on this route, in order: [PROBE-CC] E0 row promoted → E<m> + probes/V<nn>-<topic>/<m>-<slug>.md, then [PROBE-CC] value binding written, consumer row → BOUND, then [CHECK-CC] all rows terminal + E0 empty → CLOSE. The Log narrates and never carries evidence: bindings live on the consumer rows above, and the Log renders chip-free. -->
+<!-- RULE: Log lines wear the ruled grammar `- <date> [<time>] · [<PHASE>-<actor>] <what moved> [→ <pointer>]`, PHASE one of DRAFT EVIDENCE REVISE CHECK. Typical lines on this route, in order: [EVIDENCE-CC] E0 row promoted → E<m> + probes/V<nn>-<topic>/<m>-<slug>.md, then [EVIDENCE-CC] value binding written, consumer row → BOUND, then [CHECK-CC] all rows terminal + E0 empty → CLOSE. The Log narrates and never carries evidence: bindings live on the consumer rows above, and the Log renders chip-free. -->

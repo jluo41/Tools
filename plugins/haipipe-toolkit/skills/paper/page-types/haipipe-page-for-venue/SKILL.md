@@ -6,6 +6,10 @@ metadata:
   version: "0.1.2"
   last_updated: "2026-08-04"
   summary: "Now lives under page-types/ and composes the venue-page contract with the current Page Phase."
+  outline:
+    mode: fixed          # fixed | grammar | resolved
+    source: "./template.md"
+    shape: "one division per venue-indexed topic, in the desk's own reading order"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,7 +18,7 @@ metadata:
 **LOAD `haipipe-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the Opening split, the numbering, and the evaluation contract.
 This file adds only what a venue page needs and an ordinary decision page does not.
 It never repeats a base rule, because a copied rule goes a night out of date while the contract moves.
-After resolving this Page Type, load the current contract from `page-phases/`; this file determines the persistent venue shape, not whether the current work is DRAFT, PROBE, REVISE, or CHECK.
+After resolving this Page Type, load the current contract from `page-workflows/`; this file determines the persistent venue shape, not whether the current work is DRAFT, EVIDENCE, REVISE, or CHECK.
 
 **The kind this variant covers**: one page per submission TARGET, and nothing above it.
 

@@ -9,7 +9,7 @@ A layered skill is a container of containers. Judge the outer container before i
 | Step | Level | What it owns | Where it lives |
 |---|---|---|---|
 | 1 | Umbrella (orchestrate) | intent parsing + routing + frontier | `haipipe-application/`, `0-enter/`, `1-lifecycle/haipipe-application-lifecycle` |
-| 2 | Phase | the shared HOW: DRAFT → PROBE → REVISE → CHECK | `2-phase/` |
+| 2 | Phase | the shared HOW: DRAFT → EVIDENCE → REVISE → CHECK | `2-phase/` |
 | 3 | Stage | the WHAT each stage delivers | `1-lifecycle/<N-stage>/<skill>` |
 
 The umbrella routes; the phase workers execute; the stages define the contract each execution fulfills.
@@ -28,15 +28,15 @@ If routing is wrong, stop — you cannot trust any stage verdict reached through
 
 ## Step 2 — Is the phase good?
 
-The phase engine is `2-phase/`: DRAFT → PROBE → REVISE → CHECK, shared across every stage. A fix here improves all stages at once.
+The phase engine is `2-phase/`: DRAFT → EVIDENCE → REVISE → CHECK, shared across every stage. A fix here improves all stages at once.
 
 - Order: the four phases fire in sequence; no phase is skipped or reordered.
 - Internal: phases are never user-invoked directly — a stage drives them.
-- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as entries in `1-probes/` and dispatches the `### q-executor` block verbatim through the clean collector agent (`1-lifecycle/haipipe-application-lifecycle/SKILL.md` Intervention Lifecycle Contract).
+- Evidence door: EVIDENCE is the ONLY way evidence enters; it raises questions as entries in `1-probes/` and dispatches the `### q-executor` block verbatim through the clean collector agent (`1-lifecycle/haipipe-application-lifecycle/SKILL.md` Intervention Lifecycle Contract).
 - Gates: DRAFT review and CHECK are the two human gates; the agent never self-advances past them (`haipipe-application/SKILL.md` Stage Gate Protocol). CHECK's mechanical teeth are `checks.sh` + the probe-file checker — a ❌/FAIL blocks the gate green at any venue depth.
 - Stage-agnostic: the workers carry no stage-specific logic; the stage supplies the contract, the phase supplies the process.
 
-If a phase leaks (evidence entering outside PROBE, an auto-advance past CHECK), stop — the stage's output is unearned.
+If a phase leaks (evidence entering outside EVIDENCE, an auto-advance past CHECK), stop — the stage's output is unearned.
 
 ## Step 3 — Is the stage good?
 

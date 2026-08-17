@@ -6,6 +6,10 @@ metadata:
   version: "0.1.1"
   last_updated: "2026-08-05"
   summary: "First cut, on JL's 260805 admission. Rejected earlier as for-main; readmitted as for-section because section is cross-family and carries typed records for-stage does not."
+  outline:
+    mode: resolved          # fixed | grammar | resolved
+    source: "paper/venue/playbook-<pack>/<venue>/<venue>-<kind>/template.md (95 on disk)"
+    shape: "resolved by (venue x kind): paragraph blocks with per-block budgets and anti-patterns"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -48,6 +52,29 @@ A section declares its KIND from a closed set the family owns (introduction, met
 
 This join is what for-stage cannot provide and why this type exists: a stage page chains page-to-page; only a section page joins division-to-division with the venue's own catalog. The join stays TWO-HOP: ① is read by the venue stage alone, and this page consumes ② and ③. A section page never copies structure from a sibling section; it takes it from its own resolved template.
 
+## 🗂 The outline is RESOLVED, and here is the one line that resolves it
+
+This is the only Page Type whose outline comes from OUTSIDE itself, so it declares `outline: mode: resolved` and names the source rather than listing divisions (JL 260816: "page-for-section it is kind of different"). It is not thinner than the others; it is the RICHEST, because 95 of these templates are already written and each carries per-block budgets, arcs, and anti-patterns that no generic shape could hold.
+
+**The path, resolvable in one step:**
+
+```text
+paper/venue/playbook-<pack>/<venue>/<venue>-<kind>/template.md
+
+  MISQ + introduction  → playbook-utd-is/MISQ/MISQ-introduction/template.md
+  npj DM + methods     → playbook-nature-portfolio/npj-digital-medicine/
+                           npjdm-methods/template.md
+```
+
+```bash
+# the outline this page must execute, resolved from its own two keys
+ls paper/venue/playbook-*/"$VENUE"/"$VENUE"-"$KIND"/template.md
+```
+
+**What arrives is a fillable skeleton, not a description.** The MISQ introduction template hands over `### P1. Phenomenon hook -- why this matters now`, `### P2. (optional) Deepen the stakes`, `### P3. What is known -- brief positioning`, each with its paragraph budget (~4-6 sentences, ~24-25 words each, citation density ~0.5/sentence clustered in the hook and contribution blocks) and its named anti-pattern ("do NOT open with a literature-review paragraph"). DRAFT's job here is to CHOOSE the variant and the ¶ counts against this paper's claim structure, not to invent an arc.
+
+**A missing template is a HOLE, never an invented outline.** If `(venue × kind)` resolves to nothing, the venue pack owes one; say so and stop. Copying a sibling section's shape is the failure this type exists to prevent, because two sections of one paper have different jobs and the desk knows it.
+
 ## 📥 The landing surface: where the three record types reach prose
 
 A section page is where the other types' records become sentences:
@@ -59,7 +86,7 @@ display acceptance (for-display)     →  the \ref, and the placement record
                                         points back at THIS sentence
 ```
 
-A binding that landed on its topic page but never reached the owing sentence is this page's open work, visible at its gate. The hole grammar itself is the phases' (`page-phases/`); this page only says where the paid debt lands.
+A binding that landed on its topic page but never reached the owing sentence is this page's open work, visible at its gate. The hole grammar itself is the phases' (`page-workflows/`); this page only says where the paid debt lands.
 
 ## 🔁 What a retarget rewrites
 

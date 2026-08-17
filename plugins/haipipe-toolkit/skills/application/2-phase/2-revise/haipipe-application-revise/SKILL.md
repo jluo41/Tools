@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-revise
-description: "Application-specific REVISE phase worker (internal). Called whenever the Page router enters REVISE to improve a stage doc under fixed purpose and Aims: weave any landed evidence, tighten wording, and enforce applicable venue and audience profiles. A changed promise routes to DRAFT and a new unknown routes to PROBE. Users invoke stage skills, not this skill directly."
+description: "Application-specific REVISE phase worker (internal). Called whenever the Page router enters REVISE to improve a stage doc under fixed purpose and Aims: weave any landed evidence, tighten wording, and enforce applicable venue and audience profiles. A changed promise routes to DRAFT and a new unknown routes to EVIDENCE. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   argument_hint: "[stage <stage-name>] [intervention-path]"
@@ -15,16 +15,16 @@ Skill: haipipe-application-revise (internal phase worker)
 
 REVISE phase worker. Runs whenever the Page router selects REVISE. Agent-only: change the text directly and leave a short why-comment in `_LOG`; never switch to comment-first mode.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-page-revise/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-revise/SKILL.md`.
 This file adds application quality rules to that fixed-promise authority.
 
 ## What REVISE means
 
 ```
-1. WEAVE      fold PROBE's landed evidence into the text: replace flagged
+1. WEAVE      fold EVIDENCE's landed evidence into the text: replace flagged
               NEEDs with the stage doc's a-consumer (the Q-consumer `Answer:`
               line) or an evidence-backed statement;
-              a NEED that PROBE could not fill stays flagged for CHECK
+              a NEED that EVIDENCE could not fill stays flagged for CHECK
 2. TIGHTEN    one job per paragraph/element; cut filler; concrete over vague
 3. CONFORM    the venue pack (venue/venue-<name>/style-profile.md):
               length limits, structure, register, and tone-by-audience
@@ -35,8 +35,8 @@ This file adds application quality rules to that fixed-promise authority.
 
 ## Boundaries
 
-- Never introduce new claims or numbers -- REVISE rearranges and polishes what DRAFT + PROBE settled.
-- If purpose or an Aim must change, return to DRAFT and begin a new round; if a consequential answer is missing, route to PROBE.
+- Never introduce new claims or numbers -- REVISE rearranges and polishes what DRAFT + EVIDENCE settled.
+- If purpose or an Aim must change, return to DRAFT and begin a new round; if a consequential answer is missing, route to EVIDENCE.
 - Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): skip step 3's venue half; clarity rules still apply.
 - Do not resolve CHECK-level questions (approval, scope changes) here.
 
@@ -47,5 +47,5 @@ status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path revised>
 open:      <count of NEEDs still flagged for CHECK>
-next:      <CHECK | PROBE | DRAFT | REVISE, chosen by the Page router>
+next:      <CHECK | EVIDENCE | DRAFT | REVISE, chosen by the Page router>
 ```

@@ -9,7 +9,7 @@ regressed: ""
 ---
 "you should let me know what probes to release"
 
-The console dashboard reads the probe state (index + per-stage `_PROBE/` cards)
+The console dashboard reads the probe state (index + per-stage `_EVIDENCE/` cards)
 but only surfaced it as a single buried "run PP02" line in Recommended Next. The
 user wants an explicit RELEASABLE-PROBES menu on the dashboard: which planned/held
 cards are unblocked and awaiting the user's go, which are blocked (and on what),

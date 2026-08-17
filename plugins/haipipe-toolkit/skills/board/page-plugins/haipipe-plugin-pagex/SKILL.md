@@ -3,9 +3,9 @@ name: haipipe-plugin-pagex
 description: >-
   The pagex/ plugin of a Board page: the page's borrow LIST at <page>/pagex/<stem>.md (PRIMARY) — one row per FILE taken from another page anywhere in the repo, where the ORDER of the rows IS the person's rank — materialized as relative symlinks so the borrowed material is read live and never copied. Owns the three-route contract (seed-and-re-mint, drag-order, pen), the vet a target must pass, and its two laws: pagex links files and never a page's home folder, and the scan seeds while the person ranks. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: pagex plugin, which parts of that page do we use, folder inventory, seed borrows from the prose, borrow a file from another page, reference other pages, reuse a component from another page, symlink plugin, page citations into pages, dangling borrow, pagex tab, /haipipe-plugin-pagex.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-16"
-  summary: "A card is now a source PAGE with its folder inventory, marking which parts are in use (JL 260816), and opening one frames it under a way back."
+  version: "0.4.0"
+  last_updated: "2026-08-17"
+  summary: "A card is now a source PAGE with its folder inventory, marking which parts are in use; PROBE MATCH now uses PageX as its first cross-page reuse lookup."
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages
 
@@ -14,6 +14,35 @@ This file owns only pagex's delta: the borrow row, the minted link, the vet, and
 
 The family is three now: bibex holds a page's references into the literature, skill into the skill tree, and pagex into the repo's own page tree.
 The design page is `QPf11` on the board skill's board.
+
+## 🔎 PROBE MATCH · the reuse lane
+
+PageX is the cross-page lookup surface used by PROBE before new bank work is
+authorized. It is not a fourth evidence bank and it does not dispatch:
+
+```text
+PROBE obligation
+  ├─ current Page probe/Bibex
+  ├─ PageX: inspect exact borrowed answer/material
+  ├─ task/discovery QA bank
+  └─ new card only if no exact answer exists
+```
+
+The match is valid only when the borrowed file literally answers the neutral
+Q-executor or is the exact accepted Display being reused. A page that merely
+shares a topic is a candidate, not evidence. The PROBE receipt records the
+source path and `reuse` or `no exact match`; the ranked borrow list remains the
+person's durable choice.
+
+The board exposes `POST /_board/pagex-match` as a read-only candidate
+shortlist. It reports transparent token overlap and a short excerpt, but its
+result is deliberately `inspect exact answer before reuse`: the endpoint never
+binds a card, edits the borrow list, or claims that similarity is evidence.
+
+When a QA answer is reused, the new Page may point its local Probe card at the
+same QA file. The QA bank stays unaware of both consumers, and no answer bytes
+are copied into PageX. When a Display is reused, cite its fully qualified unit
+id or borrow its specific file; never link an entire page home folder.
 
 ## 🗂 Storage · MIXED, one ranked list and the links minted from it
 
@@ -62,6 +91,7 @@ POST /_board/pagex-order    the drag: the store keeps exactly the sent order
 POST /_board/pagex-entry    the pen: `borrow` one path OR a list (note
                             optional, lands at the TOP) · ✕ remove
                             (tombstone) · ↩ restore
+POST /_board/pagex-match    PROBE's read-only candidate shortlist; no write
 GET  /_board/pagexview      one borrow, framed under ← ☰ → over the list
 ```
 

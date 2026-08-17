@@ -1,4 +1,4 @@
-Per-stage dispatch reference (paper PROBE)
+Per-stage dispatch reference (paper EVIDENCE)
 ============================================
 
 Loaded on demand from the door's fn/probes.md. Which stage routes where, stage
@@ -23,7 +23,7 @@ the entries still owed after ② MATCH, handed as a SET
               division's `#### consumers` rows are the paper's record of what the answer MEANS; the CLAIM's status
               lives in 0-lifecycle/S02-work/S-Work-C-claims.md.
               The reusable artifact is the EXECUTOR's <task-folder>/QA/<n>-<slug>.md,
-              which any paper's PROBE-time MATCH can find and read (`bank: reuse`).
+              which any paper's EVIDENCE-time MATCH can find and read (`bank: reuse`).
 ```
 
 Per-stage table (workers = HARVESTERS: they transcribe landed evidence, never
@@ -31,7 +31,7 @@ acquire; acquisition is always a question ENTRY -> its `#### Q-executor` -> the
 task/discovery orchestrator -> the answering QA file)
 ----------------
 - **seed** (-> discovery): landscape / related work / novelty to sharpen the seed question; returned source anchors stay in the ENTRY's `#### A-executor`.
-- **resource** (-> task + discovery): DRAFT asks Qs keyed to N rows on `S-Work-0-resources.md`; PROBE opens and MATCHes one entry per Q, writes the `-> PP<NN>` backlink, and dispatches only within `--depth`. `task-for-fit` and `task-for-eval` are Claims work.
+- **resource** (-> task + discovery): DRAFT asks Qs keyed to N rows on `S-Work-0-resources.md`; EVIDENCE opens and MATCHes one entry per Q, writes the `-> PP<NN>` backlink, and dispatches only within `--depth`. `task-for-fit` and `task-for-eval` are Claims work.
 - **claims** (-> task + discovery): one question entry per GAP claim. The author writes claim status in `S-Work-1-claims.md`; CHECK reviews the paper judgment. Claims consumes only Resource-declined forward pointers recorded in that S page's `## Log`.
 - **pitch** -- anchor-paper questions (-> discovery).
 - **narrative** -- anchor-paper and display-need questions, one per beat.
@@ -42,8 +42,8 @@ task/discovery orchestrator -> the answering QA file)
 
 Dispatch rules (apply to every dispatch)
 ----------------------------------------------
-1. **Reuse-before-create -- the MATCH is PROBE's, the DEPTH is the EXECUTOR's.**
-   PROBE runs ② MATCH over the
+1. **Reuse-before-create -- the MATCH is EVIDENCE's, the DEPTH is the EXECUTOR's.**
+   EVIDENCE runs ② MATCH over the
    bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the
    hits -- match ON THE ANSWER, never on the topic. A hit is `bank: reuse`
    (point the entry's `target` at that QA file; nothing runs). Only what MATCH
@@ -57,7 +57,7 @@ Dispatch rules (apply to every dispatch)
 Seed specifics (DEFAULT RUN for a new seed)
 ---------------------------------------------
 Skip only on re-entry or minor edits, and only by an explicit logged verdict
-(`[PROBE] skipped -- <reason>` in the S page's `## Log`; phase line shows `--`) --
+(`[EVIDENCE] skipped -- <reason>` in the S page's `## Log`; phase line shows `--`) --
 never silently. The seed question needs outside context, not settled claims:
 
 ```
@@ -76,7 +76,7 @@ different thing: it belongs to the bank, not to the probe layer.)
 
 Resource specifics (SCAN and BUILD lanes)
 -------------------------------------------
-The stage hands over paper-space QUESTIONS, never PP ids or probe topics. PROBE
+The stage hands over paper-space QUESTIONS, never PP ids or probe topics. EVIDENCE
 reads `S-Work-0-resources.md`, opens one entry per Q, writes the Q-consumer,
 bank binding, blocks field, Q-executor, and `-> PP<NN>` backlink. Its ② MATCH
 settles what the bank already answers; ③ dispatches only within `--depth`, and
@@ -122,7 +122,7 @@ route through discovery; their return is transcribed into the A.
 
 Claims specifics
 -----------------
-Every GAP/weak claim raises one question ENTRY -- PROBE MATCHes first
+Every GAP/weak claim raises one question ENTRY -- EVIDENCE MATCHes first
 (reuse-before-create), then the ones left `run`/`code`/`new` fan out by shape:
 
 ```

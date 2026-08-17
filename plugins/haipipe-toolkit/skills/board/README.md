@@ -34,7 +34,7 @@ reviewable set of question pages or lifecycle stages.
   Re-run `install.sh --global` (repo root) afterwards or the skill stops resolving.
 - `page-workflows/` holds the page WORKFLOW: `haipipe-page-workflow` is its
   HEAD (the RUN router, the packet + receipt contract), and beside it sit the
-  four host-agnostic phase contracts `haipipe-page-draft`, `haipipe-page-probe`,
+  four host-agnostic phase contracts `haipipe-page-draft`, `haipipe-page-evidence`,
   `haipipe-page-revise`, and `haipipe-page-check`.
   Phases are selected by authority rather than by edit operation or a rigid
   order; one folder, one head skill, its members beside it is the shape every
@@ -53,10 +53,10 @@ reviewable set of question pages or lifecycle stages.
   `regroup.py` and `check.py` written a second time, and its one unique script
   moved with it.
 - `agents/haipipe-board-creator-agent.md` produces one target Page in a fresh
-  context. It supports batch creation plus exactly one DRAFT, PROBE, or REVISE
+  context. It supports batch creation plus exactly one DRAFT, EVIDENCE, or REVISE
   phase for RUN; it never rebuilds or performs CHECK.
 - `agents/haipipe-board-reviewer-agent.md` is the read-only, fresh-context
-  CHECK. It judges one source/render version and returns CLOSE, REVISE, PROBE,
+  CHECK. It judges one source/render version and returns CLOSE, REVISE, EVIDENCE,
   DRAFT, or HOLD; it never repairs the Board it judges.
 - `agents/haipipe-page-orchestrator-agent.md` is the non-interactive RUN
   target. It invokes the bounded Workflow, stores `_runs/page/` receipts, and
@@ -84,7 +84,7 @@ board/
 │   ├── haipipe-page-workflow/
 │   │   └── ref/page-run-contract.md
 │   ├── haipipe-page-draft/
-│   ├── haipipe-page-probe/
+│   ├── haipipe-page-evidence/
 │   ├── haipipe-page-revise/
 │   └── haipipe-page-check/
 ├── haipipe-sentence/

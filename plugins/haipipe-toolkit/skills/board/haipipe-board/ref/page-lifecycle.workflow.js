@@ -1,8 +1,8 @@
 export const meta = {
   name: 'haipipe-page-lifecycle',
-  description: 'Route one Page through bounded DRAFT, PROBE, REVISE, and independent CHECK loops.',
+  description: 'Route one Page through bounded OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and independent CHECK loops.',
   phases: [
-    { title: 'Produce', detail: 'a phase-scoped producer performs DRAFT, PROBE, or REVISE' },
+    { title: 'Produce', detail: 'a phase-scoped producer performs DRAFT, EVIDENCE, or REVISE' },
     { title: 'Snapshot', detail: 'rebuild, run mechanical checks, and identify the exact Page version' },
     { title: 'Check', detail: 'a fresh read-only judge evaluates and routes that version' },
   ],
@@ -23,17 +23,20 @@ if (!board || !page || !runId || !intent || !parsed.start_phase) {
   log('page-lifecycle: missing board, page, run_id, intent, or start_phase')
   return { status: 'blocked', reason: 'missing required raw-material packet field', receipts: [] }
 }
-if (!['DRAFT', 'PROBE', 'REVISE', 'CHECK'].includes(startPhase)) {
+if (!['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK'].includes(startPhase)) {
   log(`page-lifecycle: unknown start_phase=${startPhase}`)
   return { status: 'blocked', reason: `unknown start_phase ${startPhase}`, receipts: [] }
 }
 
-const ROUTES = ['DRAFT', 'PROBE', 'REVISE', 'CHECK', 'CLOSE', 'HOLD']
+const ROUTES = ['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK', 'CLOSE', 'HOLD']
 const LEGAL = {
-  DRAFT: ['DRAFT', 'PROBE', 'REVISE', 'CHECK', 'HOLD'],
-  PROBE: ['PROBE', 'REVISE', 'DRAFT', 'CHECK', 'HOLD'],
-  REVISE: ['REVISE', 'PROBE', 'DRAFT', 'CHECK', 'HOLD'],
-  CHECK: ['CLOSE', 'REVISE', 'PROBE', 'DRAFT', 'HOLD'],
+  OUTLINE: ['OUTLINE', 'DRAFT', 'HOLD'],
+  DRAFT: ['DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'CHECK', 'HOLD'],
+  PROBE: ['PROBE', 'EVIDENCE', 'REVISE', 'HOLD'],
+  EVIDENCE: ['EVIDENCE', 'REVISE', 'DRAFT', 'CHECK', 'HOLD'],
+  REVISE: ['REVISE', 'COMPILE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
+  COMPILE: ['COMPILE', 'CHECK', 'REVISE', 'HOLD'],
+  CHECK: ['CLOSE', 'OUTLINE', 'REVISE', 'PROBE', 'EVIDENCE', 'DRAFT', 'HOLD'],
 }
 
 const PRODUCER_RESULT = {
@@ -42,7 +45,7 @@ const PRODUCER_RESULT = {
   properties: {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['ok', 'blocked', 'failed'] },
-    phase: { type: 'string', enum: ['DRAFT', 'PROBE', 'REVISE'] },
+    phase: { type: 'string', enum: ['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE'] },
     route: { type: 'string', enum: ROUTES },
     reason: { type: 'string' },
     reopens_promise: { type: 'boolean' },
@@ -76,7 +79,7 @@ const REVIEW_RESULT = {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
     verdict: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
-    route: { type: 'string', enum: ['CLOSE', 'REVISE', 'PROBE', 'DRAFT', 'HOLD'] },
+    route: { type: 'string', enum: ['CLOSE', 'OUTLINE', 'REVISE', 'PROBE', 'EVIDENCE', 'DRAFT', 'COMPILE', 'HOLD'] },
     reason: { type: 'string' },
     checked_version: { type: 'string' },
     reopens_promise: { type: 'boolean' },
@@ -153,7 +156,7 @@ for (let step = 1; step <= maxSteps; step++) {
       `Load haipipe-page, the matching Page Type, and haipipe-page-check. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
-      `Do not edit, rebuild, or cure a finding. Route to CLOSE, REVISE, PROBE, DRAFT, or HOLD. ` +
+      `Do not edit, rebuild, or cure a finding. Route to CLOSE, OUTLINE, REVISE, PROBE, EVIDENCE, DRAFT, or HOLD. ` +
       `DRAFT requires reopens_promise=true because purpose or Aims must change. ` +
       `CLOSE requires verdict=pass and durable evidence for every required human gate.`,
       {
@@ -283,11 +286,12 @@ for (let step = 1; step <= maxSteps; step++) {
   }
 
   phase('Produce')
+  const phaseSkill = current === 'COMPILE' ? 'revise' : current.toLowerCase()
   const producer = await agent(
     `Perform exactly one ${current} phase for one Board Page.\n\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
-    `Load haipipe-page, the matching Page Type, haipipe-page-${current.toLowerCase()}, and any family worker. ` +
-    `Follow the phase boundary. Work only on the target Page and a declared probe surface when PROBE requires one. ` +
+    `Load haipipe-page, the matching Page Type, haipipe-page-${phaseSkill}, and any family worker. ` +
+    `Follow the phase boundary. Work only on the target Page and a declared probe surface when EVIDENCE requires one. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
     `Return one phase receipt and suggest the next legal route. DRAFT from a non-DRAFT phase must explain the changed purpose or Aim and set reopens_promise=true.`,
     {
@@ -346,7 +350,7 @@ for (let step = 1; step <= maxSteps; step++) {
     route = 'HOLD'
     reason = `${reason}; producer returned a phase or route outside ${current} authority`
     findings = findings.concat(['producer phase or route violated the lifecycle grammar'])
-  } else if (route === 'DRAFT' && current !== 'DRAFT' && !producer.reopens_promise) {
+  } else if (route === 'DRAFT' && current !== 'DRAFT' && current !== 'OUTLINE' && !producer.reopens_promise) {
     status = 'blocked'
     route = 'HOLD'
     reason = `${reason}; DRAFT route did not name a reopened purpose or Aim`
@@ -371,7 +375,7 @@ for (let step = 1; step <= maxSteps; step++) {
     route = 'HOLD'
     reason = `${reason}; max_steps=${maxSteps} reached before another phase could run`
   }
-  if (route === 'DRAFT' && current !== 'DRAFT' && producer.reopens_promise && round >= maxRounds) {
+  if (route === 'DRAFT' && current !== 'DRAFT' && current !== 'OUTLINE' && producer.reopens_promise && round >= maxRounds) {
     route = 'HOLD'
     reason = `${reason}; max_rounds=${maxRounds} prevents another DRAFT round`
   }
@@ -410,7 +414,7 @@ for (let step = 1; step <= maxSteps; step++) {
   if (route === 'HOLD') {
     return { status: status === 'blocked' ? 'blocked' : status === 'failed' ? 'failed' : 'hold', run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
   }
-  if (route === 'DRAFT' && current !== 'DRAFT' && producer.reopens_promise) round += 1
+  if (route === 'DRAFT' && current !== 'DRAFT' && current !== 'OUTLINE' && producer.reopens_promise) round += 1
   current = route
 }
 

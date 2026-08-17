@@ -43,7 +43,7 @@ The evidence page organizes its Content BY EXECUTOR (JL 260806). Each division i
 3. a `#### answer digest` block: 2-3 lines from the A-executor. The full text stays in the QA-probe record, one click away; the digest is what a reader scans.
 4. when the page declares `display: companion`, one `🖼 Display:` pointer to the same-numbered candidate display record. Its state is `candidate`, `selected`, `paper-bound`, `parked`, or `not-displayable`.
 
-`### E0 · incoming` is the one standing division: the queue where a newly collected Q-consumer waits until PROBE translates it into a new E<n> and opens its QA-probe. A Q-consumer born on ANY page is COLLECTED into the owning topic's E0 first, then promoted.
+`### E0 · incoming` is the one standing division: the queue where a newly collected Q-consumer waits until EVIDENCE translates it into a new E<n> and opens its QA-probe. A Q-consumer born on ANY page is COLLECTED into the owning topic's E0 first, then promoted.
 
 The page closes only when every E<n> division's consumers are terminal AND E0 is empty. The human gate reads the E divisions, not the QA-probes: an answer sitting in a QA-probe's `#### A-executor` that never became an A-consumer row closes nothing.
 

@@ -24,7 +24,7 @@ dashboard: none
 #            newest Log date.
 
 phases: [draft, probe, revise, check]
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
                            # consumer's `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -58,8 +58,8 @@ template: template.md
 
 exit_when: "at CHECK — pick one of the `exits:` below"
 
-gates: [check]             # ONE human gate, at CHECK — like every other stage. DRAFT/PROBE/REVISE
-                           # run unattended. Safe because probe_depth is 0: PROBE only HARVESTS,
+gates: [check]             # ONE human gate, at CHECK — like every other stage. DRAFT/EVIDENCE/REVISE
+                           # run unattended. Safe because probe_depth is 0: EVIDENCE only HARVESTS,
                            # nothing spends on a default run. A BUILD acquisition is depth >= 1 and
                            # never fires unless the human explicitly raises the ceiling with
                            # `probe --depth N` — that raise IS the spend authorization, so no
@@ -87,7 +87,7 @@ formatting:
 
 q_id_pattern: "- P<n> · Q-Resource-<n> · <title>"
 q_anchor: "[Q-Resource-<n>] cited inline in the `### Serves & carries` (or topic) line it tests"
-closed_when: "PROBE writes the Answer from the answering QA file — existence AND fitness AND what it
+closed_when: "EVIDENCE writes the Answer from the answering QA file — existence AND fitness AND what it
               KILLS, carrying [source: PP<NN>]. The bracket STAYS; a ledger keeps its questions."
 
 probe_lanes:              # what a Q costs to answer

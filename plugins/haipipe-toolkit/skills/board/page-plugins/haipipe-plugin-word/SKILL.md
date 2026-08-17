@@ -3,9 +3,9 @@ name: haipipe-plugin-word
 description: >-
   The WORD plugin of a Board page: export one page's prose as a coauthor .docx with a PDF twin, flowing paragraph-per-paragraph prose (never the source's sentence-per-line), citations and a References section resolved from the page's own bibex/ bib, and evidence riding as anchored Word comments. Loads on top of haipipe-plugin's contract; the writer is the paper family's md2docx, called by path. Trigger: word plugin, word export, docx export, page to word, coauthor docx, PDF twin, join paragraphs, /haipipe-plugin-word.
 metadata:
-  version: "0.1.1"
+  version: "0.2.0"
   last_updated: "2026-08-16"
-  summary: "The page's display evidence embeds (JL 260816): a temp ref-injection bridge + --display-root carry the figure, caption, and 🖼 comment into the docx."
+  summary: "The docx now opens with the Page's complete H1 title; rendered Display evidence still embeds through the temp ref bridge."
 ---
 
 # /haipipe-plugin-word · one page, as a document a coauthor can mark up
@@ -30,6 +30,8 @@ All three are DERIVED: a rebuild overwrites them, and a lasting correction belon
 **Paragraph per paragraph (JL 260815)**: the board's `.md` keeps one sentence per line for its sentence-anchor grammar, and the export passes `--join-paragraphs` so each block lands as one flowing paragraph.
 The one-line form is board machinery and stops at the writer.
 
+**The Page title prints**: the Board passes the complete canonical H1 through `--document-title`; md2docx emits it once with Word's editable `Title` paragraph style before the numbered Content headings. It is independent of the writer's paper-section H1 inference, so a Page that begins Content with `### 1 ...` cannot suppress its document title.
+
 **The page's bib comes first**: when `bibex/<stem>.bib` holds an entry, `cli/refs.py` compiles `.board-refs.bbl` beside it and md2docx renders the in-text label and a References section from it — the same store that feeds the page's cite chips and the LaTeX PDF.
 With no page store, a paper's `0-*.bib` found upward rides along; outside any paper the export degrades cite-less rather than refusing.
 
@@ -37,8 +39,10 @@ With no page store, a paper's `0-*.bib` found upward rides along; outside any pa
 
 **Evidence rides as comments**: `--lanes` defaults to Citation alone (the paper family's ruling); whether a BOARD page's export wants lanes at all is QPf7's open A2.1, answered by a real coauthor's markup.
 
-**The page's display evidence embeds (JL 260816)**: when `<page>/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by short id, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/display` and `--lanes Citation,Display`.
+**The page's display evidence embeds (JL 260816)**: when `<page>/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
 The docx then carries the figure (rasterized from the unit's winning `figure.pdf`) with the unit's own caption, the inline `(Figure n)`, and a 🖼 Display comment on the citing sentence; the page source is never edited and the temp is deleted after the run.
+
+**Tables remain native and editable**: booktabs `tabular` and `tabularx` assets, including balanced column specifications such as `@{}X r@{}` and `\multicolumn`, are parsed into Word table rows. TeX wrappers and note minipages do not leak into cell text.
 
 ## 🖥 How to run it
 
@@ -48,7 +52,8 @@ The writer directly, board conventions included:
 
 ```bash
 python3 skills/paper/haipipe-paper/scripts/to-word/md2docx.py <page.md> \
-        -o <page-dir>/word/<stem>.docx --join-paragraphs [--paper-root DIR]
+        -o <page-dir>/word/<stem>.docx --join-paragraphs \
+        [--document-title "Full Page H1"] [--paper-root DIR]
 ```
 
 ## ⚠️ Known warts

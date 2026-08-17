@@ -338,7 +338,7 @@
     }
     diag(attach ? 'REJOIN' : 'SEND', attach ? ('at cursor ' + curGet()) : msg.slice(0, 60));
     traceStart();
-    /* A REJOIN IS A PROBE, AND A PROBE THAT FINDS NOTHING MUST SAY NOTHING.
+    /* A REJOIN IS A EVIDENCE, AND A EVIDENCE THAT FINDS NOTHING MUST SAY NOTHING.
        The sync heartbeat calls this on a timer to ask whether a turn is running
        with nobody watching, so on a quiet page it fires over and over — and it
        used to paint "Rejoining" every time, then let the watchdog escalate to
@@ -356,7 +356,7 @@
        code below never reaches chatBusy(false): red stop button, dead drawer,
        nothing moving. Report the silence, then give up rather than hang. */
     var lastEv = Date.now();
-    /* A silent PROBE is the expected case, not a hang: give up in seconds and
+    /* A silent EVIDENCE is the expected case, not a hang: give up in seconds and
        without a word. A real turn keeps the long, loud timings. */
     var QUIET_WARN = attach ? Infinity : 45000;
     var QUIET_GIVEUP = attach ? 6000 : 420000;

@@ -38,14 +38,14 @@ Only display compiles to .tex + PDF.
 | `2-pitch` | Make the one-minute argument for THIS audience | What is the paper selling? | LIGHT | narrative |
 | `3-narrative` | Structure the paper for THIS venue | How do claims become sections? | MEDIUM | display |
 | `4-display` | Design displays per THIS venue's limits | What figure/table carries each claim? | HEAVY | section-edit |
-| `5-section-edit` | Per-section DRAFT-PROBE-REVISE-CHECK | How to write each section? | SPECIFIC | review |
+| `5-section-edit` | Per-section DRAFT-EVIDENCE-REVISE-CHECK | How to write each section? | SPECIFIC | review |
 
 ## Phase Dimension
 
 Stages x phases is a two-axis model. Each stage skill in `1-lifecycle/` defines
-WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT -> PROBE ->
+WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT -> EVIDENCE ->
 REVISE -> CHECK (`haipipe-paper-{draft,probe,revise,check}`). Venue omits
-REVISE by contract. The PROBE phase authors and matches entries, then sends
+REVISE by contract. The EVIDENCE phase authors and matches entries, then sends
 only authorized bank work through the isolated
 `haipipe-probe-q-executor-agent` collector.
 Phases are internal workers driven by the stage skill; CHECK is the only
@@ -89,7 +89,7 @@ Handoff to probe/discover/task only when the problem is evidence, not
 wording.
 
 ```text
-paper GAP -> question ENTRY (1-probes/) -> the PROBE phase's MATCH ->
+paper GAP -> question ENTRY (1-probes/) -> the EVIDENCE phase's MATCH ->
 DISPATCH what MATCH cannot close -> the answering QA file -> the entry's
 `### a-executor` -> each Q-consumer's a-consumer in its stage doc -> the paper
 backfills (a claim's status flips in S-Work-1-claims.md)
@@ -99,9 +99,9 @@ Common routes:
 
 ```text
 claim needs its status settled       -> add/route the owning Q-consumer, then run that stage's
-                                        PROBE phase (it authors the entry, MATCHes, and sends only
+                                        EVIDENCE phase (it authors the entry, MATCHes, and sends only
                                         authorized work through the collector)
-claim needs outside context/citation -> Q-consumer -> stage PROBE -> collector -> discovery QA
+claim needs outside context/citation -> Q-consumer -> stage EVIDENCE -> collector -> discovery QA
 display needs materialized result    -> DR row -> display stage (which owns any task dispatch)
 settled claim status                 -> 0-lifecycle/1-work/S-Work-1-claims.md (the ONLY
                                         home of a claim's status; the probe entry

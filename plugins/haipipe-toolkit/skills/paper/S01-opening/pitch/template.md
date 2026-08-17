@@ -103,4 +103,4 @@ Q-consumer
   **Description:** <the specific check — one sentence per line>
   **Reason:** <which pitch element it bears on, and why it matters if wrong>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+  **Answer:** <empty in DRAFT — EVIDENCE fills it: the finding + [source: PP<nn>]>

@@ -7,7 +7,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Legacy files migrated and gone: no `4-display-probes.md`, no `4-display-preview.txt` / contact-sheet file, no `%% {USER}:` comments left in the tex (all merged VERBATIM into the md; `[MIGRATE]` logged).
 - [ ] The Display S page has a `## Log`.
 - [ ] `_DISPLAY_REQUEST.md` inbox consumed: no row left `requested` (each `accepted`/`declined` with reason; delivered units flipped `done (unit: ...)`).
-- [ ] `Probes` entries all terminal: every `###` entry `done` with its `Outcome:` filled, or user-skipped (logged at the gate); no `✋` entry run while its gating thread was unruled, none silently dropped. PROBE's S0 cross-stage sweep ran (or was explicitly skipped with a logged reason): unfiled section/narrative display needs are DR rows, not invisible.
+- [ ] `Probes` entries all terminal: every `###` entry `done` with its `Outcome:` filled, or user-skipped (logged at the gate); no `✋` entry run while its gating thread was unruled, none silently dropped. EVIDENCE's S0 cross-stage sweep ran (or was explicitly skipped with a logged reason): unfiled section/narrative display needs are DR rows, not invisible.
 - [ ] `4-display.tex` is REGENERATED from the md by sync — never hand-edited: `\section*{<paper section>}` banner at each section change, a named `\subsection*{Figure N. <name>}` / `Table N. <name>` per display, small-font interrogation verdicts, `\input` per unit, Parking section last (parked units never `\input` into the manuscript).
 - [ ] Gallery sizing knobs (width cap, float pinning, spacing) live in the md's gallery config and are emitted into the generated tex preamble — never pushed into a unit's `float.tex` or source spec.
 - [ ] `4-display.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit, from the paper root so `displays/` paths resolve).
@@ -38,9 +38,9 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 ## Route on a gap
 | gap | route |
 |---|---|
-| display needs task-produced numbers | PROBE evidence lane: `/haipipe-task-for-display <need>` (direct, not claim-gated) |
-| display rests on an unverified claim | PROBE evidence lane: `/haipipe-paper probe "<need>"` |
-| missing / weak render, candidate never tried | PROBE render lane: figure / table / diagram / illustration skill |
+| display needs task-produced numbers | EVIDENCE evidence lane: `/haipipe-task-for-display <need>` (direct, not claim-gated) |
+| display rests on an unverified claim | EVIDENCE evidence lane: `/haipipe-paper probe "<need>"` |
+| missing / weak render, candidate never tried | EVIDENCE render lane: figure / table / diagram / illustration skill |
 | wrong figure sequence / hero does not sell the story | `/haipipe-paper pitch` or DRAFT |
 
 ## Exit (stage gate)

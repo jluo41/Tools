@@ -22,21 +22,17 @@ paper/
 │   ├── scripts/                    verb tooling: check_structure.sh · diffpdf/ ·
 │   │                               project/ · to-word/
 │   └── create-page.py              the public S-page creator (+ check-contracts.py)
-├── page-types/                     the TEN Page Type variants THIS family owns, each a
-│   │                               registered skill loaded on top of `haipipe-page`
-│   ├── haipipe-page-for-venue/     QBv<n> · one place a paper goes
-│   ├── haipipe-page-for-narrative/ the claims, their order, and the section outline
-│   ├── haipipe-page-for-section/   one reader-ordered unit, bound to its venue
-│   │                               allocation · INCLUDES appendix units, lettered
-│   ├── haipipe-page-for-display/   a unit a person must ACCEPT: figure, table, diagram
-│   ├── haipipe-page-for-literature/ evidence, outward route: what is already KNOWN
-│   ├── haipipe-page-for-value/     evidence, inward route: what this project HAS and
-│   │                               PRODUCES · absorbed resource (JL 260809)
-│   │                               ─ one DASH per multi-unit family above ─
-│   ├── haipipe-page-for-dash-section/    which unit to work on next
-│   ├── haipipe-page-for-dash-value/      binding rule · staleness · inventory
-│   ├── haipipe-page-for-dash-display/    the wiring map · reader-order rehearsal
-│   └── haipipe-page-for-dash-literature/ the gap contract · topic map
+├── page-types/                     the FIVE live Page Type variants this family owns;
+│   │                               each loads on top of `haipipe-page`
+│   ├── haipipe-page-for-opening/   one per paper · identity, RQ, source Pages,
+│   │                               venue position, editor promise, Narrative handoff
+│   ├── haipipe-page-for-venue/     QBv<n> · one reusable venue knowledge page
+│   ├── haipipe-page-for-narrative/ one per paper · claim roles, reader journey,
+│   │                               Section map, PageX source allocation
+│   ├── haipipe-page-for-section/   one reader-ordered unit executing one Narrative row
+│   ├── haipipe-page-for-dash/      regenerated rollup; `dash_family:` selects family
+│   └── _archive/                   retired display, literature, value, and four
+│                                   per-family dash contracts; readable, not installed
 ├── S01-opening/                    seed, venue, pitch (stage.md + template.md each)
 ├── S02-work/                       resource, claims, narrative
 ├── S03-literature/                 runtime store for discovery-backed topic entries
@@ -58,7 +54,7 @@ paper/
 
 **`page-types/` is this family's own, and that is the rule (JL 260809).** A Page
 Type variant ships under the `page-types/` folder of the skill set that OWNS it,
-so the five variants describing a paper's own artifacts live here while the base
+so the five live variants describing a paper's own artifacts live here while the base
 contract and the generic kinds stay in `../board/`. The board keeps
 `for-stage` because a stage page is a board mechanism both the paper and
 application families instantiate. ⚠️ Moving a variant does not move its installed
@@ -67,7 +63,7 @@ resolving.
 
 The numbered S folders are the Paper family grammar. There is no `workers/`
 directory anymore (dissolved 2026-08-05, thin-paper phase 2): page logic lives
-in `../board/page-phases/`, the LaTeX-side craft lives in the stage folders as
+in `../board/page-workflows/`, the LaTeX-side craft lives in the stage folders as
 `*-craft.md` data files each `stage.md` declares under `craft:`, and the probe
 tooling lives in the door's `probe/` folder. Thin-paper phase 3 (2026-08-06)
 collapsed the remaining registered skills into the door: folder/conform and the
@@ -98,19 +94,35 @@ nested probes/ entry: one Q-executor, consumer trace, bank binding, and answer
 There is no live top-level `1-probes/`; legacy probe material belongs only in
 `0-lifecycle/_archive/1-probes/`.
 
+The target paper-control flow is:
+
+```text
+Opening ── accepted handoff ──▶ Narrative ── one row each ──▶ Section pages
+   ▲                                  ▲
+   └──── existing Pages via PageX ────┘
+
+Task / Discovery folders ── Probe ──▶ their owning evidence Pages
+```
+
+PageX and Probe are parallel in this design. PageX reads existing Pages; Probe
+reaches Task and Discovery folders. Opening and Narrative therefore use
+`pagex/` rather than owning local evidence discovery. Legacy Seed, Venue,
+Pitch, and Claims runtime pages remain compatibility inputs until a separate
+migration is run.
+
 ## Stage to phase
 
 ```text
 stage work        -> haipipe-paper (the door): resolve the stage from
                      haipipe-paper/stages/index.yml, load ONE stage.md, ensure
                      the S page exists, hand the page to haipipe-page
-draft             -> ../board/page-phases/haipipe-page-draft (page logic)
+draft             -> ../board/page-workflows/haipipe-page-draft (page logic)
                      + the stage's declared craft: files (citation · values · display)
-probe             -> ../board/page-phases/haipipe-page-probe + probe/haipipe-probe
+probe             -> ../board/page-workflows/haipipe-page-evidence + probe/haipipe-probe
                      + haipipe-paper/probe/ (the family door's probe tooling)
-revise            -> ../board/page-phases/haipipe-page-revise (page logic)
+revise            -> ../board/page-workflows/haipipe-page-revise (page logic)
                      + the stage's declared craft: files (revise-place · revise-results)
-check             -> ../board/page-phases/haipipe-page-check (page logic)
+check             -> ../board/page-workflows/haipipe-page-check (page logic)
                      + the stage.md's checker: script; pre-submission adds
                      check-evidence-craft.md, and proofs add S09-build/proof-checker/
 build and deliver -> the door's fn/ verbs (compile · diffpdf · project ·

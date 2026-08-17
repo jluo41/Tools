@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.7"
   last_updated: "2026-07-19"
-  summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery PROBE via 1-probes/. History: ./CHANGELOG.md."
+  summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery EVIDENCE via 1-probes/. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-themes
@@ -50,16 +50,16 @@ DRAFT   re-mine last round's Parked reservoir (did new D entries ground any?); r
         (the grounding floor); elicit taste on which directions matter; sweep the three lenses — data /
         field (discovery: "what messaging levers does the mhealth literature name?") / counter-hunt —
         drafting T slots with grounding + hooks
-PROBE   the five-step loop raises field-pattern questions as ENTRIES in 1-probes/ and COLLECTS
+EVIDENCE   the five-step loop raises field-pattern questions as ENTRIES in 1-probes/ and COLLECTS
         (→ discovery; task only for a quick in-data confirmation); each entry's `### a-executor` lands grounding
         refs onto its T entry. Routing mechanics are the probe layer's:
-        ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md
 REVISE  sharpen pattern sentences, merge overlapping themes, park the ungrounded
 CHECK   every theme grounded (>=1 resolving D id or source) + carries a hook (or a context-only note);
         every 1a D id consumed; counter-hunt ran; Parked honest; no STALE tags; roster matches 1-probes/
 ```
 
-Themes RECEIVES grounding, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-probe` binds them.
+Themes RECEIVES grounding, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-evidence` binds them.
 When a theme's grounding refreshes (a `[STALE ...]` tag from 1a), re-confirm or revise the theme before CHECK.
 A theme needing a number files the 1a D slot immediately and logs `[ROUTE -> descriptions]` — never wait for a gate to report it.
 Rounds + back-routing (loop-until-dry for medium+ venues; `[ROUND n]` / `[ROUTE -> descriptions]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).

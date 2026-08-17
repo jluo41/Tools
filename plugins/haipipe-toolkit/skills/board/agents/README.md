@@ -4,7 +4,7 @@ board: Agent Roster
 The Board family owns a producer, a reviewer, and a Page orchestrator:
 
 ```text
-haipipe-board-creator-agent             one target Page; DRAFT/PROBE/REVISE
+haipipe-board-creator-agent             one target Page; DRAFT/EVIDENCE/REVISE
 haipipe-board-reviewer-agent            fresh read-only CHECK
 haipipe-page-orchestrator-agent   bounded router + durable audit receipt
 ```

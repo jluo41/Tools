@@ -206,9 +206,29 @@ The target Page owns the stake-bearing Q-consumer. The PROBE phase strips the st
                   +--  HOLD          |
                                       +--> controller
 \end{verbatim}
-📌 RUN follows returned authority routes and stops at explicit terminals or limits.
+📌 RUN follows returned authority routes and stops at explicit terminals or limits. Figure~\ref{fig:qpw1-run-loop} states the same controller as an algorithm, so a reader can see the three actors alternate and read the stop conditions in the order the loop tests them.
 
-ADVANCE suggests that one phase has one next phase and that progress always moves forward. RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD. The legal route table is dynamic: DRAFT, PROBE, and REVISE may repeat or hand off, while only CHECK may CLOSE. Returning to DRAFT from another phase increments the round only when purpose or an Aim reopened.
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{../display/QPw1-Display1-run-loop/assets/figure.pdf}
+\caption{RUN, as the router it is rather than the conveyor belt its name could
+  suggest. The producer, the builder, and the judge are three separate actors;
+  the loop follows the route each returns, refuses a route outside $R(\varphi)$,
+  and stops at CLOSE, HOLD, or a limit.}
+\label{fig:qpw1-run-loop}
+\end{figure}
+
+ADVANCE suggests that one phase has one next phase and that progress always moves forward. RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD. The legal route table is dynamic: DRAFT, PROBE, and REVISE may repeat or hand off, while only CHECK may CLOSE. Figure~\ref{fig:qpw1-route-relation} writes that table as two rules and derives both laws from them, including one this prose never states: CHECK cannot route to CHECK, so a judged version reaches a second judgment only through a producer. Returning to DRAFT from another phase increments the round only when purpose or an Aim reopened.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{../display/QPw1-Display2-route-relation/assets/figure.pdf}
+\caption{The legal-route relation $R$, and the two laws it makes checkable.
+  A producer may hand off to any phase including itself; the judge alone reaches
+  CLOSE, and alone cannot reach itself, so every judged version passes through a
+  producer before it is judged again.}
+\label{fig:qpw1-route-relation}
+\end{figure}
 
 The packet names the persistent Page, stable Page Type, starting Phase, run intent, source paths, settled constraints, closing gate, and step and round limits. A new Page is first created and registered, then RUN starts it at DRAFT. An existing Page with no known next need starts at CHECK, allowing a cold judge to route the visible version. A missing source, unknown gate, or ambiguous authority becomes HOLD rather than an invented input.
 

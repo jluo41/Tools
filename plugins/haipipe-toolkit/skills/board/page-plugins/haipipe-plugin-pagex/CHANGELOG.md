@@ -1,5 +1,12 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.4.0 · 2026-08-17
+
+Documents PageX as PROBE's cross-page MATCH surface: it is a ranked live reuse
+list, not a second QA bank, and exact reuse leaves an audit trace without copy.
+Adds the read-only `pagex-match` candidate endpoint; overlap is navigation and
+never an automatic reuse decision.
+
 ## 0.3.0 · 2026-08-16
 
 A card stopped being a borrowed file and became a source PAGE with its inventory.

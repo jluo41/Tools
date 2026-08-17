@@ -1,3 +1,18 @@
+
+## 0.4.0 — 2026-08-16
+
+REVISE now owns the artifacts, not only the prose (JL 260816).
+
+- Added "The page becomes its artifacts here, or it never does": REVISE holds
+  display-walk steps ② RENDER, ③ PICK, ④ BUILD, calls the renderer the unit's
+  `kind:` row names, cites each unit by short id in the sentence that claims it,
+  and rebuilds BOTH projections (`latex/`, `word/`) at the end of every pass.
+- The landing order gained ④ RENDER and ⑤ BUILD after ① LAND ② ARGUE ③ SOUND.
+- Stated that rendering is not release: a PHI-safe aggregate intake may be
+  rendered and cited as a labelled candidate while a method or provenance
+  question stays open; only step ⑤'s human tick releases it.
+- Phase token PROBE -> EVIDENCE throughout.
+
 haipipe-page-revise · Changelog
 ===============================
 

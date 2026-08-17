@@ -6,6 +6,10 @@ metadata:
   version: "0.6.0"
   last_updated: "2026-08-09"
   summary: "The dash rule is corrected (JL 260809): a dash still takes NO human gate and is never counted, but it DOES declare requires: S-Open-Venue, because it cannot measure a family without the blueprint. Each dash now loads its own for-dash-* contract."
+  outline:
+    mode: resolved          # fixed | grammar | resolved
+    source: "paper/haipipe-paper/stages/<stage>/stage.md"
+    shape: "the stage's declared product IS the Content; stage.md names it"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -381,4 +385,4 @@ page-types/haipipe-page-for-stage/
 └── CHANGELOG.md        version history
 ```
 
-Owns no scripts. The base frame is `haipipe-page`; the generic phase contracts are `haipipe-page-draft`, `haipipe-page-probe`, `haipipe-page-revise`, and `haipipe-page-check`; the generator for the managed span is `haipipe-board/src/stage_contract.py` driven by `cli/stage.py`; the stage roster is `paper/haipipe-paper/stages/index.yml`; the catalog this contract binds to is `haipipe-page-for-venue`; the paper and application families add their artifact knowledge after the phase contract, through each stage.md's declared `craft:` files.
+Owns no scripts. The base frame is `haipipe-page`; the generic phase contracts are `haipipe-page-draft`, `haipipe-page-evidence`, `haipipe-page-revise`, and `haipipe-page-check`; the generator for the managed span is `haipipe-board/src/stage_contract.py` driven by `cli/stage.py`; the stage roster is `paper/haipipe-paper/stages/index.yml`; the catalog this contract binds to is `haipipe-page-for-venue`; the paper and application families add their artifact knowledge after the phase contract, through each stage.md's declared `craft:` files.

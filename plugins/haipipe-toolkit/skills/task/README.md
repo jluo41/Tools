@@ -1,7 +1,21 @@
 # task
 
-`task/` is the HAI-Pipe execution layer: a task is a runnable work unit with a
-shared lifecycle and a type-specific IPO contract.
+`task/` is the HAI-Pipe execution and insight family. A task is a runnable work
+unit; the Task/Insights Board turns its results and Discovery evidence into
+consumer-neutral DIKW Pages that Paper and Application can reuse through PageX.
+
+## Two surfaces, one family
+
+```text
+EXECUTION                         KNOWLEDGE
+Task Folder                      Task / Insights Board
+Plan → Build → Execute → Report  Data → Information → Knowledge → Wisdom
+page-type: task                  page-type: insight
+```
+
+Execution answers whether the implementation and run are right. An Insight Page
+answers what the evidence means and how far that meaning can travel. Consumers
+read the settled Insight handoff; they never read `results/` directly.
 
 ## Mental Model
 
@@ -50,6 +64,19 @@ Chinese mnemonic:
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
+## Page Types
+
+```text
+task/page-types/
+├── haipipe-page-for-task/      one Task Folder and a run-bound human reading
+└── haipipe-page-for-insight/   one reusable DIKW chain around one question
+```
+
+An Insight Page may read several Task Pages, Task `QA/` answers, Discovery
+Pages, or prior Insight Pages. It remains consumer-neutral: Paper selects K and
+Application selects K/W, but neither downstream stake is written into the
+Insight Page.
+
 ## Boundary (self-contained by design)
 
 Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, names none, and its working docs (SKILL/ref/fn) never route upward.
@@ -65,6 +92,10 @@ For the human reader, the wider mental model:
 task       = execute internal work (code, runs, metrics)
 discovery  = inspect outside evidence (literature, prior art)
 
-📄 the consumers — they ask, and they interpret; we never see them
-paper/app  = deliver audience-facing narrative
+📄 the knowledge wall — Task/Insights Board interprets, without consumer stake
+insight    = D → I → K → W, settled once and reused
+
+📦 the consumers — they select and re-express; they never enter the folder
+paper      = academic expression through Opening → Narrative → Section
+application= intervention expression through Brief → Intervention → Artifact
 ```

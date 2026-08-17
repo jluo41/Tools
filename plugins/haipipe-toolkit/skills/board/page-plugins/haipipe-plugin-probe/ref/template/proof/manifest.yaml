@@ -1,0 +1,5 @@
+card: PP<NN>-<noun-slug>
+files: []
+pending: >-
+  <the file that will be pulled once this is answered, and its kind:
+  table .csv | numbers .json | excerpt .txt>

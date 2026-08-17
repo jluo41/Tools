@@ -98,7 +98,7 @@ The checker's --stage gate greps these ids for the stage word (Q-Seed-1 → seed
 
 🔗 bank binding  (how it reaches the bank)
 ------------------------------------------
-Normal entries use four fields that say how this q-executor reaches the bank; all are authored at PROBE (①②).
+Normal entries use four fields that say how this q-executor reaches the bank; all are authored at EVIDENCE (①②).
 A terminal `concern` uses only `route: none` plus `state: concern` because no bank or target exists.
 `route` — which bank: `task` for internal work (data, a run, a regression), `discovery` for outside evidence (prior-art, landscape). Authoritative — the executor runs it, it does not re-decide. Use `none` only for terminal `concern`.
 `bank` — what the bank needs, judged by reading it (a read-only grep is allowed): `reuse` (a specific existing QA file answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). This is the plan; `state` is where it actually is now.
@@ -109,9 +109,9 @@ All bank-facing values are derived from disk, never asserted.
 It keeps all four subsections and a real stake-free `q-executor`, uses `route: none`, omits `bank` and `target`, and leaves `a-executor` empty.
 At final delivery add `**discussed**: <where the manuscript bears the limitation>`.
 
-`deferred` — the PROBE CEILING landed here. The entry's `bank` verdict maps to a depth ABOVE the
+`deferred` — the EVIDENCE CEILING landed here. The entry's `bank` verdict maps to a depth ABOVE the
 stage's `probe_depth`, so answering it would cost money nobody has authorized. This is a CORRECT
-outcome. It must be DECLARED, with a fifth field, or it is indistinguishable from a PROBE that was
+outcome. It must be DECLARED, with a fifth field, or it is indistinguishable from a EVIDENCE that was
 simply skipped:
 
 ```text
@@ -137,14 +137,14 @@ It is the LONGEST body in the file and the one a human actually reads, so its re
 DRAFT writes the stage content and raises each Q-consumer on the owning S page.
 It writes no probe entry and never opens `1-probes/`.
 
-PROBE authors the plan. For each question DRAFT raised:
+EVIDENCE authors the plan. For each question DRAFT raised:
   1. Find or open the q-executor entry (`## QX<n>`) — if an existing q-executor already asks it, add a bullet under its `### q-consumer` instead of opening a new entry.
   2. Write `### q-executor` — strip the stake, add the Deliverable and Accepted lines.
   3. Under `### q-consumer`, copy in each consumer's id and original question.
   4. Under `### bank binding`, write `route` and `bank` (read the bank read-only, judge reuse / run / code / new), set `target`, and leave `state: planned`.
   5. Leave `### a-executor` empty.
-PROBE then runs the plan forward: it hands authorized `run` / `code` / `new` entries as a set to `haipipe-probe-q-executor-agent`, points each target, and copies the QA answer into `### a-executor`.
-For a true terminal `concern`, PROBE writes the neutral q-executor plus the review-only q-consumer copy, sets `route: none` and `state: concern`, and does not dispatch.
+EVIDENCE then runs the plan forward: it hands authorized `run` / `code` / `new` entries as a set to `haipipe-probe-q-executor-agent`, points each target, and copies the QA answer into `### a-executor`.
+For a true terminal `concern`, EVIDENCE writes the neutral q-executor plus the review-only q-consumer copy, sets `route: none` and `state: concern`, and does not dispatch.
 
 ➕ Optional fields (add only when they apply)
 --------------------------------------------

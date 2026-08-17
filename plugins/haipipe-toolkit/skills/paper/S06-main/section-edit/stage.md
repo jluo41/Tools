@@ -26,9 +26,9 @@ phases: [draft, probe, revise, check]
 # qualifies by the same independent-gate rule, but its contract migration is separate.
 # `$2` is the unit, not the paper dir.
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
-                           # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
-                           # This is safe only because PROBE cannot spend: see probe_depth.
-probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+                           # Default is ONE, at CHECK. DRAFT/EVIDENCE/REVISE run unattended.
+                           # This is safe only because EVIDENCE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what EVIDENCE may dispatch, on the bank's own ladder
                            # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
                            # consumer's `bank:` verdict:
                            #   0 READ        reuse  results already answer it   free, nothing runs
@@ -190,7 +190,7 @@ q_id_pattern: "- P<n> · Q-Sec<unit><Slug>-<n> · <title>"
                                             # on three different pages.
 q_anchor: "[Q-Sec<unit><Slug>-<n>] beside the {VAL:?} or \\cite{TOADD} it will fill; the
            entry's Reason names the §<N> P<x>.S<y> sentence(s) that raised it — the back-link"
-closed_when: "PROBE writes the Answer + the target: QA-file path; CHECK's human verifies and
+closed_when: "EVIDENCE writes the Answer + the target: QA-file path; CHECK's human verifies and
               the agent THEN places the real thing. A CITATION retires its placeholder AND its
               bracket together, because \\citep{key} is self-checking against the .bib forever.
               A VALUE retires only the placeholder: the number replaces {VAL:?}, the bracket
@@ -278,7 +278,7 @@ model that produced outlines nobody could evaluate as writing).
 DRAFT prose is:
 
 ```text
-NOT verified        that is PROBE — {VAL:?} and \cite{TOADD} stay until traced
+NOT verified        that is EVIDENCE — {VAL:?} and \cite{TOADD} stay until traced
 NOT venue-polished  that is REVISE — humanizer, sentence economy, weave
 NOT LaTeX           that is sync-to-tex, after REVISE
 ```
@@ -287,7 +287,7 @@ Three placeholder forms, and nothing guessed
 --------------------------------------------
 
 ```text
-{VAL:? <what>} [Q-Sec6Results-<n>]  a number PROBE must trace to a source, + the question that owes it
+{VAL:? <what>} [Q-Sec6Results-<n>]  a number EVIDENCE must trace to a source, + the question that owes it
 \citep{key} / \citet{key}        a REAL citation — the key must ALREADY EXIST in the .bib
 \cite{TOADD} [Q-Sec6Results-<n>]    a citation slot with no suitable .bib key yet, + its question
 ```
@@ -299,7 +299,7 @@ question will ever fill. (JL ruling 2026-07-10; a legacy `[CITE:]` in an old dra
 
 - `\citep{key}` — grep the `.bib` FIRST. Writing a key that does not grep is inventing a citation.
 - `grep -c TOADD` counts open slots. A `TOADD` surviving into compiled tex FAILS CHECK.
-- `{VAL:?}` — the `<what the number is>` text is exactly what PROBE traces.
+- `{VAL:?}` — the `<what the number is>` text is exactly what EVIDENCE traces.
 
 Citation commands are the ONLY LaTeX allowed in the `.md`; they sync to tex verbatim. No other
 markup, no `%%` markers, no agent monologue.

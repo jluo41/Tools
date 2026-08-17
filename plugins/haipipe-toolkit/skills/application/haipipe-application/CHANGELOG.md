@@ -1,7 +1,16 @@
 haipipe-application — Changelog
 ===============================
 
-Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Oldest first (append at the bottom).
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+
+## [0.7.0] — 2026-08-17
+
+- Replaced the ten-stage target lifecycle with three globally unique Page Types:
+  Brief → Intervention → Artifact.
+- Moved DIKW ownership to the Task/Insights Board. Application now reads settled
+  Insight Pages through PageX and owns no evidence Probe.
+- Added Page-first internal procedures and compatibility aliases for legacy
+  Seed/ladder/Venue/Pitch/Narrative/Display/Section folders.
 
 
 ## [0.6.10] — 2026-07-24

@@ -1,5 +1,26 @@
 # haipipe-plugin-display · Changelog
 
+## 0.3.0 — 2026-08-17
+
+**Where a data-driven unit's numbers come from is now written down** (JL 260817
+asked it directly). New §❄️: `intake/inputs/` freezes FROM a probe card's
+`proof/`, verbatim, recording the CARD's own `sha256`. The unit never reaches
+into the workspace a second time, because the card already crossed the wall and
+a second unwitnessed pull can silently disagree with it.
+
+- **Staleness becomes computable**: the manifest carries the card's hash, so a
+  re-pull that moves the hash makes the intake stale and drops `accepted:` to ⬜.
+- **A unit cannot exist before a card has ANSWERED**, since its intake freezes
+  from a `proof/` that does not exist until then. That is why the display unit
+  is created at EVIDENCE (`haipipe-page-workflow` §🃏) and why a plan carries a
+  bare `🖼 owed` mark until the number lands.
+- **The recipe types no cell** and fails loudly on a ragged read.
+  `QC1-visitlbp-Display1-control-ladder`, the first unit built this whole way,
+  caught Stata's `="771,449"`: the `=` outside the quote stops a CSV parser
+  treating the quote as a quote, so the `N` row arrived as 11 cells, not 5.
+- **A unit names the bullet it serves** in a `serves:` README row, the same
+  backward link a probe card carries.
+
 ## 0.1.0 · 2026-08-15
 - Born in the thin-door round (JL 260815), the first FAMILY-WRITER variant: display's writer is a routing decision (five renderer kinds) plus a human gate (`accepted:`), which no roster row can hold.
 - Owns the page-side delta only — unit address `<page>/display/<stem>-DisplayN-<slug>/`, kind→renderer routing, the five-step walk, and the `> Display:` evidence-card lane; the unit's internal shape stays the display family's contract, adopted verbatim per QPf5's ruling.

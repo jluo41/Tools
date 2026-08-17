@@ -342,11 +342,11 @@ When this Page needs a precise fragment of another Page, use the one fixed excep
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)
   Why this phase needs that fragment.
 ```
 
-The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, PROBE, REVISE, CHECK, or ALL; the link target is Board-root-relative. The Page id must match the target, and scope is `page` or one direct Content division such as `§3.2`. `pagecontext.py` reads only phase-matching rows and follows one hop. For a division it returns the target Page identity, Opening, that division, and its matching Aims/States group; several scopes on one target share one identity and Opening. Never list a whole Page when one division is enough.
+The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, EVIDENCE, REVISE, CHECK, or ALL; the link target is Board-root-relative. The Page id must match the target, and scope is `page` or one direct Content division such as `§3.2`. `pagecontext.py` reads only phase-matching rows and follows one hop. For a division it returns the target Page identity, Opening, that division, and its matching Aims/States group; several scopes on one target share one identity and Opening. Never list a whole Page when one division is enough.
 
 ## Law
 optional · folded · Rules this question has settled and will follow from now on, one per line.

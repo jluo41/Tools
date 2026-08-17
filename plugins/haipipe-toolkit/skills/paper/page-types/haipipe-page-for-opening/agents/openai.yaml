@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Opening Page"
+  short_description: "Define a paper’s identity, venue position, and narrative handoff"
+  default_prompt: "Use $haipipe-page-for-opening to create or repair the Opening page for this paper."

@@ -149,7 +149,7 @@ placement: <t | b | htbp, or "pending">
 <!-- RULE: Aims names the intended outcomes for this one display. Use a P record only for an
      unresolved semantic or evidence question. Known build work and the human gate are ordinary
      Aim records. Numbers come from the bank, never from the agent: a value the agent typed is a
-     defect, not a draft. Route uncertainty through PROBE. -->
+     defect, not a draft. Route uncertainty through EVIDENCE. -->
 
 ### Display output
 - A1.1 · Build, render, and promote the declared display artifact.
@@ -163,7 +163,7 @@ placement: <t | b | htbp, or "pending">
   **Description:** <what this asset needs to know>
   **Reason:** <which Spec / Wrapper / caption / reader assertion depends on the answer, and what breaks>
   **Probe:** not opened yet
-  **Answer:** <empty until PROBE or a documented human ruling>
+  **Answer:** <empty until EVIDENCE or a documented human ruling>
 
 ## States
 ### Display output

@@ -16,7 +16,7 @@ owning S page's `## Log`.
                         and explicitly confirms / restarts / accepts.
 🤖 autopilot            a FRESH-CONTEXT reviewer subagent reads the stage artifact + the
                         exit-criteria report, leaves > REVIEWER: comments in the working doc,
-                        and returns a verdict: approve | restart-from-<DRAFT|PROBE|REVISE> (+ reasons).
+                        and returns a verdict: approve | restart-from-<DRAFT|EVIDENCE|REVISE> (+ reasons).
                         approve -> advance; the ledger records the agent as actor.
                         restart -> the named phase re-runs READING the > REVIEWER: comments,
                         then re-checks (same loop a human restart triggers).
@@ -56,7 +56,7 @@ Stage Exit Invariant
 The CHECK phase is the ONLY door out of a stage. Its verdicts move in exactly two directions:
 
 ```
-♻️ backward, WITHIN the stage    restart from DRAFT | PROBE | REVISE (a phase re-opens; never another stage)
+♻️ backward, WITHIN the stage    restart from DRAFT | EVIDENCE | REVISE (a phase re-opens; never another stage)
 ✅ forward, ACROSS the gate      proceed (or accept-with-issues) -> the derived frontier moves to the next stage
 ```
 
@@ -82,18 +82,18 @@ The amendment does NOT generalize. Every other stage still has exactly the two v
 Phase Transition Contract (within a stage)
 -------------------------------------------
 
-The gate governs stage EXITS; this contract governs phase VISIBILITY inside the stage. A live seed run silently skipped PROBE and REVISE and drifted into CHECK without ever announcing it -- the user discovered the phase by accident. Every stage skill obeys:
+The gate governs stage EXITS; this contract governs phase VISIBILITY inside the stage. A live seed run silently skipped EVIDENCE and REVISE and drifted into CHECK without ever announcing it -- the user discovered the phase by accident. Every stage skill obeys:
 
 1. **Announce every boundary.** Entering a phase = one line in the reply
-   ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the owning S
+   ("EVIDENCE: dispatching seed landscape...") + a `[PHASE]` entry in the owning S
    page's `## Log` + the phase line of the closing block moves 🔥.
 2. **No silent skips.** Run the stage's declared `phases:` list in order. A
    declared phase may be skipped only by an EXPLICIT logged verdict: one reply
-   line with the reason, `[PROBE] skipped -- <reason>` in the S page's `## Log`,
+   line with the reason, `[EVIDENCE] skipped -- <reason>` in the S page's `## Log`,
    and `--` on the phase line. A phase absent from `phases:` is also `--`, but is
    omitted by contract rather than skipped at runtime.
 3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
-4. **PROBE dispatches through one isolated collector.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> ① ORGANIZE + ② MATCH in the family worker -> `Agent(haipipe-probe-q-executor-agent)` for ③ DISPATCH + ④ POINT -> ⑤ INTERPRET back in the family worker. The collector alone calls `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying each `### q-executor` block VERBATIM and nothing else. A question that MATCH closes is never handed to the collector. The worker/collector chain is the ONLY exit for evidence work -- a stage never dispatches any evidence agent itself, and no scope label creates an exception: "audit", "re-verify", and "quick check" take the same door. The family worker may grep and read the published `QA/*.md` bank index for MATCH, but it never opens raw results, runs bank work, or writes a QA file. The collector never sees the stage page or stake. Evidence scope is project-local; a plausible sibling-project source is named as an unread hypothesis until the user authorizes reuse.
+4. **EVIDENCE dispatches through one isolated collector.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> ① ORGANIZE + ② MATCH in the family worker -> `Agent(haipipe-probe-q-executor-agent)` for ③ DISPATCH + ④ POINT -> ⑤ INTERPRET back in the family worker. The collector alone calls `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying each `### q-executor` block VERBATIM and nothing else. A question that MATCH closes is never handed to the collector. The worker/collector chain is the ONLY exit for evidence work -- a stage never dispatches any evidence agent itself, and no scope label creates an exception: "audit", "re-verify", and "quick check" take the same door. The family worker may grep and read the published `QA/*.md` bank index for MATCH, but it never opens raw results, runs bank work, or writes a QA file. The collector never sees the stage page or stake. Evidence scope is project-local; a plausible sibling-project source is named as an unread hypothesis until the user authorizes reuse.
 
 
 Evidence Principles (总纲)

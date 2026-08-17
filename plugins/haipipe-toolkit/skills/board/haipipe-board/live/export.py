@@ -68,6 +68,16 @@ def _esc(s):
     return html.escape(str(s or ""), quote=False)
 
 
+def _tex_text(s):
+    """Escape plain page metadata for a small reader-facing LaTeX title."""
+    escaped = {
+        "\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$",
+        "#": r"\#", "_": r"\_", "{": r"\{", "}": r"\}",
+        "~": r"\textasciitilde{}", "^": r"\textasciicircum{}",
+    }
+    return "".join(escaped.get(char, char) for char in str(s or ""))
+
+
 class ExportMixin:
 
     # ---- shared ground ------------------------------------------------
@@ -108,6 +118,14 @@ class ExportMixin:
                 return None
             d = d.parent
 
+    def _page_title(self, page_src):
+        """Read the canonical Markdown H1; exports must not lose page identity."""
+        for line in page_src.read_text(encoding="utf-8", errors="replace").splitlines():
+            match = re.match(r"^#\s+(.+?)\s*$", line)
+            if match:
+                return match.group(1)
+        return page_src.stem
+
     def _page_units(self, page_src):
         """[(short, rec)] for every display unit under `<page>/display/`
         (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
@@ -117,6 +135,7 @@ class ExportMixin:
         ddir = page_src.parent / "display"
         if not ddir.is_dir():
             return out
+        stem = page_src.stem
         for f in sorted(ddir.glob("*/float.tex")):
             d = f.parent
             tex = f.read_text(encoding="utf-8", errors="replace")
@@ -129,11 +148,49 @@ class ExportMixin:
                     depth += (tex[k] == "{") - (tex[k] == "}")
                     k += 1
                 cap = tex[i + 9:k - 1].strip()
-            out.append(("-".join(d.name.split("-")[:2]),
+            # A page stem may itself contain hyphens (for example QC1-lbp).
+            # The old first-two-segments rule collapsed every display on such
+            # a page to the same short id and made placement impossible.
+            prefix = stem + "-Display"
+            aliases = []
+            if d.name.startswith(prefix):
+                number = d.name[len(stem) + 1:].split("-", 1)[0]
+                short = stem + "-" + number
+                # A Page is a local namespace. Its prose normally says
+                # `Display1`, while cross-page material may say
+                # `<stem>-Display1`; both address the same unit and the
+                # exporter must place it once.
+                aliases = [short, number]
+            else:
+                short = "-".join(d.name.split("-")[:2])
+                aliases = [short]
+            out.append((short,
                         {"dir": d, "label": lab.group(1) if lab else None,
                          "kind": kind.group(1) if kind else "figure",
-                         "caption": cap}))
+                         "caption": cap, "aliases": aliases}))
         return out
+
+    def _first_unit_mention(self, body, unit):
+        """Return the first reader-facing mention of a Display unit.
+
+        The source order, not the folder's numeric order, owns first-reference
+        placement.  Metadata comments and examples inside verbatim fences are
+        not citations.
+        """
+        hits = []
+        for alias in unit.get("aliases", []):
+            hits += list(re.finditer(r"(?<![\w-])%s(?![\w-])"
+                                    % re.escape(alias), body))
+        for match in sorted(hits, key=lambda hit: hit.start()):
+            before = body[:match.start()]
+            if (before.count("\\begin{verbatim}")
+                    > before.count("\\end{verbatim}")):
+                continue
+            line_start = body.rfind("\n", 0, match.start()) + 1
+            if body[line_start:match.start()].lstrip().startswith("%"):
+                continue
+            return match
+        return None
 
     def _run(self, cmd, timeout, cwd=None, env=None):
         try:
@@ -198,6 +255,7 @@ document.getElementById('rebuild').onclick = function () {
             return None, err
         p = {**p, **self._canon_ctx(board, p)}   # the view bakes p; make it canonical
         stem = page_src.stem
+        title = _tex_text(self._page_title(page_src))
         proot = self._paper_root(page_src)
         # --keep-fences: a board division is often figure-only, and the paper
         # default (drop sketches) exported it as an empty section (JL 260815).
@@ -219,34 +277,56 @@ document.getElementById('rebuild').onclick = function () {
         units = self._page_units(page_src)
         if units:
             body = tex.read_text(encoding="utf-8")
+            # Insert from the last first-reference toward the first.  If one
+            # paragraph cites Display2 and then Display4, forward insertion at
+            # the same paragraph boundary reverses their floats.  Reverse
+            # source-order placement preserves the sentence's evidence order.
+            ranked = []
             for short, u in units:
+                mention = self._first_unit_mention(body, u)
+                if mention:
+                    ranked.append((mention.start(), short, u))
+            for _position, short, u in sorted(ranked, reverse=True):
                 rel = os.path.relpath(u["dir"], out_dir).replace(os.sep, "/")
                 lab = "\\label{%s}\n" % u["label"] if u["label"] else ""
                 if (u["kind"] == "table"
                         and (u["dir"] / "assets" / "table-body.tex").is_file()):
-                    block = ("\\begin{table}[t]\n\\centering\n"
+                    # Evidence units cite a precise point in the prose.  A
+                    # regular top float can leap to the beginning of a later
+                    # page, visually preceding the section that introduces
+                    # it.  Keep the unit at its first substantive citation.
+                    block = ("\\begin{table}[H]\n\\centering\n"
                              "\\input{%s/assets/table-body}\n"
                              "\\caption{%s}\n%s\\end{table}"
                              % (rel, u["caption"], lab))
                 elif (u["dir"] / "assets" / "figure.pdf").is_file():
-                    block = ("\\begin{figure}[t]\n\\centering\n"
+                    block = ("\\begin{figure}[H]\n\\centering\n"
                              "\\includegraphics[width=.85\\linewidth]"
                              "{%s/assets/figure.pdf}\n\\caption{%s}\n%s"
                              "\\end{figure}" % (rel, u["caption"], lab))
                 else:
                     continue          # ⬜ no winning render yet: nothing to print
-                for m in re.finditer(r"(?<![\w-])%s(?![\w-])"
-                                     % re.escape(short), body):
-                    # a mention inside a verbatim fence is an illustration,
-                    # not a citation — the bibex scanner's own rule
-                    before = body[:m.start()]
-                    if (before.count("\\begin{verbatim}")
-                            > before.count("\\end{verbatim}")):
-                        continue
+                m = self._first_unit_mention(body, u)
+                if m:
                     at = body.find("\n\n", m.end())
                     at = len(body) if at < 0 else at
                     body = body[:at] + "\n\n" + block + body[at:]
-                    break
+                    # Prose cites a stable display short-id so the board can
+                    # locate the unit.  In an exported document, readers see
+                    # the conventional Figure/Table reference instead.
+                    if u["label"]:
+                        noun = "Table" if u["kind"] == "table" else "Figure"
+                        # A page's source contract is the bare stable id
+                        # (``Display1``), but older pages sometimes wrote
+                        # ``Figure Display1``.  Normalize that legacy form
+                        # too, rather than emitting ``Figure Figure 1`` in a
+                        # compiled PDF.
+                        prefix = noun + " "
+                        start = m.start()
+                        if body[max(0, start - len(prefix)):start] == prefix:
+                            start -= len(prefix)
+                        body = (body[:start] + "%s~\\ref{%s}" % (noun, u["label"])
+                                + body[m.end():])
             tex.write_text(body, encoding="utf-8")
 
         # The wrapper master: article + the few packages a board section uses.
@@ -266,7 +346,7 @@ document.getElementById('rebuild').onclick = function () {
         master = out_dir / (stem + "-master.tex")
         head = ["\\documentclass[11pt]{article}",
                 "\\usepackage[margin=1in]{geometry}",
-                "\\usepackage{graphicx,booktabs,longtable}",
+                "\\usepackage{graphicx,booktabs,longtable,float,tabularx}",
                 "\\usepackage[hidelinks]{hyperref}"]
         tail = []
         if bib:
@@ -276,14 +356,20 @@ document.getElementById('rebuild').onclick = function () {
         else:
             head.append("\\providecommand{\\citep}[1]{[#1]}"
                         "\\providecommand{\\citet}[1]{[#1]}")
+        title_block = ("\\begin{center}\n{\\large\\bfseries %s\\par}\n"
+                       "\\end{center}\n\\vspace{0.35em}\n" % title)
         master.write_text(
-            "\n".join(head) + "\n\\begin{document}\n\\input{%s}\n" % stem
+            "\n".join(head) + "\n\\begin{document}\n" + title_block
+            + "\\input{%s}\n" % stem
             + "\n".join(tail) + "\n\\end{document}\n", encoding="utf-8")
 
         env = dict(os.environ, PATH=_TEXBIN + ":" + os.environ.get("PATH", ""))
         if bib:
             env["BIBINPUTS"] = ".:%s:" % bib.parent
-        passes = [["xelatex", "-interaction=nonstopmode", master.name]]
+        # First pass lays down display labels; second resolves their in-text
+        # Figure/Table references.
+        passes = [["xelatex", "-interaction=nonstopmode", master.name],
+                  ["xelatex", "-interaction=nonstopmode", master.name]]
         if bib:
             passes += [["bibtex", master.stem],
                        ["xelatex", "-interaction=nonstopmode", master.name],
@@ -383,13 +469,17 @@ document.getElementById('rebuild').onclick = function () {
                 if fence or ln.lstrip().startswith(">"):
                     continue
                 for short, u in units:
-                    if short in done:
+                    key = u["label"] or u["dir"].name
+                    if key in done:
                         continue
-                    m = re.search(r"(?<![\w-])%s(?![\w-])" % re.escape(short), ln)
-                    if m:
+                    hits = [m for alias in u.get("aliases", [short])
+                            if (m := re.search(r"(?<![\w-])%s(?![\w-])"
+                                              % re.escape(alias), ln))]
+                    if hits:
+                        m = min(hits, key=lambda hit: hit.start())
                         lines[i] = (ln[:m.end()] + " (\\ref{%s})" % u["label"]
                                     + ln[m.end():])
-                        done.add(short)
+                        done.add(key)
                         ln = lines[i]
             if done:
                 tmp = out_dir / (stem + ".export.md")
@@ -400,7 +490,8 @@ document.getElementById('rebuild').onclick = function () {
         # (JL 260815: "make it the normal paragraph"). The writer joins each
         # block's sentences into one flowing paragraph instead.
         cmd = [sys.executable, str(_SCRIPTS / "md2docx.py"), str(src_for_docx),
-               "-o", str(docx), "--join-paragraphs"]
+               "-o", str(docx), "--join-paragraphs",
+               "--document-title", self._page_title(page_src)]
         if units:
             # the unit index for the page address, and the Display comment
             # bubble beside the Citation ones — the docx's evidence card
@@ -418,8 +509,8 @@ document.getElementById('rebuild').onclick = function () {
                 tmp.unlink()
             except OSError:
                 pass
-        if not docx.is_file():
-            return None, "md2docx wrote no .docx:\n" + log[-1500:]
+        if code != 0 or not docx.is_file():
+            return None, "md2docx failed or wrote no fresh .docx:\n" + log[-1500:]
         pdf = out_dir / (stem + ".pdf")
         code, plog = self._run(
             [sys.executable, str(_SCRIPTS / "docx2pdf.py"), str(docx),

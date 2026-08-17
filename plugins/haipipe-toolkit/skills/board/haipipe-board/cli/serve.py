@@ -113,6 +113,13 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
                        BOARD_CHAT_RULES, BOARD_FULL_RULES, READONLY, WRITE_TOOLS)
 
 
+# A proof file is EMBEDDED in an <iframe>, so it must RENDER, not download.
+# `text/csv` makes some browsers offer a download instead; served as plain text
+# it always renders, and the bytes on the wire are identical either way.
+_INLINE_TEXT = {".csv": "text/plain", ".tsv": "text/plain", ".log": "text/plain",
+                ".do": "text/plain", ".yaml": "text/plain", ".yml": "text/plain"}
+
+
 class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
@@ -258,6 +265,12 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         if self.try_gzip():
             return
         return SimpleHTTPRequestHandler.do_GET(self)
+
+    def guess_type(self, path):
+        suf = os.path.splitext(str(path))[1].lower()
+        if suf in _INLINE_TEXT:
+            return _INLINE_TEXT[suf] + "; charset=utf-8"
+        return SimpleHTTPRequestHandler.guess_type(self, path)
     def do_HEAD(self):
         if self.is_home_request():
             return self.serve_home()
@@ -436,6 +449,10 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/pagex-entry":    # the pen: borrow · ✕ · ↩
             res, err = self.pagex_entry(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/pagex-match":    # PROBE's read-only shortlist
+            res, err = self.pagex_match(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         # The EVIDENCE plugins' read-only surfaces (QPf5 · QPf9): the view

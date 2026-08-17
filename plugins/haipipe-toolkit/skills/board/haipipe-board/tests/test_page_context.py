@@ -54,7 +54,7 @@ Only this division should enter the scoped packet.
 
 ## Files
 ### 🔗 Related Board Pages · what this Page reads by scope
-- `reads · PROBE` · [QA1 §1](QA1-current.md)
+- `reads · EVIDENCE` · [QA1 §1](QA1-current.md)
   This cycle must never be traversed by a one-hop read.
 """
 
@@ -113,9 +113,9 @@ class RelatedBoardPageContextTest(unittest.TestCase):
 
     def test_probe_packet_reads_only_the_declared_closure_and_one_hop(self):
         self.write_source(
-            "- `reads · PROBE` · [QB2 §2](evidence/QB2-evidence.md)"
+            "- `reads · EVIDENCE` · [QB2 §2](evidence/QB2-evidence.md)"
         )
-        packet = related_context_packet(self.source, "PROBE")
+        packet = related_context_packet(self.source, "EVIDENCE")
         self.assertIn("Which evidence boundary matters?", packet)
         self.assertIn("### 2 · Evidence", packet)
         self.assertIn("### A2 · 📚 Evidence", packet)
@@ -126,52 +126,52 @@ class RelatedBoardPageContextTest(unittest.TestCase):
 
     def test_phase_filter_accepts_all_and_ignores_other_phases(self):
         self.write_source(
-            "- `reads · PROBE` · [QB2 §2](evidence/QB2-evidence.md)\n"
+            "- `reads · EVIDENCE` · [QB2 §2](evidence/QB2-evidence.md)\n"
             "- `contrasts · ALL` · [QB2 §1](evidence/QB2-evidence.md)"
         )
         check_packet = related_context_packet(self.source, "CHECK")
         self.assertIn("### 1 · Background", check_packet)
         self.assertNotIn("### 2 · Evidence", check_packet)
-        probe_packet = related_context_packet(self.source, "PROBE")
+        probe_packet = related_context_packet(self.source, "EVIDENCE")
         self.assertIn("### 1 · Background", probe_packet)
         self.assertIn("### 2 · Evidence", probe_packet)
         self.assertEqual(1, probe_packet.count("Which evidence boundary matters?"))
 
     def test_dead_path_is_rejected(self):
-        self.write_source("- `reads · PROBE` · [QB2 §2](evidence/missing.md)")
+        self.write_source("- `reads · EVIDENCE` · [QB2 §2](evidence/missing.md)")
         self.assertIn("dead-related-page", self.codes())
 
     def test_wrong_page_id_is_rejected(self):
         self.write_source(
-            "- `reads · PROBE` · [QB9 §2](evidence/QB2-evidence.md)"
+            "- `reads · EVIDENCE` · [QB9 §2](evidence/QB2-evidence.md)"
         )
         self.assertIn("related-page-id", self.codes())
 
     def test_missing_scope_is_rejected(self):
         self.write_source(
-            "- `reads · PROBE` · [QB2 §9](evidence/QB2-evidence.md)"
+            "- `reads · EVIDENCE` · [QB2 §9](evidence/QB2-evidence.md)"
         )
         self.assertIn("dead-related-scope", self.codes())
 
     def test_path_cannot_climb_out_of_the_board(self):
-        self.write_source("- `reads · PROBE` · [QB2 §2](../QB2-evidence.md)")
+        self.write_source("- `reads · EVIDENCE` · [QB2 §2](../QB2-evidence.md)")
         self.assertIn("unsafe-related-path", self.codes())
 
     def test_malformed_row_is_rejected_before_context_is_read(self):
         self.write_source("- [QB2](evidence/QB2-evidence.md)")
         self.assertIn("related-row-form", self.codes())
         with self.assertRaises(RelatedContextError):
-            related_context_packet(self.source, "PROBE")
+            related_context_packet(self.source, "EVIDENCE")
 
     def test_duplicate_row_is_reported_and_emitted_once(self):
-        row = "- `reads · PROBE` · [QB2 §2](evidence/QB2-evidence.md)"
+        row = "- `reads · EVIDENCE` · [QB2 §2](evidence/QB2-evidence.md)"
         self.write_source(f"{row}\n{row}")
         self.assertIn("duplicate-related-row", self.codes())
-        packet = related_context_packet(self.source, "PROBE")
+        packet = related_context_packet(self.source, "EVIDENCE")
         self.assertEqual(1, packet.count("## QB2 §2 · reads"))
 
     def test_board_checker_surfaces_related_page_faults(self):
-        self.write_source("- `reads · PROBE` · [QB2 §2](evidence/missing.md)")
+        self.write_source("- `reads · EVIDENCE` · [QB2 §2](evidence/missing.md)")
         result = subprocess.run(
             [sys.executable, str(HERE / "cli" / "check.py"), str(self.board)],
             check=False,
@@ -182,10 +182,10 @@ class RelatedBoardPageContextTest(unittest.TestCase):
 
     def test_fenced_grammar_example_is_not_a_live_reference(self):
         self.source.write_text(
-            current("- `reads · PROBE` · [QB2 §2](evidence/QB2-evidence.md)")
+            current("- `reads · EVIDENCE` · [QB2 §2](evidence/QB2-evidence.md)")
             + "\n```markdown\n"
             + "### 🔗 Related Board Pages · example only\n"
-            + "- `reads · PROBE` · [QB9 §9](missing.md)\n"
+            + "- `reads · EVIDENCE` · [QB9 §9](missing.md)\n"
             + "```\n",
             encoding="utf-8",
         )

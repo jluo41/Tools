@@ -162,6 +162,31 @@ class PageLifecycleAuditTest(unittest.TestCase):
         )
         self.assertClean(value)
 
+    def test_full_outline_to_compile_route_closes(self):
+        value = run(
+            [
+                producer(1, "OUTLINE", "v0", "v1", "DRAFT"),
+                producer(2, "DRAFT", "v1", "v2", "PROBE"),
+                producer(3, "PROBE", "v2", "v2", "EVIDENCE"),
+                producer(4, "EVIDENCE", "v2", "v2", "REVISE"),
+                producer(5, "REVISE", "v2", "v3", "COMPILE"),
+                producer(6, "COMPILE", "v3", "v3", "CHECK"),
+                check(7, "v3"),
+            ]
+        )
+        self.assertClean(value)
+
+    def test_check_can_route_to_outline(self):
+        value = run(
+            [
+                check(1, "v1", "OUTLINE"),
+                producer(2, "OUTLINE", "v1", "v2", "DRAFT"),
+                producer(3, "DRAFT", "v2", "v3", "CHECK"),
+                check(4, "v3"),
+            ]
+        )
+        self.assertClean(value)
+
     def test_check_revise_requires_a_new_check(self):
         value = run(
             [
@@ -182,6 +207,42 @@ class PageLifecycleAuditTest(unittest.TestCase):
             ]
         )
         self.assertClean(value)
+
+    def test_check_can_route_to_evidence(self):
+        """The current phase token, under its current name."""
+        value = run(
+            [
+                check(1, "v1", "EVIDENCE"),
+                producer(2, "EVIDENCE", "v1", "v1", "REVISE"),
+                producer(3, "REVISE", "v1", "v2", "CHECK"),
+                check(4, "v2"),
+            ]
+        )
+        self.assertClean(value)
+
+    def test_probe_and_evidence_audit_identically(self):
+        """A receipt written before the 260816 rename still audits.
+
+        `_runs/page/` receipts are immutable by contract, so the auditor
+        normalizes the retired token instead of failing the run that used it.
+        The two runs differ only in that token and must produce the same
+        findings AND the same traversed edges.
+        """
+        def build(token):
+            return run(
+                [
+                    producer(1, "DRAFT", "v0", "v1", token),
+                    producer(2, token, "v1", "v1", "REVISE"),
+                    producer(3, "REVISE", "v1", "v2", "CHECK"),
+                    check(4, "v2", "CLOSE", verdict="pass"),
+                ]
+            )
+
+        old, new = build("PROBE"), build("EVIDENCE")
+        self.assertEqual(audit_run(old), audit_run(new))
+        self.assertEqual(traversed_edges(old["receipts"]),
+                         traversed_edges(new["receipts"]))
+        self.assertIn("EVIDENCE", " ".join(traversed_edges(old["receipts"])))
 
     def test_check_to_draft_begins_a_new_round(self):
         value = run(

@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.6.1"
   last_updated: "2026-07-19"
-  summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism. DRAFT may WebSearch to orient; PROBE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
+  summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism. DRAFT may WebSearch to orient; EVIDENCE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-seed
@@ -23,7 +23,7 @@ It answers one question — why might this intervention work? — and keeps that
 1d-advice         what the evidence advises (the deliverable)
 ```
 
-The user invokes this skill; it drives DRAFT → PROBE → REVISE → CHECK internally via the `2-phase/` workers.
+The user invokes this skill; it drives DRAFT → EVIDENCE → REVISE → CHECK internally via the `2-phase/` workers.
 Read first: `../../../PHILOSOPHY.md`.
 
 
@@ -38,10 +38,10 @@ Two shapes, both light and both `discovery`-side: is the angle NOVEL (landscape 
 Profiling OUR OWN cohort/engagement data is `task` work that belongs to rung 1a — never a seed probe; it leaves as a FORWARD pointer (need + why, no card).
 This bounds the seed's cost to the feasibility question and stops it doing ladder evidence work early.
 
-**3. DRAFT may search; PROBE must dispatch.**
+**3. DRAFT may search; EVIDENCE must dispatch.**
 Inline WebSearch is legitimate DRAFT fuel — orientation that becomes prose AND buffered `state: planned` question skeletons — but it is NEVER evidence.
-The PROBE phase must ALWAYS run the real worker; an inline result has no project-side ledger, so the PROBE phase did not happen.
-The invariant is section STATE: `planned` (DRAFT) vs `read` with a resolving `target:` (PROBE), mechanically enforced by the probe checker.
+The EVIDENCE phase must ALWAYS run the real worker; an inline result has no project-side ledger, so the EVIDENCE phase did not happen.
+The invariant is section STATE: `planned` (DRAFT) vs `read` with a resolving `target:` (EVIDENCE), mechanically enforced by the probe checker.
 
 
 ## The four phases, in seed
@@ -52,19 +52,19 @@ DRAFT   settle the five content sections with the user (haipipe-application-draf
         AUTHOR the probe plan: ① ORGANIZE each feasibility question into a `## QX<n>` ENTRY in
         1-probes/, ② MATCH it against the bank (a read-only grep is legal), leaving it `state: planned`;
         register internal-data needs as [FORWARD -> CLAIMS] pointers in _LOG_0-seed.md
-PROBE   EXACTLY ONE worker call — `Skill("haipipe-application-probe", args="from-buffer <root>")` —
+EVIDENCE   EXACTLY ONE worker call — `Skill("haipipe-application-evidence", args="from-buffer <root>")` —
         feasibility only (novelty + external-data obtainable). It RUNS THE DRAFT-AUTHORED PLAN FORWARD:
         ③ DISPATCH what the bank still owes, ④ POINT each `target`, ⑤ INTERPRET. ①② already happened at
-        DRAFT and are AUTHORITATIVE — PROBE does not re-raise and does not re-match.
+        DRAFT and are AUTHORITATIVE — EVIDENCE does not re-raise and does not re-match.
         Inline search is FORBIDDEN here.
-        Routing mechanics + seed specifics: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        Routing mechanics + seed specifics: ../../../2-phase/1-evidence/haipipe-application-evidence/SKILL.md
 REVISE  tighten wording; weave probe takeaways into Opportunity/Mechanism; the Q-consumer section holds the questions (haipipe-application-revise)
 CHECK   exit criteria below → Gate Ledger row; the gate RUNS the probe checker (haipipe-application-check)
 ```
 
-Seed RECEIVES its feasibility evidence, never PRODUCES it inline: it raises questions; `haipipe-application-probe` binds them via the stake-free collector `Agent(haipipe-probe-q-executor-agent)`, never an orchestrator directly.
+Seed RECEIVES its feasibility evidence, never PRODUCES it inline: it raises questions; `haipipe-application-evidence` binds them via the stake-free collector `Agent(haipipe-probe-q-executor-agent)`, never an orchestrator directly.
 If the intervention folder does not exist, route to `/haipipe-application enter <path>` (get-or-create owns scaffolding).
-Migrate a legacy per-stage `_PROBE/` card into `1-probes/` in the new shape on first touch only.
+Migrate a legacy per-stage `_EVIDENCE/` card into `1-probes/` in the new shape on first touch only.
 
 
 ## The artifact
@@ -89,7 +89,7 @@ Venue-FREE: the seed survives retargeting; the channel hunch is context, not a c
 Done: all five content sections carry real content (not placeholders); Audience and channel hunch are specific; the Q-consumer section raises at least the novelty/landscape question as a `## Q-Seed-<n>` block (Description/Reason/Probe/Answer, per `ref/seed-template.md`), with internal-data needs appearing only as `[FORWARD -> CLAIMS]` pointers; the probe checker exits clean at the gate — the APPLICATION family's copy, named explicitly:
 
 ```sh
-CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*haipipe-application-probe/check-probe-cards.sh' 2>/dev/null | head -1)
+CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*haipipe-application-evidence/check-probe-cards.sh' 2>/dev/null | head -1)
 [ -n "$CHK" ] || { echo 'FAIL: application probe checker not found'; exit 1; }
 sh "$CHK" <intervention_root> --stage seed
 ```

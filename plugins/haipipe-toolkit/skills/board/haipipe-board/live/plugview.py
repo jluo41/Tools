@@ -34,6 +34,12 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 body{{margin:0;padding:18px;background:var(--bg);color:var(--fg);
  font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
 h1{{font-size:16px;margin:0 0 4px}} .mut{{color:var(--mut);font-size:12px}}
+a.summary{{color:inherit}} h2{{font-size:14px;margin:14px 0 5px}}
+p{{margin:7px 0}} ul{{margin:6px 0 8px 20px;padding:0}}
+code{{font:12px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 4px;
+ border-radius:4px}} .summary{{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}}
+.metric{{border:1px solid var(--line);border-radius:999px;padding:3px 9px;
+ background:var(--card);font-size:12px}} .ready{{color:#267247}} .pending{{color:#9a6115}}
 a{{color:#1f5aa8}} pre{{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
  white-space:pre-wrap}}
@@ -50,6 +56,52 @@ object.pdf{{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radi
 .nav button{{cursor:pointer;border:1px solid var(--line);background:var(--card);
  color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}}
 .nav .pos{{color:var(--mut);font-size:12px;min-width:38px;text-align:center}}
+.chead{{display:flex;align-items:baseline;gap:9px;padding:0 0 9px;
+ border-bottom:1px solid var(--line);margin-bottom:11px}}
+.pid{{font:700 11px ui-monospace,Menlo,monospace;color:var(--mut);
+ border:1px solid var(--line);border-radius:5px;padding:1px 6px;letter-spacing:.04em}}
+.ptitle{{font:600 15.5px/1.3 -apple-system,BlinkMacSystemFont,sans-serif}}
+.q{{font-size:15px;line-height:1.55;margin:0 0 11px;max-width:60em}}
+dl.fields{{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0 0 12px;
+ font-size:12.5px}}
+dl.fields dt{{color:var(--mut);font:600 11px ui-monospace,Menlo,monospace;
+ text-transform:uppercase;letter-spacing:.05em;padding-top:2px}}
+dl.fields dd{{margin:0;word-break:break-all}}
+.next{{font-size:12.5px;border-radius:7px;padding:7px 11px;margin:0 0 4px;
+ border:1px solid var(--line);background:var(--card)}}
+.next.owed{{color:#9a6115;border-color:#e5cfa8}}
+.next.ok{{color:#267247;border-color:#bcdcc7}}
+.step{{border:1px solid var(--line);border-radius:10px;margin:13px 0;
+ overflow:hidden;background:var(--bg)}}
+.step.lead{{border-color:var(--fg);border-width:1.5px}}
+.step .sh{{display:flex;align-items:baseline;gap:8px;padding:7px 12px;
+ background:var(--card);border-bottom:1px solid var(--line)}}
+.step .sh b{{font:700 11.5px -apple-system,sans-serif;letter-spacing:.09em;
+ text-transform:uppercase}}
+.step .sh .sn{{color:var(--mut);font-size:11.5px;font-family:ui-monospace,Menlo,monospace}}
+.step .sb{{padding:11px 13px}}
+.step .sb p:first-child{{margin-top:0}} .step .sb p:last-child{{margin-bottom:0}}
+details.fold>summary{{cursor:pointer}}
+details.fold[open]>summary{{border-bottom:1px solid var(--line)}}
+.hole{{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;
+ color:var(--mut);font-size:12.5px}}
+figure.pf{{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden;background:var(--card)}}
+figure.pf+.why{{margin:-6px 0 14px}}
+.pfh{{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 11px;
+ border-bottom:1px solid var(--line)}}
+.pfn{{font:600 12.5px ui-monospace,Menlo,monospace;word-break:break-all}}
+.facts{{display:flex;gap:5px;flex-wrap:wrap}}
+.fact{{font-size:10.5px;color:var(--mut);border:1px solid var(--line);
+ border-radius:999px;padding:1px 8px;white-space:nowrap;background:var(--bg)}}
+.exhibit{{display:block;width:100%;height:290px;border:0;background:var(--bg)}}
+object.exhibit{{aspect-ratio:4/3;height:auto}}
+.pfp{{border-top:1px solid var(--line);padding:6px 11px;font-size:11.5px;
+ color:var(--mut)}}
+.pfp>summary{{cursor:pointer}} .pfp div{{word-break:break-all;margin:3px 0}}
+.why{{font-size:13px;line-height:1.55;margin:0 0 13px;max-width:60em}}
+details>summary{{list-style:none}}
+details>summary::-webkit-details-marker{{display:none}}
 .chips{{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}}
 .chip{{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
  border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
@@ -99,13 +151,22 @@ assets/        ⚙️ the WINNING render
 candidates/ · versions/</pre>
 <div class="mut">nothing here yet · this is the unit shape the contract expects (QPf5 §1)</div></div>"""
 
-_GHOST_PROBE = """<div class="card ghost"><b>PP01-&lt;slug&gt;/card.md</b>
+_GHOST_EVIDENCE = """<div class="card ghost"><b>PP01-&lt;slug&gt;/card.md</b>
 <pre>question    in the page's own words, stake included
 state:      raised → working → bound
 binding:    → &lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</pre>
 <div class="mut">nothing asked yet · this is the card shape the contract expects (QPf9 §1)</div></div>"""
 
-_STATE_BADGE = {"raised": "⬜", "working": "🔨", "bound": "✅", "answered": "✅"}
+# The protocol's own ladder (haipipe-probe, via haipipe-plugin-probe 0.7.0),
+# plus the three retired words so an old card still reads. `planned` and
+# `commissioned` used to fall through to ⬜ here, which is how two ANSWERED
+# cards on QC1-visitlbp read as untouched (fixed 260817).
+_STATE_BADGE = {
+    "planned": "⬜", "commissioned": "🔨", "answered": "✅",
+    "answered-local": "✅", "read": "🧑✅",
+    "deferred": "⏸", "failed": "🚨", "concern": "⚠️",
+    "raised": "⬜", "working": "🔨", "bound": "✅",      # retired 260817
+}
 
 
 def _esc(s):
@@ -122,6 +183,259 @@ def _readme_rows(readme):
             if m:
                 rows.append((m.group(1), m.group(2)))
     return rows
+
+
+def _inline_md(text):
+    """The small, safe Markdown subset a probe card needs in its read-only tab.
+
+    Card bodies are authored evidence summaries, not executable HTML.  Escape
+    first, then restore only code and bold spans so a path or result can remain
+    legible without allowing a card to inject markup into the Board shell.
+    """
+    text = _esc(text)
+    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
+    return re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+
+
+def _read(path):
+    return path.read_text(errors="replace") if path.is_file() else ""
+
+
+def _head_fields(text):
+    """`key: value` lines above the first `##` — haipipe-plugin-probe §🪪."""
+    out = {}
+    for ln in text.splitlines():
+        if ln.startswith("## "):
+            break
+        m = re.match(r"^([a-z_-]+):\s*(.*)$", ln)
+        if m:
+            out.setdefault(m.group(1), m.group(2).strip())
+    return out
+
+
+def _proof_rows(manifest):
+    """-> ([{name,kind,rows,run,source,why}], note) from proof/manifest.yaml.
+
+    A deliberately small reader: the surface must not gain a yaml dependency,
+    and the manifest is authored to a fixed shape (§🧾).
+    """
+    if not manifest.is_file():
+        return [], "no proof/manifest.yaml"
+    text = manifest.read_text(errors="replace")
+    rows, cur, in_files = [], None, False
+    lines = text.splitlines()
+    # A folded scalar (`why: >-`) keeps its text on the following indented
+    # lines. Without this the surface printed the literal `>-` (found 260817
+    # by looking at the rendered tab, not at the parser).
+    for i, ln in enumerate(lines):
+        m = re.match(r"^(\s*)([a-z_0-9]+):\s*[>|]-?\s*$", ln)
+        if m:
+            pad, tail = len(m.group(1)), []
+            for nxt in lines[i + 1:]:
+                if nxt.strip() and len(nxt) - len(nxt.lstrip()) > pad:
+                    tail.append(nxt.strip())
+                else:
+                    break
+            lines[i] = "%s%s: %s" % (m.group(1), m.group(2), " ".join(tail))
+    for ln in lines:
+        if re.match(r"^files:\s*\[\s*\]\s*$", ln):
+            in_files = False
+            continue
+        if re.match(r"^files:\s*$", ln):
+            in_files = True
+            continue
+        if re.match(r"^(why_empty|pending|card):", ln):
+            in_files = False
+        if in_files and re.match(r"^\s*-\s+\w+:", ln):
+            cur = {}
+            rows.append(cur)
+        if in_files and cur is not None:
+            m = re.match(r"^\s*-?\s*([a-z_0-9]+):\s*(.*)$", ln)
+            if m:
+                cur[m.group(1)] = m.group(2).strip()
+    note = ""
+    m = re.search(r"^(why_empty|pending):\s*(.*)$", text, re.M)
+    if m and not rows:
+        tail = []
+        for ln in text.split(m.group(0), 1)[1].splitlines():
+            if re.match(r"^\s+\S", ln):
+                tail.append(ln.strip())
+            elif tail:
+                break
+        note = "%s: %s" % (m.group(1), " ".join([m.group(2)] + tail).strip(" >-"))
+    return rows, note
+
+
+def _missing_step(head, qx, ax, proof, pnote):
+    """The FIRST step that is not done — never a claim that one exists merely
+    because the folder does (§🚪)."""
+    if not qx.strip():
+        return "no q-executor written yet: nothing can be dispatched"
+    if not head.get("target"):
+        return "q-executor written, target empty: nobody has been asked yet"
+    if not ax.strip():
+        return "dispatched, no answer copied back into a-executor.md"
+    if not proof and not pnote:
+        return "answered, but proof/ is empty and says nothing about why"
+    return "answered · nobody has read it and written the A-consumer"
+
+
+def _embed_proof(href, path):
+    """EMBED the file, never re-render it as HTML (JL 260817).
+
+    Display frames `preview.pdf` with <object>; a proof file is framed the same
+    way. This is not only a look: every proof bug so far came from PARSING —
+    `15.3332***` lost its stars to the bold rule, a folded yaml scalar printed
+    `>-`, and esttab's `="..."` armour needed its own splitter. An embedded file
+    is the file, so there is nothing left to get wrong.
+    """
+    if path.suffix == ".pdf":
+        return ("<object class='exhibit' data='%s' type='application/pdf'>"
+                "<a href='%s'>%s</a></object>" % (href, href, _esc(path.name)))
+    return ("<iframe class='exhibit' src='%s' title='%s' loading='lazy'></iframe>"
+            % (href, _esc(path.name)))
+
+
+def _step(icon, label, note, inner, tone=""):
+    """One wall step as its OWN panel: a header strip naming it, then its body.
+
+    JL 260817 read the previous card as "乱糟糟" — five steps ran together in
+    one column with only a hairline between them, so the eye could not tell
+    where the dispatched question ended and the answer began.
+    """
+    return ("<section class='step %s'><header class='sh'><span>%s</span>"
+            "<b>%s</b><span class='sn'>%s</span></header>"
+            "<div class='sb'>%s</div></section>"
+            % (tone, icon, _esc(label), _esc(note), inner))
+
+
+def _proof_block(rows, note, folder, rel):
+    """Wall step 4: ONE PANEL PER FILE — a header bar carrying the filename and
+    its facts, the framed file flush underneath, provenance folded below."""
+    if not rows:
+        return ("<div class='hole'>🕳 %s</div>"
+                % _esc(note or "empty, and the manifest says nothing about why"))
+    out = []
+    for r in rows:
+        nm = r.get("name", "?")
+        path = folder / nm
+        facts = "".join("<span class='fact'>%s</span>" % _esc(x) for x in (
+            r.get("kind", "?"), "%s rows" % r.get("rows", "?"),
+            "%s bytes" % r.get("bytes", "?"),
+            r.get("run", "")) if x)
+        body = (_embed_proof(_esc("%s/proof/%s" % (rel, nm)), path)
+                if path.is_file()
+                else "<div class='hole'>🕳 named in the manifest, not on disk</div>")
+        out.append(
+            "<figure class='pf'>"
+            "<figcaption class='pfh'><span class='pfn'>%s</span>"
+            "<span class='facts'>%s</span></figcaption>"
+            "%s"
+            "<details class='pfp'><summary>provenance</summary>"
+            "<div>source: <code>%s</code></div>"
+            "<div>pulled: %s</div><div>sha256: <code>%s</code></div>"
+            "</details></figure>"
+            % (_esc(nm), facts, body, _esc(r.get("source", "?")),
+               _esc(r.get("pulled", "?")), _esc(r.get("sha256", "?"))))
+        if r.get("why"):
+            out.append("<div class='why'>%s</div>" % _esc(r["why"]))
+    return "".join(out)
+
+
+def _probe_body_html(text):
+    """Render the material below a probe card's header metadata.
+
+    The previous surface silently discarded this body, leaving a bound Probe
+    looking like a question plus a file tree.  This intentionally small reader
+    supports the structures used by card.md (paragraphs, headings and lists)
+    while keeping the plugin read-only and dependency-free.
+    """
+    kept = []
+    for ln in text.splitlines():
+        if ln.startswith("# ") or re.match(
+                r"^(?:state|question|binding)\s*:", ln, re.I):
+            continue
+        kept.append(ln.rstrip())
+    out, para, items = [], [], []
+
+    def flush_para():
+        if para:
+            out.append("<p>%s</p>" % _inline_md(" ".join(x.strip() for x in para)))
+            para.clear()
+
+    def flush_items():
+        if items:
+            out.append("<ul>%s</ul>" % "".join(
+                "<li>%s</li>" % _inline_md(x) for x in items))
+            items.clear()
+
+    fence = None
+    for ln in kept:
+        s = ln.strip()
+        # A ``` block is VERBATIM. Without this the inline reader ate the
+        # significance stars: `15.3332***` rendered as `15.3332*`, because
+        # `**` is bold everywhere else (found 260817 by reading the tab).
+        if s.startswith("```"):
+            if fence is None:
+                flush_para()
+                flush_items()
+                fence = []
+            else:
+                out.append("<pre>%s</pre>" % _esc("\n".join(fence)))
+                fence = None
+            continue
+        if fence is not None:
+            fence.append(ln)
+            continue
+        if not s:
+            flush_para()
+            flush_items()
+        elif s.startswith("##"):
+            flush_para()
+            flush_items()
+            out.append("<h2>%s</h2>" % _inline_md(s.lstrip("#").strip()))
+        elif re.match(r"^[-*]\s+", s):
+            flush_para()
+            items.append(re.sub(r"^[-*]\s+", "", s))
+        else:
+            flush_items()
+            para.append(s)
+    if fence:
+        out.append("<pre>%s</pre>" % _esc("\n".join(fence)))
+    flush_para()
+    flush_items()
+    return "".join(out)
+
+
+def _display_state(unit, rows):
+    """Compute declared/rendered/accepted from files, never from folder count."""
+    row = {k.lower(): v for k, v in rows}
+    inputs = unit / "intake" / "inputs"
+    has_intake = (unit / "intake" / "manifest.yaml").is_file() and \
+        inputs.is_dir() and any(p.is_file() for p in inputs.rglob("*"))
+    has_recipe = (unit / "recipe").is_dir() and \
+        any(p.is_file() for p in (unit / "recipe").rglob("*"))
+    assets = unit / "assets"
+    has_asset = assets.is_dir() and any(
+        p.is_file() and p.name in ("table-body.tex", "figure.pdf", "figure.png", "figure.svg")
+        for p in assets.rglob("*"))
+    has_preview = (unit / "preview.pdf").is_file()
+    accepted_text = row.get("accepted", "").strip().lower()
+    accepted = accepted_text.startswith(("✅", "yes", "true", "accepted"))
+    rendered = has_asset and has_preview
+    if not has_intake:
+        next_step = "① INTAKE missing · add an approved frozen snapshot"
+    elif not has_recipe:
+        next_step = "② RENDER missing · add the renderer-owned recipe"
+    elif not has_asset:
+        next_step = "② RENDER has not produced a winning asset"
+    elif not has_preview:
+        next_step = "④ BUILD missing · compile preview.pdf"
+    elif not accepted:
+        next_step = "⑤ ACCEPT pending · rendered candidate awaits human review"
+    else:
+        next_step = "complete · rendered and human-accepted"
+    return {"rendered": rendered, "accepted": accepted, "next": next_step}
 
 
 def _tree(root, keep=60):
@@ -174,9 +488,11 @@ class PlugViewMixin:
                 timeout=120, cwd=unit, env=env)
             if code != 0 or not (unit / "preview.pdf").is_file():
                 fails.append(unit.name)
-        cards = []
+        cards, states = [], []
         for unit in sorted(d for d in out_dir.iterdir() if d.is_dir()):
             rows = _readme_rows(unit / "README.md")
+            state = _display_state(unit, rows)
+            states.append(state)
             body = "".join("<div class='mut'><b style='color:var(--fg)'>%s</b>: %s</div>"
                            % (_esc(k), _esc(v)) for k, v in rows)
             pdf = unit / "preview.pdf"
@@ -186,9 +502,11 @@ class PlugViewMixin:
                          "<a href='%s'>preview.pdf</a></object>" % (href, href))
             else:
                 body += ("<div class='card ghost' style='margin:8px 0'>"
-                         "🕳 no render yet · this unit has an intake and a recipe "
-                         "but ② RENDER has not run; the figure appears here when "
-                         "preview.pdf exists</div>")
+                         "🕳 no render yet · %s</div>" % _esc(state["next"]))
+            if pdf.is_file():
+                body += ("<div class='%s' style='margin:7px 0'>%s</div>"
+                         % ("ready" if state["accepted"] else "pending",
+                            _esc(state["next"])))
             body += "<pre>%s</pre>" % _esc(_tree(unit))
             cards.append("<div class='card' id='%s'><b>%s</b>%s</div>"
                          % (_esc(unit.name), _esc(unit.name), body))
@@ -196,6 +514,11 @@ class PlugViewMixin:
         # there (JL 260815: "where is the name list for all the displays?").
         stem = out_dir.parent.name
         units = [d.name for d in sorted(out_dir.iterdir()) if d.is_dir()]
+        summary = ("<div class='summary'><span class='metric'>%d declared</span>"
+                   "<span class='metric ready'>%d rendered</span>"
+                   "<span class='metric'>%d accepted</span></div>"
+                   % (len(units), sum(s["rendered"] for s in states),
+                      sum(s["accepted"] for s in states)))
         chips = ""
         if len(units) > 1:
             chips = "<div class='chips'>%s</div>" % "".join(
@@ -209,56 +532,110 @@ class PlugViewMixin:
             footer += " · ⚠️ preview failed: " + ", ".join(fails)
         return self._plug_page(p, out_dir, "display", "🖼 Display",
                                cards or [_GHOST_DISPLAY], footer,
-                               strip=True, head=chips)
+                               strip=True, head=summary + chips)
 
     # ---- POST /_board/probe ------------------------------------------
     def plug_probe(self, p):
-        """The display split's structure, carrying cards instead of units
-        (JL 260816): one card fills the pane, shift right for the next, a
-        chip row of ids, per-card anchors. The filling is probe's own."""
+        """One card per FOLDER, read in WALL ORDER so the reader sees the
+        crossing: head, what was asked, what came back, the proof files, and
+        the stake-bearing audit copy folded away (haipipe-plugin-probe §🚪).
+
+        The four counts and the `read` verdict are computed from DISK, never
+        from the `state:` word — a folder count is not an answered question.
+        """
         page_src, out_dir, _, err = self._export_target(p, "probe")
         if err:
             return None, err
-        srcs = sorted(d / "card.md" for d in out_dir.iterdir() if d.is_dir())
-        srcs += sorted(f for f in out_dir.glob("PP*.md"))
-        cards, names = [], []
-        for card in srcs:
+        dirs = sorted(d for d in out_dir.iterdir()
+                      if d.is_dir() and d.name.startswith("PP"))
+        flat = sorted(f for f in out_dir.glob("PP*.md"))
+        cards, names, tally = [], [], {"planned": 0, "commissioned": 0,
+                                       "answered": 0, "read": 0}
+        for d in dirs + flat:
+            card = d / "card.md" if d.is_dir() else d
             if not card.is_file():
                 continue
-            text = card.read_text(errors="replace")
-            state = (re.search(r"^state:\s*(\w+)", text, re.M) or [None, ""])[1]
-            badge = _STATE_BADGE.get(state.lower(), "⬜")
-            binding = (re.search(r"^binding:\s*(.+)$", text, re.M) or [None, ""])[1]
-            q = (re.search(r"^question\s*:?\s*(.+)$", text, re.M) or [None, ""])[1]
-            if not q:
-                for ln in text.splitlines():
-                    if ln.strip() and not ln.startswith(("#", "state:", "binding:", "-")):
-                        q = ln.strip()
-                        break
-            name = card.parent.name if card.name == "card.md" else card.stem
+            head = _head_fields(card.read_text(errors="replace"))
+            name = d.name if d.is_dir() else d.stem
             names.append(name)
-            body = ("<div style='margin:6px 0'>%s</div>"
-                    "<div class='mut'>%s</div>"
-                    % (_esc(q), _esc("binding: " + binding if binding
-                                     else "no binding yet")))
-            if card.name == "card.md":
-                body += "<pre>%s</pre>" % _esc(_tree(card.parent))
-            cards.append("<div class='card' id='%s'><span class='badge'>%s"
-                         "</span><b>%s</b>%s</div>"
-                         % (_esc(name), badge, _esc(name), body))
-        # The chip row: every card by its PP id, clicking one shifts the
-        # strip there — the display split's name list, id-sized.
+            state = head.get("state", "")
+            badge = _STATE_BADGE.get(state.lower(), "⬜")
+
+            qx = _read(d / "executor" / "q-executor.md")
+            ax = _read(d / "executor" / "a-executor.md")
+            qc = _read(d / "consumer" / "q-consumer.md")
+            proof, pnote = _proof_rows(d / "proof" / "manifest.yaml")
+
+            # the counts, from disk
+            tally["planned"] += 1
+            if head.get("target"):
+                tally["commissioned"] += 1
+            if ax.strip() and head.get("target"):
+                tally["answered"] += 1
+            is_read = head.get("read", "").startswith("✅")
+            tally["read"] += 1 if is_read else 0
+
+            # DISPLAY'S SHAPE, filled with probe's material, and every
+            # step in its OWN PANEL (JL 260817: "每一个 file 是不是应该分开
+            # 一些？现在看着乱糟糟的").
+            rows = []
+            if head.get("question"):
+                rows.append("<div class='q'>%s</div>" % _inline_md(head["question"]))
+            rows.append("<dl class='fields'>%s</dl>" % "".join(
+                "<dt>%s</dt><dd>%s</dd>" % (_esc(k), _esc(head[k]))
+                for k in ("state", "route", "bank", "serves", "target")
+                if head.get(k)))
+            rows.append("<div class='next %s'>%s</div>"
+                        % ("ok" if is_read else "owed",
+                           _esc(("✅ read · " + head.get("read", "").lstrip("✅ "))
+                                if is_read
+                                else "🕳 " + _missing_step(head, qx, ax, proof, pnote))))
+            rows.append(_step("🔢", "proof", "the files behind the answer",
+                              _proof_block(proof, pnote, d / "proof", d.name),
+                              tone="lead"))
+            rows.append(_step("🧱", "asked", "executor/q-executor.md · the only "
+                              "thing dispatched", _probe_body_html(qx)))
+            if ax.strip():
+                rows.append(_step("📥", "came back", "executor/a-executor.md · "
+                                  "the bank's own words", _probe_body_html(ax)))
+            if qc.strip():
+                rows.append("<details class='step fold'><summary class='sh'>"
+                            "<span>🗂</span><b>audit</b><span class='sn'>"
+                            "consumer/q-consumer.md · who wanted it, and why"
+                            "</span></summary><div class='sb'>%s</div></details>"
+                            % _probe_body_html(qc))
+            rows.append("<details class='step fold'><summary class='sh'>"
+                        "<span>📂</span><b>files</b><span class='sn'>%s</span>"
+                        "</summary><div class='sb'><pre>%s</pre></div></details>"
+                        % (_esc(d.name), _esc(_tree(d))))
+            pp, _, words = name.partition("-")
+            cards.append("<div class='card' id='%s'>"
+                         "<div class='chead'><span class='badge'>%s</span>"
+                         "<span class='pid'>%s</span>"
+                         "<span class='ptitle'>%s</span></div>%s</div>"
+                         % (_esc(name), badge, _esc(pp),
+                            _esc(words.replace("-", " ")), "".join(rows)))
+
+        n = len(names)
+        verdict = "ready" if n and tally["read"] == n else ""
+        summary = ("<div class='summary'>"
+                   "<span class='metric'>%d planned</span>"
+                   "<span class='metric'>%d commissioned</span>"
+                   "<span class='metric'>%d answered</span>"
+                   "<span class='metric %s'>%d / %d read</span></div>"
+                   % (tally["planned"], tally["commissioned"], tally["answered"],
+                      verdict, tally["read"], n))
         chips = ""
-        if len(names) > 1:
+        if n > 1:
             chips = "<div class='chips'>%s</div>" % "".join(
                 "<a class='chip' href='#%s'>%s</a>"
-                % (_esc(n), _esc(n.split("-", 1)[0] if n.startswith("PP") else n))
-                for n in names)
+                % (_esc(x), _esc(x.split("-", 1)[0] if x.startswith("PP") else x))
+                for x in names)
         return self._plug_page(p, out_dir, "probe", "🚪 Probe",
-                               cards or [_GHOST_PROBE],
-                               "read-only · the consumer raises, the orchestrator claims, "
-                               "the collector binds (QPf9 §3)",
-                               strip=True, head=chips)
+                               cards or [_GHOST_EVIDENCE],
+                               "read-only · consumer/ never crosses · executor/ is "
+                               "the only thing dispatched · a person ticks read:",
+                               strip=True, head=summary + chips)
 
     # ---- shared page writer ------------------------------------------
     def _plug_page(self, p, out_dir, route, label, cards, footer, strip=False, head=""):

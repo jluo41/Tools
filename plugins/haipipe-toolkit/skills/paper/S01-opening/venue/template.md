@@ -109,4 +109,4 @@ Q-consumer
   **Description:** <the specific lookup — one sentence per line>
   **Reason:** <which venue decision/requirement it bears on, and why it matters if wrong>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+  **Answer:** <empty in DRAFT — EVIDENCE fills it: the finding + [source: PP<nn>]>

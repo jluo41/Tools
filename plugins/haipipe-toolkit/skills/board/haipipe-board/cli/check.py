@@ -52,6 +52,7 @@ from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
                         page_files)
 from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
+from src.page_evidence import check_page_evidence  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
@@ -512,6 +513,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_duplicate_sections(text, name, rep)
     check_retired_sections(text, name, rep)
     check_evidence_pointer(text, name, rep)
+    check_page_evidence(path, text, name, rep, ERROR, WARN)
     check_fence_balance(text, name, rep)
 
 
@@ -892,7 +894,7 @@ def check_related_board_pages(path, name, text, rep):
     Pages row is narrower: its target must be a real Page on this Board, its
     visible Page id must agree with that source, and its requested Content scope
     must exist. Those facts are deterministic, so malformed context never waits
-    for an agent to discover it during DRAFT, PROBE, REVISE, or CHECK.
+    for an agent to discover it during DRAFT, EVIDENCE, REVISE, or CHECK.
     """
     for finding in audit_related_rows(path, text):
         level = ERROR if finding.level == "ERROR" else WARN
@@ -1115,8 +1117,9 @@ FENCE = "`" * 3
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # `stage` joined 260815: the restructure reduced this family's kinds to stage
 # and design, and QPs3's specimen declares `page-type: stage` explicitly.
-PAGE_TYPE_VALUES = ("display", "slide", "design", "section", "labeling",
-                    "narrative", "dash", "view", "stage")
+PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "section",
+                    "labeling", "narrative", "dash", "task", "insight",
+                    "brief", "intervention", "artifact", "view", "stage")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 

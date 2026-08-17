@@ -3,6 +3,12 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.13.0] -- 2026-08-17 -- Page lifecycle split
+
+The shared contract now names PROBE as the outgoing ORGANIZE/MATCH/DISPATCH
+phase and EVIDENCE as the POINT/INTERPRET/land phase, with PageX reuse checked
+before a new QA-bank dispatch.
+
 ## [0.12.0] -- 2026-08-06 -- twin-QA names final; slot words are capitals
 
 - QA-bank and QA-probe are the two FILE names (word order fixed): the QA-bank

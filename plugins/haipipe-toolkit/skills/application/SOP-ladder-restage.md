@@ -1,7 +1,7 @@
 SOP — Application Ladder Restage (stage 1 → 1a/1b/1c/1d), 2026-07-09
 ======================================================================
 
-> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _PROBE/ folders, the 1-probe-plans/ index, the _PROBE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
+> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _EVIDENCE/ folders, the 1-probe-plans/ index, the _EVIDENCE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
 
 Status: EXECUTED same-session (JL approved "please go ahead and don't stop until you have a very clean results", 2026-07-09). Remaining: live bench exam (§8) on the next real intervention + archive this SOP into haipipe-application/CHANGELOG.md and delete (round-1/2 convention).
 Owner: JL. Executor: CC.
@@ -24,7 +24,7 @@ JL rulings absorbed (2026-07-09 session): each stage is a mission controller for
 2. Invariants (must survive)
 ----------------------------
 
-- PPNN card anatomy, `_PROBE/` per stage folder, `1-probe-plans/README.md` index, checker glob `0-lifecycle/*/_PROBE/PP*.md` (lettered folders match `*`) — unchanged.
+- PPNN card anatomy, `_EVIDENCE/` per stage folder, `1-probe-plans/README.md` index, checker glob `0-lifecycle/*/_EVIDENCE/PP*.md` (lettered folders match `*`) — unchanged.
 - DPRC phase engine, the one-door probe rule, VERIFY + gate checkers — unchanged.
 - Venue machinery: pin between stage 1 and pitch; stages_skipped; claims_settlement read against 1c's Evidence Campaign — unchanged.
 - Seed's `[FORWARD -> CLAIMS]` pointer TOKEN unchanged (grep-stable, paper-aligned); only the consumer moves (R5).
@@ -34,7 +34,7 @@ JL rulings absorbed (2026-07-09 session): each stage is a mission controller for
 3. Design resolutions (CC defaults, JL veto here)
 --------------------------------------------------
 
-- R1 — folder shape: skill tree gains `1-lifecycle/1a-descriptions/`, `1b-themes/`, `1d-principles/`; existing `1-claims/` git-mv'd to `1c-claims/`. Intervention folders mirror: `0-lifecycle/1a-descriptions/1a-descriptions.md` (+ `_LOG` + `_PROBE/`) etc. Always four files, every venue (light venues just keep them short) — mechanical checkability beats file-count thrift.
+- R1 — folder shape: skill tree gains `1-lifecycle/1a-descriptions/`, `1b-themes/`, `1d-principles/`; existing `1-claims/` git-mv'd to `1c-claims/`. Intervention folders mirror: `0-lifecycle/1a-descriptions/1a-descriptions.md` (+ `_LOG` + `_EVIDENCE/`) etc. Always four files, every venue (light venues just keep them short) — mechanical checkability beats file-count thrift.
 - R2 — ids + traceability: ladder-local ids `D<n>` (descriptions), `T<n>` (themes), `C<n>` (claims), `P<n>` (principles); every downstream entry cites its upstream ids (`C2 (T1; D3)`, `P1 (C2)`). Ids are ladder-local — no relation to insight-KB card ids or PPNN cards.
 - R3 — staleness (the dynamic-data contract): every 1a entry carries an as-of date on its anchor. Refreshing an entry stamps its downstream dependents with a `[STALE <id> refreshed <date>]` tag (grep-mechanical); a rung's CHECK fails on unresolved STALE tags in its own doc. Iterate's backfill writes 1a and triggers the stamp pass.
 - R4 — verbs + routing: router gains `descriptions | themes | principles` verbs and a composite `ladder` verb (runs 1a→1d as one sweep); `claims` now targets 1c only. Old aliases: "K/W", "what must be true" → claims; "data profile", "how does the data look" → descriptions; "design principles", "social norms", "message principles" → principles.
@@ -56,7 +56,7 @@ JL rulings absorbed (2026-07-09 session): each stage is a mission controller for
 | 5 | haipipe-application/SKILL.md → 6.0.0 | verbs (descriptions/themes/principles/ladder), strip example, routing notes, delivery-need paths |
 | 6 | 1-lifecycle/haipipe-application-lifecycle/SKILL.md → 4.0.0 | ladder in pipeline order, dispatch map, frontier list, loopback, relation diagram |
 | 7 | haipipe-application/stage-strip.sh | keys gain descriptions/themes/principles; prefix-normalization handles `1a-` |
-| 8 | 2-phase/1-probe/.../ref/per-stage-dispatch.md | per-stage rows 1a/1b/1c/1d (modes: light/light/full/rare) |
+| 8 | 2-phase/1-evidence/.../ref/per-stage-dispatch.md | per-stage rows 1a/1b/1c/1d (modes: light/light/full/rare) |
 | 9 | the Stage Gate Protocol | R6 gate batching |
 | 10 | 1-lifecycle/0-seed/haipipe-application-seed/SKILL.md | FORWARD consumer = 1a (token unchanged); handoff → ladder |
 | 11 | 1-lifecycle/*/ref/<stage>-template.md (9 files) + draft 1.2.0 registry | JL follow-up same session: every stage skill carries its canonical artifact template (paper convention); draft worker WRITE reads it via a registry table; SKILL.md pointer lines added |

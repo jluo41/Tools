@@ -7,6 +7,83 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.32.0 — 2026-08-17
+
+**Task/Insights and Application receive globally unique Page Types.** Step ③ now
+resolves `insight`, `brief`, `intervention`, and `artifact`, raising the roster
+to sixteen variants across six owning skill sets. Application deliberately uses
+Brief rather than Paper Opening and Intervention rather than Board Design, so a
+`page-type:` key remains sufficient without consulting the current family.
+
+## 0.31.0 — 2026-08-17
+
+**Paper Opening is a first-class Page Type.** `page-type: opening` resolves to
+`haipipe-page-for-opening`, upstream of Narrative and Section. The roster now
+states the live total: twelve variants across five owning skill sets, including
+the previously omitted Task Page Type. Narrative's roster line now describes
+story architecture and source allocation rather than ownership of all claims.
+
+## 0.30.0 — 2026-08-17
+
+**Seven Page Phases, not four.** §🎭's table and its authority test now list
+OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK, with the load path for
+each. The three splits and the failure each one allowed stay in
+`page-workflows/haipipe-page-workflow`; this table only stopped contradicting
+them. The authority test gains `the section list itself is being agreed →
+OUTLINE`, `a marked hole has no card open for it → PROBE`, and `a card is open
+and its answer must land → EVIDENCE`.
+
+## 0.29.0 - 2026-08-16
+
+**display, literature and value retired as Page Types** (JL 260816): "every page
+will have them, so I will treat them more like the page plugins." They fail the
+admission law for the plainest reason available: a property EVERY page carries
+cannot distinguish one kind of page from another, so it changes no closing rule,
+and a kind that changes no closing rule is plugin material (the same law that
+retired for-slide at 0.26.0).
+
+- Type resolution drops step ② entirely. `route: outward` / `route: inward` no
+  longer pick a contract. The HEAD LINE ITSELF SURVIVES: `src/topic_entry_contract.py`
+  still trusts it and it still names the evidence lane, so no code changed here.
+  A page carrying `route:` now falls through to ④ or ⑤ and resolves by filename.
+- Type resolution drops the step-③ key `page-type: display`.
+- `paper/page-types/haipipe-page-for-{display,literature,value}/` moved whole to
+  `paper/page-types/_archive/`, which `install.sh` prunes, so the retired
+  contracts stay readable without shipping.
+- Each already had a plugin lane shipping BESIDE its type, which is what made the
+  duplication visible: `<page>/display/` (QPf5), `<page>/bibex/` (QPf8),
+  `<page>/probe/` (QPf9) on the design board.
+- The four family DASHES SURVIVE. A dash is a rollup page with its own closing
+  rule, and it rolls up pages carrying a plugin exactly as well as pages that
+  wore a type.
+**The four per-family DASHES merged into one** (JL 260816, same session: "maybe
+just one thing for all"). Their `closes when` cells were identical character for
+character, all four reading `never · a dash has no gate and is regenerated each
+run`, and so were their type key, their venue rule, their generated-versus-authored
+split, and their empty-cell rule. Four contracts stating one closing rule is one
+type whose family is a FIELD.
+
+- `paper/page-types/haipipe-page-for-dash/` is the merged contract. It states the
+  shared rules once and carries a four-row payload table for what differs.
+- `haipipe-page-for-dash-{section,value,display,literature}/` moved whole to
+  `_archive/`, keeping their payload detail readable.
+- `dash_family: section | value | display | literature` is PROMOTED from a
+  specimen-only fallback to REQUIRED on every dash, including one wearing an
+  `S-<Family>-Dash` filename, where the two must agree. With one contract the
+  filename picks nothing, so the field is the only thing that says which family.
+- Step ③ now resolves every key to exactly ONE contract; the key-and-filename
+  cooperation that existed only for `dash` is gone.
+
+- Seventeen variants become ELEVEN. Re-run `install.sh --global` (repo root) so
+  the seven removed symlinks stop resolving.
+
+⬜ NOT DONE, needs a separate pass: three code sites still name the retired
+contracts in comments or accept their keys —
+`cli/bib-from-bank.py:91` (accepts `page-type: literature`),
+`src/dialect_paper.py:714` and `src/parse.py:149` (comments naming for-value /
+for-literature). None is load-bearing for resolution; all three now describe a
+world that no longer exists.
+
 ## 0.28.0 - 2026-08-16
 
 **The `state:` line is a row, not a paragraph** (JL 260816, ruled on the design

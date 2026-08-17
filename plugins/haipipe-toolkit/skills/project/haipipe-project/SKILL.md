@@ -75,7 +75,7 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
 
    📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>/
       (renamed from 1-probe-plans/ on 2026-07-14). One file per TOPIC, one SECTION per
-      question. Created by the consumer's own PROBE phase, never by this skill.
+      question. Created by the consumer's own EVIDENCE phase, never by this skill.
 
    🔗 THEY BIND BY PATH.  A section's `target:` names a QA file. No id crosses. Nothing
       to renumber, no ledger, no shared namespace.

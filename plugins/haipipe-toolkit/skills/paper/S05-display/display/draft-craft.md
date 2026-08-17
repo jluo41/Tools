@@ -101,4 +101,4 @@ Done criteria
 Where the rest lives
 ---------------------
 
-Phase dispatch and load order are owned by `board/page-phases/` (DRAFT loads this file last, after the type contract); the display stage's own contract, which owns `_DISPLAY_REQUEST.md` and advances every DR row, is `./stage.md`; the sibling DRAFT lanes are `../../S03-literature/citation-craft.md` and `../../S04-value/values-craft.md`; the probe loop that later LINKs a landed unit is `../../haipipe-paper/probe/`.
+Phase dispatch and load order are owned by `board/page-workflows/` (DRAFT loads this file last, after the type contract); the display stage's own contract, which owns `_DISPLAY_REQUEST.md` and advances every DR row, is `./stage.md`; the sibling DRAFT lanes are `../../S03-literature/citation-craft.md` and `../../S04-value/values-craft.md`; the probe loop that later LINKs a landed unit is `../../haipipe-paper/probe/`.

@@ -107,7 +107,7 @@ Forward: <parked items the next round inherits, or "none">
 <!-- RULE: Aims names this round's intended outcomes. Known triage/apply work and the human
      close gate are ordinary Aim records; use a P record only for an unresolved evidence
      question. Numbers come from the bank, never from the agent; route uncertainty through
-     PROBE (MATCH first; the ceiling is probe_depth, raised only by a human). -->
+     EVIDENCE (MATCH first; the ceiling is probe_depth, raised only by a human). -->
 
 ### Round output
 - A1.1 · Triage every intake item onto the coverage ledger with a decision and a target.
@@ -123,7 +123,7 @@ Forward: <parked items the next round inherits, or "none">
   **Description:** <what the question wants to know, one sentence per line>
   **Reason:** <which ledger item(s) / response sentence(s) cite this id, and why each matters if the assertion is wrong>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT; PROBE fills it from the answering QA file>
+  **Answer:** <empty in DRAFT; EVIDENCE fills it from the answering QA file>
 
 ## States
 

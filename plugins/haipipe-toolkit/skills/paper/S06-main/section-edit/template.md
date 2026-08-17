@@ -64,7 +64,7 @@ Q-consumer
 <tpl: LOGICAL Q-consumer source, physically adapted into the Board S page's `## Aims`.
      A DRAFT that omits the recognizable Aim records, or duplicates them under Content,
      is INCOMPLETE and FAILS CHECK.
-     DRAFT proposes the questions; PROBE authors/matches entries and fills each Answer within the invocation's depth ceiling; CHECK is the human gate.
+     DRAFT proposes the questions; EVIDENCE authors/matches entries and fills each Answer within the invocation's depth ceiling; CHECK is the human gate.
      · STAGE-PREFIXED ID — `Q-Sec<unit><Slug>-<n>`, both halves read off this unit's S page
        filename `S-<Family>-<unit>-<slug>.md`: S-Main-0-abstract -> `Q-Sec0Abstract-<n>`,
        S-Main-6-results -> `Q-Sec6Results-<n>`, S-Appendix-A-prompts -> `Q-SecAPrompts-<n>`.
@@ -75,16 +75,16 @@ Q-consumer
      · EVERY {VAL:?}, every \cite{TOADD}, every heavier need becomes a numbered question. Only items resolving paper-local (a pointer the draft already sees) go into the Board page's States / Log instead.
      · A missing DISPLAY UNIT is NEVER a question — it is a DR row in 0-lifecycle/S05-display/_DISPLAY_REQUEST.md. section-edit FILES display requests; it never creates displays.
      · Bullet lines, never markdown tables, anywhere in this block (JL standing rule).
-     · At PROBE time heavier bank questions are DISPATCHED through 1-probes/PP<NN>_<topic>/ (executor-facing q-executor:, no stake); the harvested answer flows BACK into the Answer field here.
+     · At EVIDENCE time heavier bank questions are DISPATCHED through 1-probes/PP<NN>_<topic>/ (executor-facing q-executor:, no stake); the harvested answer flows BACK into the Answer field here.
      · CHECK presents the Board page, so the user reviews STRUCTURE and QUESTIONS at the declared human gate.
-     · PROBE fills the Answer, REVISE weaves it into the owned sentence, and CHECK verifies both the placement and its source.>
+     · EVIDENCE fills the Answer, REVISE weaves it into the owned sentence, and CHECK verifies both the placement and its source.>
 
 - P<n> · Q-Sec<unit><Slug>-<n> · <question title>
   **Done when:** The answer has landed, been interpreted, and been woven into Content.
   **Description:** <what the question wants to know — one sentence per line; what a good answer looks like>
   **Reason:** <which §<N> P<x>.S<y> sentence(s) cite this id, and why each matters if that assertion is wrong · serves: <claim id / stage> · track: <citation | values | display | discovery | decision | wording>>
   **Probe:** not opened yet
-  **Answer:** <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]; a pure human decision reads `JL decision`>
+  **Answer:** <empty in DRAFT — EVIDENCE fills it from the answering QA file, anchored [source: PPnn]; a pure human decision reads `JL decision`>
 
 ---
 
@@ -100,4 +100,4 @@ Q-consumer
 _(empty — add your notes here)_
 <tpl: this section is MANDATORY and always present, even when empty. Agents NEVER rewrite or delete anything below its marker.>
 
-<tpl: after filling: verify `grep -c '<tpl' {section}.md` -> 0, continue through PROBE and REVISE, then present the completed Board page at CHECK. Do not cross CHECK without the user's verb.>
+<tpl: after filling: verify `grep -c '<tpl' {section}.md` -> 0, continue through EVIDENCE and REVISE, then present the completed Board page at CHECK. Do not cross CHECK without the user's verb.>

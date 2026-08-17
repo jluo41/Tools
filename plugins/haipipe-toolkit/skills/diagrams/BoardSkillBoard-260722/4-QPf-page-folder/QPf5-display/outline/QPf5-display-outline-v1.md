@@ -1,0 +1,63 @@
+# QPf5-display · outline v1
+outline-version: v1
+supersedes: —
+date: 260817
+approved: ⬜            🚧 a person ticks this. No machine may.
+
+Generated 260817 from this page's own divisions, face-figure captions and
+sentences, so no bullet claims anything the page does not already say.
+UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
+
+## C1 · The same folder shape as a paper, at a new address
+
+### C1.P1 · one `display/` per page, one folder per unit, every unit the same shape
+- B1 · The tree above is copied from the display family's own rules file, `display-unit-output-contract.md`, word for word.
+- B2 · The folders split in two.
+- B3 · `intake/` and `recipe/` are yours to write, filled by people and by drawing skills.
+- B4 · `assets/` and `preview.pdf` are rebuilt for you from those two.
+- B5 · So a rebuild may replace the built half, and it never touches the half you wrote.
+- B6 · The one page-side change is the address.
+- B7 · The unit sits inside the page's own `display/` folder, so when the page moves, its figures move with it.
+
+## C2 · Every unit shows as a card, and a sentence can point at it
+
+### C2.P1 · what a reader sees when they open 🖼 Display on a page
+- B1 · The tab is built the way the Slides tab is.
+- B2 · A small button in the page's toolbar asks the server for this page's units.
+- B3 · The server then writes a view that frames each unit's `preview.pdf`.
+- B4 · 🔄 builds `preview.pdf` again from `preview.tex`.
+- B5 · It never reruns the recipe, never changes the inputs, and never changes a yes.
+- B6 · Name a unit's id in plain text, and that id turns into a small button in the sentence.
+- B7 · Click it, and the unit's card opens with its picture and its yes-or-no state.
+- B8 · ⚠️ 8 more sentences in this division are not planned here yet
+
+## C3 · Three hands touch a unit, and only one may say yes
+
+### C3.P1 · three hands touch one unit, and each stays in its own half
+- B1 · The drawing skills already belong to the display family, and this page adds none of its own.
+- B2 · The `accepted:` row is the one rule with teeth.
+- B3 · A ✅ there means a person looked at one exact picture and said yes.
+- B4 · A machine that ticks it has faked a judgment, not saved time, so no machine may tick it.
+- B5 · A data-driven skill draws numbers, and it may not go back to the raw data.
+- B6 · It reads only the small approved copy in `intake/`.
+- B7 · A concept-driven skill draws an idea, so it holds no numbers at all, and its input is the sketch itself.
+- B8 · ⚠️ 6 more sentences in this division are not planned here yet
+
+## C4 · The order of the work, and which steps need a person
+
+### C4.P1 · from approved numbers to a picture a person accepts, and who moves each step
+- B1 · Drawing never comes first.
+- B2 · With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that.
+- B3 · Steps ① ③ ⑤ belong to a person, and steps ② ④ belong to the machine.
+- B4 · QPf5-Display1 draws that split of hands.
+- B5 · The tab's 🔄 reruns step ④'s build alone, never step ②'s drawing skill.
+- B6 · If the inputs change, the work runs forward again from ② to ⑤.
+- B7 · The old yes drops back to ⬜, because the picture a person agreed to no longer exists.
+- B8 · ⚠️ 12 more sentences in this division are not planned here yet
+
+## C5 · Evidence this page already carries
+
+### C5.P1 · Cite each where it belongs, or drop it
+- B1 · Display1 is on disk and no bullet cites it yet   🖼 Display1
+- B2 · Display2 is on disk and no bullet cites it yet   🖼 Display2
+

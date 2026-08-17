@@ -1,3 +1,19 @@
+
+## 0.4.0 — 2026-08-16
+
+CHECK judges the BUILT artifact, not only the Markdown (JL 260816).
+
+- Added the built-artifact gate with six deterministic findings computed by the
+  new `haipipe-board/src/page_evidence.py` and reported by `cli/check.py`:
+  `display-declared-not-rendered` (naming the first missing step),
+  `display-cited-not-embedded`, `display-rendered-not-cited`,
+  `display-accept-stale`, `latex-untitled`, `projection-stale`.
+- Stated the three-count rule: declared, rendered, and accepted are independent,
+  folder count is never completed work, and a version whose declared count
+  exceeds its rendered count does not pass.
+- CHECK administers display-walk step ⑤ ACCEPT and never ticks it.
+- Phase token PROBE -> EVIDENCE throughout.
+
 haipipe-page-check · Changelog
 ==============================
 

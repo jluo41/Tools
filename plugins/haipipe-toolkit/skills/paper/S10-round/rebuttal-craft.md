@@ -69,11 +69,11 @@ A quick pass may stop here: present the ledger + strategy (how many issues per r
 shared vs unique concerns, priorities, evidence gaps) and let the user decide whether to
 continue to a full draft or write manually.
 
-Evidence gaps go through PROBE, never inline
+Evidence gaps go through EVIDENCE, never inline
 ---------------------------------------------
 
 An issue tagged `grounded_evidence` with no existing evidence is a question ENTRY in the
-round's PROBE phase. MATCH runs first: a reviewer-demanded experiment is often already
+round's EVIDENCE phase. MATCH runs first: a reviewer-demanded experiment is often already
 answered by an existing task's QA file. Only what MATCH cannot close is a spend decision,
 and the ceiling (`probe_depth`, raised per invocation by a human) governs it. If an
 experiment fails or is inconclusive: switch the mode to `narrow_concession` or
