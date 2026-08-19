@@ -1,3 +1,28 @@
+## 0.7.3 — 2026-08-18
+
+- **The FOUR outline marks against the THREE lanes**, stated here for the first
+  time. A plan marks citation, value, display and PROOF; only the first three
+  become lanes in this phase, and proof never does. Found by JL reading the
+  QPw00 plan: "you should say that the four evidence card types. You don't have
+  it for now, right?" — correct, no phase contract said it. The rule itself was
+  already ruled (260817, proof earns no folder, `haipipe-page-probe` §🧭); what
+  was missing was the lane that does not exist being named where the lanes are.
+
+## 0.7.2 — 2026-08-18
+
+- Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §④, which
+  states this phase and every sibling in the SAME six fields
+  (`❓ ASKS · 📥 READS · 📤 WRITES · 🚪 EXITS · ✋ TICK · 🔀 ROUTES`). This
+  contract still owns the reasoning; the card is the readable-across-phases
+  summary, and the contract wins when they disagree.
+- Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
+  `QPw00g` when JL ruled that pages which are not phases may not carry
+  phase numbers.
+
+
+## 0.7.1 — 2026-08-18
+
+Added the Board page backlink: the page that argues this contract, created 260818 when JL ruled one page per workflow step.
 
 ## 0.7.0 — 2026-08-17
 

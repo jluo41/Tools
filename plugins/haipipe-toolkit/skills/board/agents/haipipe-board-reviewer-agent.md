@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-reviewer-agent
-description: "Read-only REVIEWER for one HAI-Pipe Board or one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CLOSE, REVISE, EVIDENCE, DRAFT, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
+description: "Read-only REVIEWER for one HAI-Pipe Board or one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CLOSE, OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
 tools:
   - Read
   - Grep
@@ -9,7 +9,7 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   last_updated: "2026-08-04"
   summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop."
   changelog: "./CHANGELOG.md"
@@ -146,7 +146,12 @@ when they affect the reviewed change or reveal an actual broken promise.
 actor:    haipipe-board-reviewer-agent
 status:   pass | revise | blocked
 verdict:  pass | revise | blocked
-route:    CLOSE | REVISE | EVIDENCE | DRAFT | HOLD
+route:    CLOSE | OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE | HOLD
+          ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The RUN
+          controller forces REVISE while it is above zero, so counting another
+          page's errors here makes CLOSE unreachable for every page on the
+          board. Filter check.py's output to lines whose first field is this
+          page's file name.
 reason:   <why this route owns the next authority>
 checked_version: <source-sha256>:<render-sha256>
 reopens_promise: true | false

@@ -1,0 +1,78 @@
+% One row per step of the page workflow. Transcribed from the eight files frozen
+% in intake/inputs/; the TIME column is the only estimate and is labelled as one.
+\newcommand{\band}[1]{%
+  \midrule
+  \multicolumn{6}{l}{\cellcolor{black!7}\footnotesize\itshape\bfseries #1}\\
+  \midrule}
+\newcommand{\you}{\textbf{YOU}~}
+\newcommand{\loopy}{$\circlearrowleft$~}
+\newcommand{\cost}[1]{{\footnotesize$\leftarrow$ \itshape #1}}
+\renewcommand{\arraystretch}{1.15}
+\footnotesize
+\begin{minipage}{124mm}
+\begin{tabular}{@{}c@{~} l@{~} p{34mm} p{30mm} l@{~~} l@{}}
+\toprule
+\textbf{\#} & \textbf{PHASE} & \textbf{WHAT HAPPENS} & \textbf{YOUR JOB} &
+\textbf{TIME} & \textbf{HOW OFTEN}\\
+
+\band{once per page}
+0 & OPEN & you name the page and the one thing it must decide (\texttt{haipipe-page} CREATE, not a phase) &
+    \you say what it must decide & 15 min & once\\
+
+\band{the loop --- CHECK may send you back to any row in this band}
+1 & OUTLINE & a machine writes the SHAPE only: sections, bullets, and what each
+    bullet still owes &
+    \you approve it, or send it back \newline \cost{reject costs 10 seconds; this
+    is the cheapest gate} & 10 min & \loopy each round\\
+
+2 & DRAFT & a machine turns each approved bullet into sentences carrying visible
+    \texttt{<HOLE>}s &
+    nothing. \newline Do NOT fill a hole & 0 & \loopy each round\\
+
+3 & PROBE & a machine looks for an answer that already exists, then opens a card
+    and asks the bank &
+    nothing & 0 & \loopy each round\\
+
+4c & CITATION & a PERSON finds the published work; a machine may copy bibtex and
+    may never compose it &
+    \you paste the entry, tick \texttt{verified} & 20 min & \loopy per entry\\
+
+4v & VALUE & the bank answers, bound BY PATH to a real file, with the proof
+    pulled next to the card &
+    \you read the proof, tick \texttt{read:} \newline \cost{this is the cost, and
+    the tick is what permits quoting} & 30 min & \loopy per card\\
+
+4d & DISPLAY & a machine freezes the exact bytes a figure will be drawn from,
+    and never draws &
+    nothing & 0 & \loopy per figure\\
+
+\multicolumn{6}{@{}l}{\footnotesize\itshape\quad 4c, 4v and 4d run at the SAME
+    TIME. None of the three waits for another to finish.}\\
+
+5 & REVISE & a machine replaces every landed hole, draws the figures, and
+    rebuilds the pdf &
+    nothing & 0 & \loopy each round\\
+
+6 & CHECK & a machine and a DIFFERENT reader judge the BUILT pdf, never the
+    markdown, and never the producer's own work &
+    \you accept, or say where to go back \newline
+    {\footnotesize$\hookrightarrow$ back to 1, 2, 3, 4 or 5} & 15 min &
+    \loopy each round\\
+
+\band{reached only when CHECK says CLOSE}
+7 & ACCEPT & each figure is bound to the inputs it was accepted with &
+    \you tick \texttt{accepted:} \newline \cost{it reverts if the inputs change}
+    & 10 min & once per figure\\
+
+8 & CLOSE & the page's own ruling, named by its Page Type &
+    \you sign it \newline \cost{this ends the round} & 5 min & once per round\\
+\bottomrule
+\end{tabular}
+
+\par\vspace{1.5mm}
+\parbox{124mm}{\scriptsize\itshape TIME is an ESTIMATE and nothing else in this table is. The
+board holds ONE live run, \texttt{260805-0216-QB8e}, whose five receipts are
+CHECK, REVISE, CHECK, REVISE, CHECK: no OUTLINE, DRAFT, PROBE or EVIDENCE phase
+has ever been timed here. Every other cell is transcribed from a file frozen in
+\texttt{intake/inputs/}.}
+\end{minipage}

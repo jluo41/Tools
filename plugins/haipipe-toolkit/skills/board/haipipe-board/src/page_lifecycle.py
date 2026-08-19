@@ -125,9 +125,41 @@ def audit_artifacts(run: dict[str, Any], base_dir: Path | None = None) -> list[F
             )
         ]
     if not page.is_file():
-        return [
-            _finding("source-artifact-missing", "run", f"Page source does not exist: {page}")
-        ]
+        # A recorded path that no longer resolves is usually a MOVED page, not a
+        # missing one: run 260805-0216-QB8e stored an ABSOLUTE path and the
+        # 260816 regroup added a `<N>-` prefix to every group folder, so a page
+        # that had not changed at all audited as "source does not exist". Fall
+        # back to the file name under `board`, and REPORT the fallback: the
+        # receipt is still defective, and saying so precisely beats saying
+        # something false. A fallback is refused when it is not unique, because
+        # guessing between two candidates is worse than stopping.
+        candidates = sorted(board.rglob(page.name))
+        candidates = [c for c in candidates if c.is_file() and "/board/" not in c.as_posix()]
+        if len(candidates) != 1:
+            return [
+                _finding(
+                    "source-artifact-missing",
+                    "run",
+                    f"Page source does not exist: {page}"
+                    + (
+                        f"; {len(candidates)} files named {page.name} under the board, so no unique fallback"
+                        if candidates
+                        else ""
+                    ),
+                )
+            ]
+        resolved = candidates[0]
+        findings.append(
+            _finding(
+                "page-path-stale",
+                "run",
+                f"`page` records {page_raw} which does not resolve; the same file name "
+                f"resolves uniquely to {resolved.relative_to(board).as_posix()}. Audited "
+                f"against that. Store `page` BOARD-RELATIVE so a group rename cannot "
+                f"break a receipt for a page that did not change.",
+            )
+        )
+        page = resolved
 
     rendered_root = board / "board"
     rendered = sorted(rendered_root.rglob(f"{page.stem}.html")) if rendered_root.is_dir() else []

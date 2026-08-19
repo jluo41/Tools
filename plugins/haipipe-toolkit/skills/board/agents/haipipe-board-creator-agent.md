@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-creator-agent
-description: "Write-scoped PRODUCER for one target Board Page. In a fresh context it can create the Page, revise only its Opening, or perform exactly one DRAFT, EVIDENCE, or REVISE phase for the bounded Page RUN loop. It loads the canonical Page, Page Type, and Page Phase contracts, emits an auditable phase receipt, self-checks without approving, never touches board.md, never rebuilds, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, page DRAFT producer, page EVIDENCE producer, page REVISE producer, automatic page loop, create pages in parallel, board creator."
+description: "Write-scoped PRODUCER for one target Board Page, and the ONLY producer the RUN controller dispatches. In a fresh context it can create the Page, revise only its Opening, or perform exactly one OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE or COMPILE phase for the bounded Page RUN loop. It loads the canonical Page, Page Type, and Page Phase contracts, emits an auditable phase receipt, self-checks without approving, never touches board.md, never rebuilds, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, page OUTLINE producer, page DRAFT producer, page PROBE producer, page EVIDENCE producer, page REVISE producer, automatic page loop, create pages in parallel, board creator."
 tools:
   - Read
   - Write
@@ -10,9 +10,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-08-04"
-  summary: "Produces one Page phase and returns the receipt consumed by the automatic RUN router; it never judges its own version."
+  version: "0.7.0"
+  last_updated: "2026-08-18"
+  summary: "All SIX producer phases, not three: the RUN controller hardcodes this agent for every producer step, so OUTLINE, PROBE and COMPILE had no producer at all."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -36,11 +36,31 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
    opens with a question. Five skill and agent pages were written from the base alone on
    260802 and came out as one form letter with the nouns swapped.
-3. The one phase contract matching the operation: DRAFT for `create-page` or
-   `draft`, EVIDENCE for `evidence` (or the retired `probe`), and REVISE for
-   `revise` or `revise-opening` while
-   purpose and Aims remain fixed. If revision changes either, stop the edit,
-   route to DRAFT, and set `reopens_promise: true`.
+3. The ONE phase contract matching the operation. Operation names and phase
+   names are the same word since 260818, so the mapping is an identity:
+
+   ```text
+   operation        phase       contract loaded
+   ────────────────────────────────────────────────────────────────────
+   outline          OUTLINE     ../page-workflows/haipipe-page-outline
+   create-page      DRAFT       ../page-workflows/haipipe-page-draft
+   draft            DRAFT       ../page-workflows/haipipe-page-draft
+   probe            PROBE       ../page-workflows/haipipe-page-probe
+   evidence         EVIDENCE    ../page-workflows/haipipe-page-evidence
+   revise           REVISE      ../page-workflows/haipipe-page-revise
+   revise-opening   REVISE      ../page-workflows/haipipe-page-revise
+   compile          COMPILE     ../page-workflows/haipipe-page-revise
+                                (COMPILE has no contract of its own)
+   ```
+
+   ⚠️ `operation: probe` meant EVIDENCE until 260818, because PROBE had been
+   renamed to EVIDENCE on 260816 and then SPLIT BACK OUT on 260817 as its own
+   phase ③. It now means phase ③ and nothing else: raise the card, write its
+   `serves:` backlink, dispatch the stripped question. A caller that means
+   "land what came back" sends `operation: evidence`.
+
+   While the phase is REVISE, purpose and Aims stay fixed. If the edit changes
+   either, stop, route to DRAFT, and set `reopens_promise: true`.
 4. `../haipipe-sentence/SKILL.md` for how a line must read.
 5. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
 6. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
@@ -117,7 +137,8 @@ naming the field rather than guessing it.
 
 ```text
 required:
-  operation:   create-page | revise-opening | draft | probe | revise
+  operation:   create-page | revise-opening | outline | draft | probe |
+               evidence | revise | compile
   path:        the exact file path to write, inside its group folder
   id:          the page id (QA3, S-Main-2, ...)
   title:       the short title, unique on this board
@@ -172,8 +193,21 @@ being guessed.
 5. For `revise-opening`, draft from the page's actual subject and evidence.
    Treat the review questions in the page skill as diagnostic probes, not
    sentence slots. Replace only the Opening body.
-6. For `draft`, `probe`, or `revise`, perform only the authority named by the
-   loaded phase contract. Stop before the returned route begins. Record a
+6. For `outline`, `draft`, `probe`, `evidence`, `revise` or `compile`, perform
+   only the authority named by the loaded phase contract. Three of the six write
+   somewhere OTHER than the page body, and writing into the body instead is the
+   phase boundary being crossed rather than a stylistic choice:
+
+   ```text
+   outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
+                itself. Leave `approved:` UNTICKED: it is a person's.
+   probe     ─▶ <page>/probe/PP<NN>-<slug>/ with card.md, consumer/, executor/
+                and a proof/ holding only its manifest. Never an answer.
+   evidence  ─▶ bibex/ entries, a card's `state: answered` + `target:`, and a
+                frozen display intake/. Leave `verified` and `read:` UNTICKED.
+   ```
+
+   Stop before the returned route begins. Stop before the returned route begins. Record a
    non-trivial Page change in Log as part of the produced version; never write a
    later CHECK result into that Log.
 7. Self-check the result against the page skill and `writing-rules.md`. Confirm
@@ -206,8 +240,8 @@ being guessed.
 ```text
 actor:    haipipe-board-creator-agent
 status:   ok | blocked | failed
-operation: create-page | revise-opening | draft | probe | revise
-phase:    DRAFT | EVIDENCE | REVISE
+operation: create-page | revise-opening | outline | draft | probe | evidence | revise | compile
+phase:    OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE
 path:     <the file written, or none>
 id:       <page id>
 title:    <title as written>
@@ -219,7 +253,7 @@ sources:
   read:   <files read and cited>
   unread: <files named in the packet that could not be read, or none>
 open:     <what this page leaves for the human to decide, or none>
-route:    DRAFT | EVIDENCE | REVISE | CHECK | HOLD
+route:    OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE | CHECK | HOLD
 reason:   <which phase authority was exercised and why this route follows>
 reopens_promise: true | false
 artifacts: <every file written, target first>

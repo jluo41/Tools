@@ -1,61 +1,83 @@
 % GENERATED from QPf12-outline.md by md2tex.py. Do not hand-edit: sync is
 % one-way and the next run overwrites this file.
 
-\section{The §N anchor}
-\textbf{Two grammars, one meaning}: the template already anchors; \texttt{§N} catches what it does not.
+\section{How a line says which part it belongs to}
+\textbf{Two ways, and the first one is free}: most lines already say it; the mark is for the rest.
 
 \begin{verbatim}
-  (1) the A-grammar    ### A3 group  .  id A3.1     already says "division 3"
-     (free)          ### P  group  .  id P1       already says "page-wide"
+  (1) already said       ### A3 group . id A3.1     this is part 3
+     (nothing to do)   ### P  group . id P1       this is the whole page
 
-  (2) the SN anchor . POSITION is what makes it an anchor
-      Aims    - [x]  S1 the text ...    LEADS, after box, emoji, or id
-      States  S1 shipped 260815 ...       LEADS the line
-      Files   `build.py` S1 S2          TRAILS, and may be several
-      Log     never anchored            it is a time axis
+  (2) the SN mark . WHERE it sits is what makes it a mark
+      Aims    - [x]  S1 the text ...     at the FRONT
+      States  S1 shipped 260815 ...        at the FRONT
+      Files   `build.py` S1 S2           at the END, may be several
+      Log     never marked               it is a diary, not a part
 
-   not anchors, all four seen on real pages
-     `QB6` S7 . [QB7 S3](...)   a division of ANOTHER page
-     S5.1 . S4.3              a sub-division
-     SRequired Inputs         a named section, no number
-     "Every number S4 prints" a manuscript section, in ordinary prose
+   these look the same but are not marks, all seen on real pages
+     `QB6` S7 . [QB7 S3](...)   a part of ANOTHER page
+     S5.1 . S4.3              a smaller piece inside part 5
+     SRequired Inputs         a name, not a number
+     "Every number S4 prints" a paper's own section, in a sentence
 \end{verbatim}
-📌 This part fixes the mark itself: what it points at, where it may appear, and what an unanchored line means. A page written to the current template needs NO anchor at all. Its Aims and States are already grouped \texttt{\#\#\# A3 ·} and its ids already read \texttt{A3.1}, and both name division 3; \texttt{P1} already says page-wide. So the first grammar is free, and this page is its own proof: every one of its aims maps with zero anchors written. The \texttt{§N} anchor exists for what that grammar does not reach, which is every page written before it and every line that sits outside a group. The anchor is the literal token \texttt{§N}, where N is the number of a \texttt{\#\#\# N ·} division in this page's own Content. POSITION is what separates an anchor from prose, and it has to be. The \texttt{§} sign was in use on these boards long before this plugin, and a paper-section page writes \texttt{§4} in ordinary sentences to mean the manuscript's own section 4. No reading of the characters alone can tell those two apart, so the anchor is recognized only where prose does not put one: leading an Aim or State row, or trailing a Files row. An aim or state line carries at most one anchor, and it leads, after the checkbox, the state emoji, a decorative emoji, or the aim's id. A Files row carries several, and they trail at the end, because one code file often serves several divisions. Everything in the middle of a sentence is prose and is left alone. An unanchored line is legal and means page-wide: it belongs to the whole page, not to one division. So an existing page with no anchors at all parses cleanly today; its outline is simply one 🌐 card, which is honest and uninformative. Log lines never take an anchor: the Log is ordered by time, and cutting it into divisions would cut its story. The anchor points by number, so whoever renumbers Content divisions owes the page's anchors in the same edit; the parser catches an out-of-range \texttt{§N}, and it cannot catch an in-range one that now points at the wrong part.
+📌 Most lines already say which part they belong to; for the rest you write a small mark like §2. A page written the normal way needs no mark at all. Its goals are already grouped \texttt{\#\#\# A3} and numbered \texttt{A3.1}, and both mean part 3. \texttt{P1} already means the whole page. This page is its own proof: every one of its goals lands in the right part, with no mark written anywhere. The mark is for what that leaves out: pages written before the numbering, and stray lines that sit outside any group. The mark is \texttt{§} and a number, and the number is a part of THIS page's own Content. WHERE the mark sits is what makes it a mark. The \texttt{§} sign was used on these boards long before this tab, and a paper page writes \texttt{§4} in normal sentences to mean the paper's own section 4. Nothing about the characters can tell those apart. So a mark is only read in a place where a sentence would not put one. On a goal or a progress line it sits at the front, before the words. On a file line it sits at the end, and there may be several, because one file often serves several parts. A \texttt{§4} in the middle of a sentence is just writing, and is left alone. A line with no mark belongs to the whole page. So an old page with no marks still reads fine; it just shows as one 🌐 card, which is honest but tells you little. Diary lines in \texttt{\#\# Log} never take a mark, because cutting a diary into parts loses the story. The mark points by number, so whoever renumbers the parts has to fix the marks in the same edit. A mark pointing past the last part is caught and named. A mark pointing at the wrong part is not, because it still points at a real one.
 
 
-\section{The live surface: check and view in one walk}
-\textbf{The tab's two jobs}: the same parse measures the page and draws it.
+\section{The tab, read fresh every time you open it}
+\textbf{One read does both jobs}: the same pass checks the page and draws it.
 
 \begin{verbatim}
-  header   [x] aligned  .  or   3 loose lines .  S7 out of range
-  chips    [ By division]  [ By progress]
-   lens   one card per division . under its title, ONE LINE saying
-           what the division is about . then [x] done aims (each with
-           its S-matched state receipt), then [ ] open aims .  last
-   lens   [ ] open bucket FIRST (the page's to-do) then [x] done .
-           every aim wears a div N badge linking back
+  -- what you see first ---------------------------------
+   QPf11-pagex
+  How does a page borrow a file from another page ...?      the page's
+    11 of 12 done . [ ] 1 to do .  1 waiting        own question
+  -------------------------------------------------------
+  [x] every line is placed  .  or   3 lines not placed in any part
+  [ By part]  [ What is left]
 
-  one aim on a card . three parts, three jobs
-     the goal    plain voice . the id ONCE, as a dim tag on the right
-     NOW ...       the State beneath it, behind a `now` label
-     the ask     a Decision Now row is neither, and gets its own card
+  -- one card ------------------------------------------
+  1 . The contract                                   2/2
+  what a person writes and keeps                one line about the part
+  [ ] STILL TO DO   goals not done, always in sight
+   [x] 2 DONE      finished goals, folded away
+    MORE        notes and files, folded away
 
-  the brief, read in this order and never invented
-     the job line     ` This part fixes ...` . ` Establishes ...`
-     else the caption  `**The tab**: the first surface renders ...`
-     else the first plain sentence
-    [ ] else nothing      a wrong summary is worse than none
+  -- one goal ------------------------------------------
+   the goal      plain words . the id once, small, on the right
+   NOW ...         its progress, under it
 \end{verbatim}
-📌 This part fixes the surface: rendered live on every open, never written to disk, wrong anchors shown rather than thrown. The view is rendered by \texttt{GET /\_board/outline} on every open and stored nowhere, on the \texttt{QPf1} precedent: a status written to disk starts aging the moment it lands. Because nothing is stored, this plugin has no staleness, no ✨ Regenerate, no subfolder, and no roster row: like 📂 it is a meta-surface over the page, the family's second. Checking is not a separate gate: an out-of-range \texttt{§N} renders as a named ❌ on the card it tried to reach, and every unanchored aim or state swells the 🌐 card, so the 🌐 card doubles as the worklist for anchoring the page. The two lenses are the same parsed data sorted twice, switched by chips client-side with no second request; a third lens later is one more chip, never a new writer. In the 🚦 lens the [ ] bucket renders first, because opening that lens is asking what this page still owes. An Aim and its State are two different sentences, and the card has to keep them looking different. An Aim says what should become true; a State says what is true now. Printed as two alike lines that both open with the same id and both wear a tick, they read as one sentence said twice, and a reader stops trusting either. So the id prints once, as a dim tag on the right, the goal keeps the plain voice, and the status sits under it behind a small \texttt{now} label in the State's own emoji. A \texttt{Decision Now} row is a third thing again, an ask a person still owes, so it is neither counted as a state nor dropped: unanswered asks get their own card at the top, because a page waiting on someone should say so before it lists what it has done. A division card also says in one line what its division is about, and that line is read, never written. The template already asks each division for one: the \texttt{📌} line under its face diagram, saying what the part settles. Pages in the wild write the same line in their own hand, \texttt{📋 Establishes the reading protocol}, so the reader looks for the SHAPE, an emoji then a sentence, rather than for one emoji. A division with no such line falls back to its figure caption, then to its first plain sentence, and a division with none of the three shows no brief at all. That last step is the same rule the anchors follow: a summary nobody wrote is not invented, because a wrong one costs the reader more than a missing one.
+📌 The tab reads the page every time you open it, so it can never be out of date. The tab is drawn by \texttt{GET /\_board/outline} and saved nowhere. This copies \texttt{QPf1}: anything written to disk starts going out of date the moment it lands. Because nothing is saved, this plugin has no stale flag, no rebuild button, and no folder of its own. It is not on the plugin list either, because it owns no folder to be on the list for. Checking is not a separate step. A mark pointing past the last part shows as a red ❌ on the card it tried to reach. Every unmarked goal or progress line lands on the 🌐 card, so that card is also the list of lines still worth marking. The two views are the same lines sorted twice. Clicking a chip re-sorts them in the browser, with nothing fetched again. 🚦 What is left puts unfinished goals first, because that is what you opened it to ask. THE ANSWER COMES FIRST, and that is a requirement, not a taste. This tab is read by someone with ADHD, in a language that is not their first. The first version failed both. It opened straight into part 1, with no word about what the page was even for. Every visible line was a long sentence. Finished work was printed in full, above the one thing still to do. So the top of the tab now carries the page's own opening question. Under it sits one line of numbers: how many goals, how many done, how many left, how many questions wait on a person. Each card carries its own count, and one line saying what its part is about. Unfinished goals stay in plain sight; finished ones fold away behind a count you can click. Nothing is hidden and nothing is summarized by a machine. What changed is the ORDER, so one screen tells you where the page stands. The words changed too. \texttt{loose lines} became \texttt{lines not placed in any part}, and \texttt{By division} became \texttt{By part}. A reader opening the tab for the first time has no reason to know this plugin's own shorthand. A goal and its progress are two different sentences, and the card has to keep them looking different. A goal says what should become true. Progress says what is true now. Printed as two alike lines, both starting with \texttt{A1.1} and both ticked, they read as one sentence said twice. So the id is printed once, small and grey on the right, and the progress sits under the goal behind a \texttt{now} label. Each card also carries one line saying what its part is about, and that line is READ, never written. The page template already asks each part for one: the \texttt{📌} line under its picture. Pages write it in their own hand, \texttt{📋 Establishes the reading protocol}, so what the tab looks for is the SHAPE, an emoji then a sentence. A part with no such line falls back to its picture caption, then to its first plain sentence. A part with none of the three shows nothing, because a wrong summary costs the reader more than a missing one.
 
 
-\section{Migration: authored once, mechanical forever}
-\textbf{Claude's one appearance}: propose anchors into the \texttt{.md}, be reviewed, leave.
+\section{Getting older pages ready}
+\textbf{AI shows up once, then leaves}: it suggests the marks, a person checks them, and the file keeps them.
 
 \begin{verbatim}
-   claude -p  reads page  -->  proposes SN per aim/state  -->   JL reviews
-                                                                    |
-   forever after: the parser reads what the writer wrote   <------+ written into .md
+   AI reads the page  -->  suggests a SN per line  -->   a person checks
+                                                              |
+   after that, the tab just reads what is written  <---------+ saved in the page
 \end{verbatim}
-📌 This part fixes how existing pages get their anchors without hand-writing sixty of them. Existing pages predate the anchor, so their outlines would open as one 🌐 card each. The migration is a one-time pass per page: claude proposes an anchor for each aim and state line, the proposal is written into the \texttt{.md} as ordinary text, and a person reviews the diff before it lands. After that pass the judgment lives in the material and claude never renders, which is the whole point of the rule-based route. New pages anchor at write time: the writer who creates an aim knows its division better than any later reader.
+📌 Old pages get their marks once, with help, and never need it again. Pages written before the mark existed have none, so each shows as a single 🌐 card. Fixing that is a one-time pass per page. An AI suggests a mark for each goal and progress line, the suggestion is written into the page as ordinary text, and a person reads the change before it lands. After that pass the answer lives in the page, and no AI runs when you open the tab. New pages take their marks as they are written, because whoever writes a goal knows which part it serves.
+
+
+\section{The plan is a FILE now, and OUTLINE is a phase}
+\textbf{Two rulings on 260817}: the plan stopped being something read out of the page, and started being something written before it.
+
+\begin{verbatim}
+   until 260816   the tab DERIVED a plan from the page's own headings
+                     a plan could not exist before the page did
+  [x] from 260817    <page>/outline/<stem>-outline-v<N>.md   AUTHORED . versioned
+                     exits only when a person ticks `approved:`
+\end{verbatim}
+📌 A plan you can reject in ten seconds now sits in front of every expensive phase. The phase contract is \texttt{page-workflows/haipipe-page-outline} 0.1.0, and it took the outline authority OUT of \texttt{haipipe-page-draft}, whose §🗂 had owned it. This page had ruled the opposite on 260816, in these words: "there is no outline phase and no outline file". What overturned it was a real failure the same week: one phase owned both agreeing the shape and writing the page, so one done-report covered both, and a plan ended up pasted into a page's own \texttt{\#\# Content} where it went stale at the next edit. **A bullet is a POINT, not a sentence** (JL 260817). Its address is \texttt{C<n>.P<n>.B<n>}, and one \texttt{B} becomes one or more \texttt{S} when it is drafted, so the plan and the page count different units and say so. \texttt{C<n>.P<n>} is shared with the sentence address, so the link survives; \texttt{C} stays because Aims use \texttt{A} and page-wide uses \texttt{P} in that same slot. The \texttt{C} prints once on the section heading and the rows carry only \texttt{P<n>.B<n>}. **A bullet with no mark is the normal case.** Requiring a mark on every line made the plan unreadable and buried the few lines that owed something, so a mark is now the exception, written at the END of a bullet where the card will hang on the real sentence. Six marks: 🎯 aim · [x] have it · 📚 citation · 🔢 value · 🖼 display · 🧮 proof.
+
+
+\section{What the tab shows now, and the two halves it had never labelled}
+\textbf{The join runs both ways}: what the plan promised, against what is on disk.
+
+\begin{verbatim}
+   THE PLAN      the file . one row per bullet . each ref opens as a card
+    THE PAGE NOW  folded . the page's own divisions, as written today
+\end{verbatim}
+📌 Both halves were on screen unlabelled, and a reader could not tell them apart. The tab reads three things now: the plan file, the page \texttt{.md}, and the page's sibling plugin folders. It still writes nothing, caches nothing and calls no model; storage-less was the old invariant and only "markdown-only" was given up. Each 📚, 🔢 and 🖼 renders as the board's own evidence card: a chip in the line and a popover holding the THING itself, the reference as printed, the card's own question, the unit's own claim. Three counts are computed separately and never collapsed: **owed**, **landed**, **accepted**. The reverse direction is drawn too: a card on disk that no bullet cites shows as 🎈, which caught its own first defect within a minute of shipping. \texttt{📄 THE PAGE NOW} folds shut, because on a page whose aims carry no ids it was nine empty cards in the way.
 

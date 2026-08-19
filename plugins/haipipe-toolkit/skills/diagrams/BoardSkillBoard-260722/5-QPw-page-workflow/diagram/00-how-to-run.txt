@@ -1,0 +1,151 @@
+HOW TO RUN THE PAGE WORKFLOW                       260818, rev 2 (1645)
+=====================================================================
+rev 2 changed five things. See WHAT CHANGED at the bottom.
+
+╔═══════════════════════════════════════════════════════════════════╗
+║  STEP 1   type this in YOUR session                               ║
+║                                                                   ║
+║           /haipipe-page run <page-id> from OUTLINE                ║
+║                                                                   ║
+║  ~2 min, then it STOPS and writes                                 ║
+║    <page>/outline/<stem>-outline-v1.md                            ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════╗
+║  STEP 2   an AGENT checks it, not you                             ║
+║                                                                   ║
+║    haipipe-board-approver-agent runs approve-rules R1-R10         ║
+║    and writes ONE line:                                           ║
+║                                                                   ║
+║      checked: OK  auto 260818 - approve-rules R1-R9 pass          ║
+║      checked: --  auto 260818 - R3 fails: 6 bullets carry no mark ║
+║                                                                   ║
+║  the RUN proceeds on a passing `checked:` alone.                  ║
+║  It does NOT wait for you.                                        ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════╗
+║  STEP 3   you read it ONLY if you want to break something         ║
+║                                                                   ║
+║      STOP <what is wrong, in your own words>   <- your one move   ║
+║      "all good"                                <- the other one   ║
+║                                                                   ║
+║  a STOP outranks every agent pass under it and needs no rule.     ║
+║  saying nothing is NOT consent for the RULING, and IS fine        ║
+║  for everything else.                                             ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════╗
+║  STEP 4   type this                                               ║
+║                                                                   ║
+║           /haipipe-page run <page-id> from DRAFT                  ║
+║                                                                   ║
+║  DRAFT -> PROBE -> EVIDENCE -> REVISE -> CHECK                    ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+
+--S Your job is to BREAK, not to approve (JL ruled 260818) ----------
+
+  the test for any proposed rule:
+     can it be written down ONCE and never re-judged?
+         YES  ->  AGENT.  add it to approve-rules/<kind>-rules.md
+         NO   ->  YOU.    it is a break, not a rule
+
+  AGENT rule                    HUMAN break
+  --------------------------    ------------------------------------
+  LOCAL: this axis label,       WHOLE: only visible looking at all
+  this DOI, this button         of it at once
+  right answer, independent     depends on what you WANT it to be
+  of intent
+  output: a VERDICT             output: a PROPOSAL, do it differently
+
+  measured on 260818: the agent found 7 rule failures, 3 of them real
+  content bugs in shipped files, 1 of them FALSE MATHEMATICS printing
+  in the page PDF. It asked JL 2 questions all day.
+
+
+--S The five ticks, and who writes them now -------------------------
+
+  tick            on what                       who
+  ------------------------------------------------------------------
+  approved:       outline/<stem>-outline-v<N>   YOU, optional blanket
+  verified        each bibex/<stem>.bib entry   agent, cite-rules R1-R7
+  read:           each probe/PP<NN>/card.md     agent, value-rules R1-R8
+  accepted:       each display/<unit>/README    agent, display-rules R1-R14
+  the RULING      the Page Type's gate          YOU ONLY. no rules file.
+
+  TWO go BACKWARD when their inputs change:  read:   accepted:
+  the agent signs `auto`, never your name.
+
+
+--S Why you must TYPE it, not ask an agent --------------------------
+
+  a SUBAGENT is handed NO Workflow tool.
+
+  proved 260818, run 260818-1444-QPw00:
+    haipipe-page-orchestrator-agent declares 7 tools, was handed 4.
+    Grep missing, Glob missing, Workflow missing.
+    -> blocked, 0 steps, no receipt.
+  it was demoted at 0.3.0 to packet builder + receipt keeper.
+
+  also: a NEW agent file is invisible to the session that wrote it.
+  run  Tools/install.sh --global  then start a new session.
+
+
+--S If something goes wrong -----------------------------------------
+
+  "missing required raw-material packet field"
+      -> the packet went in as a 2nd positional arg. it belongs in
+         the args FIELD:  Workflow({scriptPath: "...", args: {...}})
+
+  it loops REVISE and never closes
+      -> the page has mechanical ERRORS of its own:
+         cli/check.py <board> | grep '^<page-file>.md'
+         board-wide errors do NOT count. page-scoped only.
+
+  audit says source-artifact-missing
+      -> fixed 260818. it now says page-path-stale and audits the
+         file it found, because the page MOVED, it did not vanish.
+
+  audit says checked-version-mismatch          <- OPEN BUG 260818
+      -> CHECK left three disagreeing version ids
+         (version_before / version_after / checked_version).
+         Surfaced by run 260818-1543-QPw00 receipt[2]. Not yet fixed.
+
+
+--S Where the detail lives ------------------------------------------
+
+  the rules an agent checks
+      board/agents/approve-rules/
+        README.md  approve-rules.md  display-rules.md
+        cite-rules.md  value-rules.md
+  the approver itself
+      board/agents/haipipe-board-approver-agent.md
+  per-phase job cards, all six fields
+      board/page-workflows/haipipe-page-workflow/ref/phase-cards.md
+  the priced worklist, one row per step
+      QPw00-page-loop.md  section 12
+  the ruling that the human breaks rather than approves
+      QPw00g-human-gate  section 6
+  the packet + receipt spec
+      board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+
+
+--S WHAT CHANGED in rev 2 -------------------------------------------
+
+  1. approving moved to an AGENT. rev 1 told you to hand-edit
+     `approved:` yourself. You still may, but nothing waits for it.
+  2. a NEW field `checked:` exists, written by the agent. rev 1 had
+     the agent writing `approved:`, which three shipped contracts
+     forbid; the collision was found by the first live approver run.
+  3. four RULES FILES exist, under board/agents/approve-rules/.
+  4. the human's job is stated: BREAK and STEER, not approve.
+  5. a fourth failure mode is listed above, checked-version-mismatch,
+     and it is still open.
+
+--S Why this file vanished once -------------------------------------
+
+  rev 1 was written at 1505 and was GONE by 1640. It was untracked,
+  and a concurrent session committed (ca6b48ea) in the same repo.
+  rev 2 is `git add`ed immediately, which is what keeps an untracked
+  file out of a sibling session's cleanup.

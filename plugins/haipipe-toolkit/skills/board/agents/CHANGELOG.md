@@ -3,6 +3,108 @@ board agents: Changelog
 
 Agent-scoped history. Versions match the agent frontmatter.
 
+## approver 0.1.0 - 2026-08-18
+
+New agent, on JL's ruling that a human's job is to BREAK, not to approve.
+
+- The cut: a rule that survives being written down belongs to an agent; a
+  judgment re-made every time, because it depends on what a person wants,
+  belongs to that person. Measured against this session: JL's six
+  interventions on 260818 were all whole-artifact breaks and proposals, and
+  not one was a mechanical check.
+- Passes four of the five ticks against `approve-rules/<kind>-rules.md`:
+  `approved:` `verified` `read:` `accepted:`. It refuses the fifth, the Page
+  Type's RULING, which has no rules file because deciding a page's own
+  question is the point of the page.
+- The default is PASS. A person's 🛑 arrives afterwards, outranks every rule
+  pass beneath it, and needs no rule to justify itself.
+- It signs `auto`, never a person's name, and it may not pass work it
+  produced.
+- It PROMOTES a break into a rule in the person's own words, with a
+  `promoted <date> from <who>'s break on <what>` stamp, so the same break
+  never recurs. A break that cannot be written down is reported as a steer
+  and adds nothing.
+- Four questions it must refuse every time are named in the file, because
+  answering one of them confidently is the failure mode it exists to avoid.
+
+## orchestrator 0.3.0 - 2026-08-18
+
+Dispatched as itself for the first time, and it cannot do the one thing it
+was named for.
+
+- Run `260818-1444-QPw00` on `QPw00-page-loop`: `blocked` at procedure step 2,
+  0 steps, no receipt. The file declares seven tools and the running instance
+  was handed four: `Grep`, `Glob` and `Workflow` were absent. **A subagent is
+  not handed the Workflow tool**, so no charter wording can make this agent the
+  dispatcher.
+- It declined to shim the controller under `node`, and that was the right
+  refusal: the controller needs `agent()`, `log()` and `phase()` as globals, and
+  supplying `agent()` itself would have collapsed producer, builder and judge
+  into one actor.
+- DEMOTED to packet builder and receipt keeper. The MAIN session invokes the
+  Workflow; this agent validates the packet before and stores plus audits the
+  result after.
+- The charter injected into the running instance was a PRE-0.2.0 copy of the
+  file on disk, so same-session edits to an agent definition do not reach an
+  agent dispatched in that session. Its third divergence was live: "Resolve
+  paths before dispatch" reads as "make it absolute", which is the exact defect
+  the 0.2.0 board-relative rule exists to stop.
+
+## orchestrator 0.2.0 - 2026-08-18
+
+The one documented call in this agent would not have worked.
+
+- The procedure showed `Workflow({scriptPath: "..."}, <packet>)`, two positional
+  arguments. The Workflow tool takes ONE object and the packet belongs in its
+  `args` field. A second positional argument is dropped, so the controller
+  would have returned `blocked · missing required raw-material packet field`
+  with an empty packet: a call-shape error wearing a caller error's message.
+  This agent has never been dispatched as itself, which is why nothing caught it.
+- `page` MUST be BOARD-RELATIVE, stated with the run it broke
+  (`260805-0216-QB8e`, absolute path plus the 260816 regroup).
+- The producer roster is now all SIX phases, matching creator 0.7.0.
+
+## reviewer 0.8.0 - 2026-08-18
+
+The judge could not name three of the seven phases it is allowed to route to.
+
+- `route:` was `CLOSE | REVISE | EVIDENCE | DRAFT | HOLD`, while the controller's
+  own `REVIEW_RESULT` schema
+  (`haipipe-board/ref/page-lifecycle.workflow.js`) accepts OUTLINE, PROBE and
+  COMPILE as well. A judge that found a page built on an unapproved shape had no
+  legal way to say so, and the nearest available word was DRAFT, which reopens
+  the promise instead of the plan.
+- `mechanical.errors` is now stated as PAGE-SCOPED in the return contract. The
+  controller forces REVISE while that number is above zero, so a board-scoped
+  count made CLOSE unreachable for every page whenever any one page had an
+  error. On `BoardSkillBoard-260722` that was four foreign errors blocking all
+  69 pages.
+
+## creator 0.7.0 - 2026-08-18
+
+The producer covered THREE of the six producer phases, and the controller
+dispatches it for all six.
+
+- `ref/page-lifecycle.workflow.js:300` hardcodes `agentType:
+  'haipipe-board-creator-agent'` for EVERY producer step, while this agent's
+  return contract declared `phase: DRAFT | EVIDENCE | REVISE`. So a run that
+  routed to OUTLINE, PROBE or COMPILE dispatched an agent whose own schema could
+  not name the phase it had just performed. Found by tracing what
+  `/haipipe-page run QPw00` would do, before running it.
+- The agent now covers OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE and COMPILE.
+- Operation names and phase names are now the SAME WORD, and the load table is
+  an identity map. `create-page` and `revise-opening` stay as the two
+  operations that are not phase names.
+- ⚠️ `operation: probe` REVERSED meaning. It meant EVIDENCE, because PROBE was
+  renamed to EVIDENCE on 260816; PROBE was split back out on 260817 as its own
+  phase ③, so `probe` now means raise-the-card and `evidence` means land-what-
+  came-back. A caller written before 260818 that sends `probe` meaning EVIDENCE
+  will now get a card raised instead of an answer landed.
+- Procedure step 6 names where each of the three non-body phases writes:
+  OUTLINE writes only `outline/`, PROBE writes only `probe/PP<NN>-<slug>/`,
+  EVIDENCE writes `bibex/`, a card's `answered` state and a frozen `intake/`.
+  Each leaves its person-reserved tick UNTICKED.
+
 ## 0.6.0 / 0.7.0 / 0.1.0 - 2026-08-04
 
 - Creator 0.6.0 gains one-phase `draft`, `probe`, and `revise` operations and

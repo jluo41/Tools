@@ -1,0 +1,3 @@
+card: PP01-keypress-double-path
+files: []
+pending: the per-key-press event log and its character count, once the device and run that produced it are named

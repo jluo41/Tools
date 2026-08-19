@@ -1,0 +1,6 @@
+card: PP01-bibex-row
+files: []
+pending: >-
+  one numbers file holding the file count and the two modification times, and
+  one excerpt file holding the quoted condition with its line numbers, once the
+  read that produced them is named: numbers .json | excerpt .txt

@@ -5,3 +5,4 @@
      a `removed` row is a person's ✕ and is never re-seeded. -->
 
 - haipipe-board
+- haipipe-writing

@@ -9,3 +9,4 @@
 - haipipe-board-routing
 - haipipe-sentence
 - haipipe-writing
+- haipipe-board-reviewer-agent

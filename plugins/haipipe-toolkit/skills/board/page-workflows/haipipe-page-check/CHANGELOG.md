@@ -1,3 +1,45 @@
+## 0.6.1 — 2026-08-18
+
+- Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §⑦, which
+  states this phase and every sibling in the SAME six fields
+  (`❓ ASKS · 📥 READS · 📤 WRITES · 🚪 EXITS · ✋ TICK · 🔀 ROUTES`). This
+  contract still owns the reasoning; the card is the readable-across-phases
+  summary, and the contract wins when they disagree.
+- Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
+  `QPw00g` when JL ruled that pages which are not phases may not carry
+  phase numbers.
+
+
+## 0.6.0 — 2026-08-18
+
+The tick roster was WRONG at 0.5.0: five, not four.
+
+- 0.5.0 rostered FOUR person-reserved ticks and omitted the probe card's `read:`,
+  whose reserving rule is `haipipe-plugin-probe`: "Only a person may tick it, and
+  a changed `target` or a re-pulled `proof/` drops the tick back."
+  Caught by an independent CHECK on `QPw00g-human-gate` the same day.
+- Recorded which two of the five REVERT on changed inputs: `read:` and
+  `accepted: ✅`. The other three do not.
+- Recorded the sixth human-reserved write that is deliberately excluded because it
+  is an ORDER and not a field: the row rank in `skill/` and `pagex/`.
+- Corrected "no single surface collects them": `haipipe-board/live/outline.py`
+  already collects four of the five, read-only, with no `<n> of <n>` count and
+  no row for the Page Type's RULING.
+
+## 0.5.0 — 2026-08-18
+
+The gate is ACCEPT-BIASED, and the four ticks are rostered (JL 260818).
+
+- Added `## ✋ The gate is ACCEPT-BIASED`, on JL's words "human should be more
+  likely to accept it": present a gate only when `mechanical_errors` for that
+  page is ZERO, so the gate is a confirmation rather than an inspection.
+- Stated the one line the bias may not move: silence is not consent, and a
+  required gate with no durable passed evidence still routes to HOLD.
+- Rostered the board's FOUR ticks a machine may never write, with the file each
+  lives on, the rule that reserves it, and its phase: `approved:` ①,
+  `verified` ④, `accepted: ✅` ⑦, the Page Type's ruling ⑦.
+- Recorded that no single surface collects the four, and pointed at `QPw00g`.
+- Added the Board page backlink: `QPw6-check` argues this phase.
 
 ## 0.4.0 — 2026-08-16
 

@@ -3,9 +3,9 @@ name: haipipe-page-workflow
 description: >-
   The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under <board>/_runs/page/, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-17"
-  summary: "The lifecycle now names the Point-to-sentence-to-evidence handoff: DRAFT writes scaffolds, PROBE performs PageX/MATCH, EVIDENCE lands the bundle, and REVISE realizes the final prose."
+  version: "0.7.0"
+  last_updated: "2026-08-18"
+  summary: "Receipts must store the page BOARD-RELATIVE and mechanical_errors must be page-scoped: both proved by auditing the only live run on 260818."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,6 +40,23 @@ haipipe-board              the machinery this skill calls, never contains
    yes           each division
                  must establish
 ```
+
+## 🔤 Four words, and none substitutes for another
+
+```text
+word         answers                    in one receipt        repeats?
+──────────────────────────────────────────────────────────────────────
+🌀 WORKFLOW  which LOOP is this?        the run itself        no
+⏱️ PHASE     which AUTHORITY acts?      `phase:`              YES
+🔢 STEP      WHERE in this run?         `step:`               never
+🔁 ROUND     which PROMISE era?         `round:`              on reopen
+```
+
+⚠️ **PHASE may not be renamed to STEP** (JL weighed it and ruled against it, 260818).
+`step` is already a field meaning the monotonic position, so one receipt would carry
+two meanings on one key. A phase is a TYPE and a step is an INSTANCE of one: in
+`260805-0216-QB8e` the single CHECK phase occupies steps 1, 3 and 5. The word must
+permit repetition, which is the same reason RUN is not ADVANCE. `QPw00 §11` argues it.
 
 Each phase may repeat, PROBE is skipped when the Page promises no claim it cannot already support, and CHECK may route back to any earlier phase.
 Which phase runs next is decided by AUTHORITY (`haipipe-page`'s authority test), not by position, which is why the verb is RUN and not ADVANCE.
@@ -81,6 +98,43 @@ EVIDENCE       PROBE + EVIDENCE   raising a card and landing it counted as one
 REVISE         REVISE + COMPILE   "the prose is right" was reported as done while
                                   the PDF carried raw <!-- --> and literal **
 ```
+
+## 🪪 Each phase in SIX fields · `ref/phase-cards.md`
+
+JL asked the question this section exists for (260818 1402): "if I want to work
+with the page workflow's each phase, what should each phase do". Every phase
+contract already answered it, and no two answered in the same fields.
+
+```text
+contract                  the fields it used
+──────────────────────────────────────────────────────────────────────
+haipipe-page-outline      owns · may do · exits · may not
+haipipe-page-probe        owns · may do · exits · may not
+haipipe-page-revise       a three-line same-promise test
+haipipe-page-check        reads · writes · does not
+haipipe-page-draft        owns · may do · exits
+haipipe-page-evidence     a six-step loop, two phases wide
+```
+
+All six are correct and none of them can be read next to another, which is what
+a person needs when choosing which phase to run. So `ref/phase-cards.md` states
+every phase ONCE, in the same six fields, in loop order:
+
+```text
+❓ ASKS     the one question the phase answers
+📥 READS    what must already exist, or the phase cannot start
+📤 WRITES   the exact path it creates or changes
+🚪 EXITS    a testable condition
+✋ TICK     the person-reserved tick, or none
+🔀 ROUTES   where it may go next
+```
+
+**The operational rule is the 🚪 EXITS row: you work a phase by satisfying it.**
+Ten cards (④ splits into its three lanes) carry five person ticks between them,
+so the other five run machine-only from start to finish.
+
+That file is a SUMMARY and this family is its source. When the two disagree, the
+phase contract wins and the card is the defect.
 
 ## 🃏 One hole, five phases, and only ONE of them opens a file
 
@@ -165,10 +219,23 @@ exercised and audited, rather than when one known edit is enough.
    materialize that phase's Related Board Pages packet with
    `haipipe-board/cli/pagecontext.py`; an invalid row or missing scope is a
    named HOLD, never omitted context.
-2. Invoke `haipipe-board/ref/page-lifecycle.workflow.js` with the packet. The
-   workflow dispatches a phase-scoped producer for OUTLINE, DRAFT, PROBE,
-   EVIDENCE, REVISE, or COMPILE, a mechanical builder/version snapshot, and a
-   fresh read-only reviewer for CHECK.
+2. Invoke `haipipe-board/ref/page-lifecycle.workflow.js` with the packet,
+   **FROM THE MAIN SESSION**, as ONE object with the packet in `args`:
+
+   ```text
+   Workflow({ scriptPath: "<abs>/…/ref/page-lifecycle.workflow.js",
+              args: <the packet, a JSON OBJECT> })
+   ```
+
+   🚫 **Do not delegate this step to a subagent.** A subagent is not handed the
+   `Workflow` tool. `haipipe-page-orchestrator-agent` declared it, was dispatched
+   for the first time on 260818, and returned `blocked` at this exact step with
+   0 steps and no receipt. That agent is a packet builder and a receipt keeper
+   since 0.3.0; the dispatch is the main session's and cannot be moved.
+
+   The workflow then dispatches a phase-scoped producer for OUTLINE, DRAFT,
+   PROBE, EVIDENCE, REVISE, or COMPILE, a mechanical builder/version snapshot,
+   and a fresh read-only reviewer for CHECK.
 3. Follow returned routes rather than a prescribed order. Only CHECK may CLOSE.
    A route to DRAFT from another phase begins a new round only when purpose or an
    Aim reopened.
@@ -207,3 +274,29 @@ haipipe-page-workflow/
 
 The executable machinery stays under `haipipe-board`: `ref/page-lifecycle.workflow.js` (the controller), `src/page_lifecycle.py` (the deterministic auditor), and `cli/pageflow.py` (the audit CLI).
 The non-interactive dispatch target is `agents/haipipe-page-orchestrator-agent.md`, which invokes this contract in a fresh context.
+
+**The Board pages that argue this family** are the `QPw` group on `BoardSkillBoard-260722`, re-cut 260818 when JL ruled one page per workflow step:
+
+```text
+🔁 QPw00  the loop itself: the time axis, RUN ≠ ADVANCE, the audit
+
+⏱️ THE PHASES · one page per phase, in loop order, each one RUNS
+🧭 QPw1  OUTLINE   ✏️ QPw2  DRAFT    📮 QPw3  PROBE
+🃏 QPw4  EVIDENCE  🖊 QPw5  REVISE   ✅ QPw6  CHECK
+   └─ QPw4's three PARALLEL lanes: 📚 QPw4c citation · 🔢 QPw4v value
+                                   · 🖼 QPw4d display intake
+
+🔧 THE MACHINE · cuts ACROSS all six. No position in time; never "runs"
+🤲 QPw00a  🎭 WHO acts       the three agent units, and the act each may never do
+🧾 QPw00r  📜 WHAT proves it the receipt per attempted phase, chained by hash
+✋ QPw00g  ⚖️ WHO says yes    the five ticks a machine may never write
+```
+
+⚠️ **7, 8 and 9 are not phases ⑦⑧⑨.** They share the group's numbering and
+nothing else: read in sequence they would say "CHECK, then agents, then
+receipts, then the gate", which is not a thing that happens. They are the run's
+three axes, actor · record · authority, and each carries its own open ruling
+(the orchestrator was never dispatched · receipts store absolute paths · no
+surface joins the five ticks), which is why they are three pages and not one.
+
+COMPILE has no page because it has no contract of its own; it is folded into `haipipe-page-revise`, and whether that fold is permanent is `QPw5`'s open ruling. Each page's `## Law` rows and its `### Decision Now` carry what its contract leaves open.

@@ -1,9 +1,0 @@
-# A concept unit states no number, so it declares no values intake.
-# The sets it states are transcribed, not remembered.
-kind: concept
-values: none
-sources:
-  - path: plugins/haipipe-toolkit/skills/board/haipipe-board/src/page_lifecycle.py
-    takes: PHASES, TERMINAL_ROUTES, LEGAL_ROUTES
-  - path: QPw1-page-loop.md
-    takes: "section 9.1, the RUN-is-not-ADVANCE ruling"

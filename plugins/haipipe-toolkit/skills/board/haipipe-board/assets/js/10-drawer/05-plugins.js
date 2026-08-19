@@ -33,6 +33,7 @@
   'use strict';
 
   var reg = [];
+  var defaultId = '';
 
   var MENUS = ['plugin', 'workflow'];
 
@@ -76,12 +77,31 @@
     });
   }
 
+  /* THE DEFAULT, and why it is a second call rather than a `register` field:
+     a plugin ships not knowing whether it wants to be the default, and the
+     answer can change (JL 260818: outline should open on a plain FAB click
+     instead of the picker every time). One id is remembered; the FAB reads
+     it and falls back to the picker when the id is unset, unknown, or does
+     not apply to the page in view — the same `applies` gate every row uses,
+     so a default never opens on a page it would refuse. */
+  function setDefault(id) { defaultId = id || ''; }
+  function getDefault(page) {
+    if (!defaultId) return null;
+    var hit = reg.filter(function (e) { return e.id === defaultId; })[0];
+    if (!hit) return null;
+    try { if (hit.applies && !hit.applies(page, pageType(page))) return null; }
+    catch (e) { return null; }
+    return hit;
+  }
+
   window.boardPlugins = {
     register: register,
     all: function () { return reg.slice(); },
     applicable: applicable,
     menus: function () { return MENUS.slice(); },
     livePage: livePage,
-    pageType: pageType
+    pageType: pageType,
+    setDefault: setDefault,
+    getDefault: getDefault
   };
 })();

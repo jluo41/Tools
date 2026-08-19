@@ -7,3 +7,4 @@
 - haipipe-board
 - haipipe-plugin-chat
 - haipipe-plugin
+- haipipe-writing

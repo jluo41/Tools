@@ -1,0 +1,5 @@
+card: PP02-pagex-link-depth
+files: []
+pending: >-
+  one table file holding link path · raw target · step count · resolves, one
+  row per symbolic link, once the walk that produced it is named: table .csv

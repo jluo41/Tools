@@ -68,7 +68,7 @@ Rewording it here without touching the file it graduated into is how the board a
   ├── 📄 haipipe-page/            SPEC · Page = TYPE x PHASE        (QPs1)
   ├── 🎭 page-types/        4 types     one folder per Page Type          (QPs2)
   ├── 🧩 page-plugins/     11 plugins   one folder per page plugin        (QPf1)
-  ├── 🔄 page-workflows/    5 units     DRAFT · PROBE · REVISE · CHECK    (QPw1)
+  ├── 🔄 page-workflows/    5 units     OUTLINE·DRAFT·PROBE·EVIDENCE·REVISE·CHECK (QPw00)
   ├── ✏️  haipipe-sentence/        SPEC · the atomic unit             (QS1)
   ├── 🔀 haipipe-board-routing/         VERB · BOTH altitudes            (QB1a)
   │      src/lanes.py                   board.md structure + one write

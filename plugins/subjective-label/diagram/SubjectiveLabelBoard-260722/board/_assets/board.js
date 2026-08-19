@@ -92,7 +92,7 @@ function boardDirPath() {
  * the category now describes something real instead of anticipating it.
  *
  * A WORKFLOW IS NOT ALWAYS A LADDER. Labeling's five doors are ordered and each is
- * locked by the one before. Page's DRAFT/PROBE/REVISE/CHECK is a loop whose CHECK
+ * locked by the one before. Page's DRAFT/EVIDENCE/REVISE/CHECK is a loop whose CHECK
  * routes BACKWARD ("RUN is deliberately not ADVANCE"), so it has a current phase and
  * legal next phases and no locks at all. Each surface computes its own dimming; the
  * registry holds no step model, which is what lets both live in one menu.
@@ -106,6 +106,7 @@ function boardDirPath() {
   'use strict';
 
   var reg = [];
+  var defaultId = '';
 
   var MENUS = ['plugin', 'workflow'];
 
@@ -149,13 +150,32 @@ function boardDirPath() {
     });
   }
 
+  /* THE DEFAULT, and why it is a second call rather than a `register` field:
+     a plugin ships not knowing whether it wants to be the default, and the
+     answer can change (JL 260818: outline should open on a plain FAB click
+     instead of the picker every time). One id is remembered; the FAB reads
+     it and falls back to the picker when the id is unset, unknown, or does
+     not apply to the page in view — the same `applies` gate every row uses,
+     so a default never opens on a page it would refuse. */
+  function setDefault(id) { defaultId = id || ''; }
+  function getDefault(page) {
+    if (!defaultId) return null;
+    var hit = reg.filter(function (e) { return e.id === defaultId; })[0];
+    if (!hit) return null;
+    try { if (hit.applies && !hit.applies(page, pageType(page))) return null; }
+    catch (e) { return null; }
+    return hit;
+  }
+
   window.boardPlugins = {
     register: register,
     all: function () { return reg.slice(); },
     applicable: applicable,
     menus: function () { return MENUS.slice(); },
     livePage: livePage,
-    pageType: pageType
+    pageType: pageType,
+    setDefault: setDefault,
+    getDefault: getDefault
   };
 })();
 
@@ -368,6 +388,10 @@ function boardDirPath() {
       },
       tab: { url: outlineUrl, write: write }
     });
+    // JL 260818: "how to make the outline be the default plugin when we
+    // open it" — a plain FAB click now goes straight here instead of the
+    // picker (50-structure.js reads this back through getDefault()).
+    window.boardPlugins.setDefault('outline');
   }
 })();
 
@@ -2505,7 +2529,7 @@ function boardDirPath() {
     }
     diag(attach ? 'REJOIN' : 'SEND', attach ? ('at cursor ' + curGet()) : msg.slice(0, 60));
     traceStart();
-    /* A REJOIN IS A PROBE, AND A PROBE THAT FINDS NOTHING MUST SAY NOTHING.
+    /* A REJOIN IS A EVIDENCE, AND A EVIDENCE THAT FINDS NOTHING MUST SAY NOTHING.
        The sync heartbeat calls this on a timer to ask whether a turn is running
        with nobody watching, so on a quiet page it fires over and over — and it
        used to paint "Rejoining" every time, then let the watchdog escalate to
@@ -2523,7 +2547,7 @@ function boardDirPath() {
        code below never reaches chatBusy(false): red stop button, dead drawer,
        nothing moving. Report the silence, then give up rather than hang. */
     var lastEv = Date.now();
-    /* A silent PROBE is the expected case, not a hang: give up in seconds and
+    /* A silent EVIDENCE is the expected case, not a hang: give up in seconds and
        without a word. A real turn keeps the long, loud timings. */
     var QUIET_WARN = attach ? Infinity : 45000;
     var QUIET_GIVEUP = attach ? 6000 : 420000;
@@ -3810,13 +3834,37 @@ function boardDirPath() {
       } });
   }
 
-  fab.onclick = function () {
+  /* JL 260818: "how to make the outline be the default plugin when we open
+     it" — a plain FAB click now opens the registry's default (outline) on
+     the page in view, same as clicking its row in the picker would; the
+     picker itself moved to #chatfabmore, right beside it. On a board/group
+     session (no live page) outline never `applies`, so getDefault() returns
+     null and the FAB falls back to its old job, opening chat. */
+  var fabMore = document.createElement('button');
+  fabMore.id = 'chatfabmore';
+  fabMore.type = 'button';
+  fabMore.setAttribute('aria-label', 'Open the plugin and chat picker');
+  fabMore.title = 'Other plugins, GUI/TUI chat, workflow';
+  fabMore.textContent = '⋯';
+  fabMore.onclick = function () {
     if (!pick.hidden) return pickClose();
+    pickOpen();
+  };
+  document.body.appendChild(fabMore);
+
+  fab.onclick = function () {
+    if (!pick.hidden) pickClose();
+    var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
+    var def = window.boardPlugins ? window.boardPlugins.getDefault(page) : null;
+    if (def) { def.open(page); return; }
     pickOpen();
   };
   function fabLbl() {
     var tgt = chatTarget();
-    fab.innerHTML = !tgt ? '\u{1F916} Board chat'
+    var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
+    var def = window.boardPlugins ? window.boardPlugins.getDefault(page) : null;
+    fab.innerHTML = def ? def.label
+                  : !tgt ? '\u{1F916} Board chat'
                   : (tgt.group ? '\u{1F916} Group chat' : '\u{1F916} Chat');
   }
   window.addEventListener('hashchange', fabLbl);
@@ -4367,18 +4415,239 @@ function boardDirPath() {
   window.boardWorkflowOpen = open;   // kept for direct calls and for the tests
 })();
 
+/* 📚 Content · the ONE reader every export shares.
+ *
+ * WHY THIS FILE EXISTS. Three surfaces now take the open page and hand it to
+ * somebody else: 🎞 Slides writes an html-ppt deck, 📕 PDF writes a print sheet,
+ * 📝 Word writes a .docx. Each of them needs the same three answers — which nodes
+ * are the page's CONTENT, what is each one called, and what has to be stripped out
+ * of a clone before it leaves the board — and the moment two of them answer
+ * differently the deck and the document stop being the same page.
+ *
+ * So the answers live here, once, and the three exports are renderers with no
+ * opinion about what a division is.
+ *
+ * CONTENT, NOT APPARATUS (JL 260812: "slides should focus on the content as well").
+ * A board page carries two different kinds of thing. `## Content` is the writing:
+ * numbered divisions of real prose, which is what a reader came for. Everything
+ * around it — Aims, States, Law, Glossary, Files, Discussion, Log — is APPARATUS:
+ * status the page keeps about itself, useful while you work on the page and noise
+ * the moment you are trying to read it. The first Slides run exported all of it, so
+ * a nine-division page arrived as twenty-two slides of which half were fold counts
+ * and log rows. `divisions()` reads `details.sect.content` and nothing else.
+ *
+ * THE FALLBACK IS NOT AN AFTERTHOUGHT. Not every page has a `## Content`: an index
+ * page, a stage hub, a page mid-DRAFT. Refusing to export those would make the menu
+ * lie about applying everywhere, so when there is no Content section the walk falls
+ * back to the whole page and SAYS SO in the returned `source`, which each renderer
+ * shows in its header strip. A silent fallback would be the worse bug: the reader
+ * would think the apparatus WAS the content.
+ */
+(function () {
+  'use strict';
+
+  function txt(node) {
+    return node ? (node.textContent || '').replace(/\s+/g, ' ').trim() : '';
+  }
+
+  /* THE AUTHOR'S WORDS, WITHOUT THE INJECTED CONTROLS. A summary is plain text in
+     the source; the anchor chips, the ⧉ copy and the 🤖 hand-off are added by the
+     board's own scripts after load. Reading only the node's direct TEXT children
+     takes what the author typed and drops every control, without this file having
+     to know their class names, which it would otherwise have to track forever.
+     The first run showed exactly what that costs: "1 · Step ① initC1C1⧉🤖". */
+  function ownText(node) {
+    if (!node) return '';
+    var s = '';
+    Array.prototype.forEach.call(node.childNodes, function (n) {
+      if (n.nodeType === 3) s += n.nodeValue;
+    });
+    return s.replace(/\s+/g, ' ').trim();
+  }
+
+  function heading(det) {
+    if (!det) return '';
+    var sm = det.querySelector(':scope > summary');
+    if (!sm) return '';
+    return ownText(sm.querySelector('.chl')) || ownText(sm) || txt(sm);
+  }
+
+  /* A clone is taken rather than the node itself, because an export must be able to
+     open what the page keeps shut without the page losing its own fold state. Every
+     control that acts on the PAGE is stripped from the copy: a copy button inside a
+     slide, a PDF or a Word file would act on a detached node, or on nothing at all,
+     and appear broken — which is worse than not being there. */
+  function clean(node) {
+    if (!node) return null;
+    var c = node.cloneNode(true);
+    /* The clone's OWN tag counts. `querySelectorAll` never returns the root, so a
+       section cloned whole kept its wrapper shut while every child inside it was
+       opened, and with the summary removed as well it rendered as a title over
+       nothing. */
+    if (c.tagName === 'DETAILS') c.open = true;
+    c.querySelectorAll('details').forEach(function (d) { d.open = true; });
+    /* `.schatbar` and `.smenu` are the SENTENCE APPARATUS, injected after load and
+       therefore invisible in the HTML on disk. On the page they are quiet controls
+       beside a sentence; cloned into an export they print as bare text, so every
+       slide of QBt1 carried a stack of "C1.P1.S1 / QBt1.C1.P1.S1" between its
+       sentences and half the slide was ids (JL 260810: "the quality is not that
+       good"). They are stripped by WRAPPER, not by the `.sidchip` inside, because
+       removing the chip alone leaves the empty bar holding its own vertical space. */
+    c.querySelectorAll('.secall,.cpy,.copy,.sb-x,.schatbar,.smenu,.shc,button')
+      .forEach(function (b) { b.parentNode && b.parentNode.removeChild(b); });
+    /* Links keep their text but stop being links: a click inside a deck that
+       navigated the frame away would look like the deck crashed, and a live href
+       means nothing at all inside a .docx. */
+    c.querySelectorAll('a').forEach(function (a) {
+      var s = document.createElement('span');
+      s.className = 'sd-was-link';
+      s.innerHTML = a.innerHTML;
+      a.parentNode.replaceChild(s, a);
+    });
+    return c;
+  }
+
+  /* The page head, which every export opens with: the id, the title, the state
+     pill and the metadata line. `.hid` holds the page id, which the kicker already
+     carries, so reading it twice printed "QG1 QG1 · page-type LABELING". */
+  function cover(page) {
+    var h2raw = page && page.querySelector('h2.h2');
+    var h2 = h2raw ? h2raw.cloneNode(true) : null;
+    if (h2) h2.querySelectorAll('.hid').forEach(function (n) { n.remove(); });
+    var pill = page && page.querySelector('.qh .pill');
+    var metas = [];
+    Array.prototype.forEach.call(
+      (page && page.querySelectorAll('.qh .mut')) || [],
+      function (m) {
+        var s = txt(m).replace(/^·\s*/, '');
+        if (s) metas.push(s);
+      });
+    return { id: (page && page.id) || '', title: txt(h2),
+             state: txt(pill), metas: metas };
+  }
+
+  /* The Opening's lead paragraph: the question the page exists to answer. It is
+     kept even though it is not inside `## Content`, because it is the one piece of
+     apparatus that is genuinely prose and reads as the abstract of everything
+     after it. Its own heading row is dropped, since the renderer supplies one. */
+  function opening(page) {
+    var op = page && page.querySelector('.opening');
+    var lead = clean(op && op.querySelector('.ask'));
+    if (!lead) return null;
+    lead.querySelectorAll('.ch, .opening-head').forEach(function (n) {
+      n.parentNode && n.parentNode.removeChild(n);
+    });
+    return txt(lead) ? lead : null;
+  }
+
+  /* The FALLBACK walk, for a page with no `## Content`. Sections are not all direct
+     children: Aims and States sit side by side inside `div.cmp`, and Law, Glossary,
+     Log and Discussion inside `div.folds`, both layout wrappers the renderer adds.
+     A walk that read only direct children lost half of every page and said nothing
+     about it. */
+  function allSections(page) {
+    var out = [];
+    Array.prototype.forEach.call(page.children, function (el) {
+      if (el.tagName === 'DETAILS') { out.push(el); return; }
+      if (el.tagName !== 'DIV') return;
+      if (/\b(qh|opening|nav)\b/.test(el.className || '')) return;
+      Array.prototype.forEach.call(el.children, function (k) {
+        if (k.tagName === 'DETAILS') out.push(k);
+      });
+    });
+    return out;
+  }
+
+  /* ── divisions ──────────────────────────────────────────────────────────────
+     -> {source:'content'|'page', items:[{kicker, title, node}]}
+
+     `source` is not decoration. 'content' means these ARE the page's `## Content`
+     divisions; 'page' means the page had none and this is every section it has,
+     apparatus included. Each renderer prints that word, so a document that is not
+     really the content never passes for the content. */
+  function divisions(page) {
+    if (!page) return { source: 'page', items: [] };
+
+    var content = page.querySelector(':scope > details.sect.content')
+               || page.querySelector('details.sect.content');
+    if (content) {
+      var csecs = content.querySelectorAll(':scope > .cbody > details.csec, '
+                                         + ':scope > details.csec');
+      var items = [];
+      Array.prototype.forEach.call(csecs, function (d) {
+        if (items.some(function (it) { return it.src === d; })) return;
+        items.push({ kicker: '', title: heading(d) || '…', src: d,
+                     node: clean(d.querySelector(':scope > .cbody') || d) });
+      });
+      /* A Content section with no divisions is a flat one: the prose sits straight
+         in its body with no numbered headings. That is still content, so it is
+         exported as a single division rather than dropped. */
+      if (!items.length) {
+        var flat = clean(content.querySelector(':scope > .cbody') || content);
+        if (flat && txt(flat)) {
+          flat.querySelectorAll(':scope > summary').forEach(function (s) {
+            s.parentNode && s.parentNode.removeChild(s);
+          });
+          items.push({ kicker: '', title: 'Content', node: flat });
+        }
+      }
+      if (items.length) return { source: 'content', items: items };
+    }
+
+    var out = [];
+    allSections(page).forEach(function (el) {
+      var label = heading(el);
+      /* One node can satisfy two of these selectors at once, and querySelectorAll
+         returns it once per match, which is how the Files section shipped its
+         Related-pages group as two identical entries. */
+      var subs = [];
+      ['details', '.cbody > details', 'div > details'].forEach(function (sel) {
+        Array.prototype.forEach.call(el.querySelectorAll(':scope > ' + sel),
+          function (s) { if (subs.indexOf(s) < 0) subs.push(s); });
+      });
+      if (subs.length) {
+        subs.forEach(function (sub) {
+          out.push({ kicker: label, title: heading(sub) || '…',
+                     node: clean(sub.querySelector(':scope > .cbody') || sub) });
+        });
+      } else {
+        var inner = el.cloneNode(true);
+        var sm = inner.querySelector(':scope > summary');
+        if (sm) sm.parentNode.removeChild(sm);
+        out.push({ kicker: '', title: label, node: clean(inner) });
+      }
+    });
+    return { source: 'page', items: out };
+  }
+
+  function pageFile(page) {
+    return (page && page.getAttribute('data-file')) || '';
+  }
+
+  function boardOf() {
+    try { return boardPath(); } catch (e) { return location.pathname; }
+  }
+
+  window.boardContent = {
+    txt: txt, ownText: ownText, heading: heading, clean: clean,
+    cover: cover, opening: opening, divisions: divisions,
+    pageFile: pageFile, board: boardOf
+  };
+})();
+
 /* 📄 Page phases · the page family's own workflow, registered into the 🪜 menu.
  *
  * THE SECOND MEMBER. The registry's Workflow group was reserved for exactly this
  * (05-plugins.js: "Page's four phases arrive as the second member"). Labeling is a
- * LADDER — each door locked by the one before; this is a LOOP — DRAFT/PROBE/REVISE/
- * CHECK selected by authority, CHECK routes backward, and only CHECK may CLOSE. So
- * this surface lights the last acted phase and names where it routed; it draws no
- * locks, because the loop has none.
+ * LADDER — each door locked by the one before; this is a LOOP — OUTLINE/DRAFT/PROBE/
+ * EVIDENCE/REVISE/COMPILE/CHECK selected by authority, CHECK routes backward, and
+ * only CHECK may CLOSE. So this surface lights the last acted phase and names where
+ * it routed; it draws no locks, because the loop has none. SEVEN since 260817, four
+ * before it: haipipe-page-workflow §"Why each split" carries the reason for each.
  *
  * INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开").
- * The LEFT column is an index — ① ✏️ DRAFT, ② 🔍 PROBE, ③ 🖊 REVISE, ④ ✅ CHECK,
- * names only — and the RIGHT column holds the selected phase's content plus the run
+ * The LEFT column is an index — ① 🧭 OUTLINE … ⑦ ✅ CHECK, names only, one row per
+ * phase — and the RIGHT column holds the selected phase's content plus the run
  * record, the same left-index-right-content language the board itself speaks. The
  * layout classes (`wf-cols` / `wf-index` / `wf-ix` / `wf-main`) live in
  * 85-workflow.css and are SHARED with 🏷 Labeling: the ruling was about what a
@@ -4403,16 +4672,38 @@ function boardDirPath() {
   'use strict';
 
   var PHASES = [
+    { id: 'OUTLINE', icon: '🧭', name: 'OUTLINE', skill: 'haipipe-page-outline',
+      job: 'agree the SHAPE: sections, paragraphs, bullets, and what each owes' },
     { id: 'DRAFT',  icon: '✏️',  name: 'DRAFT',  skill: 'haipipe-page-draft',
-      job: 'define or reopen the purpose, Aims, and promised shape' },
-    { id: 'PROBE',  icon: '🔍', name: 'PROBE',  skill: 'haipipe-page-probe',
-      job: 'resolve a consequential unknown across the evidence wall' },
+      job: 'plan it: purpose, Aims, and each division’s own promise' },
+    { id: 'PROBE',  icon: '📮', name: 'PROBE', skill: 'haipipe-page-probe',
+      job: 'turn each outline mark into a card, point it at its bullets, and ask' },
+    { id: 'EVIDENCE', icon: '🔍', name: 'EVIDENCE', skill: 'haipipe-page-evidence',
+      job: 'land every promised claim\u2019s card: citation, value, display intake' },
     { id: 'REVISE', icon: '🖊', name: 'REVISE', skill: 'haipipe-page-revise',
-      job: 'improve the realization while purpose and Aims stay fixed' },
+      job: 'write the prose, citing every landed card by id' },
+    { id: 'COMPILE', icon: '📄', name: 'COMPILE', skill: 'haipipe-page-revise',
+      job: 'rebuild latex, pdf and word from that prose' },
     { id: 'CHECK',  icon: '✅',       name: 'CHECK',  skill: 'haipipe-page-check',
-      job: 'judge one version and route its next authority; only CHECK may CLOSE' }
+      job: 'judge the BUILT version and route its authority; only CHECK may CLOSE' }
   ];
-  var NUM = ['①', '②', '③', '④'];
+  /* PROBE means two different phases depending on WHEN the receipt was written:
+     it was EVIDENCE's name from 260816 until 260817, when PROBE became a phase
+     of its own again (raise the card and ask; EVIDENCE lands what comes back).
+     Receipts on disk are immutable, so the token resolves against the run's own
+     date rather than through a global alias, which would relabel every future
+     PROBE as EVIDENCE. An unparseable date reads as CURRENT. */
+  var PROBE_SPLIT = 260817;
+  function runDate(run) {
+    var m = /^(\d{6})/.exec((run && run.run_id) || '');
+    return m ? parseInt(m[1], 10) : PROBE_SPLIT;
+  }
+  function phaseId(v, run) {
+    v = String(v || '').toUpperCase();
+    if (v === 'PROBE' && runDate(run) < PROBE_SPLIT) return 'EVIDENCE';
+    return v;
+  }
+  var NUM = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
 
   function pageFile(page) {
     return (page && page.getAttribute('data-file')) || '';
@@ -4448,8 +4739,9 @@ function boardDirPath() {
      last route when one exists and is a phase; else CHECK, the run contract's
      default for an existing page whose next need is unknown. */
   function nextPhase(run) {
-    if (run && run.last && PHASES.some(function (p) { return p.id === run.last.route; })) {
-      return run.last.route;
+    var last = run && run.last ? phaseId(run.last.route, run) : '';
+    if (last && PHASES.some(function (p) { return p.id === last; })) {
+      return last;
     }
     return 'CHECK';
   }
@@ -4459,8 +4751,8 @@ function boardDirPath() {
     var file = pageFile(page);
     var runs = (data && data.runs) || [];
     var cur = runs[0] || null;
-    var lastPhase = cur && cur.last ? cur.last.phase : '';
-    var route = cur && cur.last ? cur.last.route : '';
+    var lastPhase = cur && cur.last ? phaseId(cur.last.phase, cur) : '';
+    var route = cur && cur.last ? phaseId(cur.last.route, cur) : '';
     var closed = cur && (cur.status === 'closed' || route === 'CLOSE');
     var next = nextPhase(cur);
     var sel = lastPhase || next;      // the phase whose content opens first
@@ -4468,7 +4760,7 @@ function boardDirPath() {
     function visits(pidPhase) {
       if (!cur) return 0;
       return (cur.trail || []).filter(function (r) {
-        return String(r.phase).toUpperCase() === pidPhase;
+        return phaseId(r.phase, cur) === pidPhase;
       }).length;
     }
 
@@ -4516,9 +4808,9 @@ function boardDirPath() {
       var runBlock;
       if (cur) {
         var edges = (cur.trail || []).map(function (r) {
-          return esc(r.phase) + (r.verdict ? '(' + esc(r.verdict) + ')' : '');
+          return esc(phaseId(r.phase, cur)) + (r.verdict ? '(' + esc(r.verdict) + ')' : '');
         });
-        if (cur.last && cur.last.route) edges.push(esc(cur.last.route));
+        if (cur.last && cur.last.route) edges.push(esc(phaseId(cur.last.route, cur)));
         runBlock =
           '<div class="pf-run">'
           + '<div class="wf-dh">' + (closed ? '🏁' : '🧭') + ' '
@@ -4653,7 +4945,7 @@ function boardDirPath() {
     window.boardPlugins.register({
       id: 'pageflow',
       label: '📄 Page phases',
-      hint: 'where this page stands in DRAFT · PROBE · REVISE · CHECK',
+      hint: 'where this page stands in DRAFT · EVIDENCE · REVISE · CHECK',
       menu: 'workflow',
       applies: function (page) {
         var name = pageFile(page).split('/').pop();
@@ -5513,6 +5805,134 @@ function boardDirPath() {
       id: 'pagex',
       label: '🔗 Pagex',
       hint: 'files this page borrows from other pages, linked live',
+      menu: 'plugin',
+      applies: function (page) { return !!pageFile(page); },
+      open: function (page) {
+        write(page, function (j) {
+          if (j.url) window.open(j.url + '?plain', '_blank', 'noopener');
+        }, function (e) { alert('⚠ ' + e); });
+      },
+      tab: {
+        url: function (page) { return savedUrl(page); },
+        write: write
+      }
+    });
+  }
+})();
+
+/* 🗂 Task · the page's citations into the repo's TASK FOLDERS (QPf13).
+ *
+ * WHAT THIS FILE OWNS, one thing: WHERE the linked-task view lives and which
+ * door writes it. The store, the minter, and the pen all live server-side in
+ * live/task.py; this entry only names the saved view and the re-mint door,
+ * pagex's own split.
+ */
+(function () {
+  'use strict';
+
+  function pageFile(page) {
+    return (page && page.getAttribute('data-file')) || '';
+  }
+
+  function board() {
+    try { return boardPath(); } catch (e) { return location.pathname; }
+  }
+
+  /* folded page -> <dir>/<stem>/task/<stem>-view.html; a flat page falls
+     back to the board-level task/ home, the same fork every plugin takes. */
+  function savedUrl(page) {
+    var f = pageFile(page);
+    if (!f) return '';
+    var p = decodeURIComponent(location.pathname || '');
+    var cut = p.lastIndexOf('/board/');
+    if (cut < 0) return '';
+    var base = p.slice(0, cut);
+    var m = f.match(/^(.*)\/([^\/]+)\/\2\.md$/);
+    if (m) return base + '/' + m[1] + '/' + m[2] + '/task/' + m[2] + '-view.html';
+    var stem = (f.split('/').pop() || '').replace(/\.md$/, '');
+    return stem ? base + '/task/' + stem + '-view.html' : '';
+  }
+
+  function write(page, cb, err) {
+    fetch('/_board/task', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: board(), file: pageFile(page) })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { err && err(j.err || 'the task view did not build'); return; }
+        cb(j);
+      })
+      .catch(function (e) { err && err(String(e)); });
+  }
+
+  if (window.boardPlugins) {
+    window.boardPlugins.register({
+      id: 'task',
+      label: '🗂 Task',
+      hint: 'task folders this page is written about, linked live',
+      menu: 'plugin',
+      applies: function (page) { return !!pageFile(page); },
+      open: function (page) {
+        write(page, function (j) {
+          if (j.url) window.open(j.url + '?plain', '_blank', 'noopener');
+        }, function (e) { alert('⚠ ' + e); });
+      },
+      tab: {
+        url: function (page) { return savedUrl(page); },
+        write: write
+      }
+    });
+  }
+})();
+
+/* 🗣 Meeting · a page's own kept record of a conversation (QPf14).
+ *
+ * WHAT THIS FILE OWNS, one thing: WHERE the meeting view lives and which
+ * door writes it. Listing kept meetings and landing a new one both live
+ * server-side in live/meeting.py; this entry only names the saved view and
+ * the refresh door, the same split every plugin holds.
+ */
+(function () {
+  'use strict';
+
+  function pageFile(page) {
+    return (page && page.getAttribute('data-file')) || '';
+  }
+
+  function board() {
+    try { return boardPath(); } catch (e) { return location.pathname; }
+  }
+
+  function savedUrl(page) {
+    var f = pageFile(page);
+    if (!f) return '';
+    var p = decodeURIComponent(location.pathname || '');
+    var cut = p.lastIndexOf('/board/');
+    if (cut < 0) return '';
+    var base = p.slice(0, cut);
+    var m = f.match(/^(.*)\/([^\/]+)\/\2\.md$/);
+    if (m) return base + '/' + m[1] + '/' + m[2] + '/meeting/' + m[2] + '-view.html';
+    var stem = (f.split('/').pop() || '').replace(/\.md$/, '');
+    return stem ? base + '/meeting/' + stem + '-view.html' : '';
+  }
+
+  function write(page, cb, err) {
+    fetch('/_board/meeting', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: board(), file: pageFile(page) })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { err && err(j.err || 'the meeting view did not build'); return; }
+        cb(j);
+      })
+      .catch(function (e) { err && err(String(e)); });
+  }
+
+  if (window.boardPlugins) {
+    window.boardPlugins.register({
+      id: 'meeting',
+      label: '🗣 Meeting',
+      hint: "this page's own kept meeting notes",
       menu: 'plugin',
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {
@@ -6690,158 +7110,30 @@ document.addEventListener('click', function (ev) {
   window.__boardWireDecisionCopy = wire;
 })();
 
-/* ── QD8 · activity timing and layout ───────────────────────────────────
-   Timing is runtime data, so it is enhancement-only by definition. The static
-   shell above still explains the measurement when this script or serve.py is
-   absent. HEAD polling never counts as activity. Only a visible, non-idle span
-   sends heartbeats, and the server stores completed seconds outside Git. */
-(function () {
-  var PULSE = 30000, IDLE = 5 * 60 * 1000;
-  var span = '', seq = 0, lastAction = Date.now(), changed = false;
-  var tab = '', spanContext = null, idleTimer = null;
-  try {
-    tab = sessionStorage.getItem('board-activity-tab') || '';
-    if (!tab) {
-      tab = (crypto.randomUUID ? crypto.randomUUID() :
-        Date.now().toString(36) + Math.random().toString(36).slice(2));
-      sessionStorage.setItem('board-activity-tab', tab);
-    }
-  } catch (e) {
-    tab = Date.now().toString(36) + Math.random().toString(36).slice(2);
-  }
+/* ── the Activity readout ───────────────────────────────────────────────
+   Runtime data, so it is enhancement-only by definition: the static shell
+   above still explains the measurement when this script or serve.py is
+   absent. One POST on load, one more whenever the page reports a write.
 
+   The FOCUS TIMER that used to live here was deleted on 260816 (JL: keep the
+   log tracker, drop the rest). It wrote browser spans into a SQLite file at
+   `.haipipe-board/activity.sqlite3` that nothing ever read back, and it was
+   also, accidentally, what fetched this readout: every heartbeat returned the
+   stats and the panel drew them. So the display had to be given a request of
+   its own before the timer could go, which is this. */
+(function () {
   function escAct(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function fmtAct(sec) {
-    sec = Math.max(0, Math.round(Number(sec) || 0));
-    if (sec < 60) return sec ? '<1m' : '0m';
-    var min = Math.round(sec / 60);
-    if (min < 60) return min + 'm';
-    var h = Math.floor(min / 60), rem = min % 60;
-    return h + 'h' + (rem ? ' ' + rem + 'm' : '');
-  }
-  function context() {
-    var id = (location.hash || '').slice(1);
-    var row = null;
-    document.querySelectorAll('a.ir[href^="#"]').forEach(function (r) {
-      if (r.getAttribute('href') === '#' + id) row = r;
-    });
-    if (!row) return { page: 'board', group: '', title: 'Whole board' };
-    var p = row.previousElementSibling;
-    while (p && !p.classList.contains('grp')) p = p.previousElementSibling;
-    return {
-      page: (row.querySelector('.i') || {}).textContent || id,
-      group: p ? p.getAttribute('data-g') || '' : '',
-      title: (row.querySelector('.t') || {}).textContent || id
-    };
-  }
-  function actor() {
-    try { return localStorage.getItem('board-user-last') || 'JL'; }
-    catch (e) { return 'JL'; }
-  }
-  function payload(op, active, reason, activeUntil) {
-    var c = spanContext || context();
-    var p = {
-      op: op, path: boardPath(), span: span, page: c.page,
-      group: c.group, title: c.title, actor: actor(),
-      active: active !== false, changed: changed, reason: reason || ''
-    };
-    if (activeUntil) p.active_until = activeUntil / 1000;
-    return p;
-  }
+
   function status(text, cls) {
     var s = document.getElementById('activity-status');
     if (!s) return;
     s.textContent = text;
     s.className = 'act-status' + (cls ? ' ' + cls : '');
   }
-  function post(p, beacon) {
-    var raw = JSON.stringify(p);
-    if (beacon && navigator.sendBeacon) {
-      navigator.sendBeacon('/_board/activity',
-        new Blob([raw], { type: 'application/json' }));
-      return;
-    }
-    fetch('/_board/activity', {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: raw
-    }).then(function (r) {
-      if (!r.ok) throw new Error(String(r.status));
-      return r.json();
-    }).then(function (data) {
-      if (p.changed && p.span === span) changed = false;
-      render(data);
-    }).catch(function () {
-      status('timing unavailable', '');
-    });
-  }
-  function begin() {
-    if (span || document.hidden) return;
-    spanContext = context();
-    span = tab + ':' + (++seq) + ':' + Date.now().toString(36);
-    post(payload('start', true), false);
-    scheduleIdle();
-  }
-  function clearIdle() {
-    if (idleTimer) window.clearTimeout(idleTimer);
-    idleTimer = null;
-  }
-  function scheduleIdle() {
-    clearIdle();
-    if (!span || document.hidden) return;
-    var due = lastAction + IDLE;
-    idleTimer = window.setTimeout(function stopAtIdleBoundary() {
-      idleTimer = null;
-      if (!span || document.hidden) return;
-      if (Date.now() < due) {
-        scheduleIdle();
-        return;
-      }
-      finish(false, 'idle', due);
-      status('paused', '');
-    }, Math.max(0, due - Date.now()));
-  }
-  function finish(beacon, reason, activeUntil) {
-    if (!span) return;
-    var p = payload('stop', true, reason || 'stop', activeUntil);
-    span = '';
-    spanContext = null;
-    changed = false;
-    clearIdle();
-    post(p, beacon);
-  }
-  function pulse() {
-    if (document.hidden || Date.now() - lastAction >= IDLE) {
-      finish(false, document.hidden ? 'hidden' : 'idle',
-        document.hidden ? 0 : lastAction + IDLE);
-      status('paused', '');
-      return;
-    }
-    if (!span) begin();
-    else post(payload('pulse', true), false);
-  }
-  function touch() {
-    lastAction = Date.now();
-    if (!span && !document.hidden) begin();
-    else scheduleIdle();
-  }
-  ['pointerdown','keydown','wheel','touchstart','scroll'].forEach(function (name) {
-    window.addEventListener(name, touch, { passive: true });
-  });
-  window.addEventListener('hashchange', function () {
-    finish(false, 'page-change'); lastAction = Date.now(); begin();
-  });
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) finish(true, 'hidden');
-    else { lastAction = Date.now(); begin(); }
-  });
-  window.addEventListener('pagehide', function () { finish(true, 'pagehide'); });
-  window.addEventListener('board:updated', function () {
-    changed = true;
-    if (span) post(payload('pulse', true), false);
-  });
 
   /* ── the dashboard counts UPDATES, not time (QD8 -> QC2, JL 260726) ──────
      "I don't care about the time. What I care is about the numbers of
@@ -6968,9 +7260,21 @@ document.addEventListener('click', function (ev) {
   }
 
 
+  function load() {
+    fetch('/_board/activity', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: 'stats', path: boardPath() })
+    }).then(function (r) {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json();
+    }).then(render).catch(function () {
+      status('counts unavailable', '');
+    });
+  }
+  window.addEventListener('board:updated', load);
+
   status('reading logs', '');
-  begin();
-  setInterval(pulse, PULSE);
+  load();
 })();
 
 

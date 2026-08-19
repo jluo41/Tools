@@ -14,23 +14,29 @@ a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
  padding:10px 12px;margin:0 0 10px}
 .card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
 .miss{border-color:#c66;}
-</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPf8-bibex</h1><p class='mut'>compiled by xelatex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.pdf' download>⬇ QPf8-bibex.pdf</a></p><iframe src='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.pdf?t=1786825537228758590' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPf8-bibex.tex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.tex' download>⬇ download</a></summary><pre>% GENERATED from QPf8-bibex.md by md2tex.py. Do not hand-edit: sync is
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPf8-bibex</h1><p class='mut'>compiled by xelatex · <a href='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.pdf' download>⬇ QPf8-bibex.pdf</a></p><iframe src='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.pdf?t=1786990615528811901' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPf8-bibex.tex · <a href='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf8-bibex/latex/QPf8-bibex.tex' download>⬇ download</a></summary><pre>% GENERATED from QPf8-bibex.md by md2tex.py. Do not hand-edit: sync is
 % one-way and the next run overwrites this file.
 
-\section{The contract}
+\section{One file is yours, the rest is rebuilt}
+\textbf{A MIXED plugin, like display/}: one file a person rules, and files a rebuild may replace.
+
 \begin{verbatim}
   &lt;page&gt;/bibex/
     &lt;stem&gt;.bib          PRIMARY . the page's citation store . committed
                           header says: edits welcome, refresh only APPENDS
     &lt;stem&gt;-bib.html     DERIVED . the workbench view, regenerated freely
-  flat page fallback: &lt;board&gt;/bibex/ . deck.py's own fork
+    .board-refs.bbl     DERIVED . the formatted references, for the word export
+  flat page fallback: &lt;board&gt;/bibex/
 \end{verbatim}
-Seeding resolves a cited key against the paper's \texttt{0-*.bib} upward and copies the entry whole into the page bib; the upstream file is read and never written. A refresh re-scans the page's keys, imports what has become resolvable, and regenerates the view; an entry already in the page bib is never overwritten and never deleted, because a person may have edited it. An entry no longer cited on the page stays, marked \texttt{not cited on this page}, so removing a sentence never silently drops its source. A cite inside a code fence or backticks is stripped before scanning: a figure showing the syntax is an illustration, not a citation.
+📌 The page's \texttt{.bib} is yours to write and is never overwritten, while the card view and the formatted references are rebuilt for you at any time. The \texttt{.board-refs.bbl} comes from no door at all: the word export runs \texttt{cli/refs.py} over this bib whenever the bib is newer, so the .docx prints the in-text labels and the References list. Filling looks a cited key up in the paper's \texttt{0-*.bib}, searching upward, and copies the whole entry into the page bib. The paper file is read and never written. A refresh scans the page's keys again, brings in what can now be found, and draws the view again. An entry already in the page bib is never overwritten and never deleted, because a person may have edited it. An entry no longer cited on the page stays, marked \texttt{not cited on this page}, so cutting a sentence never quietly drops its source. A cite inside a code fence or backticks is stripped before the scan, because a figure showing the syntax is a picture, not a citation.
 
-\section{The workbench}
+
+\section{What a person can do to an entry, and what the machine may not}
+\textbf{What a person does on a card}: check, mark, fix, add.
+
 \begin{verbatim}
-   checked . JL 260815  [undo]     the tick writes verified = {JL 260815}
-   unchecked  [ I checked this]    INTO the entry . travels with it,
+  [x] checked . JL 260815  [undo]     the tick writes verified = {JL 260815}
+  [ ] unchecked  [ I checked this]    INTO the entry . travels with it,
                                       no sidecar to drift
    Scholar .  DOI .  URL        the links the checking happens through
    raw bibtex .  edit  [save]     fix a field, replace in place
@@ -38,21 +44,26 @@ Seeding resolves a cited key against the paper's \texttt{0-*.bib} upward and cop
      [ paste]  done                 verbatim in the page bib
    add a citation                    same pen, for uncited sources
 \end{verbatim}
-The ✓ is the page's answer to "did I check this link myself": nobody but a person clicks it, the field records who and when, and undo removes it. The pen validates shape only, one balanced entry with a key, and refuses a duplicate key unless the save is an explicit replace; it never composes, completes, or corrects the text, which is the line between a pen and an author. The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar's Cite → BibTeX link, or a paper URL, and the bibtex is fetched WHOLE from that source into the box for review, so fetching is copying and landing stays the person's second click. An unusable fetched key, such as doi.org's URL-as-key, is renamed to surname+year mechanically, because a key is a local handle and not metadata. The whole raw \texttt{.bib} sits one fold from the cards, path printed, because the file is the person's and hand-editing it is legal. The store's first lived entry is JL's own KDD paper \citep{luo2026eventglucose}, landed through the pen on 260815 and cited here so this very page renders the inline link and the References block the binding produces.
+📌 A person ticks, fixes, and pastes, and the machine only copies text whole and never writes a reference itself. The ✓ answers one question: did I check this link myself? Nobody but a person clicks it, the field records who and when, and undo takes it away. The edit buttons check the shape only, one balanced entry with a key. They refuse a repeated key unless the save says outright that it replaces the old one. They never write, finish, or fix the text itself, and that is the line between a pen and an author. The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar's Cite to BibTeX link, or a paper URL. The bibtex is then fetched WHOLE from that source into the box. Fetching is copying, so the fetched text sits in the box for review, and landing it stays the person's second click. A fetched key you cannot use, such as doi.org's URL-as-key, is renamed to surname plus year by rule, because a key is a local handle and not information about the paper. The whole raw \texttt{.bib} opens right below the cards, with its path printed. The file is the person's, and editing it by hand is allowed. This page's own file holds one entry, JL's KDD paper \citep{luo2026eventglucose}. It is cited here so the page draws the inline link and the References block that the binding makes.
 
-\section{The surface}
+
+\section{How the tab gets on screen}
+\textbf{The 📚 tab}: framed the way the slide tab is, from a registry entry, a HEAD probe, and an iframe, with the view carrying its own buttons.
+
 \begin{verbatim}
   82-plugin-exports.js --POST--&gt; /_board/bibex --&gt; refresh + view
   tab.url()  names bibex/&lt;stem&gt;-bib.html . HEAD hit &gt; frame it
-  the view's buttons POST bibex-verify / bibex-entry themselves and
-  reload . lit-click on the tab &gt; REFRESH, the derived half only
+  the view's own buttons POST bibex-verify / bibex-entry, then reload
+  clicking the  tab while it is open &gt; the refresh door again
 \end{verbatim}
+📌 The 📚 tab frames a page the server wrote, and the buttons inside that page talk to the server on their own. Clicking a tab that is already open rebuilds what that tab shows, so the second click on 📚 is the refresh: it draws the view again and appends any import the paper bib can now resolve, and it touches no entry already there.
+
 </pre></details><script>
 document.getElementById('rebuild').onclick = function () {
   var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
   fetch('/_board/latex', {method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({path: "/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "QPf-page-folder/QPf8-bibex/QPf8-bibex.md"})})
+    body: JSON.stringify({path: "/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "4-QPf-page-folder/QPf8-bibex/QPf8-bibex.md"})})
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (j.ok) { location.reload(); return; }

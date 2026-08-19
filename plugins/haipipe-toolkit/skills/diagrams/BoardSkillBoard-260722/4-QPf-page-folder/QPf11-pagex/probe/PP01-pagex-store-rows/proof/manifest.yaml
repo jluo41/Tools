@@ -1,0 +1,5 @@
+card: PP01-pagex-store-rows
+files: []
+pending: >-
+  one table file holding order · path · note · seed number, one row per list
+  row, once the read that produced it is named: table .csv

@@ -98,7 +98,7 @@ Every id here is a link: a group token opens the index at that group, a page id 
 
   QA00 ──places───▶  every folder above     QPs1 ──defines──▶ the base page
   QB2  ──renders──▶  this Index             QPf1 ──rules───▶  <name>/<name>.md
-  QPw1 ──times────▶  every page's loop      QS1  ──owns────▶  the atomic unit
+  QPw00 ─times────▶  every page's loop      QS1  ──owns────▶  the atomic unit
   QF1  ──proves───▶  every page change      QA6  ──lists───▶  every shipped unit
 
   every id above is a LINK · retired ids keep resolving through ## Links
@@ -221,8 +221,13 @@ A page is `<name>/<name>.md` and every subfolder of it is a plugin (JL 260815); 
                        borrow FILES from other pages as symlinks
 🧭 outline             QPf12 the outline meta-surface · the page re-read
                        per division from §N anchors, live, storage-less
-⬜ debt                the boundary page · meeting · fixture
-                       plugin pages, born as each contract is written
+🗂 task                QPf13 the task plugin · the fourth citation twin:
+                       borrow whole task FOLDERS as symlinks, status
+                       read live from plan.yaml / report.yaml / QA/
+🗣 meeting             QPf14 the meeting plugin · a page's own kept
+                       record of a conversation, standalone (260818)
+⬜ debt                the fixture plugin page, born once its own
+                       contract is written
 ```
 QPf1-folder.md
 QPf2-draw-attach.md
@@ -240,22 +245,97 @@ QPf9-probe.md
 QPf10-skill.md
 QPf11-pagex.md
 QPf12-outline.md
+QPf13-task.md
+QPf14-meeting.md
 ### QPw · Page-Workflow
-How a page MOVES: the loop, and the hands that run it when no person is in the room.
-Design-6 became QPw2 on 260816, when the Design kind folded into the Q series: the unit rides the Q page that argues it.
+How a page MOVES, in two halves that must not be read as one sequence: `QPw1`-`QPw6` are the PHASES, one page per phase, in loop order, and each one RUNS; `QPw00a`-`QPw00g` are the MACHINE, which cuts across every phase and never runs at all. JL 260818: "Please explain what is 7, 8, 9??? I still don't get it?" - the numbering was the whole confusion, because read in sequence it says "CHECK, then agents, then receipts, then the gate", which is not a thing that happens.
+Design-6 became QPw00a on 260816 (renamed off the coined word "hands" on 260818, JL: "why I don't understand 7 specifically"), when the Design kind folded into the Q series: the unit rides the Q page that argues it.
+Renumbered 260818 (JL): the loop became `QPw00`, the group holder, on `QA00`'s precedent; the six phases took `QPw1`-`QPw6` in loop order; the hands moved to the tail. JL ruled the human gate LAST of all, and ruled it accept-biased: the machine must clear every mechanical finding before a person is asked to sign.
 
 ```text
-🔁 the loop        QPw1  DRAFT · PROBE · REVISE · CHECK, the time axis
-                        carries the five page-workflows units in skill/:
-                        the head that owns RUN, plus one per phase
-🤲 the hands       QPw2  the three dispatched agents, each named by the
-                        act it may never do: the producer never judges,
-                        the judge never repairs, the controller never
-                        edits prose · carries all three in skill/
-⬜ debt            the `_runs/` receipt contract still has no page
+🔁 the loop        QPw00 the TIME AXIS only: seven phases, non-linear routing,
+                        rounds, RUN ≠ ADVANCE, the DRAFT⇄REVISE test, and
+                        Page Type vs Page Phase as separate axes
+── ⏱️ THE PHASES · QPw1-QPw6, in loop order, each one RUNS ────────────
+
+🧭 outline         QPw1  the MARK · the plan down to the POINT, each bullet
+                        marked · exits on NOTHING but a person's `approved:`
+                        the cheapest gate on the board: one screen, rejectable
+                        in ten seconds, and it costs the prose after
+✏️ draft           QPw2  the AIM + the sentence scaffold with visible holes;
+                        JL's words: convert the outline's bullets into
+                        sentences · the stake a card will carry is written HERE,
+                        which is why no card may exist before this phase ends
+📮 probe           QPw3  the CARD · PageX/MATCH before new work, then
+                        probe/PP<NN>-<slug>/ + `serves:` + dispatch
+                        ⬜ born from haipipe-page-probe, 228 lines
+🃏 evidence        QPw4  the CONTRACT page for three lane faces: the shared
+                        exit test, the six-step loop split, and the Evidence
+                        Bundle join keyed by Outline Point
+📚 citation        QPw4c a PERSON lands the entry verbatim into bibex/ and
+                        ticks `verified` · a machine may subset or transcribe
+                        bibtex and may NEVER compose it · one verified entry
+                        exists board-wide, on QPf4
+🔢 value           QPw4v the BANK answers, bound BY PATH to a real QA file,
+                        with proof/ pulled · then `read:` 🧑, the tick that
+                        permits quoting · 3 cards board-wide, 0 read
+🖼 display         QPw4d this lane FREEZES intake/ and names the renderer,
+                        and never draws · the unit outlives 3 phases:
+                        ① EVIDENCE ②③④ REVISE ⑤ CHECK · 4 units board-wide
+                        and every intake is UNFROZEN
+                        ⚖️ split from QPw4 on 260818: JL ruled it three times
+🖊 revise          QPw5  the SENTENCE · cite landed cards by id, render, pick,
+                        build, and COMPILE until compile earns its own split
+                        ⬜ born from haipipe-page-revise, 158 lines
+✅ check           QPw6  the ROUTE · CLOSE|REVISE|EVIDENCE|DRAFT|HOLD, judged on
+                        the BUILT pdf and docx, never by its own producer
+                        ⬜ born from haipipe-page-check, 158 lines
+
+── 🔧 THE MACHINE · QPw00a-QPw00g cut ACROSS all six phases ──────────────
+   They have no position in time and never "run". Three axes of one run:
+   🎭 QPw00a WHO acts · 📜 QPw00r WHAT proves it ran · ⚖️ QPw00g WHO says yes.
+   Three separate pages because each carries its own open ruling, and one
+   merged page would hold three unrelated Decision Now blocks.
+
+🤖 the agents      QPw00a  🎭 WHO ACTS · the ROSTER of the three agent units that run a
+                        page when no person is in the loop, each at its own
+                        maturity with its own debt: haipipe-board-creator-agent
+                        (never judges) · haipipe-board-reviewer-agent (never
+                        repairs) · haipipe-page-orchestrator-agent (never edits
+                        prose) · all three snapshotted in skill/
+                        ⚠️ the ROLE SEPARATION rule itself belongs to QPw00 §9.3;
+                        this page owns the roster and the per-unit debt only
+🧾 the receipts    QPw00r  📜 WHAT PROVES IT · _runs/page/ · one receipt per ATTEMPTED phase, chained
+                        by sha256, the seven invariants, and an auditor that
+                        REHASHES rather than trusting the receipt · carries the
+                        one live run 260805-0216-QB8e and the 11 defects it
+                        returned against its own contract · closes the ⬜ debt line
+✋ the human gate  QPw00g  ⚖️ WHO SAYS YES · LAST, by JL's 260818 ruling: the FIVE
+                        ticks a machine may never write (`approved:` on the
+                        outline · `verified` on a bibex entry · `read:` on a
+                        probe card · `accepted: ✅` on a display README · the
+                        Page Type's ruling), today in 3 phases and N files with
+                        0 surfaces joining them · accept-biased: the gate opens
+                        only when the 8 routed mechanical findings are zero (10
+                        are emitted), and silence is still never consent
+                        🔴 the only page born empty, and being empty IS its question
+⛔ COMPILE gets no page: zero lines of its own, folded into haipipe-page-revise.
+   Whether that fold is permanent is QPw5's Decision Now row, since the loop's
+   vocabulary names seven phases and only six have contracts.
 ```
-QPw1-page-loop.md
-QPw2-the-hands.md
+QPw00-page-loop.md
+QPw1-outline.md
+QPw2-draft.md
+QPw3-probe.md
+QPw4-evidence.md
+QPw4c-citation.md
+QPw4d-display.md
+QPw4v-value.md
+QPw5-revise.md
+QPw6-check.md
+QPw00a-page-agents.md
+QPw00r-receipts.md
+QPw00g-human-gate.md
 ### QS · Sentence
 The atomic unit: one line, its lanes, its card, and everything written onto it.
 Both Design pages left on 260816: Design-5 folded into QS1, whose contract it ships, and Design-4 became QS5, since no page argued the prose standard.
@@ -318,10 +398,10 @@ QF4-talk-run.md
 # Design-6/7/8 folded into one Page-Workflow design (JL 260815:
 # one Design relates to several skills or agents).
 # Design-6 became QPw2 on 260816 (the Design kind folded into the Q series).
-Design-6             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
-Design-6-page-workflow.md            5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
-Design-7             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
-Design-8             5-QPw-page-workflow/QPw2-the-hands/QPw2-the-hands.md
+Design-6             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+Design-6-page-workflow.md            5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+Design-7             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+Design-8             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
 Design-6-haipipe-board-reviewer-agent.md         _archive/Design-6-haipipe-board-reviewer-agent.md
 Design-7-haipipe-board-creator-agent.md          _archive/Design-7-haipipe-board-creator-agent.md
 Design-8-haipipe-page-orchestrator-agent.md      _archive/Design-8-haipipe-page-orchestrator-agent.md
@@ -379,7 +459,7 @@ QPf2a               _archive/QPf2a-linked-drawings.md
 # resolves here; a reused number follows the 260801 precedent.
 QB3                  4-QPf-page-folder/QPf1-folder/QPf1-folder.md
 QB4                  3-QPs-page-structure/QPs1-overall/QPs1-overall.md
-QB5                  5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
+QB5                  5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md
 QB6                  3-QPs-page-structure/QPs2-page-types/QPs2-page-types.md
 QB7                  4-QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
 QB8                  6-QS-sentence/QS1-overview/QS1-overview.md
@@ -428,7 +508,7 @@ QBt3-for-display.md      ../PaperSkillBoard-260725/4-QBt-page-types/QBt3-for-dis
 QBt4-for-literature.md   ../PaperSkillBoard-260725/4-QBt-page-types/QBt4-for-literature/QBt4-for-literature.md
 QBt5-for-value.md        ../PaperSkillBoard-260725/4-QBt-page-types/QBt5-for-value/QBt5-for-value.md
 QBt6-for-section.md      ../PaperSkillBoard-260725/4-QBt-page-types/QBt6-for-section/QBt6-for-section.md
-QBt11 ../../../../subjective-label/diagram/SubjectiveLabelBoard-260722/7-QG-page-type/QG1-for-labeling/QG1-for-labeling.md
+QBt11 ../../../../subjective-label/diagram/SubjectiveLabelBoard-260722/8-QG-page-type/QG1-for-labeling/QG1-for-labeling.md
 draw.py              ../../board/haipipe-board/cli/draw.py
 test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
 live/xcal.py          ../../board/haipipe-board/live/xcal.py
@@ -451,11 +531,26 @@ QDa3                4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
 QDa4                8-QO-operating/_archive/QD4-liveupdate.md
 QD4-liveupdate      8-QO-operating/_archive/QD4-liveupdate.md
 QDa5                4-QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
-QB9                 5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md
+QB9                 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md
 QB10                3-QPs-page-structure/QPs2-page-types/QPs2-page-types.md
 QD13                8-QO-operating/QO1-split-workspace/QO1-split-workspace.md
 QC5-pagecost        8-QO-operating/QO3-pagecost/QO3-pagecost.md
 QD8-pagecost        8-QO-operating/QO3-pagecost/QO3-pagecost.md
+# 260818 renumber (JL): the loop became the group holder, the hands moved to the tail.
+# The bare keys QPw1 and QPw2 are deliberately NOT redirected: they are live pages
+# now (QPw1-outline, QPw2-draft), and a redirect would shadow the real page.
+QPw1-page-loop      5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md
+QPw2-the-hands      5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+QPw7-the-hands      5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+# 260818 second renumber (JL: "if they are not follow, then it is not with w etc."):
+# 7, 8 and 9 were never phases, so they lost their phase-shaped numbers and became
+# subordinates of QPw00, the run, on the QPw4c/4v/4d precedent.
+QPw7                5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+QPw7-page-agents    5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
+QPw8                5-QPw-page-workflow/QPw00r-receipts/QPw00r-receipts.md
+QPw8-receipts       5-QPw-page-workflow/QPw00r-receipts/QPw00r-receipts.md
+QPw9                5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md
+QPw9-human-gate     5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md
 QD14                4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
 QDa6                8-QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
 QDa7                8-QO-operating/_archive/QD7-boardagent.md

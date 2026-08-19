@@ -44,6 +44,23 @@ def css():
     return _join("css", ".css")
 
 
+# A stylesheet does NOT inherit the HTML document's encoding. When the server
+# sends `Content-Type: text/css` with no charset parameter, which is exactly
+# what Python's own `mimetypes` sends, the browser falls back to its LOCALE
+# default: windows-1252 on most machines. Every non-ASCII glyph in a `content:`
+# rule then mojibakes, and the one that shows is the fold marker on each
+# section header: `▸` (UTF-8 e2 96 b8) renders as `â–¸` (JL 260819, screenshot
+# of Diagram / Content / Aims / States / Files).
+#
+# This is the half of the fix that travels WITH the file, so it also holds
+# under `file://` and under any server that is not `cli/serve.py`. It must be
+# the first bytes of the stylesheet: a comment or even a blank line in front of
+# it makes the browser ignore the rule. It is prepended at WRITE time rather
+# than inside `css()`, because `css()` is also inlined into a `<style>` element
+# by the legacy single-file build, and `@charset` is not valid there.
+CSS_CHARSET = '@charset "utf-8";\n'
+
+
 def parts(folder="js", suffix=".js"):
     """The part files, in the order they are concatenated."""
     root = HERE / "assets" / folder

@@ -1,3 +1,30 @@
+## 0.4.1 — 2026-08-18
+
+- Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §③, which
+  states this phase and every sibling in the SAME six fields
+  (`❓ ASKS · 📥 READS · 📤 WRITES · 🚪 EXITS · ✋ TICK · 🔀 ROUTES`). This
+  contract still owns the reasoning; the card is the readable-across-phases
+  summary, and the contract wins when they disagree.
+- Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
+  `QPw00g` when JL ruled that pages which are not phases may not carry
+  phase numbers.
+
+
+## 0.4.0 — 2026-08-18
+
+MATCH runs LATE, recorded as an open defect (JL 260818).
+
+- Added the timing defect to `§🔗 MATCH order`: MATCH needs only the outline's
+  MARK and not the stake, so nothing requires DRAFT to precede it, yet it lives
+  inside PROBE which runs after DRAFT. A page therefore pays for its sentence
+  scaffolds before discovering the answer already existed.
+- Recorded JL's reading that put the lookup second ("OUTLINE, then the probe
+  (pagex), and the draft") and why he is right about MATCH and not about the
+  card, whose `consumer/` side needs the stake DRAFT writes.
+- Stated why a split would be named MATCH and never PAGEX: PageX is one of
+  MATCH's three lookups, so naming the phase after it is like naming EVIDENCE
+  "bibex". Scored 2.5 of 4 versus 0.5 of 4 on `QPw00 §7.2`'s split test.
+- Added the Board page backlink: `QPw3-probe` argues this phase.
 haipipe-page-probe · Changelog
 ==============================
 

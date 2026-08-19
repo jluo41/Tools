@@ -9,3 +9,4 @@
 - haipipe-board
 - haipipe-page
 - html-ppt
+- haipipe-writing

@@ -1,0 +1,1 @@
+Three `1-probes` directories exist, all inside fixture or test folders of skill packages: the paper fixture (2 entries), the application fixture (0), and the probe skill's test fixture (1). No live paper or application in this repository carries one.

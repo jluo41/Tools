@@ -7,6 +7,12 @@
 body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
  font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a.summary{color:inherit} h2{font-size:14px;margin:14px 0 5px}
+p{margin:7px 0} ul{margin:6px 0 8px 20px;padding:0}
+code{font:12px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 4px;
+ border-radius:4px} .summary{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}
+.metric{border:1px solid var(--line);border-radius:999px;padding:3px 9px;
+ background:var(--card);font-size:12px} .ready{color:#267247} .pending{color:#9a6115}
 a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
  white-space:pre-wrap}
@@ -23,17 +29,63 @@ object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radiu
 .nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
  color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
 .nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chead{display:flex;align-items:baseline;gap:9px;padding:0 0 9px;
+ border-bottom:1px solid var(--line);margin-bottom:11px}
+.pid{font:700 11px ui-monospace,Menlo,monospace;color:var(--mut);
+ border:1px solid var(--line);border-radius:5px;padding:1px 6px;letter-spacing:.04em}
+.ptitle{font:600 15.5px/1.3 -apple-system,BlinkMacSystemFont,sans-serif}
+.q{font-size:15px;line-height:1.55;margin:0 0 11px;max-width:60em}
+dl.fields{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0 0 12px;
+ font-size:12.5px}
+dl.fields dt{color:var(--mut);font:600 11px ui-monospace,Menlo,monospace;
+ text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+dl.fields dd{margin:0;word-break:break-all}
+.next{font-size:12.5px;border-radius:7px;padding:7px 11px;margin:0 0 4px;
+ border:1px solid var(--line);background:var(--card)}
+.next.owed{color:#9a6115;border-color:#e5cfa8}
+.next.ok{color:#267247;border-color:#bcdcc7}
+.step{border:1px solid var(--line);border-radius:10px;margin:13px 0;
+ overflow:hidden;background:var(--bg)}
+.step.lead{border-color:var(--fg);border-width:1.5px}
+.step .sh{display:flex;align-items:baseline;gap:8px;padding:7px 12px;
+ background:var(--card);border-bottom:1px solid var(--line)}
+.step .sh b{font:700 11.5px -apple-system,sans-serif;letter-spacing:.09em;
+ text-transform:uppercase}
+.step .sh .sn{color:var(--mut);font-size:11.5px;font-family:ui-monospace,Menlo,monospace}
+.step .sb{padding:11px 13px}
+.step .sb p:first-child{margin-top:0} .step .sb p:last-child{margin-bottom:0}
+details.fold>summary{cursor:pointer}
+details.fold[open]>summary{border-bottom:1px solid var(--line)}
+.hole{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;
+ color:var(--mut);font-size:12.5px}
+figure.pf{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden;background:var(--card)}
+figure.pf+.why{margin:-6px 0 14px}
+.pfh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 11px;
+ border-bottom:1px solid var(--line)}
+.pfn{font:600 12.5px ui-monospace,Menlo,monospace;word-break:break-all}
+.facts{display:flex;gap:5px;flex-wrap:wrap}
+.fact{font-size:10.5px;color:var(--mut);border:1px solid var(--line);
+ border-radius:999px;padding:1px 8px;white-space:nowrap;background:var(--bg)}
+.exhibit{display:block;width:100%;height:290px;border:0;background:var(--bg)}
+object.exhibit{aspect-ratio:4/3;height:auto}
+.pfp{border-top:1px solid var(--line);padding:6px 11px;font-size:11.5px;
+ color:var(--mut)}
+.pfp>summary{cursor:pointer} .pfp div{word-break:break-all;margin:3px 0}
+.why{font-size:13px;line-height:1.55;margin:0 0 13px;max-width:60em}
+details>summary{list-style:none}
+details>summary::-webkit-details-marker{display:none}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
 .chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
  border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
  background:var(--card)}
 .chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
-</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><span class='nav'><button id='prev'>◀</button><span class='pos' id='pos'></span><button id='next'>▶</button></span><h1>🚪 Probe · QPf9-probe</h1><div class='mut' style='margin:0 0 12px'>read-only · the consumer raises, the orchestrator claims, the collector binds (QPf9 §3)</div><div class='chips'><a class='chip' href='#PP01-pool-census'>PP01</a><a class='chip' href='#PP02-landing-address'>PP02</a><a class='chip' href='#PP03-skill-census'>PP03</a></div><div class='strip' id='strip'><div class='card' id='PP01-pool-census'><span class='badge'>✅</span><b>PP01-pool-census</b><div style='margin:6px 0'>Which papers and applications in the toolkit still carry a `1-probes/` pool, and how many PPNN cards live in each?</div><div class='mut'>binding: → tasks/A01_repo_inventory/01_scan_1probes_dirs/QA/1-scan-1probes-dirs.md</div><pre>└── card.md</pre></div><div class='card' id='PP02-landing-address'><span class='badge'>✅</span><b>PP02-landing-address</b><div style='margin:6px 0'>Do the probe orchestrator and collector agents accept an arbitrary landing directory today, or is `1-probes/` written into their prompts and code paths?</div><div class='mut'>binding: → tasks/A01_toolkit_probe_audit/01_probe_landing_path_scan/QA/1-probe-landing-path-hardcoding.md</div><pre>└── card.md</pre></div><div class='card' id='PP03-skill-census'><span class='badge'>✅</span><b>PP03-skill-census</b><div style='margin:6px 0'>How many skills does the board family ship under plugins/haipipe-toolkit/skills/board, and which are they?</div><div class='mut'>binding: → tasks/F01_skill_inventory/01_board_skill_count/QA/1-board-skill-count.md</div><pre>└── card.md</pre></div></div><script>
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><span class='nav'><button id='prev'>◀</button><span class='pos' id='pos'></span><button id='next'>▶</button></span><h1>🚪 Probe · QPf9-probe</h1><div class='mut' style='margin:0 0 12px'>read-only · consumer/ never crosses · executor/ is the only thing dispatched · a person ticks read:</div><div class='summary'><span class='metric'>3 planned</span><span class='metric'>0 commissioned</span><span class='metric'>0 answered</span><span class='metric '>0 / 3 read</span></div><div class='chips'><a class='chip' href='#PP01-pool-census'>PP01</a><a class='chip' href='#PP02-landing-address'>PP02</a><a class='chip' href='#PP03-skill-census'>PP03</a></div><div class='strip' id='strip'><div class='card' id='PP01-pool-census'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP01</span><span class='ptitle'>pool census</span></div><div class='q'>Which papers and applications in the toolkit still carry a <code>1-probes/</code> pool, and how many PPNN cards live in each?</div><dl class='fields'><dt>state</dt><dd>bound</dd></dl><div class='next owed'>🕳 no q-executor written yet: nothing can be dispatched</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 no proof/manifest.yaml</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'></div></section><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP01-pool-census</span></summary><div class='sb'><pre>└── card.md</pre></div></details></div><div class='card' id='PP02-landing-address'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP02</span><span class='ptitle'>landing address</span></div><div class='q'>Do the probe orchestrator and collector agents accept an arbitrary landing directory today, or is <code>1-probes/</code> written into their prompts and code paths?</div><dl class='fields'><dt>state</dt><dd>bound</dd></dl><div class='next owed'>🕳 no q-executor written yet: nothing can be dispatched</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 no proof/manifest.yaml</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'></div></section><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP02-landing-address</span></summary><div class='sb'><pre>└── card.md</pre></div></details></div><div class='card' id='PP03-skill-census'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP03</span><span class='ptitle'>skill census</span></div><div class='q'>How many skills does the board family ship under plugins/haipipe-toolkit/skills/board, and which are they?</div><dl class='fields'><dt>state</dt><dd>bound</dd></dl><div class='next owed'>🕳 no q-executor written yet: nothing can be dispatched</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 no proof/manifest.yaml</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'></div></section><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP03-skill-census</span></summary><div class='sb'><pre>└── card.md</pre></div></details></div></div><script>
 document.getElementById('rebuild').onclick = function () {
   var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
   fetch('/_board/probe', {method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({path: "/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "QPf-page-folder/QPf9-probe/QPf9-probe.md"})})
+    body: JSON.stringify({path: "/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "4-QPf-page-folder/QPf9-probe/QPf9-probe.md"})})
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (j.ok) { location.reload(); return; }

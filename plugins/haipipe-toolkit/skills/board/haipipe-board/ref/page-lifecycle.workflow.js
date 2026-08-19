@@ -10,7 +10,24 @@ export const meta = {
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : (args || {})
 const board = parsed.board
-const page = parsed.page
+// `page` MUST be stored BOARD-RELATIVE. Run 260805-0216-QB8e stored an ABSOLUTE
+// path; the 260816 regroup added a `<N>-` prefix to every group folder and the
+// receipt stopped auditing, on a page that had not changed. A relative path also
+// survives a clone, a rename of the checkout, and a second working copy.
+const page = (() => {
+  const raw = String(parsed.page || '')
+  if (!raw || !board) return raw
+  const b = String(board).replace(/\/+$/, '')
+  return raw.startsWith(b + '/') ? raw.slice(b.length + 1) : raw
+})()
+// The RECEIPT stores the relative path; every AGENT is handed the absolute one,
+// because an agent runs in a fresh context with no idea what `board` was.
+const pageAbs = page && board && !page.startsWith('/') ? `${String(board).replace(/\/+$/, '')}/${page}` : page
+// The auditor's own packet-run-mismatch invariant requires packet.page === run.page
+// (both board-relative). Without this line the echoed packet kept the raw absolute
+// input while the top-level `page` was normalized, so every audit failed on its own
+// receipt (found 260818 auditing run 260818-1510-QPw00).
+parsed.page = page
 const runId = parsed.run_id
 const intent = parsed.intent
 const startPhase = String(parsed.start_phase || '').toUpperCase()
@@ -100,9 +117,14 @@ const REVIEW_RESULT = {
 async function snapshot(label) {
   return agent(
     `You are the mechanical builder for one Board Page. You do not edit Markdown or make a semantic judgment.\n\n` +
-    `Board: ${board}\nPage: ${page}\nSnapshot label: ${label}\n\n` +
+    `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\nSnapshot label: ${label}\n\n` +
     `1. Run haipipe-board/cli/build.py on the Board.\n` +
-    `2. Run haipipe-board/cli/check.py --strict and preserve the target Page findings.\n` +
+    `2. Run haipipe-board/cli/check.py on the Board, then keep ONLY the lines whose\n` +
+    `   first field is this Page's file name. mechanical_errors and mechanical_warnings\n` +
+    `   are PAGE-SCOPED counts, never board-scoped: a board-scoped count makes CLOSE\n` +
+    `   unreachable for every page whenever any OTHER page has an error.\n` +
+    `   Use: python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board> | grep '^<page-file-name>'\n` +
+    `   Report the exact matching lines in findings, and 0 when there are none.\n` +
     `3. Locate the rendered HTML for this Page.\n` +
     `4. Compute SHA-256 for the Markdown source and rendered HTML.\n` +
     `5. Return version_id exactly as <source_sha256>:<render_sha256>.\n` +
@@ -151,7 +173,7 @@ for (let step = 1; step <= maxSteps; step++) {
     phase('Check')
     const review = await agent(
       `Perform CHECK on exactly one Board Page in a fresh, read-only context.\n\n` +
-      `Board: ${board}\nPage: ${page}\nExpected version: ${currentVersion.version_id}\n` +
+      `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\nExpected version: ${currentVersion.version_id}\n` +
       `Intent: ${intent}\nHuman gate: ${JSON.stringify(humanGate)}\n\n` +
       `Load haipipe-page, the matching Page Type, and haipipe-page-check. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
@@ -289,6 +311,7 @@ for (let step = 1; step <= maxSteps; step++) {
   const phaseSkill = current === 'COMPILE' ? 'revise' : current.toLowerCase()
   const producer = await agent(
     `Perform exactly one ${current} phase for one Board Page.\n\n` +
+    `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
     `Load haipipe-page, the matching Page Type, haipipe-page-${phaseSkill}, and any family worker. ` +
     `Follow the phase boundary. Work only on the target Page and a declared probe surface when EVIDENCE requires one. ` +

@@ -1,0 +1,193 @@
+{
+  "status": "blocked",
+  "run_id": "260818-1543-QPw00",
+  "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+  "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+  "packet": {
+    "run_id": "260818-1543-QPw00",
+    "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+    "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+    "start_phase": "DRAFT",
+    "intent": "Execute outline v1, approved by JL 260818 1543 ('ok, approved'), at 5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v1.md. Turn Content divisions 1-4 into short hand-off-pointer paragraphs per the outline's C1.P1-C4.P1 bullets, citing QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, QPw6-check by name. Keep #### 2.4, 2.5, 2.6 in place unshortened, per outline bullet C2.P2. None of the outline's bullets carry a \ud83d\udcda citation mark, a \ud83d\udd22 value mark, or a \ud83d\uddbc display mark; every bullet is \u2705 have-it or a \ud83c\udfaf Aim reference to material already on disk, so this round should not need PROBE or EVIDENCE and may go DRAFT straight to REVISE. Do not touch the open Decision Now row on A2.2 (Q-consumer ownership transfer), and do not renumber Aims, States, or Content division ids.",
+    "sources": [
+      "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+      "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v1.md",
+      "5-QPw-page-workflow/QPw2-draft/QPw2-draft.md",
+      "5-QPw-page-workflow/QPw3-probe/QPw3-probe.md",
+      "5-QPw-page-workflow/QPw4-evidence/QPw4-evidence.md",
+      "5-QPw-page-workflow/QPw5-revise/QPw5-revise.md",
+      "5-QPw-page-workflow/QPw6-check/QPw6-check.md"
+    ],
+    "constraints": [
+      "Page Type is the base Q-decision type; it closes when every Aim is met or explicitly held, per haipipe-page.",
+      "Follow outline v1's C1-C4 bullets; do not deviate without naming the deviation as a finding.",
+      "Do not touch the open Decision Now row on A2.2 (Q-consumer ownership transfer) or the Aims/States numbering.",
+      "No em dashes; one sentence per source line; English only, per this page's own Writing Style section."
+    ],
+    "human_gate": {
+      "required": false,
+      "rule": "all Aims met or explicitly held"
+    },
+    "limits": {
+      "max_steps": 8,
+      "max_rounds": 2
+    }
+  },
+  "limits": {
+    "max_steps": 8,
+    "max_rounds": 2
+  },
+  "final_version": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+  "receipts": [
+    {
+      "step": 1,
+      "round": 1,
+      "phase": "DRAFT",
+      "actor": "haipipe-board-creator-agent",
+      "role": "producer",
+      "builder_actor": "mechanical-builder",
+      "status": "ok",
+      "version_before": "d85e32bdb1577739f94449f70dbadc270f883abe330740c2158512d2df53b016:959936980e0b0936f500d044f28e8e68533f28a171cb16bf39cc23e1659bdc07",
+      "version_after": "f4f75fe3ec76f68e1883785d7e1b2e3716c256b559e13bcb323702c33273f0da:6241ce042216ad038d12dbb96f607a1f364c48a8187f8d035b3fa82d8f972c9c",
+      "checked_version": "",
+      "source_sha256": "f4f75fe3ec76f68e1883785d7e1b2e3716c256b559e13bcb323702c33273f0da",
+      "render_sha256": "6241ce042216ad038d12dbb96f607a1f364c48a8187f8d035b3fa82d8f972c9c",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 1,
+      "verdict": "",
+      "route": "REVISE",
+      "requested_route": "REVISE",
+      "reopens_promise": false,
+      "reason": "Performed exactly one DRAFT phase on QPw00-page-loop (path 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md, id QPw00, kind Q, base Q-decision Page Type: no page-type: frontmatter, filename matches Q&lt;group&gt;&lt;n&gt;-&lt;slug&gt;, no variant applies). Loaded haipipe-page, haipipe-page-draft, and read the whole target page plus outline/QPw00-page-loop-outline-v1.md (approved: JL 260818 1543 \"ok, approved\") and all five sibling contract pages named in sources (QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, QPw6-check), so sources.read = all 7 packet sources, sources.unread = none. DRAFT's authority is to define or reopen purpose, Aims, or promised shape (haipipe-page-draft \u00a7Authority test: \"An operation does not identify DRAFT... Adding a paragraph for an existing Aim is REVISE\"). Tested outline v1's C1.P1-C4.P1 bullets against that test and found every bullet replaces an existing paragraph with a short pointer paragraph that SERVES an already-fixed Aim (tagged directly in the outline as A1.1, A2.1, A3.1 or A4.1); none proposes a new Aim, removes a promised result, or changes the page's purpose. Aims/States ids A1-A12 and P1 are unchanged and need no reopening. Concluded DRAFT has nothing to define this round: the promise was already stable, and outline v1's own text (\"this plan only shrinks the REALIZATION of Content divisions 1 to 4... is REVISE material, not a reopened round\") already classifies the work as REVISE, matching this page's own \u00a76.1 operations table and matching QPw2-draft's Writing Style verbatim (\"adding a paragraph for an existing Aim is REVISE, and adding an Aim is DRAFT\") and QPw5-revise's Diagram (\"same promise after the change -> REVISE / purpose or an Aim must change -> DRAFT, new round\"). Per the packet's own intent line (\"may go DRAFT straight to REVISE\") and haipipe-page-draft's routing table (\"promise is stable but realization needs work -> REVISE\"), DRAFT therefore wrote no change to Content, Aims, States, Diagram, Opening, or Writing Style, made no edit to the outline file, and did not tick approved: (person-only). The single write performed was one Log entry on the target page (top of ## Log, timestamped from the packet's own run_id 260818-1543-QPw00, matching the precedent set by the 260818 1510 OUTLINE Log entry) recording this authority check and its route. State line, sections, and section set (Opening, Writing Style, Diagram, Content, Aims, States, Files, Law, Glossary, Discussion, Log) are otherwise unchanged. Scope/siblings this page still points at from its own Content and Files: QPw1-outline, QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, QPw6-check (none of those sibling pages were read for edit, only for citation verification, and none was written). Self-check: canonical_sources_loaded yes, full_target_read yes, opening_page_specific n/a (Opening untouched), outside_opening_unchanged n/a (not a revise-opening operation). Needs: the caller records this receipt under _runs/page/QPw00/260818-1543-QPw00.json, runs build.py + check.py (mechanical builder role, not performed here), then dispatches REVISE with outline v1 as its source so a REVISE-phase producer executes C1.P1-C4.P1 verbatim (replace #### 1.1-1.3, #### 2.1-2.3 while keeping #### 2.4-2.6 unshortened, #### 3.1-3.3, #### 4.1-4.3 with the short hand-off pointer paragraphs citing QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, QPw6-check by name). Blocked: none.",
+      "artifacts": [
+        "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+      ],
+      "evidence": [
+        "QPw00-page-loop.md ## Log, new bullet at 260818 1543 documenting this DRAFT pass and its REVISE route",
+        "QPw00-page-loop.md \u00a76.1 'Adding a paragraph to explain evidence for an existing Aim is REVISE. Adding a paragraph because the Page now answers a new question is DRAFT.'",
+        "QPw00-page-loop.md ## Aims A1.1, A2.1, A2.2, A2.3, A3.1, A4.1, P1 and ## States, read whole: no id changed, no new Aim needed",
+        "QPw00-page-loop.md ### Decision Now, the open A2.2 row, confirmed untouched per packet constraint",
+        "outline/QPw00-page-loop-outline-v1.md lines 7-20: 'Purpose and Aims stay fixed: this plan only shrinks the REALIZATION of Content divisions 1 to 4, so it is REVISE material, not a reopened round.'",
+        "outline/QPw00-page-loop-outline-v1.md C1.P1.B2 (tag \ud83c\udfaf A1.1), C2.P1.B1-B3 (tag \ud83c\udfaf A2.1), C3.P1.B2 (tag \ud83c\udfaf A3.1), C4.P1.B2 (tag \ud83c\udfaf A4.1): every rewrite-bearing bullet is tagged to an already-existing Aim, none proposes a new one",
+        "5-QPw-page-workflow/QPw2-draft/QPw2-draft.md ## Writing Style, read whole: 'adding a paragraph for an existing Aim is REVISE, and adding an Aim is DRAFT'",
+        "5-QPw-page-workflow/QPw5-revise/QPw5-revise.md ## Diagram, read whole: 'same promise after the change -> REVISE / purpose or an Aim must change -> DRAFT, new round'",
+        "5-QPw-page-workflow/QPw3-probe/QPw3-probe.md and QPw4-evidence/QPw4-evidence.md ## Opening, read whole: confirm no PROBE or EVIDENCE trigger exists in outline v1 (no \ud83d\udcda/\ud83d\udd22/\ud83d\uddbc marks), consistent with the packet's own claim",
+        "5-QPw-page-workflow/QPw6-check/QPw6-check.md ## Opening, read whole: confirms CHECK is the only phase that may CLOSE, not reached this round",
+        "haipipe-page-draft SKILL.md \u00a7Authority test and \u00a7Exit and routing ('promise is stable but realization needs work -> REVISE')",
+        "_runs/page/QPw00/260818-1510-QPw00.json: prior OUTLINE receipt, round 1, status hold pending approval, now approved per the new packet",
+        "Build: `python3 .../haipipe-board/cli/build.py .` from board root -> \"\u2705 ./board \u00b7 79 files (one per page, one per group, plus index)\" and \"\u2705 69 pages \u00b7 largest keeps 292333 chars with JS stripped\" (build succeeded; unrelated printed section about PaperSkillBoard-260725/_tools/adapter-out/*.tex markers is a separate, unowned .tex audit that this Page's build does not touch)",
+        "Check: `python3 .../haipipe-board/cli/check.py <board> | grep '^QPw00-page-loop.md'` -> exactly one line: `QPw00-page-loop.md -> QPw00-page-loop.tex    WARN  projection-stale         the .tex is older than the Page source it projects; REVISE changed the page and did not rebuild.`",
+        "Rendered HTML located at board/QPw/QPw00-page-loop.html (distinct from sibling pages QPw00a-page-agents.html, QPw00r-receipts.html, QPw00g-human-gate.html found in the same directory)",
+        "source_sha256 computed via python3 hashlib.sha256 over 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md (64 hex chars, verified length)",
+        "render_sha256 computed via python3 hashlib.sha256 over board/QPw/QPw00-page-loop.html (64 hex chars, verified length)"
+      ],
+      "findings": [
+        "Deviation from the packet's literal start_phase dispatch, named as required: the packet set start_phase=DRAFT and its intent implied DRAFT would produce outline v1's C1.P1-C4.P1 pointer paragraphs before handing to REVISE. This DRAFT pass found that authoring those paragraphs is REVISE-authority work (they serve already-fixed Aims under an unchanged purpose), per this page's own \u00a76.1 rule, QPw2-draft's Writing Style, QPw5-revise's Diagram, and outline v1's own explicit self-classification ('REVISE material, not a reopened round'). DRAFT therefore made no Content edit and routes straight to REVISE, which is consistent with the packet's own fallback language ('may go DRAFT straight to REVISE') but is a narrower DRAFT deliverable than a literal reading of the intent paragraph implies.",
+        "The open Decision Now row on A2.2 (Q-consumer ownership transfer) remains untouched, as required; not resolved by this phase.",
+        "outline v1's C1.P1-C4.P1 edits (the pointer paragraphs replacing #### 1.1-1.3, #### 2.1-2.3, #### 3.1-3.3, #### 4.1-4.3, keeping #### 2.4-2.6 unshortened) are still unwritten on the target page and are owed to the next REVISE pass."
+      ],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    },
+    {
+      "step": 2,
+      "round": 1,
+      "phase": "REVISE",
+      "actor": "haipipe-board-creator-agent",
+      "role": "producer",
+      "builder_actor": "mechanical-builder",
+      "status": "ok",
+      "version_before": "f4f75fe3ec76f68e1883785d7e1b2e3716c256b559e13bcb323702c33273f0da:6241ce042216ad038d12dbb96f607a1f364c48a8187f8d035b3fa82d8f972c9c",
+      "version_after": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+      "checked_version": "",
+      "source_sha256": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251",
+      "render_sha256": "d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 1,
+      "verdict": "",
+      "route": "CHECK",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "Executed outline v1's C1.P1-C4.P1 bullets under fixed purpose and Aims: replaced #### 1.1-1.3, #### 2.1-2.3, #### 3.1-3.3, and #### 4.1-4.3 with one short pointer paragraph each (QPw00-page-loop \u00a71.1, \u00a72.1, \u00a73.1, \u00a74.1), naming QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, and QPw6-check by name, per haipipe-page-revise's authority test (edit shape does not identify the phase; the fixed promise does). #### 2.4-2.6 kept unshortened per outline bullet C2.P2, and A2.2's open Decision Now row and every Aim/State id are untouched. This is REVISE, not DRAFT, because the outline itself states the plan only shrinks realization and every replaced paragraph still serves its already-fixed Aim (A1.1/A2.1/A3.1/A4.1). The version is now internally consistent (no dangling four-phase claims) and ready for a fresh CHECK.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+      ],
+      "evidence": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v1.md (approved: \u2705 JL 260818 1543)",
+        "5-QPw-page-workflow/QPw2-draft/QPw2-draft.md \u00a74.1 (mature-Page/repeated-DRAFT case) and its Diagram/\u00a71-\u00a72 (Point-to-scaffold, stake rule)",
+        "5-QPw-page-workflow/QPw3-probe/QPw3-probe.md \u00a71-\u00a73 (card creation, MATCH order)",
+        "5-QPw-page-workflow/QPw4-evidence/QPw4-evidence.md \u00a73 (binding, landing the answer)",
+        "5-QPw-page-workflow/QPw5-revise/QPw5-revise.md \u00a71-\u00a72 (fixed-promise test, five-step order) and its own COMPILE fold",
+        "5-QPw-page-workflow/QPw6-check/QPw6-check.md \u00a71-\u00a72 (judge/repair separation, three counts, accept-biased gate) and its Diagram routing table (close/REVISE/EVIDENCE/DRAFT/HOLD)",
+        "5-QPw-page-workflow/QPw1-outline/QPw1-outline.md Opening (OUTLINE as phase upstream of DRAFT)",
+        "build.py: ./board \u00b7 79 files (one per page, one per group, plus index); 69 pages \u00b7 largest keeps 292333 chars with JS stripped",
+        "check.py page-scoped line: QPw00-page-loop.md -> QPw00-page-loop.tex    WARN  projection-stale    the .tex is older than the Page source it projects; REVISE changed the page and did not rebuild.",
+        "Rendered HTML located at board/QPw/QPw00-page-loop.html",
+        "Source MD: 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+      ],
+      "findings": [
+        "Deviation beyond outline v1's literal C1-C4 bullets, named per the 'do not deviate without naming it' instruction: (1) corrected QPw00 \u00a74's face-card route label from the stale pre-260817 name 'PROBE' to 'EVIDENCE' to match QPw6-check's own routing table, since the outline's C4.P1 B1 said the face-card 'needs no correction' but this one route word was stale; (2) updated the Opening's 260817 banner and the top `state:` line, which both asserted Content divisions 1-4 'still describe the four' phases from 260804, a claim this REVISE pass made false; (3) updated States rows A1.1, A2.1, A3.1, A4.1 to point at their new locations, flipping only A2.1 to \u2705 because its own text made the STALE claim explicitly conditional on 'owed a REVISE round,' which this pass supplies; A1.1/A3.1/A4.1 stayed \ud83d\udd28 because their blocking qualifier was a pending human check of the model, not missing content, which REVISE has no authority to rule on.",
+        "Not fixed, left for a future round: the page's own ## Files section (lines ~633-638) still cites the retired `page-phases/` directory name for the DRAFT/PROBE/REVISE/CHECK skill contracts (renamed to `page-workflows/` on 260817 per this page's own \u00a711.3), and `page-run-contract.md`'s path is likewise stale (should be under `page-workflows/haipipe-page-workflow/ref/`). This was out of scope for outline v1 (Files was not named in any C1-C4 bullet) so it was left untouched rather than fixed silently.",
+        "Division 5's Transition diagram (line ~176) still shows '\ud83d\udd0e PROBE \u21ba' as a route label from DRAFT in the ASCII figure; division 5 was explicitly out of scope for this round (not named in outline v1) so it was left as-is."
+      ],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    },
+    {
+      "step": 3,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-board-reviewer-agent",
+      "role": "judge",
+      "builder_actor": "mechanical-builder",
+      "status": "blocked",
+      "version_before": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+      "version_after": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+      "checked_version": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:0a2d2d4c5a4dff373e40c215d07e9d187276510eb9a8718d4e74c95a104f4751 (current; render differs from the expected 49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d, which I also independently reproduced at the start of the review before the concurrent rebuild)",
+      "source_sha256": "49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251",
+      "render_sha256": "d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 1,
+      "verdict": "blocked",
+      "route": "HOLD",
+      "requested_route": "HOLD",
+      "reopens_promise": false,
+      "reason": "Version mismatch detected: computed at review time, source sha256 matches the expected value exactly and is stable (unchanged mtime/bytes throughout the review), but the rendered HTML sha256 diverged from the expected d545dff5... to 0a2d2d4c... I traced the cause: a sibling page, 5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md (out of this review's scope), was edited at 16:05:11 and the whole board was rebuilt at 16:05:13-16:05:43 (every board/*.html plus board.css/js plus this page's latex/ projection all got new mtimes), which changed this page's rendered bytes via the shared sidebar/rail even though QPw00-page-loop.md itself never changed. This is exactly the \"concurrent or hidden mutation\" case haipipe-page-check's version gate requires routing to HOLD for, and it is also the exact defect this very page's own Log (260806 entry) already names as unresolved: \"the contract must say the SOURCE hash is the version's identity and the render hash is advisory (a rebuild is not a mutation), or every rebuild retroactively breaks every closed run.\" I did not rebuild to force agreement, per instruction. On the page's own merits (see section_conformance and cold_read below) the content would otherwise support CLOSE, but I cannot certify a stable checked_version while the board is being concurrently edited, so the correct next authority is HOLD, not CLOSE.; checked version differs from the current snapshot",
+      "artifacts": [],
+      "evidence": [
+        "source: 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md sha256 49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251, mtime stable at Aug 18 16:00:18 across the whole review",
+        "render: board/QPw/QPw00-page-loop.html first measured sha256 d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d at mtime Aug 18 16:01:19, matching the expected version exactly",
+        "render: board/QPw/QPw00-page-loop.html re-measured minutes later sha256 0a2d2d4c5a4dff373e40c215d07e9d187276510eb9a8718d4e74c95a104f4751 at mtime Aug 18 16:05:13, no longer matching expected",
+        "find -newer QPw00-page-loop.md shows every board/*.html, board/_assets/board.css, board/_assets/board.js, and 5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md changed after the reviewed page's own last edit",
+        "check.py --strict, run twice: first run showed one WARN (projection-stale) for QPw00-page-loop.md; second run (after the external rebuild) showed zero findings for it",
+        "check.py --summary: 69 pages, 40 findings board-wide, 61 of 69 pages clean; none of the board-wide ERROR findings (display-intake-unfrozen x2, display-declared-no-claim, display-declared-not-rendered) are attributed to QPw00-page-loop.md",
+        "outline/QPw00-page-loop-outline-v1.md: approved: \u2705 JL 260818 1543, \"ok, approved\"; its C1.P1-C4.P1 bullets match the Content changes verbatim",
+        "QPw2-draft.md #### 4.1 'DRAFT may run on an empty page, repeat, or reopen a mature one' -- supports State A1.1's citation of 'QPw2-draft \u00a74.1'",
+        "QPw5-revise.md ### 1 'The promise is fixed, and that is the phase's only test' -- supports #### 3.1's citation",
+        "QPw6-check.md ### 1 'CHECK judges and may not repair' and ### 2 'Judge the BUILT artifact, not only the markdown' -- supports #### 4.1's citation, and its own \ud83d\udd00 routing table reads CLOSE/REVISE/EVIDENCE/DRAFT/HOLD, matching the corrected face-card in \u00a74"
+      ],
+      "findings": [
+        "BLOCKING: render sha256 for board/QPw/QPw00-page-loop.html drifted from the expected d545dff5...  to 0a2d2d4c... between two check.py runs, while the source .md stayed byte-identical (sha256 49e38702... at every measurement); root cause is a full-board rebuild triggered by an edit to 5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md at 16:05:11, not by anything in the reviewed page.",
+        "Mechanical: 0 ERROR / 0 WARN for QPw00-page-loop.md at the final check.py run (a transient WARN projection-stale on latex/QPw00-page-loop.tex self-resolved when the same external rebuild regenerated the projection).",
+        "Function/evidence: every claim in the 260818 REVISE Log entry was individually verified against the live Content -- the \u00a71/\u00a72/\u00a73/\u00a74 face-cards and pointer paragraphs match what the outline v1 (C1.P1-C4.P1) specified, \u00a72.4-2.6 are left verbatim as instructed, the Decision Now row on A2.2 is untouched (still unticked), and Aim/State ids A1-A12+P are unchanged and remain a strict one-to-one map.",
+        "Function/evidence: the five cited target pages (QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, QPw6-check) all exist and each contains material matching what the pointer paragraph claims lives there (spot-checked QPw2-draft #### 4.1, QPw5-revise ### 1/#### 1.1, QPw6-check ### 1/### 2, QPw3-probe's MATCH order, QPw4-evidence's write-surface section) -- no broken promise, no card owed.",
+        "Undisclosed-but-defensible scope addition: the writer also corrected \u00a74's face-card routing line from the stale term `PROBE` to `EVIDENCE` to match QPw6-check's own routing vocabulary; this was not literally named by any outline bullet, but the Log discloses it plainly and it is a factual consistency fix under fixed Aims/purpose (REVISE authority), not a new promise.",
+        "Readability (minor, non-blocking): the Opening's 260817/260818 warning banner still narrates history inline with bare dates ('on 260817', 'on 260804', 'the 260818 REVISE round') rather than moving that history to Log, which is the pattern writing-rules.md calls the commonest leak; check.py's opening-attribution rule only fires on the narrower `(JL ####)`/`(CC ####)` parenthetical form, so it does not catch this looser dated-prose form.",
+        "Readability (minor, non-blocking): the shortened pointer paragraphs in #### 1.1 and #### 2.1 use undefined terms at first use on this page -- 'Point' (#### 1.1: 'turning one approved Point into several sentence scaffolds') and 'MATCH lookup' (#### 2.1) are not in this page's own ## Glossary; a cold reader gets the gist but not the precise referent without following the pointer to QPw2-draft/QPw3-probe."
+      ],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": [
+          "Caller-supplied human gate for this review is {\"required\": false, \"rule\": \"all Aims met or explicitly held\"}. Independently, the page's own local Aims A1.1, A3.1, and A4.1 remain \ud83d\udd28 with State text 'awaiting the human check of the model' -- an explicitly held, not-yet-closed condition that the Log's own route (CHECK, not CLOSE) already accounts for, so it is not a blocking gap for this CHECK pass."
+        ]
+      }
+    }
+  ]
+}

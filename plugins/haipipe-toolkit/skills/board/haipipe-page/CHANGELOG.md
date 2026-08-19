@@ -1,3 +1,11 @@
+## 0.33.0 — 2026-08-18
+
+- RUN's dispatch may NOT be delegated to a subagent. A subagent is not handed
+  the `Workflow` tool, so `run <page>` runs in the session it was typed in.
+  Proved by dispatching `haipipe-page-orchestrator-agent` as itself for the
+  first time on 260818: it returned `blocked` at its own step 2, with 0 steps
+  and no receipt, because three of the seven tools it declares were absent.
+
 haipipe-page · Changelog
 ========================
 

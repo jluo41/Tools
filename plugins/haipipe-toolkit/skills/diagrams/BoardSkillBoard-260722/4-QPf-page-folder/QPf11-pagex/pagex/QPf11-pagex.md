@@ -9,3 +9,7 @@
 - plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/3-QPs-page-structure/QPs1-overall/QPs1-overall.md · note: scan-seeded — this page names QPs1 16×
 - plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf1-folder/QPf1-folder.md · note: scan-seeded — this page names QPf1 7×
 - plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf3-slide/QPf3-slide.md · note: scan-seeded — this page names QPf3 4×
+- Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/3-QPs-page-structure/QPs1-overall/QPs1-overall.md · note: scan-seeded — this page names QPs1 20×
+- Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf10-skill/QPf10-skill.md · note: scan-seeded — this page names QPf10 11×
+- Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf1-folder/QPf1-folder.md · note: scan-seeded — this page names QPf1 8×
+- Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf3-slide/QPf3-slide.md · note: scan-seeded — this page names QPf3 8×

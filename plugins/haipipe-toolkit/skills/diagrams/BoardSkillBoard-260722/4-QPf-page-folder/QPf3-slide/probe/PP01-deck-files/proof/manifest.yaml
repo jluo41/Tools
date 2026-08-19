@@ -1,0 +1,5 @@
+card: PP01-deck-files
+files: []
+pending: >-
+  one table file holding path · bytes · modification time, one row per deck
+  file, once the walk that produced it is named: table .csv

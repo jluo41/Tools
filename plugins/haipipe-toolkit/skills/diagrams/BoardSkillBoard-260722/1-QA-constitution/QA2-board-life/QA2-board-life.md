@@ -184,7 +184,7 @@ This board's own `close:` is the worked example, and it is deliberately a test s
                    `close:` gains a `closed: YYMMDD · who accepted it`
 🎓 the audit       `close` REPORTS every ✅ page whose Law has no
                    landing site named, and a person clears the list
-🔓 the reopen      a closed board reopens like any page (QPw1) ·
+🔓 the reopen      a closed board reopens like any page (QPw00) ·
                    the head keeps `closed:` and gains `reopened:`
                    a drifted implementation is a defect, not a reopen
                 =  🏁 the verb now has a second half, and none of it refuses
@@ -209,7 +209,7 @@ That note is what `QA6` §6.1's mechanism was always missing, and it is worth wr
 #### 6.3 · A closed board reopens, and the head says so
 
 Reopening is already normal here, and CC's first draft of this division banned it, which contradicted three things at once.
-`QPw1` and both shipped agents carry `reopens_promise: true` as a first-class route, DRAFT may reopen a page that already has polished prose, and a reopened promise starts a new round.
+`QPw00` and both shipped agents carry `reopens_promise: true` as a first-class route, DRAFT may reopen a page that already has polished prose, and a reopened promise starts a new round.
 `QA00` itself reads `reopened 260816 as the introduction chapter`, and `QF` is described on `board.md` as the lane with a reopen path.
 Nobody had ruled that a board is different from a page, and there was no reason to invent it.
 
@@ -221,7 +221,7 @@ A rule that shipped and that the code has since drifted from is a defect in the 
 The page reopens only when the decision itself is doubted.
 
 What a reopen never does is edit the old argument in place.
-It adds a round, exactly as `QPw1` describes, for the same reason a sentence is archived rather than deleted: the record has to keep saying what was decided then, or the history stops being evidence.
+It adds a round, exactly as `QPw00` describes, for the same reason a sentence is archived rather than deleted: the record has to keep saying what was decided then, or the history stops being evidence.
 
 ## Aims
 ### The proposal method's tests
@@ -246,8 +246,8 @@ It adds a round, exactly as `QPw1` describes, for the same reason a sentence is 
 - [x] 🎓 Rule whether closing requires a graduation audit
       Ruled 260816 (§6.2): `close` REPORTS every ✅ page whose Law names no landing site, and never refuses; the Law row carries `→ landed in <file>` from now on.
 - [x] 🔓 Rule what reopens a closed board
-      Ruled 260816 (§6.3): a doubted decision does, the same way it reopens any page (`QPw1`), and `board.md` keeps `closed:` while gaining `reopened: YYMMDD · why`.
-      CC's first draft banned reopening and was struck the same round: `QPw1`, both agents, and `QA00`'s own state line already reopen things (JL: "who said so???").
+      Ruled 260816 (§6.3): a doubted decision does, the same way it reopens any page (`QPw00`), and `board.md` keeps `closed:` while gaining `reopened: YYMMDD · why`.
+      CC's first draft banned reopening and was struck the same round: `QPw00`, both agents, and `QA00`'s own state line already reopen things (JL: "who said so???").
 - [ ] 🎓 The `→ landed in` note exists on a real Law row
       Done when: one settled page on this board carries the landing site on its `## Law` row, so the audit in §6.2 can be a lookup rather than a re-read.
 - [ ] 🧪 Make the close runnable in one command
@@ -261,7 +261,7 @@ For the close, the two shipped conditions are stated in `SKILL.md` and enforced 
 
 - 260816 · 🏁 The close's second half was ruled, on JL's delegation
   JL answered "make the decision yourself", so CC ruled all three holes in `§6`: the folder stays, the graduation audit is a report rather than a refusal, and a closed board reopens like any page.
-  The reopen ruling was wrong on its first pass and JL caught it in one line, "who said so???": CC had banned reopening while `QPw1`, both shipped agents and `QA00`'s own state line all reopen things, so the ban was struck and the ruling now only adds the `reopened:` record.
+  The reopen ruling was wrong on its first pass and JL caught it in one line, "who said so???": CC had banned reopening while `QPw00`, both shipped agents and `QA00`'s own state line all reopen things, so the ban was struck and the ruling now only adds the `reopened:` record.
   The graduation one was the load-bearing hole, because `QA6` §6.1 makes copying a settled Law the whole point of the loop and nothing checked that it happened; the fix is small and is a note on the Law row, `→ landed in <file>`, which turns the audit into a lookup.
   Nothing is enforced yet: three Aims stay open for the note, the command, and the graduation into `SKILL.md`.
 - 260816 · 🏁 The close joined this page
@@ -305,7 +305,7 @@ The three close rows below are the exception and say so on their face: JL handed
       The mechanism that makes it cheap is new and small: a graduated Law row gains `→ landed in <file> §<n>`, so the audit is a lookup. `§6.2` carries it.
 - [x] 🔓 Rule what reopens a closed board
       ✅ CC ruled, corrected by JL the same round.
-      CC's first answer was that a closed board is never reopened; JL asked "who said so???" and nobody had: `QPw1` and both shipped agents carry `reopens_promise: true`, and `QA00`'s own state line reads `reopened 260816`.
+      CC's first answer was that a closed board is never reopened; JL asked "who said so???" and nobody had: `QPw00` and both shipped agents carry `reopens_promise: true`, and `QA00`'s own state line reads `reopened 260816`.
       The ruling that stands is `§6.3`: a doubted decision reopens a closed board exactly as it reopens any page, `board.md` keeps `closed:` and gains `reopened: YYMMDD · why`, and a shipped rule the code drifted from is a defect in that unit rather than a reopen.
 
 ## Files
@@ -337,15 +337,15 @@ The three close rows below are the exception and say so on their face: JL handed
   From now on a graduated Law row carries `→ landed in <file> §<n>`, which is what turns the audit into a lookup.
 - 260816 · CC, corrected by JL · 🔓 **A closed board reopens like any page**
   A doubted decision reopens its page and with it the board; `board.md` keeps `closed:` and gains `reopened: YYMMDD · why`, because a board that closed once and reopened is not a board that never closed.
-  A shipped rule the code has drifted from is a defect in that unit and reopens nothing, and no reopen ever edits the old argument in place: it adds a round, as `QPw1` already describes.
-  CC first ruled the opposite, that a closed board is never reopened; JL asked "who said so???" and the answer was nobody, since `QPw1`, both shipped agents and `QA00`'s own state line all reopen things.
+  A shipped rule the code has drifted from is a defect in that unit and reopens nothing, and no reopen ever edits the old argument in place: it adds a round, as `QPw00` already describes.
+  CC first ruled the opposite, that a closed board is never reopened; JL asked "who said so???" and the answer was nobody, since `QPw00`, both shipped agents and `QA00`'s own state line all reopen things.
 
 ## Discussion
 > JL: The current question names, page names, and especially proposed page groups are not consistently good. We need a dedicated question for how the Board should propose reasonable pages and groups.
 
 ## Log
 - 260816 · [REVISE-CC, JL delegated then corrected] `§7` went from three open holes to three rulings, on JL's "make the decision yourself".
-  The folder stays, the graduation audit is a report with a `→ landed in` note behind it, and the reopen was ruled twice: CC banned it, JL replied "who said so???", and the ban was struck the same round because `QPw1`, both shipped agents and `QA00`'s own state line already reopen things.
+  The folder stays, the graduation audit is a report with a `→ landed in` note behind it, and the reopen was ruled twice: CC banned it, JL replied "who said so???", and the ban was struck the same round because `QPw00`, both shipped agents and `QA00`'s own state line already reopen things.
   Three Aims stay open for the parts that are not shipped: the note on a real Law row, `close --check`, and the graduation of `§7.1`-`§7.3` into `SKILL.md` and `ref/board-form.md`.
 - 260816 · [REVISE-CC, JL ruled] the close joined birth on one page and the file became `QA2-board-life`: `§6` records what the `close` verb performs today and `§7` names the three questions nothing owns, with four Aims and two Decision Now rows opened on them.
   The same pass swept the retired ids the 260815 restructure left behind (`QB4` → `QPs1`, `QC9`/`QD9`'s absorbed asks dropped as overtaken, `QE4` → `QO7`), and the group-default row was rewritten from the three-layer model to the ladder the board now runs.

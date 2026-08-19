@@ -275,13 +275,37 @@
       } });
   }
 
-  fab.onclick = function () {
+  /* JL 260818: "how to make the outline be the default plugin when we open
+     it" — a plain FAB click now opens the registry's default (outline) on
+     the page in view, same as clicking its row in the picker would; the
+     picker itself moved to #chatfabmore, right beside it. On a board/group
+     session (no live page) outline never `applies`, so getDefault() returns
+     null and the FAB falls back to its old job, opening chat. */
+  var fabMore = document.createElement('button');
+  fabMore.id = 'chatfabmore';
+  fabMore.type = 'button';
+  fabMore.setAttribute('aria-label', 'Open the plugin and chat picker');
+  fabMore.title = 'Other plugins, GUI/TUI chat, workflow';
+  fabMore.textContent = '⋯';
+  fabMore.onclick = function () {
     if (!pick.hidden) return pickClose();
+    pickOpen();
+  };
+  document.body.appendChild(fabMore);
+
+  fab.onclick = function () {
+    if (!pick.hidden) pickClose();
+    var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
+    var def = window.boardPlugins ? window.boardPlugins.getDefault(page) : null;
+    if (def) { def.open(page); return; }
     pickOpen();
   };
   function fabLbl() {
     var tgt = chatTarget();
-    fab.innerHTML = !tgt ? '\u{1F916} Board chat'
+    var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
+    var def = window.boardPlugins ? window.boardPlugins.getDefault(page) : null;
+    fab.innerHTML = def ? def.label
+                  : !tgt ? '\u{1F916} Board chat'
                   : (tgt.group ? '\u{1F916} Group chat' : '\u{1F916} Chat');
   }
   window.addEventListener('hashchange', fabLbl);

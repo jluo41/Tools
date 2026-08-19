@@ -1,6 +1,7 @@
 # Subjective labeling: turn one person's vague concept into labels, policy, and measured executors
 spine: Settle a human-grounded subjective-labeling system in which one identified person is the semantic authority, repeated Calibration Rounds jointly improve human-confirmed labels and an executable annotation policy, and a sealed final test selects how the remaining corpus is completed.
 close: Every active Q reaches ✅ SETTLED or ⏸️ ON HOLD, the settled laws are reflected in the subjective-label skill family, and the resulting workflow passes a fresh-context end-to-end test.
+session: bb1efa90-a20e-4915-8ce6-a5b2820d891d
 excalidraw: /_excalidraw
 dialect: paper
 
@@ -69,6 +70,9 @@ cumulative gold D_t + closed G_t
 
 QA0 is the governing conception for this edition.
 The other pages make one part of that conception independently inspectable and closeable.
+This Lifecycle is the GROUP axis, which is not the same thing as the RUN axis, and the difference was written down wrongly on 260818 before being corrected the same day.
+The GROUP axis is the one drawn above: which responsibility group a reader visits next, and it needs no group of its own because it IS this section.
+The RUN axis is what ONE `label-round` call does, and `skills/page-workflows/label-round/SKILL.md` carries it as six phases A to F with no page on this Board arguing them; `QLw00` lifts it here as eleven phases in two rhythms.
 Old questions were reopened where their earlier purpose conflicted with QA0; their former filenames remain aliases under Links.
 
 ## Board Map
@@ -116,7 +120,8 @@ SubjectiveLabelBoard-260722/
 ├── 4-QD-optimization-and-convergence/    when the policy stops moving
 ├── 5-QE-final-evaluation-and-completion/ the sealed test and the scorecards
 ├── 6-QF-execution-contract/              what actually ran
-├── 7-QG-page-type/                       the labeling Page Type this family owns
+├── 7-QLw-labeling-workflow/              the RUN axis: QLw00 + one page per phase
+├── 8-QG-page-type/                       the labeling Page Type this family owns
 ├── _source/                              raw working material, off-board under `_`
 └── board/                                generated site, never hand-edited
 ```
@@ -158,11 +163,118 @@ QE4-final-audit-and-provenance.md
 
 ### QF · Execution contract
 This group owns how settled Board laws become references, callable skills, agent authority, implementation boundaries, and acceptance tests.
+It also holds this Board's workflow pair, the two pages the BoardSkillBoard keeps in its own `QPw` group: how the labeling workflow MOVES, and the hands that move it when no person is in the room.
+No `QPw-labeling-workflow` group was added on 260818, because `QB` through `QE` already ARE the time axis a `QPw1` would draw; a sixth workflow group would restate the spine that `## Pipeline` declares.
+
+```text
+🔁 the loop        QF1  the five canonical commands ARE the phases:
+                        label-init · label-round · label-evaluate ·
+                        label-complete, plus read-only label-status
+                        carries all five in skill/, with the router
+📋 the artifacts   QF2  what each phase may write
+🤲 the hands       QF3  the agents, each named by the act it may never do:
+                        the weak executor never writes gold, the optimizer
+                        never accepts its own patch, the evaluator never
+                        modifies G* · carries six of them in skill/
+🧰 the libraries   QF4  what exists, what conflicts, what must be built
+🚪 the gate        QF5  the fresh-context test the whole family must pass
+⬜ debt            QF3 governs NINE agent files and names only six:
+                        classifier-agent, embedder-agent and prober-agent
+                        appear as role words in States A2.1 and in no
+                        ## Files row, so skill/ cannot seed them
+⬜ debt            the 15 lifecycle pages QB1 to QE4 name no runner at all:
+                        each describes its step in prose and never writes
+                        the command or agent that performs it, so every
+                        one of them seeds an empty skill/
+⬜ debt            the run-receipt contract and the human-tick surface moved
+                        to `QLw` on 260818, where they are divisions 4 and 5 of
+                        QLw00; the QF6/QF7/QF8 proposal of the same morning is
+                        superseded, because the workflow they belonged to now
+                        has a group and QF holds contracts rather than sequence
+```
+
+The three proposed pages are the ONLY parts of `QPw`'s ten-page shape that `QB` through `QE` do not already carry.
+`QPw1`-`QPw6` are the six phases, and this Board argues all six across its 15 lifecycle pages; `QPw7` is `QF3` under another name; `QPw00` is `## Pipeline`.
+What is left is the gate before the work, the record of the work attempted, and the one surface a person signs, which is why the borrow is three pages and not a group.
+The full phase-by-phase mapping, including the four disciplines the existing pages are missing rather than the pages, was drawn on 260818 and belongs in `QF6` when it is written.
 QF1-skill-command-contract.md
 QF2-artifact-schema-config.md
 QF3-agent-topology.md
 QF4-library-mapping.md
 QF5-acceptance-tests.md
+
+### QLw · Labeling workflow
+This group owns the RUN axis: what actually happens, in order, when a person labels a corpus, and what that person does in each step.
+`## Pipeline` above draws the GROUP axis, which is which responsibility group a reader visits next; that is a different question and this group does not restate it.
+It exists because the sequence lived nowhere: `QA` through `QE` argue each step's method one page at a time, and the only list of steps was inside `skills/page-workflows/label-round/SKILL.md`, whose phases A to F cover one round and say nothing about opening or closing the job.
+Numbered 260818 (JL): `QLw00` holds the group on `QPw00`'s precedent, the eleven phases take `QLw1` to `QLw11` in run order, and the machinery takes `QLw12` to `QLw14`.
+Phases count from ONE, so `QLw0` no longer sits beside `QLw00`; every phase page's number IS its phase number, and phase 8 is `QLw8` with no arithmetic in between.
+A phase page owns TIMING and AUTHORITY only: when the phase starts, when it is finished, which hands may act, and what each may never do. The METHOD stays on the `QA` to `QE` page named in each row, because a copy of a method goes out of date the night it is written.
+
+```text
+📋 the sequence    QLw00 the ELEVEN phases in order, their two rhythms, the
+                         person's job and cost in each, and the two contracts
+                         that exist nowhere · the door a new person enters through
+
+📆 THE LIFECYCLE · phases 1, 8, 9, 10, 11, each exactly once
+🎬 start           QLw1  react to ~15 random items, and let the first guideline
+                         come OUT of the reactions · method: QB1 · QA2
+🧊 freeze          QLw8  the person signs, the policy stops moving · LAST and
+                         accept-biased (JL 260818) · this tick closes the run
+                         page · method: QE1
+🏁 score           QLw9  every candidate on the sealed test, one protocol,
+                         read-only · the person does NOTHING · method: QE2
+🏭 label all       QLw10 the chosen executor finishes the corpus and sends the
+                         hard ones back · method: QE3
+🔍 spot check      QLw11 a fresh sample judged BLIND, then compared · method: QE4
+
+🔁 THE ROUND · phases 2 to 7, run N times and nobody knows N
+🔎 pick            QLw2  choose what the person spends hours on, and say WHY ·
+                         exits on a person's `approved:` · method: QC1 · QC3
+🔒 lock            QLw3  the small models guess first, sealed · the ONLY phase
+                         defined by what may not be READ · method: QC2
+🧠 label           QLw4  the person judges · class, region, uncertainty, reason ·
+                         blind first pass, then the reveal · method: QB2 · QC4
+                         🎯 ~85% of the person's hours in the whole job
+📜 rules           QLw5  the reasons become rules a stranger could follow, each
+                         citing the item ids that forced it · method: QD1 · QA3
+📊 numbers         QLw6  what moved, and was QLw2's claim right · method: QD2 · QD3
+🚦 next?           QLw7  close the round, and price the next one · five routes ·
+                         method: QB3 · QD4
+
+🔧 THE MACHINERY · what RUNS the phases, on the QPw7-8-9 precedent
+🤖 the agents      QLw12 the nine hands, each named by the one act it may NEVER
+                         do, against the phases each acts in · records that QF3
+                         names six of the nine in its ## Files
+🧾 the receipts    QLw13 how the loop is RUN: the four words (job · phase · step ·
+                         round), one receipt per ATTEMPTED phase, chained by
+                         sha256, an auditor that REHASHES, and the six stops of
+                         which five are not success
+                         🆕 labeling's one real difference from QPw8: phase 4 and
+                            phase 10 are worked by a PERSON over hours or days,
+                            so their receipts are per ITEM and not per phase
+✋ the gate        QLw14 the five ticks a machine may never write, on ONE surface,
+                         accept-biased: it opens only when 8 computed findings are
+                         zero (JL 260818) · silence, good numbers and an agent's
+                         confirmation are each refused as substitutes
+```
+The number alone cannot say whether a page is a phase or a service, so the three headings in this block carry that split.
+JL hit exactly this on the sibling Board ("I don't understand why we have so many 7, 8, 9", 260818), and the repair there was to NAME the page for its job, which is why `QPw7` is `page-agents` and not `the-hands`.
+QLw00-the-workflow.md
+QLw1-start.md
+QLw2-pick.md
+QLw3-lock.md
+QLw4-label.md
+QLw5-rules.md
+QLw6-numbers.md
+QLw7-next.md
+QLw8-freeze.md
+QLw9-score.md
+QLw10-label-all.md
+QLw11-spot-check.md
+QLw12-the-agents.md
+QLw13-the-receipts.md
+QLw14-the-gate.md
 
 ### QG · Page type
 This group owns how one run of this workflow shows up as a board page, which is the only concern here that a reader meets before the method rather than inside it.

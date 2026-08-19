@@ -1,0 +1,22 @@
+# A concept unit states no number, so it declares no values intake.
+# The sets it states are transcribed, not remembered. Frozen 260818: the
+# `sources:` list named two files and named no bytes, so nothing could be
+# rechecked. These are the bytes the relation R was read from.
+kind: concept
+values: none
+frozen: 260818
+inputs:
+  - path: intake/inputs/QPw00-page-loop.md
+    sha256: 141dc13a117b6c1a73c49ce61b43c42db99ac19cb53314812d45a95a99499bdb
+    bytes: 66160
+    takes: "section 9.1, the RUN-is-not-ADVANCE ruling"
+  - path: intake/inputs/page_lifecycle.py
+    sha256: 5144806339485d7dbafa106b279d06201fb801b837674d279f0c75fc7f4b8f04
+    bytes: 23139
+    takes: "PHASES, TERMINAL_ROUTES, LEGAL_ROUTES: the four-row relation R the equation states"
+origin:
+  - page_lifecycle.py is a frozen copy of
+    plugins/haipipe-toolkit/skills/board/haipipe-board/src/page_lifecycle.py
+  - QPw00-page-loop.md is a frozen copy of this unit's own Page source
+unbound:
+  - nothing. This unit prints no number.

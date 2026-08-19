@@ -10,3 +10,4 @@
 - haipipe-task-orchestrator-agent · note: the bank door that claimed and answered all three cards' questions in tasks/
 - haipipe-plugin
 - haipipe-board
+- haipipe-writing

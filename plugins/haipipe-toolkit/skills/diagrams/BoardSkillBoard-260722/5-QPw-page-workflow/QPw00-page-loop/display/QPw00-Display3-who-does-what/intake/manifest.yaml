@@ -1,0 +1,52 @@
+# A concept unit states no number, so it declares no values intake.
+# What it DOES bind is the text it transcribes. Every phase name, every job,
+# every tick and every route in the table was copied from a file frozen below,
+# never from memory. The TIME column is the one thing NOT bound: no page has
+# run this loop, so those figures are estimates and the table says so on its face.
+#
+# RE-FROZEN 260818: haipipe-page.SKILL.md was added as the ninth input after the
+# approver's R14 found row 0 OPEN tracing to none of the other eight. OPEN is
+# haipipe-page's CREATE verb and is deliberately not a phase.
+kind: concept
+values: none
+frozen: 260818
+inputs:
+  - path: intake/inputs/260805-0216-QB8e.json
+    sha256: 788f02b3b34ca8e6edee79e84a33ed0fe5681ac790f7a890549a4c7efd3c91ca
+    bytes: 28887
+    takes: "the ONLY live run on this board when this unit was frozen: 5 receipts, CHECK REVISE CHECK REVISE CHECK"
+  - path: intake/inputs/haipipe-page-check.SKILL.md
+    sha256: 67c3773646c920462c605a184e93d3fde2b922bedc35fa2b3fa07283436d528a
+    bytes: 12684
+    takes: "the accept-bias, the RULING, judge-the-BUILT-artifact, and the FIVE-ticks count at :141 and :153"
+  - path: intake/inputs/haipipe-page-draft.SKILL.md
+    sha256: adfab930039d7f494d7f1f411ec8f6ceb6e2bda47227a9b425500ab56e3d3a6b
+    bytes: 13723
+    takes: "the scaffold-with-holes output and "DRAFT creates NO card""
+  - path: intake/inputs/haipipe-page-evidence.SKILL.md
+    sha256: 1ddff4a7743d74b3fd2933862f308990c63b0eb34b7046f4ce393c0dab6c54cf
+    bytes: 17963
+    takes: "the three kinds, their cards, and their three gates"
+  - path: intake/inputs/haipipe-page-outline.SKILL.md
+    sha256: 2227173bb85c4b476437d99ecfd749450d4506a969f4bf8f5e50a8d6b17194fc
+    bytes: 6733
+    takes: "the `approved:` exit and the outline file path"
+  - path: intake/inputs/haipipe-page-probe.SKILL.md
+    sha256: 4519eab1d5100d6b846774ad70ec074730d405b9176ed2a98b926ed6d6b97714
+    bytes: 13686
+    takes: "the MATCH order and the probe/PP<NN>-<slug>/ folder"
+  - path: intake/inputs/haipipe-page-revise.SKILL.md
+    sha256: ad5bfc479c9120ac269bdfb64f2af4abc9e83e86f20854f740f500efd4ad5dbf
+    bytes: 9201
+    takes: "the render/pick/build steps and the rebuilt projections"
+  - path: intake/inputs/haipipe-page.SKILL.md
+    sha256: c78db1eb6a7865b084f24974a4257beb782366a0dc9ef06e0fbb96755fe89f96
+    bytes: 48041
+    takes: "the CREATE verb, which is where row 0 OPEN comes from; CREATE is not a phase"
+  - path: intake/inputs/phase-cards.md
+    sha256: e415ea193080121fa2d923b25410f74f21f1577206dde497e208c3ffa831e458
+    bytes: 7670
+    takes: "the six fields of every phase card: ASKS READS WRITES EXITS TICK ROUTES"
+unbound:
+  - the TIME column. No OUTLINE, DRAFT, PROBE or EVIDENCE receipt existed when
+    this was frozen, so no phase on this table had ever been timed. Estimated.
