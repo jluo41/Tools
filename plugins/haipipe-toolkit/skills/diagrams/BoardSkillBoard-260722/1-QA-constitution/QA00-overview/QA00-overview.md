@@ -180,7 +180,7 @@ Where a page sits: a group holds pages, and each page carries a kind, a type wit
 page / face: one `Q*.md` or `S*.md`; Q is a decision (closes when its checkboxes close), S is a lifecycle stage (closes at its human gate); one layout serves both.
 Design-<n>: the unit design page (260815); the mirror kinds Skill-<unit> and Agent-<unit> retired when for-design absorbed them, and a unit page now settles on its SELECTION record like any Q.
 Page kind / Page Phase: one page combines a stable kind with a current phase.
-The kinds are narrowing toward stage and design (`QPs2`, JL 260815); the four phases DRAFT · PROBE · REVISE · CHECK ship under `board/page-phases/`; the verbs CREATE / WORK ON / RUN are `haipipe-page`'s door (`QPw1`).
+The kinds are narrowing toward stage and design (`QPs2`, JL 260815); the four phases DRAFT · PROBE · REVISE · CHECK ship under `board/page-phases/`; the verbs CREATE / WORK ON / RUN are `haipipe-page`'s door (`QPw00`).
 section: a `##` heading inside a page; the on-stage order is fixed (`QPs1`), and the renderer knows sections only through `ALIAS` (`src/common.py`).
 Opening: the lead section's one name on every page kind (260731); `Question` survives only as a legacy alias, so older pages parse forever.
 group: a `###` heading in `## Pages`, one folder per group (`QB1`); since 260731 every page id matches its group letter, and every earlier id stays resolvable as a declared Link.
@@ -428,7 +428,7 @@ Material that used to be dressed up as pages lands here instead: decks, scenes, 
 The loop and its hands: four phases, and the dispatched agents that run them:
 
 ```text
-  🔁 QPw1  the page's time axis: draft · probe · revise · check
+  🔁 QPw00 the page's time axis: draft · probe · revise · check
   🧩 Design-6  the workflow unit's page; the three dispatched
      agents' pages folded into it (🗂), reviewer · creator · orchestrator
 ```

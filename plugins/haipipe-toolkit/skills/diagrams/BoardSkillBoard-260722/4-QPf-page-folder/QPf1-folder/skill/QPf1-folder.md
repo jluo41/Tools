@@ -11,3 +11,4 @@
 - haipipe-plugin-draw
 - haipipe-plugin-latex
 - haipipe-plugin-word
+- haipipe-writing

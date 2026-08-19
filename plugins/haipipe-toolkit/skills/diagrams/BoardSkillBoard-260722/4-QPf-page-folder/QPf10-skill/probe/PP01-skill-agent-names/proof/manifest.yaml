@@ -1,0 +1,6 @@
+card: PP01-skill-agent-names
+files: []
+pending: >-
+  one numbers file holding the two totals and one table file holding
+  name · kind · path for every entry, once the walk that produced them is
+  named: numbers .json | table .csv

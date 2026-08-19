@@ -1,0 +1,35 @@
+# A concept unit states no number, so it declares no values intake.
+# What it DOES bind is transcribed text: every phase name, route and stop
+# condition in the algorithm was copied from a file frozen below, never from
+# memory. Frozen 260818, when the unit's `sources:` list was turned into real
+# files: a path plus a `takes:` note names where a reader should look, and
+# only a copy plus a sha256 lets anyone check that the copy still matches.
+kind: concept
+values: none
+frozen: 260818
+inputs:
+  - path: intake/inputs/QPw00-page-loop.md
+    sha256: 141dc13a117b6c1a73c49ce61b43c42db99ac19cb53314812d45a95a99499bdb
+    bytes: 66160
+    takes: "sections 9.1 to 9.4, the prose the figure lets a reader stop re-reading"
+  - path: intake/inputs/haipipe-page-workflow.SKILL.md
+    sha256: 1be5551e1de027adcea82d10da82c1d0d0e5c646f55441d3f4a6947c5b53a6d6
+    bytes: 19274
+    takes: "the six RUN steps, the producer/judge separation, and the stop list"
+  - path: intake/inputs/page-lifecycle.workflow.js
+    sha256: 40573839fd70d39565a64f677b6c94f02d2ac5774676af9fb4a2ab4ba439a0c6
+    bytes: 17644
+    takes: "the actual control flow the algorithm transcribes: the producer/snapshot/judge order and the stop tests"
+  - path: intake/inputs/page_lifecycle.py
+    sha256: 5144806339485d7dbafa106b279d06201fb801b837674d279f0c75fc7f4b8f04
+    bytes: 23139
+    takes: "PHASES, LEGAL_ROUTES, TERMINAL_ROUTES: every phase name and every route the figure draws"
+origin:
+  - page_lifecycle.py is a frozen copy of
+    plugins/haipipe-toolkit/skills/board/haipipe-board/src/page_lifecycle.py
+  - QPw00-page-loop.md is a frozen copy of this unit's own Page source
+  - page-lifecycle.workflow.js is a frozen copy of
+    plugins/haipipe-toolkit/skills/board/haipipe-board/ref/page-lifecycle.workflow.js
+  - haipipe-page-workflow.SKILL.md is a frozen copy of that skill's SKILL.md
+unbound:
+  - nothing. This unit prints no number.

@@ -42,6 +42,20 @@ body.chaton{padding-right:min(var(--chatw,440px),92vw)}
  box-shadow:0 6px 20px rgba(0,0,0,.28)}
 #chatfab:hover{filter:brightness(1.06)}
 body:not(.chaton) #chatfab{display:inline-flex}
+/* the picker's second door (JL 260818): a plain FAB click now opens the
+   registry's default plugin (outline) straight away, so the full menu — the
+   other plugins, the workflow group, GUI/TUI chat — needs a way in that is
+   not "click the thing that no longer opens it". One small round button,
+   left of the FAB, same row, same shadow language, opens exactly what the
+   FAB itself used to. */
+#chatfabmore{position:fixed;right:78px;bottom:20px;z-index:55;display:none;
+ align-items:center;justify-content:center;width:38px;height:38px;
+ background:var(--card);color:var(--fg);border:1px solid var(--line);
+ border-radius:999px;font-size:15px;cursor:pointer;
+ box-shadow:0 6px 20px rgba(0,0,0,.22)}
+#chatfabmore:hover{filter:brightness(1.06)}
+body:not(.chaton) #chatfabmore{display:inline-flex}
+@media(max-width:820px){#chatfabmore{right:max(66px,calc(env(safe-area-inset-right) + 66px));bottom:max(12px,env(safe-area-inset-bottom))}}
 /* 选哪个聊天（QD2 C8，JL 260802）：右下角那一下先给两行 —— GUI 抽屉还是 TUI
    终端。每一行还报「这边是不是已经有东西在跑」，那是别处看不到的事实。
    宽度跟着屏幕走：手机上贴着两边，桌面上是一张卡片。 */

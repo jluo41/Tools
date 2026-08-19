@@ -3,9 +3,9 @@ name: haipipe-page-evidence
 description: >-
   The EVIDENCE phase contract for any Board Page, renamed from PROBE on 260816 because asking a question was only ONE of the three ways a claim gets its support. EVIDENCE's plain job: for every claim the Page's outline promised, put the thing that backs it on disk, in the card that holds it, with the hand that makes it named. The three kinds are a CITATION (a bibex entry a person landed), a VALUE (a probe card bound to its answering QA file), and a DISPLAY INTAKE (a frozen snapshot plus the renderer that will draw it). It changes the Page's knowledge boundary without authoring its argument. Load haipipe-page, the matching Page Type, this contract, and the shared haipipe-probe crossing protocol before the family door's tooling. Raising the card and dispatching the question are NOT here since 260817; they are page-workflows/haipipe-page-probe. Use when a dispatched question has come back, when a number needs binding to its answering QA file before it may be written, when a claim needs a figure or table and its intake must be frozen, or when an answer must return without being silently woven into prose. Trigger: page evidence, EVIDENCE phase, bind the answer, A-executor, A-consumer, evidence card, citation, value, display intake, freeze intake, name the renderer, evidence return, /haipipe-page-evidence.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-08-17"
-  summary: "EVIDENCE lands answers, proof, citations, and Display intake; it exposes a derived Evidence Bundle with owner feedback while REVISE owns final prose and Display selection."
+  version: "0.7.3"
+  last_updated: "2026-08-18"
+  summary: "A plan marks FOUR kinds and only THREE become lanes here: proof earns no folder and lands as prose at REVISE. EVIDENCE lands answers, citations, and Display intake; it exposes a derived Evidence Bundle with owner feedback while REVISE owns final prose and Display selection."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -52,6 +52,25 @@ The loop is now `OUTLINE · DRAFT · PROBE · EVIDENCE · REVISE · COMPILE · C
 DESIGN was weighed as the new name and rejected: `page-types/haipipe-page-for-design` already holds that word, and a phase called DESIGN would carry DRAFT's authority over purpose and Aims, which is the one thing this phase must never touch.
 
 ## 🧾 The three kinds, their cards, and the hands
+
+⚠️ **A plan marks FOUR kinds and only THREE arrive here.** The outline's owe-marks
+are citation, value, display and PROOF (`haipipe-plugin-outline` §📐, JL 260817:
+"citation, display, values and proofs"). The fourth never becomes a lane, and a
+reader who counts marks and expects four cards is counting the wrong thing:
+
+```text
+  📚 citation   ─▶  a lane here      bibex/ entry            `verified` 🧑
+  🔢 value      ─▶  a lane here      probe/PP<NN>/           state: read 🧑
+  🖼 display    ─▶  a lane here      display/<unit>/intake/  accepted: ✅ 🧑
+  🧮 proof      ─▶  NO lane, ever    it lands as PROSE at ⑤ REVISE
+```
+
+**Why proof has no lane**, and it is not an omission: a proof earns no folder
+(ruled 260817, `haipipe-page-probe` §🧭). The pulled file a derivation rests on
+already lives inside a probe card's own `proof/`, so a second home for it would
+be the same material filed twice. What a 🧮 mark owes is a written derivation or
+a stated assumption chain, and prose is REVISE's to write. So EVIDENCE lands
+nothing for it, and no card ever backlinks a 🧮 bullet.
 
 Each kind has a card that holds it, a maker, and a human gate. None of the three gates moves here.
 
@@ -284,3 +303,8 @@ Owns no scripts.
 The shared crossing model is `probe/haipipe-probe`; the three cards belong to `page-plugins/haipipe-plugin-probe`, `haipipe-plugin-bibex`, and `haipipe-plugin-display`; Page Type variants live under `page-types/`; the family DOOR owns the persisted QA-probe shape and checker.
 The deterministic display-lifecycle check is `haipipe-board/src/page_evidence.py`, run by `cli/check.py`.
 The Board engine owns execution and audit; this phase owns only its authority and receipt.
+
+**This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
+`../haipipe-page-workflow/ref/phase-cards.md` §④, all three lanes. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
+
+**The Board page that argues this contract** is `QPw4-evidence` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open.

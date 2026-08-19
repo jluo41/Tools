@@ -97,6 +97,8 @@ from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
 from live.pagex import PagexMixin
+from live.task import TaskMixin
+from live.meeting import MeetingMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
@@ -119,8 +121,13 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
 _INLINE_TEXT = {".csv": "text/plain", ".tsv": "text/plain", ".log": "text/plain",
                 ".do": "text/plain", ".yaml": "text/plain", ".yml": "text/plain"}
 
+# Textual payloads that `mimetypes` does not label `text/*`, and so would be
+# served with no charset. See `guess_type` for the failure that made this list.
+_UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
+               "image/svg+xml"}
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -270,7 +277,20 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         suf = os.path.splitext(str(path))[1].lower()
         if suf in _INLINE_TEXT:
             return _INLINE_TEXT[suf] + "; charset=utf-8"
-        return SimpleHTTPRequestHandler.guess_type(self, path)
+        ctype = SimpleHTTPRequestHandler.guess_type(self, path)
+        # A text response carrying NO charset is decoded by the browser's
+        # locale default, not by UTF-8 and not by the encoding of the page that
+        # linked it. Python's `mimetypes` sends a bare `text/css`, so every
+        # non-ASCII glyph in a CSS `content:` rule mojibaked: the section-header
+        # fold marker `▸` rendered as `â–¸`, which is windows-1252 reading the
+        # three UTF-8 bytes one at a time (JL 260819). Stamp the charset on
+        # everything textual this server hands out. The built stylesheet also
+        # carries its own `@charset` now (src/assets.py CSS_CHARSET); this is
+        # the half that fixes files already on disk without a rebuild.
+        if isinstance(ctype, str) and "charset=" not in ctype and (
+                ctype.startswith("text/") or ctype in _UTF8_TYPES):
+            return ctype + "; charset=utf-8"
+        return ctype
     def do_HEAD(self):
         if self.is_home_request():
             return self.serve_home()
@@ -453,6 +473,31 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/pagex-match":    # PROBE's read-only shortlist
             res, err = self.pagex_match(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        # 🗂 task, the fourth citation twin (QPf13): the page's borrowings
+        # from `tasks/` — whole task FOLDERS, one store + symlinks re-minted
+        # from it, status read from plan.yaml / report.yaml / QA/ on disk.
+        if self.path == "/_board/task":           # re-mint the links + view
+            res, err = self.task_refresh(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/task-order":     # the drag: rank = the order
+            res, err = self.task_order(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/task-entry":     # the pen: link · ✕ · ↩
+            res, err = self.task_entry(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        # 🗣 meeting (QPf14): a person's own record of a conversation, kept
+        # under <page>/meeting/<YYMMDD-HHMM>/ — digest.md + transcript.md.
+        if self.path == "/_board/meeting":        # the view: list kept meetings
+            res, err = self.meeting_view(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/meeting-entry":  # the pen: keep a meeting
+            res, err = self.meeting_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         # The EVIDENCE plugins' read-only surfaces (QPf5 · QPf9): the view

@@ -1,0 +1,3 @@
+card: PP02-native-binary-shasum
+files: []
+pending: the two sha256 digests and the paths they were taken from, once the run that produced them is named

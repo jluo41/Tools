@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf13-task · task</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.miss{border-color:#c66;}
+</style></head><body><style>body{padding:12px 16px}button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:3px 9px;font:500 12.5px -apple-system,sans-serif}input{border:1px solid var(--line);border-radius:6px;padding:4px 7px;background:var(--card);color:var(--fg);font:12px ui-monospace,Menlo,monospace;max-width:62%}.sp{flex:1}.bar{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}.bar b{font:600 15px ui-monospace,Menlo,monospace}.row{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:12px 16px;border:1px solid var(--line);border-radius:10px;margin:0 0 12px;background:var(--card)}.row.drag{opacity:.45;border-style:dashed}.grip{cursor:grab;color:var(--mut);font-size:15px;padding:0 4px;user-select:none}.rl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rl code{font-size:12.5px;word-break:break-all}.rr{margin-left:auto;display:flex;gap:6px}.dsc{flex-basis:100%;line-height:1.5;font-size:12.5px}.status{flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:2px 0}.sb{font:600 12.5px -apple-system,sans-serif}.fact{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 8px}.ok{color:#2c7a4b;font-size:12px}.bad{color:#c0392b;font-size:12px}summary{cursor:pointer;margin:8px 0}.pick{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}</style><div class='bar'><b>🗂 QPf13-task</b><span class='mut'>· 1 task folder · top = most load-bearing</span><span class='sp'></span><button id='refresh'>♻ re-mint</button><a href='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf13-task/task/QPf13-task.md' download>⬇ store</a></div><div id='cards'><div class='row' draggable='true' data-n='examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair'><div class='rl'><span class='grip' title='drag to rank'>⠿</span><code>examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair</code> <span class='ok'>🗂 linked</span></div><div class='rr'><button class='rm' data-n='examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair' title='drop this task folder'>✕</button></div><div class='status'><span class='sb'>✅ reported · warn</span><span class='fact'>✅ plan.yaml</span><span class='fact'>✅ report.yaml</span><span class='fact'>0 QA files</span><span class='fact'>40d ago</span></div><div class='dsc'>QPf13 own proof-of-mint specimen</div><div class='dsc'><a href='/examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair' target='_blank'>open Project-Personality-OpioidRx/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair/</a></div></div></div><details open><summary class='mut'>＋ link a task folder</summary><div class='pick'><input id='newpath' placeholder='repo-relative path to a task folder, e.g. examples/Project-X/tasks/A01_group/B02_unit' style='min-width:62%'><input id='newnote' placeholder='note (optional)'><button id='addlink'>link</button></div><p class='mut'>No auto-seed: a task folder is not a page id this page's prose can be scanned for, so every row is typed here on purpose.</p></details><details><summary class='mut'>🚫 removed · 1</summary><div>🚫 <code>examples/Project-Personality-OpioidRx</code> <button class='rst' data-n='examples/Project-Personality-OpioidRx'>↩ restore</button></div></details><script>
+var CTX = {path: "/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "4-QPf-page-folder/QPf13-task/QPf13-task.md"};
+function post(route, body) {
+  Object.assign(body, CTX);
+  fetch('/_board/' + route, {method: 'POST',
+    headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.ok) { alert('\u26a0 ' + (j.err || route)); return; }
+      location.reload();
+    })
+    .catch(function (e) { alert('\u26a0 ' + e); });
+}
+document.addEventListener('click', function (ev) {
+  var b = ev.target;
+  if (b.id === 'refresh') return post('task', {});
+  if (b.id === 'addlink')
+    return post('task-entry', {
+      link: document.getElementById('newpath').value,
+      note: document.getElementById('newnote').value});
+  if (!b.dataset || !b.dataset.n) return;
+  if (b.className === 'rm')  return post('task-entry', {link: b.dataset.n, remove: true});
+  if (b.className === 'rst') return post('task-entry', {link: b.dataset.n, restore: true});
+});
+var drag = null, moved = false;
+document.addEventListener('dragstart', function (ev) {
+  drag = ev.target.closest ? ev.target.closest('.row') : null;
+  moved = false;
+  if (drag) drag.classList.add('drag');
+});
+document.addEventListener('dragover', function (ev) {
+  if (!drag) return;
+  ev.preventDefault();
+  var r = ev.target.closest ? ev.target.closest('.row') : null;
+  if (!r || r === drag) return;
+  var box = r.getBoundingClientRect();
+  r.parentNode.insertBefore(drag, (ev.clientY - box.top) < box.height / 2
+                                  ? r : r.nextSibling);
+  moved = true;
+});
+document.addEventListener('drop', function (ev) { ev.preventDefault(); });
+document.addEventListener('dragend', function () {
+  if (!drag) return;
+  drag.classList.remove('drag');
+  drag = null;
+  if (!moved) return;
+  var out = [];
+  Array.prototype.forEach.call(document.querySelectorAll('#cards .row'),
+    function (r) { out.push(r.dataset.n); });
+  post('task-order', {order: out});
+});
+</script></body></html>

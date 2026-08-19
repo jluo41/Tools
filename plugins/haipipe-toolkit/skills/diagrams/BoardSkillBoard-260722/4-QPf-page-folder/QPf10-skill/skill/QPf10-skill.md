@@ -7,3 +7,5 @@
 - haipipe-plugin-skill · note: the skill was extracted from this page
 - haipipe-board
 - haipipe-plugin
+- haipipe-plugin-latex
+- haipipe-writing

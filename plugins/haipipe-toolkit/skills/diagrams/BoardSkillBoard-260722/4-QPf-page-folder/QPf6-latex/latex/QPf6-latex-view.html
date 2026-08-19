@@ -14,35 +14,69 @@ a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
  padding:10px 12px;margin:0 0 10px}
 .card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
 .miss{border-color:#c66;}
-</style></head><body><h1>📜 QPf6-latex</h1><p class='mut'>compiled by xelatex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf6-latex/latex/QPf6-latex.pdf' download>⬇ QPf6-latex.pdf</a></p><iframe src='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf6-latex/latex/QPf6-latex.pdf' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPf6-latex.tex · <a href='/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf6-latex/latex/QPf6-latex.tex' download>⬇ download</a></summary><pre>% GENERATED from QPf6-latex.md by md2tex.py. Do not hand-edit: sync is
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPf6-latex</h1><p class='mut'>compiled by xelatex · <a href='/4-QPf-page-folder/QPf6-latex/latex/QPf6-latex.pdf' download>⬇ QPf6-latex.pdf</a></p><iframe src='/4-QPf-page-folder/QPf6-latex/latex/QPf6-latex.pdf?t=1787105895074165999' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPf6-latex.tex · <a href='/4-QPf-page-folder/QPf6-latex/latex/QPf6-latex.tex' download>⬇ download</a></summary><pre>% GENERATED from QPf6-latex.md by md2tex.py. Do not hand-edit: sync is
 % one-way and the next run overwrites this file.
 
-\section{The contract}
+\section{What sits in the folder, and what a rebuild overwrites}
+\textbf{What the folder holds}: three files, all built for you, and every one can be built again.
+
 \begin{verbatim}
   &lt;page&gt;/latex/
-    &lt;stem&gt;.tex     md2tex's section . header says "do not hand-edit"
-    &lt;stem&gt;.pdf     the compiled look . what the tab frames
-  flat page fallback: &lt;board&gt;/latex/&lt;stem&gt;.* . the same fork deck.py takes
+    &lt;stem&gt;.tex         md2tex's section . header says "do not hand-edit"
+    &lt;stem&gt;.pdf         the compiled look . what the view shows
+    &lt;stem&gt;-view.html   the tab's page: PDF inline + the .tex one fold below
+  flat page fallback: &lt;board&gt;/latex/&lt;stem&gt;.* . for a page that owns no folder
 \end{verbatim}
-A hand-edited file is overwritten on the next build, which is the derived-plugin rule and not a defect. \texttt{--paper-root} is discovered by walking up from the page toward \texttt{--root} for a \texttt{0-*.bib}; a page outside any paper compiles cite-less with \texttt{\textbackslash{}citep} printed as \texttt{[key]} rather than refusing. Inside a paper the master gains natbib, \texttt{plainnat}, and a \texttt{bibtex} pass against the paper's own bib.
+📌 This part settles which three files live in \texttt{latex/}, and that a rebuild may overwrite any of them. Edit one of these files by hand and the next build overwrites it. That is the rule for a folder the machine rebuilds, not a fault. Nobody keeps the view page up to date by hand. \texttt{export.py} writes it again at the end of every run, whether or not xelatex produced a PDF. The bibliography looks first at the page's own bibex/ list (QPf8). When \texttt{bibex/&lt;stem&gt;.bib} holds an entry, the PDF cites exactly what the page cites. With no page bib, the export looks for a \texttt{0-*.bib} by walking up from the page toward the server's root folder. Outside any paper it still compiles with no citations, printing each \texttt{\textbackslash{}citep} as \texttt{[key]} rather than refusing. With either bib the master gains natbib, \texttt{plainnat}, and a \texttt{bibtex} pass.
 
-\section{What the writer inherits, and what it drops}
+
+\section{What survives the trip to LaTeX, and what is lost}
+\textbf{What md2tex keeps and what it drops on a board page}: most of it lines up, and the losses are written down, not hidden.
+
 \begin{verbatim}
-  ### 1 . title      --&gt;  \section          the Content divisions map cleanly
+  ### 1 . title      --&gt;  \section
   #### block         --&gt;  paragraph break
-  \citep{} \ref{}    --&gt;  kept verbatim     already LaTeX
-  &gt; lanes            --&gt;  DROPPED           in Word they become comments;
-                                            here they have nowhere to go
-  refuse-to-regress  --&gt;  inherited         a rewrite that loses citations
-                                            is refused, not silently written
+  \citep{} \ref{}    --&gt;  kept verbatim
+  &gt; lanes            --&gt;  DROPPED
+  refuse-to-regress  --&gt;  inherited
 \end{verbatim}
-The proof run is \texttt{QPf4b}'s Content: eight divisions became a real four-page PDF, driven in a browser through the tab on 260815. What does not survive is the board's emoji-heavy ascii figures: xelatex drops glyphs its fonts lack, so a figure-dense page reads thinner in PDF than on stage, and A2 below is where that gap is measured rather than guessed.
+📌 This part says what a board page loses on its way to LaTeX: the \texttt{&gt;} lanes, and some emoji. The Content parts map cleanly, because a part already is a section. \texttt{\textbackslash{}citep\{\}} and \texttt{\textbackslash{}ref\{\}} come through untouched, because they were LaTeX before the export started. The \texttt{&gt;} lanes are the one real loss. The Word export lands them as comments pinned to a spot, and a LaTeX section has nowhere to put them. The writer also refuses to go backwards: a rewrite that loses citations is refused, not written quietly. The proof run is \texttt{QPf4b}'s Content: ten parts became a real nine-page PDF, driven in a browser through the tab. The board's emoji-heavy ascii figures do not survive. xelatex drops any glyph its fonts lack, so a page full of figures reads thinner in PDF than on screen. A2 below is where that gap gets measured instead of guessed.
 
-\section{The surface}
+
+\section{The tab shows something even when the build fails}
+\textbf{The 📜 tab}: the registry's \texttt{tab: \{url, write\}} spec, url first, then a HEAD check, then a build, with the latex route behind it.
+
 \begin{verbatim}
   82-plugin-exports.js --POST--&gt; /_board/latex --runs--&gt; md2tex + xelatex
-  tab.url()  names latex/&lt;stem&gt;.pdf . HEAD hit  &gt; frame it
-  tab.write() builds on miss . lit-click       &gt; REBUILD (derived refresh)
-  failure    &gt; a view page: the .tex + the log tail . never a blank frame
+  tab.url()  names latex/&lt;stem&gt;-view.html . PDF framed, .tex one fold below
+  tab.write() builds on miss . lit-click       &gt; REBUILD (build it again)
+  no PDF     &gt; the .tex fold opens . log tail above it
 \end{verbatim}
-</pre></details></body></html>
+📌 This part settles that the 📜 tab always has a page to show: the PDF when the build works, the log when it does not. One view page is written either way, so the tab is never empty. A run that works shows the PDF, with the raw source folded under it. A run that fails opens that fold and prints the tail of the log, so the error sits where the finished page would have been. Figure~\ref{fig:qpf6-latex-proof} shows the working case at the size a reader reads it: page 1 of this page's own export, rendered at 150 dpi, so the claim that the projection works is shown rather than asserted a third time.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{../display/QPf6-Display1-latex-proof/assets/figure.pdf}
+\caption{Page 1 of this page's own LaTeX export, rendered at 150 dpi. The
+  projection is asserted to work in three places on this page and was never
+  shown; this is the showing. A reader who doubts the export can compare this
+  image against \texttt{latex/QPf6-latex.pdf} directly.}
+\label{fig:qpf6-latex-proof}
+\end{figure}
+
+</pre></details><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/latex', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/./board.md", file: "4-QPf-page-folder/QPf6-latex/QPf6-latex.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script></body></html>

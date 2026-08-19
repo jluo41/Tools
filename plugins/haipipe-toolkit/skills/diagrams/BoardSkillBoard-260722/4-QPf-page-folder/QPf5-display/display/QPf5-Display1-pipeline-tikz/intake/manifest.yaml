@@ -10,3 +10,14 @@ facts_the_image_may_state:
   - the pipeline is intake, render, pick, build, accept, in that order
   - a person owns steps 1, 3, 5; machinery owns steps 2 and 4
   - a changed intake flows forward and the acceptance falls back to open
+
+# FROZEN 260818. This manifest named its sources by REF and froze no bytes,
+# so `cli/check.py` reported `display-intake-unfrozen` and nothing could be
+# rechecked: a ref points at a file that keeps changing. These are the bytes
+# the figure was drawn from.
+frozen: 260818
+inputs:
+  - path: intake/inputs/QPf5-display.md
+    sha256: 06137007a199f0d8ea9e3a3ae976ec76e1b908ebeadd255508d2f40ef682959f
+    bytes: 27936
+    takes: "Content section 4: the five-step pipeline and the three-hands rule this figure draws"

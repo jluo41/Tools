@@ -1,3 +1,18 @@
+## 0.4.2 — 2026-08-18
+
+- Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §⑤, which
+  states this phase and every sibling in the SAME six fields
+  (`❓ ASKS · 📥 READS · 📤 WRITES · 🚪 EXITS · ✋ TICK · 🔀 ROUTES`). This
+  contract still owns the reasoning; the card is the readable-across-phases
+  summary, and the contract wins when they disagree.
+- Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
+  `QPw00g` when JL ruled that pages which are not phases may not carry
+  phase numbers.
+
+
+## 0.4.1 — 2026-08-18
+
+Added the Board page backlink: the page that argues this contract, created 260818 when JL ruled one page per workflow step.
 
 ## 0.4.0 — 2026-08-16
 

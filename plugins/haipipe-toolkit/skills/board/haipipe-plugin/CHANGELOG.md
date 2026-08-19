@@ -3,6 +3,21 @@ haipipe-plugin — Changelog
 
 Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.1.2 - 2026-08-18
+
+- `task/` joined the roster: the fourth citation twin, a page's ranked list
+  of `tasks/` folders it is written about, materialized as symlinks to whole
+  DIRECTORIES (never files — the inverse of pagex's own rule, because a task
+  folder is never itself a page) and read for live status off `plan.yaml` /
+  `report.yaml` / `QA/*.md`, never a hand-typed word. `live/task.py` +
+  `assets/js/10-drawer/86-plugin-task.js`; design page QPf13.
+- `meeting/` went 🟢 built: `<YYMMDD-HHMM>/digest.md` + `transcript.md`,
+  exactly the shape the row already declared. JL ruled it STANDALONE over
+  pointing at the separate `Meeting-<n>` page type — a meeting plugin is a
+  page's own attachment with nothing to route, where a `Meeting-<n>` page
+  owes a decision to some other page. `live/meeting.py` +
+  `assets/js/10-drawer/87-plugin-meeting.js`; design page QPf14.
+
 ## 0.1.1 - 2026-08-15
 
 - The slide row caught up with the same evening's rulings: writer is

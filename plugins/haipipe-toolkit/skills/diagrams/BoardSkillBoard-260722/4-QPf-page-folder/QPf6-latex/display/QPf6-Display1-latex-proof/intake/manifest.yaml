@@ -1,0 +1,23 @@
+# A PROOF unit states no number of its own: it renders an artifact and the
+# artifact is the claim. Frozen 260818, when the unit was completed.
+#
+# It had NO manifest and NO README at all, so `cli/check.py` reported both
+# `display-declared-no-claim` and `display-declared-not-rendered` on it, and
+# those were 2 of the board's 4 errors. `intake/SOURCE.txt` named
+# `../../latex/QPf6-latex.tex`, a file that does not exist: the latex plugin
+# writes the .pdf and a -view.html and keeps no .tex beside them.
+unit: QPf6-Display1-latex-proof
+kind: proof
+values: none
+frozen: 260818
+inputs:
+  - path: intake/inputs/QPf6-latex.md
+    sha256: 9aced6b2b2315877029887a52168f9d608ad086bb04cafedb3631edb40c513b7
+    bytes: 17252
+    takes: "the page source that produced that PDF, so the proof can be tied to a version"
+  - path: intake/inputs/QPf6-latex.pdf
+    sha256: 606fa845afc3f296ac383af185f78fe87ea5fa4b8ab20023e8e5d6a264a3cf61
+    bytes: 25781
+    takes: "the compiled artifact this unit renders to PNG; it IS the thing being proved"
+unbound:
+  - nothing. This unit prints no number; it prints a PAGE.

@@ -87,6 +87,25 @@ shape and preserves all receipts in order:
 }
 ```
 
+⚠️ **`human_gate` is a POINTER, never the tick itself** (JL 260818). It records
+that a gate was satisfied and WHERE to look; `evidence` holds paths to the
+durable ticks. Two independent reasons forbid storing the tick here:
+
+```text
+the WRITER       the controller writes receipts, so a tick stored in one is
+                 a machine writing its own approval
+MUTABILITY       a tick can go BACKWARD: a changed display `intake/` drops
+                 `accepted: ✅` to ⬜. receipts are an append-only chain, and
+                 a value that reverts cannot live in one
+```
+
+The four ticks and the missing single surface are argued on `QPw00g-human-gate`.
+
+```text
+(receipt shape continues)
+}
+```
+
 The minimum auditable identity is the SHA-256 of the Markdown source joined to
 the SHA-256 of its rendered HTML. The auditor requires lowercase 64-character
 hex digests and verifies that `version_after` is exactly
@@ -164,6 +183,76 @@ under `<board>/board/`, and independently recomputes both SHA-256 digests. A
 well-formed receipt still fails if the files currently on disk do not equal its
 `final_version`. Thus version evidence is not accepted merely because an agent
 wrote the same claimed hash into several fields.
+
+⚠️ **`page` MUST be stored BOARD-RELATIVE.** This was proved on 260818 by
+auditing the only live run that exists, and the controller now normalizes it:
+
+```text
+$ pageflow.py audit _runs/page/QB8e/260805-0216-QB8e.json     BEFORE 260818
+ERROR source-artifact-missing  Page source does not exist:
+      <board>/QS-sentence/QS2-sentence-details-lifecycle/QS2-…md
+FAIL  page-lifecycle: 1 finding
+
+the file is FINE. it sits at 6-QS-sentence/QS2-…, because the 260816
+regroup added the `<N>-` numeric prefix to every group folder.
+```
+
+Two fixes landed the same day, and the second is the one that matters:
+
+```text
+① the CONTROLLER normalizes  page-lifecycle.workflow.js strips a leading
+                             `<board>/` before it writes any receipt, so every
+                             NEW receipt stores a relative path
+② the AUDITOR falls back     when the recorded path does not resolve, it looks
+   AND SAYS SO               for the file NAME under `board`. A unique match is
+                             audited, and reported as `page-path-stale`; two
+                             matches refuse, because guessing is worse than
+                             stopping. The audit still FAILS: the receipt is
+                             defective, and saying so precisely beats saying
+                             something false.
+```
+
+```text
+$ pageflow.py audit _runs/page/QB8e/260805-0216-QB8e.json     AFTER 260818
+ERROR page-path-stale            records <abs>/QS-sentence/…; resolves uniquely
+                                 to 6-QS-sentence/…. Audited against that.
+ERROR artifact-version-mismatch  current identity differs from final_version
+FAIL  page-lifecycle: 2 finding(s)
+      edges=CHECK->REVISE,REVISE->CHECK,CHECK->REVISE,REVISE->CHECK,CHECK->CLOSE
+```
+
+The second finding is the one the first was hiding: the page has been edited
+since it closed, which is a true statement about a closed version and is exactly
+what an audit is for.
+
+So a run recorded as `CLOSE` with `audit PASS` no longer audits at all, and the
+cause is a legitimate board reorganization rather than any mutation of the page.
+An absolute path also breaks on a clone, a rename, or a different checkout.
+
+```text
+🚫 page: /Users/…/BoardSkillBoard-260722/QS-sentence/QS2-…/QS2-….md
+✅ page: <group-folder>/QS2-…/QS2-….md      resolved against `board`
+   and a group renumber is then a resolvable move, not a dead path
+```
+
+Until that lands, an auditor SHOULD fall back to resolving the receipt's page by
+its stem under `board`, and MUST report the fallback rather than passing silently.
+
+⚠️ **`mechanical_errors` MUST be PAGE-scoped**, and it was undefined until
+260818. This is defect ④ of the same run and it was never theoretical: on
+`BoardSkillBoard-260722` every error belonged to some OTHER page, so under
+board-scoped counting no page on that board could ever pass. Board-level
+findings are reported as context and never as a gate.
+
+```text
+where it is now stated
+  ref/page-lifecycle.workflow.js   snapshot() step 2 carries the literal
+                                   `check.py <board> | grep '^<page-file>'`
+  agents/haipipe-board-reviewer-   the return contract's `route:` block
+    agent.md 0.8.0
+measured 260818 after the fix      board 4 errors, ALL foreign
+                                   (QPf5 ×2, QPf6 ×2) · QPw00 ZERO
+```
 
 Do not append a CHECK result to the Page's own Log after approval: that would
 change the just-checked version. OUTLINE owns its versioned plan; DRAFT,

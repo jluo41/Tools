@@ -1,0 +1,94 @@
+# approve-rules · what an agent checks before 🧭 `approved:`
+
+Seeded 260818. This is the SPLIT tick: an agent can establish that a plan is
+COMPLETE and CONSISTENT; only a person can say it is the plan they want.
+
+```text
+🤖 the agent half   is the plan complete, consistent and legal?
+🧑 the human half   is this the DIRECTION I want?   ← re-judged every time
+```
+
+## Rules
+
+```text
+R1  EVERY SECTION IS ACCOUNTED FOR. Each `## C<n>` in the plan maps to a real
+    Content division on the page, and every division the round touches has a
+    `## C<n>`. A division that is deliberately untouched is named as out of
+    scope, not omitted.
+R2  THE OUT-OF-SCOPE LIST IS EXPLICIT. The plan states which divisions,
+    Aims, States and open Decision Now rows it does NOT touch.
+R3  EVERY BULLET CARRIES A MARK. One of 🔢 value · 📚 citation · 🖼 display ·
+    🧮 proof · 🎯 aim · ✅ have it. An unmarked bullet owes something nobody
+    named.
+R4  NO BULLET CONTRADICTS A `## Law` ROW on its own page or on a page that
+    page cites as binding.
+R5  THE ROUND IS CLASSIFIED CORRECTLY. A plan that changes purpose or any
+    Aim's intent is a DRAFT round and says so; a plan that only changes
+    realization is REVISE and says so.
+R6  IDS ARE STABLE. Aim and State ids the plan keeps are listed by id, so a
+    renumber cannot happen by accident.
+R7  NOTHING IS LOST SILENTLY. Where the plan shrinks or deletes material, it
+    names where that material now lives. Material with no new home is called
+    out as a deliberate loss, with the reason.
+R8  NEVER DELETE THE ONLY PLACE A RULE IS WRITTEN, even when the surrounding
+    division is being shrunk. For each paragraph marked for deletion, recover
+    its text (git, or a display unit's frozen intake) and grep the board AND
+    the skill tree for the rule it states. A rule with no second home makes
+    the deletion a finding.
+    ⚠️ NOT promoted from any break. This rule was seeded 260818 with a WORKED
+    EXAMPLE THAT WAS FALSE: the README claimed the uncertainty rule lived only
+    in QPw00's `#### 1.3`. It does not. `haipipe-page-draft/SKILL.md:24` states
+    it outright and `QPw2-draft §2.2` restates it, which the first approver run
+    established by checking all twelve deleted paragraphs. The RULE is sound
+    and stays; the example was invented and is struck. A seeded rule carries no
+    origin stamp because it has no origin, and that is exactly why it must not
+    be dressed as a promotion.
+R9  THE ADDRESSES ARE WELL FORMED. `C<n>.P<n>.B<n>`, no gaps inside a
+    paragraph, no id used twice.
+R10 THE AGENT WRITES `checked:`, NEVER `approved:`. Two fields, two authors,
+    on two lines:
+
+    ```text
+    checked:  ✅ auto <YYMMDD> · approve-rules R1-R9 pass     🤖 the agent
+    approved: ✅ JL <YYMMDD>                                   🧑 the person
+    ```
+
+    The producer of a plan never checks its own plan: the approver runs in a
+    fresh context.
+```
+
+⚖️ **Why two fields and not one** (resolved 260818, after the first live run).
+An earlier draft of R10 had the agent write `approved: ✅ auto`. Three shipped
+contracts forbid exactly that, in the same words: `QPw00-page-loop`'s own
+Diagram ("a PERSON ticks `approved:`; no machine may"), `QPw1-outline §3`, and
+`haipipe-page-check:141`. The first approver run read all three and reported the
+collision before it could bite, because its verdict happened to be ⬜.
+
+So the ruling and the law both hold, on separate lines:
+
+```text
+🧑 JL 260818  "human not to approve, they to break"
+              ⇒ the RUN proceeds on `checked: ✅` alone. It does not wait
+                for `approved:`, and a plan nobody objected to is not blocked.
+🔒 three contracts
+              ⇒ `approved:` stays a person's word, and no machine writes it.
+                It is now OPTIONAL: the blanket "the whole thing is good".
+🛑 either way
+              ⇒ a person's 🛑 outranks every rule pass beneath it, reverts
+                `checked:`, and needs no rule to justify itself.
+```
+
+What a 🛑 costs is one re-plan. What the blocking gate cost was every plan
+waiting on one reader.
+
+## 🚫 NOT rules · these are the human half
+
+```text
+"is this the right direction for the page?"
+"should we shrink these divisions at all, or keep them full?"
+"is this round worth doing now?"
+"does this plan serve what I am actually trying to build?"
+```
+
+Every one of these changes with what the person wants and cannot be written
+once. They are the 🛑, and the 🛑 outranks every R1-R10 pass beneath it.

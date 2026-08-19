@@ -7,3 +7,4 @@
 - haipipe-board
 - haipipe-plugin-bibex
 - haipipe-plugin
+- haipipe-writing

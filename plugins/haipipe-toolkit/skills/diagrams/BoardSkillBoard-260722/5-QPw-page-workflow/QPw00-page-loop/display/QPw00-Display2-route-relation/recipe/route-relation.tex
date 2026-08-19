@@ -1,0 +1,44 @@
+% A rebuild is deterministic: recompiling this recipe gives the same PDF.
+%
+% The drawing only. No \documentclass, no preamble.
+%
+% Every set below is transcribed from intake/inputs/page_lifecycle.py lines
+% 18-28, never from memory. REBUILT 260818: the previous version drew a FOUR
+% phase Phi and a uniform R(phi) = Phi + {HOLD}, which was true of the loop in
+% 260816 and false of the seven-phase loop the same file now declares. The two
+% consequence lines survived the rebuild unchanged, because they were always
+% derived from CHECK's row alone.
+\begin{align*}
+  \Phi &= \{\textsc{Outline},\ \textsc{Draft},\ \textsc{Probe},\
+            \textsc{Evidence},\ \textsc{Revise},\ \textsc{Compile},\
+            \textsc{Check}\} &&\text{the seven phases}\\[2pt]
+  T &= \{\textsc{Close},\ \textsc{Hold}\} &&\text{the two terminals}
+\end{align*}
+
+\smallskip
+\noindent$R(\varphi)$ row by row, and the point is that it is \textbf{not} uniform:
+
+\smallskip
+{\footnotesize
+\noindent\begin{tabular}{@{}r@{\ }l@{}}
+$R(\textsc{Outline})$  & $=\{\textsc{Outline},\ \textsc{Draft},\ \textsc{Hold}\}$\\
+$R(\textsc{Draft})$    & $=\{\textsc{Draft},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Revise},\ \textsc{Check},\ \textsc{Hold}\}$\\
+$R(\textsc{Probe})$    & $=\{\textsc{Probe},\ \textsc{Evidence},\ \textsc{Revise},\ \textsc{Hold}\}$\\
+$R(\textsc{Evidence})$ & $=\{\textsc{Evidence},\ \textsc{Revise},\ \textsc{Draft},\ \textsc{Check},\ \textsc{Hold}\}$\\
+$R(\textsc{Revise})$   & $=\{\textsc{Revise},\ \textsc{Compile},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Check},\ \textsc{Hold}\}$\\
+$R(\textsc{Compile})$  & $=\{\textsc{Compile},\ \textsc{Check},\ \textsc{Revise},\ \textsc{Hold}\}$\\
+$R(\textsc{Check})$    & $=\{\textsc{Close},\ \textsc{Outline},\ \textsc{Revise},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Hold}\}$
+\end{tabular}}
+
+\medskip
+\noindent Three laws follow from the table, and they are why it is worth printing:
+
+\begin{align*}
+  \textsc{Close} \in R(\varphi)
+    &\iff \varphi = \textsc{Check}
+  &&\text{only a judge may close}\\[2pt]
+  \textsc{Check} &\notin R(\textsc{Check})
+  &&\text{no version is judged twice untouched}\\[2pt]
+  \textsc{Hold} &\in R(\varphi) \ \ \text{for every } \varphi \in \Phi
+  &&\text{every phase may stop honestly}
+\end{align*}

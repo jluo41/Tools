@@ -1,6 +1,7 @@
 ---
 name: diagram-ascii
-description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking. Use when the user wants to sketch an idea, map a codebase, visualize a flow inline during discussion, or show pipeline progress. Output is plain-text with liberal emoji for visual punch.
+description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking, AND the two-box shape every substantive chat reply opens with (✅ ANSWER, then 🧑 YOURS, then a 🤖 MINE list). Use when the user wants to sketch an idea, map a codebase, visualize a flow inline during discussion, show pipeline progress, or when a reply must lead with its answer and the one action the reader owns. Output is plain-text with liberal emoji for visual punch.
+version: "0.2.0"
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
@@ -25,6 +26,40 @@ metadata:
 | `ref/05-progress-tracker.txt` | experiment dashboard, multi-run grid, burn-down |
 | `ref/06-numbered-series.txt` | multi-diagram answers with `[N/TOTAL]` headers |
 | `ref/08-paper-section.txt` | argument-style diagram for a paper method section (progression + contrast + synthesis combined) |
+| `ref/09-reply-boxes.txt` | the two-box reply opening: ✅ ANSWER, then 🧑 YOURS, then 🤖 MINE |
+
+## Reply format — open with TWO boxes
+
+**Every substantive chat reply opens with two boxes and then a numbered list.** Ruled 260818, in two corrections one after the other: *"I want the style like this, highlight your answer, highlight what I need to do"*, then *"I think you should also highlight your quick answer."* A bold sentence on line 1 is not enough, because bold still disappears in a scroll.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ✅ ANSWER · <the answer to what was asked, one line>        ║
+║                                                              ║
+║  <at most 2 more lines: the number, the path, the verdict>   ║
+╚══════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════╗
+║  🧑 YOURS · <how long, or the word "nothing">                 ║
+║                                                              ║
+║  <the literal thing to type, click, or decide>               ║
+║  <what happens if it is skipped>                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+── 🤖 MINE · <n> items, no input needed ──────────────────────
+  1️⃣ <what the assistant does>        <how long>
+```
+
+Four rules make it work, and `ref/09-reply-boxes.txt` carries the worked example:
+
+- **Never omit the YOURS box.** With nothing to do it still appears and says `nothing`, so it is never scanned for.
+- **YOURS holds the LITERAL thing**: the exact command, the exact line, the exact path. Never a description of it.
+- **MINE is a numbered list with time estimates.** It is what makes `nothing` in the YOURS box credible instead of evasive.
+- **Both boxes are the same width**, 62 columns of content. Two widths read as two unrelated things.
+
+Skip both boxes for a one-word factual answer, a pure "sketch this" request where the diagram IS the answer, and mid-work progress notes.
+
+State, findings and evidence diagrams come AFTER the boxes and still obey the ≤3 diagram budget.
 
 ## When to Use
 - Mid-discussion idea plotting — "sketch how this works"

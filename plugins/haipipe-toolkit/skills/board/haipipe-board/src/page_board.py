@@ -945,7 +945,10 @@ def render_tree(meta, qs, out_dir, only=None):
     # One file each, assembled from the parts (src/assets.py). The split site
     # links these rather than inlining, so the browser caches one copy for all
     # 61 pages and the ?v= stamp is what makes a ship land.
-    (assets / "board.css").write_text(CSS, encoding="utf-8")   # CSS is rstripped
+    # CSS is rstripped; `@charset` goes in front and nothing may precede it.
+    # See src/assets.py CSS_CHARSET for why a stylesheet needs to declare its
+    # own encoding even when the page that links it already declared one.
+    (assets / "board.css").write_text(_assets.CSS_CHARSET + CSS, encoding="utf-8")
     (assets / "board.js").write_text(_assets.js(), encoding="utf-8")
 
     written = []

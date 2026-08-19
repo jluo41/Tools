@@ -64,7 +64,7 @@
       -tex           .tex recipe > vector PDF . TeX-native . a person writes it
       -illustration  image-gen prompt > concept figure . recipe = prompt + receipts
 \end{verbatim}
-A data-driven skill draws numbers, and it may not go back to the raw data. It reads only the small approved copy in \texttt{intake/}. A concept-driven skill draws an idea, so it holds no numbers at all, and its input is the sketch itself. The ✒️ row is the one whose writer is a person: someone writes the \texttt{.tex} by hand, which is how both units on this page were drawn. It earns a row because it is written in TeX itself, so it picks up the document's fonts and math and \texttt{float.tex} can pull it in directly. Its skill is named after that MECHANISM rather than one package, so \texttt{haipipe-display-tex} covers a TikZ figure, an algorithm block, and a display equation alike (JL 260816). Such a unit still owes a compiled \texttt{assets/figure.pdf}, because a document that includes it rarely carries the author's own preamble. Drawing a unit again from its recipe depends on the kind. A python figure reruns its script, a diagram redraws from its spec, and an AI picture replays its saved prompt.
+A data-driven skill draws numbers, and it may not go back to the raw data. It reads only the small approved copy in \texttt{intake/}. A concept-driven skill draws an idea, so it holds no numbers at all, and its input is the sketch itself. In the ✒️ row a person draws by hand: they type the picture as \texttt{.tex} code, and that is how both units on this page were drawn. It gets its own row because the drawing is TeX code, so it uses the document's own fonts and math, and \texttt{float.tex} can pull the file in as it is. The skill is named after that way of drawing, not after one package, so \texttt{haipipe-display-tex} covers a TikZ figure, an algorithm block, and a math display (JL 260816). Such a unit still owes a built \texttt{assets/figure.pdf}. A document that pulls the code in rarely has the same setup lines at the top of the file. Drawing a unit again from its recipe depends on the kind. A python figure reruns its script, a diagram redraws from its spec, and an AI picture replays its saved prompt.
 
 
 \section{The order of the work, and which steps need a person}
@@ -81,9 +81,9 @@ A data-driven skill draws numbers, and it may not go back to the raw data. It re
                      --check reports a stale unit instead of hiding it
   (5)  ACCEPT     a person reads the render and ticks accepted:
 \end{verbatim}
-📌 Nothing is drawn before a person approves the numbers, and nothing is finished before a person looks. Drawing never comes first. With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that. Steps (1) (3) (5) belong to a person, and steps (2) (4) belong to the machine. QPf5-Display1 draws that split of hands. The tab's 🔄 reruns step (4)'s build alone, never step (2)'s drawing skill. If the inputs change, the work runs forward again from (2) to (5). The old yes drops back to [ ], because the picture a person agreed to no longer exists.
+📌 Nothing is drawn before a person approves the numbers, and nothing is finished before a person looks. Drawing never comes first. With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that. Steps (1) (3) (5) belong to a person, and steps (2) (4) belong to the machine. Figure~\ref{fig:qpf5-pipeline} draws that split of hands. The tab's 🔄 reruns step (4)'s build alone, never step (2)'s drawing skill. If the inputs change, the work runs forward again from (2) to (5). The old yes drops back to [ ], because the picture a person agreed to no longer exists.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=.85\linewidth]{../display/QPf5-Display1-pipeline-tikz/assets/figure.pdf}
 \caption{The display pipeline: five steps from approved intake to an accepted
@@ -102,9 +102,9 @@ A data-driven skill draws numbers, and it may not go back to the raw data. It re
    intake/manifest.yaml      > cites that holder BY ID . carries only a
                                  small approved extract in inputs/
 \end{verbatim}
-A probe is a question card. The page asks its question once, the answer lands in the shared task list, and after that everyone points at the card's id instead of asking again. So \texttt{intake/} is not a second copy of the data. The task's own output stays the one source, and the manifest only points at it, by id. A unit names its evidence by id, never by a file path, and it never types a number by hand. QPf5-Display2 draws that move: ask once, point at it twice. The slides plugin already works this way on \texttt{QPf3}. Its deck asks for an id, a small helper turns the id into the file's real path, and the template holds no digits at all. So a hand-typed number has nowhere to live. That id lookup already reaches units under a page, because the citation index finds a unit by id wherever the unit sits. Aim A1 asks for the other half. The build adapter should accept a page's \texttt{display/} as a unit root, so \texttt{--check} can report an out-of-date page unit instead of hiding it.
+A probe is a question card. The page asks its question once, the answer lands in the shared task list, and after that everyone points at the card's id instead of asking again. So \texttt{intake/} is not a second copy of the data. The task's own output stays the one source, and the manifest only points at it, by id. A unit names its evidence by id, never by a file path, and it never types a number by hand. Figure~\ref{fig:qpf5-small-paper} draws that move: ask once, point at it twice. The slides plugin already works this way on \texttt{QPf3}. Its deck asks for an id, a small helper turns the id into the file's real path, and the template holds no digits at all. So a hand-typed number has nowhere to live. That id lookup already reaches units under a page, because the citation index finds a unit by id wherever the unit sits. Aim A1 asks for the other half. The build adapter should accept a page's \texttt{display/} as a unit root, so \texttt{--check} can report an out-of-date page unit instead of hiding it.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=.85\linewidth]{../display/QPf5-Display2-small-paper-tikz/assets/figure.pdf}
 \caption{A page as a small paper: the probe plugin asks a question once, the

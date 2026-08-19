@@ -26,6 +26,7 @@ opening it is asking what the page still owes.
 """
 import html
 import json
+import pathlib
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
@@ -221,7 +222,7 @@ summary:hover{{color:var(--acc)}}
 .evtag{{border-style:dashed}}
 .evchip:hover,.evchip:focus-visible{{background:color-mix(in srgb,currentColor 18%,transparent);
  border-color:color-mix(in srgb,currentColor 45%,transparent)}}
-.chipcard{{margin:auto;max-width:min(25em,calc(100vw - 2rem));padding:8px 11px;
+.chipcard{{margin:auto;max-width:min(44em,calc(100vw - 2rem));padding:8px 11px;
  max-height:min(46vh,20em);overflow:auto;border:1px solid var(--line);
  border-left-width:3px;border-radius:8px;background:var(--card);color:var(--fg);
  font:12.5px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;
@@ -237,6 +238,14 @@ summary:hover{{color:var(--acc)}}
 .cck{{font:10px ui-monospace,Menlo,monospace;color:var(--mut);
  letter-spacing:.04em;text-transform:uppercase}}
 .ccb p{{margin:0}}
+/* THE FIGURE, in the panel the chip opens. A display unit whose mark opens a
+   panel holding only its claim sends the reader out of the tab to see the one
+   thing the mark is about (JL 260818). Bounded so the plan stays skimmable:
+   the panel is evidence, never the page. */
+.evfig{{display:block;width:100%;max-height:32vh;margin:0 0 7px;
+ border:1px solid var(--line);border-radius:5px;background:#fff;
+ object-fit:contain}}
+object.evfig{{height:32vh}}
 @supports (position-area:block-end){{
  .chipcard{{position:fixed;inset:auto;margin:0;
   position-area:block-end span-inline-end;
@@ -246,6 +255,11 @@ summary:hover{{color:var(--acc)}}
 .evbody{{margin:3px 0 5px 62px;padding:6px 9px;border-left:2px solid var(--line);color:var(--fg);font-size:12px;background:var(--card)}}
 .sep{{opacity:.45;padding:0 2px}}
 .addr{{font:500 9.5px ui-monospace,Menlo,monospace;color:var(--mut);flex:none;min-width:42px;text-align:right}}
+/* The SECTION address is LEFT aligned, and the bullet addresses stay right.
+   A right-aligned gutter ends `C3` and `P1.B1` at the same x, so the two
+   character section id sits FURTHER RIGHT than the five character bullet id
+   beneath it and the hierarchy reads backwards (JL 260818, screenshot). */
+.addr.sec{{text-align:left;min-width:0;margin-right:8px}}
 .bundles{{margin:7px 0 8px;padding:5px 8px;border:1px solid var(--line);
  border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card))}}
 .bundles>summary{{font-size:10px}}
@@ -633,22 +647,45 @@ def _disk_state(page_src):
                 continue
             r = d / "README.md"
             txt = r.read_text(errors="replace") if r.is_file() else ""
-            acc = bool(re.search(r"^accepted:\s*✅", txt, re.M))
+            # ONE parser, shared with the checker. `src/page_evidence.py:60`
+            # recorded this exact blind spot and named this file: both read
+            # README rows, this one required a leading bullet, and every unit
+            # writing a bare `claim: ...` came back with NO claim, NO kind and
+            # NO acceptance. A tab and a checker disagreeing about what a ROW
+            # is, is how a reader learns to trust neither.
+            rows = {}
+            for k, v in re.findall(
+                    r"^\s*(?:[-*]\s*)?\*{0,2}([A-Za-z][\w -]{0,24}?)"
+                    r"\*{0,2}\s*:\s*\*{0,2}\s*(.*?)\s*$", txt, re.M):
+                rows.setdefault(k.strip().lower(), v.strip())
+            acc = rows.get("accepted", "").startswith("✅")
             rendered = (d / "preview.pdf").is_file() and any(
                 (d / "assets").glob("*")) if (d / "assets").is_dir() else False
-            m2 = re.search(r"^claim\s+(.+?)(?=\n\w+\s{2,}|\n\n|\Z)", txt,
-                           re.M | re.S)
-            claim = re.sub(r"\s+", " ", m2.group(1)) if m2 else ""
+            claim = re.sub(r"\s+", " ", rows.get("claim")
+                           or rows.get("what it shows")
+                           or rows.get("shows") or "")
             # A rendered PDF is not yet EVIDENCE. The current Display contract
             # also requires a frozen intake and an explicit renderer row; keep
             # those inputs in the live tuple so the bundle cannot call a bare
             # preview complete.
             intake_ready = (d / "intake").is_dir() and bool(
-                re.search(r"^intake:\s*\S+", txt, re.M)
-            )
-            renderer = bool(re.search(r"^renderer:\s*\S+", txt, re.M))
+                rows.get("intake") or rows.get("evidence")
+                or rows.get("source") or (d / "intake" / "inputs").is_dir())
+            renderer = bool(rows.get("renderer"))
+            # THE FIGURE ITSELF, not a description of it (JL 260818: "why
+            # here the Displays are not embedded in the outline's content").
+            # A 🖼 chip that opens a panel holding only the claim makes a
+            # reader leave the tab to see the one thing the mark is about.
+            # PNG first because a browser draws it inline with no plugin;
+            # the PDF is the fallback and rides in an <object>.
+            asset = None
+            for cand in ("assets/figure.png", "assets/figure.svg",
+                         "assets/figure.pdf", "preview.pdf"):
+                if (d / cand).is_file():
+                    asset = d / cand
+                    break
             units[m.group(1)] = (rendered, acc, claim.strip(),
-                                 intake_ready and renderer, renderer)
+                                 intake_ready and renderer, renderer, asset)
             sv = (re.search(r"^serves:\s*(.+)$", txt, re.M) or [None, ""])[1]
             display_serves[m.group(1)] = re.findall(
                 r"C\d+\.P\d+\.B\d+", sv
@@ -729,7 +766,44 @@ def _tex_dash(s):
     return re.sub(r"-{2,3}", "\u2013", s or "")
 
 
-def _live(mark, ref, cards, units, keys=()):
+def _asset_url(units, ref, root):
+    """-> a URL the browser can fetch for this unit's winning asset, or None.
+
+    The tab is served from the SAME process that serves the tree, so a path
+    made relative to `--root` is fetchable as-is. Outside the root there is no
+    URL to give, and a broken <img> is worse than no image."""
+    got = units.get(ref)
+    asset = got[5] if got and len(got) > 5 else None
+    if not asset or not root:
+        return None
+    try:
+        return "/" + asset.resolve().relative_to(
+            pathlib.Path(root).resolve()).as_posix()
+    except ValueError:
+        return None
+
+
+def _aim_rows(page_text):
+    """-> {aim id: (aim sentence, state emoji, state sentence)}.
+
+    One id ties three places: the outline bullet says what a sentence will
+    establish, `## Aims` says what must become true, `## States` says whether
+    it has (haipipe-plugin-outline §📐). Only the first two were ever joined."""
+    def _sec(name):
+        m = re.search(r"(?m)^## %s\b[^\n]*$(.*?)(?=^## |\Z)" % name, page_text, re.S)
+        return m.group(1) if m else ""
+    want, got = {}, {}
+    for m in re.finditer(r"(?m)^-\s+(A\d+\.\d+|P\d+)\s*·\s*(.+?)\s*$",
+                         _sec("Aims")):
+        want.setdefault(m.group(1), m.group(2))
+    for m in re.finditer(r"(?m)^-\s+(\S+)\s+(A\d+\.\d+|P\d+)\s*·\s*(.+?)\s*$",
+                         _sec("States")):
+        got.setdefault(m.group(2), (m.group(1), m.group(3)))
+    return {k: (want.get(k, ""), got.get(k, ("", ""))[0], got.get(k, ("", ""))[1])
+            for k in set(want) | set(got)}
+
+
+def _live(mark, ref, cards, units, keys=(), aims=None):
     """One bullet's LIVE half: what the folders say about what it owes."""
     if mark == "value":
         if not ref:
@@ -788,8 +862,27 @@ def _live(mark, ref, cards, units, keys=()):
         # With an id the note stays EMPTY: the chip already prints the id, and
         # "→ %s" printed it a second time, so the chip read `🎯 A4.2 → A4.2`
         # (seen in the 260817 screenshot).
-        return ("mut", "no Aim id", "") if not ref \
-            else ("mut", "", "")
+        #
+        # 🎯 WAS THE ONE MARK THAT NEVER OPENED (JL 260818: "why the evidence
+        # card here are not clickable?"). It returned an empty detail whether
+        # the id resolved or not, so twenty tracked targets rendered as dead
+        # grey tags. The material was on the page the whole time: the plugin's
+        # own id grammar ties the bullet to `## Aims` and `## States` by that
+        # id (§📐), and the panel is where the other three marks already show
+        # the THING itself.
+        if not ref:
+            return "mut", "no Aim id", ""
+        row = (aims or {}).get(ref)
+        if row is None:
+            # NOT an error. At OUTLINE time the plan names Aims that DRAFT has
+            # not created yet, so an unresolved id is the normal forward case;
+            # 🚨 here would fire on every well-formed new plan.
+            return "mut", "not on the page yet", ""
+        aim, emo, state = row
+        detail = aim or "named in ## States, with no row in ## Aims"
+        if state:
+            detail += "  ·  " + (emo + " " if emo else "") + state
+        return ("ok" if emo == "✅" else "mut"), "", detail
     if mark == "proof":
         return "mut", "prose", ""
     return "mut", "", ""
@@ -893,7 +986,7 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
             "have": 1, "need": 1}
 
 
-def plan_card(page_src):
+def plan_card(page_src, root=None):
     """-> the html for the plan card, or '' when the page has no outline file."""
     f, ver = _latest_plan(page_src)
     if f is None:
@@ -902,6 +995,8 @@ def plan_card(page_src):
     approved = bool(re.search(r"^approved:\s*✅", txt, re.M))
     cards, units, keys, serves, display_serves = _disk_state(page_src)
     page_text = page_src.read_text(encoding="utf-8", errors="replace")
+    aims = _aim_rows(page_text)
+    aims.update({k: v for k, v in _aim_rows(txt).items() if v[0]})
     scaffolds = {}
     for m in re.finditer(r"(?m)^([^\n]*?)<!--\s*realizes:\s*"
                          r"(C\d+\.P\d+\.B\d+)\s*-->\s*$", page_text):
@@ -949,10 +1044,10 @@ def plan_card(page_src):
     rows, tally, cited, bundle_rows = [], {}, set(), []
     cn = pn = sn = nid = 0
     for line in joined:
-        if line.startswith("## "):
+        if re.match(r"^## C\d+\b", line):
             cn += 1; pn = 0
             rows.append('<div class=row style="margin-top:9px">'
-                        '<span class=addr>C%d</span><b>%s</b></div>'
+                        '<span class="addr sec">C%d</span><b>%s</b></div>'
                         % (cn, _e(re.sub(r"^C\d+\s*·\s*", "", line[3:].strip()))))
             continue
         if line.startswith("### "):
@@ -1021,7 +1116,7 @@ def plan_card(page_src):
         for ref in (refs or [""]):
             if ref:
                 cited.add(ref)
-            cls, note, detail = _live(kind, ref, cards, units, keys)
+            cls, note, detail = _live(kind, ref, cards, units, keys, aims)
             label = " ".join(x for x in (emo, _e(ref), _e(note)) if x)
             if not detail:
                 chips.append('<span class="evtag %s">%s</span>' % (cls, label))
@@ -1034,6 +1129,13 @@ def plan_card(page_src):
             # panel is real body text, so deleting every <script> leaves it.
             nid += 1
             pid = "ev%d" % nid
+            media = ""
+            if kind == "display":
+                u = _asset_url(units, ref, root)
+                if u:
+                    media = ('<object class=evfig data="%s"></object>' % _e(u)
+                             if u.endswith(".pdf")
+                             else '<img class=evfig src="%s" alt="">' % _e(u))
             kindname = {"value": "probe card", "display": "display unit",
                         "cite": "citation", "aim": "aim",
                         "proof": "proof"}.get(kind, kind)
@@ -1041,9 +1143,9 @@ def plan_card(page_src):
                 '<button class="evchip %s" popovertarget="%s">%s</button>'
                 '<div id="%s" popover class="chipcard %s">'
                 '<div class=cch><b>%s</b><span class=cck>%s %s</span></div>'
-                '<div class=ccb><p>%s</p></div></div>'
+                '<div class=ccb>%s<p>%s</p></div></div>'
                 % (cls, pid, label, pid, cls, _e(ref or "—"), emo, kindname,
-                   _e(detail)))
+                   media, _e(detail)))
         bl = _backlink(exclude=refs)
         if bl:
             chips.append(bl)
@@ -1145,7 +1247,7 @@ def _page_now(plan, plan_head, cards):
     return (plan_head + plan + fold) if plan else body
 
 
-def render(title, o, page_src=None):
+def render(title, o, page_src=None, root=None):
     """-> the full html page: both lenses rendered, chips toggle."""
     # Say it in words a tired reader can take in the first time (JL 260816).
     # "3 loose lines" and "aligned" are this plugin's own shorthand, and a
@@ -1185,7 +1287,7 @@ def render(title, o, page_src=None):
     # second one was for). The PLAN is what we said we would write; the PAGE
     # is what is written now. Reading them unlabelled beside each other, with
     # two different section lists, is what made the tab confusing.
-    plan = plan_card(page_src) if page_src is not None else ""
+    plan = plan_card(page_src, root) if page_src is not None else ""
     plan_head = ('<div class=lead>🧭 THE PLAN &mdash; what this page said it '
                  'would cover. Authored, frozen when approved.</div>')
     by_div = _page_now(plan, plan_head, cards) if o["divs"] else (plan +
@@ -1223,7 +1325,7 @@ class OutlineMixin:
         f, board = got
         page_src = Path(board) / f
         o = parse_outline(page_src.read_text(encoding="utf-8"))
-        page = render(page_src.stem, o, page_src)
+        page = render(page_src.stem, o, page_src, self.root)
         return self._outline_send(page.encode("utf-8"), 200, head_only)
 
     def _outline_send(self, body, code, head_only):

@@ -192,7 +192,7 @@ Required and optional markers belong in the first body line, never in the headin
 🗣 WHAT YOU TYPE IN A SESSION
    "create a new page on <topic>"        "update QB2"  ·  "work on QB2"
    "add a page about <topic> to QB"      "bring QB2 up to the standard"
-   "run QB2" ── the bounded page loop · receipts under _runs/ · QPw1 owns it
+   "run QB2" ── the bounded page loop · receipts under _runs/ · QPw00 owns it
         │                                        │
         └────────── /haipipe-board ──────────────┘
                      routes anything about ONE PAGE to
@@ -1451,7 +1451,7 @@ It must also report any contradiction it finds INSIDE this page, because a defec
                        ▼
         ⚙️ build ▸ 🧪 check ▸ ✅ zero findings, read on the RENDER
 
-🔁 "run <page>" ── the bounded page loop · receipts under _runs/ · QPw1 owns it
+🔁 "run <page>" ── the bounded page loop · receipts under _runs/ · QPw00 owns it
 
 🚫 you never pick the sub-skill, and never call build.py or check.py
 🚫 not done when the source is right: a dead watcher and a shut <details>
@@ -1462,7 +1462,7 @@ It must also report any contradiction it finds INSIDE this page, because a defec
 #### 10.1 · There is one door, and it is a sentence
 (say it to `haipipe-board`; page work routes itself)
 Say `create a new page on <topic>`, `update <page>`, or `run <page>` and you are done choosing. `haipipe-board` is the door for everything about a board, and anything about ONE PAGE routes to `haipipe-page`, which owns this contract and drives that page end to end (JL 260802).
-`run <page>` is the third verb: it drives one page through the bounded DRAFT, PROBE, REVISE, CHECK loop with receipts under `_runs/`; QPw1 owns that loop, and since 0.27.0 the shipped owner is the workflow head skill `haipipe-page-workflow`.
+`run <page>` is the third verb: it drives one page through the bounded DRAFT, PROBE, REVISE, CHECK loop with receipts under `_runs/`; QPw00 owns that loop, and since 0.27.0 the shipped owner is the workflow head skill `haipipe-page-workflow`.
 You never pick the sub-skill, and you never call `build.py` or `check.py`. Someone asking for one page should not have to know which skill or which script does what.
 Routing is by SCOPE, not by wording: one page belongs to the page skill, the board and its structure belong to the board skill, and a request naming a page id or a path is the page skill's even when it sounds structural, because whoever asks is looking at one page.
 `haipipe-board` still owns the machinery. The page skill CALLS the engine rather than containing it, which is the same separation `### 9.3.3` requires of the reviewer: one source of rules, several things that run them.
@@ -1634,7 +1634,7 @@ A variant ships under the `page-types/` folder of the skill set that owns it (JL
 ### A8 · 📄 The source file
 - ✅ A8.1 · Implemented and verified across templates, every active generator, checker, Board matrix, JSON output, aliases, and the public paper-stage creation path.
 - ✅ A8.2 · Stated in `ref/page-template.md`'s first line and its How-to-use comment, in `### 8`, `## Writing Style`, `## Law`, and `haipipe-page`. This page and QB2 were the board's only two divergent titles and both were corrected in the same edit, so all 46 pages now read in sentence case. `QB1` remains a full question rather than a phrase, which is the template's separate phrase rule and not a casing divergence.
-- ✅ A8.3 · Ruled 260816 when JL read QPf9's four-clause state line. The rule is written in all four places, QPf9 and this page were rewritten as the specimens, and `check.py`'s `state-line-long` warn enforces it. The sweep finished the same day, reached by JL reading QPw1's four-clause line in the viewer: 20 pages rewritten to the row grammar, longest 109 characters, and `check.py` now reports zero `state-line-long` findings on this board.
+- ✅ A8.3 · Ruled 260816 when JL read QPf9's four-clause state line. The rule is written in all four places, QPf9 and this page were rewritten as the specimens, and `check.py`'s `state-line-long` warn enforces it. The sweep finished the same day, reached by JL reading QPw00's four-clause line in the viewer: 20 pages rewritten to the row grammar, longest 109 characters, and `check.py` now reports zero `state-line-long` findings on this board.
 
 ### A9 · 🧪 Evaluation
 - ✅ A9.1 · Implemented in the canonical page spec, Quality Check prompt, and fresh reviewer contract; the final fresh-context acceptance returned PASS.
@@ -1703,9 +1703,9 @@ The dated implementation history lives in Log, so this section stays a current s
   Exercises scope closure, phase filtering, one-hop recursion boundaries, fenced examples, checker wiring, dead paths, wrong ids, missing scopes, malformed rows, path escape, and duplicate suppression.
 
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `constrained by · ALL` · [QPw1 §8](5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md)
+- `constrained by · ALL` · [QPw00 §8](5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md)
   Page Type and Page Phase must stay separate when a Files row selects phase-specific context.
-- `continues · CHECK` · [QPw1 §10](5-QPw-page-workflow/QPw1-page-loop/QPw1-page-loop.md)
+- `continues · CHECK` · [QPw00 §10](5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md)
   The lifecycle audit defines what the process can prove after scoped context has been supplied.
 
 ### 📤 Output files · what a BUILD writes
@@ -2019,7 +2019,7 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0804: yes. The Page now declares relation, phase, target Page, and `page`/`§n` scope under one fixed group. A scoped division brings its target Opening and matching Aims/States, the reader follows one hop, and the checker rejects a dead Page or scope before an agent works without it.
 
 ## Log
-- 260816 · [JL via CC] the state line ruled a row: JL read QPf9's four-clause line and asked for tight; the row grammar (status word, what stands, `open:` list or count, under 110 chars) landed in `## Writing Style`, `§8.1.1`, `ref/page-template.md`, `haipipe-page` 0.28.0, and a new `state-line-long` warn in `check.py`. QPf9 and this page rewritten as the specimens; the measurement found 25 of 54 pages over, and the sweep is `A8.3`'s open half. Same pass, an alignment audit against the live unit: three live "QB5 owns the loop" citations swept to QPw1 (QB5 retired into the alias map on 260815), with the 0.27.0 handoff to `haipipe-page-workflow` named where RUN is described.
+- 260816 · [JL via CC] the state line ruled a row: JL read QPf9's four-clause line and asked for tight; the row grammar (status word, what stands, `open:` list or count, under 110 chars) landed in `## Writing Style`, `§8.1.1`, `ref/page-template.md`, `haipipe-page` 0.28.0, and a new `state-line-long` warn in `check.py`. QPf9 and this page rewritten as the specimens; the measurement found 25 of 54 pages over, and the sweep is `A8.3`'s open half. Same pass, an alignment audit against the live unit: three live "QB5 owns the loop" citations swept to QPw00 (QB5 retired into the alias map on 260815), with the 0.27.0 handoff to `haipipe-page-workflow` named where RUN is described.
 - 260816 · [PLUG-CC] the snapshot re-plugged fresh at `haipipe-page` 0.27.0: two files now, because 0.27.0 moved the RUN contract to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`, so the old snapshot's `ref/` copy left with it.
 - 260816 · [JL via CC] QPs00 folded into this page: JL ruled the unit page away ("no more QPs00-haipipe-page"), the grammar and the unit that ships it now close on one page. `skill/haipipe-page/` moved here as this page's plugin, the selection record, door-test evidence and open unit aims carried into `### 11` and the `A11` lanes, the page reopened ✅ → 🟡 to hold them, and `QPs00-haipipe-page` (with its `draw/` and `slide/`) archived; the ids QPs00, Design-3 and Skill-3 resolve here through board.md's alias map.
 - 260815 1615 · [JL via CC] Aims shape ruled: checkbox Aims (`- [ ]` with an emoji) are blessed as the first-class form, and the id form (`- A3.1 ·` with States mirroring ids) stays available for machine-tracked pages; writing-rules.md amended to match. The written contract and the living practice disagreed on every page, and the practice won (reviewer finding, 260815).

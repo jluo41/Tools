@@ -13,3 +13,18 @@ facts_the_image_may_state:
   - a page owns probe/ and display/ as sibling plugins
   - the probe card holds the binding once; manifest and sentence cite it by id
   - the bank answers in general language; the stake stays on the page side
+
+# FROZEN 260818. This manifest named its sources by REF and froze no bytes,
+# so `cli/check.py` reported `display-intake-unfrozen` and nothing could be
+# rechecked: a ref points at a file that keeps changing. These are the bytes
+# the figure was drawn from.
+frozen: 260818
+inputs:
+  - path: intake/inputs/QPf5-display.md
+    sha256: 06137007a199f0d8ea9e3a3ae976ec76e1b908ebeadd255508d2f40ef682959f
+    bytes: 27936
+    takes: "the ask-once-cite-twice rule and the TikZ method row"
+  - path: intake/inputs/QPf9-probe.md
+    sha256: a81b4aa18bca381a78672aff7d092c695744319ac13848b07029004930d60462
+    bytes: 23690
+    takes: "the card grammar (question, state, binding) and the wall"

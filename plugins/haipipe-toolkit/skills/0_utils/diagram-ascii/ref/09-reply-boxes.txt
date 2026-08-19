@@ -1,0 +1,82 @@
+REPLY BOXES — the shape every chat reply to JL opens with
+=========================================================
+Ruled 260818, in two corrections one after the other:
+  "I want the style like this, highlight your answer, highlight
+   what I need to do."
+  "I think you should also highlight your quick answer."
+So: TWO boxes, not one. A bold sentence on line 1 is not enough,
+because bold still disappears in a scroll.
+
+
+--S The shape, in order ---------------------------------------------
+
+╔══════════════════════════════════════════════════════════════╗
+║  ✅ ANSWER · <the answer to what was asked, one line>        ║
+║                                                              ║
+║  <at most 2 more lines: the number, the path, the verdict>   ║
+╚══════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════╗
+║  🧑 YOURS · <how long, or the word "nothing">                 ║
+║                                                              ║
+║  <the literal thing to type, click, or decide>               ║
+║  <what happens if it is skipped>                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+── 🤖 MINE · <n> items, no input needed ──────────────────────
+  1️⃣ <what the assistant does>        <how long>
+  2️⃣ ...
+
+<then, and only then, the state / findings / evidence diagrams,
+ still inside the ≤3 diagram budget>
+
+
+--S Worked example ---------------------------------------------------
+
+╔══════════════════════════════════════════════════════════════╗
+║  ✅ ANSWER · Yes. Two boxes from now on, not one.            ║
+║                                                              ║
+║  ANSWER box first, YOURS box second, MINE list third.        ║
+║  Saved to memory, so it holds in the next session.           ║
+╚══════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════╗
+║  🧑 YOURS · nothing                                          ║
+║                                                              ║
+║  2 optional questions are open:                              ║
+║    1. is QPw00-Display3 good OVERALL?                        ║
+║    2. is a TABLE the right shape for a cost argument?        ║
+║  skipping them blocks nothing.                               ║
+╚══════════════════════════════════════════════════════════════╝
+
+── 🤖 MINE · 3 items, no input needed ────────────────────────
+  1️⃣ re-run the 3 approvers on my fixes            ~6 min
+  2️⃣ checked-version-mismatch in the controller    the real bug
+  3️⃣ the outline's R3: 6 bullets carry no mark     ~5 min
+
+
+--S The four rules that make it work ---------------------------------
+
+  1. NEVER omit the YOURS box. When there is nothing to do, the box
+     still appears and says "nothing", so it is never scanned for.
+
+  2. The YOURS box holds the LITERAL thing: the exact command to
+     type, the exact line to edit, the exact file to open. Never a
+     description of the thing.
+
+  3. MINE is a numbered list, not a box, and every item carries a
+     time estimate. It is what makes "nothing" in the YOURS box
+     credible rather than evasive.
+
+  4. Box width is fixed at 62 columns of content. Same width for
+     both boxes, every time: two boxes of different widths read as
+     two unrelated things.
+
+
+--S When NOT to use it -----------------------------------------------
+
+  a one-word factual answer     "yes" / "0 errors" / the path
+                                the box costs more than it saves
+  a pure diagram request        "sketch the pipeline"
+                                the diagram IS the answer
+  mid-work progress             "still running, 2 of 3 back"

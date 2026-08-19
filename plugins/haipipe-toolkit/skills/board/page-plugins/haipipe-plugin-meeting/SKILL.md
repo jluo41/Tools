@@ -1,0 +1,70 @@
+---
+name: haipipe-plugin-meeting
+description: >-
+  The meeting/ plugin of a Board page: a person's own kept record of a conversation that bears on this page's argument, one folder per meeting at <page>/meeting/<YYMMDD-HHMM>/ holding digest.md (what it decided, in the person's own words) and an optional transcript.md (raw exchange, reference only). Standalone by JL's 260818 ruling: it does NOT point at the separate Meeting-<n> page type, because the two solve different problems — a Meeting-<n> page owes a routed decision to some other page, this plugin is a page's own attachment with nothing to route. No store, no rank: read by when it happened, newest first. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: meeting plugin, keep a meeting, meeting record, meeting digest, meeting transcript, meeting tab, /haipipe-plugin-meeting.
+metadata:
+  version: "0.1.0"
+  last_updated: "2026-08-18"
+  summary: "Born QPf14, alongside task/'s haipipe-plugin-task: the roster row had stood 📋 declared since 260815; this round wrote its skill and its writer, and ruled it standalone over Meeting-<n>."
+---
+# /haipipe-plugin-meeting · a page's own kept meeting notes
+
+**LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
+This file owns only meeting's delta: the dated-folder shape, why it is standalone rather than routed, and the one writer.
+
+## 🗣 Storage · dated folders, digest first
+
+```text
+<page>/meeting/
+└── <YYMMDD-HHMM>/          one KEPT meeting, server-stamped
+    ├── digest.md            what it decided · the reading path · required
+    └── transcript.md        the raw exchange · reference only · optional
+```
+
+No store file, no rank: unlike pagex/task/skill, a meeting is not read in a
+person's chosen order. It is read by WHEN IT HAPPENED, so the folder name is
+the only index and the view lists newest first. The stamp is the SERVER
+clock, never the client's — the rule every other timestamped write in this
+engine already follows — so two people in different time zones land on the
+same board's own idea of "now".
+
+## ⚖️ Standalone, not routed — the one design decision this file settles
+
+A `Meeting-<n>` page (`haipipe-page-for-meeting`, `cli/meetingpage.py`) is a
+whole board PAGE, generated, with its own closing rule: a decision spoken
+there is NOT ruled until it lands on the page that owns the subject. This
+plugin is a different thing entirely — a page's own attachment, a person's
+notes from a meeting that bears on THIS argument, with no decision to route
+anywhere. JL ruled 260818 to keep it standalone rather than pointing this
+plugin's cards at `Meeting-<n>` pages: a meeting kept HERE is material for
+the page it sits beside, not a second copy of a page that already exists.
+
+If a meeting produces a decision that belongs to ANOTHER page, that still
+goes through the `Meeting-<n>` route and `haipipe-board-routing`, unchanged;
+this plugin never competes with that path.
+
+## ✍️ Writer · one pen, read-only view
+
+```text
+/_board/meeting          POST   list kept meetings, newest first (read-only)
+/_board/meeting-entry    POST   {digest, transcript?, cast?} — keep a new one
+```
+
+`meeting_entry` only ever ADDS a folder; it never edits or removes one — a
+kept meeting is a record, not a list a person curates afterward. There is no
+✕ or ↩ here, unlike pagex/task/skill, because nothing here is meant to be
+un-kept.
+
+## 📂 Files
+
+- `../../haipipe-board/live/meeting.py`
+  The whole plugin: the dated-folder writer, the newest-first reader, the
+  card view with its keep form.
+- `../../haipipe-board/assets/js/10-drawer/87-plugin-meeting.js`
+  The registry entry whose `tab` spec the shell builds the 🗣 tab from.
+- `../../haipipe-plugin/ref/roster.md`
+  The one list of plugin names; the `meeting/` row there is what this page
+  builds on.
+- `../../page-types/haipipe-page-for-meeting/SKILL.md`
+  The separate `Meeting-<n>` page type this plugin deliberately does not
+  point at (§⚖️ above).

@@ -60,5 +60,9 @@
       },
       tab: { url: outlineUrl, write: write }
     });
+    // JL 260818: "how to make the outline be the default plugin when we
+    // open it" — a plain FAB click now goes straight here instead of the
+    // picker (50-structure.js reads this back through getDefault()).
+    window.boardPlugins.setDefault('outline');
   }
 })();

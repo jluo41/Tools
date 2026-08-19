@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""One row per Page, one column per thing a Page can owe.
+
+The three-line closing block (`status.py`) answers "where is this SESSION".
+This answers a different question: "where is every page in this GROUP", and it
+answers it from DISK rather than from what a page says about itself.
+
+    python3 pagestatus.py BOARD                 every group
+    python3 pagestatus.py BOARD --group QPw     one group
+    python3 pagestatus.py BOARD --group QPw --md   markdown, for pasting on a page
+
+Never writes. Every column is a count a person can go and verify.
+"""
+import argparse, re, sys
+from pathlib import Path
+
+def _pages(board: Path, group: str | None):
+    out = []
+    for d in sorted(board.iterdir()):
+        if not d.is_dir() or d.name.startswith(("_", ".")) or d.name in ("board", "fig", "draw"):
+            continue
+        for pd in sorted(d.iterdir()):
+            if not pd.is_dir():
+                continue
+            md = pd / f"{pd.name}.md"
+            if not md.exists():
+                continue
+            pid = re.match(r"([A-Za-z]+\d*[a-z]?)", pd.name)
+            pid = pid.group(1) if pid else pd.name
+            if group and not re.match(rf"^{group}\d*[a-z]?$", pid):
+                continue
+            out.append((pid, pd, md))
+    return out
+
+def _count(pd: Path, md: Path):
+    t = md.read_text(encoding="utf-8", errors="replace")
+    r = {}
+    r["div"] = len(re.findall(r"^### \d+ · ", t, re.M))
+    r["sub"] = len(re.findall(r"^#### \d+\.\d+ · ", t, re.M))
+    r["aim"] = len(re.findall(r"^- (?:[⬜🔨🧠✅❄️] )?[AP]\d+\.\d+ · ", t, re.M))
+    r["st"]  = len(re.findall(r"^- [⬜🔨🧠✅❄️] [AP]\d+\.\d+ · ", t, re.M))
+    r["dec"] = len(re.findall(r"^- \[[ x]\] 🗣", t, re.M))
+    r["law"] = len(re.findall(r"^- (?:\d{6} \w+ · )?[^\s] \*\*", t, re.M))
+    r["dia"] = t.count("```text")   # an INLINE ascii block, never a display unit
+
+    # ── probe/  one folder per question
+    pr = pd / "probe"
+    cards = sorted(pr.glob("PP*")) if pr.is_dir() else []
+    r["prb"] = len(cards)
+    val = read = serves = 0
+    for c in cards:
+        cm = c / "card.md"
+        if not cm.exists():
+            continue
+        ct = cm.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"^state:.*\b(answered|read)\b", ct, re.M | re.I): val += 1
+        if re.search(r"^read:\s*✅", ct, re.M): read += 1
+        if re.search(r"^serves:", ct, re.M): serves += 1
+    r["val"], r["read"], r["srv"] = val, read, serves
+
+    # ── bibex/  one entry per reference
+    bx = pd / "bibex"
+    ent = ver = 0
+    if bx.is_dir():
+        for b in bx.glob("*.bib"):
+            bt = b.read_text(encoding="utf-8", errors="replace")
+            ent += len(re.findall(r"^@\w+\{", bt, re.M))
+            ver += len(re.findall(r"verified\s*=", bt))
+    r["cit"], r["vfd"] = ent, ver
+
+    # ── display/  declared vs rendered vs accepted, three independent counts
+    dp = pd / "display"
+    dec = ren = acc = frz = 0
+    if dp.is_dir():
+        for u in sorted(p for p in dp.iterdir() if p.is_dir()):
+            dec += 1
+            if (u / "preview.pdf").exists() and any((u / "assets").glob("*")): ren += 1
+            rm = u / "README.md"
+            if rm.exists() and re.search(r"^accepted:\s*✅", rm.read_text(errors="replace"), re.M): acc += 1
+            if (u / "intake" / "inputs").is_dir() and any((u / "intake" / "inputs").iterdir()): frz += 1
+    r["dsp"], r["ren"], r["acc"], r["frz"] = dec, ren, acc, frz
+
+    # ── the other plugins, present or absent
+    sk = pd / "skill" / f"{pd.name}.md"
+    r["skl"] = len(re.findall(r"^- \S", sk.read_text(errors="replace"), re.M)) if sk.exists() else 0
+    r["out"] = len(list((pd / "outline").glob("*-outline-v*.md"))) if (pd / "outline").is_dir() else 0
+    r["apv"] = 0
+    for o in ((pd / "outline").glob("*-outline-v*.md") if (pd / "outline").is_dir() else []):
+        if re.search(r"^approved:\s*✅", o.read_text(errors="replace"), re.M): r["apv"] += 1
+    r["px"]  = 1 if (pd / "pagex").is_dir() else 0
+    r["tex"] = 1 if (pd / "latex").is_dir() else 0
+    r["doc"] = 1 if (pd / "word").is_dir() else 0
+    r["ln"]  = t.count("\n") + 1
+    r["state"] = (re.search(r"^state:\s*(\S+)", t, re.M) or [None, "?"])[1]
+    r["tick"] = r["apv"] + r["vfd"] + r["read"] + r["acc"]
+    return r
+
+COLS = [("page","%-20s"),("ln","%5s"),("state","%-4s"),("div","%4s"),("sub","%4s"),
+        ("dia","%4s"),("aim","%4s"),("st","%4s"),("dec","%4s"),("law","%4s"),
+        ("out","%4s"),("prb","%4s"),("val","%4s"),("cit","%4s"),("dsp","%4s"),
+        ("skl","%4s"),("tick","%5s")]
+HEAD = {"page":"page","ln":"lines","state":"st","div":"§","sub":"§.n","dia":"📐",
+        "aim":"aim","st":"📍","dec":"🗣","law":"law","out":"🧭","prb":"📮",
+        "val":"🔢","cit":"📚","dsp":"🖼","skl":"🛠","tick":"✋"}
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("board", type=Path)
+    ap.add_argument("--group", help="one Q/S group id, e.g. QPw")
+    ap.add_argument("--md", action="store_true", help="emit a fenced block for a page")
+    a = ap.parse_args()
+    if not a.board.is_dir():
+        print(f"not a board: {a.board}", file=sys.stderr); return 2
+    rows = []
+    for pid, pd, md in _pages(a.board, a.group):
+        r = _count(pd, md); r["page"] = pid; rows.append(r)
+    if not rows:
+        print("no pages matched", file=sys.stderr); return 1
+
+    line = lambda vals: " ".join(f % str(v) for (k, f), v in zip(COLS, vals))
+    head = line([HEAD[k] for k, _ in COLS])
+    body = [line([r[k] for k, _ in COLS]) for r in rows]
+    tot  = {k: sum(r[k] for r in rows) for k in
+            ("ln","div","sub","dia","aim","st","dec","law","out","prb","val","cit","dsp","skl","tick")}
+    tot["page"], tot["state"] = f"TOTAL {len(rows)} pages", ""
+    foot = line([tot[k] for k, _ in COLS])
+    rule = "─" * len(head)
+
+    if a.md: print("```text")
+    print(head); print(rule)
+    for b in body: print(b)
+    print(rule); print(foot)
+    print()
+    print("§ content divisions · §.n subdivisions · 📐 INLINE ascii diagrams · 📍 State rows")
+    print("🗣 Decision Now rows · 🧭 outline files · 📮 probe cards · 🔢 answered cards")
+    print("📚 bibex entries · 🖼 DISPLAY UNITS on disk · 🛠 skill rows")
+    print("⚠ 📐 and 🖼 are DIFFERENT things.")
+    print("   📐 an ascii block inside the markdown. costs nothing, renders as text.")
+    print("   🖼 a FOLDER with intake/ recipe/ assets/ that embeds into the pdf.")
+    print("   check.py calls the inline block a figure too (division-no-figure at :1071,")
+    print("   whose own message at :1076 says diagram). that is the upstream collision.")
+    print("✋ human ticks WRITTEN: approved + verified + read + accepted")
+    if a.md: print("```")
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,11 @@
+% Caller-owned caption + label. The asset is a PNG of page 1 of the page's own
+% compiled PDF, so the float needs no renderer package: it is graphics only.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=.72\linewidth]{assets/figure.pdf}
+  \caption{Page 1 of this page's own LaTeX export, rendered at 150 dpi. The
+  projection is asserted to work in three places on this page and was never
+  shown; this is the showing. A reader who doubts the export can compare this
+  image against \texttt{latex/QPf6-latex.pdf} directly.}
+  \label{fig:qpf6-latex-proof}
+\end{figure}

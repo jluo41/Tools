@@ -10,3 +10,6 @@
 - haipipe-task
 - haipipe-paper
 - haipipe-plugin
+- haipipe-display-table
+- haipipe-display-tex
+- haipipe-writing

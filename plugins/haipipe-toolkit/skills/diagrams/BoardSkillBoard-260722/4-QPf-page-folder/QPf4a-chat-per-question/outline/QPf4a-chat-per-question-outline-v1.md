@@ -13,6 +13,6 @@ PURPOSE rather than filled with invented structure.
 
 ### C1.P1 · What has to happen before an outline exists here
 - B1 · the page is 275 lines and carries none of the `### N ·` divisions the
-  outline reads, so its plan has to be written by hand or the page restructured
+  outline reads, so its plan has to be written by hand or the page restructured   🔢 value
 - B2 · whoever writes it should decide first whether this page is still live,
-  since a page with no Content divisions may be a note rather than a page
+  since a page with no Content divisions may be a note rather than a page   🎯 aim

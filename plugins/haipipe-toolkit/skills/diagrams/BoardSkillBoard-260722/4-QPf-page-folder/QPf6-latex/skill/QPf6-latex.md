@@ -9,3 +9,4 @@
 - haipipe-board
 - haipipe-page
 - haipipe-paper
+- haipipe-writing

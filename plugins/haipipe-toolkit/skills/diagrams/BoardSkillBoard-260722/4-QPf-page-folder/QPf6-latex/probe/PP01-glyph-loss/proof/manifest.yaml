@@ -1,0 +1,7 @@
+card: PP01-glyph-loss
+files: []
+pending: >-
+  one table file holding code point · name · source count · present in pdf, one
+  row per distinct non-ascii character, plus one numbers file holding the two
+  totals, once the export that produced them is named: table .csv |
+  numbers .json
