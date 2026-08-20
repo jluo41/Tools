@@ -3,7 +3,7 @@ name: haipipe-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK. Page Type variants live under page-types/; the workflow lives under page-workflows/, whose head skill haipipe-page-workflow owns RUN. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN hands off to haipipe-page-workflow, which drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, page contract, Page Type, Page Phase, outline draft probe evidence revise compile check, seven phases, which phase, rewrite Opening, section evaluation, which section, base page, /haipipe-page.
 metadata:
-  version: "0.33.0"
+  version: "0.36.0"
   last_updated: "2026-08-17"
   summary: "Sixteen globally unique Page Type variants now ship across six skill sets, including Task Insight and Application Brief, Intervention, and Artifact."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -49,7 +49,7 @@ step  machine-readable key                            Page Type             cont
       filename QBv<n>-                                QBv venue             for-venue
 ②     ─ retired 260816 · `route:` is a PLUGIN key now, not a type key ─
 ③     frontmatter `page-type: design`                 Design brief          for-design
-      frontmatter `page-type: opening`                Paper opening         for-opening
+      frontmatter `page-type: seed`                Paper seed            for-seed
       frontmatter `page-type: section`                Section unit          for-section
       frontmatter `page-type: narrative`              Narrative             for-narrative
       frontmatter `page-type: insight`                DIKW insight          for-insight
@@ -104,7 +104,7 @@ page-types/                                     stage of a paper or application
                  haipipe-page-for-design        one division per candidate, closes
                                                 on a SELECTION record
 
-paper/           haipipe-page-for-opening       one per paper · identity, venue
+paper/           haipipe-page-for-seed       one per paper · identity, VENUE-FREE
 page-types/                                     position, promise, Narrative handoff
   the kinds      haipipe-page-for-venue         QBv<n> · one place a paper goes
   only a paper   haipipe-page-for-narrative     claim roles, reader order, source
@@ -242,15 +242,54 @@ Each section answers ONE reader question, and the same five rows define every se
 section            conveys · the reader question                omit
 ──────────────────────────────────────────────────────────────────────
 🧭 Opening          what is this page, why should I care?        never
+   ### Writing Style  how the NEXT writer should write it          allowed
 🖼 Diagram          can I see the whole subject at once?         when no figure helps: delete
 📚 Content          what does this page actually establish?      Q may · S never
-🎯 Aims             what should become true, and for which Content division? never
-📍 States           what is true now for each Aim, what waits?   never
+🎯 Aims             what should become true, whether it has, and for
+                    which Content division?                      never
+📍 States           ⛔ RETIRED 260819 · merged into Aims          always
 📎 Files            which few files or Page fragments continue this work? allowed, advised against
 🗃 folds            what was ruled, learned, changed, if needed  each optional
 ```
 
-A sentence answering another section's question is MISPLACED, and the protocol names its home: substance found in Opening moves to Content, Required Inputs and Venue move to Stage Contract, prose rules move to Writing Style, intended outcomes move to Aims, current facts move to States, and temporary next steps become an Aim's optional Plan.
+A sentence answering another section's question is MISPLACED, and the protocol names its home: substance found in Opening moves to Content, Required Inputs and Venue move to Stage Contract, prose rules move to Opening's `### Writing Style`, and both intended outcomes and current facts move to Aims, where one row carries the target and its status together. Temporary next steps become an Aim's optional Plan.
+
+## 🎯 One Aim, one row, and its status is on it (260819)
+
+**`## States` is RETIRED and merged into `## Aims`.** Until 260819 a page carried
+each Aim twice: the target in `## Aims`, its status in `## States`, joined by id.
+
+```markdown
+- ✅ A6.2 · COMPILE's fold into REVISE is a scored decision, not an inherited
+  silence.
+  **Done when:** the fold is scored against §10.2's four split tests on the page.
+  **Now:** Met 260819. §6.4 scores it 0 of 4 and names QPw5-revise as the owner
+  of whether the fold is permanent.
+```
+
+```text
+  the tick     ✅ met · 🔨 being worked on · 🧠 waiting on a ruling · ⬜ not met
+  Done when:   the TEST. How a reader checks it without asking anyone.
+  Now:         the FACT. What is true today, and what it rests on.
+```
+
+**Why it merged.** One id written in two places is one fact with two owners, and
+this page's own history is the argument (JL 260819): on 260819 alone the checker
+reported `aim-stated-twice` and `state-without-aim` on `QPw00-page-loop`, and a
+duplicated `### A7` group heading meant the parser kept whichever it met last.
+Every one of those is a join that should never have needed making.
+
+**What is NOT merged.** A State row carrying no Aim id was never a status; it was
+a note. Those move to the Aim's optional Plan, or out of the page. The 🧭 tab's
+division card kept them under 📍 notes precisely because nothing else claimed
+them.
+
+**The plan file keeps the target and drops the status.** `outline/<stem>-outline-
+v<N>.md` declares each Aim with its `Done when:` and stops there, because a plan
+FREEZES at approval while a status changes daily; putting a moving fact inside a
+frozen file is what the 260817 ruling ("the plan is not a cache of the page")
+exists to prevent. DRAFT transcribes target and test onto the page once, and the
+page owns `Now:` from then on.
 The full five rows per section live in the design board's `QB4` Content divisions; the authoritative source form stays `haipipe-board/ref/page-template.md`.
 
 An Aims or States group is `### A<n> · <emoji> <name>`, taking the NUMBER, NAME and EMOJI of the Content part it answers, so the three sections line up by eye as well as by id (JL 260802; it was `C<n>` until then, which made a reader translate one letter to see that `A3.1` belonged under it, and `C<n>` still resolves). `P` is for a target belonging to no single part. Ordinary Files groups are a MENU of actions, taken as they apply: ⚙️ Engines what RUNS the subject · 📋 Contracts what CARRIES a rule to other pages · 🧪 Checks what CATCHES a page breaking one · 📥 Input files what the work READS · 📤 Output files what a BUILD writes. Their names state an ACTION, never a subject, because a subject-named group rots the moment its subject leaves the page.
@@ -315,7 +354,7 @@ skill that combines the phase contracts, and follows its procedure.
 
 🚫 **The dispatch stays in the session you typed it in.** A subagent is not
 handed the `Workflow` tool, so `run <page>` may not be handed off to
-`haipipe-page-orchestrator-agent` or any other agent. Proved 260818: that agent
+`haipipe-page-auditor-agent` or any other agent. Proved 260818: that agent
 was dispatched as itself for the first time and returned `blocked` with 0 steps. The
 packet, receipt, role-separation, and stop rules are that skill's
 `ref/page-run-contract.md`; the receipts land under
@@ -352,6 +391,72 @@ The title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801
 The `state:` line is a row, not a paragraph (JL 260816, ruled on the design board's QPs1). After the status word come at most two ` · ` parts: what stands, then `open:` with a short list or a count. Keep the whole line under 110 characters; `check.py` warns past that. A part that could end in a period is prose: the facts belong in States and the reason in Log, so the line only points. Good: `🟡 PARTIAL · ruled, card grammar adopted · open: landing address, citation hop, tab`.
 
 An Opening keeps one fixed physical shape: one real question paragraph, then one plain rationale paragraph.
+
+## 🗂 The Page Types that exist, and why the rest went (260819)
+
+**No `page-type:` key is the DEFAULT and the most flexible case.** JL 260819
+decided against inventing a `question` type for it: "question itself just to be
+very flexible." A page with no key owes the base section order and nothing more,
+which is what 247 of this repo's 274 pages already were.
+
+```text
+  🅰 skill board    (no key)     the flexible default
+  🅱 task board     task         one task-folder · Why·Concept·Data·Method·
+                                Result·Meaning(last) · FLAT or NESTED
+                   insight      a SUBCLASS of task: Data→Information→
+                                Knowledge→Wisdom
+  🅲 paper board    section      resolved from the venue playbook
+                   narrative    resolved, venue-embedded
+                   seed         venue-free (renamed from opening)
+                   dash         kept, not yet settled
+  🅳 application    artifact · brief · intervention   deferred
+  ⚙️ stage          the S-page contract, unchanged
+```
+
+**Four types were DELETED on 260819**, and each for a reason that names where the
+work went instead:
+
+```text
+  design    20 pages, 3 declaring it   no speciality left. Its one real rule,
+                                       "one candidate per division", is what a
+                                       flexible page does anyway
+  meeting   0 pages                    it is a PLUGIN, and
+                                       haipipe-plugin-meeting already ships
+  skill     0 pages                    same: haipipe-plugin-skill already ships
+  view      0 pages declaring it        everything is a view now
+```
+
+**A discovery folder does not get its own type.** It is a special task, so `task`
+carries which kind of folder it reads rather than a sibling contract repeating
+its shape (JL 260819: "the discovery will be in the task as well, like a special
+task?").
+
+A key is what a page carries when its shape is genuinely special enough to earn a
+contract. Carrying one to say "I am ordinary" would make the default a thing you
+declare, which is not a default.
+
+**`## Writing Style` is a `###` INSIDE Opening since 260819** (JL: "I don't want
+to have the Writing style to be in the main page, please put it under the
+subsection in the Openning"). It always RENDERED inside the Opening drawer
+(`src/page_question.py`); what moved is where it is written.
+
+```text
+  ## Opening
+  <the one paragraph a reader sees>
+
+  ### Writing Style          ← a named row of the More details drawer
+  <how the next writer writes this page>
+```
+
+**Why it belongs there and not on the main page.** A top-level section answers a
+reader's question about the SUBJECT. This one answers a writer's question about
+the PAGE, so on the main run it sat between Diagram and Content asking the
+reader to skip it. Inside the drawer it is one click from whoever needs it and
+invisible to whoever does not.
+
+The top-level `## Writing Style` still parses, because 123 pages carry it and
+deleting someone else's text on read would be a silent loss. New pages write the
+`###`.
 
 THE FIRST BLANK LINE IN `## Opening` IS THE SPLIT (JL 260801, ruled on QB4 §1). Above it is the ONE paragraph a reader sees without clicking, joined into a single block; below it is the `More details` drawer, behind a click. Nothing reports a blank line in the wrong place, so the failure mode is a page whose Opening renders as one bare question while its explanation sits unread. The visible paragraph is 4-5 sentences, about five lines on screen: target ~450 characters, HARD CEILING 520, measured on the RENDER. 520 is what `check.py` enforces (`OPENING_MAX_STAGE_CHARS`); ~450 is the comfortable length, not the limit. Write it in PLAIN ENGLISH for a reader whose English is weak: a shorter common word always beats a precise rare one. Its shape is the question, what the question's own words mean, why that is hard, what this page decides. NEVER open with a list that will grow: name examples and say the set grows, so a fourth member never forces an edit; the roster lives in the Content division that owns it.
 

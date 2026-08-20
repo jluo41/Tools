@@ -1,6 +1,6 @@
 # Minimal example: a board with two questions
 
-For a real board see `skills/diagrams/BoardSkillBoard-260722/`, this skill's own board, with 10 questions.
+For a real board see `../../../diagrams/BoardSkillBoard-260722/` (this plugin's `skills/diagrams` folder), this skill's own board, with 10 questions.
 What follows is only the minimal skeleton you can copy.
 
 Folder: `examples/ProjX-Demo/diagram/01-cohort-260801/`

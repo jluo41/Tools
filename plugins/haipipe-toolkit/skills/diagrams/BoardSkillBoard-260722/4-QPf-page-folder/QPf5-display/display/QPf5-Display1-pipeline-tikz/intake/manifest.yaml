@@ -15,9 +15,18 @@ facts_the_image_may_state:
 # so `cli/check.py` reported `display-intake-unfrozen` and nothing could be
 # rechecked: a ref points at a file that keeps changing. These are the bytes
 # the figure was drawn from.
-frozen: 260818
+# CONVERTED 260819 to the checkable shape: `source:` names the LIVE file
+# relative to the skills/ root and `sha256` hashes THAT file, so
+# checks/intake.py can compute staleness. The live file matched the 260818
+# copy byte-for-byte at conversion; nothing was redrawn.
+frozen: 260819
 inputs:
-  - path: intake/inputs/QPf5-display.md
-    sha256: 06137007a199f0d8ea9e3a3ae976ec76e1b908ebeadd255508d2f40ef682959f
-    bytes: 27936
+  - file: intake/inputs/QPf5-display.md
+    source: diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf5-display/QPf5-display.md
+    sha256: e251fdcac0d6a9ac94d8e2db8b4b066d6c954d4581289da80c89b7b76b615620
+    bytes: 28558
     takes: "Content section 4: the five-step pipeline and the three-hands rule this figure draws"
+
+# RE-FROZEN 260819: the source pages' Log rows were cleaned of profanity
+# (JL: "please clean all the bad words from the log"); the content each
+# figure takes is untouched, so nothing was redrawn.

@@ -1,0 +1,1 @@
+../skills/board/page-workflows/agents/haipipe-page-outline-agent.md

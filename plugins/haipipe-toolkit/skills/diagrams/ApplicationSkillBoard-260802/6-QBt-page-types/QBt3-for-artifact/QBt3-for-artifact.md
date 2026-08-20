@@ -1,99 +1,86 @@
-# Application Artifact: one independently reviewable delivery unit
-state: 🟡 PARTIAL · fresh-context grain passed · open: render, stale acceptance
+# Application Artifact Page: an optional governance promotion
+state: 🟡 PARTIAL · contract 0.2.0 shipped · stale-version test pending
 page-type: artifact
-artifact-kind: sms
-artifact-unit: specimen
 owner: JL
 
 ## Opening
-Where does concrete intervention content live, and what exactly does a person accept?
 
-One Artifact Page executes one Intervention component row and owns its copy, local trace, visible render, and version-bound acceptance. Neighboring units split only when one can pass while another fails; comparison arms reviewed together remain divisions on the same Page.
+Does every message, card, or report section need its own Page?
 
-**Covered here**: Artifact grain, rendering, trace, and acceptance.
+No. Concrete output normally remains a projection of its Design Page. Promote a unit to an Artifact Page only when it can be accepted, rejected, versioned, or deployed independently from its neighbors.
 
-**Covered elsewhere**: Intervention owns global strategy; Deploy ships only accepted versions.
+### Writing Style
 
-## Writing Style
-Show concrete content separately from explanation. Name handoff and render versions whenever acceptance is discussed.
+Lead with the independent-governance reason for promotion. Show exact content and version separately from rationale.
 
 ## Diagram
-**Artifact authority**: one handoff produces one reviewable version before deployment.
 
 ```text
-Intervention row ─▶ authored unit ─▶ visible render ─▶ acceptance ─▶ deploy
+Design projection
+      │
+      ├─ reviewed/deployed with neighbors ──▶ stay on Design Page
+      │
+      └─ independently governed ────────────▶ 📦 Artifact Page
+                                                   │
+                                  version + render + acceptance + deploy
 ```
 
 ## Content
 
-### 1 · Unit contract
-**Unit identity**: one handoff names one review grain.
-```text
-artifact-kind + artifact-unit + intervention-row + venue
-```
-The unit carries one audience job, current handoff, venue constraints, and safety rails.
+### 1 · Contract
 
-### 2 · Authored content
-**Concrete output**: the user-visible material is separate from its rationale.
-```text
-content version → exact copy / interface content
-```
-Concrete copy or interface content lives here rather than in the Intervention map.
+**Contract map**: the subparts below refine the Page decision into one bounded handoff.
 
-### 3 · Variants and arms
-**Review grain**: comparable arms stay together and vary one declared dimension.
 ```text
-invariant core | arm A variable | arm B variable
+inputs → bounded contract → observable handoff
 ```
-Arms remain together when comparison is the review unit; each names the one variable it changes.
 
-### 4 · Trace
-**Local lineage**: every substantive move reaches settled knowledge.
-```text
-content move → Intervention principle → Insight K/W row
-```
-Every substantive move reaches an Intervention principle and settled Insight Page.
+The Page states which independent accept/reject/version/deploy decision makes promotion necessary.
 
-### 5 · Render and preview
-**Visible version**: review points to one exact rendering of one exact content version.
-```text
-content v<n> → render v<n> → preview path
-```
-The Page points to the exact visible version under review.
+#### 2 · Source binding
 
-### 6 · Acceptance
-**Acceptance lock**: approval binds both input and visible output versions.
-```text
-reviewer + date + handoff version + render version → accepted
-```
-Acceptance names reviewer, date, handoff version, and render version; any changed input reopens it.
+Pins the Design Page, unit division, accepted handoffs, venue constraints, and rails that the Artifact may not broaden.
+
+#### 3 · Content and render
+
+Owns one exact content version and its visible render or executable package.
+
+#### 4 · Acceptance
+
+Approval binds reviewer, date, source Design version, content version, and render/ package version. Any material input change invalidates acceptance.
+
+#### 5 · Deployment
+
+Deployment records target, version, timestamp, receipt, rollback path, and the feedback route into the smallest affected Page.
 
 ## Aims
 
-### A4 · Trace
-- A4.1 · Claim audit reaches settled Insight Pages without entering Task folders.
-  **Done when:** a rendered specimen passes the trace check.
+### A1 · Contract
+- A1.1 · No Artifact Page exists merely because output exists.
+  **Done when:** every Page names an independent governance decision.
 
-### A6 · Acceptance
-- A6.1 · Changed handoff or render invalidates prior acceptance.
-  **Done when:** a known-stale fixture fails before a fresh version passes.
+#### A2 · Staleness
+- A2.1 · Changed Design or render invalidates prior acceptance.
+  **Done when:** a negative fixture fails before a refreshed version passes.
 
 ## States
 
-### A4 · Trace
-- ⬜ A4.1 · No rendered specimen exists yet.
+### A1 · Contract
+- ✅ A1.1 · Required by Artifact Page Type 0.2.0.
 
-### A6 · Acceptance
-- ⬜ A6.1 · Known-stale negative fixture not yet exercised.
+#### A2 · Staleness
+- ⬜ A2.1 · Negative runtime fixture remains open.
 
 ## Files
 
 ### 📋 Contracts
 - `../../../../application/page-types/haipipe-page-for-artifact/SKILL.md`
-  The Page Type contract this specimen exercises.
 - `../../../../application/haipipe-application/fn/artifact.md`
-  The Application door procedure.
+
+## Law
+
+Artifact is a governance promotion, not the default container for every rendered unit.
 
 ## Log
-260817 · Fresh Application agent kept jointly reviewed SMS variants on one Artifact Page, deferred a separable renal Artifact until warranted, and bound future acceptance to both handoff and render versions.
-260817 · Opened as the Application unit Page: concrete content, render, and version-bound acceptance.
+
+260820 · Made Artifact optional and projection-first.

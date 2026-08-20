@@ -1,52 +1,153 @@
+# RE-FROZEN 260819 night, last pin: page_lifecycle.py gained the PREPARE-pause
+# rule and the cold-CHECK clause after the previous freeze. The figure draws
+# phases, ticks and the gate, none of which moved; copy refreshed, hash re-pinned.
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+# RE-FROZEN 260819 night, at the round's close. Deltas: haipipe-page-outline
+# 0.6.0 (the 有问有答 append rule + break-gate wording) and haipipe-page-evidence
+# 0.11.0 (landing values creates fold debt). No phase name, tick, route or
+# drawn fact moved; copies refreshed and hashes re-pinned only.
 # A concept unit states no number, so it declares no values intake.
 # What it DOES bind is the text it transcribes. Every phase name, every job,
 # every tick and every route in the table was copied from a file frozen below,
-# never from memory. The TIME column is the one thing NOT bound: no page has
-# run this loop, so those figures are estimates and the table says so on its face.
+# never from memory. The TIME column is the one thing NOT bound: no phase on
+# this table has ever been timed, so those figures are estimates and the table
+# says so on its face.
 #
-# RE-FROZEN 260818: haipipe-page.SKILL.md was added as the ninth input after the
-# approver's R14 found row 0 OPEN tracing to none of the other eight. OPEN is
-# haipipe-page's CREATE verb and is deliberately not a phase.
+# RE-FROZEN 260819, and the SHAPE changed with it. Every row now names the LIVE
+# `source:` as well as the local copy, because a `path:` + `sha256` pair proves
+# only that the copy has not rotted and says nothing about the original. That is
+# the promise `haipipe-plugin-display` §❄️ makes, and `checks/intake.py` is what
+# keeps it: it re-hashes each `source:` and reports CHANGED.
+#
+# WHY IT WAS RE-FROZEN: the 260819 loop change (phase-cards.md §🔁) made the old
+# table's row ORDER wrong. PROBE and EVIDENCE now run BEFORE DRAFT, the display
+# walk's RENDER/PICK/BUILD steps moved from REVISE to EVIDENCE, and ④⑤⑥ ask a
+# person for nothing.
+#
+# ADDED at this freeze: haipipe-page-check.SKILL.md was already here; new are
+# page-run-contract.md (the receipt shape, which carries no start/end pair),
+# haipipe-plugin-probe.SKILL.md and haipipe-plugin-display.SKILL.md (the two
+# reverting ticks), and the board's two QPw00 run receipts, because "which
+# phases have ever produced a receipt" is now a transcribed cell.
+# RE-FROZEN TWICE on 260819. Sibling agents edited page-run-contract.md,
+# haipipe-page-evidence/SKILL.md and haipipe-page-draft/SKILL.md while this
+# unit was being rebuilt (RUN now begins at OUTLINE; EVIDENCE routes to
+# OUTLINE always; DRAFT's receipt route list drops EVIDENCE and COMPILE).
+# All three were re-copied and re-hashed. None of the three edits touches a
+# cell of this table: it prints no phase's route list and does not say where
+# RUN begins, and the passages it does transcribe (draft §📥, evidence §🖼,
+# the receipt JSON shape) are byte-identical across both freezes.
+#
+# RE-FROZEN a FOURTH time on 260819, late evening, at EVIDENCE, and this one
+# REDREW one block: the footer. The board gained a fourth stored run
+# (260819-1813-QPw00.json, the day's shared append surface) whose receipts
+# include PROBE's first two, so the footer's "three runs" and "PROBE ... has
+# no receipt anywhere" both went false; the corrected footer counts four runs,
+# lists PROBE as covered, and anchors the EVIDENCE/COMPILE gap to this freeze,
+# because this very pass appends the board's first EVIDENCE receipt right
+# after it. That append will move the fourth input again the same night; the
+# footer stays true because its coverage claim is dated to the freeze. The
+# nine contract inputs also moved (mark-glyph renames 🔢 -> 🧮 value and
+# 📮 probe, outline 0.5.0's two-direction COVERAGE, cosmetic agent/tab
+# wording); none of those changes a cell, and no other cell changed.
+#
+# RE-FROZEN a THIRD time on 260819, ~30 min later, and this one ran the other
+# way: the main session took this unit's README `contradictions:` findings and
+# fixed the CONTRACTS, so four sources moved TOWARD the drawing. phase-cards.md
+# now says two ③ lane ticks with ③d tickless and numbers the lanes ③c/③v;
+# haipipe-page-probe 0.5.1 calls itself phase ②; haipipe-page-evidence 0.10.2's
+# kinds table says RENDER · PICK · BUILD are here instead of `draws it in
+# REVISE`; page-run-contract.md says five ticks and its legal-routes block now
+# matches the PREPARE loop. Zero table cells changed at this freeze; the two
+# transcribed anchors (`CLOSE is a route, not a fifth Page Phase`; a receipt
+# shape with no start/end pair) were re-read and still hold.
 kind: concept
 values: none
-frozen: 260818
-inputs:
-  - path: intake/inputs/260805-0216-QB8e.json
+frozen: 260819
+files:
+  - file: inputs/phase-cards.md
+    source: board/page-workflows/haipipe-page-workflow/ref/phase-cards.md
+    sha256: 9c5591b13bd1a1310f2f22b863dc359e171589729899935525c432f1a629b289
+    takes: "the six fields of every phase card, the PREPARE loop, the attention
+      ruling that ④⑤⑥ ask for nothing, and the five person-reserved ticks"
+  - file: inputs/page-run-contract.md
+    source: board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+    sha256: 2c5b26f0921a7aee18d2cb83b9286492cb8963e799dbcfbc24b9453309ba4f82
+    takes: "the phase-receipt JSON shape, which carries NO start/end pair, so no
+      receipt can time a phase; and `CLOSE is a route, not a fifth Page Phase`"
+  - file: inputs/haipipe-page-outline.SKILL.md
+    source: board/page-workflows/haipipe-page-outline/SKILL.md
+    sha256: 846838b7b14eb32ff5f0e1564e909e0674d1f51fed65d80c79610e0e0b127654
+    takes: "the FOUR checks (coverage · address · value · shape), that all four
+      run BEFORE the person is asked, and the `approved:` exit"
+  - file: inputs/haipipe-page-probe.SKILL.md
+    source: board/page-workflows/haipipe-page-probe/SKILL.md
+    sha256: a694c32547fd660cf74f10326c5c3ca4f30f5e375cba357f3c1b0fbfef8169b5
+    takes: "the four-step MATCH order, the probe/PP<NN>-<slug>/ folder, and that
+      this phase routes BACK to OUTLINE and never forward to DRAFT"
+  - file: inputs/haipipe-page-evidence.SKILL.md
+    source: board/page-workflows/haipipe-page-evidence/SKILL.md
+    sha256: 6f7b3d6b00c92d078c0891f917ef13272f37408a0f1fdacd9de664f870ccc4ba
+    takes: "the three lanes in parallel, and §🖼: four of the display walk's five
+      steps are EVIDENCE's since 260819, with only ⑤ ACCEPT left at CHECK"
+  - file: inputs/haipipe-page-draft.SKILL.md
+    source: board/page-workflows/haipipe-page-draft/SKILL.md
+    sha256: d84ead3e95ce4f602bbd5d02fc20ee020d123df7e62aecd6cce33d12dbc64154
+    takes: "§📥: DRAFT enters on landed evidence and writes the NUMBER, so a hole
+      is the EXCEPTION and must name the input that is missing"
+  - file: inputs/haipipe-page-revise.SKILL.md
+    source: board/page-workflows/haipipe-page-revise/SKILL.md
+    sha256: a332b91459bb19007196d0a732cdf46121541708fb51cb93eb486b05d0735c49
+    takes: "§🏗: what REVISE keeps is the citing sentence, the caption, and the
+      latex/ + word/ rebuild. It no longer draws."
+  - file: inputs/haipipe-page-check.SKILL.md
+    source: board/page-workflows/haipipe-page-check/SKILL.md
+    sha256: a22417ff17fc061c494067c6b78029a531bd2a5e672757888de9e4a6b37dfd6f
+    takes: "judge the BUILT artifact, the accept-bias (a gate is shown only at
+      zero mechanical errors), and the FIVE-ticks count at :141 and :153"
+  - file: inputs/haipipe-page.SKILL.md
+    source: board/haipipe-page/SKILL.md
+    sha256: cbbdfd32ba197ac17a1654a4136a4b029171378d125e290bdb209236229bd06a
+    takes: "the CREATE verb, which is where row 0 OPEN comes from: the template
+      copy, the purpose-stating title, the board.md roster. CREATE is not a phase."
+  - file: inputs/haipipe-plugin-probe.SKILL.md
+    source: board/page-plugins/haipipe-plugin-probe/SKILL.md
+    sha256: c34e0463d41b9c90519c4e88a1e7443ed891ae58e01009990c5a78d376f3fbb4
+    takes: "what `read: ✅` MEANS after checks/values.py recomputes the number:
+      not `I checked the arithmetic` but `I agree with the judgment inside the
+      question`; and that the tick reverts on a changed target or proof/"
+  - file: inputs/haipipe-plugin-display.SKILL.md
+    source: board/page-plugins/haipipe-plugin-display/SKILL.md
+    sha256: 48f0fa4147af8aa8cd8de633dba9081a27a64f8fcaaac770d857e2ff4e9b604a
+    takes: "the five-step walk ① INTAKE 🧑 ② RENDER ⚙️ ③ PICK 🧑 ④ BUILD ⚙️
+      ⑤ ACCEPT 🧑, and that a changed intake/ drops `accepted:` back to ⬜"
+  - file: inputs/260805-0216-QB8e.json
+    source: diagrams/BoardSkillBoard-260722/_runs/page/QB8e/260805-0216-QB8e.json
     sha256: 788f02b3b34ca8e6edee79e84a33ed0fe5681ac790f7a890549a4c7efd3c91ca
-    bytes: 28887
-    takes: "the ONLY live run on this board when this unit was frozen: 5 receipts, CHECK REVISE CHECK REVISE CHECK"
-  - path: intake/inputs/haipipe-page-check.SKILL.md
-    sha256: 67c3773646c920462c605a184e93d3fde2b922bedc35fa2b3fa07283436d528a
-    bytes: 12684
-    takes: "the accept-bias, the RULING, judge-the-BUILT-artifact, and the FIVE-ticks count at :141 and :153"
-  - path: intake/inputs/haipipe-page-draft.SKILL.md
-    sha256: adfab930039d7f494d7f1f411ec8f6ceb6e2bda47227a9b425500ab56e3d3a6b
-    bytes: 13723
-    takes: "the scaffold-with-holes output and "DRAFT creates NO card""
-  - path: intake/inputs/haipipe-page-evidence.SKILL.md
-    sha256: 1ddff4a7743d74b3fd2933862f308990c63b0eb34b7046f4ce393c0dab6c54cf
-    bytes: 17963
-    takes: "the three kinds, their cards, and their three gates"
-  - path: intake/inputs/haipipe-page-outline.SKILL.md
-    sha256: 2227173bb85c4b476437d99ecfd749450d4506a969f4bf8f5e50a8d6b17194fc
-    bytes: 6733
-    takes: "the `approved:` exit and the outline file path"
-  - path: intake/inputs/haipipe-page-probe.SKILL.md
-    sha256: 4519eab1d5100d6b846774ad70ec074730d405b9176ed2a98b926ed6d6b97714
-    bytes: 13686
-    takes: "the MATCH order and the probe/PP<NN>-<slug>/ folder"
-  - path: intake/inputs/haipipe-page-revise.SKILL.md
-    sha256: ad5bfc479c9120ac269bdfb64f2af4abc9e83e86f20854f740f500efd4ad5dbf
-    bytes: 9201
-    takes: "the render/pick/build steps and the rebuilt projections"
-  - path: intake/inputs/haipipe-page.SKILL.md
-    sha256: c78db1eb6a7865b084f24974a4257beb782366a0dc9ef06e0fbb96755fe89f96
-    bytes: 48041
-    takes: "the CREATE verb, which is where row 0 OPEN comes from; CREATE is not a phase"
-  - path: intake/inputs/phase-cards.md
-    sha256: e415ea193080121fa2d923b25410f74f21f1577206dde497e208c3ffa831e458
-    bytes: 7670
-    takes: "the six fields of every phase card: ASKS READS WRITES EXITS TICK ROUTES"
+    takes: "run 1 of 4 on this board: 5 receipts, CHECK REVISE CHECK REVISE CHECK"
+  - file: inputs/260818-1510-QPw00.json
+    source: diagrams/BoardSkillBoard-260722/_runs/page/QPw00/260818-1510-QPw00.json
+    sha256: a9f21ca51a64c7608659fbc587c2d36a7b94a64cb475a52984aa0da23ff1ac44
+    takes: "run 2 of 4: 1 receipt, OUTLINE, status hold"
+  - file: inputs/260818-1543-QPw00.json
+    source: diagrams/BoardSkillBoard-260722/_runs/page/QPw00/260818-1543-QPw00.json
+    sha256: bfd3f4e7606bf21d533a52fec889f0235524d72dc88136de4b8fb3451e56c3e8
+    takes: "run 3 of 4: 3 receipts, DRAFT REVISE CHECK, status blocked"
+  - file: inputs/260819-1813-QPw00.json
+    source: diagrams/BoardSkillBoard-260722/_runs/page/QPw00/260819-1813-QPw00.json
+    sha256: 7362373c187ef5d1c7e52c566d3b37a562d03a013a7a84ce251a8579a2a312b0
+    takes: "run 4 of 4: 6 receipts at this freeze, OUTLINE PROBE OUTLINE OUTLINE
+      PROBE OUTLINE, every one parking at HOLD; PROBE's first receipts
+      anywhere on this board, and the main session's plan-rotation pass
+      appended the sixth mid-freeze. The day's shared append surface, so
+      this pass's own EVIDENCE receipt moves it again the same night,
+      expected and recorded"
 unbound:
-  - the TIME column. No OUTLINE, DRAFT, PROBE or EVIDENCE receipt existed when
-    this was frozen, so no phase on this table had ever been timed. Estimated.
+  - the TIME column. The receipt shape in page-run-contract.md carries no
+    start/end pair, so no receipt can time a phase and not one phase on this
+    table has ever been timed. At this freeze the four stored runs' receipts
+    covered OUTLINE, PROBE, DRAFT, REVISE and CHECK, and EVIDENCE and COMPILE
+    had none. Estimated.

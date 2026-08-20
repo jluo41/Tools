@@ -14,26 +14,131 @@ a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
  padding:10px 12px;margin:0 0 10px}
 .card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
 .miss{border-color:#c66;}
-</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPw00-page-loop</h1><p class='mut'>compiled by xelatex · <a href='/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf' download>⬇ QPw00-page-loop.pdf</a></p><iframe src='/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf?t=1787084709447669713' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPw00-page-loop.tex · <a href='/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.tex' download>⬇ download</a></summary><pre>% GENERATED from QPw00-page-loop.md by md2tex.py. Do not hand-edit: sync is
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><h1>📜 QPw00-page-loop</h1><p class='mut'>compiled by xelatex · <a href='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf' download>⬇ QPw00-page-loop.pdf</a></p><iframe src='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf?t=1787202552496249502' style='width:100%;height:78vh;border:1px solid var(--line);border-radius:8px'></iframe><details><summary>⌨️ raw LaTeX source · QPw00-page-loop.tex · <a href='/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.tex' download>⬇ download</a></summary><pre>% GENERATED from QPw00-page-loop.md by md2tex.py. Do not hand-edit: sync is
 % one-way and the next run overwrites this file.
 
-\section{DRAFT gives the Page a promise}
-\textbf{The DRAFT contract}: what enters, what DRAFT may decide, and what it hands forward.
+\section{Overview: what the loop is, and how to read the rest}
+\textbf{The claim this page makes}: a phase is defined by the ONE question it answers, not by the edit it performs, and a Page moves forward by satisfying a phase's exit rather than by being worked on.
+
+\textbf{The problem}: one Page is worked by many hands over many days, and the same visible edit can be two different acts.
+
+Adding a paragraph under an existing Aim and adding a paragraph that creates one look identical in a diff. So the loop names acts by their REASON, never by their diff. Each phase is the question it answers: OUTLINE asks what shape, PROBE asks what is unknown, EVIDENCE asks what backs it, DRAFT asks how it is said, REVISE asks how it gets better, and CHECK asks where it goes next. Progress is satisfying a phase's exit, a tick, a landed card, a verdict; hours of editing move nothing without the exit. The Opening says where this page sits among its siblings. This division says what the LOOP is. Neither repeats the other.
+
+\textbf{The loop is not a line}: Figure~\ref{fig:qpw00-loop-at-a-glance} draws it: phases (1), (2) and (3) repeat as one converging PREPARE loop, and only a person's \texttt{approved:} tick on the plan releases the page into (4), (5) and (7).
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display4-the-loop-at-a-glance/assets/figure.pdf}
+\caption{The loop at a glance, in the shape ruled 260819. A PREPARE loop
+  (\ding{172} OUTLINE, \ding{173} PROBE, \ding{174} EVIDENCE) repeats until the
+  plan is self-consistent, because evidence does not confirm a plan; it changes
+  it. ONE gate leads out: four machine checks (coverage, address, value, shape),
+  then a person's \texttt{approved:}. Everything after the gate runs unattended
+  (\ding{175} DRAFT, \ding{176} REVISE with \ding{177} COMPILE folded in) until
+  \ding{178} CHECK, which a person judges and which reaches CLOSE or returns
+  the page to any earlier phase. Red ticks are the five stops reserved for a
+  person; no machine may write one.}
+\label{fig:qpw00-loop-at-a-glance}
+\end{figure}
+
+Its intake is frozen out of the seven phase contracts and both legal-route tables; nobody has accepted it yet, so \texttt{accepted:} still reads [ ].
 
 \begin{verbatim}
- DRAFT
-+--  enters    page need . constraints . prior round
-+--  owns      purpose . Aims . promised shape
-+--  writes    any Page part needed to expose the design
-+--  names     unknowns . dependencies . assumptions
-+--  exits     one stable round contract
+  S1        what the loop is, and the four words it spends
+  S2-S7     the six phase divisions, in the LOOP's order: OUTLINE (1) . PROBE (2) .
+            EVIDENCE (3) . DRAFT (4) . REVISE (5) ((6) folded in) . CHECK (7)
+  S8-S11    the laws that hold them together
+  S12-S14   the machine that runs it, the audit that proves it, its price
 \end{verbatim}
-📌 DRAFT decides what this round of the Page is trying to become.
+\textbf{Two reading paths.} A person who only RUNS the loop reads §1, §8 and §14. A person implementing one phase reads that phase's division, then its contract file.
 
-DRAFT's full contract, its worked example turning one approved Point into several sentence scaffolds, and its rule that the Aim behind a hole is the stake a probe card will later carry all live at QPw2-draft. OUTLINE, at QPw1-outline, is the phase now immediately upstream of DRAFT: it agrees the plan's shape before DRAFT turns an approved bullet into prose, a split this page's own §1 predates and never had to name.
+\textbf{The loop today}: counted rather than described.
+
+\begin{verbatim}
+  7  phases declared             PP01.v1   COMPILE is one of them
+  6  ship a contract file        PP01.v2   COMPILE has none
+  5  stops a person owns         PP01.v3   two of the five revert
+\end{verbatim}
+How much of it has ever EXECUTED is a different card's question: \texttt{PP02} owns the run counts, and \texttt{§12.2} quotes them.
+
+\textbf{Who executes each phase}: Figure~\ref{fig:qpw00-agents-and-skills} names them.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display6-agents-and-skills/assets/figure.pdf}
+\caption{Who executes each phase, and what each loads: one agent per phase
+  under page-workflows/agents/ (six files; (6) COMPILE is folded into (5), and
+  (7)'s judge is haipipe-page-check-agent), each walking one fixed stack whose
+  shared law lives once in ref/producer-contract.md. The PREPARE trio
+  (1)(2)(3) repeats until the plan converges and stops at a person's
+  \texttt{approved:} tick. The full routes and stop conditions are Display4's
+  and Display1's.}
+\label{fig:qpw00-agents-and-skills}
+\end{figure}
+
+Six agent files sit under \texttt{page-workflows/agents/}, five write-scoped producers plus (7)'s read-only judge, and each walks one fixed skill stack whose shared law lives once in \texttt{ref/producer-contract.md}.
+
+\textbf{The vocabulary rule}: the loop needs all four and none of them substitutes for another, which is why the word stays "phase" rather than "step".
+
+\begin{verbatim}
+word         answers                      count in the ONE live run    repeats?
+----------------------------------------------------------------------------------
+ WORKFLOW  which LOOP is this?          1  . the run itself          no
+ PHASE     which AUTHORITY acts?        7 defined . 2 used           YES
+ STEP      WHERE in this run?           5 . monotonic 1..5           never
+ ROUND     which PROMISE era?           1 . bumps only on a reopen   on reopen
+\end{verbatim}
+📌 A phase is a TYPE and a step is an INSTANCE of one: in the one live run the single CHECK phase occupies steps 1, 3 and 5.
+
+\textbf{All four in one receipt}: none may be renamed onto another.
+
+(\texttt{step: 4 · round: 1 · phase: CHECK · route: REVISE}, four fields in one object) Renaming phase to step would put two different meanings on one key inside a single receipt, and the auditor reads both. \texttt{step} is the monotonic position that never recurs; \texttt{phase} is the kind of work that must be free to recur, which is the property the whole loop is built on.
+
+\textbf{Why not "step"}: it would contradict the router's own name.
+
+(RUN is deliberately not ADVANCE, \texttt{§12.1}) The word must permit repetition, because CHECK may route back to any earlier phase, PROBE may be skipped entirely, and a page may re-enter DRAFT in a new round. The one live run proves it rather than asserting it: CHECK ran three times and REVISE twice inside a single round, so a vocabulary that numbered them 1..7 could not describe what happened.
+
+\textbf{The folder settles one of them}: it already carries the workflow word.
+
+(\texttt{board/page-workflows/}, one skill per phase plus the head router) The directory says which of the four words scopes the family, and the contracts inside it say which authority each phase holds. So the full term is "workflow phase" where disambiguation is needed and "phase" everywhere else, and the 927 occurrences of the word across this board and the skill tree stay as they are.
+
+\textbf{Two more words ride along, defined here and spent everywhere below}: a PAGE persists through all of it, and an OPERATION is one edit act upon it: phases are named by reason, operations by shape.
+
+The four words are defined at the top, before any division spends them. What keeps the siblings honest is a sweep of the family's contracts for a phase called a step or a step called a phase, and A1.2 tracks it.
 
 
-\section{PROBE resolves what the Page cannot know}
+\section{OUTLINE ①: the head of a loop that converges}
+\textbf{The OUTLINE contract}: what it decides, what it leaves alone, and what ends it.
+
+\begin{verbatim}
+ OUTLINE
+   asks     what will this page say, division by division, and what does each
+            bullet still owe?
+   writes   &lt;page&gt;/outline/&lt;stem&gt;-outline-v&lt;N&gt;.md, and nothing in the page
+   marks    a hole, and then STOPS. It raises no card and asks nothing.
+   loops    with (2) PROBE and (3) EVIDENCE until the plan and its evidence agree
+   exits    a person ticks `approved:`. Nothing else ends it.
+\end{verbatim}
+The deliverable is the section list, the paragraph under each section, the bullets under each paragraph, and what each bullet still owes. It all lives in ONE file, \texttt{outline/&lt;stem&gt;-outline-v&lt;N&gt;.md}, and the page's own prose stays untouched until DRAFT. OUTLINE marks a hole and stops there: raising cards and dispatching questions is PROBE's job.
+
+The Aims are settled in the plan file itself, and not at DRAFT. Shape and target are read once and approved by one tick. Every bullet that owes something names its Aim by id, so no id can dangle, and DRAFT transcribes those Aims onto the page rather than inventing them. The plan carries both the Aim's id and its target, so a renumber moves them together and no id can point at a target the plan does not hold. The same placement is what lets PROBE run ahead of DRAFT. A probe card's stake is an Aim, so PROBE can start no earlier than the phase that settles the Aims. The Aims exist the moment the plan does, so the card carries its stake from the plan and waits for nothing.
+
+\textbf{Evidence changes the plan, and never just confirms it}: this page's own PREPARE loop shows both directions: a planned division scored 0 of 4 on \texttt{§10}'s split tests and was folded away, and a planned count of 17 was recomputed as 13 before the tick (both recorded in outline v3).
+
+Four machine checks run on every version of the plan. Coverage: every mark is served both ways. Address: every \texttt{serves:} resolves. Value: every quoted number recomputes. Shape: the divisions match the page type. The person is asked LAST, and for DIRECTION rather than arithmetic: the machine already proved the numbers, so the tick's question is whether the plan aims at the right thing. A tick belongs to the version it ticked. Quietly editing an approved plan is how \texttt{serves:} addresses go stale; a changed plan gets a new version and a new tick.
+
+\textbf{What the gate sees on this board today}: \texttt{PP06.v1} counts 17 plans, and \texttt{PP06.v2} finds 6 that pass all four checks.
+
+Coverage is the common failure (\texttt{PP06.v3}, 10 plans); address and shape fail none (\texttt{PP06.v4} and \texttt{PP06.v5}, both 0); value fails one (\texttt{PP06.v6}). The plan is ONE file, so its folds serialize: PROBE and EVIDENCE fan out safely across separate folders, and one OUTLINE pass per round is the merge point. The FIRST check is the human's own look, ruled after this page's own live round: the look is cheap and early, and it catches structure and style before any card is raised or run is spent. The look is not the gate. \texttt{approved:} ends the loop, and it is taken only after the four checks pass.
+
+\begin{verbatim}
+  change a section list   BEFORE the prose   one line
+  change a section list   AFTER  the prose   the prose
+\end{verbatim}
+No machine may write the tick: it is the loop's one hard human gate. A phase whose entire output fits on one screen, and which a person can reject in ten seconds, belongs in front of every expensive phase rather than folded into one. The file's shape, its marks and its version rules live at \texttt{QPw1-outline} and \texttt{haipipe-plugin-outline}.
+
+
+\section{PROBE ②: turning a mark into a card, and asking}
 \textbf{The PROBE contract}: an approved mark leaves the plan, becomes a card, and is asked.
 
 \begin{verbatim}
@@ -44,18 +149,174 @@ DRAFT's full contract, its worked example turning one approved Point into severa
 +--  exits     the moment the stripped question leaves
 +--  avoids    target Page prose . landing the answer
 \end{verbatim}
-📌 PROBE turns an approved mark into a card and asks; landing what comes back is EVIDENCE's job.
+📌 PROBE turns an approved mark into a card and asks; landing what comes back is (3) EVIDENCE's job.
 
-PROBE's trigger, its four-step MATCH lookup that runs before any dispatch, and its optional-when-no-unknown-is-hidden rule now live at QPw3-probe. The write surface it hands off to, binding the returned answer and landing it in a card, now lives at QPw4-evidence. PROBE's meaning changed on 260817, exactly as this page's own Opening states it: it now only raises the card and asks.
+The card holds the question, its \texttt{serves:} backlink into the plan, and later its \texttt{\#\# Values}; the question goes out stripped of stake. PROBE is the only phase that may create \texttt{probe/PP&lt;NN&gt;-&lt;slug&gt;/}: OUTLINE marks, and EVIDENCE fills. It looks before asking, MATCH before RAISE: an existing card on this page, a PageX match, or a QA-bank answer to the same question is reused, never duplicated. The trigger, the four-step MATCH lookup, and the optional-when-no-unknown-is-hidden rule live at \texttt{QPw3-probe}.
 
-The target Page is the Page whose lifecycle raised the stake-bearing Q-consumer. A family may file the QA-probe under an evidence route such as Literature or Value without transferring the Q-consumer, A-consumer, or State to that route's topic Page. The Paper family's S03 and S04 layout exposes the distinction: a Results Page can raise the question, a QA-probe can live beneath a Value topic, and a QA-bank file can answer it. Treating physical placement as an ownership transfer gives one exchange two Page-facing consumer surfaces before the answer reaches prose.
+\textbf{Filing a QA-probe does not name the target Page}: the probe layer never learns which page consumes the answer, and that wall is what keeps executors stake-blind.
 
-One PROBE run may write its declared Probe surface and the active target Page's Probe reference, A-consumer, and State. When the same Q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available without authoring those sibling Pages in the current run. Each sibling interprets the answer and changes its own Content through its own PROBE or REVISE route, with its own version and CHECK. This preserves one Q-executor for reuse without turning one answer into an unbounded cross-Page edit.
+A family may file the QA-probe under an evidence route such as Literature or Value without transferring the Q-consumer, the A-consumer, or the State to that route's topic Page. Treating physical placement as an ownership transfer gives one exchange two Page-facing consumer surfaces before the answer reaches prose.
 
-The active Page may need to show the Q-executor, bank target, state, returned answer, and limits while keeping its source concise. A read-only projection can render that chain from the QA-probe and bank answer, while the Page source keeps the Probe reference and its own A-consumer interpretation. The same reference should drive phase-scoped context loading and CHECK, so an author does not maintain a Probe pointer, an embed, and a Related Board Pages row for one relationship. Missing targets, superseded answers, or changed source hashes must fail visibly rather than leave an old projection looking current.
+\textbf{One active Page bounds the consumer write}: a PROBE run writes consumer rows only into the one page it was opened for.
+
+When the same Q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available, and each sibling page interprets it through its own PROBE or REVISE route, with its own version and CHECK. This preserves one Q-executor for reuse without turning one answer into an unbounded cross-Page edit.
+
+\textbf{One reference shows the whole chain}: from the bullet's mark to the card, to the QA file, to the pulled proof, every hop is a recorded pointer, so a read-only projection can render the chain without a second authored copy.
+
+Missing targets, superseded answers, or changed source hashes must fail visibly rather than leave an old projection looking current.
+
+\textbf{One edge stays open, and it is recorded rather than hidden}: whether a family adapter may transfer Q-consumer ownership after handoff is the open Decision Now row below, and \texttt{A3.2} waits on it.
 
 
-\section{REVISE makes the current promise work}
+\section{EVIDENCE ③: landing what came back}
+\textbf{The EVIDENCE contract}: what enters, the lanes it runs, and what ends it.
+
+\begin{verbatim}
+ EVIDENCE
+   enters   a dispatched question that has returned, a known bib key, or a
+            unit whose material exists
+   lanes     citation .  value .  display      IN PARALLEL
+   stages   (1) MAKE the thing . (2) BIND it so a sentence can name it
+   exits    every marked bullet has its thing on disk, or a named HOLD
+\end{verbatim}
+Figure~\ref{fig:qpw00-evidence-logic} draws the division at once, and its head is the probe card: the plan ASKS, the card answers, the value lane fills the card itself, a data display freezes FROM the card's \texttt{proof/}, and the citation lane is a person's and does not pass through the card.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display5-evidence-logic/assets/figure.pdf}
+\caption{EVIDENCE, whole, with its head: the plan's bullet ASKS, PROBE raises
+  the card (consumer/, executor/, proof/, and one id per value), and the three
+  lanes run through MAKE and BIND at the same time. The value lane fills the
+  card itself; a DATA display freezes its intake from the card's proof/; the
+  citation lane is a person's and does not pass through the card. Two ticks
+  revert; accepted is CHECK's. Neither stage writes a sentence; REVISE does,
+  quoting one value by its id.}
+\label{fig:qpw00-evidence-logic}
+\end{figure}
+
+\begin{verbatim}
+  (1) MAKE   build the thing in the folder that owns it
+            the bibex entry
+            the card's answer, pulled into proof/
+            the unit DRAWN: intake . recipe . assets . preview.pdf
+
+  (2) BIND   make it pointable, so a sentence can name it and be checked
+            the key resolves in bibex/                   `verified`
+            target: names the answering QA file by PATH  `read:`
+            the unit is previewable, its intake frozen
+
+  ----------- the page's prose starts HERE, and this phase stops ----------
+  (5) REVISE the sentence that uses it, its caption, the projections
+\end{verbatim}
+Neither stage touches this page's \texttt{\#\# Content}. That is the whole boundary: EVIDENCE changes what the page KNOWS and REVISE changes what it SAYS. A phase that both landed the answer and wrote the sentence could not be audited, because the only evidence that the answer came first would be its own report.
+
+A 📮 mark sits on a bullet that ASKS. The bullet keeps only the question; the answer arrives later as an append plus the card's values. One card may serve many bullets, and its \texttt{serves:} line lists every address it answers. The ask and the quote share one \texttt{probe/} folder: 📮 marks the ask, 🧮 marks a quote of one landed number, and both point into the same card. The live example is one division up: \texttt{§1.2}'s counts stand on \texttt{PP01}, whose card carries the question, its state, and the three landed values.
+
+\textbf{What it lands}: a number bound BY PATH to the QA file that answered it, with the pulled file sitting in the card's own \texttt{proof/}.
+
+\begin{verbatim}
+  made by   the bank, task or discovery, answering into its own QA file.
+            PROBE already raised the card and asked.
+  tick      `read:`, and it REVERTS when `target:` changes or proof/ is re-pulled
+  id        PP&lt;NN&gt;.v&lt;n&gt; . one card holds several numbers
+\end{verbatim}
+\textbf{One card, many values.} A card is ONE question, and its answer usually holds several numbers, so the id goes one level deeper: allocated in \texttt{card.md}'s \texttt{\#\# Values} block when the answer lands, and never before. That is what makes two failures visible instead of silent: a number in the prose citing no \texttt{PP&lt;NN&gt;.v&lt;n&gt;}, and a value in a card that no sentence uses. Both directions are checked, and the 🔢 tab reports them: a surface with no storage, because the number already lives in \texttt{proof/} with its source, run and sha256. The live example: this page states 7 declared phases from \texttt{PP01.v1}, 6 contracts from \texttt{PP01.v2}, and 5 person-reserved ticks from \texttt{PP01.v3}. The card's v4 row reads \texttt{NOT HERE} and points at \texttt{PP02}, because run counts are that card's question, and its \texttt{read:} still reads [ ], so every one of these quotes still waits on a person.
+
+\textbf{What it lands}: one entry in \texttt{bibex/&lt;stem&gt;.bib}, and a key a sentence can cite.
+
+\begin{verbatim}
+  made by   a PERSON, verbatim. A machine may SUBSET or TRANSCRIBE bibtex
+            and may never COMPOSE it.
+  tick      `verified`, on the entry itself. It does not revert.
+  failure   a  mark naming a sibling board page. That is a cross-reference,
+            written in the bullet's own words; only a bib key wears .
+\end{verbatim}
+\texttt{verified} never reverts because provenance does not decay: it records that a person read the entry against its source. The live example is this page's own store: \citep{luo2026eventglucose} was transcribed verbatim from QPf4-chat's bibex and carries its \texttt{verified = \{&lt;who&gt; &lt;date&gt;\}} signature, so a sentence here may cite the key and its chip resolves green.
+
+\textbf{What it lands}: a DRAWN, previewable unit, not a folder of material.
+
+\begin{verbatim}
+  (1) INTAKE   freeze the material           EVIDENCE
+  (2) RENDER   the renderer writes recipe/   EVIDENCE
+  (3) PICK     choose among candidates/      EVIDENCE
+  (4) BUILD    assets/ . float.tex . preview EVIDENCE
+  (5) ACCEPT   README `accepted: [x]`         CHECK      the human tick
+\end{verbatim}
+Steps (2) to (4) live in this lane because a display's return must be as directly usable as the other lanes': a citation lands a key, a value lands a bound number, so a display lands a drawn unit rather than an unrendered folder. Which units wait depends on their kind: a DATA unit (table, figure) freezes its intake FROM a probe card's \texttt{proof/} and waits for an answer, while a CONCEPT unit (diagram, tex, illustration) freezes a listing of source files and waits for nothing. The intake manifest pins every source with a sha256, so a moved or edited input is computable staleness, and \texttt{accepted: [x]} reverts with it: acceptance binds to the frozen inputs it was accepted with. The live example is Figure~\ref{fig:qpw00-who-does-what}, one glance down at \texttt{§14}: a concept unit with 15 frozen inputs in its \texttt{intake/manifest.yaml}, \texttt{accepted:} still [ ], and cited both here and by \texttt{§14}'s table, which is legal because a unit owes AT LEAST one citing sentence, not exactly one.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display3-who-does-what/assets/figure.pdf}
+\caption{The page workflow as a person experiences it, in the order it has run
+  since 260819: the PREPARE loop (1 OUTLINE, 2 PROBE, 3 EVIDENCE) repeats as one
+  unit before 4 DRAFT, and 5 REVISE with 6 COMPILE folded in, ever start. EIGHT
+  of the twelve rows ask something of a person and four read \emph{nothing}; of
+  those eight, five carry a tick a machine may never write, and three (0 OPEN,
+  3d DISPLAY and 7 CHECK) ask for a judgment that leaves no tick behind. The
+  four \emph{nothing} rows are 2 PROBE and the whole unattended stretch 4, 5, 6.
+  TIME is the only estimated column, because no phase on this board has ever
+  been timed.}
+\label{fig:qpw00-who-does-what}
+\end{figure}
+
+\begin{verbatim}
+   citation   -&gt;  bibex/&lt;stem&gt;.bib entry   returns a bib key
+   value      -&gt;  probe/PP&lt;NN&gt;-&lt;slug&gt;/     returns a number bound to its run
+   display    -&gt;  display/&lt;unit&gt;/          returns a drawn, previewable figure
+\end{verbatim}
+They run at the same time, and none waits for another: the fold at (1) OUTLINE is the only merge point. Each return is directly usable by a sentence: a citable key, a quotable id, a previewable figure. Three ticks live here and two of them revert: \texttt{verified} never, \texttt{read:} when \texttt{target:} changes or \texttt{proof/} is re-pulled, \texttt{accepted:} when the frozen intake changes. The ticks belong to stage (2) BIND, because a tick is what turns a made thing into one a sentence may quote; \texttt{accepted: [x]} is the exception and stays at CHECK, since what it judges is the drawn artifact as a reader meets it.
+
+\textbf{EVIDENCE on this board, counted}: \texttt{PP03.v1} finds 23 probe cards, \texttt{PP03.v2} 13 still at \texttt{planned}, \texttt{PP03.v3} 0 read by a person, \texttt{PP03.v4} 10 of 10 display units rendered, and \texttt{PP03.v5} 0 accepted.
+
+Every person-reserved tick in this phase is open across the whole board. The lanes are real folders under real contracts with almost no traffic, and saying so is the difference between a contract and a description. The lane contracts are \texttt{QPw4c-citation}, \texttt{QPw4v-value} and \texttt{QPw4d-display}, under the phase contract \texttt{QPw4-evidence}.
+
+
+\section{DRAFT ④: turning each point into sentences}
+\textbf{The DRAFT contract}: what enters, the one conversion it performs, and what it hands forward.
+
+\begin{verbatim}
+ DRAFT
+   enters   an approved plan whose evidence has ALREADY landed
+   does     one approved POINT --&gt; one or more SENTENCES that write the number
+   cites    every value, key and figure BY ID, at the place it is used
+   never    invents a value, a citation, a reading, or a rendered figure
+   exits    every point in the plan has become prose; a hole is the EXCEPTION
+\end{verbatim}
+DRAFT enters on landed evidence, so it writes the NUMBER itself rather than a placeholder: the PREPARE loop already landed everything a sentence needs. A hole is the exception, not the normal case, and it names the input it is missing rather than just marking a gap. The Aims are settled at OUTLINE, and this phase transcribes them onto the page rather than inventing them. It executes the approved plan and names nothing new: a shape found wrong during DRAFT goes back to OUTLINE as a new version, never a quiet local fix. And it is named by reason, never by diff: the same edit shape can be DRAFT or REVISE, and only the reason distinguishes them.
+
+Figure~\ref{fig:qpw00-point-to-sentence} draws the conversion in both directions: one approved POINT becomes one or more sentence scaffolds, and the join survives later edits because it is carried twice.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display7-point-to-sentence/assets/figure.pdf}
+\caption{The point-to-sentence conversion at \textcircled{\scriptsize 4}
+  DRAFT, shown both ways round. Forward: one approved outline POINT
+  (\texttt{C3.P1.B4}) becomes one or more sentence scaffolds
+  (\texttt{C3.P1.S1}--\texttt{S3}), each hole sitting exactly where its answer
+  will sit, and DRAFT may never invent the value, citation, reading or figure.
+  Backward: the machine-readable \texttt{realizes:} comment on each scaffold
+  line recovers the point from any sentence, so REVISE can split or merge
+  sentences without losing the join. The shared \texttt{C3.P1} prefix is the
+  join key; \texttt{B} (a point in the plan) is owned by
+  haipipe-plugin-outline, \texttt{S} (a sentence on the page) by
+  haipipe-sentence, and neither redefines the other.}
+\label{fig:qpw00-point-to-sentence}
+\end{figure}
+
+\begin{verbatim}
+   plan     C3.P1.B4 . Robustness across specifications    PP01.v1 .  Display4
+                 |
+                   DRAFT
+   page     C3.P1.S1 . The primary estimate is 0.42 (PP01.v1).
+              C3.P1.S2 . It moves by less than 0.03 across specifications (PP01.v2).
+              C3.P1.S3 . Display4 compares the estimates.
+\end{verbatim}
+One bullet is a POINT, not a sentence, so the two sides count different units and say so. \texttt{C3.P1} is shared, and only the last token differs: B for a point in the plan, S for a sentence on the page. The backlink also rides in a comment on the scaffold line, \texttt{&lt;!-- realizes: C3.P1.B4 --&gt;}, so REVISE may split or merge the sentence later without losing it. When a question stayed genuinely BLOCKED, the sentence keeps a visible hole carrying the card that owes it, so a reader sees what is missing and who owes it; \texttt{§14.1}'s PP05 hole is this page's one worked example. A sentence may never invent a value, a citation, a reading, or a rendered figure: a sentence that already knows its answer was written after the fact, and holes keep the order honest.
+
+One idea per sentence, and a sentence past about thirty words is usually two. The haipipe-writing plain rules apply to scaffolds, not only to finished prose. The AI-tell catalogue at \texttt{haipipe-writing/ref/ai-tells.md} applies HERE and not only at REVISE, because machine cadence written at DRAFT gets rewritten twice instead of once. \textbf{What a scaffold may not contain}, as a list a writer can check against: an invented number; a hedge standing in for a hole; a summary of what a card says, which the 🧭 tab already reads live; or a division the plan did not name. Each forbidden thing is a way of smuggling unlanded evidence into prose. The full contract and its worked example live at \texttt{QPw2-draft}.
+
+
+\section{REVISE ⑤: turning landed evidence into sentences}
 \textbf{The REVISE contract}: the Page changes while its purpose and Aims remain fixed.
 
 \begin{verbatim}
@@ -68,10 +329,25 @@ The active Page may need to show the Q-executor, bank target, state, returned an
 \end{verbatim}
 📌 REVISE improves the realization of the current round rather than redefining its promise.
 
-REVISE's fixed-promise test, its five-step LAND, ARGUE, SOUND, RENDER, BUILD order, and the three display-walk steps it owns now live at QPw5-revise, which also carries COMPILE. This page's own §6, Operations route by reason, still carries the shared DRAFT-versus-REVISE test table that separates the two phases on the same edit, so a reader is pointed sideways as well as forward.
+REVISE improves the realization while purpose and Aims stay fixed; if either moves, it is not REVISE, and the work reopens OUTLINE in a new version or DRAFT in a new round. It is the phase that fills a landed hole: the hole is replaced by the number plus its id, never by a restatement of the card. Its fixed-promise test, its five-step LAND, ARGUE, SOUND, CITE, BUILD order, and the \texttt{latex/} and \texttt{word/} rebuilds live at \texttt{QPw5-revise}, which also carries COMPILE. This page's own \texttt{§9} still carries the shared DRAFT-versus-REVISE test table that separates the two phases on the same edit, so a reader is pointed sideways as well as forward.
+
+\textbf{Scored against \texttt{§10}'s four split tests}, rather than asserted:
+
+\begin{verbatim}
+  (1) an unresolved question that is not just asking for its definition
+      its only open question is whether the fold is permanent
+  (2) needs its own Aims and States rather than borrowing
+      its one Aim was the fold itself; nothing else was ever tracked
+  (3) an independent closing gate
+      no tick, no receipt, no gate anywhere
+  (4) its own continuation map in Files
+      shares REVISE's
+                                                        0 of 4  it stays here
+\end{verbatim}
+COMPILE rebuilds \texttt{latex/} and \texttt{word/} from the source as it now stands. That is real work with a real audit code, \texttt{projection-stale}, and it is the only member of the loop with no contract file, no receipt in any stored run, and no tick. The loop declares seven phases and the Diagram draws (6), because that count is cited across the contracts. COMPILE gets no division at the same level as the six phases that have one, because a heading of its own would assert a symmetry the four tests refuse. Whether the fold is permanent is \texttt{QPw5-revise}'s open ruling.
 
 
-\section{CHECK decides where the current version goes next}
+\section{CHECK ⑦: where the current version goes next}
 \textbf{The CHECK contract}: one concrete version is judged against its promise and routed.
 
 \begin{verbatim}
@@ -84,7 +360,7 @@ REVISE's fixed-promise test, its five-step LAND, ARGUE, SOUND, RENDER, BUILD ord
 \end{verbatim}
 📌 CHECK observes and decides; another phase performs the content change it requests.
 
-CHECK's judge-may-not-repair separation, the three independent built-artifact counts it reads (declared, rendered, accepted), and its accept-biased human gate now live at QPw6-check. This page's own §10 still carries the receipt fields and invariants CHECK's routed findings are measured against, so nothing here is left an orphaned reference.
+CHECK judges one exact version and routes it: CLOSE, or back to the phase that owns the fix. Only CHECK closes; producers may HOLD or hand forward, and the judge alone ends a page's run. It judges and never repairs, because a fix by the finder would erase the independent finding; repair returns to a producer. The judge-may-not-repair separation, the three independent built-artifact counts it reads, and the accept-biased human gate live at \texttt{QPw6-check}: unclear findings route forward for repair rather than blocking the page. This page's own \texttt{§13} still carries the receipt fields and invariants CHECK's routed findings are measured against, so nothing here is left an orphaned reference.
 
 
 \section{Transitions form rounds, not a rigid conveyor belt}
@@ -93,20 +369,19 @@ CHECK's judge-may-not-repair separation, the three independent built-artifact co
 \begin{verbatim}
  ROUND n . purpose + Aims fixed
 
- DRAFT  --+--&gt;  CHECK --&gt; [x] close
-              +--&gt;  PROBE  --&gt;  REVISE  --&gt;  CHECK
-                                       |                 |
-                        +---------------+                 |
++  OUTLINE   PROBE   EVIDENCE +  PREPARE . until plan and evidence agree
++---------------+---------------------+
+    `approved:`|
 
- ROUND n+1 &lt;--------------  DRAFT &lt;---- purpose or Aims reopened
+    DRAFT --&gt;  REVISE  --&gt;  CHECK --&gt; [x] close
+                                    |
+                     +-- sent back --+  CHECK may return to any earlier phase
+
+ ROUND n+1 &lt;--  DRAFT &lt;-- purpose or Aims reopened
 \end{verbatim}
 📌 The arrows express dependencies and routing choices, not a rule that every phase runs once.
 
-\texttt{DRAFT, DRAFT, PROBE, REVISE, DRAFT} is a legal history. The first two DRAFT entries can be repeated design work in one round. The final DRAFT means that revision reopened the promise and therefore began a new round. A complete draft with no unknowns and no revision need may go directly to CHECK.
-
-REVISE may reveal that the current purpose or Aims are wrong. The Page then returns to DRAFT and receives a new round, while the Page itself persists. Earlier evidence remains available, but its relevance must be checked against the new promise. Any earlier closing decision no longer applies to the new round.
-
-The history should say which authority was used: promise reopened, unknown resolved, current promise improved, or version judged. Without that reason, two identical diffs can be mislabeled as different phases and two different intentions can be mislabeled as the same one.
+The common order is not the only legal order: rounds may repeat phases or skip them, and the route table defines legality, not habit. \texttt{DRAFT, DRAFT, PROBE, REVISE, DRAFT} is a legal history: two repeated design passes in one round, an optional question, a repair, and a final DRAFT that means revision reopened the promise and began a new round. REVISE to DRAFT is that restart, not a forbidden edge: the Page persists, earlier evidence remains available, and its relevance is re-checked against the new promise, while any earlier closing decision stops applying. A phase label requires a reason: "we edited prose" names no phase, "the aim moved" does, and without the reason two identical diffs can be mislabeled as different phases. These rules are what made the six-page split safe: six phase pages split out of this one, and the comparison and transition grammar they must agree on stays here, in \texttt{§8} and \texttt{§9}, where one home keeps them auditable. The shape to take away is three bands, not eleven steps: OPEN happens once, the PREPARE and writing phases repeat, and the CLOSE acts happen when CHECK stops the loop; \texttt{§14} prices the same shape as work.
 
 
 \section{Operations route by reason, not by edit shape}
@@ -122,69 +397,46 @@ The history should say which authority was used: promise reopened, unknown resol
 \end{verbatim}
 📌 The operation says what changed in the file; the authority says which phase performed it.
 
-Adding a paragraph to explain evidence for an existing Aim is REVISE. Adding a paragraph because the Page now answers a new question is DRAFT. Deleting unsupported or duplicate prose while keeping the Aim is REVISE. Deleting the promised result itself, or deleting its Aim, is DRAFT.
-
-Moving paragraphs to improve flow under the same argument is REVISE. Changing the argument the Page promises to make is DRAFT even if the diff is only one moved heading. Rewriting the Opening for clarity is REVISE when the purpose stays fixed. Rewriting it to give the Page a different purpose is DRAFT.
-
-PROBE writes questions, sources, evidence, and answer records. CHECK writes findings, comments, and gate records. When either phase causes target prose to change, the actual content edit is performed under REVISE or a restarted DRAFT.
+Adding and deleting name no phase: adding a paragraph to explain evidence for an existing Aim is REVISE, and adding one because the Page now answers a new question is DRAFT. Deleting unsupported or duplicate prose while keeping the Aim is REVISE; deleting the promised result itself, or its Aim, is DRAFT. Moving and rewriting use the same test: improving flow under the same argument is REVISE, and changing the argument the Page promises is DRAFT even when the diff is one moved heading. PROBE and CHECK produce records on different write surfaces, cards and verdicts, and neither touches page prose; when either causes target prose to change, the edit runs under REVISE or a restarted DRAFT. Sibling pages cite this page by \texttt{§} address rather than copying it (\texttt{QPw1-outline} pins \texttt{QPw00 §6} and \texttt{QPw6-check} pins \texttt{QPw00 §10} in their Files today), so a silent move of any division here, this table included, breaks their pins.
 
 
 \section{One lifecycle Page holds the phases together}
 \textbf{The Page split rule}: each phase begins as a Content division and earns a Page only by becoming an independent question.
 
 \begin{verbatim}
- QB5 . ONE LIFECYCLE QUESTION
-+--  1 .  DRAFT
-+--  2 .  PROBE
-+--  3 .  REVISE
-+--  4 .  CHECK
-+--  5 .  transitions
-+--  6 .  operations
+ a phase earns its own Page . ALL four required
++--  an independent question, not just its definition
++--  its own Aims and  States
++--  an independent closing gate
++--  its own continuation files
 
- split test . ALL required
-+--  independent question
-+--  own Aims +  States
-+--  independent closing gate
-+--  own continuation files
-
- phase skill   executable contract
- design Page   independently closable question
- mapping       no automatic 1:1 mirror
+ phase skill   executable law, loaded one contract at a time
+ design Page   an independently closable question
+ mapping       neither implies the other
 \end{verbatim}
-📌 Shared boundaries stay together until one phase can carry and close a question of its own.
+📌 Shared boundaries stay together; a phase moves out only when it can carry and close a question of its own.
 
-DRAFT, PROBE, REVISE, and CHECK remain divisions of QB5 because their meanings depend on comparison and transition. The DRAFT and REVISE boundary is easier to judge when both definitions and the operation examples stay on one Page. The transition rules also need one home that no phase-specific Page can own alone.
-
-The phase must have an unresolved question that is not merely asking for its definition. It must need its own Aims and States rather than borrowing QB5's records. It must have an independent closing gate and its own small continuation map in Files. If any test fails, the material remains a division or paragraph on QB5.
-
-A phase skill may remain separate because a worker needs to load one execution contract at a time. That file boundary does not force the Board to create a matching design Page. If a phase later passes the split test, QB5 keeps the shared boundaries and transitions while pointing to the new Page for that phase's independent question.
+A phase begins as a Content division here and earns a Page of its own only by becoming an independently closable question: one it can close with its own evidence, its own gate, and its own continuation files. The four tests above decide it, and they are not left abstract: the re-cut that made this board's phase pages scored the phases against them, overturned this division's stay-together default, and split six pages out, \texttt{QPw1-outline} through \texttt{QPw6-check}, while COMPILE scored 0 of 4 and stays a step of \texttt{§6}; the Log keeps that ruling. Separate skills still do not require separate design pages: a phase skill is executable law a worker loads one contract at a time, a design page is an argument, and one phase may have both or either.
 
 
 \section{Page Type and Page Phase are separate skill axes}
 \textbf{The skill composition}: the base resolves what the Page is and how the current work is acting on it.
 
 \begin{verbatim}
- haipipe-page                   the shared Page contract and router
-+--  page-types/                      what kind of Page persists . ten types . QB6 owns the roster
-|   +-- for-stage
-|   +-- for-skill
-|   +-- for-venue
-|   +-- ... seven more . for-design . for-display . for-literature . for-meeting . for-section . for-slide . for-value
-+--  page-phases/                     what authority acts now
-    +-- draft
-    +-- probe
-    +-- revise
-    +-- check
+ haipipe-page                the shared Page contract and router
++--  page-types/             what kind of Page PERSISTS . QB6 owns the roster
+|   +-- for-stage . for-task . for-venue . for-section . ...
+|   +-- sixteen variants across six skill sets (haipipe-page 0.36.0)
++--  page-workflows/         what AUTHORITY acts now . page-phases/ is its retired name
+    +-- haipipe-page-outline (1) . haipipe-page-probe (2) . haipipe-page-evidence (3)
+    +-- haipipe-page-draft (4) . haipipe-page-revise (5) . haipipe-page-check (7)
+    +-- haipipe-page-workflow . the RUN router that composes them
 
 one invocation = base + matching Page Type + current Page Phase + family worker
 \end{verbatim}
 📌 Page Type and Page Phase are orthogonal, so their folder names and skill names must not collapse them into one label.
 
-\texttt{haipipe-page-for-stage}, \texttt{-for-skill}, and \texttt{-for-venue} keep their names and move under \texttt{page-types/}. The roster has since grown to ten Page Types, and \texttt{QB6} owns the admission test and the list. The grouping folder is organizational and carries no \texttt{SKILL.md} of its own. A new Page Type is added only when a persistent Page needs a structural contract that the base does not provide.
-
-The phase contracts are \texttt{haipipe-page-draft}, \texttt{-probe}, \texttt{-revise}, and \texttt{-check} under \texttt{page-phases/}. They apply across Page Types and therefore do not use \texttt{for-stage} in their names. The base first adopted the phase vocabulary without adding \texttt{ADVANCE}. The automatic router now earns a verb named \texttt{RUN}, because it may repeat, branch, HOLD, or return to DRAFT rather than advance in one direction.
-
-The target Page owns the stake-bearing Q-consumer. The PROBE phase strips the stake into a neutral Q-executor, binds the returned A-executor, and writes an A-consumer interpretation for each consumer. One Q-executor may serve several Q-consumers. \texttt{haipipe-probe} remains the shared crossing protocol, while \texttt{haipipe-page-probe} applies that protocol to a Board Page.
+\texttt{for-*} names only Page Types: the preposition says which persistent Page shape varies from the base, and the roster has grown to sixteen variants across six skill sets, with \texttt{QB6} owning the admission test and the list. Phase skills use direct names, \texttt{haipipe-page-&lt;phase&gt;}, because a phase is an active authority and not a Page variant, and it applies across Page Types. PROBE keeps one vocabulary across the boundary: the target Page owns the stake-bearing Q-consumer, the phase strips it into a neutral Q-executor, binds the returned A-executor, and writes an A-consumer interpretation for each consumer; one Q-executor may serve several Q-consumers, and \texttt{haipipe-probe} remains the shared crossing protocol. The paths are one rename behind in places: contracts still name \texttt{page-phases/}, the retired folder name, and each is one mechanical sweep away from correct. The base-adoption question itself is closed as \texttt{P1}: option B won, the smallest reversible adoption, and the concrete router later earned the verb RUN rather than ADVANCE.
 
 
 \section{RUN turns the phase grammar into a bounded loop}
@@ -195,22 +447,26 @@ The target Page owns the stake-bearing Q-consumer. The PROBE phase strips the st
 |  Page . Type . start Phase . intent . sources . constraints . gate . limits
 
  controller
-+--  DRAFT /  PROBE /  REVISE  -&gt; producer
++-- every phase except CHECK          -&gt; producer
 +--  build + version snapshot       -&gt; mechanical builder
 +--  CHECK exact version            -&gt; fresh read-only judge
                   |
                   +-- [x] CLOSE
                   +--  REVISE ------+
-                  +--  PROBE -------+
+                  +--  EVIDENCE ----+
                   +--  DRAFT round+1|
                   +--  HOLD          |
                                       +--&gt; controller
 \end{verbatim}
-📌 RUN follows returned authority routes and stops at explicit terminals or limits. Figure~\ref{fig:qpw1-run-loop} states the same controller as an algorithm, so a reader can see the three actors alternate and read the stop conditions in the order the loop tests them.
+📌 RUN follows returned authority routes and stops at explicit terminals or limits.
 
-\begin{figure}[H]
+RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD; it is not ADVANCE, which would promise forward-only steps. The controller reads each phase's requested route and follows the legal-route table, which is dynamic: producers may repeat or hand off, and only CHECK may CLOSE. The packet bounds what agents may know: it names the Page, its Type, the starting Phase, the run intent, source paths, settled constraints, the closing gate, and step and round limits; context beyond it is contamination. A missing source, unknown gate, or ambiguous authority becomes HOLD rather than an invented input. The controller itself only routes, because writing or judging from the controller would collapse the producer, builder and judge separation it exists to keep: the producer performs exactly one phase, the mechanical builder rebuilds and snapshots the version, and the fresh judge returns the verdict, testing for CHECK rather than listing producer phases. Every stop is honest: CLOSE, explicit HOLD, missing input, failed build, version mismatch, required human ruling, maximum steps, or maximum rounds; reaching a limit says the process did not converge within its budget, and it never says the Page passed.
+
+Figure~\ref{fig:qpw1-run-loop} states the controller as an algorithm, so a reader can see the three actors alternate and read the stop conditions in the order the loop tests them. Figure~\ref{fig:qpw1-route-relation} writes the legal-route table as six explicit row-sets and derives the laws this prose would otherwise assert: PROBE and EVIDENCE route only sideways or BACK to OUTLINE, so OUTLINE's gate is the one door into DRAFT; and CHECK cannot route to CHECK, so a judged version reaches a second judgment only through a producer.
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=.85\linewidth]{../display/QPw00-Display1-run-loop/assets/figure.pdf}
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display1-run-loop/assets/figure.pdf}
 \caption{RUN, as the router it is rather than the conveyor belt its name could
   suggest. The producer, the builder, and the judge are three separate actors;
   the loop follows the route each returns, refuses a route outside $R(\varphi)$,
@@ -218,25 +474,31 @@ The target Page owns the stake-bearing Q-consumer. The PROBE phase strips the st
 \label{fig:qpw1-run-loop}
 \end{figure}
 
-ADVANCE suggests that one phase has one next phase and that progress always moves forward. RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD. The legal route table is dynamic: DRAFT, PROBE, and REVISE may repeat or hand off, while only CHECK may CLOSE. Figure~\ref{fig:qpw1-route-relation} writes that table as two rules and derives both laws from them, including one this prose never states: CHECK cannot route to CHECK, so a judged version reaches a second judgment only through a producer. Returning to DRAFT from another phase increments the round only when purpose or an Aim reopened.
-
-\begin{figure}[H]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=.85\linewidth]{../display/QPw00-Display2-route-relation/assets/figure.pdf}
-\caption{The legal-route relation $R$, seven rows, and the three laws the
-  table makes checkable. The rows are deliberately NOT uniform: PROBE may not
-  hand off to DRAFT or CHECK, and REVISE may not hand off to PROBE. The judge
-  alone reaches CLOSE and alone cannot reach itself, so every judged version
-  passes through a producer before it is judged again; and every phase without
-  exception may stop at HOLD.}
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display2-route-relation/assets/figure.pdf}
+\caption{The legal-route relation $R$ after the 260819 loop change, six rows,
+  and the four laws the table makes checkable. The rows are deliberately NOT
+  uniform: PROBE and EVIDENCE route only sideways or BACK to OUTLINE, so the
+  single door out of the PREPARE loop is OUTLINE's own gate, four machine checks
+  plus a person's \texttt{approved:}. The judge alone reaches CLOSE and alone
+  cannot reach itself, so every judged version passes through a producer before
+  it is judged again; every phase without exception may stop at HOLD. The
+  controller and the auditor encode this same table since 260819, keeping only
+  a \textsc{Compile} row no contract names, so already-stored receipts that
+  name it stay auditable.}
 \label{fig:qpw1-route-relation}
 \end{figure}
 
-The packet names the persistent Page, stable Page Type, starting Phase, run intent, source paths, settled constraints, closing gate, and step and round limits. A new Page is first created and registered, then RUN starts it at DRAFT. An existing Page with no known next need starts at CHECK, allowing a cold judge to route the visible version. A missing source, unknown gate, or ambiguous authority becomes HOLD rather than an invented input.
+\textbf{The runs so far, counted}: \texttt{PP02.v1} finds 4 runs stored under \texttt{\_runs/page/}, \texttt{PP02.v2} 24 receipts across them, \texttt{PP02.v3} 6 of 7 phases covered, and \texttt{PP02.v4} exactly one phase never executed, COMPILE.
 
-The producer performs exactly one DRAFT, PROBE, or REVISE phase and suggests a legal route. The mechanical builder rebuilds, runs deterministic checks, and identifies the source plus render version. The fresh reviewer performs CHECK against that exact version and returns CLOSE, REVISE, PROBE, DRAFT, or HOLD. The controller validates and follows the route, but it cannot alter Page prose or convert a pending human gate into CLOSE.
+So the loop is fully specified and all but one phase exercised, and the one phase with no receipt anywhere is also the one with no contract of its own.
 
-The run stops on CLOSE, explicit HOLD, missing input, failed build, version mismatch, required human ruling, maximum steps, or maximum rounds. Reaching a limit says the process did not converge within its budget. It never says the Page passed. The run's final state and every attempted phase remain inspectable instead of disappearing into an agent transcript.
+Each phase is executed by its own producer: the controller's \texttt{PRODUCER\_AGENTS} table maps a phase to \texttt{haipipe-page-&lt;phase&gt;-agent}, with the creator agent as the fallback. The agent files stay thin wrappers: each carries identity, skill chain, walls and receipt duty, and the shared law lives ONCE in \texttt{ref/producer-contract.md}, because an agent file that restates a contract is a mirror, and mirrors drift.
+
+\textbf{Counted on disk}: \texttt{PP07.v1} finds 6 agent files under \texttt{page-workflows/agents/}, \texttt{PP07.v2} 5 phases owning a producer of their own, \texttt{PP07.v3} 2 sharing or borrowing one (COMPILE and CHECK), and \texttt{PP07.v4} 4 support agents beside them.
+
+The roster itself, with each unit's daily debts, lives on \texttt{QPw00a}: this page owns the RULE, because a mirror of the roster here would drift within a day.
 
 
 \section{Audit proves process claims with receipts and fault tests}
@@ -251,33 +513,11 @@ The run stops on CLOSE, explicit HOLD, missing input, failed build, version mism
 \end{verbatim}
 📌 A passing process audit proves that the declared process ran correctly, not that every possible substantive claim is true.
 
-Each receipt records step, round, Phase, producer or judge actor, builder actor, status, source and render SHA-256 values, route, reason, artifacts, evidence, findings, and human-gate state. CHECK additionally binds \texttt{checked\_version} and a verdict. The receipts are ordered and stored outside Page discovery under \texttt{\_runs/page/&lt;page-id&gt;/&lt;run-id&gt;.json}. The deterministic auditor independently rehashes the source and rendered files on disk; matching claims repeated inside a receipt are not accepted as artifact evidence by themselves. The terminal CHECK record is not appended to the Page afterward, because that append would change the version it claims to approve.
+Each receipt binds one attempted phase to its actor, its builder, its status, the source and render SHA-256 identities before and after, the route it requests, and its reason, artifacts, evidence, findings and human-gate state; CHECK additionally binds \texttt{checked\_version} and a verdict. Receipts are ordered and stored outside Page discovery under \texttt{\_runs/page/&lt;page-id&gt;/&lt;run-id&gt;.json}, and the deterministic auditor independently rehashes the artifacts on disk, so a claim repeated inside a receipt is never accepted as its own proof. Seven invariants make the loop auditable, among them version continuity from receipt to receipt, one writer per pen with distinct actor identities per role, legal routes only with CLOSE reserved to CHECK, packet and limit matching, and a human gate that closes only on durable evidence. Testing covers both directions: the happy paths and branch routes must pass, and injected faults, self-approval, mutation after CHECK, illegal routes, broken continuity, symbolic hashes, missing human evidence, must each be rejected for the specific invariant they violate. Quality is evidenced, never declared: a green audit proves the declared process ran, not that every substantive claim is true, and silence is never a pass.
 
-The preserved raw-material packet must match the run identity, first Phase, declared gate, and limits. Only legal phase routes are accepted, and only CHECK may CLOSE. A non-DRAFT route to DRAFT must name the reopened purpose or Aim and increment the next round exactly once. The producer, mechanical builder, and judge of one version must have different actor identities. Every version id must be the two declared lowercase SHA-256 digests joined by \texttt{:}, and every receipt must begin from the preceding receipt's ending version. CHECK must observe identical before, after, and checked ids; the auditor rehashes the current artifacts, and any later change requires a new CHECK. A required human gate closes only with durable evidence that the person ruled. Maximum steps and rounds terminate as non-convergence, never as a pass.
+\textbf{The auditor, run on this board's own receipts rather than described}: \texttt{PP04.v1} audits 4 stored runs, \texttt{PP04.v2} finds 0 that PASS, \texttt{PP04.v3} 8 findings, \texttt{PP04.v4} 5 distinct fault codes, and \texttt{PP04.v5} exactly 1 real contract violation.
 
-Happy paths include DRAFT directly to CHECK and DRAFT through optional PROBE and REVISE. Branch tests include CHECK to REVISE and back, CHECK to PROBE, and CHECK to a new DRAFT round. Fault injection includes self-approval, mutation after CHECK, illegal route, packet mismatch, broken version continuity, symbolic hashes, missing human evidence, failed worker, non-terminal trace, and exhausted limits. The deterministic harness must reject each injected fault for the specific invariant it violates.
-
-The mechanical checker can prove structural facts, and the lifecycle auditor can prove process facts. A fresh reviewer supplies semantic evidence that the Page performs its declared function and is readable without the drafting conversation. Direct sources or a human gate supply claims those instruments cannot settle. The final report therefore names the checked version, traversed branches, evidence inspected, remaining findings, gate state, and residual risk instead of saying only that quality is guaranteed.
-
-
-\section{Workflow, phase, step and round are four different words}
-\textbf{The vocabulary rule}: the loop needs all four and none of them substitutes for another, which is why "phase" was kept when JL weighed replacing it with "step" on 260818.
-
-\begin{verbatim}
-word         answers                      count in the ONE live run    repeats?
-----------------------------------------------------------------------------------
- WORKFLOW  which LOOP is this?          1  . the run itself          no
- PHASE     which AUTHORITY acts?        7 defined . 2 used           YES
- STEP      WHERE in this run?           5 . monotonic 1..5           never
- ROUND     which PROMISE era?           1 . bumps only on a reopen   on reopen
-\end{verbatim}
-📌 A phase is a TYPE and a step is an INSTANCE of one: in \texttt{260805-0216-QB8e} the single CHECK phase occupies steps 1, 3 and 5.
-
-Renaming phase to step would put two different meanings on one key inside a single receipt, and the auditor reads both. \texttt{step} is the monotonic position that never recurs; \texttt{phase} is the kind of work that must be free to recur, which is the property the whole loop is built on.
-
-The word must permit repetition, because CHECK may route back to any earlier phase, PROBE may be skipped entirely, and a page may re-enter DRAFT in a new round. The one live run proves it rather than asserting it: CHECK ran three times and REVISE twice inside a single round, so a vocabulary that numbered them 1..7 could not describe what happened. JL raised the replacement and answered it himself on 260818: "for phase, we can do it again and again, right?"
-
-The directory says which of the four words scopes the family, and the contracts inside it say which authority each phase holds. So the full term is "workflow phase" where disambiguation is needed and "phase" everywhere else, and the 927 occurrences of the word across this board and the skill tree stay as they are.
+The real one is \texttt{checked-version-mismatch}, on a stored CHECK receipt: CHECK must leave \texttt{version\_before}, \texttt{version\_after} and \texttt{checked\_version} identical, because a judge reporting on a version it did not read is the one failure the receipt exists to catch. No reasoning predicted it; running the auditor found it. Most of the rest is expected noise, \texttt{artifact-version-mismatch} on pages edited after their runs closed, which is the recorded cost of auditing live pages rather than frozen ones.
 
 
 \section{The same loop, priced: what a person is actually asked to do}
@@ -286,65 +526,90 @@ The directory says which of the four words scopes the family, and the contracts 
 \begin{verbatim}
 #    PHASE      WHAT HAPPENS                    YOUR JOB              TIME    HOW OFTEN
 -------------------------------------------------------------- once per page -----------
-0    OPEN       you name the page and the        say what it        15 min  once
-                one thing it must decide           must decide
-------------------- the loop . CHECK may send you back to any row in this band ---------
-1    OUTLINE    a machine writes the SHAPE       approve it, or     10 min   each round
-                only: sections, bullets, and       send it back
-                what each bullet still owes      reject costs 10 sec
-2    DRAFT      a machine turns each approved   nothing.              0        each round
-                bullet into sentences with      do NOT fill a hole
-                visible &lt;HOLE&gt;s
-3    PROBE      a machine looks for an answer   nothing               0        each round
-                that already exists, then opens
-                a card and asks the bank
-4c   CITATION   a PERSON finds the published     paste the entry,   20 min   per entry
-                work; a machine may copy           tick `verified`
-                bibtex and never compose it
-4v   VALUE      the bank answers, bound BY       read the proof,    30 min   per card
-                PATH to a real file                tick `read:`
-                                                 the cost, and the tick that permits quoting
-4d   DISPLAY    a machine freezes the exact     nothing               0        per figure
-                bytes a figure is drawn from
-                 4c . 4v . 4d run at the SAME TIME. None waits for another to finish.
-5    REVISE     a machine replaces every landed nothing               0        each round
-                hole, draws the figures, and
-                rebuilds the pdf
-6    CHECK      a machine and a DIFFERENT        accept, or say     15 min   each round
-                reader judge the BUILT pdf         where to go back
-                 "go back"  row 1, 2, 3, 4 or 5
------------------------------- reached only when CHECK says CLOSE ----------------------
-7    ACCEPT     each figure is bound to the      tick               10 min  once per figure
-                inputs it was accepted with        `accepted: [x]`
-                                                 reverts if the inputs change
-8    CLOSE      the page's own ruling, named     sign it            5 min   once per round
-                by its Page Type                 this ends the round
+0    OPEN       CREATE copies the template       write the title    15 min  once
+                and registers the page in          so it states the
+                board.md (a VERB, not a phase)     page's PURPOSE
+---------------- the loop . CHECK may send you back to rows 1, 2, 3, 4 or 5 ------------
+1    OUTLINE    a machine writes the SHAPE       judge DIRECTION,   10 min   each pass
+                only, then FOUR checks run:        never arithmetic,
+                coverage . address . value .       then tick `approved:`
+                shape                            the four run BEFORE you are asked;
+                                                   this is the loop's one gate
+2    PROBE      MATCH first (this page, PageX,  nothing               0        each pass
+                the QA bank), only then a card;
+                the stripped question is the
+                only thing that crosses
+3c   CITATION   a machine may SUBSET or          land the entry     20 min   per entry
+                TRANSCRIBE a real record,          verbatim, so it
+                never COMPOSE one                  carries `verified`
+3v   VALUE      the bank answers into its own    tick `read:` =     30 min   per card
+                QA file, `target:` names that      "I agree with the
+                file BY PATH, and                  judgment", not "I
+                `checks/values.py` re-runs         checked the arithmetic"
+                the number                       reverts when target or proof moves
+3d   DISPLAY    this lane DRAWS since 260819:    rule `intake/`,     ?       per unit
+                intake, recipe, the pick, then     choose among
+                assets/ + preview.pdf              candidates/
+                                                 no tick here: `accepted:` is row 7a's
+      rows 1, 2 and 3 REPEAT AS ONE UNIT until the plan and its evidence agree,
+        and 3c . 3v . 3d run at the SAME TIME
+4    DRAFT      enters on evidence that has     nothing               0       per round
+                ALREADY landed, so it writes
+                the NUMBER; a hole is the
+                EXCEPTION and names the input
+                it is missing
+5    REVISE     the sentence citing each drawn  nothing               0        each round
+                unit by id, the caption, the
+                latex/ + word/ rebuild. It no
+                longer draws
+6    COMPILE    folded into 5 since 260819,     nothing               0       with 5
+                holding no contract of its own
+      4, 5 and 6 run END TO END and stop for nobody
+7    CHECK      a DIFFERENT actor judges the     take CLOSE, or     15 min   each round
+                RENDERED page and the BUILT        name where to go
+                artifact                           back, by phase NAME
+------------------ what ends it . both ticks below are row 7 CHECK's own ---------------
+7a   ACCEPT     shown only once the page's       tick               10 min  per unit
+                mechanical errors are ZERO: a      `accepted: [x]`
+                confirmation, not an inspection  a changed intake/ drops it back to [ ]
+7b   CLOSE      CLOSE is a ROUTE and not a       sign the RULING    5 min   per round
+                phase; only `verdict: pass`      silence is not consent
+                may take it
 \end{verbatim}
-📌 SEVEN of the eleven rows ask something of a person and four read \texttt{nothing}; of those seven, five carry a tick a machine may never write, and two (row 0 OPEN and row 6 CHECK) ask for a judgment that leaves no tick behind. That is the same fact \texttt{§9} states as authority, priced instead. Figure~\ref{fig:qpw00-who-does-what} renders this table for print, with the eight files it was transcribed from frozen beside it.
+⚠️ \textbf{The row numbers here are the WORK's, not the loop's.} Row 0 OPEN is a verb, and rows 7a ACCEPT and 7b CLOSE are (7) CHECK's own ticks; rows 3c, 3v and 3d are the three lanes inside phase (3). Rows 1, 2, 4, 5 and 7 are phases (1), (2), (4), (5) and (7), and phase (6) COMPILE holds row 6 only to say out loud that it is folded into row 5. 📌 EIGHT of the twelve rows ask something of a person and four read \texttt{nothing} (2, 4, 5, 6); of those eight, five carry a tick a machine may never write (1, 3c, 3v, 7a, 7b), and three (row 0 OPEN, row 3d DISPLAY, row 7 CHECK) ask for a judgment that leaves no tick behind. Every asking row is the OPEN that starts the page, a step of the PREPARE loop, or CHECK: the loop's whole human cost is paid BEFORE DRAFT and AFTER REVISE, and never inside them. That is the same fact \texttt{§12} states as authority, priced instead. Figure~\ref{fig:qpw00-who-does-what} renders this table for print, with the fifteen files it is transcribed from frozen beside it.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=.85\linewidth]{../display/QPw00-Display3-who-does-what/assets/figure.pdf}
-\caption{The page workflow as a person experiences it: one row per step, what
-  the machine does, what a person must do, and how often. SEVEN of the eleven
-  rows ask something of a person and four read \emph{nothing}; of those seven,
-  five carry a tick a machine may never write and two (OPEN and CHECK) ask for
-  a judgment that leaves no tick behind. TIME is the only estimated column,
-  because no OUTLINE, DRAFT, PROBE or EVIDENCE phase has ever been timed on
-  this board.}
+\includegraphics[width=.85\linewidth,height=.85\textheight,keepaspectratio]{../display/QPw00-Display3-who-does-what/assets/figure.pdf}
+\caption{The page workflow as a person experiences it, in the order it has run
+  since 260819: the PREPARE loop (1 OUTLINE, 2 PROBE, 3 EVIDENCE) repeats as one
+  unit before 4 DRAFT, and 5 REVISE with 6 COMPILE folded in, ever start. EIGHT
+  of the twelve rows ask something of a person and four read \emph{nothing}; of
+  those eight, five carry a tick a machine may never write, and three (0 OPEN,
+  3d DISPLAY and 7 CHECK) ask for a judgment that leaves no tick behind. The
+  four \emph{nothing} rows are 2 PROBE and the whole unattended stretch 4, 5, 6.
+  TIME is the only estimated column, because no phase on this board has ever
+  been timed.}
 \label{fig:qpw00-who-does-what}
 \end{figure}
 
-No OUTLINE, DRAFT, PROBE or EVIDENCE receipt exists anywhere on this board, so four of the table's phases have never run under the contract at all. Every other cell is transcribed from a file frozen in \texttt{display/QPw00-Display3-who-does-what/intake/inputs/}, and the manifest names all eight with their sha256. A number nobody has measured is marked as an estimate on the table's own face rather than left to look like the others.
+\textbf{The one measured number is zero}: \texttt{PP05.v1} reports 0 phases with a measured duration, and \texttt{PP05.v2} names the 2 inputs that block it.
 
-A reader who takes only the three bands away already has the loop: one thing happens once, six things repeat until CHECK stops sending them back, and two things happen when it does. The numbers are not a sequence, because rows 4c, 4v and 4d run at the same time and row 6 may return to any of rows 1 through 5. That is the non-linearity \texttt{§5} argues from transitions, put in the one place a person looks to find out what today costs them.
+Every phase's real duration is &lt;HOLE: PP05 blocked, no stored receipt carries a start/end pair, and COMPILE has no receipt at all (PP02.v4)&gt;, so the TIME column stays an estimate on its own face.
+
+\begin{verbatim}
+  (1) every stored receipt carries ONE timestamp,   a completion time, not a
+     the newest PROBE receipt included             start/end pair     PP05.v2
+  (2) one phase has never run at all                COMPILE            PP02.v4
+\end{verbatim}
+Block (1) is the one to fix first, because it is a contract change rather than work: the receipt shape in \texttt{ref/page-run-contract.md} needs a per-phase start and end stamp. Block (2) then clears by running the loop once end to end. An estimate was not substituted, because substituting one is how this column got its current values. Every other cell is transcribed from a file frozen in \texttt{display/QPw00-Display3-who-does-what/intake/inputs/}: the manifest names all fifteen with the sha256 of the copy AND of the live source, so \texttt{checks/intake.py} can recompute staleness on demand. Row 3d carries no estimate at all, because nobody has priced the lane's render, pick and build steps. A number nobody has measured is marked as an estimate on the table's own face rather than left to look like the others. Once receipts carry start and end pairs, the column is rebuilt from \texttt{\_runs/page/} timestamps instead of estimated, which is \texttt{A14.2}'s whole test.
 
 </pre></details><script>
 document.getElementById('rebuild').onclick = function () {
   var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
   fetch('/_board/latex', {method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({path: "/./board.md", file: "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"})})
+    body: JSON.stringify({path: "/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/board.md", file: "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"})})
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (j.ok) { location.reload(); return; }

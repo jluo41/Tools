@@ -221,6 +221,13 @@ It declined to shim the controller under `node` instead, and that refusal was co
 
 ## States
 ### Decision Now
+- [ ] 🗣 Fold the 260819 roster change into this page's five divisions
+      📍 the whole `## Content`: §1's three hands, §3's creator, §5's orchestrator
+      🔔 `Why now` the roster this page argues TRIPLED today: six phase producers born (`page-workflows/agents/`, one per phase, JL "for the creator-agent, it should have the outline-agent, etc."), the creator renamed `haipipe-page-creator-agent` and reduced to its two verbs, the approver renamed `haipipe-page-approver-agent`, the orchestrator renamed `haipipe-page-auditor-agent` (it cannot dispatch the loop), and the shared producer law carved out to `haipipe-page-workflow/ref/producer-contract.md`. §1's "three hands" now under-counts and §5 argues a unit under a retired name.
+      ⭐ `A ·` run this page through its own loop (OUTLINE first) so the five divisions are re-argued against the ten-agent roster
+      `B ·` keep the page as the three-ROLE argument and add one division mapping roles to the ten units
+      🛑 `Blocks` A3, A4, A5's States rows, which cite the old names
+      🤖 `If nobody answers` A, because the page's own §2 rules one page per DESIGN and the design changed
 - [ ] 🗣 Rule what the 260729 "don't need to have the review agent" remark covered
       📍 `Part` §4, the reviewer
       🔔 `Why now` it was said while one dispatch was running and has never been scoped, so three written things are held in place by an unresolved sentence
@@ -252,11 +259,11 @@ It declined to shim the controller under `node` instead, and that refusal was co
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
-- `agents/haipipe-board-creator-agent.md`
+- `agents/haipipe-page-creator-agent.md`
   The producer's own contract, and the authority on its procedure.
 - `agents/haipipe-board-reviewer-agent.md`
   The judge's contract: the verdict vocabulary and the pass list, including the consecutive-Openings pass that has never run.
-- `agents/haipipe-page-orchestrator-agent.md`
+- `agents/haipipe-page-auditor-agent.md`
   The controller's charter: its stop rules and its return contract, both still unexercised.
 ### ⚙️ Engines · what RUNS this subject
 - `haipipe-board/ref/page-lifecycle.workflow.js`
@@ -283,6 +290,8 @@ It declined to shim the controller under `node` instead, and that refusal was co
 - 🚦 **verdict**: the reviewer's only output, one of CLOSE, REVISE, PROBE, DRAFT or HOLD. It is never a repair.
 
 ## Log
+
+- 260819 1757 · [REPAIR-CC] tonight's roster change written back: the three `skill/` copies renamed and refreshed from live (`haipipe-page-creator-agent` 0.10.0, `haipipe-page-auditor-agent`, `haipipe-board-reviewer-agent` 0.9.0), the two `## Files` rows repointed, and a Decision Now row added for the fold this page now owes its own Content. Six phase producer agents were born today under `page-workflows/agents/`; this page's divisions still argue the 3-agent design and need their own run.
 - 260816 · [REVISE-CC] `Design-6` became `QPw00a`, the Design kind folded into the Q series on JL's call: the unit rides the Q page that argues it, so the page keeps its subject and gains a Q id. Its `skill/` plugin, holding the three plugged agent snapshots, its `slide/` deck and its `draw/` scene all moved with it under the new name. Brought to the Q page contract in the same round: the Opening's on-stage paragraph grew from a bare question to a question plus four sentences, `## Writing Style` and `## Files` were added, every Content division gained a face figure and numbered paragraphs, the flat Aims list became `A1` to `A5` groups matching the divisions with `Done when` lines, `## States` became one row per Aim, and the unruled 260729 remark about the review agent became a `### Decision Now` row with its two options and their consequences. `page-type: design` was dropped, because the page is now a Q.
 
 - 260818 1450 · [REVISE-CC] `§5` and `A5.1` rewritten on a real dispatch. The charter had been reasoned since 260805 and was finally run as an agent, on this group's own `QPw00-page-loop`, as run `260818-1444-QPw00`. It returned `blocked` at its own procedure step 2 with 0 steps and no receipt: it declares seven tools and was handed four, missing `Grep`, `Glob` and `Workflow`. The ruling that falls out is that a SUBAGENT is handed no `Workflow` tool, so no charter wording can make this unit the dispatcher; it was demoted to packet builder and receipt keeper at 0.3.0 and the RUN moved to the main session. A second, quieter finding: the charter injected into the running instance was a PRE-0.2.0 copy of the file on disk, so a same-session edit to an agent definition does not reach an agent dispatched in that session.- 260815 1500 · [REVISE-CC] merged from Design-6/7/8 (JL 260815: "one Design can relate to several skills or agents"): one design page, three plugged units, versions in the title; the three originals moved to `_archive/` whole.

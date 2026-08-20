@@ -3,7 +3,7 @@ name: haipipe-plugin-outline
 description: >-
   The 🧭 outline surface of a Board page: the page RE-READ one Content division at a time, each division card carrying its own Aims, State rows, and Files rows instead of leaving them in three separate lists, and above them the PLAN card read from the page's own versioned outline file. The plan is primary material; the surface is rule-based and read-only, rendered from the file and live plugin folders on every open, and calls no model because the division tie is already in the material (`### A<n>` group grammar first, then the `§N` anchor). It is the DELIVERABLE of OUTLINE, phase ① of the page workflow, and the surface where that outline is read and approved before any prose is written; each division card also carries an evidence row read live from the page's probe/, display/ and bibex/ folders. Owns only its delta: the anchor grammar, the two lenses, the 🌐 page-wide card, the derived Evidence Bundle, and the two promises its checker guards. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: outline plugin, outline tab, 🧭 tab, page outline, OUTLINE phase, outline gate, evidence column, evidence bundle, what does this page owe, read the page by division, section anchor, §N anchor, which division does this aim belong to, by progress lens, page-wide, approve the outline, /haipipe-plugin-outline.
 metadata:
-  version: "0.9.0"
+  version: "0.15.0"
   last_updated: "2026-08-17"
   summary: "0.9.0 names the derived Evidence Bundle: one frozen Point joins sentence scaffolds, live Probe/Bibex/proof/Display material, and owner feedback without creating a duplicate folder."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -33,7 +33,7 @@ That is the promotion, and it comes from a real failure. On 260817 a page carrie
 
 ## 🚧 Whose phase this is
 
-The file is the deliverable of OUTLINE, phase ① of the page workflow. That phase's authority, its human gate and its receipt are `page-workflows/haipipe-page-outline` (0.1.0, 260817); this file owns only the MATERIAL and the SURFACE and states neither of those twice.
+The file is the deliverable of OUTLINE, phase ① of the page workflow. That phase's authority, its human gate and its receipt are `page-workflows/haipipe-page-outline` (260817); this file owns only the MATERIAL and the SURFACE and states neither of those twice.
 
 ```text
   🚧 the phase   what OUTLINE may do, and what ends it   ../../page-workflows/
@@ -106,24 +106,57 @@ approved: ⬜            🚧 a person ticks this. No machine may.
 ## C3 · Method · The code that produced every number on this page
 
 ### C3.P1 · What actually runs
-- B1 · the task-folder holds 61 Stata scripts and 14 PowerShell runners
-- B2 · 12 specification families × 5 traits, plus one summary-statistics script
-- B3 · a run fixes one outcome window and one estimator family        🔢 PP04
+- B1 · Script Census
+  Note: the task-folder holds 61 Stata scripts and 14 PowerShell runners
+- B2 · Specification Grid
+  Note: 12 specification families × 5 traits, plus one summary-statistics script
+- B3 · What One Run Fixes
+  Note: one outcome window and one estimator family                   📮 PP04
 ```
+
+**The file ends with its own `## Aims` trailing section, and the Aims live HERE
+since 260819** (JL: "Aims should be move together with outline"). One Aim = one
+target plus its test, and `Done when:` IS the test:
+
+```markdown
+## Aims · what must become true, and how you would know
+- A3.1 · The headline coefficient carries its four coordinates.
+  **Done when:** a reader can quote SPEC, window, trait form and outcome
+  without opening the task folder.
+```
+
+Before the move the plan wrote an id and the PAGE held the target, so a plan
+that renumbered its divisions pointed `A4.1` at the page's OLD A4.1; nine of
+sixteen ids on `QPw00-page-loop` did exactly that. DRAFT transcribes the Aims
+onto the page verbatim, because inventing one there would fork the agreed
+target.
 
 **The marks, and every line carries exactly one status plus what it owes:**
 
 ```text
 🎯 aim        we intend to establish this and have NOT yet
-✅ have it    the material is already on the page or in a landed card
+⛔ ✅ "have it" was RETIRED 260819 (see below): an unmarked bullet
+              already means nothing is owed
 📚 citation   owes a bib key            → bibex/
-🔢 value      owes a number + its run   → probe/PP<NN>/answer/
+📮 probe      owes a QUESTION answered  → probe/PP<NN>/
+              — bare before ② raises
+              the card, `📮 PP<NN>`
+              after; the answer may be
+              a finding or numbers
+🧮 value      QUOTES one number,        → that card's ## Values
+              `PP<NN>.v<n>`, out of an
+              answered card; the
+              machine re-computes it
 🖼 display    owes a figure or table    → display/<stem>-DisplayN-<slug>/
               · and NAMES ITS KIND: `🖼 owed · table`
-🧮 proof      owes a derivation or a stated assumption chain
 ```
 
-🧮 proof is the fourth kind and it is NEW (JL 260817, "citation, display, values and proofs"). A proof lands as PROSE in the division it belongs to, and this mark exists so the outline can say a claim needs one. ✅ **It earns NO folder of its own** (ruled 260817, `haipipe-page-probe` §🧭): the pulled file a derivation rests on already lives in a probe card's `proof/`, so a second home for it would be the same material filed twice. A 🧮 bullet therefore carries no id and no card ever backlinks it; what the surface can show is the division it sits in.
+⛔ **A fifth mark, proof, was RETIRED on 260819** (it wore 🧮 then; the glyph was revived hours later as the VALUE mark, with 🔢 as the legacy alias). It was created from one
+transcribed quote and no Log row ever ruled it. JL: "我从开始到最后都没有说
+proof，我一直说 probe" — going to a task folder or a discovery folder for the
+evidence behind a claim IS a probe, which is 📮 (the value it yields is quoted as 🧮 PP<NN>.v<n>). The retired mark was the only
+one with no plugin, no folder, no lane, no id and no backlink, and that was the
+symptom. ⚠️ `proof/` the FOLDER is unaffected: it is a probe card's own.
 
 **A 🖼 mark carries its KIND, and the bullet's own sentence is the whole design.** There is no display section in a plan: one bullet is one unit, its sentence says what the reader will see, and the mark says which renderer family draws it (JL 260817: "display 的设计都有哪些呢?").
 
@@ -135,7 +168,7 @@ approved: ⬜            🚧 a person ticks this. No machine may.
                                                          is picked at plan time
 ```
 
-The four kinds are the display family's: `table` · `figure` · `diagram` · `tex`. What the plan does NOT carry is `claim:`, `caption-job:`, `intake:` and the renderer's own rows; those live in the unit's README and cannot be written until a card has ANSWERED, because the intake freezes from its `proof/` (`haipipe-plugin-display` §❄️). So a plan states the INTENT and a unit states the DESIGN, and the mark goes bare `🖼 owed · <kind>` until the folder exists, then names it: `🖼 Display1 · table`.
+The five kinds are the display family's: `table` · `figure` · `diagram` · `tex` · `illustration`. What the plan does NOT carry is `claim:`, `caption-job:`, `intake:` and the renderer's own rows; those live in the unit's README and cannot be written until a card has ANSWERED, because the intake freezes from its `proof/` (`haipipe-plugin-display` §❄️). So a plan states the INTENT and a unit states the DESIGN, and the mark goes bare `🖼 owed · <kind>` until the folder exists, then names it: `🖼 Display1 · table`.
 
 **A 📚 names a PUBLISHED WORK, never a sibling board page** (JL 260817: "我们这里 citation 的 button 好像不是很多?"). The mark means a bib key in this page's own `bibex/`, and the surface checks it three ways:
 
@@ -147,23 +180,68 @@ The four kinds are the display family's: `table` · `figure` · `diagram` · `te
 
 The third row is a real defect this file caused: a plan marked `📚 QB1 · QB2 · QB3` on the page whose `bibex/` held ZERO entries. Those are board pages, and pointing prose at a sibling page is an internal cross-reference, which is a different act from citing published knowledge. A cross-reference is written in the bullet's own words; only a bib key wears 📚.
 
-**An id on a bullet is a CITATION, not a copy.** `🔢 PP01` names a card; it never restates the card's question or its state, because the evidence column below reads that live. A bullet that spells out what a card says is the same duplication that put `Evidence owed: probe/PP03-…, state raised.` into a page's prose on 260817.
+**An id on a bullet is a CITATION, not a copy.** `📮 PP01` names a card, `🧮 PP01.v2` quotes one of its values; it never restates the card's question or its state, because the evidence column below reads that live. A bullet that spells out what a card says is the same duplication that put `Evidence owed: probe/PP03-…, state raised.` into a page's prose on 260817.
 
-**A 🎯 aim bullet names the Aim it belongs to, and that is the whole link to `## States`** (JL 260817). The id grammar already exists and this surface already parses it, so nothing new is invented:
+**A 🎯 aim bullet names the Aim it belongs to, and that is the whole link to `## States`** (JL 260817; the Aims' home moved into the plan file 260819, §📐 above). The id grammar already exists and this surface already parses it, so nothing new is invented:
 
 ```text
-  🧭 outline bullet          - the choice has never been written down   🎯 A2.1
-                                                                            │
-  📄 page ## Aims            - A2.1 · Confirm LBP as the lead, and say why  │
-                                                                            │
-  📄 page ## States          - ⬜ A2.1 · No rationale recorded  ◀───────────┘
+  🧭 plan bullet     - the choice has never been written down            🎯 A2.1
+  🧭 plan ## Aims    - A2.1 · Confirm LBP as the lead, and say why
+                       Done when: the rationale is one readable division
+  📄 page ## Aims    the same rows, TRANSCRIBED at DRAFT, never invented there
+  📄 page ## States  - ⬜ A2.1 · No rationale recorded
 ```
 
-One id ties the three: the outline says what the sentence will establish, `## Aims` says what must become true, `## States` says whether it has. A 🎯 bullet with no Aim id is an intention nobody is tracking, and an Aim with no bullet is a target no sentence is aiming at; the tab shows both as named rows rather than silence.
+One id ties the four: the plan's bullet says what the sentence will establish, the plan's `## Aims` says what must become true and how a reader would know, the page carries the transcription, and `## States` says whether it has become true. A 🎯 bullet with no Aim id is an intention nobody is tracking, and an Aim with no bullet is a target no sentence is aiming at; the tab shows both as named rows rather than silence.
 
-An `✅ have it` bullet needs no id, because it is already true and has nothing to track. The other four marks point at cards, and cards carry their own state on disk.
+An UNMARKED bullet needs no id, because a plain point has nothing to track. The marks point at cards, and cards carry their own state on disk. (`✅ have it` was RETIRED 260819: it claimed backing without NAMING it, so nothing could recheck it; a backed point either cites its id or stands as plain prose, and the ↩ backlink already shows every card that serves a bullet. The glyph also worked two other jobs — the tick syntax `approved: ✅` and phase ⑦ — which produced a phantom-chip bug the same day. JL failed to read the mark three times; a mark that needs explaining fails its only job. Zero plans carried it at retirement.)
 
-**A mark carries an id only when the id already EXISTS.** A 📚 can, because a bib key is found before it is cited. A 🔢 or 🖼 usually cannot: the card is created at PROBE, after this file was frozen. So the mark is bare, and the CARD names the bullet it serves (`haipipe-plugin-probe` §↩). The 🧭 tab joins from that side and prints `↩ PP04 serve this bullet · 2 of 3 bound`.
+**A mark carries an id only when the id already EXISTS.** A 📚 can, because a bib key is found before it is cited. A 📮 or 🖼 usually cannot: the card is created at PROBE, after this file was frozen. So the mark is bare, and the CARD names the bullet it serves (`haipipe-plugin-probe` §↩). The 🧭 tab joins from that side and prints `↩ PP04 serve this bullet · 2 of 3 answered`.
+
+**Each mark names what a bullet OWES; a plugin names WHERE it is answered.
+The two use different words for the same thing, on purpose:**
+
+```text
+  the mark        what the bullet owes      the plugin that owns the answer
+  ────────────────────────────────────────────────────────────────────────
+  📚 citation     a published work           haipipe-plugin-bibex    bibex/
+  📮 probe        a question and its card    haipipe-plugin-probe    probe/
+🧮 value        one quoted PP<NN>.v<n>     haipipe-plugin-value    the card's ## Values
+  🖼 display      a figure or table          haipipe-plugin-display  display/
+```
+
+The middle row is the one that trips people, and it tripped JL twice on 260819:
+the mark is `value` and the folder is `probe/`, so there is no plugin called
+`value` and there should not be one. A probe IS how a value is obtained: you go
+to a task folder or a discovery folder and ask. Adding a fourth plugin would be
+a second home for one folder, which is exactly why the proof mark was retired.
+
+**A paragraph carries 3 to 6 bullets. Seven is two paragraphs** (JL 260819:
+"我们 C2 的话，你这里是只要求一个 paragraph 吗？还是说我们可能写多个 paragraph
+会好一些？"). The `### C<n>.P<n> · …` line is a BRIEF, and the tab prints it above
+the bullets; eight bullets under one brief means the brief cannot describe them.
+Split by IDEA, not by count: `C2` went from one paragraph of eight to three of
+three, and the three briefs are what OUTLINE decides, where the Aims are agreed,
+and the tick that ends the phase.
+
+**A bullet NEVER carries a markdown heading mark** (JL 260819, twice: "I dont
+like '####', could you change it to somehing else?" and "Do not use '##' in the
+outline"). Name the part in words or with the § anchor, because `##` and `####`
+are the file's own syntax and a reader parses them as structure before they
+parse them as a reference:
+
+```text
+  ❌ "- B2 · replace #### 2.1, 2.2 and 2.3 with one pointer paragraph"
+  ❌ "- B4 · `## Opening` says where this page sits"
+  ✅ "- B2 · §4.1, 4.2 and 4.3 collapse to one pointer paragraph"
+  ✅ "- B4 · the Opening section says where this page sits"
+```
+
+The same rule bans a `## ` line anywhere except a `## C<n> ·` division heading
+and the file's own trailing sections. The tab counts divisions by position, so
+a stray `## ` in a preamble became a phantom C1 and shifted every address below
+it by two (found 260818 by driving the parser, fixed in `live/outline.py` by
+matching `^## C\d+` and nothing else).
 
 **A bullet with NO mark is the normal case, not a defect** (JL 260817). Requiring a tag on every line made the plan unreadable and buried the few lines that actually owed something. A mark is the EXCEPTION: it is written only where that point needs evidence, and it sits at the END of the bullet, because that is where the card will hang on the real sentence.
 
@@ -203,7 +281,7 @@ Both lenses render server-side from one parse and toggle client-side with no sec
 kind          read from                              the row shows
 ─────────────────────────────────────────────────────────────────────────────
 📚 citation   bibex/<stem>.bib                       key · in bibex/ or not
-🔢 value      probe/PP<NN>-<slug>/card.md            id · planned → commissioned
+📮 probe      probe/PP<NN>-<slug>/card.md            id · planned → commissioned
               + whether proof/ holds files             → answered → read 🧑
                                                       🚫 answered, proof/ empty
 🖼 display    display/<stem>-DisplayN-<slug>/         id · declared → rendered →
@@ -247,7 +325,7 @@ outline 都给挤得不知道去哪儿了").
 ④ never say it twice       a chip is `emoji · id · note`, so a note repeating
                            the id printed `🎯 A4.2 → A4.2`; and the ↩ tag is
                            SUPPRESSED for a card the row already names, since
-                           `🔢 PP01 answered 1` `↩ PP01 ✓` is one fact twice.
+                           `📮 PP01 answered 1` `↩ PP01 ✓` is one fact twice.
 ```
 
 🚫 **No emoji inside a tag.** At 10.5px a `⬜` or `📄` renders at full glyph size
@@ -258,6 +336,11 @@ already say "not landed".
 frozen before the card exists, so the mark is usually BARE, and then the
 backlink is the only thing that names the card at all.
 
+**The three levels read apart** (JL 260819, four-preview pick): a division
+head is bold at the edge; a paragraph row carries its own `C<n>.P<m>` address
+plus a short accent tick in the left gutter; bullets are plain rows. All
+addresses share one left-aligned column, so every title starts at the same x.
+
 ### The popover panel
 
 A chip in the line, a panel beside it holding the THING itself: the reference as printed, the card's own question, the unit's own claim. Native `<popover>`, no script, so deleting every `<script>` leaves the panel readable as body text. It is a marginal note, not a modal:
@@ -265,13 +348,64 @@ A chip in the line, a panel beside it holding the THING itself: the reference as
 ```text
                     was            now       measured in Chrome
   ─────────────────────────────────────────────────────────────
-  🔢 probe card     512×131 px     339×120   PP01, the longest
-  🔢 probe card     512×109 px     339×101   PP03
+  🧮 probe card     512×131 px     339×120   PP01, the longest
+  🧮 probe card     512×109 px     339×101   PP03
   📚 citation       367× 86 px     327× 64   Deyo2015
   width             34em/14px      25em/12.5px
 ```
 
 **A 📚 panel prints `Author et al.`, never the author list.** Six names is what made a citation panel twice a probe panel's height, and the key in the panel's own title bar already carries the first author. BibTeX's `---` prints as an EN dash rather than three raw hyphens.
+
+## ✂️ The bullet itself is CONCISE: a head, then its evidence (260819)
+
+The same skim argument reaches the bullet's own words. JL, on a bullet whose
+colon unpacked a whole vocabulary before its mark: "它的核心目的明显就是为了做
+一个图…你冒号后面的东西其实都有点喧宾夺主了…越 concise 越好，最好只有几个字说
+明你的要点，后面再加上后续的证据。"
+
+```text
+  one bullet = HEAD · hidden detail · mark
+
+  HEAD        a terse LABEL or a QUESTION, Capitalized, aim ≤ 10 words
+              ("Figure for Whole Workflow Loop" · "What is the number
+              of plans passing all four checks?") — JL 260819
+  hidden      continuation lines the surface FOLDS behind a click:
+   detail       Note: <one concise explanation>   authored at OUTLINE
+                Answered: <ids + numbers>         appended by the fold
+                Drawn: <what the figure shows>    appended by the fold
+                An Answered: line ends in `· recount` when its value
+                counts the RUN'S OWN artifacts (receipts, findings, a
+                pinned hash) and so drifts as phases append; DRAFT
+                re-reads ONLY these cards and trusts the rest as
+                written (JL 260820, after QPw00's DRAFT re-read all
+                14 folders to find 3 drifts, all self-referential)
+              every bullet carries one of these; a head a reader might
+              not parse owes its Note
+  mark        end-anchored, unchanged grammar, on the LAST line
+```
+
+**How the surface folds it (JL 260819: "点击之后能看到…简明扼要的解释…without
+'>'"):** the row shows only HEAD + chips and looks exactly like a plain row —
+no disclosure marker of any kind, hover is the affordance; clicking the row
+unfolds the detail as muted body text, the `Note:`/`More:` label stripped.
+Native details element, script-free, and the summary hard-resets every
+typography property because the board shell's own drawer styles cascade into
+the injected card (one folded bullet rendered as a section heading before the
+reset).
+
+**What the head may not carry**: anything that lives behind the bullet's own
+mark — the card's question, the unit's claim, a contract's rule. That detail
+is one popover away; restating it in the head makes the guest upstage the
+host (喧宾夺主) and the plan stops being skimmable. A head that needs more
+than one clause of unique detail is usually two points, which is an address
+decision, not a licence for a long line.
+
+**Plain, common words, in heads and Notes alike** (JL 260819, on a head reading
+`The control rung.`: "你这里用了一些非常奇怪的单词…不要用这样的词了"): the
+reader is a weak-English reader, so a rare word fails even when it is apt. A
+technical term survives only as the thing's real NAME (`iv-overid`,
+Callaway–Sant'Anna), defined at first use; metaphor vocabulary (`rung`) is
+rewritten to the plain thing it means (`SPEC`, `control set`, `step`).
 
 ## 🧵 What it is for, and what it is NOT
 
@@ -285,7 +419,7 @@ Two jobs, and they are small ones (JL 260817):
 
 🚫 **It is not a controller.** DRAFT drafts every sentence anyway, REVISE revises anyway, CHECK checks anyway. Writing out which phase consumes which mark adds a second copy of the workflow and buys nothing: the marks say what is owed, and the phases do their own jobs.
 
-🔒 **Once approved, progress is never written back into it.** A bullet marked 🎯 aim stays 🎯 aim in an approved `v1`, because that is what was intended that day. What is actually on disk is read from the folders. A plan that edited itself as work landed would always look finished, and the gap between what was promised and what got built would be invisible.
+🔒 **Once approved, a version's PROMISE is never rewritten; the fold's appends are the one exception, and they add, never edit.** A bullet marked 🎯 aim stays 🎯 aim in an approved `v1`, because that is what was intended that day. The fold APPENDS `Answered:`/`Drawn:` detail (and the `📮 PP<NN>` id once a card serves a bullet) into bullets in place — into the working file while `approved:` is ⬜, or into `v<N+1>` after a tick, because a tick belongs to the version it ticked. What is actually on disk is read from the folders. A plan that rewrote its own heads and marks as work landed would always look finished, and the gap between what was promised and what got built would be invisible.
 
 ## 🔗 The Evidence Bundle · a derived view, not another folder
 

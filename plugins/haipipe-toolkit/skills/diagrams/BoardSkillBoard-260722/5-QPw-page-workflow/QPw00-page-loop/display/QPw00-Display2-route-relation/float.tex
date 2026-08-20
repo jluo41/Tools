@@ -1,12 +1,20 @@
 % Caller-owned caption + label; the asset reference is the recipe itself.
+% The minipage is what keeps the two note paragraphs LEFT-aligned: a bare
+% \centering in this float centered them line by line, and a centered
+% paragraph of prose is unreadable at this width.
 \begin{figure}[t]
-  \centering
-  \input{recipe/route-relation.tex}
-  \caption{The legal-route relation $R$, seven rows, and the three laws the
-  table makes checkable. The rows are deliberately NOT uniform: PROBE may not
-  hand off to DRAFT or CHECK, and REVISE may not hand off to PROBE. The judge
-  alone reaches CLOSE and alone cannot reach itself, so every judged version
-  passes through a producer before it is judged again; and every phase without
-  exception may stop at HOLD.}
+  \begin{minipage}{\linewidth}
+    \input{recipe/route-relation.tex}
+  \end{minipage}
+  \caption{The legal-route relation $R$ after the 260819 loop change, six rows,
+  and the four laws the table makes checkable. The rows are deliberately NOT
+  uniform: PROBE and EVIDENCE route only sideways or BACK to OUTLINE, so the
+  single door out of the PREPARE loop is OUTLINE's own gate, four machine checks
+  plus a person's \texttt{approved:}. The judge alone reaches CLOSE and alone
+  cannot reach itself, so every judged version passes through a producer before
+  it is judged again; every phase without exception may stop at HOLD. The
+  controller and the auditor encode this same table since 260819, keeping only
+  a \textsc{Compile} row no contract names, so already-stored receipts that
+  name it stay auditable.}
   \label{fig:qpw1-route-relation}
 \end{figure}

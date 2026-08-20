@@ -28,11 +28,11 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 ```
 
 - **owner-unit** = who this board serves.
-  Boards for a task, project, or paper default to their own `diagram/`; boards inside a plugin used to design a skill collect under that plugin's `skills/diagrams/`.
+  Boards for a task, project, or paper default to their own `diagram/`; boards inside a plugin used to design a skill collect under that plugin's `skills/diagrams` folder.
   A board is a work artifact, a skill is a delivery package, and the two never share one folder.
 - **NN** orders boards within the same topic series; it does not assign a unique number across the whole collection.
   A new topic starts at `01`; only later boards on the same topic use `02`.
-  So a shared `skills/diagrams/` can hold several different topics' `01-*` at once.
+  So a shared `skills/diagrams` folder can hold several different topics' `01-*` at once.
 - **YYMMDD** is **the day the board was opened**, and it never changes afterward.
 
 **The folder question (QC3, JL 260724)**: a Q file can also live inside the very folder it discusses, so a board can sit directly on top of an existing tree (the first consumer: a paper's `0-lifecycle/`):
@@ -87,7 +87,7 @@ A board is numbered or it is not, and no writer may manufacture the middle state
 **Renumbering an ALREADY-FOLDERED board is still a hand move, and that is a gap.**
 `regroup.py` only moves pages that sit at the board ROOT, so on a board whose groups are already folders it reports "every page already lives in a folder" and does nothing. Migrating such a board means renaming each group folder to `<N>-<folder>` in `## Pages` order AND rewriting every path string that cites the old names, at the path HEAD only so a cross-board Link into another board's folder survives. Doing it by hand on this family's own board moved 9 folders and 197 strings across 29 files. Until `regroup.py` grows that pass, `check.py`'s `groups-not-numbered` WARN names the work rather than offering a command.
 Everything that reads a group folder strips the number first through `group_stem()` in `src/common.py`, so the letter stays the group's identity and an unnumbered board keeps working with no migration.
-The generated route never carries the number: `7-QC-engine/` still renders to `board/QC/`.
+The generated route never carries the number: `7-QC-engine/` still renders to `board/QC`.
 
 Only Board-level source and derived artifacts stay at the Board root: `board.md`, optional `board.excalidraw`, `fig/`, `_archive/`, and generated `board/`.
 `## Pages` does not change a single character; it still lists only bare filenames.

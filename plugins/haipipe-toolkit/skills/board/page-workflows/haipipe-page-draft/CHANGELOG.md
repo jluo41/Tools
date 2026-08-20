@@ -1,3 +1,54 @@
+## 0.9.0 — 2026-08-20
+
+- **§📖 Trust the plan's answers; recount only what is marked** (JL: "看看哪里
+  可以去优化"): DRAFT quotes the outline's `Answered:`/`Drawn:` values as
+  written and re-reads only cards whose line ends `· recount`, plus one
+  spot-check; QPw00's first DRAFT re-read all 14 evidence folders to find 3
+  drifts, all self-referential run counts.
+- **§🕰 Content states the present; the Log holds the past** (JL: "我们这里
+  不是做 log 的地方，content 永远只包含最新的东西"): no "Before <date> it
+  was X" in Content; the current rule is written clean and `## Log` carries
+  when and why it moved.
+
+## 0.8.2 — 2026-08-19
+
+- **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).
+  🔢 stays accepted as the legacy alias, so pre-260819 plans remain legal.
+  The abacus was the proof mark retired earlier on 260819 and is revived with
+  its new meaning: a recomputable number, which is what `checks/values.py`
+  does to every one of them.
+- **Coherence sweep (260819)**: §🃏's dead stake argument deleted (Aims live in
+  the plan, so PROBE precedes this phase); §🗂 and §🃏 renumbered DRAFT ④ ·
+  PROBE ② and the footer points at phase-cards §④; §🧱's worked example writes
+  the NUMBER on landed evidence, with the hole as the blocked exception; §📂's
+  crossing begins at ② PROBE, not EVIDENCE; the metadata summary says the same.
+
+## 0.8.1 — 2026-08-19
+
+- **The receipt's `route` enum still listed EVIDENCE and COMPILE**, which the §🔀
+  table already excluded. Corrected to `DRAFT | PROBE | REVISE | CHECK | HOLD`.
+  Found by the display agent rebuilding `QPw00-Display2`.
+
+## 0.8.0 — 2026-08-19
+
+- **DRAFT enters on LANDED evidence.** JL 260819: "until outline is
+  self-consistent and together with all the evidence cards, then we are good to go
+  ahead to draft." OUTLINE ⇄ PROBE ⇄ EVIDENCE now loops before DRAFT starts.
+- **A hole becomes the EXCEPTION.** DRAFT writes the number. A hole is what a
+  genuinely blocked question leaves, and it must name the missing input; a hole
+  with no named blocker means the PREPARE loop exited early, and the fix is a
+  `v<N+1>` at OUTLINE.
+- The conversion is unchanged and is still the whole phase: one POINT becomes one
+  or more SENTENCES, citing evidence by id.
+
+## 0.7.3 — 2026-08-19
+
+- **No `page-type:` key is the DEFAULT, not a defect.** JL 260819, deciding
+  against creating a `question` page type for it: "question itself just to be
+  very flexible." Reading the absence as a defect made OUTLINE illegal on 247 of
+  274 pages, this session's own QPw00 among them. A page with no type owes the
+  base section order and nothing more.
+
 ## 0.7.2 — 2026-08-18
 
 - Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §②, which

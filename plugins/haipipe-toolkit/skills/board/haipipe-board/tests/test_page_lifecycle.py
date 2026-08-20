@@ -1,9 +1,10 @@
 import hashlib
+import re
 import tempfile
 import unittest
 from pathlib import Path
 
-from src.page_lifecycle import audit_artifacts, audit_run, traversed_edges
+from src.page_lifecycle import LEGAL_ROUTES, audit_artifacts, audit_run, traversed_edges
 
 
 HERE = Path(__file__).resolve().parent.parent
@@ -152,26 +153,37 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertEqual(["DRAFT->CHECK", "CHECK->CLOSE"], traversed_edges(value["receipts"]))
 
     def test_full_optional_probe_route_closes(self):
+        """DRAFT may send back to PROBE; the detour returns through the plan.
+
+        Pre-260819 this fixture walked PROBE->REVISE, an edge the PREPARE loop
+        removed: PROBE routes only sideways or back, and the loop's one door
+        out is OUTLINE's gate."""
         value = run(
             [
                 producer(1, "DRAFT", "v0", "v1", "PROBE"),
-                producer(2, "PROBE", "v1", "v1", "REVISE"),
-                producer(3, "REVISE", "v1", "v2", "CHECK"),
-                check(4, "v2"),
+                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
+                producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(5, "DRAFT", "v1", "v2", "CHECK"),
+                check(6, "v2"),
             ]
         )
         self.assertClean(value)
 
     def test_full_outline_to_compile_route_closes(self):
+        """The 260819 happy path: the PREPARE loop converges, then the linear
+        tail runs to CLOSE. The pre-260819 fixture walked EVIDENCE->REVISE,
+        which the loop removed."""
         value = run(
             [
-                producer(1, "OUTLINE", "v0", "v1", "DRAFT"),
-                producer(2, "DRAFT", "v1", "v2", "PROBE"),
-                producer(3, "PROBE", "v2", "v2", "EVIDENCE"),
-                producer(4, "EVIDENCE", "v2", "v2", "REVISE"),
-                producer(5, "REVISE", "v2", "v3", "COMPILE"),
-                producer(6, "COMPILE", "v3", "v3", "CHECK"),
-                check(7, "v3"),
+                producer(1, "OUTLINE", "v0", "v1", "PROBE"),
+                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
+                producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(5, "DRAFT", "v1", "v2", "REVISE"),
+                producer(6, "REVISE", "v2", "v3", "COMPILE"),
+                producer(7, "COMPILE", "v3", "v3", "CHECK"),
+                check(8, "v3"),
             ]
         )
         self.assertClean(value)
@@ -201,9 +213,11 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run(
             [
                 check(1, "v1", "PROBE"),
-                producer(2, "PROBE", "v1", "v1", "REVISE"),
-                producer(3, "REVISE", "v1", "v2", "CHECK"),
-                check(4, "v2"),
+                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
+                producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(5, "DRAFT", "v1", "v2", "CHECK"),
+                check(6, "v2"),
             ]
         )
         self.assertClean(value)
@@ -213,9 +227,10 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run(
             [
                 check(1, "v1", "EVIDENCE"),
-                producer(2, "EVIDENCE", "v1", "v1", "REVISE"),
-                producer(3, "REVISE", "v1", "v2", "CHECK"),
-                check(4, "v2"),
+                producer(2, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(3, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(4, "DRAFT", "v1", "v2", "CHECK"),
+                check(5, "v2"),
             ]
         )
         self.assertClean(value)
@@ -402,15 +417,88 @@ class PageLifecycleAuditTest(unittest.TestCase):
                 {finding.code for finding in audit_artifacts(value)},
             )
 
+    def test_prepare_pause_allows_the_next_pass_after_hold(self):
+        """260819 pause rule: a HOLD from OUTLINE/PROBE/EVIDENCE with an open
+        required gate is a PAUSE between passes of one round, not a terminal.
+        The live 260819 round appended one receipt per pass and 10 of 12 legal
+        passes audited as receipt-after-terminal before this rule existed."""
+        gate = {"required": True, "status": "pending",
+                "evidence": ["outline approved: line, unticked"]}
+        steps = []
+        for i, phase in enumerate(("OUTLINE", "PROBE", "EVIDENCE", "OUTLINE"), 1):
+            r = producer(i, phase, "v1", "v1", "HOLD")
+            r["human_gate"] = dict(gate)
+            steps.append(r)
+        value = run(steps, status="hold", gate_required=True)
+        self.assertNotIn("receipt-after-terminal", self.codes(value))
+
+    def test_prepare_pause_still_requires_a_legal_next_phase(self):
+        gate = {"required": True, "status": "pending",
+                "evidence": ["outline approved: line, unticked"]}
+        r1 = producer(1, "OUTLINE", "v1", "v1", "HOLD")
+        r1["human_gate"] = dict(gate)
+        r2 = producer(2, "REVISE", "v1", "v1", "HOLD")
+        r2["human_gate"] = dict(gate)
+        value = run([r1, r2], status="hold", gate_required=True)
+        self.assertIn("route-phase-mismatch", self.codes(value))
+
+    def test_cold_check_is_legal_from_a_prepare_pause(self):
+        gate = {"required": True, "status": "pending",
+                "evidence": ["outline approved: line, unticked"]}
+        r1 = producer(1, "OUTLINE", "v0", "v1", "HOLD")
+        r1["human_gate"] = dict(gate)
+        r2 = check(2, "v1", "REVISE")
+        value = run([r1, r2], status="revise", gate_required=True)
+        codes = self.codes(value)
+        self.assertNotIn("receipt-after-terminal", codes)
+        self.assertNotIn("route-phase-mismatch", codes)
+
+    def test_close_stays_terminal_even_with_an_open_gate(self):
+        gate = {"required": True, "status": "pending",
+                "evidence": ["outline approved: line, unticked"]}
+        r1 = producer(1, "OUTLINE", "v0", "v1", "HOLD")
+        r1["human_gate"] = dict(gate)
+        r2 = check(2, "v1")
+        r3 = producer(3, "OUTLINE", "v1", "v1", "HOLD")
+        r3["human_gate"] = dict(gate)
+        value = run([r1, r2, r3], status="hold", gate_required=True)
+        self.assertIn("receipt-after-terminal", self.codes(value))
+
+
 
 class PageLifecycleWorkflowContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.script = (HERE / "ref/page-lifecycle.workflow.js").read_text(encoding="utf-8")
 
+    def test_js_legal_table_matches_python(self):
+        """The two route tables agree only by hand until this test: parse the
+        js LEGAL block and compare it to src.page_lifecycle.LEGAL_ROUTES."""
+        m = re.search(r"const LEGAL = \{(.*?)\n\}", self.script, re.S)
+        self.assertIsNotNone(m)
+        js = {}
+        for row in re.finditer(r"(\w+): \[([^\]]*)\]", m.group(1)):
+            js[row.group(1)] = set(re.findall(r"'([A-Z]+)'", row.group(2)))
+        self.assertEqual({k: set(v) for k, v in LEGAL_ROUTES.items()}, js)
+
     def test_workflow_separates_producer_and_reviewer_agents(self):
-        self.assertIn("agentType: 'haipipe-board-creator-agent'", self.script)
-        self.assertIn("agentType: 'haipipe-board-reviewer-agent'", self.script)
+        # One producer agent per phase since 260819; the base agent is the
+        # dispatch FALLBACK, and the judge is never in the producer map.
+        self.assertIn("const PRODUCER_AGENTS = {", self.script)
+        for agent_name in (
+            "haipipe-page-outline-agent",
+            "haipipe-page-probe-agent",
+            "haipipe-page-evidence-agent",
+            "haipipe-page-draft-agent",
+            "haipipe-page-revise-agent",
+        ):
+            self.assertIn(agent_name, self.script)
+        self.assertIn(
+            "agentType: PRODUCER_AGENTS[current] || 'haipipe-page-creator-agent'",
+            self.script)
+        self.assertIn("agentType: 'haipipe-page-check-agent'", self.script)
+        self.assertNotIn("haipipe-page-check-agent'", str(
+            self.script.split("const PRODUCER_AGENTS = {", 1)[1].split("}", 1)[0]))
         self.assertIn("Do not edit, rebuild, or cure a finding", self.script)
 
     def test_workflow_is_bounded_and_versions_every_check(self):
@@ -423,6 +511,24 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIn("let current = startPhase", self.script)
         self.assertIn("current = route", self.script)
         self.assertNotIn("DRAFT → PROBE → REVISE → CHECK", self.script)
+
+    def test_mechanical_error_repair_routes_are_legal_from_every_phase(self):
+        match = re.search(
+            r"const MECHANICAL_REPAIR_ROUTE = \{(.*?)\n\}", self.script, re.S
+        )
+        self.assertIsNotNone(match)
+        repair = dict(
+            re.findall(r"(\w+):\s*'([A-Z]+)'", match.group(1))
+        )
+        self.assertEqual(set(LEGAL_ROUTES), set(repair))
+        for phase, route in repair.items():
+            with self.subTest(phase=phase, route=route):
+                self.assertIn(route, LEGAL_ROUTES[phase])
+        for phase in ("OUTLINE", "PROBE", "EVIDENCE"):
+            self.assertEqual(phase, repair[phase])
+        self.assertIn(
+            "route = MECHANICAL_REPAIR_ROUTE[current] || 'HOLD'", self.script
+        )
 
 
 if __name__ == "__main__":

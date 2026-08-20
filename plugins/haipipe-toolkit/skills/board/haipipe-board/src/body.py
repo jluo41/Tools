@@ -205,6 +205,17 @@ CMP = re.compile(r"(?:&lt;|&gt;|<|>|≤|≥)=?\s*$")
 CARDS = []
 CHIP_N = 0
 
+# A display unit's preview EMBEDS under the first Content sentence that names
+# it (JL 260819: "could we make the display to be embedded below that
+# sentence? so we know what is content it is"). _display() only QUEUES the
+# figure; the Content paragraph loop is the one flush site, so a chip inside a
+# summary, an Aims row, or a lane never grows a figure mid-layout. A unit
+# registers in EMBED_SEEN when its figure is actually flushed, not when
+# queued, so a mention in a drawer cannot eat the Content embed. Cleared per
+# page beside CARDS.
+EMBEDS = []
+EMBED_SEEN = set()
+
 # Face ids on THIS board, set once per build. Lets a chip link to a sibling
 # page only when that page actually exists here.
 FACE_IDS = set()
@@ -589,9 +600,39 @@ def _kind(u, fallback_label=""):
     return "tab" if fallback_label.startswith("tab:") else "fig"
 
 
+def _embed_figure(did, meta):
+    """The unit's first preview as an inline figure, or "" when none exists.
+    Same markup family as the card's ccprev so one stylesheet rules both."""
+    for kind, label, path, text in (meta or {}).get("preview", []):
+        href = _rel(path)
+        if not href:
+            continue
+        cap = f'<figcaption>🖼 {esc(did)} · {esc(label)}</figcaption>'
+        if kind == "img":
+            return (f'<figure class="ccprev dembed">{cap}'
+                    f'<img src="{esc(href)}" alt="{esc(label)}" '
+                    f'loading="lazy"></figure>')
+        if kind == "pdf":
+            # The reading flow wants the FIGURE, not a PDF application: the
+            # open-parameters strip Chrome's toolbar and thumbnail pane here,
+            # while the card's own object keeps them for download/print.
+            return (f'<figure class="ccprev dembed">{cap}'
+                    f'<object class="ccpdf" '
+                    f'data="{esc(href)}#toolbar=0&amp;navpanes=0&amp;view=FitH" '
+                    f'type="application/pdf">'
+                    f'<a class="fp" href="{esc(href)}">open {esc(label)}</a>'
+                    f'</object></figure>')
+    return ""
+
+
 def _display(did):
     state, tip, meta = PAPER.display(did)
-    return _chip("disp " + _kind(PAPER.unit(did)), state, did, tip, meta)
+    u = PAPER.unit(did)
+    key = u.path.name if (u is not None and getattr(u, "path", None)) else did
+    fig = _embed_figure(did, meta)
+    if fig:
+        EMBEDS.append((key, fig))
+    return _chip("disp " + _kind(u), state, did, tip, meta)
 
 
 def _ref(label):
@@ -1128,6 +1169,7 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
     out, fence, blt, lg, flang = [], None, None, None, ""
     ifence = None    # 缩进在 item 下的 ``` 块：收进这个 item 的折叠区（JL 260724）
     last_p, appar = None, {}   # 最近一句正文的 out 下标 → 它收集到的 `>` 装置行（QA8）
+    pbreak = True   # 源文件里空行=段落边界；下一句正文要戴 pnew（句址 P 的分段依据）
     para_head = False          # 上一行是不是 #### 段落标题（决定紧跟的 (…) 是不是它的活儿）
 
     def flush():
@@ -1267,6 +1309,7 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
             continue
         flush()
         if not ln.strip():
+            pbreak = True
             continue
         # 句子随行装置（QA8，JL 260725）：紧跟在一句正文后面的 `>` 行
         # （> Citation: / > Value: / > Check: / > JL: …，可隔空行）收进那一句的
@@ -1424,8 +1467,22 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
                        f'<div class="ctext">{note(m.group(4))}</div></div>')
             last_p = None
         else:
-            out.append(f"<p>{inline(ln)}</p>")
+            EMBEDS.clear()
+            # One source line = one sentence = one <p>, but the PARAGRAPH is
+            # the blank-line block. The first sentence after a break wears
+            # pnew so the address JS can count C.P.S instead of one P per
+            # sentence (JL 260819: "the paragraph should not change every
+            # sentence"). last_p is None after any non-sentence emission, so
+            # headings, bullets and figures break the paragraph too.
+            _cls = ' class="pnew"' if (pbreak or last_p is None) else ""
+            out.append(f"<p{_cls}>{inline(ln)}</p>")
+            pbreak = False
             last_p = len(out) - 1
+            for _key, _fig in EMBEDS:
+                if _key not in EMBED_SEEN:
+                    EMBED_SEEN.add(_key)
+                    out.append(_fig)
+            EMBEDS.clear()
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():

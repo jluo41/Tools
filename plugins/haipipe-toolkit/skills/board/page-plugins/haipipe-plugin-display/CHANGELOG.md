@@ -20,6 +20,9 @@ a second unwitnessed pull can silently disagree with it.
   treating the quote as a quote, so the `N` row arrived as 11 cells, not 5.
 - **A unit names the bullet it serves** in a `serves:` README row, the same
   backward link a probe card carries.
+- Coherence pass (260819 law): §❄️'s creation rule is scoped to DATA kinds —
+  a CONCEPT unit (diagram · tex · illustration) freezes a LISTING of the
+  source files it reads and waits for no card.
 
 ## 0.1.0 · 2026-08-15
 - Born in the thin-door round (JL 260815), the first FAMILY-WRITER variant: display's writer is a routing decision (five renderer kinds) plus a human gate (`accepted:`), which no roster row can hold.

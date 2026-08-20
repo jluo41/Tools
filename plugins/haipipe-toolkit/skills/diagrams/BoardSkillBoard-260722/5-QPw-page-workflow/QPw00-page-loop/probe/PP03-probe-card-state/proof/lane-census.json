@@ -1,0 +1,17 @@
+{
+  "source": "BoardSkillBoard-260722, every <page>/probe|bibex|display",
+  "run": "local read, 260819, re-pulled at EVIDENCE",
+  "probe_cards_total": 23,
+  "probe_by_state": {
+    "planned": 13,
+    "answered": 3,
+    "answered-local": 6,
+    "concern": 1
+  },
+  "probe_read_ticked": 0,
+  "bibex_files": 9,
+  "display_units_total": 10,
+  "display_rendered": 10,
+  "display_accepted": 0,
+  "note": "re-read 260819 after this page's own five cards landed: planned went 17 -> 13. checks/values.py caught the drift, which is exactly the class of error a person re-reading by eye does not catch. Re-read again after Display5 landed: 7 -> 8 units. Re-read a third time at EVIDENCE after tonight's additions: PP06 and PP07 raised cards (22 -> 23, answered-local 4 -> 6), Display6 landed (8 -> 9 units, all rendered), and this page's own bibex/ landed (8 -> 9 bib files). Re-read once more within the hour: QPw00-Display7-point-to-sentence landed on this same page (9 -> 10 units, all rendered)."
+}

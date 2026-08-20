@@ -49,7 +49,7 @@ The page closes only when every E<n> division's consumers are terminal AND E0 is
 
 ## The Display companion: a candidate, not a final float
 
-An answered probe should be made visible before it is made manuscript-ready. A topic page opting in with `display: companion` therefore pairs each QA-probe with a hidden, same-stem record under `display/<topic>/`.
+An answered probe should be made visible before it is made manuscript-ready. A topic page opting in with `display: companion` therefore pairs each QA-probe with a hidden, same-stem record under `display/<topic page name>/`, beside the topic page.
 The record states the possible five-second takeaway, claim role, and disposition.
 It may say `not-displayable`; the purpose is to make that decision inspectable, not to force every result into a figure or table.
 Only a `selected` companion may file a Display request and become a formal Display unit.

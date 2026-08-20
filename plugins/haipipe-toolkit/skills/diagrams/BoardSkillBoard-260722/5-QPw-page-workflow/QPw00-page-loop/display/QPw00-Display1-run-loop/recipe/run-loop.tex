@@ -6,9 +6,14 @@
 %
 % Every line below is transcribed from the shipped contract, never from memory:
 %   · the phases, the producer/builder/judge split, and the stop list are
-%     QPw00 §9.1-§9.4 and page-workflows/haipipe-page-workflow/SKILL.md
+%     QPw00 §12.1-§12.4 and page-workflows/haipipe-page-workflow/SKILL.md §🔁
 %   · the legal routes and the terminal set are src/page_lifecycle.py's
 %     LEGAL_ROUTES and TERMINAL_ROUTES
+%   · the branch below tests ONE phase by name, CHECK, because that is what
+%     ref/page-lifecycle.workflow.js tests (`if (current === 'CHECK')`). It is
+%     deliberately not a list of producer phases: the loop was re-cut from four
+%     phases to seven on 260817 and re-ordered on 260819, and a figure that
+%     enumerates the producers goes false on every such change.
 \begin{algorithm}[H]
 \DontPrintSemicolon
 \SetAlgoNlRelativeSize{-1}
@@ -23,13 +28,13 @@
        \textit{sources}, \textit{constraints}, \textit{gate}, \textit{limits})$}
 \Output{$\rho = (r_1, \dots, r_n)$, one receipt per attempted phase}
 
-$\varphi \leftarrow \varphi_0$ \tcp*{an existing Page enters at CHECK, a new one at DRAFT}
+$\varphi \leftarrow \varphi_0$ \tcp*{an existing Page enters at CHECK, a new one at OUTLINE}
 $s \leftarrow 0$; \quad $k \leftarrow 1$ \tcp*{steps taken, and the current round}
 
 \While{$s < \textit{limits}.\textit{max\_steps}$ \KwAnd $k \le \textit{limits}.\textit{max\_rounds}$}{
   $\Gamma \leftarrow \textsc{Context}(\textit{page}, \varphi)$
     \tcp*{one hop, this phase's rows only; a bad row is a HOLD}
-  \eIf{$\varphi \in \{\textsc{Draft}, \textsc{Probe}, \textsc{Revise}\}$}{
+  \eIf{$\varphi \neq \textsc{Check}$}{
     $(v', \hat{r}) \leftarrow$ \Producer{$\varphi, \Pi, \Gamma$}
       \tcp*{one phase, by one actor, who also proposes a route}
     $v' \leftarrow$ \Builder{$v'$} \tcp*{rebuild, deterministic checks, version identity}
@@ -41,7 +46,9 @@ $s \leftarrow 0$; \quad $k \leftarrow 1$ \tcp*{steps taken, and the current roun
     \quad append $r$ to $\rho$\;
   \lIf{$\hat{r}.\textit{route} \notin R(\varphi)$}{\Return{$\rho$ \textbf{with} \textsc{Hold}}}
   \lIf{$\hat{r}.\textit{route} \in \{\textsc{Close}, \textsc{Hold}\}$}{\Return{$\rho$}}
-  \lIf{$\hat{r}.\textit{route} = \textsc{Draft}$ \KwAnd $\hat{r}.\textit{reopens}$}{$k \leftarrow k + 1$}
+  \lIf{$\hat{r}.\textit{route} = \textsc{Draft}$ \KwAnd
+       $\varphi \notin \{\textsc{Outline}, \textsc{Draft}\}$ \KwAnd
+       $\hat{r}.\textit{reopens}$}{$k \leftarrow k + 1$}
   $\varphi \leftarrow \hat{r}.\textit{route}$; \quad $v \leftarrow v'$; \quad $s \leftarrow s + 1$\;
 }
 \Return{$\rho$ \textbf{with} \textsc{LimitReached}}

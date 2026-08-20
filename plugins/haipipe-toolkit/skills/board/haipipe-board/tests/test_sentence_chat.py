@@ -43,9 +43,14 @@ class SentenceChatContractTest(unittest.TestCase):
     def test_content_sentence_addresses_are_generated_and_rewired(self):
         self.assertIn("sec.querySelector('details.sect.content')", self.js)
         self.assertIn("var contentId = 'C' + (ci + 1)", self.js)
+        # P counts blank-line blocks (build.py stamps their first sentence
+        # with .pnew) and S counts sentences within one; S1-for-every-P was
+        # the bug JL caught on 260819 ("the paragraph should not change
+        # every sentence").
         self.assertIn(
-            "var shortId = contentId + '.P' + nextP + '.S1'", self.js
+            "var shortId = contentId + '.P' + nextP + '.S' + nextS", self.js
         )
+        self.assertIn("p.classList.contains('pnew')", self.js)
         self.assertIn("var fullId = sec.id + '.' + shortId", self.js)
         self.assertIn("window.__boardWireSentenceChats = function () {", self.js)
         self.assertIn("    wireSentenceChats();", self.js)

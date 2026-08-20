@@ -1,4 +1,15 @@
-# _fixture — a real slice of the MISQ paper, so the design board can SHOW its rules
+# _fixture — frozen stage-era resolver material, not the current Paper graph
+
+This folder is retained only for archived Board examples and compatibility tests
+of the old paper dialect. Its `1-probes/`, `displays/`, bibliography, and TeX
+slice are historical fixture inputs; they are **not** the current Page-first
+Paper layout and must not be copied into a new Paper.
+
+Current Paper validation lives in `4-QC-composition/`. The current evidence model
+is Page-local Probe with two lanes: `pagex/` for accepted Pages and `probe/` for
+Task/Discovery QA cards.
+
+## Historical fixture contract
 
 Not a paper and never rendered as one. It exists so the `QC` faces carry LIVE
 examples: the board declares `dialect: paper` with `paper-root: _fixture`, and

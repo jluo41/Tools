@@ -19,7 +19,7 @@ The raw bibtex sits behind an ✎ edit fold, which is where an entry is fixed or
 **Covered elsewhere**: `QPf1` rules the folder, and the roster row is `../../board/haipipe-plugin/ref/roster.md`.
 The siblings are `QPf6` (latex) and `QPf7` (word).
 `QPf6`'s Decision row rules what git does with the rebuilt files, while the page bib itself is always committed.
-The law comes from `S03-literature/citation-craft.md`.
+The live law comes from `../../board/page-plugins/haipipe-plugin-bibex/SKILL.md`.
 
 ## Diagram
 **The page bib is the truth, and three doors work it**: ↻ copies cited entries in, ✓ writes a person's check into the entry, and ✎ lands a person's pasted bibtex.
@@ -137,7 +137,7 @@ What is left is a ✓ that can be traced to a person, a click that can be traced
 ## Law
 - 🗃 The page owns its bib; the paper's is read-only here (JL 260815: "the bib for this page only")
       Filling copies whole entries out of the paper's `0-*.bib`, and nothing this plugin does ever writes that file.
-- ✂️ The pen, never the author, inherited from citation-craft.md
+- ✂️ The pen, never the author, inherited from the Bibex plugin contract
       The machine lands a person's pasted text word for word, or copies an upstream entry whole.
       It writes, finishes, and fixes no entry, and a missing key is reported rather than guessed at.
 - 🧑 The ✓ is a person's
@@ -156,8 +156,8 @@ What is left is a ✓ that can be traced to a person, a click that can be traced
   What the word export runs to compile `.board-refs.bbl` in `bibex/`; it is the only writer of the third file §1 lists.
 
 ### 📋 Contracts
-- `../../paper/S03-literature/citation-craft.md`
-  Where the law comes from; if the two disagree, that file wins and this plugin is the defect.
+- `../../board/page-plugins/haipipe-plugin-bibex/SKILL.md`
+  The live Bibex law; if the two disagree, that contract wins and this design Page is the defect.
 
 ### 🧑 What a person rules
 - `bibex/QPf8-bibex.bib`
@@ -177,7 +177,7 @@ What is left is a ✓ that can be traced to a person, a click that can be traced
       §3 used `lit-click`, a word no Glossary on this page defines: clicking a tab that is already open rebuilds what the tab shows, so the second click on 📚 is the refresh, and the sentence says that plainly.
       The refresh is not view-only, which the old fence row implied: `export.py`'s `export_bibex` appends a newly resolvable import and touches no entry already there, and the 📌 line now says both halves.
       The Opening lost one sentence to come back under the 520-character ceiling; the editor it named is now in the drawer's card list, where the ✎ fold is already described.
-- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我他妈真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 15 sentences flagged before, 8 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
+- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 15 sentences flagged before, 8 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260816 · [REVISE-CC] JL's ruling lands: A2.2 goes back to 🧠, held, and the second-round findings are worked.
       A2.2's ✅ stood on scope and not on provenance, so the Aim is held rather than met.
       Its `Done when` decides on who wrote the field, "because JL opened its link and clicked ✓, not because a machine or a demo wrote it", and `../QPf4-chat/bibex/QPf4-chat.bib:12` shows the field and not the hand.

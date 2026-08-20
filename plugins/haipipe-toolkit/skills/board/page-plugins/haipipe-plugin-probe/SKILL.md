@@ -1,17 +1,28 @@
 ---
 name: haipipe-plugin-probe
 description: >-
-  The probe/ plugin of a Board page: one evidence question per FOLDER at <page>/probe/PP<NN>-<slug>/, where the stake wall is a PATH rather than a paragraph. consumer/ holds the stake-bearing question and never crosses; executor/ holds the stripped question and the answer that came back, and all of it may cross to the bank; proof/ holds the small aggregate CSV and JSON pulled verbatim out of the task folder with source, run and sha256, so a display can freeze from it and staleness is computable; card.md is the head a reader scans. Owns the page-side delta only: the folder address and its naming rule, where each loop step lands, the disk test behind each protocol state including the human read: tick that means done, the four counts the 🚪 strip reports, and how a sentence cites a card. Loads haipipe-plugin for the four-facet contract and haipipe-probe for the crossing protocol, and restates neither. Trigger: probe plugin, probe card, probe folder, evidence question, Q-executor, Q-consumer, A-executor, stake wall, proof folder, pulled csv, provenance manifest, cite a probe, probe tab, name a probe card, card naming rule, probe state, is this probe done, read tick, asked once cited by id, /haipipe-plugin-probe.
+  The Task/Discovery QA lane of the Board Page's Probe family: one evidence
+  question per folder at <page>/probe/PP<NN>-<slug>/. consumer/ holds the
+  stake-bearing question; executor/ holds the stripped question and returned
+  bank answer; proof/ holds small aggregate evidence with provenance; card.md is
+  the reader-facing head. PageX is the sibling accepted-Page lane and owns no QA
+  card. Loads haipipe-plugin for the four-facet contract and haipipe-probe for
+  source routing and crossing. Trigger: probe plugin, QA probe, probe card,
+  probe folder, Task evidence, Discovery evidence, Q-executor, Q-consumer,
+  A-executor, stake wall, proof folder, cite a probe, /haipipe-plugin-probe.
 metadata:
-  version: "0.6.0"
+  version: "0.9.0"
   last_updated: "2026-08-17"
-  summary: "Rewritten to the display plugin's shape and density: 262 lines of narrative in 9 sections became 6, the duplicated chain diagram is gone, 📎 Citation is written, and the invented raised/working/bound ladder is replaced by haipipe-probe's own states plus a human read: tick, the probe equivalent of a display unit's accepted:."
+  summary: "QA Probe stores the consumer interpretation behind the wall, separate from both the bank answer and later Page prose."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
-# /haipipe-plugin-probe · one question per folder, and the wall is a path
+# /haipipe-plugin-probe · Probe's Task/Discovery QA lane
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 **LOAD `haipipe-probe` for the crossing itself**: stake stripping, the five-step loop, MATCH-before-DISPATCH, bank independence. This file owns the page-side delta only: where each of those pieces lands on disk, and how a sentence cites the result.
+
+PageX is the other lane inside the Probe family. It binds accepted Page files in
+OUTLINE; this plugin creates QA cards only for `source: task|discovery`.
 
 ## 🗂 Storage · one question per folder, and the stake wall is a PATH
 
@@ -20,7 +31,8 @@ metadata:
 └── PP<NN>-<slug>/          one evidence question, numbered per page (QPf9 §1)
     ├── card.md             🧑 the head, one screen, all fields (§🪪)
     ├── consumer/           🧱 STAKE ALLOWED · never crosses
-    │   └── q-consumer.md     one block per consumer question this reduces to
+    │   ├── q-consumer.md     one block per consumer question this reduces to
+    │   └── a-consumer.md     Page-specific interpretation · not Page prose
     ├── executor/           🧱 STAKE FORBIDDEN · all of it may cross
     │   ├── q-executor.md     the stripped question · THE ONLY THING DISPATCHED
     │   └── a-executor.md     the bank's answer, verbatim
@@ -78,21 +90,26 @@ Everything else in `card.md` is a pointer, not content: the body is the four-lin
 ```
 
 ```text
-  ❌ forward   the bullet names PP01      needs the card to exist FIRST, so a
-                                          plan written that way was written
-                                          AFTER its cards, which is backwards
-  ✅ backward  the card names the bullet   the frozen plan is never edited
+  ✍️ authored   the bullet names PP01      illegal at WRITING time: the plan is
+                at OUTLINE                 authored bare, because the id does
+                                           not exist yet
+  ✅ folded     the ① fold appends         legal: `📮 PP<NN>` lands in the
+                `📮 PP<NN>` in place        bullet once the card SERVES it
+  ✅ backward   the card names the bullet  the LIVE join, and the one the 🧭
+                                           tab reads
 ```
+
+So a forward id in a bullet is a fold-appended CITATION, never an authored one; `serves:` remains the live join.
 
 The address is the plan's own (`C<n>.P<n>.B<n>`, `haipipe-plugin-outline` §📐), and the relation is MANY-TO-MANY: one card may answer several bullets, and one bullet may need two cards, typically a number and the script that produced it. `serves:` is therefore a list.
 
-**A bullet is satisfied when EVERY card serving it is bound**, never when any one is. `any` would let a claim with one landed number and one open question read as finished, which is the failure the counts exist to prevent. The 🧭 tab prints `↩ PP04 serve this bullet · 2 of 3 bound` until they all are.
+**A bullet is satisfied when EVERY card serving it is answered**, never when any one is. `any` would let a claim with one landed number and one open question read as finished, which is the failure the counts exist to prevent. The 🧭 tab prints `↩ PP04 serve this bullet · 2 of 3 answered` until they all are.
 
 A card whose `serves:` is empty is not an error while the plan is still being written. Once the plan is approved it is one, and the 🧭 tab shows it as 🎈: evidence nobody is using.
 
 ## ✍️ Writer · the loop lands each piece, and the state is checkable by FILE
 
-The lifecycle is `haipipe-probe`'s five-step loop, run by the EVIDENCE phase. No board route writes a card; this plugin only says where each step lands.
+The lifecycle is `haipipe-probe`'s five-step loop, split across TWO phases since 260819: PROBE runs ① ORGANIZE ② MATCH ③ DISPATCH, and EVIDENCE runs ④ POINT ⑤ INTERPRET, landing and binding what came back. No board route writes a card; this plugin only says where each step lands.
 
 ```text
 step                                  where it lands
@@ -102,8 +119,7 @@ step                                  where it lands
 ③ DISPATCH  send it out               card.md · dispatch: who · when
 ④ POINT     bind to the QA file       card.md · target: <path> ✚ proof/
 ⑤ INTERPRET the answer, verbatim      executor/a-executor.md
-            what it MEANS here        🚫 not here — the A-consumer is stake-aware
-                                      and is written in the page's own prose
+            what it MEANS here        consumer/a-consumer.md · stake allowed
 ```
 
 The one obligation this plugin adds: **write into the right side of the wall.** A question arriving with stake is copied into `consumer/` and stripped into `executor/`; the stripped copy is what any dispatch reads, and nothing edits `executor/` to add context back.
@@ -117,16 +133,89 @@ planned           executor/q-executor.md exists · target empty     🧑
 commissioned      target names a QA file claimed `working`         ⚙️
 answered          target names an `answered` QA file ✚ a non-empty ⚙️
                   a-executor.md ✚ proof/ with files or a why_empty
-read       ✅DONE ✚ read: ✅ <who> · <date> in card.md             🧑
+read       answered ✚ non-empty consumer/a-consumer.md ✚           🧑
+           read: ✅ <who> · <date> in card.md
 answered-local    answered from our own registries, no bank run    🧑
 deferred          parked on purpose; card names until what         🧑
 failed            the bank ran and could not answer                ⚙️
 concern           route: none · no bank can close it · stops at ①  🧑
 ```
 
-⚠️ **`answered` is the machine's finish, `read` is the page's.** `answered` means the bank returned something; `read` means a person read `a-executor.md`, wrote the A-consumer into the page's prose, and ticks `read:` in `card.md`. Only a person may tick it, and a changed `target` or a re-pulled `proof/` drops the tick back — the same rule as a display unit's `accepted:`, for the same reason: acceptance binds to the inputs it was accepted with. A page quoting a number from a card that is not `read` is quoting an unread answer.
+⚠️ **`answered` is the machine's finish, `read` is the page's.** `answered`
+means the bank returned something; `read` means a person read `a-executor.md`,
+accepted the interpretation in `consumer/a-consumer.md`, and ticked `read:` in
+`card.md`. DRAFT may then use that accepted interpretation in Page prose. Only
+a person may tick it, and a changed `target`, proof, or A-consumer drops the tick
+back. A Page quoting a number from a card that is not `read` is quoting an
+unread answer.
 
 A card claiming `answered` with an empty `a-executor.md` is a defect, not a nearly-finished card. `PRIMARY` material is `card.md`, both `q-*.md` and `proof/manifest.yaml`; `a-executor.md` is a verbatim copy. A question is asked ONCE: a second folder for the same unknown is the failure the id exists to prevent, and one `q-executor.md` may serve several consumer questions, which is why `q-consumer.md` holds a block per consumer.
+
+## 🧮 One card, many values: `PP<NN>.v<n>`
+
+A card is ONE question and its answer usually holds SEVERAL numbers. A sentence
+uses one of them. Citing the card alone is therefore not precise enough, and
+nothing caught it until JL asked on 260819: "probe 是一个大 folder，里面放了所有
+的 value，而有的时候我们在正文里面只会用到一个具体的 value".
+
+```text
+  probe/PP01-phase-contract-count/
+    the question   how many phases, contracts, ticks, runs?
+    the answer     7 · 6 · 5 · 2          ← four values, one card
+
+  §1  cites PP01.v1     the phase count
+  §13 cites PP01.v4     the run count
+```
+
+**The id is allocated in `card.md`, in a `## Values` block, and nowhere else.**
+It is written when the answer LANDS, at EVIDENCE, because a value that does not
+exist yet cannot be numbered:
+
+```text
+## Values
+- v1 · phases the loop declares · 7 · proof/phase-census.json `.phases`
+- v2 · contracts that ship      · 6 · proof/phase-census.json `.contracts`
+- v3 · person-reserved ticks    · 5 · proof/phase-census.json `.ticks`
+- v4 · runs executed            · 2 · proof/run-index.json `.runs | length`
+```
+
+Each row is one line: the id, what the number IS in plain words, the number, and
+the exact place in `proof/` it was read from. A row whose last field names no
+file is not a value; it is a number somebody typed.
+
+**Why this is not a new plugin.** The number already lives in `proof/` with its
+source, run and sha256. A `value/` folder would be a second home for one thing,
+which is the rule that retired the proof mark on 260819 (its glyph 🧮 now means value). What was missing was never a
+folder; it was one more level of ADDRESS, and the same grammar already handles
+that everywhere else: `C3.P1.B4` splits one bullet into sentences, `PP01.v2`
+splits one card into values.
+
+**A `bank: code` value is RECOMPUTED, not re-read by eye** (JL 260819: "I think
+the machine should check these numbers"). `checks/values.py` re-runs each value's
+own recipe against the repo and compares:
+
+```text
+  🤖 the machine owns   is the number still true?
+  🧑 the person owns    is this the right number to be asking for?
+```
+
+That splits what `read: ✅` means. It stops being "I checked the arithmetic" and
+becomes "I agree with the judgment inside the question". `PP01.v1` is the worked
+example: counting the contract folders is mechanical, and whether COMPILE counts
+as a phase at all is not, which is why the count is 7 and not 6.
+
+The check earned itself on its first run: `PP03.v2` quoted 17 cards at `planned`,
+which was true when it was written and became 13 four cards later. A person
+re-reading by eye does not catch that, because the page still looks right.
+
+A value with no recipe reports `unchecked`, never as passing.
+
+**What it makes checkable, in both directions:**
+
+```text
+  🕳 a sentence carries a number and cites no `PP<NN>.v<n>`   ← unsourced
+  🎈 a card holds a value no sentence uses                    ← unused answer
+```
 
 ## 🧾 `proof/` · the files behind the answer
 
@@ -162,7 +251,7 @@ proof/
 
 ```text
   📊 table    .csv    an esttab coefficient table, a frequency table
-  🔢 numbers  .json   a handful of scalars: N, a cutoff, a date range
+  🧮 numbers  .json   a handful of scalars: N, a cutoff, a date range
   📄 excerpt  .txt    the few lines cut out of a log, with their line numbers
 
   ⛔ never: a whole log · a .dta or .parquet · any row-level record · any id
@@ -236,7 +325,7 @@ The right-pane 🚪 tab is `live/plugview.py`'s `plug_probe`, taking the display
   🏷 head        card.md            state · bank verdict · target
   🧱 asked       q-executor.md      what actually crossed
   📥 came back   a-executor.md      the bank's own words
-  🔢 proof       proof/             THE FILE'S OWN CONTENT, rendered
+  🧮 proof       proof/             THE FILE'S OWN CONTENT, rendered
   🗂 audit       q-consumer.md      folded: who wanted it, and why
 ```
 
@@ -265,7 +354,7 @@ display layout 长得像一些"), which is the same order a display card uses:
   ┌ STATE ─ ROUTE ─ BANK ─ SERVES ─ TARGET ─────┐  a definition grid
   └ 🕳 the one next step, or ✅ read ────────────┘  amber / green
 
-  ┏━ 🔢 PROOF · the files behind the answer ━━━━┓  the LEAD panel, heavier border
+  ┏━ 🧮 PROOF · the files behind the answer ━━━━┓  the LEAD panel, heavier border
   ┃ ┌ main-ols_trait_l5_mme_ttl.csv (table)(13 rows)┐ one figure PER FILE
   ┃ │ ▓▓▓ the embedded file itself ▓▓▓             │
   ┃ │ ▸ provenance                                 │

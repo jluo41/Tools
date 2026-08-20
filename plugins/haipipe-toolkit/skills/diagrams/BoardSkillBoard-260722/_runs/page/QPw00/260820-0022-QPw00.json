@@ -1,0 +1,184 @@
+{
+ "run_id": "260820-0022-QPw00",
+ "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+ "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+ "status": "hold",
+ "packet": {
+  "run_id": "260820-0022-QPw00",
+  "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+  "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+  "start_phase": "DRAFT",
+  "intent": "DRAFT re-pass under the 260820 read rules (trust the plan's Answered:/Drawn: values as written, one spot-check card, no folder re-reads): land step 19's producer-owed state-line count fix, run the present-tense sweep (haipipe-page-draft §🕰, new 260820) over ## Content, and confirm per division that approved outline v3 stays realized on the page.",
+  "prior_run": "_runs/page/QPw00/260819-1813-QPw00.json",
+  "sources": [
+   "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md",
+   "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+   "_runs/page/QPw00/260819-1813-QPw00.json (step 19 findings)",
+   "page-workflows/haipipe-page-workflow/ref/producer-contract.md",
+   "page-workflows/haipipe-page-workflow/ref/page-run-contract.md"
+  ],
+  "constraints": [
+   "outline v3 is approved and READ-ONLY; a stale plan routes to OUTLINE, never a silent correction",
+   "Opening is the creator's pen; outline/, probe/, display/, bibex/ read-only except the one declared spot-check card read",
+   "## Log history rows, the <HOLE: PP05 ...> sentence, and quoted rulings in Log/Discussion stay untouched",
+   "phase is DRAFT, always"
+  ],
+  "human_gate": {
+   "required": true,
+   "rule": "a person ticks approved: on the outline; DRAFT enters only on that tick",
+   "status": "passed",
+   "evidence": [
+    "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819 (line 5)"
+   ]
+  },
+  "limits": {
+   "max_steps": 3,
+   "max_rounds": 1,
+   "note": "declared loop-aware per page-run-contract's PREPARE-pause rule: max_steps bounds passes, so 3 covers this DRAFT pass, the routed REVISE rebuild, and a CHECK"
+  }
+ },
+ "receipts": [
+  {
+   "step": 1,
+   "round": 1,
+   "phase": "DRAFT",
+   "actor": "haipipe-page-draft-agent",
+   "role": "producer",
+   "builder_actor": "watch.py live render (pid 33004, rebuilt board/QPw/QPw00-page-loop.html on save 260820 0023); latex/ and word/ rebuilds owed to ⑤ REVISE",
+   "status": "ok",
+   "version_before": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:6dfe2b049cbb7ced8363d224f75e8125e12ee329efb9be149ea843760bee7d47",
+   "version_after": "2bcd9eb4c3a2486d07403dc5d583420d9242fef0f5cc0fd869d4fa2e05934700:dd92ef48e52c1d4914a75570a432e8aa13d228908f83f577bc68fe7cb6ff7916",
+   "checked_version": "",
+   "source_sha256": "2bcd9eb4c3a2486d07403dc5d583420d9242fef0f5cc0fd869d4fa2e05934700",
+   "render_sha256": "dd92ef48e52c1d4914a75570a432e8aa13d228908f83f577bc68fe7cb6ff7916",
+   "mechanical_errors": 0,
+   "mechanical_warnings": 2,
+   "verdict": "",
+   "route": "REVISE",
+   "requested_route": "REVISE",
+   "reopens_promise": false,
+   "reason": "DRAFT authority under approved outline v3, exercised as clean re-realization: 15 Content sentences that narrated the past were rewritten or removed into present-rule statements (haipipe-page-draft §🕰, §1.3 · §2.2 · §4.5 · §5.1 · §6.2 · §10.1 · §14.1), and step 19's producer-owed fix landed: the state line's unverifiable 'open: 14' now reads 'open Aims: 23 of 31', counted from the page's own Aims rows. No Aim, target, landed number, division, or promise moved, so the route is REVISE for the latex/ and word/ rebuild this edit stales.",
+   "artifacts": [
+    "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+   ],
+   "evidence": [
+    "state line (line 2): 'open Aims: 23 of 31' — counted on the page: 31 Aim rows, 8 ✅ (A1.3, A3.1, A6.2, A10.1, A11.1, A13.1, A14.1, P1), 18 🔨, 3 ⬜, 2 🧠",
+    "spot-check (the one allowed card read): probe/PP01-phase-contract-count/card.md ## Values v1=7, v2=6, v3=5, v4 NOT HERE → PP02 — matches plan C1.P2.B3 exactly; the plan is not stale on the spot-checked card",
+    "🕰 sweep: 15 Content sentences rewritten or removed; named in the page's Log row 260820 0022; residual grep over ## Content finds only deliberate keeps (plan-named titles, dated event citations, §11's rename-debt content)",
+    "coverage re-confirmed by reading the PAGE against plan v3: all 131 points across C1-C14 have a realizing Content location in the matching division; 7 of 7 Drawn displays cited (Display1-7), PP01-PP07 quoted by id, 📚 luo2026eventglucose cited in §4.4, the one hole §14.1 names its PP05 blockers",
+    "check.py scoped to QPw00-page-loop.md: 0 ERROR, 2 WARN, both projection-stale (tex, docx), created by this edit and owed to the routed REVISE"
+   ],
+   "findings": [
+    "plan-vs-card drift, known and ruled, not re-derived this pass: outline v3 states PP02.v2=19, PP04.v3=17, PP04.v4=6 and Display3 '14 frozen sources' where the page quotes 24, 8, 5 and 15; step 19 finding #7 ruled the cards binding and the page correct, so no action and no route change",
+    "## Diagram carries the same past-contrast the sweep removes from Content ('Since 260819 the Aims live in the plan file too, and that move is what let…'); Diagram was outside this sweep's declared ## Content scope",
+    "Opening banner still narrates pre-260819 history and lists the §3-§7 hand-off pages in pre-reorder order; the creator's revise-opening pen, not a producer's (step 19 finding #3 stands)",
+    "§14 table rows 3d and 5 read 'this lane DRAWS since 260819' / 'It no longer draws'; the table is Display3's frozen transcription, so that sweep is a display-walk redraw, the same class as step 19's Display7 caption finding",
+    "two paragraph titles carry past narration the sweep may not touch because the plan names them: C5.P1 'what DRAFT actually does, now that the Aims have left' and C10.P1 'the division its own ruling overturned'; owed to an outline v4 if JL wants titles swept",
+    "§11's 'was page-phases/ until 260817' annotation kept deliberately: the old folder name is the present debt C11.P1.B4 states (contracts still naming page-phases/ exist today), so it is load-bearing, not dead history"
+   ],
+   "human_gate": {
+    "required": true,
+    "status": "passed",
+    "evidence": [
+     "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819 (line 5)"
+    ]
+   }
+  },
+  {
+   "step": 2,
+   "round": 1,
+   "phase": "REVISE",
+   "actor": "haipipe-page-revise-agent",
+   "role": "producer",
+   "builder_actor": "watch.py live render (pid 33004, rebuilt board/QPw/QPw00-page-loop.html on save 260820 0042; render hash recomputed from disk and confirmed to carry the pass's final Log row) + serve.py 5599 export doors (latex, word)",
+   "status": "ok",
+   "version_before": "2bcd9eb4c3a2486d07403dc5d583420d9242fef0f5cc0fd869d4fa2e05934700:dd92ef48e52c1d4914a75570a432e8aa13d228908f83f577bc68fe7cb6ff7916",
+   "version_after": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f:d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "checked_version": "",
+   "source_sha256": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f",
+   "render_sha256": "d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "mechanical_errors": 0,
+   "mechanical_warnings": 0,
+   "verdict": "",
+   "route": "CHECK",
+   "requested_route": "CHECK",
+   "reopens_promise": false,
+   "reason": "REVISE authority under fixed purpose and Aims: the date-code sweep (haipipe-page-draft's present-tense law extended 260820; JL, reading the compiled PDF, ruled the content must be readable) removed the past-narration DRAFT's pass deliberately kept, then both projections were rebuilt so the deliverable matches the swept source. 15 lines rewritten and 12 bare date codes removed across the state line, both Diagram captions, and Content sections 1.2, 1.3, 2.3, 6.2, 8.1, 10.1, 11, 12.1, 14 and 14.1; the history those dates carried moved to one new Log row (260820 0041). No Aim, target, landed number, division, or promise moved, so the swept version is ready for a fresh judge: route CHECK.",
+   "artifacts": [
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.tex",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop-view.html",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop.docx",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop.pdf",
+    "Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop-view.html"
+   ],
+   "evidence": [
+    "sweep residue check: grep for bare 26xxxx codes over lines 1-690 (state line, Opening, Diagram, Content) now finds only the named exceptions: the Opening banner (creator's pen), run ids 260805-0216-QB8e and 260818-1543, JL's quoted 260818 ruling, the verified = {JL 260815} tick record, plan-named headings 11.1 and 12.3, and Display3's frozen table cells",
+    "Log row 260820 0041 carries the history the removed dates held: card-birth answered three ways until the 260817 split, step-vs-phase weighed 260818, three serves: addresses stale 260819, the six-page split 260818, page-phases/ renamed 260817, base-adoption option B 260804",
+    "latex projection verified on content, not on ok:true: latex/QPw00-page-loop.tex contains the swept sentence (grep 'the word stays' = 1, 'was kept when JL weighed' = 0) after a forced clean rebuild at 0049; the first two POSTs had returned ok:true while leaving the previous conversion's body in place",
+    "word projection verified the same way: word/document.xml inside the docx has the swept sentence (1) and no pre-sweep sentence (0), rebuilt 0042",
+    "check.py scoped to QPw00-page-loop.md: 0 ERROR, 0 WARN; step 1's two projection-stale WARNs are cleared by the rebuilds",
+    "render drift noted honestly: watch.py (pid 33004) rebuilt board/QPw/QPw00-page-loop.html at 0042 while this pass ran; the render hash above is recomputed from disk and the html contains the final source's 260820 0041 Log row, so source and render identify one version"
+   ],
+   "findings": [
+    "the Opening banner still narrates pre-260819 history with four date codes; it is the creator's revise-opening pen, not a producer's (step 1 finding stands)",
+    "section 14's frozen Display3 table cells still read 'this lane DRAWS since 260819' and 'folded into 5 since 260819'; the table is a frozen transcription, so that sweep is a display-walk redraw owed to EVIDENCE on the unit, not this pen",
+    "four plan-named headings carry past narration or a date the sweep may not touch: 5.1 'now that the Aims have left', 10.1 'The division its own ruling overturned', 11.1 'settled 260804', 12.3 '(260819)'; owed to an outline v4 if JL wants titles swept",
+    "latex-door defect, found live this pass: live/export.py export_latex never checks md2tex's exit code, so when md2tex does not regenerate the tex the door re-inserts floats into the PREVIOUS conversion and returns ok:true with a fresh mtime; two POSTs served a stale body that way, repaired here by deleting the tex and re-POSTing; the door itself still has the defect",
+    "plan-vs-card drift stands as ruled at step 19 (cards binding, page correct): outline v3's PP02.v2=19, PP04.v3=17, PP04.v4=6 and Display3 '14 frozen sources' vs the page's 24, 8, 5 and 15; no action"
+   ],
+   "human_gate": {
+    "required": true,
+    "status": "passed",
+    "evidence": [
+     "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: JL 260819 (line 5)"
+    ]
+   }
+  },
+  {
+   "step": 3,
+   "round": 1,
+   "phase": "CHECK",
+   "actor": "haipipe-page-check-agent",
+   "role": "judge",
+   "builder_actor": "watch.py live render (pid 33004, rebuilt board/QPw/QPw00-page-loop.html on save 260820 0042; render hash recomputed from disk and confirmed to carry the pass's final Log row) + serve.py 5599 export doors (latex, word)",
+   "status": "ok",
+   "version_before": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f:d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "version_after": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f:d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "checked_version": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f:d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "source_sha256": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f",
+   "render_sha256": "d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe",
+   "mechanical_errors": 0,
+   "mechanical_warnings": 0,
+   "verdict": "pass",
+   "route": "HOLD",
+   "requested_route": "HOLD",
+   "reopens_promise": false,
+   "reason": "pass: the version meets its plan with zero page-scoped findings and both projections current; HOLD because the close ruling (Q row 7b) and the read:/accepted: ticks are a person's, and this is the run's last budgeted step (max_steps 3)",
+   "artifacts": [],
+   "evidence": [
+    "identity recomputed from disk equals step 2's version_after exactly",
+    "check.py --strict page-scoped: 0 error, 0 warn, 0 gap",
+    "bare date codes in lines 1-690: only the nine standing exceptions",
+    "state line recounted from Aims rows: open Aims: 23 of 31 exact"
+   ],
+   "findings": [
+    "Opening banner narrates history (creator's pen)",
+    "Display3 frozen cells carry date codes (display walk)",
+    "four plan-named headings carry dates (outline v4, if wanted)",
+    "plan-vs-card drift stands as ruled (cards binding)",
+    "export_latex md2tex exit-code guard was missing (fixed off-run 260820)"
+   ],
+   "human_gate": {
+    "required": true,
+    "status": "passed",
+    "evidence": [
+     "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819 (line 5)"
+    ],
+    "close_ruling": "pending: no person has signed CLOSE for this version"
+   }
+  }
+ ],
+ "final_version": "1fe67991434252714376bbe12c412426615e29dac3a7b1399be46ee48894e34f:d29d12108d03faee124421aca3b0eba485fd50b81a5f9ba9837c1d133ace23fe"
+}

@@ -883,7 +883,7 @@ def retitle(page, src, unit_name):
     if not ver:
         return
     kind = "Skill" if src.is_dir() else "Agent"
-    # an agent's title token is its ROLE: haipipe-board-creator-agent -> creator
+    # an agent's title token is its ROLE: haipipe-page-creator-agent -> creator
     short = unit_name
     if kind == "Agent":
         short = re.sub(r"^haipipe-(?:board|page)-", "", unit_name)

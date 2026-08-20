@@ -12,8 +12,19 @@ from cli.check import Report, check_page_type  # noqa: E402
 
 
 class PageTypeRegistryTest(unittest.TestCase):
-    def test_new_task_and_application_types_resolve_by_declared_key(self):
-        for value in ("venue", "insight", "brief", "intervention", "artifact"):
+    def test_current_cross_family_types_resolve_by_declared_key(self):
+        for value in (
+            "seed",
+            "venue",
+            "narrative",
+            "section",
+            "round",
+            "dash",
+            "insight",
+            "brief",
+            "intervention",
+            "artifact",
+        ):
             with self.subTest(value=value):
                 report = Report()
                 check_page_type(

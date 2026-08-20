@@ -1,111 +1,104 @@
-# Intervention: map settled insights into components and variants
-state: 🟡 PARTIAL · contract shipped · fresh-context design passed · open: materialized runtime map
+# Application Design Page: one audience × job × venue
+state: 🟡 PARTIAL · contract 0.2.0 shipped · runtime projection pending
 page-type: intervention
 owner: JL
 
 ## Opening
-How does Application turn settled Insight Pages into a message, dashboard, checklist, or report without rerunning DIKW?
 
-Intervention selects and translates K/W rows into mechanisms, principles, strategy, components, variants, and safety rails. It is Application's composition Page and uses a distinct name because Board already owns generic Design.
+What is the main compositional unit of an Application?
 
-**Covered here**: the global delivery architecture and Artifact handoffs.
+One user-facing Design Page serves one audience × behavior job × primary venue.
+It consumes the Brief and exact Insight Design Handoffs through PageX, then owns principles, a message/unit map, repeated divisions, variants, rails, and visible projections. The machine key remains `intervention` for global uniqueness.
 
-**Covered elsewhere**: Brief owns audience and promise; Artifact owns concrete content and acceptance.
+### Writing Style
 
-## Writing Style
-Write every design move as an action tied to an Insight Page. Distinguish invariant, experimental variable, and safety rail explicitly.
+Explain what each message or component does for the audience. Tie every substantive move to a handoff row and inherited boundary.
 
 ## Diagram
-**The transformation chain**: no design move floats free of knowledge or delivery.
 
 ```text
-Insight K/W ─▶ principle ─▶ component ─▶ Artifact Page
+Brief + Insight Design Handoffs
+              │ PageX
+              ▼
+🎨 Design contract
+   ├── principles
+   ├── message/unit map
+   ├── R1 message division
+   ├── R2 message division
+   └── Rn ... + variants + rails
+              │
+              ▼
+visible SMS / email / dashboard / checklist / report projection
 ```
 
 ## Content
 
-### 1 · Insight selection
-**Selection state**: adopted and declined inputs are both inspectable.
-```text
-Insight Page | adopted/declined | reason | boundary
-```
-Adopted and declined Insight Pages remain visible with one-line reasons.
+### 1 · Contract
 
-### 2 · Theory of change
-**Mechanism chain**: each action link names its knowledge warrant.
-```text
-K/W row → mechanism → audience action → outcome
-```
-Every audience-action link names the K/W row that warrants it.
+**Contract map**: the subparts below refine the Page decision into one bounded handoff.
 
-### 3 · Intervention principles
-**Principle form**: knowledge becomes an executable design move.
 ```text
-because <insight>, do <move>, within <rail>
+inputs → bounded contract → observable handoff
 ```
-Principles are executable design moves, not claims paraphrased as advice.
 
-### 4 · Strategy and arc
-**Composition choice**: venue and behavior determine the organizing form.
-```text
-framing | sequence | interaction architecture | narrative
-```
-The venue decides whether this is framing, sequence, interaction architecture, or narrative.
+Pins audience, behavior job, primary venue, success/kill criteria, and Brief version.
 
-### 5 · Component map
-**Unit map**: one row becomes one independently approvable Artifact.
-```text
-unit | audience job | content move | constraint | rail
-```
-One row exists per independently approvable Artifact unit, with audience job, content move, constraint, and rail.
+#### 2 · Insight Use Map
 
-### 6 · Variants and arms
-**Experiment boundary**: invariant content is separated from the tested variable.
-```text
-invariant core + one variable → arm A / arm B
-```
-The Page separates what stays invariant from what deployment is allowed to test.
+Records Design Aim, Insight Page, exact handoff row, adopted/declined state, allowed use, and inherited boundary.
 
-### 7 · Safety and compliance
-**Safety rail**: prohibited and unsupported moves are visible before authoring.
-```text
-risk | trigger | prohibited move | required safeguard
-```
-Unsupported, unsafe, or prohibited moves are explicit before copy is authored.
+#### 3 · Principles and architecture
 
-### 8 · Artifact handoff
-**Component packet**: each unit receives only its own bounded design inputs.
-```text
-component row + principle refs + venue constraints + rails
-```
-Every unit receives one current, versioned handoff row.
+Turns accepted K/W into executable design moves and an organizing sequence or interaction architecture.
+
+#### 4 · Message/unit map
+
+Lists repeated units by job, content move, handoff refs, venue constraints, variant status, rails, and acceptance.
+
+#### 5 · Repeated divisions
+
+Each `R<n>` division contains the concrete unit, why it exists, what it may say, what it must not imply, variants, and projection state.
+
+#### 6 · Acceptance and reopen
+
+The Page closes when its required projections pass the venue and audience criteria. A changed handoff reopens only dependent divisions.
 
 ## Aims
 
-### A5 · Component map
-- A5.1 · The independent accept/reject test determines Artifact grain.
-  **Done when:** a runtime map has no row combining separately reviewable units.
+### A1 · Contract
+- A1.1 · One Page contains one coherent audience/job/venue design.
+  **Done when:** no division silently serves another decision maker or channel.
 
-### A8 · Artifact handoff
-- A8.1 · A fresh Artifact agent executes one row without inventing strategy.
-  **Done when:** forward validation preserves trace, invariant, variant, and rail.
+#### A2 · Trace
+- A2.1 · Every substantive design move reaches an accepted handoff.
+  **Done when:** the Insight Use Map has no unsupported adopted row.
+
+### P · Projection
+- P1 · One runtime Design Page produces an accepted visible projection.
+  **Done when:** output and trace pass CHECK.
 
 ## States
 
-### A5 · Component map
-- ⬜ A5.1 · No runtime component map has been inspected yet.
+### A1 · Contract
+- ✅ A1.1 · Fixed by Design Page Type 0.2.0.
 
-### A8 · Artifact handoff
-- ✅ A8.1 · Fresh-context validation on 260817 mapped Insight A/B into timing and non-blaming principles, one core SMS component, one conditional renal component, and explicit safety rails without inventing strategy.
+#### A2 · Trace
+- ✅ A2.1 · Fixed by the Insight Use Map contract.
+
+### P · Projection
+- ⬜ P1 · Runtime projection remains open.
 
 ## Files
 
 ### 📋 Contracts
 - `../../../../application/page-types/haipipe-page-for-intervention/SKILL.md`
-  The Page Type contract this specimen exercises.
 - `../../../../application/haipipe-application/fn/intervention.md`
-  The Application door procedure.
+
+## Law
+
+Design consumes handoffs and owns composition. It never performs a substitute
+Probe or copies raw evidence into its message logic.
 
 ## Log
-260817 · Fresh Application agent used the independent accept/reject test, kept the core SMS as one Artifact, and withheld the renal-specific component until a new Wisdom handoff exists.
-260817 · Named Intervention rather than Design to avoid collision with Board's candidate-selection Page Type.
+
+260820 · Recast Intervention as many user-facing Design Pages with repeated message/unit divisions.

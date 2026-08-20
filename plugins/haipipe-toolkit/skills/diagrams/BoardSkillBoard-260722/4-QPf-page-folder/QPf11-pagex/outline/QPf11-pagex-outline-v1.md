@@ -32,7 +32,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 
 ### C3.P1 · the rule that skips plugin folders, and the shape this never makes anyway
 - B1 · The board finds its pages by walking the folders.   ✅ have it
-- B2 · `_in_plugin` in `src/common.py` tells it to stop as soon as it reaches `pagex`, and to skip everything under it.   🧮 proof
+- B2 · `_in_plugin` in `src/common.py` tells it to stop as soon as it reaches `pagex`, and to skip everything under it.
 - B3 · So a borrowed `Q*.md` never appears as a second, ghost page, and neither does the list file itself.   ✅ have it
 - B4 · The hardest case would be a shortcut to a whole page FOLDER.   ✅ have it
 - B5 · That shape is never made: this plugin borrows files only, and both the rebuild and the ＋ button refuse a folder.   🎯 A2.2
@@ -41,7 +41,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 
 ### C4.P1 · the same rule the skill list already follows
 - B1 · A page cannot lean on another page in secret.   ✅ have it
-- B2 · It says so in its own words, in the "Covered elsewhere" line and in every sentence that names another page.   🧮 proof
+- B2 · It says so in its own words, in the "Covered elsewhere" line and in every sentence that names another page.
 - B3 · The borrow is therefore already written down, and asking someone to type it again is asking them to say the same thing twice.   ✅ have it
 - B4 · So there is no picker here: no page to choose from a dropdown, no file list to open, and no reason to type before anything is borrowed.   ✅ have it
 - B5 · What the machine must NOT decide is your order.   ✅ have it
@@ -71,7 +71,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B3 · The order is no longer the machine's: QPs1 was suggested first on 16 mentions and now sits second, because a person moved it there, and a rebuild never touches that.   🔢 value · PP01
 - B4 · Every shortcut is relative, so a borrow still works after the repo is copied or moved.   ✅ have it
 - B5 · How far a shortcut climbs depends on where its source page sits: three `../` when that page shares this page's own group folder, which is the case for QPf10, QPf1 and QPf3, and four when it sits in another, which is the case for QPs1.   🔢 value · PP02
-- B6 · Opening one proves the point: `pagex/QPs1-overall/QPs1-overall.md` shows QPs1's text as it is today, where a copy would show the day it was copied.   🧮 proof
+- B6 · Opening one proves the point: `pagex/QPs1-overall/QPs1-overall.md` shows QPs1's text as it is today, where a copy would show the day it was copied.
 - B7 · Each shortcut keeps the file's path inside its source page, so two files taken from one page can never collide on the same name.   ✅ have it
 - B8 · ⚠️ 1 more sentences in this division are not planned here yet   🎯 aim
 

@@ -2,7 +2,7 @@ export const meta = {
   name: 'haipipe-page-lifecycle',
   description: 'Route one Page through bounded OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and independent CHECK loops.',
   phases: [
-    { title: 'Produce', detail: 'a phase-scoped producer performs DRAFT, EVIDENCE, or REVISE' },
+    { title: 'Produce', detail: 'a phase-scoped producer performs any phase except CHECK' },
     { title: 'Snapshot', detail: 'rebuild, run mechanical checks, and identify the exact Page version' },
     { title: 'Check', detail: 'a fresh read-only judge evaluates and routes that version' },
   ],
@@ -35,6 +35,9 @@ const limits = parsed.limits || {}
 const maxSteps = limits.max_steps || 12
 const maxRounds = limits.max_rounds || 3
 const humanGate = parsed.human_gate || { required: false, rule: '' }
+// Set when CHECK reopened the promise into a new DRAFT round; a reopened
+// DRAFT is never fused with REVISE (page-run-contract.md §The fused pass).
+let promiseReopened = false
 
 if (!board || !page || !runId || !intent || !parsed.start_phase) {
   log('page-lifecycle: missing board, page, run_id, intent, or start_phase')
@@ -46,14 +49,32 @@ if (!['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK'].inc
 }
 
 const ROUTES = ['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK', 'CLOSE', 'HOLD']
+// THE PREPARE LOOP, 260819. OUTLINE is the head of a converging loop
+// (OUTLINE -> PROBE -> EVIDENCE and back) until the plan passes its four
+// self-consistency checks. This table REJECTED all three of those edges until
+// now, so a run obeying the current contracts routed to HOLD. COMPILE keeps its
+// row so an already-stored receipt naming it stays auditable.
 const LEGAL = {
-  OUTLINE: ['OUTLINE', 'DRAFT', 'HOLD'],
-  DRAFT: ['DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'CHECK', 'HOLD'],
-  PROBE: ['PROBE', 'EVIDENCE', 'REVISE', 'HOLD'],
-  EVIDENCE: ['EVIDENCE', 'REVISE', 'DRAFT', 'CHECK', 'HOLD'],
+  OUTLINE: ['OUTLINE', 'PROBE', 'EVIDENCE', 'DRAFT', 'HOLD'], // EVIDENCE added 260819: ② and ③ dispatch in parallel after the 🧑 LOOK
+  PROBE: ['PROBE', 'EVIDENCE', 'OUTLINE', 'HOLD'],
+  EVIDENCE: ['EVIDENCE', 'OUTLINE', 'HOLD'],
+  DRAFT: ['DRAFT', 'PROBE', 'REVISE', 'CHECK', 'HOLD'],
   REVISE: ['REVISE', 'COMPILE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
   COMPILE: ['COMPILE', 'CHECK', 'REVISE', 'HOLD'],
-  CHECK: ['CLOSE', 'OUTLINE', 'REVISE', 'PROBE', 'EVIDENCE', 'DRAFT', 'HOLD'],
+  CHECK: ['CLOSE', 'OUTLINE', 'PROBE', 'EVIDENCE', 'DRAFT', 'REVISE', 'HOLD'],
+}
+
+// A deterministic failure returns to the phase that owns the broken artifact.
+// In particular, PREPARE phases cannot jump to REVISE, which owns existing Page
+// prose rather than outlines, questions, or evidence bindings.
+const MECHANICAL_REPAIR_ROUTE = {
+  OUTLINE: 'OUTLINE',
+  PROBE: 'PROBE',
+  EVIDENCE: 'EVIDENCE',
+  DRAFT: 'REVISE',
+  REVISE: 'REVISE',
+  COMPILE: 'REVISE',
+  CHECK: 'REVISE',
 }
 
 const PRODUCER_RESULT = {
@@ -167,6 +188,31 @@ let current = startPhase
 let round = parsed.round || 1
 let receipts = []
 let producerActors = {}
+// One producer agent per phase since 260819 (JL: "for the creator-agent, it
+// should have the outline-agent, etc."). COMPILE maps to the REVISE agent
+// because the fold is haipipe-page-revise's. The base agent stays the fallback
+// so a roster gap degrades to the old behavior instead of a dead dispatch.
+const PRODUCER_AGENTS = {
+  OUTLINE: 'haipipe-page-outline-agent',
+  PROBE: 'haipipe-page-probe-agent',
+  EVIDENCE: 'haipipe-page-evidence-agent',
+  DRAFT: 'haipipe-page-draft-agent',
+  REVISE: 'haipipe-page-revise-agent',
+  COMPILE: 'haipipe-page-revise-agent',
+}
+
+// Effort tier per phase (JL 260820, after QPw00's DRAFT spent 77% of its
+// 114k output tokens on xhigh thinking for point-to-sentence realization):
+// the hard judgment lives in OUTLINE (synthesis) and CHECK (verdict), which
+// INHERIT the session tier by carrying no entry here. The middle phases
+// execute an already-approved plan, so they run one tier down at 'high'.
+const PHASE_EFFORT = {
+  PROBE: 'high',
+  EVIDENCE: 'high',
+  DRAFT: 'high',
+  REVISE: 'high',
+  COMPILE: 'high',
+}
 
 for (let step = 1; step <= maxSteps; step++) {
   if (current === 'CHECK') {
@@ -184,7 +230,10 @@ for (let step = 1; step <= maxSteps; step++) {
       {
         label: `check:r${round}:s${step}`,
         phase: 'Check',
-        agentType: 'haipipe-board-reviewer-agent',
+        // ⑦ since 260819: the page-scoped judge; haipipe-board-reviewer-agent
+        // is its base and keeps whole-board reviews. Pre-260819 receipts
+        // naming the reviewer as CHECK actor stay auditable.
+        agentType: 'haipipe-page-check-agent',
         schema: REVIEW_RESULT,
       }
     )
@@ -302,25 +351,42 @@ for (let step = 1; step <= maxSteps; step++) {
     if (route === 'CLOSE' || route === 'HOLD') {
       return { status: terminalStatus(route, reviewStatus === 'blocked' ? 'blocked' : 'hold'), run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
     }
-    if (route === 'DRAFT' && review.reopens_promise) round += 1
+    if (route === 'DRAFT' && review.reopens_promise) { round += 1; promiseReopened = true }
     current = route
     continue
   }
 
   phase('Produce')
   const phaseSkill = current === 'COMPILE' ? 'revise' : current.toLowerCase()
+  // The fused ④+⑤ pass (JL 260820, cutting one agent boot per round): a
+  // DRAFT whose promise is UNCHANGED continues into REVISE in the same
+  // context, appends both receipt steps to the run file, and returns the
+  // typed result as phase DRAFT with route CHECK. A reopened DRAFT is
+  // dispatched alone, because its REVISE must see the changed promise cold.
+  const fused = current === 'DRAFT' && !promiseReopened
+  if (current === 'DRAFT') promiseReopened = false
+  const fuseClause = fused
+    ? `This is a FUSED pass: after completing DRAFT, do NOT stop — load ` +
+      `haipipe-page-revise and continue into REVISE (⑥ COMPILE folded in) in ` +
+      `this same context: polish under the fixed promise, rebuild latex/ and ` +
+      `word/ through the board doors, and append a SECOND receipt step for ` +
+      `REVISE (its version_before = the DRAFT step's version_after). Your ` +
+      `typed return stays phase DRAFT and requests route CHECK. `
+    : ``
   const producer = await agent(
     `Perform exactly one ${current} phase for one Board Page.\n\n` +
     `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
-    `Load haipipe-page, the matching Page Type, haipipe-page-${phaseSkill}, and any family worker. ` +
+    fuseClause +
+    `Read the ⚡ Brief at the top of haipipe-page-${phaseSkill} first; open the full contract, haipipe-page, the matching Page Type, and any family worker only where the brief does not settle your case. ` +
     `Follow the phase boundary. Work only on the target Page and a declared probe surface when EVIDENCE requires one. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
     `Return one phase receipt and suggest the next legal route. DRAFT from a non-DRAFT phase must explain the changed purpose or Aim and set reopens_promise=true.`,
     {
       label: `${current.toLowerCase()}:r${round}:s${step}`,
       phase: 'Produce',
-      agentType: 'haipipe-board-creator-agent',
+      agentType: PRODUCER_AGENTS[current] || 'haipipe-page-creator-agent',
+      effort: PHASE_EFFORT[current],
       schema: PRODUCER_RESULT,
     }
   )
@@ -330,7 +396,7 @@ for (let step = 1; step <= maxSteps; step++) {
       step,
       round,
       phase: current,
-      actor: 'haipipe-board-creator-agent',
+      actor: PRODUCER_AGENTS[current] || 'haipipe-page-creator-agent',
       role: 'producer',
       builder_actor: currentVersion.actor,
       status: 'blocked',
@@ -390,7 +456,7 @@ for (let step = 1; step <= maxSteps; step++) {
     reason = `${reason}; producer and mechanical builder actor are identical`
     findings = findings.concat(['producer and builder must be separate actors'])
   } else if (afterSnapshot.mechanical_errors > 0) {
-    route = 'REVISE'
+    route = MECHANICAL_REPAIR_ROUTE[current] || 'HOLD'
     reason = `${reason}; deterministic checker found ${afterSnapshot.mechanical_errors} error(s)`
     findings = findings.concat(afterSnapshot.findings || [])
   }

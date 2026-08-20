@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-check
 description: >-
-  The CHECK phase contract for any Board Page. CHECK judges one concrete rendered version against its purpose, Aims, evidence, Page Type, and local closing rule, records findings where they apply, and routes the work to close, REVISE, EVIDENCE, or a new DRAFT round; it does not cure its own substantive findings. It judges the BUILT deliverable, not only the Markdown: a declared display unit that never rendered, a cited unit the projection never embedded, and a PDF without the Page's own title are CHECK findings, not cosmetics. Load haipipe-page, the matching Page Type, this contract, and haipipe-sentence when findings use sentence lanes, then any family checker. Use when reviewing a Page version, running a declared gate, planting findings in context, choosing the next phase, or preventing a checker from silently revising what it judged. Trigger: page check, CHECK phase, quality gate, review version, close round, route finding, restart phase, human decision, declared not rendered, cited not embedded, check the pdf, check the docx, /haipipe-page-check.
+  The CHECK phase contract for any Board Page. CHECK judges one concrete rendered version against its purpose, Aims, evidence, Page Type, and local closing rule, records findings where they apply, and routes the work to CLOSE, OUTLINE, PROBE, EVIDENCE, DRAFT, REVISE, or HOLD; it does not cure its own substantive findings. It judges the BUILT deliverable, not only the Markdown: a declared display unit that never rendered, a cited unit the projection never embedded, and a PDF without the Page's own title are CHECK findings, not cosmetics. Load haipipe-page, the matching Page Type, this contract, and haipipe-sentence when findings use sentence lanes, then any family checker. Use when reviewing a Page version, running a declared gate, planting findings in context, choosing the next phase, or preventing a checker from silently revising what it judged. Trigger: page check, CHECK phase, quality gate, review version, close round, route finding, restart phase, human decision, declared not rendered, cited not embedded, check the pdf, check the docx, /haipipe-page-check.
 metadata:
   version: "0.6.1"
   last_updated: "2026-08-18"
@@ -24,6 +24,64 @@ haipipe-page
 What is CHECK's alone: it is the only phase that may CLOSE, and the only one forbidden to change what it judges.
 Its risk is becoming a hidden revision: curing its own finding and calling the same version checked, which is why the fix always runs under another phase and returns for a fresh look.
 The Page Type or local contract supplies the closing rule and whether a person must rule.
+
+## ⚡ Brief
+
+```text
+Q          judge ONE concrete rendered version cold and name its next
+           authority by phase name; the only phase that may CLOSE
+WRITES     findings · comments · the check record · a proposed or human
+           ruling; NEVER the artifact it judges
+
+WALLS
+  read-only on the judged version: never edits, never rebuilds, never cures
+    a finding in the same pass; the fix runs under another phase and the
+    changed version returns for a fresh CHECK
+  judges the BUILT deliverable (PDF · docx), not only the Markdown;
+    declared, rendered, and accepted are three independent counts
+  the actor that produced a version may not be its CHECK actor
+  never writes the five person-reserved ticks, and never claims a person
+    approved when no person did; silence is not consent
+  only `verdict: pass` may route to CLOSE; a required human gate without
+    durable passed evidence routes to HOLD
+  checked_version must equal both version fields; a mismatch routes to HOLD
+  never invents a gate and never skips a declared one
+
+READ ECONOMY
+  read fully ONLY the target page, the plan, and this brief
+  trust the plan's Answered:/Drawn: values as written; re-read only cards
+    whose line ends `· recount`, plus one spot-check (haipipe-page-draft §📖)
+  batch shell calls; scope cli/check.py output to your page with grep
+  never paste board-wide output or compile logs into your context; the
+    board doors return compact JSON, use them
+
+ROUTES (§🔀 · the seven, each finding names one)
+  ✅ CLOSE      the version meets the closing rule
+  🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens
+                the PREPARE loop
+  📮 PROBE      a marked bullet was never served by a card
+  🔎 EVIDENCE   a promised claim has no card behind it
+  ✍️ DRAFT      purpose or Aims must reopen, beginning a new round
+  🧵 REVISE     purpose and Aims stand, but realization needs work
+  ⏸ HOLD        accept a named defect or park the work with an explicit record
+
+RECEIPT  the common phase receipt plus this file's rows (checked_version ·
+         verdict · findings · route · human_gate), shape in §🧾 below;
+         field law: ../haipipe-page-workflow/ref/page-run-contract.md
+         §Receipt step, field by field
+```
+
+Open the full contract below only where this brief does not settle your case; the full text wins every conflict.
+
+## 🪪 The official-document lane
+
+`## Content` states rules, never attributions. The mechanical checker flags
+each offending line as `content-attribution` (WARN): a bare date code
+("260819") or a person named as authority in Content or Diagram prose. On a
+page under active work this lane routes REVISE; on a legacy page it is
+reported, not cured. Fenced blocks are exempt in the checker because a fence
+may carry a frozen transcription another pen owns; this judge reads those by
+eye and lists what it finds for the owning pen.
 
 ## 👁 The authority test
 
@@ -94,9 +152,12 @@ projection-stale                 latex/ or word/ is older than the        REVISE
 
 ```text
 ✅ CLOSE       the version meets the closing rule
-🧵 REVISE     purpose and Aims stand, but realization needs work
+🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens the
+              PREPARE loop
+📮 PROBE      a marked bullet was never served by a card
 🔎 EVIDENCE   a promised claim has no card behind it
 ✍️ DRAFT      purpose or Aims must reopen, beginning a new round
+🧵 REVISE     purpose and Aims stand, but realization needs work
 ⏸ HOLD        accept a named defect or park the work with an explicit record
 ```
 
@@ -144,8 +205,8 @@ makes yes the likely answer without touching the tick itself.
 tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
 `approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     ①
-`verified`       each bibex/<stem>.bib entry       haipipe-plugin-bibex     ④
-`read:`          each probe/PP<NN>-<slug>/card.md  haipipe-plugin-probe     ④
+`verified`       each bibex/<stem>.bib entry       haipipe-plugin-bibex     ③c
+`read:`          each probe/PP<NN>-<slug>/card.md  haipipe-plugin-probe     ③v
 `accepted: ✅`   each display/<unit>/README.md     this contract            ⑦
 the RULING       the Page Type's declared gate     this contract            ⑦
 ```
@@ -170,7 +231,7 @@ and cannot write. The remaining hole is argued on `QPw00g-human-gate`.
 
 CHECK may appear whenever a concrete version needs judgment.
 It may repeat after REVISE, open EVIDENCE, or send the Page into a new DRAFT round.
-The common `DRAFT → EVIDENCE → REVISE → CHECK` path is a useful route, not a mandatory sequence.
+The common `PREPARE(①②③) → DRAFT → REVISE → CHECK` path is a useful route, not a mandatory sequence.
 
 ## 🧾 RUN receipt and version gate
 
@@ -182,7 +243,7 @@ checked_version    source SHA-256 joined to rendered HTML SHA-256
 verdict            pass | revise | blocked
 findings           exact defects or none
 evidence           visible support for every pass claim
-route              CLOSE | REVISE | EVIDENCE | DRAFT | HOLD
+route              CLOSE | OUTLINE | PROBE | EVIDENCE | DRAFT | REVISE | HOLD
 human_gate         required, status, and durable evidence
 ```
 

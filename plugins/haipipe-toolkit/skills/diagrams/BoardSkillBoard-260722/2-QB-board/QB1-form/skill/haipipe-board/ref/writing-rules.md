@@ -40,7 +40,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Do not stop mid-way to ask for approval. Write the source, propagate the rule to `ref/page-template.md` and `haipipe-page` so new pages inherit it, run `check.py`, then confirm the RENDER, not the markdown. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produce a correct file and a wrong page. A half-applied change is worse than either finishing or not starting.
 
 
-- **No em-dashes** (JL 260724: "fuck em-dash")
+- **No em-dashes** (JL 260724, ruled emphatically)
   Never use the em-dash in prose. Use a colon when expanding on what came before, a semicolon or a new sentence for two linked clauses, parentheses or commas for an aside. This is a rewrite per sentence, never a blind find-and-replace: each dash needs the mark its own sentence calls for.
 - **One sentence per source line** (JL 260725)
   The renderer gives every plain prose line its own row on the page, so a hard wrap in the middle of a sentence becomes a broken line the reader sees. Write each sentence as one source line and let the browser soft-wrap it; start a new line only at a sentence boundary. This also gives each sentence a clean anchor for comments and future sentence-level apparatus.

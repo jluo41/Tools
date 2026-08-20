@@ -91,6 +91,7 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
         cards.append({"title": title, "spine": spine, "path": rel,
                       "pages": len(pages), "settled": settled, "ready": ready,
                       "kind": kind, "icon": icon,
+                      "slug": board_slug(board.name, board.parent.name),
                       "href": "/" + quote((board.relative_to(root) / "board" / "index.html").as_posix(), safe="/")})
     return sorted(cards, key=lambda c: str(c["path"]).lower())
 
@@ -176,47 +177,73 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
 
 
 def render_home(root: Path) -> str:
+    """One table, one row per board — the same shape as a board Index's page
+    table (`bstat`), because that is the layout JL reads fastest (260819:
+    "arrange the board like the page index"). Kind headers are the gray group
+    rows; the spine is a hover tooltip, not a column, so 13 boards fit one
+    screen without scrolling."""
     cards = discover_boards(root)
-    sections = []
+    rows = []
     for kind, icon in BOARD_KINDS:
         kind_cards = [card for card in cards if card["kind"] == kind]
         if not kind_cards:
             continue
-        items = []
+        rows.append(f'<tr class="bsg"><td colspan="4">{icon} {kind}s · {len(kind_cards)}</td></tr>')
         for card in kind_cards:
             title = html.escape(str(card["title"]))
-            spine = html.escape(str(card["spine"]))
+            spine = html.escape(str(card["spine"]), quote=True)
             path = html.escape(str(card["path"]))
-            progress = f'{card["settled"]}/{card["pages"]} pages settled'
+            slug = html.escape(str(card["slug"]))
+            href = html.escape(str(card["href"]), quote=True)
+            pages, settled = card["pages"], card["settled"]
             if card["ready"]:
+                state = "✅" if pages and settled == pages else "🟡"
+                cls = "bs-ok" if pages and settled == pages else "bs-warn"
+                id_cell = f'<a href="{href}">{state} {slug}</a>'
+                title_cell = (f'<a class="bt" href="{href}" title="{spine}">{title}</a>'
+                              f'<br><span class="path">{path}</span>')
                 # Two doors, because they are two different jobs: reading the
                 # board is one document, OPERATING it (QD5) is three panes with
                 # a chat beside the page. Same board either way.
                 # The split is what a board opens as now, so it is the plain
                 # link; `?plain` is the opt-out back to the one-document board.
-                action = (f'<a class="split" href="{html.escape(str(card["href"]), quote=True)}?plain"'
+                action = (f'<a class="split" href="{href}?plain"'
                           f' title="The one-document board: sidebar, page and drawer in a single page">↗ plain</a>'
-                          f'<a class="open" href="{html.escape(str(card["href"]), quote=True)}">Open board →</a>')
+                          f'<a class="open" href="{href}">Open →</a>')
             else:
+                state, cls = "🔴", "bs-no"
+                id_cell = f'{state} {slug}'
+                title_cell = (f'<span class="bt" title="{spine}">{title}</span>'
+                              f'<br><span class="path">{path}</span>')
                 action = '<span class="build">Build needed</span>'
-            items.append(f'''<article class="card"><p class="path">{path}</p><h2>{title}</h2>
-<p class="spine">{spine}</p><footer><span>{progress}</span><span class="kind">{icon} {kind}</span>{action}</footer></article>''')
-        plural = f"{kind}s"
-        cards_html = "\n".join(items)
-        sections.append(f'''<section class="board-kind"><header><h2>{icon} {plural}</h2><span>{len(kind_cards)}</span></header>
-<div class="grid">{cards_html}</div></section>''')
-    body = "\n".join(sections) or '<p class="empty">No board.md files found below this SPACE root.</p>'
+            rows.append(f'<tr><th class="bsp">{id_cell}</th><td>{title_cell}</td>'
+                        f'<td class="{cls}">{settled}/{pages}</td><td class="bact">{action}</td></tr>')
+    table = "\n".join(rows)
+    body = (f'''<div class="bwrap"><table class="bhome"><thead>
+<tr><th>board</th><th>title</th><th>🎯 settled</th><th>open</th></tr></thead>
+<tbody>{table}</tbody></table></div>''' if rows
+            else '<p class="empty">No board.md files found below this SPACE root.</p>')
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SPACE Boards</title><style>
 :root{{color-scheme:light;--ink:#202124;--mut:#6b7280;--line:#e5e7eb;--bg:#fafafa;--card:#fff;--accent:#2867b2}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
 main{{max-width:1060px;margin:0 auto;padding:clamp(22px,5vw,56px) clamp(16px,4vw,36px)}}
-h1{{font-size:clamp(28px,5vw,46px);letter-spacing:-.04em;margin:0 0 6px}}.lead{{margin:0 0 28px;color:var(--mut)}}
-.board-kind{{margin:32px 0 0}}.board-kind>header{{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}}.board-kind>header h2{{margin:0;font-size:20px;letter-spacing:-.02em}}.board-kind>header span{{border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--mut);font-size:12px;font-weight:700}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}}.card{{display:flex;min-height:210px;flex-direction:column;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:0 1px 2px #00000008}}
-.path{{margin:0;color:var(--mut);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.card h2{{font-size:18px;line-height:1.25;margin:12px 0 8px}}.spine{{margin:0;color:#40444b;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}footer{{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:18px;color:var(--mut);font-size:12px}}.kind{{border-radius:999px;background:#f3f4f6;padding:3px 7px;white-space:nowrap}}.open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap;margin-left:auto}}.open:hover{{text-decoration:underline}}
-.split{{color:var(--mut);font-weight:700;text-decoration:none;white-space:nowrap;margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:3px 9px}}.split:hover{{color:var(--accent);border-color:var(--accent)}}.split+.open{{margin-left:0}}.build{{color:#a05a00;font-weight:700}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
-</style></head><body><main><h1>🏠 SPACE Boards</h1><p class="lead">{len(cards)} boards discovered in this SPACE. This home is a read-only map; each card opens that Board's own Index.</p><section class="grid">{body}</section></main></body></html>'''
+h1{{font-size:clamp(28px,5vw,46px);letter-spacing:-.04em;margin:0 0 6px}}.lead{{margin:0 0 20px;color:var(--mut)}}
+.bwrap{{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 1px 2px #00000008}}
+table.bhome{{width:100%;border-collapse:collapse}}
+.bhome th,.bhome td{{padding:8px 14px;text-align:left;vertical-align:top;font-size:14px;border-top:1px solid var(--line)}}
+.bhome thead th{{border-top:0;background:#f9fafb;color:var(--mut);font-size:12px;font-weight:700}}
+tr.bsg td{{background:#f3f4f6;font-weight:700;font-size:13px;color:#374151}}
+th.bsp{{white-space:nowrap;font-weight:700}}th.bsp a{{color:var(--ink);text-decoration:none}}th.bsp a:hover{{text-decoration:underline}}
+a.bt{{color:var(--ink);text-decoration:none;font-weight:600}}a.bt:hover{{text-decoration:underline}}span.bt{{font-weight:600}}
+.path{{color:var(--mut);font:11px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}
+td.bs-ok{{color:#116329;font-weight:700;white-space:nowrap}}td.bs-warn{{color:#9a6700;font-weight:700;white-space:nowrap}}td.bs-no{{color:#cf222e;font-weight:700;white-space:nowrap}}
+td.bact{{white-space:nowrap;text-align:right}}
+.open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap}}.open:hover{{text-decoration:underline}}
+.split{{color:var(--mut);font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-right:8px;font-size:12px}}.split:hover{{color:var(--accent);border-color:var(--accent)}}
+.build{{color:#a05a00;font-weight:700;font-size:12px}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
+</style></head><body><main><h1>🏠 SPACE Boards</h1><p class="lead">{len(cards)} boards discovered in this SPACE. This home is a read-only map; each row opens that Board's own Index. Hover a title for the board's spine.</p>{body}</main></body></html>'''
 
 
 class HomeMixin:

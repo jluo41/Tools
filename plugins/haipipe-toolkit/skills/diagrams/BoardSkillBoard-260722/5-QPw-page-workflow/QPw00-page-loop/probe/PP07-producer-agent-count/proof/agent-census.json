@@ -1,0 +1,36 @@
+{
+  "source": "Tools/plugins/haipipe-toolkit/skills/board/page-workflows/agents/ + skills/board/agents/ + skills/board/haipipe-board/ref/page-lifecycle.workflow.js",
+  "run": "local read, 260819, `ls page-workflows/agents/*.md` + `ls skills/board/agents/*.md` + grep PRODUCER_AGENTS ref/page-lifecycle.workflow.js",
+  "agent_files_total": 6,
+  "agent_files": [
+    "haipipe-page-check-agent.md",
+    "haipipe-page-draft-agent.md",
+    "haipipe-page-evidence-agent.md",
+    "haipipe-page-outline-agent.md",
+    "haipipe-page-probe-agent.md",
+    "haipipe-page-revise-agent.md"
+  ],
+  "phases_with_own_producer": 5,
+  "producer_map": {
+    "OUTLINE": "haipipe-page-outline-agent",
+    "PROBE": "haipipe-page-probe-agent",
+    "EVIDENCE": "haipipe-page-evidence-agent",
+    "DRAFT": "haipipe-page-draft-agent",
+    "REVISE": "haipipe-page-revise-agent",
+    "COMPILE": "haipipe-page-revise-agent, shared: PRODUCER_AGENTS maps COMPILE to REVISE's agent because the fold is haipipe-page-revise's"
+  },
+  "phases_lacking_count": 2,
+  "phases_lacking": [
+    "COMPILE: no agent file of its own, shares haipipe-page-revise-agent",
+    "CHECK: deliberately no producer; the controller dispatches the judge haipipe-page-check-agent (workflow.js line 207)"
+  ],
+  "fallback": "haipipe-page-creator-agent in skills/board/agents/, dispatched when PRODUCER_AGENTS has no row (workflow.js line 343)",
+  "support_agent_files": 4,
+  "support_agents": [
+    "haipipe-board-reviewer-agent.md",
+    "haipipe-page-approver-agent.md",
+    "haipipe-page-auditor-agent.md",
+    "haipipe-page-creator-agent.md"
+  ],
+  "excluded": ["README.md", "CHANGELOG.md", "approve-rules/ is a folder, not an agent"]
+}

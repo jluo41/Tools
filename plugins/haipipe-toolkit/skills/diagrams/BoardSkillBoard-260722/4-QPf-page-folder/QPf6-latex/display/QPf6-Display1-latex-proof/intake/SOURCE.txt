@@ -1,3 +1,4 @@
-source: ../../latex/QPf6-latex.tex
-compiled: ../../latex/QPf6-latex.pdf (xelatex, 260815 1530)
+source: ../../latex/QPf6-latex.tex (md2tex output; exists since the plugin began keeping the .tex beside the .pdf)
+compiled: ../../latex/QPf6-latex.pdf (xelatex, 260818 2218; re-rendered into assets/ 260819)
 approved-input: the three content divisions of QPf6-latex.md
+note: intake/manifest.yaml is the authoritative source record; this file is a human note only.

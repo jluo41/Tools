@@ -1,3 +1,89 @@
+## 0.11.0 — 2026-08-19
+
+- **Landing `## Values` creates fold debt**: the asking bullet owes its answer,
+  appended in place by the next ① fold with the value ids inline; this phase's
+  return lists every landed card so the fold knows what owes what (JL 260819:
+  "在 probe 回答问题之后，需要 evidence 去把这个问题给填上去").
+- **Coherence sweep (260819)**: the receipt routes `EVIDENCE | OUTLINE | HOLD`
+  (§🔀 already said → ① OUTLINE, always); §✍️ writes recipe/ and assets/ too,
+  since RENDER · PICK · BUILD moved here; the exit is DRAWN and previewable,
+  no longer "a named renderer"; §🖼's unclosed fence no longer swallows the
+  §✍️ heading.
+
+## 0.10.4 — 2026-08-19
+
+- The kinds table names the plan's 📮 mark as what ② PROBE creates the value
+  card from — 📮 probe and 🧮 value separated (JL: "I want to separate them").
+
+## 0.10.3 — 2026-08-19
+
+- **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).
+  🔢 stays accepted as the legacy alias, so pre-260819 plans remain legal.
+  The abacus was the proof mark retired earlier on 260819 and is revived with
+  its new meaning: a recomputable number, which is what `checks/values.py`
+  does to every one of them.
+
+## 0.10.2 — 2026-08-19
+
+- **The kinds table stopped saying a display is drawn in REVISE** — RENDER ·
+  PICK · BUILD have been this phase's since 260819, and §🖼 twelve sections
+  later already said so.
+- **Stale numbers**: the loop line still read `OUTLINE · DRAFT · PROBE …`; the
+  five-step table and the footer still numbered PROBE ③ and EVIDENCE ④. Found
+  by the Display3 rebuild agent.
+
+## 0.10.1 — 2026-08-19
+
+- **§🔀's route table said `→ REVISE` and `→ DRAFT`**, contradicting §🔁 written the
+  same day. Corrected: whatever comes back goes to ① OUTLINE. Found by the display
+  agent rebuilding `QPw00-Display2`, which derived the route relation from the
+  contracts and had to choose between two blocks in this one file.
+
+## 0.10.0 — 2026-08-19
+
+- **EVIDENCE routes back to ① OUTLINE, never forward to DRAFT.** An answer is not
+  a confirmation: it goes to the plan, and the plan decides whether it still wants
+  what it asked for (JL 260819).
+- The PREPARE loop's exit is the plan's four checks: coverage, address, value,
+  shape. Nothing in this phase may declare the loop finished.
+
+## 0.9.0 — 2026-08-19
+
+- **EVIDENCE stated as TWO stages, MAKE then BIND**, both inside the plugin
+  folders (JL 260819). Neither touches the page's `## Content`: this phase
+  changes what the page KNOWS and REVISE changes what it SAYS. A person's tick
+  belongs to BIND, because it is what turns a made thing into a quotable one.
+- **RENDER, PICK and BUILD move to EVIDENCE.** JL 260819: "这个不应该是 evidence
+  里的这个 display 开始画图吗？REVISE 主要 work 还是 work 在这个 sentence 上面去".
+  They sat in REVISE on the reasoning that a caption and a choice of rows are
+  ARGUMENT. That was right about the caption and wrong about the drawing, and
+  the asymmetry it produced is what exposed it: a citation lane returned a bib
+  key, a value lane returned a bound number, and the display lane returned an
+  unrendered intake folder. Two of three landed something a page could use.
+  A lane that performs one step out of five is not a lane.
+- REVISE keeps the argument half: the sentence that cites the unit by id, the
+  caption that ties the figure to this page's claim, and both projections.
+  EVIDENCE keeps the unit's factual `claim:` row and may not say what it proves.
+- **A unit's KIND decides whether its intake waits**, stated for the first time.
+  A data unit (table, figure) freezes from a probe card's `proof/` and cannot
+  exist before its card is answered. A concept unit (diagram, tex, illustration)
+  freezes a listing of source files and has nothing to wait for. Every phase
+  contract had only the first case, which read as if no unit could ever be built
+  early.
+
+## 0.8.0 — 2026-08-19
+
+- **🧮 proof RETIRED.** JL 260819: "我从开始到最后都没有说 proof，我一直说
+  probe". The mark came from ONE transcribed quote ("citation, display, values
+  and proofs") and no Log row ever ruled it. Going to a task folder or a
+  discovery folder for the evidence behind a claim IS a probe, which is 🔢.
+  It was the only mark with no plugin, no folder, no lane, no id and no
+  backlink, and that was the symptom rather than a design.
+  ⚠️ `proof/` the FOLDER is untouched: it belongs to a probe card.
+
+- **0.7.3 is WITHDRAWN.** It stated a four-marks-against-three-lanes rule, and
+  the fourth mark no longer exists. Three marks now meet three lanes.
+
 ## 0.7.3 — 2026-08-18
 
 - **The FOUR outline marks against the THREE lanes**, stated here for the first

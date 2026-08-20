@@ -17,14 +17,28 @@ from typing import Any, Iterable
 PHASE_ALIASES = {}
 PHASES = {"OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK"}
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
+# THE PREPARE LOOP, 260819. `haipipe-page-outline` 0.3.0 made OUTLINE the head of
+# a converging loop: OUTLINE -> PROBE -> EVIDENCE and back, until the plan passes
+# its four self-consistency checks. Until this table was updated it REJECTED all
+# three of those edges, so a run obeying the current contracts audited as an
+# illegal route. Found by the display agent rebuilding QPw00-Display2, which
+# derived R from the contracts and then compared.
+#
+# The one door out of PREPARE is OUTLINE's gate, which is the fourth law the
+# figure now prints: DRAFT is in neither R(PROBE) nor R(EVIDENCE).
+#
+# COMPILE keeps its row. It is declared as phase 6 and drawn in the loop, it has
+# no contract of its own and is folded into REVISE (haipipe-page-revise 0.5.0),
+# and a stored receipt may still name it. Removing the row would make an old
+# receipt unauditable, which is the opposite of what this table is for.
 LEGAL_ROUTES = {
-    "OUTLINE": {"OUTLINE", "DRAFT", "HOLD"},
-    "DRAFT": {"DRAFT", "PROBE", "EVIDENCE", "REVISE", "CHECK", "HOLD"},
-    "PROBE": {"PROBE", "EVIDENCE", "REVISE", "HOLD"},
-    "EVIDENCE": {"EVIDENCE", "REVISE", "DRAFT", "CHECK", "HOLD"},
+    "OUTLINE": {"OUTLINE", "PROBE", "EVIDENCE", "DRAFT", "HOLD"},  # EVIDENCE added 260819: after the 🧑 LOOK, ② and ③ dispatch in parallel
+    "PROBE": {"PROBE", "EVIDENCE", "OUTLINE", "HOLD"},
+    "EVIDENCE": {"EVIDENCE", "OUTLINE", "HOLD"},
+    "DRAFT": {"DRAFT", "PROBE", "REVISE", "CHECK", "HOLD"},
     "REVISE": {"REVISE", "COMPILE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
     "COMPILE": {"COMPILE", "CHECK", "REVISE", "HOLD"},
-    "CHECK": {"CLOSE", "OUTLINE", "REVISE", "PROBE", "EVIDENCE", "DRAFT", "HOLD"},
+    "CHECK": {"CLOSE", "OUTLINE", "PROBE", "EVIDENCE", "DRAFT", "REVISE", "HOLD"},
 }
 
 
@@ -125,9 +139,41 @@ def audit_artifacts(run: dict[str, Any], base_dir: Path | None = None) -> list[F
             )
         ]
     if not page.is_file():
-        return [
-            _finding("source-artifact-missing", "run", f"Page source does not exist: {page}")
-        ]
+        # A recorded path that no longer resolves is usually a MOVED page, not a
+        # missing one: run 260805-0216-QB8e stored an ABSOLUTE path and the
+        # 260816 regroup added a `<N>-` prefix to every group folder, so a page
+        # that had not changed at all audited as "source does not exist". Fall
+        # back to the file name under `board`, and REPORT the fallback: the
+        # receipt is still defective, and saying so precisely beats saying
+        # something false. A fallback is refused when it is not unique, because
+        # guessing between two candidates is worse than stopping.
+        candidates = sorted(board.rglob(page.name))
+        candidates = [c for c in candidates if c.is_file() and "/board/" not in c.as_posix()]
+        if len(candidates) != 1:
+            return [
+                _finding(
+                    "source-artifact-missing",
+                    "run",
+                    f"Page source does not exist: {page}"
+                    + (
+                        f"; {len(candidates)} files named {page.name} under the board, so no unique fallback"
+                        if candidates
+                        else ""
+                    ),
+                )
+            ]
+        resolved = candidates[0]
+        findings.append(
+            _finding(
+                "page-path-stale",
+                "run",
+                f"`page` records {page_raw} which does not resolve; the same file name "
+                f"resolves uniquely to {resolved.relative_to(board).as_posix()}. Audited "
+                f"against that. Store `page` BOARD-RELATIVE so a group rename cannot "
+                f"break a receipt for a page that did not change.",
+            )
+        )
+        page = resolved
 
     rendered_root = board / "board"
     rendered = sorted(rendered_root.rglob(f"{page.stem}.html")) if rendered_root.is_dir() else []
@@ -472,10 +518,36 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         if previous is not None:
             previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
             previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
-            if previous_route in TERMINAL_ROUTES:
+            # THE PREPARE PAUSE, 260819. A HOLD from OUTLINE/PROBE/EVIDENCE
+            # while the packet's human gate is required and the step's gate is
+            # still open is a PAUSE between passes of one converging round,
+            # not a terminal: the ruled loop appends one receipt per pass, and
+            # 10 of tonight's 12 legal passes audited as receipt-after-terminal
+            # before this rule existed. The next phase must be legal FROM the
+            # paused phase (phase-repeat included). CLOSE stays terminal, and
+            # a HOLD outside PREPARE or with a settled gate stays terminal.
+            prepare_pause = (
+                previous_route == "HOLD"
+                and previous_phase in {"OUTLINE", "PROBE", "EVIDENCE"}
+                and declared_gate_required
+                and str(_gate(previous).get("status", "")) in {"pending", "waiting"}
+            )
+            if previous_route in TERMINAL_ROUTES and not prepare_pause:
                 findings.append(
                     _finding("receipt-after-terminal", index, f"receipt follows {previous_route}")
                 )
+            elif prepare_pause:
+                # A cold CHECK is legal on ANY version, pauses included: the
+                # judge reads and routes, it does not produce (found by the
+                # first real check-agent dispatch, 260819 step 14).
+                if phase != "CHECK" and phase not in LEGAL_ROUTES.get(previous_phase, set()):
+                    findings.append(
+                        _finding(
+                            "route-phase-mismatch",
+                            index,
+                            f"paused at {previous_phase}; phase {phase} is not legal from it",
+                        )
+                    )
             elif phase != previous_route:
                 findings.append(
                     _finding(

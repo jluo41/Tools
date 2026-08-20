@@ -1,0 +1,220 @@
+{
+  "source": "every <page>/outline/<stem>-outline-v<N>.md on BoardSkillBoard-260722, highest N per page",
+  "run": "local run, 260819: src/plan_shape.py check()/check_serves()/check_coverage() per plan; checks/values.py sweep() for the value check (every ## Values block on this board lives on 5-QPw-page-workflow/QPw00-page-loop, so its mismatches attribute there alone)",
+  "plans_total": 17,
+  "plans_passing_all_four": 6,
+  "plans_passing": [
+    "4-QPf-page-folder/QPf1-folder",
+    "4-QPf-page-folder/QPf10-skill",
+    "4-QPf-page-folder/QPf2-draw-attach",
+    "4-QPf-page-folder/QPf3-slide",
+    "4-QPf-page-folder/QPf4a-chat-per-question",
+    "4-QPf-page-folder/QPf7-word"
+  ],
+  "fails_by_check_counts": {
+    "coverage": 10,
+    "address": 0,
+    "shape": 0,
+    "value": 1
+  },
+  "fails_by_check": {
+    "coverage": [
+      "QPf11-pagex",
+      "QPf12-outline",
+      "QPf4-chat",
+      "QPf4b-chat-sdk",
+      "QPf4c-chat-terminal",
+      "QPf4d-chat-terminal-design",
+      "QPf5-display",
+      "QPf6-latex",
+      "QPf8-bibex",
+      "QPf9-probe"
+    ],
+    "address": [],
+    "shape": [],
+    "value": [
+      "QPw00-page-loop"
+    ]
+  },
+  "check_failing_most_often": "coverage",
+  "note": "value mismatches are stale quoted counts awaiting EVIDENCE re-pull, not arithmetic errors; the census ran during the 260819 PROBE pass, before that pass appended its own run receipt",
+  "plans": [
+    {
+      "page": "4-QPf-page-folder/QPf1-folder",
+      "plan": "QPf1-folder-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf10-skill",
+      "plan": "QPf10-skill-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf11-pagex",
+      "plan": "QPf11-pagex-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf12-outline",
+      "plan": "QPf12-outline-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf2-draw-attach",
+      "plan": "QPf2-draw-attach-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf3-slide",
+      "plan": "QPf3-slide-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf4-chat",
+      "plan": "QPf4-chat-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf4a-chat-per-question",
+      "plan": "QPf4a-chat-per-question-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf4b-chat-sdk",
+      "plan": "QPf4b-chat-sdk-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 8,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf4c-chat-terminal",
+      "plan": "QPf4c-chat-terminal-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf4d-chat-terminal-design",
+      "plan": "QPf4d-chat-terminal-design-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 9,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf5-display",
+      "plan": "QPf5-display-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 3,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf6-latex",
+      "plan": "QPf6-latex-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf7-word",
+      "plan": "QPf7-word-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": true
+    },
+    {
+      "page": "4-QPf-page-folder/QPf8-bibex",
+      "plan": "QPf8-bibex-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 1,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "4-QPf-page-folder/QPf9-probe",
+      "plan": "QPf9-probe-outline-v1.md",
+      "version": 1,
+      "coverage_findings": 4,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [],
+      "passes_all_four": false
+    },
+    {
+      "page": "5-QPw-page-workflow/QPw00-page-loop",
+      "plan": "QPw00-page-loop-outline-v3.md",
+      "version": 3,
+      "coverage_findings": 0,
+      "address_findings": 0,
+      "shape_findings": 0,
+      "value_mismatches": [
+        "PP02.v1",
+        "PP02.v2",
+        "PP03.v1",
+        "PP03.v4",
+        "PP04.v1",
+        "PP04.v2"
+      ],
+      "passes_all_four": false
+    }
+  ]
+}

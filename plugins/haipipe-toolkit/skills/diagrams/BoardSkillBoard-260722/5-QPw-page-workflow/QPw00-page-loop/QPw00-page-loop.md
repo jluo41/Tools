@@ -1,5 +1,5 @@
 # Page · the loop: outline, draft, probe, evidence, revise, compile, check
-state: 🟡 IN PROGRESS · renumbered QPw00, the group holder; §1-§4 hand off to QPw2-QPw6 · open: 14
+state: 🟡 IN PROGRESS · Content runs in the loop's own order · open Aims: 23 of 31
 owner: JL
 method: define each phase by its authority over one persistent Page, execute the routes with versioned receipts, and test both legal branches and injected failures
 session: 2e9b9226-9933-4bac-af13-7b22cc6e9cb6
@@ -10,7 +10,7 @@ The Page persists while each phase changes the authority of the work.
 Adding, deleting, moving, or rewriting does not identify the phase, and the loop may restart after revision.
 This page defines what each phase owns, how a round moves, when returning to DRAFT begins a new round, and how an automatic RUN is audited.
 
-⚠️ **The loop became SEVEN phases on 260817, and Content divisions 1 to 4 were the four it had on 260804 until the 260818 REVISE round shrank them.** The splits and the failure each one allowed are in `haipipe-page-workflow` §"Why each split"; §1 to §4 now hand off to QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, and QPw6-check, each carrying the fuller, current argument. `PROBE` also changed MEANING twice: it was the whole evidence phase until 260816, then EVIDENCE's old name, and since 260817 it is the phase that raises the card and asks.
+⚠️ **Content follows the LOOP's order since 260819, and every phase has a division.** It did not until then: Content was written 260804 for a four-phase loop, OUTLINE and EVIDENCE were split out on 260817, and the body kept opening on phase ② with three of the seven phases missing. `§3` to `§7` hand off to QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise and QPw6-check, each carrying the fuller argument. `PROBE` also changed MEANING twice: it was the whole evidence phase until 260816, then EVIDENCE's old name, and since 260817 it is the phase that raises the card and asks.
 
 **Where this page sits**: `QB4` owns the Page's fixed reading structure.
 This page owns the Page's lifecycle, from choosing what it promises through deciding whether its current version can close.
@@ -25,7 +25,7 @@ Without an authority boundary, a worker cannot tell whether it is improving the 
 **What this page does not own**: it does not decide the content of a paper, application, Q page, S page, or Skill mirror.
 Those Page kinds supply their own constraints and closing gates.
 
-## Writing Style
+### Writing Style
 
 **Language and sentences**: Use plain English, one sentence per source line, and no em dash.
 Define Page, phase, round, and operation before relying on them.
@@ -41,97 +41,356 @@ Keep implementation choices in States until JL rules them, then close the row an
 
 ## Diagram
 
-**One Page across repeated rounds**: the common route, the shorter routes, and the explicit restart.
+**One Page across repeated rounds**: the PREPARE loop, its one gate, the unattended middle, and the explicit restart.
 
 ```text
                          📄 ONE PERSISTENT PAGE
                                   │
                                   ▼
-  🧭 OUTLINE ─▶ ✍️ DRAFT ─▶ 📮 PROBE ─▶ 🔎 EVIDENCE ─▶ 🧵 REVISE ─▶ 📄 COMPILE ─▶ 🧑 CHECK
-     🚧 gate       │          (skippable)                 │            │           │
-     ▲            │                                       │            │           ├──▶ ✅ close
-     │            └───── CHECK routes back to any of them ┴────────────┴───────────┤
-     └────────────────────────── 🔁 new round ◀───────────────────────────────────┘
+   ┌─ 🧭 ① OUTLINE ⇄ 📮 ② PROBE ⇄ 🔎 ③ EVIDENCE ─┐   PREPARE · repeats until
+   └──────────────────────┬───────────────────────┘   plan and evidence agree
+                 🚧 gate   │   a PERSON ticks `approved:`; no machine may
+                           ▼
+   ✍️ ④ DRAFT ──▶ 🧵 ⑤ REVISE (⑥ COMPILE folded in) ──▶ 🧑 ⑦ CHECK
+        ▲                                                    ├──▶ ✅ close
+        │             CHECK routes back to any earlier phase ┘
+        └────────── 🔁 new round · purpose or Aims reopened
 
   🔒 one round   purpose + Aims fixed
-  🔁 new round   purpose or Aims reopened
   🛠 operation   add · delete · move · rewrite
-  🚧 gate        a PERSON ticks `approved:` on the outline; no machine may
 ```
 
-**Where an evidence card is born**, because that was the question three contracts answered three ways until 260817:
+**Where an evidence card is born**, stated once so no two phase contracts can answer it differently:
 
 ```text
-  🧭 OUTLINE   the MARK   `- B4 · the four coordinates   🔢`   nothing on disk
-  ✍️ DRAFT     the AIM    what the page loses if it stays a hole
-  📮 PROBE     the CARD   probe/PP<NN>-<slug>/ · serves: C4.P1.B4 · dispatched
-  🔎 EVIDENCE  the ANSWER binding: <QA path> · proof/ pulled · state: bound
-  🧵 REVISE    the SENTENCE cites the card by id, never restates it
+  🧭 OUTLINE   the MARK + the AIM   `- B4 · the four coordinates   📮 · 🎯 A4.1`
+  📮 PROBE     the CARD     probe/PP<NN>-<slug>/ · serves: C4.P1.B4 · dispatched
+  🔎 EVIDENCE  the ANSWER   binding: <QA path> · proof/ pulled · ids in ## Values
+  ✍️ DRAFT     the SENTENCE that writes the landed number, citing the id
+  🧵 REVISE    the polish, and it never changes a landed number
 ```
 
-A plan is rejectable in ten seconds and must leave nothing behind, so OUTLINE may not open the file; the mark IS the proposal, so a card at DRAFT would be a second copy of it. The deciding reason is the STAKE: a card's `consumer/` side carries what the page loses, that is an Aim, and Aims are written at DRAFT.
+A plan is rejectable in ten seconds and must leave nothing behind, so OUTLINE may not open the file; the mark IS the proposal, so a card at DRAFT would be a second copy of it.
+The Aims live in the plan file too, and that placement is what lets PROBE run ahead of DRAFT: a card's `consumer/` side carries what the page loses, that stake is an Aim, and the Aim exists the moment the plan does.
 
 ## Content
 
-### 1 · DRAFT gives the Page a promise
-**The DRAFT contract**: what enters, what DRAFT may decide, and what it hands forward.
+### 1 · Overview: what the loop is, and how to read the rest
+**The claim this page makes**: a phase is defined by the ONE question it answers, not by the edit it performs, and a Page moves forward by satisfying a phase's exit rather than by being worked on.
+
+#### 1.1 · The loop stated once, before any single phase
+**The problem**: one Page is worked by many hands over many days, and the same visible edit can be two different acts.
+Adding a paragraph under an existing Aim and adding a paragraph that creates one look identical in a diff.
+So the loop names acts by their REASON, never by their diff.
+Each phase is the question it answers: OUTLINE asks what shape, PROBE asks what is unknown, EVIDENCE asks what backs it, DRAFT asks how it is said, REVISE asks how it gets better, and CHECK asks where it goes next.
+Progress is satisfying a phase's exit, a tick, a landed card, a verdict; hours of editing move nothing without the exit.
+The Opening says where this page sits among its siblings.
+This division says what the LOOP is.
+Neither repeats the other.
+
+#### 1.2 · How to read the rest of it
+**The loop is not a line**: QPw00-Display4 draws it: phases ①, ② and ③ repeat as one converging PREPARE loop, and only a person's `approved:` tick on the plan releases the page into ④, ⑤ and ⑦.
+Its intake is frozen out of the seven phase contracts and both legal-route tables; nobody has accepted it yet, so `accepted:` still reads ⬜.
 
 ```text
-✍️ DRAFT
-├── 📥 enters    page need · constraints · prior round
-├── 🎯 owns      purpose · Aims · promised shape
-├── 📝 writes    any Page part needed to expose the design
-├── 🚩 names     unknowns · dependencies · assumptions
-└── 📤 exits     one stable round contract
+  §1        what the loop is, and the four words it spends
+  §2-§7     the six phase divisions, in the LOOP's order: OUTLINE ① · PROBE ② ·
+            EVIDENCE ③ · DRAFT ④ · REVISE ⑤ (⑥ folded in) · CHECK ⑦
+  §8-§11    the laws that hold them together
+  §12-§14   the machine that runs it, the audit that proves it, its price
 ```
-📌 DRAFT decides what this round of the Page is trying to become.
 
-#### 1.1 · The full contract, worked example, and stake rule now live at QPw2-draft
-(this page keeps only the promise-versus-realization test in §6)
-DRAFT's full contract, its worked example turning one approved Point into several sentence scaffolds, and its rule that the Aim behind a hole is the stake a probe card will later carry all live at QPw2-draft.
-OUTLINE, at QPw1-outline, is the phase now immediately upstream of DRAFT: it agrees the plan's shape before DRAFT turns an approved bullet into prose, a split this page's own §1 predates and never had to name.
+**Two reading paths.** A person who only RUNS the loop reads §1, §8 and §14.
+A person implementing one phase reads that phase's division, then its contract file.
 
-### 2 · PROBE resolves what the Page cannot know
+**The loop today**: counted rather than described.
+
+```text
+  7  phases declared             PP01.v1   COMPILE is one of them
+  6  ship a contract file        PP01.v2   COMPILE has none
+  5  stops a person owns         PP01.v3   two of the five revert
+```
+
+How much of it has ever EXECUTED is a different card's question: `PP02` owns the run counts, and `§12.2` quotes them.
+
+**Who executes each phase**: QPw00-Display6 names them.
+Six agent files sit under `page-workflows/agents/`, five write-scoped producers plus ⑦'s read-only judge, and each walks one fixed skill stack whose shared law lives once in `ref/producer-contract.md`.
+
+#### 1.3 · Workflow, phase, step and round are four different words
+**The vocabulary rule**: the loop needs all four and none of them substitutes for another, which is why the word stays "phase" rather than "step".
+
+```text
+word         answers                      count in the ONE live run    repeats?
+──────────────────────────────────────────────────────────────────────────────────
+🌀 WORKFLOW  which LOOP is this?          1  · the run itself          no
+⏱️ PHASE     which AUTHORITY acts?        7 defined · 2 used           YES
+🔢 STEP      WHERE in this run?           5 · monotonic 1..5           never
+🔁 ROUND     which PROMISE era?           1 · bumps only on a reopen   on reopen
+```
+📌 A phase is a TYPE and a step is an INSTANCE of one: in the one live run the single CHECK phase occupies steps 1, 3 and 5.
+
+**All four in one receipt**: none may be renamed onto another.
+(`step: 4 · round: 1 · phase: CHECK · route: REVISE`, four fields in one object)
+Renaming phase to step would put two different meanings on one key inside a single receipt, and the auditor reads both.
+`step` is the monotonic position that never recurs; `phase` is the kind of work that must be free to recur, which is the property the whole loop is built on.
+
+**Why not "step"**: it would contradict the router's own name.
+(RUN is deliberately not ADVANCE, `§12.1`)
+The word must permit repetition, because CHECK may route back to any earlier phase, PROBE may be skipped entirely, and a page may re-enter DRAFT in a new round.
+The one live run proves it rather than asserting it: CHECK ran three times and REVISE twice inside a single round, so a vocabulary that numbered them 1..7 could not describe what happened.
+
+**The folder settles one of them**: it already carries the workflow word.
+(`board/page-workflows/`, one skill per phase plus the head router)
+The directory says which of the four words scopes the family, and the contracts inside it say which authority each phase holds.
+So the full term is "workflow phase" where disambiguation is needed and "phase" everywhere else, and the 927 occurrences of the word across this board and the skill tree stay as they are.
+
+**Two more words ride along, defined here and spent everywhere below**: a PAGE persists through all of it, and an OPERATION is one edit act upon it: phases are named by reason, operations by shape.
+The four words are defined at the top, before any division spends them.
+What keeps the siblings honest is a sweep of the family's contracts for a phase called a step or a step called a phase, and A1.2 tracks it.
+
+### 2 · OUTLINE ①: the head of a loop that converges
+**The OUTLINE contract**: what it decides, what it leaves alone, and what ends it.
+
+```text
+🧭 OUTLINE
+   asks     what will this page say, division by division, and what does each
+            bullet still owe?
+   writes   <page>/outline/<stem>-outline-v<N>.md, and nothing in the page
+   marks    a hole, and then STOPS. It raises no card and asks nothing.
+   loops    with ② PROBE and ③ EVIDENCE until the plan and its evidence agree
+   exits    a person ticks `approved:`. Nothing else ends it.
+```
+
+#### 2.1 · What OUTLINE decides, and what it leaves alone
+The deliverable is the section list, the paragraph under each section, the bullets under each paragraph, and what each bullet still owes.
+It all lives in ONE file, `outline/<stem>-outline-v<N>.md`, and the page's own prose stays untouched until DRAFT.
+OUTLINE marks a hole and stops there: raising cards and dispatching questions is PROBE's job.
+
+#### 2.2 · The Aims are agreed here, not later
+The Aims are settled in the plan file itself, and not at DRAFT.
+Shape and target are read once and approved by one tick.
+Every bullet that owes something names its Aim by id, so no id can dangle, and DRAFT transcribes those Aims onto the page rather than inventing them.
+
+The plan carries both the Aim's id and its target, so a renumber moves them together and no id can point at a target the plan does not hold.
+
+The same placement is what lets PROBE run ahead of DRAFT.
+A probe card's stake is an Aim, so PROBE can start no earlier than the phase that settles the Aims.
+The Aims exist the moment the plan does, so the card carries its stake from the plan and waits for nothing.
+
+#### 2.3 · The loop, and what makes it stop
+**Evidence changes the plan, and never just confirms it**: this page's own PREPARE loop shows both directions: a planned division scored 0 of 4 on `§10`'s split tests and was folded away, and a planned count of 17 was recomputed as 13 before the tick (both recorded in outline v3).
+
+Four machine checks run on every version of the plan.
+Coverage: every mark is served both ways.
+Address: every `serves:` resolves.
+Value: every quoted number recomputes.
+Shape: the divisions match the page type.
+The person is asked LAST, and for DIRECTION rather than arithmetic: the machine already proved the numbers, so the tick's question is whether the plan aims at the right thing.
+A tick belongs to the version it ticked.
+Quietly editing an approved plan is how `serves:` addresses go stale; a changed plan gets a new version and a new tick.
+
+**What the gate sees on this board today**: `PP06.v1` counts 17 plans, and `PP06.v2` finds 6 that pass all four checks.
+Coverage is the common failure (`PP06.v3`, 10 plans); address and shape fail none (`PP06.v4` and `PP06.v5`, both 0); value fails one (`PP06.v6`).
+
+The plan is ONE file, so its folds serialize: PROBE and EVIDENCE fan out safely across separate folders, and one OUTLINE pass per round is the merge point.
+The FIRST check is the human's own look, ruled after this page's own live round: the look is cheap and early, and it catches structure and style before any card is raised or run is spent.
+The look is not the gate.
+`approved:` ends the loop, and it is taken only after the four checks pass.
+
+#### 2.4 · The gate that ends the loop
+```text
+  change a section list   BEFORE the prose   one line
+  change a section list   AFTER  the prose   the prose
+```
+
+No machine may write the tick: it is the loop's one hard human gate.
+A phase whose entire output fits on one screen, and which a person can reject in ten seconds, belongs in front of every expensive phase rather than folded into one.
+The file's shape, its marks and its version rules live at `QPw1-outline` and `haipipe-plugin-outline`.
+
+### 3 · PROBE ②: turning a mark into a card, and asking
 **The PROBE contract**: an approved mark leaves the plan, becomes a card, and is asked.
 
 ```text
-🔎 PROBE
+📮 PROBE
 ├── 📥 enters    the approved mark, still bare, from the plan
 ├── 🧭 owns      the MATCH lookup, the card, and the dispatch
 ├── 🗂 writes    probe/PP<NN>-<slug>/ · consumer/ · executor/
 ├── 📤 exits     the moment the stripped question leaves
 └── 🚫 avoids    target Page prose · landing the answer
 ```
-📌 PROBE turns an approved mark into a card and asks; landing what comes back is EVIDENCE's job.
+📌 PROBE turns an approved mark into a card and asks; landing what comes back is ③ EVIDENCE's job.
 
-#### 2.1 · The trigger, the MATCH lookup, and the optional rule now live at QPw3-probe and QPw4-evidence
-(this page's own §1-§4 predate the 260817 split; the Opening banner above already names it once)
-PROBE's trigger, its four-step MATCH lookup that runs before any dispatch, and its optional-when-no-unknown-is-hidden rule now live at QPw3-probe.
-The write surface it hands off to, binding the returned answer and landing it in a card, now lives at QPw4-evidence.
-PROBE's meaning changed on 260817, exactly as this page's own Opening states it: it now only raises the card and asks.
+#### 3.1 · The phase in one paragraph, pointing at QPw3-probe
+The card holds the question, its `serves:` backlink into the plan, and later its `## Values`; the question goes out stripped of stake.
+PROBE is the only phase that may create `probe/PP<NN>-<slug>/`: OUTLINE marks, and EVIDENCE fills.
+It looks before asking, MATCH before RAISE: an existing card on this page, a PageX match, or a QA-bank answer to the same question is reused, never duplicated.
+The trigger, the four-step MATCH lookup, and the optional-when-no-unknown-is-hidden rule live at `QPw3-probe`.
 
-#### 2.4 · Filing a QA-probe does not identify the target Page
-(physical evidence routing and ownership of the Page-facing question are separate decisions)
-The target Page is the Page whose lifecycle raised the stake-bearing Q-consumer.
-A family may file the QA-probe under an evidence route such as Literature or Value without transferring the Q-consumer, A-consumer, or State to that route's topic Page.
-The Paper family's S03 and S04 layout exposes the distinction: a Results Page can raise the question, a QA-probe can live beneath a Value topic, and a QA-bank file can answer it.
+#### 3.2 · The three rules argued nowhere else
+**Filing a QA-probe does not name the target Page**: the probe layer never learns which page consumes the answer, and that wall is what keeps executors stake-blind.
+A family may file the QA-probe under an evidence route such as Literature or Value without transferring the Q-consumer, the A-consumer, or the State to that route's topic Page.
 Treating physical placement as an ownership transfer gives one exchange two Page-facing consumer surfaces before the answer reaches prose.
 
-#### 2.5 · One active Page bounds the consumer write
-(a shared answer creates handoffs to sibling Pages rather than inline rewrites of their Content)
-One PROBE run may write its declared Probe surface and the active target Page's Probe reference, A-consumer, and State.
-When the same Q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available without authoring those sibling Pages in the current run.
-Each sibling interprets the answer and changes its own Content through its own PROBE or REVISE route, with its own version and CHECK.
+**One active Page bounds the consumer write**: a PROBE run writes consumer rows only into the one page it was opened for.
+When the same Q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available, and each sibling page interprets it through its own PROBE or REVISE route, with its own version and CHECK.
 This preserves one Q-executor for reuse without turning one answer into an unbounded cross-Page edit.
 
-#### 2.6 · A projection can show the full chain without another authored copy
-(one canonical reference should drive human display, agent context, and stale-source checks)
-The active Page may need to show the Q-executor, bank target, state, returned answer, and limits while keeping its source concise.
-A read-only projection can render that chain from the QA-probe and bank answer, while the Page source keeps the Probe reference and its own A-consumer interpretation.
-The same reference should drive phase-scoped context loading and CHECK, so an author does not maintain a Probe pointer, an embed, and a Related Board Pages row for one relationship.
+**One reference shows the whole chain**: from the bullet's mark to the card, to the QA file, to the pulled proof, every hop is a recorded pointer, so a read-only projection can render the chain without a second authored copy.
 Missing targets, superseded answers, or changed source hashes must fail visibly rather than leave an old projection looking current.
 
-### 3 · REVISE makes the current promise work
+**One edge stays open, and it is recorded rather than hidden**: whether a family adapter may transfer Q-consumer ownership after handoff is the open Decision Now row below, and `A3.2` waits on it.
+
+### 4 · EVIDENCE ③: landing what came back
+**The EVIDENCE contract**: what enters, the lanes it runs, and what ends it.
+
+```text
+🔎 EVIDENCE
+   enters   a dispatched question that has returned, a known bib key, or a
+            unit whose material exists
+   lanes    📚 citation · 🧮 value · 🖼 display      IN PARALLEL
+   stages   ① MAKE the thing · ② BIND it so a sentence can name it
+   exits    every marked bullet has its thing on disk, or a named HOLD
+```
+
+#### 4.1 · The whole phase on one picture
+QPw00-Display5 draws the division at once, and its head is the probe card: the plan ASKS, the card answers, the value lane fills the card itself, a data display freezes FROM the card's `proof/`, and the citation lane is a person's and does not pass through the card.
+
+```text
+  ① MAKE   build the thing in the folder that owns it
+           📚 the bibex entry
+           🧮 the card's answer, pulled into proof/
+           🖼 the unit DRAWN: intake · recipe · assets · preview.pdf
+
+  ② BIND   make it pointable, so a sentence can name it and be checked
+           📚 the key resolves in bibex/                   `verified` ✋
+           🧮 target: names the answering QA file by PATH  `read:` ✋
+           🖼 the unit is previewable, its intake frozen
+
+  ─────────── the page's prose starts HERE, and this phase stops ──────────
+  ⑤ REVISE the sentence that uses it, its caption, the projections
+```
+
+Neither stage touches this page's `## Content`.
+That is the whole boundary: EVIDENCE changes what the page KNOWS and REVISE changes what it SAYS.
+A phase that both landed the answer and wrote the sentence could not be audited, because the only evidence that the answer came first would be its own report.
+
+#### 4.2 · 📮 The probe mark, the ask the lanes answer
+A 📮 mark sits on a bullet that ASKS.
+The bullet keeps only the question; the answer arrives later as an append plus the card's values.
+One card may serve many bullets, and its `serves:` line lists every address it answers.
+The ask and the quote share one `probe/` folder: 📮 marks the ask, 🧮 marks a quote of one landed number, and both point into the same card.
+The live example is one division up: `§1.2`'s counts stand on `PP01`, whose card carries the question, its state, and the three landed values.
+
+#### 4.3 · 🧮 The value lane
+**What it lands**: a number bound BY PATH to the QA file that answered it, with the pulled file sitting in the card's own `proof/`.
+
+```text
+  made by   the bank, task or discovery, answering into its own QA file.
+            PROBE already raised the card and asked.
+  tick      `read:`, and it REVERTS when `target:` changes or proof/ is re-pulled
+  id        PP<NN>.v<n> · one card holds several numbers
+```
+
+**One card, many values.** A card is ONE question, and its answer usually holds several numbers, so the id goes one level deeper: allocated in `card.md`'s `## Values` block when the answer lands, and never before.
+That is what makes two failures visible instead of silent: a number in the prose citing no `PP<NN>.v<n>`, and a value in a card that no sentence uses.
+Both directions are checked, and the 🔢 tab reports them: a surface with no storage, because the number already lives in `proof/` with its source, run and sha256.
+The live example: this page states 7 declared phases from `PP01.v1`, 6 contracts from `PP01.v2`, and 5 person-reserved ticks from `PP01.v3`.
+The card's v4 row reads `NOT HERE` and points at `PP02`, because run counts are that card's question, and its `read:` still reads ⬜, so every one of these quotes still waits on a person.
+
+#### 4.4 · 📚 The citation lane
+**What it lands**: one entry in `bibex/<stem>.bib`, and a key a sentence can cite.
+
+```text
+  made by   a PERSON, verbatim. A machine may SUBSET or TRANSCRIBE bibtex
+            and may never COMPOSE it.
+  tick      `verified`, on the entry itself. It does not revert.
+  failure   a 📚 mark naming a sibling board page. That is a cross-reference,
+            written in the bullet's own words; only a bib key wears 📚.
+```
+
+`verified` never reverts because provenance does not decay: it records that a person read the entry against its source.
+The live example is this page's own store: `luo2026eventglucose` was transcribed verbatim from QPf4-chat's bibex and carries its `verified = {<who> <date>}` signature, so a sentence here may cite the key and its chip resolves green.
+
+#### 4.5 · 🖼 The display lane
+**What it lands**: a DRAWN, previewable unit, not a folder of material.
+
+```text
+  ① INTAKE  🧑 freeze the material           EVIDENCE
+  ② RENDER  ⚙️ the renderer writes recipe/   EVIDENCE
+  ③ PICK    🧑 choose among candidates/      EVIDENCE
+  ④ BUILD   ⚙️ assets/ · float.tex · preview EVIDENCE
+  ⑤ ACCEPT  🧑 README `accepted: ✅`         CHECK      the human tick
+```
+
+Steps ② to ④ live in this lane because a display's return must be as directly usable as the other lanes': a citation lands a key, a value lands a bound number, so a display lands a drawn unit rather than an unrendered folder.
+Which units wait depends on their kind: a DATA unit (table, figure) freezes its intake FROM a probe card's `proof/` and waits for an answer, while a CONCEPT unit (diagram, tex, illustration) freezes a listing of source files and waits for nothing.
+The intake manifest pins every source with a sha256, so a moved or edited input is computable staleness, and `accepted: ✅` reverts with it: acceptance binds to the frozen inputs it was accepted with.
+The live example is QPw00-Display3, one glance down at `§14`: a concept unit with 15 frozen inputs in its `intake/manifest.yaml`, `accepted:` still ⬜, and cited both here and by `§14`'s table, which is legal because a unit owes AT LEAST one citing sentence, not exactly one.
+
+#### 4.6 · What the three lanes have in common
+```text
+  📚 citation   ─▶  bibex/<stem>.bib entry   returns a bib key
+  🧮 value      ─▶  probe/PP<NN>-<slug>/     returns a number bound to its run
+  🖼 display    ─▶  display/<unit>/          returns a drawn, previewable figure
+```
+
+They run at the same time, and none waits for another: the fold at ① OUTLINE is the only merge point.
+Each return is directly usable by a sentence: a citable key, a quotable id, a previewable figure.
+Three ticks live here and two of them revert: `verified` never, `read:` when `target:` changes or `proof/` is re-pulled, `accepted:` when the frozen intake changes.
+The ticks belong to stage ② BIND, because a tick is what turns a made thing into one a sentence may quote; `accepted: ✅` is the exception and stays at CHECK, since what it judges is the drawn artifact as a reader meets it.
+
+**EVIDENCE on this board, counted**: `PP03.v1` finds 23 probe cards, `PP03.v2` 13 still at `planned`, `PP03.v3` 0 read by a person, `PP03.v4` 10 of 10 display units rendered, and `PP03.v5` 0 accepted.
+Every person-reserved tick in this phase is open across the whole board.
+The lanes are real folders under real contracts with almost no traffic, and saying so is the difference between a contract and a description.
+
+The lane contracts are `QPw4c-citation`, `QPw4v-value` and `QPw4d-display`, under the phase contract `QPw4-evidence`.
+
+### 5 · DRAFT ④: turning each point into sentences
+**The DRAFT contract**: what enters, the one conversion it performs, and what it hands forward.
+
+```text
+✍️ DRAFT
+   enters   an approved plan whose evidence has ALREADY landed
+   does     one approved POINT ──▶ one or more SENTENCES that write the number
+   cites    every value, key and figure BY ID, at the place it is used
+   never    invents a value, a citation, a reading, or a rendered figure
+   exits    every point in the plan has become prose; a hole is the EXCEPTION
+```
+
+#### 5.1 · What DRAFT actually does, now that the Aims have left
+DRAFT enters on landed evidence, so it writes the NUMBER itself rather than a placeholder: the PREPARE loop already landed everything a sentence needs.
+A hole is the exception, not the normal case, and it names the input it is missing rather than just marking a gap.
+The Aims are settled at OUTLINE, and this phase transcribes them onto the page rather than inventing them.
+It executes the approved plan and names nothing new: a shape found wrong during DRAFT goes back to OUTLINE as a new version, never a quiet local fix.
+And it is named by reason, never by diff: the same edit shape can be DRAFT or REVISE, and only the reason distinguishes them.
+
+#### 5.2 · One point becomes several sentences, and the join survives both ways
+QPw00-Display7 draws the conversion in both directions: one approved POINT becomes one or more sentence scaffolds, and the join survives later edits because it is carried twice.
+
+```text
+  🧭 plan     C3.P1.B4 · Robustness across specifications   🧮 PP01.v1 · 🖼 Display4
+                 │
+                 ▼  DRAFT
+  📄 page     C3.P1.S1 · The primary estimate is 0.42 (PP01.v1).
+              C3.P1.S2 · It moves by less than 0.03 across specifications (PP01.v2).
+              C3.P1.S3 · Display4 compares the estimates.
+```
+
+One bullet is a POINT, not a sentence, so the two sides count different units and say so.
+`C3.P1` is shared, and only the last token differs: B for a point in the plan, S for a sentence on the page.
+The backlink also rides in a comment on the scaffold line, `<!-- realizes: C3.P1.B4 -->`, so REVISE may split or merge the sentence later without losing it.
+When a question stayed genuinely BLOCKED, the sentence keeps a visible hole carrying the card that owes it, so a reader sees what is missing and who owes it; `§14.1`'s PP05 hole is this page's one worked example.
+A sentence may never invent a value, a citation, a reading, or a rendered figure: a sentence that already knows its answer was written after the fact, and holes keep the order honest.
+
+#### 5.3 · How it is written, because a scaffold is still prose
+One idea per sentence, and a sentence past about thirty words is usually two.
+The haipipe-writing plain rules apply to scaffolds, not only to finished prose.
+The AI-tell catalogue at `haipipe-writing/ref/ai-tells.md` applies HERE and not only at REVISE, because machine cadence written at DRAFT gets rewritten twice instead of once.
+**What a scaffold may not contain**, as a list a writer can check against: an invented number; a hedge standing in for a hole; a summary of what a card says, which the 🧭 tab already reads live; or a division the plan did not name.
+Each forbidden thing is a way of smuggling unlanded evidence into prose.
+The full contract and its worked example live at `QPw2-draft`.
+
+### 6 · REVISE ⑤: turning landed evidence into sentences
 **The REVISE contract**: the Page changes while its purpose and Aims remain fixed.
 
 ```text
@@ -144,12 +403,34 @@ Missing targets, superseded answers, or changed source hashes must fail visibly 
 ```
 📌 REVISE improves the realization of the current round rather than redefining its promise.
 
-#### 3.1 · The fixed-promise test, the five-step order, and the display-walk split now live at QPw5-revise
-(which also carries COMPILE, folded in since 260817)
-REVISE's fixed-promise test, its five-step LAND, ARGUE, SOUND, RENDER, BUILD order, and the three display-walk steps it owns now live at QPw5-revise, which also carries COMPILE.
-This page's own §6, Operations route by reason, still carries the shared DRAFT-versus-REVISE test table that separates the two phases on the same edit, so a reader is pointed sideways as well as forward.
+#### 6.1 · The phase in one paragraph, pointing at QPw5-revise
+REVISE improves the realization while purpose and Aims stay fixed; if either moves, it is not REVISE, and the work reopens OUTLINE in a new version or DRAFT in a new round.
+It is the phase that fills a landed hole: the hole is replaced by the number plus its id, never by a restatement of the card.
+Its fixed-promise test, its five-step LAND, ARGUE, SOUND, CITE, BUILD order, and the `latex/` and `word/` rebuilds live at `QPw5-revise`, which also carries COMPILE.
+This page's own `§9` still carries the shared DRAFT-versus-REVISE test table that separates the two phases on the same edit, so a reader is pointed sideways as well as forward.
 
-### 4 · CHECK decides where the current version goes next
+#### 6.2 · ⑥ COMPILE is a step of this phase, not a division of its own
+**Scored against `§10`'s four split tests**, rather than asserted:
+
+```text
+  ① an unresolved question that is not just asking for its definition
+     ❌ its only open question is whether the fold is permanent
+  ② needs its own Aims and States rather than borrowing
+     ❌ its one Aim was the fold itself; nothing else was ever tracked
+  ③ an independent closing gate
+     ❌ no tick, no receipt, no gate anywhere
+  ④ its own continuation map in Files
+     ❌ shares REVISE's
+                                                        0 of 4 → it stays here
+```
+
+COMPILE rebuilds `latex/` and `word/` from the source as it now stands. That is real work with a real audit code, `projection-stale`, and it is the only member of the loop with no contract file, no receipt in any stored run, and no tick.
+
+The loop declares seven phases and the Diagram draws ⑥, because that count is cited across the contracts.
+COMPILE gets no division at the same level as the six phases that have one, because a heading of its own would assert a symmetry the four tests refuse.
+Whether the fold is permanent is `QPw5-revise`'s open ruling.
+
+### 7 · CHECK ⑦: where the current version goes next
 **The CHECK contract**: one concrete version is judged against its promise and routed.
 
 ```text
@@ -162,46 +443,40 @@ This page's own §6, Operations route by reason, still carries the shared DRAFT-
 ```
 📌 CHECK observes and decides; another phase performs the content change it requests.
 
-#### 4.1 · The judge/repair separation, the three built-artifact counts, and the accept-biased gate now live at QPw6-check
-(this page's own §10, Audit proves process claims, still carries the receipt and invariant material CHECK is measured against)
-CHECK's judge-may-not-repair separation, the three independent built-artifact counts it reads (declared, rendered, accepted), and its accept-biased human gate now live at QPw6-check.
-This page's own §10 still carries the receipt fields and invariants CHECK's routed findings are measured against, so nothing here is left an orphaned reference.
+#### 7.1 · The phase in one paragraph, pointing at QPw6-check
+CHECK judges one exact version and routes it: CLOSE, or back to the phase that owns the fix.
+Only CHECK closes; producers may HOLD or hand forward, and the judge alone ends a page's run.
+It judges and never repairs, because a fix by the finder would erase the independent finding; repair returns to a producer.
+The judge-may-not-repair separation, the three independent built-artifact counts it reads, and the accept-biased human gate live at `QPw6-check`: unclear findings route forward for repair rather than blocking the page.
+This page's own `§13` still carries the receipt fields and invariants CHECK's routed findings are measured against, so nothing here is left an orphaned reference.
 
-### 5 · Transitions form rounds, not a rigid conveyor belt
+### 8 · Transitions form rounds, not a rigid conveyor belt
 **The transition grammar**: repetition is legal, and returning to DRAFT changes the round.
 
 ```text
 📄 ROUND n · purpose + Aims fixed
 
-✍️ DRAFT ↺ ──┬──▶ 🧑 CHECK ──▶ ✅ close
-              └──▶ 🔎 PROBE ↺ ──▶ 🧵 REVISE ↺ ──▶ 🧑 CHECK
-                        ▲               │                 │
-                        └───────────────┘                 │
-                                                        ▼
-📄 ROUND n+1 ◀────────────── ✍️ DRAFT ◀──── purpose or Aims reopened
+┌ 🧭 OUTLINE ⇄ 📮 PROBE ⇄ 🔎 EVIDENCE ┐ ↺ PREPARE · until plan and evidence agree
+└───────────────┬─────────────────────┘
+   🚧 `approved:`│
+                 ▼
+   ✍️ DRAFT ──▶ 🧵 REVISE ↺ ──▶ 🧑 CHECK ──▶ ✅ close
+                     ▲               │
+                     └── sent back ──┤  CHECK may return to any earlier phase
+                                     ▼
+📄 ROUND n+1 ◀── ✍️ DRAFT ◀── purpose or Aims reopened
 ```
 📌 The arrows express dependencies and routing choices, not a rule that every phase runs once.
 
-#### 5.1 · The common order is not the only legal order
-(each phase may repeat, and optional work disappears when its trigger is absent)
-`DRAFT, DRAFT, PROBE, REVISE, DRAFT` is a legal history.
-The first two DRAFT entries can be repeated design work in one round.
-The final DRAFT means that revision reopened the promise and therefore began a new round.
-A complete draft with no unknowns and no revision need may go directly to CHECK.
+#### 8.1 · The three rules, and the split they made safe
+The common order is not the only legal order: rounds may repeat phases or skip them, and the route table defines legality, not habit.
+`DRAFT, DRAFT, PROBE, REVISE, DRAFT` is a legal history: two repeated design passes in one round, an optional question, a repair, and a final DRAFT that means revision reopened the promise and began a new round.
+REVISE to DRAFT is that restart, not a forbidden edge: the Page persists, earlier evidence remains available, and its relevance is re-checked against the new promise, while any earlier closing decision stops applying.
+A phase label requires a reason: "we edited prose" names no phase, "the aim moved" does, and without the reason two identical diffs can be mislabeled as different phases.
+These rules are what made the six-page split safe: six phase pages split out of this one, and the comparison and transition grammar they must agree on stays here, in `§8` and `§9`, where one home keeps them auditable.
+The shape to take away is three bands, not eleven steps: OPEN happens once, the PREPARE and writing phases repeat, and the CLOSE acts happen when CHECK stops the loop; `§14` prices the same shape as work.
 
-#### 5.2 · REVISE to DRAFT is a restart, not a forbidden edge
-(the explicit restart preserves the distinction between improving and redefining)
-REVISE may reveal that the current purpose or Aims are wrong.
-The Page then returns to DRAFT and receives a new round, while the Page itself persists.
-Earlier evidence remains available, but its relevance must be checked against the new promise.
-Any earlier closing decision no longer applies to the new round.
-
-#### 5.3 · A phase label requires a reason
-(the visible sequence alone cannot classify the work)
-The history should say which authority was used: promise reopened, unknown resolved, current promise improved, or version judged.
-Without that reason, two identical diffs can be mislabeled as different phases and two different intentions can be mislabeled as the same one.
-
-### 6 · Operations route by reason, not by edit shape
+### 9 · Operations route by reason, not by edit shape
 **The same operation under two authorities**: a compact test for ordinary Page changes.
 
 ```text
@@ -214,111 +489,59 @@ Without that reason, two identical diffs can be mislabeled as different phases a
 ```
 📌 The operation says what changed in the file; the authority says which phase performed it.
 
-#### 6.1 · Adding and deleting do not name a phase
-(the same paragraph-level change can design the promise or improve its realization)
-Adding a paragraph to explain evidence for an existing Aim is REVISE.
-Adding a paragraph because the Page now answers a new question is DRAFT.
-Deleting unsupported or duplicate prose while keeping the Aim is REVISE.
-Deleting the promised result itself, or deleting its Aim, is DRAFT.
+#### 9.1 · The table the sibling pages cite
+Adding and deleting name no phase: adding a paragraph to explain evidence for an existing Aim is REVISE, and adding one because the Page now answers a new question is DRAFT.
+Deleting unsupported or duplicate prose while keeping the Aim is REVISE; deleting the promised result itself, or its Aim, is DRAFT.
+Moving and rewriting use the same test: improving flow under the same argument is REVISE, and changing the argument the Page promises is DRAFT even when the diff is one moved heading.
+PROBE and CHECK produce records on different write surfaces, cards and verdicts, and neither touches page prose; when either causes target prose to change, the edit runs under REVISE or a restarted DRAFT.
+Sibling pages cite this page by `§` address rather than copying it (`QPw1-outline` pins `QPw00 §6` and `QPw6-check` pins `QPw00 §10` in their Files today), so a silent move of any division here, this table included, breaks their pins.
 
-#### 6.2 · Moving and rewriting use the same test
-(clarity stays inside the round; reframing opens a new one)
-Moving paragraphs to improve flow under the same argument is REVISE.
-Changing the argument the Page promises to make is DRAFT even if the diff is only one moved heading.
-Rewriting the Opening for clarity is REVISE when the purpose stays fixed.
-Rewriting it to give the Page a different purpose is DRAFT.
-
-#### 6.3 · PROBE and CHECK use different write surfaces
-(they can produce records without becoming authors of the target Page's content)
-PROBE writes questions, sources, evidence, and answer records.
-CHECK writes findings, comments, and gate records.
-When either phase causes target prose to change, the actual content edit is performed under REVISE or a restarted DRAFT.
-
-### 7 · One lifecycle Page holds the phases together
+### 10 · One lifecycle Page holds the phases together
 **The Page split rule**: each phase begins as a Content division and earns a Page only by becoming an independent question.
 
 ```text
-📄 QB5 · ONE LIFECYCLE QUESTION
-├── 📚 1 · ✍️ DRAFT
-├── 📚 2 · 🔎 PROBE
-├── 📚 3 · 🧵 REVISE
-├── 📚 4 · 🧑 CHECK
-├── 📚 5 · 🔁 transitions
-└── 📚 6 · 🛠 operations
+✂️ a phase earns its own Page · ALL four required
+├── ❓ an independent question, not just its definition
+├── 🎯 its own Aims and 📍 States
+├── 🚪 an independent closing gate
+└── 📁 its own continuation files
 
-✂️ split test · ALL required
-├── ❓ independent question
-├── 🎯 own Aims + 📍 States
-├── 🚪 independent closing gate
-└── 📁 own continuation files
-
-⚙️ phase skill   executable contract
-📄 design Page   independently closable question
-🚫 mapping       no automatic 1:1 mirror
+⚙️ phase skill   executable law, loaded one contract at a time
+📄 design Page   an independently closable question
+🚫 mapping       neither implies the other
 ```
-📌 Shared boundaries stay together until one phase can carry and close a question of its own.
+📌 Shared boundaries stay together; a phase moves out only when it can carry and close a question of its own.
 
-#### 7.1 · One phase does not automatically mean one Page
-(a description is a division; an independently managed question is a Page)
-DRAFT, PROBE, REVISE, and CHECK remain divisions of QB5 because their meanings depend on comparison and transition.
-The DRAFT and REVISE boundary is easier to judge when both definitions and the operation examples stay on one Page.
-The transition rules also need one home that no phase-specific Page can own alone.
+#### 10.1 · The division its own ruling overturned
+A phase begins as a Content division here and earns a Page of its own only by becoming an independently closable question: one it can close with its own evidence, its own gate, and its own continuation files.
+The four tests above decide it, and they are not left abstract: the re-cut that made this board's phase pages scored the phases against them, overturned this division's stay-together default, and split six pages out, `QPw1-outline` through `QPw6-check`, while COMPILE scored 0 of 4 and stays a step of `§6`; the Log keeps that ruling.
+Separate skills still do not require separate design pages: a phase skill is executable law a worker loads one contract at a time, a design page is an argument, and one phase may have both or either.
 
-#### 7.2 · A phase earns a Page by passing four tests
-(the split happens only when the new Page can be worked on and closed independently)
-The phase must have an unresolved question that is not merely asking for its definition.
-It must need its own Aims and States rather than borrowing QB5's records.
-It must have an independent closing gate and its own small continuation map in Files.
-If any test fails, the material remains a division or paragraph on QB5.
-
-#### 7.3 · Separate skills do not require separate design Pages
-(an executable contract and a design question have different reasons to be separate)
-A phase skill may remain separate because a worker needs to load one execution contract at a time.
-That file boundary does not force the Board to create a matching design Page.
-If a phase later passes the split test, QB5 keeps the shared boundaries and transitions while pointing to the new Page for that phase's independent question.
-
-### 8 · Page Type and Page Phase are separate skill axes
+### 11 · Page Type and Page Phase are separate skill axes
 **The skill composition**: the base resolves what the Page is and how the current work is acting on it.
 
 ```text
-📄 haipipe-page                   the shared Page contract and router
-├── 📁 page-types/                      what kind of Page persists · ten types · QB6 owns the roster
-│   ├── for-stage
-│   ├── for-skill
-│   ├── for-venue
-│   └── … seven more · for-design · for-display · for-literature · for-meeting · for-section · for-slide · for-value
-└── 📁 page-phases/                     what authority acts now
-    ├── draft
-    ├── probe
-    ├── revise
-    └── check
+📄 haipipe-page                the shared Page contract and router
+├── 📁 page-types/             what kind of Page PERSISTS · QB6 owns the roster
+│   ├── for-stage · for-task · for-venue · for-section · …
+│   └── sixteen variants across six skill sets (haipipe-page 0.36.0)
+└── 📁 page-workflows/         what AUTHORITY acts now · page-phases/ is its retired name
+    ├── haipipe-page-outline ① · haipipe-page-probe ② · haipipe-page-evidence ③
+    ├── haipipe-page-draft ④ · haipipe-page-revise ⑤ · haipipe-page-check ⑦
+    └── haipipe-page-workflow · the RUN router that composes them
 
 one invocation = base + matching Page Type + current Page Phase + family worker
 ```
 📌 Page Type and Page Phase are orthogonal, so their folder names and skill names must not collapse them into one label.
 
-#### 8.1 · `for-*` names only Page Types
-(the preposition says which persistent Page shape varies from the base)
-`haipipe-page-for-stage`, `-for-skill`, and `-for-venue` keep their names and move under `page-types/`.
-The roster has since grown to ten Page Types, and `QB6` owns the admission test and the list.
-The grouping folder is organizational and carries no `SKILL.md` of its own.
-A new Page Type is added only when a persistent Page needs a structural contract that the base does not provide.
+#### 11.1 · The axis split
+`for-*` names only Page Types: the preposition says which persistent Page shape varies from the base, and the roster has grown to sixteen variants across six skill sets, with `QB6` owning the admission test and the list.
+Phase skills use direct names, `haipipe-page-<phase>`, because a phase is an active authority and not a Page variant, and it applies across Page Types.
+PROBE keeps one vocabulary across the boundary: the target Page owns the stake-bearing Q-consumer, the phase strips it into a neutral Q-executor, binds the returned A-executor, and writes an A-consumer interpretation for each consumer; one Q-executor may serve several Q-consumers, and `haipipe-probe` remains the shared crossing protocol.
+The paths are one rename behind in places: contracts still name `page-phases/`, the retired folder name, and each is one mechanical sweep away from correct.
+The base-adoption question itself is closed as `P1`: option B won, the smallest reversible adoption, and the concrete router later earned the verb RUN rather than ADVANCE.
 
-#### 8.2 · Phase skills use direct names
-(a phase is an active authority, not a Page variant)
-The phase contracts are `haipipe-page-draft`, `-probe`, `-revise`, and `-check` under `page-phases/`.
-They apply across Page Types and therefore do not use `for-stage` in their names.
-The base first adopted the phase vocabulary without adding `ADVANCE`.
-The automatic router now earns a verb named `RUN`, because it may repeat, branch, HOLD, or return to DRAFT rather than advance in one direction.
-
-#### 8.3 · PROBE keeps one vocabulary across the boundary
-(Q-consumer and Q-executor remain the two question forms; Entry is not a fifth lifecycle concept)
-The target Page owns the stake-bearing Q-consumer.
-The PROBE phase strips the stake into a neutral Q-executor, binds the returned A-executor, and writes an A-consumer interpretation for each consumer.
-One Q-executor may serve several Q-consumers.
-`haipipe-probe` remains the shared crossing protocol, while `haipipe-page-probe` applies that protocol to a Board Page.
-
-### 9 · RUN turns the phase grammar into a bounded loop
+### 12 · RUN turns the phase grammar into a bounded loop
 **The executable flow**: one controller composes separate producer, builder, and judge roles without prescribing one phase sequence.
 
 ```text
@@ -326,51 +549,41 @@ One Q-executor may serve several Q-consumers.
 │  Page · Type · start Phase · intent · sources · constraints · gate · limits
 ▼
 🧭 controller
-├── ✍️ DRAFT / 🔎 PROBE / 🧵 REVISE  ─▶ producer
+├── every phase except CHECK          ─▶ producer
 ├── 🏗 build + version snapshot       ─▶ mechanical builder
 └── 🧑 CHECK exact version            ─▶ fresh read-only judge
                   │
                   ├── ✅ CLOSE
                   ├── 🧵 REVISE ──────┐
-                  ├── 🔎 PROBE ───────┤
+                  ├── 🔎 EVIDENCE ────┤
                   ├── ✍️ DRAFT round+1│
                   └── ⏸ HOLD          │
                                       └──▶ controller ↺
 ```
 📌 RUN follows returned authority routes and stops at explicit terminals or limits.
-QPw00-Display1 states the same controller as an algorithm, so a reader can see the three actors alternate and read the stop conditions in the order the loop tests them.
 
-#### 9.1 · RUN is not ADVANCE
-(the verb must describe what the router can actually do)
-ADVANCE suggests that one phase has one next phase and that progress always moves forward.
-RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD.
-The legal route table is dynamic: DRAFT, PROBE, and REVISE may repeat or hand off, while only CHECK may CLOSE.
-QPw00-Display2 writes that table as two rules and derives both laws from them, including one this prose never states: CHECK cannot route to CHECK, so a judged version reaches a second judgment only through a producer.
-Returning to DRAFT from another phase increments the round only when purpose or an Aim reopened.
-
-#### 9.2 · The raw-material packet bounds what agents may know
-(automation begins with explicit inputs rather than hidden conversational memory)
-The packet names the persistent Page, stable Page Type, starting Phase, run intent, source paths, settled constraints, closing gate, and step and round limits.
-A new Page is first created and registered, then RUN starts it at DRAFT.
-An existing Page with no known next need starts at CHECK, allowing a cold judge to route the visible version.
+#### 12.1 · A router, not a conveyor belt
+RUN means execute the current Page lifecycle from a named starting authority until CLOSE or HOLD; it is not ADVANCE, which would promise forward-only steps.
+The controller reads each phase's requested route and follows the legal-route table, which is dynamic: producers may repeat or hand off, and only CHECK may CLOSE.
+The packet bounds what agents may know: it names the Page, its Type, the starting Phase, the run intent, source paths, settled constraints, the closing gate, and step and round limits; context beyond it is contamination.
 A missing source, unknown gate, or ambiguous authority becomes HOLD rather than an invented input.
+The controller itself only routes, because writing or judging from the controller would collapse the producer, builder and judge separation it exists to keep: the producer performs exactly one phase, the mechanical builder rebuilds and snapshots the version, and the fresh judge returns the verdict, testing for CHECK rather than listing producer phases.
+Every stop is honest: CLOSE, explicit HOLD, missing input, failed build, version mismatch, required human ruling, maximum steps, or maximum rounds; reaching a limit says the process did not converge within its budget, and it never says the Page passed.
 
-#### 9.3 · The controller routes but does not write or judge
-(this page OWNS the role-separation rule; `QPw00a` owns only the roster of units that fill the roles and each unit's debt, ruled 260818 when JL read `QPw00a` and could not tell what it was for)
-(coordination is a separate authority from production and approval)
-The producer performs exactly one DRAFT, PROBE, or REVISE phase and suggests a legal route.
-The mechanical builder rebuilds, runs deterministic checks, and identifies the source plus render version.
-The fresh reviewer performs CHECK against that exact version and returns CLOSE, REVISE, PROBE, DRAFT, or HOLD.
-The controller validates and follows the route, but it cannot alter Page prose or convert a pending human gate into CLOSE.
+#### 12.2 · The loop drawn, and what it has actually done
+QPw00-Display1 states the controller as an algorithm, so a reader can see the three actors alternate and read the stop conditions in the order the loop tests them.
+QPw00-Display2 writes the legal-route table as six explicit row-sets and derives the laws this prose would otherwise assert: PROBE and EVIDENCE route only sideways or BACK to OUTLINE, so OUTLINE's gate is the one door into DRAFT; and CHECK cannot route to CHECK, so a judged version reaches a second judgment only through a producer.
 
-#### 9.4 · Every loop has honest stop conditions
-(bounded automation must distinguish non-convergence from quality)
-The run stops on CLOSE, explicit HOLD, missing input, failed build, version mismatch, required human ruling, maximum steps, or maximum rounds.
-Reaching a limit says the process did not converge within its budget.
-It never says the Page passed.
-The run's final state and every attempted phase remain inspectable instead of disappearing into an agent transcript.
+**The runs so far, counted**: `PP02.v1` finds 4 runs stored under `_runs/page/`, `PP02.v2` 24 receipts across them, `PP02.v3` 6 of 7 phases covered, and `PP02.v4` exactly one phase never executed, COMPILE.
+So the loop is fully specified and all but one phase exercised, and the one phase with no receipt anywhere is also the one with no contract of its own.
 
-### 10 · Audit proves process claims with receipts and fault tests
+#### 12.3 · The producer role is filled per phase
+Each phase is executed by its own producer: the controller's `PRODUCER_AGENTS` table maps a phase to `haipipe-page-<phase>-agent`, with the creator agent as the fallback.
+The agent files stay thin wrappers: each carries identity, skill chain, walls and receipt duty, and the shared law lives ONCE in `ref/producer-contract.md`, because an agent file that restates a contract is a mirror, and mirrors drift.
+**Counted on disk**: `PP07.v1` finds 6 agent files under `page-workflows/agents/`, `PP07.v2` 5 phases owning a producer of their own, `PP07.v3` 2 sharing or borrowing one (COMPILE and CHECK), and `PP07.v4` 4 support agents beside them.
+The roster itself, with each unit's daily debts, lives on `QPw00a`: this page owns the RULE, because a mirror of the roster here would drift within a day.
+
+### 13 · Audit proves process claims with receipts and fault tests
 **The assurance model**: deterministic invariants, fresh semantic judgment, and direct or human evidence support different quality claims.
 
 ```text
@@ -382,187 +595,103 @@ The run's final state and every attempted phase remain inspectable instead of di
 ```
 📌 A passing process audit proves that the declared process ran correctly, not that every possible substantive claim is true.
 
-#### 10.1 · A receipt binds action, actor, version, and route
-(a prose summary cannot reveal self-approval or changed-after-check)
-Each receipt records step, round, Phase, producer or judge actor, builder actor, status, source and render SHA-256 values, route, reason, artifacts, evidence, findings, and human-gate state.
-CHECK additionally binds `checked_version` and a verdict.
-The receipts are ordered and stored outside Page discovery under `_runs/page/<page-id>/<run-id>.json`.
-The deterministic auditor independently rehashes the source and rendered files on disk; matching claims repeated inside a receipt are not accepted as artifact evidence by themselves.
-The terminal CHECK record is not appended to the Page afterward, because that append would change the version it claims to approve.
+#### 13.1 · What a receipt binds, and what a pass does not cover
+Each receipt binds one attempted phase to its actor, its builder, its status, the source and render SHA-256 identities before and after, the route it requests, and its reason, artifacts, evidence, findings and human-gate state; CHECK additionally binds `checked_version` and a verdict.
+Receipts are ordered and stored outside Page discovery under `_runs/page/<page-id>/<run-id>.json`, and the deterministic auditor independently rehashes the artifacts on disk, so a claim repeated inside a receipt is never accepted as its own proof.
+Seven invariants make the loop auditable, among them version continuity from receipt to receipt, one writer per pen with distinct actor identities per role, legal routes only with CLOSE reserved to CHECK, packet and limit matching, and a human gate that closes only on durable evidence.
+Testing covers both directions: the happy paths and branch routes must pass, and injected faults, self-approval, mutation after CHECK, illegal routes, broken continuity, symbolic hashes, missing human evidence, must each be rejected for the specific invariant they violate.
+Quality is evidenced, never declared: a green audit proves the declared process ran, not that every substantive claim is true, and silence is never a pass.
 
-#### 10.2 · Seven invariants make the loop auditable
-(the highest-risk failures become machine-detectable)
-The preserved raw-material packet must match the run identity, first Phase, declared gate, and limits.
-Only legal phase routes are accepted, and only CHECK may CLOSE.
-A non-DRAFT route to DRAFT must name the reopened purpose or Aim and increment the next round exactly once.
-The producer, mechanical builder, and judge of one version must have different actor identities.
-Every version id must be the two declared lowercase SHA-256 digests joined by `:`, and every receipt must begin from the preceding receipt's ending version.
-CHECK must observe identical before, after, and checked ids; the auditor rehashes the current artifacts, and any later change requires a new CHECK.
-A required human gate closes only with durable evidence that the person ruled.
-Maximum steps and rounds terminate as non-convergence, never as a pass.
+**The auditor, run on this board's own receipts rather than described**: `PP04.v1` audits 4 stored runs, `PP04.v2` finds 0 that PASS, `PP04.v3` 8 findings, `PP04.v4` 5 distinct fault codes, and `PP04.v5` exactly 1 real contract violation.
+The real one is `checked-version-mismatch`, on a stored CHECK receipt: CHECK must leave `version_before`, `version_after` and `checked_version` identical, because a judge reporting on a version it did not read is the one failure the receipt exists to catch.
+No reasoning predicted it; running the auditor found it.
+Most of the rest is expected noise, `artifact-version-mismatch` on pages edited after their runs closed, which is the recorded cost of auditing live pages rather than frozen ones.
 
-#### 10.3 · Testing covers branches and injected failures
-(a green common path does not demonstrate a router)
-Happy paths include DRAFT directly to CHECK and DRAFT through optional PROBE and REVISE.
-Branch tests include CHECK to REVISE and back, CHECK to PROBE, and CHECK to a new DRAFT round.
-Fault injection includes self-approval, mutation after CHECK, illegal route, packet mismatch, broken version continuity, symbolic hashes, missing human evidence, failed worker, non-terminal trace, and exhausted limits.
-The deterministic harness must reject each injected fault for the specific invariant it violates.
-
-#### 10.4 · Quality is evidenced, not declared absolute
-(different checks justify different confidence claims)
-The mechanical checker can prove structural facts, and the lifecycle auditor can prove process facts.
-A fresh reviewer supplies semantic evidence that the Page performs its declared function and is readable without the drafting conversation.
-Direct sources or a human gate supply claims those instruments cannot settle.
-The final report therefore names the checked version, traversed branches, evidence inspected, remaining findings, gate state, and residual risk instead of saying only that quality is guaranteed.
-
-### 11 · Workflow, phase, step and round are four different words
-**The vocabulary rule**: the loop needs all four and none of them substitutes for another, which is why "phase" was kept when JL weighed replacing it with "step" on 260818.
-
-```text
-word         answers                      count in the ONE live run    repeats?
-──────────────────────────────────────────────────────────────────────────────────
-🌀 WORKFLOW  which LOOP is this?          1  · the run itself          no
-⏱️ PHASE     which AUTHORITY acts?        7 defined · 2 used           YES
-🔢 STEP      WHERE in this run?           5 · monotonic 1..5           never
-🔁 ROUND     which PROMISE era?           1 · bumps only on a reopen   on reopen
-```
-📌 A phase is a TYPE and a step is an INSTANCE of one: in `260805-0216-QB8e` the single CHECK phase occupies steps 1, 3 and 5.
-
-#### 11.1 · The receipt already spends all four, so none may be renamed onto another
-(`step: 4 · round: 1 · phase: CHECK · route: REVISE`, four fields in one object)
-Renaming phase to step would put two different meanings on one key inside a single receipt, and the auditor reads both.
-`step` is the monotonic position that never recurs; `phase` is the kind of work that must be free to recur, which is the property the whole loop is built on.
-
-#### 11.2 · "Step" would contradict the router's own name
-(RUN is deliberately not ADVANCE, `§9.1`)
-The word must permit repetition, because CHECK may route back to any earlier phase, PROBE may be skipped entirely, and a page may re-enter DRAFT in a new round.
-The one live run proves it rather than asserting it: CHECK ran three times and REVISE twice inside a single round, so a vocabulary that numbered them 1..7 could not describe what happened.
-JL raised the replacement and answered it himself on 260818: "for phase, we can do it again and again, right?"
-
-#### 11.3 · The folder already carries the workflow word, so no rename is owed
-(`board/page-phases/` became `board/page-workflows/` on 260817)
-The directory says which of the four words scopes the family, and the contracts inside it say which authority each phase holds.
-So the full term is "workflow phase" where disambiguation is needed and "phase" everywhere else, and the 927 occurrences of the word across this board and the skill tree stay as they are.
-
-### 12 · The same loop, priced: what a person is actually asked to do
+### 14 · The same loop, priced: what a person is actually asked to do
 **The cost rule**: a reader deciding whether to run this loop needs the WORK, not the authority, so the loop is stated once more as one row per step, with a person's job and its price in it.
 
 ```text
 #    PHASE      WHAT HAPPENS                    YOUR JOB              TIME    HOW OFTEN
 ────────────────────────────────────────────────────────────── once per page ───────────
-0    OPEN       you name the page and the       ✋ say what it        15 min  once
-                one thing it must decide           must decide
-─────────────────── the loop · CHECK may send you back to any row in this band ─────────
-1    OUTLINE    a machine writes the SHAPE      ✋ approve it, or     10 min  ↺ each round
-                only: sections, bullets, and       send it back
-                what each bullet still owes     ⬅ reject costs 10 sec
-2    DRAFT      a machine turns each approved   nothing.              0       ↺ each round
-                bullet into sentences with      do NOT fill a hole
-                visible <HOLE>s
-3    PROBE      a machine looks for an answer   nothing               0       ↺ each round
-                that already exists, then opens
-                a card and asks the bank
-4c   CITATION   a PERSON finds the published    ✋ paste the entry,   20 min  ↺ per entry
-                work; a machine may copy           tick `verified`
-                bibtex and never compose it
-4v   VALUE      the bank answers, bound BY      ✋ read the proof,    30 min  ↺ per card
-                PATH to a real file                tick `read:`
-                                                ⬅ the cost, and the tick that permits quoting
-4d   DISPLAY    a machine freezes the exact     nothing               0       ↺ per figure
-                bytes a figure is drawn from
-                ⚡ 4c · 4v · 4d run at the SAME TIME. None waits for another to finish.
-5    REVISE     a machine replaces every landed nothing               0       ↺ each round
-                hole, draws the figures, and
-                rebuilds the pdf
-6    CHECK      a machine and a DIFFERENT       ✋ accept, or say     15 min  ↺ each round
-                reader judge the BUILT pdf         where to go back
-                ⤴ "go back" → row 1, 2, 3, 4 or 5
-────────────────────────────── reached only when CHECK says CLOSE ──────────────────────
-7    ACCEPT     each figure is bound to the     ✋ tick               10 min  once per figure
-                inputs it was accepted with        `accepted: ✅`
-                                                ⬅ reverts if the inputs change
-8    CLOSE      the page's own ruling, named    ✋ sign it            5 min   once per round
-                by its Page Type                ⬅ this ends the round
+0    OPEN       CREATE copies the template      ✋ write the title    15 min  once
+                and registers the page in          so it states the
+                board.md (a VERB, not a phase)     page's PURPOSE
+──────────────── the loop · CHECK may send you back to rows 1, 2, 3, 4 or 5 ────────────
+1    OUTLINE    a machine writes the SHAPE      ✋ judge DIRECTION,   10 min  ↺ each pass
+                only, then FOUR checks run:        never arithmetic,
+                coverage · address · value ·       then tick `approved:`
+                shape                           ⬅ the four run BEFORE you are asked;
+                                                   this is the loop's one gate
+2    PROBE      MATCH first (this page, PageX,  nothing               0       ↺ each pass
+                the QA bank), only then a card;
+                the stripped question is the
+                only thing that crosses
+3c   CITATION   a machine may SUBSET or         ✋ land the entry     20 min  ↺ per entry
+                TRANSCRIBE a real record,          verbatim, so it
+                never COMPOSE one                  carries `verified`
+3v   VALUE      the bank answers into its own   ✋ tick `read:` =     30 min  ↺ per card
+                QA file, `target:` names that      "I agree with the
+                file BY PATH, and                  judgment", not "I
+                `checks/values.py` re-runs         checked the arithmetic"
+                the number                      ⬅ reverts when target or proof moves
+3d   DISPLAY    this lane DRAWS since 260819:   ✋ rule `intake/`,     ?      ↺ per unit
+                intake, recipe, the pick, then     choose among
+                assets/ + preview.pdf              candidates/
+                                                ⬅ no tick here: `accepted:` is row 7a's
+     ⚡ rows 1, 2 and 3 REPEAT AS ONE UNIT until the plan and its evidence agree,
+        and 3c · 3v · 3d run at the SAME TIME
+4    DRAFT      enters on evidence that has     nothing               0       per round
+                ALREADY landed, so it writes
+                the NUMBER; a hole is the
+                EXCEPTION and names the input
+                it is missing
+5    REVISE     the sentence citing each drawn  nothing               0       ↺ each round
+                unit by id, the caption, the
+                latex/ + word/ rebuild. It no
+                longer draws
+6    COMPILE    folded into 5 since 260819,     nothing               0       with 5
+                holding no contract of its own
+     ⚡ 4, 5 and 6 run END TO END and stop for nobody
+7    CHECK      a DIFFERENT actor judges the    ✋ take CLOSE, or     15 min  ↺ each round
+                RENDERED page and the BUILT        name where to go
+                artifact                           back, by phase NAME
+────────────────── what ends it · both ticks below are row 7 CHECK's own ───────────────
+7a   ACCEPT     shown only once the page's      ✋ tick               10 min  per unit
+                mechanical errors are ZERO: a      `accepted: ✅`
+                confirmation, not an inspection ⬅ a changed intake/ drops it back to ⬜
+7b   CLOSE      CLOSE is a ROUTE and not a      ✋ sign the RULING    5 min   per round
+                phase; only `verdict: pass`     ⬅ silence is not consent
+                may take it
 ```
-📌 SEVEN of the eleven rows ask something of a person and four read `nothing`; of those seven, five carry a tick a machine may never write, and two (row 0 OPEN and row 6 CHECK) ask for a judgment that leaves no tick behind. That is the same fact `§9` states as authority, priced instead.
-QPw00-Display3 renders this table for print, with the eight files it was transcribed from frozen beside it.
+⚠️ **The row numbers here are the WORK's, not the loop's.** Row 0 OPEN is a verb, and rows 7a ACCEPT and 7b CLOSE are ⑦ CHECK's own ticks; rows 3c, 3v and 3d are the three lanes inside phase ③. Rows 1, 2, 4, 5 and 7 are phases ①, ②, ④, ⑤ and ⑦, and phase ⑥ COMPILE holds row 6 only to say out loud that it is folded into row 5.
 
-#### 12.1 · TIME is the only estimated column, and it is estimated because nothing has been timed
-(`_runs/page/` holds ONE run, `260805-0216-QB8e`, whose five receipts are CHECK · REVISE · CHECK · REVISE · CHECK)
-No OUTLINE, DRAFT, PROBE or EVIDENCE receipt exists anywhere on this board, so four of the table's phases have never run under the contract at all.
-Every other cell is transcribed from a file frozen in `display/QPw00-Display3-who-does-what/intake/inputs/`, and the manifest names all eight with their sha256.
+📌 EIGHT of the twelve rows ask something of a person and four read `nothing` (2, 4, 5, 6); of those eight, five carry a tick a machine may never write (1, 3c, 3v, 7a, 7b), and three (row 0 OPEN, row 3d DISPLAY, row 7 CHECK) ask for a judgment that leaves no tick behind. Every asking row is the OPEN that starts the page, a step of the PREPARE loop, or CHECK: the loop's whole human cost is paid BEFORE DRAFT and AFTER REVISE, and never inside them. That is the same fact `§12` states as authority, priced instead.
+QPw00-Display3 renders this table for print, with the fifteen files it is transcribed from frozen beside it.
+
+#### 14.1 · TIME is the only estimated column, and it is estimated because nothing has been timed
+**The one measured number is zero**: `PP05.v1` reports 0 phases with a measured duration, and `PP05.v2` names the 2 inputs that block it.
+
+Every phase's real duration is <HOLE: PP05 blocked, no stored receipt carries a start/end pair, and COMPILE has no receipt at all (PP02.v4)>, so the TIME column stays an estimate on its own face.
+
+```text
+  ① every stored receipt carries ONE timestamp,   a completion time, not a
+     the newest PROBE receipt included             start/end pair     PP05.v2
+  ② one phase has never run at all                COMPILE            PP02.v4
+```
+
+Block ① is the one to fix first, because it is a contract change rather than work: the receipt shape in `ref/page-run-contract.md` needs a per-phase start and end stamp.
+Block ② then clears by running the loop once end to end.
+An estimate was not substituted, because substituting one is how this column got its current values.
+Every other cell is transcribed from a file frozen in `display/QPw00-Display3-who-does-what/intake/inputs/`: the manifest names all fifteen with the sha256 of the copy AND of the live source, so `checks/intake.py` can recompute staleness on demand.
+Row 3d carries no estimate at all, because nobody has priced the lane's render, pick and build steps.
 A number nobody has measured is marked as an estimate on the table's own face rather than left to look like the others.
-
-#### 12.2 · The bands are the shape, and the row numbers are only a reading order
-(once per page · the loop · what ends it)
-A reader who takes only the three bands away already has the loop: one thing happens once, six things repeat until CHECK stops sending them back, and two things happen when it does.
-The numbers are not a sequence, because rows 4c, 4v and 4d run at the same time and row 6 may return to any of rows 1 through 5.
-That is the non-linearity `§5` argues from transitions, put in the one place a person looks to find out what today costs them.
-
+Once receipts carry start and end pairs, the column is rebuilt from `_runs/page/` timestamps instead of estimated, which is `A14.2`'s whole test.
 
 ## Aims
 
-### A1 · ✍️ DRAFT gives the Page a promise
-- A1.1 · DRAFT is defined by authority over purpose and Aims rather than by first creation.
-  **Done when:** a reader can identify DRAFT in both an empty Page and a mature Page that reopens its promise.
+Every Aim is one row: the tick says where it stands, `Done when:` is the test a reader can apply without asking anyone, and `Now:` is what is true today.
 
-### A2 · 🔎 PROBE resolves what the Page cannot know
-- A2.1 · PROBE has an explicit trigger, write surface, return record, and exit.
-  **Done when:** a reader can route a consequential unknown without letting PROBE author target prose.
-- A2.2 · The target Page, Probe surface, sibling handoff, and forbidden cross-Page write are unambiguous.
-  **Done when:** a family can file a QA-probe by evidence route without silently transferring Q-consumer ownership or authoring a sibling Page in the same run.
-- A2.3 · One Probe reference can show the full evidence chain without becoming a second authored answer.
-  **Done when:** the reference drives render projection, bounded phase context, dependency versioning, visible failure, and CHECK.
-
-### A3 · 🧵 REVISE makes the current promise work
-- A3.1 · REVISE is separated from DRAFT by whether purpose and Aims remain fixed.
-  **Done when:** the same add, delete, move, or rewrite operation can be classified from its reason.
-
-### A4 · 🧑 CHECK decides where the current version goes next
-- A4.1 · CHECK judges one version and routes it to close, REVISE, PROBE, or a new DRAFT.
-  **Done when:** every finding names the authority that owns the next change.
-
-### A5 · 🔁 Transitions form rounds, not a rigid conveyor belt
-- A5.1 · Repetition, optional phases, and REVISE to DRAFT are represented without contradiction.
-  **Done when:** `DRAFT, DRAFT, PROBE, REVISE, DRAFT` has an unambiguous round interpretation.
-
-### A6 · 🛠 Operations route by reason, not by edit shape
-- A6.1 · Common Page edits are examples rather than phase definitions.
-  **Done when:** adding, deleting, moving, and rewriting each have both a DRAFT case and a REVISE case.
-
-### A7 · 📄 One lifecycle Page holds the phases together
-- A7.1 · Each phase remains a Content division until it becomes an independently closable question.
-  **Done when:** the Page names the four split tests and distinguishes phase skills from design Pages.
-
-### A8 · 🗂 Page Type and Page Phase are separate skill axes
-- A8.1 · The skill tree keeps persistent Page variation separate from current phase authority.
-  **Done when:** Page Types live under `page-types/`, Page Phases live under `page-phases/`, and the base routes both without introducing an Entry phase or treating RUN as linear ADVANCE.
-
-### A9 · 🔁 RUN turns the phase grammar into a bounded loop
-- A9.1 · One automatic router composes phase producers, version snapshots, independent CHECK, legal branches, new rounds, and honest stops.
-  **Done when:** a new or existing Page can run from a named Phase to CLOSE or HOLD without assuming DRAFT, PROBE, REVISE, and CHECK each run once in order.
-
-### A10 · 🧪 Audit proves process claims with receipts and fault tests
-- A10.1 · Every run is reconstructable and every critical invariant has both a passing and failing test.
-  **Done when:** the durable receipt passes the deterministic auditor, fresh-context review passes the checked version, and branch plus fault coverage rejects known bad flows.
-
-### A11 · 🔤 Workflow, phase, step and round are four different words
-- A11.1 · No document in this family uses one of the four words for another's meaning.
-  Done when a sweep finds no receipt field, contract sentence, or page division calling a phase a step or a step a phase.
-- A11.2 · The four are readable from one figure without opening the receipt.
-  Done when each word carries what it answers, its count in a real run, and whether it repeats.
-
-### A12 · 💰 The same loop, priced: what a person is actually asked to do
-- A12.1 · Every cell except TIME is transcribed from a frozen file rather than from memory.
-  Done when `display/QPw00-Display3-who-does-what/intake/manifest.yaml` lists a sha256 for every source the table quotes, and `cli/check.py` reports no `display-intake-unfrozen` on this unit.
-- A12.2 · The TIME column stops being an estimate.
-  Done when `_runs/page/` holds at least one receipt for each of OUTLINE, DRAFT, PROBE and EVIDENCE, and the column is rebuilt from their timestamps.
-
-### P · Page-level
-- P1 · The base Page contract either adopts this lifecycle vocabulary or explicitly leaves it family-specific.
-  **Done when:** JL chooses the base-adoption option and the affected contracts are either wired or retired.
-
-## States
+🔒 Target and test are transcribed from the approved plan `outline/QPw00-page-loop-outline-v3.md`, which is where Aims are settled (JL 260819). `Now:` is the page's own, and `## States` merged into this section the same day (`haipipe-page` 0.34.0).
 
 ### Decision Now
 
@@ -577,73 +706,152 @@ That is the non-linearity `§5` argues from transitions, put in the one place a 
       ✅ `Ruled B` JL 260804: "Yes, correct. Please go ahead for it."
 
 - [ ] 🗣 Can a family adapter transfer Q-consumer ownership when it files a QA-probe under an evidence topic?
-      📍 `A2.2` owns the boundary between the active target Page and an evidence route supplied by a family.
-      🔔 `Why now` the Paper adapter currently makes the Literature or Value topic Page canonical after another Page raises the Aim, while `QB5 §8.3` says the target Page owns the Q-consumer.
+      📍 `A3.2` owns the boundary between the active target Page and an evidence route supplied by a family.
+      🔔 `Why now` the Paper adapter currently makes the Literature or Value topic Page canonical after another Page raises the Aim, while this page's `§11.1` (QB5 §8.3 before the renumber) says the target Page owns the Q-consumer.
       `A ·` Allow the transfer. The evidence topic Page owns the stake, A-consumer, State, and Probe path; this keeps a self-contained topic register but makes one PROBE a multi-Page consumer write.
       ⭐ `B ·` Keep ownership on the Page that raised the Q-consumer. The QA-probe may be filed under any family route, while topic Pages show a derived rollup and receive their own lifecycle only when their synthesis changes.
       🛑 `Blocks` changing the Paper topic-entry contract and implementing the zero-copy topic projection.
-      🤖 `If nobody answers` the implemented Paper topic-owned rule remains unchanged, and sections 2.4 to 2.6 stay the recommended shared boundary rather than shipped family behavior.
+      🤖 `If nobody answers` the implemented Paper topic-owned rule remains unchanged, and `§3.2` stays the recommended shared boundary rather than shipped family behavior.
 
-### A1 · ✍️ DRAFT gives the Page a promise
-- 🔨 A1.1 · The mature-Page and repeated-DRAFT cases now live at QPw2-draft §4.1, cited from this page's own §1.1; awaiting the human check of the model.
+### A1 · 🧭 Overview: what the loop is, and how to read the rest
+- ⬜ A1.1 · The loop is stated once, whole, before any single phase is argued.
+  **Done when:** a reader can stop after §1 and say what the seven phases are, which one they are in, and where to read next.
+  **Now:** Not met. §1 states the loop whole this round, PREPARE first, and no reader has been asked whether they can stop there and still say what the seven phases are.
+- 🔨 A1.2 · No document in this family uses one of the four words for another's meaning.
+  **Done when:** a sweep finds no receipt field, contract sentence, or page division calling a phase a step or a step a phase.
+  **Now:** Being worked on now. The four are separated here and in `haipipe-page-workflow`; the sweep across the other 63 pages of this board has not run.
+- ✅ A1.3 · The four are readable from one figure without opening the receipt.
+  **Done when:** each word carries what it answers, its count in a real run, and whether it repeats.
+  **Now:** Met. `§1.3`'s figure carries all four with their live counts from `260805-0216-QB8e`.
 
-### A2 · 🔎 PROBE resolves what the Page cannot know
-- ✅ A2.1 · Met 260818. §2's face-card, pin line, and §2.1 now state PROBE's post-260817 meaning consistently with the Diagram and the Opening, and point at QPw3-probe and QPw4-evidence rather than re-arguing it.
-- 🧠 A2.2 · Waiting on the open Decision Now row. Sections 2.4 and 2.5 state the origin-owned, one-active-Page alternative and the Paper S03/S04 case that exposed the ambiguity.
-- 🧠 A2.3 · Waiting on A2.2. The Board already supports live Markdown embeds and scoped Related Board Pages, but no single Probe reference drives display, context, dependency identity, and CHECK.
+### A2 · 🧭 OUTLINE ①: the head of a loop that converges
+- 🔨 A2.1 · OUTLINE has a division of its own, stating its authority, its deliverable and the tick that ends it.
+  **Done when:** the body opens on phase ① rather than phase ②, and a reader reaches DRAFT already knowing what an approved plan is.
+  **Now:** The body opens on phase ① and `§2` states authority, deliverable and tick; whether a reader reaches `§5` already knowing what an approved plan is has not been tested on a reader.
+- 🔨 A2.2 · The Aims are settled during OUTLINE, in the plan file, and every owing bullet links to one by id.
+  **Done when:** no bullet names an Aim the plan does not declare, and DRAFT transcribes the Aims rather than inventing them.
+  **Now:** Exercised again this round: outline v3 declares all 31 Aims and this section is transcribed from it. The rule is still absent from `haipipe-page-outline` itself, whose 0.6.0 text names no Aims at all.
+- 🔨 A2.4 · The loop's order is argued from what each phase NEEDS, not from habit.
+  **Done when:** a reader can say why PROBE may run before DRAFT now and could not before 260819.
+  **Now:** Written this round: `§2.2` states the stake argument that moved PROBE, and `§2.3` records the fold cases and the one merge point.
+- 🔨 A2.5 · Self-consistency is four checks a machine runs, and the human tick is scoped to what they cannot reach.
+  **Done when:** all four are named with the tool that runs them, and the tick's question is stated as direction rather than correctness.
+  **Now:** Written this round in `§2.3` with PP06's counts landed; the four checks are named there and the tick's direction-only scope is stated in `§2.3` and `§2.4`.
 
-### A3 · 🧵 REVISE makes the current promise work
-- 🔨 A3.1 · The fixed-purpose-and-Aims test now lives at QPw5-revise §1, and the shared operation table stays on this page's own §6; awaiting human check.
+### A3 · 📮 PROBE ②: turning a mark into a card, and asking
+- ✅ A3.1 · PROBE has an explicit trigger, write surface, return record, and exit.
+  **Done when:** a reader can route a consequential unknown without letting PROBE author target prose.
+  **Now:** Met 260818, renumbered 260819. `§3`'s face card, pin line, and `§3.1` state PROBE's post-260817 meaning consistently with the Diagram and the Opening, and point at QPw3-probe rather than re-arguing it.
+- 🧠 A3.2 · The target Page, Probe surface, sibling handoff, and forbidden cross-Page write are unambiguous.
+  **Done when:** a family can file a QA-probe by evidence route without silently transferring Q-consumer ownership or authoring a sibling Page in the same run.
+  **Now:** Waiting on the open Decision Now row. `§3.2` states the origin-owned, one-active-Page alternative and the Paper S03/S04 case that exposed the ambiguity.
+- 🧠 A3.3 · One Probe reference can show the full evidence chain without becoming a second authored answer.
+  **Done when:** the reference drives render projection, bounded phase context, dependency versioning, visible failure, and CHECK.
+  **Now:** Waiting on A3.2. The Board already supports live Markdown embeds and scoped Related Board Pages, but no single Probe reference drives display, context, dependency identity, and CHECK.
 
-### A4 · 🧑 CHECK decides where the current version goes next
-- 🔨 A4.1 · The judged outcomes and the no-hidden-revision rule now live at QPw6-check §1-§2, cited from this page's own §4.1; awaiting human check.
+### A4 · 🔎 EVIDENCE ③: landing what came back
+- 🔨 A4.1 · EVIDENCE is readable as parallel lanes, and the marks a plan can carry are named against the three lanes that exist.
+  **Done when:** a reader can say why 📮 probe and 🧮 value are two marks over the one probe/ folder, without opening another contract.
+  **Now:** Rewritten this round to the plan's own text. `§4.2` and `§4.3` state the two marks over one probe/ folder, and the retired 🧮-proof reading survives only in the Log.
+- 🔨 A4.2 · The three ticks EVIDENCE carries are stated with which two revert.
+  **Done when:** a reader can name the input whose change reverts `read:` and the one that reverts `accepted:`.
+  **Now:** Written in `§4.6`, with the reverting input named for both `read:` and `accepted:`.
+- 🔨 A4.3 · What each lane returns is stated side by side.
+  **Done when:** the three returns are one block, not three paragraphs in three contracts.
+  **Now:** Written in `§4.6` as one block of three returns.
+- 🔨 A4.4 · EVIDENCE is readable as two stages, MAKE then BIND, with the boundary to prose visible.
+  **Done when:** a reader can say which stage a person's tick belongs to, and why neither stage may write a sentence.
+  **Now:** Written in `§4.1` and `§4.6`: the two stages, the ticks living at BIND, and the auditability argument for why neither stage writes a sentence.
+- 🔨 A4.5 · A value is addressable on its own, not only through the card that holds it.
+  **Done when:** every number in this page's prose carries a `PP<NN>.v<n>`, and no card holds a value no sentence uses.
+  **Now:** This round quotes every landed value on the seven cards by id somewhere in Content; the reverse check, a prose number with no id, is the 🔢 tab's to report at CHECK.
 
-### A5 · 🔁 Transitions form rounds, not a rigid conveyor belt
-- 🔨 A5.1 · Written in Content with repeated phases, optional PROBE, and REVISE to DRAFT as a new round; awaiting human check.
+### A5 · ✍️ DRAFT ④: turning each point into sentences
+- 🔨 A5.1 · DRAFT is defined by the point-to-sentence conversion, not by first creation and not by owning Aims.
+  **Done when:** a reader can identify DRAFT in both an empty Page and a mature Page that reopens its promise, and can say what DRAFT kept when the Aims left.
+  **Now:** Rewritten 260819. `§5` defines DRAFT by the conversion and by entering on landed evidence; until this round the division sat at `§3` and still drew holes as the normal case.
+- 🔨 A5.2 · Every mark in the plan becomes a visible hole in the sentence that will use it, with its card id beside it.
+  **Done when:** no landed answer can be written into prose without passing through a hole, and no hole exists that no card serves.
+  **Now:** `§5.2` keeps the mark-to-hole rule for the blocked case and names `§14.1` as the page's one worked example; the normal case now writes the landed number directly.
+- ⬜ A5.3 · A scaffold reads like a person wrote it, before REVISE touches it.
+  **Done when:** `score.py` on a fresh DRAFT output flags no more sentences than it flags on the same page's already-revised prose.
+  **Now:** Not measured against revised prose on the same page yet; this round's DRAFT output has not been through the comparison.
+- 🔨 A5.4 · A hole in the prose is the EXCEPTION and names the input it is missing.
+  **Done when:** no hole on this page lacks a named blocker, and PP05 is the worked example.
+  **Now:** The page's one hole sits in `§14.1` and names PP05's two blocking inputs; whether an unnamed hole hides elsewhere is a reader's check at ⑦.
 
-### A6 · 🛠 Operations route by reason, not by edit shape
-- 🔨 A6.1 · Written in Content with paired add, delete, move, and rewrite cases; awaiting human check.
+### A6 · 🧵 REVISE ⑤: turning landed evidence into sentences
+- 🔨 A6.1 · REVISE is separated from DRAFT by whether purpose and Aims remain fixed.
+  **Done when:** the same add, delete, move, or rewrite operation can be classified from its reason.
+  **Now:** The fixed-purpose-and-Aims test now lives at QPw5-revise §1, and the shared operation table stays on this page's own `§9`; awaiting human check.
+- ✅ A6.2 · COMPILE's fold into REVISE is stated as a measured decision with its open ruling named, not as an inherited silence.
+  **Done when:** the division scores COMPILE against §10's four split tests and points at QPw5-revise for the ruling.
+  **Now:** Met 260819. `§6.2` scores COMPILE against `§10`'s four split tests, 0 of 4, and names QPw5-revise as the owner of whether the fold is permanent.
 
-### A7 · 📄 One lifecycle Page holds the phases together
-- ✅ A7.1 · JL agreed 260804 that every phase gets a Content division by default, not its own Page; division 7 records the four tests for a later split.
+### A7 · 🧑 CHECK ⑦: where the current version goes next
+- 🔨 A7.1 · CHECK judges one version and routes it to close, REVISE, PROBE, or a new DRAFT.
+  **Done when:** every finding names the authority that owns the next change.
+  **Now:** The judged outcomes and the no-hidden-revision rule now live at QPw6-check §1-§4, cited from this page's own `§7.1`; awaiting human check.
 
-### A8 · 🗂 Page Type and Page Phase are separate skill axes
-- ✅ A8.1 · JL ruled 260804 that `for-*` skills belong under `page-types/`, direct phase skills belong under `page-phases/`, and the remaining layering proposal stands.
+### A8 · 🔁 Transitions form rounds, not a rigid conveyor belt
+- 🔨 A8.1 · Repetition, optional phases, and REVISE to DRAFT are represented without contradiction.
+  **Done when:** `DRAFT, DRAFT, PROBE, REVISE, DRAFT` has an unambiguous round interpretation.
+  **Now:** Written in `§8.1` with repeated phases, optional PROBE, REVISE to DRAFT as a new round, and the PREPARE loop drawn in the division figure; awaiting human check.
 
-### A9 · 🔁 RUN turns the phase grammar into a bounded loop
-- 🔨 A9.1 · LIVE-PROVEN with one caveat, 260805: run `260805-0216-QB8e` drove a real page CHECK→REVISE→CHECK→REVISE→CHECK→CLOSE in 5 receipts, findings 8→2→0, distinct fresh-context actors per role, audit PASS with hashes recomputed from disk (`_runs/page/QB8e/260805-0216-QB8e.json`). The caveat keeping this 🔨: `page-lifecycle.workflow.js` was NOT invocable as shipped (no Workflow harness in the live environment); the controller logic was executed by hand, and the run surfaced 11 contract ambiguities, logged below.
+### A9 · 🛠 Operations route by reason, not by edit shape
+- 🔨 A9.1 · Common Page edits are examples rather than phase definitions.
+  **Done when:** adding, deleting, moving, and rewriting each have both a DRAFT case and a REVISE case.
+  **Now:** Written in `§9.1` with paired add, delete, move, and rewrite cases; awaiting human check.
 
-### A10 · 🧪 Audit proves process claims with receipts and fault tests
-- ✅ A10.1 · Met 260805: the live QB8e run supplied the missing semantic CHECK, three fresh judges on three exact versions, converging 8→2→0, terminal verdict pass with zero findings; the deterministic auditor passed the same bundle with artifact hashes recomputed from disk.
+### A10 · 📄 One lifecycle Page holds the phases together
+- ✅ A10.1 · Each phase remains a Content division until it becomes an independently closable question.
+  **Done when:** the Page names the four split tests and distinguishes phase skills from design Pages.
+  **Now:** The four tests stay named in `§10`, now with the record that the 260818 split applied them and overturned this division's original stay-together default; the skill-versus-page distinction stands beside them.
 
-### A11 · 🔤 Workflow, phase, step and round are four different words
-- 🔨 A11.1 · Being worked on now. The four are separated here and in `haipipe-page-workflow`; the sweep across the other 63 pages of this board has not run.
-- ✅ A11.2 · Met. `§11`'s figure carries all four with their live counts from `260805-0216-QB8e`.
+### A11 · 🗂 Page Type and Page Phase are separate skill axes
+- ✅ A11.1 · The skill tree keeps persistent Page variation separate from current phase authority.
+  **Done when:** Page Types live under `page-types/`, Page Phases live under `page-workflows/`, and the base routes both without introducing an Entry phase or treating RUN as linear ADVANCE.
+  **Now:** JL ruled 260804 that `for-*` skills belong under `page-types/` and phase skills use direct names; the folder is `page-workflows/` since 260817 and `§11`'s tree now draws it.
 
-### A12 · 💰 The same loop, priced: what a person is actually asked to do
-- ✅ A12.1 · Met 260818, and then extended the same day. `QPw00-Display3` was the FIRST unit on this board with a frozen intake, eight inputs with sha256; `QPw00-Display1` (4 inputs) and `QPw00-Display2` (2 inputs) were frozen hours later, and `haipipe-board-approver-agent` recomputed all fourteen digests against disk. `QPf5-Display1` and `QPf5-Display2` remain the only unfrozen units on the board.
-- ⬜ A12.2 · Not met, and not close. `_runs/page/` holds ONE run with five receipts, all CHECK or REVISE, so four of the table's phases have never been executed under the contract.
+### A12 · 🔁 RUN turns the phase grammar into a bounded loop
+- 🔨 A12.1 · One automatic router composes phase producers, version snapshots, independent CHECK, legal branches, new rounds, and honest stops.
+  **Done when:** a new or existing Page can run from a named Phase to CLOSE or HOLD without assuming DRAFT, PROBE, REVISE, and CHECK each run once in order.
+  **Now:** LIVE-PROVEN with one caveat, 260805: run `260805-0216-QB8e` drove a real page CHECK→REVISE→CHECK→REVISE→CHECK→CLOSE in 5 receipts, findings 8→2→0, distinct fresh-context actors per role, audit PASS with hashes recomputed from disk (`_runs/page/QB8e/260805-0216-QB8e.json`). The caveat keeping this 🔨: `page-lifecycle.workflow.js` was NOT invocable as shipped (no Workflow harness in the live environment); the controller logic was executed by hand, and the run surfaced 11 contract ambiguities, logged below.
+
+### A13 · 🧪 Audit proves process claims with receipts and fault tests
+- ✅ A13.1 · Every run is reconstructable and every critical invariant has both a passing and failing test.
+  **Done when:** the durable receipt passes the deterministic auditor, fresh-context review passes the checked version, and branch plus fault coverage rejects known bad flows.
+  **Now:** Met 260805: the live QB8e run supplied the missing semantic CHECK, three fresh judges on three exact versions, converging 8→2→0, terminal verdict pass with zero findings; the deterministic auditor passed the same bundle with artifact hashes recomputed from disk.
+
+### A14 · 💰 The same loop, priced: what a person is actually asked to do
+- ✅ A14.1 · Every cell except TIME is transcribed from a frozen file rather than from memory.
+  **Done when:** `display/QPw00-Display3-who-does-what/intake/manifest.yaml` lists a sha256 for every source the table quotes, and `cli/check.py` reports no `display-intake-unfrozen` on this unit.
+  **Now:** Met 260818, and then extended the same day. `QPw00-Display3` was the FIRST unit on this board with a frozen intake, eight inputs with sha256; `QPw00-Display1` (4 inputs) and `QPw00-Display2` (2 inputs) were frozen hours later, and `haipipe-board-approver-agent` recomputed all fourteen digests against disk. `QPf5-Display1` and `QPf5-Display2` remain the only unfrozen units on the board. Extended again 260819: all five `QPw00` units re-froze in the `file:` + `source:` + sha256 shape, `checks/intake.py` recomputes every source hash on demand, and Display3's manifest grew to fifteen inputs when the fourth stored run landed; `QPf5-Display1`, `QPf5-Display2` and `QPf6-Display1` are what remain on the old copy-only shape, five inputs unresolvable.
+- ⬜ A14.2 · The TIME column stops being an estimate.
+  **Done when:** `_runs/page/` holds at least one receipt for each of OUTLINE, DRAFT, PROBE and EVIDENCE, and the column is rebuilt from their timestamps.
+  **Now:** Not met. `_runs/page/` holds 4 runs and 24 receipts (`PP02.v1`, `PP02.v2`), but no receipt carries a start and end pair, so no duration is computable (`PP05.v1` reports 0 phases measured).
 
 ### P · Page-level
-- ✅ P1 · JL chose B on 260804: the base adopted the lifecycle vocabulary first; the later concrete router is now named `RUN`, not linear `ADVANCE`.
-
+- ✅ P1 · The base Page contract either adopts this lifecycle vocabulary or explicitly leaves it family-specific.
+  **Done when:** JL chooses the base-adoption option and the affected contracts are either wired or retired.
+  **Now:** JL chose B on 260804: the base adopted the lifecycle vocabulary first; the later concrete router is now named `RUN`, not linear `ADVANCE`.
 ## Files
 
 ### Contracts
 
 - `../../../../board/haipipe-page/SKILL.md` · the base Page contract that may adopt the lifecycle vocabulary
-- `../../../../board/haipipe-page/ref/page-run-contract.md` · the shared raw-material packet, phase receipt, role, version, and stop contract
-- `../../../../board/page-phases/haipipe-page-draft/SKILL.md` · the DRAFT phase contract
-- `../../../../board/page-phases/haipipe-page-probe/SKILL.md` · the PROBE phase contract
-- `../../../../board/page-phases/haipipe-page-revise/SKILL.md` · the REVISE phase contract
-- `../../../../board/page-phases/haipipe-page-check/SKILL.md` · the CHECK phase contract
+- `../../../../board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md` · the shared raw-material packet, phase receipt, role, version, and stop contract
+- `../../../../board/page-workflows/haipipe-page-draft/SKILL.md` · the DRAFT phase contract
+- `../../../../board/page-workflows/haipipe-page-probe/SKILL.md` · the PROBE phase contract
+- `../../../../board/page-workflows/haipipe-page-revise/SKILL.md` · the REVISE phase contract
+- `../../../../board/page-workflows/haipipe-page-check/SKILL.md` · the CHECK phase contract
 
 ### Input files
 
-- `../../../../paper/haipipe-paper/fn/` · the paper family's side: the LaTeX workers became `fn/` verbs in the 260806 one-door merge (the old `paper/workers/` sits in `paper/_old/workers/`); the loop itself lives in `page-phases/`
+- `../../../../paper/haipipe-paper/SKILL.md` · the current thin Paper door; it selects typed Pages and delegates their loop to `page-workflows/`
 - `../../../../application/2-phase/` · the application family's existing lifecycle model
 - `3-QPs-page-structure/QPs1-overall/QPs1-overall.md` · the fixed Page structure paired with this lifecycle
-- `../PaperSkillBoard-260725/1-QA-design/QA5-the-probe-layer/QA5-the-probe-layer.md` · the Paper S03/S04 implementation case that exposed the difference between Probe placement and target Page ownership
+- `../PaperSkillBoard-260725/1-QA-architecture/QA2-ownership-boundary/QA2-ownership-boundary.md` · the current Paper ownership boundary, including parallel PageX and Probe lanes
 
 ### Checks
 
@@ -655,8 +863,8 @@ That is the non-linearity `§5` argues from transitions, put in the one place a 
 ### Engines
 
 - `../../../../board/haipipe-board/ref/page-lifecycle.workflow.js` · defines the bounded producer, builder, reviewer, and routing loop; not invocable without a Workflow harness, so the 260805 live RUN drove the controller by hand
-- `../../../../board/agents/haipipe-page-orchestrator-agent.md` · dispatches one non-interactive RUN and stores its exact receipt
-- `../../../../board/agents/haipipe-board-creator-agent.md` · performs one DRAFT, PROBE, or REVISE phase without judging it
+- `../../../../board/agents/haipipe-page-auditor-agent.md` · validates the RUN packet, stores the exact receipt under `_runs/page/`, and runs the lifecycle auditor; not the dispatcher since 260818
+- `../../../../board/agents/haipipe-page-creator-agent.md` · the producer base the per-phase agents wrap; keeps create-page and revise-opening, and stands in when a phase agent is missing
 - `../../../../board/agents/haipipe-board-reviewer-agent.md` · performs fresh read-only CHECK on one exact version
 
 ## Law
@@ -686,7 +894,7 @@ That is the non-linearity `§5` argues from transitions, put in the one place a 
 - 🎭 **Phase**: a mode of work defined by the authority it may exercise over the Page. A TYPE, and free to recur.
 - 🔢 **Step**: the monotonic position of one attempted phase inside one workflow. An INSTANCE, and never reused.
 - 🔁 **Round**: a span of work during which the Page's purpose and Aims stay fixed.
-- 🔒 **Round contract**: the purpose, Aims, and promised shape that DRAFT hands to the rest of one round.
+- 🔒 **Round contract**: the purpose, Aims, and promised shape, settled in the approved plan at OUTLINE since 260819, that the rest of one round holds fixed.
 - 🛠 **Operation**: a local file change such as adding, deleting, moving, or rewriting text.
 - 🔁 **RUN**: the bounded router that executes a Page from one named Phase until CLOSE or HOLD.
 - 🧾 **Phase receipt**: one auditable record binding an attempted Phase to its actor, versions, reason, evidence, findings, and route.
@@ -709,40 +917,50 @@ That is the non-linearity `§5` argues from transitions, put in the one place a 
 
 ## Log
 
+- 260820 0103 · [REVISE-CC, run `260820-0103-QPw00`] The attribution sweep: `## Content` now states every rule without a person's name or a date code as authority, 7 sentences or headings rewritten under fixed Aims (§1.3's 📌 line, §1.3's phase-versus-step paragraph, §4.4's bibex example, §11.1's heading and P1 sentence, §12.3's heading, §13.1's violation sentence). The history the removed attributions carried, held here: §1.3's step counts are the live run `260805-0216-QB8e`'s, where CHECK occupies steps 1, 3 and 5; the phase-versus-step replacement was raised and answered by JL on 260818 ("for phase, we can do it again and again, right?"); §4.4's live example really carries `verified = {JL 260815}` on the bibex entry itself; §11.1's axis split was settled and option B chosen by JL on 260804; §12.3's per-phase producers landed 260819; §13.1's one real violation sits at run `260818-1543` receipt[2]. Kept, listed rather than edited: §14's two frozen Display3 table cells ("since 260819" in rows 3d and 6), because the table is Display3's transcription source and clearing them is a display redraw, EVIDENCE's pen, not this one's; and §14.1's PP05 hole, still blocked and named. `latex/` and `word/` rebuilt this pass, so both projections match the swept source.
+- 260820 0041 · [REVISE-CC, run `260820-0022-QPw00`] The date-code sweep reached the keeps DRAFT's 🕰 pass left behind, under fixed Aims: 15 lines rewritten, 12 bare date codes removed, across the state line, both Diagram captions, and Content (§1.2, §1.3, §2.3, §6.2's stale A7.1 reference, §8.1, §10.1, §11's tree and prose, §12.1, §14's Display3 sentence, §14.1's figure). The history those dates carried lives in this row now: the card-birth question had three answers in three contracts until the 260817 split; JL weighed "step" against "phase" on 260818; three `serves:` addresses went stale on 260819 from editing an approved plan; the six-page split and the §10 re-cut are 260818's; `page-phases/` became `page-workflows/` on 260817; JL chose base-adoption option B on 260804. Kept, each for its named exception: the Opening banner (the creator's revise-opening pen), quoted rulings, run ids, `verified = {JL 260815}`, §14's frozen Display3 table cells (`since 260819` twice, a display-walk redraw), the plan-named headings §5.1, §10.1, §11.1 and §12.3, and §14.1's PP05 hole. `latex/` and `word/` rebuilt this pass, so both projections match the swept source.
+- 260820 0022 · [DRAFT-CC, run `260820-0022-QPw00`] The 🕰 present-tense sweep (`haipipe-page-draft` §🕰, 260820) re-realized 15 Content sentences that narrated the past into current-rule statements, none moving an Aim or a landed number: §1.3's folder parenthetical and defined-at-top line, §2.2's Aims-placement and PROBE-order paragraphs, §4.5's display-steps sentence, §5.1's Aims-transcription line, §6.2's seven-phase pair, §10.1's overturn record (folded into the 260818 split sentence, two self-narrating sentences removed), and §14.1's row-3d line. Step 19's producer-owed fix landed with it: the state line's dangling `open: 14` now reads `open Aims: 23 of 31`, counted from this page's own Aims rows (8 ✅, 18 🔨, 3 ⬜, 2 🧠). Out of this sweep's pen: the Opening banner (the creator's revise-opening verb), the Diagram's "Since 260819" line, §14's table cells (Display3's frozen transcription), and the plan-named paragraph titles carrying dates. The outline, probe/, display/ and bibex/ untouched; latex/ and word/ go stale with this edit and their rebuild is owed to ⑤ REVISE.
+- 260819 2348 · [REVISE-CC, run `260819-1813-QPw00`] The projections rebuilt and three wording slips fixed under fixed Aims. `latex/` and `word/` regenerated from the DRAFT v3 source, so Display6 and Display7, cited since DRAFT, now embed as real floats with their own captions (clearing 2 `display-cited-not-embedded` ERRORs and the `projection-stale` WARN). Three sentences corrected, none moving an Aim: §2.3 said `approved:` "closes the round" where the page's own §1.3 vocabulary requires "ends the loop" (the round runs on through DRAFT, REVISE and CHECK); §6.1's five-step order still read RENDER where QPw5-revise says CITE since the 260819 display-walk move; the Glossary's Round contract row still said DRAFT hands the promise to the round, which stopped being true when the Aims moved to OUTLINE 260819. §14.1's PP05 hole stays, blocked and named. The outline, probe/, display/ recipes and bibex/ untouched.
+- 260819 2330 · [DRAFT-CC, run `260819-1813-QPw00`] Executed outline v3, the first plan approved after the loop's own reorder. Content's phase divisions now run in the LOOP's order: §3 PROBE ② (was §4), §4 EVIDENCE ③ (was §5), §5 DRAFT ④ (was §3), with sub-headings, circled numbers and every in-page §-reference repointed; §2 retitled "the head of a loop that converges" and given §2.3, the PREPARE loop with PP06's counts. Every division realizes its v3 bullets with landed values cited by id: PP01 (§1.2 · §4.2 · §4.3), PP06 (§2.3), PP03 (§4.6), PP02 (§12.2 · §14.1), PP07 (§12.3), PP04 (§13.1), PP05 (§14.1), the bib key luo2026eventglucose (§4.4), and Display1-Display7 cited from §12.2, §12.2, §14 plus §4.5, §1.2, §4.1, §1.2 and §5.2. The one hole is §14.1's and names PP05's two blocking inputs. §8-§11 and §13 compressed to one sub-division each per the plan; §6.4 renumbered §6.2; §10's stay-together text rewritten to record its own 260818 overturn; §11's tree now draws page-workflows/ and the sixteen-type roster; the Diagram redrawn to the PREPARE shape. ## Aims retranscribed from v3: A3/A4/A5 rotated to PROBE/EVIDENCE/DRAFT, five new rows (A2.4, A2.5, A4.4, A4.5, A5.4), the open Decision Now row repointed from A4.2 to A3.2. Two garbled Log references ("§4.4-2.6") repaired to name the material's current home, §3.2, without changing those rows' historical claims. The outline, probe/, display/ and bibex/ untouched; latex/ and word/ stay owed to ⑤ REVISE.
+- 260819 2227 · [REVISE-CC, run `260819-1813-QPw00`] Executed CHECK step 14's seven findings, nothing else: the five `## Files` Contracts rows now point at `page-workflows/` (the run contract at its 260815 home, the four phase contracts under the 260817 folder name §1.3 already states), the two dead Engines rows now name the shipped agents `haipipe-page-auditor-agent` and `haipipe-page-creator-agent` with descriptions their own headers support, the literal `%s` in the 260819 Log row's time slot is dropped because no receipt names a time for that pass, the fused 260818 1435 and 260818 1041 Log rows are two source lines again, and the open Decision Now row and A4.2's `Now:` cite §4.4-4.6 instead of the pre-renumber 2.4-2.6. Content order, Aims intent, the outline, probe/, display/ and bibex/ untouched; the rebuild of latex/ and word/ is owed to the builder.
+- 260819 · [CC shipped] DRAFT executed `outline-v2`. Content is now the LOOP's order: 15 divisions, four of them new (§1 Overview, §2 OUTLINE ①, §5 EVIDENCE ④, §7 COMPILE ⑥), old §10 folded into §1.2, nothing deleted. 48 section anchors and 16 Aim ids remapped in one pass, with four cross-page references left alone. `## Aims` is TRANSCRIBED from the plan, which is where Aims are settled since JL's 260819 ruling; seven new Aims got their States rows. Two holes are visible and owned: `[Q-loopstate]` in §1.1 and `[Q-evidencerun]` in §5.2.
+- 260819 · [JL ruled] the 🧮 proof mark is RETIRED ("我从开始到最后都没有说 proof，我一直说 probe"). It came from one transcribed quote, no Log row ever ruled it, and it was the only mark with no plugin, no folder, no lane, no id and no backlink. 48 marks stripped from 14 plan files; `haipipe-plugin-outline` 0.10.0, `haipipe-page-evidence` 0.8.0 (withdrawing 0.7.3), `haipipe-page-probe` 0.4.2.
+- 260819 · [JL ruled] the Aims are settled at OUTLINE, in the plan file, and every owing bullet links to one by id. Before this, a plan that renumbered divisions pointed `A5.1` at the OLD A5.1, and nine of sixteen ids on this page's plan did exactly that.
 
-- 260818 1625 · [REVISE-CC] `§12`'s count was WRONG and `haipipe-board-approver-agent` failed the unit on it. The caption, the README claim, this Log and the `📌` line all said "five of the eleven rows need a person, the other six run machine-only". The drawing shows SEVEN rows carrying a job and FOUR reading `nothing`, and rows 0 and 6 are billed 15 minutes each in the table's own TIME column. The claim also placed the five ticks on FOUR rows, which reproduces the exact miscount the unit's own frozen `haipipe-page-check.SKILL.md:153` corrects. Two more rules failed with it: R14, because row 0 OPEN traced to none of the eight frozen inputs (`haipipe-page.SKILL.md` is now the ninth, and row 0 names its CREATE verb); and R8, because the built page embeds the asset at `width=.85\linewidth`, which printed the 176mm original at 0.733x and delivered 8pt body type to the reader at 5.9pt. The natural width is now 124mm and the same embed prints at 0.9x.
+- 260818 1625 · [REVISE-CC] `§14`'s count was WRONG and `haipipe-board-approver-agent` failed the unit on it. The caption, the README claim, this Log and the `📌` line all said "five of the eleven rows need a person, the other six run machine-only". The drawing shows SEVEN rows carrying a job and FOUR reading `nothing`, and rows 0 and 6 are billed 15 minutes each in the table's own TIME column. The claim also placed the five ticks on FOUR rows, which reproduces the exact miscount the unit's own frozen `haipipe-page-check.SKILL.md:153` corrects. Two more rules failed with it: R14, because row 0 OPEN traced to none of the eight frozen inputs (`haipipe-page.SKILL.md` is now the ninth, and row 0 names its CREATE verb); and R8, because the built page embeds the asset at `width=.85\linewidth`, which printed the 176mm original at 0.733x and delivered 8pt body type to the reader at 5.9pt. The natural width is now 124mm and the same embed prints at 0.9x.
 
-- 260818 · [REVISE-CC, run `260818-1543-QPw00`] Executed outline v1's C1.P1 to C4.P1, plus C2.P2's explicit instruction to leave §2.4-2.6 untouched.
+- 260818 · [REVISE-CC, run `260818-1543-QPw00`] Executed outline v1's C1.P1 to C4.P1, plus C2.P2's explicit instruction to leave the QA-probe ownership trio untouched (§2.4-2.6 then, §3.2 now).
   Replaced #### 1.1-1.3, #### 2.1-2.3, #### 3.1-3.3, and #### 4.1-4.3 with one short pointer paragraph each, naming QPw2-draft, QPw3-probe, QPw4-evidence, QPw5-revise, and QPw6-check by name.
-  Corrected §2's face-card and pin line, which mixed PROBE's post-260817 job with EVIDENCE's (outline C2.P1 B1), and corrected one term the outline did not name: §4's face-card still routed CHECK to `PROBE`, the phase's pre-260817 name for the job now called EVIDENCE, so it now reads `EVIDENCE` to match QPw6-check's own routing table.
-  Updated the Opening's 260817 banner and the top `state:` line, both of which said Content divisions 1 to 4 still described the four phases from 260804: that claim stopped being true this pass, so both now name the five pages §1-§4 hand off to.
-  Updated States rows A1.1, A2.1, A3.1, and A4.1 to point at their new locations; A2.1 moves to ✅, because its own text made the STALE claim conditional on "owed a REVISE round," which this pass supplies, while A1.1, A3.1, and A4.1 stay 🔨 because their qualifier was a pending human check of the model, not missing content, and REVISE does not rule on that.
-  A2.2 and A2.3's States rows, the open Decision Now row on A2.2, and every Aim's id and intent are untouched, per the outline's own instruction.
-  Route CHECK: the promise is unchanged, §1-§4's realization now matches the current loop, and the next legal authority is a fresh judge of this version.
+  Corrected §4's face-card and pin line, which mixed PROBE's post-260817 job with EVIDENCE's (outline C2.P1 B1), and corrected one term the outline did not name: §7's face-card still routed CHECK to `PROBE`, the phase's pre-260817 name for the job now called EVIDENCE, so it now reads `EVIDENCE` to match QPw6-check's own routing table.
+  Updated the Opening's 260817 banner and the top `state:` line, both of which said Content divisions 1 to 4 still described the four phases from 260804: that claim stopped being true this pass, so both now name the five pages §3-§7 hand off to.
+  Updated States rows A3.1, A4.1, A6.1, and A7.1 to point at their new locations; A4.1 moves to ✅, because its own text made the STALE claim conditional on "owed a REVISE round," which this pass supplies, while A3.1, A6.1, and A7.1 stay 🔨 because their qualifier was a pending human check of the model, not missing content, and REVISE does not rule on that.
+  A4.2 and A4.3's States rows, the open Decision Now row on A4.2, and every Aim's id and intent are untouched, per the outline's own instruction.
+  Route CHECK: the promise is unchanged, §3-§7's realization now matches the current loop, and the next legal authority is a fresh judge of this version.
 
 - 260818 1543 · [DRAFT-CC, run `260818-1543-QPw00`] RUN from DRAFT, entered right after JL approved outline v1 ("ok, approved", 260818 1543).
-  Tested outline v1's C1.P1 to C4.P1 bullets against this page's own `§6.1` rule ("adding a paragraph to explain evidence for an existing Aim is REVISE") and against `haipipe-page-draft`'s authority test ("an operation does not identify DRAFT").
-  Every bullet replaces an existing paragraph with a short pointer paragraph that serves an already-fixed Aim, tagged 🎯 A1.1, A2.1, A3.1 or A4.1 in the outline itself, and outline v1 already states on its own first page that the plan "only shrinks the REALIZATION of Content divisions 1 to 4" and "is REVISE material, not a reopened round."
+  Tested outline v1's C1.P1 to C4.P1 bullets against this page's own `§9.1` rule ("adding a paragraph to explain evidence for an existing Aim is REVISE") and against `haipipe-page-draft`'s authority test ("an operation does not identify DRAFT").
+  Every bullet replaces an existing paragraph with a short pointer paragraph that serves an already-fixed Aim, tagged 🎯 A3.1, A4.1, A6.1 or A7.1 in the outline itself, and outline v1 already states on its own first page that the plan "only shrinks the REALIZATION of Content divisions 1 to 4" and "is REVISE material, not a reopened round."
   Purpose and every Aim and State id (A1 to A12, P1) stay exactly as written, so DRAFT found nothing to define or reopen and wrote no change to Content, Aims, or States this round, matching the packet's own "may go DRAFT straight to REVISE."
   Receipt at `_runs/page/QPw00/260818-1543-QPw00.json`.
-  Route REVISE: the next producer executes outline v1's C1.P1 to C4.P1 verbatim under REVISE authority, the phase this page's own operations table (`§6`) already assigns to the edit.
-- 260818 1510 · [OUTLINE-CC, run `260818-1510-QPw00`] RUN from OUTLINE wrote `outline/QPw00-page-loop-outline-v1.md`, the plan to turn Content divisions 1-4 into short hand-off pointers to QPw2-QPw6, keeping §2.4-2.6 in place because no QPw2-QPw6 page yet restates that material. Terminal route HOLD, correctly: `approved:` is a person-only tick and no machine may write it. Receipt at `_runs/page/QPw00/260818-1510-QPw00.json`. The audit surfaced a 13th RUN-contract defect: `page-lifecycle.workflow.js` normalizes the top-level `page` field to board-relative (the 260818 fix logged below) but never touched the echoed `packet.page`, so the auditor's own `packet-run-mismatch` invariant could never pass on a fresh run. Fixed with one line, `parsed.page = page`; `pageflow.py audit` now PASSes this receipt.
-- 260818 1435 · [DRAFT-CC] `§12` added, on a shape JL handed over rather than described: a labeling protocol written as `# · PHASE · WHAT HAPPENS · YOUR JOB · TIME · HOW OFTEN`, with the three bands once / the loop / what ends it. The page already stated the loop four times as AUTHORITY, and never once as WORK, so a reader could not find out what it would cost them. The count that falls out is that seven of eleven rows ask something of a person and four read `nothing`, five of the seven carrying a tick. `QPw00-Display3-who-does-what` renders it, and is the FIRST unit on this board with a frozen `intake/inputs/`: eight files with sha256, so every cell except TIME is transcribed rather than remembered. TIME is an estimate and says so on its own face, because `_runs/page/` holds one run whose five receipts are CHECK · REVISE · CHECK · REVISE · CHECK and four of the table's phases have never executed.- 260818 1041 · [RESTRUCTURE-CC, JL ruled] the group was re-cut and this page became `QPw00`, the holder, on `QA00`'s precedent. Four rulings in one round. ① **The loop is the 00 page**: it keeps only the time axis, the transitions (§5), the operations test (§6), the Type-against-Phase axes (§8), RUN (§9) and the audit (§10). ② **One page per phase**, `QPw1` OUTLINE through `QPw6` CHECK, which SUPERSEDES this page's own `§7.1`: that paragraph kept DRAFT · PROBE · REVISE · CHECK as divisions because "their meanings depend on comparison and transition", and it was written when the loop had four phases and no phase had a contract of its own. Six now ship 111 to 286 lines each, and the comparison it protected stays here in §5 and §6, which is exactly what makes the split safe. COMPILE gets no page: zero lines of its own, folded into `haipipe-page-revise`. ③ **The human gate goes LAST**, `QPw00g`, after `QPw00r` the receipts, because the receipt READS the tick and can never hold it: the controller writes receipts, so a gate inside one is a machine writing its own approval, and a tick is mutable (a changed `intake/` drops `accepted: ✅` back to ⬜) while receipts are an append-only sha256 chain. ④ **The gate is accept-biased** (JL: "human should be more likely to accept it"): a person is asked to sign only after the machine's findings are all zero, so the gate is a confirmation and not an inspection. The bias changes what is PRESENTED, never who writes the tick; silence is still not consent, and a required gate with no durable evidence still routes to HOLD.
-  §1-§4 now carry a hand-off line each rather than the phase argument, and the four scattered ticks (`approved:` on the outline, `verified` per bibex entry, `accepted: ✅` per display README, the Page Type ruling) are `QPw00g`'s question because no page holds them today.
+  Route REVISE: the next producer executes outline v1's C1.P1 to C4.P1 verbatim under REVISE authority, the phase this page's own operations table (`§9`) already assigns to the edit.
+- 260818 1510 · [OUTLINE-CC, run `260818-1510-QPw00`] RUN from OUTLINE wrote `outline/QPw00-page-loop-outline-v1.md`, the plan to turn Content divisions 1-4 into short hand-off pointers to QPw2-QPw6, keeping the QA-probe ownership trio (§2.4-2.6 then, §3.2 now) in place because no QPw2-QPw6 page yet restates that material. Terminal route HOLD, correctly: `approved:` is a person-only tick and no machine may write it. Receipt at `_runs/page/QPw00/260818-1510-QPw00.json`. The audit surfaced a 13th RUN-contract defect: `page-lifecycle.workflow.js` normalizes the top-level `page` field to board-relative (the 260818 fix logged below) but never touched the echoed `packet.page`, so the auditor's own `packet-run-mismatch` invariant could never pass on a fresh run. Fixed with one line, `parsed.page = page`; `pageflow.py audit` now PASSes this receipt.
+- 260818 1435 · [DRAFT-CC] `§14` added, on a shape JL handed over rather than described: a labeling protocol written as `# · PHASE · WHAT HAPPENS · YOUR JOB · TIME · HOW OFTEN`, with the three bands once / the loop / what ends it. The page already stated the loop four times as AUTHORITY, and never once as WORK, so a reader could not find out what it would cost them. The count that falls out is that seven of eleven rows ask something of a person and four read `nothing`, five of the seven carrying a tick. `QPw00-Display3-who-does-what` renders it, and is the FIRST unit on this board with a frozen `intake/inputs/`: eight files with sha256, so every cell except TIME is transcribed rather than remembered. TIME is an estimate and says so on its own face, because `_runs/page/` holds one run whose five receipts are CHECK · REVISE · CHECK · REVISE · CHECK and four of the table's phases have never executed.
+- 260818 1041 · [RESTRUCTURE-CC, JL ruled] the group was re-cut and this page became `QPw00`, the holder, on `QA00`'s precedent. Four rulings in one round. ① **The loop is the 00 page**: it keeps only the time axis, the transitions (§8), the operations test (§9), the Type-against-Phase axes (§11), RUN (§12) and the audit (§13). ② **One page per phase**, `QPw1` OUTLINE through `QPw6` CHECK, which SUPERSEDES this page's own `§10.1`: that paragraph kept DRAFT · PROBE · REVISE · CHECK as divisions because "their meanings depend on comparison and transition", and it was written when the loop had four phases and no phase had a contract of its own. Six now ship 111 to 286 lines each, and the comparison it protected stays here in §8 and §9, which is exactly what makes the split safe. COMPILE gets no page: zero lines of its own, folded into `haipipe-page-revise`. ③ **The human gate goes LAST**, `QPw00g`, after `QPw00r` the receipts, because the receipt READS the tick and can never hold it: the controller writes receipts, so a gate inside one is a machine writing its own approval, and a tick is mutable (a changed `intake/` drops `accepted: ✅` back to ⬜) while receipts are an append-only sha256 chain. ④ **The gate is accept-biased** (JL: "human should be more likely to accept it"): a person is asked to sign only after the machine's findings are all zero, so the gate is a confirmation and not an inspection. The bias changes what is PRESENTED, never who writes the tick; silence is still not consent, and a required gate with no durable evidence still routes to HOLD.
+  §3-§7 now carry a hand-off line each rather than the phase argument, and the four scattered ticks (`approved:` on the outline, `verified` per bibex entry, `accepted: ✅` per display README, the Page Type ruling) are `QPw00g`'s question because no page holds them today.
 
-- 260817 0738 · [DRAFT-CC] the loop became SEVEN phases and this page's Diagram now draws them; §1 to §4 still describe the four and are owed a REVISE round. The round's real question was JL's: "具体的 proof 应该由谁来做？我还没想好这部分是在 draft 阶段来做，还是在 outline 阶段来做？" Three contracts answered it three ways: `haipipe-page-draft` §🃏 said DRAFT creates the card in OWED state, `haipipe-page-evidence` §🧾 said a card "may arrive already PROPOSED" by DRAFT, and `haipipe-plugin-outline` §📐 said "the card is created at PROBE". **Ruled: PROBE creates it**, on the stake argument, and PROBE finally has its own contract at `page-workflows/haipipe-page-probe` instead of borrowing EVIDENCE's. Also settled without a separate round: one mark is not one card (many bullets may share one, `PP04` on QC1-visitlbp serves three), 🖼 display units are created at EVIDENCE and not earlier because their `intake/` freezes FROM a `proof/` that does not exist until an answer does, and 🧮 proof earns NO folder, closing `haipipe-plugin-outline`'s open ⬜. The 🧭 Page-phases stepper now draws seven, and its `PROBE` token resolves against the RECEIPT'S OWN DATE rather than a global alias, which would have relabelled every future PROBE as EVIDENCE.
-- 260806 2107 · [REVISE-CC] swept to the 260806 architecture; state line now records the 260805 QB8e live RUN instead of calling it pending, dead `paper/workers/` path repointed at `paper/haipipe-paper/fn/`, §8 tree shows all ten Page Types with QB6 owning the roster, and live prose now says QA-probe with capitalized Q-executor/A-consumer slot words
+- 260817 0738 · [DRAFT-CC] the loop became SEVEN phases and this page's Diagram now draws them; §3 to §7 still describe the four and are owed a REVISE round. The round's real question was JL's: "具体的 proof 应该由谁来做？我还没想好这部分是在 draft 阶段来做，还是在 outline 阶段来做？" Three contracts answered it three ways: `haipipe-page-draft` §🃏 said DRAFT creates the card in OWED state, `haipipe-page-evidence` §🧾 said a card "may arrive already PROPOSED" by DRAFT, and `haipipe-plugin-outline` §📐 said "the card is created at PROBE". **Ruled: PROBE creates it**, on the stake argument, and PROBE finally has its own contract at `page-workflows/haipipe-page-probe` instead of borrowing EVIDENCE's. Also settled without a separate round: one mark is not one card (many bullets may share one, `PP04` on QC1-visitlbp serves three), 🖼 display units are created at EVIDENCE and not earlier because their `intake/` freezes FROM a `proof/` that does not exist until an answer does, and 🧮 proof earns NO folder, closing `haipipe-plugin-outline`'s open ⬜. The 🧭 Page-phases stepper now draws seven, and its `PROBE` token resolves against the RECEIPT'S OWN DATE rather than a global alias, which would have relabelled every future PROBE as EVIDENCE.
+- 260806 2107 · [REVISE-CC] swept to the 260806 architecture; state line now records the 260805 QB8e live RUN instead of calling it pending, dead `paper/workers/` path repointed at `paper/haipipe-paper/fn/`, §11 tree shows all ten Page Types with QB6 owning the roster, and live prose now says QA-probe with capitalized Q-executor/A-consumer slot words
 - 260806 0210 · [PROBE-CC] a 12th RUN-contract ambiguity, found by re-auditing the QB8e bundle a day later: `pageflow.py audit` now reports `artifact-version-mismatch` on the RENDER hash alone, because later innocent rebuilds changed the html while the source hash still matches `final_version`. The receipt treats source:render as one identity; the contract must say the SOURCE hash is the version's identity and the render hash is advisory (a rebuild is not a mutation), or every rebuild retroactively breaks every closed run. Also: the bundle carries no `audit` key at all, so "audit PASS" survives only in session history, which is item ⑩'s snapshot-has-no-receipt-home problem wearing a second face.
 260805 · FIRST LIVE RUN, `260805-0216-QB8e`: CLOSE, audit PASS, and the run's second product is a defect list for this page's own contract, 11 items recorded in the bundle and owed fixes here. The sharpest six: ① the workflow controller is not invocable outside a Workflow harness and the contract never says what a bare caller may do; ② the producer prompt omits the judge's findings, so a strict REVISE guesses (the controller forwarded them as a disclosed deviation); ③ "the local closing rule" is ambiguous for a mid-life Q page whose Decision rows wait on JL by design, so the contract must say run-level CLOSE certifies THE VERSION, not the page's decisions; ④ `mechanical_errors` scope is undefined, and board-scoped counting would let one foreign dead link forbid CLOSE forever; ⑤ warnings do not gate CLOSE, so the semantic judge is the only defense on a WARN-only page; ⑥ fresh judges oscillate (r1s1 waived unnumbered paragraphs, r1s3 raised them), and max_steps is the only brake. Also surfaced: no run_id minting rule, no concurrency rule while a foreign session rebuilds board/, the pre-run snapshot has no receipt home, extra bundle keys pass unaudited, and the Decision Now row shape diverges between the base and page-template.md.
 
-260805 · The Page-Types admission row MOVED to `../QB6-page-types/QPs2-page-types.md`, created after JL asked whether Page Types deserve their own Q. Measured against this page's own `§7.2` split test, the list-of-types question passes all four: independent question, own Aims and States, its own closing rule, and the `page-types/` contracts as its continuation files. This page keeps the axis split (`§8`) and the lifecycle; `QB6` keeps the list, the admission test, and the D-starred separation ruling.
+260805 · The Page-Types admission row MOVED to `../QB6-page-types/QPs2-page-types.md`, created after JL asked whether Page Types deserve their own Q. Measured against this page's own `§10.2` split test, the list-of-types question passes all four: independent question, own Aims and States, its own closing rule, and the `page-types/` contracts as its continuation files. This page keeps the axis split (`§11`) and the lifecycle; `QB6` keeps the list, the admission test, and the D-starred separation ruling.
 260805 · JL held the separation: "I still want to separate for-literature and for-value," and named the reason that decides it: each uses ITS OWN LANGUAGE to understand the Q and the A crossing the executor wall. That is a typed-records difference, and the base says the type decides "which typed records it fills," so the separation is principled rather than preferential. Option D added and starred: two types over ONE loaded structural core, so the register and entry anatomy is never stated twice. The earlier A recommendation under-weighted the translation layer by reducing the two routes to "which bank answers."
 260805 · JL proposed `-for-display`, `-for-value`, `-for-literature` as new Page Types and asked how far the list grows. Added the Decision Now row: the recommended shape admits by STRUCTURE rather than by family name, because the type-resolution rule reads the filename and `S-Literature-1`, `S-Value-6`, `S-Display-2a` and `S-Main-3` all resolve to the stage type today, while the topic shape (register + nested `probes/` entries) is one structure appearing under two family names and is already enforced by `src/topic_entry_contract.py` with no loadable contract teaching a writer the same shape. A `-for-topic` admission would key on the declared `### Q-consumer register` marker, the same signal the checker already trusts.
-260804 · Moved the Probe ownership and zero-copy discussion from the Paper board to this Page lifecycle owner. Added sections 2.4 to 2.6, Aims A2.2 and A2.3, the open family-adapter ownership decision, the one-active-Page handoff boundary, and the requirement that one Probe reference drive projection, context, dependency identity, and CHECK. The Paper S03/S04 layout remains an input case rather than the owner of the generic rule.
+260804 · Moved the Probe ownership and zero-copy discussion from the Paper board to this Page lifecycle owner. Added sections 2.4 to 2.6, Aims A4.2 and A4.3, the open family-adapter ownership decision, the one-active-Page handoff boundary, and the requirement that one Probe reference drive projection, context, dependency identity, and CHECK. The Paper S03/S04 layout remains an input case rather than the owner of the generic rule.
 260804 · Opened a new DRAFT round for the automatic Page flow. Added RUN as a bounded dynamic router, the raw-material packet and phase receipt, producer/build/reviewer separation, version identity, CLOSE/HOLD stops, deterministic lifecycle auditing, branch coverage, and fault injection. Updated Aims A9 and A10, continuation files, Law, Glossary, and Discussion to track implementation and fresh validation separately.
 260804 · Added JL's open discussion on an automatic AI-agent quality loop: what evidence proves the Page process works, which failures and branches must be audited, and how builder, checker, fixer, and approver remain separable.
 260804 · Fresh-context audits followed the new skill without conversation history, accepted the process fixture, and rejected injected self-approval, symbolic hashes, and builder/judge collapse. Their findings led to strict source/render SHA-256 validation, explicit builder identity, independent artifact rehashing, packet/run matching, and receipt-to-receipt version continuity. They also correctly refused to treat a process fixture as semantic Page quality. Live Claude Workflow execution remains an honest open gate.
 260804 · JL chose base-adoption option B and approved the `page-types/` plus `page-phases/` split. Added division 8, closed P1, and recorded that `for-*` belongs only to Page Types, phase skills use direct names, PROBE retains its four Q/A forms without introducing Entry, and `ADVANCE` remains deferred.
-260804 · JL agreed that DRAFT, PROBE, REVISE, and CHECK remain Content divisions of QB5 by default. Added division 7, Aim A7.1, its completed State, and the dated Law that requires four tests before a phase becomes its own Page.
+260804 · JL agreed that DRAFT, PROBE, REVISE, and CHECK remain Content divisions of QB5 by default. Added division 7, Aim A10.1, its completed State, and the dated Law that requires four tests before a phase becomes its own Page.
 260804 · Reframed the page around one persistent Page and gave DRAFT, PROBE, REVISE, and CHECK one Content division each. Added separate divisions for non-linear transitions and operation routing. `REVISE → DRAFT` now means an explicit new round, and add, delete, move, and rewrite no longer determine the phase by themselves. No skill contract changed.
 260804 · Created from the paper-board session that proposed one Page moving through DRAFT, PROBE, REVISE, and human CHECK, after fresh-context validation found four board phase contracts with zero inbound references.

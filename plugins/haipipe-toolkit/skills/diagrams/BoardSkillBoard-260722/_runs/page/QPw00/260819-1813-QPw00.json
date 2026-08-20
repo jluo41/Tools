@@ -1,0 +1,898 @@
+{
+  "status": "ok",
+  "run_id": "260819-1813-QPw00",
+  "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+  "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+  "packet": {
+    "run_id": "260819-1813-QPw00",
+    "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722",
+    "page": "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+    "start_phase": "OUTLINE",
+    "intent": "PREPARE fold-back pass (haipipe-page-workflow SKILL section merge-point rule, one OUTLINE pass per round): fold the 260819 returned evidence (five refreshed display READMEs, phase-cards renumbering, probe 0.5.1 / evidence 0.10.2 / draft 0.8.1, legal-route alignment, the producer-agent roster and ref/producer-contract.md, and the ruled outline-update design) into outline v3, re-run the four self-consistency checks, and leave this receipt. approved: stays unticked; a person ticks it.",
+    "sources": [
+      "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md",
+      "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+      "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display1-run-loop/README.md",
+      "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display2-route-relation/README.md",
+      "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/README.md",
+      "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display4-the-loop-at-a-glance/README.md",
+      "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display5-evidence-logic/README.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP01-phase-contract-count/card.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP02-run-receipt-coverage/card.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/card.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP04-auditor-verdict/card.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP05-phase-run-time/card.md",
+      "5-QPw-page-workflow/QPw00-page-loop/probe/PP06-plan-gate-pass/card.md"
+    ],
+    "constraints": [
+      "Edit the plan file only: never the page, a card, a unit, or board.md.",
+      "approved: stays unticked; a person ticks it, and only after the four checks pass.",
+      "Never invent a number: every stated count comes from running a check or reading the file.",
+      "Appended bullets only inside existing paragraphs, so no card's frozen serves: address moves."
+    ],
+    "human_gate": {
+      "required": true,
+      "rule": "a person ticks approved: on outline v3 after reading the 🧭 tab"
+    },
+    "limits": {
+      "max_steps": 1,
+      "max_rounds": 1
+    }
+  },
+  "limits": {
+    "max_steps": 1,
+    "max_rounds": 1
+  },
+  "final_version": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+  "receipts": [
+    {
+      "step": 1,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "haipipe-page-outline-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 5,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "PROBE",
+      "reopens_promise": false,
+      "reason": "OUTLINE authority exercised as the PREPARE merge point: folded the 260819 evidence into outline v3 in place (approved: unticked, so in-place edits are legal per haipipe-page-outline). The plan now owes evidence a card must serve (one bare value mark at C12.P3.B3, two owed display units at C1.P2.B5 and C3.P2.B1), so the producer requests PROBE next. This one-pass run itself terminates HOLD, named: it stops at the human gate (a person reads the 🧭 tab and decides the tick) and no controller loop is running to dispatch PROBE inside this run.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "outline v3 sha256 after this pass: 7454752f4d5f24f2cb40b7cd4fab4c445af31050b0dac9a38e9c20434b8f316a",
+        "counts: 14 divisions, 29 paragraphs, 125 bullets; mark-bearing bullets 40 aim, 7 value, 7 display (5 named units + 2 owed), 0 citation; mark grammar migrated to haipipe-plugin-outline 0.12.0 on JL's ruling: the seven ASKING bullets now carry the probe mark (C1.P2.B3 PP01, C2.P3.B5 PP06, C5.P5.B5 PP03, C12.P2.B3 PP02, C13.P1.B5 PP04, C14.P2.B4 PP05, C12.P3.B3 bare), no bullet quotes one landed number so no value-mark .v id was assigned, and A5.1 was reworded off the retired proof-is-the-fourth-kind test; the last three bullets are the per-lane worked examples JL asked for (C5.P2.B5 luo2026eventglucose verified JL 260815, C5.P3.B6 PP01's three values + unticked read:, C5.P4.B6 Display3's 14-source frozen listing), each verified against the artifact it names",
+        "check VALUE: checks/values.py = 17 recomputed OK, 3 unchecked (person-owned), 'every recomputable value still matches the repo'",
+        "check SHAPE: src/plan_shape.py check() = clean (no page-type: key, flexible default, base order only)",
+        "check ADDRESS: src/plan_shape.py check_serves() = clean (all 11 card/unit serves: addresses exist in this plan)",
+        "check COVERAGE: src/plan_shape.py check_coverage() = one named gap, 'C12.P3.B3 owes probe and no card or unit serves it', the deliberate bare probe mark this pass added on ruling (no card raised yet); checks/outline.py reports it under 'still inside the PREPARE loop' and its overall verdict stays pass",
+        "checks/intake.py: NOT clean. QPw00-Display1/2/3/4 report 8 inputs CHANGED since their 260819 freezes (haipipe-page-workflow/SKILL.md, ref/page-run-contract.md, ref/page-lifecycle.workflow.js), traced to the post-freeze producer-roster wiring (PRODUCER_AGENTS table, meta detail fix, producer-contract carve-out). Display5 is clean. Re-freezing is EVIDENCE's display lane, not OUTLINE's."
+      ],
+      "findings": [
+        "This receipt file itself moves four card values, verified by re-running checks/values.py after the write: PP02.v1 (runs stored 3 to 4), PP02.v2 (receipts 9 to 10), PP04.v1 (runs audited 3 to 4) and PP04.v2 (runs that PASS 0 to 1, because this run passes cli/pageflow.py audit). The cards quote counts that include _runs/page/, so the next EVIDENCE pass must re-pull their proof/ and the next OUTLINE pass must fold the new numbers. Recorded here so the drift is a known consequence, not a surprise; the four-check VALUE verdict quoted above is the fold-time state, before this file existed.",
+        "haipipe-page-workflow SKILL.md producer section still says the shared law lives 'in haipipe-page-creator-agent' and its merge-point section still says 'not a new agent type'; both are one carve-out behind ref/producer-contract.md and page-workflows/agents/ on disk. A skill defect, outside this phase's write scope.",
+        "The page's own state line says '12 divisions to 15' while the page and the plan both have 14 divisions; the page also still numbers DRAFT (2), PROBE (3), EVIDENCE (4) in its Content headings against phase-cards' 260819 numbering. Page fixes are DRAFT/REVISE work against this plan, not OUTLINE's.",
+        "The board site was rebuilt mid-session by the 0.12.0 mark-grammar migration, so the page's render hash moved from 80f2eb...'s predecessor while its SOURCE stayed 6126f576dd98; this receipt records the identity current at its last refresh.",
+        "C1.P2.B1 now asks Display4 to name the evidence machinery explicitly (PROBE's card + stripped question; the three EVIDENCE kinds with ticks verified, read:, and accepted: at CHECK), per JL's 260819 ruling. Display4 is rendered but does not yet draw that, so the unit is rendered-but-not-yet-matching until EVIDENCE's display lane rebuilds and re-freezes it. The plan states what the picture owes; the unit itself was not touched."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "round": 1,
+      "phase": "PROBE",
+      "actor": "haipipe-page-probe-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 5,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "EVIDENCE",
+      "reopens_promise": false,
+      "reason": "PROBE authority exercised on outline v3's marks. MATCH ran first over PP01-PP06: no existing card asks the producer-roster question, so PP07-producer-agent-count was raised for the plan's one bare probe mark C12.P3.B3 and answered locally (bank: code, a read of page-workflows/agents/ and the controller's PRODUCER_AGENTS table; PageX and the QA bank were not consulted because no borrowed file can answer a live roster read more directly than the disk itself). PP06-plan-gate-pass advanced planned -> answered-local by running the four checkers over all 17 plans on this board (6 pass all four; coverage fails most often, 10 plans). PP05-phase-run-time re-verified BLOCKED: ref/page-run-contract.md still defines no start/end pair and this receipt itself carries none, so no phase can be timed; state stays concern, no number invented. The five read: ticks stay unticked: only a person may tick read:. The producer requests EVIDENCE next (re-pull PP02/PP03/PP04 proofs, whose quoted counts this pass and this receipt move). This one-pass run itself terminates HOLD, named: it stops at the human gate on outline v3's approved: line and no controller loop is running to dispatch EVIDENCE inside this run.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/card.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/consumer/q-consumer.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/executor/q-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/executor/a-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/proof/agent-census.json",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP07-producer-agent-count/proof/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP06-plan-gate-pass/card.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP06-plan-gate-pass/executor/a-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP06-plan-gate-pass/proof/plan-gate-census.json",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP06-plan-gate-pass/proof/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP05-phase-run-time/card.md"
+      ],
+      "evidence": [
+        "match: C12.P3.B3 · PP01-PP06 read, none asks the producer roster · new -> PP07, answered-local (bank: code)",
+        "match: PP06 · already raised at PROBE 260819, question runnable with existing checkers · advanced, not duplicated",
+        "coverage: 1 of 1 marked-and-unserved bullet served (C12.P3.B3 -> PP07); the plan's other six probe marks were already served by PP01-PP06",
+        "check SHAPE: src/plan_shape.py check() = clean, after PP07",
+        "check ADDRESS: src/plan_shape.py check_serves() = clean (all 13 card/unit serves: addresses exist in this plan)",
+        "check COVERAGE: src/plan_shape.py check_coverage() = clean; the 260819-1813 OUTLINE receipt's one named gap C12.P3.B3 is closed by PP07",
+        "check OUTLINE SWEEP: checks/outline.py = pass, 293 pages; QPw00's gap gone, 30 coverage gaps remain on 10 other pages still inside the PREPARE loop",
+        "check VALUE: checks/values.py at baseline (before this pass wrote anything) = exactly the 5 known mismatches (PP02.v1 3->4, PP02.v2 9->10, PP03.v4 8->9, PP04.v1 3->4, PP04.v2 0->1); after this pass's card writes and before this receipt = those 5 plus PP03.v1 22->23 (PP07 is a new card) and PP03.v2 14->13 (PP06 left planned)",
+        "check PAGEFLOW at baseline: 260819-1813 PASS; 260818-1510 FAIL (1), 260818-1543 FAIL (2), QB8e 260805-0216 FAIL (2) - the 5 findings and 3 codes PP04 records",
+        "PP05 verification: grep of ref/page-run-contract.md receipt shape = no start/end field; EVIDENCE and COMPILE still have no receipt anywhere"
+      ],
+      "findings": [
+        "This receipt file itself moves card values again, the same drift the step-1 receipt recorded: PP02.v2 10->11 (one more receipt), PP02.v3 '4 of 7'->'5 of 7' and PP02.v4 3->2 (PROBE now has a receipt), PP04.v3 and PP04.v4 (this appended step adds auditor findings, next line). EVIDENCE's re-pull must fold all of them; none were edited by hand.",
+        "Appending this step makes the stored run exceed its own limits (limits.max_steps=1, packet-fixed) and follow a terminal HOLD, so cli/pageflow.py audit on this file now reports max-steps-exceeded and receipt-after-terminal, and the run drops from PASS to FAIL. The append was the assignment packet's explicit instruction (append to this receipt, never replace); recording the collision between that instruction and the one-step run shape is this receipt's job, not hiding it. The alternative, editing step 1's route or the packet's limits, would falsify stored history and was not taken.",
+        "PP05's blocker list needed one wording amendment to stay true after this append: PROBE now HAS a receipt (this one), but it carries a single timestamp, so the card's reason becomes 'no start/end pair in any receipt; EVIDENCE and COMPILE have no receipt at all'. The blocking-input count stays 2; no number moved.",
+        "values.py RECIPES covers PP01-PP04 only; PP06's six values and PP07's four report as unchecked, which is the checker's declared behavior for a value without a recipe, not a pass."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "haipipe-page-outline-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 5,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "PROBE",
+      "reopens_promise": false,
+      "reason": "OUTLINE authority exercised as the fold of JL's own 260819 review of v3, the early human look the plan now names at C2.P3.B7. Three rulings folded, in place (approved: unticked, so in-place edits are legal): C5 recut so the four mark kinds read probe, value, citation, display, each with a real worked example, with the probe example NEW and built on PP01 (asking bullet C1.P2.B3, serves: backlink, PP01.v1 7 phases, PP01.v2 6 contracts, PP01.v3 5 ticks; nothing invented); the early human look added as C2.P3.B7-B8, with approved: kept as the round's formal close; and the on-disk display roster verified fully cited, Display4 at C1.P2.B1. C12.P3.B3's bare probe mark was left bare on ruling: PP07 is step 2's raise and the NEXT fold writes the id. The producer requests PROBE next, for one card-side write this pen may not make: PP03's serves: must repoint C5.P5.B5 -> C5.P6.B5 after the recut. This one-pass append itself terminates HOLD, named: it stops at the human gate on outline v3's approved: line and no controller loop is running.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "outline v3 sha256 after this pass: 21cf45cbc67a935b042040f024d36cf2578c64748f993554786f3fa7b19e100a",
+        "counts: 14 divisions, 30 paragraphs, 131 bullets; end-anchored marks 43 aim, 7 probe (6 with card ids + C12.P3.B3 bare), 7 display (6 on-disk units + 1 owed at C3.P2.B1), 0 value, 0 citation",
+        "C5 renumber map: old C5.P2 citation -> C5.P4, old C5.P4 display -> C5.P5, old C5.P5 common -> C5.P6; C5.P1 picture and C5.P3 value unmoved; new C5.P2 probe paragraph B1-B4; the plan text held no cross-reference to any C5 address, so none needed repointing",
+        "check SHAPE: src/plan_shape.py check() = clean (no page-type: key, flexible default, base order only)",
+        "check ADDRESS: src/plan_shape.py check_serves() = clean by positional existence (all 13 card/unit serves: addresses exist in this plan); one named semantic staleness: PP03 serves C5.P5.B5, which after the recut is the display lane's B5, while PP03's asking bullet now sits at C5.P6.B5. The repoint is a card write, PROBE's surface, not this pen's",
+        "check COVERAGE: src/plan_shape.py check_coverage() = one named gap, 'C5.P6.B5 owes probe and no card or unit serves it', the same PP03 staleness seen from the plan's side; checks/outline.py sweep overall verdict pass, gap reported under 'still inside the PREPARE loop'",
+        "check VALUE: checks/values.py = of the packet's five known mismatches, three unchanged exactly as listed (PP02.v1 3->4, PP03.v4 8->9, PP04.v1 3->4); PP02.v2 drifted further, 9->11, by step 2's receipt append; PP04.v2 matches again (quoted 0, disk 0) because this run dropped to pageflow FAIL at step 2; new mismatches PP02.v3 '4 of 7'->'5 of 7', PP02.v4 3->2, PP03.v1 22->23, PP03.v2 14->13, PP04.v3 5->7, PP04.v4 3->5 are all step 2's card raises and this receipt file's own growth. The plan edit moved no card value; all re-pulls stay EVIDENCE's",
+        "check PAGEFLOW: cli/pageflow.py audit = FAIL, 2 findings (max-steps-exceeded, receipt-after-terminal), already failing BEFORE this append from step 2's collision with limits.max_steps=1 and the terminal HOLD; this ordered append keeps the same codes, per the packet's explicit append instruction, recorded as step 2 recorded it",
+        "JL's 260819 review rulings are this pass's raw material and gate-level authority; the formal approved: tick stays unticked pending his read of the folded plan on the outline tab"
+      ],
+      "findings": [
+        "PP03's serves: needs the card-side repoint C5.P5.B5 -> C5.P6.B5; until PROBE writes it, ADDRESS passes only by positional existence and COVERAGE names the C5.P6.B5 gap.",
+        "The next OUTLINE fold writes PP07 next to C12.P3.B3's bare probe mark (ruled 260819: not this pass, the card was step 2's concurrent raise).",
+        "Display roster after this fold: all six on-disk units are cited by exactly one bullet each (Display1 C12.P2.B1, Display2 C12.P2.B2, Display3 C14.P1.B1, Display4 C1.P2.B1, Display5 C5.P1.B1, Display6 C1.P2.B5); no unit is orphaned. The one owed mark, C3.P2.B1 'owed tex', names a unit not yet drawn, EVIDENCE's display lane.",
+        "This append moves receipt-derived card values again, the drift steps 1 and 2 both recorded: PP02.v2 gains one more receipt and PP04's finding counts grow with the third-step audit; EVIDENCE's re-pull folds them, none edited by hand."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "haipipe-page-outline-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 2,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "PROBE",
+      "reopens_promise": false,
+      "reason": "OUTLINE authority exercised folding JL's 260819 ruling that C5's lane paragraphs described their evidence instead of wearing it ('C5 are not worked together with the real evidence for each type'). The four worked-example bullets now CARRY their real end-anchored marks so the outline tab chips them live: C5.P2.B4 reworded to genuinely ASK PP01's question and marked with the card id; C5.P3.B6 reworded to QUOTE one landed number as a value mark, with the sibling ids left in prose because the value grammar binds one quoted number per mark (haipipe-plugin-outline: a value mark QUOTES one number, PP<NN>.v<n>); C5.P4.B5 reworded to cite the verified sibling-page bib entry by key; C5.P5.B6 reworded to wear the drawn concept unit. C12.P3.B3's bare probe mark was completed to its id now that step 2's card exists with serves: C12.P3.B3. No bullet added, none renumbered, no paragraph moved; all seven frozen serves: addresses (PP01 C1.P2.B3, PP02 C12.P2.B3, PP03 C5.P6.B5, PP04 C13.P1.B5, PP05 C14.P2.B4, PP06 C2.P3.B5, PP07 C12.P3.B3) untouched. The producer requests PROBE next for the card-side writes this pen may not make: PP01's serves: owes appends for C5.P2.B4 and C5.P3.B6. This one-pass append itself terminates HOLD, named: it stops at the human gate on outline v3's approved: line and no controller loop is running.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "outline v3 sha256 after this pass: 19d49df74d66a52959c4e0461cf19fd26565a68e52a7ed4a3b6a8a582013d061",
+        "counts: 14 divisions, 30 paragraphs, 131 bullets; end-anchored marks 43 aim, 8 probe all with card ids (PP01 twice, at C1.P2.B3 and C5.P2.B4; PP02-PP07 once each), 1 value (PP01.v1 at C5.P3.B6), 1 citation (luo2026eventglucose at C5.P4.B5), 8 display (7 bullets citing the 6 on-disk units, Display3 cited twice at C14.P1.B1 and C5.P5.B6, legal because the law is >=1, plus the one owed tex at C3.P2.B1)",
+        "check SHAPE: src/plan_shape.py check() = clean (no page-type: key, flexible default, base order only)",
+        "check ADDRESS: src/plan_shape.py check_serves() = clean (all 13 card/unit serves: addresses exist in this plan; PP03's card-side repoint to C5.P6.B5 landed since step 3)",
+        "check COVERAGE: src/plan_shape.py check_coverage() = clean, with a named caveat rather than a hidden one: the checker's forward join scans only a bullet's first physical line, and the four new marks sit end-anchored on wrapped continuation lines, outside that window; the real outstanding backlinks are recorded in findings, and the render-side join (live/outline.py joins wrapped bullets) chips all four",
+        "check OUTLINE SWEEP: checks/outline.py = pass, 486 pages across 5 boards; QPw00 contributes no gap; 34 coverage gaps remain on 11 OTHER pages still inside the PREPARE loop",
+        "check VALUE: checks/values.py = 17 recomputed, 13 unchecked (PP05/PP06/PP07 have no recipe, declared person-owned); 10 mismatches, all of them the recorded PP02/PP03/PP04 re-pull debt from receipt growth this file included: PP02.v1 3->4, PP02.v2 9->12, PP02.v3 '4 of 7'->'5 of 7', PP02.v4 3->2, PP03.v1 22->23, PP03.v2 14->13, PP03.v4 8->9, PP04.v1 3->4, PP04.v3 5->9, PP04.v4 3->5. The plan edit moved no card value; all re-pulls stay EVIDENCE's",
+        "check PAGEFLOW: cli/pageflow.py audit = FAIL, 4 findings, all recorded machinery debt confirmed and not fixed: max-steps-exceeded and receipt-after-terminal x2 are steps 2 and 3's named collision between the packet's append instruction and limits.max_steps=1; artifact-version-mismatch is the render hash drifting 80f2eb -> a720a9 through the mid-session board rebuilds step 3 already recorded, source unchanged at 6126f5. This ordered append keeps the same codes",
+        "mechanical page-scoped, cli/check.py | grep '^QPw00-page-loop.md': 0 errors, 2 warnings (display-rendered-not-cited on Display6: the checker reads the PAGE's sentences, not the plan's C1.P2.B5 mark, so it stands until DRAFT/REVISE writes the citing sentence; projection-stale on QPw00-page-loop.tex)"
+      ],
+      "findings": [
+        "PP01 owes serves: appends for C5.P2.B4 and C5.P3.B6: a card's serves: line is PROBE's pen, so the next probe pass writes both; until then the two marks are backed by PP01's answered-local card but not yet backlinked, and the checker's wrapped-bullet window is why COVERAGE reads clean meanwhile.",
+        "C5.P4.B5's citation mark shows not-in-bibex on the outline render until phase 3 EVIDENCE transcribes the luo2026eventglucose entry from QPf4-chat/bibex/QPf4-chat.bib into this page's own bibex/ (QPw00 has no bibex/ folder yet); a machine SUBSET or TRANSCRIBE of bibtex is legal there, COMPOSE is not.",
+        "Display3's README serves: names C14.P1.B1 only; the second citing bullet C5.P5.B6 is legal at >=1 and forces no README write.",
+        "This appended step moves receipt-derived card values again, the same drift steps 1-3 each recorded: PP02 and PP04 counts grow with this file; EVIDENCE's re-pull folds them, none edited by hand."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "round": 1,
+      "phase": "PROBE",
+      "actor": "haipipe-page-probe-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 2,
+      "mechanical_warnings": 3,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "EVIDENCE",
+      "reopens_promise": false,
+      "reason": "PROBE authority exercised on the one card-side write step 4 requested: PP01's serves: line owed appends for the two bullets whose 260819 rewording made them wear PP01's evidence as live end-anchored marks. Both were verified against outline v3 before the pen moved: C5.P2.B4 genuinely ASKS PP01's three-part question and ends with the probe mark and card id, and C5.P3.B6 QUOTES the landed 7-phases number as the value mark PP01.v1; a card may serve many bullets, so both addresses were appended to the one existing serves: line rather than a second card being raised. Nothing else was touched: no new card (MATCH found PP01 already holds the answer both bullets use), no outline edit (a person is reviewing v3), no display unit, no value edit, and the concurrent EVIDENCE agent's surfaces (PP02/PP03/PP04 proof re-pulls and bibex/) were left alone. The producer requests EVIDENCE next, for the re-pull debt every step of this file has recorded and for the luo2026eventglucose bibex transcription step 4 named. This one-pass append itself terminates HOLD, named: it stops at the human gate on outline v3's approved: line and no controller loop is running.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP01-phase-contract-count/card.md"
+      ],
+      "evidence": [
+        "PP01 card.md serves: line after this pass, verbatim: 'serves: C1.P2.B3 · C5.P2.B4 · C5.P3.B6'; card state stays answered-local, read: stays unticked (a person's)",
+        "outline v3 verified unchanged by this pass: C5.P2.B4 ends '📮 PP01' and C5.P3.B6 ends '🧮 PP01.v1', exactly the two marks step 4 landed; both addresses exist positionally (C5.P2 has 4 bullets, C5.P3 has 6)",
+        "check SHAPE: src/plan_shape.py check() = clean (no page-type: key, flexible default, base order only)",
+        "check ADDRESS: src/plan_shape.py check_serves() = clean (all card/unit serves: addresses exist in this plan, the two appended ones included)",
+        "check COVERAGE: src/plan_shape.py check_coverage() = clean; the two backlinks step 4's findings named outstanding are now written, so the wrapped-bullet window caveat no longer hides an unserved mark on this page",
+        "check OUTLINE SWEEP: checks/outline.py = pass, 488 pages across 5 boards; QPw00 contributes no gap; 31 coverage gaps remain on 11 OTHER pages still inside the PREPARE loop",
+        "check VALUE: checks/values.py = 17 recomputed, 13 unchecked (PP05/PP06/PP07 and PP01.v4 have no recipe, declared person-owned); 10 mismatches, the SAME ten ids step 4 listed, all recorded PP02/PP03/PP04 re-pull debt, confirmed and not fixed; three drifted further through receipt growth since step 4's listing: PP02.v2 9->13, PP04.v3 5->11, PP04.v4 3->6. The serves: append moved no card value",
+        "check PAGEFLOW: cli/pageflow.py audit at baseline BEFORE this append = FAIL, 6 findings, all recorded machinery debt confirmed and not fixed: max-steps-exceeded, receipt-after-terminal x3 (steps 2-4's named collision between the packet's append instruction and limits.max_steps=1), version-continuity at receipt[3] and artifact-version-mismatch (both the render-hash drift 80f2eb -> a720a9 that step 3 recorded, source unchanged at 6126f5). This ordered append adds one more receipt-after-terminal and keeps the same codes"
+      ],
+      "findings": [
+        "The page-scoped mechanical count moved 0/2 -> 2 errors, 3 warnings since step 4, and NONE of it is this pass's write: both errors and the new warning trace to display/QPw00-Display7-point-to-sentence, created 19:49-19:50 tonight by the concurrent EVIDENCE agent and caught mid-write (no README.md on disk at this pass's read). Recorded, not touched: that unit is the concurrent agent's surface.",
+        "This appended step moves receipt-derived card values again, the same drift steps 1-4 each recorded: PP02 and PP04 counts grow with this file; EVIDENCE's re-pull folds them, none edited by hand.",
+        "C5.P4.B5's luo2026eventglucose transcription into this page's own bibex/ (QPw00 still has no bibex/ folder) remains EVIDENCE's, as step 4 recorded."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 6,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session (JL: 'I think you should work on this now in the main session')",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 2,
+      "mechanical_warnings": 3,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "EVIDENCE",
+      "reopens_promise": false,
+      "reason": "JL's ruling, 2009: rotate the phase divisions into the loop's own order. Old C3 DRAFT -> C5, old C4 PROBE -> C3, old C5 EVIDENCE -> C4; paragraph heads, cross-references and division-keyed aim ids (A3/A4/A5) rotated with them; C1.P2.B2's 'two orders are allowed to differ' claim replaced (overruled); C5.P2.B1 marked 🖼 Display7 · tex. First rotation attempt used placeholders that still contained the target tokens, collapsing old-C3 into C4; caught by reading the written heading list, repaired positionally, and every A-id verified unique with every 🎯 mark resolving. Serves repointed for PP01, Display5, Display7; PP03's repoint handed to the live EVIDENCE agent which owns that file this hour.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "heading order now: C1 Overview, C2 OUTLINE ①, C3 PROBE ②, C4 EVIDENCE ③, C5 DRAFT ④, C6 REVISE ⑤, C7 CHECK ⑦, C8..C14",
+        "aims: 30 rows, 0 duplicate ids, 0 unresolved 🎯 marks",
+        "plan_shape after repoints: COVERAGE + ADDRESS each 1 finding, both the deferred PP03 repoint",
+        "board sweep checks/outline.py: 1 failure, same PP03 repoint, nothing else broke"
+      ],
+      "findings": [
+        "Aims-section anecdote id 'A4.1' (line ~420) has unrecoverable pre-rotation provenance; it is illustrative history and affects no check"
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 7,
+      "round": 1,
+      "phase": "EVIDENCE",
+      "actor": "haipipe-page-evidence-agent",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "OUTLINE",
+      "reopens_promise": false,
+      "reason": "EVIDENCE authority exercised on three lanes, in order. CITATION: luo2026eventglucose TRANSCRIBED byte-identical (cmp-verified) from 4-QPf-page-folder/QPf4-chat/bibex/QPf4-chat.bib into this page's bibex/QPw00-page-loop.bib, verified = {JL 260815} carried; C4.P4.B5's not-in-bibex chip is now resolvable. VALUE: PP02, PP03 and PP04 re-pulled by their own documented recipes (a fresh _runs read, a fresh three-lane census, a fresh src/page_lifecycle.py auditor run), proof/ JSONs, manifests, a-executor.md and card Values rewritten to the recomputed truth; re-pulled twice more mid-pass as concurrent appends and Display7 moved the disk (final: 4 runs, 15 receipts, 5 of 7 phases, 23 cards, 13 planned, 10 of 10 units rendered, 15 findings, 8 codes, 1 real violation). PP05 left blocked, PP01 left to its owner, PP06/PP07 untouched. DISPLAY: Display1, 2, 3, 4, 6 re-frozen against the moved inputs; Display1/2/4 re-pinned with NOTHING redrawn (no drawn fact moved), Display3 minimally redrawn (footer: four runs, PROBE covered, EVIDENCE/COMPILE gap dated to the freeze) plus the fourth run pinned as input 15, Display6 minimally redrawn (printed version line 0.14.2 -> 0.15.0); both rebuilt and looked at via pdftoppm. Display5 untouched (owned by its rebuild agent). Coordinator-ordered mid-pass: PP03 serves: repointed C5.P6.B5 -> C4.P6.B5 after the plan rotation. This receipt's own append re-stales Display3's input 15 and PP02.v2/PP04.v3 by one; expected, recorded in Display3's manifest, and the next fold's re-pull absorbs it. Route HOLD; requested OUTLINE, the next fold closes the round.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/bibex/QPw00-page-loop.bib",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP02-run-receipt-coverage/proof/run-index.json",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP02-run-receipt-coverage/proof/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP02-run-receipt-coverage/executor/a-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP02-run-receipt-coverage/card.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/proof/lane-census.json",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/proof/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/executor/a-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/card.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP04-auditor-verdict/proof/auditor-verdicts.json",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP04-auditor-verdict/proof/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP04-auditor-verdict/executor/a-executor.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP04-auditor-verdict/card.md",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display1-run-loop/intake/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display1-run-loop/README.md",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display2-route-relation/intake/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display2-route-relation/README.md",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/intake/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/intake/inputs/260819-1813-QPw00.json",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/recipe/who-does-what.tex",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/assets/figure.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/preview.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display3-who-does-what/README.md",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display4-the-loop-at-a-glance/intake/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display4-the-loop-at-a-glance/README.md",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display6-agents-and-skills/intake/manifest.yaml",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display6-agents-and-skills/recipe/agents-and-skills.tex",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display6-agents-and-skills/assets/figure.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display6-agents-and-skills/preview.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/display/QPw00-Display6-agents-and-skills/README.md",
+        "5-QPw-page-workflow/QPw00-page-loop/probe/PP03-probe-card-state/card.md serves: repoint (coordinator-ordered)"
+      ],
+      "evidence": [
+        "checks/values.py: every recomputable value still matches the repo (17 recomputed, 13 unchecked)",
+        "checks/intake.py: 10 display unit(s) audited, every frozen intake still matches its source",
+        "checks/outline.py: position rule, page shapes, and every board page pass",
+        "src/plan_shape.py check + check_serves + check_coverage on outline v3: all clean",
+        "cli/pageflow.py audit: all 4 stored runs FAIL, confirmed as recorded debt, not repaired"
+      ],
+      "findings": [
+        "recorded debt, confirmed: pageflow FAILs on all four stored runs (page-path-stale, artifact-version-mismatch x4, checked-version-mismatch at 260818-1543 receipt[2], and on this shared file max-steps-exceeded, receipt-after-terminal x4, version-continuity, missing-artifacts-list + human-gate-contract-mismatch at receipt[5])",
+        "this append itself advances receipts 15 -> 16 and moves Display3's input 15: the next fold's re-pull absorbs it (recorded in Display3's manifest and README)"
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked; lane ticks verified/read:/accepted: all left unticked, a person's"
+        ]
+      }
+    },
+    {
+      "step": 8,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session (closing micro-fold)",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "Round-closing fold. The plan needed no prose edit: the mark redesign moved every recomputable number out of prose into chips, and the one 🧮 (PP01.v1 = 7) is current. Two self-referential leftovers closed AFTER this append so they pin the final state: PP04.v3 recomputed against the receipt as it stands including this step, and Display3's intake re-pinned on this receipt file. Both will drift again on the next append by construction; the cure is the receipt-schema fix already recorded as debt.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "values.py, outline.py, intake.py, plan_shape: all green pre-append except the two self-referential leftovers"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 9,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "JL's 有问有答 ruling: every answered 📮 bullet gains its answer appended in place, value ids quoted inline, mark staying end-anchored. Six bullets appended (PP01, PP02, PP03, PP04, PP06, PP07); PP04.v4's stale 8-code enumeration trimmed to the 6 live codes. Rule codified: haipipe-page-outline 0.6.0, haipipe-page-evidence 0.11.0. values, outline sweep, coverage, address: all green after.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "plan sha256 9f0651b5c9a9965193e8e25d3ab0439d31a31eb2a27b58ea76fe347b2cbec798"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 10,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "JL's ruling extended 有问有答 to displays: every 🖼 bullet gains 'Drawn: what the figure shows', transcribed from the unit's own README claim — seven bullets appended (Display1-7). The gate reframed in the contracts: the person's job at the tick is to BREAK the plan (挑毛病), not bless it. PP04.v3 re-pinned after this very append, the recorded self-reference.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "plan sha256 52bcd8408ff94cd2c1e45d2775ad066d57b8de67d227bebcc6ee10dcb637125d"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 11,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "JL's concise-bullet style ruling, applied to every bullet: HEAD = a terse label or a 'What is the number of…' question, capitalized ('Figure for Whole Workflow Loop'); Answered:/Drawn: appends and all marks kept intact; grid unchanged at 14/30/131; the rule is law at haipipe-plugin-outline 0.13.0 §✂️. All checks green after.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "plan sha256 edf46f423286b61e307e33aff953736c028a5f7a78acd2959476d8c4d26ebbcb",
+        "grid 14 divisions · 30 paragraphs · 131 bullets, unchanged",
+        "values ✅ · outline sweep ✅ · coverage clean · address clean"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 12,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "JL's clickable-bullet ruling: every bullet folds a concise explanation behind a click, with NO disclosure marker. Renderer: all markers removed, hover affordance, Note:/More: labels stripped in display. Content: 118 Note: lines authored, one per bullet lacking an Answered:/Drawn: append, so all 131 bullets now carry hidden detail. Grid unchanged 14/30/131. PP04.v3 re-pinned after this append (recorded self-reference).",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "plan sha256 11020a7eef75c8e5ea8d19423514b9fa3451733fba25d3136838a1f6e32c7da9",
+        "118 Note: + 6 Answered: + 7 Drawn: = 131 of 131 bullets with detail"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 13,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "none: the page source was not touched, so no rebuild was owed",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "The 260819 skills-coherence round, JL-commissioned: 3 reviewers (contracts, agents, machinery) found 45+25+5 findings; 5 fixers fixed 77 across 15 contract/agent files; registration layer repaired (17 symlinks); PREPARE-pause rule + OUTLINE→EVIDENCE edge landed in the auditor, both route tables, run-contract and phase-cards, with 4 new tests (222 pass); plan_shape.check_coverage ported to the renderer's join + last-emoji law with ref resolution and bib satisfaction; Display2 redrawn one row; all intakes re-frozen; watch.py started; agree.py 0 findings. This receipt now audits 3 findings, all true history (packet max_steps=1, one continuity break, final_version pinned pre-rebuild).",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "values ✅ · intake ✅ · outline sweep ✅ · 222 tests · smoke 6/6"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "waiting",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 14,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-page-check-agent",
+      "role": "judge",
+      "builder_actor": "watch.py render, unchanged since step 13; the judge rebuilt nothing",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "checked_version": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "source_sha256": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec",
+      "render_sha256": "a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 2,
+      "verdict": "revise",
+      "route": "REVISE",
+      "requested_route": "REVISE",
+      "reopens_promise": false,
+      "reason": "Realization defects under fixed purpose and Aims that outline v3 does not plan: five dead Contracts/run-contract rows and two dead Engines rows in ## Files (lines 924-928, 947-948), a literal %s where the time belongs in the 260819 Log row (line 1001), and two Log rows fused on one source line (line 1022). REVISE owns those repairs and may not execute v3's Content reorder: the DRAFT-2/PROBE-3/EVIDENCE-4 headings versus the section-14 footnote's PROBE-2/EVIDENCE-3/DRAFT-4, the stale section-11 page-phases tree, and the stale 2.4-2.6 anchors are v3's territory (C3-C5, C11.P1.B4) and wait on the person's approved: tick, which stays pending in parallel.",
+      "artifacts": [],
+      "evidence": [
+        "cli/check.py --strict filtered to QPw00-page-loop.md: 0 ERROR, 2 WARN (display-rendered-not-cited on Display6, Display7)",
+        "sha256 recomputed from disk: source 6126f576... render a720a906..., equal to step 13's version_after, so the judged version is the one PREPARE ended on",
+        "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md:924-928,947-948 (dead paths, existence-tested), :1001 (%s), :1022 (fused rows), :764 (phase-number footnote)",
+        "outline/QPw00-page-loop-outline-v3.md:5 approved: unticked; C11.P1.B4 owns the page-workflows rename sweep"
+      ],
+      "findings": [
+        "Files:924 names board/haipipe-page/ref/page-run-contract.md, which does not exist; the run contract moved to board/page-workflows/haipipe-page-workflow/ref/ on 260815",
+        "Files:925-928 name board/page-phases/haipipe-page-{draft,probe,revise,check}/SKILL.md; that folder was renamed page-workflows/ on 260817, a rename this page's own section 1.3 states, so Files contradicts the body",
+        "Files:947 names board/agents/haipipe-page-orchestrator-agent.md, which does not exist",
+        "Files:948 names board/agents/haipipe-board-creator-agent.md, which does not exist; the shipped producer agent is haipipe-page-creator-agent.md",
+        "Log:1001 opens '- 260819 %s .' with a literal %s format placeholder where the time belongs",
+        "Log:1022 fuses the 260818 1435 row and the 260818 1041 RESTRUCTURE row onto one source line",
+        "PLAN-COVERED, not routed on: sections 3-5 headings number the loop DRAFT-2/PROBE-3/EVIDENCE-4 while line 764 and the priced table number PROBE-2/EVIDENCE-3/DRAFT-4 and the head Diagram draws the old order; outline v3 C3-C5 cure this at DRAFT after the tick",
+        "PLAN-COVERED: section 11's figure still shows page-phases/, ten Page Types, and the retired for-display/for-literature/for-value; v3 C11.P1.B4 owns the sweep",
+        "PLAN-ADJACENT renumber debris: the open Decision Now row and A4.2's Now: cite sections 2.4-2.6, which are 4.4-4.6 since the 260819 renumber",
+        "WARN x2 (mechanical): Display6 and Display7 rendered but uncited; expected mid-gate, v3's divisions plan the citing sentences",
+        "RUN-CONTRACT, not this page: step 13 paused at OUTLINE->HOLD and the Legal routes table gives a PREPARE pause no CHECK continuation, yet requested_route was CHECK and this CHECK was dispatched; owner haipipe-page-workflow ref/page-run-contract.md; packet max_steps=1 versus 14 receipts stays the true-history finding step 13 already names"
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "pending",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md line 5: approved: unticked; a person has not looked yet"
+        ]
+      }
+    },
+    {
+      "step": 15,
+      "round": 1,
+      "phase": "REVISE",
+      "actor": "haipipe-page-revise-agent",
+      "role": "producer",
+      "builder_actor": "watch.py render (rebuilt board/QPw/QPw00-page-loop.html on save, 260819 2228); the latex/ and word/ rebuilds stay owed to the caller's builder",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1",
+      "checked_version": "",
+      "source_sha256": "3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959",
+      "render_sha256": "02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 3,
+      "verdict": "",
+      "route": "HOLD",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "REVISE authority exercised on exactly the seven realization defects CHECK step 14 routed here, purpose and Aims fixed and nothing else touched. Files: the dead run-contract row now points at board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md (its 260815 home, existence-tested), the four page-phases/ phase-contract rows now read page-workflows/ (the 260817 rename the page's own section 1.3 states), and the two dead Engines rows now name the shipped agents haipipe-page-auditor-agent and haipipe-page-creator-agent with descriptions transcribed from their own headers. Log: the literal %s in the 260819 row's time slot is dropped rather than invented, because no stored receipt names a time for that DRAFT pass (this run's receipts carry no timestamps, PP05's standing blocker); the fused 260818 1435 and 260818 1041 rows are two source lines again. Aims: the open Decision Now row and A4.2's Now: repointed from the pre-renumber 2.4-2.6 to sections 4.4-4.6, keeping A4.2's waiting state true against the renumbered body. Content division order, every Aim's intent, outline v3, probe/, display/ and bibex/ untouched: the v3 reorder waits on the person's approved: tick. One-pass dispatch terminates HOLD, named: the human gate on outline v3 is pending and no controller loop is running; the requested next authority is CHECK on this new version once the builder rebuilds the projections.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+      ],
+      "evidence": [
+        "Files rows 924-928 now resolve: ls confirms board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md and the four page-workflows/haipipe-page-<phase>/SKILL.md files on disk",
+        "Files rows 947-948 now resolve: ls confirms board/agents/haipipe-page-auditor-agent.md and board/agents/haipipe-page-creator-agent.md; descriptions checked against each file's frontmatter (auditor 0.3.0 'demoted from dispatcher', creator 0.10.0 'base only since 260819')",
+        "Log row '- 260819 · [CC shipped]' carries no time: _runs/page/QPw00/ holds only 260818-1510, 260818-1543 and 260819-1813, none of whose steps is the outline-v2 DRAFT and none of whose receipts carries a timestamp, so the time was dropped per the never-invent rule",
+        "Log rows '- 260818 1435 ·' and '- 260818 1041 ·' are separate source lines again (page lines 1023-1024)",
+        "Decision Now row (line 809) and A4.2 Now: (line 847) cite sections 4.4 to 4.6 / 4.4 and 4.5; headings 4.4, 4.5, 4.6 verified present carrying the old 2.4-2.6 material",
+        "grep zero-hit sweep after the edit: 'board/page-phases/' in Files, 'orchestrator-agent', 'haipipe-board-creator-agent', '260819 %s', 'sections 2.4 to 2.6', 'Sections 2.4 and 2.5' all gone from live rows",
+        "Content heading order untouched: no ### or #### heading appears in any replaced string; division list identical before and after",
+        "mechanical page-scoped, cli/check.py | grep '^QPw00-page-loop.md': 0 errors, 3 warnings (display-rendered-not-cited on Display6 and Display7, plan-covered; projection-stale on QPw00-page-loop.tex, this pass's own rebuild debt)",
+        "REVISE Log row for this pass appended at 260819 2227, time from the clock"
+      ],
+      "findings": [
+        "latex/ and word/ projections are stale against the new source (projection-stale WARN): the packet assigns the rebuild to the caller's builder, so it is owed, not done.",
+        "Input files row line 932 still ends 'the loop itself lives in page-phases/': stale the same way as the fixed rows but outside CHECK step 14's seven findings, left for the next routed pass.",
+        "Discussion (line ~992) quotes 'Section 2.6' inside a recorded CC answer; left because rewriting recorded dialogue falsifies it, and the Log rows quoting the garbled '§4.4-2.6' outline instruction (lines 1009, 1023) are history and likewise left.",
+        "Display6 and Display7 stay rendered-but-uncited: the citing sentences are outline v3's planned divisions, waiting on the approved: tick.",
+        "This append moves receipt-derived card values again (PP02 receipt counts, PP04 finding counts), the drift every prior step recorded; the next EVIDENCE re-pull folds it."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "pending",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: line, unticked"
+        ]
+      }
+    },
+    {
+      "step": 16,
+      "round": 1,
+      "phase": "OUTLINE",
+      "actor": "main-session",
+      "role": "producer",
+      "builder_actor": "watch.py render (rebuilt board/QPw/QPw00-page-loop.html on save, 260819 2228); the latex/ and word/ rebuilds stay owed to the caller's builder",
+      "status": "ok",
+      "version_before": "6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:a720a906f143c02457a6787e45b1fe663534f55ec15a52e546ddb51162d37302",
+      "version_after": "3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1",
+      "checked_version": "",
+      "source_sha256": "3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959",
+      "render_sha256": "02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 3,
+      "verdict": "",
+      "route": "DRAFT",
+      "requested_route": "DRAFT",
+      "reopens_promise": false,
+      "reason": "JL approved outline v3 in chat ('ok, I think it is good enough') and explicitly instructed the transcription ('write the tick for me and then do the draft phase'). approved: is ✅ JL 260819. PREPARE closes; the run leaves the pause and routes to ④ DRAFT.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md"
+      ],
+      "evidence": [
+        "plan sha256 4e3599061cf3d0fb848f0f4125cfd06f067266f931e934099f015663a2532f2c",
+        "approved: line ✅ JL 260819, transcription noted on the line itself"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": true,
+        "status": "passed",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819"
+        ]
+      }
+    },
+    {
+      "step": 17,
+      "round": 1,
+      "phase": "DRAFT",
+      "actor": "haipipe-page-draft-agent",
+      "role": "producer",
+      "builder_actor": "watch.py render (rebuilt board/QPw/QPw00-page-loop.html on save, 260819 2337); the latex/ and word/ rebuilds stay owed to ⑤ REVISE",
+      "status": "ok",
+      "version_before": "3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1",
+      "version_after": "db5a3ba142b00f5899403dc8677c8401ee9bf2b9aaadb960f2a22b7fea0bc978:e9fb18067002accc797f1f2a4d42eb281e087c35bbed6b3c0f427645c61a2a94",
+      "checked_version": "",
+      "source_sha256": "db5a3ba142b00f5899403dc8677c8401ee9bf2b9aaadb960f2a22b7fea0bc978",
+      "render_sha256": "e9fb18067002accc797f1f2a4d42eb281e087c35bbed6b3c0f427645c61a2a94",
+      "mechanical_errors": 2,
+      "mechanical_warnings": 1,
+      "verdict": "",
+      "route": "REVISE",
+      "requested_route": "REVISE",
+      "reopens_promise": false,
+      "reason": "DRAFT executed the approved outline v3: reordered Content §3-§5 to the plan's PROBE ② / EVIDENCE ③ / DRAFT ④ order with every sub-heading, circled number and in-page §-reference repointed; realized each division's bullets as sentences carrying the landed numbers cited by id (PP01, PP02, PP03, PP04, PP06, PP07, luo2026eventglucose, Display1-Display7); transcribed the v3 Aims onto the page with the A3/A4/A5 rotation and five new rows; left exactly one hole, §14.1's, naming PP05's two blocking inputs. Route REVISE: the promise is fixed and realized, and what remains is realization work REVISE owns, the latex/ and word/ rebuilds (Display6 and Display7 are cited but absent from the stale .tex) and prose polish under fixed Aims.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"
+      ],
+      "evidence": [
+        "QPw00-page-loop.md §3 heading 'PROBE ②', §4 heading 'EVIDENCE ③', §5 heading 'DRAFT ④' (plan order landed)",
+        "QPw00-page-loop.md §2.3 quotes PP06.v1-v6; §1.2 and §4.3 quote PP01.v1-v3; §4.6 quotes PP03.v1-v5; §12.2 quotes PP02.v1-v4; §12.3 quotes PP07.v1-v4; §13.1 quotes PP04.v1-v5",
+        "QPw00-page-loop.md §14.1 hole names PP05's blockers; §4.4 cites luo2026eventglucose verified {JL 260815}",
+        "QPw00-page-loop.md ## Aims header names outline v3 as the transcription source; A3/A4/A5 groups rotated to PROBE/EVIDENCE/DRAFT",
+        "Log rows 260818 and 260818 1510: garbled '§4.4-2.6' repaired to '§2.4-2.6 then, §3.2 now'"
+      ],
+      "findings": [
+        "display-cited-not-embedded: Display6 and Display7 are cited in prose but absent from latex/QPw00-page-loop.tex; the rebuild is ⑤ REVISE's (2 check.py ERRORs)",
+        "projection-stale: latex/QPw00-page-loop.tex older than the source; same REVISE rebuild (1 check.py WARN)",
+        "Opening banner (not DRAFT's pen; revise-opening is the creator's verb) lists the §3-§7 hand-off pages in the pre-reorder order QPw2, QPw3, QPw4, QPw5, QPw6; true as a set, stale as a sequence",
+        "cross-page debt, listed not dispatched: QPw1-outline pins 'QPw00 §6' and QPw6-check pins 'QPw00 §10' in their Files; both predate the 260819 renumber and need re-pointing from their own pages",
+        "Glossary row 'Round contract' still says DRAFT hands the promise to the round; Aims moved to OUTLINE 260819, and Glossary is outside DRAFT's writable sections"
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "passed",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819"
+        ]
+      }
+    },
+    {
+      "step": 18,
+      "round": 1,
+      "phase": "REVISE",
+      "actor": "haipipe-page-revise-agent",
+      "role": "producer",
+      "builder_actor": "board live export.py (POST /_board/latex 260819 2348, POST /_board/word 260819 2349, both ok) + watch.py render (board/QPw/QPw00-page-loop.html rebuilt on save, 260819 2350)",
+      "status": "ok",
+      "version_before": "db5a3ba142b00f5899403dc8677c8401ee9bf2b9aaadb960f2a22b7fea0bc978:e9fb18067002accc797f1f2a4d42eb281e087c35bbed6b3c0f427645c61a2a94",
+      "version_after": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "checked_version": "",
+      "source_sha256": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb",
+      "render_sha256": "4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "CHECK",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "REVISE improved the realization under the fixed v3 promise and made the page its artifacts: latex/ and word/ rebuilt from the DRAFT v3 source through the board's own export routes, so all seven cited units (Display1-Display7) now embed as floats with their unit-owned captions, clearing both display-cited-not-embedded ERRORs and the projection-stale WARN; three wording slips fixed, each serving a fixed Aim (§2.3 'closes the round' -> 'ends the loop' serves A1.2's four-words rule; §6.1 RENDER -> CITE matches QPw5-revise's post-260819 five-step order, serving A6.1; the Glossary Round-contract row now says the promise is settled at OUTLINE since 260819, serving A2.2). §14.1's PP05 hole is preserved, blocked and named, per the unanswered-hole rule. Route CHECK: the fixed promise is realized, both projections match the source, page-scoped mechanical findings are zero, and the next legal authority is a fresh judge of this exact version.",
+      "artifacts": [
+        "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md",
+        "5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.tex",
+        "5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/latex/QPw00-page-loop-view.html",
+        "5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop.docx",
+        "5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop.pdf",
+        "5-QPw-page-workflow/QPw00-page-loop/word/QPw00-page-loop-view.html"
+      ],
+      "evidence": [
+        "cli/check.py on the board 260819 2350: zero findings scoped to QPw00-page-loop.md (was 2 ERROR display-cited-not-embedded Display6/Display7 + 1 WARN projection-stale before the rebuild); board total 71 pages, 0 error, 38 warn, all 38 foreign to this page",
+        "latex/QPw00-page-loop.tex lines 15/52/170/233/275/453/463: all seven Display units embedded as includegraphics floats in citation order; PDF 706288 bytes, mtime 260819 2348, built by xelatex via POST /_board/latex (ok: true)",
+        "word/QPw00-page-loop.docx (OOXML, 1533182 bytes) + PDF twin (~24 pages, 1775196 bytes), mtime 260819 2349, built via POST /_board/word (ok: true)",
+        "QPw00-page-loop.md §2.3 'ends the loop', §6.1 'LAND, ARGUE, SOUND, CITE, BUILD', Glossary Round-contract row 'settled in the approved plan at OUTLINE since 260819'; Log row 260819 2348 records the pass",
+        "QPw00-page-loop.md §14.1 hole '<HOLE: PP05 blocked...>' preserved with its two named blockers",
+        "board/QPw/QPw00-page-loop.html rebuilt 260819 2350 carries the edited sentences; source and render sha256 recomputed from disk"
+      ],
+      "findings": [
+        "Opening banner (the creator's pen, not REVISE's) still lists the §3-§7 hand-off pages in the pre-reorder order QPw2, QPw3, QPw4, QPw5, QPw6; true as a set, stale as a sequence against the §3 PROBE / §4 EVIDENCE / §5 DRAFT order",
+        "cross-page debt, listed not dispatched: QPw1-outline pins 'QPw00 §6' and QPw6-check pins 'QPw00 §10' in their Files; both predate the 260819 renumber and need re-pointing from their own pages",
+        "Display7's float.tex caption still describes holes as sitting where every answer will sit, while §5.1 makes a hole the exception since v3; the caption describes the drawn figure accurately, and editing float.tex would stale preview.pdf against its source, so it is left for the display walk to redraw",
+        "§14.1's PP05 hole remains open by design: no stored receipt carries a start/end pair and COMPILE has no receipt (PP02.v4); it clears only when ref/page-run-contract.md adds per-phase stamps and the loop runs end to end"
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "passed",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819 (line 5)"
+        ]
+      }
+    },
+    {
+      "step": 19,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-page-check-agent",
+      "role": "judge",
+      "builder_actor": "board live export.py + watch.py render (step 18's builder, unchanged; the judge rebuilt nothing)",
+      "status": "ok",
+      "version_before": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "version_after": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "checked_version": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb:4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "source_sha256": "138eebedd676630ecf5ddbba8b007c08d500b7f79c58c67c6854cb136e3a81eb",
+      "render_sha256": "4c2aa6108b95bb5dd1385745c2485074ea076685b6ab22be0650f029be3a9f24",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "pass",
+      "route": "HOLD",
+      "requested_route": "HOLD",
+      "reopens_promise": false,
+      "reason": "Cold CHECK of the exact version step 18 pinned. The version realizes approved outline v3 completely: Content §1-§14 execute C1-C14 in the plan's order, all 31 Aims are transcribed one-to-one with Done when + Now, every quoted number matches its card on disk, all 7 display units are rendered with frozen intakes and embedded in latex/, the one hole (§14.1) names its blockers, and check.py reports zero page-scoped findings. CLOSE is unavailable under the Q page type's closing rule (every Aim met or explicitly held): 23 of 31 Aims are open (18 🔨, 3 ⬜, 2 🧠) and none carries ❄️; every remaining actionable item is a person's (read: ⬜ on all 7 probe cards, PP03.v3=0; accepted: ⬜ on all 7 display units, PP03.v5=0; Decision Now row A3.2 unruled), reserved-pen (Opening banner, the creator's revise-opening verb), cross-page (QPw1/QPw6 stale pins), or by-design (§14.1 PP05 hole). Pass routes to CLOSE unless a required human gate remains pending, which routes to HOLD; the pending authority is human, so HOLD.",
+      "artifacts": [],
+      "evidence": [
+        "check.py --strict scoped to QPw00-page-loop.md: zero findings (board context: 0 ERROR, 38 WARN, all on other pages)",
+        "identity at pass start recomputed from disk equals step 18's version_after: 138eebed…:4c2aa610…",
+        "all 7 quoted cards match disk: PP01 7/6/5 · PP02 4/24/6-of-7/COMPILE · PP03 23/13/0/10-of-10/0 · PP04 4/0/8/5/1 · PP05 0/2 · PP06 17/6/10/0/0/1 · PP07 6/5/2/4",
+        "display: 7 declared = 7 rendered (preview.pdf + assets + intake/manifest.yaml each), 0 accepted, stated honestly by the page; all 7 embedded via \\includegraphics in latex/QPw00-page-loop.tex",
+        "bibex: luo2026eventglucose present, ✅ checked · JL 260815",
+        "outline/QPw00-page-loop-outline-v3.md line 5: approved: ✅ JL 260819",
+        "Aims: 31 rows transcribed from v3, one-to-one; 8 ✅ (A1.3, A3.1, A6.2, A10.1, A11.1, A13.1, A14.1, P1), 23 open"
+      ],
+      "findings": [
+        "render-identity churn, not this page's mutation: at pass start disk equaled step 18's version_after; mid-pass a foreign save (8-QO-operating/QO5-mountspace/QO5-mountspace.md) triggered watch.py (pid 33004) to rebuild board/, moving the render hash 4c2aa610… → 36ea9f4e… → 6dfe2b04… while the SOURCE stayed byte-identical at 138eebed… and latex/, word/, probe/, display/, bibex/ stayed untouched. This instantiates the RECORDED, still-unruled RUN-contract ambiguity #12 (page Log 260806 0210): the source hash is the version's identity and the render hash is advisory, or every foreign rebuild retroactively breaks every pinned version. Owed to ref/page-run-contract.md, not to this page.",
+        "state: line (line 2) says 'open: 14' and the count's referent is not verifiable: 23 Aims open, 1 Decision Now row open, 11 Aim groups open; none equals 14. WARN-grade; smallest fix: make the count name what it counts, next producing pass.",
+        "Opening banner (line 13) lists the §3-§7 hand-off pages in pre-reorder order QPw2, QPw3, QPw4, QPw5, QPw6: true as a set, misleading as a sequence against the §3 PROBE / §4 EVIDENCE / §5 DRAFT order. The creator's revise-opening pen (so recorded at steps 17 and 18), not a REVISE producer's.",
+        "cross-page debt, listed not dispatched: QPw1-outline pins 'QPw00 §6' and QPw6-check pins 'QPw00 §10' in their Files; both predate the 260819 renumber and are those pages' own repairs.",
+        "Display7 float.tex caption still draws holes as the normal case while §5.1 makes them the exception since v3; the caption is accurate to the drawn figure, so the fix is a display-walk redraw, not a prose edit here.",
+        "§14.1's PP05 hole stands and is legal: it names its two blockers (no receipt carries a start/end pair; COMPILE has never run, PP02.v4).",
+        "plan-versus-card drift, resolved correctly by the page: outline v3 froze PP02.v2=19 and PP04.v3=17 / PP04.v4=6; the cards now read 24, 8 and 5, and the page quotes the cards, which are the binding source."
+      ],
+      "human_gate": {
+        "required": true,
+        "status": "passed",
+        "evidence": [
+          "5-QPw-page-workflow/QPw00-page-loop/outline/QPw00-page-loop-outline-v3.md approved: ✅ JL 260819 (line 5)"
+        ]
+      }
+    }
+  ]
+}

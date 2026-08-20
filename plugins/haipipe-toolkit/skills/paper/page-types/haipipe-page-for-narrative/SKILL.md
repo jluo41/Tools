@@ -1,145 +1,156 @@
 ---
 name: haipipe-page-for-narrative
 description: >-
-  The VARIANT contract for the NARRATIVE page, exactly one per paper. It reads the accepted Opening plus venue structure and existing source Pages, then designs the paper's claim roles, argument arc, reader journey, section-by-section map, PageX source allocation, display moments, and handoff to Section pages. It does not absorb Opening, write section prose, or rediscover evidence. Use when deciding argument order, repairing a section map, assigning existing Pages to claims or sections, retargeting the story, or checking what each Section page must execute. Trigger: narrative page, paper arc, reader journey, section map, claim order, PageX allocation, page-type narrative, /haipipe-page-for-narrative.
+  The Paper Page Type for one venue-aligned Narrative. It converts a stable Seed
+  and one Venue Page into claims, argument order, reader journey, evidence and
+  display allocation, and a detailed one-row-per-section outline. Use when
+  designing or retargeting a paper story, deciding claim roles, repairing the
+  section map, or giving Section Pages executable handoffs.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-17"
-  summary: "Narrative is the story architecture between Opening and Section: it maps claims and existing Pages into reader order without owning Opening, evidence discovery, or prose."
   outline:
     mode: grammar
-    source: "Opening handoff + venue blueprint + PageX source Pages"
-    shape: "promise → claim roles → arc → reader journey → section map → source allocation → display moments → Section handoff"
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+    source: "this SKILL.md"
+    shape: "first word from {Venue, Claim, Argument, Reader, Section, Evidence, Handoff}; Handoff is one page-level division, always last"
 ---
 
-# /haipipe-page-for-narrative · turn the promise into reader order
+# /haipipe-page-for-narrative · claims in reader order
 
-**LOAD `haipipe-page` FIRST.** It owns the shared Page frame and lifecycle. Load `haipipe-page-for-stage` when Narrative is an S page, `haipipe-page-for-opening` for its upstream contract, and `haipipe-plugin-pagex` when resolving existing source Pages.
+Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
+Declare `page-type: narrative` and record the Venue Page it reads.
 
-This variant covers exactly one Narrative per paper.
+## 📐 Grain and boundary
 
-```text
-kind       subject                                  closes when
-─────────────────────────────────────────────────────────────────────────
-Narrative  the paper's claims in reader order and   a person accepts the
-           the section map that executes that order  Section handoff
-```
+There is one Narrative per target venue. A second target creates a second
+Narrative reading the same Seed.
 
-Declare `page-type: narrative`. The key is required and beats the filename under the base Page resolver.
+Narrative owns:
 
-## 🧭 Boundary
+- the venue-aligned audience, editor question, promise, pitch, and framing;
+- claims and their rhetorical roles;
+- the argument arc and reader journey;
+- one detailed outline row per manuscript or appendix Section;
+- cross-section allocation of evidence and displays;
+- the bounded packet each Section Page executes.
 
-```text
-Opening     establishes identity, venue position, promise, and hard limit
-Narrative   decides claim roles, order, transitions, sections, and source allocation
-Section     writes and revises prose against one assigned row
-```
+Narrative does not write final section prose and does not replace the source
+cards it cites.
 
-Narrative is not `for-argument` and not `for-paper-map`. Those are two views of the same Narrative responsibility and do not receive separate Page Types.
+## 🧬 Required Content roles
 
-Narrative does not absorb Seed, Claims, Venue, or Pitch content. It reads the Opening handoff and keeps only the architecture needed downstream. A canonical Claims control page may still own claim status; Narrative assigns rhetorical roles and landing points without becoming a second ledger.
-
-## 📥 Preferred and compatibility inputs
-
-Preferred input is one accepted Opening page plus the venue blueprint and existing source Pages.
+The instance outline is a grammar, so divisions may be combined or repeated
+when the paper requires it. Every role below must remain inspectable.
 
 ```text
-Opening handoff + venue blueprint + PageX source Pages
-                         ▼
-                     Narrative
-                         ▼
-               one assignment per Section page
+1  Venue Position and Promise
+   target · audience · editor question · contribution promise · hard constraints
+
+2  Claim System
+   claim id · exact proposition · role · importance · current evidence state · limit
+
+3  Argument Arc
+   dependency order: what must be understood before each claim can land
+
+4  Reader Journey
+   what the reader believes, asks, sees, and concludes at each turn
+
+5  Per-section Outline
+   one detailed row per reader-ordered manuscript or appendix Section
+
+6  Evidence and Display Allocation
+   which cards, citations, values, and displays land where; conflicts and reuse
+
+7  Section Handoffs
+   one bounded execution packet per Section Page
 ```
 
-Until old runtimes migrate, synthesize the Opening input read-only from legacy Seed, Venue, Pitch, and Claims pages. Do not paste those pages into Narrative and do not delete them during compatibility reads.
+## 🧾 Claims are required
 
-## 🧬 Grammar Content outline
-
-Every Narrative must perform the following roles, but the number and titles of divisions may follow the paper's actual logic.
+Without claims there is no narrative—only a topic list. Each consequential
+claim has a stable id and a precise sentence:
 
 ```text
-Promise           restate the accepted Opening handoff and hard limit
-Claim roles       peak · setup · consequence · mechanism · boundary · support
-Argument arc      what must be understood before each claim can land
-Reader journey    what the reader believes, asks, and learns in sequence
-Section map       one row per reader-ordered manuscript or appendix section
-Source allocation which existing Pages support each claim and section
-Display moments   what must be seen, not merely stated, and where it earns attention
-Section handoff   the exact packet each Section page executes
+claim-id | proposition | role | evidence ids | status | boundary | lands in
 ```
 
-The instance outline is a grammar, not a fixed list. A short empirical paper may combine roles; a theory paper may repeat setup and consequence. It is defective only when a role needed for handoff has no home.
+Useful roles include setup, gap, mechanism, peak result, consequence, boundary,
+and contribution. A claim may be provisional, but it may not be invisible.
 
-## 📐 The Section map is the governing artifact
+Narrative may itself make evidence-dependent judgments. For example, “C2 is the
+peak claim” depends on the magnitude, credibility, and venue fit of its support.
+Such judgments use the Narrative Page's own cards and bindings. The Page is not
+evidence-free merely because its output is an outline.
 
-Write one row per section in reader order:
+## 📋 The governing per-section outline
+
+Write one row per Section in reader order. Make the row detailed enough that a
+fresh Section agent does not invent the paper's logic.
 
 ```text
-section-id | reader job | claim role | must establish | PageX sources |
-display moment | allocation/limit | enters from | hands to
+section-id
+section kind and working title
+reader question
+reader state on entry
+reader state on exit
+claim role and claim ids
+must establish, as propositions
+evidence card ids
+citation ids
+value ids
+display ids or explicit none
+paragraph/move outline
+required transition in
+required transition out
+venue allocation and constraints
+known limitation or risk
+open obligations
 ```
 
-- `reader job` says what changes for the reader.
-- `must establish` is a proposition, not a topic label.
-- `PageX sources` names existing Pages, never copied raw evidence.
-- `display moment` may say `none`; Narrative requests attention but does not render or place a float.
-- `enters from` and `hands to` make transitions inspectable.
+A Section Page points to exactly one current row. Reordering or materially
+changing a row reopens that Section. Existing prose is input to revision, not
+authority over Narrative.
 
-A Section page must point to exactly one current row. Reordering rows reopens every affected Section assignment.
+## 🃏 Evidence and displays
 
-## 🔎 PageX and Probe are parallel
-
-Narrative normally allocates existing Board Pages through PageX. It may inspect their internal probes and displays through those Page boundaries, but it does not redo their discovery.
-
-Probe remains the direct route to Task and Discovery folders. If a required claim has no existing Page, Narrative records the gap and routes it to the owning Probe workflow; it does not create a local evidence investigation.
+Narrative uses the same Page-local lanes as every Page:
 
 ```text
-existing Board Page ── PageX ──▶ source allocation
-Task / Discovery folder ─ Probe ─▶ owning Page ─ PageX ─▶ Narrative
+pagex/     Probe's accepted-Page lane: Seed, Venue, analysis, or literature Pages
+probe/     Probe's Task/Discovery QA lane: unresolved judgments and missing support
+bibex/     citations supporting framing, method rationale, limitations, or claims
+display/   zero or more maps, tables, or figures that make the argument inspectable
 ```
 
-This is the current clean separation. PageX and Probe remain parallel contracts until a later design decision changes their relationship.
+Values remain in each probe card's `## Values` block and are cited by
+`PP<NN>.v<n>`; Narrative never creates a second value store.
 
-## 🎯 Retargeting
+One Narrative may own many displays: a claim map, section matrix, evidence
+ledger, or alternative arc. Each display is independently accepted. Displays
+may later be consumed by the paper, but their first job here is to let a person
+inspect the Narrative itself.
 
-Narrative is venue-aligned and normally rewrites on retarget:
+## 📤 Section handoff packet
 
-- Reread Opening's venue-free identity and newly aligned promise.
-- Re-resolve section kinds and allocations from the new venue blueprint.
-- Preserve source Page identities unless their relevance changed.
-- Recut claim roles, arc, reader journey, display moments, and Section rows.
-
-Do not protect an old order merely because prose already exists. Existing Sections become inputs to revision, not authority over the new map.
-
-## 📥📤 Runtime shape
+Each Section receives only:
 
 ```text
-<NarrativePage>.md
-├── outline/    Narrative outline and section-map material
-└── pagex/      bindings to existing source Pages
+Narrative row id and version
+claim ids and exact propositions
+reader entry/exit states
+allowed evidence/citation/value/display ids
+paragraph/move outline
+venue allocation and hard constraints
+open obligations the Section must expose, not invent answers for
 ```
-
-Narrative owns no `probe/`, `proof/`, manuscript `.tex`, bibliography bank, or display unit.
-
-**Output:** the accepted Section map and one bounded handoff packet per Section page. It may open display requests through the display plugin, but formal rendering, acceptance, and placement remain with the owning Page and Section.
 
 ## ✅ Closing checks
 
-- The Narrative promise matches Opening and does not exceed its hard limit.
-- Every important claim has a rhetorical role and a landing section.
-- Every Section row names a reader job, required establishment, and downstream handoff.
-- Every source allocation resolves to an existing Page or is explicitly marked as a routed gap.
-- Display moments serve named claims rather than decorating topics.
-- No legacy control-page prose, raw evidence, local Probe work, or section prose has been copied into Narrative.
-- A Section agent can execute its row without inventing the paper's global order.
-
-## 📂 Skill files
-
-```text
-haipipe-page-for-narrative/
-├── SKILL.md
-└── CHANGELOG.md
-```
+- Venue and venue-aligned promise are explicit and consistent with Seed limits.
+- Every important claim has an id, exact proposition, role, landing Section, and
+  evidence status.
+- Every reader-ordered Section has one complete outline row.
+- Every evidence/display allocation resolves or is visibly open.
+- Every Section handoff is bounded and versioned.
+- No final section prose or copied raw evidence has become a second authority.
+- CHECK judges the built Narrative and only CHECK closes it.
 
 This variant owns no scripts.

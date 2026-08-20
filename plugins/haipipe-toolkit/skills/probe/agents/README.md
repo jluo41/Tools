@@ -8,16 +8,17 @@ stake-aware halves (① writing the q-executor + T1 LOCAL, ⑤ harvest) stay wit
 A probe is COMMUNICATION: it maps questions to answers and gets out of the way. It transports
 evidence; it does not grade it.
 
-The probe writes NO bank file. Its only files are the paper's own
-`papers/<P>/1-probes/PPNN_<topic>/` probe files. Execution artifacts live in `tasks/` and
-`discoveries/`, authored by the executor (haipipe-probe/SKILL.md, R12 + CC-8).
+The agent writes no bank file and handles only the Task/Discovery QA branch of
+the Probe family. A Board Page owns its local `probe/PP<NN>-<slug>/` card;
+Task/Discovery owns the answering `QA/<n>-<slug>.md`. The sibling PageX branch
+uses `pagex/` during OUTLINE and never reaches this agent.
 
 
 Dispatch — the collector, then direct to the executors
 -------------------------------------------------------
 
 ```
-📄 the STAGE (in the CONSUMER session — a paper or an application)
+📄 the CONSUMER PAGE
    │  ① ORGANIZE (writes the q-executors) · T1 LOCAL (matches its OWN registries first)
    │
    │  hands the STILL-COLLECTING q-executors (state: planned/commissioned), VERBATIM
@@ -31,8 +32,8 @@ Dispatch — the collector, then direct to the executors
    │        both run the `qa` gate inside:  ① QA scan  ② digest  ③ P-B-E-R
    │        both return a PATH:  <task-folder>/QA/<n>-<slug>.md   ← the EXECUTOR authored it
    ▼
-📄 the STAGE again — ⑤ INTERPRET: reads each answered QA file and writes the claim's
-   status into 0-lifecycle/1-claims/1-claims.md. No agent, no gate.
+📄 the CONSUMER PAGE again — ⑤ INTERPRET: reads each answered QA file,
+   records the Page-specific meaning, and returns to OUTLINE. No collector gate.
 ```
 
 A COLLECTOR, but NOT the old gateway. The retired gateway was a 1:1 hop — one question forwarded
@@ -51,8 +52,8 @@ Agents are THIN — every rule lives in its canonical home:
 the probe layer (probe file anatomy, path binding,    → ../haipipe-probe/SKILL.md
 the QA/ contract, the qa verb, the two LAWS,             ⭐ START HERE
 status derivation, the writer table)
-the claim's status + claim_type overclaim check       → ../../<consumer>/1-lifecycle/1b-claims/
-(authored by the consumer, from the answered QA file)   haipipe-{paper,application}-claims/SKILL.md
+the consumer-specific interpretation                  → the owning Page Type
+(authored after reading the answered QA file)           and Page EVIDENCE contract
 the qa verb's executor-side flow     → ../../task/haipipe-task/fn/qa.md  ·  the discovery twin
 ```
 

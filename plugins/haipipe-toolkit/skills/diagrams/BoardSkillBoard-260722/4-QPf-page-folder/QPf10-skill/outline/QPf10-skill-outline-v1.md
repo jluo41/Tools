@@ -15,7 +15,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B2 · It lists names the page literally writes, and matches each whole word against the real SKILL.md folders and agent files in the toolkit tree.   🔢 value · PP01
 - B3 · So a name is never invented.   ✅ have it
 - B4 · A row may name an AGENT as well as a skill.   ✅ have it
-- B5 · An agent is one `agents/<name>-agent.md` file, so its card wears 🤖 and the word `agent`.   🧮 proof
+- B5 · An agent is one `agents/<name>-agent.md` file, so its card wears 🤖 and the word `agent`.
 - B6 · Its door opens the live markdown view, because there is no SKILL.md folder behind it.   ✅ have it
 - B7 · The rank does not care which kind a row is.   ✅ have it
 - B8 · ⚠️ 3 more sentences in this division are not planned here yet   🎯 aim

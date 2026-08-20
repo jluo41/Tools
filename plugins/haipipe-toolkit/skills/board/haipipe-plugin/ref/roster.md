@@ -4,13 +4,18 @@ The single list of page-plugin names (design.excalidraw, JL 260815).
 A subfolder of a page's home folder is board material only if its name is here.
 `kind`: PRIMARY = originals a person makes, committed; DERIVED = projections of the page's text, regenerable, gitignorable.
 
+**Probe is a logical family over two existing plugin rows, not a third folder:**
+`pagex/` is its accepted-Page lane in OUTLINE; `probe/` is its Task/Discovery
+QA lane in PROBE/EVIDENCE. Their storage stays separate so an accepted Page
+binding can never masquerade as a bank answer.
+
 | name       | kind    | storage (`<page>/<name>/`)          | surface (right-pane tab)             | writer                                        | status |
 |------------|---------|-------------------------------------|--------------------------------------|-----------------------------------------------|--------|
 | `draw/`    | PRIMARY | `<stem>.excalidraw` scene           | 🖌 the live Excalidraw editor, ✨ Draw it on the tab | the xcal save path (`live/xcal.py`, mints a missing scene) + `/_board/autodraw` (`live/autodraw.py`: `claude -p` AUTHORS from the page's .md; stamped, refuses hand-drawn; transparent fills, Comic Shanns) | 🟢 live |
 | `chat/`    | PRIMARY | `<YYMMDD-HHMM>/` kept sessions      | 💬 Chat (GUI/TUI segment inside)     | the session's closing keep step (QPf4, open)  | 🟡 live tab; landing unruled |
 | `meeting/` | PRIMARY | `<YYMMDD-HHMM>/` digest.md + transcript.md, one folder per kept meeting, newest first | 🗣 digest reader: form to keep a new one, cards for every kept one | `/_board/meeting-entry` (the pen: a person types digest + optional transcript + cast, server stamps `<YYMMDD-HHMM>/`) + `/_board/meeting` (the read-only list) — see `haipipe-plugin-meeting` · QPf14 | 🟢 built 260818, standalone shape ruled over pointing at `Meeting-<n>` pages |
 | `slide/`   | DERIVED | `<stem>-deck.html`                  | 🎞 the deck, framed `?plain`, ✨ Regenerate on both doors | `/_board/autodeck` (`live/autodeck.py`: `claude -p` AUTHORS from the page's .md; overwrite always, validation before write) | 🟢 live |
-| `latex/`   | DERIVED | `<stem>.tex` + compiled `<stem>.pdf`| 📜 the compiled PDF, tex fallback    | `/_board/latex` → `md2tex.py` + xelatex       | 🟢 built this round |
+| `latex/`   | DERIVED | `<stem>.tex` + compiled `<stem>.pdf`| 📜 the compiled PDF, tex fallback    | `/_board/latex` → `md2tex.py` + LuaLaTeX      | 🟢 built this round |
 | `word/`    | DERIVED | `<stem>.docx` + preview `<stem>.pdf`| 📝 the PDF twin; ⬇ the .docx        | `/_board/word` → `md2docx.py` + `docx2pdf.py` | 🟢 built this round |
 | `bibex/`   | MIXED   | `<stem>.bib` PRIMARY (the page's own bib, JL 260815) + derived `<stem>-bib.html` | 📚 citation workbench: status chip, Scholar/DOI/URL links, ✓ checked tick, ✎ edit, ＋ add | `/_board/bibex` refresh (seed-imports from the paper's `0-*.bib`, never writes it) + `/_board/bibex-verify` (the human ✓ as a `verified` field) + `/_board/bibex-entry` (the pen: person-supplied text verbatim, never composed) | 🟢 built this round |
 | `display/` | MIXED   | `<stem>-Display<N>-<slug>/` units per the display family's unit contract, adopted verbatim (QPf5): intake/recipe/float.tex PRIMARY, preview/assets/candidates derived | 🖼 unit strip: one unit per screen, snap-shift right, chip name list, README rows + framed preview.pdf + ⚙️-marked tree (`live/plugview.py`, read-only) | the display family, routed by kind, plus the human `accepted:` tick no machine may make — see `haipipe-plugin-display` · the view's 🔄 recompiles each unit's derived preview.tex ▶ pdf only (JL 260816) | 🟢 built 260815 |
@@ -21,7 +26,7 @@ A subfolder of a page's home folder is board material only if its name is here.
 | `logging/` | PRIMARY | run/session logs the page owns      | 🧾 (planned)                         | the owning runner                             | 📋 declared |
 | `_fixture/`| PRIMARY | specimen inputs/outputs             | none — underscore keeps it off-board | the specimen's builder                        | 📋 declared |
 
-Writers for the DERIVED paper trio live in `skills/paper/haipipe-paper/scripts/to-word/` (`md2tex.py`, `md2docx.py`, `docx2pdf.py`); the board calls them and holds no copy.
+Writers for the DERIVED document trio live in `skills/board/page-plugins/_shared-export/` (`md2tex.py`, `md2docx.py`, `docx2pdf.py`); the board calls them by path.
 `--paper-root` is discovered by walking up from the page for a `0-*.bib`; a page outside any paper exports cite-less rather than refusing.
 Per-plugin SKILLs ship under `page-plugins/` (JL 260815): draw · slide · chat · latex · word · bibex · probe · skill · display · pagex · task · meeting, each `haipipe-plugin-<name>` and delta-only over this contract; the roster stays the single list of NAMES, a row going 🟢 brings its skill with it, and logging/_fixture gain theirs when their rows go live.
 One skill has no row on purpose: `haipipe-plugin-folder` (JL 260816) is the 📂 meta-surface OVER this list — it owns no subfolder and stores nothing, so a `folder/` name here would be wrong twice.

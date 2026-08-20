@@ -3,9 +3,9 @@ name: haipipe-page-draft
 description: >-
   The DRAFT phase contract for any Board Page. DRAFT is the PLANNING phase: it is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round, It ENTERS on an approved outline (phase ①, haipipe-page-outline) and executes it, naming no division the plan did not name. It is not identified by an empty file, first typing, or adding text. Load haipipe-page first, then the matching Page Type under page-types/, then this contract, and finally the stage's declared family craft files. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or naming a hole and the Aim it costs without opening a card for it. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, the page's promise, owned hole, stake, draft boundary, who creates the card, /haipipe-page-draft.
 metadata:
-  version: "0.7.2"
+  version: "0.9.0"
   last_updated: "2026-08-18"
-  summary: "DRAFT creates no card: it instantiates the approved Point plan as sentence scaffolds with visible holes, while PROBE later turns the marks into cards."
+  summary: "DRAFT creates no card: it enters on landed evidence and writes each Point as sentences citing ids; PROBE (phase ②, before it) turned the marks into cards, and a hole is the blocked exception."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,6 +23,114 @@ haipipe-page
 What is DRAFT's alone: the promise may move here, and nowhere else without a new round.
 Its risk runs in one direction: presenting an unavailable answer as settled fact, because a hole hidden at DRAFT reaches print wearing the same face as a real number.
 So DRAFT's exit is not polish; it is a stable purpose, its Aims, and every unknown named with an owner.
+
+## ⚡ Brief
+
+```text
+Q          convert the approved plan into page prose: one approved POINT
+           becomes one or more SENTENCES that write the NUMBER, citing
+           evidence by id (PP01.v1 · Display4 · a bib key)
+WRITES     the target page's sections per §✍️: Opening · Diagram · Content ·
+           Aims (transcribed from the plan) · States · Files · Log
+
+WALLS
+  enters only on an approved outline; names no division the plan did not name
+  never edits the plan it executes; a wrong plan routes to OUTLINE for a
+    v<N+1>, never a quiet fix here
+  never invents a number, citation, interpretation, or rendered Display
+  a hole is the BLOCKED exception and names the input it is missing;
+    an unnamed blocker means PREPARE exited early: fix at OUTLINE, never here
+  creates NO card: the mark-to-card move is PROBE's
+  Content states the PRESENT: no past-tense contrasts, no bare date codes
+    (the Log holds the past)
+  reads the Page Type's outline: mode before shaping anything
+    (fixed | grammar | resolved | no key = base order only)
+
+READ ECONOMY
+  read fully ONLY the target page, the plan, and this brief
+  trust the plan's Answered:/Drawn: values as written; re-read only cards
+    whose line ends `· recount`, plus one spot-check (this file §📖)
+  batch shell calls; scope cli/check.py output to your page with grep
+  never paste board-wide output or compile logs into your context; the
+    board doors return compact JSON, use them
+
+ROUTES (§🔀 · 🚫 never EVIDENCE, never COMPILE, never CLOSE)
+  a Task/Discovery-backed claim lacks support → PROBE   (bank MATCH, then cards)
+  an existing-Page obligation is wrong/missing → OUTLINE (repair PageX binding)
+  promise is stable but realization needs work → REVISE
+  version is ready for judgment     → CHECK
+  promise still unsettled           → DRAFT again
+
+FUSED    an unchanged promise may continue straight into REVISE in the same
+         context; the second half runs under haipipe-page-revise's contract
+         (../haipipe-page-workflow/ref/page-run-contract.md §The fused ④+⑤ pass)
+
+RECEIPT  one phase receipt per pass, shape in §🧾 below; field law:
+         ../haipipe-page-workflow/ref/page-run-contract.md
+         §Receipt step, field by field
+```
+
+Open the full contract below only where this brief does not settle your case; the full text wins every conflict.
+
+## 📥 DRAFT now ENTERS on landed evidence (260819)
+
+Ruled by JL: "until outline is self-consistent and together with all the evidence
+cards, then we are good to go ahead to draft."
+
+```text
+  was   🧭 OUTLINE ─▶ ✏️ DRAFT ─▶ 📮 PROBE ─▶ 🃏 EVIDENCE ─▶ 🖊 REVISE
+                       writes <VALUE HOLE> and waits two phases
+
+  now   ┌ 🧭 OUTLINE ⇄ 📮 PROBE ⇄ 🃏 EVIDENCE ┐  loops until self-consistent
+        └──────────────┬───────────────────────┘
+                       ▼
+                    ✏️ DRAFT   writes the NUMBER
+```
+
+**So a hole is now the EXCEPTION, not the normal case.** It is what a genuinely
+BLOCKED question leaves behind, and it must name the input that is missing rather
+than just marking a gap:
+
+```text
+  ✅ "Four phases have no measured duration [PP05: the receipt shape carries no
+      start/end pair, and three phases have no receipt at all]"
+  🚫 "The effect is <HOLE>."   on a page whose PREPARE loop said it was done
+```
+
+A hole with no named blocker means the PREPARE loop exited early, and the fix is
+a `v<N+1>` at OUTLINE, not a placeholder here.
+
+**What DRAFT keeps** is the conversion, which is the whole phase: one approved
+POINT becomes one or more SENTENCES, each citing the evidence it uses by id
+(`PP01.v1`, `Display4`, a bib key) rather than restating it.
+
+## 📖 Trust the plan's answers; recount only what is marked (JL 260820)
+
+The approved outline already carries every landed value inline, because the
+PREPARE loop appends `Answered:` and `Drawn:` lines in place (有问有答,
+haipipe-plugin-outline §✂️). Re-deriving all of them from disk is what made
+QPw00's first DRAFT re-read 7 cards and 7 READMEs to confirm numbers the plan
+already stated, and it found drift in exactly the values that count the run
+itself.
+
+```text
+  trust      every Answered:/Drawn: value, quoted from the plan as written
+  recount    ONLY a value whose Answered: line ends in `· recount` — the
+             outline marks these because they count the run's own artifacts
+             (receipts, findings, a pinned hash) and so move under DRAFT's
+             feet; re-read just that card and quote the card
+  spot-check one card of your choosing; a mismatch there means the plan is
+             stale and the route is OUTLINE, not a silent correction
+```
+
+The card stays the binding source; what this rule removes is the blanket
+re-read, not the hierarchy.
+
+**The fused ④+⑤ pass**: when the promise is unchanged, the controller may
+ask this phase to continue straight into REVISE in the same context
+(haipipe-page-workflow ref/page-run-contract.md §The fused ④+⑤ pass). The
+second half runs under haipipe-page-revise's own contract and writes its own
+receipt step; nothing about either phase's walls changes.
 
 ## 🎯 The authority test
 
@@ -57,7 +165,9 @@ CONTENT      the matching Page Type      the DIVISION SHAPE             one page
 INSTANCE     DRAFT                       THIS page's actual outline     one page
 ```
 
-**Read the Page Type's declared shape before proposing anything.** DRAFT INSTANTIATES that shape for this subject; inventing a different one when the Page Type declares one is the defect, and so is proposing an outline when no `page-type:` key claims the page at all.
+**Read the Page Type's declared shape before proposing anything.** DRAFT INSTANTIATES that shape for this subject, and inventing a different one when the Page Type declares one is the defect.
+
+**No `page-type:` key is the DEFAULT, not a defect** (JL 260819: "question itself just to be very flexible"). It was read as a defect until then, which made OUTLINE illegal on 247 of this repo's 274 pages: a page with no type has no declared division shape, so the only shape it owes is the base section order. A key is what a page carries when its shape is genuinely special enough to earn a contract; carrying one to say "I am ordinary" would make the default a thing you declare, which is not a default.
 
 Every Page Type declares HOW it supplies its outline, in an `outline:` block in its own frontmatter (JL 260816: "for the page-types, we should have this outline to be ready first, and then people can fill it"). Read that block first; it tells you what DRAFT is even allowed to decide:
 
@@ -90,7 +200,7 @@ DRAFT owned the outline until 260817 and no longer does. It is now phase ①,
 ```text
   ① OUTLINE   the SHAPE: sections · paragraphs · bullets · what each owes
               a versioned file, approved by a person       ← was DRAFT's
-  ② DRAFT     purpose · Aims · the page's own promise      ← what stays here
+  ④ DRAFT     purpose · Aims · the page's own promise      ← what stays here
 ```
 
 **Why it left.** One phase owning both "agree the shape" and "write the page"
@@ -121,35 +231,81 @@ DRAFT is not the only phase allowed to create text or sections.
 REVISE may add, delete, move, and rewrite under a fixed promise.
 The difference is authority, not the visible diff.
 
+## 🕰 Content states the present; the Log holds the past (JL 260820)
+
+"我们这里不是做 log 的地方，content 永远只包含最新的东西." A Content sentence
+never narrates what something used to be. When a rule, a number, an address,
+or a shape has changed, write the current one as if it had always been so,
+and let `## Log` and the run's receipts carry when and why it moved.
+
+```text
+🚫 "Before 260819 the plan wrote an id and this page held the target,
+    so a renumber pointed A5.1 at the OLD A5.1"
+✅ "The plan carries the target; this page realizes it by address"
+    + Log row: 260819 · targets moved from the page into the plan
+```
+
+Why: a page is re-read for months, and every past-tense contrast is a date
+the next reader must resolve before trusting the sentence next to it. The
+same principle binds the plan's bullets at OUTLINE (haipipe-page-outline) and
+REVISE's polish; history written into Content is a finding, not color.
+
+The rule is really about ATTRIBUTION. `## Content` is the OFFICIAL document:
+it states each rule as a fact of the system, and never says who decided it or
+when. Both halves of an attribution are therefore banned from Content prose:
+
+```text
+banned in Content      a bare date code ("260819", any YYMMDD)
+                       a person's name as authority ("JL ruled…",
+                       "(JL 260819)", "per JL")
+where they live        ## Log rows (what changed, when, on whose word)
+                       ## Discussion (the quoted ruling itself)
+                       tick grammar (approved: ✅ JL …, verified = {…}) —
+                       ticks are signatures, not prose
+the test               delete the name and the date; if the sentence
+                       loses meaning, it was a Log row wearing prose
+```
+
+Ruled twice on 260820, reading the compiled PDF: "什么叫 260819 啊…我的目的
+就是使这些 content 非常非常 readable" and "don't say too much 'JL' or
+'YYMMDD', this is the official document".
+
 ## 🧱 Point → sentence scaffold
 
 An approved Outline Point is a content unit, not necessarily one sentence.
-DRAFT instantiates each Point as one or more **sentence scaffolds** and keeps
-every unresolved dependency visible at the place where it will be used:
+DRAFT enters on landed evidence (§📥) and instantiates each Point as one or
+more sentences that write the NUMBER, citing each id in place:
 
 ```text
-C3.P1.B4 · Establish robustness across specifications
+C3.P1.B4 · Robustness across specifications   🧮 PP01.v1 · 🖼 Display4
         ↓ DRAFT
-C3.P1.S1 · The primary estimate is <VALUE HOLE>.
-C3.P1.S2 · It remains <ROBUSTNESS HOLE> across specifications.
-C3.P1.S3 · <DISPLAY HOLE> compares the estimates.
+C3.P1.S1 · The primary estimate is 0.42 (PP01.v1).
+C3.P1.S2 · It moves by less than 0.03 across specifications (PP01.v2).
+C3.P1.S3 · Display4 compares the estimates.
 ```
 
-The scaffold may use a local hole marker and the Point address, but it may not
-invent a number, citation, interpretation, or rendered Display. The address
-is the join key; the final sentence may expand, merge, or split the scaffold
+The sentence may not invent a number, citation, interpretation, or rendered
+Display: everything it states arrived through the PREPARE loop and is cited
+by id. A hole is the BLOCKED exception (§📥), and it names the input it is
+missing rather than just marking a gap:
+
+```text
+C3.P1.S2 · It remains <HOLE: PP02 blocked, no run for the IV spec> across
+           specifications.
+```
+
+The address is the join key; the final sentence may expand, merge, or split
 under REVISE while retaining `realizes: C3.P1.B4`.
 
 For the live join, keep that backlink machine-readable in an HTML comment on
-the scaffold line, without making it reader-facing prose:
+the sentence line, without making it reader-facing prose:
 
 ```text
-C3.P1.S1 · The primary estimate is <VALUE HOLE>. <!-- realizes: C3.P1.B4 -->
+C3.P1.S1 · The primary estimate is 0.42 (PP01.v1). <!-- realizes: C3.P1.B4 -->
 ```
 
-This is the first half of the conversion. REVISE performs the second half:
-it replaces the holes with landed evidence, writes the reader-facing prose,
-and cites the Probe/Bibex/Display ids in the sentence that uses them.
+REVISE performs the polish half: it improves the reader-facing prose and the
+captions under fixed Aims, and it never changes a landed number.
 
 ## 🕳 Name the hole and the Aim it costs, then stop
 
@@ -175,21 +331,20 @@ longer is, and nothing replaces the move: **the outline's MARK is the proposal,
 and `haipipe-page-probe` turns it into a folder.**
 
 ```text
-① OUTLINE   `- B4 · the four coordinates      🔢`   the mark. Nothing on disk.
-② DRAFT     the Aim that mark belongs to            ← what stays here
-③ PROBE     probe/PP<NN>-<slug>/ · serves: C4.P1.B4
+① OUTLINE   `- B4 · the four coordinates      📮`   the mark. Nothing on disk.
+② PROBE     probe/PP<NN>-<slug>/ · serves: C4.P1.B4
+④ DRAFT     the sentence that writes the answer     ← what stays here
 ```
 
-**Why it left.** Two reasons, and the second one decides it:
+**Why it left.**
 
 ```text
 duplication   a card that only repeats the mark is a second copy of the plan,
               which is haipipe-page-workflow §🪞 exactly
-
-the stake     a card's consumer/ side carries what the page LOSES if the answer
-              never comes. That is an Aim, and Aims are written HERE. A card
-              raised before this phase ends cannot carry its own stake.
 ```
+
+A second reason about the stake died 260819: Aims live in the plan since then,
+so the card carries its stake from the plan and PROBE runs before this phase.
 
 So DRAFT still names the hole and its owner. It does not open the file:
 
@@ -205,7 +360,8 @@ DRAFT has no mandatory next phase.
 Route by what the Page now needs:
 
 ```text
- a promised claim has no support yet → PROBE   (PageX/MATCH, then raise cards)
+Task/Discovery-backed claim lacks support → PROBE   (bank MATCH, then cards)
+existing-Page obligation is wrong/missing → OUTLINE (repair PageX binding)
 promise is stable but realization needs work → REVISE
 version is ready for judgment     → CHECK
 promise still unsettled           → DRAFT again
@@ -224,7 +380,10 @@ facts explicit:
 reason             which purpose, Aim, or promised shape DRAFT defined
 artifacts          the target Page and any declared source it changed
 evidence           the exact Page locations that expose the promise
-route              DRAFT | PROBE | EVIDENCE | REVISE | COMPILE | CHECK | HOLD
+route              DRAFT | PROBE | REVISE | CHECK | HOLD
+                   🚫 not EVIDENCE, not COMPILE: EVIDENCE is reached only
+                   through PROBE inside the PREPARE loop, and COMPILE is
+                   folded into REVISE (260819)
 reopens_promise    false for repeated DRAFT in the same unsettled round
 ```
 
@@ -241,10 +400,18 @@ page-workflows/haipipe-page-draft/
 ```
 
 Owns no scripts.
-The base is `haipipe-page`; Page Type variants live under `page-types/`; the shared question crossing is `probe/haipipe-probe` and begins only when the work enters EVIDENCE.
+The base is `haipipe-page`; Page Type variants live under `page-types/`; the shared question crossing is `probe/haipipe-probe` and begins at ② PROBE, which owns the crossing and the dispatch.
 The Board engine owns execution and audit; this phase owns only its authority and receipt.
 
 **This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §②. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
+`../haipipe-page-workflow/ref/phase-cards.md` §④. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
 
 **The Board page that argues this contract** is `QPw2-draft` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open.
+
+## ✅ Exit checklist: the official-document sweep
+
+Before this phase returns, run the board checker scoped to the page and clear
+every `content-attribution` line your pen owns: no bare date codes, no person
+named as authority, in `## Content` or Diagram prose. A flagged line inside a
+frozen display transcription is LISTED for the display walk, never edited
+here.

@@ -179,6 +179,18 @@ def main():
     print("── outline (every page, offline) " + "─" * 34)
     rc0 = subprocess.run([sys.executable, str(HERE / "outline.py")]).returncode
 
+    # Values and intake joined 260819, the day both were built and both caught
+    # real drift the same afternoon: values.py recomputes every number a page
+    # quotes from a `bank: code` card (17→13, 7→8, 21→22 were all silent until
+    # it ran), and intake.py re-hashes every frozen display source (4 of 5
+    # QPw00 figures were drawing a loop order that no longer existed).
+    print("\n── values (every quoted number, recomputed) " + "─" * 23)
+    rcv = subprocess.run([sys.executable, str(HERE / "values.py")]).returncode
+
+    print("\n── intake (every frozen display, re-hashed) " + "─" * 23)
+    rci = subprocess.run([sys.executable, str(HERE / "intake.py")]).returncode
+    rc0 = rc0 or rcv or rci
+
     print("\n── smoke (the live server) " + "─" * 40)
     rc = subprocess.run([sys.executable, str(HERE / "smoke.py"),
                          "--host", a.host, "--port", a.port]).returncode

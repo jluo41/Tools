@@ -1,0 +1,11 @@
+card: PP02-run-receipt-coverage
+files:
+  - name: run-index.json
+    kind: numbers
+    source: BoardSkillBoard-260722/_runs/page/**.json, one file per run, each receipt naming its phase
+    run: local run, 260819, re-pulled at EVIDENCE after the 260819-1813 run landed
+    pulled: 2026-08-19
+    bytes: 1116
+    sha256: 7c7ba1d8f9003151ea75ce92ca6fc1ff1416ec567c891eb0ec7d236f9d3dff7b
+    why: the run/receipt/coverage census C12.P2.B3 owes, one row per stored run
+    aggregate: true

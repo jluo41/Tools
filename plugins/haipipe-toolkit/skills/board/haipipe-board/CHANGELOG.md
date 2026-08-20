@@ -1,3 +1,166 @@
+## 0.141.3 — 2026-08-20
+
+- Synced the roster with Page 0.38.0 after Dash retired: twelve live variants
+  remain, including Application's four-type Brief/Insight/Design/Artifact set.
+- Removed the stale early overview of four Board-owned variants; Board now owns
+  only `for-stage`, while generated Skill/Agent/Meeting filename kinds use plugins.
+
+## 0.141.2 — 2026-08-20
+
+- Corrected the live Page Type roster after the Application ownership change:
+  Insight now ships with Brief, Intervention/Design, and Artifact under
+  `application/page-types/`; Task retains `for-task`.
+
+## 0.141.1 — 2026-08-20
+
+- **The phase bar is emoji, not circled digits** (JL 260820: "I don't like the
+  1, 2, 3, 4 here, it is not that readable"): ①②③ render at a few pixels in a
+  terminal font. Each phase now carries §🔁's own emoji, with 🔍 standing in
+  for CHECK because ✅ is already the DONE marker.
+
+## 0.141.0 — 2026-08-20
+
+- **The ⏱️ phase row in the closing block** (JL 260820: "how to update this so
+  I know which phase of the page I am in?"): a page-focused `status.py` strip
+  now prints a FOURTH row, the phase whose exit test fails first plus the six
+  phases as a bar plus the ticks owed. Board- and group-focused strips stay at
+  three rows, because a phase belongs to one page.
+- **`src/page_phase.py`**, one shared computation behind both surfaces:
+  `status.py`'s row and `cli/pagephase.py`'s full strip. Written this way on
+  purpose: two copies of the phase rules would drift the first time the loop
+  changed, which is the failure §🪞 of the page workflow already records.
+
+## unreleased — 2026-08-19
+
+- **The latex door fails on a failed md2tex instead of compiling yesterday's
+  .tex** (found live by the 260820-0103 REVISE pass: two POSTs returned
+  ok:true while re-floating the previous conversion, because only the file's
+  existence was checked): export_latex now checks md2tex's exit code.
+- **`content-attribution` is a checker code, not just prose law** (JL 260820:
+  "add it as the rule or checklist for the skills or the agents to review
+  after the draft"): cli/check.py flags each Content/Diagram prose line that
+  carries a bare date code or a person named as authority (WARN, line-precise,
+  fences exempt as another pen's frozen transcriptions). The CHECK contract
+  gained the lane; DRAFT and REVISE gained the exit checklist.
+- **The Word door cites what the LaTeX door cites** (JL 260820: "the word
+  plugin don't have the citation and reference"): export_word now converts a
+  backtick key the page's own bibex defines into \citep{key} in the temp
+  export copy, so md2docx renders the in-text label and the References
+  section from .board-refs.bbl. Verified: "(Luo et al. 2026)" + References
+  inside the rebuilt docx.
+- **Fused ④+⑤ dispatch + brief-first loading in ref/page-lifecycle.workflow.js**
+  (JL 260820): `fused` clause on the DRAFT dispatch, `promiseReopened`
+  tracking, and the producer prompt now opens each phase contract's ⚡ Brief
+  before anything else. Law in page-run-contract.md §The fused ④+⑤ pass.
+
+- **The LaTeX projection reads like a document, not a dump** (JL 260820,
+  four rulings in one sitting): live/export.py's master now (1) boxes every
+  fence in a breakable gray tcolorbox at \footnotesize ("找一个框给框起来"),
+  (2) converts a backtick key the page's own bibex defines into a real
+  \citep so the References section prints (C4.P8.S2), (3) compiles with
+  LUALATEX and a luaotfload fallback chain — Apple Color Emoji, then
+  TeXLive's DejaVu — so the board's emoji mark grammar and circled digits
+  print instead of vanishing ("emoji 都没有被 compile"), with pifont for
+  md2tex's \ding output, and (4) converts md2tex's missed mid-paragraph
+  **bold** runs outside verbatim. Verified on QPw00: 20 pages, references
+  on p.20, zero stray asterisks.
+- **A tall display cannot overflow the page any more** (JL 260820: "display
+  table 太长了…page overflow 了，其他几个 display 也有这个问题"): the unit
+  embed was `figure[H]` + width-only, so a preview taller than the text
+  block was planted mid-page and clipped the prose after it. Now
+  `[!htbp]` + `height=.85\textheight,keepaspectratio`: a fitting figure
+  stays at its citation, a tall one shrinks to the page or floats whole.
+  Verified: pp.18-19 break the long fence cleanly, nothing clipped.
+- **`PHASE_EFFORT` in ref/page-lifecycle.workflow.js** (JL 260820): the
+  dispatch runs PROBE/EVIDENCE/DRAFT/REVISE/COMPILE at 'high' effort; OUTLINE
+  and CHECK inherit the session tier. Law in haipipe-page-workflow's
+  page-run-contract.md §Effort tier per phase.
+- **Writing Style renders ONCE in the Opening drawer** (JL 260819: "I have
+  two writing styles here"): `src/page_question.py` extracts `### Writing
+  Style` into its own named drawer row but never removed it from the
+  More-details remainder, so the same block printed twice. The extraction
+  now strips it from the remainder.
+- **Sentence addresses count paragraphs, not sentences** (JL 260819: "the
+  paragraph should not change every sentence, and the sentence should be
+  1, 2, 3, 4"): the board writes one sentence per source line and `body()`
+  rendered each as its own `<p>`, so the address JS bumped P per sentence
+  and hardcoded S1. `src/body.py` now stamps the first sentence after a
+  blank line (or any non-sentence emission) with `class="pnew"`, and
+  `assets/js/40-sentence/10-address.js` bumps P at stamps and S within —
+  C1.P2.S1…S8 verified in a real browser over CDP. A page built before the
+  stamp has no `.pnew` and falls back to the old numbering.
+- **A display embeds under the FIRST Content sentence that cites it** (JL
+  260819: "could we make the display to be embedded below that sentence? so
+  we know what is content it is"): `src/body.py` `_display()` queues the
+  unit's preview and the Content paragraph loop is the ONE flush site, so a
+  chip in a summary, an Aims row, or a lane never grows a figure. First
+  citation per page embeds (`EMBED_SEEN`, cleared beside `CARDS`); later
+  citations keep the chip. The inline `<object>` strips Chrome's PDF toolbar
+  (`#toolbar=0&navpanes=0&view=FitH`); the card's object keeps it for
+  download/print. CSS `.dembed` in `assets/css/60-chips.css`.
+
+- **`bullet-missing-note` is a hard check** (JL 260819: "remove all the
+  legacy-grammar, I don't want to maintain the old things"):
+  `src/plan_shape.py` gains `check_bullet_grammar` — every plan bullet owes a
+  folded `Note:`/`Answered:`/`Drawn:` line (`haipipe-plugin-outline` §✂️) —
+  and `checks/outline.py` fails on it, every plan, approved or not.
+- **The 🧭 plan surface's hierarchy, tuned live with JL (260819 night)**:
+  paragraph rows carry their own `C<n>.P<m>` address (the renderer used to
+  strip it) and a short accent tick (`::before`, 0.85em) instead of a
+  full-height bar; every address sits LEFT-aligned in one shared 76px column
+  so paragraph and bullet titles start at the same x; the host shell's
+  `::before` drawer triangle is suppressed on bullet rows (the `::marker`
+  kills never touched it).
+
+- **agree.py path findings zeroed (13)** — stale doc paths fixed: the BoardSkillBoard citations now resolve from the citing file (`../../../diagrams/…`; the QPs1-overall worked example had moved into `3-QPs-page-structure/`), board-local tokens (`board/QA`, `board/QC`, `display/<page name>/`, the generated site's `_assets/board.css`+`.js`, `display/<topic page name>/`) are written so the checker no longer misreads them as skills-tree citations, and every `skills/diagrams` mention names its plugin root in prose.
+- **`live/outline.py` prints the FULL address on every plan row** (`C1.P2.B1`,
+  not `P2.B1`) — JL 260819 reversed his 260817 trim: a row is quoted out of the
+  pane, and there the C is the part that says where it lives.
+- **The mark is the LAST emoji on the line, end-anchored** — a first-hit scan
+  read C1.P2.B1, whose prose mentions 📚 mid-sentence before ending
+  `🖼 Display4`, as a citation bullet, so Display4 sat on the orphan row of the
+  plan that cites it. Same 64-char window as `plan_shape.check_coverage`.
+- **A 🧮 chip now carries its number** (`🧮 PP01.v1 = 7 · answered`) and its
+  evidence card shows the card's `## Values` row — value, meaning, proof
+  binding — before the question (JL: "why the value '7' is not get the
+  evidence card?").
+- **Citation ref pattern accepts author-year-WORD keys** — `[a-z]?` after the
+  year truncated `luo2026eventglucose` to `luo2026e`, reporting not-in-bibex
+  for a key nobody wrote.
+- **`src/plan_shape.check_coverage` gains the REVERSE join** — a display unit
+  no bullet cites BY MARK is a COVERAGE failure (`retired:` opts out); README
+  `serves:` alone no longer clears it, matching `haipipe-page-outline` 0.5.0.
+- **`live/outline.py` folds every bullet's detail behind a click** — the row
+  shows HEAD + chips only; `Note:`/`Answered:`/`Drawn:` continuation text
+  renders as a script-free details element with no marker (JL: "without '>'"),
+  the summary hard-reset against the board shell's own drawer CSS (which had
+  rendered one folded bullet as a big blue section heading). A 📮 chip's count
+  now says WHAT it counts ("answered · 3 values", was "answered 1", read as
+  "the answer is 1").
+
+- **`checks/values.py`** RECOMPUTES every number a page quotes and compares it to
+  the repo (JL 260819: "I think the machine should check these numbers"). It caught
+  `PP03.v2` on its first run: 17 cards at `planned`, true when written and 13 four
+  cards later. A value with no recipe reports `unchecked`, never as passing.
+- **`src/plan_shape.py` gains `check_serves`**, self-consistency test ② of
+  `haipipe-page-outline` §🚦: a card or display unit whose `serves:` names an
+  address the plan does not have. Three of this board's own cards did on 260819,
+  and a person read all three out by eye before any tool noticed.
+- **`src/plan_shape.py` + `checks/outline.py` gain `plan-shape-off-type`.** Every
+  surviving Page Type declares a mode (`fixed` | `grammar` | `resolved`) in an
+  `outline:` block under `metadata:`, and nothing read it, so a plan's division
+  shape was whatever its author felt like. `haipipe-page-outline` 0.2.0 made it
+  a machine exit that runs BEFORE the human tick; this is the check behind it.
+  Pages with no `page-type:` key are the flexible default and return clean.
+- **`live/outline.py`**: a 🎯 aim chip opens (it was the one mark that never did);
+  plan-declared Aims beat the page's when a plan renumbers divisions; a plan
+  division is `## C<n>` and any other `## ` ENDS the list (the plan's trailing
+  `## Aims` was rendering as 26 bullets of the last paragraph); a bare 🔢 whose
+  bullet already has a card no longer says "not raised yet"; the drawer stops
+  counting the 🌐 page-wide card as a Content division; font sizes up one step.
+- Caught by the sweep, minutes after writing it: the bare-mark shortcut dropped
+  four rows from the derived Evidence Bundle. Fixed by suppressing only the chip.
+
 
 ## Unreleased — 2026-08-16
 

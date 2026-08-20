@@ -988,6 +988,8 @@ def render_tree(meta, qs, out_dir, only=None):
         # `popovertarget` button lives in a different document and can never open it.
         bd.CARDS.clear()
         bd.CHIP_N = 0
+        bd.EMBED_SEEN.clear()
+        bd.EMBEDS.clear()
         card = (render_doc_slide(q, prv, nxt) if q.get("kind") == "doc"
                 else render_question(q, prv, nxt))
         # The shared page renderer emits fragment navigation because that is
@@ -1028,6 +1030,8 @@ def render_tree(meta, qs, out_dir, only=None):
             continue
         bd.CARDS.clear()
         bd.CHIP_N = 0
+        bd.EMBED_SEEN.clear()
+        bd.EMBEDS.clear()
         gtok = bd.group_token(g)
         rows = []
         for q in members:
@@ -1072,6 +1076,8 @@ def render_tree(meta, qs, out_dir, only=None):
         return f"{gt}/{tree_page_name(q)}"
     bd.CARDS.clear()
     bd.CHIP_N = 0
+    bd.EMBED_SEEN.clear()
+    bd.EMBEDS.clear()
     rows = index_rows(meta, qs, href_for=_href,
                       group_href=lambda tok: f"{tok}.html")
     # JL 260731 ruled exactly three board-level components onto this index:

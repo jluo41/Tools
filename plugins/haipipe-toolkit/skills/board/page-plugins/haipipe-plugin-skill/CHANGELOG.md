@@ -1,3 +1,13 @@
+## 0.2.1 · 2026-08-16
+
+- **Agents joined the list (JL 260816)**: an `agents/<name>-agent.md` is a
+  first-class 🤖 row — same rank, same ✕; its open door is the live markdown
+  view, because no SKILL.md folder stands behind it. The scan-seed matches
+  against real SKILL.md folders AND agent definitions, and never invents.
+- *(Entry reconstructed 260819 from the 0.2.1 frontmatter summary and commit
+  432bd718 — the bump shipped without its CHANGELOG entry; agree.py caught the
+  disagreement.)*
+
 # haipipe-plugin-skill · Changelog
 
 ## 0.2.0 · 2026-08-16

@@ -2,43 +2,73 @@
 %
 % The drawing only. No \documentclass, no preamble.
 %
-% Every set below is transcribed from intake/inputs/page_lifecycle.py lines
-% 18-28, never from memory. REBUILT 260818: the previous version drew a FOUR
-% phase Phi and a uniform R(phi) = Phi + {HOLD}, which was true of the loop in
-% 260816 and false of the seven-phase loop the same file now declares. The two
-% consequence lines survived the rebuild unchanged, because they were always
-% derived from CHECK's row alone.
+% Every row below is transcribed from the frozen inputs in intake/inputs/,
+% never from memory: ref/phase-cards.md's ROUTES row for each phase, and each
+% phase contract's own "Exit and routing" section. The two code files are
+% frozen for the LAST block only, which is the block that quotes them.
+%
+% REBUILT 260819. That day the loop became TWO parts: a converging PREPARE loop
+% OUTLINE -> PROBE -> EVIDENCE -> back to OUTLINE, then a linear tail
+% DRAFT -> REVISE -> CHECK. PROBE and EVIDENCE no longer route forward at all.
+% Five of the seven rows this unit drew on 260818 are therefore false, and
+% COMPILE lost its row entirely: it has no contract of its own, it is folded
+% into REVISE, and no phase routes to it.
+%
+% REFRESHED later the same day, 260819: LEGAL_ROUTES (py) and LEGAL (js) were
+% brought into line with the contracts, acting on this unit's own finding, so
+% the last block below now records agreement, not a lag. The six R rows were
+% re-derived from the live contracts on refresh and are byte-identical to the
+% morning rebuild.
 \begin{align*}
-  \Phi &= \{\textsc{Outline},\ \textsc{Draft},\ \textsc{Probe},\
-            \textsc{Evidence},\ \textsc{Revise},\ \textsc{Compile},\
-            \textsc{Check}\} &&\text{the seven phases}\\[2pt]
+  \Phi &= \{\textsc{Outline},\ \textsc{Probe},\ \textsc{Evidence},\
+            \textsc{Draft},\ \textsc{Revise},\ \textsc{Check}\}
+       &&\text{the six, in run order}\\[2pt]
   T &= \{\textsc{Close},\ \textsc{Hold}\} &&\text{the two terminals}
 \end{align*}
 
+\noindent{\footnotesize \textsc{Compile} is not a member. Since 260819 it has no
+contract of its own, it is folded into \textsc{Revise}, and no phase routes to
+it.\par}
+
 \smallskip
-\noindent$R(\varphi)$ row by row, and the point is that it is \textbf{not} uniform:
+\noindent$R(\varphi)$ row by row, and the point is that it is \textbf{not}
+uniform: the first three rows are a LOOP that can only leave through one door.
 
 \smallskip
 {\footnotesize
 \noindent\begin{tabular}{@{}r@{\ }l@{}}
-$R(\textsc{Outline})$  & $=\{\textsc{Outline},\ \textsc{Draft},\ \textsc{Hold}\}$\\
-$R(\textsc{Draft})$    & $=\{\textsc{Draft},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Revise},\ \textsc{Check},\ \textsc{Hold}\}$\\
-$R(\textsc{Probe})$    & $=\{\textsc{Probe},\ \textsc{Evidence},\ \textsc{Revise},\ \textsc{Hold}\}$\\
-$R(\textsc{Evidence})$ & $=\{\textsc{Evidence},\ \textsc{Revise},\ \textsc{Draft},\ \textsc{Check},\ \textsc{Hold}\}$\\
-$R(\textsc{Revise})$   & $=\{\textsc{Revise},\ \textsc{Compile},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Check},\ \textsc{Hold}\}$\\
-$R(\textsc{Compile})$  & $=\{\textsc{Compile},\ \textsc{Check},\ \textsc{Revise},\ \textsc{Hold}\}$\\
-$R(\textsc{Check})$    & $=\{\textsc{Close},\ \textsc{Outline},\ \textsc{Revise},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Hold}\}$
+\multicolumn{2}{@{}l}{\textsc{Prepare} $-$ repeats until the plan is self-consistent}\\
+$R(\textsc{Outline})$  & $=\{\textsc{Outline},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Hold}\}$\\
+$R(\textsc{Probe})$    & $=\{\textsc{Probe},\ \textsc{Evidence},\ \textsc{Outline},\ \textsc{Hold}\}$\\
+$R(\textsc{Evidence})$ & $=\{\textsc{Evidence},\ \textsc{Outline},\ \textsc{Hold}\}$\\[4pt]
+\multicolumn{2}{@{}l}{\textsc{Execute} $-$ entered only through \textsc{Outline}'s gate}\\
+$R(\textsc{Draft})$    & $=\{\textsc{Draft},\ \textsc{Probe},\ \textsc{Revise},\ \textsc{Check},\ \textsc{Hold}\}$\\
+$R(\textsc{Revise})$   & $=\{\textsc{Revise},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Check},\ \textsc{Hold}\}$\\
+$R(\textsc{Check})$    & $=\{\textsc{Close},\ \textsc{Outline},\ \textsc{Probe},\ \textsc{Evidence},\ \textsc{Draft},\ \textsc{Revise},\ \textsc{Hold}\}$
 \end{tabular}}
 
 \medskip
-\noindent Three laws follow from the table, and they are why it is worth printing:
+\noindent Four laws follow from the table, and they are why it is worth printing:
 
 \begin{align*}
   \textsc{Close} \in R(\varphi)
     &\iff \varphi = \textsc{Check}
   &&\text{only a judge may close}\\[2pt]
-  \textsc{Check} &\notin R(\textsc{Check})
-  &&\text{no version is judged twice untouched}\\[2pt]
+  \varphi \in R(\varphi)
+    &\iff \varphi \neq \textsc{Check}
+  &&\text{every phase may repeat, not the judge}\\[2pt]
   \textsc{Hold} &\in R(\varphi) \ \ \text{for every } \varphi \in \Phi
-  &&\text{every phase may stop honestly}
+  &&\text{every phase may stop honestly}\\[2pt]
+  \textsc{Draft} &\notin R(\textsc{Probe}) \cup R(\textsc{Evidence})
+  &&\text{the loop's one door out}
 \end{align*}
+
+\noindent{\footnotesize The two code files AGREE with this table today. The
+controller (\texttt{ref/page-lifecycle.workflow.js}, \texttt{LEGAL}) and the
+auditor (\texttt{src/page\_lifecycle.py}, \texttt{LEGAL\_ROUTES}) encode these
+same six rows: all three \textsc{Prepare} edges are legal, and neither
+\textsc{Probe} nor \textsc{Evidence} routes forward. One residue, documented in
+both files' own comments: each keeps a \textsc{Compile} row and a
+$\textsc{Revise}\!\to\!\textsc{Compile}$ edge so an already-stored receipt
+naming \textsc{Compile} stays auditable. No phase contract names those
+edges.\par}

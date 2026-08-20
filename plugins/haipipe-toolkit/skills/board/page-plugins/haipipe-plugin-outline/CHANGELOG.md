@@ -1,3 +1,117 @@
+## 0.15.0 — 2026-08-20
+
+- **§✂️'s `Answered:` line gains the `· recount` tail** (JL: "看看哪里可以去
+  优化"): it flags a value that counts the run's own artifacts so DRAFT knows
+  the one kind of value it must re-read from the card instead of trusting the
+  plan.
+
+## 0.14.0 — 2026-08-19
+
+- **The Aims live in the plan file** (JL: "Aims should be move together with
+  outline"): §📐 gains the `## Aims` trailing section — one target plus its
+  `**Done when:**` test per Aim — and the 🎯 tie diagram routes plan bullet →
+  plan `## Aims` → page transcription → page `## States`. Before the move a
+  renumbered plan pointed ids at the page's OLD Aims (nine of sixteen on
+  QPw00 did).
+- **§✂️ plain, common words** (JL, on `The control rung.`: "不要用这样的词了"):
+  a rare word fails even when apt; a technical term survives only as the
+  thing's real name, defined at first use; metaphor vocabulary is rewritten
+  to the plain thing it means.
+
+## 0.13.0 — 2026-08-19
+
+- **§✂️ concise bullets**: one bullet = a few-word HEAD (the point or the
+  question) · evidence appends (`Answered:` / `Drawn:`, written by the fold
+  when the card lands or the unit builds) · the end-anchored mark. The head
+  never restates what lives behind its own mark (JL: "越 concise 越好…冒号后面
+  的东西其实都有点喧宾夺主了").
+- **Same night, the bullet's hidden detail**: every bullet folds a concise
+  explanation behind a click — `Note:` (authored at OUTLINE) or the fold's
+  `Answered:`/`Drawn:` — with NO disclosure marker; heads are terse labels or
+  questions ("Figure for Whole Workflow Loop"). 131/131 bullets on QPw00
+  carry one.
+- **Levels styling**: paragraph rows show their own address + a short accent
+  tick; one shared left-aligned address column aligns every title (JL picked
+  the accent bar from four previews, then trimmed it to a tick).
+- Coherence pass, same law: §🔒 qualified — the fold APPENDS `Answered:`/
+  `Drawn:` (and `📮 PP<NN>` ids) into bullets in place, into the working file
+  while `approved:` is ⬜ or into `v<N+1>` after a tick; §📐 counts FIVE
+  display kinds (`illustration` added), its worked example now shows §✂️-style
+  bullets (terse Capitalized head + folded `Note:`), and the ↩ example says
+  "answered", not the retired "bound"; §🚧 no longer pins the sibling phase
+  skill's version.
+
+## 0.12.0 — 2026-08-19
+
+- **📮 probe and 🧮 value are now SEPARATE marks** (JL: "You mean you put the
+  probe and values together? I want to separate them"). 📮 = this point needs
+  a QUESTION answered — bare before ② raises the card, `📮 PP<NN>` after; the
+  answer may be a finding or a folder of numbers. 🧮 = this point QUOTES one
+  value, `PP<NN>.v<n>`, out of an answered card's `## Values` block, and
+  `checks/values.py` re-computes it. 📮 deliberately shares phase ②'s glyph
+  (same concept) and is end-anchored in the scanners so prose about the phase
+  never reads as a mark.
+
+## 0.11.1 — 2026-08-19
+
+- **🧮 widened from "a number" to "a probe-answered fact".** JL: "this point
+  might need a probe to provide the evidence, do you get it?" — the mark IS
+  the needs-a-probe mark, and the card already binds ANY answer by path; the
+  `PP<NN>.v<n>` ids and `checks/values.py` recompute are the numeric
+  specialization, not the definition. Bare 🧮 = probe needed · 🧮 PP<NN> =
+  raised · ↩ ✓ = landed.
+
+## 0.11.0 — 2026-08-19
+
+- **The ✅ "have it" mark is RETIRED.** It asserted "backed on disk" without
+  naming what backs it, so no machine could recheck it; an unmarked bullet
+  already means "plain point, nothing owed"; and the glyph already works two
+  other jobs (`approved: ✅` tick syntax, phase ⑦), which produced a phantom
+  chip on a bullet that merely QUOTED the tick name. JL failed to read it
+  three separate times. Zero plans carried it at retirement, so no alias is
+  kept: an end-of-line ✅ in a plan is now just text. The mark grammar is
+  four: 🧮 value · 📚 citation · 🖼 display · 🎯 aim.
+
+## 0.10.1 — 2026-08-19
+
+- **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).
+  🔢 stays accepted as the legacy alias, so pre-260819 plans remain legal.
+  The abacus was the proof mark retired earlier on 260819 and is revived with
+  its new meaning: a recomputable number, which is what `checks/values.py`
+  does to every one of them.
+
+## 0.10.0 — 2026-08-19
+
+- **Mark to plugin, written down once.** A mark names what a bullet OWES and a
+  plugin names WHERE it is answered, so `🔢 value` is served by `probe/` and
+  there is no plugin called `value`. JL asked for one on 260819; a fourth
+  plugin would be a second home for one folder.
+- **A paragraph carries 3 to 6 bullets.** The `### C<n>.P<n>` line is a brief
+  the tab prints above them, and eight bullets under one brief means the brief
+  cannot describe them. Split by idea, not by count.
+- **🧮 proof RETIRED.** JL 260819: "我从开始到最后都没有说 proof，我一直说
+  probe". The mark came from ONE transcribed quote ("citation, display, values
+  and proofs") and no Log row ever ruled it. Going to a task folder or a
+  discovery folder for the evidence behind a claim IS a probe, which is 🔢.
+  It was the only mark with no plugin, no folder, no lane, no id and no
+  backlink, and that was the symptom rather than a design.
+  ⚠️ `proof/` the FOLDER is untouched: it belongs to a probe card.
+
+- Six marks become FIVE: 🎯 aim · ✅ have it · 📚 citation · 🔢 value · 🖼 display.
+- `live/outline.py` drops 🧮 from `_MARK`, from `_live`, from the Evidence
+  Bundle kinds and from the `owed` count. 48 marks stripped from 14 plan files.
+
+## 0.9.1 — 2026-08-19
+
+- **A bullet never carries a markdown heading mark.** JL objected twice in one
+  session, to `####` inside a bullet and then to `` `## Opening` ``: they are the
+  file's own syntax, so a reader parses them as structure before as a reference.
+  Name the part in words or with the § anchor.
+- The same rule stated for `## ` lines: only `## C<n> ·` is a division. A stray
+  `## ` in a plan's preamble was counted as a phantom division and shifted every
+  address below it by two. `live/outline.py` now matches `^## C\d+` and nothing
+  else, so the file and the renderer agree.
+
 # CHANGELOG · haipipe-plugin-outline
 
 ## 0.9.0 — 2026-08-17

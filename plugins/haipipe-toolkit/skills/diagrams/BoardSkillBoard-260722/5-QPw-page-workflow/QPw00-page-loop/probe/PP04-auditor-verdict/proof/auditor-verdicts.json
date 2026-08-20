@@ -1,0 +1,18 @@
+{
+  "260805-0216-QB8e.json": [
+    "page-path-stale run: `page` records /Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722/QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md which does not resolve; the same file name resolves uniquely to 6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md. Audited against that. Store `page` BOARD-RELATIVE so a group rename cannot break a receipt for a page that did not change.",
+    "artifact-version-mismatch run: current source/render identity c6e2f8f6d100176aae7cf493cf83021339214d6534352c10cf1562ce603e66e6:de29e0e4759d9859c454709237b62651f5ff110f1e7889b05e3edbde76382218 differs from final_version 8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d"
+  ],
+  "260818-1510-QPw00.json": [
+    "artifact-version-mismatch run: current source/render identity 3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1 differs from final_version 141dc13a117b6c1a73c49ce61b43c42db99ac19cb53314812d45a95a99499bdb:5fcccdc7e7dfc89ac0a4b9f5262fc1174460d2f52dc273f9c74566adcf581cdc"
+  ],
+  "260818-1543-QPw00.json": [
+    "checked-version-mismatch receipt[2]: CHECK must leave one identical version_before/version_after/checked_version",
+    "artifact-version-mismatch run: current source/render identity 3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1 differs from final_version 49e38702cb294b089d3bb5627e616c3caf89bd5d9a358fa377de37e054d0f251:d545dff546deb69050803f8807421d26c23e3d819d09cd214efbfd48deb4f00d"
+  ],
+  "260819-1813-QPw00.json": [
+    "max-steps-exceeded run: 15 receipts exceed max_steps=1",
+    "version-continuity receipt[3]: version_before must equal the preceding receipt's version_after",
+    "artifact-version-mismatch run: current source/render identity 3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959:02727b0ad36bcf985f7596dbbe414d82331ceb9c7b027316290223cc253b2aa1 differs from final_version 6126f576dd9803cec3652c2360f44042ad87cab4c46b599c577063e2a5a4c5ec:80f2ebc833ac17039c73984a594078adf7935da315a6a01f9511824685c65dd7"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "source": "BoardSkillBoard-260722/_runs/page/",
+  "run": "local read, 260819, re-pulled at EVIDENCE after the 260819-1813 run landed",
+  "runs": [
+    {
+      "id": "260805-0216-QB8e",
+      "receipts": 5,
+      "phases": [
+        "CHECK",
+        "REVISE",
+        "CHECK",
+        "REVISE",
+        "CHECK"
+      ],
+      "terminal": "CLOSE"
+    },
+    {
+      "id": "260818-1510-QPw00",
+      "receipts": 1,
+      "phases": [
+        "OUTLINE"
+      ],
+      "terminal": "HOLD"
+    },
+    {
+      "id": "260818-1543-QPw00",
+      "receipts": 3,
+      "phases": [
+        "DRAFT",
+        "REVISE",
+        "CHECK"
+      ],
+      "terminal": "HOLD"
+    },
+    {
+      "id": "260819-1813-QPw00",
+      "receipts": 6,
+      "phases": [
+        "OUTLINE",
+        "PROBE",
+        "OUTLINE",
+        "OUTLINE",
+        "PROBE",
+        "OUTLINE"
+      ],
+      "terminal": "HOLD"
+    }
+  ],
+  "runs_total": 4,
+  "receipts_total": 24,
+  "phases_covered": [
+    "CHECK",
+    "DRAFT",
+    "EVIDENCE",
+    "OUTLINE",
+    "PROBE",
+    "REVISE"
+  ],
+  "phases_never_run": [
+    "COMPILE"
+  ],
+  "coverage": "6 of 7"
+}

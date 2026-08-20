@@ -1,3 +1,12 @@
+## 0.3.0 — 2026-08-19
+
+- **The two reply boxes are RULES ONLY**: a line above, a line below, no left or
+  right edge, 78 columns. JL 260819: "你这个 box 能不能只保留上下，不要左右，
+  然后把它变得越宽越好？" Side pipes force every line to be padded to one width,
+  which capped the text at about 58 columns and wrapped sentences that fit.
+- `ref/09-reply-boxes.txt` redrawn in the new shape, with the five rules
+  gathered and the worked example rebuilt.
+
 diagram-ascii — Changelog
 =========================
 

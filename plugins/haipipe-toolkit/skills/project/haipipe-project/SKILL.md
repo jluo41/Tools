@@ -1,12 +1,11 @@
 ---
 name: haipipe-project
-description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; probes/ retired 2026-07-05 and insights/ retired 2026-07-12 — a paper's evidence questions live in its own 1-probes/ PPNN probe files, and the bank answers them in <task-folder>/QA/<n>-<slug>.md); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
-argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
+description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/name; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; top-level probes/ and insights/ are retired). Probe is Page-local: its PageX lane binds accepted Pages and its QA lane binds exact Task/Discovery QA paths; this scaffold creates none of those optional folders. Each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.4"
   last_updated: "2026-08-05"
-  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired. v3.2 syncs the container contract to the probe v3 model (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/, JL 2026-07-14): a task/discovery LEAF may carry an OPTIONAL QA/ folder (QA/<n>-<slug>.md — the executor's readable digest, numbering IS the index, on BOTH banks); the scaffold NEVER mints _ASK/ or _ANS/ (the bank is PROBE-UNAWARE: no PP ids, no answers: field); a consumer's evidence questions live in papers|applications/<X>/1-probes/PPNN_<topic>/ (renamed from 1-probe-plans/), bound to the bank BY PATH."
+  summary: "Project SETUP only: create top-level containers. Task/Discovery leaves may later own QA files; consuming Pages may later own local probe cards. The scaffold creates neither and never creates _ASK/_ANS."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,9 +40,8 @@ eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper folder
 project audits / reorganization              -> retired; originals in project/_archive
-claims / evidence questions                  -> /haipipe-probe (a probe is a
-                                                paper-level file, papers/<P>/1-probes/PPNN_<topic>/
-                                                -- it owns NO folder in the execution tree)
+claims / evidence questions                  -> /haipipe-probe crossing + the
+                                                consuming Page's local probe plugin
 asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa
 ```
 
@@ -63,19 +61,22 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
    └── 🗺️ diagram/        owner: this skill (via /diagram-ascii)  01-story, 02-boundary -- EMPTY at setup, authored on request
 ```
 
-**The evidence contract, in the three lines this skill must not get wrong** (owner:
+**The evidence contract, in the four lines this skill must not get wrong** (owner:
 `/haipipe-probe`; full detail in `skills/probe/haipipe-probe/SKILL.md`):
 
 ```
+   🔀 PROBE ROUTES BY SOURCE. Accepted Pages use PageX in OUTLINE. Task/Discovery
+      questions use the QA branch in PROBE/EVIDENCE. This scaffold creates neither lane.
+
    ⚙️ THE BANK is PROBE-UNAWARE.  tasks/<task-group>/<task-folder>/ and discoveries/<discovery-group>/<discovery-folder>/ carry NO _ASK/,
       NO _ANS/, NO `answers:` field, NO PP id -- ever. THIS SKILL NEVER MINTS ONE.
       A leaf MAY carry an OPTIONAL QA/ folder: QA/<n>-<slug>.md, the executor's readable
       digest, written by the EXECUTOR at its Report stage. Numbering IS the index.
       Not scaffolded at setup -- it appears when the task-folder has something to say.
 
-   📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>/
-      (renamed from 1-probe-plans/ on 2026-07-14). One file per TOPIC, one SECTION per
-      question. Created by the consumer's own EVIDENCE phase, never by this skill.
+   📄 THE CONSUMER holds QA questions on its owning Page-local probe surface.
+      For a Board Page: <page>/probe/PP<NN>-<slug>/. PROBE creates the card and
+      EVIDENCE binds the answer. This project scaffold never creates that folder.
 
    🔗 THEY BIND BY PATH.  A section's `target:` names a QA file. No id crosses. Nothing
       to renumber, no ledger, no shared namespace.

@@ -1,126 +1,135 @@
 ---
 name: haipipe-page-for-section
 description: >-
-  The VARIANT contract for a SECTION Page: one page per reader-ordered section unit of a paper or application, produced by a stage that runs once per unit. It loads haipipe-page for the base and haipipe-page-for-stage for the chain and gate, then adds only what a section page carries and a plain stage page does not: the section kind, the venue contract block whose blueprint line BINDS this unit alone, the template resolved per venue and kind, and the landing surface where citation, value, and display bindings reach prose. This is the type that CONNECTS to for-venue: the QBv catalog is read once by the venue stage, the blueprint allocates the desk's totals per section, and this page consumes its own allocation. Use when writing or fixing a section page, when its venue binding is wrong or missing, when a retarget must say what gets rewritten, or when a landed answer never reached the sentence that owed it. Trigger: section page, S-Main, S-Appendix, section kind, venue contract block, blueprint binds, word budget, section edit page, retarget section, /haipipe-page-for-section.
+  The Paper Page Type for one reader-ordered manuscript or appendix Section. It
+  executes exactly one current Narrative row, resolves venue-and-kind structure,
+  and binds prose to Page-local values, citations, probes, and displays. Use when
+  outlining, drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-05"
-  summary: "First cut, on JL's 260805 admission. Rejected earlier as for-main; readmitted as for-section because section is cross-family and carries typed records for-stage does not."
   outline:
-    mode: resolved          # fixed | grammar | resolved
-    source: "paper/venue/playbook-<pack>/<venue>/<venue>-<kind>/template.md (95 on disk)"
-    shape: "resolved by (venue x kind): paragraph blocks with per-block budgets and anti-patterns"
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+    mode: resolved
+    source: "paper/venue/**/template.md"
+    marker: "section-page-template: 1"
+    fallback: "paper/page-types/haipipe-page-for-section/ref/generic-template.md"
+    shape: "current Narrative row overlaid on a current venue-and-kind template or the explicit generic fallback"
 ---
 
-# /haipipe-page-for-section · one reader-ordered unit, bound to one venue allocation
+# /haipipe-page-for-section · execute one Narrative row
 
-**LOAD TWO CONTRACTS FIRST.** `haipipe-page` owns the base frame; `haipipe-page-for-stage` owns everything a chained, gated page needs: `requires` / `style-from` / `provides`, the managed Stage Contract span, the venue transfer tiers, and the rule that ONE stage reads the venue catalog. This file restates none of that; it adds only the section overlay, the same way `for-literature` adds a route over the topic core.
+Load `haipipe-page`, this Page Type, and `haipipe-page-workflow`. Declare
+`page-type: section` and `section_kind: <kind>`.
 
-**The kind this variant covers**: one page per section UNIT, in any family that edits by section.
+## 📄 Grain and authority
 
-```
-kind      produced by                          closes when
-──────────────────────────────────────────────────────────────────────
-Section   a stage declaring runs: per-unit,    ITS OWN human gate passes,
-unit      one page per reader-ordered unit     judged against its venue floor
-```
+One Section Page owns one reader-ordered manuscript or appendix unit. Main and
+appendix Sections use the same contract; numbering and venue treatment may
+differ.
 
-The paper family files these as `S-Main-<n>-<slug>` and `S-Appendix-<letter>-<slug>`; the application family's section-edit produces its own. "Section" is cross-family, which is why this type exists while `for-main` was rejected: Main names one family's region, section names a shape both have.
-
-**The type key.** A section page declares `page-type: section` in its frontmatter, and the line is REQUIRED: `S-Main-3-theory` is letter for letter a stage filename, and the key is what routes the page here instead of stopping at `-for-stage`. The `page-type:` key beats the filename (base, type resolution step ③).
-
-## 🔗 The venue chain, which is the reason this type exists
-
-The chain is drawn once, in `-for-stage`'s "ONE stage reads the venue page, and it is the venue stage": the QBv catalog is read once by the venue stage, the blueprint turns the desk's totals into per-section allocations, and every later page reads the blueprint. This page does not redraw it. What it adds is the unit grain: this page consumes ITS OWN allocation through its `### Venue contract` block, a POINTER and never a copy. The blueprint line is BINDING for this unit alone; the style line is reference only; the override line SAYS whether a per-section desk rule exists, because such a rule outranks the blueprint.
-
-The block is the typed record that makes this a type. Other stage pages carry a venue contract block too, `S-Open-Pitch` among them; what no other stage page carries is one PER READER-ORDERED UNIT, allocating that unit's own budget and shape. Its three lines answer the three questions a retarget asks: what binds, what merely advises, and what the desk itself said.
-
-## 🎚 The section kind is a JOIN KEY, and the template is one of three things it joins
-
-A section declares its KIND from a closed set the family owns (introduction, methods, results, discussion, appendix, and the set grows). The kind is the one name that ties three things together: the venue division, the blueprint block, and the template. Three owners wrote them at different times, and the kind is what lines them up:
-
-```
-  section_kind = "theory"  joins
-  ① the venue page's MATCHING DIVISION   for-venue cuts QBv Content by the
-       (QBv1 · Sec-3-Theory)             venue's own reading index, so venue
-                                         and section pages match division-to-division
-  ② the blueprint's per-kind block       the allocation, BINDING for this unit
-  ③ the (venue × kind) template          a MISQ introduction and a Nature
-                                         introduction differ in SHAPE, not length
-```
-
-This join is what for-stage cannot provide and why this type exists: a stage page chains page-to-page; only a section page joins division-to-division with the venue's own catalog. The join stays TWO-HOP: ① is read by the venue stage alone, and this page consumes ② and ③. A section page never copies structure from a sibling section; it takes it from its own resolved template.
-
-## 🗂 The outline is RESOLVED, and here is the one line that resolves it
-
-This is the only Page Type whose outline comes from OUTSIDE itself, so it declares `outline: mode: resolved` and names the source rather than listing divisions (JL 260816: "page-for-section it is kind of different"). It is not thinner than the others; it is the RICHEST, because 95 of these templates are already written and each carries per-block budgets, arcs, and anti-patterns that no generic shape could hold.
-
-**The path, resolvable in one step:**
+Authority order:
 
 ```text
-paper/venue/playbook-<pack>/<venue>/<venue>-<kind>/template.md
-
-  MISQ + introduction  → playbook-utd-is/MISQ/MISQ-introduction/template.md
-  npj DM + methods     → playbook-nature-portfolio/npj-digital-medicine/
-                           npjdm-methods/template.md
+Seed boundary
+  → selected Venue rules
+  → current Narrative row and version
+  → venue × section-kind structure/template
+  → landed Page-local evidence
+  → current prose
 ```
 
-```bash
-# the outline this page must execute, resolved from its own two keys
-ls paper/venue/playbook-*/"$VENUE"/"$VENUE"-"$KIND"/template.md
-```
+Prose never outranks a changed Narrative row or binding desk rule.
 
-**What arrives is a fillable skeleton, not a description.** The MISQ introduction template hands over `### P1. Phenomenon hook -- why this matters now`, `### P2. (optional) Deepen the stakes`, `### P3. What is known -- brief positioning`, each with its paragraph budget (~4-6 sentences, ~24-25 words each, citation density ~0.5/sentence clustered in the hook and contribution blocks) and its named anti-pattern ("do NOT open with a literature-review paragraph"). DRAFT's job here is to CHOOSE the variant and the ¶ counts against this paper's claim structure, not to invent an arc.
+## 📥 Required contract block
 
-**A missing template is a HOLE, never an invented outline.** If `(venue × kind)` resolves to nothing, the venue pack owes one; say so and stop. Copying a sibling section's shape is the failure this type exists to prevent, because two sections of one paper have different jobs and the desk knows it.
-
-## 📥 The landing surface: where the three record types reach prose
-
-A section page is where the other types' records become sentences:
-
-```
-citation binding   (for-literature)  →  the \citep on the claiming sentence
-value binding      (for-value)       →  the number, with its provenance lane
-display acceptance (for-display)     →  the \ref, and the placement record
-                                        points back at THIS sentence
-```
-
-A binding that landed on its topic page but never reached the owing sentence is this page's open work, visible at its gate. The hole grammar itself is the phases' (`page-workflows/`); this page only says where the paid debt lands.
-
-## 🔁 What a retarget rewrites
-
-A section page is venue-ALIGNED: retargeting the work to another venue rewrites the venue contract block, re-resolves the template, and re-judges the prose against the new floor, while the section's claims, evidence bindings, and unit identity survive. The split between what survives and what rewrites is `for-stage`'s venue-free against venue-aligned rule, applied at unit grain.
-
-**The template.** NOT fixed here, and resolved by a PAIR, `(venue, section_kind)`. The venue page's matching `### Sec-<n>-<Kind>` division states the shape that desk expects, and the venue pack carries the skeleton. A MISQ introduction and a Nature introduction differ in SHAPE, not only in wording, so one template for this type would flatten the very difference a venue page exists to record. Both halves of the pair are declared in the page's own head, which is what makes the lookup mechanical rather than a hunt.
-
-## 📥📤 What this page reads, and what it hands on
-
-**A page is a unit of work** (`QB6` §7). A section page is the ONE type with no input folder, because its raw material is the prose on the page itself.
+Record these fields in the Page before drafting:
 
 ```text
- 📥 INPUT   ✗ no folder. The material IS this page's own ## Content, plus the
-            three bindings that LAND here from other pages:
-              a citation binding  (for-literature)  → the \citep on the sentence
-              a value binding     (for-value)       → the number, with provenance
-              a display acceptance(for-display)     → the \ref, and the placement
-
- 📤 OUTPUT  <paper root>/sections/<nn>_<slug>.tex   FLAT, and reader-ordered
-              ▶ never a subdirectory: on the live MISQ paper
-                `find sections appendices -type d` returns only the two roots
-              ▶ the shipped filename carries the READER's number, never the
-                board page id: S-Main-4-measurement.md ships 04_personality_extraction.tex
-              ▶ the mapping is not 1:1: 8 S-Main pages, 14 files in sections/
+narrative-row       id + version
+section-kind        abstract · introduction · theory · methods · results ·
+                    discussion · appendix · venue-specific kind
+reader-question     the one question this Section answers
+entry-state         what the reader already believes/knows
+exit-state          what must be established on exit
+claim-ids           exact Narrative claims landing here
+venue-allocation    binding desk rules + observed pack guidance, distinguished
+structure-source    resolved venue × kind template or explicit generic fallback
+evidence-allowlist  card, citation, value, and display ids
+transition-in/out   required joins to neighboring Sections
 ```
 
-The one line where this type touches the display type is an `\input` of a shipped float, for example `sections/05_data_variables.tex` reaching `displays/S-Display-3c-variable-operationalization/float.tex`. That is how a display reaches a reader, and a float nothing inputs prints `??` however finished the unit is.
+If the Narrative row is missing or stale, stop section drafting and repair the
+Narrative first.
 
-## 📂 Files
+## 🧱 Content outline
 
+Resolve paragraph or move divisions from the selected Venue and section kind.
+A venue template is current only when its first metadata block carries
+`section-page-template: 1`. Unmarked templates are stage-era playbook material:
+they may inform a typed pack observation, but they may not become
+`structure-source`. This prevents an old `0-lifecycle`, `1-probes`, or
+`5-section-edit` scaffold from silently reviving the retired Paper runtime.
+
+If no marked venue template exists, use `ref/generic-template.md` and record the
+fallback; do not invent venue-specific rules.
+
+Each Content division states:
+
+```text
+reader move
+claim ids advanced
+evidence/citation/value/display bindings
+expected prose or display placement
+transition to the next move
+known limitation or unresolved obligation
 ```
-haipipe-page-for-section/
-├── SKILL.md            this variant contract
-└── CHANGELOG.md        version history
+
+## 🃏 Landing evidence in prose
+
+Literature, values, and displays are not separate Page Types. They land through
+the Section's Page-local plugins:
+
+```text
+pagex/            Probe's accepted-Page lane: bounded source Page context
+probe/<card>/     Probe's Task/Discovery QA lane: answer, proof, interpretation
+bibex/            citation card and bibliography key used by the sentence
+display/<unit>/   intake, recipe, artifacts, caption, bindings, acceptance
 ```
 
-Owns no scripts. The frame is `haipipe-page-for-stage`; the catalog side is `haipipe-page-for-venue`; the record producers are `-for-literature`, `-for-value`, `-for-display`; the paper family's stage is `paper/S06-main/section-edit/stage.md`, which declares the closed kind set and the per-unit identity this contract requires but never contains.
+The value plugin is a storage-less surface over `probe/<card>/card.md` and the
+Section prose. Cite one exact number as `PP<NN>.v<n>`; never create `value/` as
+a second home.
+
+Every consequential sentence must be one of:
+
+- supported by one or more card/citation/value/display ids;
+- explicitly framed as interpretation and bounded by its evidence;
+- visibly marked as an open obligation that prevents closure.
+
+One Section may cite many displays, including displays owned by another Page,
+but it must record the source unit and accepted version. It may also own several
+local displays.
+
+## 🔁 Retargeting
+
+On a venue change:
+
+1. Bind the Section to the new Narrative row.
+2. Re-resolve venue × kind structure and hard constraints.
+3. Preserve evidence ids whose meaning and scope remain valid.
+4. Reopen prose, citations, and displays whose role or placement changed.
+5. Compile and CHECK the new built version.
+
+## ✅ Closing checks
+
+- Exactly one current Narrative row governs the Page.
+- Reader entry and exit states match neighboring rows.
+- Every claim and consequential sentence has inspectable support or an open
+  obligation.
+- Every citation key resolves; every value has provenance; every cited display
+  names an accepted artifact version.
+- Venue rules are distinguished from pack observations.
+- The generated TeX/PDF/DOCX reflects the accepted Page version.
+- CHECK, not prose completion, closes the Section.
+
+This variant owns no scripts. It owns `ref/generic-template.md`, the explicit
+fallback that keeps every Section kind executable while venue templates are
+migrated one by one.

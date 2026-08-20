@@ -1,0 +1,278 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🖼 Display · QPw00-page-loop</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a.summary{color:inherit} h2{font-size:14px;margin:14px 0 5px}
+p{margin:7px 0} ul{margin:6px 0 8px 20px;padding:0}
+code{font:12px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 4px;
+ border-radius:4px} .summary{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}
+.metric{border:1px solid var(--line);border-radius:999px;padding:3px 9px;
+ background:var(--card);font-size:12px} .ready{color:#267247} .pending{color:#9a6115}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.ghost{opacity:.55;border-style:dashed}
+.badge{font-size:13px;margin-right:6px}
+object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radius:8px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;
+ scroll-behavior:smooth;padding:2px}
+.strip>.card{flex:0 0 100%;scroll-snap-align:start;margin:0;box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:8px;float:right}
+.nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
+ color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
+.nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chead{display:flex;align-items:baseline;gap:9px;padding:0 0 9px;
+ border-bottom:1px solid var(--line);margin-bottom:11px}
+.pid{font:700 11px ui-monospace,Menlo,monospace;color:var(--mut);
+ border:1px solid var(--line);border-radius:5px;padding:1px 6px;letter-spacing:.04em}
+.ptitle{font:600 15.5px/1.3 -apple-system,BlinkMacSystemFont,sans-serif}
+.q{font-size:15px;line-height:1.55;margin:0 0 11px;max-width:60em}
+dl.fields{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0 0 12px;
+ font-size:12.5px}
+dl.fields dt{color:var(--mut);font:600 11px ui-monospace,Menlo,monospace;
+ text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+dl.fields dd{margin:0;word-break:break-all}
+.next{font-size:12.5px;border-radius:7px;padding:7px 11px;margin:0 0 4px;
+ border:1px solid var(--line);background:var(--card)}
+.next.owed{color:#9a6115;border-color:#e5cfa8}
+.next.ok{color:#267247;border-color:#bcdcc7}
+.step{border:1px solid var(--line);border-radius:10px;margin:13px 0;
+ overflow:hidden;background:var(--bg)}
+.step.lead{border-color:var(--fg);border-width:1.5px}
+.step .sh{display:flex;align-items:baseline;gap:8px;padding:7px 12px;
+ background:var(--card);border-bottom:1px solid var(--line)}
+.step .sh b{font:700 11.5px -apple-system,sans-serif;letter-spacing:.09em;
+ text-transform:uppercase}
+.step .sh .sn{color:var(--mut);font-size:11.5px;font-family:ui-monospace,Menlo,monospace}
+.step .sb{padding:11px 13px}
+.step .sb p:first-child{margin-top:0} .step .sb p:last-child{margin-bottom:0}
+details.fold>summary{cursor:pointer}
+details.fold[open]>summary{border-bottom:1px solid var(--line)}
+.hole{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;
+ color:var(--mut);font-size:12.5px}
+figure.pf{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden;background:var(--card)}
+figure.pf+.why{margin:-6px 0 14px}
+.pfh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 11px;
+ border-bottom:1px solid var(--line)}
+.pfn{font:600 12.5px ui-monospace,Menlo,monospace;word-break:break-all}
+.facts{display:flex;gap:5px;flex-wrap:wrap}
+.fact{font-size:10.5px;color:var(--mut);border:1px solid var(--line);
+ border-radius:999px;padding:1px 8px;white-space:nowrap;background:var(--bg)}
+.exhibit{display:block;width:100%;height:290px;border:0;background:var(--bg)}
+object.exhibit{aspect-ratio:4/3;height:auto}
+.pfp{border-top:1px solid var(--line);padding:6px 11px;font-size:11.5px;
+ color:var(--mut)}
+.pfp>summary{cursor:pointer} .pfp div{word-break:break-all;margin:3px 0}
+.why{font-size:13px;line-height:1.55;margin:0 0 13px;max-width:60em}
+details>summary{list-style:none}
+details>summary::-webkit-details-marker{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
+ border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
+ background:var(--card)}
+.chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><span class='nav'><button id='prev'>◀</button><span class='pos' id='pos'></span><button id='next'>▶</button></span><h1>🖼 Display · QPw00-page-loop</h1><div class='mut' style='margin:0 0 12px'>read-only · renderers write recipe/ and assets/; a person rules intake/ and ticks accepted: (QPf5 §3) · 🔄 recompiles each unit's preview</div><div class='summary'><span class='metric'>7 declared</span><span class='metric ready'>7 rendered</span><span class='metric'>0 accepted</span></div><div class='chips'><a class='chip' href='#QPw00-Display1-run-loop'>QPw00-Display1-run-loop</a><a class='chip' href='#QPw00-Display2-route-relation'>QPw00-Display2-route-relation</a><a class='chip' href='#QPw00-Display3-who-does-what'>QPw00-Display3-who-does-what</a><a class='chip' href='#QPw00-Display4-the-loop-at-a-glance'>QPw00-Display4-the-loop-at-a-glance</a><a class='chip' href='#QPw00-Display5-evidence-logic'>QPw00-Display5-evidence-logic</a><a class='chip' href='#QPw00-Display6-agents-and-skills'>QPw00-Display6-agents-and-skills</a><a class='chip' href='#QPw00-Display7-point-to-sentence'>QPw00-Display7-point-to-sentence</a></div><div class='strip' id='strip'><div class='card' id='QPw00-Display1-run-loop'><b>QPw00-Display1-run-loop</b><object class='pdf' data='QPw00-Display1-run-loop/preview.pdf' type='application/pdf'><a href='QPw00-Display1-run-loop/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: RUN is a bounded router, not a conveyor belt: it takes one packet, alternates a producer, a mechanical builder, and a fresh judge, follows only the route each returns, refuses a route outside $R(\varphi)$, and stops at CLOSE, HOLD, or a limit that never means the Page passed</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (an `algorithm2e` block; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: let a reader see the loop's control flow and its three separate actors at once, so §12's prose has something to point at instead of being read four times. §12 was §9 until the page was re-cut on 260819; the citing sentence is now the last line of §12's Overview block</div><div class='mut'><b style='color:var(--fg)'>intake</b>: `intake/manifest.yaml`, frozen 260819 (re-frozen the same evening after the PREPARE-loop route rewrite) in the `file:` + `source:` + `sha256:` shape · five LIVE files hashed: `board/haipipe-board/ref/page-lifecycle.workflow.js` `d476c53090`, `board/haipipe-board/src/page_lifecycle.py` `9465025ae5`, `board/page-workflows/haipipe-page-workflow/SKILL.md` `ebe6bbd790`, `.../ref/page-run-contract.md` `a957d2ff40`, and the page itself `6126f576dd` · from no probe card: a concept unit freezes the LISTINGS it asserts, not a `proof/`</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; the block states no number. What it does bind is transcribed text, so it goes wrong when an ACTOR, a STOP, or an ENTRY DEFAULT moves, never when the phase order does: the figure names one phase, CHECK, and reads every route out of $R(\varphi)$ without enumerating it. `intake/manifest.yaml` names the five live files those facts live in and hashes each one, so `checks/intake.py` can say whether any of them has moved since</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand; rebuild = `pdflatex preview.tex` at the unit root, then `cd recipe &amp;&amp; pdflatex asset.tex &amp;&amp; cp asset.pdf ../assets/figure.pdf`</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260816 CC · one candidate; the first compile wrapped four comments and left a third of the page blank, so the geometry went 185x175mm to 224x132mm and two comments were shortened. 260819 re-verified rather than redrawn: the loop's own re-cut, not a new design, is what changed two lines</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ nobody has accepted the CORRECTED drawing. The previous note here was a 260818 R7 staleness report (`preview.pdf` and `assets/figure.pdf` older than `recipe/run-loop.tex`, believed comment-only); that is now resolved, but not the way the note predicted. Both artifacts were rebuilt 260819 and the recipe edit was NOT comment-only: line 5 of the block asserted the wrong actor. What a person must judge is the three changed lines: 5 and 13 (morning pass) and line 1's entry comment, DRAFT → OUTLINE (evening refresh)</div><div class='mut'><b style='color:var(--fg)'>contradictions</b>: recorded, not resolved (260819 evening refresh):</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C12.P2.B1</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── QPw00-page-loop.md
+│   │   ├── haipipe-page-workflow.SKILL.md
+│   │   ├── page-lifecycle.workflow.js
+│   │   ├── page-run-contract.md
+│   │   └── page_lifecycle.py
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── run-loop.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display2-route-relation'><b>QPw00-Display2-route-relation</b><object class='pdf' data='QPw00-Display2-route-relation/preview.pdf' type='application/pdf'><a href='QPw00-Display2-route-relation/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: the legal-route relation is not uniform, and its shape is the 260819 two-part loop: PROBE and EVIDENCE route only sideways or BACK to OUTLINE, so DRAFT is unreachable from either and the PREPARE loop's single door out is OUTLINE's own gate; CLOSE is reachable from CHECK alone, CHECK is unreachable from CHECK, HOLD is reachable from every phase, and since the same-day 260819 fix the controller and the auditor encode this same table, keeping only a COMPILE row no contract names so stored receipts stay auditable</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (a display equation; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: turn §9.1's sentence "only CHECK may CLOSE" into a statement a reader can check against the shipped table, and surface the three laws the prose never states: the loop's one door out, CHECK's unreachability from itself, and that contracts and code now assert the same relation</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: none data-bound; every set is transcribed from the six phase contracts' §🔀 rows and `ref/phase-cards.md`'s ROUTES rows, all named in `intake/manifest.yaml` with the sha256 of the LIVE file. A phase renamed, a ROUTES row edited, or `LEGAL_ROUTES` diverging from the contracts again makes this unit wrong, and `checks/intake.py` says so the same day. The two JUDGMENT rows the morning rebuild carried are RESOLVED and no judgment remains: haipipe-page-evidence 0.10.2 deleted the stale `→ REVISE`/`→ DRAFT` half of its §🔀 (the §🔁 block this unit followed won), and haipipe-page-draft 0.8.1 removed EVIDENCE and COMPILE from its receipt route enum (the phase-cards ④ row this unit followed won)</div><div class='mut'><b style='color:var(--fg)'>contradictions</b>: one residue stands and is NOT resolved here: `src/page_lifecycle.py` LEGAL_ROUTES, `ref/page-lifecycle.workflow.js` LEGAL, and `haipipe-page-workflow/ref/page-run-contract.md`'s Legal-routes block all keep a COMPILE row and a REVISE→COMPILE edge that no phase contract's §🔀 names (phase-cards ⑤ folds COMPILE into REVISE and lists no such route). Both code files say in their own comments that the row is kept so an already-stored receipt naming COMPILE stays auditable, and phase-cards says whether the fold is permanent is `QPw5-revise`'s open ruling. The figure states this residue in its last block rather than hiding it</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand; rebuild = `cd recipe &amp;&amp; pdflatex -interaction=nonstopmode asset.tex` for `assets/figure.pdf`, then `pdflatex -interaction=nonstopmode preview.tex` at the unit root</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · one candidate again, the explicit set list, because a reviewer diffs this rebuild against the 260818 rows and a grid would hide which row moved. Three overfull boxes were fixed by shortening annotation text, never by shrinking the type; `preview.tex` moved to 10pt/135mm so the preview breaks lines exactly where the embedded asset does</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ nobody has looked at the refreshed render. Refreshed and re-frozen 260819 by the producer, who may not judge his own claim; the `contradictions:` row is what a person should read first</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C12.P2.B2</div><div class='mut'><b style='color:var(--fg)'>history</b>: REFRESHED 260819, same day as the rebuild below, because the code caught up: `LEGAL_ROUTES` and `LEGAL` were brought into line with the contracts acting on this unit's own finding, so the figure's last block and the caption now record agreement instead of a lag, and both JUDGMENT rows dissolved when haipipe-page-evidence went to 0.10.2 and haipipe-page-draft to 0.8.1 (haipipe-page-workflow 0.9.2 aligned its ref too). The six R(φ) row-sets were re-derived from the live contracts and are UNCHANGED; seven of the ten intake hashes moved and the manifest was re-frozen; `checks/intake.py` reports this unit clean. The kept COMPILE row moved from the figure's disagreement note to the `contradictions:` row above</div><div class='mut'><b style='color:var(--fg)'>history</b>: REBUILT 260819. The loop became two parts that day (a converging PREPARE loop ① OUTLINE ⇄ ② PROBE ⇄ ③ EVIDENCE, then linear ④ DRAFT → ⑤ REVISE → ⑦ CHECK), which made the previous figure stale in five of its seven rows: PROBE and EVIDENCE stopped routing forward, OUTLINE gained PROBE, DRAFT and REVISE lost EVIDENCE's and COMPILE's edges, and COMPILE lost its row entirely. `checks/intake.py` is what caught it, reporting `page_lifecycle.py CHANGED`; the change in that file turned out to be unrelated (a moved-page fallback), and the real staleness was in the CONTRACTS, which the 260818 manifest did not name at all. Both remaining laws from 260818 survived, a fourth was added, and the intake was converted to the checkable `file:` + `source:` + `sha256` shape with ten inputs</div><div class='mut'><b style='color:var(--fg)'>history</b>: REBUILT 260818 against the frozen `intake/inputs/page_lifecycle.py`. The unit drew a FOUR-phase $\Phi$ and a uniform $R(\varphi)=\Phi\cup\{\textsc{Hold}\}$, true of the 260816 loop and false of the seven-phase loop the same file declares: $R(\textsc{Probe})$ omits DRAFT and CHECK, $R(\textsc{Revise})$ omits PROBE, and $R(\textsc{Check})$ omits COMPILE while adding OUTLINE and EVIDENCE. Caught by `haipipe-board-approver-agent` on display-rules R14, the no-invented-value rule, on its first run. The two consequence lines survived untouched because they were always derived from CHECK's row alone; a third, HOLD in every row, was added because the real table shows it.</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260816 beside Display1, from the observation that `R(CHECK)` omits CHECK — a law the page argues nowhere in prose</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── haipipe-page-check.SKILL.md
+│   │   ├── haipipe-page-draft.SKILL.md
+│   │   ├── haipipe-page-evidence.SKILL.md
+│   │   ├── haipipe-page-outline.SKILL.md
+│   │   ├── haipipe-page-probe.SKILL.md
+│   │   ├── haipipe-page-revise.SKILL.md
+│   │   ├── haipipe-page-workflow.SKILL.md
+│   │   ├── page-lifecycle.workflow.js
+│   │   ├── page_lifecycle.py
+│   │   └── phase-cards.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── route-relation.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display3-who-does-what'><b>QPw00-Display3-who-does-what</b><object class='pdf' data='QPw00-Display3-who-does-what/preview.pdf' type='application/pdf'><a href='QPw00-Display3-who-does-what/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: the page workflow asks a person for something on EIGHT of its twelve rows, and every one of those eight is either the OPEN that starts the page, a step of the PREPARE loop, or CHECK; the three rows that sit between the plan and the judgment (4 DRAFT, 5 REVISE, 6 COMPILE) ask for nothing at all, so the loop's whole human cost is paid BEFORE DRAFT and AFTER REVISE and never inside them</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (a `booktabs` table; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: let a reader see the whole loop as WORK rather than as authority, so the question "what will this cost me, and when" is answered before the contracts are opened</div><div class='mut'><b style='color:var(--fg)'>serves</b>: QPw00-page-loop.md §14 · outline v3 bullet C14.P1.B1</div><div class='mut'><b style='color:var(--fg)'>intake</b>: `intake/manifest.yaml`, 14 inputs, listing frozen 260819 and re-frozen the same afternoon after sibling agents edited three of them (`page-run-contract.md`, `haipipe-page-evidence/SKILL.md`, `haipipe-page-draft/SKILL.md`); the manifest header records why none of those edits changes a cell. Every row names the LIVE `source:` as well as the local copy, so `checks/intake.py` can re-hash the original and report CHANGED. No probe card serves this unit and none needs to: it is a CONCEPT unit, whose intake freezes a listing of source files rather than a `proof/` (`haipipe-page-evidence` §🖼, "concept kind ... nothing to wait for")</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: one column is data-bound and it is TIME, which is an ESTIMATE and says so on its own face. Every other cell is transcribed from a file frozen in `intake/inputs/`. What makes this picture WRONG: a renamed phase, a moved tick, a re-ordered loop, or a phase gaining its first receipt. Disk WOULD say so for all four, because `checks/intake.py` re-hashes every `source:` row; that is exactly how the 260819 order change was caught, six inputs CHANGED at once</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand; rebuild = `pdflatex preview.tex` at the unit root for `preview.pdf`, then `cd recipe &amp;&amp; pdflatex asset.tex` and move `asset.pdf` to `assets/figure.pdf`</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · three candidates on the TIME/HOW OFTEN boundary, all rejected by looking at the render. `l@{~~}` (the pre-260819 spec) printed the headers as one word, `TIME HOW OFTEN`; `l@{~}` was worse; `r@{~~}` with the two `p` columns trimmed to 31mm and 28mm separates them and holds the asset near its old width. The row for 3d DISPLAY was also picked twice: `0` was rejected because the lane took over three of REVISE's steps on 260819 and no longer costs a person nothing, and no substitute number was invented</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ NOT judged, and not judgeable here. A producer asked "is my table right" says yes; the row order, the eight-of-twelve split and the five ticks must be read against `intake/inputs/phase-cards.md` by `haipipe-board-reviewer-agent`, and the tick itself belongs to a person at ⑦ CHECK, which is row 7a of this very table</div><div class='mut'><b style='color:var(--fg)'>contradictions</b>: ALL FIVE below were RESOLVED UPSTREAM on 260819, the same afternoon they were reported: the main session edited the contracts toward this drawing (phase-cards.md now says two ③ lane ticks with ③d tickless and numbers the lanes ③c/③v; `haipipe-page-probe` 0.5.1 calls itself phase ②; `haipipe-page-evidence` 0.10.2's kinds table says RENDER · PICK · BUILD are here; `page-run-contract.md` says five ticks and its legal-routes block matches the PREPARE loop). The intake was re-frozen against the fixed files and ZERO cells changed. The list is kept as found, because finding them is what this unit's transcription rule is for: ① `phase-cards.md` §🧑 says "the three ③ evidence ticks", but its own ③d card says `accepted: ✅` "is CHECK's, not this phase's" and its gathered-ticks table places `accepted:` at ⑦. The table follows the ③d card and the gathered table, so 3d shows a job with no tick. ② `phase-cards.md`'s ⑦ ROUTES row and its gathered-ticks table still use the PRE-260819 numbers (④ EVIDENCE, ③ PROBE, ②/④c/④v); the table therefore prints route names, never those numbers. ③ `haipipe-page-probe`'s frontmatter and footer still call themselves "phase ③" and point at `phase-cards.md §③`, and `haipipe-page-evidence`'s footer points at `§④`; both are one place behind the headings in the file they cite. ④ `haipipe-page-evidence`'s three-kinds table still says a display's renderer "draws it in REVISE", contradicting its own §🖼 twelve sections later. ⑤ `page-run-contract.md`'s legal-routes block still allows `from OUTLINE → DRAFT` directly and says "The four ticks"</div><div class='mut'><b style='color:var(--fg)'>history</b>: RE-BUILT 260819 because the loop's phase ORDER changed that day and this table drew the old one. `checks/intake.py` reported 6 of the 9 frozen inputs CHANGED. Four rows moved and three changed meaning: PROBE and the three EVIDENCE lanes now come BEFORE DRAFT rather than after it; DRAFT's cell now says it enters on landed evidence and writes the NUMBER, so a hole is the exception; REVISE's cell no longer claims it draws, because RENDER, PICK and BUILD moved to EVIDENCE and only ACCEPT stayed at CHECK; 3d DISPLAY gained a job and lost its `0`; COMPILE gained its own row saying it is folded into 5; and OUTLINE's cell now names the FOUR machine checks that run before the person is asked, which is new work for that row because the person now judges DIRECTION and not arithmetic. The manifest was converted from the `path:` + `sha256` shape, which proves only that a copy has not rotted, to `file:` + `source:` + `sha256`, and grew from 9 inputs to 14: `page-run-contract.md`, the two page plugins, and the board's two QPw00 run receipts, because "which phases have ever produced a receipt" became a transcribed cell</div><div class='mut'><b style='color:var(--fg)'>history</b>: CORRECTED 260818 by `haipipe-board-approver-agent` on its first run, which failed R11, R12 and R14. The caption and claim both said "five of the eleven rows need a person" and "the other six run machine-only" while the drawing showed SEVEN rows with a job and FOUR reading `nothing`; the claim also spread the five ticks over FOUR rows, reproducing the exact miscount `haipipe-page-check.SKILL.md:153` corrects. R14 caught row 0 OPEN tracing to none of the frozen inputs, which is why `haipipe-page.SKILL.md` is an input</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260818, when JL handed over a labeling protocol written as `# · PHASE · WHAT HAPPENS · YOUR JOB · TIME · HOW OFTEN` and asked for the page workflow in the same shape. The band structure is his: once / the loop / what ends it</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── 260805-0216-QB8e.json
+│   │   ├── 260818-1510-QPw00.json
+│   │   ├── 260818-1543-QPw00.json
+│   │   ├── haipipe-page-check.SKILL.md
+│   │   ├── haipipe-page-draft.SKILL.md
+│   │   ├── haipipe-page-evidence.SKILL.md
+│   │   ├── haipipe-page-outline.SKILL.md
+│   │   ├── haipipe-page-probe.SKILL.md
+│   │   ├── haipipe-page-revise.SKILL.md
+│   │   ├── haipipe-page.SKILL.md
+│   │   ├── haipipe-plugin-display.SKILL.md
+│   │   ├── haipipe-plugin-probe.SKILL.md
+│   │   ├── page-run-contract.md
+│   │   └── phase-cards.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── who-does-what.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display4-the-loop-at-a-glance'><b>QPw00-Display4-the-loop-at-a-glance</b><object class='pdf' data='QPw00-Display4-the-loop-at-a-glance/preview.pdf' type='application/pdf'><a href='QPw00-Display4-the-loop-at-a-glance/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: since 260819 the loop is not a line. ① OUTLINE, ② PROBE and ③ EVIDENCE repeat as one converging PREPARE loop that only a person's `approved:` tick (after four machine checks: coverage · address · value · shape) lets the page out of; ④ DRAFT and ⑤ REVISE (⑥ COMPILE folded in, no contract of its own) then run unattended end to end; and ⑦ CHECK, which a person judges, alone reaches CLOSE and may return the page to any earlier phase. Five stops on the whole loop are a person's and no machine may write one.</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, a TikZ-native figure hand-written in `recipe/loop-at-a-glance.tex` (door: haipipe-display-tex); not a data plot and not a table</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: give §1 Overview the picture a first-time reader needs BEFORE any single phase is argued, so they can say what the seven phases are, which one they are in, and that their attention belongs to the PREPARE loop</div><div class='mut'><b style='color:var(--fg)'>intake</b>: 9 files under `intake/inputs/`, sha256 of the LIVE files in `intake/manifest.yaml`: `ref/phase-cards.md`, the six phase SKILL.md contracts (outline 0.3.0 · probe 0.5.1 · evidence 0.10.2 · draft 0.8.1 · revise 0.5.0 · check 0.6.1), and both legal-route tables (`ref/page-lifecycle.workflow.js` + `src/page_lifecycle.py`, each carrying the 260819 PREPARE edges). `checks/intake.py` audited this unit 260819: 0 CHANGED, 0 unresolved</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: fully data-bound to the contracts. A renamed phase, a moved tick, a changed legal route (EVIDENCE gaining a route to DRAFT would break the "ONE gate out" panel outright), or COMPILE regaining its own contract makes this figure wrong, and the intake makes each of those computable. The attended/unattended zones hang on prose (`phase-cards.md` §🧑), so a re-ruling of where a person's attention sits flips the zones and only the frozen hash would say so</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand, tikz; rebuild = `cd recipe &amp;&amp; pdflatex asset.tex &amp;&amp; cp asset.pdf ../assets/figure.pdf`, then `pdflatex preview.tex` at the unit root. Natural width 151.5mm (429.5pt), so a page embedding it at `width=.85\linewidth` (140.3mm at 11pt, 1in margins) scales it 0.926x and the smallest 8pt type prints at 7.4pt</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC, two candidates across the day. The morning one (a left-to-right seven-box chain, two return arrows) was WRONG by evening: it drew the pre-260819 linear order, and JL caught it reading the page ("things here is still the old way"). The rebuilt drawing is two-part, loop over tail, per the same day's ruling. One wording fix on the rebuild's rebuild: PROBE's role row said "machine, unattended" inside the zone labeled "a person attends here", which no contract says; `phase-cards.md` gives PROBE `✋ TICK none`, so the row now reads "machine, no tick"</div><div class='mut'><b style='color:var(--fg)'>contradictions</b>: none among the nine frozen inputs. Three were found mid-rebuild and all three were fixed upstream BEFORE this freeze: `phase-cards.md` route rows and tick table still carried pre-260819 phase numbers (④ EVIDENCE · ③ PROBE · ④c/④v), its §🧑 counted "three ③ evidence ticks" against §🧾 placing `accepted:` at ⑦, and `haipipe-page-evidence` line 51 still recited the old order with DRAFT second. The frozen copies are the corrected versions (probe 0.5.1, evidence 0.10.2)</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ nobody has looked at it yet; a person still has to say whether it orients them. It awaits a person and this unit never ticks it</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C1.P2.B1 — outline v3 §C1.P2.B1 asks for "the whole loop on one picture: seven phases, who acts at each, which five stops need a person, and where a round restarts", and is already marked `🖼 Display4 · the-loop-at-a-glance`</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260819, when JL asked why the Overview had no picture ("overview 里面，不应该有一些图片或者 display 之类的吗？让我们看到它在 overall 上是一个什么样的东西？"). Redrawn later the same day after JL caught the first drawing still showing the pre-260819 linear loop; the redraw agent died mid-run at the API session limit with the tikz compiled but unchecked, and a second agent verified every fact against the live contracts, fixed PROBE's role row, rebuilt figure + preview (preview paper 160x60mm → 168x160mm), re-froze the intake at 9 inputs (adding `page_lifecycle.py`), and looked at the render</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── haipipe-page-check.SKILL.md
+│   │   ├── haipipe-page-draft.SKILL.md
+│   │   ├── haipipe-page-evidence.SKILL.md
+│   │   ├── haipipe-page-outline.SKILL.md
+│   │   ├── haipipe-page-probe.SKILL.md
+│   │   ├── haipipe-page-revise.SKILL.md
+│   │   ├── page-lifecycle.workflow.js
+│   │   ├── page_lifecycle.py
+│   │   └── phase-cards.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.pdf
+│   ├── asset.tex
+│   └── loop-at-a-glance.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display5-evidence-logic'><b>QPw00-Display5-evidence-logic</b><object class='pdf' data='QPw00-Display5-evidence-logic/preview.pdf' type='application/pdf'><a href='QPw00-Display5-evidence-logic/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: the evidence a page lands is HEADED by the probe card — a bullet of the approved plan ASKS, ② PROBE raises the card whose `serves:` points back at that bullet, and the two-stage (MAKE, BIND) three-lane wall draws on it unevenly: the value lane fills the card itself and each landed number gets its own id (PP01.v2), a DATA display freezes its intake FROM the card's proof/, and the citation lane is a person's and does not pass through the card</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (a hand-authored `tikz` block; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: let a reader see the whole of §5 at once — where the question comes from and what folder holds it, the two stages, which tick belongs to which lane, which two ticks revert, and the line the phase stops at — so the division's subsections have something to point at</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: fully data-bound to the contracts. Every stage, lane, tick, revert rule and card field is transcribed, so `intake/manifest.yaml` freezes eight files with sha256; a moved tick, a renamed lane or a changed card field makes this figure wrong and computably so</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand, `tikz`; rebuild = `cd recipe &amp;&amp; pdflatex asset.tex` for `assets/figure.pdf`, then `pdflatex preview.tex` at the unit root</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · one candidate, two columns for the two stages crossed with three rows for the three lanes, because the parallelism is the fact the figure exists to show</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · the card sits LEFT of the wall as its head, not above it, because its three relations to the lanes are horizontal edges a reader can follow (fills the card · freezes from proof/ · no edge at all); an above-the-wall head would cross the citation lane to reach the other two</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜ nobody has looked at it yet. Rendered 260819 with the intake frozen from 8 files</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C5.P1.B1</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260819 in the EVIDENCE phase, after JL asked for the C5 logic to be drawn ("我觉得你应该在 C5 里面加 display，把整个 logic 都给画出来")</div><div class='mut'><b style='color:var(--fg)'>history</b>: refreshed 260819, same day, after two frozen inputs moved under it: `haipipe-page-evidence` 0.10.0 → 0.10.2 and `phase-cards.md` (EVIDENCE is now phase ③, routes to ① OUTLINE always, and ③d leaves no tick behind: its `accepted:` is ⑦ CHECK's). One cell changed in the drawing: the display lane's tick note now reads "reverts · ticked at (7) CHECK", and the caption says accepted is CHECK's. MAKE/BIND, all six stage-and-lane cells, the revert pair (`read:` · `accepted:`), and the ⑤ REVISE line below the wall were re-verified against the live contracts and are unchanged. Layout only: stage and lane boxes got fixed text widths and the preview page widened to 150mm, because the first look at the rebuilt preview.pdf showed the tick column clipped at the page edge and the two stage headers colliding (a birth defect, visible only in the picture). Intake re-frozen, all six sha256 current</div><div class='mut'><b style='color:var(--fg)'>history</b>: redrawn 260819, same day, after JL read it and named the hole ("I think for the display5, you didn't mention the probe itself. How could you put the probe there as well?"). The PROBE joins as the HEAD: the approved plan's bullet asks, ② PROBE raises the card (question, serves: C4.P1.B4 pointing BACK, consumer/, executor/, proof/, and the `## Values` ids PP01.v1.. written at ③ when the answer lands), and edges show which lanes draw on it — value fills the card itself, a DATA display freezes intake/ FROM proof/, citation is a person's and takes no card unless the key is unknown. One old cell corrected against the live contract: the display MAKE cell now lists `intake` among what is drawn (`haipipe-page-evidence` §🧱 lists it; the old drawing omitted it). The wall, ticks, reverts, stop line and OUTLINE loop re-verified and unchanged. Intake re-frozen at eight files (adding `haipipe-page-probe` 0.6.x and `haipipe-plugin-value` 0.1.1), all sha256 current. Three preview looks caught and fixed: the card overlapping the mark box and the stop line, the display-edge label colliding with the [D] cell, and the [D] box crossing the dashed line</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── haipipe-page-evidence.SKILL.md
+│   │   ├── haipipe-page-probe.SKILL.md
+│   │   ├── haipipe-page-revise.SKILL.md
+│   │   ├── haipipe-plugin-bibex.SKILL.md
+│   │   ├── haipipe-plugin-display.SKILL.md
+│   │   ├── haipipe-plugin-probe.SKILL.md
+│   │   ├── haipipe-plugin-value.SKILL.md
+│   │   └── phase-cards.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── evidence-logic.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display6-agents-and-skills'><b>QPw00-Display6-agents-and-skills</b><object class='pdf' data='QPw00-Display6-agents-and-skills/preview.pdf' type='application/pdf'><a href='QPw00-Display6-agents-and-skills/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: every phase of the loop is executed by its OWN agent, six files under page-workflows/agents/, five write-scoped producers plus (7)'s read-only judge, each walking one fixed six-layer stack whose shared law lives once in ref/producer-contract.md, so no producer reads another agent's file; the one standing exception is (7), whose stack still rests on another agent's file, its base haipipe-board-reviewer-agent, because the judge ref has not been carved out yet</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (a hand-authored `tikz` block; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: let a reader answer "who runs this phase, and what does it load" for any phase without opening an agent file, and see in the same glance that the PREPARE trio (1)(2)(3) iterates as one converging bracket that stops at a person's `approved:` tick before (4)(5)(7) run</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: fully data-bound to the ten frozen files. A renamed agent, a moved producer-contract.md, a changed load order, a new plugin in a load chain, or the judge ref finally being carved out makes this figure wrong, and `intake/manifest.yaml` (ten sha256) is what makes that computable. The printed version line (haipipe-page-workflow 0.14.2) moves with every SKILL.md release even when the roster does not</div><div class='mut'><b style='color:var(--fg)'>intake</b>: intake/manifest.yaml freezes ten files, all under skills/: the six phase agent files (board/page-workflows/agents/), producer-contract.md and SKILL.md 0.14.2 (board/page-workflows/haipipe-page-workflow/), and the two base agents haipipe-page-creator-agent and haipipe-board-reviewer-agent (board/agents/)</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand, `tikz`; rebuild = `cd recipe &amp;&amp; pdflatex asset.tex &amp;&amp; cp asset.pdf ../assets/figure.pdf`, then `pdflatex preview.tex` at the unit root</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · one candidate, a six-column roster in the order the loop runs the phases, crossed with the six load layers as rows, because spanning cells are what make the sharing visible: the shared law spans the five producers and STOPS at (7), whose row-2 cell is the different one. Two layout passes were wrong before it: pass 1 rendered black-on-black through sips (a rendering-tool artifact, not a figure defect; pdftoppm is the faithful renderer), pass 2 clipped every agent name at the box edge and drowned the rotated gate label behind row 1, both visible only in the picture</div><div class='mut'><b style='color:var(--fg)'>contradictions</b>: (a) C1.P2.B5 and producer-contract.md's carve-out rationale both say "no agent reads another agent's file", but haipipe-page-check-agent.md instructs reading haipipe-board-reviewer-agent.md FIRST and says itself the judge side has no carved-out ref yet; the universal clause is false for (7) today, the figure draws the exception, unresolved here. (b) haipipe-page-check-agent.md locates its base at plugins/haipipe-toolkit/agents/ while the roster's own files sit at skills/board/agents/; both paths exist and the two copies are byte-identical today, but nothing on disk keeps them identical, unresolved here</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜  a person has not looked at it yet; the tick is (7) CHECK's, never this producer's</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C1.P2.B5</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260819 in the EVIDENCE phase of the PREPARE round on QPw00-page-loop, after JL asked for the iteration itself to be drawn ("I think we should create the figure as well. Like the iteration between outline probe and evidence"); mid-build the value mark ruling landed (🔢 → 🧮, SKILL.md 0.14.1 → 0.14.2), the intake was re-frozen the same evening, the drawing prints no value mark, and only its printed version line followed</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── haipipe-board-reviewer-agent.md
+│   │   ├── haipipe-page-check-agent.md
+│   │   ├── haipipe-page-creator-agent.md
+│   │   ├── haipipe-page-draft-agent.md
+│   │   ├── haipipe-page-evidence-agent.md
+│   │   ├── haipipe-page-outline-agent.md
+│   │   ├── haipipe-page-probe-agent.md
+│   │   ├── haipipe-page-revise-agent.md
+│   │   ├── haipipe-page-workflow.SKILL.md
+│   │   └── producer-contract.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── agents-and-skills.tex
+│   └── asset.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div><div class='card' id='QPw00-Display7-point-to-sentence'><b>QPw00-Display7-point-to-sentence</b><object class='pdf' data='QPw00-Display7-point-to-sentence/preview.pdf' type='application/pdf'><a href='QPw00-Display7-point-to-sentence/preview.pdf'>preview.pdf</a></object><div class='pending' style='margin:7px 0'>⑤ ACCEPT pending · rendered candidate awaits human review</div><div class='mut'><b style='color:var(--fg)'>claim</b>: DRAFT's whole job is one conversion a reader can walk in BOTH directions: one approved outline POINT (`C3.P1.B4`) becomes one or more sentence scaffolds (`C3.P1.S1`-`S3`) whose holes sit exactly where their answers will sit, and the join survives edits because it is carried twice, in the shared `C3.P1` address prefix (only the last token differs, B for a point in the plan, S for a sentence on the page) and in the machine-readable `&lt;!-- realizes: C3.P1.B4 --&gt;` comment on each scaffold line, which is what lets REVISE split or merge sentences without losing the point</div><div class='mut'><b style='color:var(--fg)'>kind</b>: tex, TeX-native (a hand-authored `tikz` block; the writer is a person, the recipe IS the figure)</div><div class='mut'><b style='color:var(--fg)'>caption-job</b>: let a reader DO the conversion, both ways round, without opening either contract: given a bullet, write its scaffold with the address carried across; given a scaffold sentence, recover its point from the `realizes:` comment; and say why B and S never collide (two owners, one shared prefix)</div><div class='mut'><b style='color:var(--fg)'>intake</b>: intake/manifest.yaml freezes 2 files as a LISTING (concept unit, no probe card serves it and none is needed): `board/page-workflows/haipipe-page-draft/SKILL.md` 0.8.2 sha256 fab3b386... (the worked example C3.P1.B4 -&gt; S1/S2/S3, the hole markers, the realizes: comment, the never-invent rule, all from its "Point -&gt; sentence scaffold" section) and `board/page-plugins/haipipe-plugin-outline/SKILL.md` 0.12.0 sha256 94e84996... (one POINT becomes ONE OR MORE sentences, the shared-prefix join, B owned by haipipe-plugin-outline and S by haipipe-sentence)</div><div class='mut'><b style='color:var(--fg)'>fragility</b>: fully transcription-bound. If the draft contract's worked example changes its addresses or hole names, if the realizes: comment moves off the scaffold line, if the B/S ownership moves (haipipe-sentence losing S, or the plan letter changing), or if the join stops being the address prefix, this figure is wrong; the two sha256 in intake/manifest.yaml are what make that computable. A known tension it inherits rather than resolves: the frozen worked example is hole-heavy while the same contract's 260819 ruling (and this page's C3.P1.B1) says DRAFT now enters on landed evidence so a hole is the EXCEPTION; the contract itself kept the example unchanged after the ruling, so the figure transcribes it verbatim and leaves the tension to the source</div><div class='mut'><b style='color:var(--fg)'>renderer</b>: CC as the TeX hand via haipipe-display-tex, `tikz` (arrows.meta, positioning); rebuild = `cd recipe &amp;&amp; pdflatex asset.tex &amp;&amp; cp asset.pdf ../assets/figure.pdf`, then `pdflatex preview.tex` at the unit root</div><div class='mut'><b style='color:var(--fg)'>picked</b>: 260819 CC · one candidate, plan box over page box with the two arrows in the gap (solid down = the conversion, dashed up = the recovery) and the address-join law as its own third box, because "both ways round" is the bullet's own ask and two opposed arrows are the only layout that shows it without prose. Two layout passes were wrong before it: pass 1 (side-by-side boxes) clipped the page box at the paper edge and ran both arrow labels through each other and through the join box; pass 2 (vertical) still collided the two gap labels at center and wrapped S2's realizes: comment onto its own orphan line; both defects were invisible in the source and obvious in the rendered PNG. Fixed by widening to 140mm text width, pushing the arrows to +-66mm, and shortening the page-box header</div><div class='mut'><b style='color:var(--fg)'>accepted</b>: ⬜  a person has not looked at it yet; the tick is ⑦ CHECK's, never this producer's</div><div class='mut'><b style='color:var(--fg)'>serves</b>: C3.P2.B1</div><div class='mut'><b style='color:var(--fg)'>history</b>: born 260819 in the EVIDENCE phase of the PREPARE round on QPw00-page-loop, the last owed 🖼 mark on outline v3. The mark rename in the plan (`🖼 owed · tex` -&gt; `🖼 Display7 · tex` on C3.P2.B1) is NOT done: the dispatching instruction forbade outline edits for this build (Display5 was being rebuilt concurrently), so the one-line rename is owed by the caller</div><pre>├── ⚙️ assets/
+│   └── ⚙️ figure.pdf
+├── intake/
+│   ├── inputs/
+│   │   ├── haipipe-page-draft.SKILL.md
+│   │   └── haipipe-plugin-outline.SKILL.md
+│   └── manifest.yaml
+├── recipe/
+│   ├── asset.tex
+│   └── point-to-sentence.tex
+├── README.md
+├── float.tex
+├── preview.aux
+├── preview.log
+├── ⚙️ preview.pdf
+└── preview.tex</pre></div></div><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/display', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/board/QPw/QPw00-page-loop.html", file: "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script><script>
+(function () {
+  var s = document.getElementById('strip');
+  if (!s) return;
+  var cards = s.children.length;
+  var pos = document.getElementById('pos');
+  function at() { return Math.round(s.scrollLeft / s.clientWidth); }
+  function paint() { pos.textContent = (at() + 1) + ' / ' + cards; }
+  function go(d) { s.scrollTo({left: (at() + d) * s.clientWidth, behavior: 'smooth'}); }
+  document.getElementById('prev').onclick = function () { go(-1); };
+  document.getElementById('next').onclick = function () { go(1); };
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  function paintChips() {
+    var i = at();
+    chips.forEach(function (c, k) { c.className = 'chip' + (k === i ? ' on' : ''); });
+  }
+  s.addEventListener('scroll', function () {
+    requestAnimationFrame(function () { paint(); paintChips(); });
+  });
+  /* A CITATION or a chip lands here as #<unit-id>: shift the deck to that
+     unit, so a sentence citing a display arrives at the render it cites. */
+  function toHash() {
+    var h = decodeURIComponent((location.hash || '').slice(1));
+    var el = h && document.getElementById(h);
+    if (el && el.parentNode === s) s.scrollLeft = el.offsetLeft - s.offsetLeft;
+  }
+  window.addEventListener('hashchange', toHash);
+  toHash();
+  paint(); paintChips();
+})();
+</script></body></html>

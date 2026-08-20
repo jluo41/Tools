@@ -38,7 +38,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ## C4 · The chat box in the browser, and what is still open on it
 
 ### C4.P1 · `claude_agent_sdk` turns in the drawer (folded from `QPf4b`)
-- B1 · The drawer sits outside `div.wrap`, so it survives the page swap.   🧮 proof
+- B1 · The drawer sits outside `div.wrap`, so it survives the page swap.
 - B2 · Nine Aims are still open on `QPf4b`.   ✅ have it
 - B3 · A4.2 to A4.5 sit under what it costs to match the extension.   ✅ have it
 - B4 · A8.2, A8.4, A8.5, A8.6 and A8.7 sit under what a drawn interface has to be given.   ✅ have it

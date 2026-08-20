@@ -1,22 +1,90 @@
+# RE-FROZEN 260819 night, last pin: page_lifecycle.py gained the PREPARE-pause
+# rule and the cold-CHECK clause after the previous freeze. The figure draws
+# phases, ticks and the gate, none of which moved; copy refreshed, hash re-pinned.
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+# RE-FROZEN 260819 night, at the round's close. Deltas: haipipe-page-outline
+# 0.6.0 (the 有问有答 append rule + break-gate wording) and haipipe-page-evidence
+# 0.11.0 (landing values creates fold debt). No phase name, tick, route or
+# drawn fact moved; copies refreshed and hashes re-pinned only.
 # A concept unit states no number, so it declares no values intake.
 # The sets it states are transcribed, not remembered. Frozen 260818: the
 # `sources:` list named two files and named no bytes, so nothing could be
 # rechecked. These are the bytes the relation R was read from.
+#
+# RE-FROZEN 260819, in the CHECKABLE shape. The 260818 rows carried `path:` and
+# a sha256 of the LOCAL COPY only, which proves the copy has not rotted and says
+# nothing about the live original: `checks/intake.py` reported one of the two as
+# `unresolved`. Every row now names its live `source:` relative to the skills/
+# root and hashes THAT file, so staleness is computable.
+#
+# RE-FROZEN a THIRD time 260819, late evening, at EVIDENCE. Seven hashes moved
+# and not one R row did: the deltas are the mark-glyph renames (🔢 -> 🧮 value,
+# 📮 probe) in phase-cards.md and four phase contracts, outline 0.5.0 widening
+# COVERAGE to both directions, and the per-phase producer-agent roster in
+# SKILL.md 0.15.0 + page-lifecycle.workflow.js PRODUCER_AGENTS. None of that is
+# a route: LEGAL_ROUTES (py, unmoved) and LEGAL (js, roster-only delta) still
+# encode the same six rows, so the last block's agreement claim was re-verified
+# and stands. Zero recipe lines changed.
+#
+# RE-FROZEN AGAIN later on 260819: LEGAL_ROUTES (py) and LEGAL (js) were brought
+# into line with the contracts (acting on this unit's morning finding), and
+# haipipe-page-evidence 0.10.2 / -draft 0.8.1 / -workflow 0.9.2 removed the
+# stale route lists this unit had recorded as JUDGMENT rows. Seven of the ten
+# hashes moved; the six R rows they encode did not.
+#
+# The input list also changed. The relation is read from the CONTRACTS, so all
+# six phase contracts plus ref/phase-cards.md are inputs, and the two code files
+# are inputs because the figure's last block quotes their tables. The
+# page's own QPw00-page-loop.md was DROPPED: this figure transcribes nothing
+# from it, the page is the thing the figure is checked against rather than an
+# input to it, and freezing a page that REVISE rewrites would report this unit
+# stale on every edit of the prose it serves.
 kind: concept
 values: none
-frozen: 260818
-inputs:
-  - path: intake/inputs/QPw00-page-loop.md
-    sha256: 141dc13a117b6c1a73c49ce61b43c42db99ac19cb53314812d45a95a99499bdb
-    bytes: 66160
-    takes: "section 9.1, the RUN-is-not-ADVANCE ruling"
-  - path: intake/inputs/page_lifecycle.py
-    sha256: 5144806339485d7dbafa106b279d06201fb801b837674d279f0c75fc7f4b8f04
-    bytes: 23139
-    takes: "PHASES, TERMINAL_ROUTES, LEGAL_ROUTES: the four-row relation R the equation states"
-origin:
-  - page_lifecycle.py is a frozen copy of
-    plugins/haipipe-toolkit/skills/board/haipipe-board/src/page_lifecycle.py
-  - QPw00-page-loop.md is a frozen copy of this unit's own Page source
+frozen: 260819
+files:
+  - file: inputs/phase-cards.md
+    source: board/page-workflows/haipipe-page-workflow/ref/phase-cards.md
+    sha256: 9c5591b13bd1a1310f2f22b863dc359e171589729899935525c432f1a629b289
+    takes: "the ROUTES row of every phase card. This is the authority for all six rows."
+  - file: inputs/haipipe-page-outline.SKILL.md
+    source: board/page-workflows/haipipe-page-outline/SKILL.md
+    sha256: 846838b7b14eb32ff5f0e1564e909e0674d1f51fed65d80c79610e0e0b127654
+    takes: "R(OUTLINE): the four-check gate, PROBE when the plan owes, DRAFT when approved"
+  - file: inputs/haipipe-page-probe.SKILL.md
+    source: board/page-workflows/haipipe-page-probe/SKILL.md
+    sha256: a694c32547fd660cf74f10326c5c3ca4f30f5e375cba357f3c1b0fbfef8169b5
+    takes: "R(PROBE): EVIDENCE, OUTLINE for a v2, HOLD; and never DRAFT or REVISE"
+  - file: inputs/haipipe-page-evidence.SKILL.md
+    source: board/page-workflows/haipipe-page-evidence/SKILL.md
+    sha256: 6f7b3d6b00c92d078c0891f917ef13272f37408a0f1fdacd9de664f870ccc4ba
+    takes: "R(EVIDENCE): the 260819 section 'EVIDENCE routes BACK to OUTLINE'"
+  - file: inputs/haipipe-page-draft.SKILL.md
+    source: board/page-workflows/haipipe-page-draft/SKILL.md
+    sha256: d84ead3e95ce4f602bbd5d02fc20ee020d123df7e62aecd6cce33d12dbc64154
+    takes: "R(DRAFT): PROBE, REVISE, CHECK, DRAFT again; never CLOSE"
+  - file: inputs/haipipe-page-revise.SKILL.md
+    source: board/page-workflows/haipipe-page-revise/SKILL.md
+    sha256: a332b91459bb19007196d0a732cdf46121541708fb51cb93eb486b05d0735c49
+    takes: "R(REVISE): CHECK, EVIDENCE, DRAFT, REVISE again; COMPILE folded in here"
+  - file: inputs/haipipe-page-check.SKILL.md
+    source: board/page-workflows/haipipe-page-check/SKILL.md
+    sha256: a22417ff17fc061c494067c6b78029a531bd2a5e672757888de9e4a6b37dfd6f
+    takes: "R(CHECK): the five routes it names, and the rule that no actor judges twice"
+  - file: inputs/haipipe-page-workflow.SKILL.md
+    source: board/page-workflows/haipipe-page-workflow/SKILL.md
+    sha256: e6ff80de8e66a55d532c8c0ab578df484293b1a9d65bac2577fc8f3f3f9d01ee
+    takes: "the two laws that are not in any one row: 'each phase may repeat' and 'only CHECK may CLOSE'"
+  - file: inputs/page_lifecycle.py
+    source: board/haipipe-board/src/page_lifecycle.py
+    sha256: 27a4e91a7eba7dc41d43999401ef9ea7a31296779f0374edfef90cb9c81e0ea3
+    takes: "LEGAL_ROUTES, the AUDITOR's table, quoted only in the last block, which since the 260819 refresh records agreement plus the kept COMPILE row"
+  - file: inputs/page-lifecycle.workflow.js
+    source: board/haipipe-board/ref/page-lifecycle.workflow.js
+    sha256: e97a57737869f49327655856d58d9176da145b7226c7e9b124fd57fe761517eb
+    takes: "LEGAL, the CONTROLLER's table, same agreement and same COMPILE residue, same block"
 unbound:
   - nothing. This unit prints no number.

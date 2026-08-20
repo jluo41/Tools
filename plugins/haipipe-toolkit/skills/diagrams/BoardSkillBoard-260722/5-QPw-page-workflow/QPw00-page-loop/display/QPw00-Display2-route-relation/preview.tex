@@ -1,7 +1,11 @@
 % Standalone wrapper that \inputs float.tex, per the unit contract.
 % This package list IS the unit's dependency declaration.
-\documentclass[11pt]{article}
-\usepackage[margin=10mm, paperwidth=200mm, paperheight=118mm]{geometry}
+% 10pt and a 135mm text column deliberately MATCH recipe/asset.tex, so this
+% preview shows the same line breaks a consumer will embed. The paper grew from
+% 118mm to 195mm tall on the 260819 rebuild: the table gained a fourth law and
+% the note about the code, which on the same-day refresh records agreement.
+\documentclass[10pt]{article}
+\usepackage[margin=12mm, paperwidth=159mm, paperheight=195mm]{geometry}
 \usepackage{amsmath, amssymb}
 \pagestyle{empty}
 \begin{document}

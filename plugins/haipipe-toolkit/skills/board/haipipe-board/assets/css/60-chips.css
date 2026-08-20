@@ -228,3 +228,11 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
    have been. */
 .lane.cardmiss{color:var(--todo)}
 .lane.cardmiss code{color:inherit}
+
+/* 🖼 A display embeds under the FIRST Content sentence that cites it
+   (JL 260819: "so we know what is content it is"). Same ccprev/ccpdf family
+   as the card so both surfaces read alike; later citations keep the chip. */
+.dembed{margin:9px 0 4px;padding:7px 9px;border:1px solid var(--line);
+  border-radius:var(--radius-control);background:var(--pre)}
+.dembed figcaption{margin-bottom:5px}
+.dembed .ccpdf{height:20em;border:0}

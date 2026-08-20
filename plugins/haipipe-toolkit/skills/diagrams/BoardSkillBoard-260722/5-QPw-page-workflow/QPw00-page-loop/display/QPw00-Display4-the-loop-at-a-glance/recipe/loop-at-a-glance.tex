@@ -1,0 +1,105 @@
+% The ORIENTATION figure, redrawn 260819 for the loop RULED that day: a PREPARE
+% part that CONVERGES (1 OUTLINE -> 2 PROBE -> 3 EVIDENCE -> back to the plan),
+% ONE gate out of it, an unattended tail (4 DRAFT -> 5 REVISE, with 6 COMPILE
+% folded in), and 7 CHECK, which a person judges and which may send the page back
+% to any phase above. Every name, tick, zone and edge is transcribed from
+%   ref/phase-cards.md  "the loop has TWO parts" · "a person's attention belongs
+%                       to the PREPARE loop" · the seven phase cards · the five
+%                       person-reserved ticks
+%   haipipe-page-outline "the PREPARE loop" · "self-consistent means FOUR things"
+%   haipipe-page-probe   "exit and routing"   haipipe-page-draft "DRAFT ENTERS"
+%   haipipe-page-evidence "EVIDENCE routes BACK to OUTLINE"
+%   haipipe-page-check   "FIVE ticks are reserved for a person"
+% and frozen with sha256 in intake/manifest.yaml.
+%
+% LEGIBILITY. Coordinates are mm; the natural width is 151.5mm, so the page's
+% `width=.85\linewidth` (140.3mm at 11pt with 1in margins) scales it by 0.926 and
+% the smallest type, 8pt Helvetica here, still prints at 7.41pt. Nothing on the
+% figure is set below 8pt.
+\providecommand{\cn}[1]{\ding{\number\numexpr171+#1\relax}}
+\providecommand{\hd}[1]{{\fontsize{9.5}{10.5}\selectfont\bfseries #1}}
+\providecommand{\sm}[1]{{\fontsize{8}{9.2}\selectfont #1}}
+\providecommand{\md}[1]{{\fontsize{8.5}{9.8}\selectfont #1}}
+\providecommand{\prsn}[1]{\textcolor{red!58!black}{#1}}
+\providecommand{\mach}[1]{\textcolor{black!58}{#1}}
+\begin{tikzpicture}[
+    x=1mm, y=1mm, font=\sffamily,
+    ph/.style={draw=black!65, fill=white, rounded corners=1.4pt, align=center,
+               inner sep=1.2pt, minimum height=14mm},
+    zone/.style={draw=black!45, rounded corners=2pt, fill=black!5},
+    unatt/.style={draw=black!45, dashed, dash pattern=on 1.1mm off 0.9mm,
+                  rounded corners=2pt, fill=white},
+    ar/.style={-{Latex[length=1.7mm, width=1.4mm]}, black!62, line width=.5pt},
+    back/.style={ar, dashed, dash pattern=on 1.1mm off 0.8mm},
+    tick/.style={align=center, text=red!58!black}]
+
+  % ══ PREPARE · the part that loops, and the only part a person attends ══════
+  \draw[zone] (-4,13) rectangle (117,51);
+  \node[anchor=west] at (-1,47.6)
+    {\md{\textbf{PREPARE} \mach{\textperiodcentered{}} \prsn{a person attends here}}};
+  \node[anchor=east] at (114,47.6)
+    {\md{\mach{repeats until the plan is self-consistent}}};
+
+  \node[ph, minimum width=33mm] (out) at (16.5,34)
+    {\hd{\cn{1} OUTLINE}\\[1.2pt]\sm{the plan, not the page}\\[1.2pt]
+     \sm{\mach{machine} + \prsn{person}}};
+  \node[ph, minimum width=33mm] (prb) at (57.5,34)
+    {\hd{\cn{2} PROBE}\\[1.2pt]\sm{a mark becomes a card}\\[1.2pt]
+     \sm{\mach{machine, no tick}}};
+  \node[ph, minimum width=33mm] (evi) at (98.5,34)
+    {\hd{\cn{3} EVIDENCE}\\[1.2pt]\sm{the support, on disk}\\[1.2pt]
+     \sm{\mach{machine} + \prsn{person}}};
+
+  \draw[ar] (out) -- (prb);
+  \draw[ar] (prb) -- (evi);
+
+  \node[tick] at (16.5,43.8) {\sm{\ding{51}\,approved:}};
+  \node[tick] at (98.5,43.8) {\sm{\ding{51}\,verified \quad \ding{51}\,read:}};
+
+  % EVIDENCE hands its answer back to the PLAN, never forward to DRAFT
+  \draw[ar] (98.5,27) -- (98.5,20.5) -- (16.5,20.5) -- (16.5,27);
+  \node at (57.5,17.8) {\sm{\mach{the answer changes the plan}}};
+
+  % ══ the ONE gate out of the loop ══════════════════════════════════════════
+  \draw[ar, line width=.7pt, black!75] (16.5,13) -- (16.5,-2);
+  \node[anchor=west] at (21,10.6) {\sm{\textbf{ONE gate out}: the plan AND its evidence}};
+  \node[anchor=west] at (21,7.4)
+    {\sm{\mach{FOUR machine checks}: coverage \textperiodcentered{} address \textperiodcentered{} value \textperiodcentered{} shape}};
+  \node[anchor=west] at (21,4.2) {\sm{and \prsn{THEN a person ticks approved:}}};
+
+  % ══ the tail · runs end to end, and asks for nothing ══════════════════════
+  \draw[unatt] (-4,-25) rectangle (79,0.5);
+  \node[ph, minimum width=31mm] (drf) at (15.5,-9)
+    {\hd{\cn{4} DRAFT}\\[1.2pt]\sm{numbers, not holes}\\[1.2pt]
+     \sm{\mach{machine, unattended}}};
+  \node[ph, minimum width=40mm, minimum height=17mm] (rev) at (56,-9)
+    {\hd{\cn{5} REVISE}\\[1.2pt]\sm{prose \textperiodcentered{} captions \textperiodcentered{} rebuild}\\[1.2pt]
+     \sm{\mach{\cn{6} COMPILE folded in}}\\[1.2pt]
+     \sm{\mach{machine, unattended}}};
+  \draw[ar] (drf) -- (rev);
+  \node[anchor=west] at (-1,-20.8)
+    {\sm{\mach{\textbf{UNATTENDED} \textperiodcentered{} runs end to end and asks for nothing}}};
+
+  % ══ 7 CHECK · attended again, and the one phase that reaches CLOSE ════════
+  \draw[zone] (83,-25) rectangle (117,0.5);
+  \node[tick] at (100,2.4) {\sm{a person judges}};
+  \node[ph, minimum width=28mm] (chk) at (100,-9)
+    {\hd{\cn{7} CHECK}\\[1.2pt]\sm{judges what is built}\\[1.2pt]
+     \sm{\mach{machine} + \prsn{person}}};
+  \draw[ar] (rev) -- (chk);
+  \node[tick] at (100,-19.6) {\sm{\ding{51}\,accepted:}};
+  \node[tick] at (100,-22.9) {\sm{\ding{51}\,the RULING}};
+
+  \draw[ar] (117,-9) -- (124,-9);
+  \node[anchor=south west] at (117.5,-8.4) {\sm{\textbf{CLOSE}}};
+
+  % the return edge: CHECK may send the page back to ANY phase above
+  \draw[back] (100,-25) -- (100,-30) -- (-7,-30) -- (-7,34) -- (-4.6,34);
+  \draw[back] (40,-30) -- (40,-24.4);
+  \node[anchor=west] at (12,-32.8)
+    {\sm{\mach{\cn{7} CHECK sends the page back to ANY phase above}}};
+
+  \node[anchor=west] at (-7,-37.8)
+    {\sm{\prsn{\ding{51}}\,\mach{a stop only a person may write. FIVE on the whole
+      loop, and no machine may write one.}}};
+\end{tikzpicture}

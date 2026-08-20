@@ -8,6 +8,11 @@
 - Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
   `QPw00g` when JL ruled that pages which are not phases may not carry
   phase numbers.
+- **Coherence sweep (260819)**: CHECK routes to all SEVEN of CLOSE | OUTLINE |
+  PROBE | EVIDENCE | DRAFT | REVISE | HOLD, in §🔀, the receipt, and the
+  description; the ticks table's `verified` and `read:` lanes are ③c and ③v
+  per phase-cards; the common path reads PREPARE(①②③) → DRAFT → REVISE →
+  CHECK.
 
 
 ## 0.6.0 — 2026-08-18

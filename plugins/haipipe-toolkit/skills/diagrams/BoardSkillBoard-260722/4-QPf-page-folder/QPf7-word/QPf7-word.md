@@ -16,7 +16,7 @@ macOS's `textutil` was measured dropping all 239 pinned comments, and a file who
 
 **Covered elsewhere**: `QPf1` rules the folder, and this plugin's row in the plugin list is `../../board/haipipe-plugin/ref/roster.md`.
 The siblings are `QPf6` (latex, whose Decision row also settles whether this folder goes into git) and `QPf8` (bibex).
-The rules the writer itself follows are in `fn/to-word.md` in the paper family.
+The rules the writer itself follows are in its shared Page-plugin docstring and the Word plugin contract.
 
 ## Diagram
 **One source, three files**: the .docx for Word, the twin drawn from it, and the view page the tab frames.
@@ -131,9 +131,9 @@ What stays open is one reader's ruling, one small markup fault, and the checker'
   The reference compiler the route runs on the page's own bib: it writes the `.board-refs.bbl` that md2docx reads.
 - `../../board/haipipe-board/assets/js/10-drawer/82-plugin-exports.js`
   The registry row whose `tab` spec the shell builds the 📝 tab from.
-- `../../paper/haipipe-paper/scripts/to-word/md2docx.py`
-  The writer, called by path, and its docstring plus `fn/to-word.md` hold the export rules.
-- `../../paper/haipipe-paper/scripts/to-word/docx2pdf.py`
+- `../../board/page-plugins/_shared-export/md2docx.py`
+  The writer, called by path; its docstring and the Word plugin contract hold the export rules.
+- `../../board/page-plugins/_shared-export/docx2pdf.py`
   The twin's maker: it reads the OOXML directly, prints comments in the margin, and uses Chrome for the paged output.
 
 ### 🧪 Evidence
@@ -154,7 +154,7 @@ What stays open is one reader's ruling, one small markup fault, and the checker'
       §1's flat-page fallback row took the twin's shape, `flat page fallback: <board>/word/<stem>.* · a page that owns no folder`, in place of a space-padded clause that dropped the `<stem>.*`.
       The three Content parts took the emoji their Aims groups already carry, so each Aims group matches its part by number, emoji and name and the `group-name-drift` warnings have nothing left to catch.
       The line reporting `QPf6` §1's slide-plugin credit was amended rather than dropped, because `QPf6`'s own Log records that row fixed on 260816 and its fence now reads "for a page that owns no folder".
-- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我他妈真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 12 sentences flagged before, 6 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
+- 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 12 sentences flagged before, 6 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260816 · [REVISE-CC] second review pass: the Aims conditions, §2's fence and open question, §3's HEAD miss, and three cross-references.
       The pass held purpose and Aims fixed and repaired what the second round's read found.
       A1.1 gained a `Done when` and moved its ship evidence to States, and A2.2's condition now ends at "captions read bold in Word" with a convert-or-accept clause for the comment-range split, because the old wording named an unconverted run as satisfaction and contradicted its own State.

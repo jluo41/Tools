@@ -1,35 +1,69 @@
-# A concept unit states no number, so it declares no values intake.
-# What it DOES bind is transcribed text: every phase name, route and stop
-# condition in the algorithm was copied from a file frozen below, never from
-# memory. Frozen 260818, when the unit's `sources:` list was turned into real
-# files: a path plus a `takes:` note names where a reader should look, and
-# only a copy plus a sha256 lets anyone check that the copy still matches.
+# RE-FROZEN 260819 night, last pin: page_lifecycle.py gained the PREPARE-pause
+# rule and the cold-CHECK clause after the previous freeze. The figure draws
+# phases, ticks and the gate, none of which moved; copy refreshed, hash re-pinned.
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+# ❄️ Frozen intake · re-frozen 260819 (second pass, evening: PREPARE-loop route rewrite) in the `file:` + `source:` + `sha256:` shape.
+#
+# RE-FROZEN a THIRD time 260819, late evening, at EVIDENCE. The per-phase
+# producer-agent roster landed in three inputs (SKILL.md 0.15.0 §👷,
+# page-run-contract.md's producer line, page-lifecycle.workflow.js
+# PRODUCER_AGENTS + the check-agent rename). NO drawn fact moved: the figure
+# names Producer/Builder/Judge generically, tests φ ≠ CHECK exactly as the
+# controller still does, and its entry comment (new Page at OUTLINE) still
+# matches the contract. Three hashes re-pinned, zero recipe lines changed.
+#
+# The old shape (`path:` + `sha256`) named only the COPY in inputs/, so its
+# sha256 proved the copy had not rotted and said NOTHING about the original.
+# `checks/intake.py` reported two of these inputs as CHANGED and two as
+# `unresolved` for exactly that reason. Every row below now names the LIVE file
+# and hashes IT, so staleness is computable, which is the promise
+# `haipipe-plugin-display` §❄️ makes.
+#
+# A concept unit states no number, so it declares no values intake and nothing
+# here is `unbound`: this unit prints no count. What it DOES bind is transcribed
+# TEXT. Every phase name, every actor, every route test and every stop condition
+# in recipe/run-loop.tex was copied from a file below, never from memory. The
+# per-row `takes:` notes are comments because the shape has no field for them.
+#
+# `source:` is relative to plugins/haipipe-toolkit/skills/.
 kind: concept
 values: none
-frozen: 260818
-inputs:
-  - path: intake/inputs/QPw00-page-loop.md
-    sha256: 141dc13a117b6c1a73c49ce61b43c42db99ac19cb53314812d45a95a99499bdb
-    bytes: 66160
-    takes: "sections 9.1 to 9.4, the prose the figure lets a reader stop re-reading"
-  - path: intake/inputs/haipipe-page-workflow.SKILL.md
-    sha256: 1be5551e1de027adcea82d10da82c1d0d0e5c646f55441d3f4a6947c5b53a6d6
-    bytes: 19274
-    takes: "the six RUN steps, the producer/judge separation, and the stop list"
-  - path: intake/inputs/page-lifecycle.workflow.js
-    sha256: 40573839fd70d39565a64f677b6c94f02d2ac5774676af9fb4a2ab4ba439a0c6
-    bytes: 17644
-    takes: "the actual control flow the algorithm transcribes: the producer/snapshot/judge order and the stop tests"
-  - path: intake/inputs/page_lifecycle.py
-    sha256: 5144806339485d7dbafa106b279d06201fb801b837674d279f0c75fc7f4b8f04
-    bytes: 23139
-    takes: "PHASES, LEGAL_ROUTES, TERMINAL_ROUTES: every phase name and every route the figure draws"
-origin:
-  - page_lifecycle.py is a frozen copy of
-    plugins/haipipe-toolkit/skills/board/haipipe-board/src/page_lifecycle.py
-  - QPw00-page-loop.md is a frozen copy of this unit's own Page source
-  - page-lifecycle.workflow.js is a frozen copy of
-    plugins/haipipe-toolkit/skills/board/haipipe-board/ref/page-lifecycle.workflow.js
-  - haipipe-page-workflow.SKILL.md is a frozen copy of that skill's SKILL.md
-unbound:
-  - nothing. This unit prints no number.
+frozen: 260819
+why: the figure asserts WHICH ACTOR runs a phase and WHEN the loop stops, so a
+  re-cut phase inventory, a moved judge/producer branch or a changed route table
+  makes it wrong; these five files are where each of those lives.
+files:
+  - file: inputs/QPw00-page-loop.md
+    source: diagrams/BoardSkillBoard-260722/5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md
+    sha256: 3a65eef3fb34fd6d508b8868b3080ec78102feb1f9e83f0eb59705750f715959
+    # takes: §12.1-§12.4, the prose this figure lets a reader stop re-reading.
+    #     §12 was §9 when the unit was born; the page was re-cut 260819 and the
+    #     citing sentence now sits at §12.
+  - file: inputs/haipipe-page-workflow.SKILL.md
+    source: board/page-workflows/haipipe-page-workflow/SKILL.md
+    sha256: e6ff80de8e66a55d532c8c0ab578df484293b1a9d65bac2577fc8f3f3f9d01ee
+    # takes: §🔁 step 1's entry defaults, step 2's actor list (a producer for
+    #     OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE or COMPILE; a fresh read-only
+    #     reviewer for CHECK), and steps 3-4's stop list.
+  - file: inputs/page-run-contract.md
+    source: board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+    sha256: 2c5b26f0921a7aee18d2cb83b9286492cb8963e799dbcfbc24b9453309ba4f82
+    # takes: the packet the \Input line spells out field by field, and the
+    #     sentence that fixes where a new and an existing Page each enter.
+  - file: inputs/page-lifecycle.workflow.js
+    source: board/haipipe-board/ref/page-lifecycle.workflow.js
+    sha256: e97a57737869f49327655856d58d9176da145b7226c7e9b124fd57fe761517eb
+    # takes: the control flow this algorithm transcribes line for line: the
+    #     `if (current === 'CHECK')` branch that separates the judge from every
+    #     producer, the snapshot between producer and route, the illegal-route
+    #     and terminal tests in the order the loop makes them, and the round
+    #     increment's `current !== 'DRAFT' && current !== 'OUTLINE'` guard.
+  - file: inputs/page_lifecycle.py
+    source: board/haipipe-board/src/page_lifecycle.py
+    sha256: 27a4e91a7eba7dc41d43999401ef9ea7a31296779f0374edfef90cb9c81e0ea3
+    # takes: PHASES, LEGAL_ROUTES and TERMINAL_ROUTES, which are R(varphi) and
+    #     the {CLOSE, HOLD} set the figure names but deliberately does not
+    #     enumerate.

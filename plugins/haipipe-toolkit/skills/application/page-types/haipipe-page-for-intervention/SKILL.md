@@ -1,100 +1,92 @@
 ---
 name: haipipe-page-for-intervention
 description: >-
-  The Page Type contract for the INTERVENTION page, exactly one per application. It reads an accepted Brief, settled Insight Pages through PageX, and the venue pack, then maps them into a theory of change, intervention principles, message or interaction strategy, venue-appropriate arc, component map, experimental variants, safety rails, and one handoff row per Artifact Page. Use when designing a message, dashboard, checklist, report, or other intervention from existing insights; when repairing component allocation; or when retargeting an application. Trigger: intervention design, message strategy, theory of change, component map, artifact map, variant arms, page-type intervention, /haipipe-page-for-intervention.
+  The Page Type contract for an Application DESIGN PAGE, using the globally unique machine key `page-type: intervention`. An Application may own many Design Pages; each serves one audience × behavior job × primary venue, consumes the Brief and settled local/external Insight Design Handoffs through PageX, then authors principles, a message/unit map, repeated message divisions, variants, rails, and an accepted visible projection. Use for SMS/email/dashboard/checklist/report/message design, audience-specific strategy, message sequences, interaction components, or retargeting. Trigger: application design page, intervention design, message strategy, audience job, message map, message divisions, component map, variants, page-type intervention, /haipipe-page-for-intervention.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-17"
-  summary: "Intervention is Application's composition Page: it transforms settled Insight Pages into mechanisms, components, variants, and Artifact handoffs without redoing DIKW."
+  version: "0.2.0"
+  last_updated: "2026-08-20"
+  summary: "Many Design Pages per Application; each turns settled Insight handoffs into one audience/job/venue message system."
   outline:
     mode: grammar
-    source: "accepted Brief + PageX Insight Pages + venue pack"
-    shape: "insight selection → theory of change → principles → strategy/arc → components → variants → safety → Artifact handoff"
+    source: "accepted Brief + PageX Insight handoffs + venue pack"
+    shape: "design contract → insight use → principles → unit map → repeated message/unit divisions → rails → render/acceptance"
 ---
 
-# /haipipe-page-for-intervention · turn settled insights into a delivery design
+# /haipipe-page-for-intervention · design one audience/job delivery system
 
-Load `haipipe-page`, `haipipe-page-for-brief`, and `haipipe-plugin-pagex` first. Load the selected venue pack before making channel-specific choices.
+Load `haipipe-page`, `haipipe-page-for-brief`, `haipipe-plugin-pagex`, and the selected venue pack. In user-facing prose call this a **Design Page**; declare `page-type: intervention` for deterministic global resolution.
 
-This type covers exactly one Intervention Page per application. Declare `page-type: intervention`.
+An Application may own many Design Pages. The default grain is:
 
-The name is intentionally distinct from Board's generic `page-type: design`, which compares candidate artifacts and closes on a selection record. Intervention closes on an accepted delivery architecture.
+```text
+one audience or recipient class × one behavior job × one primary venue
+```
+
+Split when two designs can be accepted, retargeted, or reopened independently.
 
 ## Boundary
 
 ```text
-Brief          opportunity · audience · outcome · venue · promise
-Insight Pages  settled knowledge/wisdom and evidence limits
-Intervention   mechanism · strategy · components · variants · handoffs
-Artifact       concrete copy, interface, section, or delivery unit
+Brief          Application scope, need map, promise, Design roster
+Insight Page   settled K/W + Design Handoff under source boundaries
+Design Page    applicability, principles, message roles, content, render, acceptance
+Artifact Page  optional promotion for one independently accepted/deployed unit
 ```
 
-Intervention performs composition, not research. It may select, decline, combine, and translate insights, but it may not change their evidence status.
+Design performs composition, not evidence settlement. It owns `pagex/` and no `probe/`.
 
 ## Content grammar
 
-Every Intervention Page must realize these roles; division titles and grouping may follow the venue:
+Every Design Page realizes these roles; venue decides the exact titles and repeated unit form:
 
 ```text
-Insight selection       adopted/declined Insight Pages and why
-Theory of change        audience action chain, each link insight-anchored
-Intervention principles exact design moves derived from K/W rows
-Strategy and arc        framing, timing, sequence, interaction or narrative
-Component map           one row per independently reviewable Artifact unit
-Variants and arms       invariants, experimental variables, comparison logic
-Safety and compliance   forbidden moves, uncertainty language, escalation rails
-Artifact handoff        the packet each Artifact Page executes
+Design contract       audience · behavior job · context · primary venue · success condition
+Insight Use Map       adopted/constraining/declined handoffs and applicability reasons
+Design principles     because <H/K/W>, do <move>, within <rail>
+Message/Unit map      ordered roles, trigger/timing, job, invariant, allowed variable
+R<n> unit divisions   one message, touchpoint, panel, checklist block, or report section per division
+Cross-unit rails      coherence, escalation, prohibited moves, uncertainty language
+Render and acceptance exact visible version reviewed as one system
 ```
 
-Narrative is a conditional role inside Intervention, not its own Application Page Type. SMS may need one move, a checklist a sequence, a dashboard an interaction architecture, and a report a narrative arc.
-
-## Trace and component maps
-
-Each design move must trace:
+Each repeated unit division carries:
 
 ```text
-Insight Page K/W row ─▶ intervention principle ─▶ component ─▶ Artifact unit
+unit id · recipient moment · audience job · Insight/Handoff refs · design move
+exact content or interaction · declared variants · safety rail · next trigger
 ```
 
-Write one component row per independently approvable unit:
+Do not create empty Narrative or Display divisions. Use one division per jointly reviewed message/unit. Promote a unit to an Artifact Page only when it can pass/fail/deploy while its neighbors do not.
+
+## PageX-only input boundary
 
 ```text
-unit-id | audience job | adopted insight/principle | content move |
-venue constraint | invariant | variant | safety rail | Artifact page
+Brief Page ───────────── PageX ─┐
+settled Insight Handoff ─ PageX ─┼─▶ Design Page
+accepted prior Design ─── PageX ─┘
 ```
 
-If two units cannot be accepted independently, keep them in one Artifact Page. If one may pass while the other fails, split them.
-
-## PageX-only evidence boundary
-
-Intervention owns `pagex/` and no `probe/`. A missing premise becomes a `missing insight` request naming the question, required target level, and Task/Insights Board destination. Work pauses only where that premise is load-bearing; unrelated components may continue.
-
-Do not inspect Task `results/`, dispatch Discovery, or copy another Page's probe cards. PageX imports the settled Page contract and its source pointers.
-
-## Retargeting
-
-Reread Brief, load the new venue pack, and preserve only venue-independent principles that still serve the promise. Rewrite strategy, arc, components, variants, safety rails, and Artifact handoffs as required. Existing Artifacts become revision inputs, not authority over the new design.
+PageX binds exact files/scopes. The Insight Use Map records why they apply here. Never inspect Task `results/`, dispatch Discovery, or copy an Insight Page's Probe cards.
 
 ## Runtime shape
 
 ```text
-<InterventionPage>/
-├── <InterventionPage>.md
-├── pagex/       selected Insight Page bindings
-├── outline/     strategy, arc, and component-map working surface
-└── display/     optional mockups or architecture displays
+<application-root>/2-design/D<NN>-<audience>-<job>/
+├── D<NN>-<audience>-<job>.md
+├── pagex/
+├── outline/
+└── display/
 ```
-
-Intervention owns no raw evidence, deployable output, or direct deployment action.
 
 ## Closing checks
 
-- Every theory-of-change link and design principle names a settled Insight K/W row.
-- Declined insights remain visible with reasons.
-- Every component has one audience job, venue constraint, and safety rail.
+- The Page names one audience, behavior job, context, and primary venue.
+- Every load-bearing design principle reaches a settled Insight Design Handoff.
+- Declined and constraining insights remain visible with reasons.
+- Every unit has one audience job, trigger/timing, design move, and safety rail.
 - Experimental variables are separated from invariants.
-- Every Artifact Page has exactly one current handoff row.
-- Missing insights route to Task/Insights Board; no local Probe work exists.
-- A fresh Artifact agent can execute its row without inventing global strategy.
+- The exact visible system has a version-bound human acceptance.
+- Missing premises route to a local Insight Page; no local Probe exists.
+- A promoted Artifact can execute its handoff without inventing global strategy.
 
 This variant owns no scripts.

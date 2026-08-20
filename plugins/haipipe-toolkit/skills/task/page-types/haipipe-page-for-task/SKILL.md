@@ -3,9 +3,10 @@ name: haipipe-page-for-task
 description: >-
   The VARIANT contract for a TASK Page: one page per task-folder, reading what that folder produced and carrying the one thing no file in it can hold, the READING of the result. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Why, Concept, Data, Method, Result, Meaning in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Meaning always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
   last_updated: "2026-08-16"
   summary: "Closing rule: a task page closes when the result is READ and each reading names the run it is bound to; a rerun re-opens it. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Meaning stays one page-level division, always last."
+  folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved
     source: "this SKILL.md"
@@ -14,6 +15,38 @@ metadata:
 ---
 
 # /haipipe-page-for-task · the folder ran, and someone has to say what it means
+
+## 📂 A DISCOVERY folder is a special task, not a page type of its own
+
+Ruled 260819 (JL: "the discovery will be in the task as well, like a special
+task?"). One `folder-kind:` key says which kind this page reads, and everything
+else on this contract holds unchanged:
+
+```text
+  folder-kind: task        tasks/<group>/<folder>/     plan · build · execute · report
+  folder-kind: discovery   discoveries/<group>/<folder>/  plan · build(opt) · execute · report
+```
+
+**Why one contract and not two.** Both are executors with the same four-phase
+lifecycle, both answer a question by writing `QA/<n>-<slug>.md`, and both hand a
+page the same job: read what the folder produced and say what it means. A sibling
+contract would restate that and then drift from it. `haipipe-task` and
+`haipipe-discovery` already share this shape at the layer below.
+
+**What the key CHANGES**, and it is only these:
+
+```text
+  where the page reads      tasks/… vs discoveries/…
+  what a `Result` division  a run's numbers  vs  a source list, a verdict,
+  is reading                                     a landscape, or ideas
+  what the verdict binds    a run name       vs  a discovery folder + its QA file
+```
+
+**What it does NOT change**: the grammar (`Why · Concept · Data · Method ·
+Result · Meaning`), the FLAT/NESTED fork, `Meaning` always last and page-level,
+or the closing rule that a person must read the result against the folder's own
+question. A discovery page that skips `Meaning` is as unclosed as a task page.
+
 
 **LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a task-folder can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.
 

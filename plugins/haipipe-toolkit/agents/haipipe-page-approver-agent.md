@@ -1,0 +1,1 @@
+../skills/board/agents/haipipe-page-approver-agent.md
