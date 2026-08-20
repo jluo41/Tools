@@ -29,6 +29,13 @@ MARKERS = {"ready": "🟢", "working": "🔥", "blocked": "⛔", "done": "✅"}
 LOOPBACK_URL = "http://127.0.0.1:5599"
 
 
+try:                                            # the phase row, JL 260820
+    from src.page_phase import phase_state, compact as phase_compact
+except ImportError:                             # pragma: no cover
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from src.page_phase import phase_state, compact as phase_compact
+
+
 def short_board_name(name, board=None):
     """A compact, human label for the clickable line.
 
@@ -297,11 +304,19 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
             where = f"🧭 {attachment} ({url})"
     else:
         where = f"🧭 {attachment}"
-    return "\n".join([
-        where + "  ",
-        f"{marker} {status} · {mode}  ",
-        f"→ {next_action}",
-    ])
+    # A FOURTH row when the focus is one PAGE, because "working" does not say
+    # WHERE in the page workflow you are (JL 260820: "how to update this so I
+    # know which phase of the page I am in?"). Read from disk by
+    # src/page_phase.py, the same module `cli/pagephase.py` prints in full, so
+    # the two can never drift. Board- and group-level strips stay three rows:
+    # a phase belongs to one page and averaging it over a group means nothing.
+    rows = [where + "  ", f"{marker} {status} · {mode}  "]
+    if target["kind"] == "page" and not problem:
+        st = phase_state(board / target["file"], board)
+        if st:
+            rows.append(phase_compact(st) + "  ")
+    rows.append(f"→ {next_action}")
+    return "\n".join(rows)
 
 
 def main(argv=None):

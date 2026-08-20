@@ -1,3 +1,45 @@
+## 0.8.1 — 2026-08-19
+
+- **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).
+  🔢 stays accepted as the legacy alias, so pre-260819 plans remain legal.
+  The abacus was the proof mark retired earlier on 260819 and is revived with
+  its new meaning: a recomputable number, which is what `checks/values.py`
+  does to every one of them.
+- Coherence pass, same law: §✍️ names the phase split (PROBE runs ① ② ③,
+  EVIDENCE runs ④ ⑤) instead of crediting the whole loop to EVIDENCE; §↩
+  legalizes the fold-appended forward id — the plan is authored bare, the ①
+  fold writes `📮 PP<NN>` into the bullet once the card serves it, `serves:`
+  stays the live join; and the retired ladder word "bound" in the satisfaction
+  rule and the ↩ tag now reads "answered".
+
+## 0.8.0 — 2026-08-19
+
+- **A `bank: code` value is RECOMPUTED by machine.** JL 260819: "I think the
+  machine should check these numbers." `checks/values.py` re-runs each value's own
+  recipe against the repo and compares it to what the card quotes.
+- This splits what `read: ✅` means: not "I checked the arithmetic" but "I agree
+  with the judgment inside the question". Counting contract folders is mechanical;
+  whether COMPILE counts as a phase is not.
+- It earned itself on the first run: `PP03.v2` quoted 17 cards at `planned`, true
+  when written and 13 four cards later. A person re-reading by eye does not catch
+  that, because the page still looks right.
+- A value with no recipe reports `unchecked`, never as passing.
+
+## 0.7.0 — 2026-08-19
+
+- **`PP<NN>.v<n>` · one card, many values.** A card is one question whose answer
+  usually holds several numbers, and a sentence uses one of them, so citing the
+  card alone could not say which (JL 260819). The id is allocated at EVIDENCE in
+  a `## Values` block in `card.md`: one line per value with what it is, the
+  number, and the exact place in `proof/` it was read from.
+- **No `value/` folder and no `haipipe-plugin-value`.** The number already lives
+  in `proof/` with its source, run and sha256; a second home for it is the rule
+  that retired 🧮 proof the same day. What was missing was one more level of
+  ADDRESS, which the grammar already does elsewhere: `C3.P1.B4` splits a bullet
+  into sentences, `PP01.v2` splits a card into values.
+- Makes two failures visible: a sentence with a number and no `PP<NN>.v<n>`, and
+  a card holding a value no sentence uses.
+
 # haipipe-plugin-probe · Changelog
 
 ## 0.1.0 · 2026-08-15

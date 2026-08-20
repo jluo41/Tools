@@ -1,13 +1,13 @@
-# `missing-insight` · route knowledge work back to Task/Insights Board
+# `missing-insight` · release a blocked need to a local Insight Page
 
-Application may identify a missing premise but may not answer it.
+Application Design Pages may identify a missing premise but may not answer it locally.
 
-1. Keep the application stake on the owning Brief or Intervention Page: which decision is blocked and why.
-2. Rewrite the request in consumer-neutral language. Remove message, paper, claim, component, and audience persuasion language unless they define the population or outcome being studied.
-3. State the required target level: Data, Information, Knowledge, or Wisdom.
-4. Search existing settled Insight Pages through PageX before opening work.
-5. If none answers it, call `/haipipe-task insight "<neutral question>" <TaskBoard>`.
-6. Record the returned Insight Page path as the request target. The Insight Page owns Probe and DIKW settlement.
-7. When settled, bind it through PageX and reopen the held Application Aim.
+1. Keep the Application stake on the owning Brief or Design Page: which decision is blocked and why.
+2. Rewrite the evidence question without a preferred answer. Keep audience/population language only when it defines scope.
+3. State the required target: Data, Information, Knowledge, or Wisdom.
+4. Search settled local/external Insight Pages through PageX before creating work.
+5. Show the release packet: neutral question, target, matches, Task/Discovery source routes, `serves:` id, and blocked Aim.
+6. If no Page covers it, call `fn/insight.md` inside the same Application root.
+7. When settled, bind Division 8 through PageX and reopen the held Aim.
 
-Never create an Application `probe/`, dispatch a Task/Discovery executor directly, or copy a QA answer into the Application as though it were a settled Insight.
+Never create a `probe/` under Brief, Design, or Artifact; dispatch evidence only from the Application-local Insight Page under Task-backed authority.

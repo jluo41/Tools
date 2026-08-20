@@ -1,1 +1,0 @@
-../skills/board/agents/haipipe-board-creator-agent.md

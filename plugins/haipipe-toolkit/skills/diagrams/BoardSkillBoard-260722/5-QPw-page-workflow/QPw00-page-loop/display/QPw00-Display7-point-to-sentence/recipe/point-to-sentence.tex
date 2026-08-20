@@ -1,0 +1,69 @@
+% A rebuild is deterministic: recompiling this recipe yields the same PDF, so
+% hand-editing an output is pointless by construction.
+% Every printed string is transcribed from the two frozen files in
+% ../intake/inputs/: the worked conversion from haipipe-page-draft.SKILL.md
+% ("Point -> sentence scaffold"), the address grammar and ownership from
+% haipipe-plugin-outline.SKILL.md. No number here comes from memory.
+\providecommand{\dHead}[1]{{\small\bfseries #1}}
+\providecommand{\dSub}[1]{{\footnotesize\textcolor{black!60}{#1}}}
+\providecommand{\dAddr}[1]{{\footnotesize\ttfamily #1}}
+\providecommand{\dHole}[1]{{\footnotesize\ttfamily\bfseries #1}}
+\providecommand{\dCmt}[1]{{\scriptsize\ttfamily\textcolor{black!55}{#1}}}
+\providecommand{\dSep}{ $\cdot$ }
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, thick, rounded corners=2pt, inner sep=3mm, align=left,
+              text width=140mm},
+  planbox/.style={box, fill=black!6},
+  pagebox/.style={box, fill=white},
+  flow/.style={-{Stealth[length=3.2mm]}, line width=1pt},
+  back/.style={-{Stealth[length=3.2mm]}, densely dashed, line width=0.8pt},
+]
+
+% ── the PLAN side: one POINT ────────────────────────────────────────────────
+\node[planbox, anchor=north] (plan) at (0,0) {%
+  \dHead{\textcircled{\scriptsize 1} OUTLINE\dSep the plan}\hfill
+  \dSub{one POINT per bullet, a content unit}\\[2mm]
+  \dAddr{C3.P1.B4}\dSep Establish robustness across specifications%
+};
+
+% ── the PAGE side: one or more sentence SCAFFOLDS ───────────────────────────
+\node[pagebox, below=32mm of plan] (page) {%
+  \dHead{\textcircled{\scriptsize 4} DRAFT\dSep the page}\hfill
+  \dSub{one point became THREE sentences, holes where the answers will sit}\\[2mm]
+  \dAddr{C3.P1.S1}\dSep The primary estimate is \dHole{<VALUE HOLE>}.
+  \hfill\dCmt{<!-- realizes: C3.P1.B4 -->}\\[1mm]
+  \dAddr{C3.P1.S2}\dSep It remains \dHole{<ROBUSTNESS HOLE>} across specifications.
+  \hfill\dCmt{<!-- realizes: C3.P1.B4 -->}\\[1mm]
+  \dAddr{C3.P1.S3}\dSep \dHole{<DISPLAY HOLE>} compares the estimates.
+  \hfill\dCmt{<!-- realizes: C3.P1.B4 -->}%
+};
+
+% ── forward: the conversion DRAFT performs ──────────────────────────────────
+\draw[flow] ([xshift=-66mm]plan.south) -- ([xshift=-66mm]page.north)
+  node[midway, right=2.5mm, align=left, font=\footnotesize] {%
+   \textbf{read the point, write the scaffold:}\\
+   one POINT $\rightarrow$ one or more SENTENCES\\
+   \dSub{never inventing a number, citation,}\\
+   \dSub{reading or figure}};
+
+% ── backward: the join a reader (and REVISE) can walk ───────────────────────
+\draw[back] ([xshift=66mm]page.north) -- ([xshift=66mm]plan.south)
+  node[midway, left=2.5mm, align=right, font=\footnotesize] {%
+   \textbf{read any sentence, recover its point:}\\
+   \dCmt{realizes:} rides in a comment on the line,\\
+   \dSub{so REVISE may split or merge sentences}\\
+   \dSub{without losing the join}};
+
+% ── the address, carried across ──────────────────────────────────────────────
+\node[box, below=6mm of page, inner sep=2.5mm] (join) {%
+  \dHead{the address is the join key}\qquad
+  \dAddr{C3.P1.}\dHole{B4}
+  \(\;\longleftrightarrow\;\)
+  \dAddr{C3.P1.}\dHole{S1 S2 S3}\\[1mm]
+  \dSub{the prefix is shared; only the last token differs, because the units differ}\\[1mm]
+  \dAddr{B} = a POINT in the plan file\dSep owner: \dAddr{haipipe-plugin-outline}\\
+  \dAddr{S} = a SENTENCE on the rendered page\dSep owner: \dAddr{haipipe-sentence}%
+};
+
+\end{tikzpicture}

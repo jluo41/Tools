@@ -171,8 +171,8 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
  --mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--warn:#e0955a;--ok:#7dbb87;
  --acc:#7d9cc4}}}}
 body{{margin:0;padding:16px;background:var(--bg);color:var(--fg);
- font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
-h1{{font-size:15px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:12px}}
+ font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
+h1{{font-size:17px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:13px}}
 .chips{{display:flex;gap:6px;margin:10px 0}}
 .chip{{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);
  border-radius:999px;padding:4px 12px;cursor:pointer;background:var(--card);
@@ -181,12 +181,12 @@ h1{{font-size:15px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:12px}}
 .ok{{color:var(--ok);font-weight:600}} .warn{{color:var(--warn);font-weight:600}}
 .card{{background:var(--card);border:1px solid var(--line);border-radius:10px;
  padding:10px 14px;margin:0 0 10px}}
-.card h2{{font-size:13px;margin:0 0 4px;display:flex;gap:8px;
+.card h2{{font-size:15px;margin:0 0 4px;display:flex;gap:8px;
  align-items:baseline}}
 .card h2 .tally{{margin-left:auto;flex:none;font:600 11px ui-monospace,
  Menlo,monospace;color:var(--mut)}}
 .card h2 .tally.all{{color:var(--ok)}}
-.lead{{font-size:13px;margin:6px 0 0;color:var(--fg)}}
+.lead{{font-size:14.5px;margin:6px 0 0;color:var(--fg)}}
 .tally{{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
  margin:10px 0 6px;font-size:12px}}
 .tally b{{font-weight:600}}
@@ -195,37 +195,80 @@ h1{{font-size:15px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:12px}}
 .bar i{{display:block;height:100%;background:var(--ok)}}
 .left{{color:var(--fg)}} .wait{{color:var(--warn);font-weight:600}}
 details{{margin:4px 0 0}}
-summary{{cursor:pointer;font:600 11px -apple-system,sans-serif;
+summary{{cursor:pointer;font:600 12px -apple-system,sans-serif;
  color:var(--mut);text-transform:uppercase;letter-spacing:.03em;
  padding:3px 0;list-style:none}}
 summary::-webkit-details-marker{{display:none}}
 summary:before{{content:"▸ ";color:var(--mut)}}
 details[open]>summary:before{{content:"▾ "}}
 summary:hover{{color:var(--acc)}}
-.brief{{color:var(--mut);font-size:12px;margin:0 0 8px;
+.brief{{color:var(--mut);font-size:13.5px;margin:0 0 8px;
  padding-bottom:8px;border-bottom:1px solid var(--line)}}
-.sub{{font:600 11px -apple-system,sans-serif;color:var(--mut);
+.sub{{font:600 12.5px -apple-system,sans-serif;color:var(--mut);
  text-transform:uppercase;margin:8px 0 2px}}
-.row{{display:flex;gap:7px;padding:1px 0;font-size:12px;line-height:1.4;
+.row{{display:flex;gap:8px;padding:2px 0;font-size:14px;line-height:1.55;
  align-items:baseline}}
 .row .t{{flex:none}} .row .x{{flex:1;min-width:0}}
-.idtag{{flex:none;font:500 11px ui-monospace,Menlo,monospace;color:var(--mut)}}
+.idtag{{flex:none;font:500 12px ui-monospace,Menlo,monospace;color:var(--mut)}}
 /* A TAG, not a pill. As a rounded 14px pill on its own flex column it wrapped
    its own label onto two lines and pushed the sentence into half the pane
    (JL 260817, screenshot). Small, nowrap, inline at the end of the sentence. */
 .evchip,.evtag{{display:inline;white-space:nowrap;
- font:10.5px/1.4 ui-monospace,Menlo,monospace;
+ font:12px/1.45 ui-monospace,Menlo,monospace;
  border:1px solid color-mix(in srgb,currentColor 26%,transparent);
  background:color-mix(in srgb,currentColor 8%,transparent);
  border-radius:4px;padding:0 4px;color:inherit;vertical-align:1px}}
 .evchip{{cursor:pointer}}
 .evtag{{border-style:dashed}}
+/* A bullet with hidden detail is a details element: the row shows only the
+   terse head + chips, and clicking unfolds the Answered:/Drawn: text (JL 260819:
+   "点击之后能看到这个 bullet point 稍微详细一点、但又非常 concise 的解释…
+   像 figure 之类的，其实完全可以放到 hidden text 里面"). Native, script-free,
+   like the popovers. */
+/* HARD RESET: the board shell injects this card into a page that styles its
+   own drawers' summary/row classes (big, bold, accent-coloured — JL 260819
+   screenshot: one folded bullet rendered like a section heading). Restate
+   every typography and layout property so no host rule survives cascade. */
+details.brow{{margin:0;padding:0;border:0;background:none}}
+details.brow>summary{{list-style:none!important;cursor:pointer;display:flex;
+ gap:8px;padding:2px 0;margin:0;border:0;background:none;font-size:14px;
+ line-height:1.55;align-items:baseline;font-weight:400;color:var(--fg);
+ text-transform:none;letter-spacing:normal;font-family:inherit}}
+details.brow>summary .x{{flex:1;min-width:0;font-size:14px;font-weight:400;
+ color:var(--fg);text-transform:none;letter-spacing:normal}}
+details.brow>summary .addr{{font:500 11.5px ui-monospace,Menlo,monospace;
+ color:var(--mut);flex:none;min-width:76px;text-align:left;
+ text-transform:none}}
+/* the paragraph row is a LEVEL, not another bullet (JL 260819: "hard to
+   distinguish with the bullet point"): a thin rule above and a heavier,
+   slightly spaced label make the structure visible at a skim. */
+/* JL picked the ACCENT BAR (260819, from four previews): a short colored
+   bar juts into the left gutter beside the paragraph label, dark text,
+   and the bullets stay flush — the bar alone carries the hierarchy. */
+.prow{{margin-top:10px;position:relative;margin-left:-9px;
+ padding-left:9px}}
+/* a short tick, not a full-height bar (JL 260819: "this one is too long"):
+   0.85em tall, vertically centered on the label line. */
+.prow::before{{content:"";position:absolute;left:0;top:50%;
+ transform:translateY(-50%);width:3px;height:.85em;
+ background:var(--acc);border-radius:2px}}
+.prow .mut{{font-weight:650;font-size:13.5px;color:var(--fg);
+ letter-spacing:.01em}}
+/* the host shell draws its drawer triangle with ::before, which ::marker
+   rules never touch — kill every pseudo that could carry a glyph */
+details.brow>summary::before{{content:none!important;display:none!important}}
+details.brow>summary::after{{content:none!important}}
+details.brow>summary::-webkit-details-marker{{display:none!important}}
+details.brow>summary::marker{{content:""!important;display:none!important}}
+details.brow>summary:hover{{background:color-mix(in srgb,var(--fg) 5%,transparent)}}
+.bdetail{{margin:1px 0 7px 3.6em;color:var(--mut);font-size:13px;
+ line-height:1.5;max-width:62em}}
 .evchip:hover,.evchip:focus-visible{{background:color-mix(in srgb,currentColor 18%,transparent);
  border-color:color-mix(in srgb,currentColor 45%,transparent)}}
 .chipcard{{margin:auto;max-width:min(44em,calc(100vw - 2rem));padding:8px 11px;
  max-height:min(46vh,20em);overflow:auto;border:1px solid var(--line);
  border-left-width:3px;border-radius:8px;background:var(--card);color:var(--fg);
- font:12.5px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;
+ font:14px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;
  box-shadow:0 6px 20px rgba(0,0,0,.18)}}
 @supports selector(:popover-open){{.chipcard:not(:popover-open){{display:none}}}}
 .chipcard::backdrop{{background:rgba(0,0,0,.12)}}
@@ -252,9 +295,9 @@ object.evfig{{height:32vh}}
   position-try-fallbacks:flip-block,flip-inline}}}}
 .ev>summary::-webkit-details-marker{{display:none}}
 .ev>summary:hover{{text-decoration:underline dotted}}
-.evbody{{margin:3px 0 5px 62px;padding:6px 9px;border-left:2px solid var(--line);color:var(--fg);font-size:12px;background:var(--card)}}
+.evbody{{margin:3px 0 5px 62px;padding:7px 10px;border-left:2px solid var(--line);color:var(--fg);font-size:13.5px;background:var(--card)}}
 .sep{{opacity:.45;padding:0 2px}}
-.addr{{font:500 9.5px ui-monospace,Menlo,monospace;color:var(--mut);flex:none;min-width:42px;text-align:right}}
+.addr{{font:500 11.5px ui-monospace,Menlo,monospace;color:var(--mut);flex:none;min-width:76px;text-align:left}} /* 76px fits C14.P2.B4; one shared column, so paragraph and bullet titles start at the same x (JL 260819: aligned) */
 /* The SECTION address is LEFT aligned, and the bullet addresses stay right.
    A right-aligned gutter ends `C3` and `P1.B1` at the same x, so the two
    character section id sits FURTHER RIGHT than the five character bullet id
@@ -583,8 +626,21 @@ def _tally(o):
 # So this card renders two things side by side: what the plan SAID, and what
 # is on disk NOW. The gap between them is the whole point of the card.
 
-_MARK = {"🎯": "aim", "✅": "have", "📚": "cite",
-         "🔢": "value", "🖼": "display", "🧮": "proof"}
+# 🧮 = value since 260819 (JL; the glyph's proof meaning died that morning).
+# 🔢 stays accepted as the pre-260819 legacy alias so old plans keep parsing.
+# The ✅ "have it" mark was RETIRED 260819: it named nothing a machine could
+# recheck, an unmarked bullet already means "plain point, nothing owed", and
+# the glyph already works two other jobs (tick syntax, the CHECK phase). It
+# confused JL three separate times, and a mark that needs explaining fails
+# its only job. Zero plans carried it at retirement.
+# 📮 probe and 🧮 value SEPARATED 260819 (JL: "I want to separate them"):
+# 📮 = this point needs a QUESTION answered (the card, any answer shape);
+# 🧮 = this point QUOTES one value, PP<NN>.v<n>, out of an answered card.
+# 📮 doubles as phase ②'s glyph ON PURPOSE (same concept) and is END-ANCHORED
+# in the hit scan, so prose ABOUT the phase can never grow a phantom chip
+# (the ✅ lesson).
+_MARK = {"🎯": "aim", "📚": "cite", "📮": "probe",
+         "🧮": "value", "🔢": "value", "🖼": "display"}
 
 
 def _latest_plan(page_src):
@@ -638,7 +694,17 @@ def _disk_state(page_src):
             q = (re.search(r"^question:\s*(.+)$", t, re.M) or [None, ""])[1]
             if not q:
                 q = (re.search(r"^#\s*\S+\s*\n+(.+)$", t, re.M) or [None, ""])[1]
-            cards[d.name.split("-")[0]] = (st, n, q.strip(), why_empty)
+            # The `## Values` rows, keyed v1/v2/…, kept verbatim: the 🧮
+            # chip's evidence card must show THE NUMBER and its proof
+            # binding, not just the card's question (JL 260819: "why the
+            # value '7' is not get the evidence card? is it the PP01.v1??").
+            vals = {}
+            vb = re.search(r"(?ms)^## Values\s*\n(.*?)(?=^## |\Z)", t)
+            if vb:
+                for row in re.finditer(r"(?m)^-\s*(v\d+)\s*·\s*(.+?)\s*$",
+                                        vb.group(1)):
+                    vals[row.group(1)] = row.group(2)
+            cards[d.name.split("-")[0]] = (st, n, q.strip(), why_empty, vals)
     dd = base / "display"
     if dd.is_dir():
         for d in sorted(dd.iterdir()):
@@ -805,10 +871,10 @@ def _aim_rows(page_text):
 
 def _live(mark, ref, cards, units, keys=(), aims=None):
     """One bullet's LIVE half: what the folders say about what it owes."""
-    if mark == "value":
+    if mark == "probe":
         if not ref:
-            return "mut", "no card", ""
-        st, n, q, why_empty = cards.get(ref, (None, 0, "", False))
+            return "mut", "needs a probe · not raised yet", ""
+        st, n, q, why_empty, _vals = cards.get(ref, (None, 0, "", False, {}))
         if st is None:
             return "warn", "🚨 no card", ""
         body, st = q, _pstate(st)
@@ -818,14 +884,67 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
             # ANSWERED with an empty proof/ is the one shape that lies: the
             # card says the number came back and nothing on disk carries it.
             return "warn", "🚨 %s, proof/ empty" % st, body
+        # "📮 PP01 answered 1" read as "the answer is 1" (JL 260819: "why
+        # the answer is 1???") — the bare number was the proof/ FILE count.
+        # Say what is counted, and prefer the count a reader wants: how
+        # many values the card holds.
+        nv = sum(1 for r in _vals.values() if "NOT HERE" not in r.upper())
+        got = ("%d value%s" % (nv, "s" if nv != 1 else "")) if nv \
+            else ("proof/ %d file%s" % (n, "s" if n != 1 else ""))
+        # An answered ask's card SHOWS its values (JL 260819: "how could we
+        # later convert this into the value evidence card?" — no conversion:
+        # the card already holds them; quoting is 🧮's job, one id per use).
+        if _vals:
+            vrows = " · ".join(
+                "%s.%s = %s (%s)" % (ref, k,
+                                     (r.split("·")[1].strip() if "·" in r else r),
+                                     r.split("·")[0].strip())
+                for k, r in sorted(_vals.items()))
+            body = "%s\n\nValues: %s" % (body, vrows)
         if st in READ:
-            return "ok", "read %d" % n, body
+            return "ok", "read · %s" % got, body
         if st in LANDED:
-            return "ok", "%s %d" % (st, n), body
+            return "ok", "%s · %s" % (st, got), body
         return "mut", st or "?", body
+    if mark == "value":
+        # 🧮 quotes ONE number: PP<NN>.v<n>. The card's lifecycle is 📮's
+        # job; this chip answers only "is the quoted id real and landed".
+        # checks/values.py owns re-computing the number itself.
+        if not ref:
+            return "mut", "owes its value id · PP<NN>.v<n>", ""
+        card_id = ref.split(".")[0]
+        st, n, q, why_empty, vals = cards.get(card_id,
+                                              (None, 0, "", False, {}))
+        if st is None:
+            return "warn", "🚨 no card behind %s" % ref, ""
+        body, st = q, _pstate(st)
+        if "." not in ref:
+            return "mut", "names the card, owes the .v id", body
+        # The evidence behind a 🧮 chip is THE VALUES ROW — the number, its
+        # meaning and its proof binding — with the card's question after it
+        # for context. Showing only the question made the reader ask where
+        # the 7 lives (JL 260819).
+        row = vals.get(ref.split(".", 1)[1])
+        if row is None:
+            return ("warn", "🚨 %s names no row in %s's ## Values"
+                    % (ref, card_id), body)
+        parts = [p.strip() for p in row.split("·")]
+        num = parts[1] if len(parts) > 1 else ""
+        label = parts[0] if parts else row
+        bind = " · ".join(parts[2:])
+        body = "%s = %s · %s%s · state %s. The card asks: %s" % (
+            ref, num or "?", label,
+            (" · bound to " + bind) if bind else "", st, q)
+        if num.upper() == "NOT HERE":
+            return "warn", "🚨 allocated elsewhere · %s" % row, body
+        if st in STUCK:
+            return "warn", "🚨 " + st, body
+        if st in READ or st in LANDED:
+            return "ok", "= %s · %s" % (num, st), body
+        return "mut", "%s · value not landed yet" % (st or "?"), body
     if mark == "display":
         if not ref:
-            return "mut", "owed", ""
+            return "mut", "needs a figure · not built yet", ""
         got = units.get(ref)
         if got is None:
             return "warn", "🚨 no unit", ""
@@ -839,14 +958,14 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
         # sibling board page. QB1/QB2/QB3 were board pages wearing the citation
         # mark, and the page's bibex held zero entries (JL 260817).
         if not ref:
-            return "mut", "owed", ""
+            return "mut", "needs a bib key · not landed yet", ""
         if re.match(r"^QB?\d+$", ref):
             return "warn", "🚨 board page, not a citation", ""
         e = keys.get(ref)
         if not e:
             return "warn", "🚨 not in bibex/", ""
         # A CARD, not a bibliography entry. The full author list is what made
-        # a 📚 card twice the height of a 🔢 one (JL 260817: "evidence card
+        # a 📚 card twice the height of a 🧮 one (JL 260817: "evidence card
         # 太大了"), and nobody reads six names in a popover: the citation KEY
         # already carries the first author, so the panel says "et al.".
         bits = [b for b in (_short_authors(e["author"]), e["year"]) if b]
@@ -854,8 +973,7 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
         if e["venue"]:
             detail += " · " + e["venue"]
         return "ok", "", detail
-    if mark == "have":
-        return "ok", "have it", ""
+
     if mark == "aim":
         # An empty cell is a STATUS, never a blank. A 🎯 bullet with no Aim id
         # is an intention nobody is tracking, and that must SHOW (JL 260817).
@@ -883,8 +1001,7 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
         if state:
             detail += "  ·  " + (emo + " " if emo else "") + state
         return ("ok" if emo == "✅" else "mut"), "", detail
-    if mark == "proof":
-        return "mut", "prose", ""
+
     return "mut", "", ""
 
 
@@ -892,7 +1009,7 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
 def _count_landed(txt, cards, units, keys):
     """How many owed things EXIST. Not how many are finished."""
     n = 0
-    for m in re.finditer(r"🔢[^\n]*?(PP\d+)", txt):
+    for m in re.finditer(r"🧮[^\n]*?(PP\d+)", txt):
         st = _pstate(cards.get(m.group(1), (None, 0, ""))[0])
         n += st in LANDED
     for m in re.finditer(r"🖼[^\n]*?(Display\d+)", txt):
@@ -911,7 +1028,7 @@ def _count_accepted(txt, cards, units):
     for m in re.finditer(r"🖼[^\n]*?(Display\d+)", txt):
         got = units.get(m.group(1))
         n += bool(got and got[1])
-    for m in re.finditer(r"🔢[^\n]*?(PP\d+)", txt):
+    for m in re.finditer(r"🧮[^\n]*?(PP\d+)", txt):
         n += _pstate(cards.get(m.group(1), (None, 0, ""))[0]) in READ
     return n
 
@@ -946,7 +1063,7 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
             cite, "verified" if keys.get(cite, {}).get("verified")
             else "unverified"))
 
-    if kind == "value":
+    if kind in ("value", "probe"):
         landed = [p for p in probes
                   if _pstate(cards.get(p, ("", 0, "", False))[0]) in LANDED
                   and (cards.get(p, ("", 0, "", False))[1] > 0
@@ -973,12 +1090,6 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
                 "citations": citations, "sentences": sentences,
                 "feedback": feedback, "status": status,
                 "have": len(citations), "need": max(1, len(refs))}
-    if kind == "proof":
-        return {"probes": probes, "displays": displays,
-                "citations": citations, "sentences": sentences,
-                "feedback": feedback,
-                "status": "needs-revision",
-                "have": 0, "need": 1}
     return {"probes": probes, "displays": displays,
             "citations": citations, "sentences": sentences,
             "feedback": feedback,
@@ -1044,6 +1155,14 @@ def plan_card(page_src, root=None):
     rows, tally, cited, bundle_rows = [], {}, set(), []
     cn = pn = sn = nid = 0
     for line in joined:
+        # A `## ` that is NOT `## C<n>` ENDS the plan's divisions. The plan's
+        # own trailing sections (## Aims, ## Notes for DRAFT) were falling
+        # through into the last paragraph, so its 26 `- A1.1 ·` rows rendered
+        # as bullets B5..B30 of C15.P2 (JL 260819: "there are 32 points for one
+        # paragraph"). Counting only `## C<n>` as a division was half the fix;
+        # stopping at the first other `## ` is the other half.
+        if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
+            break
         if re.match(r"^## C\d+\b", line):
             cn += 1; pn = 0
             rows.append('<div class=row style="margin-top:9px">'
@@ -1052,66 +1171,145 @@ def plan_card(page_src, root=None):
             continue
         if line.startswith("### "):
             pn += 1; sn = 0
-            rows.append('<div class=row><span class=mut>%s</span></div>'
-                        % _e(re.sub(r"^C\d+\.P\d+\s*·\s*", "", line[4:].strip())))
+            # The paragraph row carries its OWN address in the same column the
+            # bullets use (JL 260819, on reading a paragraph title as a broken
+            # bullet: "how do you think we can add the Cx.Px to the paragraph
+            # sentence as well"). The address was in the file all along; the
+            # renderer used to strip it.
+            rows.append('<div class="row prow"><span class=addr>C%d.P%d</span>'
+                        '<span class=mut>%s</span></div>'
+                        % (cn, max(pn, 1),
+                           _e(re.sub(r"^C\d+\.P\d+\s*·\s*", "",
+                                     line[4:].strip()))))
             continue
         if not line.startswith("- "):
             continue
         sn += 1
         body = re.sub(r"^[SB]\d+\s*·\s*", "", line[2:].strip())
-        # The C is printed ONCE on the section head above, not on
-        # every row (JL 260817: "为什么还要保留 C1"). The full
-        # address is still C<n>.P<n>.S<n>; the row shows the part
-        # that changes. The C is NOT dropped from the grammar: it
-        # says which SECTION, and Aims use A / page-wide uses P in
-        # that same slot (haipipe-sentence, QPs1 §0.6).
+        # The FULL address on every row. It was shortened to P<n>.B<n> once
+        # (JL 260817: "为什么还要保留 C1") and JL reversed it on 260819
+        # ("could you add back the C? like P2.B1 to C1.P2.B1, so we can know
+        # the exact index"): a row is quoted OUT of the pane — in chat, in a
+        # card's serves:, in a receipt — and there the C is the part that
+        # says where it lives.
         # B, not S. At OUTLINE time a bullet is a POINT, and one point
         # becomes ONE OR MORE sentences when it is drafted (JL 260817:
         # "我们能一句话把一个 point 讲完吗?"). C3.P2 is shared with the
         # sentence address, so the link survives; only the last token
         # differs, and it differs because the units differ.
-        addr = "P%d.B%d" % (max(pn, 1), sn)
         full_addr = "C%d.P%d.B%d" % (cn, max(pn, 1), sn)
+        addr = full_addr
         def _backlink(exclude=()):
             """The ↩ tag: cards that name THIS bullet in their `serves:`.
             It is skipped for a card the row already prints as a chip, because
-            `🔢 PP01 answered 1` then `↩ PP01 ✓` is one fact twice on one line
+            `🧮 PP01 answered 1` then `↩ PP01 ✓` is one fact twice on one line
             (JL 260817, screenshot). It is the ONLY thing that speaks when the
             plan's mark is bare, which is the normal case: the plan is frozen
             before the card exists, so the CARD names the bullet."""
             b = [x for x in by_bullet.get(full_addr, []) if x not in exclude]
             if not b:
                 return ""
-            st = [_pstate(cards.get(x, ("?", 0, ""))[0]) for x in b]
-            got = sum(x in LANDED for x in st)
-            return ('<span class="evtag %s">↩ %s %s</span>'
-                    % ("ok" if got == len(st) else "mut", _e(" ".join(b)),
-                       "✓" if got == len(st) else "%d/%d" % (got, len(st))))
+            # One chip PER card, each opening the card's own popover — the
+            # same evidence-card treatment the forward chips got. A bare
+            # <span> here meant the one chip that usually speaks for a bullet
+            # was the one chip nobody could open (JL 260819: "why the probe
+            # PP01 here we cannot click and see it?").
+            out = []
+            for x in b:
+                st = _pstate(cards.get(x, ("?", 0, ""))[0])
+                ok = st in LANDED
+                cls = "ok" if ok else "mut"
+                label = "↩ %s %s" % (_e(x), "✓" if ok else _e(st))
+                _c, _n, detail = _live("probe", x, cards, units, keys, aims)
+                if not detail:
+                    out.append('<span class="evtag %s">%s</span>' % (cls, label))
+                    continue
+                pid = "bl-%s-%s" % (full_addr.replace(".", "-"), _e(x))
+                out.append(
+                    '<button class="evchip %s" popovertarget="%s">%s</button>'
+                    '<div id="%s" popover class="chipcard %s">'
+                    '<div class=cch><b>%s</b><span class=cck>🧮 probe card</span></div>'
+                    '<div class=ccb><p>%s</p></div></div>'
+                    % (cls, pid, label, pid, cls, _e(x), _e(detail)))
+            return " ".join(out)
 
-        hit = None
+        # THE MARK IS THE LAST EMOJI ON THE LINE, inside the end-anchored
+        # window. A first-hit substring scan read C1.P2.B1 — whose PROSE
+        # mentions 📚 and 🧮 mid-sentence before ending `🖼 Display4` — as a
+        # citation bullet, so Display4 landed on the orphan row of the very
+        # plan that cites it (JL 260819: "Why you still didn't solve this
+        # problem? you should cite it."). Same 64-char window as
+        # plan_shape.check_coverage, one law in two readers.
+        hit, hit_at = None, -1
         for emo, kind in _MARK.items():
-            if emo in body:
-                hit = (emo, kind); break
+            at = body.rfind(emo)
+            if at > hit_at and at >= 0 and len(body) - at <= 64:
+                hit, hit_at = (emo, kind), at
+        def _bullet_row(head_raw, chips_html):
+            """One bullet row; Answered:/Drawn:/Note: text folds behind a
+            click (JL 260819), so the pane shows only the terse head."""
+            m2 = re.search(r'\s(Answered:|Drawn:|Note:|More:)\s', head_raw)
+            if not m2:
+                return ('<div class=row><span class=addr>%s</span>'
+                        '<span class=x>%s %s</span></div>'
+                        % (addr, _e(head_raw), chips_html))
+            head, detail = head_raw[:m2.start()], head_raw[m2.start():].strip()
+            # No marker of any kind (JL 260819: "without '>'"): the row reads
+            # exactly like a plain one; hover + cursor are the affordance, and
+            # a plain Note:'s label is stripped since it names nothing.
+            detail = re.sub(r'^(Note|More):\s*', '', detail)
+            return ('<details class=brow><summary class=row>'
+                    '<span class=addr>%s</span><span class=x>%s %s</span>'
+                    '</summary><div class=bdetail>%s</div></details>'
+                    % (addr, _e(head.strip()), chips_html, _e(detail)))
+
         if hit is None:
             # A plain sentence is the NORMAL case, not a defect. Requiring a
             # tag on every line was wrong (JL 260817) and made the plan
             # unreadable: the plan is prose, the notes are the exception.
             tally["plain point"] = tally.get("plain point", 0) + 1
-            rows.append('<div class=row><span class=addr>%s</span>'
-                        '<span class=x>%s %s</span></div>'
-                        % (addr, _e(body), _backlink()))
+            rows.append(_bullet_row(body, _backlink()))
             continue
         emo, kind = hit
         tally[kind] = tally.get(kind, 0) + 1
-        said = _e(body.split(emo)[0].strip())
-        after = body.split(emo, 1)[1]
-        pat = {"value": r"(PP\d+)", "display": r"(Display\d+)",
-               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[a-z]?)",
+        # Split at the WINNING occurrence, not the first: the prose before an
+        # end mark may legally mention any glyph.
+        raw_said = body[:hit_at].strip()
+        after = body[hit_at + len(emo):]
+        pat = {"probe": r"(PP\d+)", "value": r"(PP\d+(?:\.v\d+)?)",
+               "display": r"(Display\d+)",
+               # [A-Za-z]* after the year, not [a-z]?: author-year-WORD keys
+               # (`luo2026eventglucose`) were truncated to `luo2026e`, and the
+               # chip then reported not-in-bibex for a key nobody wrote.
+               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*)",
                "aim": r"(A\d+\.\d+|P\d+)"}.get(kind)
         # ALL of them, not the first. "📚 Dowell2016 · Dowell2022" registered
         # only Dowell2016, so the second key appeared as an orphan on the very
         # reverse-join row built to catch orphans (found 260817 by driving it).
         refs = re.findall(pat, after) if pat else []
+        # LEGACY TOLERANCE for multi-chip tails (`📚 Gray2021 · 🧮 proof`):
+        # the ROW shows only the LAST mark, but the orphan join must credit
+        # every kind named anywhere in the end window — Gray2021 printed as
+        # an orphan of the very plan that cites it (260819 smoke, QC1).
+        _tail = body[-64:]
+        for _emo, _kind in _MARK.items():
+            _at = _tail.rfind(_emo)
+            _p = {"probe": r"PP\d+", "value": r"PP\d+(?:\.v\d+)?",
+                  "display": r"Display\d+",
+                  "cite": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*"}.get(_kind)
+            if _at >= 0 and _p:
+                cited.update(re.findall(_p, _tail[_at:]))
+        # A BARE mark whose bullet already has a card is RAISED, and saying
+        # "not raised yet" beside a ↩ chip that names the card is one fact
+        # contradicted twice on one line (JL 260819: "why here you didn't
+        # raise a probe here? I don't understand"). The plan is frozen before
+        # the card exists, so bare is the NORMAL case and the backlink is the
+        # only thing that knows: let it speak alone.
+        # A BARE mark whose bullet already has a card is RAISED, so the chip
+        # is suppressed and the ↩ backlink speaks alone. It must NOT skip the
+        # Evidence Bundle row below: doing that dropped four rows from the
+        # derived bundle, caught by checks/outline.py minutes after I wrote it.
+        bare_served = not refs and bool(by_bullet.get(full_addr))
         chips = []
         for ref in (refs or [""]):
             if ref:
@@ -1136,9 +1334,9 @@ def plan_card(page_src, root=None):
                     media = ('<object class=evfig data="%s"></object>' % _e(u)
                              if u.endswith(".pdf")
                              else '<img class=evfig src="%s" alt="">' % _e(u))
-            kindname = {"value": "probe card", "display": "display unit",
-                        "cite": "citation", "aim": "aim",
-                        "proof": "proof"}.get(kind, kind)
+            kindname = {"probe": "probe card", "value": "value",
+                        "display": "display unit",
+                        "cite": "citation", "aim": "aim"}.get(kind, kind)
             chips.append(
                 '<button class="evchip %s" popovertarget="%s">%s</button>'
                 '<div id="%s" popover class="chipcard %s">'
@@ -1146,11 +1344,15 @@ def plan_card(page_src, root=None):
                 '<div class=ccb>%s<p>%s</p></div></div>'
                 % (cls, pid, label, pid, cls, _e(ref or "—"), emo, kindname,
                    media, _e(detail)))
-        bl = _backlink(exclude=refs)
-        if bl:
-            chips.append(bl)
-        if kind in {"value", "display", "cite", "proof"}:
-            bundle = _bundle_state(kind, refs, full_addr, by_bullet,
+        if bare_served:
+            chips = [_backlink()]
+        else:
+            bl = _backlink(exclude=refs)
+            if bl:
+                chips.append(bl)
+        if kind in {"probe", "value", "display", "cite"}:
+            bundle = _bundle_state("value" if kind == "probe" else kind,
+                                   refs, full_addr, by_bullet,
                                    display_by_bullet, cards, units, keys,
                                    scaffolds)
             labels = []
@@ -1180,16 +1382,14 @@ def plan_card(page_src, root=None):
         # sentence got squeezed into half the pane and the plan stopped being
         # skimmable (JL 260817, with a screenshot: "你把这些 outline 都给挤得
         # 不知道去哪儿了"). Inline, they sit at the end of the last line.
-        rows.append('<div class=row><span class=addr>%s</span>'
-                    '<span class=x>%s %s</span></div>'
-                    % (addr, said, " ".join(chips)))
+        rows.append(_bullet_row(raw_said, " ".join(chips)))
 
     # ── the join runs BOTH ways ────────────────────────────────────────
     # Bullet → disk catches "we promised a display and built none". Disk →
     # bullet catches the opposite: evidence sitting on the page that no plan
     # line uses. The contract claimed both from the start and only the first
     # was built (found 260817 by checking the file against its own code).
-    on_disk = [("🔢", k) for k in cards] + [("🖼", k) for k in units] \
+    on_disk = [("🧮", k) for k in cards] + [("🖼", k) for k in units] \
         + [("📚", k) for k in keys]
     orphan = [(e, k) for e, k in on_disk
               if k not in cited and not serves.get(k)]
@@ -1205,7 +1405,7 @@ def plan_card(page_src, root=None):
     # Three counts, computed INDEPENDENTLY. A folder existing is not a landed
     # answer, and a landed answer is not an accepted one; collapsing them into
     # one number is how "declared" got read as "done".
-    owed = sum(tally.get(k, 0) for k in ("value", "display", "cite", "proof"))
+    owed = sum(tally.get(k, 0) for k in ("probe", "value", "display", "cite"))
     landed = _count_landed(txt, cards, units, keys)
     accepted = _count_accepted(txt, cards, units)
     head = "%s plan %s" % ("🔒" if approved else "✍️", _e(ver))
@@ -1237,9 +1437,16 @@ def _page_now(plan, plan_head, cards):
     So it collapses: one line when there is nothing in it, open on a click."""
     body = "".join(cards)
     empty = body.count("no aim, state or file on this page names this part")
-    n = len(cards)
+    # `cards` ends with the 🌐 page-wide card, which is NOT a Content division:
+    # it is the bucket for everything unanchored. Counting it said "15 Content
+    # divisions" on a page with 14 (JL 260819), which is the one number in this
+    # drawer's own title and the easiest to trust without checking.
+    wide = 1 if any("🌐" in c for c in cards) else 0
+    n = len(cards) - wide
     note = (" &middot; all %d empty: this page's aims carry no ids" % n
             if empty >= n else "")
+    if wide:
+        note += " &middot; plus the 🌐 page-wide card"
     fold = ('<details><summary style="cursor:pointer;color:var(--mut);'
             'font-size:12px;padding:8px 0">📄 THE PAGE NOW &mdash; %d Content '
             'division%s as written today%s</summary>%s</details>'

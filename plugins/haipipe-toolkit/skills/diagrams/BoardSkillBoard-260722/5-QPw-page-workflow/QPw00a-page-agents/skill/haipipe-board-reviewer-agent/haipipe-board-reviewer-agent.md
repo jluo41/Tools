@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-reviewer-agent
-description: "Read-only REVIEWER for one HAI-Pipe Board or one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CLOSE, REVISE, PROBE, DRAFT, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
+description: "Read-only REVIEWER for one HAI-Pipe Board, and the BASE of haipipe-page-check-agent, which since 260819 is the RUN controller's phase-⑦ dispatch for judging one exact Page version (this agent still can, as the fallback). In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CLOSE, OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
 tools:
   - Read
   - Grep
@@ -9,7 +9,7 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.7.0"
+  version: "0.9.0"
   last_updated: "2026-08-04"
   summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop."
   changelog: "./CHANGELOG.md"
@@ -32,7 +32,7 @@ copy is exactly what goes a night out of date while the contract moves:
    INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
-4. `../page-phases/haipipe-page-check/SKILL.md` for the judgment and
+4. `../page-workflows/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -42,7 +42,7 @@ copy is exactly what goes a night out of date while the contract moves:
 
 ```text
 input:   Board folder, optional changed pages, and optional expected Page version
-output:  pass | revise | blocked, plus CLOSE | REVISE | PROBE | DRAFT | HOLD
+output:  pass | revise | blocked, plus CLOSE | REVISE | EVIDENCE | DRAFT | HOLD
 role:    independent, zero-background reviewer
 ```
 
@@ -122,7 +122,7 @@ The writer owns every repair and may ask for another fresh review afterward.
    required order. A page may be clear alone and still fail this batch voice
    gate when it reads like a form letter beside the others.
 11. Choose the route by required next authority: realization defect → REVISE;
-    consequential missing answer → PROBE; changed purpose or Aim → DRAFT with
+    a promised claim with no card → EVIDENCE; changed purpose or Aim → DRAFT with
     `reopens_promise: true`; satisfied machine gate → CLOSE; unavailable input,
     version mismatch, or unmet human gate → HOLD.
 12. Return the contract below. Do not write a review file.
@@ -146,7 +146,12 @@ when they affect the reviewed change or reveal an actual broken promise.
 actor:    haipipe-board-reviewer-agent
 status:   pass | revise | blocked
 verdict:  pass | revise | blocked
-route:    CLOSE | REVISE | PROBE | DRAFT | HOLD
+route:    CLOSE | OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE | HOLD
+          ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The RUN
+          controller forces REVISE while it is above zero, so counting another
+          page's errors here makes CLOSE unreachable for every page on the
+          board. Filter check.py's output to lines whose first field is this
+          page's file name.
 reason:   <why this route owns the next authority>
 checked_version: <source-sha256>:<render-sha256>
 reopens_promise: true | false

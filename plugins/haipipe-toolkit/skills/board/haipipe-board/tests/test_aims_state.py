@@ -82,48 +82,25 @@ class AimsStateTest(unittest.TestCase):
             self.assertIn("## States", text, rel)
             self.assertNotIn("## State\n", text, rel)
 
-    def test_public_paper_generator_materializes_stage_specific_aims(self):
+    def test_public_paper_door_routes_the_six_current_page_types(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper_root = root.parents[1] / "paper"
-        paper = paper_root / "haipipe-paper"
-        spec = importlib.util.spec_from_file_location(
-            "paper_stage_create_page", paper / "create-page.py"
+        door = (paper_root / "haipipe-paper" / "SKILL.md").read_text(
+            encoding="utf-8"
         )
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        for page_type in ("seed", "venue", "narrative", "section", "round", "dash"):
+            with self.subTest(page_type=page_type):
+                self.assertIn(f"haipipe-page-for-{page_type}", door)
+                self.assertTrue(
+                    (paper_root / "page-types" / f"haipipe-page-for-{page_type}" / "SKILL.md").is_file()
+                )
+        self.assertIn("S01–S10 stage contracts", door)
+        self.assertIn("retired", door)
 
-        display_template = paper_root / "S05-display/display/template.md"
-        divisions = [name for name, _ in module.template_divisions(display_template)]
-        self.assertIn("Q-consumer", divisions)
-        self.assertEqual(
-            module.consumer_q_id(
-                "- P<n> · Q-Display<unit>-<n> · <title>",
-                "Display",
-                "4a",
-                "main-effect",
-            ),
-            "Q-Display4a-1",
-        )
-        self.assertEqual(
-            module.consumer_q_id(
-                "- P<n> · Q-Sec<unit><Slug>-<n> · <title>",
-                "Section Edit",
-                "6",
-                "main-results",
-            ),
-            "Q-Sec6MainResults-1",
-        )
-        seed_template = paper_root / "S01-opening/seed/template.md"
-        seed_aim = module.consumer_aim(
-            module.board_template_aims(seed_template), "Q-Seed-1"
-        )
-        self.assertIn("- P1 · Q-Seed-1 · <question title>", seed_aim)
-        self.assertNotIn("<what must be learned, using the consumer wording>", seed_aim)
-
-    def test_active_paper_templates_teach_aims_and_states(self):
+    def test_active_paper_types_do_not_teach_legacy_checkbox_progress(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper = root.parents[1] / "paper"
-        for path in paper.glob("S*/**/template.md"):
+        for path in paper.glob("page-types/haipipe-page-for-*/SKILL.md"):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("## Items to Finish", text, path.as_posix())
             self.assertNotIn("## Where we are", text, path.as_posix())

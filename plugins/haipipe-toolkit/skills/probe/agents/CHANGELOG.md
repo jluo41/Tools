@@ -7,6 +7,19 @@ Never loaded at invocation; read on demand.
 Versions match each agent's frontmatter `version:`. Newest first, grouped per agent.
 
 
+## haipipe-probe-q-executor-agent 1.2.0 — 2026-08-20
+
+- **Callers, one per family** (JL refinement, same day): the family's own
+  PROBE producer is the only hand that dispatches me (board page:
+  haipipe-page-probe-agent; paper stage: its EVIDENCE worker); a main
+  session or any other agent never calls me directly.
+- **Family-agnostic for real, and THE ONE DOOR** (JL: "永远只有这个 agent 才能够
+  做这件事"): scope now paper + application + board page; input entries carry
+  an id (QX<n> or PP<NN>), route, and a BIND-BACK path (1-probes/ entry or
+  probe/PP<NN>/card.md) where ④ POINT writes target:. The stale "MATCH ran in
+  the EVIDENCE worker" now reads "the dispatching family's own MATCH-owning
+  phase" (a board page's is PROBE).
+
 ## [1.1.0] — 2026-07-19
 
 - Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname

@@ -1,5 +1,21 @@
 # paper/_old/: retired skills (moved, never deleted)
 
+## 260820 Page-first retirement
+
+`stage-runtime-260820/` preserves the complete retired S01–S10 Paper runtime
+and the former `haipipe-paper` helper engine. It includes the stage contracts,
+resolver, S-page creator, S03/S04 probe projection, build/export scripts, and
+their historical references. Nothing in that folder is installed or loaded by
+the current Page-first Paper door.
+
+The current active surface is intentionally small:
+
+```text
+paper/haipipe-paper/SKILL.md
+paper/page-types/{seed,venue,narrative,section,dash}/
+paper/venue/
+```
+
 Retirements from the thin-paper restructure, ruled A on
 `diagrams/01-haipipe-paper-260725/QC-engine/QC6-paper-skill-folder.md` (JL 260805).
 Nothing here is registered by `install.sh` (underscore prefix is pruned).

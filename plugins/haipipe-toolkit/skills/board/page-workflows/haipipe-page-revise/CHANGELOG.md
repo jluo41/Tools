@@ -1,3 +1,17 @@
+## 0.5.0 — 2026-08-19
+
+- **RENDER, PICK and BUILD move to EVIDENCE.** JL 260819: "这个不应该是 evidence
+  里的这个 display 开始画图吗？REVISE 主要 work 还是 work 在这个 sentence 上面去".
+  They sat in REVISE on the reasoning that a caption and a choice of rows are
+  ARGUMENT. That was right about the caption and wrong about the drawing, and
+  the asymmetry it produced is what exposed it: a citation lane returned a bib
+  key, a value lane returned a bound number, and the display lane returned an
+  unrendered intake folder. Two of three landed something a page could use.
+  A lane that performs one step out of five is not a lane.
+- REVISE keeps the argument half: the sentence that cites the unit by id, the
+  caption that ties the figure to this page's claim, and both projections.
+  EVIDENCE keeps the unit's factual `claim:` row and may not say what it proves.
+
 ## 0.4.2 — 2026-08-18
 
 - Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §⑤, which

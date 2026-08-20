@@ -1,0 +1,89 @@
+% EVIDENCE, whole, with its head: the plan's bullet ASKS, (2) PROBE raises the
+% card, and the two-stage x three-lane wall draws on it. Every name is
+% transcribed; see intake/manifest.yaml.
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize, >=Latex,
+  st/.style={draw, rounded corners=1.5pt, minimum height=7mm, align=center,
+             inner sep=3pt, fill=black!3, text width=31mm},
+  ln/.style={draw, rounded corners=1.5pt, minimum width=34mm, minimum height=14mm,
+             align=left, inner sep=4pt, text width=31mm},
+  cd/.style={draw, rounded corners=1.5pt, align=left, inner sep=4pt,
+             fill=black!6, text width=46mm},
+  tk/.style={font=\sffamily\tiny\bfseries, text=black!35!red},
+  nb/.style={font=\sffamily\tiny, text=black!58, align=left}]
+
+  % ── the head: the plan asks, and PROBE raises the card ────────────────────
+  \node[st, text width=46mm] (mark) at (-66mm,38mm)
+    {\textbf{(1) OUTLINE's approved plan}\\[1pt]
+     \footnotesize a bullet ASKS $\cdot$ its mark: [P] probe};
+
+  \node[cd, anchor=north] (pc) at (-66mm,22mm)
+    {\textbf{[P] the CARD}\\
+     raised at (2) PROBE $\cdot$ \mbox{probe/PP01-.../}\\[2pt]
+     \textbf{card.md} $\cdot$ question: one neutral line\\
+     \quad state: planned $\to$ commissioned\\[1pt]
+     \textbf{consumer/} the stake $\cdot$ never crosses\\
+     \textbf{executor/} the stripped question $\cdot$ the only thing dispatched\\
+     \textbf{proof/} the files behind the answer $\cdot$ source, run, sha256\\[1pt]
+     \textbf{\#\#\,Values} one id per number: PP01.v1, .v2, ...\\
+     \quad written at (3), when the answer lands};
+
+  \draw[->, black!55] ([xshift=-16mm]mark.south) -- ([xshift=-16mm]pc.north);
+  \draw[->, dashed, black!55] ([xshift=16mm]pc.north) -- ([xshift=16mm]mark.south);
+  \node[nb, align=center, anchor=center] at (-66mm,27mm)
+    {serves: C4.P1.B4\\the card points BACK\\the plan never changes};
+
+  % ── the two stages, as columns ────────────────────────────────────────────
+  \node[nb, text=black!75, anchor=west] at (-36mm,41.5mm)
+    {\textbf{(3) EVIDENCE} $\cdot$ three lanes, at the same time, across two stages};
+  \node[st, minimum width=34mm] (mk) at (0,32mm) {\textbf{stage (1) MAKE}\\[1pt]
+    \footnotesize build it in the folder that owns it};
+  \node[st, minimum width=34mm] (bd) at (46mm,32mm) {\textbf{stage (2) BIND}\\[1pt]
+    \footnotesize make it pointable, so a sentence can name it};
+  \node[nb, anchor=west] at (66mm,32mm) {a person\\ticks these};
+
+  % ── three lanes, in parallel ──────────────────────────────────────────────
+  % [C] citation · a person's lane, and it does not pass through the card
+  \node[ln] (a0) at (0,13mm) {\textbf{[C] citation}\\[1pt]
+    the bibex entry, landed by a PERSON\\
+    {\tiny no card: PROBE opens one only when the key is \mbox{UNKNOWN}}};
+  \node[ln] (b0) at (46mm,13mm) {the key resolves in bibex/};
+  \draw[->, black!55] (a0) -- (b0);
+  \node[tk, anchor=west] at (66mm,13mm) {verified};
+
+  % [V] value · this lane fills the card itself
+  \node[ln] (a1) at (0,-10mm) {\textbf{[V] value}\\[1pt]
+    the answer pulled into proof/};
+  \node[ln] (b1) at (46mm,-10mm) {target: names the QA file BY PATH\\
+    \#\#\,Values: one id per number (PP01.v2)};
+  \draw[->, black!55] (a1) -- (b1);
+  \node[tk, anchor=west] at (66mm,-8mm) {read:};
+  \node[nb, anchor=west] at (66mm,-12.5mm) {reverts when target\\or proof/ moves};
+
+  % [D] display · a DATA unit freezes from the card's proof/
+  \node[ln] (a2) at (0,-34mm) {\textbf{[D] display}\\[1pt]
+    the unit DRAWN: \mbox{intake}, recipe, assets, \mbox{preview}\\
+    {\tiny DATA kinds freeze intake/ FROM the card's proof/ $\cdot$ concept kinds need not wait}};
+  \node[ln] (b2) at (46mm,-34mm) {previewable, intake frozen};
+  \draw[->, black!55] (a2) -- (b2);
+  \node[tk, anchor=west] at (66mm,-32mm) {accepted};
+  \node[nb, anchor=west] at (66mm,-36.5mm) {reverts $\cdot$ ticked\\at (7) CHECK};
+
+  % ── which lanes draw on the card ──────────────────────────────────────────
+  \draw[->, black!55] (pc.east |- a1.west) -- (a1.west);
+  \node[nb, anchor=south, align=center] at (-30mm,-9.3mm) {this lane fills\\the CARD itself};
+  \draw[->, black!55] ([yshift=-9mm]pc.east |- a1.west) -- (a2.west);
+
+  % ── the loop back to the plan ─────────────────────────────────────────────
+  \draw[->, black!55] (bd.north) -- ++(0,0) |- (-66mm,50mm) -- (mark.north);
+  \node[nb, anchor=south] at (-8mm,50.5mm)
+    {whatever came back routes to (1) OUTLINE, ALWAYS $\cdot$ the plan's own gate ends the loop};
+
+  % ── the wall: prose starts after, and only after ──────────────────────────
+  \draw[dashed, black!45] (-92mm,-52mm) -- (94mm,-52mm);
+  \node[nb, anchor=west, text=black!75] at (-92mm,-56mm)
+    {this phase STOPS here. Neither stage writes a sentence.};
+  \node[st, minimum width=60mm, text width=56mm] at (10mm,-66mm)
+    {\textbf{(5) REVISE} the sentence, its caption, the projections\\[1pt]
+     \footnotesize the sentence QUOTES PP01.v2 and cites the unit by id};
+\end{tikzpicture}

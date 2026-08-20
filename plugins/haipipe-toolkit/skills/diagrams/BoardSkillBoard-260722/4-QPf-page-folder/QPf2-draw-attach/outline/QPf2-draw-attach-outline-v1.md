@@ -28,7 +28,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B3 · The Draw-it button takes an optional ask.   ✅ have it
 - B4 · Leave it empty, and it turns the page's ascii figure into a real drawing.   ✅ have it
 - B5 · A drawing Claude made can be drawn again as often as you like.   ✅ have it
-- B6 · The button refuses to overwrite a drawing a person made by hand.   🧮 proof
+- B6 · The button refuses to overwrite a drawing a person made by hand.
 
 ## C3 · The big group picture is built from the page files, not copied from them
 
@@ -46,5 +46,5 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B1 · Every save carries the version it started from.   ✅ have it
 - B2 · So two people on the same drawing cannot quietly overwrite each other.   ✅ have it
 - B3 · The chat pane gets the same owner address as the canvas.   ✅ have it
-- B4 · So asking chat to change a drawing writes to that drawing's own file.   🧮 proof
+- B4 · So asking chat to change a drawing writes to that drawing's own file.
 

@@ -52,13 +52,13 @@ reviewable set of question pages or lifecycle stages.
   `haipipe-board-routing`: three of its five verbs were the door's own `open`,
   `regroup.py` and `check.py` written a second time, and its one unique script
   moved with it.
-- `agents/haipipe-board-creator-agent.md` produces one target Page in a fresh
+- `agents/haipipe-page-creator-agent.md` produces one target Page in a fresh
   context. It supports batch creation plus exactly one DRAFT, EVIDENCE, or REVISE
   phase for RUN; it never rebuilds or performs CHECK.
 - `agents/haipipe-board-reviewer-agent.md` is the read-only, fresh-context
   CHECK. It judges one source/render version and returns CLOSE, REVISE, EVIDENCE,
   DRAFT, or HOLD; it never repairs the Board it judges.
-- `agents/haipipe-page-orchestrator-agent.md` is the non-interactive RUN
+- `agents/haipipe-page-auditor-agent.md` is the non-interactive RUN
   target. It invokes the bounded Workflow, stores `_runs/page/` receipts, and
   calls the deterministic auditor without editing Page prose.
 
@@ -71,9 +71,9 @@ board/
 ├── agents/
 │   ├── README.md
 │   ├── CHANGELOG.md
-│   ├── haipipe-board-creator-agent.md
+│   ├── haipipe-page-creator-agent.md
 │   ├── haipipe-board-reviewer-agent.md
-│   └── haipipe-page-orchestrator-agent.md
+│   └── haipipe-page-auditor-agent.md
 ├── haipipe-page/
 ├── page-types/          the five variants THIS skill set owns
 │   ├── haipipe-page-for-stage/

@@ -11,9 +11,9 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ## C1 · The plugin runs the same engine we already run (read from v2.1.220, 260731)
 
 ### C1.P1 · its three layers, and which one really talks to Claude
-- B1 · The plugin does not build an agent of its own.   🧮 proof
+- B1 · The plugin does not build an agent of its own.
 - B2 · It does not build its own message format either.   ✅ have it
-- B3 · It packs in the TypeScript Agent SDK and drives it, and `extension.js` gives that away in its own option names.   🧮 proof
+- B3 · It packs in the TypeScript Agent SDK and drives it, and `extension.js` gives that away in its own option names.
 - B4 · Our Python `claude_agent_sdk` offers those same option names, because it is the same SDK in two languages.   📚 citation
 - B5 · That 245MB file is not a special build, and it is not a second product (JL asked, 260731).   🔢 value · PP01 · PP02
 - B6 · It is the Claude Code CLI compiled into one Mach-O program, with the Node runtime and every dependency baked in, and that is the whole reason it is so big.   ✅ have it
@@ -33,12 +33,12 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ## C3 · We started a new claude for every message, and that was the whole cost
 
 ### C3.P1 · how the plugin serves a conversation, and how serve.py used to
-- B1 · The plugin's read loop runs ONCE for the life of a session, and it pushes each new user turn into the live process with `inputStream.enqueue(...)`.   🧮 proof
+- B1 · The plugin's read loop runs ONCE for the life of a session, and it pushes each new user turn into the live process with `inputStream.enqueue(...)`.
 - B2 · That is what `--input-format stream-json` buys: stdin is a STREAM of turns, not a single prompt, so one process serves the whole conversation.   ✅ have it
 - B3 · Our `ClaudeSDKClient` can do exactly the same.   ✅ have it
 - B4 · Its own docstring even names our use case ("Building chat interfaces or conversational UIs", "Multi-turn conversations with context").   📚 citation
 - B5 · serve.py threw that away.   ✅ have it
-- B6 · `chat()` opened `async with ClaudeSDKClient(...)` inside a per-POST `anyio.run(run)`, so every message connected, ran one turn, and disconnected.   🧮 proof
+- B6 · `chat()` opened `async with ClaudeSDKClient(...)` inside a per-POST `anyio.run(run)`, so every message connected, ran one turn, and disconnected.
 - B7 · That single line was the whole "not that good".   🔢 value · PP03
 - B8 · ⚠️ 7 more sentences in this division are not planned here yet   🎯 aim
 
@@ -59,7 +59,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ### C5.P1 · which of them we could use, and what each one would gain
 - B1 · Three different things get called "the JS version", and they have three different answers.   🖼 owed · table
 - B2 · It is a VS Code plugin-host module that calls `require("vscode")` all through, exports no public API, and ships as one 2.5MB minified bundle.   🔢 value · PP01
-- B3 · Outside VS Code the `vscode` module does not exist, so the file cannot even load.   🧮 proof
+- B3 · Outside VS Code the `vscode` module does not exist, so the file cannot even load.
 - B4 · But it is the SAME SDK as our Python one, so taking it is a change of language, not a change of what we can do.   📚 citation
 - B5 · There is nothing we would gain by switching.   🔢 value · PP04
 - B6 · So the advice is to stay in Python, and the strongest evidence is what else serve.py is (JL asked 260731, "what does serve.py do besides the claude code?").   ✅ have it
@@ -91,7 +91,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B1 · JL asked twice on 260801 whether the day's problems should become a part named for what the reader sees, something like Mobile Usage or UI Experience.   ✅ have it
 - B2 · The first answer here was no, because filing them under UI would file architecture under taste.   ✅ have it
 - B3 · That answer was half right.   ✅ have it
-- B4 · The grouping by OWNER stands, because every defect arrived as a feeling about the interface and turned out to be a fact about where state lives.   🧮 proof
+- B4 · The grouping by OWNER stands, because every defect arrived as a feeling about the interface and turned out to be a fact about where state lives.
 - B5 · The NAME was a picture that told a cold reader nothing.   ✅ have it
 - B6 · The subject is the interface, and the Opening already says why it needs one.   ✅ have it
 - B7 · A terminal carries its own behaviour, a chat box we draw has to be given all of it, and this part is the list of what nobody gave it.   🖼 owed · table
@@ -104,7 +104,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B2 · It was the one QD3 already shipped.   ✅ have it
 - B3 · A terminal survives a reload because its bytes go to a RING that clients attach to.   ✅ have it
 - B4 · Chat's bytes went straight down the socket of whoever happened to ask.   ✅ have it
-- B5 · That single difference was the mechanism under three of the five rows above, and it is why the VS Code panel felt different rather than only nicer.   🧮 proof
+- B5 · That single difference was the mechanism under three of the five rows above, and it is why the VS Code panel felt different rather than only nicer.
 - B6 · `live/turnring.py` is the module.   ✅ have it
 - B7 · It holds one `Turn` per question key, and every event carries a counter `n` that only goes up.   ✅ have it
 - B8 · ⚠️ 40 more sentences in this division are not planned here yet   🎯 aim

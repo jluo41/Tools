@@ -63,7 +63,13 @@ LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw", "/boards")
 
 # Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
-REQUIRED = ["Opening", "Done when", "Now"]
+# `Now` (`## States`) RETIRED 260819 and merged into `Done when` (`## Aims`):
+# one Aim is one row carrying its tick, its `Done when:` test and its `Now:`
+# fact (`haipipe-page` 0.34.0). One id written in two places was one fact with
+# two owners, and it produced `aim-stated-twice` and `state-without-aim` on the
+# very page that ruled it. A page that still carries `## States` keeps parsing;
+# `retired-section` reports it, and this list no longer DEMANDS it.
+REQUIRED = ["Opening", "Done when"]
 
 # QA9's construct table: source form -> the class the renderer must produce.
 # Kept in this order so the report reads like the table on that page.
@@ -515,6 +521,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_evidence_pointer(text, name, rep)
     check_page_evidence(path, text, name, rep, ERROR, WARN)
     check_fence_balance(text, name, rep)
+    check_content_attribution(text, name, rep)
 
 
 # QB4 §1 states seven rules for the Opening and NOT ONE of them was checked, so
@@ -628,7 +635,7 @@ RETIRED_SECTIONS = {
     "Boundary": "JL 260731; what a page covers is the Opening's job",
     "Question": "renamed to `## Opening` (260731)",
     "Items to Finish": "renamed to `## Aims` (260731)",
-    "Where we are": "renamed to `## States` (260731)",
+    "Where we are": "renamed to `## States` (260731), then merged into `## Aims` (260819)",
 }
 
 
@@ -724,6 +731,52 @@ def check_fence_balance(text, name, rep):
                 "a fence is never closed, so every section below it renders as "
                 "code. The page still builds and every other check still "
                 "passes, which is why this one exists.")
+
+
+def check_content_attribution(text, name, rep):
+    """The OFFICIAL-DOCUMENT rule: Content states rules, never attributions.
+
+    Ruled 260820, reading the compiled PDF: "don't say too much 'JL' or
+    'YYMMDD', this is the official document." A bare six-digit date code or a
+    person's name as authority inside `## Content` (or the Diagram caption) is
+    a Log row wearing prose: the reader of the document cannot parse it and
+    should not have to. Who and when live in `## Log`, `## Discussion`, and
+    tick lines. Fenced blocks are skipped, because a fence may carry a frozen
+    transcription another pen owns; the CHECK judge reads those by eye.
+    New authority names join the name pattern here when the board gains them.
+    """
+    body = re.search(r"(?ms)^## (?:Content|Diagram)\b.*?(?=^## (?!Content|Diagram)|\Z)",
+                     text)
+    spans = re.findall(r"(?ms)^## (?:Content|Diagram)\b[^\n]*\n(.*?)(?=^## |\Z)",
+                       text)
+    if not spans:
+        return
+    date_re = re.compile(r"\b26[01]\d{3}\b")
+    name_re = re.compile(r"\bJL\b")
+    offset = 0
+    for span in spans:
+        start = text.index(span, offset)
+        offset = start + len(span)
+        base = text[:start].count("\n") + 1
+        fenced = False
+        for i, line in enumerate(span.split("\n")):
+            st = line.lstrip()
+            if st.startswith(FENCE):
+                fenced = not fenced
+                continue
+            if fenced or st.startswith(">") or st.startswith("<!--"):
+                continue
+            hits = []
+            if date_re.search(line):
+                hits.append("a bare date code")
+            if name_re.search(line):
+                hits.append("a person named as authority")
+            if hits:
+                rep.add(WARN, "content-attribution", "%s:%d" % (name, base + i),
+                        "Content is the official document and this line carries "
+                        + " and ".join(hits) + "; state the rule itself and move "
+                        "the who/when to a Log row (haipipe-page-draft, the "
+                        "present-tense rule).")
 
 
 def check_retired_sections(text, name, rep):
@@ -1117,8 +1170,8 @@ FENCE = "`" * 3
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # `stage` joined 260815: the restructure reduced this family's kinds to stage
 # and design, and QPs3's specimen declares `page-type: stage` explicitly.
-PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "section",
-                    "labeling", "narrative", "dash", "task", "insight",
+PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
+                    "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "brief", "intervention", "artifact", "view", "stage")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 

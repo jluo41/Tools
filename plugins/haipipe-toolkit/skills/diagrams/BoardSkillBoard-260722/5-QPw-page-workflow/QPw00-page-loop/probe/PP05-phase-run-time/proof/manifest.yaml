@@ -1,0 +1,10 @@
+files: []
+why_empty: |
+  BLOCKED, not unanswered. Measuring a phase needs a receipt with timestamps, and
+  three of the seven phases have never produced one anywhere on this board
+  (PROBE, EVIDENCE, COMPILE — see PP02.v4). The four that have are spread across
+  three runs whose receipts carry a single completion time, not a start/end pair,
+  so even those four cannot be differenced.
+  What unblocks this: run the loop once end to end with per-phase start and end
+  stamps in the receipt. That is a change to the receipt shape in
+  page-workflows/haipipe-page-workflow/ref/page-run-contract.md, not a read.

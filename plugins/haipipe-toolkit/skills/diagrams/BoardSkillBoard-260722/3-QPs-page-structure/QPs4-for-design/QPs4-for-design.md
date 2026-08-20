@@ -1,7 +1,7 @@
 # QBt10 · page-type DESIGN · owns NO folder of its own; one Content division per CANDIDATE, closing on a SELECTION that keeps the losers
 
 state: 🟡 PARTIAL · selected 260806 by JL · open: the record's `downstream` line, one unmet criterion
-page-type: design
+
 owner: JL
 method: write the brief first, draw each candidate whole beside the others, and close on one selection record that keeps every loser and the reason it lost
 
@@ -250,8 +250,8 @@ These are page-level Aims, not `A<n>` groups, and on this Page Type they always 
 
 ## Files
 
-- `../../board/page-types/haipipe-page-for-design/SKILL.md`
-  The contract this page is an instance of. If the two disagree, the contract wins and this page is the defect.
+- `../../board/haipipe-page/SKILL.md`
+  The base contract. `haipipe-page-for-design` was DELETED on 260819 (JL: "we will not have the design anymore ... cannot see the speciality of the design now"), so this page now runs on the flexible default: no `page-type:` key, and only the base section order is owed. Its one real rule, one candidate per division, is what a flexible page does anyway.
 - `../../board/haipipe-board/src/topic_entry_contract.py`
   Where the winner is implemented: `PROBE_DIRS` carries the loser's tail, `page_id()` carries the S-prefix removal, and the pairing comment states why a declared `requires:` still beats the folder.
 - `../../../../board/haipipe-board/cli/build-displays.py`

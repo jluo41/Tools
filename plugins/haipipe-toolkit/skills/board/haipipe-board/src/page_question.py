@@ -34,6 +34,22 @@ STAGE_LABELS = {
 _CITE_RE = re.compile(r"\\cite(p|t)?\*?(?:\[[^\]]*\])*\{([^}]+)\}")
 
 
+def _opening_sub(opening_text, name):
+    """-> the body of `### <name>` inside `## Opening`, or "".
+
+    The Opening's first blank line splits what a reader sees from the
+    `More details` drawer (haipipe-page §THE FIRST BLANK LINE). A `###` under
+    it is a NAMED row of that drawer, which is what Writing Style became on
+    260819: it is guidance for whoever writes the page next, not substance a
+    reader of the page needs.
+    """
+    if not opening_text:
+        return ""
+    m = re.search(r"(?ms)^###\s+%s\s*$(.*?)(?=^###\s|\Z)" % re.escape(name),
+                  opening_text)
+    return m.group(1).strip() if m else ""
+
+
 def _bib_entries(raw):
     out = {}
     for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", raw):
@@ -808,6 +824,13 @@ def _render_question(q, prv, nxt):
         [x for x in lead_lines if x.lstrip().startswith(">")]
     )
     qrest = _parts[1].strip() if len(_parts) > 1 else ""
+    # A `###` inside Opening is a NAMED drawer row (Writing Style since
+    # 260819), so it must LEAVE the More-details remainder when it is
+    # extracted below. Skipping this printed the same Writing Style block
+    # twice, once inside More details and once as its own row (JL 260819:
+    # "I have two writing styles here").
+    qrest = re.sub(r"(?ms)^###\s+Writing Style\s*$.*?(?=^###\s|\Z)",
+                   "", qrest).strip()
     content_sections = parse_content_sections(sec(q["sec"], "Content"))
     contract_md = re.sub(r"<!--.*?-->", "", sec(q["sec"], "Stage Contract"), flags=re.S)
     contract_sections = parse_content_sections(contract_md)
@@ -836,7 +859,15 @@ def _render_question(q, prv, nxt):
     # Required Inputs、Venue 并列；但「这一页该怎么写」每一页都得有 —— 没有它，
     # 下一个人就没法照着改。所以它跟 Why this matters 一样收在领句后面：解释这一页
     # 该怎么被对待，而不是这一页的实质内容。
-    wstyle = sec(q["sec"], "Writing Style").strip()
+    # SOURCE SHAPE CHANGED 260819 (JL: "I don't want to have the Writing style
+    # to be in the main page, please put it under the subsection in the
+    # Openning"). It renders in the Opening drawer either way; what moved is
+    # where it is WRITTEN. `### Writing Style` under `## Opening` is the shape
+    # now; the top-level `## Writing Style` still parses, because 123 pages
+    # carry it and deleting someone else's text on read is a silent loss.
+    wstyle = _opening_sub(sec(q["sec"], "Opening"), "Writing Style")
+    if not wstyle:
+        wstyle = sec(q["sec"], "Writing Style").strip()
     if wstyle:
         opening_sections.append(("Writing Style", wstyle))
     # Stage Contract joins Opening's collapsed rows (JL 260725: "within the

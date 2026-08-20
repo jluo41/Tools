@@ -66,9 +66,9 @@ The Five Worlds
 
 One-way dependency map (cross-cutting orientation; no single world owns it):
 
-  papers/        READ tasks/ + discoveries/ BY PATH — a section in the paper's own
-                 1-probes/PPNN_<topic>/ carries `target: <task-folder>/QA/<n>-<slug>.md`
-  applications/  same model (applications/<A>/1-probes/); NEVER write back
+  papers/        Probe routes accepted Pages through PageX and reaches tasks/ +
+                 discoveries/ through QA cards bound to exact paths
+  applications/  same crossing model through its owning consumer surface; NEVER write back
   discoveries/   consumer-unaware (the consumer records the link on its own side)
   tasks/         NEVER read discoveries/ papers/ applications/
 
@@ -79,6 +79,10 @@ The Evidence Contract (this skill's ONE hard rule about the bank)
 
 Owner: /haipipe-probe (skills/probe/haipipe-probe/SKILL.md). Restated here ONLY as a scaffolding
 prohibition, because this skill is the thing that creates folders.
+
+  🔀 PROBE HAS TWO PAGE-LOCAL LANES. `pagex/` binds exact accepted Page files in
+     OUTLINE; `probe/` binds Task/Discovery QA in PROBE/EVIDENCE. This project
+     scaffold creates neither lane.
 
   ⚙️ THE BANK IS PROBE-UNAWARE. Nothing under tasks/ or discoveries/ may carry an _ASK/ folder,
      an _ANS/ folder, an `answers:` field, or a PP id. THIS SKILL NEVER MINTS ONE. (The _ASK/
@@ -100,9 +104,10 @@ prohibition, because this skill is the thing that creates folders.
        · NOT SCAFFOLDED AT SETUP. It appears when the task-folder has something to say.
        · Applies to BOTH banks — task and discovery are both executors.
 
-  📄 THE CONSUMER holds the questions: papers|applications/<X>/1-probes/PPNN_<topic>/
-     (renamed from 1-probe-plans/ on 2026-07-14). Created by the consumer's own EVIDENCE phase,
-     never by this skill. Bound to the bank BY PATH — no id ever crosses.
+  📄 THE CONSUMER holds questions on its owning Page-local probe surface. For a
+     Board Page this is <page>/probe/PP<NN>-<slug>/. PROBE creates the card;
+     EVIDENCE binds it to the bank BY PATH. This project scaffold never creates
+     consumer probe folders.
 
 ---
 
@@ -136,6 +141,6 @@ For anything below the top level, consult the owner; this file never restates th
   --------------  -----------------------  --------------------------------------------------------------------------
   tasks/          /haipipe-task            task/haipipe-task/ref/task-structure.md (layout), plus ref/hierarchy.md + ref/authoring-conventions.md
   discoveries/    /haipipe-discovery       discovery/haipipe-discovery/SKILL.md (folder contract: discovery.yaml + evidence files)
-  papers/         /haipipe-paper           paper/haipipe-paper/fn/folder.md (paper-folder contract) + paper/haipipe-paper/ref/paper-folder-anatomy.md
+  papers/         /haipipe-paper           paper/haipipe-paper/SKILL.md + paper/README.md (thin Paper graph and owned Page Types)
   applications/   /haipipe-application-*   application/_audience/audience-requirements.md + the venue playbooks under application/_venue/
   diagram/        this skill               this file (Project-Level diagram/ section above)

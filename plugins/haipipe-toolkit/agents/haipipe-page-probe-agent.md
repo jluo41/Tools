@@ -1,0 +1,1 @@
+../skills/board/page-workflows/agents/haipipe-page-probe-agent.md

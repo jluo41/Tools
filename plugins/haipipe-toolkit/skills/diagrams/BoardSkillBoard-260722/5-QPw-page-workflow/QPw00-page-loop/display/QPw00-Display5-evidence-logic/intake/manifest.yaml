@@ -1,0 +1,40 @@
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+frozen: 260819
+why: every stage, lane, tick, revert rule, and now every card field in this
+  figure is transcribed from these eight contracts, so a moved tick, a renamed
+  lane or a changed card field makes the figure wrong and this manifest is what
+  makes that computable.
+  re-frozen 260819 (third freeze, same day): JL asked for the PROBE itself in
+  the picture, so the card raised at (2) PROBE joins as the head, and two
+  contracts join the freeze: haipipe-page-probe (the phase that raises the
+  card) and haipipe-plugin-value (the PP<NN>.v<n> id, one per number). The six
+  prior files also moved under the freeze: the value glyph settled as 🧮
+  (was 🔢) across four of them, and haipipe-page-evidence went 0.10.2 -> 0.10.4.
+files:
+  - file: inputs/haipipe-page-evidence.SKILL.md
+    source: board/page-workflows/haipipe-page-evidence/SKILL.md
+    sha256: 6f7b3d6b00c92d078c0891f917ef13272f37408a0f1fdacd9de664f870ccc4ba
+  - file: inputs/haipipe-page-probe.SKILL.md
+    source: board/page-workflows/haipipe-page-probe/SKILL.md
+    sha256: a694c32547fd660cf74f10326c5c3ca4f30f5e375cba357f3c1b0fbfef8169b5
+  - file: inputs/haipipe-page-revise.SKILL.md
+    source: board/page-workflows/haipipe-page-revise/SKILL.md
+    sha256: a332b91459bb19007196d0a732cdf46121541708fb51cb93eb486b05d0735c49
+  - file: inputs/haipipe-plugin-probe.SKILL.md
+    source: board/page-plugins/haipipe-plugin-probe/SKILL.md
+    sha256: c34e0463d41b9c90519c4e88a1e7443ed891ae58e01009990c5a78d376f3fbb4
+  - file: inputs/haipipe-plugin-value.SKILL.md
+    source: board/page-plugins/haipipe-plugin-value/SKILL.md
+    sha256: f0b9ca2c7c87334bad4d5c290583293d3afa5eb60b4c0060900c92cca5c861dc
+  - file: inputs/haipipe-plugin-bibex.SKILL.md
+    source: board/page-plugins/haipipe-plugin-bibex/SKILL.md
+    sha256: 1b32b319473029720dbec2effcfbac9475083e57e63496d0124965992c15670c
+  - file: inputs/haipipe-plugin-display.SKILL.md
+    source: board/page-plugins/haipipe-plugin-display/SKILL.md
+    sha256: 48f0fa4147af8aa8cd8de633dba9081a27a64f8fcaaac770d857e2ff4e9b604a
+  - file: inputs/phase-cards.md
+    source: board/page-workflows/haipipe-page-workflow/ref/phase-cards.md
+    sha256: 9c5591b13bd1a1310f2f22b863dc359e171589729899935525c432f1a629b289

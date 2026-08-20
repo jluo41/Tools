@@ -1,3 +1,13 @@
+## 0.2.0 — 2026-08-19
+
+- **ONE venue page per VENUE**, new `per: venue` key, and it stays a PAGE. JL
+  260819: "I want to make venue page to be each page. Don't reduce it." A
+  proposal to demote it to a `ref/` file was rejected.
+- The reason it is a page: a venue carries open questions, a fit judgment, a
+  submission history and decisions that get overturned. Those need Aims with
+  `Done when:` and `Now:`, a Log, and a tickable `Decision Now` row, which a
+  reference file cannot hold.
+
 haipipe-page-for-venue · Changelog
 ==================================
 

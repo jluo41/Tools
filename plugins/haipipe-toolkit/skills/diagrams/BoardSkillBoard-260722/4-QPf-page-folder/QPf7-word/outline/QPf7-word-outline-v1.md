@@ -37,5 +37,5 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ### C3.P1 · the registry's `tab: {url, write}` spec, url first, then a HEAD check, then a build, with the word route behind it
 - B1 · A HEAD is a small web question that asks only whether a file is there, and a miss never leaves you with a blank tab.   ✅ have it
 - B2 · Opening the tab posts the route, says it is building, and lands on the view the writer returns.   ✅ have it
-- B3 · If the writer fails, its own error prints where that view would have been.   🧮 proof
+- B3 · If the writer fails, its own error prints where that view would have been.
 

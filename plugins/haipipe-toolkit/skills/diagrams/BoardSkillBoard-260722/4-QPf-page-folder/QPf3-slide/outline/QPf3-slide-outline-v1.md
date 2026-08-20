@@ -43,12 +43,12 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B2 · The middles are built from the page's own emoji, numbers, and quoted rulings.   ✅ have it
 - B3 · The deck points at the html-ppt skill's files by relative path.   ✅ have it
 - B4 · So a better theme reaches every deck at once, with nothing to rebuild.   ✅ have it
-- B5 · Nothing from the skill is copied into the board, and the board adds no CSS of its own.   🧮 proof
+- B5 · Nothing from the skill is copied into the board, and the board adds no CSS of its own.
 
 ## C5 · Why Claude writes the deck, and what was dropped
 
 ### C5.P1 · three ways a page could have had a deck, and the one still standing
-- B1 · This way won on evidence, not on argument.   🧮 proof
+- B1 · This way won on evidence, not on argument.
 - B2 · Six decks were written in the hour of the ruling, and the first live `/_board/autodeck` run produced a real talk for `QF2-newcomer`.   🔢 value · PP01
 - B3 · The reflow copy lost because it copied instead of choosing, so one part of the page came back as its own paragraphs in a box.   ✅ have it
 - B4 · It was dropped whole, endpoint and route with it, and nothing in the board turns a page into slides that way now.   ✅ have it

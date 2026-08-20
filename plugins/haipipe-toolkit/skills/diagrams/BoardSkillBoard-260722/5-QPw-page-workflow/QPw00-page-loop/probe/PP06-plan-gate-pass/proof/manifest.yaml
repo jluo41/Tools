@@ -1,0 +1,11 @@
+card: PP06-plan-gate-pass
+files:
+  - name: plan-gate-census.json
+    kind: numbers
+    source: every <page>/outline/<stem>-outline-v<N>.md on this board, highest N per page, checked by src/plan_shape.py and checks/values.py
+    run: local run, 260819, during the QPw00 PROBE pass
+    pulled: 2026-08-19
+    bytes: 6202
+    sha256: 851c359e43fb5803d6eb924451b68340f6d85c627f7d41ad47070ebe07ab90b6
+    why: the four-check pass/fail census C2.P3.B5 owes, one row per plan
+    aggregate: true

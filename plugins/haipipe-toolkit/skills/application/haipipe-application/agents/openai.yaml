@@ -1,4 +1,4 @@
 interface:
   display_name: "Application"
-  short_description: "Compose settled insights into intervention artifacts"
-  default_prompt: "Use $haipipe-application to open this intervention and continue its Brief, Intervention, or Artifact frontier."
+  short_description: "Turn application insights into audience-specific designs"
+  default_prompt: "Use $haipipe-application to open this application and continue its Brief, Insight, Design, or Artifact frontier."

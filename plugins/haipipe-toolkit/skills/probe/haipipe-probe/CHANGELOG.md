@@ -3,6 +3,26 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.14.0 — 2026-08-20
+
+- **ONE door to the bank, ruled by JL** ("永远只有 haipipe-probe-q-executor-agent
+  才能够做这件事"): no consumer-side worker — paper stage, application, or
+  board-page phase producer — ever calls the executor orchestrators directly.
+  Found live on 260820: the board-page family's contract prescribed a DIRECT
+  crossing while this file forbade it, and the only agent able to cross was
+  scoped to exclude pages.
+- **Probe-outcome alignment, same day**: a Q-executor asks for the WHOLE
+  SURFACE its artifact holds (JL: "拿到的信息越全越好…不是零散一测一测的");
+  the harvest lands every quotable number as an ADDRESSABLE value (family id
+  scheme, e.g. PP<NN>.v<n>) with a recompute-precise source pointer or a
+  pulled proof, or the entry is not answered; and the one door gains its
+  caller rule — one PROBE producer per family hands it the batch (board
+  page: haipipe-page-probe-agent).
+- **The self-contradiction fixed**: "EVIDENCE writes route/bank after MATCH"
+  four lines from "PROBE owns ② MATCH" — now: the phase that OWNS MATCH
+  writes them. Plus one line stating the board-page family's raising cut
+  (OUTLINE marks, PROBE raises), which this file predated.
+
 ## [0.13.0] -- 2026-08-17 -- Page lifecycle split
 
 The shared contract now names PROBE as the outgoing ORGANIZE/MATCH/DISPATCH

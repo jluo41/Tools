@@ -18,13 +18,27 @@ facts_the_image_may_state:
 # so `cli/check.py` reported `display-intake-unfrozen` and nothing could be
 # rechecked: a ref points at a file that keeps changing. These are the bytes
 # the figure was drawn from.
-frozen: 260818
+#
+# CONVERTED 260819 to the checkable shape: each row now names the LIVE
+# `source:` (relative to the skills/ root) and freezes ITS hash, because a
+# `path:` + `sha256` pair proves only that the copy has not rotted and says
+# nothing about the original (`haipipe-plugin-display` §❄️; the auditor is
+# `board/haipipe-board/checks/intake.py`). At conversion both live sources
+# were byte-identical to the 260818 copies, so the hashes are unchanged and
+# nothing was redrawn.
+frozen: 260819
 inputs:
-  - path: intake/inputs/QPf5-display.md
-    sha256: 06137007a199f0d8ea9e3a3ae976ec76e1b908ebeadd255508d2f40ef682959f
-    bytes: 27936
+  - file: inputs/QPf5-display.md
+    source: diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf5-display/QPf5-display.md
+    sha256: e251fdcac0d6a9ac94d8e2db8b4b066d6c954d4581289da80c89b7b76b615620
+    bytes: 28558
     takes: "the ask-once-cite-twice rule and the TikZ method row"
-  - path: intake/inputs/QPf9-probe.md
-    sha256: a81b4aa18bca381a78672aff7d092c695744319ac13848b07029004930d60462
-    bytes: 23690
+  - file: inputs/QPf9-probe.md
+    source: diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf9-probe/QPf9-probe.md
+    sha256: 878c7fcc89d6724ccd859d3b4fd719471304ca1963c39ba5844f74975b47dd45
+    bytes: 23684
     takes: "the card grammar (question, state, binding) and the wall"
+
+# RE-FROZEN 260819: the source pages' Log rows were cleaned of profanity
+# (JL: "please clean all the bad words from the log"); the content each
+# figure takes is untouched, so nothing was redrawn.

@@ -1,410 +1,225 @@
 ---
 name: haipipe-probe
-description: "The shared probe model: a consumer-level Q/A map that binds a neutral Q-executor by PATH to a QA-bank file in the probe-unaware task/discovery bank. Consumer families own their persisted QA-probe record and local overlay; this skill owns stake stripping, the five-step loop, bank independence, and the QA evidence boundary. Trigger: probe, Q-executor, A-consumer, QA-probe, QA-bank, QA file, qa verb, state, evidence, /haipipe-probe."
+description: >-
+  The shared evidence-acquisition router for a consumer Page. Probe first types
+  the source: existing accepted Pages go through its PageX lane, while Task or
+  Discovery questions go through its QA lane with stake stripping,
+  MATCH-before-DISPATCH, and exact-path answer binding. Consumer plugins own the
+  two local surfaces. Trigger: probe, PageX, existing Page evidence, Task
+  evidence, Discovery evidence, Q-consumer, Q-executor, QA bank, QA file,
+  match before dispatch, A-executor, /haipipe-probe.
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-08-17"
-  summary: "Twin-QA vocabulary plus the Page lifecycle split: PROBE organizes/matches/dispatches, EVIDENCE points/interprets/lands the answer."
+  version: "0.16.0"
+  last_updated: "2026-08-20"
+  summary: "Probe is the umbrella; PageX handles accepted Pages and QA Probe handles Task/Discovery."
 ---
 
-> **WHERE A QA-PROBE RECORD LIVES IS THE CONSUMER'S CHOICE, not this model's.** This
-> skill owns the crossing: stake stripping, MATCH-before-DISPATCH, and the
-> bank's independent QA evidence. A consumer skill owns its record path, its
-> evidence-page divisions, QA-probe headings, and local state overlay. For Paper,
-> read `paper/haipipe-paper/probe/topic-entry-contract.md` before
-> authoring an evidence page or its QA-probes; it defines the S03 Literature and S04 Value runtime shape.
+# /haipipe-probe · choose the PageX or QA evidence lane
 
-**Canonical lifecycle vocabulary, ruled 260804 and renamed 260806:** EVIDENCE is
-the Page phase, a lowercase probe is one question-and-answer exchange, and a
-QA-probe record is its persisted consumer-side surface. One conversation, two
-QAs: the QA-bank is the original, the file the executor writes in its own tree;
-the QA-probe is the consumer's stub that points at it. The four slot words are
-CAPITALS everywhere, including heading slots: Q-consumer, A-consumer,
-Q-executor, A-executor; they name SLOTS, never files. The older word `entry`
-still appears in checker names, paths, and executable schemas below. Read it as
-the persisted QA-probe record, not as another Page Type, phase, or conceptual
-layer.
-
-Skill: haipipe-probe — the probe layer
-======================================
-
-A probe maps a question your paper or application cannot answer itself to an answer in the bank.
-It lives in the consumer as one topic folder containing one file per Q-executor, and binds each question by PATH to a QA file that the executor wrote.
-A paper may instead record a terminal `concern` when no bank can close the doubt; that form is never dispatched.
-A probe is COMMUNICATION between a consumer and an executor — it carries a clean question out and a general answer back, while its `### Q-consumer` copy remains review-only on the consumer side.
-
-Spec and rationale (why it is built this way): `../../diagrams/01-probe-qa-260726/`.
-This file is the shared execution model and vocabulary source. A consumer-specific
-contract wins for the storage path, page hierarchy, and entry headings it owns.
-
-⚠️ ONE SOURCE FOR THE VOCABULARY.
-The task/discovery twins, the `qa` verbs, the probe workers, and `check-probe-cards.sh` COPY the canonical strings from here.
-Change a `state:` value, a field name (`state:` / `started:` / `by:`), the TTL constant `QA_WORKING_TTL_HOURS`, the timestamp format `YYYY-MM-DDTHH:MM`, or the `set -C` idiom HERE, then propagate.
-
-
-What a probe is
-===============
+Probe is the Page's one evidence-acquisition family. It routes by source before
+doing any work; it is not a storage layout and not a Paper stage.
 
 ```text
-   YOUR PAPER / APPLICATION                THE BANK  (task = discovery, probe-UNAWARE)
-   ────────────────────────                ──────────────────────────────────────────
-   1-probes/PP03_welldoc/QX1_cycle.md      tasks/A03_welldoc_cycle_check/01_column_scan/
-     ## QX1  "cycle indicator?"              ├── workflow/plan.yaml · results/   (code)
-     ### Q-executor ────────────┐            └── QA/1-cycle-indicator.md         (readable)
-     ### bank binding · target ─┼───────────────▶ "none — 40 tables scanned"
-     ### A-executor: "…"  ◀────────┘   the answer comes back as a FILE the executor wrote
+Probe
+├── source: page            ── PageX ─────▶ scoped accepted-Page binding
+└── source: task|discovery  ── QA Probe ─▶ bank-owned QA file
 ```
 
-The question crosses as a STRING in an agent's prompt (the `Q-executor`), never as a file on the bank side.
-The bank never learns probes exist: no mailbox, no back-reference, no probe id under `tasks/` or `discoveries/`.
-The answer comes back as a QA file the executor wrote for its own reasons — readable, general, with no consumer in it.
-That asymmetry is the whole design: the same answer is reusable, because two consumers read the same file differently.
+PageX now sits inside the Probe family, but it remains a separate lane with a
+different phase and durable surface. OUTLINE uses PageX to rank and bind exact
+accepted Page files. The PROBE and EVIDENCE phases use QA Probe only for Task or
+Discovery. Neither lane falls through to the other: a mistaken source type
+returns to OUTLINE for correction.
 
-YOUR QUESTION AND THE EXECUTOR'S QUESTION ARE NOT THE SAME QUESTION.
-Yours carries the STAKE — "does WellDoc have a cycle column? (my claim C6 dies if it does)".
-The executor must never see that stake, or it shapes the answer around your hypothesis.
-So the probe writes a Q-EXECUTOR: the SAME question in plain, general language — "scan the WellDoc tables for a cycle column; report present or absent" — with the stake stripped out.
-The Q-executor is the executor-facing question, and the ONLY thing that crosses to the bank.
-Writing it — your question → the Q-executor — is the probe's core act.
+## 🔀 Source router
 
-The probe does NOT judge.
-It carries the answer (`### A-executor`, a copy of the QA answer) back to the consumer, which interprets it into its own A-consumer in the stage doc; whether that settles a claim is the consumer's own business, in its own `1-claims.md`, and never the probe's.
+Choose the lane from the source, not from convenience:
 
-THE FOUR FORMS — a question and its answer, on each side of the wall:
+| Source | Lane | Phase | Durable record |
+|---|---|---|---|
+| accepted Board Page | PageX | OUTLINE | `pagex/<stem>.md` + exact-file links |
+| Task folder | QA Probe | PROBE → EVIDENCE | `probe/PP<NN>-<slug>/` → Task `QA/` |
+| Discovery folder | QA Probe | PROBE → EVIDENCE | `probe/PP<NN>-<slug>/` → Discovery `QA/` |
+
+PageX does not create a mirror QA card for evidence already accepted by its
+source Page. QA Probe does not search Pages or treat topic similarity as a bank
+answer.
+
+## 🧱 The QA wall
+
+One exchange has four named forms:
 
 ```text
-                 CONSUMER (holds the stake)          EXECUTOR (never sees it)
-                 ──────────────────────────          ────────────────────────
-   QUESTION      Q-consumer            ──T1 strip──────▶  Q-executor = `### Q-executor`
-                 (stage doc, per consumer)                 the ONLY thing sent to the bank
-   ANSWER        A-consumer            ◀──T2 interpret──  A-executor = `### A-executor`
-                 (stage doc, per consumer)                 (a copy of the QA file's ## Answer)
+                 CONSUMER SIDE                    EXECUTOR SIDE
+QUESTION         Q-consumer      ── strip stake ─▶ Q-executor
+ANSWER           A-consumer      ◀─ interpret ─── A-executor
 ```
 
-The probe file holds the EXECUTOR side of both — `### Q-executor` (the question OUT) and `### A-executor` (the answer BACK, copied in as the consumer-side single source of truth) — plus a review-only `### Q-consumer` map.
-The AUTHORITATIVE CONSUMER side lives in the stage doc: the Q-consumer (the question, with its stake) and the A-consumer (the per-consumer interpretation, station ②).
-One Q-executor may serve SEVERAL Q-consumers — many consumer questions reduce to the same executor question — so the probe entry copies each original under `### Q-consumer` for audit.
-That copy may preserve the stake; it never crosses the wall.
-The two arrows are the two loop steps: T1 = ① ORGANIZE (write `### Q-executor`), T2 = ⑤ INTERPRET (write `### A-executor`, a copy of the QA answer; each consumer then writes its own A-consumer in its stage doc).
-Q-consumer is the logical collection where a stage RAISES its questions.
-Its physical adapter belongs to the consumer family.
-A Board-first paper S page stores each Q-consumer as a recognizable,
-Content-linked Aim in `## Aims`; an application that does not use Board may
-keep a literal `Q-consumer` section.
-There is one record per question, with an id, title, stake-bearing description,
-reason, probe pointer, and answer (the answer lands later, at EVIDENCE):
+- `Q-consumer` states what this Page needs, why it matters, and what breaks.
+- `Q-executor` is neutral and answerable without seeing the Page. It is the only
+  question that may cross into a bank.
+- `A-executor` is the bank's answer, preserved verbatim and bound by path.
+- `A-consumer` is the Page-specific interpretation stored behind the wall at
+  `consumer/a-consumer.md`. DRAFT may later turn an accepted interpretation
+  into Page prose; the bank does not own it.
+
+Stake includes Page ids, claim ids, desired conclusions, venue pressure, and
+phrases such as “our paper” or “we need to show.” It may appear in Q-consumer,
+but never in Q-executor, A-executor, a dispatch payload, or a bank QA file.
+
+## 🗂 Ownership
+
+The consumer owns its local record. The PageX lane loads
+`board/page-plugins/haipipe-plugin-pagex`. The QA lane loads
+`board/page-plugins/haipipe-plugin-probe`; it stores one question at:
 
 ```text
-   - A<section>.<n> · Q-<Stage>-<n> · <question title>
-         **Done when:** <the answer is interpreted into this stage's Content>
-         **Description:** <what this question wants to know>
-         **Reason:** <which Content assertion depends on it and what breaks>
-         **Probe:** not opened yet
-         **Answer:** <empty until EVIDENCE>
-
-   ## States
-   - ⬜ A<section>.<n> · <current fact about Q-<Stage>-<n>>
+<page>/probe/PP<NN>-<slug>/
+├── card.md
+├── consumer/q-consumer.md
+├── consumer/a-consumer.md
+├── executor/q-executor.md
+├── executor/a-executor.md
+└── proof/
 ```
 
-The Q-consumer id is CONSUMER-LOCAL — `Q-Seed-1`, `Q-Claim-6` (paper); each family owns its own scheme and the ids never collide across consumers, because a Q-consumer id (like a PP number) never crosses the wall. Only the `Q-executor` is shared vocabulary. (The `resource` stage already numbers this way.)
-
-DRAFT RAISES; PROBE PLANS AND DISPATCHES; EVIDENCE HARVESTS. DRAFT writes the
-stage's prose and the Q-consumer questions it cannot answer — and stops there.
-It authors no probe entry, chooses no route, judges no bank, and never opens
-`1-probes/`. PROBE owns the outgoing half of the crossing; EVIDENCE owns what
-comes back and the Page-facing evidence card.
-
-⚠️ ①② USED TO RUN AT DRAFT. The stated reason was to let ONE human gate review draft + probe plan together. That gate is GONE — stages now declare `gates: [check]` — so the reason evaporated and the steps went back where they belong. A DRAFT that writes a `### Q-executor` is doing EVIDENCE's job.
-
-For each Q-consumer, the Page workflow runs the loop in order:
-- ① ORGANIZE — turn the Q-consumer into a probe ENTRY (below): find-or-open its `## QX<n>`, write its `### Q-executor` (the stake stripped out, plus the Deliverable / Accepted lines), copy the Q-consumer's original wording under `### Q-consumer`, and choose its `route` (`task | discovery`). If an existing Q-executor already asks it, just add a `### Q-consumer` bullet — no new entry. If no bank could in principle close the doubt, record the paper-only terminal form (`route: none`, `state: concern`) and stop before MATCH.
-- ② MATCH — for non-concern entries, root the question to a SPECIFIC readable QA answer or to the bank work that must produce one (a read-only grep of `QA/*.md` is legal — LAW 1 bans the pen and the run, not the eye): `bank` records the verdict (`reuse | run | code | new`). `reuse` points `target` at the existing QA file; `run` / `code` / `new` use `NEW <path>` until the executor returns an answering QA file.
-
-`route` and the `bank` verdict are AUTHORITATIVE — EVIDENCE writes them after MATCH, and the executor executes that plan rather than re-deciding it.
-EVIDENCE self-reviews its entries in a FRESH context against **The EVIDENCE entry-review checklist** below, fixes mechanical defects, then continues within the stage's declared phase sequence.
-There is no DRAFT│EVIDENCE gate.
-The stage's declared CHECK gate reviews the draft, probe entries, answers, and any explicit `deferred` entries together.
-PROBE owns ① ORGANIZE, ② MATCH, and ③ DISPATCH. EVIDENCE owns ④ POINT and
-⑤ INTERPRET, then lands the value/citation/display card that the Page can use.
-Ids: three LOCAL layers, none crossing the wall — `Q-<Stage>-<n>` in the stage doc (consumer-local), `QX<n>` in the probe file (topic-local), `QA/<n>-<slug>.md` in the bank (task-folder-local). They bind by PATH (`target`), never by a shared id. Each stage-doc `Q-<Stage>-<n>` gains a `→ 1-probes/PPnn_<topic>/QXn_<slug>.md` pointer, and its `state` is DERIVED — that state, not an empty `target`, marks a planned-but-unrun entry, because EVIDENCE writes `target`.
-
-The EVIDENCE entry-review checklist
---------------------------------
-
-The EVIDENCE self-review reads and judges what `check-probe-cards.sh` cannot; the checker still runs at CHECK as the mechanical backstop, and the two are complementary. A review sub-agent (fresh context) runs it per question ENTRY, plus per file:
-
-Per ENTRY:
-- `Q-executor:` is CLEAN (LAW 2) — no claim ids, no "our / this paper", no stake, no hint of the wanted answer; a stranger could answer it.
-- the question is ANSWERABLE + SPECIFIC — a concrete check with a definite result, not broad or ambiguous.
-- `route` is set (`task | discovery`), except the explicit terminal `concern` form uses `none`.
-- `bank` is judged by READING a SPECIFIC candidate folder ON THE ANSWER (topic-similarity is not a hit): `reuse`/`run`/`code` names the folder; `new` says nothing exists. A terminal `concern` has no `bank` or `target` because no executor can close it.
-- `target` agrees with `bank` (an existing QA path for `reuse`, or `NEW <path>` for `run` / `code` / `new`).
-- each `### Q-consumer` bullet copies in a real stage-doc Q-consumer (id + its original question); comparing that review-only copy with `### Q-executor` proves the strip lost no factual request while the dispatch leaked no stake.
-Per FILE:
-- stake may appear only in the review-only `### Q-consumer` copy; it is forbidden in `### Q-executor`, `### A-executor`, collector payloads, targets, and every bank file.
-
-The stage's DRAFT worker separately checks the draft prose and Q-consumer shape against its own artifact spec. EVIDENCE issues → the EVIDENCE worker fixes → re-review (bounded); both phase records ride to CHECK in the owning S page's `## Log`.
-
-The answer's three stations
----------------------------
-
-An answer returns from the bank and lands in THREE places — each a more integrated FORM of the same fact, each ANCHORED to the one before, so a copy can never drift or be fabricated:
+The bank owns the answering QA file:
 
 ```text
-  🏦 QA file  ─▶  ① EVIDENCE FILE           ─▶  ② Q-consumer Answer      ─▶  ③ STAGE CONTENT
-  (bank)          ### A-executor: "12.9…"    Q-Claim-6 Answer: 12.9…      "…prescribe 12.9 more
-                  [→ target QA file]         [source: PPnn]               MME (N=766k)…"
-  form:           the copy = single truth     the per-consumer Q&A         the reader-facing prose
-   written at:     ⑤ INTERPRET (EVIDENCE)         EVIDENCE/REVISE (beside ①)      REVISE (weave + discharge)
+<task-folder>/QA/<n>-<slug>.md
+<discovery-folder>/QA/<n>-<slug>.md
 ```
 
-- **① probe file** — `### A-executor`, a COPY of the QA answer, anchored to the `target` QA file: the consumer-side single source of truth, reusable by every Q-consumer this Q-executor serves.
-- **② Q-consumer `Answer:`** in the stage doc, PER CONSUMER, carrying a `[source: PPnn]` anchor to ①: the answer recorded NEXT TO its question, so the stage doc is a self-contained Q&A. A copy, but ANCHORED — the anchor points at ①, which points at the QA file, so nothing drifts or is fabricated.
-- **③ stage content** — the answer WOVEN into the sentence(s) that cite `[Q<n>]`, citation discharged.
+Never create `1-probes/`, an evidence Page, an S03/S04 Paper stage, or a second
+consumer-side QA schema. This protocol points to the bank artifact; it does not
+copy authority away from it.
 
-Each hop is a copy anchored to the last, so the whole chain is self-contained AND traceable — you can walk content → A-consumer → A-executor → QA to see where any error entered. The STAKE never enters this chain; it stays in the stage-doc Q-consumer. Same three stations in paper and application.
-
-
-The probe file
-==============
-
-`papers/<P>/1-probes/PPNN_<topic>/`, or identically `applications/<A>/1-probes/PPNN_<topic>/` — a FOLDER per topic.
-One FOLDER per TOPIC; one FILE `QXn_<slug>.md` per Q-EXECUTOR. Each file holds a single `## QX<n>` entry, oriented around the Q-executor, with its consumers attached. A Q-executor is path-addressable, and `check-probe-cards.sh` globs `PP*/*.md`.
-PP numbers are consumer-local footnote numbers — two consumers may both carry a PP04, and nothing collides because no PP id ever crosses to the bank.
-The authoritative stake lives in each stage-doc Q-consumer.
-Its original wording may be copied under `### Q-consumer` for review, but that subsection is never dispatched.
-
-Fillable form + rules: `ref/probe-template.md`. An entry is `## QX<n>` + four `###` subsections; no markdown tables.
+## 🔁 Five-step crossing
 
 ```text
-   # PP03 — WellDoc data feasibility
-
-   ## QX1 — cycle indicator          ← topic-local Q-executor id (QX1, QX2 … within this file)
-
-   ### Q-executor                    ← the question in general language, FROZEN — the dispatch payload
-   Scan all 40 WellDoc CSV tables for menstrual/cycle/hormone columns. Report which exist, or none.
-   Deliverable: QA digest + machine artifact. Accepted: present | absent.
-
-   ### Q-consumer                    ← who needs it; each bullet copies in that consumer's ORIGINAL question
-   * Q-Claim-6 — does WellDoc have a cycle column? (C6 dies if it does)
-   * Q-Seed-1 — is menstrual-cycle-labelled external data obtainable?
-
-   ### bank binding
-   **route**: task                   ← the dispatch door (AUTHORITATIVE), chosen at EVIDENCE
-   **bank**: reuse                   ← reuse | run | code | new — what the bank needs (the EVIDENCE ② verdict)
-   **target**: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
-   **state**: read                   ← DERIVED from disk, never asserted
-
-   ### A-executor                    ← a COPY of the QA file's answer, written at harvest
-   No cycle column in 40 tables.
+① ORGANIZE   write Q-consumer; strip it to one neutral Q-executor
+② MATCH      ask the chosen bank in --check-only mode; read candidate QA files
+③ DISPATCH   only when MATCH finds no literal answer or active matching question
+④ POINT      bind the exact returned QA path and preserve A-executor verbatim
+⑤ INTERPRET  state what that answer means for this consumer, with its limits
 ```
 
-An entry's parts (`## QX<n>` + four `###` subsections), all but `### A-executor` authored at EVIDENCE:
-- `### Q-executor` — the executor-facing question (plain, general, no stake), frozen once written; the ONLY thing dispatched, and the ONLY shared (cross-consumer) form. Carries its own `Deliverable:` and `Accepted: a | b` lines.
-- `### Q-consumer` — one bullet per Q-consumer this Q-executor serves: the stage-doc id + that consumer's ORIGINAL question, copied in (review-only, never dispatched). One Q-executor may serve several — that is reuse, structurally. A stage gate greps these ids for its stage token (Q-Seed-1 → seed).
-- `### bank binding` — four `**field**:` lines:
-  - `route` — the dispatch door, `task | discovery`, chosen at EVIDENCE; AUTHORITATIVE (the executor executes it, not re-decides). The terminal `concern` form uses `none`.
-  - `bank` — the EVIDENCE ② verdict, read-only-grep judged: `reuse` (a results folder already answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). The plan; `state` is where it is now.
-  - `target` — a PATH to the answering QA FILE; `NEW <path>` while it does not exist yet, `NEW ?` while even the folder is undecided. Point at the FILE, never the folder.
-  - `state` — `planned | commissioned | answered | read | answered-local | deferred | failed | concern`.
-    The bank-facing lifecycle states are derived from disk, never asserted.
-    `concern` is the one consumer-side terminal ruling: the neutral Q-executor records a construct-validity threat, design limitation, or other doubt that neither task nor discovery can close.
-    It requires `route: none`, omits `bank` and `target`, leaves `### A-executor` empty, and at final delivery carries `**discussed**: <where the manuscript bears the limitation>`.
-    It still uses the same four subsections and still requires a real, stake-free `### Q-executor`; terminal does not mean structurally incomplete.
-    This — not an empty `target` — marks a planned-but-unrun entry.
-    `deferred` is the landing state for the EVIDENCE CEILING: the entry's `bank` verdict sits ABOVE `probe_depth`, so answering it would cost money nobody has authorized. It is a CORRECT outcome, not a failure, and it must be DECLARED, never inferred — a `deferred` entry additionally carries `**deferred**: depth-<n> · <one line: what it would take>`. Without that line it is a bare `planned` and FAILs as `probe-not-run`. The distinction is the whole point: "nobody has paid for this yet" and "EVIDENCE was skipped" must not look the same on disk.
-- `### A-executor` — a COPY of the answering QA file's answer, written at harvest (EVIDENCE); empty until answered. The consumer-side single source of truth. Each Q-consumer then writes its own A-consumer in its stage doc (station ②), anchored `[source: PP<NN>]` back to this copy.
-
-The STAKE may appear only in the review-only `### Q-consumer` copy of the stage-doc question.
-It never appears in `### Q-executor`, `### A-executor`, a collector payload, a bank binding, or a QA file.
-
-(An entry may also carry optional `**values**:` / `**sources**:` / `**displays**:` pointers under `### bank binding`. Those are HARVEST-LANE fields — how the consumer later pulls a number, a citation, or a figure out of the answer — and they belong to the probe WORKERS, not to this model. See the workers.)
-
-
-BUILD-LANE FIELDS.
-An ENTRY whose answer legitimately takes DAYS-TO-WEEKS additionally carries, and ONLY at `state: commissioned`:
+Page lifecycle ownership is split deliberately:
 
 ```text
-   **owner**: <who> · **eta**: YYYY-MM-DD · **blocks**: <the claim/demand ids it gates>
-   **cross-project**: <sibling-project path NAMED as a reuse candidate, or `none-found`>
+PROBE phase       ① ORGANIZE · ② MATCH · ③ DISPATCH
+EVIDENCE phase    ④ POINT · ⑤ INTERPRET · bind proof and values
 ```
 
-An ENTRY still `commissioned` when a gate runs is build-lane by definition, so these four fields are unconditional there.
-`cross-project:` is how a named sibling-source candidate reaches the one human gate that authorizes SPEND — the MATCH may NAME it but never CONSUME it.
+### ① ORGANIZE
 
+Write the stake-bearing question locally, then make Q-executor independently
+answerable. A good Q-executor names the population, variable, comparison,
+method, and requested output when those are needed. It does not name the answer
+the consumer hopes to receive.
 
-The five-step loop
-==================
+Choose one QA route after the source router has ruled out an accepted Page:
+
+- `task` for computed, measured, run-bound, or repository-local facts;
+- `discovery` for literature, prior art, external facts, or novelty questions;
+- `none` when neither bank can answer. `none` is a concern, not permission to
+  invent a third route.
+
+### ② MATCH before DISPATCH
+
+Call the selected bank's QA verb with `--check-only` first:
 
 ```text
-   ① ORGANIZE   collect the stage doc's Q-consumer questions into probe files (grouped by TOPIC), and
-                write each one's `### Q-executor` — translate your question into the executor-
-                facing form, stripping the stake out; copy the Q-consumer under `### Q-consumer`.
-   ② MATCH      SCAN the bank's existing QA files FIRST (grep + READ each state line), and set
-                `bank` (reuse | run | code | new). If one already answers it, REUSE (point, skip ③).
-                Only a `new`/`run`/`code` entry goes on.
-   ③ DISPATCH   only for `new`/`run`/`code`: hand the `### Q-executor` VERBATIM to the executor
-                orchestrator → it returns a QA-file PATH (a new answer, written by the executor).
-   ④ POINT      set the entry's `target` at the answering QA file
-   ⑤ INTERPRET  copy the QA answer into `### A-executor` (each consumer then writes its own
-                A-consumer in its stage doc)
+/haipipe-task qa "<Q-executor>" [<task-folder>] --check-only
+/haipipe-discovery qa "<Q-executor>" [<discovery-folder>] --check-only
 ```
 
-The order is the point: ② always precedes ③, so an existing answer is REUSED and only a genuinely new question ever creates new bank work.
-PHASE MAP: DRAFT raises only the stake-bearing Q-consumer. PROBE turns each
-into a `### Q-executor` (①), roots it against the bank with a read-only grep
-(②, LAW 1: the eye is allowed, the pen and the run are not), and dispatches
-only what its ceiling allows (③). EVIDENCE points (④), harvests (⑤), and
-lands the Page-facing card. PageX reuse is a PROBE-side MATCH candidate before
-the bank is dispatched.
-
-THE COST LADDER — cheap doors first; only T3/T4 summon an agent.
+Read a candidate's state line before its answer. Reuse only when the QA file
+literally answers this question. Topic similarity is not an answer.
 
 ```text
-   T0 JOIN    another Q-executor already asks this        → add a Q-consumer bullet   ~0
-   T1 LOCAL   my own registries answer it                 → answered-local      ~0
-   T2 REUSE   an existing QA file answers it              → point the entry     1 grep + 1 read
-   T3 ENRICH  the task-folder exists, never asked this    → new entry   → ③     agent
-   T4 FRESH   no task-folder                              → new entry   → ③     agent
+answered              bind that path
+working, live          bind/report that path; dispatch nothing
+superseded-by          follow to the live QA file
+near miss or no hit    proceed to DISPATCH
 ```
 
-MOST entries should land on T2: in a healthy project the bank fills on its own, so most answers already exist before anyone asks.
-MATCH ON THE ANSWER, NEVER ON THE TOPIC: a HIT counts only if the QA file LITERALLY ANSWERS the question — read it; topic similarity is not evidence.
+### ③ DISPATCH
 
-THE COLLECTOR PAYLOAD — copy this block; do not invent variants:
+Dispatch only Q-executor through the same bank verb without `--check-only`.
+The bank chooses whether to digest existing outputs, execute a run, enrich a
+discovery, or create a correctly scoped folder. Those choices belong to the
+Task/Discovery contract, not to Probe.
+
+The return is a QA path or an explicit refusal/re-route. A refusal is complete
+evidence about scope; record it rather than manufacturing an answer.
+
+### ④ POINT
+
+Bind the exact QA file path. Do not bind a folder, prose description, latest
+glob, or copied answer without provenance. Preserve the bank answer verbatim in
+the consumer record and pull only small aggregate proof files allowed by the
+consumer plugin.
+
+The bank remains authoritative. If a pulled proof and the bank disagree, mark
+the consumer copy stale and re-bind.
+
+### ⑤ INTERPRET
+
+Write one A-consumer for each Q-consumer served in
+`consumer/a-consumer.md`. State:
+
+- the answer relevant to the consumer;
+- the exact source path and any run/version;
+- what the evidence does not establish;
+- whether it changes the approved outline.
+
+Interpretation may carry stake because it has returned behind the wall. It is
+evidence metadata, not Page prose: EVIDENCE returns it to OUTLINE, a person
+accepts it with `read:`, and later DRAFT/REVISE owns the sentence.
+
+## 🧮 Values and proof
+
+When one answer contains several usable values, the consumer plugin allocates
+`PP<NN>.v<n>` ids in `card.md`. Each value names the exact file and field in
+`proof/`; a naked number is not a value binding. Proof is aggregate-only and
+keeps source, run, pulled date, size, and sha256. Never pull row-level or PHI
+data into a Page.
+
+## ✅ Completion and human gate
+
+Machine completion and consumer acceptance are distinct:
 
 ```text
-Agent(haipipe-probe-q-executor-agent, prompt="
-  project_root: <project_root>
-  probe_files: <the PPNN/QXn files touched this run>
-  dispatch: <the run|code|new entries still owed, each with its authoritative route>
-")
+answered   QA path resolves · A-executor is non-empty · proof is present or
+           explicitly unnecessary
+read       a person read the answer and accepted its consumer interpretation
 ```
 
-The collector's isolated context hands each `### Q-executor` VERBATIM to
-`Agent(haipipe-task-orchestrator-agent)` or
-`Agent(haipipe-discovery-orchestrator-agent)` according to `route`, and returns
-the answering QA-file path.
-The stage and family EVIDENCE worker never call those executor orchestrators directly.
+Only a person marks `read`. Changing `target:` or replacing proof drops the
+read gate. One Q-executor may serve many Q-consumers; ask once and cite it by id.
 
+## 🧾 Return contract
 
-Phase rules — the followable checklists
-=======================================
-
-The sections above are the MODEL; these are the DO-THIS rules a phase worker follows. A stage's DRAFT / EVIDENCE worker POINTS here and adds only its FAMILY-specific rules (paper registries, harvest lanes, …). On any conflict, the model sections above win.
-
-DRAFT phase — author content and raise questions:
-1. Write the stage artifact per the STAGE's own spec (real content; the spec is the stage skill's, not this file's).
-2. FIND the questions a reader or later phase must settle. Each stage skill owns a **Questions this stage typically raises** section naming the kinds it is prone to. Walk the draft against it and add whatever the mechanical sweeps returned unowned.
-3. For each open question, raise a `## Q-<Stage>-<n>` or a Board-native Content-linked Aim in the owning S page's Q-consumer, then give that Aim one matching State row. Write no probe entry, `### Q-executor`, `route`, `bank`, or `target`; never open `1-probes/`.
-4. SELF-REVIEW the draft content and Q-consumer shape against the stage artifact spec; fix and re-review, bounded.
-5. Record `[DRAFT]` in the owning S page's `## Log`, then continue to the next declared phase. DRAFT opens no human gate unless a future stage explicitly lists `draft` in `gates:`.
-
-PROBE phase — author entries, match, and dispatch:
-1. ① ORGANIZE every open Q-consumer into a probe ENTRY: find-or-open `## QX<n>`, write `### Q-executor` with the stake stripped, copy the Q-consumer under `### Q-consumer`, and choose `route`.
-2. ② MATCH against a SPECIFIC bank QA file on the answer, then set `bank` and `target`. `route` / `bank` become AUTHORITATIVE here.
-3. Apply the invocation's `--depth` ceiling. Write a real `deferred` ENTRY with `**deferred**: depth-<n> · <reason>` when answering would exceed it.
-4. ③ DISPATCH the authorized `run`/`code`/`new` entries through `haipipe-probe-q-executor-agent`; an existing answered target skips dispatch.
-
-EVIDENCE phase — point, interpret, and land:
-5. ④ POINT `target` at the answering QA file, then OPEN it and read its `state:` line.
-6. ⑤ INTERPRET — copy the QA answer into `### A-executor` only against an answered, non-superseded target; each consumer then writes its A-consumer, followed by the family harvest.
-7. Run the EVIDENCE entry review and `check-probe-cards.sh` before the stage's CHECK gate.
-
-
-The QA-bank file — the bank's answer
-====================================
-
-Every executor task-folder MAY carry a `QA/` folder (task and discovery, same shape); not every one does.
-`QA/<n>-<slug>.md`, where `n` is creation order — `ls QA/` IS the index. Slug only, never a PP id.
-This file is the QA-bank, the ORIGINAL of the twin pair: its `# Q` is the Q-executor and its `## Answer` the A-executor; every consumer's QA-probe points at it by path.
-
-A QA file is a TICKET that becomes a RECEIPT: exactly ONE mutable field, the `state:` line.
-
-```markdown
-# Q — <the question, restated by the EXECUTOR in its own words>
-- state:   working | answered | superseded-by: QA/<m>-<slug>.md
-- started: 2026-07-14T09:12          ← MANDATORY while state: working
-- by:      <run id | agent | human>  ← optional
-
-## Answer     empty while working; filled at the executor's Report. plain words + [→ results/<file>] anchors
-## Caveats    what this does NOT establish
-## Not-done   what was asked but not resolved, and why
-```
-
-ONE WRITER — the EXECUTOR, for the whole life of the file.
-It writes twice: the CLAIM (`state: working` + `started:`) when it starts, and the COMPLETION (`state: answered` + the body) at its Report.
-⛔ A CONSUMER never creates, claims, edits, completes, or supersedes a QA file — a probe that finds a stale target re-points its OWN entry, never the file.
-
-THE CLAIM MUST EXPIRE.
-`QA_WORKING_TTL_HOURS = 24` — a `working` file whose `started:` is older is STALE and restartable.
-
-THE RACE GUARD — `set -C` (noclobber), and nothing more.
-Two runs may both pick `QA/3-`; the claim is created under noclobber, and the loser re-scans and defers.
-
-SUPERSESSION.
-A later run whose answer CHANGES writes a NEW file and appends `superseded-by: QA/<m>-<slug>.md` to the OLD file's state line; the body is never rewritten.
-
-The executor-side flow that WRITES these files (the qa verb: scan → digest → run) lives in `../../task/haipipe-task/fn/qa.md` and its discovery twin.
-
-
-The two LAWS
-============
-
-LAW 1 — A CONSUMER SESSION NEVER RUNS BANK WORK INLINE.
-Dispatch means hand the `### Q-executor` VERBATIM, and nothing else — never the `### Q-consumer` copies, never the probe file, never the paper.
-It is broken the moment a consumer session runs bank work or writes a bank file (including a QA digest it thinks it is being helpful by authoring).
-A read-only grep of `{tasks,discoveries}/**/QA/*.md` is LEGAL and REQUIRED — that IS step ② MATCH. The wall bans the PEN and the RUN, not the EYE.
-
-LAW 2 — BACKSTOP LINT, ON TWO SURFACES.
-Q-executor blocks carry no claim ids and no stake words ("rescue", "we want", "the hoped-for").
-The bank's `QA/*.md` carry no consumer vocabulary (claim ids, "the paper" meaning *our* paper).
-
-
-Section state
-=============
-
-Bank-facing state is never a claim about an agent; it is checkable on disk, and the reader OPENS the file — an `ls` is not enough.
-`concern` is the declared terminal exception because its defining fact is that no bank route can settle it.
+Return a compact crossing receipt:
 
 ```text
-   planned         the entry exists; the target task-folder is missing (or `NEW …`)
-   commissioned    the task-folder exists with no answered QA file yet, OR the target QA file is `working`
-   answered        the target QA file exists AND is `state: answered`
-   read            the entry's `### A-executor` is non-empty — LEGAL ONLY against an `answered`, non-superseded target
-   answered-local  target points into the consumer's own registries; no dispatch
-   deferred        the bank verdict is above the authorized probe depth; declaration required
-   failed          a dead target · the task-folder was deleted · the executor REFUSED
-   concern         no bank can close the doubt; route none; final delivery names where it is discussed
+lane:        pagex | qa-probe
+route:       page | task | discovery | none
+match:       reuse | working | dispatched | refused
+question:    path to Q-executor
+target:      exact bank QA path, when one exists
+state:       planned | commissioned | answered | read | deferred | failed | concern
+proof:       manifest path or why no proof exists
+serves:      consumer outline addresses
+limits:      what remains unresolved
+next:        EVIDENCE | PROBE | OUTLINE | HOLD
 ```
 
-THE CHECKER — `check-probe-cards.sh` enforces these (each FAILs, exit 1):
-`read-target-working` · `read-target-superseded` · `qa-working-no-started` · `qa-working-expired` · `qa-answered-empty` · `qa-no-state` · `commissioned-target-answered`, plus the build-lane `commissioned-no-owner` / `-no-eta` / `-no-blocks` / `-no-cross-project`, and `concern-with-route` / final-only `concern-not-discussed`.
+For `lane: pagex`, return the exact source file, bounded scope, accepted source
+version, and local PageX record instead of QA fields.
 
-
-Verbs
-=====
-
-```text
-   /haipipe-probe                    → this file, the operational contract
-   /haipipe-probe contract|anatomy   → the probe-file anatomy + the QA contract
-   /haipipe-probe status             → derive states from disk: ls the 1-probes/ files, resolve each
-                                       target:, ls the QA files. Never a stored state.
-   /haipipe-probe "<question>"       → ROUTE, do not execute. A question with no consumer behind it is not
-                                       a probe — hand it to the executor's own door: task-shaped →
-                                       /haipipe-task qa, discovery-shaped → /haipipe-discovery qa.
-```
-
-
-Pointers
-========
-
-```text
-   spec + rationale (why it is built this way)  → ../../diagrams/01-probe-qa-260726/
-   the paper family's probe tooling               → ../../paper/haipipe-paper/probe/
-                                                   ../../application/2-phase/1-probe/haipipe-application-probe/
-   the question-level collector agent (②③④,       → ../agents/haipipe-probe-q-executor-agent.md
-     stake-free, shared, isolated context)
-   the executor-side qa verb (writes QA files)   → ../../task/haipipe-task/fn/qa.md  ·  the discovery twin
-```
+No Paper-specific runtime file is part of this contract. Paper, Application,
+and any future consumer use the same source router; only their local records
+differ.

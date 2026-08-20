@@ -1,0 +1,11 @@
+card: PP07-producer-agent-count
+files:
+  - name: agent-census.json
+    kind: numbers
+    source: Tools/plugins/haipipe-toolkit/skills/board/page-workflows/agents/ + skills/board/agents/ + skills/board/haipipe-board/ref/page-lifecycle.workflow.js
+    run: local read, 260819, ls of both agents/ folders + grep PRODUCER_AGENTS
+    pulled: 2026-08-19
+    bytes: 1681
+    sha256: 0fd3c353101cd4338bf08089834e34e297c36684f09417da42e3ea797e869513
+    why: the producer-agent roster count C12.P3.B3 owes, with the two phases that lack an agent of their own
+    aggregate: true

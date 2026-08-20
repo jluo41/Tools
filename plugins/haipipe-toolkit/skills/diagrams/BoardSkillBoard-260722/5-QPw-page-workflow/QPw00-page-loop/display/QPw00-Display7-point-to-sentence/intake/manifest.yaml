@@ -1,0 +1,24 @@
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+# RE-FROZEN 260819 night: haipipe-plugin-outline 0.13.0 (§✂️ concise bullets)
+# moved under the freeze; copies refreshed, hashes re-pinned, no drawn fact
+# affected (the figure shows the point-to-sentence relation, not bullet style).
+frozen: 260819
+why: every printed string in this figure is transcribed from these two files:
+  the worked conversion (C3.P1.B4 and its three scaffold sentences, the hole
+  markers, the realizes: comment) from haipipe-page-draft SKILL.md 0.8.2
+  section "Point -> sentence scaffold", and the address grammar (B = POINT in
+  the plan, S = sentence on the page, C<n>.P<n> as the shared join key, who
+  owns each letter) from haipipe-plugin-outline SKILL.md 0.12.0. A change to
+  either section makes the figure wrong, and this manifest is what makes that
+  computable. This is a concept unit: no probe card serves it and none is
+  needed, the intake is a LISTING of the authority files.
+files:
+  - file: inputs/haipipe-page-draft.SKILL.md
+    source: board/page-workflows/haipipe-page-draft/SKILL.md
+    sha256: d84ead3e95ce4f602bbd5d02fc20ee020d123df7e62aecd6cce33d12dbc64154
+  - file: inputs/haipipe-plugin-outline.SKILL.md
+    source: board/page-plugins/haipipe-plugin-outline/SKILL.md
+    sha256: f05ecc312d859b536db849367a936aa90d89da479b62c599be01cd2ec2dee451

@@ -1,0 +1,53 @@
+# RE-FROZEN 260819 night, last pin: page_lifecycle.py gained the PREPARE-pause
+# rule and the cold-CHECK clause after the previous freeze. The figure draws
+# phases, ticks and the gate, none of which moved; copy refreshed, hash re-pinned.
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+# RE-FROZEN 260819 night, at the round's close. Deltas: haipipe-page-outline
+# 0.6.0 (the 有问有答 append rule + break-gate wording) and haipipe-page-evidence
+# 0.11.0 (landing values creates fold debt). No phase name, tick, route or
+# drawn fact moved; copies refreshed and hashes re-pinned only.
+# RE-FROZEN 260819 late evening, at EVIDENCE. Six hashes moved and no drawn
+# fact did: the deltas are the mark-glyph renames (🔢 -> 🧮 value, 📮 probe) in
+# phase-cards.md, probe 0.6.0, evidence 0.10.4 and draft 0.8.2, outline 0.5.0
+# widening COVERAGE to both directions (still the same four check NAMES the
+# gate panel prints), and page-lifecycle.workflow.js gaining PRODUCER_AGENTS
+# (this figure names no agent). Phase names, the five person-reserved ticks,
+# the PREPARE zone, the one gate and the CHECK return edge were each re-read
+# against the moved files and stand. Zero recipe lines changed.
+frozen: 260819
+why: every phase name, every person-reserved tick, the PREPARE-loop shape, the
+  one gate out, the unattended stretch and the CHECK return edge in this figure
+  are transcribed from these files, so a renamed phase, a moved tick or a
+  changed legal route makes the figure wrong and this manifest is what makes
+  that computable.
+files:
+  - file: inputs/phase-cards.md
+    source: board/page-workflows/haipipe-page-workflow/ref/phase-cards.md
+    sha256: 9c5591b13bd1a1310f2f22b863dc359e171589729899935525c432f1a629b289
+  - file: inputs/haipipe-page-outline.SKILL.md
+    source: board/page-workflows/haipipe-page-outline/SKILL.md
+    sha256: 846838b7b14eb32ff5f0e1564e909e0674d1f51fed65d80c79610e0e0b127654
+  - file: inputs/haipipe-page-probe.SKILL.md
+    source: board/page-workflows/haipipe-page-probe/SKILL.md
+    sha256: a694c32547fd660cf74f10326c5c3ca4f30f5e375cba357f3c1b0fbfef8169b5
+  - file: inputs/haipipe-page-evidence.SKILL.md
+    source: board/page-workflows/haipipe-page-evidence/SKILL.md
+    sha256: 6f7b3d6b00c92d078c0891f917ef13272f37408a0f1fdacd9de664f870ccc4ba
+  - file: inputs/haipipe-page-draft.SKILL.md
+    source: board/page-workflows/haipipe-page-draft/SKILL.md
+    sha256: d84ead3e95ce4f602bbd5d02fc20ee020d123df7e62aecd6cce33d12dbc64154
+  - file: inputs/haipipe-page-revise.SKILL.md
+    source: board/page-workflows/haipipe-page-revise/SKILL.md
+    sha256: a332b91459bb19007196d0a732cdf46121541708fb51cb93eb486b05d0735c49
+  - file: inputs/haipipe-page-check.SKILL.md
+    source: board/page-workflows/haipipe-page-check/SKILL.md
+    sha256: a22417ff17fc061c494067c6b78029a531bd2a5e672757888de9e4a6b37dfd6f
+  - file: inputs/page-lifecycle.workflow.js
+    source: board/haipipe-board/ref/page-lifecycle.workflow.js
+    sha256: e97a57737869f49327655856d58d9176da145b7226c7e9b124fd57fe761517eb
+  - file: inputs/page_lifecycle.py
+    source: board/haipipe-board/src/page_lifecycle.py
+    sha256: 27a4e91a7eba7dc41d43999401ef9ea7a31296779f0374edfef90cb9c81e0ea3

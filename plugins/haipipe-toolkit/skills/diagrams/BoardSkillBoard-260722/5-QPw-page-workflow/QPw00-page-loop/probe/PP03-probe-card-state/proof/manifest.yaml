@@ -1,0 +1,11 @@
+card: PP03-probe-card-state
+files:
+  - name: lane-census.json
+    kind: numbers
+    source: every <page>/probe/PP*/card.md (state:, read:), every <page>/bibex/*.bib, every <page>/display/*/README.md (accepted:, assets/figure.*) on this board
+    run: local read, 260819, re-pulled at EVIDENCE
+    pulled: 2026-08-19
+    bytes: 992
+    sha256: 611e7965dfa8c562c64a0200bb21ba80872f40296f62c997862783ca46dfe80b
+    why: the three-lane census C5.P6.B5 owes, counts split by state and person tick
+    aggregate: true

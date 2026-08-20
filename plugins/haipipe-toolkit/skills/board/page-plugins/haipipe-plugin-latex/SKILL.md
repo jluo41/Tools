@@ -1,7 +1,7 @@
 ---
 name: haipipe-plugin-latex
 description: >-
-  The latex/ plugin of a Board page: the page's Content compiled to a PDF in <page>/latex/, DERIVED and regenerable, written only by the /_board/latex route calling the paper family's md2tex.py plus xelatex. Owns the caller contract: paper-root discovery, the board's --keep-fences default, the wrapper master, staleness, and what a failure shows. Loads haipipe-plugin for the four-facet contract and never restates it; holds no copy of any writer. Trigger: latex plugin, compile the page, page pdf, tex export, latex tab, rebuild the tex, keep fences, /haipipe-plugin-latex.
+  The latex/ plugin of a Board page: compile the page's Content to a DERIVED and regenerable PDF in its local latex/ folder through the /_board/latex route, the shared Page-plugin md2tex.py, and lualatex. Owns the caller contract: paper-root discovery, the board's --keep-fences default, the wrapper master, staleness, and what a failure shows. Loads haipipe-plugin for the four-facet contract and never restates it; holds no copy of any writer. Trigger: latex plugin, compile the page, page pdf, tex export, latex tab, rebuild the tex, keep fences, /haipipe-plugin-latex.
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-16"
@@ -29,14 +29,14 @@ The 📂 Folder tab flags this plugin STALE when its newest file predates the pa
 The one door is `POST /_board/latex` (`live/export.py`), and it runs the paper family's writer:
 
 ```text
-md2tex.py  (skills/paper/haipipe-paper/scripts/to-word/)  the section
-export.py  wraps a standalone master · runs xelatex        the PDF
+md2tex.py  (skills/board/page-plugins/_shared-export/)     the section
+export.py  wraps a standalone master · runs lualatex       the PDF
 ```
 
 Three caller rules, each earned on 260815:
 
 - `--keep-fences` is the BOARD's default: a board division is often figure-only, and the paper default (drop sketches) exported it as an empty section.
-  A kept fence arrives transliterated to ASCII verbatim, because xelatex's fonts lack the board's box glyphs and emoji.
+  A kept fence arrives through the configured LuaLaTeX fallback fonts so box glyphs and emoji remain visible when supported.
 - `--paper-root` is DISCOVERED, never demanded: walk up from the page toward `--root` for a `0-*.bib`.
   A page outside any paper compiles cite-less, with `\citep` shown literally; inside a paper the master gains natbib, `plainnat`, and a bibtex pass.
 - A code span QUOTES and never EXECUTES: backticked TeX commands are escaped on the way out, so `\citep` prints instead of running.
@@ -47,13 +47,13 @@ Three caller rules, each earned on 260815:
 ## 📡 Surface · the tab, and what a failure shows
 
 The right-pane 📜 tab frames the PDF; 🔄 rebuild re-runs the route and reloads.
-`xelatex` producing no PDF is never a blank frame: the view page shows the `.tex` and the log tail, so the failure is readable where it happened.
+`lualatex` producing no PDF is never a blank frame: the view page shows the `.tex` and the log tail, so the failure is readable where it happened.
 
 ## 📂 Files
 
 - `../../haipipe-board/live/export.py`
   The route, the master wrap, the view pages.
-- `../../../paper/haipipe-paper/scripts/to-word/md2tex.py`
+- `../_shared-export/md2tex.py`
   The writer; Word and LaTeX stay two projections of one reader (`md2docx.parse_page`).
 - `../../haipipe-plugin/ref/roster.md`
   The row this skill expands.

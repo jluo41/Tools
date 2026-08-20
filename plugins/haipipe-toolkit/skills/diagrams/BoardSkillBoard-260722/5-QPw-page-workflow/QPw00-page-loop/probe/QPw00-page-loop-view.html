@@ -1,0 +1,187 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🚪 Probe · QPw00-page-loop</title><style>
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+h1{font-size:16px;margin:0 0 4px} .mut{color:var(--mut);font-size:12px}
+a.summary{color:inherit} h2{font-size:14px;margin:14px 0 5px}
+p{margin:7px 0} ul{margin:6px 0 8px 20px;padding:0}
+code{font:12px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 4px;
+ border-radius:4px} .summary{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}
+.metric{border:1px solid var(--line);border-radius:999px;padding:3px 9px;
+ background:var(--card);font-size:12px} .ready{color:#267247} .pending{color:#9a6115}
+a{color:#1f5aa8} pre{background:var(--card);border:1px solid var(--line);
+ border-radius:8px;padding:12px;overflow:auto;font:12px/1.45 ui-monospace,Menlo,monospace;
+ white-space:pre-wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;
+ padding:10px 12px;margin:0 0 10px}
+.card b{font:600 13px/1.3 ui-monospace,Menlo,monospace}
+.ghost{opacity:.55;border-style:dashed}
+.badge{font-size:13px;margin-right:6px}
+object.pdf{width:100%;aspect-ratio:4/3;border:1px solid var(--line);border-radius:8px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;
+ scroll-behavior:smooth;padding:2px}
+.strip>.card{flex:0 0 100%;scroll-snap-align:start;margin:0;box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:8px;float:right}
+.nav button{cursor:pointer;border:1px solid var(--line);background:var(--card);
+ color:var(--fg);border-radius:6px;padding:3px 10px;font:600 13px -apple-system,sans-serif}
+.nav .pos{color:var(--mut);font-size:12px;min-width:38px;text-align:center}
+.chead{display:flex;align-items:baseline;gap:9px;padding:0 0 9px;
+ border-bottom:1px solid var(--line);margin-bottom:11px}
+.pid{font:700 11px ui-monospace,Menlo,monospace;color:var(--mut);
+ border:1px solid var(--line);border-radius:5px;padding:1px 6px;letter-spacing:.04em}
+.ptitle{font:600 15.5px/1.3 -apple-system,BlinkMacSystemFont,sans-serif}
+.q{font-size:15px;line-height:1.55;margin:0 0 11px;max-width:60em}
+dl.fields{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0 0 12px;
+ font-size:12.5px}
+dl.fields dt{color:var(--mut);font:600 11px ui-monospace,Menlo,monospace;
+ text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+dl.fields dd{margin:0;word-break:break-all}
+.next{font-size:12.5px;border-radius:7px;padding:7px 11px;margin:0 0 4px;
+ border:1px solid var(--line);background:var(--card)}
+.next.owed{color:#9a6115;border-color:#e5cfa8}
+.next.ok{color:#267247;border-color:#bcdcc7}
+.step{border:1px solid var(--line);border-radius:10px;margin:13px 0;
+ overflow:hidden;background:var(--bg)}
+.step.lead{border-color:var(--fg);border-width:1.5px}
+.step .sh{display:flex;align-items:baseline;gap:8px;padding:7px 12px;
+ background:var(--card);border-bottom:1px solid var(--line)}
+.step .sh b{font:700 11.5px -apple-system,sans-serif;letter-spacing:.09em;
+ text-transform:uppercase}
+.step .sh .sn{color:var(--mut);font-size:11.5px;font-family:ui-monospace,Menlo,monospace}
+.step .sb{padding:11px 13px}
+.step .sb p:first-child{margin-top:0} .step .sb p:last-child{margin-bottom:0}
+details.fold>summary{cursor:pointer}
+details.fold[open]>summary{border-bottom:1px solid var(--line)}
+.hole{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;
+ color:var(--mut);font-size:12.5px}
+figure.pf{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden;background:var(--card)}
+figure.pf+.why{margin:-6px 0 14px}
+.pfh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 11px;
+ border-bottom:1px solid var(--line)}
+.pfn{font:600 12.5px ui-monospace,Menlo,monospace;word-break:break-all}
+.facts{display:flex;gap:5px;flex-wrap:wrap}
+.fact{font-size:10.5px;color:var(--mut);border:1px solid var(--line);
+ border-radius:999px;padding:1px 8px;white-space:nowrap;background:var(--bg)}
+.exhibit{display:block;width:100%;height:290px;border:0;background:var(--bg)}
+object.exhibit{aspect-ratio:4/3;height:auto}
+.pfp{border-top:1px solid var(--line);padding:6px 11px;font-size:11.5px;
+ color:var(--mut)}
+.pfp>summary{cursor:pointer} .pfp div{word-break:break-all;margin:3px 0}
+.why{font-size:13px;line-height:1.55;margin:0 0 13px;max-width:60em}
+details>summary{list-style:none}
+details>summary::-webkit-details-marker{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{font:500 12px ui-monospace,Menlo,monospace;border:1px solid var(--line);
+ border-radius:999px;padding:3px 10px;text-decoration:none;color:var(--fg);
+ background:var(--card)}
+.chip.on{border-color:#3e5c84;color:#3e5c84;font-weight:700}
+</style></head><body><button id='rebuild' style="float:right;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 10px;font:500 12px -apple-system,sans-serif">🔄 rebuild</button><span class='nav'><button id='prev'>◀</button><span class='pos' id='pos'></span><button id='next'>▶</button></span><h1>🚪 Probe · QPw00-page-loop</h1><div class='mut' style='margin:0 0 12px'>read-only · consumer/ never crosses · executor/ is the only thing dispatched · a person ticks read:</div><div class='summary'><span class='metric'>5 planned</span><span class='metric'>0 commissioned</span><span class='metric'>0 answered</span><span class='metric '>0 / 5 read</span></div><div class='chips'><a class='chip' href='#PP01-phase-contract-count'>PP01</a><a class='chip' href='#PP02-run-receipt-coverage'>PP02</a><a class='chip' href='#PP03-probe-card-state'>PP03</a><a class='chip' href='#PP04-auditor-verdict'>PP04</a><a class='chip' href='#PP05-phase-run-time'>PP05</a></div><div class='strip' id='strip'><div class='card' id='PP01-phase-contract-count'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP01</span><span class='ptitle'>phase contract count</span></div><div class='q'>How many phases does the page workflow declare, how many of them ship a contract file, and how many person-reserved ticks does the set of contracts define?</div><dl class='fields'><dt>state</dt><dd>answered-local</dd><dt>route</dt><dd>task</dd><dt>bank</dt><dd>code · answered locally, no dispatch needed: the count is a read of page-workflows/</dd><dt>serves</dt><dd>C1.P1.B3</dd></dl><div class='next owed'>🕳 q-executor written, target empty: nobody has been asked yet</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 why_empty: nothing has been dispatched yet; PROBE raised this card on 260819</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'><p>🧱 STAKE FORBIDDEN · this is the ONLY file that is dispatched.</p><p>How many phases does the page workflow declare, how many of them ship a contract file, and how many person-reserved ticks does the set of contracts define?</p><p><strong>Where to look</strong> Tools/plugins/haipipe-toolkit/skills/board/page-workflows/ — one folder per contract, plus haipipe-page-workflow/ref/phase-cards.md which states every phase in six fields including its TICK row.</p><p><strong>What a complete answer contains</strong> four integers and the list behind each: the phase count, the contract count with their versions and line counts, the tick count with the artifact each tick sits on, and the run count with the phases those runs covered.</p><p><strong>How to return it</strong> Numbers with the file or command each came from. A count with no source is not an answer. If a number cannot be produced, say which input is missing rather than estimating it.</p></div></section><section class='step '><header class='sh'><span>📥</span><b>came back</b><span class='sn'>executor/a-executor.md · the bank's own words</span></header><div class='sb'><p>Read from disk on 260819.</p><p><strong>Phases the loop declares: 7</strong> — OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK. <code>ref/phase-cards.md</code> carries six <code>##</code> headings, not seven, because ⑥ COMPILE shares ⑤ REVISE's heading. The phase is declared; it has no card of its own.</p><p><strong>Contracts that ship: 6</strong>, one folder each under <code>page-workflows/</code>:</p><pre>OUTLINE   haipipe-page-outline    0.1.2   116 lines
+DRAFT     haipipe-page-draft      0.7.2   250
+PROBE     haipipe-page-probe      0.4.2   252
+EVIDENCE  haipipe-page-evidence   0.9.0   353
+REVISE    haipipe-page-revise     0.5.0   164
+CHECK     haipipe-page-check      0.6.1   211
+COMPILE   —                       —       no contract file exists</pre><p><code>haipipe-page-workflow</code> 0.7.0, 302 lines, also lives there and is the ROUTER, not a phase, so it is not in the count.</p><p><strong>Person-reserved ticks: 5</strong> — <code>approved:</code> on the outline file, <code>verified</code> on each bibex entry, <code>read:</code> on each probe card, <code>accepted: ✅</code> on each display README, and the Page Type's RULING. Two revert when their inputs change: <code>read:</code> and <code>accepted:</code>.</p><p><strong>Runs executed: not answered here.</strong> That question is <code>PP02-run-receipt-coverage</code>'s, and answering it in this card would put one number in two places.</p></div></section><details class='step fold'><summary class='sh'><span>🗂</span><b>audit</b><span class='sn'>consumer/q-consumer.md · who wanted it, and why</span></summary><div class='sb'><p><strong>The question, as this page needs it</strong> How many phases does the page workflow declare, how many of them ship a contract file, and how many person-reserved ticks does the set of contracts define?</p><p><strong>What this page loses if it never comes back</strong> §1 is the Overview. It promises a reader can stop after it and still say what the loop IS. If the counts are wrong or absent, the division that exists to orient a reader misorients them, and Aim A1.1 goes unmet.</p><p><strong>Where it is used</strong> <code>C1.P1.B3</code> in <code>outline/QPw00-page-loop-outline-v2.md</code>, and the sentence that bullet becomes.</p></div></details><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP01-phase-contract-count</span></summary><div class='sb'><pre>├── consumer/
+│   └── q-consumer.md
+├── executor/
+│   ├── a-executor.md
+│   └── q-executor.md
+├── proof/
+│   ├── manifest.yaml
+│   └── phase-census.json
+└── card.md</pre></div></details></div><div class='card' id='PP02-run-receipt-coverage'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP02</span><span class='ptitle'>run receipt coverage</span></div><div class='q'>Which runs are stored under the board's _runs/page/ tree, how many receipts does each hold, and which phases appear across all of them?</div><dl class='fields'><dt>state</dt><dd>answered-local</dd><dt>route</dt><dd>task</dd><dt>bank</dt><dd>code</dd><dt>serves</dt><dd>C13.P2.B3</dd></dl><div class='next owed'>🕳 q-executor written, target empty: nobody has been asked yet</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 why_empty: nothing has been dispatched yet; PROBE raised this card on 260819</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'><p>🧱 STAKE FORBIDDEN · this is the ONLY file that is dispatched.</p><p>Which runs are stored under the board's _runs/page/ tree, how many receipts does each hold, and which phases appear across all of them?</p><p><strong>Where to look</strong> BoardSkillBoard-260722/_runs/page/**.json — each file is one run; each receipt inside names its phase. Cross-read with page-workflows/haipipe-page-workflow/ref/page-run-contract.md for the receipt shape.</p><p><strong>What a complete answer contains</strong> one row per stored run: run id, receipt count, the ordered phase sequence, and the terminal route. Then the union of phases covered, and the complement against the seven the loop declares.</p><p><strong>How to return it</strong> Numbers with the file or command each came from. A count with no source is not an answer. If a number cannot be produced, say which input is missing rather than estimating it.</p></div></section><section class='step '><header class='sh'><span>📥</span><b>came back</b><span class='sn'>executor/a-executor.md · the bank's own words</span></header><div class='sb'><p>Read from disk on 260819.</p><p><strong>3 runs are stored, holding 9 receipts between them.</strong></p><pre>260805-0216-QB8e    5   CHECK · REVISE · CHECK · REVISE · CHECK
+260818-1510-QPw00   1   OUTLINE
+260818-1543-QPw00   3   DRAFT · REVISE · CHECK</pre><p><strong>Phases covered: 4 of 7</strong> — OUTLINE, DRAFT, REVISE, CHECK. <strong>Never executed under the contract: 3</strong> — PROBE, EVIDENCE, COMPILE.</p><p>The first run is the only multi-round one, and every one of its five receipts is CHECK or REVISE: it exercised the judge/repair edge and nothing else. The two 260818 runs are single-pass and cover one new phase each.</p><p>So the loop has been driven end to end zero times. No stored run contains a PROBE or an EVIDENCE receipt, which means the phases that put evidence on disk have never been executed by the router, only by hand.</p></div></section><details class='step fold'><summary class='sh'><span>🗂</span><b>audit</b><span class='sn'>consumer/q-consumer.md · who wanted it, and why</span></summary><div class='sb'><p><strong>The question, as this page needs it</strong> Which runs are stored under the board's _runs/page/ tree, how many receipts does each hold, and which phases appear across all of them?</p><p><strong>What this page loses if it never comes back</strong> §13 argues RUN is a bounded non-linear router. A claim about a loop nobody has driven end to end is a design statement wearing an evidence face, and Aim A13.1 currently rests on ONE run whose controller was executed by hand.</p><p><strong>Where it is used</strong> <code>C13.P2.B3</code> in <code>outline/QPw00-page-loop-outline-v2.md</code>, and the sentence that bullet becomes.</p></div></details><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP02-run-receipt-coverage</span></summary><div class='sb'><pre>├── consumer/
+│   └── q-consumer.md
+├── executor/
+│   ├── a-executor.md
+│   └── q-executor.md
+├── proof/
+│   ├── manifest.yaml
+│   └── run-index.json
+└── card.md</pre></div></details></div><div class='card' id='PP03-probe-card-state'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP03</span><span class='ptitle'>probe card state</span></div><div class='q'>Across this board, how many probe cards exist, how many bibex entries, how many display units, and how many of each have reached the state that means a person has read or accepted them?</div><dl class='fields'><dt>state</dt><dd>answered-local</dd><dt>route</dt><dd>task</dd><dt>bank</dt><dd>code</dd><dt>serves</dt><dd>C5.P2.B3</dd></dl><div class='next owed'>🕳 q-executor written, target empty: nobody has been asked yet</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 why_empty: nothing has been dispatched yet; PROBE raised this card on 260819</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'><p>🧱 STAKE FORBIDDEN · this is the ONLY file that is dispatched.</p><p>Across this board, how many probe cards exist, how many bibex entries, how many display units, and how many of each have reached the state that means a person has read or accepted them?</p><p><strong>Where to look</strong> every &lt;page&gt;/probe/PP*/card.md (state: and read: lines), every &lt;page&gt;/bibex/*.bib, every &lt;page&gt;/display/*/README.md (accepted: line). haipipe-plugin-probe states the ladder; haipipe-plugin-display states the accept rule.</p><p><strong>What a complete answer contains</strong> three counts per lane, each split into created / landed / person-ticked, plus the count of cards still at <code>planned</code> and how long they have been there.</p><p><strong>How to return it</strong> Numbers with the file or command each came from. A count with no source is not an answer. If a number cannot be produced, say which input is missing rather than estimating it.</p></div></section><section class='step '><header class='sh'><span>📥</span><b>came back</b><span class='sn'>executor/a-executor.md · the bank's own words</span></header><div class='sb'><p>Read from disk on 260819.</p><p><strong>The value lane.</strong> 21 probe cards exist across the board: 17 at <code>planned</code>, 3 <code>answered</code>, 1 <code>answered-local</code>. <strong>0 carry <code>read: ✅</code>.</strong> So four cards hold an answer and no person has read any of them, which means no number on this board may legally be quoted yet.</p><p><strong>The citation lane.</strong> 8 bibex file(s) exist across the whole board.</p><p><strong>The display lane.</strong> 7 units, all 7 rendered, <strong>0 accepted</strong>.</p><p><strong>What this says about the three lanes.</strong> The lane structure is designed and barely exercised. 17 of 21 cards have never been dispatched, and every single person-reserved tick in the evidence phase is still open across the entire board. The lanes are real folders with real contracts and almost no traffic.</p></div></section><details class='step fold'><summary class='sh'><span>🗂</span><b>audit</b><span class='sn'>consumer/q-consumer.md · who wanted it, and why</span></summary><div class='sb'><p><strong>The question, as this page needs it</strong> Across this board, how many probe cards exist, how many bibex entries, how many display units, and how many of each have reached the state that means a person has read or accepted them?</p><p><strong>What this page loses if it never comes back</strong> §5 claims EVIDENCE runs as three parallel lanes. If almost every card on the board sits at <code>planned</code>, then the lane structure is designed but unexercised, and saying so is the difference between a contract and a description. Aim A5.1 depends on it.</p><p><strong>Where it is used</strong> <code>C5.P2.B3</code> in <code>outline/QPw00-page-loop-outline-v2.md</code>, and the sentence that bullet becomes.</p></div></details><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP03-probe-card-state</span></summary><div class='sb'><pre>├── consumer/
+│   └── q-consumer.md
+├── executor/
+│   ├── a-executor.md
+│   └── q-executor.md
+├── proof/
+│   ├── lane-census.json
+│   └── manifest.yaml
+└── card.md</pre></div></details></div><div class='card' id='PP04-auditor-verdict'><div class='chead'><span class='badge'>✅</span><span class='pid'>PP04</span><span class='ptitle'>auditor verdict</span></div><div class='q'>What does the deterministic lifecycle auditor return for each stored run, and which fault codes does it emit?</div><dl class='fields'><dt>state</dt><dd>answered-local</dd><dt>route</dt><dd>task</dd><dt>bank</dt><dd>code</dd><dt>serves</dt><dd>C14.P1.B5</dd></dl><div class='next owed'>🕳 q-executor written, target empty: nobody has been asked yet</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 why_empty: nothing has been dispatched yet; PROBE raised this card on 260819</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'><p>🧱 STAKE FORBIDDEN · this is the ONLY file that is dispatched.</p><p>What does the deterministic lifecycle auditor return for each stored run, and which fault codes does it emit?</p><p><strong>Where to look</strong> haipipe-board/src/page_lifecycle.py is the auditor; run it over every file under _runs/page/. Its codes are defined in that module.</p><p><strong>What a complete answer contains</strong> one verdict per run, PASS or FAIL, with each emitted fault code and the receipt index that produced it, quoted from the auditor's own output rather than summarised.</p><p><strong>How to return it</strong> Numbers with the file or command each came from. A count with no source is not an answer. If a number cannot be produced, say which input is missing rather than estimating it.</p></div></section><section class='step '><header class='sh'><span>📥</span><b>came back</b><span class='sn'>executor/a-executor.md · the bank's own words</span></header><div class='sb'><p>The auditor is <code>src/page_lifecycle.py</code>, run over every file under <code>_runs/</code> on 260819. Verbatim output, not summarised:</p><pre>260805-0216-QB8e     FAIL (2)
+  page-path-stale            run         `page` records a path that no longer resolves
+  artifact-version-mismatch  run         current source/render identity ≠ recorded
+
+260818-1510-QPw00    FAIL (1)
+  artifact-version-mismatch  run         current source/render identity ≠ recorded
+
+260818-1543-QPw00    FAIL (2)
+  checked-version-mismatch   receipt[2]  CHECK must leave one identical
+                                         version_before/version_after/checked_version
+  artifact-version-mismatch  run         current source/render identity ≠ recorded</pre><p><strong>3 runs stored, 3 FAIL, 0 PASS. 5 findings, 3 distinct codes.</strong></p><p>The three codes are not equally serious, and the distinction matters:</p><ul><li><code>artifact-version-mismatch</code> fires on all three and is EXPECTED. It compares the page as it stands now against the identity recorded when the run finished, and every one of these pages has been edited since. It says the receipt is old, not that the run was wrong.</li><li><code>page-path-stale</code> fires on the oldest run because the page was later renamed. The auditor recovered by searching for the file's basename, which is why it degraded to a named finding instead of a false "artifact missing".</li><li><code>checked-version-mismatch</code> at <code>receipt[2]</code> is the real one. CHECK is required to leave <code>version_before</code>, <code>version_after</code> and <code>checked_version</code> identical, because a judge that reports on a version it did not read is the one failure the receipt exists to catch. That receipt violates it, and no reasoning had predicted it: it was found by running the auditor.</li></ul><p><strong>So the loop's own audit claim is half-earned.</strong> The machinery exists and it caught a genuine contract violation in the board's own history. What is missing is any run that PASSES: the passing half of <code>A14.1</code>'s "both a passing and a failing test" has no stored example.</p></div></section><details class='step fold'><summary class='sh'><span>🗂</span><b>audit</b><span class='sn'>consumer/q-consumer.md · who wanted it, and why</span></summary><div class='sb'><p><strong>The question, as this page needs it</strong> What does the deterministic lifecycle auditor return for each stored run, and which fault codes does it emit?</p><p><strong>What this page loses if it never comes back</strong> §14 claims the loop is auditable and that quality is evidenced rather than declared. An audit nobody has run over the board's own receipts leaves that claim self-referential; Aim A14.1 asks for both a passing and a failing test, and a real FAIL on our own run is the failing half.</p><p><strong>Where it is used</strong> <code>C14.P1.B5</code> in <code>outline/QPw00-page-loop-outline-v2.md</code>, and the sentence that bullet becomes.</p></div></details><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP04-auditor-verdict</span></summary><div class='sb'><pre>├── consumer/
+│   └── q-consumer.md
+├── executor/
+│   ├── a-executor.md
+│   └── q-executor.md
+├── proof/
+│   ├── auditor-verdicts.json
+│   └── manifest.yaml
+└── card.md</pre></div></details></div><div class='card' id='PP05-phase-run-time'><div class='chead'><span class='badge'>⚠️</span><span class='pid'>PP05</span><span class='ptitle'>phase run time</span></div><div class='q'>How long does each phase take, measured from the timestamps of stored receipts rather than estimated?</div><dl class='fields'><dt>state</dt><dd>concern</dd><dt>route</dt><dd>task</dd><dt>bank</dt><dd>run · blocked: the receipt shape carries no start/end pair, and three phases have no receipt at all</dd><dt>serves</dt><dd>C15.P2.B4</dd></dl><div class='next owed'>🕳 q-executor written, target empty: nobody has been asked yet</div><section class='step lead'><header class='sh'><span>🔢</span><b>proof</b><span class='sn'>the files behind the answer</span></header><div class='sb'><div class='hole'>🕳 why_empty: | BLOCKED, not unanswered. Measuring a phase needs a receipt with timestamps, and three of the seven phases have never produced one anywhere on this board (PROBE, EVIDENCE, COMPILE — see PP02.v4). The four that have are spread across three runs whose receipts carry a single completion time, not a start/end pair, so even those four cannot be differenced. What unblocks this: run the loop once end to end with per-phase start and end stamps in the receipt. That is a change to the receipt shape in page-workflows/haipipe-page-workflow/ref/page-run-contract.md, not a read.</div></div></section><section class='step '><header class='sh'><span>🧱</span><b>asked</b><span class='sn'>executor/q-executor.md · the only thing dispatched</span></header><div class='sb'><p>🧱 STAKE FORBIDDEN · this is the ONLY file that is dispatched.</p><p>How long does each phase take, measured from the timestamps of stored receipts rather than estimated?</p><p><strong>Where to look</strong> _runs/page/**.json receipt timestamps. The four phases with no receipt anywhere (OUTLINE, DRAFT, PROBE, EVIDENCE) must each be run once before this can be answered at all.</p><p><strong>What a complete answer contains</strong> one measured duration per phase, with the run and receipt each came from, and an explicit NOT MEASURED for any phase with no receipt.</p><p><strong>How to return it</strong> Numbers with the file or command each came from. A count with no source is not an answer. If a number cannot be produced, say which input is missing rather than estimating it.</p></div></section><section class='step '><header class='sh'><span>📥</span><b>came back</b><span class='sn'>executor/a-executor.md · the bank's own words</span></header><div class='sb'><p><strong>BLOCKED. No number can be produced, and here is exactly which input is missing.</strong></p><p>Two separate blocks, and both have to clear:</p><pre>① three phases have NO receipt anywhere      PROBE · EVIDENCE · COMPILE
+② the receipts that DO exist carry one       a completion time, not a
+   timestamp, not two                        start/end pair</pre><p>So even the four phases with receipts (OUTLINE, DRAFT, REVISE, CHECK) cannot be timed: there is nothing to subtract from.</p><p><strong>What unblocks it.</strong> Block ② is the one to fix first, because it is a contract change rather than work: the receipt shape in <code>ref/page-run-contract.md</code> needs a per-phase start and end stamp. Block ① then clears by running the loop once end to end.</p><p>An estimate was NOT returned. The question asked for measured durations, and returning a plausible number here is exactly how the table's TIME column got its current values.</p></div></section><details class='step fold'><summary class='sh'><span>🗂</span><b>audit</b><span class='sn'>consumer/q-consumer.md · who wanted it, and why</span></summary><div class='sb'><p><strong>The question, as this page needs it</strong> How long does each phase take, measured from the timestamps of stored receipts rather than estimated?</p><p><strong>What this page loses if it never comes back</strong> §15 prices the loop for a person deciding whether to use it, and TIME is the only column nobody has measured. Aim A15.2 is not met and cannot be met by reasoning: it needs receipts that do not exist yet.</p><p><strong>Where it is used</strong> <code>C15.P2.B4</code> in <code>outline/QPw00-page-loop-outline-v2.md</code>, and the sentence that bullet becomes.</p></div></details><details class='step fold'><summary class='sh'><span>📂</span><b>files</b><span class='sn'>PP05-phase-run-time</span></summary><div class='sb'><pre>├── consumer/
+│   └── q-consumer.md
+├── executor/
+│   ├── a-executor.md
+│   └── q-executor.md
+├── proof/
+│   └── manifest.yaml
+└── card.md</pre></div></details></div></div><script>
+document.getElementById('rebuild').onclick = function () {
+  var b = this; b.disabled = true; b.textContent = '⏳ rebuilding…';
+  fetch('/_board/probe', {method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path: "/board.md", file: "5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md"})})
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) { location.reload(); return; }
+      alert('⚠ ' + (j.err || 'rebuild failed'));
+      b.disabled = false; b.textContent = '🔄 rebuild';
+    })
+    .catch(function (e) { alert('⚠ ' + e);
+      b.disabled = false; b.textContent = '🔄 rebuild'; });
+};
+</script><script>
+(function () {
+  var s = document.getElementById('strip');
+  if (!s) return;
+  var cards = s.children.length;
+  var pos = document.getElementById('pos');
+  function at() { return Math.round(s.scrollLeft / s.clientWidth); }
+  function paint() { pos.textContent = (at() + 1) + ' / ' + cards; }
+  function go(d) { s.scrollTo({left: (at() + d) * s.clientWidth, behavior: 'smooth'}); }
+  document.getElementById('prev').onclick = function () { go(-1); };
+  document.getElementById('next').onclick = function () { go(1); };
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  function paintChips() {
+    var i = at();
+    chips.forEach(function (c, k) { c.className = 'chip' + (k === i ? ' on' : ''); });
+  }
+  s.addEventListener('scroll', function () {
+    requestAnimationFrame(function () { paint(); paintChips(); });
+  });
+  /* A CITATION or a chip lands here as #<unit-id>: shift the deck to that
+     unit, so a sentence citing a display arrives at the render it cites. */
+  function toHash() {
+    var h = decodeURIComponent((location.hash || '').slice(1));
+    var el = h && document.getElementById(h);
+    if (el && el.parentNode === s) s.scrollLeft = el.offsetLeft - s.offsetLeft;
+  }
+  window.addEventListener('hashchange', toHash);
+  toHash();
+  paint(); paintChips();
+})();
+</script></body></html>

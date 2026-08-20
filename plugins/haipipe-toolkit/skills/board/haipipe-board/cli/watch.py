@@ -41,46 +41,6 @@ def build(d, only=None):
             cmd += ["--only", ",".join(sorted(only))]
     r = subprocess.run(cmd, capture_output=True, text=True)
     print((r.stdout or r.stderr).strip(), flush=True)
-    project_sections(d, only)
-
-
-MD2TEX = (HERE.parent.parent / "paper" / "haipipe-paper"
-          / "scripts" / "to-word" / "md2tex.py")
-
-
-def project_sections(d, only=None):
-    """A SECTION page that changed also regenerates its .tex, and says where.
-
-    JL 260807: "section 一改它就生成", and the path has to be printed or the
-    output may as well not exist. Only pages that DECLARE `section_title:` are
-    projected, so this never fires on a board that has no manuscript behind it.
-
-    It writes `3-dist/tex/`, which is md2tex's own default, and never
-    `sections/`. Overwriting the tree a human hand-carries stays a separate
-    deliberate act, and a watcher is the last place that should happen by
-    itself.
-    """
-    if not MD2TEX.is_file():
-        return
-    pages = [p for p in sorted(d.rglob("*.md"))
-             if not any(s.startswith(("_", ".")) for s in p.relative_to(d).parts)
-             and (only is None or p.name in only)
-             and "section_title:" in p.read_text(errors="ignore")[:1500]]
-    if not pages:
-        return
-    root = next((c for c in (d / "_fixture", d.parent.parent) if c.is_dir()), None)
-    if root is None:
-        return
-    r = subprocess.run([sys.executable, str(MD2TEX), *map(str, pages),
-                        "--paper-root", str(root)],
-                       capture_output=True, text=True)
-    out = (r.stdout or r.stderr).strip()
-    if out:
-        print(out, flush=True)
-    for p in pages:
-        made = root / "3-dist" / "tex" / (p.stem + ".tex")
-        if made.is_file():
-            print(f"   📄 {made}", flush=True)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 ---
 name: haipipe-plugin-word
 description: >-
-  The WORD plugin of a Board page: export one page's prose as a coauthor .docx with a PDF twin, flowing paragraph-per-paragraph prose (never the source's sentence-per-line), citations and a References section resolved from the page's own bibex/ bib, and evidence riding as anchored Word comments. Loads on top of haipipe-plugin's contract; the writer is the paper family's md2docx, called by path. Trigger: word plugin, word export, docx export, page to word, coauthor docx, PDF twin, join paragraphs, /haipipe-plugin-word.
+  The WORD plugin of a Board page: export one page's prose as a coauthor .docx with a PDF twin, flowing paragraph-per-paragraph prose (never the source's sentence-per-line), citations and a References section resolved from the page's own bibex/ bib, and evidence riding as anchored Word comments. Loads on top of haipipe-plugin's contract; the shared Page-plugin writer is called by path. Trigger: word plugin, word export, docx export, page to word, coauthor docx, PDF twin, join paragraphs, /haipipe-plugin-word.
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-16"
@@ -51,12 +51,12 @@ Headless, through the server: `POST /_board/word {path: "<board>/board.md", file
 The writer directly, board conventions included:
 
 ```bash
-python3 skills/paper/haipipe-paper/scripts/to-word/md2docx.py <page.md> \
+python3 skills/board/page-plugins/_shared-export/md2docx.py <page.md> \
         -o <page-dir>/word/<stem>.docx --join-paragraphs \
         [--document-title "Full Page H1"] [--paper-root DIR]
 ```
 
 ## ⚠️ Known warts
 
-The board's `**Name**:` caption markers reach Word as literal asterisks; md2docx was built for the paper's stage grammar.
+The Board's `**Name**:` caption markers are Page scaffolding; the shared reader strips them before Word output.
 The twin needs Chrome on the machine; without it the view keeps the ⬇ download and names the failure.

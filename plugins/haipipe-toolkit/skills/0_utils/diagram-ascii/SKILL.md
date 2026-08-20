@@ -1,11 +1,11 @@
 ---
 name: diagram-ascii
 description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking, AND the two-box shape every substantive chat reply opens with (✅ ANSWER, then 🧑 YOURS, then a 🤖 MINE list). Use when the user wants to sketch an idea, map a codebase, visualize a flow inline during discussion, show pipeline progress, or when a reply must lead with its answer and the one action the reader owns. Output is plain-text with liberal emoji for visual punch.
-version: "0.2.0"
+version: "0.3.0"
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
-  summary: "Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking."
+  version: "0.3.0"
+  last_updated: "2026-08-19"
+  summary: "0.3.0 makes the two reply boxes RULES ONLY, top and bottom, 78 columns: side pipes capped the text at ~58 columns and wrapped sentences that fit."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,20 +33,18 @@ metadata:
 **Every substantive chat reply opens with two boxes and then a numbered list.** Ruled 260818, in two corrections one after the other: *"I want the style like this, highlight your answer, highlight what I need to do"*, then *"I think you should also highlight your quick answer."* A bold sentence on line 1 is not enough, because bold still disappears in a scroll.
 
 ```
-╔══════════════════════════════════════════════════════════════╗
-║  ✅ ANSWER · <the answer to what was asked, one line>        ║
-║                                                              ║
-║  <at most 2 more lines: the number, the path, the verdict>   ║
-╚══════════════════════════════════════════════════════════════╝
+══════════════════════════════════════════════════════════════════════════════
+✅ ANSWER · <the answer to what was asked, one line>
+<at most 2 more lines: the number, the path, the verdict>
+══════════════════════════════════════════════════════════════════════════════
 
-╔══════════════════════════════════════════════════════════════╗
-║  🧑 YOURS · <how long, or the word "nothing">                 ║
-║                                                              ║
-║  <the literal thing to type, click, or decide>               ║
-║  <what happens if it is skipped>                             ║
-╚══════════════════════════════════════════════════════════════╝
+══════════════════════════════════════════════════════════════════════════════
+🧑 YOURS · <how long, or the word "nothing">
+<the literal thing to type, click, or decide>
+<what happens if it is skipped>
+══════════════════════════════════════════════════════════════════════════════
 
-── 🤖 MINE · <n> items, no input needed ──────────────────────
+── 🤖 MINE · <n> items, no input needed ─────────────────────────────────────
   1️⃣ <what the assistant does>        <how long>
 ```
 
@@ -55,7 +53,9 @@ Four rules make it work, and `ref/09-reply-boxes.txt` carries the worked example
 - **Never omit the YOURS box.** With nothing to do it still appears and says `nothing`, so it is never scanned for.
 - **YOURS holds the LITERAL thing**: the exact command, the exact line, the exact path. Never a description of it.
 - **MINE is a numbered list with time estimates.** It is what makes `nothing` in the YOURS box credible instead of evasive.
-- **Both boxes are the same width**, 62 columns of content. Two widths read as two unrelated things.
+- **RULES ONLY, top and bottom, no left or right edge** (JL 260819: “你这个 box 能不能只保留上下，不要左右，然后把它变得越宽越好？”). Side pipes force every line to be padded to one width, which caps the text at ~58 columns and wraps sentences that would otherwise fit. Rules alone let a line run the full terminal.
+- **78 columns, both rules the same width.** Two widths read as two unrelated things.
+- **No padding inside.** Text starts at column 1, directly under the rule.
 
 Skip both boxes for a one-word factual answer, a pure "sketch this" request where the diagram IS the answer, and mid-work progress notes.
 

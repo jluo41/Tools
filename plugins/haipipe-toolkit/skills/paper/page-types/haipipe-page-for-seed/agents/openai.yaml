@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Seed Page"
+  short_description: "Define a venue-free paper identity and Narrative handoff"
+  default_prompt: "Use $haipipe-page-for-seed to create or repair the venue-free Seed page for this paper."

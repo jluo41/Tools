@@ -2,12 +2,12 @@
 
 THE DIVISION OF LABOUR between a writer and a door:
 
-  the writers (skills/paper/haipipe-paper/scripts/to-word/)   HOW an export is made
+  the writers (skills/board/page-plugins/_shared-export/)     HOW an export is made
   this file                                                   WHERE it lands, and the door
 
-Nothing is copied from the paper family. `md2tex.py` and `md2docx.py` are called
-by path, so Word and LaTeX stay two projections of one source and improve when
-the skill improves. The one writer authored HERE is the bibex extractor, because
+`md2tex.py` and `md2docx.py` are shared Page-plugin writers and are called by
+path, so Word and LaTeX stay two projections of one source. The one writer
+authored HERE is the bibex extractor, because
 citation-craft.md forbids generating bibtex: it may only SUBSET a `.bib` a person
 already wrote, so it is thirty lines of copying and belongs to no other family.
 
@@ -34,10 +34,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-# The writers, found beside this engine the way autodeck.py finds html-ppt:
-# live/ -> haipipe-board -> board -> skills, then the paper family.
-_SCRIPTS = (Path(__file__).resolve().parents[3]
-            / "paper" / "haipipe-paper" / "scripts" / "to-word")
+# The writers are shared by the Word and LaTeX Page plugins. They live beside
+# those contracts rather than inside a consumer family such as Paper.
+_SCRIPTS = (Path(__file__).resolve().parents[2]
+            / "page-plugins" / "_shared-export")
 
 _TEXBIN = "/Library/TeX/texbin"
 
@@ -247,9 +247,8 @@ document.getElementById('rebuild').onclick = function () {
 
     # ---- POST /_board/latex ------------------------------------------
     def export_latex(self, p):
-        """{path, file} -> {ok, url, tex, pdf}. md2tex writes the section; a
-        standalone master is wrapped around it here because md2tex's own
-        --compile is bound to one paper's hand-written master."""
+        """{path, file} -> {ok, url, tex, pdf}. md2tex writes Page TeX;
+        this caller owns the standalone wrapper and LuaLaTeX compilation."""
         page_src, out_dir, board, err = self._export_target(p, "latex")
         if err:
             return None, err
@@ -265,6 +264,12 @@ document.getElementById('rebuild').onclick = function () {
              "--keep-fences"],
             timeout=120)
         tex = out_dir / (stem + ".tex")
+        # A nonzero md2tex exit must FAIL the door (found by the 260820 REVISE
+        # pass: two POSTs returned ok:true while re-floating the PREVIOUS
+        # conversion, because only the file's existence was checked and a
+        # stale .tex from the last run satisfied that).
+        if code != 0:
+            return None, "md2tex exited %s:\n" % code + log[-1500:]
         if not tex.is_file():
             return None, "md2tex wrote no .tex:\n" + log[-1500:]
 
@@ -295,13 +300,31 @@ document.getElementById('rebuild').onclick = function () {
                     # regular top float can leap to the beginning of a later
                     # page, visually preceding the section that introduces
                     # it.  Keep the unit at its first substantive citation.
+                    # A unit is drawn against its OWN preview page, which
+                    # is as wide as the table needs; the master's text block
+                    # is not, and an over-wide table does not wrap, it runs
+                    # off the paper (QC1-visitlbp Table 3: the GUARD column,
+                    # the whole point of that table, was cut in half). Shrink
+                    # ONLY when it does not fit, so a table that already fits
+                    # keeps its own size.
                     block = ("\\begin{table}[H]\n\\centering\n"
-                             "\\input{%s/assets/table-body}\n"
+                             "\\resizebox{\\ifdim\\width>\\linewidth"
+                             "\\linewidth\\else\\width\\fi}{!}{%%\n"
+                             "\\input{%s/assets/table-body}}\n"
                              "\\caption{%s}\n%s\\end{table}"
                              % (rel, u["caption"], lab))
                 elif (u["dir"] / "assets" / "figure.pdf").is_file():
-                    block = ("\\begin{figure}[H]\n\\centering\n"
-                             "\\includegraphics[width=.85\\linewidth]"
+                    # width AND height capped with keepaspectratio, and
+                    # [!htbp] instead of [H]: a tall display preview at
+                    # fixed width is taller than the text block, and [H]
+                    # plants it mid-page anyway, so it overflowed and
+                    # clipped the prose after it (JL 260820, Figure 8 on
+                    # p.19 plus "其他几个 display 也有这个问题"). [!htbp]
+                    # still tries HERE first, so a fitting figure stays at
+                    # its citation; only one that cannot fit floats on.
+                    block = ("\\begin{figure}[!htbp]\n\\centering\n"
+                             "\\includegraphics[width=.85\\linewidth,"
+                             "height=.85\\textheight,keepaspectratio]"
                              "{%s/assets/figure.pdf}\n\\caption{%s}\n%s"
                              "\\end{figure}" % (rel, u["caption"], lab))
                 else:
@@ -343,11 +366,85 @@ document.getElementById('rebuild').onclick = function () {
         elif proot:
             bibs = sorted(proot.glob("0-*.bib"))
             bib = bibs[0] if bibs else None
+        # md2tex leaves a handful of mid-paragraph **bold** runs unconverted
+        # (found on QPw00: 5 of them printed literal asterisks). Convert them
+        # here, OUTSIDE verbatim only, so fences keep their raw text.
+        import re as _re
+        body = tex.read_text(encoding="utf-8")
+        parts = _re.split(r"(\\begin\{verbatim\}.*?\\end\{verbatim\})",
+                          body, flags=_re.S)
+        for _i in range(0, len(parts), 2):
+            # The markers must sit at a word boundary. A regression page
+            # writes significance as `12.9024***`, and a pair-anywhere regex
+            # reads the 2nd and 3rd star of one coefficient together with the
+            # 1st and 2nd of the next, wrapping the prose between them and
+            # breaking the \texttt group it started in (QC1-visitlbp: the
+            # rival-cells sentence printed in monospace with one star left).
+            parts[_i] = _re.sub(r"(?<![\w*])\*\*([^*\n]+?)\*\*(?![\w*])",
+                                r"\\textbf{\1}", parts[_i])
+        fixed = "".join(parts)
+        if fixed != body:
+            tex.write_text(fixed, encoding="utf-8")
+
+        # A key the page cites in backticks reaches the PDF as a REAL citation
+        # (JL 260820, C4.P8.S2: "reference 为什么没有展现出来"): md2tex renders
+        # `key` as \texttt{key}, so no \citep ever fired and bibtex printed
+        # nothing. Convert exactly the keys the chosen .bib defines.
+        if bib:
+            import re as _re
+            keys = _re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,",
+                               bib.read_text(encoding="utf-8",
+                                             errors="replace"))
+            body = tex.read_text(encoding="utf-8")
+            hit = False
+            for k in keys:
+                pat = "\\texttt{%s}" % k
+                if pat in body:
+                    body = body.replace(pat, "\\citep{%s}" % k)
+                    hit = True
+            if hit:
+                tex.write_text(body, encoding="utf-8")
         master = out_dir / (stem + "-master.tex")
         head = ["\\documentclass[11pt]{article}",
                 "\\usepackage[margin=1in]{geometry}",
-                "\\usepackage{graphicx,booktabs,longtable,float,tabularx}",
-                "\\usepackage[hidelinks]{hyperref}"]
+                "\\usepackage{graphicx,booktabs,longtable,float,tabularx,pifont}",
+                # A display unit declares its own packages in its
+                # preview.tex, and the master must cover them or the
+                # glyph vanishes: nonstopmode turns an undefined
+                # \\checkmark into an EMPTY table cell, which is worse
+                # than a failed build because the table still prints
+                # (QC1-visitlbp Table 1, every shipped/not-shipped mark
+                # blank in the page PDF while the unit's own preview.pdf
+                # was correct).
+                "\\usepackage{amsmath,amssymb}",
+                "\\usepackage[hidelinks]{hyperref}",
+                # Emoji are the board's mark grammar and Latin Modern has no
+                # glyph for any of them; LaTeX drops a missing glyph silently
+                # (JL 260820: "emoji 都没有被 compile"). LuaLaTeX + a
+                # luaotfload fallback chain prints them: Apple Color Emoji
+                # for the pictographs, TeXLive's DejaVu for circled digits
+                # and arrows. This is why the compile passes below run
+                # lualatex, not xelatex.
+                "\\usepackage{fontspec}",
+                "\\directlua{luaotfload.add_fallback(\"emojifb\","
+                " {\"[/System/Library/Fonts/Apple Color Emoji.ttc]"
+                ":mode=harf;\", \"[DejaVuSans.ttf];\"})}",
+                "\\setmainfont{Latin Modern Roman}"
+                "[RawFeature={fallback=emojifb}]",
+                "\\setmonofont{Latin Modern Mono}"
+                "[RawFeature={fallback=emojifb}]",
+                # A board fence is a DIAGRAM, not prose (JL 260820: "它在这个
+                # 里面非常扎眼…找一个框给框起来"). Box every verbatim in a
+                # breakable gray-backed frame at \footnotesize so it reads as
+                # apparatus beside the text instead of merging into it.
+                "\\usepackage{fancyvrb,etoolbox,xcolor}",
+                "\\usepackage{tcolorbox}\\tcbuselibrary{breakable}",
+                "\\RecustomVerbatimEnvironment{verbatim}{Verbatim}"
+                "{fontsize=\\footnotesize,baselinestretch=0.92}",
+                "\\BeforeBeginEnvironment{verbatim}{\\begin{tcolorbox}"
+                "[breakable,colback=black!4,colframe=black!25,"
+                "boxrule=0.4pt,arc=2pt,left=4pt,right=4pt,top=1pt,bottom=1pt]}",
+                "\\AfterEndEnvironment{verbatim}{\\end{tcolorbox}}"]
         tail = []
         if bib:
             head.append("\\usepackage{natbib}")
@@ -368,12 +465,12 @@ document.getElementById('rebuild').onclick = function () {
             env["BIBINPUTS"] = ".:%s:" % bib.parent
         # First pass lays down display labels; second resolves their in-text
         # Figure/Table references.
-        passes = [["xelatex", "-interaction=nonstopmode", master.name],
-                  ["xelatex", "-interaction=nonstopmode", master.name]]
+        passes = [["lualatex", "-interaction=nonstopmode", master.name],
+                  ["lualatex", "-interaction=nonstopmode", master.name]]
         if bib:
             passes += [["bibtex", master.stem],
-                       ["xelatex", "-interaction=nonstopmode", master.name],
-                       ["xelatex", "-interaction=nonstopmode", master.name]]
+                       ["lualatex", "-interaction=nonstopmode", master.name],
+                       ["lualatex", "-interaction=nonstopmode", master.name]]
         for cmd in passes:
             code, out = self._run(cmd, timeout=180, cwd=out_dir, env=env)
         built = out_dir / (stem + "-master.pdf")
@@ -403,14 +500,14 @@ document.getElementById('rebuild').onclick = function () {
         if pdf.is_file():
             # the mtime rides the frame's URL, so a rebuild's reload can never
             # show a cached PDF as if it were the fresh one
-            body = (btn + "<h1>📜 %s</h1><p class='mut'>compiled by xelatex · "
+            body = (btn + "<h1>📜 %s</h1><p class='mut'>compiled by lualatex · "
                     "<a href='%s' download>⬇ %s.pdf</a></p>"
                     "<iframe src='%s?t=%d' style='width:100%%;height:78vh;border:1px "
                     "solid var(--line);border-radius:8px'></iframe>%s"
                     % (_esc(stem), self._url_of(pdf), _esc(stem),
                        self._url_of(pdf), pdf.stat().st_mtime_ns, src_fold))
         else:
-            body = (btn + "<h1>📜 %s.tex</h1><p class='mut'>xelatex produced no PDF; "
+            body = (btn + "<h1>📜 %s.tex</h1><p class='mut'>lualatex produced no PDF; "
                     "the generated source is below. Log tail:</p><pre>%s</pre>%s"
                     % (_esc(stem), _esc(out[-800:] if out else ""), src_fold))
         view.write_text(_VIEW.format(title=_esc(stem + " · latex"),
@@ -458,8 +555,19 @@ document.getElementById('rebuild').onclick = function () {
         # with `(\ref{<label>})` appended to each unit's first prose mention.
         # The page source is never edited; the temp is deleted after the run.
         units = [(s, u) for s, u in self._page_units(page_src) if u["label"]]
+        # The same conversion the LaTeX door does (JL 260820: "the word plugin
+        # don't have the citation and reference"): a backtick key the page's
+        # own bibex defines becomes \citep{key}, which md2docx renders from
+        # the compiled .board-refs.bbl — in-text label plus References. Without
+        # it the key ships as code text and no citation ever fires.
+        import re as _re
+        bibkeys = []
+        if own.is_file():
+            bibkeys = _re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,",
+                                  own.read_text(encoding="utf-8",
+                                                errors="replace"))
         src_for_docx, tmp = page_src, None
-        if units:
+        if units or bibkeys:
             lines = page_src.read_text(encoding="utf-8").split("\n")
             fence, done = False, set()
             for i, ln in enumerate(lines):
@@ -481,7 +589,22 @@ document.getElementById('rebuild').onclick = function () {
                                     + ln[m.end():])
                         done.add(key)
                         ln = lines[i]
-            if done:
+            key_hits = 0
+            if bibkeys:
+                fence = False
+                for i, ln in enumerate(lines):
+                    if ln.lstrip().startswith("```"):
+                        fence = not fence
+                        continue
+                    if fence or ln.lstrip().startswith(">"):
+                        continue
+                    for k in bibkeys:
+                        pat = "`%s`" % k
+                        if pat in ln:
+                            lines[i] = ln = ln.replace(
+                                pat, "\\citep{%s}" % k)
+                            key_hits += 1
+            if done or key_hits:
                 tmp = out_dir / (stem + ".export.md")
                 tmp.write_text("\n".join(lines), encoding="utf-8")
                 src_for_docx = tmp

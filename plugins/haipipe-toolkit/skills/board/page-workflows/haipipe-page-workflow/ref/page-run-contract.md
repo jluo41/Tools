@@ -17,8 +17,9 @@ The caller supplies facts and authority, not a proposed paragraph formula.
 run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
 page: /absolute/path/to/QB5-page-loop.md
-  start_phase: CHECK              # OUTLINE | DRAFT | PROBE | EVIDENCE |
-                                  # REVISE | COMPILE | CHECK
+start_phase: CHECK             # OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE |
+                               # CHECK; COMPILE parses for legacy receipts only
+                               # (⑥ folded into REVISE 260819)
 intent: audit and improve the automatic Page loop
 sources:                       # exact files the run may rely on
   - /absolute/path/to/source.md
@@ -51,7 +52,7 @@ controller rematerializes context for the new phase rather than reusing CHECK's
 packet.
 
 For a new Page, CREATE scaffolds and registers the persistent Page first; RUN
-then begins at DRAFT. For an existing Page whose next need is unknown, RUN
+then begins at OUTLINE, which has been phase ① since 260817. Beginning at DRAFT was correct only while DRAFT owned the outline. For an existing Page whose next need is unknown, RUN
 begins at CHECK so a fresh judge routes the visible version.
 
 ## Phase receipt
@@ -64,7 +65,7 @@ shape and preserves all receipts in order:
   "step": 4,
   "round": 1,
   "phase": "CHECK",
-  "actor": "haipipe-board-reviewer-agent",
+  "actor": "haipipe-page-check-agent",
   "role": "judge",
   "builder_actor": "fresh-page-builder",
   "status": "ok",
@@ -89,7 +90,10 @@ shape and preserves all receipts in order:
 
 ⚠️ **`human_gate` is a POINTER, never the tick itself** (JL 260818). It records
 that a gate was satisfied and WHERE to look; `evidence` holds paths to the
-durable ticks. Two independent reasons forbid storing the tick here:
+durable ticks. And it must MATCH the packet: `human_gate.required` must equal
+the packet's `human_gate.required` on EVERY step, or the auditor rejects the
+receipt (`human-gate-contract-mismatch`). Two independent reasons forbid
+storing the tick here:
 
 ```text
 the WRITER       the controller writes receipts, so a tick stored in one is
@@ -99,12 +103,7 @@ MUTABILITY       a tick can go BACKWARD: a changed display `intake/` drops
                  a value that reverts cannot live in one
 ```
 
-The four ticks and the missing single surface are argued on `QPw00g-human-gate`.
-
-```text
-(receipt shape continues)
-}
-```
+The five ticks and the missing single surface are argued on `QPw00g-human-gate`.
 
 The minimum auditable identity is the SHA-256 of the Markdown source joined to
 the SHA-256 of its rendered HTML. The auditor requires lowercase 64-character
@@ -116,26 +115,114 @@ snapshot. Every receipt's `version_before` must equal the preceding receipt's
 must be checked again.
 
 `reason` names the authority exercised, not merely the file operation. A route
-to DRAFT from EVIDENCE, REVISE, or CHECK is legal ONLY as a reopen: the receipt
+to DRAFT from REVISE or CHECK is legal ONLY as a reopen (EVIDENCE lost its DRAFT
+edge on 260819: it routes back to OUTLINE, and the plan's gate is the one door
+into DRAFT): the receipt
 names the reopened purpose or Aim, sets `reopens_promise: true`, and increments
 the round, which is the same "only when purpose or an Aim reopened" rule the
 base and QB5 (the loop page, QB9 until 260805) state; a cross-phase route to DRAFT that reopens nothing is an
 illegal route, not a free visit. Repeated DRAFT within the same unsettled
 promise does not increment.
 
+## Receipt step, field by field
+
+What `../../../haipipe-board/src/page_lifecycle.py` (`audit_run`) actually
+enforces on every receipt, transcribed from the code; the right column is the
+finding code a breach raises.
+
+```text
+field                 the auditor's rule                           finding code
+────────────────────────────────────────────────────────────────────────────────
+step                  exactly its 1-based position in receipts:    step-sequence
+                      1, 2, 3 … no gap, no reuse
+round                 first receipt: a positive integer; after     round-start ·
+                      that, +1 ONLY when the previous receipt      round-sequence ·
+                      routed DRAFT from a phase other than         max-rounds-exceeded
+                      DRAFT/OUTLINE with reopens_promise true,
+                      else unchanged; never above
+                      limits.max_rounds
+phase                 one of OUTLINE DRAFT PROBE EVIDENCE          unknown-phase ·
+                      REVISE COMPILE CHECK; must equal the         route-phase-mismatch ·
+                      previous receipt's route; nothing may        receipt-after-terminal
+                      follow a CLOSE or HOLD receipt
+route                 in LEGAL_ROUTES[phase]; only CHECK may       illegal-route ·
+                      CLOSE; the final receipt must route          producer-closed ·
+                      CLOSE or HOLD                                trace-not-terminal
+actor                 non-empty; on a producer phase it must       missing-actor ·
+                      differ from builder_actor                    producer-is-builder
+builder_actor         non-empty; a CHECK judge may equal           missing-builder-actor ·
+                      neither it nor the producer of the           judge-is-builder ·
+                      checked version                              self-approval
+role                  producer on every phase but CHECK; judge     producer-role ·
+                      on CHECK (controller allowed only to         check-role ·
+                      record a blocked/failed HOLD, never to       controller-judged
+                      judge or close)
+status                blocked or failed must route to HOLD         failed-work-not-held
+version_before        required; <64-hex-source>:<64-hex-render>;   missing-version ·
+                      must equal the preceding receipt's           invalid-version-format ·
+                      version_after                                version-continuity
+version_after         required; same format; must equal            snapshot-version-mismatch
+                      source_sha256:render_sha256
+checked_version       CHECK only: version_before, version_after    checked-version-mismatch
+                      and checked_version identical
+mechanical_errors /   non-negative integers, booleans rejected;    invalid-mechanical-count ·
+mechanical_warnings   CLOSE requires mechanical_errors = 0         close-with-mechanical-errors
+verdict               CHECK only: CLOSE requires pass; a pass      close-without-pass ·
+                      may only CLOSE or HOLD; revise must route    pass-routed-to-work ·
+                      to a producing phase; blocked must HOLD      revise-without-worker ·
+                                                                   blocked-not-held
+reason                non-empty, names the authority exercised     missing-reason
+evidence              a LIST                                       missing-evidence-list
+artifacts             a LIST                                       missing-artifacts-list
+human_gate            a dict whose `required` equals the           human-gate-contract-mismatch ·
+                      packet's on EVERY step; CLOSE under a        human-gate-fabricated
+                      required gate needs status=passed and
+                      non-empty evidence
+reopens_promise       true requires route=DRAFT; a non-DRAFT,      reopen-without-draft ·
+                      non-OUTLINE phase routing to DRAFT           draft-without-reopen
+                      requires it true
+```
+
+Run-level, from the same auditor: the packet must be present with `run_id`,
+`board`, `page`, `start_phase`, `intent`, and its `run_id`/`board`/`page` must
+equal the run's (`missing-packet`, `missing-packet-field`,
+`packet-run-mismatch`); `limits.max_steps`/`max_rounds` are positive integers
+and the receipt count stays within them (`invalid-limit`,
+`max-steps-exceeded`); `final_version` is required in the same
+`<source>:<render>` format and, on CLOSE, must equal the terminal CHECK's
+`checked_version` (`missing-final-version`, `invalid-final-version-format`,
+`changed-after-check`); run `status` must be `closed` exactly when the final
+route is CLOSE (`status-route-mismatch`).
+
 ## Legal routes
 
 ```text
-from OUTLINE  → OUTLINE | DRAFT | HOLD
-from DRAFT    → DRAFT | PROBE | EVIDENCE | REVISE | CHECK | HOLD
-from PROBE    → PROBE | EVIDENCE | REVISE | HOLD
-from EVIDENCE → EVIDENCE | REVISE | DRAFT | CHECK | HOLD
-from REVISE   → REVISE | COMPILE | EVIDENCE | DRAFT | CHECK | HOLD
-from COMPILE  → COMPILE | CHECK | REVISE | HOLD
-from CHECK    → CLOSE | OUTLINE | REVISE | PROBE | EVIDENCE | DRAFT | HOLD
+from OUTLINE  → OUTLINE | PROBE | EVIDENCE | DRAFT | HOLD
+from PROBE    → PROBE | EVIDENCE | OUTLINE | HOLD
+from EVIDENCE → EVIDENCE | OUTLINE | HOLD
+from DRAFT    → DRAFT | PROBE | REVISE | CHECK | HOLD
+from REVISE   → REVISE | COMPILE† | EVIDENCE | DRAFT | CHECK | HOLD
+from COMPILE† → COMPILE† | CHECK | REVISE | HOLD
+from CHECK    → CLOSE | OUTLINE | PROBE | EVIDENCE | DRAFT | REVISE | HOLD
 
-`PROBE` is a live phase: it performs PageX/MATCH, raises cards, and dispatches
-the neutral Q-executor. `EVIDENCE` starts when the answer comes back and lands
+**The PREPARE pause (260819).** A `HOLD` from OUTLINE, PROBE or EVIDENCE while
+the packet's human gate is required and the step's own gate is still open
+(`status: pending`) is a PAUSE between passes of one converging round, not a
+terminal: the next receipt's phase must be legal FROM the paused phase, and
+`receipt-after-terminal` does not fire, and a cold ⑦ CHECK may follow the pause directly: the judge reads and routes any version, it produces nothing. `CLOSE` is always terminal, and a HOLD
+outside PREPARE, or with a settled gate, stays terminal. Because one round
+appends one receipt per pass, a packet's `max_steps` must be declared with the
+loop in mind: it bounds the passes a run may spend, so `1` fits only a
+single-pass errand, never a PREPARE round.
+
+† COMPILE edges are for legacy receipts only (⑥ folded into REVISE 260819).
+  The rows stay, in this table and in the auditor's `LEGAL_ROUTES`, because
+  removing them would make a stored receipt naming COMPILE unauditable.
+
+`PROBE` is a live phase: it runs the Task/Discovery QA branch, matches banks,
+raises cards, and dispatches the neutral Q-executor. PageX is the Probe family's
+accepted-Page branch and runs in OUTLINE, never as a fallback inside the PROBE
+phase. `EVIDENCE` starts when the answer comes back and lands
 the value, citation, proof, or Display intake. Receipts from the short 260816
 rename that used PROBE as EVIDENCE remain auditable through the auditor's
 legacy-shape compatibility rule.
@@ -150,7 +237,8 @@ was achieved.
 
 ```text
 controller   chooses and records the next legal route; edits no Page prose
-  producer     performs OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, or COMPILE;
+  producer     one agent per phase since 260819 (haipipe-page-<phase>-agent,
+               COMPILE handled by the REVISE agent); performs exactly one phase;
                may not approve its own version
 builder      rebuilds, runs mechanical checks, and identifies the version
 judge        performs CHECK read-only against that exact version
@@ -161,6 +249,46 @@ The producer, builder, and judge for one version must have distinct actor
 identities. The builder may report deterministic defects but does not make
 semantic claims. The controller may stop a run for safety, but cannot turn that
 stop into CLOSE.
+
+## Effort tier per phase
+
+The dispatch runs each phase at the effort its question deserves, measured on
+QPw00's first full loop (260819-20): DRAFT at the session tier spent 77% of
+114k output tokens on thinking while executing an already-approved plan.
+
+```text
+OUTLINE · CHECK                 inherit the session tier: synthesis and the
+                                verdict are where the hard judgment lives
+PROBE · EVIDENCE · DRAFT ·      'high', one tier down: they execute a plan a
+REVISE · COMPILE                person already approved, and their own exit
+                                checks (four checks, mechanical checker,
+                                receipt continuity) catch a shallow pass
+```
+
+The controller sets this in the Workflow dispatch (`PHASE_EFFORT` in
+page-lifecycle.workflow.js); a phase absent from the map inherits. A caller
+may override for one run by saying so in the packet, and the receipt's actor
+line is unaffected either way.
+
+## The fused ④+⑤ pass
+
+When DRAFT is entered with the promise UNCHANGED — through the gate after
+PREPARE, or re-entered without `reopens_promise` — the controller dispatches
+ONE producer that performs DRAFT and then continues into REVISE (⑥ COMPILE
+folded in) in the same context. Measured on QPw00 (260819-20), the separate
+⑤ boot re-loaded the same contracts and re-read the same page for about 50k
+tokens that bought no independence: ④ and ⑤ are both unattended, both
+producers, and CHECK judges them cold either way.
+
+```text
+fused     one agent · one context · TWO receipt steps in the run file
+          (DRAFT, then REVISE with version_before = DRAFT's version_after)
+          typed return: phase DRAFT, requested route CHECK
+not fused a DRAFT that reopens the promise runs alone, because its REVISE
+          must meet the changed promise in a fresh context
+unchanged the walls (Opening, outline/, probe/, display/, bibex/), the
+          builder/judge separation, and every human tick
+```
 
 ## Durable audit bundle
 
@@ -285,9 +413,10 @@ the gate and its evidence.
 The shipped harness must exercise at least these cases:
 
 ```text
-  happy paths     OUTLINE→DRAFT→PROBE→EVIDENCE→REVISE→COMPILE→CHECK→CLOSE
-                  DRAFT→CHECK→CLOSE
-  legal loops     CHECK→REVISE→CHECK; CHECK→PROBE; CHECK→EVIDENCE;
+  happy paths     OUTLINE→PROBE→EVIDENCE→OUTLINE→DRAFT→REVISE→CHECK→CLOSE
+                  OUTLINE→DRAFT→CHECK→CLOSE
+  legal loops     OUTLINE→PROBE→EVIDENCE→OUTLINE (the PREPARE loop);
+                  CHECK→REVISE→CHECK; CHECK→PROBE; CHECK→EVIDENCE;
                   CHECK→OUTLINE; CHECK→DRAFT(new round)
 faults          producer=self-judge; version changed after CHECK; illegal route
 gates           required human approval absent; explicit HOLD

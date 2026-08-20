@@ -102,6 +102,7 @@ from live.meeting import MeetingMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
+from live.value import ValueMixin
 from live.pageruns import PageRunsMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
@@ -127,7 +128,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -231,6 +232,9 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         if self.path.split("?", 1)[0] == "/_board/outline":
             # 🧭 the page re-read per division (QPf12), same live contract
             return self.outline_view()
+        if self.path.split("?", 1)[0] == "/_board/value":
+            # 🔢 every number the page owes or uses, joined both ways (QPw4v)
+            return self.value_view()
         if self.path.split("?", 1)[0] == "/_board/pageruns":
             # 🪜 one page's lifecycle receipts, for the Page phases stepper
             return self.pageruns_view()
@@ -303,6 +307,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return self.folderstat_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/outline":
             return self.outline_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/value":
+            return self.value_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -508,6 +514,10 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/outline":     # 🧭 the same live twin (QPf12)
             res, err = self.plug_outline(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)
+            res, err = self.plug_value(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/display":    # list display/ units + previews

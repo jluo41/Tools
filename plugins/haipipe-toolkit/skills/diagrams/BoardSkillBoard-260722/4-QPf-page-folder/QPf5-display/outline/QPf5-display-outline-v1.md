@@ -11,11 +11,11 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ## C1 · The same folder shape as a paper, at a new address
 
 ### C1.P1 · one `display/` per page, one folder per unit, every unit the same shape
-- B1 · The tree above is copied from the display family's own rules file, `display-unit-output-contract.md`, word for word.   🧮 proof
+- B1 · The tree above is copied from the display family's own rules file, `display-unit-output-contract.md`, word for word.
 - B2 · The folders split in two.   ✅ have it
 - B3 · `intake/` and `recipe/` are yours to write, filled by people and by drawing skills.   ✅ have it
 - B4 · `assets/` and `preview.pdf` are rebuilt for you from those two.   ✅ have it
-- B5 · So a rebuild may replace the built half, and it never touches the half you wrote.   🧮 proof
+- B5 · So a rebuild may replace the built half, and it never touches the half you wrote.
 - B6 · The one page-side change is the address.   ✅ have it
 - B7 · The unit sits inside the page's own `display/` folder, so when the page moves, its figures move with it.   ✅ have it
 
@@ -47,12 +47,12 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 
 ### C4.P1 · from approved numbers to a picture a person accepts, and who moves each step
 - B1 · Drawing never comes first.   ✅ have it
-- B2 · With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that.   🧮 proof
+- B2 · With no approved inputs there is nothing safe to draw, and the intake rules exist to refuse exactly that.
 - B3 · Steps ① ③ ⑤ belong to a person, and steps ② ④ belong to the machine.   ✅ have it
 - B4 · QPf5-Display1 draws that split of hands.   🖼 Display1
 - B5 · The tab's 🔄 reruns step ④'s build alone, never step ②'s drawing skill.   ✅ have it
 - B6 · If the inputs change, the work runs forward again from ② to ⑤.   ✅ have it
-- B7 · The old yes drops back to ⬜, because the picture a person agreed to no longer exists.   🧮 proof
+- B7 · The old yes drops back to ⬜, because the picture a person agreed to no longer exists.
 - B8 · ⚠️ 12 more sentences in this division are not planned here yet   🎯 A1.1
 
 ## C5 · Evidence this page already carries

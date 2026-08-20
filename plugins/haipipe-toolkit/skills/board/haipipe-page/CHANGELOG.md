@@ -1,3 +1,83 @@
+## 0.38.0 — 2026-08-20
+
+- **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-page-for-narrative`
+  instead; the merge was rejected because Dash covered four families
+  (`section · probe · citation · display`) and only `section` was ever
+  Narrative-shaped, so folding it in would have stranded the other three with
+  no owner. A `closes when: never` type that owns no gate and states no
+  decision was never Page-shaped to begin with. It is `/haipipe-paper status
+  [family]` now, a plain regenerated command owned by the paper family, not a
+  resolvable Page Type. Contract archived whole at
+  `paper/page-types/_archive/haipipe-page-for-dash/`. Twelve live Page Type
+  variants remain (was thirteen).
+
+## 0.37.2 — 2026-08-20
+
+- Moved `haipipe-page-for-insight` in the owner roster from Task to Application.
+  The Page remains Task-backed for source/run/staleness/Probe authority and now
+  closes on an Application Design Handoff.
+
+## 0.37.2 — 2026-08-20
+
+- **The QA-file entry says what the NUMBER means and bans the shorthand**
+  (JL 260820: "what is the QA/5? how to understand it?"). The number is the
+  order that task folder answered questions in, not a rank or a version, and
+  "QA/5" in a reply names nothing anyone can open.
+
+## 0.37.1 — 2026-08-20
+
+- **`ref/glossary.md`**, the family's word list (JL 260820: "cards <--- what is
+  cards? do we have this glossary?"). Thirty-odd terms, each beside the PATH it
+  names: card, display unit, mark, plan, bullet, tick, stake, bank, QA file,
+  producer, judge. It restates no rule and points at the owning section where a
+  word already has one. §🔤 added to SKILL.md so the file is findable.
+
+## 0.36.0 — 2026-08-19
+
+- **Four Page Types DELETED**: `for-design` (104L, 3 pages declared it, no
+  speciality left), `for-meeting` (78L, 0 pages, it is a plugin and
+  `haipipe-plugin-meeting` already ships), `for-skill` (311L, 0 pages, same),
+  `for-view` (0 pages declared it, everything is a view now). JL ruled each.
+- **No `page-type:` key is the DEFAULT**, and no `question` type was created for
+  it: "question itself just to be very flexible" (JL 260819).
+- **A discovery folder is a special TASK**, not a sibling type. `task` will carry
+  which kind of folder it reads.
+- **`insight` becomes a subclass of `task`.** Its DIKW chain was already written
+  (Data → Information → Knowledge → Wisdom); only its parentage changes.
+- `opening` → `seed`, venue-free; `narrative` stays venue-embedded and resolved.
+  Both still to do.
+- 15 types → 11 on disk, 8 in the intended shape once seed and the task subclass
+  land.
+
+## 0.35.0 — 2026-08-19
+
+- **`Writing Style` moves INSIDE `## Opening` as a `###` subsection.** JL 260819:
+  "I don't want to have the Writing style to be in the main page, please put it
+  under the subsection in the Openning." It already rendered inside the Opening
+  drawer, so only the source shape changed.
+- The reason it does not belong on the main run: a top-level section answers a
+  READER's question about the subject, and this one answers a WRITER's question
+  about the page. On the main run it sat between Diagram and Content asking the
+  reader to skip it.
+- The top-level `## Writing Style` still parses. 123 of 274 pages carry it, and
+  deleting someone else's text on read is a silent loss.
+
+## 0.34.0 — 2026-08-19
+
+- **`## States` RETIRED, merged into `## Aims`.** One Aim is now one row carrying
+  its tick, its `Done when:` test and its `Now:` fact together. JL 260819, after
+  reading the 🧭 tab's division card and asking whether the page still needs both
+  sections when the card joins them anyway.
+- The argument is this page family's own history: on 260819 the checker reported
+  `aim-stated-twice` and `state-without-aim` on `QPw00-page-loop`, and a
+  duplicated `### A7` group heading left the parser taking whichever it met last.
+  One id in two places is one fact with two owners.
+- A State row with no Aim id was never a status. It becomes the Aim's optional
+  Plan, or it leaves the page.
+- The plan file keeps target and test, never status: a plan freezes at approval
+  and a status changes daily, so a moving fact inside a frozen file is exactly
+  what the 260817 ruling forbids.
+
 ## 0.33.0 — 2026-08-18
 
 - RUN's dispatch may NOT be delegated to a subagent. A subagent is not handed

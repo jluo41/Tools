@@ -3,21 +3,15 @@ haipipe-toolkit
 
 A skill-set for **turning runs into trustworthy science**.
 
-Two things live here, and they meet at one point:
-
-```
-   ⚙️ THE ENGINEERING SUBSTRATE                  🔬 THE RESEARCH LIFECYCLE
-   "how data becomes a model and ships"          "how runs become a paper you can defend"
-
-   1_data → 2_nn → 3_end → 4_individual          task · discovery   (the EXECUTORS — the bank)
-   RawData → … → Endpoint stores                        ⇅
-   /haipipe-data /haipipe-nn /haipipe-end          probe            (the Q/A map)
-   /haipipe-individual /haipipe-project                 ⇅
-                                                 paper · application  (the CONSUMERS)
-                    │                                              │
-                    └──────────────── a task run ──────────────────┘
-                       run.sh emits metrics.json; the research layer
-                       wraps it with QA digests, probe files, and claims
+```text
+⚙️ Engineering                         🔬 Research composition
+data → nn → endpoint → individual      Task / Discovery ── QA bank
+                                                  │
+accepted Board Pages ── Probe/PageX ──┐           │ Probe/QA
+                                     ▼           ▼
+                              typed consumer Pages
+                                     │
+                              Paper / Application
 ```
 
 If you are here to **build a model** → the engineering substrate (below).
@@ -28,34 +22,30 @@ If you want the whole model → **`ARCHITECTURE.md`**. For recipes → **`USAGE.
 The research lifecycle, in one screen
 --------------------------------------
 
-Five layers. Two of them execute, two of them consume, and one maps between.
+The current research stack is Page-first. Task and Discovery execute work;
+Probe routes evidence into the Page that consumes it; Paper composes accepted
+Pages.
 
 ```
-   ⚙️ EXECUTORS (the bank — grows on its own)     📄 CONSUMERS (ask the questions)
-   ══════════════════════════════════════        ═══════════════════════════════════
-   tasks/<leaf>/          code, runs             papers/<P>/         the manuscript
-     workflow/plan.yaml   the question             0-lifecycle/      stages × DPRC
-     results/             the raw answer           1-probes/         ← the probe files
-     QA/<n>-<slug>.md     the READABLE answer      1-claims.md       ← claim status lives here
-                                                 applications/<A>/   same model, non-academic
-   discoveries/<leaf>/    literature, prior art
-     sources.md · verdict.md · landscape.md
-     QA/<n>-<slug>.md     the READABLE answer
+⚙️ EXECUTORS                         📄 CONSUMING PAGE
+tasks/<leaf>/                        <page>/<page>.md
+  results/                             outline/
+  QA/<n>-<slug>.md                     pagex/   accepted-Page lane
+discoveries/<leaf>/                    probe/   Task/Discovery QA lane
+  sources.md · verdict.md              bibex/ · display/
+  QA/<n>-<slug>.md                     latex/ · word/ derived
 
-                    ╲                          ╱
-                     ╲   🌉 THE PROBE          ╱
-                      ╲  a PAPER-LEVEL file:  ╱
-                       papers/<P>/1-probes/PPNN_<topic>.md
-                       one file per TOPIC · one SECTION per question
-                       binds by PATH:  target: tasks/…/QA/1-cycle.md
+                         🃏 PROBE
+                 source: page ──▶ PageX
+       source: task|discovery ──▶ QA Probe
 ```
 
 **The bank never learns that probes exist.** No `_ASK/`, no ids, no back-references.
 It answers plain questions through its own `qa` verb, and the answer is a file.
 
-**The wall is a dispatch rule, not a file.** A consumer session never runs bank work
-inline — it hands a paper-agnostic `commission:` to a clean-context executor agent,
-and the *executor* writes the answer. The stake (`## Why`, H1/H2/C6) never crosses.
+**The wall is a dispatch rule plus separate Page-local records.** PageX binds
+exact accepted Page files. QA Probe strips consumer stake before a neutral
+question reaches Task or Discovery; the executor writes the bank answer.
 
 Depth: `skills/probe/haipipe-probe/SKILL.md` is the constitution.
 Design record + the rulings behind it: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/`.
@@ -81,11 +71,11 @@ Commands
 /haipipe-discovery    the external executor — Search | Review | Idea
 /haipipe-discovery qa "<question>" [<leaf>]     ← the symmetric door
 
-/haipipe-probe        the probe constitution (anatomy, binding, the two LAWS).
-                      A bare question ROUTES to an executor's qa verb — this
-                      layer never runs bank work itself.
+/haipipe-probe        evidence router: PageX for accepted Pages; QA Probe for
+                      Task/Discovery. The layer never runs bank work itself.
 
-/haipipe-paper        the academic consumer — stages × DPRC, owns 1-probes/
+/haipipe-paper        thin academic router over Seed, Venue, Narrative,
+                      Section, Round, and Dash Pages
 /haipipe-application  the non-academic consumer — same model, venue-gated
 ```
 
@@ -111,10 +101,9 @@ with their own `SKILL.md`, but the umbrella parses your intent and dispatches to
 them via `Skill()`. Only entry points get a slash-command; specialists are reached
 through their umbrella.
 
-⚠️ The two consumer families are registered inconsistently today: `application`
-follows the umbrella pattern strictly (4 slash-commands, 16 specialists dispatched
-via `Skill()`), while `paper` exposes 43. Both work. The `paper` surface is simply
-wider than the pattern intends.
+The Paper family now follows a thin-door pattern: `/haipipe-paper` routes to six
+current Page Types and the shared Page workflow. Archived stage skills are not a
+second public surface.
 
 **Folder names are organization only.** A skill is identified *solely* by the
 `name:` field in its `SKILL.md` frontmatter. Moving a folder never renames a skill.
@@ -127,8 +116,8 @@ skills/
 │   └── agents/             orchestrator · creator · reviewer
 │
 ├── discovery/         🔍 external evidence — Search | Review | Idea + the `qa` verb
-├── probe/             🌉 the constitution + the claim JUDGE (G1/G2/G3)
-├── paper/             📄 academic consumer — stages × DPRC
+├── probe/             🃏 evidence router: PageX + Task/Discovery QA
+├── paper/             📄 academic composition over six Page Types
 ├── application/       📱 non-academic consumer — venue-gated
 ├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills

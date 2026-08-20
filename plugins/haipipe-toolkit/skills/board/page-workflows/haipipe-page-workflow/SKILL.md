@@ -1,11 +1,11 @@
 ---
 name: haipipe-page-workflow
 description: >-
-  The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under <board>/_runs/page/, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
+  The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under the Board's _runs/page/ folder, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-08-18"
-  summary: "Receipts must store the page BOARD-RELATIVE and mechanical_errors must be page-scoped: both proved by auditing the only live run on 260818."
+  version: "0.18.1"
+  last_updated: "2026-08-20"
+  summary: "The phase strip, in both forms: cli/pagephase.py in full and status.py's fourth row, one shared computation (JL 260820)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,21 +24,205 @@ page-workflows/ members    each phase's own authority
 haipipe-board              the machinery this skill calls, never contains
 ```
 
+## 🤖 ONE agent per display unit, and the skill chain it walks (260819)
+
+JL 260819: "each display you can have a subagent to call the specific skills to
+work on it, right?" Yes, and the fan-out unit is the UNIT, not the page:
+
+```text
+  one 🖼 bullet  ─▶  one display unit  ─▶  one agent instance
+```
+
+Four units on `QPw00-page-loop` went stale the moment the loop's phase order
+changed, and four agents rebuilt them in parallel. Each one owns exactly one
+folder and may not touch the page's prose or a sibling unit.
+
+**The chain each agent walks, three layers:**
+
+```text
+  ① the agent      display/agents/haipipe-display-unit-agent
+                   resolves the intake, writes recipe/ · assets/ · README.md
+  ② the one door   haipipe-display
+                   reads README's `kind:` row and routes
+  ③ the renderer   📊 table  → haipipe-display-table
+                   📈 figure → haipipe-display-figure
+                   📐 diagram→ haipipe-display-diagram
+                   ✒️ tex    → haipipe-display-tex
+                   🎨 illust → haipipe-display-illustration
+```
+
+**Why the fan-out is safe.** Each unit is a separate folder with its own intake,
+recipe and README, so two agents cannot collide. The dispatching phase keeps the
+two things an agent may NOT do: it never ticks `accepted:`, which is a person's at
+⑦ CHECK, and it never edits the sentence that cites the unit, which is ⑤ REVISE's.
+
+**What every such dispatch must carry**, because a display agent in a fresh
+context knows none of it:
+
+```text
+  the unit's absolute path        it owns one folder and nothing else
+  WHY it is stale                 which frozen input changed, from checks/intake.py
+  what changed, as facts          plus the files that are the AUTHORITY, so the
+                                  agent verifies rather than trusting the prompt
+  the rebuild commands            the unit's own, from its README
+  the verification to run         checks/intake.py must stop reporting it
+```
+
+⚠️ **"An input moved" is not "the figure is wrong."** One of the four was told to
+DECIDE first and redraw only if a specific line had become false. A re-freeze is
+not a redraw, and a figure rebuilt for no reason loses its own history.
+
+## 👷 One producer agent per phase (260819)
+
+Ruled by JL an hour after §🧭: "for the creator-agent, it should have the
+outline-agent, etc." The display precedent generalizes to the whole loop:
+
+```text
+  phase        agent (skills/board/page-workflows/agents/)     fan-out?
+  ─────────────────────────────────────────────────────────────────────────
+  ① OUTLINE    haipipe-page-outline-agent                      no — merge point
+  ② PROBE      haipipe-page-probe-agent                        per card, serial
+  ③ EVIDENCE   haipipe-page-evidence-agent                     🖼 lane fans out:
+                                                               one haipipe-display-
+                                                               unit-agent per unit
+  ④ DRAFT      haipipe-page-draft-agent                        no
+  ⑤ REVISE     haipipe-page-revise-agent (⑥ COMPILE folded)    no
+  ⑦ CHECK      haipipe-page-check-agent                        no — one version,
+                                                               one cold judge
+  verbs/base   haipipe-page-creator-agent keeps create-page and
+               revise-opening and is the producers' BASE;
+               haipipe-board-reviewer-agent keeps whole-BOARD
+               reviews and is the ⑦ judge's BASE
+```
+
+**The thin-wrapper law, and it is what makes six files safe:** a phase agent
+carries identity, its skill chain, role walls and the receipt duty, and
+restates NOTHING a contract holds. A restated route table or tick rule is a
+mirror, and on 260819 every mirror on this board — phase-cards numbers, the
+route code, four of five figures — drifted within a day of the loop changing.
+The packet, procedure, house rules and return contract live once, in
+`ref/producer-contract.md` (carved out of the creator agent later the same
+day, so no agent reads another agent's file).
+
+## 🧭 ONE OUTLINE pass per PREPARE round, and it is the merge point (260819)
+
+Ruled by JL the same day as the display fan-out: "do we need to have the outline
+agent as well? to update the outline with the new evidence available?"
+
+When this was ruled the pass ran on the shared producer base; an hour later
+§👷 gave every phase its own agent, so the pass is now `haipipe-page-outline-agent`'s.
+What this section adds is WHEN it is sent back in:
+
+```text
+  PREPARE round n
+  ① OUTLINE     ONE outline-agent pass per round: fold every returned answer,
+                README claim and contradiction report into the plan, re-run
+                the four checks, leave a receipt
+  🧑 LOOK       the pass ends at HOLD with the plan rendered: the human looks
+                at the OUTLINE before anything else runs (JL 260819: "the
+                first check should be the outline check … it is good to have
+                the human to have a look at outline and then do the probes
+                and evidences"). His rulings are evidence the next ① pass
+                folds in; his go-word — or a ruling that changes nothing
+                structural — releases ② and ③. The `approved:` tick stays
+                the round's formal close; this look is earlier and lighter.
+  ② PROBE       raise what the folded plan still owes
+  ③ EVIDENCE    fan OUT: one haipipe-display-unit-agent per 🖼 unit, the
+                citation and value lanes beside it, all in parallel
+  returns land ──▶ the next ① pass opens round n+1
+  until the four checks pass AND no return changed the plan
+```
+
+Why the two lanes differ in shape: display units are independent of one another,
+so ③ fans out; the plan is ONE file that every return converges on, so ① cannot
+fan out and runs exactly once per round. An outline edit made in the dispatching
+session's own thread violates this section twice: it leaves no receipt, and an
+in-thread edit is contaminated by the discussion that caused it, which is the
+repo's own fresh-subagent rule applied to the plan.
+
+## 🧑 Where a RUN stops for a person (260819)
+
+```text
+  ┌ ① OUTLINE ⇄ ② PROBE ⇄ ③ EVIDENCE ┐   🧑 ATTENDED
+  └──────────────┬────────────────────┘
+                 ▼  ④ DRAFT → ⑤ REVISE (⑥ COMPILE)   🤖 UNATTENDED
+                 ▼  ⑦ CHECK                          🧑 judges
+```
+
+JL 260819: "we will mainly check the outline and the evidences if we want. But if
+not, you can just go ahead for the draft and revise and the compile." The PREPARE
+loop decides what is true; ④ onward is execution against a plan already agreed. A
+controller that halts between DRAFT and CHECK for a human is halting in the wrong
+place.
+
+Every step reports its `phase:` to whoever is watching, not only into the receipt:
+work that does not name its phase cannot be routed or audited.
+
+**The phase strip mechanizes that duty** (JL 260820: "I want to have a status
+strip to show what phases we are in"). One command, one row per phase, derived
+from DISK plus the newest receipt, never from what a page says about itself:
+
+```bash
+python3 <haipipe-board>/cli/pagephase.py <page-dir>        # --md to paste on a page
+```
+
+```text
+✅ ① OUTLINE   v1 approved · marks 📮25 🧮2 📚6 🖼6
+✅ ② PROBE     14 cards raised · every outline PP id has a card
+⏳ ③ EVIDENCE  🧮 13/14 answered (1 blocked) · 📚 0/7 verified · 🖼 3/5 drawn
+⏳ ④ DRAFT     8 content divisions · page predates outline tick
+⏳ ⑤ REVISE·⑥  latex/ present · pdf STALE/none
+⬜ ⑦ CHECK     last receipt: OUTLINE → HOLD (round 1)
+→ now: ③ EVIDENCE · ✋ human ticks still owed: 25
+```
+
+⚠️ The `→ now` row is the first phase whose exit test FAILS, in loop order: a
+REPORT, never a routing. Which phase runs next stays with the authority test
+(§🔤), and ⑦ CHECK may still route anywhere. Sit it beside its two siblings:
+`status.py` answers "where is this SESSION", `pagestatus.py` "where is every
+page in this GROUP", `pagephase.py` "which PHASE is this PAGE in".
+
+**And the strip rides in the closing block** (JL 260820: "how to update this so
+I know which phase of the page I am in?"). A page-focused `status.py` prints
+the same state as a fourth row, so every reply about a page says where the page
+is without anyone running a second command:
+
+```text
+⏱️ 📮 PROBE · 🧭✅ 📮⏳ 🃏⬜ ✏️⬜ 🖊⬜ 🔍⬜ · ✋4
+```
+
+The bar reuses §🔁's own phase emoji (🧭 📮 🃏 ✏️ 🖊), so the strip and the
+loop diagram teach one symbol set rather than two. ⑦ CHECK is the single
+substitution: §🔁 draws it ✅, which is also the strip's DONE marker, so it
+carries 🔍 in the bar and only there. Circled digits were the first attempt and
+JL could not read them at terminal size (260820).
+
+Both forms read `haipipe-board/src/page_phase.py`. One computation, two
+surfaces: a second copy of the phase rules would go stale the first time this
+loop changed, which is exactly the §🪞 failure this family already records.
+
 ## 🔁 The shape of the loop
 
 **The routing grammar**: authority-selected, never a conveyor belt.
 
 ```
-🧭 OUTLINE ─▶ ✏️ DRAFT ─▶ 📮 PROBE ─▶ 🃏 EVIDENCE ─▶ 🖊 REVISE ─▶ 📄 COMPILE ─▶ ✅ CHECK ─▶ CLOSE
-   🚧gate       │           (skippable)   ⚖️count       │            │            │
-   ▲            │                                       │            │            │
-   └────────────┴───── CHECK routes back to any of them ┴────────────┴────────────┘
+┌─ PREPARE · ① ⇄ ② ⇄ ③ until the plan and its evidence agree ─┐
+│                                                              │
+│  🧭 ① OUTLINE ─▶ 🧑 LOOK ─▶ 📮 ② PROBE ─▶ 🃏 ③ EVIDENCE     │
+│     🚧gate ▲                                  ⚖️count │      │
+│            └────── the answer changes the plan ───────┘      │
+└──────────────────────────┬───────────────────────────────────┘
+                           ▼
+  ✏️ ④ DRAFT ─▶ 🖊 ⑤ REVISE (📄 ⑥ COMPILE folded) ─▶ ✅ ⑦ CHECK ─▶ CLOSE
+      ▲                   ▲                              │
+      └───────────────────┴─ CHECK routes back anywhere ─┘
 
-   the shape     the promise   ask the bank   land the cards   write it   build it   judge it
-   🧭 tab, a     purpose ·     Q → QA file    📚 🔢 🖼 lanes    cite each  latex ·    the BUILT
-   person says   Aims · what                  in parallel      by id      pdf · word artifact
-   yes           each division
-                 must establish
+  ① the shape: 🧭 tab; a 🧑 LOOK ends every pass, a person ticks `approved:`
+  ② ask the bank: each 📮 mark becomes a card, Q → QA file
+  ③ land the cards: 📚 🧮 🖼 lanes in parallel; 🖼 runs intake→render→pick→build
+  ④ write it: real numbers from landed evidence, a hole is the exception
+  ⑤ prose + captions, cite each card and unit by id; rebuild latex · pdf · word
+  ⑦ judge the BUILT artifact; only CHECK may CLOSE
 ```
 
 ## 🔤 Four words, and none substitutes for another
@@ -48,7 +232,7 @@ word         answers                    in one receipt        repeats?
 ──────────────────────────────────────────────────────────────────────
 🌀 WORKFLOW  which LOOP is this?        the run itself        no
 ⏱️ PHASE     which AUTHORITY acts?      `phase:`              YES
-🔢 STEP      WHERE in this run?         `step:`               never
+🧮 STEP      WHERE in this run?         `step:`               never
 🔁 ROUND     which PROMISE era?         `round:`              on reopen
 ```
 
@@ -69,17 +253,18 @@ phase       authority                                          load
 OUTLINE 🚧  writes <page>/outline/<stem>-outline-v<N>.md, the    ../haipipe-page-outline
             plan down to the POINT and its obligations, each     (the file's shape is
             bullet marked
-            🎯aim ✅have ​📚cite 🔢value 🖼display 🧮proof ·       haipipe-plugin-outline §📐)
+            🎯aim 📮ask 🧮value 📚cite 🖼display ·        haipipe-plugin-outline §📐)
             exits ONLY on a person ticking `approved:`
  DRAFT       define purpose + Aims; instantiate each Point as   ../haipipe-page-draft
             one or more sentence scaffolds with visible holes
- PROBE       run PageX/MATCH before new work; turn each          ../haipipe-page-probe
-            🔢 mark into probe/PP<NN>-<slug>/, write its
+ PROBE       MATCH Task/Discovery before new work; turn each     ../haipipe-page-probe
+            source-typed 📮 mark into probe/PP<NN>-<slug>/, write its
             `serves:` backlink, dispatch the stripped question
- EVIDENCE ⚖️ land answer/proof, citation, and frozen Display      ../haipipe-page-evidence
-            intake; expose the derived Evidence Bundle
+ EVIDENCE ⚖️ land answer/proof, citation, and the Display        ../haipipe-page-evidence
+            units (intake, render, pick, build); expose the
+            derived Evidence Bundle
  REVISE      realize the scaffolds as final prose, cite landed   ../haipipe-page-revise
-            cards by id, render/select/build Display units
+            cards and drawn units by id, write their captions
  COMPILE     rebuild latex · pdf · word from that prose          ../haipipe-page-revise
                                                                  (until split out)
 CHECK       judge the BUILT version and route its authority     ../haipipe-page-check
@@ -130,8 +315,9 @@ every phase ONCE, in the same six fields, in loop order:
 ```
 
 **The operational rule is the 🚪 EXITS row: you work a phase by satisfying it.**
-Ten cards (④ splits into its three lanes) carry five person ticks between them,
-so the other five run machine-only from start to finish.
+Eight cards (③ splits into its three lanes, ⑥ folds into ⑤) carry five person
+ticks between them, on four of the cards, so the other four run machine-only
+from start to finish.
 
 That file is a SUMMARY and this family is its source. When the two disagree, the
 phase contract wins and the card is the defect.
@@ -143,23 +329,23 @@ until 260817 three member skills answered it three different ways. One rule now,
 and it reads down the loop:
 
 ```text
-① OUTLINE   the MARK      `- B4 · the four coordinates    🔢`   nothing on disk
-② DRAFT     the AIM +     sentence scaffold with `<VALUE HOLE>` and its
-            SCAFFOLD      Aim/State owner; no card yet
-③ PROBE     the CARD      PageX/MATCH → probe/PP<NN>-<slug>/ · serves: C4.P1.B4
-④ EVIDENCE  the ANSWER    target: <QA path> · proof/ pulled · bundle ready
-⑤ REVISE    the SENTENCE  replaces holes and cites the card by id
+① OUTLINE   the MARK      `- B4 · the four coordinates    📮`   nothing on disk
+② PROBE     the CARD      bank MATCH → probe/PP<NN>-<slug>/ · serves: C4.P1.B4
+③ EVIDENCE  the ANSWER    target: <QA path> · proof/ pulled · bundle ready
+④ DRAFT     the SENTENCE  writes the landed number into prose; a hole only
+                          for a named blocker
+⑤ REVISE    the REWRITE   improves that prose and cites the card by id
 ```
 
-**Why the file waits until ③.** A plan is rejectable in ten seconds and must
-leave nothing behind, so ① may not; the mark IS the proposal, so a card at ②
-would be a second copy of it (§🪞 below). The deciding reason is the STAKE: a
-card's `consumer/` side carries what the page loses, that is an Aim, and Aims are
-written at ②. ③ is the first phase where a complete card can exist.
+**Why the file waits until ②.** A plan is rejectable in ten seconds and must
+leave nothing behind, so ① may not: the mark IS the proposal, and a card beside
+it would be a second copy of it (§🪞 below). The deciding reason is the STAKE: a
+card's `consumer/` side carries what the page loses, and that stake lives in the
+approved plan. ② is the first phase where a complete card can exist.
 
 **The display unit is the one exception, and it goes LATER, not earlier.** Its
 `intake/` freezes FROM a `proof/` that does not exist until an answer does, so
-④ EVIDENCE creates it. Declaring a unit that nothing can fill yet is how a page
+③ EVIDENCE creates it. Declaring a unit that nothing can fill yet is how a page
 shipped "1 display declared · 0 unit folders on disk" (260817).
 
 **⚖️ EVIDENCE is three LANES, not three steps.** They run at once, each with its own hand and its own exit test; the phase ends when all three pass, and no lane waits on another. The result is a derived Evidence Bundle keyed by the Point, not a fourth storage plugin.
@@ -168,13 +354,14 @@ shipped "1 display declared · 0 unit folders on disk" (260817).
 lane          hand        exit test
 ──────────────────────────────────────────────────────────────────────────────
 📚 citation   a person    the bib key is landed AND a person marked it verified
-🔢 value      the bank    binding names a real QA file AND probe/<id>/answer/
+🧮 value      the bank    binding names a real QA file AND probe/<id>/answer/
                           holds its extract  🚫 `answered` with an empty proof/
-🖼 display    a person/   intake/ frozen from that answer/ AND a renderer
-              machine     is named; rendering and selection belong to REVISE
+🖼 display    a person/   intake/ frozen from that answer/ AND the unit drawn
+              machine     and previewable; intake, render, pick and build are
+                          all this lane's (260819), only ⑦'s accept stays out
 ```
 
-⚠️ **The display lane freezes inputs here, then realizes them in REVISE.** QPf5's five-step walk splits across the phases: ① INTAKE is EVIDENCE's, ② RENDER and ③ PICK are REVISE's, ④ BUILD is REVISE/COMPILE's, and ⑤ ACCEPT is CHECK's. A plan carries only the bare `🖼 owed` mark until EVIDENCE has a Probe `proof/` from which to freeze intake.
+⚠️ **The display lane freezes inputs here AND realizes them here.** QPf5's five-step walk sits almost entirely in this phase since 260819: ① INTAKE, ② RENDER, ③ PICK and ④ BUILD are all EVIDENCE's, and only ⑤ ACCEPT is CHECK's. A plan carries only the bare `🖼 owed` mark until EVIDENCE has a Probe `proof/` from which to freeze intake.
 
 ## 🪞 The page never writes prose about what a plugin already holds
 
@@ -214,7 +401,7 @@ exercised and audited, rather than when one known edit is enough.
 
 1. Read `ref/page-run-contract.md` and assemble its raw-material packet. Resolve
    the Page Type from the filename. For a new Page, CREATE and register it first
-   (that verb stays with `haipipe-page`), then start at DRAFT. For an existing
+   (that verb stays with `haipipe-page`), then start at OUTLINE, phase ① since 260817. For an existing
    Page with no known next authority, start at CHECK. Before each phase dispatch,
    materialize that phase's Related Board Pages packet with
    `haipipe-board/cli/pagecontext.py`; an invalid row or missing scope is a
@@ -228,7 +415,7 @@ exercised and audited, rather than when one known edit is enough.
    ```
 
    🚫 **Do not delegate this step to a subagent.** A subagent is not handed the
-   `Workflow` tool. `haipipe-page-orchestrator-agent` declared it, was dispatched
+   `Workflow` tool. `haipipe-page-auditor-agent` declared it, was dispatched
    for the first time on 260818, and returned `blocked` at this exact step with
    0 steps and no receipt. That agent is a packet builder and a receipt keeper
    since 0.3.0; the dispatch is the main session's and cannot be moved.
@@ -258,7 +445,7 @@ through CHECK before CLOSE.
 `<board>/_runs/page/<page-id>/<run-id>.json` is where a run's history lives, in the exact shape `ref/page-run-contract.md` fixes.
 A surface that shows where a page stands in its lifecycle reads these receipts and nothing else, the same way the labeling stepper reads `## States`.
 That surface ships: the 🪜 Workflow menu's `📄 Page phases` stepper (`haipipe-board/assets/js/10-drawer/65-plugin-pageflow.js`) draws the loop along the bottom of the split viewer, fed by `GET /_board/pageruns` (`live/pageruns.py`), which matches receipts by their own `page` field.
-A page with no receipts is not an error: its next authority is the contract's own default, CHECK for an existing page, DRAFT for a new one, and the stepper states exactly that.
+A page with no receipts is not an error: its next authority is the contract's own default, CHECK for an existing page, OUTLINE for a new one, and the stepper states exactly that.
 
 ## 📂 Files
 
@@ -269,11 +456,14 @@ haipipe-page-workflow/
 ├── SKILL.md            this contract
 ├── CHANGELOG.md        version history
 └── ref/
-    └── page-run-contract.md   the packet + receipt spec RUN and its members share
+    ├── page-run-contract.md   the packet + receipt spec RUN and its members share
+    ├── producer-contract.md   every phase producer's packet, procedure, house
+    │                          rules and return shape, in one copy
+    └── phase-cards.md         all phases in the same six fields, in loop order
 ```
 
 The executable machinery stays under `haipipe-board`: `ref/page-lifecycle.workflow.js` (the controller), `src/page_lifecycle.py` (the deterministic auditor), and `cli/pageflow.py` (the audit CLI).
-The non-interactive dispatch target is `agents/haipipe-page-orchestrator-agent.md`, which invokes this contract in a fresh context.
+The non-interactive dispatch target is `agents/haipipe-page-auditor-agent.md`, which invokes this contract in a fresh context.
 
 **The Board pages that argue this family** are the `QPw` group on `BoardSkillBoard-260722`, re-cut 260818 when JL ruled one page per workflow step:
 
@@ -283,7 +473,7 @@ The non-interactive dispatch target is `agents/haipipe-page-orchestrator-agent.m
 ⏱️ THE PHASES · one page per phase, in loop order, each one RUNS
 🧭 QPw1  OUTLINE   ✏️ QPw2  DRAFT    📮 QPw3  PROBE
 🃏 QPw4  EVIDENCE  🖊 QPw5  REVISE   ✅ QPw6  CHECK
-   └─ QPw4's three PARALLEL lanes: 📚 QPw4c citation · 🔢 QPw4v value
+   └─ QPw4's three PARALLEL lanes: 📚 QPw4c citation · 🧮 QPw4v value
                                    · 🖼 QPw4d display intake
 
 🔧 THE MACHINE · cuts ACROSS all six. No position in time; never "runs"

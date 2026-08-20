@@ -34,6 +34,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent      # the engine dir
 sys.path.insert(0, str(HERE))
 from live.outline import parse_outline, plan_card, render, _anchors   # noqa: E402
+from src.plan_shape import check as plan_shape_check                  # noqa: E402
+from src.plan_shape import check_serves, check_coverage              # noqa: E402
+from src.plan_shape import check_bullet_grammar                      # noqa: E402
 
 # (line, leading anchors, trailing anchors) · every row is a real shape seen on
 # a real page, or the exact shape the contract promises to read.
@@ -127,6 +130,9 @@ def lost_rows(o):
     return [r for r in o["aims"] + o["states"] if r["div"] not in cards]
 
 
+SKILLS = Path(__file__).resolve().parents[3]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--boards", nargs="*", default=None,
@@ -134,6 +140,7 @@ def main():
                          "the toolkit and its sibling plugins")
     args = ap.parse_args()
     fails = []
+    gaps = []
 
     print("① the position rule")
     for line, lead, trail in CASES:
@@ -276,6 +283,38 @@ def main():
                     fails.append(f"{p.name} invented an anchor: {o['bad']}")
                 if lost_rows(o):
                     fails.append(f"{p.name} lost {len(lost_rows(o))} rows")
+                # `plan-shape-off-type` (260819): a plan whose divisions
+                # contradict the shape its Page Type declares. Pages with no
+                # `page-type:` key are the flexible default and return clean.
+                plans = sorted((p.parent / "outline").glob("*-outline-*.md")) \
+                    if (p.parent / "outline").is_dir() else []
+                if plans:
+                    plan_txt = plans[-1].read_text(encoding="utf-8",
+                                                   errors="replace")
+                    for msg in plan_shape_check(p, plan_txt, SKILLS):
+                        fails.append(f"{p.name} plan-shape-off-type: {msg}")
+                    # self-consistency test ② (haipipe-page-outline §🚦): a
+                    # `serves:` pointing at a bullet the plan does not have.
+                    # Three of this board's own cards did on 260819, and a
+                    # person read all three out before any tool noticed.
+                    for msg in check_serves(p, plan_txt):
+                        fails.append(f"{p.name} serves-address-stale: {msg}")
+                    # bullet grammar (haipipe-plugin-outline §✂️): a HEAD plus
+                    # its folded Note:/Answered:/Drawn: line, on EVERY plan —
+                    # no legacy carve-out (JL 260819, "remove all the
+                    # legacy-grammar").
+                    for msg in check_bullet_grammar(plan_txt):
+                        fails.append(f"{p.name} bullet-missing-note: {msg}")
+                    # self-consistency test ①: an owing mark nothing serves.
+                    # The PROBE receipt reports `coverage: n of n` and nothing
+                    # recomputed it, so a receipt could claim coverage its own
+                    # disk did not have.
+                    # ⚠️ REPORTED, not failed. An unserved mark on a page in
+                    # mid-PREPARE is what PROBE is FOR, so failing the sweep on
+                    # it would cry wolf on 8 pages that are simply not finished.
+                    # It stays a HARD exit inside that page's own OUTLINE gate
+                    # (haipipe-page-outline §🚦 test ①), where it belongs.
+                    gaps.extend(f"{p.name}: {m}" for m in check_coverage(p, plan_txt))
             except Exception:
                 fails.append(f"{p.name} CRASH "
                              f"{traceback.format_exc().splitlines()[-1]}")
@@ -283,6 +322,15 @@ def main():
     print(f"   {total} pages across {len(roots)} boards")
 
     print()
+    if gaps:
+        pages = len({g.split(":")[0] for g in gaps})
+        print("🔎 %d coverage gap(s) on %d page(s) still inside the PREPARE loop"
+              % (len(gaps), pages))
+        for g in gaps[:8]:
+            print("   ", g)
+        if len(gaps) > 8:
+            print("    … %d more" % (len(gaps) - 8))
+        print()
     if fails:
         print(f"❌ {len(fails)} FAILURES")
         for f in fails[:20]:

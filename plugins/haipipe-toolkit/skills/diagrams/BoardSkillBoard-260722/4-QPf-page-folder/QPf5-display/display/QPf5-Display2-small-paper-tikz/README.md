@@ -7,3 +7,4 @@
 - renderer: CC as the TikZ hand, this unit being the plugin's own demo; rebuild = pdflatex preview.tex
 - picked: 260815 CC · one candidate, v2 after one refinement (the v1 bank box clipped at the page edge)
 - accepted: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick
+- history: 260819 · intake/manifest.yaml converted from `path:`+sha256 (copy-only, staleness uncomputable) to `file:`+`source:`+`sha256` naming the live board pages; both live sources (QPf5-display.md, QPf9-probe.md, still at 4-QPf-page-folder/) were byte-identical to the 260818 copies, so hashes unchanged, drawing untouched, and `accepted:` left as found (⬜, set 260815 awaiting JL)

@@ -8,3 +8,4 @@
 - picked: 260815 CC · one candidate, clean on the first compile
 - accepted: ⬜ · awaiting JL's read of preview.pdf, the row no machine may tick
 - history: born as QPf5-Display1-small-paper, an illustration unit blocked on the codex-image2 bridge; re-kinded to TikZ on JL's 260815 ruling that an empty block is wrong ("I think we should have a pdf here"); the illustration plan is preserved at versions/illustration-plan-prompt.md
+- history: 260819 · intake manifest converted from path:+sha256 (hashed only the copy) to file:+source:+sha256 (hashes the live source, so staleness is computable); live source diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf5-display/QPf5-display.md matched the 260818 frozen copy byte-for-byte, nothing in the drawing changed, so accepted: stays as found (⬜)

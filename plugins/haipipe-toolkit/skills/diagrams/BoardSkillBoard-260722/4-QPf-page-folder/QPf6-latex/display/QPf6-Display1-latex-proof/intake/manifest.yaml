@@ -1,23 +1,43 @@
 # A PROOF unit states no number of its own: it renders an artifact and the
-# artifact is the claim. Frozen 260818, when the unit was completed.
+# artifact is the claim. Converted 260819 from the old `path:`+sha256 shape
+# (which hashed only the COPY, so checks/intake.py could compute nothing about
+# the original) to the checkable `file:`+`source:`+`sha256` shape, where the
+# sha256 is the LIVE file's hash and staleness is a re-hash away.
 #
-# It had NO manifest and NO README at all, so `cli/check.py` reported both
-# `display-declared-no-claim` and `display-declared-not-rendered` on it, and
-# those were 2 of the board's 4 errors. `intake/SOURCE.txt` named
-# `../../latex/QPf6-latex.tex`, a file that does not exist: the latex plugin
-# writes the .pdf and a -view.html and keeps no .tex beside them.
+# The compiled PDF (`latex/QPf6-latex.pdf`) carries NO hash row BY DESIGN: it
+# is a BUILT artifact the latex plugin rewrites on every REVISE/rebuild, and a
+# no-change recompile already changes its bytes (embedded CreationDate), so a
+# frozen pdf hash goes stale on every rebuild without meaning anything. The
+# SOURCES it is built from are frozen instead: the page md (the approved
+# input) and the md2tex-generated .tex (the exact compile input, which is
+# byte-stable given the md — its header embeds no timestamp). A copy of the
+# PDF that produced assets/ is kept at intake/inputs/QPf6-latex.pdf as
+# provenance of what was rendered; its own sha256 at freeze time was
+# c6936b1ae4875485e74bbc80753081c62394882d65cc9f7672318662358f4d74 (260819),
+# recorded here as history, not as a liveness check.
+#
+# History: the unit had NO manifest and NO README until 260818; the first
+# manifest froze the md + pdf copies only. Its `intake/SOURCE.txt` complaint
+# that `../../latex/QPf6-latex.tex` "does not exist" is obsolete: the latex
+# plugin now keeps the .tex beside the .pdf.
 unit: QPf6-Display1-latex-proof
 kind: proof
 values: none
-frozen: 260818
+frozen: 260819
 inputs:
-  - path: intake/inputs/QPf6-latex.md
-    sha256: 9aced6b2b2315877029887a52168f9d608ad086bb04cafedb3631edb40c513b7
-    bytes: 17252
-    takes: "the page source that produced that PDF, so the proof can be tied to a version"
-  - path: intake/inputs/QPf6-latex.pdf
-    sha256: 606fa845afc3f296ac383af185f78fe87ea5fa4b8ab20023e8e5d6a264a3cf61
-    bytes: 25781
-    takes: "the compiled artifact this unit renders to PNG; it IS the thing being proved"
+  - file: intake/inputs/QPf6-latex.md
+    source: diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf6-latex/QPf6-latex.md
+    sha256: 53e8b50a11893983e794dcdcb53be472bc613fb95f60c80b58f22a7a95623d0c
+    bytes: 18383
+    takes: "the page source the PDF is built from, so the proof is tied to a version a rebuild cannot silently churn"
+  - file: intake/inputs/QPf6-latex.tex
+    source: diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf6-latex/latex/QPf6-latex.tex
+    sha256: 05eb6f81a1ee93b3c4b4e523fa1079b03ed336614bed8519f55346e1024855c6
+    bytes: 4414
+    takes: "md2tex's exact compile input; byte-stable given the md, so it changes only when the page does"
 unbound:
   - nothing. This unit prints no number; it prints a PAGE.
+
+# RE-FROZEN 260819: the source pages' Log rows were cleaned of profanity
+# (JL: "please clean all the bad words from the log"); the content each
+# figure takes is untouched, so nothing was redrawn.

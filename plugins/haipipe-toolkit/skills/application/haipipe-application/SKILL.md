@@ -1,195 +1,200 @@
 ---
 name: haipipe-application
 description: >-
-  One door for composing settled Task/Insight Pages into an intervention. New applications use three globally unique Page Types: Brief (opportunity, audience, outcome, venue, promise), Intervention (insight-to-mechanism/component architecture), and Artifact (one independently reviewable delivery unit). Application never rebuilds evidence: PageX reads settled Insight Pages; missing knowledge routes to `/haipipe-task insight`, where Probe reads Task/Discovery sources. Use for application status, SMS/email/dashboard/checklist/report design, Brief, Intervention, Artifact, review, deploy, retarget, or iteration. Legacy Seed/Descriptions/Themes/Claims/Advice/Venue/Pitch/Narrative/Display/Section commands remain compatibility aliases folded into the three Page contracts. Trigger: application, intervention, application board, brief, message design, component map, artifact, SMS, email, dashboard, checklist, report, review, deploy, iterate, PageX insight, /haipipe-application.
+  One door for building an Application Board from an application Brief, Application-local Insight Pages, audience/job Design Pages, and optional independently accepted Artifact Pages. Insight Pages live inside the Application folder but use Task-backed Probe, source/run, DIKW, staleness, and human-reading rules; Design Pages consume only settled Insight handoffs through PageX and never inspect Task/Discovery sources. Use for application setup or status, application insight, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, artifact review, deploy, retarget, or iteration. Trigger: application, application board, application insights, insight need, design page, intervention, message design, artifact, SMS, email, dashboard, checklist, report, review, deploy, iterate, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-08-17"
-  summary: "Page-first Application architecture: Brief → Intervention → Artifact, consuming settled Task/Insight Pages through PageX and owning no evidence Probe."
+  version: "0.8.0"
+  last_updated: "2026-08-20"
+  summary: "Application-local Insights: Brief → Insight Pages → Design Pages → optional Artifact Pages, with Task-backed evidence and PageX-only design consumption."
 ---
 
-# /haipipe-application · compose settled insights into an intervention
+# /haipipe-application · understand for this application, then design
 
-Read `PREFERENCES.md` first. This skill is the only user-facing Application door. It resolves the application root, selects one Page, and hands that Page to the shared `haipipe-page` lifecycle with the matching Application Page Type.
+Read `PREFERENCES.md` first. This skill is the only user-facing Application door. Resolve the Application root, select one owning Page, and hand it to `haipipe-page` with the matching Page Type and current Page phase.
 
 ## Architecture
 
 ```text
 Task / Discovery evidence
-          │ Probe
-          ▼
-Task / Insights Board: D → I → K → W
-          │ settled Insight Page through PageX
+          │ Probe · Task authority
           ▼
 Application Board
-Brief → Intervention → Artifact unit(s) → review → deploy
+Brief → Insight Page(s) → Design Page(s) → Artifact projection/Page → review → deploy
+             D→I→K→W          │ PageX
 ```
 
-Application owns composition and delivery. It does not own DIKW, Task execution, Discovery search, or evidence settlement.
+Application owns the folder, the design need, the contextual Wisdom, and delivery. Task rules still own how an Insight Page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
 
-## Globally unique Page Types
+## Four Page Types
 
 ```text
-page-type: brief          exactly one · identity, audience, outcome, venue, promise
-page-type: intervention   exactly one · mechanisms, strategy, components, variants
-page-type: artifact       one per independently approvable delivery unit
+page-type: brief          exactly one · opportunity, audience set, outcome, venue scope, Insight Need Map
+page-type: insight        one per application insight question · Task-backed D→I→K→W + Design Handoff
+page-type: intervention   many · UI label Design Page · one audience × behavior job × primary venue
+page-type: artifact       optional · only an independently accepted/deployed unit promoted from a Design Page
 ```
 
-Application does not use `page-type: opening`; Paper owns Opening. It does not use `page-type: design`; Board's generic Design Page compares candidates and closes on selection. The distinct names let `haipipe-page` resolve every type without family context.
+Keep `page-type: intervention` as the stable globally unique machine key; call it **Design Page** in user-facing prose. No generic `page-type: design` contract is live.
 
 ## Verbs
 
 ```text
-enter | status | board        resolve the application root and show Page frontier
-brief | opportunity | venue   create/resume the one Brief Page through fn/brief.md
-intervention | strategy |
-  design | arc | components   create/resume the one Intervention Page through fn/intervention.md
-artifact | draft | write |
-  message | unit              create/resume an Artifact Page through fn/artifact.md
-review | audit | check        CHECK the selected Artifact(s) and their trace
-deploy | ship | go-live       ship accepted Artifact versions only
-iterate | round | A/B         record delivery feedback; measurement routes to Task/Insights
-missing-insight | evidence-gap route one consumer-neutral question through fn/missing-insight.md
-feedback | digest             run the existing family feedback procedures
+enter | status | board         resolve the Application root and current frontier
+brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
+insight | understand | DIKW    create/resume an Application-local Insight Page through fn/insight.md
+missing-insight | evidence-gap release one blocked need through fn/missing-insight.md
+intervention | design | message
+  | arc | components           create/resume one Design Page through fn/intervention.md
+artifact | promote | unit      promote/resume an independently accepted Artifact through fn/artifact.md
+review | audit | check         CHECK selected Design/Artifact versions and their trace
+deploy | ship | go-live        ship accepted versions only
+iterate | round | A/B          route measurements through Task work, refresh Insight, then reopen dependents
+feedback | digest              run the existing family feedback procedures
 ```
 
-No-argument behavior: inside an application, run `enter .`; outside one, ask for a path or offer to create a Board-shaped application folder. Never infer a venue when the choice changes the deliverable.
+No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create a Board-shaped Application folder. Never infer an audience, behavior, or venue when that choice changes the design.
 
 ## Runtime folder
 
 ```text
 <application-root>/
 ├── board.md
-├── STATUS.md
-├── 0-lifecycle/
-│   ├── S-Brief-0-brief/
-│   │   ├── S-Brief-0-brief.md
-│   │   └── pagex/
-│   ├── S-Intervention-0-intervention/
-│   │   ├── S-Intervention-0-intervention.md
-│   │   ├── pagex/
-│   │   ├── outline/
-│   │   └── display/
-│   ├── S-Artifact-Dash/
-│   └── S-Artifact-<unit>-<slug>/
-│       ├── S-Artifact-<unit>-<slug>.md
-│       └── display/ · word/ · pagex/ as required
-├── 0-artifacts/              deployable projections, versioned
-└── 1-rounds/vYYMMDD/         decisions, deployment feedback, applied changes
+├── STATUS.md                         compatibility projection; derive truth from Pages
+├── 0-brief/
+│   └── A00-brief/
+│       ├── A00-brief.md
+│       └── pagex/
+├── 1-insights/
+│   └── I<NN>-<slug>/
+│       ├── I<NN>-<slug>.md           page-type: insight
+│       ├── probe/                    Task/Discovery evidence cards
+│       ├── pagex/                    accepted existing-Page inputs
+│       └── display/                  optional evidence views
+├── 2-design/
+│   └── D<NN>-<audience>-<job>/
+│       ├── D<NN>-<audience>-<job>.md page-type: intervention
+│       ├── pagex/                    Brief + settled Insight handoffs
+│       ├── outline/
+│       └── display/                  message previews / interaction mockups
+├── 3-artifacts/                      versioned projections and promoted Artifact Pages
+├── 4-deploy/                         shipment records; no evidence edits
+└── 5-rounds/vYYMMDD/                 feedback, decisions, applied changes
 ```
 
-New applications do not create `1-probes/`, descriptions/themes/claims/advice stage folders, or a separate narrative/display/section-edit spine. Page plugins and Page phases carry those concerns where they belong.
+Do not create the legacy descriptions/themes/claims/advice ladder or a flat Application-wide `1-probes/`. Each Insight Page owns its own bounded `probe/`; Design Pages own none.
+
+## The two authorities
+
+```text
+Application Insights layer
+  may PROBE Task/Discovery under haipipe-page-for-insight
+  owns D→I→K and application-contextual W
+
+Application Design layer
+  may use PageX only
+  owns selection, design principles, message roles, concrete content, and acceptance
+```
+
+The old sentence “Application owns no Probe” is too broad. The current law is: **Application Design Pages own no Probe; Application Insight Pages may Probe under Task-backed evidence authority.**
 
 ## Page flow
 
 ```text
 Brief
-  selects settled Insight Pages and pins audience, outcome, venue, promise
+  defines the Application stake and Insight Need Map
     ↓
-Intervention
-  maps Insight K/W rows to mechanism, principles, components, variants, rails
+Insight Page(s)
+  settle each load-bearing question as D→I→K→W and publish a Design Handoff
+    ↓ PageX exact file/scope binding
+Design Page(s)
+  translate handoffs into principles, message architecture, repeated message divisions, and rails
     ↓
 Artifact
-  executes one component handoff as concrete, reviewable content
+  normally a versioned projection; promote to a Page only when it can pass/fail/deploy independently
     ↓
-Review
-  checks venue fit, trace, safety, handoff/render versions
-    ↓
-Deploy
-  ships accepted versions only
-    ↓
-Iterate
-  delivery data → Task execution → refreshed Insight Page → PageX → revise
+Review → Deploy → Iterate
 ```
 
-All three Pages use the shared Page phases `OUTLINE → DRAFT → PROBE → EVIDENCE → REVISE → COMPILE → CHECK`, but Application narrows their meaning:
+## Phase behavior
 
-- Brief and Intervention normally skip PROBE/EVIDENCE because their evidence arrives as settled PageX inputs.
-- A missing insight routes to Task/Insights Board and places the current Page on HOLD where load-bearing.
-- Artifact uses REVISE/COMPILE/CHECK for concrete content and render acceptance.
-- CHECK remains the human authority for taste, venue fit, safety, and deployment acceptance.
+- An Insight Page normally runs the full shared loop: `OUTLINE ⇄ PROBE ⇄ EVIDENCE → DRAFT → REVISE → CHECK`.
+- Brief and Design Pages select exact accepted Page material through PageX during OUTLINE and normally skip local PROBE/EVIDENCE.
+- A missing load-bearing premise creates/resumes a local Insight Page and holds only the dependent Brief/Design Aim.
+- Design Page Content uses one repeated division per message role, touchpoint, panel, section, or other jointly reviewed unit.
+- Artifact and projections use REVISE/COMPILE/CHECK for exact visible-version acceptance.
+- CHECK remains the human authority for applicability, taste, venue fit, safety, and deployment acceptance.
 
-## PageX and missing insights
+## Insight-to-design handoff
 
-PageX is Application's only evidence input surface:
+An Insight Page keeps D/I/K evidence-led and lets W become Application-contextual only after K settles:
 
 ```text
-existing settled Insight Page ──▶ pagex/ ──▶ Brief or Intervention
-missing knowledge ──▶ missing-insight request ──▶ /haipipe-task insight
-                   ──▶ Insight Page Probe ──▶ settled Page ──▶ PageX return
+Application Need → neutral Question → D → I → K → contextual W → Design Handoff
 ```
 
-Never inspect Task `results/`, call Task/Discovery as an Application evidence worker, copy another Page's probe cards, or settle a claim inside Application. The application-specific stake stays on Brief/Intervention; the question sent to Task is rewritten in consumer-neutral language.
+The Design Handoff names finding, strength, boundary, source versions, design consequence, forbidden overreach, and the Brief/Design need it serves. It does not write final message copy.
+
+Design Pages borrow the exact handoff file/scope through PageX. PageX answers “which Page material”; the Design Page answers “which move follows here.” Never copy probe cards or inspect Task `results/` from a Design Page.
 
 ## Review and deployment gates
 
-An Artifact is deployable only when all are true:
+A Design or promoted Artifact is deployable only when all are true:
 
 ```text
-trace       every substantive move reaches an Intervention principle and Insight Page
-handoff     the Artifact executes the current component row
-venue       format, length, interaction, and audience rules pass
+trace       every substantive move reaches a settled Insight Design Handoff
+applicability the borrowed K/W actually covers this audience, context, and outcome
+venue       format, length, timing, interaction, and audience rules pass
 safety      prohibited moves and uncertainty language pass
-version     acceptance names handoff version and render version
-human       the visible version is explicitly accepted
+version     acceptance names design/handoff and visible render versions
+human       the exact visible version is explicitly accepted
 ```
 
-Deployment records external state but never edits evidence or design to make a failed gate appear green. A changed handoff or render reopens Artifact acceptance.
+Deployment records external state but never edits evidence or design to make a failed gate appear green. A changed Insight handoff, Design division, venue constraint, or render reopens acceptance.
 
 ## Iteration
 
-Keep application rounds for product decisions and applied changes. Treat deployment measurements as Task data:
-
 ```text
-deployment log → Task Folder P-B-E-R → Task/Insight refresh → PageX
-                                                │
-                                                └─ source change reopens dependent design
+deployment log → Task Folder P-B-E-R → Application Insight refresh
+                                            │
+                                            └─ changed handoff reopens PageX-dependent Design
 ```
 
-Application may propose the measurement question and create the Task/Insight request, but Task owns execution and DIKW interpretation.
+Application may propose the measurement question. Task owns execution; the Application-local Insight Page owns the refreshed DIKW reading and source staleness; the Design Page owns the response.
 
 ## Legacy compatibility
 
-Existing applications remain readable. Do not delete or bulk-rewrite their folders without a separate migration request.
+Existing Applications remain readable. Do not delete or bulk-rewrite their folders without a separate migration request.
 
 ```text
 legacy Seed + Venue + Pitch                    → Brief input
-legacy Descriptions + Themes + Claims + Advice → candidate Insight material;
-                                                   migrate to Task/Insights before reuse
-legacy Narrative + Display + Section-edit     → Intervention and Artifact input
-legacy 1-probes/                              → historical evidence bindings, read-only
+legacy Descriptions + Themes + Claims + Advice → candidate local Insight Pages
+legacy Narrative + Display + Section-edit     → Design Page and Artifact input
+legacy 1-probes/                               → historical bindings, read-only
+external Task/Insights Board Pages             → valid PageX inputs; do not move them automatically
 ```
 
-Legacy aliases route to the owning new Page:
-
-```text
-seed | venue | pitch                         → brief
-descriptions | themes | claims | advice      → missing-insight / Task Board migration
-narrative | display                          → intervention
-section-edit | draft                         → artifact
-```
-
-Compatibility means read-and-fold, not copy-and-continue. New work lands on the three target Page Types.
+Compatibility means read-and-fold into the new target, not copy-and-continue the old stage spine.
 
 ## Status
 
 Derive status from disk, not prose:
 
 ```text
-frontier: brief | intervention | artifact:<unit> | review | deploy | iterate
-maturity: briefed | designed | authored | reviewed | deployed | iterating
+frontier: brief | insight:<id> | design:<id> | artifact:<id> | review | deploy | iterate
+maturity: scoped | understood | designed | authored | reviewed | deployed | iterating
 ```
 
-Also report unresolved PageX bindings, missing Insight requests, Artifact units, and accepted render versions. The Gate Ledger may remain during migration, but new completion authority is the Page's own Aim/State and acceptance record.
+Also report unresolved Insight needs, stale Probe/PageX bindings, Design Page/message counts, promoted Artifact units, and accepted render versions.
 
 ## Internal procedures
 
 ```text
-fn/brief.md             Brief create/resume and legacy fold
-fn/intervention.md      Intervention create/resume and component mapping
-fn/artifact.md          Artifact grain, creation, version, projection
-fn/missing-insight.md   consumer-neutral request to Task/Insights Board
+fn/brief.md             Brief create/resume and Insight Need Map
+fn/insight.md           Application-local Task-backed DIKW Page
+fn/missing-insight.md   release a blocked need into fn/insight.md
+fn/intervention.md      multi-Page audience/job Design and message divisions
+fn/artifact.md          projection-first output; optional Page promotion
 fn/feedback.md          family feedback
 fn/digest.md            session feedback digestion
 ```

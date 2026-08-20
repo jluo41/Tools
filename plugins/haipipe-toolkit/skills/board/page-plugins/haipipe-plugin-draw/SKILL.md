@@ -78,7 +78,7 @@ The style contract every generated scene follows (JL 260816):
              #e8590c · #2f9e44 · #1971c2 · #9c36b5 (default stroke #1e1e1e)
 ✍️ text      fontFamily 8 on every text element · Comic Shanns Mono
 🔗 form      every box is a rectangle with a BOUND label · every arrow BINDS both ends
-🧮 size      under 40 elements · span near 900x600 from (0,0)
+📏 size      under 40 elements · span near 900x600 from (0,0)
 ```
 
 The enforcing copy of this contract is the prompt inside `live/autodraw.py`; a style change lands in both places in one commit.

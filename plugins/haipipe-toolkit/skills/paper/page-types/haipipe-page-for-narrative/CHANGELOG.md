@@ -1,3 +1,14 @@
+## 0.3.0 — 2026-08-19
+
+- **ONE narrative page per VENUE**, new `per: venue` key (JL 260819: "narrative,
+  it is venue embedded, each of them should have it").
+- It now owns the venue-aligned layer that arrived from `for-opening` → `for-seed`:
+  selected venue, audience, editor question, pitch, framing. That contract had
+  already labelled the layer venue-aligned; making it a page of its own stops a
+  retarget from touching the paper's stable identity.
+- Retargeting CREATES a narrative page rather than rewriting one. A narrative page
+  that does not name its venue is a defect.
+
 haipipe-page-for-narrative · Changelog
 ======================================
 

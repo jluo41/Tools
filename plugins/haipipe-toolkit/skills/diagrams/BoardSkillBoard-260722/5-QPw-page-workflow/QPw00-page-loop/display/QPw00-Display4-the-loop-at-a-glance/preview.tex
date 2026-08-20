@@ -1,0 +1,14 @@
+% Standalone wrapper that \inputs float.tex, per the unit contract.
+% This package list IS the unit's dependency declaration: a document that wants
+% to \input float.tex copies these lines into its own preamble.
+% The paper grew from 160x60mm to 168x160mm on the 260819 rebuild: the figure
+% is no longer a one-row chain but a PREPARE loop over an unattended tail.
+\documentclass[11pt]{article}
+\usepackage[margin=8mm, paperwidth=168mm, paperheight=160mm]{geometry}
+\usepackage{helvet}\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}\usetikzlibrary{arrows.meta, positioning}
+\usepackage{pifont}
+\pagestyle{empty}
+\begin{document}
+\input{float.tex}
+\end{document}

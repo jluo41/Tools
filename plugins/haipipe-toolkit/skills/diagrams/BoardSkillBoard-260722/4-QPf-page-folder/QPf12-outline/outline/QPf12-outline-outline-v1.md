@@ -14,7 +14,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B1 · A page written the normal way needs no mark at all.   ✅ have it
 - B2 · Its goals are already grouped `### A3` and numbered `A3.1`, and both mean part 3.   ✅ have it
 - B3 · `P1` already means the whole page.   ✅ have it
-- B4 · This page is its own proof: every one of its goals lands in the right part, with no mark written anywhere.   🧮 proof
+- B4 · This page is its own proof: every one of its goals lands in the right part, with no mark written anywhere.
 - B5 · The mark is for what that leaves out: pages written before the numbering, and stray lines that sit outside any group.   🎯 A3.1
 - B6 · The mark is `§` and a number, and the number is a part of THIS page's own Content.   ✅ have it
 - B7 · WHERE the mark sits is what makes it a mark.   🖼 owed · table
@@ -25,8 +25,8 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ### C2.P1 · the same pass checks the page and draws it
 - B1 · The tab is drawn by `GET /_board/outline` and saved nowhere.   ✅ have it
 - B2 · This copies `QPf1`: anything written to disk starts going out of date the moment it lands.   ✅ have it
-- B3 · Because nothing is saved, this plugin has no stale flag, no rebuild button, and no folder of its own.   🧮 proof
-- B4 · It is not on the plugin list either, because it owns no folder to be on the list for.   🧮 proof
+- B3 · Because nothing is saved, this plugin has no stale flag, no rebuild button, and no folder of its own.
+- B4 · It is not on the plugin list either, because it owns no folder to be on the list for.
 - B5 · Checking is not a separate step.   ✅ have it
 - B6 · A mark pointing past the last part shows as a red ❌ on the card it tried to reach.   ✅ have it
 - B7 · Every unmarked goal or progress line lands on the 🌐 card, so that card is also the list of lines still worth marking.   ✅ have it

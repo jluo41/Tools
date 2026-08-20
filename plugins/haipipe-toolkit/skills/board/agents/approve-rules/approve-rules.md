@@ -18,7 +18,7 @@ R1  EVERY SECTION IS ACCOUNTED FOR. Each `## C<n>` in the plan maps to a real
 R2  THE OUT-OF-SCOPE LIST IS EXPLICIT. The plan states which divisions,
     Aims, States and open Decision Now rows it does NOT touch.
 R3  EVERY BULLET CARRIES A MARK. One of 🔢 value · 📚 citation · 🖼 display ·
-    🧮 proof · 🎯 aim · ✅ have it. An unmarked bullet owes something nobody
+    📮 probe · 🧮 value `PP<NN>.v<n>` (legacy alias 🔢) · 🎯 aim. (✅ "have it" retired 260819.) An unmarked bullet owes something nobody
     named.
 R4  NO BULLET CONTRADICTS A `## Law` ROW on its own page or on a page that
     page cites as binding.

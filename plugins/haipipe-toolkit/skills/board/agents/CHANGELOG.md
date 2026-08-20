@@ -1,3 +1,31 @@
+## 0.14.0 — 2026-08-19
+
+- **The producer's shared law moved out of the creator agent** into
+  `ref/producer-contract.md`: packet, procedure, house rules, return shape.
+  Every phase agent (and the fallback) now loads only CONTRACTS — no agent
+  reads another agent's file any more, which was the one roster relationship
+  JL could not hold ("is this for the board or for the page?").
+  `haipipe-page-creator-agent` 0.10.0 keeps only its two verbs.
+- **`haipipe-page-orchestrator-agent` → `haipipe-page-auditor-agent`**: it
+  validates the packet, stores receipts, and runs the lifecycle auditor; it
+  cannot dispatch the loop (subagents get no Workflow tool), so "orchestrator"
+  named a power it lacks. The check agent's base stays the reviewer file until
+  the judge side earns the same carve-out.
+- Same-night thin-wrapper sweep: the reviewer's two route lists became pointers to page-run-contract.md § Legal routes (its old list allowed the illegal CHECK→COMPILE) and its no-card finding now routes to PROBE; the creator dropped the six-phase operation table (producer-contract.md holds it), restated its no-build rule as behavior rather than tooling, moved "drawing the unit" to EVIDENCE's walk, and un-mangled the `## Question` sentence; the approver's tick grammar became a pointer to approve-rules/README.md; the auditor's producer-roster paragraph was rewritten from the PRODUCER_AGENTS map; this folder's README redrew its roster, dispatch diagram, and Registration section from the now-existing `<toolkit>/agents/` symlinks.
+
+## 0.13.0 — 2026-08-19
+
+- **Two agents renamed to say what they are** (JL: "is this for the board or
+  for the page? I am confused"): `haipipe-board-creator-agent` →
+  `haipipe-page-creator-agent` (0.9.0) and `haipipe-board-approver-agent` →
+  `haipipe-page-approver-agent`. Both are 100%% page-scoped — the creator never
+  touches board.md, and every tick the approver checks lives on one page's
+  artifacts. `haipipe-board-reviewer-agent` alone keeps `board`, because its
+  board-wide jobs (mechanical checker, opening cold reads) are real. Old
+  receipts naming the old actor strings stay auditable; CHANGELOG history is
+  untouched. The broken root symlink `agents/haipipe-board-page-orchestrator-
+  agent.md` (target renamed long ago) was deleted.
+
 board agents: Changelog
 ========================
 

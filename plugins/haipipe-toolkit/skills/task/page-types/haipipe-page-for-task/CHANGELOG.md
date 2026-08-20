@@ -1,3 +1,14 @@
+## 0.6.0 — 2026-08-19
+
+- **A discovery folder is a special TASK.** New `folder-kind: task | discovery`
+  key; no sibling page type is created (JL 260819: "the discovery will be in the
+  task as well, like a special task?"). Both are executors with the same
+  four-phase lifecycle answering into a `QA/<n>-<slug>.md`, so a second contract
+  would restate this one and then drift from it.
+- The key changes only where the page reads, what a `Result` division is reading,
+  and what the verdict binds to. The grammar, the FLAT/NESTED fork and the
+  `Meaning`-last closing rule are untouched.
+
 haipipe-page-for-task · Changelog
 =================================
 

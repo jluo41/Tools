@@ -27,7 +27,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B2 · `\citep{}` and `\ref{}` come through untouched, because they were LaTeX before the export started.   ✅ have it
 - B3 · The `>` lanes are the one real loss.   🎯 A2.1
 - B4 · The Word export lands them as comments pinned to a spot, and a LaTeX section has nowhere to put them.   ✅ have it
-- B5 · The writer also refuses to go backwards: a rewrite that loses citations is refused, not written quietly.   🧮 proof
+- B5 · The writer also refuses to go backwards: a rewrite that loses citations is refused, not written quietly.
 - B6 · The proof run is `QPf4b`'s Content: ten parts became a real nine-page PDF, driven in a browser through the tab.   ✅ have it
 - B7 · The board's emoji-heavy ascii figures do not survive.   🔢 value · PP01
 - B8 · ⚠️ 2 more sentences in this division are not planned here yet   🎯 A2.1
@@ -37,7 +37,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 ### C3.P1 · the registry's `tab: {url, write}` spec, url first, then a HEAD check, then a build, with the latex route behind it
 - B1 · One view page is written either way, so the tab is never empty.   ✅ have it
 - B2 · A run that works shows the PDF, with the raw source folded under it.   ✅ have it
-- B3 · A run that fails opens that fold and prints the tail of the log, so the error sits where the finished page would have been.   🧮 proof
+- B3 · A run that fails opens that fold and prints the tail of the log, so the error sits where the finished page would have been.
 
 ## C4 · Evidence this page already carries
 

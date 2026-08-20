@@ -2,11 +2,15 @@
 
      Only ## Content participates. C is a ### division. H is a terminal,
      addressable #### heading and never parents P/S in the address grammar.
-     Paragraphs are siblings of headings inside C; each source-line paragraph
-     currently carries one sentence, so its leaf is Pn.S1.
+     A source PARAGRAPH is a blank-line block; each source line inside it is
+     one sentence. build.py stamps the first sentence of each block with
+     class="pnew", so P counts blocks and S counts sentences within one
+     (JL 260819: "the paragraph should not change every sentence"). A page
+     built before the stamp has no .pnew anywhere; it falls back to the old
+     one-P-per-sentence numbering instead of collapsing into a single P.
 
        QAb3.C1.H1       heading itself
-       QAb3.C1.P2.S1    sentence in the second paragraph of C1
+       QAb3.C1.P2.S3    third sentence in the second paragraph of C1
 
      These are render-local focus addresses, not durable Markdown identity. */
   // Defined in 00-apparatus.js, which runs first: one grammar, never two.
@@ -93,7 +97,8 @@
         }
         var cbody = directChild(csec, 'cbody');
         if (!cbody) return;
-        var nextH = 0, nextP = 0, headingPath = '';
+        var hasPnew = !!cbody.querySelector('p.pnew');
+        var nextH = 0, nextP = 0, nextS = 0, headingPath = '';
         cbody.querySelectorAll('.ph,p').forEach(function (node) {
           if (node.closest('.cbody') !== cbody) return;
           if (node.classList.contains('ph')) {
@@ -114,8 +119,12 @@
           }
           var p = node;
           if (!eligibleContentSentence(p, cbody)) return;
-          nextP += 1;
-          var shortId = contentId + '.P' + nextP + '.S1';
+          if (!hasPnew || p.classList.contains('pnew') || nextP === 0) {
+            nextP += 1; nextS = 1;
+          } else {
+            nextS += 1;
+          }
+          var shortId = contentId + '.P' + nextP + '.S' + nextS;
           var fullId = sec.id + '.' + shortId;
           var contentPath = contentId + (contentTitle ? ' · ' + contentTitle : '') +
             (headingPath ? '\n' + headingPath : '');

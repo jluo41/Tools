@@ -1,6 +1,6 @@
 # AI tells: the general catalogue
 
-Migrated 2026-08-01 from `paper/2-phase/2-revise/haipipe-paper-revise-humanizer/ref/pattern-catalog.md`
+Migrated 2026-08-01 from `writing/haipipe-paper-revise-humanizer/ref/pattern-catalog.md`
 Layer 1, which was itself vendored from `AIScientists-Dev/academic-humanizer @ 02281d8` (MIT).
 
 **Why it moved.** That file's Layers 2 to 6 are academic: over-claiming verbs,

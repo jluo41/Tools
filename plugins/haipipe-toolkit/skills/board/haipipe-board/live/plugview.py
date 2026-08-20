@@ -493,20 +493,22 @@ class PlugViewMixin:
             rows = _readme_rows(unit / "README.md")
             state = _display_state(unit, rows)
             states.append(state)
-            body = "".join("<div class='mut'><b style='color:var(--fg)'>%s</b>: %s</div>"
-                           % (_esc(k), _esc(v)) for k, v in rows)
+            # THE RENDER LEADS (JL 260819: "display the pdf at the very top,
+            # and then show information" — clicking a unit showed him its
+            # description rows first and the drawn thing below the fold).
             pdf = unit / "preview.pdf"
             if pdf.is_file():
                 href = _esc(unit.name + "/preview.pdf")
-                body += ("<object class='pdf' data='%s' type='application/pdf'>"
-                         "<a href='%s'>preview.pdf</a></object>" % (href, href))
-            else:
-                body += ("<div class='card ghost' style='margin:8px 0'>"
-                         "🕳 no render yet · %s</div>" % _esc(state["next"]))
-            if pdf.is_file():
+                body = ("<object class='pdf' data='%s' type='application/pdf'>"
+                        "<a href='%s'>preview.pdf</a></object>" % (href, href))
                 body += ("<div class='%s' style='margin:7px 0'>%s</div>"
                          % ("ready" if state["accepted"] else "pending",
                             _esc(state["next"])))
+            else:
+                body = ("<div class='card ghost' style='margin:8px 0'>"
+                        "🕳 no render yet · %s</div>" % _esc(state["next"]))
+            body += "".join("<div class='mut'><b style='color:var(--fg)'>%s</b>: %s</div>"
+                            % (_esc(k), _esc(v)) for k, v in rows)
             body += "<pre>%s</pre>" % _esc(_tree(unit))
             cards.append("<div class='card' id='%s'><b>%s</b>%s</div>"
                          % (_esc(unit.name), _esc(unit.name), body))

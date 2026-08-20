@@ -1,256 +1,209 @@
 ---
 name: haipipe-page-probe
 description: >-
-  The PROBE phase contract for any Board Page, and phase ③ of the page workflow. PROBE turns each MARK left by the approved outline into a real folder under <page>/probe/PP<NN>-<slug>/, writes the stake-bearing Q-consumer and the stripped Q-executor, points the card back at the bullets it serves, and dispatches the stripped question to the bank. It is the ONLY phase that creates an evidence card: OUTLINE marks the hole and leaves nothing on disk, DRAFT gives the hole an Aim to lose, EVIDENCE lands what comes back. Load haipipe-page, the matching Page Type, this contract, then haipipe-plugin-probe for the folder's shape and haipipe-probe for the crossing protocol. Use when an approved outline carries a bare 🔢 mark, when a question must be asked before a number may be written, when cards must be allocated for a page, or when a card must be pointed at the bullets it answers. Trigger: page probe, PROBE phase, phase 3, raise the card, allocate PP number, serves, mark to card, dispatch the question, ask the bank, stake wall, who creates the card, /haipipe-page-probe.
+  The PROBE phase contract for a Board Page. It turns each approved Task- or
+  Discovery-backed outline obligation into one Page-local probe card, preserves
+  the stake behind the wall, MATCHES the selected QA bank before DISPATCH, and
+  stops when every such obligation is served. This is the QA branch of the
+  Probe family; PageX is its existing-Page branch and runs in OUTLINE. Trigger: page probe, PROBE phase,
+  raise a probe card, Task evidence, Discovery evidence, Q-consumer,
+  Q-executor, match before dispatch, /haipipe-page-probe.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-18"
-  summary: "MATCH runs LATE and that is an open defect (JL 260818): it needs only the mark, so it could run before DRAFT while the card cannot."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "0.9.0"
+  last_updated: "2026-08-20"
+  summary: "The PROBE phase runs the QA branch; PageX is the Probe family's OUTLINE branch."
 ---
 
-# /haipipe-page-probe · turn each mark into a card, and ask
+# /haipipe-page-probe · run Probe's Task/Discovery QA branch
 
-**LOAD `haipipe-page` FIRST**, then the Page Type, then this file, then
-`haipipe-plugin-probe` for the folder's shape and `haipipe-probe` for the
-crossing protocol. This contract owns the PHASE. The folder, its four counts and
-its state tests are the plugin's, and this file restates neither.
-
-## 🎯 The authority test
+Load `haipipe-page`, the matching Page Type, this phase,
+`../../page-plugins/haipipe-plugin-probe`, and `haipipe-probe`.
 
 ```text
-owns       mark ─▶ card: the folder, its number, its Q-consumer, its stripped
-           Q-executor, its `serves:` backlink, and the dispatch
-           plus the MATCH order: local card → PageX → QA bank → new dispatch
-may do     create a card · merge two marks into one card · dispatch · defer
-exits      every marked bullet is served by at least one card, and every card
-           is `planned` or further along (the ladder is haipipe-plugin-probe's:
-           planned · commissioned · answered · read, never raised/working/bound)
-🚫 may not  write prose · land an answer · freeze a display intake · edit the
-           approved plan · invent a mark the plan does not carry
+Probe family
+├─ accepted Page obligation ── PageX in OUTLINE
+└─ Task/Discovery obligation ── QA Probe here
 ```
 
-Creating the card and filling it are two phases on purpose. PROBE ends the
-moment the question has left; what comes back is `haipipe-page-evidence`'s.
+PageX is grouped under Probe for discovery and configuration, but it is already
+resolved before this phase begins. The two lanes do not fall through into one
+another. If an OUTLINE mislabeled
+the source, return to OUTLINE and correct the obligation before creating a card.
 
-## 🕐 Who creates the card, and why not earlier
-
-This was the open question until 260817, and three skills answered it three
-ways. It is settled here: **the card is created at PROBE. Never at OUTLINE, and
-never at DRAFT.**
+## ⚡ Phase card
 
 ```text
-phase       what it holds about the hole            why it may not create the card
-──────────────────────────────────────────────────────────────────────────────────
-① OUTLINE   the MARK: `- B4 · the four              a plan is rejectable in ten
-            coordinates            🔢`               seconds, and a rejected plan
-            bare, no id                              must leave NOTHING on disk.
-                                                     A card for a plan nobody
-                                                     approved is litter with an id.
-
-② DRAFT     the AIM the hole belongs to             the mark IS the proposal. A
-            (`## Aims` · `## States`)                second file that says the same
-                                                     thing is the duplication rule
-                                                     of haipipe-page-workflow §🪞.
-
-③ PROBE     the CARD                                 ← here
+READS    target Page · person-LOOKED outline · existing local probe cards
+WRITES   <page>/probe/PP<NN>-<slug>/ card, consumer, executor, empty proof manifest
+NEVER    Page prose · accepted outline · PageX ranking · returned answer · display intake
+EXITS    EVIDENCE when every Task/Discovery mark is served and dispatched or matched
+HUMAN    a person's LOOK releases this phase; no human read/accept gate is ticked here
 ```
 
-**And the practical reason, which is the one that decides it.** A card's
-`consumer/` side carries the STAKE: what this page loses if the answer never
-comes. What the page loses is an Aim, and Aims are written at DRAFT. So PROBE is
-the earliest phase at which a complete card can exist at all.
-
-Two smaller consequences fall out of the same order:
+PROBE owns the outbound half of the shared crossing:
 
 ```text
-  the address is FROZEN before a card points at it, so `serves: C4.P1.B4`
-  can never name a bullet that was renumbered after the tick
-
-  the card count starts honest. `6 serve · 0 answered` on the 🧭 tab is a true
-  reading of a page nobody has dispatched yet
+① ORGANIZE   Q-consumer → stripped Q-executor
+② MATCH      current local cards, then the selected Task/Discovery QA bank
+③ DISPATCH   only when no literal QA answer or live matching question exists
 ```
 
-## 🔢 One mark is not one card
+EVIDENCE owns `④ POINT` and `⑤ INTERPRET` after the answer returns.
 
-The plan marks what a SENTENCE owes. A card is what a BANK can answer. Those are
-different units, and PROBE is where they are matched.
+## 🎯 Authority
+
+PROBE may:
+
+- create or reuse a local card;
+- merge several outline obligations into one answerable executor question;
+- serve one obligation with several cards when sources differ;
+- choose `task`, `discovery`, or `none` from the approved source obligation;
+- defer or hold an authorized question with a named reason;
+- dispatch the stripped question.
+
+PROBE may not:
+
+- search or rank existing Pages through PageX;
+- turn a topic-similar Page into evidence;
+- add an obligation absent from the approved outline;
+- edit the outline, purpose, Aims, States, or Content;
+- land the returned answer, allocate values, or freeze a display.
+
+## 🕐 Card creation
+
+The outline carries a source-typed mark but no card id. A rejected outline must
+leave no evidence-card litter, so the card is created only after a person's LOOK
+releases PROBE.
 
 ```text
-  many bullets ─▶ one card    the usual case. `PP04` on QC1-visitlbp serves
-                              C3.P1.B3 · C3.P3.B3 · C7.P2.B1, because all three
-                              are answered by reading one script.
-
-  one bullet ─▶ many cards    legal. B4 may owe both a coefficient and the N
-                              behind it, from two different runs.
-
-  a mark ─▶ no card           only when a card already serving another bullet
-                              answers it too. Add the address to that card's
-                              `serves:`; never open a second one.
+OUTLINE   C4.P1.B4 · subgroup estimate · source: task · 📮
+PROBE     probe/PP03-subgroup-estimate/ · serves: C4.P1.B4
 ```
 
-**A question is asked ONCE.** Before allocating, read the page's existing cards:
-a duplicate card is the exact failure the id exists to prevent.
+Allocate the next unused two-digit `PP<NN>` on this Page. Follow the plugin's
+noun-based slug rule. The card points backward with `serves:` because its id did
+not exist when the outline was authored.
 
-## 🔗 MATCH order · PageX is reuse, not another bank
-
-Before PROBE dispatches anything, it runs the same ordered lookup for every
-value or reference obligation:
+Many-to-many joins are valid:
 
 ```text
-1. current Page cards and Bibex
-2. PageX borrowed files and the source Page's live material
-3. task/discovery QA bank, by reading a specific answer
-4. only then: create a new card and dispatch
+many bullets → one card    one bank question answers several planned sentences
+one bullet   → many cards  separate sources are jointly necessary
 ```
 
-PageX is a ranked live borrow list, not a second QA bank and not a new phase.
-It may reveal an exact existing Probe answer, proof file, or Display unit. When
-the answer is exact, create a local binding that points to the existing QA
-path or cite the fully qualified Display id; do not ask the bank again. A
-topic-similar PageX file is only a candidate: if it does not literally answer
-the Q-executor, `bank: new|run|code` remains the honest verdict.
+A bullet is served only when every card it needs lands. A duplicate card for an
+already-asked unknown is a defect.
 
-The lookup must leave a small audit trace in the PROBE receipt:
+## 🧱 Organize and strip
+
+Write the stake-bearing need to `consumer/q-consumer.md`. Write an independently
+answerable, neutral question to `executor/q-executor.md`.
+
+The executor side contains no Page/claim id, venue pressure, desired answer, or
+phrases such as “our paper” and “we need to show.” The neutral question should
+still name the population, variable, comparison, method, and requested output
+needed for an exact answer.
+
+Route by source:
 
 ```text
-match: PP03 · PageX/QC0-results/probe/PP02/card.md · reuse
-match: B4   · no exact PageX/QA answer · new → dispatched
+task        computed, measured, run-bound, or repository-local fact
+discovery   literature, prior art, external fact, or novelty question
+none        neither bank can answer; record concern and HOLD
 ```
 
-The board's `POST /_board/pagex-match` endpoint can produce the read-only
-candidate shortlist. Its overlap score is navigation only; PROBE must open the
-candidate and record `reuse` only when the neutral Q-executor is literally
-answered. A shortlist entry is never evidence by itself.
+## 🔎 MATCH before DISPATCH
 
-This is the smoothness rule: reuse is cheap and visible, while a new Probe is
-opened only after the nearest existing answer has been read and rejected.
-
-⚠️ **MATCH runs LATE, and that is an open defect** (JL 260818). MATCH needs only
-the outline's MARK; it does not need the stake, so nothing about it requires
-DRAFT to have happened first. But it lives inside PROBE, which runs AFTER DRAFT:
+Match in this order:
 
 ```text
-🧭 OUTLINE ──▶ ✏️ DRAFT ──▶ 📮 PROBE
-                💸 the page pays    🔗 and only HERE discovers the
-                for its scaffolds       answer already existed
+1. existing probe cards on this Page
+2. selected Task or Discovery bank with its QA verb in --check-only mode
+3. only then create/dispatch new work
 ```
 
-JL read the loop and put the lookup second, before DRAFT: "OUTLINE, then the
-probe (pagex), and the draft". He is right about MATCH and not about the card:
-the CARD must stay after DRAFT because its `consumer/` side carries the stake.
-So the two halves of this phase want different positions in the loop, which is
-the argument for splitting MATCH out as its own phase ②.
+Do not insert PageX into this list. Existing Page evidence should already be a
+PageX-bound OUTLINE input; reopening that selection is an OUTLINE decision.
 
-**It is not split, and the name for it would be MATCH, not PAGEX.** PageX is one
-of MATCH's THREE lookups (local cards and bibex · PageX · the QA bank), so
-naming a phase after it would be like naming EVIDENCE "bibex". Scored against
-the split test on `QPw00 §7.2`, a MATCH phase passes 2.5 of 4 tests and a PAGEX
-phase passes 0.5, and any split renumbers the loop to eight members. The
-decision is argued on `QPw3-probe`, not settled here.
-
-## ↩ The link runs BACKWARD, and the number is allocated here
+Use the bank's own side door:
 
 ```text
-  card.md      serves: C4.P1.B4 · C3.P1.B3      ← written by PROBE
-  the bullet   knows nothing about the card      ← the plan never changes
+/haipipe-task qa "<Q-executor>" [<task-folder>] --check-only
+/haipipe-discovery qa "<Q-executor>" [<discovery-folder>] --check-only
 ```
 
-The number is the next free `PP<NN>` **on that page**, two digits, allocated at
-creation and never reused; the slug is the plugin's naming rule. A bullet reads
-as done only when EVERY card in its backlink has LANDED (`answered`,
-`answered-local` or `read`), never when any one has, because "one number landed,
-one question still open" is not an answered bullet.
-
-The backlink's shape and the four counts live in `haipipe-plugin-probe` §↩.
-
-## 🧭 Which marks PROBE acts on
-
-The plan carries six marks and only some of them are questions:
+Read state before answer:
 
 ```text
-mark          PROBE creates                          why
-──────────────────────────────────────────────────────────────────────────────────
-🔢 value      probe/PP<NN>-<slug>/                   always. This is the phase.
-📚 citation   probe/PP<NN>-<slug>/ ONLY when the      a known key is landed by a
-              key is UNKNOWN and the bank must        PERSON into bibex/ and needs
-              find the work                           no question asked
-🖼 display    NOTHING                                 a unit's intake/ freezes FROM
-                                                      a proof/ that does not exist
-                                                      yet. EVIDENCE creates it.
-🧮 proof      NOTHING                                 not a card kind: a proof is
-                                                      prose, and the pulled file it
-                                                      rests on lives in a probe
-                                                      card's own proof/ folder
-🎯 aim        NOTHING                                 DRAFT's, tracked in ## States
-✅ have it    NOTHING                                 already true
+answered          reuse exact QA path; EVIDENCE will bind it
+working, live      dispatch nothing; record the active QA path
+superseded-by      follow to the live QA file
+near miss/no hit   DISPATCH
 ```
 
-A page whose plan carries only 🎯 and ✅ marks skips PROBE entirely. That is the
-phase being unnecessary, not being skipped.
+Topic overlap is navigation only. A match passes only when the QA file literally
+answers Q-executor.
 
-## 🧱 What crosses, and what the wall is
+## 📮 DISPATCH
 
-The wall is a PATH, not a paragraph (`haipipe-plugin-probe`):
+Dispatch only `executor/q-executor.md` through the shared probe executor. The
+payload may name card id, route, bank verdict, and return address, but never the
+consumer stake.
+
+The Task or Discovery layer decides whether to digest existing terminal files,
+run code, enrich a topic, or create a correctly scoped folder. PROBE does not
+direct those internals. Its return is an exact QA path or an explicit refusal.
+
+The card may end this phase as:
 
 ```text
-consumer/    the Q-consumer + the STAKE          🚫 never crosses
-executor/    the stripped Q-executor             ✅ this, and only this, is sent
-proof/       manifest.yaml only · files: []      EVIDENCE pulls into it
-card.md      state: planned → commissioned       🚫 never `raised`/`working`:
-                                                 retired by the plugin 0.7.0
+planned         neutral question exists; no dispatch required or authorized yet
+commissioned    matching QA work is active or newly dispatched
+concern         route none or bank refusal prevents an answer
 ```
 
-PROBE dispatches to the bank by agent, in a clean context, and the clean context
-IS the wall: `haipipe-task-orchestrator-agent` for work the task layer owns,
-`haipipe-discovery-orchestrator-agent` for work the literature owns. What comes
-back is a PATH to a QA file. Binding that path is EVIDENCE's, not this phase's.
+`answered` and `read` belong to the landing/human half and are not synthesized
+here.
+
+## 🧭 Which marks create cards
+
+```text
+📮 probe      always, when source is Task or Discovery
+📚 citation   only when an unknown source requires a Discovery question
+🧮 value      no new card when it already names PP<NN>.v<n>
+🖼 display    no card; EVIDENCE owns the display unit and intake
+🎯 aim        no card; it is an outline target
+🔗 PageX      no card; OUTLINE owns accepted Page selection and scope
+```
+
+A Page with no Task/Discovery obligation skips PROBE cleanly.
 
 ## 🔀 Exit and routing
 
 ```text
-every marked bullet served, every card planned  ─▶ ④ EVIDENCE
-the bank already answered this question          ─▶ point the card at it; still EVIDENCE
-no route can answer it                           ─▶ HOLD, named, with the reason
-the plan turns out to owe the wrong thing        ─▶ ① OUTLINE, a v2, never a quiet edit
+every Task/Discovery obligation served and matched/dispatched → EVIDENCE
+wrong source type or wrong obligation                          → OUTLINE vNext
+authorized question still needs outbound work                 → PROBE again
+no allowed bank can answer                                    → HOLD
 ```
 
-PROBE never routes to REVISE: a card that was opened and never landed supports
-no sentence.
+PROBE never routes directly to DRAFT or REVISE. The returned evidence must land
+and flow back through OUTLINE before prose begins.
 
 ## 🧾 RUN receipt
 
-```text
-phase: PROBE
-outline: <page>/outline/<stem>-outline-v<N>.md   approved: ✅ <who> <date>
-marks: 🔢 <n> · 📚 <n> asked · 🖼 <n> deferred to EVIDENCE
-cards: one row per card · PP<NN> · serves: <addresses> · state · dispatched to
-       🚫 a state word outside the plugin's ladder is a defect, not a variant
-coverage: <n> of <n> marked bullets served      🚫 a gap is a HOLD, not a pass
-next: EVIDENCE | HOLD | OUTLINE
-```
-
-**`coverage` is the line that catches this phase's failure mode.** Declaring a
-card is free; the receipt reports how many marked bullets actually got one, and
-a phase whose declared and created counts disagree stops rather than reports
-(`haipipe-page-workflow` §🪞).
-
-## 📂 Files
+Follow `../haipipe-page-workflow/ref/page-run-contract.md` and add:
 
 ```text
-page-workflows/haipipe-page-probe/
-├── SKILL.md            this phase contract
-└── CHANGELOG.md        version history
+phase:       PROBE
+outline:     approved path/version and human LOOK
+marks:       number of Task and Discovery obligations
+cards:       PP id · route · serves · state · dispatch target
+matches:     local reuse or exact bank QA path; never a PageX candidate
+coverage:    served obligations / total obligations
+limits:      refused, deferred, or source-misclassified work
+next:        EVIDENCE | PROBE | OUTLINE | HOLD
 ```
 
-Owns no scripts. The base is `haipipe-page`; the folder and its counts are
-`page-plugins/haipipe-plugin-probe`'s; the crossing protocol is
-`probe/haipipe-probe`'s; the plan and the 🧭 tab are
-`page-plugins/haipipe-plugin-outline`'s; the loop and the receipt are
-`haipipe-page-workflow`'s. The next phase is `haipipe-page-evidence`, which
-fills what this phase raised.
-
-**This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §③. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
-
-**The Board page that argues this contract** is `QPw3-probe` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open.
+A coverage gap is a HOLD, not a successful receipt. The next phase is
+`haipipe-page-evidence`, which binds what this phase matched or dispatched.

@@ -26,7 +26,7 @@ UNAPPROVED, so it is a working document: rewrite it, delete what is wrong.
 - B2 · Nobody but a person clicks it, the field records who and when, and undo takes it away.   🎯 A2.2
 - B3 · The edit buttons check the shape only, one balanced entry with a key.   ✅ have it
 - B4 · They refuse a repeated key unless the save says outright that it replaces the old one.   ✅ have it
-- B5 · They never write, finish, or fix the text itself, and that is the line between a pen and an author.   🧮 proof
+- B5 · They never write, finish, or fix the text itself, and that is the line between a pen and an author.
 - B6 · The ＋ box also takes a LINK: a DOI, an arXiv link, Scholar's Cite to BibTeX link, or a paper URL.   ✅ have it
 - B7 · The bibtex is then fetched WHOLE from that source into the box.   ✅ have it
 - B8 · ⚠️ 6 more sentences in this division are not planned here yet   🎯 aim

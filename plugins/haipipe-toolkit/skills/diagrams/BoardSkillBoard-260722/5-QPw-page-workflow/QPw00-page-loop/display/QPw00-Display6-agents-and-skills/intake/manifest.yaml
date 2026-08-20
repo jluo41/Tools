@@ -1,0 +1,44 @@
+# RE-FROZEN 260819 night, closing the skills-coherence sweep: the five fixer
+# passes moved contract text under the freezes (probe/draft/outline/evidence
+# contracts + plugin-outline). Copies refreshed, hashes re-pinned; the drawn
+# facts were each re-checked against the edits and none moved.
+frozen: 260819
+why: every agent name, load-chain entry, shared-law location, fold-back
+  rule and fallback in this figure is transcribed from these ten files, so
+  a renamed agent, a moved contract or a changed load order makes the
+  figure wrong and this manifest is what makes that computable.
+  re-frozen 260819 (same evening, before first accept): haipipe-page-workflow
+  moved 0.14.1 -> 0.14.2 (value mark 🔢 -> 🧮) mid-build; the roster and
+  fold-back facts this figure transcribes are unchanged, the drawing prints
+  no value mark, and only the version line in the bottom law follows.
+files:
+  - file: inputs/haipipe-page-outline-agent.md
+    source: board/page-workflows/agents/haipipe-page-outline-agent.md
+    sha256: b698f51f1eb5bbf0aa55404f833a6be72de59687b62ff4d4fddce70a52d36ffb
+  - file: inputs/haipipe-page-probe-agent.md
+    source: board/page-workflows/agents/haipipe-page-probe-agent.md
+    sha256: e63890ec80ee5a973a75703cd5734bcf9f040448611a3cc3c5a5e5a4857d7815
+  - file: inputs/haipipe-page-evidence-agent.md
+    source: board/page-workflows/agents/haipipe-page-evidence-agent.md
+    sha256: 561cbb469c2a5e996dcc2b4bf4f1cd410ec1080511fccc5550f84fa525bc1d78
+  - file: inputs/haipipe-page-draft-agent.md
+    source: board/page-workflows/agents/haipipe-page-draft-agent.md
+    sha256: 05457fabf5f1fdf2b63868437584cf2aa277be5d7ad24616d0ca652db292830d
+  - file: inputs/haipipe-page-revise-agent.md
+    source: board/page-workflows/agents/haipipe-page-revise-agent.md
+    sha256: 24cf98080b1aa1ef1c10d1ad569068479291d8def47678df1737bb23bcd2d8f5
+  - file: inputs/haipipe-page-check-agent.md
+    source: board/page-workflows/agents/haipipe-page-check-agent.md
+    sha256: 5c749419b3e2a26f58d8cd61ad12fd9d93cd2dd8e7ba54b4d4ad3de0741eee9e
+  - file: inputs/producer-contract.md
+    source: board/page-workflows/haipipe-page-workflow/ref/producer-contract.md
+    sha256: 61edb426b079b2d0973272f29aea85dff5205445ef80fe4a7b4b6af7f124b0cd
+  - file: inputs/haipipe-page-workflow.SKILL.md
+    source: board/page-workflows/haipipe-page-workflow/SKILL.md
+    sha256: e6ff80de8e66a55d532c8c0ab578df484293b1a9d65bac2577fc8f3f3f9d01ee
+  - file: inputs/haipipe-page-creator-agent.md
+    source: board/agents/haipipe-page-creator-agent.md
+    sha256: 1091402de234b209301c94132d3805a398e0ebf3cc04fbfe6f6783e898ccb08e
+  - file: inputs/haipipe-board-reviewer-agent.md
+    source: board/agents/haipipe-board-reviewer-agent.md
+    sha256: e238a594362827c3638b9194b649d326c24cb86f602f79ecd25d9241564dd829

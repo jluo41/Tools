@@ -1,9 +1,11 @@
-# `brief` · create or resume the application Brief
+# `brief` · create or resume the Application Brief
 
-1. Resolve the application root and read `board.md`, `STATUS.md`, and the current venue pack when pinned.
-2. Find the one `page-type: brief` Page. If absent, create `S-Brief-0-brief` through `haipipe-page` and load `haipipe-page-for-brief`.
-3. For a legacy application, read Seed, Venue, and Pitch as compatibility inputs. Fold decisions into the Brief; do not delete or continue writing the old spine.
-4. Resolve selected evidence only as settled Task/Insight Pages through PageX. Record absent knowledge as `missing insight`, never as a local Probe.
-5. Run the Page lifecycle until the Intervention handoff is accepted or held on named missing insights.
+1. Resolve the Application root and read `board.md`, current Pages, and venue packs.
+2. Find the one `page-type: brief` Page. If absent, create `0-brief/A00-brief/A00-brief.md` through `haipipe-page` and load `haipipe-page-for-brief`.
+3. Fold legacy Seed, Venue, and Pitch decisions as compatibility inputs without deleting or extending the old spine.
+4. Define opportunity, audience set, behavior/outcome, venue scope, promise, and a stable Insight Need Map.
+5. Bind already accepted core Pages through PageX; release unsettled rows to `fn/insight.md` rather than probing from Brief.
+6. Write the initial roster of local Insight Pages and audience/job Design Pages.
+7. Run the Page workflow until the handoff is accepted or held on named needs.
 
-Return the Brief path, venue, selected Insight bindings, missing Insight requests, and next Page phase.
+Return the Brief path, Insight Need rows, core PageX bindings, Design roster, and next Page phase.

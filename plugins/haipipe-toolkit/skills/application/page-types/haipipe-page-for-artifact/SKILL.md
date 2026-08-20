@@ -1,20 +1,20 @@
 ---
 name: haipipe-page-for-artifact
 description: >-
-  The Page Type contract for one independently reviewable APPLICATION ARTIFACT unit, such as a message set, email, checklist block, dashboard card, interaction panel, report section, or audience segment with experimental arms. It executes one current Intervention handoff under a pinned venue, carries the concrete authored content and render/version acceptance record, and reopens when that handoff or render changes. Use when creating, revising, reviewing, or retargeting deployable application content. Trigger: application artifact, SMS copy, email unit, dashboard card, checklist block, report section, message arms, page-type artifact, /haipipe-page-for-artifact.
+  The Page Type contract for an OPTIONAL promoted Application Artifact: one delivery unit that can be accepted, rejected, versioned, or deployed independently from neighboring units on its Design Page. Most SMS sets, email sequences, dashboards, checklists, and reports remain projections of one accepted Design Page; promote only when the independent accept/reject test passes. Use when a message, dashboard card, panel, checklist block, report section, or experimental arm needs its own acceptance/deployment lifecycle. Trigger: promote application artifact, independent message unit, artifact acceptance, deployable unit, stale render, page-type artifact, /haipipe-page-for-artifact.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-17"
-  summary: "One Artifact Page owns one independently approvable delivery unit; variants reviewed together stay as divisions, and changed handoffs/renders reopen acceptance."
+  version: "0.2.0"
+  last_updated: "2026-08-20"
+  summary: "Artifact is projection-first and Page-optional; promote only an independently accepted/deployed unit."
   outline:
     mode: resolved
-    source: "Intervention handoff + venue pack"
+    source: "accepted Design Page unit handoff + venue pack"
     shape: "unit contract → authored content/variants → trace → render → acceptance"
 ---
 
-# /haipipe-page-for-artifact · execute one intervention unit
+# /haipipe-page-for-artifact · promote one independently governed delivery unit
 
-Load `haipipe-page`, `haipipe-page-for-intervention`, and the pinned venue pack first. Load Display, Word, or another output plugin only when the venue requires it.
+Load `haipipe-page`, `haipipe-page-for-intervention`, and the pinned venue pack. Load Display, Word, or another output plugin only when required.
 
 Declare:
 
@@ -22,74 +22,57 @@ Declare:
 page-type: artifact
 artifact-kind: sms | push | reminder | email | checklist | dashboard | ui-card | report | other
 artifact-unit: <stable unit id>
+design-page: <owning Design Page>
 ```
 
-One Page equals one unit that can be accepted while a neighboring unit is rejected. Variants or arms reviewed as one comparison remain Content divisions inside that Page.
+## Admission rule
+
+Default to a projection of the Design Page. Promote to an Artifact Page only when this sentence is true:
+
+```text
+This unit may be accepted, rejected, revised, versioned, or deployed while a neighboring unit is not.
+```
+
+Variants reviewed as one comparison stay divisions in the same owning Page.
 
 ## Boundary
 
 ```text
-Intervention   owns global strategy and the current unit handoff
-Artifact       owns concrete content, local trace, render, and acceptance
-Deploy         ships accepted artifacts and records external state
-Task/Insight   evaluates resulting data after deployment
+Design Page     owns audience/job strategy, system order, principles, and unit handoff
+Artifact Page   owns one promoted unit's concrete content, render, and acceptance
+Deploy          ships accepted versions and records external state
+Insight Page    evaluates deployment data after Task execution
 ```
 
-Artifact does not select global insights, redesign the theory of change, or settle evidence.
-
-## Resolved Content outline
-
-Resolve the exact divisions from `artifact-kind`, but every Artifact Page must carry:
+## Required Content roles
 
 ```text
-Unit contract       audience job, handoff row, venue constraints, safety rails
-Authored content    the concrete message, component, interaction, or section
-Variants/arms       when applicable, comparable divisions under one invariant
-Trace               content move → Intervention principle → Insight Page
-Render/preview      the exact version a person reviews
-Acceptance          accepted/rejected/held record bound to version and handoff
+Unit contract       Design Page, unit id, audience job, venue constraints, rails
+Authored content    exact copy, interface, interaction, or section
+Variants/arms       when jointly reviewed under one invariant
+Trace               content move → Design principle → Insight Handoff
+Render/preview      exact visible version
+Acceptance          reviewer/date + design-handoff version + render version
 ```
-
-Do not create empty Narrative or Display divisions for venues that do not need them. Venue packs refine the shape without changing the closing rule.
-
-## Source boundary
-
-Artifact reads its Intervention handoff, not Task/Discovery folders. It may follow the handoff's PageX trace during audit, but it owns no `probe/` and cannot repair a missing insight locally.
-
-When content needs an unsupported proposition, route to Intervention. Intervention decides whether to remove the move or request a new Insight Page.
-
-## Version and reopening
-
-Acceptance binds to both:
-
-```text
-handoff-version  the Intervention row executed
-render-version   the exact visible artifact accepted
-```
-
-A changed handoff, authored division, venue constraint, or render reopens the Page. Deployment never treats an earlier acceptance as approval of a different version.
 
 ## Runtime shape
 
 ```text
-<ArtifactPage>/
-├── <ArtifactPage>.md
-├── outline/      optional unit outline
-├── display/      previews, mockups, panels, or rendered assets
-├── word/         optional document projection
-└── pagex/        bounded trace to Brief/Intervention; normally no direct Insight import
+<application-root>/3-artifacts/A<NN>-<unit>/
+├── A<NN>-<unit>.md
+├── pagex/        owning Design Page and bounded trace
+├── display/
+└── word/         optional
 ```
-
-The deployable projection may live under `0-artifacts/`, but the Page records which source and version produced it. Hand edits to a projection must be reconciled back to the authored Page before acceptance.
 
 ## Closing checks
 
-- The Page grain passes the independent accept/reject test.
-- Content executes exactly one current Intervention handoff.
-- Every substantive move traces through Intervention to a settled Insight Page.
-- Variants change declared variables and preserve declared invariants.
-- Venue constraints and safety rails are testable on the visible render.
-- Acceptance names reviewer, date, handoff version, and render version.
-- No raw evidence investigation, global strategy rewrite, or deploy action leaked into the Page.
+- The unit passes the independent accept/reject/deploy test.
+- It executes exactly one current Design Page handoff.
+- Every substantive move traces through Design to a settled Insight Handoff.
+- Venue constraints and safety rails pass on the visible render.
+- Acceptance names reviewer, date, Design handoff version, and render version.
+- A changed handoff, content division, constraint, or render reopens acceptance.
+- No evidence investigation or global strategy rewrite leaked into the Page.
 
 This variant owns no scripts.

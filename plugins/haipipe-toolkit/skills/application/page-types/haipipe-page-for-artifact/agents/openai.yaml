@@ -1,4 +1,4 @@
 interface:
   display_name: "Application Artifact Page"
-  short_description: "Author one independently reviewable intervention delivery unit"
-  default_prompt: "Use $haipipe-page-for-artifact to create or repair one deployable intervention artifact unit."
+  short_description: "Govern one independently reviewable delivery unit"
+  default_prompt: "Use $haipipe-page-for-artifact to promote or repair one independently accepted, versioned, or deployed unit from a Design Page."

@@ -3,6 +3,20 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.8.0] — 2026-08-20
+
+- Moved Insight ownership into the Application skill set while retaining Task-backed
+  evidence authority: local Insight Pages may Probe; Brief, Design, and Artifact
+  Pages consume Pages through PageX and never Probe.
+- Replaced the single Intervention assumption with many user-facing Design Pages,
+  each scoped to one audience × behavior job × primary venue. The globally unique
+  machine key remains `page-type: intervention`.
+- Established the runtime spine `0-brief/ → 1-insights/ → 2-design/ →
+  3-artifacts/ → 4-deploy/ → 5-rounds/` and made Artifact Pages optional promotions
+  for independently governed delivery units.
+- Replaced the dormant flat-pool `fn/probes.md` procedure with a compatibility
+  route into one local Insight Page and removed the stale generic-Design claim.
+
 ## [0.7.0] — 2026-08-17
 
 - Replaced the ten-stage target lifecycle with three globally unique Page Types:

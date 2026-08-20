@@ -1,78 +1,106 @@
-% One row per step of the page workflow. Transcribed from the eight files frozen
-% in intake/inputs/; the TIME column is the only estimate and is labelled as one.
+% One row per step of the page workflow, in the order the loop runs it since
+% 260819: the PREPARE loop 1 OUTLINE / 2 PROBE / 3 EVIDENCE first, then 4 DRAFT,
+% 5 REVISE (6 COMPILE folded in) and 7 CHECK. Every cell is transcribed from a
+% file frozen in intake/inputs/; the TIME column is the only estimate and is
+% labelled as one.
 \newcommand{\band}[1]{%
   \midrule
   \multicolumn{6}{l}{\cellcolor{black!7}\footnotesize\itshape\bfseries #1}\\
   \midrule}
 \newcommand{\you}{\textbf{YOU}~}
+\newcommand{\rr}{\raggedright}
 \newcommand{\loopy}{$\circlearrowleft$~}
 \newcommand{\cost}[1]{{\footnotesize$\leftarrow$ \itshape #1}}
-\renewcommand{\arraystretch}{1.15}
+\newcommand{\note}[1]{%
+  \multicolumn{6}{@{}p{122mm}}{\footnotesize\itshape\quad #1}\\}
+\renewcommand{\arraystretch}{1.12}
 \footnotesize
 \begin{minipage}{124mm}
-\begin{tabular}{@{}c@{~} l@{~} p{34mm} p{30mm} l@{~~} l@{}}
+\begin{tabular}{@{}c@{~} l@{~} p{31mm} p{28mm} r@{~~} l@{}}
 \toprule
 \textbf{\#} & \textbf{PHASE} & \textbf{WHAT HAPPENS} & \textbf{YOUR JOB} &
 \textbf{TIME} & \textbf{HOW OFTEN}\\
 
 \band{once per page}
-0 & OPEN & you name the page and the one thing it must decide (\texttt{haipipe-page} CREATE, not a phase) &
-    \you say what it must decide & 15 min & once\\
+0 & OPEN & \rr \texttt{haipipe-page} CREATE copies the page template and registers
+    the page in \texttt{board.md} (a VERB, not a phase) &
+    \rr \you write the title so it states the page's PURPOSE & 15 min & once\\
 
-\band{the loop --- CHECK may send you back to any row in this band}
-1 & OUTLINE & a machine writes the SHAPE only: sections, bullets, and what each
-    bullet still owes &
-    \you approve it, or send it back \newline \cost{reject costs 10 seconds; this
-    is the cheapest gate} & 10 min & \loopy each round\\
+\band{the loop --- CHECK may send you back to rows 1, 2, 3, 4 or 5}
+1 & OUTLINE & \rr a machine writes the SHAPE only, into
+    \texttt{outline/...-v<N>.md} and nothing in the page itself; then FOUR checks
+    run: coverage, address, value, shape &
+    \rr \you judge the plan's DIRECTION, never its arithmetic, then tick
+    \texttt{approved:} \newline \cost{the four run BEFORE you are asked; this is
+    the loop's one gate} & 10 min & \loopy each pass\\
 
-2 & DRAFT & a machine turns each approved bullet into sentences carrying visible
-    \texttt{<HOLE>}s &
-    nothing. \newline Do NOT fill a hole & 0 & \loopy each round\\
+2 & PROBE & \rr MATCH first (this page, then PageX, then the QA bank), and only then
+    a card at \texttt{probe/PP<NN>-<slug>/}; the stripped Q-executor is the only
+    thing that crosses & \rr nothing & 0 & \loopy each pass\\
 
-3 & PROBE & a machine looks for an answer that already exists, then opens a card
-    and asks the bank &
-    nothing & 0 & \loopy each round\\
+3c & CITATION & \rr a machine may SUBSET or TRANSCRIBE a real record and may never
+    COMPOSE one &
+    \rr \you land the entry verbatim in \texttt{bibex/}, so it carries
+    \texttt{verified = \{WHO YYMMDD\}} & 20 min & \loopy per entry\\
 
-4c & CITATION & a PERSON finds the published work; a machine may copy bibtex and
-    may never compose it &
-    \you paste the entry, tick \texttt{verified} & 20 min & \loopy per entry\\
+3v & VALUE & \rr the bank answers into its own QA file, \texttt{target:} names that
+    file BY PATH, and \texttt{checks/values.py} re-runs the number &
+    \rr \you tick \texttt{read:}, which now means ``I agree with the judgment inside
+    the question'' and not ``I checked the arithmetic'' \newline \cost{it reverts
+    when target or proof moves} & 30 min & \loopy per card\\
 
-4v & VALUE & the bank answers, bound BY PATH to a real file, with the proof
-    pulled next to the card &
-    \you read the proof, tick \texttt{read:} \newline \cost{this is the cost, and
-    the tick is what permits quoting} & 30 min & \loopy per card\\
+3d & DISPLAY & \rr this lane DRAWS since 260819: intake, recipe, the pick, then
+    \texttt{assets/} and \texttt{preview.pdf}. It returns a previewable unit
+    rather than a folder &
+    \rr \you rule \texttt{intake/} and choose among \texttt{candidates/} \newline
+    \cost{no tick here: \texttt{accepted:} is row 7a's} & ? & \loopy per unit\\
 
-4d & DISPLAY & a machine freezes the exact bytes a figure will be drawn from,
-    and never draws &
-    nothing & 0 & \loopy per figure\\
+\note{Rows 1, 2 and 3 REPEAT AS ONE UNIT until the plan and its evidence agree,
+    and 3c, 3v and 3d run at the SAME TIME. Three of the five person-reserved
+    ticks are in this band; the other two are 7a and 7b.}
 
-\multicolumn{6}{@{}l}{\footnotesize\itshape\quad 4c, 4v and 4d run at the SAME
-    TIME. None of the three waits for another to finish.}\\
+4 & DRAFT & \rr it now ENTERS on evidence that already landed, so it writes the
+    NUMBER; a hole is the EXCEPTION and must name the input that is missing &
+    \rr \rr nothing & 0 & per round\\
 
-5 & REVISE & a machine replaces every landed hole, draws the figures, and
-    rebuilds the pdf &
-    nothing & 0 & \loopy each round\\
+5 & REVISE & \rr the sentence that cites each drawn unit by id, the caption for THIS
+    page's claim, and the \texttt{latex/} and \texttt{word/} rebuild. It no
+    longer draws & \rr nothing & 0 & \loopy each round\\
 
-6 & CHECK & a machine and a DIFFERENT reader judge the BUILT pdf, never the
-    markdown, and never the producer's own work &
-    \you accept, or say where to go back \newline
-    {\footnotesize$\hookrightarrow$ back to 1, 2, 3, 4 or 5} & 15 min &
-    \loopy each round\\
+6 & COMPILE & \rr folded into 5 since 260819 and holding no contract of its own;
+    whether the fold is permanent is \texttt{QPw5-revise}'s open ruling &
+    \rr \rr nothing & 0 & with 5\\
 
-\band{reached only when CHECK says CLOSE}
-7 & ACCEPT & each figure is bound to the inputs it was accepted with &
-    \you tick \texttt{accepted:} \newline \cost{it reverts if the inputs change}
-    & 10 min & once per figure\\
+\note{4, 5 and 6 run END TO END and stop for nobody: a run that pauses for a
+    person between DRAFT and CHECK is stopping in the wrong place.}
 
-8 & CLOSE & the page's own ruling, named by its Page Type &
-    \you sign it \newline \cost{this ends the round} & 5 min & once per round\\
+7 & CHECK & \rr a DIFFERENT actor judges the RENDERED page and the BUILT artifact,
+    and may not repair its own finding in the same pass &
+    \rr \you take CLOSE, or name where to go back \newline
+    {\footnotesize$\hookrightarrow$ REVISE, DRAFT, EVIDENCE, PROBE or OUTLINE} &
+    15 min & \loopy each round\\
+
+\band{what ends it --- both ticks below are row 7 CHECK's own}
+7a & ACCEPT & \rr you are shown this gate only once the page's mechanical errors are
+    ZERO, so it is a confirmation and not an inspection &
+    \rr \you tick \texttt{accepted:} in each unit's README \newline \cost{a changed
+    \texttt{intake/} drops it back to $\square$} & 10 min & per unit\\
+
+7b & CLOSE & \rr CLOSE is a ROUTE and not a phase, and only \texttt{verdict: pass}
+    may take it &
+    \rr \you sign the Page Type's declared RULING \newline \cost{silence is not
+    consent} & 5 min & per round\\
 \bottomrule
 \end{tabular}
 
 \par\vspace{1.5mm}
-\parbox{124mm}{\scriptsize\itshape TIME is an ESTIMATE and nothing else in this table is. The
-board holds ONE live run, \texttt{260805-0216-QB8e}, whose five receipts are
-CHECK, REVISE, CHECK, REVISE, CHECK: no OUTLINE, DRAFT, PROBE or EVIDENCE phase
-has ever been timed here. Every other cell is transcribed from a file frozen in
+\parbox{124mm}{\scriptsize\itshape TIME is an ESTIMATE and nothing else in this
+table is. The receipt shape carries no start/end pair, so no receipt can time a
+phase and not one phase here has ever been timed. Across this board's four
+stored runs the receipts cover OUTLINE, PROBE, DRAFT, REVISE and CHECK (PROBE's
+first two landed only on 260819), and EVIDENCE and COMPILE had none when this
+table was frozen that evening. Row 3d carries no estimate at all, because it
+took over three of REVISE's steps on 260819 and nobody has priced the lane
+since. Every other cell is transcribed from a file frozen in
 \texttt{intake/inputs/}.}
 \end{minipage}

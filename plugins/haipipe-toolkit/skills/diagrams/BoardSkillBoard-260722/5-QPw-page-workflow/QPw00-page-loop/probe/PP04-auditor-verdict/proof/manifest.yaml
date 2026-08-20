@@ -1,0 +1,11 @@
+card: PP04-auditor-verdict
+files:
+  - name: auditor-verdicts.json
+    kind: numbers
+    source: haipipe-board/src/page_lifecycle.py (audit_run + audit_artifacts) over every file under BoardSkillBoard-260722/_runs/
+    run: local run, 260819, re-pulled at EVIDENCE after the 260819-1813 run landed
+    pulled: 2026-08-19
+    bytes: 3514
+    sha256: a9459854d41ea65d39236af4fd6405b371453d5ef1bba14e26a26527c289d495
+    why: the auditor verdict census C13.P1.B5 owes, one verdict per stored run, quoted from the auditor's own output
+    aggregate: true

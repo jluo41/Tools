@@ -7,7 +7,7 @@ A board's entire value is that a second person can read it. Unreadable means unw
 
 ## The section shapes decided this session (260724)
 
-These are not style preferences. `build.py` renders each section a specific way, so writing against the shape produces a broken page. The worked example is QB4 (`skills/diagrams/BoardSkillBoard-260722/QPs-page-structure/QPs1-overall/QPs1-overall.md`).
+These are not style preferences. `build.py` renders each section a specific way, so writing against the shape produces a broken page. The worked example is QB4 (`../../../diagrams/BoardSkillBoard-260722/3-QPs-page-structure/QPs1-overall/QPs1-overall.md`).
 
 - `## Opening` = one lead sentence, then one plain paragraph
   The first paragraph is the actual question, written as a question, and stays in Opening. Everything before the FIRST BLANK LINE is what a reader sees without clicking, and it is 4 to 5 sentences, about five lines on screen, target roughly 450 characters, hard ceiling 520, which is what `check.py` enforces, measured on the render (JL 260801). Inside that ceiling it is **one flowing, page-specific rationale** with no required order of beats. Stop when a cold reader can say why the question deserves attention and what this page owns. Scope, difficulty, failure, downstream effect, and a success consequence are diagnostic prompts, not sentence slots; use only the ones that reveal this page's real stake. build.py labels that drawer "More details" as a collapsed row inside Opening for Q and S (it read "Why this matters" until JL renamed it on 260801). Do NOT use the old bullet form. There is no separate `## Boundary`; name the neighbouring page in this paragraph when it owns excluded work.
@@ -40,7 +40,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Do not stop mid-way to ask for approval. Write the source, propagate the rule to `ref/page-template.md` and `haipipe-page` so new pages inherit it, run `check.py`, then confirm the RENDER, not the markdown. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produce a correct file and a wrong page. A half-applied change is worse than either finishing or not starting.
 
 
-- **No em-dashes** (JL 260724: "fuck em-dash")
+- **No em-dashes** (JL 260724, ruled emphatically)
   Never use the em-dash in prose. Use a colon when expanding on what came before, a semicolon or a new sentence for two linked clauses, parentheses or commas for an aside. This is a rewrite per sentence, never a blind find-and-replace: each dash needs the mark its own sentence calls for.
 - **One sentence per source line** (JL 260725)
   The renderer gives every plain prose line its own row on the page, so a hard wrap in the middle of a sentence becomes a broken line the reader sees. Write each sentence as one source line and let the browser soft-wrap it; start a new line only at a sentence boundary. This also gives each sentence a clean anchor for comments and future sentence-level apparatus.

@@ -1,3 +1,68 @@
+## 0.7.0 — 2026-08-20
+
+- **The dispatch names its agent** (JL ruling A, 260820): PROBE crosses to the
+  bank through haipipe-probe-q-executor-agent ONLY — the batch carries per
+  card the PP id, stripped question, route, bank verdict and the card.md
+  bind-back path — and no page-family hand calls
+  haipipe-task/discovery-orchestrator-agent directly. Until now this section
+  named the orchestrators and no carrier, which is how a session hand-rolled
+  its own crossing on 260820.
+
+## 0.6.0 — 2026-08-19
+
+- **📮 probe and 🧮 value are now SEPARATE marks** (JL: "You mean you put the
+  probe and values together? I want to separate them"). 📮 = this point needs
+  a QUESTION answered — bare before ② raises the card, `📮 PP<NN>` after; the
+  answer may be a finding or a folder of numbers. 🧮 = this point QUOTES one
+  value, `PP<NN>.v<n>`, out of an answered card's `## Values` block, and
+  `checks/values.py` re-computes it. 📮 deliberately shares phase ②'s glyph
+  (same concept) and is end-anchored in the scanners so prose about the phase
+  never reads as a mark.
+- **Coherence sweep (260819)**: the summary and description caught up with
+  §🔗's CLOSED ruling and the Aims-in-plan move; §🧭's mark table trades the
+  retired ✅ for a 🧮 row (the mark quotes `PP<NN>.v<n>`); §🕐's bare ask
+  wears 📮, not 🧮; the receipt and the phase's release gate on the 🧑 LOOK
+  after the ① pass, with `approved:` closing the round later.
+
+## 0.5.2 — 2026-08-19
+
+- **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).
+  🔢 stays accepted as the legacy alias, so pre-260819 plans remain legal.
+  The abacus was the proof mark retired earlier on 260819 and is revived with
+  its new meaning: a recomputable number, which is what `checks/values.py`
+  does to every one of them.
+
+## 0.5.1 — 2026-08-19
+
+- **Identity fixed: PROBE is phase ②** (frontmatter and footer said ③, one
+  place behind the 260819 order).
+- **§🕐's argument caught up with the Aims ruling**: it argued "Aims are
+  written at DRAFT, so PROBE is the earliest complete card" — since 260819 the
+  Aims are settled in the approved plan, which is exactly what let PROBE move
+  to ②. The card-at-PROBE ruling itself is unchanged. Found by the Display3
+  rebuild agent.
+
+## 0.5.0 — 2026-08-19
+
+- **The MATCH-runs-late defect is CLOSED.** It stayed open on one argument: the
+  card carries the stake, the stake is an Aim, and Aims were written at DRAFT. JL
+  ruled the Aims into the plan file on 260819, so the argument died and the whole
+  phase moved to where MATCH wanted to be. No MATCH phase is split out.
+- PROBE now routes back to ① OUTLINE, never forward. What comes back confirms or
+  changes the plan, and only the plan's four-check gate ends the PREPARE loop.
+
+## 0.4.2 — 2026-08-19
+
+- **🧮 proof RETIRED.** JL 260819: "我从开始到最后都没有说 proof，我一直说
+  probe". The mark came from ONE transcribed quote ("citation, display, values
+  and proofs") and no Log row ever ruled it. Going to a task folder or a
+  discovery folder for the evidence behind a claim IS a probe, which is 🔢.
+  It was the only mark with no plugin, no folder, no lane, no id and no
+  backlink, and that was the symptom rather than a design.
+  ⚠️ `proof/` the FOLDER is untouched: it belongs to a probe card.
+
+- §🧭's mark table loses its 🧮 row; the plan carries five marks, not six.
+
 ## 0.4.1 — 2026-08-18
 
 - Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §③, which
