@@ -1,3 +1,33 @@
+## 0.142.0 — 2026-08-20
+
+- **`checks/intake.py` was passing over ZERO rows, and said ✅ while doing it.**
+  Both of its regexes required `sha256:` on the line directly after `path:`, so
+  every manifest that writes `frozen_as:` in between (all five units on
+  `QC1-visitlbp`, and the shape the display agents actually author) parsed to
+  nothing, and the run still printed "every frozen intake still matches its
+  source". Found by the Display2 repair agent, which re-hashed its inputs by
+  hand after the tool told it nothing. Fixes:
+  - a BLOCK parser (`_items`) replaces line-adjacency, so a `takes: >-` prose
+    field between the keys no longer hides a row;
+  - the `path: + frozen_as: + sha256` shape is now first-class: the copy AND
+    the live source are both re-hashed;
+  - a manifest that yields no rows is a FINDING, split into `NOT PINNED`
+    (the unit pins no sha256, a unit defect) and `UNPARSED` (a tool defect),
+    and a run that reads zero rows anywhere exits non-zero. Silence and a pass
+    must never look the same;
+  - a DERIVED input (`derived: true`, or a `frozen_as:` whose basename differs
+    from its source's, e.g. `spec-ladder.txt` transcribed out of a `.do`) is
+    reported unresolved instead of forever CHANGED, because its sha was never
+    the source's;
+  - a `glob:` row re-resolves the pattern and compares the file COUNT against
+    the frozen listing's line count, which is the only staleness question a
+    glob HAS;
+  - `_project_roots` walks past a submodule's own `.git` to the repo root,
+    otherwise a path like `examples/<project>/tasks/...` never resolved.
+  First real run on `02-CMSRegBoard-260725`: 15 rows read, `QC1-visitlbp`'s five
+  units clean, and five sibling units on QC3/QC4/QC5/QC6 exposed as pinning no
+  sha256 at all.
+
 ## 0.141.3 — 2026-08-20
 
 - Synced the roster with Page 0.38.0 after Dash retired: twelve live variants
