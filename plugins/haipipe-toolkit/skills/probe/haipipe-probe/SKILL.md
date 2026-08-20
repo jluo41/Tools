@@ -183,9 +183,32 @@ accepts it with `read:`, and later DRAFT/REVISE owns the sentence.
 
 When one answer contains several usable values, the consumer plugin allocates
 `PP<NN>.v<n>` ids in `card.md`. Each value names the exact file and field in
-`proof/`; a naked number is not a value binding. Proof is aggregate-only and
-keeps source, run, pulled date, size, and sha256. Never pull row-level or PHI
-data into a Page.
+`proof/`; a naked number is not a value binding. Proof is aggregate-only.
+Never pull row-level or PHI data into a Page.
+
+`proof/manifest.yaml` has ONE exact shape, checked by
+`page-plugins/haipipe-plugin-probe/ref/check-probe.py` — not a paraphrase of
+it, the literal field names, every one required, no invented alternative
+(`source_qa`/`quoted_from`/`size_bytes` are NOT this shape and fail the check):
+
+```yaml
+card: PP<NN>-<slug>
+files:
+  - name: <the pulled file's own name>
+    kind: table | numbers | excerpt
+    source: <path to the aggregate file this was pulled from>
+    run: <the run/script that produced it>
+    pulled: <date>
+    bytes: <size>
+    sha256: <hash>
+    why: >-
+      <why THIS file pins the answer, not a restatement of the question>
+    aggregate: true
+```
+
+`aggregate: true` is not decoration: it is the PHI-safety assertion the
+checker exists to enforce (only aggregated, PHI-free files may be committed
+to a Page). A manifest missing it is a compliance gap, not a formatting one.
 
 ## ✅ Completion and human gate
 
