@@ -1,16 +1,16 @@
 ---
 name: haipipe-page-for-task
 description: >-
-  The VARIANT contract for a TASK Page: one page per task-folder, reading what that folder produced and carrying the one thing no file in it can hold, the READING of the result. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Why, Concept, Data, Method, Result, Meaning in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Meaning always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
+  The VARIANT contract for a TASK Page: one page per task-folder, and the TECHNICAL REPORT of what that folder found, carrying the one thing no file in it can hold, the READING of the result. Reporting is the form and reading is the closing act. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Why, Concept, Data, Method, Result, Meaning in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Meaning always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, technical report, report structure, reporting, division order, learning order, residual division, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-08-16"
-  summary: "Closing rule: a task page closes when the result is READ and each reading names the run it is bound to; a rerun re-opens it. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Meaning stays one page-level division, always last."
+  version: "0.7.0"
+  last_updated: "2026-08-20"
+  summary: "A task page IS a technical report and closes when the result is READ; 0.7.0 states the arc the six words form, forbids LEARNING ORDER as a third kind of log, and makes a residual a division rather than a footnote. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Meaning stays one page-level division, always last."
   folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved
     source: "this SKILL.md"
-    shape: "FLAT or NESTED; first word from {Why, Concept, Data, Method, Result, Meaning}; Meaning is one page-level division, always last"
+    shape: "FLAT or NESTED; first word from {Why, Concept, Data, Method, Result, Meaning}; the sequence is the ARGUMENT, never run, config or learning order; a residual earns its own Result-role division; Meaning is one page-level division, always last"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,6 +74,89 @@ configs/ · runs/     how it was invoked       QA/<n>-<slug>.md  one caller's
 ```
 
 Not one of them ever says **"and therefore ___"**. `metrics.json` holds `0.83`; nothing on disk holds "0.83 means the approach works" or "0.83 is the same as the baseline, so this direction is dead". That sentence is a human judgment about an empirical result, it is what everyone downstream actually needs, and it is the only thing this page exists to carry.
+
+## 📰 The page IS a technical report, and the six words are its ARC
+
+A task page has one job with two halves, and the contract used to state only the
+second. **It REPORTS what the folder found, and it closes when a person READS
+that report against the folder's own question.** Reading is the closing act.
+Reporting is the FORM, and the form is what a reader gets wrong first.
+
+The six words are not a checklist of boxes to fill. They are the arc a technical
+report has always had, and each one earns its place from the one before it:
+
+```text
+  Why      the reader does not yet care          ─┐
+  Concept  the reader cannot yet parse it         ├─ SETUP: without these the
+  Data     the reader cannot yet trust it         │  result cannot be read
+  Method   the reader cannot yet believe it      ─┘
+  Result   what came out                         ─── THE FINDING
+  Meaning  what it costs, and what to run next   ─── THE CONSEQUENCE
+```
+
+**⛔ THE SEQUENCE IS THE ARGUMENT, and role-complete is not arc-coherent.** A page
+may carry all six words, each division correct and each in present tense, and
+still not be a report. That is the commonest shape that passes every check and
+fails its reader, and it fails for one reason: the order came from the author's
+history instead of the reader's need.
+
+**Three orderings all read as a log, and the third is nearly invisible:**
+
+```text
+  ① run order        the order the scripts executed
+  ② config order     the order the yaml files sit in
+  ③ 🔴 LEARNING ORDER  the order the AUTHOR found things out
+```
+
+① and ② are already forbidden above, and both are easy to catch because the
+division titles carry the machinery's own names. ③ survives every mechanical
+check. Each division states the present, cites its evidence, and names what the
+reader learns; nothing on the page mentions a date. The diary is in the SPACING
+between divisions, and only a reader who does not already know the story can feel
+it.
+
+**The swap test, one question per boundary:**
+
+```text
+  For each pair of adjacent divisions, name why N must come before N+1.
+
+  ✅ "Method must precede Result, or the number cannot be believed."
+  ✅ "Data must precede Method, or the sample the method ran on is unknown."
+  🔴 "That is the order we found them in."
+     └─ reorder. A reason that is a date is not a reason.
+```
+
+Ruled 260820 (JL, on a Board plan whose divisions ran old-machinery, its-gap,
+new-machinery, measurement, contract, proposal): every head was present tense and
+every count was checked, and the divisions still fell into three blocks that
+matched what was known before the session, what the session did, and what it left
+open. The repair merged the two machinery divisions into one, because they are two
+halves of one machine and their only separation was arrival time.
+
+**A residual is a DIVISION, not a footnote.** `Meaning` carries a `not answered`
+row, and that row is a pointer, not the account. What the runs did NOT settle
+needs its own place before `Meaning`, or the reader assembles it from asides
+scattered through `Result`:
+
+```text
+  ✅  Data · Method · Result · <what is still not settled> · Meaning
+  🔴  Data · Method · Result · Meaning
+                        ▲
+                        └── three residuals living as parenthetical remarks
+                            inside a division whose job is the finding
+```
+
+The word for that division is free, as every title after the fixed prefix is. Its
+ROLE is `Result`: it is what came out, stated as the part that came out empty.
+A page with no residual either answered everything, which is rare enough to be
+worth saying out loud, or has not looked.
+
+**Why this belongs to THIS type and not to the base.** Every page reports
+something. A task page reports an EMPIRICAL RESULT that regenerates, so its
+author is always writing while the work is still moving, and learning order is
+the order the material arrives in. A stage page is written once against a fixed
+gate; a task page is written beside a folder that is still being run. The
+pressure toward ③ is structural here and incidental elsewhere.
 
 ## 🏁 The closing rule, and why a rerun re-opens the page
 

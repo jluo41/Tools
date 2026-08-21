@@ -1,3 +1,38 @@
+## 0.7.0 · 2026-08-20 · reporting is the FORM, and the sequence is the argument
+
+New section `📰 The page IS a technical report, and the six words are its ARC`,
+placed before the closing rule, because what a page is FOR precedes how it closes.
+
+- The contract stated only half its job. It closed on READING and never said the
+  page REPORTS, so the six words read as a checklist of boxes rather than as the
+  arc a technical report has always had. The section groups them: Why, Concept,
+  Data and Method are SETUP, without which the result cannot be read; Result is
+  the finding; Meaning is the consequence.
+- **Role-complete is not arc-coherent.** All six words present, each division in
+  present tense with checked counts, and still not a report. Named as the
+  commonest shape that passes every mechanical check and fails its reader.
+- **LEARNING ORDER is a third kind of log**, beside run order and config order,
+  and it is the one that survives every check. The two already forbidden are
+  caught by their titles carrying the machinery's own names; this one has correct
+  present-tense titles and hides the diary in the spacing between divisions.
+  Found 260820 on a Board plan whose five divisions fell into three blocks
+  matching what was known before a session, what the session did, and what it
+  left open. Repair: the two machinery divisions merged, since their only
+  separation was arrival time.
+- **The swap test**: for each adjacent pair, name why N must precede N+1. "Method
+  before Result, or the number cannot be believed" passes. "That is the order we
+  found them in" fails, because a reason that is a date is not a reason.
+- **A residual is a DIVISION, not a footnote.** `Meaning`'s `not answered` row is
+  a pointer, not the account. What the runs did not settle takes its own place
+  before `Meaning`, with role `Result`, or it lives as parentheticals inside the
+  division whose job is the finding.
+- Says why this belongs to this type and not the base: a task page is written
+  beside a folder that is still being run, so learning order is the order its
+  material arrives in. The pressure is structural here and incidental elsewhere.
+- Frontmatter: description leads with TECHNICAL REPORT; `outline.shape` now
+  carries the sequence rule and the residual rule; triggers gain report
+  structure, division order, learning order, residual division.
+
 ## 0.6.0 — 2026-08-19
 
 - **A discovery folder is a special TASK.** New `folder-kind: task | discovery`
