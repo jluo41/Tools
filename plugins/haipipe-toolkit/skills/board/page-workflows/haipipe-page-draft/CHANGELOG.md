@@ -1,3 +1,12 @@
+## 0.9.1 — 2026-08-21
+
+- **§📏 A Log row is one line, not a paragraph** (JL: "make sure to make the
+  logging content to be as concise as possible, current it is too long. not
+  good."): 15-35 words, the headline fact and at most one load-bearing
+  caveat; every number and sub-step the long form used to list is
+  recoverable from the diff, a run receipt, or the Content it landed in.
+  Applies going forward; an old Log row is not retroactively rewritten.
+
 ## 0.9.0 — 2026-08-20
 
 - **§📖 Trust the plan's answers; recount only what is marked** (JL: "看看哪里

@@ -1,3 +1,16 @@
+## 0.2.1 · 2026-08-21
+
+- **A PNG/JPG-rendered figure unit now embeds too.** `live/export.py`'s
+  figure branch checked only for `assets/figure.pdf`; a `figure`-kind
+  display unit whose winning render is `assets/figure.png` (the common
+  case for `haipipe-display-figure` output) fell through to "no winning
+  render yet" and was never printed, with no error anywhere. Found on
+  `QAb11-npi2photo` (Display2): `check.py`'s `display-cited-not-embedded`
+  only fires once a `latex/` projection exists to be checked against, so
+  the gap was silent until the projection was built for the first time.
+  lualatex reads the raster directly; the fix widens the check to
+  `figure.pdf` / `figure.png` / `figure.jpg`, preferring `.pdf`.
+
 ## 0.2.0 · 2026-08-16
 
 - **The Page title prints**: the standalone master opens with the complete

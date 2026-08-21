@@ -3,7 +3,7 @@ name: haipipe-page-workflow
 description: >-
   The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under the Board's _runs/page/ folder, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
 metadata:
-  version: "0.18.1"
+  version: "0.19.0"
   last_updated: "2026-08-20"
   summary: "The phase strip, in both forms: cli/pagephase.py in full and status.py's fourth row, one shared computation (JL 260820)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -190,6 +190,14 @@ is without anyone running a second command:
 ```text
 ⏱️ 📮 PROBE · 🧭✅ 📮⏳ 🃏⬜ ✏️⬜ 🖊⬜ 🔍⬜ · ✋4
 ```
+
+**What each phase COSTS is measured, not guessed**: `ref/measured-cost.md`
+carries real agent returns from the 260820 QC1 and QC2 runs, minutes and tokens
+and tool calls per phase (JL 260820: "could you document for each of them, how
+long it takes for us?"). The short version: wall-clock tracks TOOL CALLS at
+about 14 seconds each, EVIDENCE is the longest phase because it opens the most
+files, a display unit runs 5 to 17 minutes, and fanning the display lane out is
+the one real speedup in the loop.
 
 The bar reuses §🔁's own phase emoji (🧭 📮 🃏 ✏️ 🖊), so the strip and the
 loop diagram teach one symbol set rather than two. ⑦ CHECK is the single

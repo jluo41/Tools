@@ -3,9 +3,9 @@ name: haipipe-page-draft
 description: >-
   The DRAFT phase contract for any Board Page. DRAFT is the PLANNING phase: it is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round, It ENTERS on an approved outline (phase ①, haipipe-page-outline) and executes it, naming no division the plan did not name. It is not identified by an empty file, first typing, or adding text. Load haipipe-page first, then the matching Page Type under page-types/, then this contract, and finally the stage's declared family craft files. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or naming a hole and the Aim it costs without opening a card for it. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, the page's promise, owned hole, stake, draft boundary, who creates the card, /haipipe-page-draft.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-18"
-  summary: "DRAFT creates no card: it enters on landed evidence and writes each Point as sentences citing ids; PROBE (phase ②, before it) turned the marks into cards, and a hole is the blocked exception."
+  version: "0.9.1"
+  last_updated: "2026-08-21"
+  summary: "DRAFT creates no card: it enters on landed evidence and writes each Point as sentences citing ids; PROBE (phase ②, before it) turned the marks into cards, and a hole is the blocked exception. A Log row is one line, 15-35 words, not a paragraph."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -269,6 +269,39 @@ the test               delete the name and the date; if the sentence
 Ruled twice on 260820, reading the compiled PDF: "什么叫 260819 啊…我的目的
 就是使这些 content 非常非常 readable" and "don't say too much 'JL' or
 'YYMMDD', this is the official document".
+
+## 📏 A Log row is one line, not a paragraph (JL 260821)
+
+"make sure to make the logging content to be as concise as possible, current
+it is too long. not good." A `## Log` row states the headline fact and stops;
+it does not narrate the investigation that found it.
+
+```text
+🚫 "260820 1241 CC · REVISE pass, second look at the 1227 pass.
+    Cross-checked every number the 260820 rebuild touched against
+    `fetch_photos_delta.log`, `image_index.parquet` and both store
+    READMEs and found four the 1227 pass had missed. `~104 url/s` for
+    the delta fetch (§2.3 diagram and A2.2) was the peak instantaneous
+    rate off the log's mid-run lines; the log's own `DONE` line gives
+    89,010 urls in 0.26 h = ~95 url/s, and both occurrences now read
+    `~95`. §4's summary table still carried `0.96% caught`..."
+    (six more clauses follow)
+✅ "260820 1241 CC · REVISE: fixed 3 more missed numbers (url/s
+    peak-vs-avg, stale byte-repeat %, stale duplicate row). NPI2Photo's
+    own README still carries the old baseline; flagged, not fixed here."
+```
+
+Roughly 15-35 words. One clause for the headline fact, at most one more for a
+genuinely load-bearing caveat (who else owns a flagged gap, what stays open).
+Every number, file path, and sub-step the long form listed is still
+recoverable: from the diff, from a run receipt under `_runs/page/`, or from
+the Content/States/Aims the change actually landed in. The Log's job is
+"what changed", not "how I found it".
+
+**Do not retroactively rewrite an OLD Log row to comply.** A Log is a
+historical record; a row written before this rule existed stays as it was
+written, verbose or not. Apply the rule going forward, starting from the
+session that learned it.
 
 ## 🧱 Point → sentence scaffold
 

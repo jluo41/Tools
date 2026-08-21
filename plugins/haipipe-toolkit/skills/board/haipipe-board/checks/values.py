@@ -3,6 +3,19 @@
 
     python3 checks/values.py [--board DIR ...]
 
+⚠️ KNOWN DEFECT (found 260820, not yet fixed): `RECIPES` below is a fixed,
+UNSCOPED dict keyed on bare `PP<NN>.v<n>` strings — built for one Dash-type
+page's own board-health metrics (phase/run/lane/audit counts). Every OTHER
+page's `PP01.v1`, `PP02.v1`, etc. mean something else entirely (a regression
+coefficient, a row count, anything a card names), and they COLLIDE on the same
+keys, so this check misapplies the Dash page's recipe to every page's values
+and reports 🚨 near-universally on any board with more than that one page.
+Confirmed on `02-CMSRegBoard-260725`: every QC page's declared values flagged
+🚨 against unrelated board-metric numbers. A real fix reads each card's own
+`proof/manifest.yaml`-listed files, not this global dict. Until then: treat
+this check's 🚨 output as unreliable outside the page it was built for, and
+verify a value by hand against its own card's `proof/` instead.
+
 JL 260819: "I think the machine should check these numbers."
 
 He is right, and it changes what the human tick is FOR. A card whose `bank:` is

@@ -1,3 +1,13 @@
+## 0.19.0 — 2026-08-20
+
+- **`ref/measured-cost.md`**: what each phase actually costs, from the 260820
+  QC1 and QC2 runs (JL: "could you document for each of them, how long it takes
+  for us?"). Minutes, tokens and tool calls per phase, with the finding that
+  wall-clock tracks tool calls at ~14s each rather than tokens, so "why is this
+  slow" almost always means "it is opening a lot of files". Also records the
+  parallel display lane as the one real speedup: 16.8 min fanned out against
+  43.2 min in sequence for the same four units.
+
 ## 0.18.1 — 2026-08-20
 
 - **The bar reuses §🔁's phase emoji** (JL 260820: the circled digits were

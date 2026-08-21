@@ -77,15 +77,15 @@ def _project_roots(unit: Path):
     `tasks/R01_.../scripts/y.do` (project-relative), so resolution walks out
     from the unit and stops at the repo root.
     """
-    out, p = [], unit.resolve()
+    out, p, last_marker = [], unit.resolve(), None
     while True:
         out.append(p)
         if (p / "pyproject.toml").exists() or (p / ".git").exists():
-            break
-        if p.parent == p:
-            break
-        p = p.parent
-    return out
+            last_marker = len(out)               # keep walking: `examples/<proj>`
+        if p.parent == p:                        # is a SUBMODULE and carries its
+            break                                # own .git, so the FIRST marker is
+        p = p.parent                             # the inner root, not the repo's
+    return out if last_marker is None else out[:max(last_marker, len(out) - 1)]
 
 
 def _sha(p: Path) -> str:
@@ -103,6 +103,18 @@ def _find_live(name: str):
     hits = [p for p in SKILLS.rglob(stem)
             if "intake/inputs" not in str(p) and "_archive" not in str(p)]
     return hits[0] if len(hits) == 1 else None
+
+
+def _glob_count(unit: Path, pattern: str):
+    """-> how many files the manifest's glob finds NOW, or None if its root is
+    not reachable from this machine (a PHI or server-only tree, legitimately)."""
+    if "<" in pattern:                 # a placeholder root, e.g. <results>/...
+        return None
+    for base in _project_roots(unit):
+        hits = list(base.glob(pattern))
+        if hits:
+            return len(hits)
+    return None
 
 
 def audit(unit: Path):
@@ -127,6 +139,23 @@ def audit(unit: Path):
             continue
         if _sha(copy) != sha:
             rows.append((name, "COPY ROTTED"))
+            continue
+        if "glob" in it:
+            # A glob has no single file to hash, so the freeze is a LISTING and
+            # the staleness question is "did the SET move?". Re-resolve the
+            # pattern and compare how many files it finds against how many
+            # lines were frozen. Cheap, and it catches the drift that matters.
+            n_live = _glob_count(unit, it["glob"])
+            n_frozen = len([ln for ln in
+                            copy.read_text(errors="replace").splitlines()
+                            if ln.strip() and not ln.lstrip().startswith("#")])
+            if n_live is None:
+                rows.append((name, "unresolved: glob root not reachable from here"))
+            elif n_live == n_frozen:
+                rows.append((name, "match"))
+            else:
+                rows.append((name, "CHANGED: glob finds %d, listing froze %d"
+                             % (n_live, n_frozen)))
             continue
         live = next((base / it["path"] for base in _project_roots(unit)
                      if (base / it["path"]).is_file()), None)
@@ -195,7 +224,7 @@ def main():
     boards = [Path(b) for b in args.board] if args.board else \
         sorted(p for p in (SKILLS / "diagrams").iterdir() if p.is_dir())
 
-    stale, unresolved, n, rowsread = [], 0, 0, 0
+    stale, unpinned, unresolved, n, rowsread = [], [], 0, 0, 0
     for b in boards:
         units = sorted(b.rglob("display/*/README.md"))
         if not units:
@@ -222,7 +251,8 @@ def main():
             for name, verdict in bad + unk:
                 print("        %-34s %s" % (name[:34], verdict))
             for x in bad:
-                stale.append("%s: %s %s" % (unit.name, x[0], x[1]))
+                (unpinned if x[1].startswith(("NOT PINNED", "UNPARSED"))
+                 else stale).append("%s: %s %s" % (unit.name, x[0], x[1]))
             unresolved += len(unk)
 
     print()
@@ -231,11 +261,18 @@ def main():
         print("⚠️  %d input(s) UNRESOLVED: the manifest froze a copy and named no "
               "source, so its staleness cannot be computed. That is the promise "
               "`haipipe-plugin-display` §❄️ makes and this shape cannot keep." % unresolved)
+    if unpinned:
+        print("🚨 %d unit(s) cannot be checked AT ALL: the manifest pins no "
+              "sha256, so staleness is not computable and a green run above "
+              "would have meant nothing:" % len(unpinned))
+        for s in unpinned:
+            print("   ", s)
     if stale:
         print("🚨 %d input(s) CHANGED since the unit was frozen — the figure may "
               "now draw something that is no longer true:" % len(stale))
         for s in stale:
             print("   ", s)
+    if stale or unpinned:
         return 1
     if not unresolved and rowsread:
         print("✅ every frozen intake still matches its source")
