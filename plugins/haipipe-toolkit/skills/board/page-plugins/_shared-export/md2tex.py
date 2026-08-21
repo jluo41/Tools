@@ -75,6 +75,32 @@ ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
 # backticks around the word.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 
+# A percentage in board prose ("26% of the headline cohort") reached raw LaTeX
+# as a live comment character: `%` and everything after it on the line vanished
+# from the compiled PDF with no error, no warning, just a shorter sentence
+# (found 260820 on QC3-visitheadache, where "N = 200,517 is 26% of..." printed
+# as "N = 200,517 is 26"). code_span_tex (below) escapes `%` `&` `#` `$` `_`
+# `~` `^` inside backtick spans only; PLAIN prose text never passed through any
+# escape at all. `$` is left alone deliberately: board prose does not use TeX
+# math, and an accidental `$` (a real dollar figure) is rarer than the display
+# damage a stray unmatched `$` would cause by opening math mode. `~` is TeX's
+# non-breaking space, so "conventional ~16.4 rule of thumb" silently dropped
+# its own tilde and printed "conventional 16.4" (same 260820 QC3 find).
+_PLAIN_SPECIALS = [("%", "\\%"), ("&", "\\&"), ("#", "\\#"),
+                    ("~", "\\textasciitilde{}")]
+
+
+def escape_prose(s):
+    """Escape TeX specials in board prose OUTSIDE backtick code spans, so a
+    literal `%`, `&` or `#` a person typed renders instead of truncating or
+    misparsing the sentence. Backtick spans are left untouched here because
+    `code_span_tex` (below) already escapes their own content in full."""
+    parts = re.split(r"(`[^`]*`)", s)
+    for i in range(0, len(parts), 2):
+        for a, b in _PLAIN_SPECIALS:
+            parts[i] = parts[i].replace(a, b)
+    return "".join(parts)
+
 # What a code span QUOTES must never EXECUTE: `\citep` inside \texttt{} ran the
 # macro and printed "[]" in QPf6's compiled PDF (JL 260815). Backslash first,
 # then TeX's other specials; the placeholder keeps the escaped backslash's own
@@ -86,10 +112,24 @@ _TEX_SPECIALS = [("\\", "\x00BS\x00"), ("{", "\\{"), ("}", "\\}"),
                  ("^", "\\textasciicircum{}")]
 
 
+
+# A code span with no space is one TeX "word": LaTeX only breaks lines at
+# glue (spaces) or hyphenation points, never inside a bare \texttt run, so a
+# long identifier with no internal space runs off the page margin instead of
+# wrapping (QC5-visitt2d 260820: `run-6/7-VisitT2D_1stPair_{...}-*.do`, 81
+# chars, physical page 2 cut off mid-word). \seqsplit makes every character a
+# legal break point; reserved for spans actually at risk, since it also
+# breaks short spans awkwardly at any width.
+_SEQSPLIT_MIN = 40
+
+
 def code_span_tex(m):
     s = m.group(1)
+    needs_seqsplit = len(s) >= _SEQSPLIT_MIN and " " not in s
     for a, b in _TEX_SPECIALS:
         s = s.replace(a, b)
+    if needs_seqsplit:
+        return "\\texttt{\\seqsplit{%s}}" % s
     return "\\texttt{%s}" % s
 
 
@@ -175,7 +215,7 @@ def build_section(page, displays, report, keep_fences=False):
             name = strip_number(b[2])
             if b[1] == 1 and declared:
                 name = declared
-            out.append("\n\\%s{%s}\n" % (lvl, name))
+            out.append("\n\\%s{%s}\n" % (lvl, escape_prose(name)))
             continue
         line = b[1].strip()
         if ESTABLISHES.match(line):
@@ -192,11 +232,11 @@ def build_section(page, displays, report, keep_fences=False):
             if m:
                 flush()
                 out.append(badge_sub(
-                    "\\textbf{%s}: %s" % (m.group(1),
+                    "\\textbf{%s}: %s" % (escape_prose(m.group(1)),
                                           CODE_SPAN.sub(code_span_tex,
-                                                        m.group(2)))) + "\n\n")
+                                                        escape_prose(m.group(2))))) + "\n\n")
             continue
-        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, b[1])))
+        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, escape_prose(b[1]))))
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".

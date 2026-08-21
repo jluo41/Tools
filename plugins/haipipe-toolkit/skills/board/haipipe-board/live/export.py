@@ -313,7 +313,8 @@ document.getElementById('rebuild').onclick = function () {
                              "\\input{%s/assets/table-body}}\n"
                              "\\caption{%s}\n%s\\end{table}"
                              % (rel, u["caption"], lab))
-                elif (u["dir"] / "assets" / "figure.pdf").is_file():
+                elif next((f for f in ("figure.pdf", "figure.png", "figure.jpg")
+                           if (u["dir"] / "assets" / f).is_file()), None):
                     # width AND height capped with keepaspectratio, and
                     # [!htbp] instead of [H]: a tall display preview at
                     # fixed width is taller than the text block, and [H]
@@ -322,11 +323,17 @@ document.getElementById('rebuild').onclick = function () {
                     # p.19 plus "其他几个 display 也有这个问题"). [!htbp]
                     # still tries HERE first, so a fitting figure stays at
                     # its citation; only one that cannot fit floats on.
+                    # lualatex reads a raster asset directly (JL 260821: a
+                    # figure-kind unit rendered to PNG, not PDF, silently
+                    # never embedded, because this branch only ever looked
+                    # for figure.pdf and fell through to "nothing to print").
+                    asset = next(f for f in ("figure.pdf", "figure.png", "figure.jpg")
+                                 if (u["dir"] / "assets" / f).is_file())
                     block = ("\\begin{figure}[!htbp]\n\\centering\n"
                              "\\includegraphics[width=.85\\linewidth,"
                              "height=.85\\textheight,keepaspectratio]"
-                             "{%s/assets/figure.pdf}\n\\caption{%s}\n%s"
-                             "\\end{figure}" % (rel, u["caption"], lab))
+                             "{%s/assets/%s}\n\\caption{%s}\n%s"
+                             "\\end{figure}" % (rel, asset, u["caption"], lab))
                 else:
                     continue          # ⬜ no winning render yet: nothing to print
                 m = self._first_unit_mention(body, u)
@@ -408,6 +415,11 @@ document.getElementById('rebuild').onclick = function () {
         head = ["\\documentclass[11pt]{article}",
                 "\\usepackage[margin=1in]{geometry}",
                 "\\usepackage{graphicx,booktabs,longtable,float,tabularx,pifont}",
+                # A long code span with no internal space (a path, a
+                # brace-expansion glob) is one unbreakable TeX word and runs
+                # off the margin instead of wrapping; md2tex.py's
+                # code_span_tex wraps those in \\seqsplit, which needs this.
+                "\\usepackage{seqsplit}",
                 # A display unit declares its own packages in its
                 # preview.tex, and the master must cover them or the
                 # glyph vanishes: nonstopmode turns an undefined

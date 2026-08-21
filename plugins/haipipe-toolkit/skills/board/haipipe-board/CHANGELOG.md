@@ -1,3 +1,11 @@
+## 0.142.1 — 2026-08-21
+
+- **`## Log` row length**: the sync table now points at `haipipe-page-draft
+  §📏 A Log row is one line, not a paragraph` (JL 260821), rather than
+  restating the rule here. The row format (`YYMMDD HHMM · what changed`)
+  stays; the addition is that "one line" means 15-35 words, not one long
+  Markdown paragraph.
+
 ## 0.142.0 — 2026-08-20
 
 - **`checks/intake.py` was passing over ZERO rows, and said ✅ while doing it.**

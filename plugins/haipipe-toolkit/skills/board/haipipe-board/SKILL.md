@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.142.0"
-  last_updated: "2026-08-20"
-  summary: "checks/intake.py parsed zero rows and reported green: block parser, the frozen_as shape, and a no-rows finding (JL 260820)."
+  version: "0.142.1"
+  last_updated: "2026-08-21"
+  summary: "checks/intake.py parsed zero rows and reported green: block parser, the frozen_as shape, and a no-rows finding (JL 260820). Log row is one line, 15-35 words; the rule and its example live at haipipe-page-draft §📏."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -580,7 +580,7 @@ After finishing any substantive work under a page (a file written, an experiment
 |---|---|
 | `## Aims` | Durable target states, grouped under their owning Content division. Change these only when intent changes. |
 | `## States` | One factual current State row per Aim: ⬜ not started, 🔨 being worked on now, 🧠 waiting on a person or on something outside this page, ✅ met with the evidence named, or ❄️ on ice. The old `🟡` / `🟠` / `⏸️` still parse (`src/common.py`), but nothing new is written with them. |
-| `## Log` | One line for each state transition or material change: `YYMMDD HHMM · what changed`. |
+| `## Log` | One line for each state transition or material change: `YYMMDD HHMM · what changed`. The line is short, 15-35 words, the headline fact only; `haipipe-page-draft §📏` owns the rule and its before/after example. |
 | `state:` | On a Q page, every Aim met or explicitly held → starts with ✅; on an S page, only its human gate may produce ✅. Progress made → starts with 🟡; deliberately parked → starts with ⏸️. The standard labels are SETTLED / PARTIAL / ON HOLD, and a human-readable note may be appended after them. |
 | the `> Comment WHO` / `> ✎` lines under a sentence | The sentence comments and edit records added, replied to, or confirmed this round |
 
