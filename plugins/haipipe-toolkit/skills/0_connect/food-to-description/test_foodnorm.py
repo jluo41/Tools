@@ -2,8 +2,26 @@
 """
 Regression + benchmark suite for the food -> nutrition normalizer.
 
-    python test_foodnorm.py            # L1 + L2 (fast, no cohort data needed)
-    python test_foodnorm.py --bench    # + L3 WellDoc held-out benchmark
+    python test_foodnorm.py            # L1 + L2. Fast, no cohort data needed.
+
+L3 IS GONE. It lived here as a 400-row single-item sample of ONE cohort, called
+`retrieve`/`classify` directly, and reported one weighting. Every one of those
+was a limit worth removing:
+
+  it never called `enrich_food_to_nutrition`, so it graded the retriever rather
+    than the pipeline that ships, and a defect that made ten of eleven cohorts
+    MISS was invisible to it for as long as it existed (QE1 D10 gate B)
+  it dropped rows containing ';', which is 59.5% of WellDoc and the LARGEST
+    gradeable class at 27,665 rows
+  its r = 0.704 was the DEDUPED weighting presented as the number; the
+    row-weighted figure on the same rows is 0.821
+
+The replacement grades the API itself, over 11 SHAPE x LABEL cells, under both
+weightings, with a PatientID-level split:
+
+    examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/
+      python build_gold.py                      # freeze the corpus
+      python run_bench.py --n 400 --tag <name>  # grade it
 
 WHY THIS EXISTS
 ================================================================================
@@ -22,7 +40,10 @@ LEVELS
 ------
   L1  contract    -- WEAK/MISS must never yield nutrition; retrieve returns dicts
   L2  golden set  -- known foods must land within tolerance of their true carbs
-  L3  benchmark   -- WellDoc's 64k app-labelled meals, held out (needs --bench)
+
+Both run in seconds and need no cohort data. That is the point: this file is the
+guard rail you run by reflex after touching `score_candidate`. Corpus-scale
+grading is the benchmark's job, not this file's.
 """
 import sys
 import argparse
@@ -127,82 +148,18 @@ def run_l2_golden():
     return fails
 
 
-def run_l3_welldoc_benchmark():
-    """Score the normalizer against WellDoc's app-DB macros -- the only ground truth.
-
-    WellDoc's Diet rows carry FoodName AND all five macros, filled in by the
-    WellDoc app's own food database. Hide the macros, feed only the name, and the
-    normalizer can be graded. Shanghai can never be graded -- it has no labels --
-    so a resolver only earns the right to run on Shanghai by passing here.
-
-    Portion is unknown (WellDoc's macros are per serving, the bank is per 100 g),
-    so the metric is the carb share of energy: dimensionless, portion-free.
-    """
-    import numpy as np
-    import pandas as pd
-
-    print("\nL3  WELLDOC HELD-OUT BENCHMARK")
-    print("-" * 78)
-
-    path = Path("/home/jluo41/WellDoc-SPACE/_WorkSpace/1-SourceStore/"
-                "WellDoc2025CVS/@WellDocDataV251226/Diet.parquet")
-    if not path.exists():
-        print(f"  SKIP  {path} not found")
-        return []
-
-    df = pd.read_parquet(path)
-    df = df[(df.Carbs > 0) & (df.Calories > 0)]
-    # Multi-item rows join foods with ';' at unknown per-item portions -- not gradeable.
-    single = df[~df.FoodName.str.contains(";", na=False)].drop_duplicates("FoodName")
-    samp = single.sample(min(400, len(single)), random_state=0)
-
-    rows = []
-    for r in samp.itertuples():
-        cands = retrieve(r.FoodName, k=10)
-        top = cands[0] if cands else None
-        rows.append(dict(
-            q=classify(r.FoodName, top),
-            true_carb=r.Carbs, true_kcal=r.Calories,
-            pred_carb=(top["carbs"] if top and top["carbs"] is not None else np.nan),
-            pred_kcal=(top["calories"] if top and top["calories"] is not None else np.nan),
-        ))
-    v = pd.DataFrame(rows)
-
-    trusted_pct = v.q.isin(TRUSTED).mean() * 100
-
-    e = v[v.q.isin(TRUSTED)].dropna(subset=["pred_carb", "pred_kcal"])
-    e = e[(e.pred_kcal > 0) & (e.pred_carb > 0)]
-    true_share = e.true_carb / e.true_kcal * 400      # % of energy from carbs
-    pred_share = e.pred_carb / e.pred_kcal * 400
-    mae = (true_share - pred_share).abs().mean()
-    r = np.corrcoef(true_share, pred_share)[0, 1]
-
-    print(f"  trusted coverage        {trusted_pct:5.1f}%   (n={len(v)})")
-    print(f"  carb-share-of-energy    MAE {mae:5.1f} pp,  r = {r:.3f}   (n={len(e)})")
-
-    # Baselines from 2026-07-12, the first run that produced any number at all.
-    # These are floors to defend, not targets -- lower them only deliberately.
-    fails = []
-    if trusted_pct < 55:
-        fails.append(f"trusted coverage {trusted_pct:.1f}% regressed below 55% floor")
-    if mae > 15:
-        fails.append(f"carb-share MAE {mae:.1f}pp regressed above 15pp ceiling")
-    if r < 0.60:
-        fails.append(f"carb-share r {r:.3f} regressed below 0.60 floor")
-    if not fails:
-        print("  ok   within baseline (coverage >=55%, MAE <=15pp, r >=0.60)")
-    return fails
-
-
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--bench", action="store_true",
-                    help="also run L3 (needs 1-SourceStore, ~1 min)")
+                    help="retired; the benchmark moved, see the module docstring")
     args = ap.parse_args()
 
-    fails = run_l1_contract() + run_l2_golden()
     if args.bench:
-        fails += run_l3_welldoc_benchmark()
+        print("--bench is retired. Corpus-scale grading now lives at\n"
+              "  examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/\n"
+              "and grades the API rather than the retriever. Running L1 + L2 only.\n")
+
+    fails = run_l1_contract() + run_l2_golden()
 
     print("\n" + "=" * 78)
     if fails:

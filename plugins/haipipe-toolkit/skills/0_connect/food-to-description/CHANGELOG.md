@@ -164,3 +164,29 @@ OPEN
 Initial 4-stage pipeline (decompose / retrieve / llm_rerank / aggregate).
 Never produced a nutrition value: the CLI could not import its own stages, and the
 library path threw on every row. See 3.0.0.
+
+## 260819 -- the dialect layer, and L3 retired
+
+- `haiutils.food_enrichment.dialect` is new and now owns every parsing rule.
+  `split_meal(text, dialect="auto")` splits on `;` AND newline and returns TYPED
+  components: `food | carb_declaration | slot_label | unnamed`. The `;` split and
+  the PLACEHOLDERS filter used to live only in
+  `code/scripts/haibuilder/0-external/e12_build_external_foodnorm.py`, so the
+  entry point this skill documents could not read the dialect 33,059 WellDoc rows
+  are written in. QE1 D10 gate A.
+- A placeholder is TYPED, not dropped. `'Just Carbs'` is a carb declaration whose
+  Carbs is real; `'dinner'` in `'Just Carbs; dinner'` is a meal slot. Typing them
+  removed 601 mentions of meal-slot words from the harvest that the old
+  PLACEHOLDERS filter had let through as foods: `dinner` 389x, `lunch` 102x,
+  `breakfast` 97x, `snack` 13x. They had been in the lexicon, looked up in a food
+  bank, since it was built.
+- `decompose()` keeps its two-tuple shape but now returns the FOOD components
+  only. Six call sites unpack it and none needed a change.
+- `LINE_RE` gained a fallback for a missing space before the number, so
+  `'Boiled vegetable111 g'` yields 111 g instead of losing the portion. The
+  fallback requires the name to end in a LETTER: without that guard it read
+  `'kirkland egg whites 1s=46g'` as the food `'kirkland egg whites 1s='`.
+- L3 is removed from `test_foodnorm.py`. It graded `retrieve`/`classify` rather
+  than `enrich_food_to_nutrition`, excluded the 27,665-row `;` class, and quoted
+  the deduped weighting as if it were the only one. `--bench` now prints a
+  pointer. L1 and L2 stay: seconds to run, no data needed.
