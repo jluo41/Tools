@@ -11,8 +11,8 @@ description: >-
   probe folder, Task evidence, Discovery evidence, Q-executor, Q-consumer,
   A-executor, stake wall, proof folder, cite a probe, /haipipe-plugin-probe.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-17"
+  version: "0.9.2"
+  last_updated: "2026-08-21"
   summary: "QA Probe stores the consumer interpretation behind the wall, separate from both the bank answer and later Page prose."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -72,6 +72,10 @@ serves:     once the plan is     C<n>.P<n>.B<n>, ` · ` separated (§↩)
 question:   always               ONE line, neutral words, no page id
 route:      after ① ORGANIZE     task | discovery | none
 bank:       after ② MATCH        reuse | run | code | new · the folder judged
+                                 = the COST TIER, named twice: reuse is T2,
+                                 run/code are T3, new is T4, and a card that
+                                 never needed the bank at all carries no `bank:`
+                                 because it closed at T0/T1 (`haipipe-probe` §💰)
 dispatch:   after ③ DISPATCH     who · when
 target:     after ④ POINT        the path of the answering QA file
 ```
@@ -124,7 +128,7 @@ step                                  where it lands
 
 The one obligation this plugin adds: **write into the right side of the wall.** A question arriving with stake is copied into `consumer/` and stripped into `executor/`; the stripped copy is what any dispatch reads, and nothing edits `executor/` to add context back.
 
-**The state vocabulary is `haipipe-probe`'s, adopted verbatim** (its entry record, §`state`), never a page-local set of words. What this plugin adds is the DISK TEST beside each one, so the word is checkable:
+**The state vocabulary is `haipipe-probe`'s, adopted verbatim** (its §🧾 Return contract `state:` row), never a page-local set of words. ⚠️ This line named "its entry record, §`state`" until 260821; that section does not exist, and the list it did point at was missing `answered-local` — so the plugin was the de-facto source for a word it claimed to be borrowing. Both files now carry all eight. What this plugin adds is the DISK TEST beside each one, so the word is checkable:
 
 ```text
 card.md state     and on disk                                     hand

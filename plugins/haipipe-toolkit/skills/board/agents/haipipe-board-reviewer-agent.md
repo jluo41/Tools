@@ -25,13 +25,18 @@ copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-page/SKILL.md` for the base page and evaluation contract.
-3. `../page-types/haipipe-page-for-skill/SKILL.md` WHENEVER a page under review is a
-   `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
-   judged against, and its Opening rule is the OPPOSITE of the base's: a roster
-   page mirrors a unit that ships elsewhere and decides nothing, so it must
-   INTRODUCE that unit and may never open with a question. Judging a skill page
-   by the base alone marks correct prose as wrong and passes the form letter this
-   variant exists to catch.
+3. `../haipipe-board/cli/check.py` § the skill-page Opening check (line ~581)
+   and `cli/skillpage.py`'s stub (line ~570) WHENEVER a page under review is a
+   `Skill-<n>` or `Agent-<n>` page. Their Opening rule is the OPPOSITE of the
+   base's: a roster page mirrors a unit that ships elsewhere and decides
+   nothing, so it must INTRODUCE that unit and may never open with a question.
+   Judging a skill page by the base alone marks correct prose as wrong and
+   passes the form letter this rule exists to catch — five pages generated from
+   the old stub on 260802 all opened with the same rhetorical question.
+   ⚠️ These two files are the rule's only homes since the `haipipe-page-for-skill`
+   VARIANT was deleted on 260819 (`Skill-`/`Agent-` are filename kinds on the
+   base Page plus `haipipe-plugin-skill`, not a Page Type). Both are executable,
+   so the rule is checked rather than merely written.
 4. `../page-workflows/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.

@@ -7,6 +7,14 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.7.0 — 2026-08-20
+
+- **0.6.0 and 0.7.0 shipped in SKILL.md with no entry here.** Reconstructed from
+  the frontmatter: the contract narrowed to the GENERIC chained Stage Page,
+  because the current Paper architecture has no S01-S10 runtime for it to
+  describe; the paper-era text was archived under `_archive/` the same day.
+  Recorded 260822 in a version-vs-changelog sweep.
+
 ## 0.5.0 - 2026-08-05
 
 Thin-paper phase 2 (QC6 ruled A; JL "go" 260805): stage.md MAY declare `checker:`

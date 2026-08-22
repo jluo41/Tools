@@ -1,3 +1,12 @@
+## 0.9.0 — 2026-08-19
+
+- **0.9.0 shipped in SKILL.md with no entry here.** Reconstructed from the
+  frontmatter: Aims joined the authority test and now live in the plan file, and
+  the version rule was stated as protecting a PROMISE and never a FORMAT — so an
+  old-grammar plan is rewritten on its next pass rather than frozen, and
+  `checks/outline.py` fails `bullet-missing-note`. Recorded 260822 in a
+  version-vs-changelog sweep.
+
 ## 0.8.0 — 2026-08-20
 
 - **The fold marks self-referential values `· recount`** (JL: "看看哪里可以去

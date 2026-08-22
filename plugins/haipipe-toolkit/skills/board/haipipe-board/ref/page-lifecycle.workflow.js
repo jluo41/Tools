@@ -34,7 +34,41 @@ const startPhase = String(parsed.start_phase || '').toUpperCase()
 const limits = parsed.limits || {}
 const maxSteps = limits.max_steps || 12
 const maxRounds = limits.max_rounds || 3
-const humanGate = parsed.human_gate || { required: false, rule: '' }
+// ── COPILOT | AUTO (260821) ──────────────────────────────────────────────
+// Not two rule sets — ONE, read two ways. The five person-reserved ticks are
+// the same in both; what changes is what happens while one is UNANSWERED:
+//
+//   copilot   the human half BLOCKS. A person is here; wait for them.
+//   auto      the human half DEFERS. The loop keeps moving and the debt
+//             accumulates on the ledger (`cli/pagephase.py --owed`), which is
+//             handed over at the end instead of interrupting five times.
+//
+// This is JL's 260818 ruling made executable: "human not to approve, they to
+// break" — the RUN proceeds on `checked: ✅` alone, and a plan nobody objected
+// to is not blocked. It defers FOUR ticks and HARDENS the fifth, below.
+const mode = String(parsed.mode || 'copilot').toLowerCase()
+if (!['copilot', 'auto'].includes(mode)) {
+  log(`page-lifecycle: unknown mode=${mode}`)
+  return { status: 'blocked', reason: `unknown mode ${mode}; use copilot | auto`, receipts: [] }
+}
+
+// AUTO DEFERS FOUR TICKS AND HARDENS THE FIFTH. `approved:` `verified` `read:`
+// and `accepted:` each have a rules file under agents/approve-rules/, so an
+// approver can establish everything around them and write `checked:`. The
+// Page Type's RULING has NONE, on purpose — deciding a page's own question is
+// the point of the page — so it is the one act auto mode may never waive. A
+// run nobody watched is exactly the run that must not certify itself.
+const declaredGate = parsed.human_gate || { required: false, rule: '' }
+const humanGate = (mode === 'auto' && !declaredGate.required)
+  ? { ...declaredGate, required: true,
+      rule: (declaredGate.rule ? declaredGate.rule + '; ' : '') +
+            'auto mode: the Page Type RULING is a person\'s and cannot be waived' }
+  : declaredGate
+// Written back for the SAME reason `parsed.page` is normalized above:
+// src/page_lifecycle.py asserts every receipt's human_gate.required equals the
+// packet's. A hardened gate that the echoed packet did not know about would
+// fail the audit on its own receipt.
+parsed.human_gate = humanGate
 // Set when CHECK reopened the promise into a new DRAFT round; a reopened
 // DRAFT is never fused with REVISE (page-run-contract.md §The fused pass).
 let promiseReopened = false
@@ -166,7 +200,7 @@ function gateShape(result) {
     : { required: !!humanGate.required, status: humanGate.required ? 'pending' : 'not-required', evidence: [] }
 }
 
-log(`page-lifecycle: run=${runId}, page=${page}, start=${startPhase}, maxSteps=${maxSteps}, maxRounds=${maxRounds}`)
+log(`page-lifecycle: run=${runId}, page=${page}, start=${startPhase}, mode=${mode}, maxSteps=${maxSteps}, maxRounds=${maxRounds}`)
 
 phase('Snapshot')
 let currentVersion = await snapshot('initial')
@@ -220,7 +254,7 @@ for (let step = 1; step <= maxSteps; step++) {
     const review = await agent(
       `Perform CHECK on exactly one Board Page in a fresh, read-only context.\n\n` +
       `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\nExpected version: ${currentVersion.version_id}\n` +
-      `Intent: ${intent}\nHuman gate: ${JSON.stringify(humanGate)}\n\n` +
+      `Intent: ${intent}\nMode: ${mode}\nHuman gate: ${JSON.stringify(humanGate)}\n\n` +
       `Load haipipe-page, the matching Page Type, and haipipe-page-check. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
@@ -265,7 +299,7 @@ for (let step = 1; step <= maxSteps; step++) {
         human_gate: gateShape(null),
       }
       receipts.push(receipt)
-      return { status: 'blocked', run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+      return { status: 'blocked', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
     }
 
     let route = review.route
@@ -310,7 +344,14 @@ for (let step = 1; step <= maxSteps; step++) {
     }
     if (route === 'CLOSE' && review.human_gate.required && (review.human_gate.status !== 'passed' || !review.human_gate.evidence.length)) {
       route = 'HOLD'
-      reason = `${reason}; required human gate lacks durable passed evidence`
+      // In AUTO this is the DESIGNED terminal, not a failure: the loop ran end
+      // to end and stopped at the one act it may never perform. Say so, or a
+      // person reads a clean run as a broken one. `--owed` lists what is left.
+      reason = mode === 'auto'
+        ? `${reason}; AUTO reached CHECK and stopped at the one gate it may never ` +
+          `waive — the Page Type RULING. Everything mechanical passed. See the ` +
+          `owed ticks: cli/pagephase.py <page-dir> --owed`
+        : `${reason}; required human gate lacks durable passed evidence`
     }
     if (step === maxSteps && !['CLOSE', 'HOLD'].includes(route)) {
       route = 'HOLD'
@@ -349,7 +390,7 @@ for (let step = 1; step <= maxSteps; step++) {
     receipts.push(receipt)
 
     if (route === 'CLOSE' || route === 'HOLD') {
-      return { status: terminalStatus(route, reviewStatus === 'blocked' ? 'blocked' : 'hold'), run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+      return { status: terminalStatus(route, reviewStatus === 'blocked' ? 'blocked' : 'hold'), run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
     }
     if (route === 'DRAFT' && review.reopens_promise) { round += 1; promiseReopened = true }
     current = route
@@ -381,6 +422,15 @@ for (let step = 1; step <= maxSteps; step++) {
     `Read the ⚡ Brief at the top of haipipe-page-${phaseSkill} first; open the full contract, haipipe-page, the matching Page Type, and any family worker only where the brief does not settle your case. ` +
     `Follow the phase boundary. Work only on the target Page and a declared probe surface when EVIDENCE requires one. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
+    (mode === 'auto'
+      ? `MODE: auto — nobody is watching this run. A tick that is a person's ` +
+        `(approved: · verified · read: · accepted:) is DEFERRED, never waited on: ` +
+        `route FORWARD on the machine half (checked:, agents/approve-rules/) and ` +
+        `record the owed tick, per JL 260818 "human not to approve, they to break". ` +
+        `HOLD only for a MISSING INPUT you cannot obtain or a person's standing 🛑 — ` +
+        `never for an unticked gate alone. You still may not write a person's tick. `
+      : `MODE: copilot — a person is attending. An unticked person-reserved gate is ` +
+        `a legitimate HOLD; stop and name which tick and which file. `) +
     `Return one phase receipt and suggest the next legal route. DRAFT from a non-DRAFT phase must explain the changed purpose or Aim and set reopens_promise=true.`,
     {
       label: `${current.toLowerCase()}:r${round}:s${step}`,
@@ -418,7 +468,7 @@ for (let step = 1; step <= maxSteps; step++) {
       human_gate: gateShape(null),
     }
     receipts.push(receipt)
-    return { status: 'blocked', run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+    return { status: 'blocked', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
   }
 
   const before = currentVersion.version_id
@@ -501,10 +551,10 @@ for (let step = 1; step <= maxSteps; step++) {
   }
 
   if (route === 'HOLD') {
-    return { status: status === 'blocked' ? 'blocked' : status === 'failed' ? 'failed' : 'hold', run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+    return { status: status === 'blocked' ? 'blocked' : status === 'failed' ? 'failed' : 'hold', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
   }
   if (route === 'DRAFT' && current !== 'DRAFT' && current !== 'OUTLINE' && producer.reopens_promise) round += 1
   current = route
 }
 
-return { status: 'hold', run_id: runId, board, page, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts, reason: 'loop exhausted without terminal route' }
+return { status: 'hold', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts, reason: 'loop exhausted without terminal route' }

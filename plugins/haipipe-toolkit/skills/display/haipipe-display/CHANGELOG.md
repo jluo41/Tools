@@ -1,5 +1,13 @@
 # haipipe-display · Changelog
 
+## 0.3.0 — 2026-08-16
+
+- **0.2.0 and 0.3.0 shipped in SKILL.md with no entry here.** Reconstructed from
+  the frontmatter rather than re-authored: the ✒️ tex kind gained its own skill,
+  so the door now routes FIVE renderers — 📊 table · 📈 figure · 📐 diagram ·
+  ✒️ tex · 🎨 illustration — and names none of them as unowned. Recorded 260822
+  in a version-vs-changelog sweep across the toolkit.
+
 ## 0.1.0 · 2026-08-16
 - Born in the consolidation round (JL 260816: "我们是不是只保留一个 … 没必要搞那么多"): the family gains its one door, routing by kind per QPf5 §3's taxonomy.
 - `haipipe-display-table` and `haipipe-display-figure` retire as skills; their full rule sets live on as this door's `ref/table.md` and `ref/figure.md`, and their folders are parked under `_todo/`.

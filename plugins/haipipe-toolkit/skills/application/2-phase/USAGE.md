@@ -1,7 +1,7 @@
 2-phase — how to use it (application)
 ======================================
 
-Concrete recipes for the application phase engine (thin mirror of `../../paper/2-phase/USAGE.md`). You never invoke a phase worker directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → EVIDENCE → REVISE internally, then stops at CHECK for you. Worker contracts live in each worker's SKILL.md; this page is a map. Paths below use a real bench intervention:
+Concrete recipes for the application phase engine (it was written as a thin mirror of `paper/2-phase/USAGE.md`, which no longer exists — paper reorganized and this file is now the only one of the pair). You never invoke a phase worker directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → EVIDENCE → REVISE internally, then stops at CHECK for you. Worker contracts live in each worker's SKILL.md; this page is a map. Paths below use a real bench intervention:
 
 ```
 INT=examples/ProjApp-SMSDesign/applications/04_bench_timing_report

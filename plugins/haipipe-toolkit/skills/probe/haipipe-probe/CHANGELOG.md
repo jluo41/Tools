@@ -1,3 +1,66 @@
+## 0.18.0 — 2026-08-21
+
+**R13 and R15 are back.** Both were ruled on 260714 (`diagram/260714-probe-qa/`
+v3, R1-R18, approved by JL — the SPEC OF RECORD for this layer) and both were
+dropped from this file's BODY in the 260819 phase-agent split, surviving only in
+this CHANGELOG. The spec folder itself is gone from disk, so the text restored
+here is recovered from git (`ca6b48ea`), not re-authored.
+
+For two days the crossing therefore had ONE gear.
+
+- **§💰 R13 THE COST LADDER** · `T0 JOIN ~0 · T1 LOCAL ~0 · T2 REUSE 1 grep +
+  1 read · T3 ENRICH agent · T4 FRESH agent`. Only T3/T4 summon an agent. The
+  tier is chosen at ② MATCH by READING, and ② now states its output as a tier:
+  T0/T1/T2 do not dispatch at all. Without this, every question — however small —
+  paid a full executor lifecycle, which is where the measured 32.1 min / 143.4k
+  tokens for ten cards came from.
+- **CC-7 restored with it**: most entries should land on T2, because in a healthy
+  project the bank fills on its own. A page whose every card is T3/T4 is a signal
+  about the PROJECT — a lazy MATCH or a starving bank — not about the question.
+- **§③ R15 THE ENRICH DEPTH LADDER** · `d0 READ · d1 NEW RUN · d2 NEW SCRIPT ·
+  d3 NEW LEAF`. The executor picks the SHALLOWEST rung; the d2/d3 scope test is
+  "does it fit THIS leaf's `plan.yaml` IPO?", asked where the IPO lives. **The
+  probe never learns which rung ran.**
+- **`route: none` sharpened, and this is the one that unblocks a stalled page.**
+  It means no bank can answer IN PRINCIPLE — a value judgment, a fact nobody
+  holds. It does NOT mean "there is no task folder yet": that is T4 FRESH, it
+  dispatches normally, and the executor opens the leaf at d3. Reaching for `none`
+  because the bank looks empty turns a MISSING ANSWER into a REFUSED QUESTION,
+  and only the second one is terminal.
+- **The two vocabularies are joined, and no field was added.** The consumer
+  plugin's `bank: reuse | run | code | new` maps onto the ladder exactly — reuse
+  is T2, run/code are T3, new is T4, and a card that closed at T0/T1 carries no
+  `bank:` at all. The three executor-flavoured words are a naming debt, not a
+  licence to direct the bank's internals; §💰 says so where they are defined.
+- `tier:` added to the §🧾 Return contract.
+
+⚠️ Still missing from the same 260714 ruleset, and NOT restored here: **R17 two
+session modes** (LEFT/executor runs P-B-E-R for its own sake, the bank grows
+autonomously, and it may do ANSWERABILITY WORK — write digests, refactor so
+future questions are cheap — without knowing which questions will come; RIGHT/
+consumer asks) and **R18 two explorers** (a human via `/haipipe-task qa`, and the
+orchestrator, commissioned or self-directed). R17 is the reason the match-first
+loop works at all, and it is the largest remaining lever on token cost: a fat
+bank is what puts most questions on T2.
+
+## 0.17.0 — 2026-08-21
+
+- **§③ DISPATCH finally implements 0.14.0's own ruling.** That entry recorded JL's
+  260820 "永远只有 haipipe-probe-q-executor-agent 才能够做这件事" and this file's §③
+  went on telling the reader to call `/haipipe-task qa` directly for another day,
+  never naming the agent once in the whole SKILL. §③ now leads with the one door,
+  says which orchestrators a consumer-side worker may never call, and marks the
+  bank-verb form as the COLLECTOR's, not the consumer's.
+- **The `state:` list was short by one.** `answered-local` was missing from the
+  §🧾 Return contract while `haipipe-plugin-probe`, `ref/check-probe.py` and
+  `live/plugview.py` all carried it — and the plugin cites THIS file as the
+  vocabulary's source, so the authority was the file that had the shorter list.
+  All eight now.
+- ⚠️ **Changelog gap.** 0.15.0 and 0.16.0 shipped in SKILL.md with no entry here;
+  their content is in the git log, not reconstructed. Found in the 260821 skills
+  audit, alongside six other skills whose SKILL version had run ahead of their
+  CHANGELOG.
+
 haipipe-probe — Changelog
 =========================
 

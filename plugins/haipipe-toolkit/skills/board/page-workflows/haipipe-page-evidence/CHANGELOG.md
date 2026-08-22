@@ -1,3 +1,10 @@
+## 0.12.0 — 2026-08-20
+
+- **0.12.0 shipped in SKILL.md with no entry here.** Reconstructed from the
+  frontmatter: EVIDENCE lands the bibex and display lanes plus Probe's QA
+  returns, and its PageX branch is NOT its own — that lane already ran in
+  OUTLINE. Recorded 260822 in a version-vs-changelog sweep.
+
 ## 0.11.0 — 2026-08-19
 
 - **Landing `## Values` creates fold debt**: the asking bullet owes its answer,

@@ -1,3 +1,17 @@
+## 0.1.3 — 2026-08-21
+
+- **`ref/roster.md` gains the `outline/` row it had been missing since 260817.**
+  The file's own opening law is that a subfolder of a page's home folder is board
+  material only if its name is in this table; `<page>/outline/` had been real
+  storage for four days with no row. Found in the 260821 skills audit.
+- **The `probe/` row was three retired words deep**: `state: raised→working→bound`
+  (retired at `haipipe-plugin-probe` 0.7.0) and `binding:` (renamed `bank:`), and
+  its storage cell named only `card.md` — no `consumer/`, `executor/` or `proof/`,
+  which is the entire stake wall. Rewritten from the plugin.
+- The ships-under list gained `outline`, and the no-row exemption note now covers
+  BOTH surface-only plugins: `haipipe-plugin-folder` (📂, over the list) and
+  `haipipe-plugin-value` (🧮, over the `## Values` blocks inside probe cards).
+
 haipipe-plugin — Changelog
 ===============================
 

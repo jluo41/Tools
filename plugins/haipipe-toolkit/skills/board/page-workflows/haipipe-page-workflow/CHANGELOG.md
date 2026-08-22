@@ -1,3 +1,60 @@
+## 0.21.0 — 2026-08-21
+
+- **`mode: copilot | auto` is in the packet, and the controller acts on it.**
+  JL's "we will mainly check the outline and the evidences IF WE WANT" (260819)
+  had never been a field: the loop had one shape, built for the attended case,
+  so an unattended run met five person-reserved ticks and deadlocked on the
+  first. One rule set, two readings — copilot BLOCKS on an unanswered human
+  half, auto DEFERS it onto the ledger (`--owed`, 0.20.0) and keeps moving.
+  Deliberately NOT two rule sets: every defect in the 260821 audit was one rule
+  living in two files.
+- **Auto defers four ticks and HARDENS the fifth.** `approved:` `verified`
+  `read:` `accepted:` each have a rules file under `agents/approve-rules/`, so
+  an approver can establish everything around them and write `checked:`. The
+  Page Type RULING has none, on purpose, so `mode: auto` forces
+  `human_gate.required` TRUE whatever the packet declared — a run nobody watched
+  is exactly the run that must not certify itself. Auto's terminal HOLD is the
+  DESIGN, not a failure, and its `reason` says so in those words.
+- **The hardened gate is written BACK into the packet**, because
+  `src/page_lifecycle.py` asserts every receipt's `human_gate.required` equals
+  the packet's. A gate hardened only in memory would have failed the audit on
+  its own receipt — the same class of bug the `parsed.page` normalization was
+  written to prevent, and the comment there is what caught it before it shipped.
+- Both the phase producer and the CHECK judge are TOLD the mode, because neither
+  can infer it and both decide whether an unticked gate is a HOLD. `mode` is
+  echoed on all five run results, so no stored receipt can be read without
+  knowing which reading of the ticks produced it.
+- Rejected values block the run rather than defaulting, and `copilot` is the
+  default: the safe reading is the one you get by saying nothing.
+
+## 0.20.0 — 2026-08-21
+
+- **✋ stopped being only a number.** `cli/pagephase.py --owed` prints the LEDGER:
+  one row per human tick this page still owes, each carrying the approver's
+  `checked:` beside the question only a person can answer. `QPw00g-human-gate`
+  has carried "no surface joins the five ticks" as an open ruling since 260819;
+  this is that join. It reads only — it writes nothing and ticks nothing.
+- **Why it is one mechanism and not two modes.** The same artifact serves both
+  readings: in copilot you watch the list shrink and answer as you go; in auto
+  the run does not stop and the list is what you are handed at the end. The
+  alternative — a second rule set for unattended runs — is exactly the shape
+  every defect in the 260821 audit had.
+- **The count was short by one, on every unclosed page.** `ticks_owed` carried
+  four entries while `phase-cards.md` § "The five person-reserved ticks,
+  gathered" has always listed FIVE: the Page Type's RULING was never counted.
+  `sum(ticks_owed.values())` now equals `len(owed_ledger(st))`, verified across
+  144 real pages on two boards, and `tests/test_page_phase_ledger.py` (7 cases)
+  asserts it — a count and a list that disagree are how a person stops trusting
+  both.
+- **Two smaller corrections that fell out of writing the rows.** `accepted:` now
+  counts only DRAWN units, because an undrawn unit owes a render (EVIDENCE's
+  machine work), not a person's act. And a bibtex `verified = {}` reads as OWED,
+  which is what cite-rules R7 says it is — the explicit unverified form — where
+  the old count matched on the field's mere presence.
+- What each row ASKS is quoted from the matching rules file's `🚫 NOT rules`
+  section, so the ledger points at the four rules files rather than restating a
+  rule. The RULING's row says it has no rules file, by design.
+
 ## 0.19.0 — 2026-08-20
 
 - **`ref/measured-cost.md`**: what each phase actually costs, from the 260820

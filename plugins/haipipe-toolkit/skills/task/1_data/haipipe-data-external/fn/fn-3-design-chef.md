@@ -15,7 +15,7 @@ Step 0: Read prerequisite refs
 
   - This skill's `ref/concepts.md` (asset triplet contract)
   - This skill's `ref/asset-catalog.md` (slug + primary-key conventions)
-  - `../haipipe-data-source/ref/concepts.md` (downstream cohort schema
+  - `../../haipipe-data-source/ref/concepts.md` (downstream cohort schema
     that the asset will join into)
 
 ---

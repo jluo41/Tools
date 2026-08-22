@@ -9,9 +9,9 @@ description: >-
   raise a probe card, Task evidence, Discovery evidence, Q-consumer,
   Q-executor, match before dispatch, /haipipe-page-probe.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-20"
-  summary: "The PROBE phase runs the QA branch; PageX is the Probe family's OUTLINE branch."
+  version: "0.11.0"
+  last_updated: "2026-08-21"
+  summary: "A missing task folder is T4, not a HOLD; the receipt reports the tier spread so a starving bank is visible."
 ---
 
 # /haipipe-page-probe · run Probe's Task/Discovery QA branch
@@ -94,67 +94,41 @@ one bullet   → many cards  separate sources are jointly necessary
 A bullet is served only when every card it needs lands. A duplicate card for an
 already-asked unknown is a defect.
 
-## 🧱 Organize and strip
+## 🧱 The crossing itself is `haipipe-probe`'s · this is the page-local delta
 
-Write the stake-bearing need to `consumer/q-consumer.md`. Write an independently
-answerable, neutral question to `executor/q-executor.md`.
+Steps ① ORGANIZE, ② MATCH and ③ DISPATCH are stated ONCE, in
+`probe/haipipe-probe` §🔁: what goes in `consumer/` versus `executor/`, what
+counts as stake, the `task | discovery | none` route table, the `--check-only`
+side door, and how to read a candidate's `state:` line before its answer. Read
+them there.
 
-The executor side contains no Page/claim id, venue pressure, desired answer, or
-phrases such as “our paper” and “we need to show.” The neutral question should
-still name the population, variable, comparison, method, and requested output
-needed for an exact answer.
+⚠️ **Until 260821 this file restated all three**, which is the §🪞 mirror its own
+family forbids — and it had already drifted: a sixth bullet mark, `🔗 PageX`,
+appeared in §🧭 below that `haipipe-plugin-outline` §📐 (the mark authority) has
+never carried. What follows is only what the shared contract does NOT say.
 
-Route by source:
-
-```text
-task        computed, measured, run-bound, or repository-local fact
-discovery   literature, prior art, external fact, or novelty question
-none        neither bank can answer; record concern and HOLD
-```
-
-## 🔎 MATCH before DISPATCH
-
-Match in this order:
+**① the local pass comes first.** `haipipe-probe` §② starts at the bank; on a
+Board Page there is a step in front of it:
 
 ```text
-1. existing probe cards on this Page
-2. selected Task or Discovery bank with its QA verb in --check-only mode
-3. only then create/dispatch new work
+1. existing probe/PP<NN>-<slug>/ cards ON THIS PAGE      ← page-local, step 0
+2. the selected Task or Discovery bank, --check-only     ← haipipe-probe §②
+3. only then dispatch new work                           ← haipipe-probe §③
 ```
 
-Do not insert PageX into this list. Existing Page evidence should already be a
-PageX-bound OUTLINE input; reopening that selection is an OUTLINE decision.
+Do not insert PageX into that list. Existing Page evidence should already be a
+PageX-bound OUTLINE input; reopening that selection is an OUTLINE decision, and
+a topic-similar Page is never a bank answer.
 
-Use the bank's own side door:
+**② one door out, and it is an agent.** Dispatch `executor/q-executor.md` — and
+nothing else — by handing the batch to `haipipe-probe-q-executor-agent`. A phase
+producer never calls `haipipe-task-orchestrator-agent` or
+`haipipe-discovery-orchestrator-agent` itself (JL 260820: 永远只有
+haipipe-probe-q-executor-agent 才能够做这件事). The payload may name card id,
+route, bank verdict and return address; it may never name the consumer stake.
 
-```text
-/haipipe-task qa "<Q-executor>" [<task-folder>] --check-only
-/haipipe-discovery qa "<Q-executor>" [<discovery-folder>] --check-only
-```
-
-Read state before answer:
-
-```text
-answered          reuse exact QA path; EVIDENCE will bind it
-working, live      dispatch nothing; record the active QA path
-superseded-by      follow to the live QA file
-near miss/no hit   DISPATCH
-```
-
-Topic overlap is navigation only. A match passes only when the QA file literally
-answers Q-executor.
-
-## 📮 DISPATCH
-
-Dispatch only `executor/q-executor.md` through the shared probe executor. The
-payload may name card id, route, bank verdict, and return address, but never the
-consumer stake.
-
-The Task or Discovery layer decides whether to digest existing terminal files,
-run code, enrich a topic, or create a correctly scoped folder. PROBE does not
-direct those internals. Its return is an exact QA path or an explicit refusal.
-
-The card may end this phase as:
+**③ the three states this phase may leave behind.** The full ladder is
+`haipipe-plugin-probe` §✍️; these are the only ones PROBE writes:
 
 ```text
 planned         neutral question exists; no dispatch required or authorized yet
@@ -162,8 +136,8 @@ commissioned    matching QA work is active or newly dispatched
 concern         route none or bank refusal prevents an answer
 ```
 
-`answered` and `read` belong to the landing/human half and are not synthesized
-here.
+`answered`, `answered-local` and `read` belong to the landing and human halves
+and are never synthesized here.
 
 ## 🧭 Which marks create cards
 
@@ -173,8 +147,12 @@ here.
 🧮 value      no new card when it already names PP<NN>.v<n>
 🖼 display    no card; EVIDENCE owns the display unit and intake
 🎯 aim        no card; it is an outline target
-🔗 PageX      no card; OUTLINE owns accepted Page selection and scope
 ```
+
+These are the FIVE marks `haipipe-plugin-outline` §📐 defines, and there is no
+sixth. A `🔗 PageX` row stood here until 260821; PageX is a LANE resolved in
+OUTLINE, never a bullet mark, and inventing one is what restating another
+file's table costs.
 
 A Page with no Task/Discovery obligation skips PROBE cleanly.
 
@@ -184,8 +162,14 @@ A Page with no Task/Discovery obligation skips PROBE cleanly.
 every Task/Discovery obligation served and matched/dispatched → EVIDENCE
 wrong source type or wrong obligation                          → OUTLINE vNext
 authorized question still needs outbound work                 → PROBE again
-no allowed bank can answer                                    → HOLD
+no bank can answer IN PRINCIPLE (route: none)                 → HOLD
 ```
+
+⚠️ **A missing task folder is NOT that HOLD.** It is `T4 FRESH` and dispatches
+normally; the executor opens the leaf at depth 3 (`haipipe-probe` §💰 · §③).
+Only a question no executor could ever close — a value judgment, a fact nobody
+holds — reaches `route: none`. Turning "no folder yet" into a HOLD converts a
+missing ANSWER into a refused QUESTION, and only the second one is terminal.
 
 PROBE never routes directly to DRAFT or REVISE. The returned evidence must land
 and flow back through OUTLINE before prose begins.
@@ -198,7 +182,10 @@ Follow `../haipipe-page-workflow/ref/page-run-contract.md` and add:
 phase:       PROBE
 outline:     approved path/version and human LOOK
 marks:       number of Task and Discovery obligations
-cards:       PP id · route · serves · state · dispatch target
+cards:       PP id · route · tier · serves · state · dispatch target
+tiers:       how many cards landed on each of T0-T4 (`haipipe-probe` §💰).
+             Every card at T3/T4 is a smell worth one line: lazy MATCH, or a
+             starving bank (CC-7).
 matches:     local reuse or exact bank QA path; never a PageX candidate
 coverage:    served obligations / total obligations
 limits:      refused, deferred, or source-misclassified work

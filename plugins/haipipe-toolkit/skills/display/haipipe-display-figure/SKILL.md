@@ -16,12 +16,12 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 > **Boundary:** this skill renders **plots only**. For any other display kind
 > (tables, diagrams, AI concept art), see the sibling-routing table in
-> `../../ref/display-unit-output-contract.md`.
+> `../ref/display-unit-output-contract.md`.
 
 ## Output: write into a display unit
 
 The plot goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../../ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `recipe/gen_*.py`
 (+ `recipe/paper_plot_style.py`).
 
@@ -236,7 +236,7 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 The display unit layout (approved values -> `intake/inputs/`, asset -> `assets/figure.pdf`,
 rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) and the no-paper flat
 fallback are the shared contract:
-`../../ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference
 

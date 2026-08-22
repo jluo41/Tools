@@ -1,4 +1,4 @@
-# display-rules · what an agent checks before 🖼 `accepted:`
+# display-rules · what an agent checks before a person's 🖼 `accepted:`
 
 Seeded 260818 from the `display-*` findings `cli/check.py` already emits, plus
 the craft checks nothing was running. A rule here is LOCAL and has a right
@@ -57,7 +57,18 @@ R13  ONE PAGE. A unit whose preview.pdf runs to two pages is a unit whose
      geometry was never set; it prints wrong in every host.
 R14  NO INVENTED VALUE. Every number drawn appears in intake/inputs/. A
      renderer that computes a new number is out of its authority.
+R15  THE AGENT WRITES `checked:`, NEVER `accepted:`. Two fields, two authors,
+     the same split `approve-rules.md` R10 fixes for an outline:
+
+       checked:  ✅ auto <YYMMDD> · display-rules R1-R14 pass   🤖 the agent
+       accepted: ✅ JL <YYMMDD>                                 🧑 the person
+
+     Added 260821. Not promoted from a break: the 260818 two-field ruling was
+     written into `approve-rules.md` alone, so this file and its siblings
+     still named a person's tick as the agent's output field. The producer of
+     a thing never ticks it, and `accepted:` is re-judged every time.
 ```
+
 
 ## 🚫 NOT rules, and never write them here
 

@@ -7,6 +7,7 @@ description: >-
   Narratives. Use when starting a paper, repairing its identity, separating the
   paper from venue framing, or retargeting without rewriting what the study is.
 metadata:
+  version: "0.2.0"
   outline:
     mode: fixed
     source: "this SKILL.md"

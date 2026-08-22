@@ -1,5 +1,9 @@
 # SKILLSET_REVIEW — task/3_end + task/haipipe-task core
 
+
+> ⚠️ **ONE PATH IN THIS REVIEW NO LONGER RESOLVES** (`../_WorkSpace`). Banner
+> added 260822 during a toolkit-wide sweep, without re-diagnosing.
+
 Date: 2026-07-08 · Reviewer: haipipe-skill-diagnose (6 parallel auditors, all trust-gated) · Scope: 16 skills / ~88 files (3_end's 15 skills + LESSON.md; haipipe-task SKILL+fn/+ref/), every file read line by line.
 
 STATUS: ✅ FIXED 2026-07-08 under JL's standing go ("yes, please go ahead and fix them").

@@ -7,6 +7,7 @@ description: >-
   and hands a verified venue contract to Narrative and Section Pages. Use when
   researching, creating, refreshing, comparing, or checking a venue Page.
 metadata:
+  version: "0.2.0"
   outline:
     mode: fixed
     source: "this SKILL.md"

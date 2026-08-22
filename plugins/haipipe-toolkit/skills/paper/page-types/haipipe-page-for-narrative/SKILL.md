@@ -7,6 +7,7 @@ description: >-
   designing or retargeting a paper story, deciding claim roles, repairing the
   section map, or giving Section Pages executable handoffs.
 metadata:
+  version: "0.3.0"
   outline:
     mode: grammar
     source: "this SKILL.md"

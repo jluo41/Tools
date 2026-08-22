@@ -1,5 +1,19 @@
 # SKILLSET_REVIEW — 0_connect bucket
 
+
+> ⚠️ **SCOPE IS STALE — read this before working the list below.** Written
+> 2026-07-05 against three skills; `food-to-description` has since LEFT this
+> bucket. It moved to `Tools/plugins/haipipe-utils/skills/describe-food/`, was
+> renamed `describe-food`, and now sits beside `describe-exercise` under the
+> `haipipe-norm` contract. At least three findings below were closed by that
+> move and are not re-verified here: **E1** (missing CHANGELOG machinery — it
+> ships `CHANGELOG.md` now), **C1** (documented entry point crashed on import —
+> `pipeline.py` was rewritten to a thin wrapper for exactly that), and **A4**
+> (example dataset path). **A3** (hardcoded USDA_DB absolute path) still needs
+> checking against the new `foodnorm/constants.py`. The bucket itself now holds
+> two skills, not three. Banner added 260822 during a toolkit-wide sweep; the
+> findings are left as written because re-diagnosing them is the owner's call.
+
 Reviewed: 2026-07-05 · Scope: `Tools/plugins/haipipe-toolkit/skills/0_connect/` (3 skills, 23 files: food-to-description, meal-cam-logger, whoop-connect) · Reviewer: haipipe-skill-diagnose
 Status: DIAGNOSED, awaiting user eyeball before any fix (改前必报).
 

@@ -13,7 +13,7 @@ Step 0: Read prerequisite refs
   - `ref/concepts.md`
   - `ref/join-contract.md`     (mechanics + match-rate calc)
   - `ref/asset-catalog.md`     (asset's primary key + common cohort cols)
-  - `../haipipe-data-source/ref/concepts.md`   (target SourceSet shape)
+  - `../../haipipe-data-source/ref/concepts.md`   (target SourceSet shape)
 
 ---
 

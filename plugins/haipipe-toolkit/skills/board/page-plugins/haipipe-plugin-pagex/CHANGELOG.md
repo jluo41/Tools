@@ -1,5 +1,14 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.6.0 — 2026-08-20
+
+- **0.5.0 and 0.6.0 shipped in SKILL.md with no entry here**, both in the 260819
+  phase-agent split (`3aaeba4f`) and its 260820 follow-up. Reconstructed from the
+  frontmatter each version left behind rather than re-authored: PageX became
+  Probe's ACCEPTED-PAGE lane, selected and bound during OUTLINE, beside the QA
+  lane that runs at PROBE/EVIDENCE. Recorded 260822 while closing a
+  version-vs-changelog sweep; the per-change detail is in the git log, not here.
+
 ## 0.4.0 · 2026-08-17
 
 Documents PageX as PROBE's cross-page MATCH surface: it is a ranked live reuse

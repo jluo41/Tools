@@ -1,3 +1,17 @@
+## 2026-08-21 · the owed-tick ledger
+
+`src/page_phase.py` gains `owed_ledger()` and `render_ledger()`;
+`cli/pagephase.py` gains `--owed`. Full rationale in
+`../page-workflows/haipipe-page-workflow/CHANGELOG.md` 0.20.0.
+
+- `_cards()` and `_displays()` now carry `path` and `checked`; a new `_bibex()`
+  returns one row per ENTRY where only a count existed before.
+- `ticks_owed` gains `ruling` — the fifth tick, uncounted until today, so every
+  ✋ this module printed was short by one on every unclosed page.
+- `accepted` counts only drawn units; a bibtex `verified = {}` counts as owed
+  (cite-rules R7).
+- `tests/test_page_phase_ledger.py`, 7 cases, asserts count == len(ledger).
+
 ## 0.142.1 — 2026-08-21
 
 - **`## Log` row length**: the sync table now points at `haipipe-page-draft

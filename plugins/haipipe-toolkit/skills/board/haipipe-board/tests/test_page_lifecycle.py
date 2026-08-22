@@ -512,6 +512,57 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIn("current = route", self.script)
         self.assertNotIn("DRAFT → PROBE → REVISE → CHECK", self.script)
 
+    def test_mode_is_copilot_or_auto_and_defaults_to_the_safe_one(self):
+        """`mode` is ONE rule set read two ways (260821). Saying nothing must
+        give the reading that waits, never the one that proceeds."""
+        self.assertIn("const mode = String(parsed.mode || 'copilot').toLowerCase()",
+                      self.script)
+        self.assertIn("if (!['copilot', 'auto'].includes(mode)) {", self.script)
+        # A rejected value BLOCKS; it never silently falls back to a default.
+        m = re.search(r"includes\(mode\)\) \{(.*?)\n\}", self.script, re.S)
+        self.assertIsNotNone(m)
+        self.assertIn("status: 'blocked'", m.group(1))
+
+    def test_auto_hardens_the_one_gate_it_may_never_waive(self):
+        """Auto defers the four ticks that HAVE a rules file and hardens the
+        RULING, which has none by design. A run nobody watched is exactly the
+        run that must not certify itself."""
+        self.assertIn("const humanGate = (mode === 'auto' && !declaredGate.required)",
+                      self.script)
+        self.assertIn("required: true", self.script)
+        # And it is written BACK, or src.page_lifecycle's own invariant below
+        # fails on every receipt the run writes.
+        self.assertIn("parsed.human_gate = humanGate", self.script)
+
+    def test_the_hardened_gate_satisfies_the_auditors_packet_invariant(self):
+        """audit_run asserts receipt.human_gate.required == packet's. The
+        write-back is what keeps an auto run auditable; without it every
+        receipt fails on its own run."""
+        src = (HERE / "src/page_lifecycle.py").read_text(encoding="utf-8")
+        self.assertIn("receipt human_gate.required must match the raw-material packet",
+                      src)
+        js = self.script
+        self.assertLess(js.index("parsed.human_gate = humanGate"),
+                        js.index("for (let step = 1; step <= maxSteps; step++)"),
+                        "the write-back must happen before any receipt is built")
+
+    def test_both_the_producer_and_the_judge_are_told_the_mode(self):
+        """Neither can infer it, and both decide whether an unticked gate is a
+        HOLD."""
+        self.assertIn("MODE: auto", self.script)
+        self.assertIn("MODE: copilot", self.script)
+        self.assertIn("Mode: ${mode}", self.script)
+
+    def test_every_run_result_carries_the_mode_it_ran_in(self):
+        """A stored receipt read without its mode cannot be judged: the same
+        HOLD means 'waiting for you' in one reading and 'done, one act left'
+        in the other."""
+        returns = re.findall(r"return \{ status: [^}]*run_id: runId[^}]*\}", self.script)
+        self.assertTrue(returns, "no run-result returns found")
+        for r in returns:
+            with self.subTest(r=r[:60]):
+                self.assertIn("mode,", r)
+
     def test_mechanical_error_repair_routes_are_legal_from_every_phase(self):
         match = re.search(
             r"const MECHANICAL_REPAIR_ROUTE = \{(.*?)\n\}", self.script, re.S

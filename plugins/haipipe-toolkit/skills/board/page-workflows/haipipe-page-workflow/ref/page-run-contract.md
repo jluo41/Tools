@@ -21,6 +21,7 @@ start_phase: CHECK             # OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE |
                                # CHECK; COMPILE parses for legacy receipts only
                                # (⑥ folded into REVISE 260819)
 intent: audit and improve the automatic Page loop
+mode: copilot                  # copilot (default) | auto — see § below
 sources:                       # exact files the run may rely on
   - /absolute/path/to/source.md
 related_context:               # derived from this Page's Files for start_phase
@@ -30,14 +31,58 @@ related_context:               # derived from this Page's Files for start_phase
 constraints:                   # settled rulings that no phase may reopen silently
   - Page is not a configuration
 human_gate:
-  required: false
-  rule: all Aims met or explicitly held
+  required: false              # ⚠️ mode: auto HARDENS this to true and writes it
+  rule: all Aims met or explicitly held   #    back into the packet, see § below
 limits:
   max_steps: 12
   max_rounds: 3
 ```
 
 Required fields are `run_id`, `board`, `page`, `start_phase`, and `intent`.
+`mode` defaults to `copilot`; any value but `copilot` or `auto` blocks the run.
+
+## 🔀 `mode` · copilot and auto are ONE rule set read two ways (260821)
+
+The five person-reserved ticks are identical in both modes, and no machine writes
+one in either. What changes is what happens while a tick is UNANSWERED:
+
+```text
+  🧑 copilot   the human half BLOCKS.  A person is here; an unticked gate is a
+               legitimate HOLD, and the receipt names which tick and which file.
+  🤖 auto      the human half DEFERS.  The loop keeps moving on the machine half
+               (`checked:`, agents/approve-rules/) and the debt accumulates on
+               the ledger, handed over once at the end instead of interrupting
+               five times.  `cli/pagephase.py <page-dir> --owed`
+```
+
+This is JL's 260818 ruling made executable — *"human not to approve, they to
+break"*: the RUN proceeds on `checked: ✅` alone, and a plan nobody objected to is
+not blocked. A person's 🛑 still outranks everything and still stops the run in
+either mode.
+
+**AUTO DEFERS FOUR TICKS AND HARDENS THE FIFTH.** `approved:` `verified` `read:`
+and `accepted:` each have a rules file under `agents/approve-rules/`, so an
+approver can establish everything around them. The Page Type's RULING has NONE,
+on purpose — deciding a page's own question is the point of the page — so it is
+the one act auto may never waive:
+
+```text
+  mode: auto  ⇒  human_gate.required is forced TRUE, whatever the packet said
+              ⇒  and written BACK into the packet, because the deterministic
+                 auditor (src/page_lifecycle.py) asserts that every receipt's
+                 human_gate.required equals the packet's. A hardened gate the
+                 echoed packet did not know about fails the audit on its own
+                 receipt — the same class of bug the `page` normalization above
+                 was written to prevent.
+```
+
+So an auto run's terminal state is a HOLD **by design, not by failure**: it
+reaches CHECK, everything mechanical passes, and it stops at exactly ONE gate
+instead of five. Its `reason` says so in those words, because a person who reads
+a clean auto run as a broken one will go back to attending every step.
+
+`mode` is echoed on every run result, so a stored receipt can never be read
+without knowing which reading of the ticks produced it.
 The caller resolves the stable Page Type before dispatch. A missing source,
 unknown gate, or ambiguous authority is a named HOLD, never a guessed input.
 

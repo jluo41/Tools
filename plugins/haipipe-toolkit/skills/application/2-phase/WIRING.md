@@ -1,7 +1,7 @@
 2-phase — wiring (application)
 ===============================
 
-How the `haipipe` plugin discovers and exposes the application phase workers, and how they get invoked at runtime (thin mirror of `../../paper/2-phase/WIRING.md`).
+How the `haipipe` plugin discovers and exposes the application phase workers, and how they get invoked at runtime (it was written as a thin mirror of `paper/2-phase/WIRING.md`, which no longer exists — paper reorganized and this file is now the only one of the pair).
 
 Discovery model (convention-based)
 -----------------------------------

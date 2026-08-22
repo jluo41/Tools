@@ -22,5 +22,5 @@ When a QA answer carries a number, a citation, or a display unit the interventio
   stage (a request row); do not invent an artifact here.
 
 Rationale: ./CHANGELOG.md. `probe` keeps the
-optional harvest-lane fields for other families (`../../../../probe/haipipe-probe/SKILL.md`);
+optional harvest-lane fields for other families (`../../../../../probe/haipipe-probe/SKILL.md`);
 the application family does not use them.

@@ -3,9 +3,9 @@ name: haipipe-page-workflow
 description: >-
   The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under the Board's _runs/page/ folder, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
 metadata:
-  version: "0.19.0"
-  last_updated: "2026-08-20"
-  summary: "The phase strip, in both forms: cli/pagephase.py in full and status.py's fourth row, one shared computation (JL 260820)."
+  version: "0.21.0"
+  last_updated: "2026-08-21"
+  summary: "mode: copilot | auto — one rule set read two ways; auto defers four ticks onto the --owed ledger and hardens the fifth."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -155,6 +155,25 @@ loop decides what is true; ④ onward is execution against a plan already agreed
 controller that halts between DRAFT and CHECK for a human is halting in the wrong
 place.
 
+**"if we want" is a MODE, and since 260821 the packet carries it.** `mode:
+copilot | auto` — one rule set, two readings, never two rule sets:
+
+```text
+  🧑 copilot   the human half BLOCKS       a person is here; wait for them
+  🤖 auto      the human half DEFERS       the loop moves on the machine half
+                                           (`checked:`) and the debt lands on
+                                           the ledger, `--owed`, once at the end
+```
+
+**Auto defers FOUR ticks and HARDENS the fifth.** `approved:` `verified` `read:`
+`accepted:` each have a rules file, so an approver can establish everything around
+them. The Page Type's RULING has none, on purpose, so auto forces
+`human_gate.required` TRUE whatever the packet said — a run nobody watched is
+exactly the run that must not certify itself. Its terminal HOLD is therefore the
+DESIGN: end to end, everything mechanical passing, stopped at ONE gate instead of
+five. `ref/page-run-contract.md` §🔀 has the field and the audit invariant behind
+the write-back.
+
 Every step reports its `phase:` to whoever is watching, not only into the receipt:
 work that does not name its phase cannot be routed or audited.
 
@@ -164,6 +183,7 @@ from DISK plus the newest receipt, never from what a page says about itself:
 
 ```bash
 python3 <haipipe-board>/cli/pagephase.py <page-dir>        # --md to paste on a page
+python3 <haipipe-board>/cli/pagephase.py <page-dir> --owed # the LEDGER, see §✋
 ```
 
 ```text
@@ -175,6 +195,33 @@ python3 <haipipe-board>/cli/pagephase.py <page-dir>        # --md to paste on a 
 ⬜ ⑦ CHECK     last receipt: OUTLINE → HOLD (round 1)
 → now: ③ EVIDENCE · ✋ human ticks still owed: 25
 ```
+
+**✋ is a COUNT; `--owed` is the LEDGER, and that is the copilot/auto join.**
+A count says there is a debt. It never says where to spend the one act that is a
+person's, which is why `QPw00g-human-gate` carries "no surface joins the five
+ticks" as an open ruling. `--owed` is that join: one row per owed tick, each
+carrying the approver's `checked:` beside the question only a person can answer.
+
+```text
+ 1. 🧑 approved  outline/QB3-diet-outline-v3.md
+      v3
+      🤖 not checked yet · approve-rules.md has never run here
+      ❓ is this the DIRECTION I want, and is this round worth doing now?
+```
+
+One artifact, two readings, and this is what makes the two modes ONE mechanism
+rather than two rule sets that drift:
+
+```text
+  🧑 copilot   you watch the list shrink and answer as you go
+  🤖 auto      the run does not stop; the list is what you are handed at the end
+```
+
+⚠️ **The count was short by one until 260821.** `ticks_owed` carried four ticks
+and phase-cards.md has always listed FIVE — the Page Type's RULING was never
+counted, so every ✋ on every unclosed page under-reported. `sum(ticks_owed)` now
+equals `len(owed_ledger())`, and `tests/test_page_phase_ledger.py` asserts it,
+because a count and a list that disagree are how a person stops trusting both.
 
 ⚠️ The `→ now` row is the first phase whose exit test FAILS, in loop order: a
 REPORT, never a routing. Which phase runs next stays with the authority test

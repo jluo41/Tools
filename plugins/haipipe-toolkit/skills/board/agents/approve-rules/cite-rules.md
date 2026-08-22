@@ -1,4 +1,4 @@
-# cite-rules · what an agent checks before 📚 `verified`
+# cite-rules · what an agent checks before a person's 📚 `verified`
 
 Seeded 260818. The binding law comes first, because it is the one this file
 may never relax.
@@ -34,6 +34,20 @@ R6  THE CITATION SUPPORTS THE SENTENCE IT SITS IN. The cited work's abstract
 R7  UNVERIFIED IS EXPLICIT. An entry with no `verified` field carries
     `verified = {}`, so a count can say "3 of 7 still unverified" instead of
     reading absence as either state.
+R8  THE AGENT WRITES `checked`, NEVER `verified`. Two fields, two authors,
+    the same split `approve-rules.md` R10 fixes for an outline. A bibtex
+    entry has no `key: value`, so the field's host syntax wins:
+
+    ```text
+    checked  = {auto <YYMMDD>}   R1-R7 pass    🤖 the agent
+    verified = {JL <YYMMDD>}                   🧑 the person
+    ```
+
+    Added 260821. Not promoted from a break: the 260818 two-field ruling was
+    written into `approve-rules.md` alone, so this file still named a person's
+    tick as the agent's output field. R7's `verified = {}` stays exactly as
+    written — an empty brace is the ABSENCE of the person's tick, and an agent
+    may neither fill it nor remove it.
 ```
 
 ## 🚫 NOT rules

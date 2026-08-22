@@ -153,8 +153,9 @@ candidates/ · versions/</pre>
 
 _GHOST_EVIDENCE = """<div class="card ghost"><b>PP01-&lt;slug&gt;/card.md</b>
 <pre>question    in the page's own words, stake included
-state:      raised → working → bound
-binding:    → &lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</pre>
+state:      planned → commissioned → answered → read
+bank:       reuse | run | code | new
+target:     &lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</pre>
 <div class="mut">nothing asked yet · this is the card shape the contract expects (QPf9 §1)</div></div>"""
 
 # The protocol's own ladder (haipipe-probe, via haipipe-plugin-probe 0.7.0),

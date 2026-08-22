@@ -14,12 +14,20 @@ from .common import ALIAS, PAGENAME
 from .parse import parse_dir
 
 
-# PROBE was renamed EVIDENCE on 260816. A row keeps parsing under either token
-# and both resolve to the same phase, because these rows live in hand-written
-# board pages across every project: a checker that turned a working row into an
-# error on the day of a rename would be reporting the rename, not a defect.
-PHASE_ALIASES = {"PROBE": "EVIDENCE"}
-PHASES = ("DRAFT", "EVIDENCE", "REVISE", "CHECK")
+# EVERY phase the lifecycle can dispatch, because haipipe-page-workflow SKILL.md
+# §🔁 step 1 requires a context packet before EACH phase dispatch and this module
+# could serve only four of the seven: `--phase OUTLINE` errored outright, and
+# `--phase PROBE` silently returned EVIDENCE's scope (fixed 260821).
+#
+# PROBE had been an ALIAS of EVIDENCE since the 260816 rename. The 260817 split
+# made them two phases with two different authorities, and the alias outlived it
+# by four days. Retiring it renames nothing: every `· PROBE ·` row in the repo
+# lives in template, snapshot or _archive text, and none in a live board page.
+#
+# PHASE_ALIASES stays as the mechanism, empty. The next rename adds one row here
+# rather than a second hard-coded token list further down.
+PHASE_ALIASES = {}
+PHASES = ("OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK")
 ROW_PHASES = PHASES + ("ALL",)
 READABLE_ROW_PHASES = ROW_PHASES + tuple(PHASE_ALIASES)
 RELATIONS = ("reads", "constrained by", "continues", "contrasts")
@@ -29,7 +37,7 @@ RELATED_HEADING_RE = re.compile(
 )
 RELATED_ROW_RE = re.compile(
     r"^\s*[-*]\s+`(?P<relation>reads|constrained by|continues|contrasts)"
-    r"\s+·\s+(?P<phase>DRAFT|EVIDENCE|PROBE|REVISE|CHECK|ALL)`\s+·\s+"
+    r"\s+·\s+(?P<phase>" + "|".join(READABLE_ROW_PHASES) + r")`\s+·\s+"
     r"\[(?P<page_id>[A-Za-z][A-Za-z0-9-]*)\s+"
     r"(?P<scope>page|§\d+(?:\.\d+)*)\]"
     r"\((?P<path>[^)\s]+)\)\s*$"

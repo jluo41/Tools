@@ -258,6 +258,18 @@ the RULING       the Page Type's declared gate     haipipe-page-check       ⑦
 Two of them REVERT when their inputs change: `read:` and `accepted:`. The other
 three stand until a person moves them.
 
+**Which of the five this page still owes, right now**, one row each with the
+approver's machine half beside it:
+
+```bash
+python3 <haipipe-board>/cli/pagephase.py <page-dir> --owed
+```
+
+Four of the five have a rules file under `agents/approve-rules/`, so an approver
+can establish everything AROUND the judgment and write `checked:` (R10). The
+RULING has none, on purpose — deciding a page's own question is the point of the
+page — and the ledger says so on its row rather than inventing a check.
+
 **The board page that argues this file** is `QPw00-page-loop` on
 `BoardSkillBoard-260722`. Each phase's own page (`QPw1` … `QPw6`, plus the three lane faces `QPw4c` ·
 `QPw4v` · `QPw4d`) carries what its contract leaves open. The run's three

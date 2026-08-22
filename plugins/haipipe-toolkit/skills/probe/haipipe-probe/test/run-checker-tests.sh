@@ -23,7 +23,11 @@
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 skills=$(cd "$here/../../.." && pwd)
-paper_chk="$skills/paper/haipipe-paper/probe/check-probe-cards.sh"
+# The paper-side checker was retired into paper/_old/stage-runtime-260820/ when
+# the stage runtime went; the surviving checker for THIS fixture shape (the flat
+# pool, `## QX<n>` entries carrying `### q-executor`) is the application family's.
+# Repointed 260822 — the old path had made this whole harness unrunnable.
+paper_chk="$skills/application/2-phase/1-evidence/haipipe-application-evidence/check-probe-cards.sh"
 fx="$here/fixture/proj/papers/Paper-Fx"
 out=""
 [ "${1:-}" = "--save" ] && { out=${2:?--save needs a dir}; mkdir -p "$out"; }

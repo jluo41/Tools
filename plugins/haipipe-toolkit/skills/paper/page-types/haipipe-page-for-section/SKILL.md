@@ -6,6 +6,7 @@ description: >-
   and binds prose to Page-local values, citations, probes, and displays. Use when
   outlining, drafting, revising, checking, or retargeting one paper section.
 metadata:
+  version: "0.1.1"
   outline:
     mode: resolved
     source: "paper/venue/**/template.md"

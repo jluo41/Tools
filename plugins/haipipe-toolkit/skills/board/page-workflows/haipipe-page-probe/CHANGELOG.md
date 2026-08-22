@@ -1,3 +1,39 @@
+## 0.11.0 — 2026-08-21
+
+- **A missing task folder stopped being a HOLD.** §🔀's `no allowed bank can
+  answer → HOLD` read as "no folder exists", so a perfectly answerable question
+  could stall the page. It now reads `no bank can answer IN PRINCIPLE (route:
+  none)`, with the distinction stated beside it: a missing folder is `T4 FRESH`,
+  it dispatches normally, and the executor opens the leaf at depth 3. The rule
+  lives in `haipipe-probe` §💰 · §③ (R13/R15, restored there 260821); this file
+  carries only the routing consequence.
+- **The receipt reports the TIER SPREAD.** `cards:` gains `tier`, and a new
+  `tiers:` row counts how many landed on each of T0-T4. Per CC-7 most should be
+  T2; an all-T3/T4 page is a lazy MATCH or a starving bank, and the receipt is
+  where that becomes visible instead of just expensive.
+
+## 0.10.0 — 2026-08-21
+
+- **Three mirrored sections deleted.** §🧱 Organize and strip, §🔎 MATCH before
+  DISPATCH and §📮 DISPATCH restated `haipipe-probe` §①②③ near-verbatim — the same
+  `--check-only` block, the same `task | discovery | none` table, the same "our
+  paper" / "we need to show" phrase list. That is the §🪞 mirror this family
+  forbids, and it had already drifted (see below). One §🧱 replaces all three and
+  carries only what the shared contract does NOT say: the page-local card pass in
+  front of the bank pass, the one-door dispatch rule, and the three states PROBE
+  may leave behind. 7.6 KB → 4.4 KB of body.
+- **`🔗 PageX` removed from §🧭.** The mark authority is `haipipe-plugin-outline`
+  §📐 and it defines FIVE marks (🎯 📮 🧮 📚 🖼). This file had a sixth. PageX is
+  a LANE resolved in OUTLINE, never a bullet mark — the drift a restated table
+  produces, caught in the 260821 skills audit.
+- **The one-door rule is now stated here.** `haipipe-probe` 0.14.0 recorded JL's
+  260820 ruling that only `haipipe-probe-q-executor-agent` may cross to the
+  banks; §📮 still said "the shared probe executor" without naming it. §🧱 ② now
+  names the agent and names what a phase producer may never call directly.
+- ⚠️ **Changelog gap.** This file jumped 0.7.0 → 0.10.0: SKILL.md shipped 0.8.0
+  and 0.9.0 with no entry here. Their content is in the git log, not in this
+  file, and is not reconstructed.
+
 ## 0.7.0 — 2026-08-20
 
 - **The dispatch names its agent** (JL ruling A, 260820): PROBE crosses to the

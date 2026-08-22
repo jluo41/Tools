@@ -3,7 +3,7 @@ Per-stage dispatch reference (haipipe-application-evidence)
 
 Loaded on demand from SKILL.md.
 Which rung runs which lanes, seed/claims specifics, venue-scaled lane rules, and phase-status strip forms.
-The MODEL — the five-step loop, the cost ladder, the states — belongs to `probe` (`../../../../probe/haipipe-probe/SKILL.md`); this file is the application-side per-rung detail.
+The MODEL — the five-step loop, the cost ladder, the states — belongs to `probe` (`../../../../../probe/haipipe-probe/SKILL.md`); this file is the application-side per-rung detail.
 
 Where a dispatched question goes
 ---------------------------------

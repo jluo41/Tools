@@ -17,7 +17,7 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 ## Output: write into a display unit
 
 The diagram goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../../ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
 rasterize/convert for LaTeX); rebuild spec -> `recipe/<name>.json` (the FigureSpec).
 
@@ -228,13 +228,13 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 ## Output Contract
 
 Write into the display unit per the shared contract
-(`../../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
+(`../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
 editable SVG in `assets/figure.svg` -> optional PDF in `assets/figure.pdf`.
 
 ## Integration with Other Skills
 
 Sibling display renderers and when to use each: see the sibling-routing table in the
-contract (`../../ref/display-unit-output-contract.md`).
+contract (`../ref/display-unit-output-contract.md`).
 `/mermaid-diagram` is a lighter alternative for simple flowcharts; in the ARIS
 `/paper-writing` Workflow 3, this skill handles Phase 2b when `illustration: figurespec`.
 

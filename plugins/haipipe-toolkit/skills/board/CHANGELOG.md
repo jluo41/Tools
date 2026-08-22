@@ -4,6 +4,61 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-08-21 — skills audit sweep · rulings that never left the file they landed in
+
+A full read of `board/` + `probe/` (30 SKILL.md, 4 rules files, 6 phase agents,
+the controller, the roster, the checkers). Every serious defect had the same
+shape: a decision made once, written into ONE file, and never propagated. Fixed
+in this sweep, worst first:
+
+- **The 260818 two-field tick split reached one file out of four.** `checked:`
+  existed only in `approve-rules.md` R10, while `approve-rules/README.md` — the
+  section the approver is told to read for the grammar — still gave the retired
+  single-field shape, and the agent's own `description:` still promised
+  `approved:` / `verified` / `read:` / `accepted:`. Dispatching it would have
+  written a person's tick. Rules files, README and agent (0.3.0) now agree.
+- **`value-rules.md` R6 failed legal cards**: four states named against the
+  plugin's eight, so any `deferred`, `failed`, `concern` or `answered-local` card
+  failed on its first run.
+- **`cli/pagecontext.py` could serve four of seven phases.** `--phase OUTLINE`
+  errored and `--phase PROBE` silently returned EVIDENCE's scope, because a
+  260816 rename alias outlived the 260817 split that made them different
+  authorities — while the workflow contract requires that call before EVERY
+  phase dispatch. `src/page_context.py` now carries all seven, the alias map is
+  empty rather than wrong, and the row regex is derived from the constant it had
+  drifted from.
+- **Three files told a cold agent to read a page-type deleted on 260819.** The
+  reviewer and creator agents pointed at `haipipe-page-for-skill/SKILL.md` and
+  `haipipe-plugin-meeting` at `haipipe-page-for-meeting/SKILL.md`. The skill
+  page's inverted Opening rule survives in `cli/skillpage.py` and `cli/check.py`,
+  which is where they point now.
+- **`board/README.md` was three rulings behind**: "six Page Types" (twelve ship),
+  "the FIVE variants this skill set owns" naming four of which three were
+  deleted, and `page-workflows/` as four members when six ship. Also gained the
+  approver bullet, the `approve-rules/` tree, and a note that skill-name
+  uniqueness rests entirely on `install.sh` pruning `_archive/`.
+- **`haipipe-page-probe` restated `haipipe-probe` §①②③ near-verbatim** and had
+  already grown a sixth bullet mark (`🔗 PageX`) that the mark authority never
+  carried. Three mirrored sections → one delta section (0.10.0).
+- **`haipipe-probe` did not implement its own newest ruling**: 0.14.0 recorded
+  "only `haipipe-probe-q-executor-agent` may cross" and §③ still described a
+  direct bank call, never naming the agent (0.17.0). Its `state:` list was also
+  short by `answered-local`, the word `haipipe-plugin-probe` claims to borrow
+  from it.
+- **`ref/roster.md`** had no `outline/` row while `<page>/outline/` had been real
+  storage since 260817 — against the file's own opening law — and its `probe/`
+  row carried three retired words (`raised→working→bound`, `binding:`).
+  `live/plugview.py`'s empty-state panel taught the same retired ladder.
+
+Not fixed, reported only: `measured-cost.md` §OUTLINE (fast path, main session)
+still contradicts `haipipe-page-workflow` §🧭 (an in-thread outline edit leaves
+no receipt) inside one skill folder; `phase-cards.md` still calls `approved:` a
+blocking exit; the controller's `LEGAL.OUTLINE` allows an OUTLINE→DRAFT edge no
+contract names; `probe/haipipe-probe/test/run-checker-tests.sh` points at a
+script that no longer exists. Three `haipipe-board` tests fail at HEAD, unchanged
+by this sweep (`test_aims_state`, `test_home`, `test_status`).
+
+
 ## 2026-08-15 · The display plugin gets its skill; the roster catches up
 
 `page-plugins/haipipe-plugin-display/` joins draw, latex, and word (JL 260815:

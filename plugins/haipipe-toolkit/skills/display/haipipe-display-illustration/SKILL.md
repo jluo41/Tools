@@ -18,7 +18,7 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 ## Output: write into a display unit
 
 Output goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../../ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `recipe/prompt.md`
 (final prompt + bridge job + score) + `recipe/review_log.json`; finalize with
 `--display-unit <unit-dir>` (Step 7).
@@ -132,7 +132,7 @@ Aim for the balance point: neither overly conservative nor flashy.
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../../ref/display-unit-output-contract.md`.
+**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../ref/display-unit-output-contract.md`.
 
 ## Workflow: MUST EXECUTE ALL STEPS
 
@@ -271,7 +271,7 @@ Keep refinement feedback concrete:
 
 When accepted, finalize INTO THE DISPLAY UNIT (the contract path; see the "Output:
 write into a display unit" section above and
-`../../ref/display-unit-output-contract.md`). Pass
+`../ref/display-unit-output-contract.md`). Pass
 `--display-unit <displays/displayNN-slug>` so the helper writes
 `assets/figure.png` + `float.tex` (only from the caller-approved caption + label + placement, never
 invented or changed) + `recipe/review_log.json`,
@@ -327,4 +327,4 @@ python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
 
 The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `recipe/prompt.md`
 + `recipe/review_log.json` + `recipe/verify.json`) and the no-paper flat fallback are
-the shared contract: `../../ref/display-unit-output-contract.md`.
+the shared contract: `../ref/display-unit-output-contract.md`.

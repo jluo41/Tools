@@ -5,6 +5,37 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [6.1.0] — 2026-08-21 — THE COST LADDER IS BACK IN THE CONSTITUTION
+
+R13 and R15 of the 260714 ruling (v3, R1-R18, approved by JL) were dropped from
+`haipipe-probe/SKILL.md`'s body in the 260819 phase-agent split and survived only
+in changelogs. The spec folder `diagram/260714-probe-qa/` is gone from disk, so
+the restored text is recovered from git (`ca6b48ea`), not re-authored.
+
+```text
+  R13 COST LADDER · consumer side, chosen at ② MATCH by READING
+     T0 JOIN   ~0    T1 LOCAL  ~0    T2 REUSE  1 grep + 1 read
+     T3 ENRICH agent T4 FRESH  agent        ⇒ only T3/T4 summon an agent
+     CC-7 · most entries should land on T2; all-T3/T4 = lazy MATCH or thin bank
+
+  R15 ENRICH DEPTH · executor side, and the probe never learns which rung ran
+     d0 READ · d1 NEW RUN · d2 NEW SCRIPT · d3 NEW LEAF
+     shallowest that answers it; d2-vs-d3 test is THIS leaf's plan.yaml IPO
+```
+
+The consequence that unblocks a stalled page: **a missing task folder is T4/d3,
+not a refusal.** `route: none` means no bank can answer IN PRINCIPLE. Reaching
+for it because the bank looks empty converts a missing ANSWER into a refused
+QUESTION, and only the second is terminal.
+
+Propagated: `haipipe-page-probe` 0.11.0 (the HOLD line, plus a tier spread in the
+receipt) and `haipipe-plugin-probe` 0.9.2 (its `bank:` verdict named as the tier
+it always was — reuse=T2, run/code=T3, new=T4; no field added, no value renamed).
+
+Still owed from the same ruleset: **R17 two session modes** and **R18 two
+explorers**. R17 is the larger lever on token cost — a bank that grows on its own
+and does answerability work is what puts most questions on T2.
+
 ## [6.0.0] — 2026-07-14 — THE PROBE BECOMES A PAPER-LEVEL Q/A MAP; the gateway is retired
 
 Ruling: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 — APPROVED by JL 2026-07-14, R1–R18. That document is the

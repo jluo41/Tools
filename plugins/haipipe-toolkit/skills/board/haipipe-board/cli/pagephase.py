@@ -13,6 +13,15 @@ fourth row; this file only prints it. Never writes.
     python3 pagephase.py PAGE_DIR           the strip
     python3 pagephase.py PAGE_DIR --md      fenced, for pasting on a page
     python3 pagephase.py PAGE_DIR --row     the one-row form status.py prints
+    python3 pagephase.py PAGE_DIR --owed    the LEDGER: every human tick still
+                                            owed, one row each, with the
+                                            approver's `checked:` beside it
+
+The strip has always printed the owed COUNT. A count says there is a debt; it
+never says where to spend the one act that is a person's. `--owed` is the LIST,
+and it is the surface `QPw00g-human-gate` records as missing ("no surface joins
+the five ticks"). It is what makes one artifact serve both modes: in copilot you
+watch it shrink, in auto you are handed it at the end.
 
 ⚠️ The `→ now` row is the first phase whose exit test FAILS, read in loop
 order. That is a REPORT, not a routing: which phase actually runs next is
@@ -25,7 +34,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.page_phase import EMOJI, LABEL, MARK, compact, phase_state  # noqa: E402
+from src.page_phase import (  # noqa: E402
+    EMOJI, LABEL, MARK, compact, phase_state, render_ledger)
 
 
 def main():
@@ -34,6 +44,8 @@ def main():
     ap.add_argument("page", type=Path)
     ap.add_argument("--md", action="store_true", help="emit a fenced block")
     ap.add_argument("--row", action="store_true", help="the one-row form only")
+    ap.add_argument("--owed", action="store_true",
+                    help="the ledger: every human tick still owed, one row each")
     a = ap.parse_args()
 
     pd = a.page.resolve()
@@ -45,6 +57,14 @@ def main():
 
     if a.row:
         print(compact(st))
+        return 0
+
+    if a.owed:
+        if a.md:
+            print("```text")
+        print("\n".join(render_ledger(st)))
+        if a.md:
+            print("```")
         return 0
 
     m, o, tk = st["states"], st["outline"], st["ticks_owed"]
@@ -79,7 +99,9 @@ def main():
                 if last else "none"))
     L.append(f"→ now: {st['now']} · ✋ human ticks still owed: {sum(tk.values())}"
              f" (read:{tk['read']} verified:{tk['verified']} accepted:{tk['accepted']}"
-             f"{'' if not tk['approved'] else ' approved:1'})")
+             f"{'' if not tk['approved'] else ' approved:1'}"
+             f"{'' if not tk['ruling'] else ' ruling:1'})"
+             + ("  — see them: --owed" if sum(tk.values()) else ""))
     L.append(compact(st))
 
     if a.md:

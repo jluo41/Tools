@@ -1,3 +1,18 @@
+## 0.9.2 — 2026-08-21
+
+- §🪪's `bank:` row now names what its four words ARE: the cost tier under
+  another name (`haipipe-probe` §💰, R13 restored 260821) — reuse is T2, run and
+  code are T3, new is T4, and a card that closed at T0/T1 carries no `bank:`.
+  No field added, no value renamed; the two vocabularies just stopped competing.
+
+## 0.9.1 — 2026-08-21
+
+- §✍️ cited "`haipipe-probe`'s entry record, §`state`" as the vocabulary's home.
+  That section does not exist, and the list the reader would have found instead
+  was missing `answered-local` — so this plugin was the de-facto source for a
+  word it claimed to be borrowing. Now points at §🧾 Return contract, and
+  `haipipe-probe` 0.17.0 carries all eight states.
+
 ## 0.8.1 — 2026-08-19
 
 - **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).

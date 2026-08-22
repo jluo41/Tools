@@ -1,3 +1,27 @@
+## 0.15.0 — 2026-08-21
+
+- **The 260818 two-field split finally reaches all four rules files.** R10 ruled
+  that the agent writes `checked:` and a person writes `approved:`, and for three
+  days it was written into `approve-rules.md` ALONE. `checked:` appeared in that
+  one file out of the whole tree, while `approve-rules/README.md` § "What a pass
+  looks like" — the section the approver is TOLD to read for the grammar — still
+  gave the single-field `<verb>: ✅ auto <YYMMDD>` shape R10 had retired, and the
+  approver's own `description:` still promised `approved:` / `verified` / `read:`
+  / `accepted:`. Dispatching it would have written a person's tick, which four
+  shipped contracts forbid. Now: README carries the two-field shape plus the
+  per-artifact table of which human field each `checked:` sits under;
+  `display-rules.md` gains R15, `cite-rules.md` R8 (bibtex syntax, `checked =
+  {auto …}`), `value-rules.md` R9; the agent goes to 0.3.0 with `checked:` named
+  in its description, its opening, its procedure step 4, a fifth ⛔ row, and a
+  `human_tick:` row in the return contract.
+- **`value-rules.md` R6 stopped failing legal cards.** It named a four-word
+  ladder (`planned · commissioned · answered · read`) against the plugin's eight,
+  so a `deferred`, `failed`, `concern` or `answered-local` card FAILED R6 on its
+  first run. R6 now names all eight and points at `check-probe.py`, which had the
+  right set the whole time.
+- Glyph: README's four-files block called value-rules 🔢; 🧮 replaced it as the
+  value mark on 260819 and 🔢 is the legacy alias.
+
 ## 0.14.0 — 2026-08-19
 
 - **The producer's shared law moved out of the creator agent** into

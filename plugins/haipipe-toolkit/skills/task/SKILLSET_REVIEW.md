@@ -1,5 +1,12 @@
 # task/ Skill-Set Review (2026-07-04)
 
+
+> ⚠️ **SOME PATHS IN THIS REVIEW NO LONGER RESOLVE.** Three of its references
+> point at files that have since moved or gone: `../../2_nn/haipipe-task-for-algo/SKILL.md`,
+> `../haipipe-nn/ref/overview.md`, and a `../../haipipe-task/ref/…` target. The
+> findings may still hold; their addresses do not. Banner added 260822 during a
+> toolkit-wide sweep, without re-diagnosing.
+
 Scope: all 44 skills under `skills/task/` plus agents/, root docs, haipipe-workflow. Status: JL approved 2026-07-04; fixes for the covered buckets are APPLIED (outcome notes on each item). Remaining: findings from the 3 pending bucket audits.
 
 Audit method: core (haipipe-task, agents/, README/DESIGN/CHANGELOG/TODO) read line-by-line by the main session and every finding disk-verified; the 9 domain buckets audited by 5 read-only subagents; 3 of their highest-severity claims spot-checked by the main session, 3/3 confirmed.
