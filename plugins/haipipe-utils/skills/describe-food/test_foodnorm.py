@@ -49,7 +49,7 @@ import sys
 import argparse
 from pathlib import Path
 
-from haiutils.food_enrichment import decompose, retrieve, classify, TRUSTED
+from foodnorm import decompose, retrieve, classify, TRUSTED
 
 # ============================================================================
 # L2 GOLDEN SET -- carbs per 100 g, as eaten

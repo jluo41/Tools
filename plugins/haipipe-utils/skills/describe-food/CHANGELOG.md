@@ -1,5 +1,33 @@
-CHANGELOG — food-to-description
+CHANGELOG — describe-food
 ================================================================================
+
+
+0.4.0 — 2026-08-21
+--------------------------------------------------------------------------------
+
+The library came back INTO the skill, and callers now reach it through one door.
+
+`code/haiutils/food_enrichment/` -> `describe-food/foodnorm/`. 0.3.0 had
+moved it the other way to fix a dependency pointing backwards (an installed
+package reaching into a skill dir via `sys.path.insert`); that fixed the direction
+but split one thing across two repositories, and docs and code drifted apart
+again. The skill now ships its own implementation, so they version together.
+
+`foodnorm.normalize(foods) -> [dict]` is the new door: batch, order-preserving,
+duplicates resolved once, deliberately shaped like a third-party API call. A
+caller knows that signature and nothing else, so the dialect layer, the bank and
+the stage sequence can all change without a pipeline file changing.
+`FOODNORM_TRANSPORT` picks `local` (default, in process) or `http`.
+`enrich_food_to_nutrition()` remains as the DataFrame-shaped form.
+
+The Shanghai SourceFn was regenerated from its builder against the door, and no
+longer names a stage number. The skill moved from `haipipe-toolkit/skills/
+0_connect/` to the new `haipipe-utils` plugin and was renamed `food-to-description`
+-> `describe-food`, beside `describe-exercise`.
+
+Also here: stage 0, `imagename.py`, an optional image -> food name step whose
+engine is `null` by default. Measured on CGMacros and NOT adopted — it lifts
+coverage off zero and still loses to predicting the cohort mean.
 
 
 0.3.1 — 2026-07-24

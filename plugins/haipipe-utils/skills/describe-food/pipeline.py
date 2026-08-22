@@ -4,13 +4,13 @@ CLI for the food → nutrition normalizer.
 
 This is a thin wrapper. All the logic lives in the installed package:
 
-    from haiutils.food_enrichment import enrich_food_to_nutrition
+    from foodnorm import enrich_food_to_nutrition
 
 It used to be a 321-line orchestrator that re-implemented the stage sequence, and
 it was dead on arrival: it did `from stages import stage_1_decompose`, but the
 modules were named `1_decompose.py` -- a leading digit is not a Python identifier,
 so every documented command raised ImportError. The stages now live in
-`haiutils.food_enrichment` under importable names and the orchestration is
+`foodnorm` under importable names and the orchestration is
 `enrich_food_to_nutrition()`, so there is nothing left for this file to do but
 parse argv.
 
@@ -25,7 +25,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from haiutils.food_enrichment import enrich_food_to_nutrition, TRUSTED
+from foodnorm import enrich_food_to_nutrition, TRUSTED
 
 LEXICON = Path("/home/jluo41/WellDoc-SPACE/_WorkSpace/ExternalStore/@v1215/foodnorm/food_lexicon.parquet")
 

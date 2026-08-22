@@ -1,15 +1,15 @@
 ---
-name: food-to-description
-description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
+name: describe-food
+description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-07-12"
+  version: "0.4.0"
+  last_updated: "2026-08-21"
   changelog: CHANGELOG.md
-  summary: "Library = haiutils.food_enrichment (installed). This skill = docs + CLI + tests."
+  summary: "The skill IS the library: foodnorm/ ships here, and callers reach it through normalize()."
   measured: "77.4% joinable overall (Shanghai 93.7%, WellDoc 83-91%), no LLM"
 ---
 
-Skill: food-to-description
+Skill: describe-food
 ================================================================================
 
 Normalize a `Diet.parquet` `FoodName` column into `Calories / Carbs / Protein /
@@ -19,30 +19,58 @@ Fat / Fiber`, whatever dialect it was written in.
 WHERE THE CODE LIVES
 --------------------------------------------------------------------------------
 
-The library is an installed package. This skill is its docs, CLI and tests.
+The library ships INSIDE this skill. Docs, CLI, tests and implementation are one
+thing, in one folder, versioned together.
 
-    code/haiutils/food_enrichment/     <- THE LIBRARY (pyproject.toml, editable)
-        decompose.py       "Egg 50 g\nRice 25 g" -> [("egg",50.0), ("rice",25.0)]
-        retrieve.py        component -> USDA candidates, scored and ranked
-        llm_rerank.py      optional; only for what stage 2 could not resolve
-        aggregate.py       per-100g x grams/100, summed over components
-        usda_db.py         the bank + score_candidate()
-        enrich.py          enrich_food_to_nutrition()  <- the entry point
+    Tools/plugins/haipipe-utils/skills/describe-food/
+        SKILL.md            you are here
+        foodnorm/           <- THE LIBRARY
+            client.py       normalize()  <- THE DOOR, and what callers use
+            dialect.py      "Egg 50 g\nRice 25 g" -> typed components
+            retrieve.py     component -> USDA candidates, scored and ranked
+            aggregate.py    per-100g x grams/100, summed over components
+            usda_db.py      the bank + score_candidate()
+            imagename.py    stage 0, optional: photo -> food name
+            llm_rerank.py   stage 3, optional: only what stage 2 could not resolve
+            enrich.py       enrich_food_to_nutrition(), the DataFrame-shaped form
+        pipeline.py         CLI wrapper
+        test_foodnorm.py    regression + benchmark suite
 
-    Tools/.../food-to-description/     <- THIS SKILL
-        SKILL.md           you are here
-        pipeline.py        CLI wrapper
-        test_foodnorm.py   regression + benchmark suite
+It used to live at `code/haiutils/food_enrichment/`, which split one thing across
+two repositories: the docs said one thing and the code did another, and the
+skill's own CHANGELOG records the drift that followed. A normalizer belongs with
+the skill that documents it.
 
-`haiutils` sits in `pyproject.toml` beside `haipipe` / `hainn` / `haifn`, so it
-imports anywhere with no path juggling:
 
-    from haiutils.food_enrichment import enrich_food_to_nutrition
+HOW A CALLER REACHES IT
+--------------------------------------------------------------------------------
 
-Do NOT write `from code.haiutils import ...`. The repo package is named `code`,
-the Python standard library also has a `code` module, and IPython imports the
-stdlib one at startup -- so that form works under plain `python` and dies in any
+Through ONE function, deliberately shaped like a third-party API call:
+
+    from foodnorm import normalize
+    out = normalize(["fried rice; egg", "Cucumber 100g"])
+
+The caller knows that signature and nothing else -- not the dialect layer, not
+the bank, not the stage sequence, not which repository any of them ship from.
+All of those can move or be rewritten without a pipeline file changing.
+
+`foodnorm` imports as a bare top-level name because the WORKSPACE says where its
+skills are. That is what `env.sh` is for: a space is the unit of work, and each
+space puts the normalizer skill dirs it wants on `PYTHONPATH`:
+
+    _HAIPIPE_UTILS="${_REPO_ROOT}/Tools/plugins/haipipe-utils/skills"
+    export PYTHONPATH="${_HAIPIPE_UTILS}/describe-food:${PYTHONPATH}"
+
+Never write a path-shaped import. The repo package is named `code`, the Python
+standard library also has a `code` module, and IPython imports the stdlib one at
+startup -- so `from code.… import …` works under plain `python` and dies in any
 notebook.
+
+TRANSPORT is the one thing that varies, from `FOODNORM_TRANSPORT`:
+
+    local   the default. In process, no service, no network, ~12 ms per meal.
+            A cook must not fail because a daemon was down.
+    http    POST $FOODNORM_URL/normalize/batch -- the same contract over the wire.
 
 
 THE PROBLEM
@@ -64,12 +92,19 @@ one nutrient vector.
 USAGE
 --------------------------------------------------------------------------------
 
-Package (what SourceFn uses):
+The door (what a SourceFn uses) -- batch, order-preserving, duplicates resolved once:
 
-    from haiutils.food_enrichment import enrich_food_to_nutrition
+    from foodnorm import normalize
 
+    out = normalize(df["FoodName"].fillna("").astype(str).tolist())
+    # -> one dict per input: Calories, Carbs, Protein, Fat, Fiber,
+    #    NutritionSource, NutritionConf, NutritionBasis
+
+The DataFrame-shaped form, for a caller that already holds one and wants the
+columns joined on. It exposes the stage sequence, so prefer the door:
+
+    from foodnorm import enrich_food_to_nutrition
     df = enrich_food_to_nutrition(df, food_col="FoodName", stages="1-2")
-    # -> Calories, Carbs, Protein, Fat, Fiber, NutritionSource, NutritionConf
 
 CLI:
 

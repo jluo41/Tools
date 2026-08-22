@@ -1,0 +1,19 @@
+{
+  "name": "haipipe-utils",
+  "version": "0.1.0",
+  "description": "Normalizer utilities for the haipipe pipeline: free text in a cohort's own dialect, resolved against a reference bank into numbers that carry their own provenance. One skill per noun — describe-food resolves a FoodName to USDA nutrition; describe-exercise will resolve an ActivityType to energy expenditure — and haipipe-norm owns the contract all of them obey.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "haipipe",
+    "normalization",
+    "food",
+    "nutrition",
+    "exercise",
+    "USDA",
+    "provenance"
+  ]
+}
