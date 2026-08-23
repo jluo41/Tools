@@ -106,10 +106,27 @@ task-folder in mode ①, and `<store>/<path of this task under tasks/>` in mode
 ②, mirroring the task tree so store and task map 1:1 both ways.
 
 ```
-RESULT_STORE env      one caller overriding one run          wins
+RESULT_STORE env      set by a DISPATCHING CONSUMER          wins
 config `store:` key   a standing declaration → MODE ②
 neither               OUTPUT_ROOT = the task-folder → MODE ①
 ```
+
+Three mechanisms set it, each covering what the others cannot (JL 260823):
+
+```
+DISPATCH   a consumer's board.md carries `store:`; the probe resolves it and
+           sends RESULT_STORE with the batch. Automatic, and the only one that
+           works for board-driven runs nobody typed a config for.
+SCAFFOLD   creating a task-folder ASKS once, when a board with a store exists,
+           and persists the answer as `store:` in the config. Blocking, not
+           defaulting — see SKILL.md § Which mode.
+GUARD      a run about to write task-local WARNS when a store already holds a
+           QA bank for this same folder. Catches what the first two missed.
+```
+
+`OUTPUT_BASE` travels beside `OUTPUT_ROOT` and is the base a SIBLING task's
+output resolves against: the store in mode ②, the `tasks/` tree in mode ①. One
+config key, `<task-rel>/results/...`, then resolves correctly in both.
 
 **Which mode is right is decided by WHO OWNS THE ANSWER**, not by how big the
 task is or who launched it. Mode ① when the answer is only about the code that

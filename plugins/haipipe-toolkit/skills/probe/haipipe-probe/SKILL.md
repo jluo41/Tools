@@ -228,6 +228,46 @@ The collector dispatches only Q-executor, through the bank verb without
 run, enrich a discovery, or create a correctly scoped folder. Those choices
 belong to the Task/Discovery contract, not to Probe.
 
+**R19 · THE RESULT STORE RIDES WITH THE DISPATCH** (JL 260823). A consumer that
+owns its own evidence base says so once, on its `board.md`, as a `store:` line.
+The consumer-side worker resolves that to an ABSOLUTE path and puts it in the
+batch as `result_store:`; the collector passes it through and the executor
+exports it as `RESULT_STORE`, which outranks any `store:` key a config holds.
+
+```text
+board.md  store: _WorkSpace/InsightBoardResult/A01_InsightBoard-SMSR2Full
+     │  resolved ONCE, by the consumer, against the repo root
+     ▼
+batch     result_store: /abs/…/A01_InsightBoard-SMSR2Full
+     ▼
+executor  OUTPUT_ROOT = <store>/<the task's own path under tasks/>
+          results · notebooks · the QA digest all land there
+```
+
+No `store:` on the board means the field is absent and the executor keeps output
+in its own task-folder. That is the correct answer, not a fallback: a task-folder
+is shared code, and a consumer that commissions nothing file-producing has no
+bank of its own to fill.
+
+**A PATH is not stake.** The executor learns where to write and still cannot
+learn which claim it serves, so this crosses the wall exactly as a return address
+does. Never send the consumer's NAME instead: the executor would then have to
+know where each consumer keeps its store, and a paper, a second board, or a
+one-off destination could not reuse the mechanism.
+
+**④ POINT VERIFIES IT.** A dispatch that sent `result_store:` must get back a QA
+path under that store:
+
+```text
+returned path under the store  → bind it
+anywhere else                  → FAIL the card. Do NOT bind.
+```
+
+The answer exists either way, which is precisely the danger: a misroute leaves a
+real file in a bank the consumer will never scan again, so `① QA SCAN` misses it
+forever and the same work is commissioned twice. Verifying the return is what
+turns a silent split bank into one failed card.
+
 **R15 · THE ENRICH DEPTH LADDER, and the probe never learns which rung ran.**
 Restored 260821 with R13; it answers JL's "what does a new question mean to a task
 folder?"

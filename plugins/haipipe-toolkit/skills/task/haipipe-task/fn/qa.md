@@ -257,10 +257,17 @@ Return
 
 ```
 qa_file:     <path>                       the answer, or the in-progress file
+bank:        <the $OUTPUT_ROOT this call addressed>
 state:       answered | working | refused
 path_taken:  1-scan | 2-digest | 3-run(depth N) | refuse
 note:        one line
 ```
+
+`bank:` is not decoration. A caller that supplied `RESULT_STORE` compares it
+against the returned path and FAILS the card when the answer landed elsewhere
+(`haipipe-probe` §③ R19). Without the field the caller can still compare
+prefixes, but it cannot tell "I addressed the store and wrote there" apart from
+"I never saw the store and wrote task-local" — and those need different fixes.
 
 On `working`, the note reads "in progress since <started>".
 On refuse, it carries the reason and the re-route.

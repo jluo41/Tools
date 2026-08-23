@@ -119,6 +119,45 @@ Build touches only code/configs/runs.
 Execute touches only `results/` and `notebooks/`. 
 Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
 
+## Which mode? Ask ONCE, at scaffold (JL 260823)
+
+A task-folder's mode is a property of what it is FOR, not of each execution, so
+it is settled when the folder is created and persisted in its config. Run time
+never asks again.
+
+Four branches. Only ONE of them prompts:
+
+```
+RESULT_STORE set in the env?   ─yes─▶  ② a consumer dispatched · SILENT
+config `store:` already there? ─yes─▶  ② already decided · SILENT
+any board.md carrying `store:`  ─no──▶  ① nothing to serve · SILENT
+under this project?
+        │
+      yes │  ◀── the ONLY branch that asks
+        ▼
+   🧑 "N board(s) here own a store. Does this task-folder serve one?
+       [1] <board> → <its store>
+       [2] <board> → <its store>
+       [n] no — keep output in the task-folder"
+        │
+        ▼
+   write the answer as `store:` in configs/<run>.yaml, or omit it for [n]
+```
+
+Detection is one glob: `board.md` files under the project whose head carries a
+`store:` line. Three of four branches stay silent, so the prompt is rare rather
+than a tax.
+
+**The ask BLOCKS; it does not default.** The entire class of bug this mechanism
+addresses is silent misrouting, and a default that guesses ① reintroduces it in
+the one situation where a person was present to prevent it. Scaffolding already
+confirms new files, so the mode question rides along in a conversation that is
+happening anyway.
+
+A SECOND cohort of an existing folder is a new config, so it passes through this
+ask again — which is correct, because that is exactly when the answer can differ
+from last time.
+
 Everything after Build that is DATA-DEPENDENT lands under `$OUTPUT_ROOT`;
 `CODE_REVIEW.md` is the exception and stays with the code, because it reviews
 the `.py` at a `git_sha` rather than a cohort's results. A task-folder

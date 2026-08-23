@@ -294,6 +294,22 @@ def check_board(d, rep):
             rep.add(ERROR, "board-missing-key", "board.md",
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
+    # `store:` is OPTIONAL and declares where work COMMISSIONED by this board
+    # writes its generated output: results, notebooks and QA digests. A probe
+    # dispatching from one of this board's pages passes it as RESULT_STORE, so
+    # the executor is told a PATH and never learns which consumer it serves.
+    # Absent means this board commissions nothing that produces files, and a
+    # task it dispatches keeps output in its own folder (JL 260823).
+    store = re.search(r"^store:\s*(\S.*?)\s*$", text, re.M)
+    if store:
+        target = store.group(1)
+        if target.startswith("~") or ".." in target.split("/"):
+            rep.add(ERROR, "board-store-path", f"board.md -> {target}",
+                    "a `store:` must be repo-relative or absolute with no `..` and no "
+                    "`~`; a dispatching probe resolves it once and hands the executor "
+                    "an absolute path, so a climbing path resolves differently "
+                    "depending on who dispatched")
+
     pages = {p.name: p for p in page_files(d)}
     # `[MIAD]\d` admits the Application runtime ids (M00-meta.md, I01-<slug>.md,
     # A00-brief.md, D01-<slug>.md) that PAGENAME now discovers; without it every

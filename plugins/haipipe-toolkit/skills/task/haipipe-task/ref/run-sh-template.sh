@@ -61,6 +61,24 @@ if [ -n "$STORE" ]; then
   OUTPUT_ROOT="$STORE/$TASK_REL"
 else
   OUTPUT_ROOT="$TASK_DIR"
+  # SPLIT-BANK GUARD (JL 260823). Writing task-local is normal — unless some
+  # store already holds answers for THIS task-folder, which means the folder is
+  # serving a consumer and this run was launched without being told. Two banks
+  # for one folder is the failure the store mechanism exists to prevent: the
+  # qa gate scans one of them, so the other's answers are invisible and the
+  # same work gets commissioned twice.
+  if [ -n "${RESULT_STORE_SEARCH_ROOT:-$REPO_ROOT/_WorkSpace}" ] && [ -d "${RESULT_STORE_SEARCH_ROOT:-$REPO_ROOT/_WorkSpace}" ]; then
+    _rel="${TASK_DIR#*/tasks/}"
+    _hits=$(find "${RESULT_STORE_SEARCH_ROOT:-$REPO_ROOT/_WorkSpace}" -type d -path "*/${_rel}/QA" 2>/dev/null | head -3)
+    if [ -n "$_hits" ]; then
+      echo "==> [warn] SPLIT BANK: this run writes task-local, but a store already" >&2
+      echo "    holds a QA bank for ${_rel}:" >&2
+      echo "$_hits" | sed 's/^/      /' >&2
+      echo "    Declare store: in configs/${RUN_NAME}.yaml, or export RESULT_STORE," >&2
+      echo "    unless serving no consumer is genuinely what you want here." >&2
+    fi
+    unset _rel _hits
+  fi
 fi
 export OUTPUT_ROOT
 

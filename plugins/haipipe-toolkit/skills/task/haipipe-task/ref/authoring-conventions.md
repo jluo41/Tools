@@ -47,7 +47,15 @@ task tree, or one cohort's numbers get joined to another's:
 
 ```yaml
 ✗ engagement_join_path:      designs/<proj>/tasks/D01_x/01_y/results/run/f.csv
-✓ engagement_join_from_task: D01_x/01_y/results/run/f.csv     # under $STORE_ROOT
+✓ engagement_join_from_task: D01_x/01_y/results/run/f.csv     # under $OUTPUT_BASE
+```
+
+`OUTPUT_BASE` is exported by `runs/<NAME>.sh` and is the store when serving a
+consumer, the `tasks/` tree when self-serving. One key, correct in both modes:
+
+```python
+base = os.environ.get("OUTPUT_BASE")
+eng_path = Path(base) / cfg["input"]["engagement_join_from_task"]
 ```
 
 `<NAME>` is `run_`-prefixed, snake_case, `[a-z0-9_]+`, encodes the variant

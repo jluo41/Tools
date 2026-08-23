@@ -4,6 +4,44 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-08-23 — the store is set by the CONSUMER, not by convention (JL)
+----------------------------------------------------------------------
+
+The 260821 change made output location resolvable but left nothing that
+RESOLVED it: a board dispatching a task sent only the question, so a task
+served a board only because someone had hand-written `store:` into its config.
+Forget it and the run succeeded into the wrong bank, silently. Three mechanisms
+now close that, each covering what the others cannot:
+
+- **DISPATCH.** A consumer declares `store:` once on its `board.md` — a new
+  OPTIONAL key beside `spine:`/`close:`, validated by the board checker
+  (`board-store-path` rejects `..` and `~`, because a climbing path resolves
+  differently per caller). The probe resolves it to an absolute path and sends
+  it as `result_store:`; the executor exports `RESULT_STORE`, which outranks
+  the config key. `haipipe-probe` §③ R19 owns the contract, and ④ POINT
+  VERIFIES the returned QA path lands under the store — otherwise the card
+  FAILS, because a misroute leaves a real answer in a bank nobody rescans.
+- **SCAFFOLD ASK.** Creating a task-folder asks once, and only on the one
+  branch of four where it is both unresolved and consequential: no
+  `RESULT_STORE`, no config `store:`, but a board with a store exists. It
+  BLOCKS rather than defaults — the bug class here is silent misrouting, and a
+  default reintroduces it in the one moment a person was there to prevent it.
+- **SPLIT-BANK GUARD.** A run about to write task-local warns when some store
+  already holds a QA bank for the same folder. Two banks for one folder is the
+  failure the mechanism exists to prevent: the gate scans one, the other goes
+  invisible, and the work is commissioned twice.
+
+Also: `OUTPUT_BASE` joins `OUTPUT_ROOT`, as the base a SIBLING task's output
+resolves against — the store in mode ②, the `tasks/` tree in mode ①, so one
+config key works in both. A run no longer creates an empty `QA/`; the gate
+makes its own, and an empty bank looks real while holding nothing.
+
+Acceptance (10/10, `07_engagement_funnel`): dispatch-only routes to the store
+with the task folder untouched; removing every store sends the same run back to
+the task folder and fires the warning naming the other bank; restoring the
+config key routes it again. New tests in `board/haipipe-board/tests/
+test_board_store.py` cover the key's validation and pin the three contracts.
+
 2026-08-21 — two defects found in the store change, both fixed
 ---------------------------------------------------------------
 
