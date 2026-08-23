@@ -1,98 +1,114 @@
 # <Target>: <what it rewards and refuses>
 
 state: 🔴 OPEN · <what is verified and what remains open>
+page-type: venue
 owner: <owner>
 method: <how this target is researched and refreshed>
 
 ## Opening
 
-<One paragraph: what this target is, which category is in scope, and the
-decision this Page makes inspectable.>
+<One paragraph: what this desk is, which categories it publishes, and what it
+buys. No paper is named — this page serves any paper that ever targets the desk.>
 
 ### Writing Style
 
-Distinguish DESK RULE, PACK OBSERVATION, PACK PRESCRIPTION, LOCAL DECISION, and
-UNKNOWN inline. Every number names its source and access date.
+Distinguish DESK RULE, PACK OBSERVATION, PACK PRESCRIPTION, and UNKNOWN inline.
+Every number names its source and access date. Write "the pack refuses X",
+never "do not do X" — a reference, not a rulebook.
 
 ## Diagram
 
-**Venue at a glance**: fit, structure, binding rules, and open gaps.
+**Three figures, in this order** (QBv1 template, JL 260803):
 
 ```text
-<compact venue overview>
+① desk taste         what counts as the contribution · what is desk-rejected · the test
+② Venue-Structure    which units, in reading order, and the budget each carries ·
+                     the pack's parts SUMMED against the desk's total
+③ Submission-Rules   category and cap · format · references · portal · anonymity ·
+                     disclosures · the desk's own URLs · enforcement moments
 ```
 
 ## Content
 
-### 1 · Target Identity and Scope
+<The division list is RESOLVED from paper/venue/<pack>/<outlet>/ — one
+style.md per unit, one division, in the desk's own reading order. A desk with
+no pack tree (grant, patent) resolves from the target's own document units.>
 
-<Target, category, audience, and scope.>
+### 1 · What the desk buys, and what it will not
 
-### 2 · Fit and Desk Reject
+<The taste test, sourced. Rewarded contributions, permitted methods,
+desk-reject signals — the desk's own words where it publishes them.>
 
-<Rewarded contributions, permitted methods, and rejection tests with sources.>
+### 2 · What arriving here costs
 
-### 3 · Venue Structure
+<Fees, review clock, reported odds. An unpublished fact is an UNKNOWN row
+with an owner, never a deleted one.>
 
-<Reading/document order, total limits, required components, and resolver gaps.>
+### 3 · Which sibling outlet a paper leans to, and what pins it here
 
-### 4 · Unit Guidance
+<Only when a family shares a pack. What the primary claim is at each desk,
+and what the pin costs downstream.>
 
-<Repeat one comparable record per section or target-defined document unit:
-reader job, observed shape, budget, expected displays/citations, anti-patterns,
-and source. Add direct Content divisions when the unit set is large.>
+### 4 · Sec-0-<Unit>: <what the pack found, in one line>
 
-### 5 · Submission Rules
+<One division per desk reading unit, numbered to join `S-Main-<n>`; the
+resolver wins when desk and index part. Repeat this division shape per unit.>
 
-<Format, anonymity, references, disclosures, portal, required files, and the
-moment each DESK RULE is enforced.>
+#### 4.1 · The moves, as slots
 
-### 6 · Cost, Clock, and Odds
+#### 4.2 · What the pack refuses
 
-<Fees, reported timing, reported acceptance information, and uncertainty.>
+#### 4.3 · Format values
 
-### 7 · Gaps and Handoff
+<Each number names its style.md line or exemplar. `not recorded by the pack`
+is a finding and is printed.>
 
-<Stale/missing facts, desk-pack conflicts, refresh date, and the bounded Venue
-contract supplied to Narrative and Section Pages.>
+#### 4.4 · The language, in the papers' own words
+
+### <last> · Before you upload: the binding rules as a list you can run
+
+<Only DESK RULES, each with its enforcement moment: at-submission,
+at-revision, at-acceptance, at-publication.>
 
 ## Aims
 
-### A1 · Target identity is verifiable
+### A1 · <mirror division 1's name>
 
-- ⬜ A1.1 · One target and category are unambiguous.
-  **Done when:** Identity and category resolve to current desk sources.
+- ⬜ A1.1 · <what done looks like for the taste division>
+  **Done when:** rejection tests resolve to current desk sources.
   **Now:** <current fact>
 
-### A2 · Rules and observations are separated
+<One Aim group per Content division, same names behind an emoji, plus one `P`
+group for page-wide targets that belong to no single unit.>
 
-- ⬜ A2.1 · Every binding rule and quantitative observation is typed and sourced.
-  **Done when:** Each row names authority, source, date, and enforcement time.
-  **Now:** <current fact>
+### P · Targets that belong to no single section
 
-### A3 · The downstream contract is usable
-
-- ⬜ A3.1 · Narrative can consume a bounded venue handoff.
-  **Done when:** The handoff names rules, patterns, structure, gaps, and version.
+- ⬜ P1 · Every venue statement is typed and sourced; every desk rule carries
+  its enforcement moment.
+  **Done when:** a walk of the page finds no bare number and no untyped claim.
   **Now:** <current fact>
 
 ## Files
 
-### 🔗 Related Board Pages · what this Page reads or constrains
+### ⚙️ Engines · what RUNS this page's subject
 
-- `reads · EVIDENCE` · <bounded source Page link and scope>
-- `continues · DRAFT` · <Narrative Page link when one exists>
+- `sync-exemplars.py` · regenerates the 📤 Generated blocks, and only those
 
-### 📥 Input files
+### 📋 Contracts · what CARRIES a rule to other pages
 
-- `bibex/` · desk sources, exemplar citations, and bibliography material
-- `probe/` · open venue questions and landed answers
-- `pagex/` · bounded playbook or related-Page context
+- `paper/page-types/haipipe-page-for-venue/SKILL.md` · this page's contract
 
-### 📤 Output files
+### 📥 Input files · what this page READS
 
-- `display/` · fit, structure, rule, or checklist displays when useful
-- `latex/` and `word/` · generated Page-level outputs when requested
+- `paper/venue/<pack>/<outlet>/` · taste.md · per-unit style.md · exemplars
+
+### 🔗 Authority · what the DESK itself PUBLISHES
+
+- <the desk's own URLs, read directly and never through the pack>
+
+### 📤 Generated · what a tool WRITES into this page, between markers
+
+- <sync-exemplars.py output blocks>
 
 ## Log
 

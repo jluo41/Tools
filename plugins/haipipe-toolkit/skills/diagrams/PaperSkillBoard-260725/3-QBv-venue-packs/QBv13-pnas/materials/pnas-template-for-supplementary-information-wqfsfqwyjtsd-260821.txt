@@ -1,0 +1,208 @@
+PNAS Template for Supplementary Information - Overleaf, Online LaTeX Editor Skip to content
+
+menu Product Features
+AI
+
+Solutions For business
+For universities
+For government
+For publishers
+Customer stories
+
+Templates
+Pricing
+Help & resources Documentation
+Overleaf learning center
+Help guides
+Why LaTeX?
+Blog
+Contact us
+
+Sign up
+Log in
+
+arrow_left_alt Back to all templates
+
+PNAS Template for Supplementary Information
+Official
+
+Open as Template View Source View PDF
+
+Author:
+Overleaf and the National Academy of Sciences (NAS)
+
+Last Updated:
+4 years ago
+
+License:
+LaTeX Project Public License 1.3c
+
+Abstract:
+Overleaf and NAS have created this template for authors preparing Supporting Information (SI) to accompany their submissions to PNAS .
+To begin writing online (in your browser), simply click the Open as Template button above. The PNAS SI template will be loaded, and additional guidelines for preparing your SI are included within the template itself.
+If you're new to Overleaf and LaTeX, check out our tutorial video and free introductory course for help getting started.
+
+Tags:
+PNAS Official eJournalPress PNAS - Official Templates Journal articles
+
+\begin { now }
+Discover why over 25 million people worldwide trust Overleaf with their work.
+Sign up for free Explore all plans
+
+Source
+
+\documentclass[9pt,twoside,lineno]{pnas-new}
+% Use the lineno option to display guide line numbers if required.
+
+\templatetype{pnassupportinginfo}
+
+\title{Your main manuscript title}
+\author{Author1, Author2 and Author3 (complete author list)}
+\correspondingauthor{Corresponding Author name.\\E-mail: author.two@email.com}
+
+\begin{document}
+
+%% Comment out or remove this line before generating final copy for submission; this will also remove the warning re: "Consecutive odd pages found".
+\instructionspage
+
+\maketitle
+
+%% Adds the main heading for the SI text. Comment out this line if you do not have any supporting information text.
+\SItext
+
+\subsection*{Subhead}
+Type or paste text here. This should be additional explanatory text such as an extended technical description of results, full details of mathematical models, etc.
+
+\section*{Heading}
+\subsection*{Subhead}
+Type or paste text here. You may break this section up into subheads as needed (e.g., one section on ``Materials'' and one on ``Methods'').
+
+\subsection*{Materials}
+Add a materials subsection if you need to.
+
+\subsection*{Methods}
+Add a methods subsection if you need to.
+
+%%% Each figure should be on its own page
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{example-image}
+\caption{First figure}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{frog}
+\caption{Second figure}
+\end{figure}
+
+\begin{table}\centering
+\caption{This is a table}
+
+\begin{tabular}{lrrr}
+Species & CBS & CV & G3 \\
+\midrule
+1. Acetaldehyde & 0.0 & 0.0 & 0.0 \\
+2. Vinyl alcohol & 9.1 & 9.6 & 13.5 \\
+3. Hydroxyethylidene & 50.8 & 51.2 & 54.0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%% Add this line AFTER all your figures and tables
+\FloatBarrier
+
+\movie{Type legend for the movie here.}
+
+\movie{Type legend for the other movie here. Adding longer text to show what happens, to decide on alignment and/or indentations.}
+
+\movie{A third movie, just for kicks.}
+
+\dataset{dataset_one.txt}{Type or paste legend here.}
+
+\dataset{dataset_two.txt}{Type or paste legend here. Adding longer text to show what happens, to decide on alignment and/or indentations for multi-line or paragraph captions.}
+
+\bibliography{pnas-sample}
+
+\end{document}
+
+Close
+
+About
+About us
+Careers
+Blog
+
+Solutions
+For business
+For universities
+For government
+For publishers
+Customer stories
+
+Learn
+Get started with LaTeX in Overleaf
+Templates
+Webinars
+Overleaf learning center
+How to insert images
+How to create tables
+
+Pricing
+For individuals
+For groups and organizations
+For students
+
+Get involved
+Let us know what you think
+
+Help
+Documentation
+Contact us
+Website status
+
+© 2026 Overleaf
+Privacy and Terms Compliance
+translate English Language
+English check
+Čeština
+Español
+Português
+Français
+Deutsch
+Svenska
+Türkçe
+Italiano
+简体中文
+Norsk
+Русский
+Dansk
+한국어
+日本語
+
+Overleaf on X
+
+Overleaf on Facebook
+
+Overleaf on LinkedIn
+
+We use cookies to improve your experience on our site, for analytics, and to support marketing, which may involve the sharing of data. You can find out more in our cookie policy .
+Essential cookies only Accept all cookies
+Get in touch
+
+error
+Something went wrong. Please try again..
+
+Email
+Subject Have you checked our knowledge base ?
+
+What do you need help with? Please select… Using LaTeX Using the Overleaf Editor Using Writefull Logging in or managing your account Managing your subscription Using premium features Contacting the Sales team Other
+Affected project URL (Optional)
+Let us know how we can help
+Important message
+
+Message received
+Thanks for getting in touch. Our team will get back to you by email as soon as possible.
+Email:
+
+Send message Sending&hellip;

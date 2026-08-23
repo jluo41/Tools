@@ -1,0 +1,220 @@
+Requirements for the research plan
+
+DE
+FR
+EN
+IT
+
+Search
+Exact
+Search Icon
+
+Login External Link Icon
+
+Swiss National Science Foundation logo Swiss National Science Foundation homepage
+
+What’s new
+Research
+Funding
+About us
+
+What’s new Dropdown Icon
+
+Data stories
+Events
+Scientific awards
+Image competition
+Subscribe to newsletter Dropdown Icon
+
+Subscribe to the SNSF Newsletter
+Subscribe to the newsletters of the NRPs
+ScienceGeist
+
+Magazine Horizons
+Media enquiries
+
+Research Dropdown Icon
+
+New Findings
+Figures and data
+Focus on basic research
+Dialogue with society
+National research
+Fresh impetus for research
+
+Funding Dropdown Icon
+
+Open calls
+Find funding scheme
+Updates
+Information for researchers Dropdown Icon
+
+Use-inspired research
+Open Access
+Information events
+International
+Project staff
+All information
+
+How to Dropdown Icon
+
+Enter a proposal
+Submission requirements
+Evaluation procedure
+CV format
+Funding Regulations
+Documents and forms
+Lifetime management of projects
+Reaching out to the public
+
+About us Dropdown Icon
+
+Profile Dropdown Icon
+
+Mission statement
+Strategy
+Statutes and legal framework
+History
+Annual report
+Figures and data
+
+Organisation Dropdown Icon
+
+SNSF bodies
+Board
+Foundation Council
+Delegates Assembly
+Research Council and evaluation bodies
+Administrative Offices
+
+Work with us
+Mandates Dropdown Icon
+
+Research Council mandates
+Project mandates
+
+Partners Dropdown Icon
+
+National partners
+International partners
+AcademiaNet
+Useful links
+
+Contact Dropdown Icon
+
+Contact us
+How to find us
+Employees
+Logo SNSF
+Media enquiries
+Send Invoices
+
+Login External Link Icon
+
+DE
+FR
+EN
+IT
+
+Requirements for the research plan
+
+The research plan provides the basis for scientific evaluation, particularly of the quality of the proposed research project, i.e. its scientific relevance, topicality, originality, feasibility and the suitability of its methods. Together with the CV and the applicants&#x27; academic track record, the research plan also serves as a basis for assessing the researchers&#x27; scientific qualifications, particularly their expertise with regard to the project.
+[PF Art. 15]
+[FR Art. 24] External Link Icon
+
+The SNSF&#x27;s requirements with regard to the form and content of the research plan help to ensure the comparability of applications. This is an important prerequisite for a comparative evaluation based on the principle of competition and for the equal treatment of all applicants.
+
+The SNSF does not consider applications that do not meet the formal requirements and/or are manifestly inadequate.
+[FR Art. 14] External Link Icon
+
+[FR Art. 22] External Link Icon
+
+The research plan must consist of original text that has been written by the applicants themselves. A limited amount of text (or other material, graphs, etc.) by third parties or text published by the applicants themselves is permissible in the sections concerning the state of research (1) and the state of their own research (2.2) as well as when describing standard methods. The quoted texts must be clearly designated as such (quotation marks or appropriate wording) and a verifiable source must be mentioned nearby and in the bibliography The SNSF uses special software to compare texts and analyse suspected cases of plagiarism. A number of universities have made such programs available to their students and employees. We recommend that you contact your institution for further information.
+[FR Art. 15] External Link Icon
+
+Scientific integrity
+
+In mathematics, natural and engineering sciences, biology, medicine, psychology, economics and political sciences, applications have to be submitted in English . In all other research areas, applications can be submitted in one of the official Swiss languages. Special rules apply for political sciences.
+[FR Art. 14] External Link Icon
+
+[AR Art. 1.16]
+Language policy
+
+The research plan needs to be uploaded to the SNSF portal as a PDF. Please name the document <Application number>_Research_plan.pdf (Example: 10000001_Research_plan.pdf).
+
+The research plan must not exceed 15 pages (17 for collaborative projects) and 60,000 characters (68,000 characters for collaborative projects) with spaces . The first limit reached applies. This includes the title or front page, footnotes, illustrations, formulae, tables (and, if applicable, the table of contents), but not the bibliography. At least font size 10 and line spacing 1.5 must be used.  The research plan may not contain any annexed documents .
+The page and character count in the SNSF Portal is binding. Applications with research plans that are too extensive cannot be submitted. Note that the number of characters may vary slightly depending on the document format / PDF coding.
+
+The SNSF Research Council encourages applicants to submit their proposals (i.e., the research plan) for project funding in English. The use of English as a submission language bolsters the external peer review process, a key step in the evaluation procedure. It assists in broadening the scope of potential reviewers, thereby benefiting applicants by increasing the pool of appropriate reviewers. In doing so, the Research Council strengthens its commitment to the underlying goal of this procedure, namely the competent and fair evaluation of proposals.
+
+The research plan must be structured as follows:
+
+​1 Current state of research in the field
+Describe your project in the context of the current state of knowledge in your field. Make reference to the most important publications, particularly by other authors. Please describe:
+which previous insights provided the starting point and basis for the planned studies.
+in which areas research is needed and why, and what your project can contribute to closing this gap.
+which important, relevant research projects are currently underway in Switzerland and abroad.
+to what extent the various disciplines – in interdisciplinary projects – contribute a variety of perspectives to the proposed research; the extent to which the targeted research goals require the integration of elements (e.g. theories, methods, concepts) from two or more disciplines which is not yet customary in this combination in the field.
+
+​2 Current state of your own research
+Please describe the research work undertaken in the relevant field by members of the research group, the results obtained so far as well as the relevance of these preliminary undertakings for the current project. If your project follows on from a preliminary project supported by the SNSF, please report on the work conducted and the results obtained in the preliminary project. Together with the CV, this information serves as a basis for assessing your academic qualifications, particularly your expertise with regard to the project.
+
+​3 Detailed research plan
+Based on the information provided under 1 and 2, please specify the approach you are taking and the concrete objectives that you aim to achieve in the period of funding.
+Describe the specific investigations or experiments that are required and/or envisaged to reach the set goals. Assess the risks involved and propose alternatives if necessary.
+Characterise existing sources and datasets and describe the data collection strategy and possible alternative strategies.
+Explain the role of each member of the research team (incl. applicants, employees, project partners and collaborations). Please also explain why the expertise and scientific contribution of several applicants is necessary and why the collaboration is essential in order to achieve the research results and delivers an additional benefit. In the case of two or more applicants, as a rule there must be no hierarchical dependency (e.g. lack of independence and/or hierarchical issues).
+
+The scope and detail of the information should enable an expert to assess whether your methodology is appropriate and your project feasible. Ensure that you refer to the work described here in the budget you submit via the SNSF portal.
+
+Specific provisions must be adhered to when conducting research involving animals that are protected by the Animal Welfare Act. Make sure that you adhere to the Principles and Practices of the Swiss National Science Foundation concerning Research Using Animals (PDF) , as well as the Checklist for Applicants Submitting Research Proposals Involving Animal Experiments (PDF) .
+
+​4 Schedule and milestones
+Please compile a schedule that includes the most important milestones.
+
+5 Relevance and impact
+Scientific relevance : Describe the expected impacts of your project for the discipline and for academic learning as a whole (research and education/teaching). Please mention the form in which you wish to publish your research results (articles in specialist journals, monographs, datasets, conference proceedings, etc.).
+
+Contact Dropdown Icon
+
+Swiss National Science Foundation (SNSF)
+Wildhainweg 3
+CH-3001 Bern
+Contact us
+Send invoices
+Work with us External Link Icon
+
+Job offers External Link Icon
+
+Media Dropdown Icon
+
+Media enquiries
+Annual report
+Figures and data External Link Icon
+
+Grant Search Dropdown Icon
+
+Here you will find detailed information about the research projects and grants approved by the SNSF:
+Grant Search External Link Icon
+
+Newsletter
+Receive the latest news regularly:
+Subscribe to the SNSF Newsletter
+Subscribe to the newsletters of the NRPs
+Subscribe to RSS
+ScienceGeist: research policy news
+
+LinkedIn Icon
+
+Bluesky Icon
+
+Mastodon Icon
+
+Instagram Icon
+
+YouTube Icon
+
+Disclaimer
+Impressum
+
+© SNSF 2026

@@ -56,10 +56,12 @@ covered four families and only one of them — section — was ever
 Narrative-shaped; folding it into Narrative would have stranded the other
 three with no owner).
 
-Retargeting keeps Seed, creates or updates a Venue Page, and creates a new
-Narrative. It does not rewrite the stable paper identity merely to imitate a
-new desk. Closed Round Pages remain bound to the Venue, Narrative, and build
-they actually reviewed.
+Retargeting keeps Seed, binds the target's SHARED Venue Page (creating one in
+the venue bank only when the desk has none), and creates a new Narrative. A
+Venue Page is consumer-neutral and refreshes on the desk's clock, never a
+paper's. Retargeting does not rewrite the stable paper identity merely to
+imitate a new desk. Closed Round Pages remain bound to the Venue, Narrative,
+and build they actually reviewed.
 
 ## 🃏 Evidence belongs to the Page that uses it
 

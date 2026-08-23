@@ -1,6 +1,6 @@
 # QBt4 · Execute exactly one current Narrative row as a Section
 
-state: ✅ SETTLED · current Section contract validated
+state: ✅ SETTLED · 0.2.0 ruled 260821 · structure resolves from the QBv bank · SC and SA groups
 page-type: section
 section_kind: results
 owner: JL
@@ -8,20 +8,25 @@ method: bind prose to one Narrative row, one venue allocation, and Page-local ev
 
 ## Opening
 How does one reader-ordered manuscript or appendix unit become checked prose?
-Section resolves its structure from the selected Venue and section kind, then executes exactly one current Narrative row.
+Section executes exactly one current Narrative row, and resolves its structure from the QBv Venue Page's unit division that the Narrative's venue decision binds.
 Its consequential sentences bind to inspectable evidence, citations, values, or displays.
 
-**Where this page sits**: Narrative supplies the row; assembly reads the accepted Section output.
+**Where this page sits**: Narrative supplies the row; assembly reads the accepted Section output. Main sections live in `1-SC-main/`, appendices in `2-SA-appendix/`, one contract for both.
 
 ## Writing Style
 Write to the named reader entry and exit states.
 Expose unsupported obligations instead of filling them with plausible prose.
+Name the structure-source as a QBv unit division or the explicit generic fallback, never a raw pack file.
 
 ## Diagram
 **Section authority**: prose is downstream of contract and evidence.
 
 ```text
-Seed limits ─▶ Venue rules ─▶ Narrative row ─▶ Page evidence ─▶ prose
+Seed limits ─▶ Narrative row ─▶ 🏛 QBv unit division ─▶ Page evidence ─▶ prose
+                    │ carries the venue decision
+                    ▼
+        1-SC-main/SC<NN>-<kind>     main reading order
+        2-SA-appendix/SA<NN>-<slug>    appendices, venue-numbered
 ```
 
 ## Content
@@ -29,23 +34,29 @@ Seed limits ─▶ Venue rules ─▶ Narrative row ─▶ Page evidence ─▶ 
 **Required binding**: the Page records the governing row, claims, reader states, constraints, structure source, evidence allowlist, and transitions.
 
 ```text
-one Narrative row + venue × kind structure + landed evidence
+one Narrative row + one QBv unit division + landed evidence
                          ─▶ accepted Section output
 ```
 
-Retargeting re-resolves the Narrative row and venue structure while preserving only evidence whose meaning remains valid.
+The old resolved source, `paper/venue/**/template.md` with the `section-page-template: 1` marker, held zero marked files, so every Section silently fell back to generic; 0.2.0 re-points resolution at the QBv page the Narrative already binds.
+A missing unit division is raised as a gap on the QBv page rather than filled locally.
+Retargeting re-resolves the Narrative row and the QBv unit division while preserving only evidence whose meaning remains valid.
 
 ## Aims
 ### A1 · 📄 Section contract
 - A1.1 · One current Narrative row governs one Section Page.
   **Done when:** every consequential sentence has inspectable support or a closure-blocking obligation.
+- A1.2 · Structure comes from the bank, not from stage-era pack files.
+  **Done when:** every structure-source names a QBv unit division or the recorded generic fallback.
 
 ## States
 ### A1 · 📄 Section contract
 - ✅ A1.1 · The current contract unifies main and appendix units under one rule.
+- ✅ A1.2 · The 0.2.0 re-point closes the empty-universe hole; the fallback stays explicit.
 
 ## Files
 - `../../paper/page-types/haipipe-page-for-section/SKILL.md` · source contract
 
 ## Log
 260820 · Kept Section light by moving paper-wide logic to Narrative and evidence to local plugins.
+260821 · 0.2.0 ruled by JL: structure resolves from the QBv Venue Page's unit division through the Narrative's binding, because the template.md universe held zero marked files; runtime splits into 1-SC-main/ and 2-SA-appendix/ with Round at 3-RD-round/.

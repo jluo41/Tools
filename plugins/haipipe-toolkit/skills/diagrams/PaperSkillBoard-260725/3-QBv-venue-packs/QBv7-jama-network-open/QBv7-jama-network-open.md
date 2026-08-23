@@ -923,6 +923,98 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 - "The study protocol was created in March 2022 and registered with ClinicalTrials.gov (NCT07368660) in January 2026 (Supplement 2)." [Witt 2026]
   The registered protocol shipping as its own Supplement, in the slot the flagship reserves for Supplement 1 and this outlet inverts.
 
+### 9 · What arriving here costs
+
+**The one outlet in this family that charges to publish**: the flagship and JAMA IM take a subscription route, and this desk is fully open access, so acceptance is followed by a bill.
+
+```text
+  💵 MONEY
+     an article processing charge for immediate open access on the day of
+     publication · waivers and discounts exist
+     ❓ THE AMOUNT IS NOT ON RECORD HERE: the desk's own For Authors page
+        names the APC without printing a figure
+     ✅ waivers and discounts for authors from resource-poor countries, and
+        for eligible authors from Hinari Core Offer countries
+
+  ⏱ CLOCK
+     2 days   to first decision WITHOUT external peer review
+     46 days  to first decision WITH review
+     59 days · 90 days  further intervals the desk publishes
+
+  🎲 ODDS
+     69%  acceptance rate for all submissions
+     12%  the second rate the desk prints
+     ❓ WHICH RATE COVERS WHICH DENOMINATOR IS NOT ON RECORD: the page prints
+        both without saying which is research-article-only, and the sibling
+        outlets print theirs as an explicit pair
+```
+
+Every figure above is read from this page's own capture of the desk's For Authors page, filed under `materials/` and indexed in `materials/MANIFEST.md`, which names the file, its access date, its method and its checksum. None of it is the pack's, because the pack records no cost data for any outlet.
+
+💵 Establishes the cost of this desk as money at acceptance rather than at submission, a decision clock an order of magnitude apart depending on whether review happens, and an acceptance rate that cannot be compared with a sibling's until its denominator is on record.
+
+#### 9.1 · The 69% is not the number a sibling's 9% compares with
+(and reading it as one would make this outlet look thirty times easier than JAMA IM)
+`QBv5-jama` prints 10% of all submissions against 4% of research submissions, and `QBv6-jama-im` prints 9% of all submissions.
+This desk prints 69% and 12% and labels only the first, as the rate "for all submissions".
+A 69% all-submission rate beside JAMA IM's 9% all-submission rate is not a like-for-like reading, because the three outlets do not receive like submissions: the descent described in this page's Opening means papers arrive here already shaped for a higher desk.
+So the honest use of this row is as a floor on this outlet's own capacity, and not as evidence that the descent is easy.
+
+### 10 · Before you upload: the binding rules as a list you can run
+
+**Everything here is enforced by the desk, not by us**: it is this page's own DESK RULE rows turned into an order of operations, and it is the only part of the page that can cost a submission.
+
+```text
+  ✅ BEFORE YOU UPLOAD ── run top to bottom, on the FINAL file
+
+  ① PICK THE ARTICLE TYPE   Original Investigation · Research Letter · and the
+                            rest of the desk's list
+                            Research Letter = 800 words · 10 references ·
+                            up to 2 small tables or figures (verified 260802
+                            against the journal, §2)
+                            ⚠️ the pack withholds the `letter` kind, so a
+                               resolver-built draft has no home for this type
+
+  ② FIX THE ABSTRACT        seven labeled fields, order fixed · a Key Points
+                            box beside it (§3)
+                            ❓ THE WORD CAP IS NOT ON RECORD: the pack's 350
+                               is a measurement, not the desk's instruction
+                               (§3.1, Aim A3.1)
+                            use the plural `Exposures` for a cohort design,
+                               which the template does not yet offer (A3.2)
+
+  ③ RUN THE VERB CHECK      no "reduced", "led to" or "caused" anywhere in
+                            Results or Discussion · "was associated with" is
+                            the permitted form (§1, §7.2)
+                            THE most common way a sound paper fails this desk
+
+  ④ SPLIT THE RESULTS       crude estimate and adjusted estimate in the SAME
+                            paragraph · no crude figure standing alone (§6)
+                            every null carries its 95% CI, in the main text,
+                            never moved to a Supplement (§6.1)
+
+  ⑤ UNNEST CONCLUSIONS      Conclusions is a TOP-LEVEL section here, not a
+                            Discussion subsection · Limitations stays titled
+                            (§7) · this is the one structural break from the
+                            flagship, so a descended manuscript must be re-cut
+
+  ⑥ FIX THE SUPPLEMENT      "Supplement N" and "eItem N in Supplement M" ·
+                            no bare "eTable N", no "in the Supplement" (§8)
+                            manifest ends on the Data Sharing Statement ·
+                            the hero display stays in the body (§8.1)
+
+  ⑦ UPLOAD, THEN BUDGET     an APC falls due at acceptance, not at submission
+                            (§9) · request a waiver before it is owed
+```
+
+✅ Establishes the desk's own gate as a seven-step list, so the binding rules are executed once on the finished file rather than remembered while drafting.
+
+#### 10.1 · Step ⑤ is the step a descended paper fails
+(it is the only rule here that a manuscript written for a sibling desk breaks by construction)
+Steps ① to ④ and ⑥ are checks a JAMA IM manuscript already passes, because the three outlets share one manuscript format and one verb discipline.
+Step ⑤ is different: the flagship and JAMA IM nest Conclusions inside Discussion, and this desk does not, so a paper arriving by the planned descent arrives structurally wrong in exactly one place.
+That makes it the cheapest possible failure to prevent and the easiest to miss, since nothing about the prose looks off.
+
 ## Aims
 
 ### A1 · 🎯 A null result is a deliverable here
@@ -969,6 +1061,18 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 - A8.2 · The manifest ends on the Data Sharing Statement whether or not the study is registered.
   **Done when:** the last Supplement in a JNO-pinned manifest is the Data Sharing Statement, and the hero display is in the body.
 
+#### A9 · 💵 What arriving here costs
+- A9.1 · The APC is a known number before a paper is pinned to this outlet.
+  **Done when:** a captured desk source states the figure, and `materials/` holds the page it was read from.
+- A9.2 · The two acceptance rates carry their denominators.
+  **Done when:** each of 69% and 12% names what it is a rate OF, or the row says the desk does not print it.
+
+#### A10 · ✅ Before you upload
+- A10.1 · The seven steps run on a finished file rather than living in a reader's memory.
+  **Done when:** a JNO-pinned draft records the seven steps as run, with the verb check and the Conclusions un-nesting named individually.
+- A10.2 · A manuscript descending from `QBv6` is re-cut at step ⑤ before it is uploaded.
+  **Done when:** no JNO submission carries Conclusions nested inside Discussion.
+
 ## States
 
 ### A1 · 🎯 A null result is a deliverable here
@@ -1000,6 +1104,14 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 ### A8 · 📎 jno-appendix: Supplements, not appendices
 - ⬜ A8.1 · Not started. The grammar is a single style.md line, 29, and a grep would catch both failures.
 - ⬜ A8.2 · Not started. The ordering is a rule of thumb at n = 2, flagged for re-verification at line 79.
+
+#### A9 · 💵 What arriving here costs
+- 🔨 A9.1 · The clock and the odds are captured and cited; the APC AMOUNT is not, because the desk's own For Authors page names the charge without printing a figure.
+- ⬜ A9.2 · Both rates are printed and neither denominator is. 69% is labelled "for all submissions"; 12% is unlabelled.
+
+#### A10 · ✅ Before you upload
+- 🔨 A10.1 · The seven steps are written from this page's own DESK RULE rows. Three of them carry an open question forward, so the list runs and does not yet run clean.
+- ⬜ A10.2 · Not started, and it is the step this outlet's planned descent breaks by construction.
 
 ## Files
 
@@ -1041,6 +1153,13 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 - **Associational language**: the verbs this desk allows. A JNO paper writes "was associated with", and never "reduced" or "led to".
 
 ## Log
+
+260821 · Divisions 9 and 10 added, closing the two gaps the 260821 outline round measured across all sixteen desk pages: 12 of 16 had no cost division and 12 of 16 did not close on a runnable rule list, where `QBv1` the ruled template carries both.
+  Division 9's clock and odds are read from `materials/pages-for-authors-260821.txt`, this desk's own For Authors page fetched 260821, which is the first time any cost figure on this page came from the desk rather than from nowhere.
+  The APC amount stays an open row because the desk names the charge without printing a figure, and the two acceptance rates stay unpaired because only one carries a denominator.
+  Division 10 assembles this page's existing DESK RULE rows into seven steps and invents nothing; each step cites the division it came from.
+  ORDERING DEVIATION, recorded rather than hidden: the venue contract puts cost among the HEAD divisions, as `QBv1` §2 and `QBv12` §3 do, and this page appends it at §9 to avoid renumbering §3 to §8 and every Aim and State id under them. Reading order pays; id stability and a silent renumbering error do not.
+  `materials/` itself is new as of 260821: 75 captured desk pages across the sixteen, with 30 navigation shells named as shells because a 200 is not a capture.
 
 260802 2200 · Rewritten for a reader whose English is weak, through `haipipe-writing`.
   Nineteen sentences in the Opening and Content were split or reworded.

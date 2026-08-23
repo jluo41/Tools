@@ -1,3 +1,27 @@
+## 0.3.0 — 2026-08-21
+
+- **Pitch returns, at division 2, as BLUF.** JL 260821: the pitch is the
+  one-minute story told to others, placed "before the research question and
+  after the identity", with placeholders when the answer is not yet known.
+  This is NOT the venue-embedded pitch 0.2.0 moved to Narrative: that one is
+  desk-shaped and stays there. This one is the GENERAL listener's telling and
+  survives retargeting, which is the Seed's own membership test.
+- **Placeholder discipline**: every pitch sentence selling a finding cites an
+  ✅ E-row or carries `⟦pending E<n>⟧`. Day-1 aspirational, convergence
+  visible: zero placeholders = the paper found its bottom line.
+- **Old division 5 split on its lifetime seam**: the volatile Establishment
+  Board (E<n> rows, ✅/🔨/⬜, unranked) separates from stable Boundaries, so a
+  diff outside the moving divisions is identity drift by construction.
+- **Source Pages named the PageX seedbed**: §5 rows the read scope, `pagex/`
+  binds exactly what is rowed, §6 cites what §5 rows.
+- Shape is now eight divisions: Identity → Pitch → RQ → Stakes → Source
+  Pages → Establishment Board → Boundaries → Narrative Handoff.
+- Frontmatter gains version, summary, and `group-token: SD` with the runtime
+  address `0-SD-seed/SD00-seed/`.
+- Same day, JL ruled the story group SHARED: Narratives live beside the Seed
+  as `SD<NN>-narrative-<venue>` in `0-SD-seed/` (narrative 0.4.0), the MT-group
+  shape applied to paper.
+
 ## 0.2.0 — 2026-08-19
 
 - **Renamed `for-opening` to `for-seed`, and made VENUE-FREE by rule.** JL 260819:

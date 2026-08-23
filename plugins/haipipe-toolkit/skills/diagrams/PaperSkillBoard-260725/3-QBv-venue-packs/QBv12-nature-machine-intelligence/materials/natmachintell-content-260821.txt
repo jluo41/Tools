@@ -1,0 +1,460 @@
+Content Types | Nature Machine Intelligence
+
+Skip to main content
+
+Thank you for visiting nature.com. You are using a browser version with limited support for CSS. To obtain
+the best experience, we recommend you use a more up to date browser (or turn off compatibility mode in
+Internet Explorer). In the meantime, to ensure continued support, we are displaying the site without styles
+and JavaScript.
+
+Advertisement
+
+View all journals
+
+Saved research
+
+Search
+
+Log in
+
+Content
+Explore content
+
+About the journal
+
+Publish with us
+
+Sign up for alerts
+
+RSS feed
+
+nature
+
+nature machine intelligence
+
+content types
+
+Content Types
+
+To submit one of the following content types, please read the formatting details below, then follow the submission guidelines :
+
+Article
+
+Analysis
+
+Correspondence*
+
+Review*
+
+Perspective*
+
+Comment*
+
+Matters Arising – see specialist submission process here .
+
+Reusability Report
+
+For more information on these content types, please contact Nature Machine Intelligence :
+
+News & Views*
+
+Book Review*
+
+News Feature*
+
+Challenge Accepted*
+
+*These content types should not include original (previously unpublished) research findings and may only contain minimal new supporting data. As they are non-primary articles they are not eligible for Open Access and can only be published using the subscription-based publishing route.
+
+______________________________________________________________________________________________________________________________________
+
+Article
+
+An Article is a substantial novel research study, with a complex story often involving several techniques or approaches.
+
+Format
+
+Main text – up to 3,500 words, excluding abstract, Methods, references and figure legends.
+
+Abstract – up to 150 words, unreferenced.
+
+Display items – up to 6 items (figures and/or tables).
+
+Article should be divided as follows:
+
+Introduction (without heading)
+
+Results
+
+Discussion
+
+Methods. ​
+
+Results and Methods should be divided by topical subheadings; the Discussion does not contain subheadings.
+
+References – as a guideline, we typically recommend up to 50.
+
+Articles include received/accepted dates.
+
+Articles may be accompanied by supplementary information.
+
+Articles are peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+Analysis
+
+An Analysis is a new analysis of existing data or describes new data obtained in a comparative analysis that leads to novel and arresting conclusions of importance to a broad audience.
+
+Format
+
+Main text – up to 3,500 words (excluding abstract, online Methods, references and figure legends).
+
+Abstract – 100-150 words, unreferenced.
+
+Display items – up to 6 items (figures and/or tables).
+
+Analysis should be divided as follows:
+
+Introduction (without heading)
+
+Results
+
+Discussion
+
+Methods. ​
+
+Results and Methods should be divided by topical subheadings; the Discussion does not contain subheadings.
+
+References – as a guideline, we typically recommend up to 50.
+
+Analyses include received/accepted dates.
+
+Analyses may be accompanied by supplementary information.
+
+Analyses are peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+Correspondence
+
+The Correspondence section provides a forum for comment on issues relevant to the journal’s community. This format may not be used for presentation of research data or analysis.
+
+Format
+
+Correspondence – between 500-1,000 words.
+
+Display items – 1 item.
+
+References – up to 10 references. Article titles are omitted from the reference list.
+
+Correspondence may be peer-reviewed at the editors’ discretion.
+
+Note that Correspondence pieces are not technical comments on peer-reviewed research papers; these should be submitted as Matters Arising.
+
+______________________________________________________________________________________________________________________________________
+
+Review
+
+A Review is an authoritative, balanced and scholarly survey of recent developments in a research field. The requirement for balance need not prevent authors from proposing a specific viewpoint, but if there are controversies in the field, the authors must treat them in an even-handed way.
+
+The scope of a Review should be broad enough that it is not dominated by the work of a single laboratory, and particularly not by the authors' own work.
+
+Format
+
+Main text – 3,000-4,000 words.
+
+Illustrations are strongly encouraged.
+
+References – up to 100 (exceptions are possible in special cases).
+
+Citations – these should be selective and, in the case of particularly important studies (≤ 10% of all the references), we encourage authors to provide short annotations explaining why these are key contributions.
+
+Reviews include received/accepted dates.
+
+Reviews are peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+Perspective
+
+A Perspective provides a forum for authors to discuss fast-moving or emerging topics in a scholarly way while also presenting an original, forward-looking vision. They are more thought-provoking or speculative than Reviews and may take a narrower field of view. While opinionated, Perspectives should remain balanced and are intended to stimulate discussion.
+
+Format
+
+Main text – 3,000-4,000 words.
+
+References – up to 100 (exceptions are possible in special cases).
+
+Perspectives include received/accepted dates.
+
+Perspectives are peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+Comment
+
+A Comment is a very flexible format, focusing on the scientific, commercial, ethical, legal, societal, or political issues surrounding research. Comments should be topical, readable, provocative and introduce new concepts/points of view, providing a personal perspective on a matter of public or scientific importance. The main criteria are that they should be of immediate interest to a broad readership and should be written in an accessible, non-technical style.
+
+Format
+
+Length – 1,500-2,000 words.
+
+Comments do not normally contain primary research data, although they may present 'sociological' data (funding trends, demographics, bibliographic data, etc.).
+
+References should be used sparingly – up to 15.
+
+Article titles are omitted from the reference list.
+
+Peer review is at the editors' discretion.
+
+______________________________________________________________________________________________________________________________________
+
+Matters Arising
+
+Matters Arising are exceptionally interesting and timely scientific comments and clarifications on original research papers published in Nature Machine Intelligence . These comments should ideally be based on contemporary knowledge rather than subsequent scientific developments.
+
+For detailed information on how to submit a Matters Arising, please follow instructions here .
+
+______________________________________________________________________________________________________________________________________
+
+Reusability Reports
+
+Reusability Reports are Articles that specifically test the robustness and reusability of previously published code that supported the findings in papers published in Nature Machine Intelligence or elsewhere. Read our editorial introducing this format " The rewards of reusable machine learning code ".
+
+______________________________________________________________________________________________________________________________________
+
+News & Views
+
+News & Views articles inform readers about the latest advances in machine intelligence, as reported in recently published papers or at scientific meetings. They may be linked to articles in Nature Machine Intelligence , or they may focus on papers of exceptional significance that are published elsewhere. Unsolicited contributions will not normally be considered, although prospective authors are welcome to make proposals.
+
+News & Views are not peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+Book Review
+
+Book Reviews are by prior arrangement only, although suggestions are welcome. Book reviews are not peer reviewed.
+
+______________________________________________________________________________________________________________________________________
+
+News Feature
+
+News Features are commissioned on an ongoing basis and cover a wide range of topics, including policy or commercial developments, funding trends or the impact of AI, machine learning and robotics on science and society.
+
+Nature Machine Intelligence welcomes ideas for future topics. Writers interested in pitching News Features should contact the Chief Editor directly by email.
+
+Format
+
+Length – up to 3,000 words.
+
+Use of tables and figures is strongly encouraged.
+
+Written in a journalistic style, accessible to a wide range of non-specialist readers.
+
+______________________________________________________________________________________________________________________________________
+
+Challenge Accepted
+
+Challenge Accepted articles are brief reports from organizers, winners or participants of competitions in robotics, AI and machine learning, to share their experiences and vision on the role of competitions in their research field.
+
+Nature Machine Intelligence welcomes ideas for future topics.
+
+Format
+
+Length – up to 1,000 words.
+
+1 figure.
+
+Up to 10 references
+
+Accessible to a wide range of non-specialist readers.
+
+Explore content
+
+Research articles
+
+Reviews & Analysis
+
+News & Comment
+
+Videos
+
+Current issue
+
+Collections
+
+Follow us on X
+
+Sign up for alerts
+
+RSS feed
+
+About the journal
+
+Aims & Scope
+
+Journal Information
+
+Journal Metrics
+
+About the Editors
+
+Our publishing models
+
+Editorial Values Statement
+
+Editorial Policies
+
+Content Types
+
+Contact
+
+Research Cross-Journal Editorial Team
+
+Reviews Cross-Journal Editorial Team
+
+Publish with us
+
+Submission Guidelines
+
+For Reviewers
+
+Language editing services
+
+Open access funding
+
+Submit manuscript
+
+Search
+
+Search articles by subject, keyword or author
+
+Show results from
+
+All journals
+This journal
+
+Search
+
+Advanced search
+
+Quick links
+
+Explore articles by subject
+
+Find a job
+
+Guide to authors
+
+Editorial policies
+
+Nature Machine Intelligence
+
+( Nat Mach Intell )
+
+ISSN 2522-5839 (online)
+
+nature.com footer links
+
+About Nature Portfolio
+
+About us
+
+Press releases
+
+Press office
+
+Contact us
+
+Discover content
+
+Journals A-Z
+
+Articles by subject
+
+protocols.io
+
+Nature Index
+
+Publishing policies
+
+Nature portfolio policies
+
+Open access
+
+Author & Researcher services
+
+Reprints & permissions
+
+Research data
+
+Language editing
+
+Scientific editing
+
+Nature Masterclasses
+
+Research Solutions
+
+Libraries & institutions
+
+Librarian service & tools
+
+Librarian portal
+
+Open research
+
+Recommend to library
+
+Advertising & partnerships
+
+Advertising
+
+Partnerships & Services
+
+Media kits
+
+Branded
+content
+
+Professional development
+
+Nature Awards
+
+Nature Careers
+
+Nature
+Conferences
+
+Regional websites
+
+Nature Africa
+
+Nature China
+
+Nature India
+
+Nature Japan
+
+Nature Middle East
+
+Privacy
+Policy
+
+Use
+of cookies
+
+Your privacy choices/Manage cookies
+
+Legal
+notice
+
+Accessibility
+statement
+
+Terms & Conditions
+
+Your US state privacy rights
+
+&copy; 2026 Springer Nature Limited

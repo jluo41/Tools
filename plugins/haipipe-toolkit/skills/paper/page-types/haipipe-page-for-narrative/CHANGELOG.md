@@ -1,3 +1,21 @@
+## 0.4.0 — 2026-08-21
+
+- **One folder for the story** (JL 260821: "put the narrative and seed into one
+  single folder"): Narratives live beside the Seed in the `0-SD-seed/` group as
+  `SD<NN>-narrative-<venue>` pages, sharing `group-token: SD`. Same shape as an
+  InsightBoard's MT group: SD00 says what the paper IS, SD01+ say how it is
+  TOLD. Group law: the story group decides the telling; no manuscript prose.
+- **The claim law**: every claim row names its Seed E-row parent. ✅ parent
+  licenses any role; 🔨 caps the role at provisional; no parent is a defect
+  with two exits (add the E-row to the Seed, or drop the claim). A claim may
+  narrow its parent and never broaden it.
+- **Division 1 is the paper's venue DECISION**, matching Venue 0.3.0's
+  consumer-neutral bank: it binds the shared QBv page through pagex/, owns
+  category choice and fit, and quotes no desk rule without the binding.
+- **Staleness wired one hop**: a Seed E-row flip reopens citing claims; a bank
+  Venue Page refresh reopens division 1. Marks travel by citation.
+- Frontmatter gains version, summary, and the shared `group-token: SD`.
+
 ## 0.3.0 — 2026-08-19
 
 - **ONE narrative page per VENUE**, new `per: venue` key (JL 260819: "narrative,

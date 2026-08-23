@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.142.1"
+  version: "0.143.0"
   last_updated: "2026-08-21"
-  summary: "checks/intake.py parsed zero rows and reported green: block parser, the frozen_as shape, and a no-rows finding (JL 260820). Log row is one line, 15-35 words; the rule and its example live at haipipe-page-draft §📏."
+  summary: "Application runtime page families (M/I/A/D) now resolve: PAGENAME, page_files, the ## Pages registry, and parse.py all admit them, verified regression-free on five boards. Log row is one line, 15-35 words; the rule and its example live at haipipe-page-draft §📏."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

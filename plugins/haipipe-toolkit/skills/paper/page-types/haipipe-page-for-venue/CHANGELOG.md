@@ -1,3 +1,95 @@
+## 0.3.2 — 2026-08-21
+
+Backfilling the two divisions 0.3.1 measured as missing. `QBv7` is done and is
+the pattern; eleven pages remain, plus `QBv3` which needs only the close and
+`QBv6` which needs only the cost division.
+
+- **`materials/` is a new page-local lane**, holding the desk's OWN published
+  pages: `raw/` for the bytes as served, a `.txt` rendering beside it, and a
+  `MANIFEST.md` classifying every capture. 75 captured across the sixteen
+  desks, 30 navigation shells named as shells. Laws: verbatim, dated with its
+  METHOD, immutable (a rule change lands a NEW dated file and the old stays).
+- **A 200 is not a capture.** INFORMS serves one byte-identical 2,742-char nav
+  shell at seven different paths and Cloudflare-blocks a headless render;
+  JAMA serves the same shell at two outlet paths. A rendering holding only
+  chrome is worse than a missing file, so shells keep their raw bytes as
+  evidence and get no rendering. A `DESK RULE` row may cite a `CONTENT`
+  capture and never a shell.
+- **Cost facts do NOT live at the URLs a venue page already cites.** Those are
+  formatting pages; fees, clocks and odds sit elsewhere, and constructing the
+  cost URLs by hand failed 7 of 8 attempts. Finding them is per-desk discovery
+  work, so the cost division is written from captures where they exist and from
+  UNKNOWN rows with owners where they do not. It is never written from memory.
+- **ORDERING DEVIATION, recorded as a convention rather than re-decided per
+  page.** The shape puts cost among the HEAD divisions, as `QBv1` §2 and
+  `QBv12` §3 do. A retrofit APPENDS it instead, because inserting a head
+  division renumbers every later division and every Aim and State id under it,
+  across sixteen heterogeneous pages. Reading order pays; a silent renumbering
+  error does not. Each page records the deviation in its own Log. A page whose
+  close already exists inserts cost immediately BEFORE it, so the runnable rule
+  list stays last.
+- **A dated FILENAME cited in Content trips `content-attribution`**, because
+  the checker reads the date code as attribution. Cite `materials/MANIFEST.md`
+  instead: its name is stable and it carries the file, date, method and
+  checksum. Found on `QBv7` and fixed there.
+
+## 0.3.1 — 2026-08-21
+
+Field evidence from retrofitting an OUTLINE onto all 16 QBv pages the same day
+0.3.0 shipped, JL approving all 16 plans. The mirror principle held on every
+desk, including the two non-journal targets whose units are agencies and
+jurisdictions rather than sections. Two declared parts of the shape did not.
+
+- **The cost head division exists on 4 of 16 pages.** Present on `QBv1-misq`
+  §2, `QBv2-isr` §3, `QBv12-nature-machine-intelligence` §3, and `QBv3-ms-is`
+  §1 in the variant form "the vocabulary switch is the arrival cost". Absent on
+  the other twelve, where fees, review clock and odds survive only as an Aim
+  row, an Authority link, or nothing.
+- **The closing runnable rule list exists on 4 of 16 pages.** `QBv1` §12,
+  `QBv2` §10, `QBv6-jama-im` §10 all title it "Before you upload: the binding
+  rules as a list you can run"; `QBv12` §11 is the same act as "The gate, as a
+  runnable list". The other twelve end on their appendix division.
+- **Two pages point at the hole in their own prose.** `QBv3-ms-is` references
+  `§10` and a `Submission-Rules` figure six times and has neither;
+  `QBv10-nature-communications` references `§10` five times as "the desk's own
+  gate" and stops at §9. A page citing a division it does not have is the
+  strongest evidence the shape is right and the page is behind it.
+- **Read as a backlog, not as an over-specification.** JL ruled `QBv1` the
+  template for the other fifteen on 260803 and it carries both parts, so the
+  4-of-16 count measures unfinished pages rather than a contract claiming a
+  shape nobody wants. No rule changed here; the counts are recorded so the gap
+  is a named queue instead of a rediscovery.
+- **One shape variance is legitimate and stays.** `QBv1` §11 carries five parts
+  and every `QBv10` unit division carries six, adding "where breadth has to be
+  visible here" — that desk's bar made structural. The four parts are the floor
+  a unit division owes, not a ceiling.
+
+## 0.3.0 — 2026-08-21
+
+- **The SKILL body caught up with its own rulings.** 0.2.0 ruled `per: venue`
+  and 0.1.0 ruled QBv1 the template, but the body still carried a 7-division
+  `mode: fixed` outline that none of the 16 real pages followed. Diffed the
+  contract against QBv1, QBv5, and QBv16: the real shape is 2-3 head divisions
+  (taste → cost → sibling pin), one division per DESK reading unit in the
+  desk's order, four fixed parts inside each, binding rules last.
+- **Outline mode corrected to `resolved`**, source `paper/venue/<pack>/<outlet>/`
+  — one style.md per unit, one division. The desk dictates the division list;
+  comparability across the 16 desks lives at the PART level. The seven old
+  divisions survive as content obligations only.
+- **Ownership stated: a SHARED desk record, consumer-neutral.** No paper name,
+  no `serves:`; refreshed on the desk's clock. A paper's venue decision lives
+  in its Narrative's Venue divisions, and retargeting touches the Narrative,
+  never this page. `LOCAL DECISION` accordingly left the authority vocabulary
+  for Narrative.
+- Frontmatter gained the standard metadata block (`version`, `summary`,
+  `per: venue` — previously only in this changelog — and `group-token: QBv`);
+  the page declares `page-type: venue`, with QBv filename resolution kept as
+  the fallback for the existing pages.
+- The 0.1.1 fan-out rules that bound structure (parts-sum vs desk total,
+  resolver-wins indexing, desk-list-longer-than-resolver, sibling-rule
+  inheritance, unfillable-slot printing) were promoted from changelog-only
+  into the SKILL body, where a producer actually reads them.
+
 ## 0.2.0 — 2026-08-19
 
 - **ONE venue page per VENUE**, new `per: venue` key, and it stays a PAGE. JL

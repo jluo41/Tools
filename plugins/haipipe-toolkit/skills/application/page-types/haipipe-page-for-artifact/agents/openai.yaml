@@ -1,4 +1,0 @@
-interface:
-  display_name: "Application Artifact Page"
-  short_description: "Govern one independently reviewable delivery unit"
-  default_prompt: "Use $haipipe-page-for-artifact to promote or repair one independently accepted, versioned, or deployed unit from a Design Page."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Application Design Page"
-  short_description: "Design messages for one audience, job, and venue"
-  default_prompt: "Use $haipipe-page-for-intervention to create or repair one Design Page from settled Insight Design Handoffs."

@@ -54,3 +54,8 @@ node_modules/
 # kept on disk only as a local reading reference; the live skills supersede it.
 # Ignored rather than committed so the repo does not carry two of everything.
 /legacy/
+
+# Scraped venue-pack downloads: cache, not source. Saved web pages can carry
+# presigned-URL credentials (a PNAS page tripped GitHub push protection on
+# 260823), and nothing tracked references them.
+**/materials/raw/

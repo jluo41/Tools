@@ -395,6 +395,75 @@ function boardDirPath() {
   }
 })();
 
+/* 🧮 Value · every number the page owes or uses, the rail's THIRD surface.
+ *
+ * THE GAP IT CLOSES (JL 260819): a probe card is ONE question whose answer
+ * holds SEVERAL numbers, and a sentence uses one of them. Citing the card
+ * alone could not say which, so a value nobody used looked exactly like one
+ * everybody did. The `PP<NN>.v<n>` id fixed the address; this surface is what
+ * makes it checkable, joining both ways:
+ *
+ *   🕳 a number in the prose citing no PP<NN>.v<n>   unsourced
+ *   🎈 a value in a card that no sentence cites      answered for nobody
+ *
+ * THIRD because this file sorts at 08-, right after 🧭 outline: registration
+ * order is asset sort order, which is the rail's order.
+ *
+ * NO STORAGE and NO WRITER (haipipe-plugin-value §🧊): the number already
+ * lives in probe/PP<NN>/proof/ with its source, run and sha256. This is a
+ * LIVE route rendered from card.md plus the page's own prose on every open,
+ * stored nowhere. The POST twin exists only so the shell's
+ * `tab: {url, write}` contract holds; it writes nothing.
+ */
+(function () {
+  'use strict';
+
+  function pageFile(page) {
+    return (page && page.getAttribute('data-file')) || '';
+  }
+
+  function board() {
+    try { return boardPath(); } catch (e) { return location.pathname; }
+  }
+
+  function valueUrl(page) {
+    var f = pageFile(page);
+    if (!f) return '';
+    return '/_board/value?path=' + encodeURIComponent(board())
+         + '&file=' + encodeURIComponent(f);
+  }
+
+  function write(page, cb, err) {
+    fetch('/_board/value', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: board(), file: pageFile(page) })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { err && err(j.err || 'value failed'); return; }
+        cb(j);
+      })
+      .catch(function (e) { err && err(String(e)); });
+  }
+
+  if (window.boardPlugins) {
+    window.boardPlugins.register({
+      id: 'value',
+      label: '🧮 Values',
+      hint: 'every number, where it was read from, and which part uses it',
+      menu: 'plugin',
+      /* Any page may cite a value, and a page with none renders the empty
+       * state rather than vanishing from the rail: an empty cell is a
+       * status, never a blank. */
+      applies: function (page) { return !!pageFile(page); },
+      open: function (page) {
+        var u = valueUrl(page);
+        if (u) window.open(u, '_blank', 'noopener');
+      },
+      tab: { url: valueUrl, write: write }
+    });
+  }
+})();
+
   /* ── highlighting ────────────────────────────────────────────
      Two paths, because they have different information:
        NEW comment  -> we still hold the live Range. Wrap THAT. Always exact,
@@ -6551,11 +6620,15 @@ document.addEventListener('click', function (ev) {
 
      Only ## Content participates. C is a ### division. H is a terminal,
      addressable #### heading and never parents P/S in the address grammar.
-     Paragraphs are siblings of headings inside C; each source-line paragraph
-     currently carries one sentence, so its leaf is Pn.S1.
+     A source PARAGRAPH is a blank-line block; each source line inside it is
+     one sentence. build.py stamps the first sentence of each block with
+     class="pnew", so P counts blocks and S counts sentences within one
+     (JL 260819: "the paragraph should not change every sentence"). A page
+     built before the stamp has no .pnew anywhere; it falls back to the old
+     one-P-per-sentence numbering instead of collapsing into a single P.
 
        QAb3.C1.H1       heading itself
-       QAb3.C1.P2.S1    sentence in the second paragraph of C1
+       QAb3.C1.P2.S3    third sentence in the second paragraph of C1
 
      These are render-local focus addresses, not durable Markdown identity. */
   // Defined in 00-apparatus.js, which runs first: one grammar, never two.
@@ -6642,7 +6715,8 @@ document.addEventListener('click', function (ev) {
         }
         var cbody = directChild(csec, 'cbody');
         if (!cbody) return;
-        var nextH = 0, nextP = 0, headingPath = '';
+        var hasPnew = !!cbody.querySelector('p.pnew');
+        var nextH = 0, nextP = 0, nextS = 0, headingPath = '';
         cbody.querySelectorAll('.ph,p').forEach(function (node) {
           if (node.closest('.cbody') !== cbody) return;
           if (node.classList.contains('ph')) {
@@ -6663,8 +6737,12 @@ document.addEventListener('click', function (ev) {
           }
           var p = node;
           if (!eligibleContentSentence(p, cbody)) return;
-          nextP += 1;
-          var shortId = contentId + '.P' + nextP + '.S1';
+          if (!hasPnew || p.classList.contains('pnew') || nextP === 0) {
+            nextP += 1; nextS = 1;
+          } else {
+            nextS += 1;
+          }
+          var shortId = contentId + '.P' + nextP + '.S' + nextS;
           var fullId = sec.id + '.' + shortId;
           var contentPath = contentId + (contentTitle ? ' · ' + contentTitle : '') +
             (headingPath ? '\n' + headingPath : '');

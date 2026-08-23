@@ -1,5 +1,12 @@
 # Start: Reshape HAIPipe Application
 
+> **STALE as of 2026-08-20.** This is the one-off bootstrap prompt that opened the
+> Application redesign in August; it is kept as a record of how the work started.
+> Its "Application-specific behavior to preserve" list is no longer true: the
+> descriptions/themes/claims/advice ladder is retired, and the Application now ends
+> at ACCEPTED rather than continuing through deploy and iterate. Read
+> `README.md` and `haipipe-application/SKILL.md` for the current architecture.
+
 Use this file to start a fresh Codex session for reorganizing the HAIPipe Application skill family.
 
 The new session should treat HAIPipe Paper as a structural reference, not as a template to copy blindly.

@@ -1,0 +1,1770 @@
+ADA Journal Policies | Journals Gateway | American Diabetes Association
+
+Skip to Main Content
+
+Advertisement
+
+Open Menu
+
+Close
+
+Professional Books
+
+Clinical Compendia
+
+Journals Open Menu
+
+Journals Home
+
+Diabetes
+
+Diabetes Care
+
+Clinical Diabetes
+
+Diabetes Spectrum
+
+Diabetes, Obesity, and CardioMetabolic CARE
+
+BMJ Open Diabetes Research & Care Open External Link
+
+Journal Article Collections
+
+ADA Standards of Care
+
+ADA Meeting Abstracts
+
+Podcasts Open Menu
+
+All ADA Podcasts
+
+DiabetesBio Open External Link
+
+Diabetes Care On Air Open External Link
+
+DOC Updates Open External Link
+
+DOC Updates: Special Editions
+
+Diabetes Day by Day Open External Link
+
+The Points of CARE Open External Link
+
+Professional News Open External Link
+
+Search Dropdown Menu
+
+header search
+
+Search input auto suggest
+
+filter your search
+
+All Content All Journals
+
+Search
+
+Advanced Search
+
+User Tools Dropdown
+
+Sign In Open Menu
+
+Toggle Menu Menu
+
+Browse All Journals
+
+Article Collections
+
+Podcasts Open Menu
+
+All ADA Podcasts
+
+DiabetesBio Open External Link
+
+Diabetes Care On Air Open External Link
+
+DOC Updates Open External Link
+
+DOC Updates: Special Editions
+
+Diabetes Day by Day Open External Link
+
+The Points of CARE Open External Link
+
+Subscriptions Open Menu
+
+Subscriptions Home
+
+Individual Subscriptions
+
+Institutional Subscriptions
+
+Site Licensing
+
+Administrator Information
+
+Information Open Menu
+
+Journal Policies
+
+Core Values
+
+Accessibility
+
+Copyright Notice / Public Access Policy
+
+Permission for Reuse
+
+Advertising in ADA Journals
+
+Contact Information
+
+Social Media and Sharing Guidelines
+
+ADA Policies and Procedures for Peer-Reviewed Publications
+
+Last updated June 30, 2026.
+
+The American Diabetes Association (ADA) follows the recommendations of the International Committee of Medical Journal Editors (ICMJE), the World Association of Medical Editors (WAME), and the Committee on Publication Ethics (COPE) for guidance on policies and procedures related to publication ethics. The policies listed below have been adopted from those three advisory bodies and, where necessary, modified and tailored to meet the specific content, audiences, and aims of ADA’s peer-reviewed journals ( Diabetes , Diabetes Care , Clinical Diabetes , Diabetes Spectrum , and ADA's newest journal Diabetes, Obesity, and Cardiometabolic CARE ), supplements, books, and monographs. The Association or its Panel on Ethical Scientific Programs (ESP) will consider on a case-by-case basis policies that are not addressed below.
+
+Table of Contents
+
+Study Design
+
+Originality and Prior Publication
+
+Authorship and Contributions
+
+Email Requirements
+
+Acknowledgments
+
+Conflict of Interest
+
+Data Access and Responsibility
+
+Data and Resource Sharing and Availability
+
+Clinical Trials, Systematic Reviews, and Meta-Analyses
+
+Reporting on Human Islets
+
+Common Forms of Scientific Misconduct
+
+Responses to Possible Scientific or Publishing Misconduct
+
+Reporting Concerns Related to Scientific Misconduct
+
+Artificial Intelligence, LLMs, and Machine Learning
+
+Peer Review
+
+Manuscript Extenders
+
+Editorial Decisions
+
+Financial Obligations for Accepted Manuscripts
+
+Prepublication of Accepted Articles
+
+Copyright, Reuse, Sharing, and Access
+
+Copyright
+
+Reuse
+
+Reuse by authors
+
+Posting and sharing
+
+Preprints
+
+Accepted manuscripts
+
+Published articles
+
+Public access
+
+Free article types
+
+Access icons
+
+NIH Public Access Policy
+
+ADA Open Choice
+
+AI Content Licensing Policy
+
+Permanency of Published Content
+
+Article Amendments
+
+Media Embargos
+
+Advertising
+
+Supplements
+
+ADA Standards, Statements, Reports, and Reviews
+
+Privacy and Data Collection Policies
+
+Additional Resources
+
+Questions
+
+Study Design
+
+In accordance with the recommendations of WAME , research submitted to ADA journals should be well justified, well planned, and appropriately designed so that it can properly address the research objective of the study described in the manuscript. Statistical issues, including power calculations, should be described to avoid futile studies that produce subject risk without enrollment sufficient to address the research objective. Outcomes should be specified at the start of the study. Research should be conducted to high standards of quality control and data analysis. Data and records, including the original versions of manuscripts, the original source files for figures and graphics, and other files and supporting materials, must be retained by authors and must be able to be produced for review, if requested by the editors. Fabrication, falsification, concealment, deceptive reporting, or misrepresentation of data constitutes scientific misconduct.
+
+In addition, and in line with WAME's recommendations, ADA requires documented review and approval from a formally constituted review board (institutional review board or ethics committee) for all studies involving people, medical records, and human tissues. For those investigators who do not have access to formal ethics review committees, the principles outlined in the World Medical Association's Declaration of Helsinki should be followed. If the study is judged exempt from review, a statement from the committee is required; authors should provide this statement at the time of manuscript submission. Informed consent by participants must be attained. If not possible, an institutional review board must decide if this is ethically acceptable; review board approval must be attested to and described in the comments to the editor upon manuscript submission and in the Research Design and Methods section of the manuscript itself.
+
+Studies and experiments using animals require full compliance with local, national, ethical, and regulatory principles, and local licensing arrangements.
+
+ADA journals require the reporting of sex for cells, tissues, and experimental animals and humans (i.e., male and female) where appropriate and suitable for the experimental design of the research effort; studies should report whether sex was considered a factor in the statistical analysis of the data.
+
+Back to Top
+
+Originality and Prior Publication
+
+ADA journals publish only original work that has not been previously published, unless otherwise specified below. All authors of manuscripts submitted to ADA journals must declare whether the manuscript or any part of it, regardless of the language in which it was originally written or published, has been published or is under consideration for publication elsewhere. ADA does not consider previous presentation of a study at a meeting, previous publication of an abstract affiliated with the proceedings of meetings, or prior posting of a study on a recognized preprint server (e.g., bioRxiv) to constitute prior publication. To be clear, ADA journals will still consider papers for publication if they are previously presented in these formats. At the time of submission and in the Acknowledgments section, authors should disclose whether the study described in the manuscript has been previously presented at a meeting, published in abstract form in the proceedings of a meeting, or posted on a preprint server.
+
+Any reference to or use of previously published material protected by copyright must be explicitly acknowledged in the manuscript. Posting of submitted material on a website may be considered prior publication and should be noted in the comments to the editor upon submission. Redundant publication—when multiple papers, without full cross-reference in the text, share the same data or results—is not permissible. At the time of submission, authors should disclose details of related papers they have authored, even if authored in a different language; similar papers in press; and any closely related papers previously published or currently under review at another journal.
+
+Back to Top
+
+Authorship and Contributions
+
+ADA journals subscribe to the requirements stated in ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals that authorship implies:
+
+Substantial contributions to conception and design of the work; or the acquisition, analysis, or interpretation of data for the work; and
+
+Drafting the work or revising it critically for important intellectual content; and
+
+Final approval of the version to be submitted to and published in the journal; and
+
+Agreement to be accountable for all aspects of the work in ensuring that questions related to the accuracy or integrity of any part of the work are appropriately investigated and resolved.
+
+All authors should meet these above conditions, and ADA requires for all listed authors to list their contributions to the study and/or manuscript in a section titled "Author Contributions" on the title page of the manuscript. If the article is accepted for publication, this information will be included after the main text in the published version of the manuscript.
+
+In addition, ADA has adopted the following ICMJE recommendations related to authorship and contributions:
+
+When a large, multicenter group has conducted the work, the group should identify the individuals who accept direct responsibility for the manuscript. These individuals should fully meet the criteria for authorship defined above, and these individuals must complete the mandatory Manuscript Submission Form , which requires authors to outline contributions and relevant conflict of interest.
+
+When submitting a manuscript authored by a group, the corresponding author should clearly indicate the preferred citation and identify all individual authors as well as the group name; other collaborators should be listed in the Acknowledgments . The National Library of Medicine (NLM) indexes the group name and the names of individuals the group has identified as being directly responsible for the manuscript; it also lists the names of collaborators if they are listed in Acknowledgments .
+
+Acquisition of funding, collection of data, collection of patient and/or samples from other species, or general supervision of the research group alone does not constitute authorship.
+
+All persons designated as authors should qualify for authorship, and all those who qualify should be listed.
+
+Each author should have participated sufficiently in the work to take public responsibility for appropriate portions of the content.
+
+All authors must take responsibility in writing for the accuracy of the manuscript, and one or more authors, such as the corresponding or lead author, must be the guarantor and take responsibility for the work as a whole.
+
+Back to Top
+
+Institutional / Employer-Affiliated Email Address Requirement for Corresponding Authors
+
+In today’s publishing environment, it is increasingly important to confirm the identities of authors. To help maintain the integrity of the scientific record, ADA journals require that the corresponding author provide an institutional or employer-assigned email address when submitting a manuscript.
+
+Using a verifiable, organization-based email address ensures accountability for scientific quality and establishes a clear connection between the corresponding author and the institution that provided the resources to perform the reported research. Personal, commercially hosted email accounts cannot reliably confirm identity and present a greater risk for fraudulent use of names and credentials.
+
+Guidelines
+
+The corresponding author must provide a valid institutional or employer-assigned email address. A personal (commercial) email address may be included as a secondary contact but cannot replace the institutional address.
+
+The institutional or employer email address should be readily identifiable as belonging to the individual corresponding author, either by including their name, initials, or a recognizable variation thereof.
+
+Email addresses consisting solely of numbers are not acceptable.
+
+Group or departmental accounts shared among multiple individuals are not permitted.
+
+Back to Top
+
+Acknowledgments
+
+The role of or contribution by any individual or entity included in the Acknowledgments section of the manuscript must be clearly defined. Editors or ADA staff may contact authors to clarify the roles or contributions of any person or entity acknowledged in the manuscript, particularly if that person or entity provided "editorial assistance" or help with "preparing" or "drafting" the manuscript. Authors should avoid vague or broad descriptions of contributions of acknowledged individuals or entities; descriptions of contributions should be clear, specific, and precise.
+
+ADA requires that authors list the employer or institutional affiliation of any individual mentioned in the Acknowledgments section. If this information is not included at the time of submission, editorial office staff will request the corresponding author to submit a new version of the manuscript that includes the required information.
+
+Back to Top
+
+Conflict of Interest
+
+ADA journals require all participants in the peer review and publication process to disclose all relationships that could be viewed as potential conflicts of interest. Editors may use information disclosed in conflict of interest and financial interest statements as a basis for editorial decisions.
+
+All authors should refer to the ADA Policy Statement on Duality of Interest . For all manuscript submissions, regardless of article type, authors should include conflict-of-interest statements in both the comments to the editors at the time of submission and within the Acknowledgments section of the manuscript itself. If authors have no relevant conflicts of interest to disclose, this should also be declared in both sections. ADA Journals also encourage authors to complete and submit ICMJE's Uniform Disclosure Form for Potential Conflicts of Interest with their manuscript submission.
+
+Examples of potential conflict of interest include:
+
+Employment, membership on the board of directors, or any fiduciary relationship with a third-party entity engaged in the development, manufacture, or sale of pharmaceutical or medical devices, supplies, or information
+
+Ownership of stock or receipt of honoraria, travel or meeting expenses, or consulting or review fees from a third-party entity, as described above
+
+Receipt of financial support or grants for research from a third-party entity, as described above
+
+Holding patents or receiving royalties related to the development of pharmaceutical or medical devices, supplies, or information
+
+Receipt of writing assistance, medicines, equipment, or administrative support from a third-party entity, as described above
+
+Membership on a scientific advisory panel or other standing scientific/medical committee
+
+Receipt of payment or honoraria for author contributions or author designation
+
+Any other relationships that readers could perceive to have influenced, or that give the appearance of potentially influencing, the content of the submitted work.
+
+Investigators must disclose potential conflicts of interest to study participants and should state in the manuscript whether they have done so.
+
+If the study was sponsored by a third party, authors should describe the role of the study sponsor in study design; collection, analysis, and interpretation of data; writing the report; and the decision to submit the report for publication. If the supporting source had no such involvement, the authors should so state. At the time of submission, ADA requires that the submitting author of a study funded by an agency with a proprietary or financial interest in indicate that she/he had full access to all of the data in the study and takes complete responsibility for the integrity of the data and the accuracy of the data analysis. This author, unless otherwise specified, will be listed in the published version of the article as the "guarantor" of the study.
+
+Please note that the editors may request a statistical analysis of all data by an independent biostatistician, and will decline to consider an article if a sponsor has asserted control over the authors’ right to publish.
+
+Peer reviewers for ADA publications are required to disclose to editors any conflicts of interest that could bias their opinions of the manuscript. Likewise, the Editor and Associate Editors are required to recuse themselves of any final decision on manuscripts for which they may have personal or professional biases. In such cases, a different member of the Editorial Team, or an "Ad Hoc Editor" (e.g., a previous Editor-in-Chief of the journal), will be appointed to adjudicate the review of the manuscript and render a decision on the manuscript.
+
+Authors are encouraged to provide editors with the names of persons they feel should not be asked to review a manuscript because of potential conflicts of interest. Authors should explain their concerns in their comments to the editor at the time of submission; the editors will take this information into account when determining who to invite to review the manuscript.
+
+Back to Top
+
+Data Access and Responsibility
+
+The American Diabetes Association has adopted the data access and responsibility policies developed by the Journal of the American Medical Association :
+
+For all reports (regardless of funding source) containing original data, at least one named author (e.g., the principal investigator) who is independent of any commercial funder or sponsor must indicate that he or she is the "guarantor" of the study (i.e., he or she had full access to all the data in the study and takes responsibility for the integrity of the data and the accuracy of the data analysis). A statement identifying the guarantor should be included in the Acknowledgments section at the end of the manuscript. Modified statements or generic statements indicating that all authors had such access are not acceptable.
+
+The statement should appear as follows:
+
+C.K. is the guarantor of this work and, as such, had full access to all the data in the study and takes responsibility for the integrity of the data and the accuracy of the data analysis.
+Modified statements or generic statements indicating that all authors had such access are not acceptable.
+
+For industry-sponsored studies, the editors reserve the right to request an analysis of the data (based on the entire raw dataset and evaluation of the study protocol, and prespecified plan for data analysis) by an independent statistician at an academic institution, rather than by statisticians employed by the sponsor or by a commercial contract research organization. In such cases, the independent biostatistician must be a faculty member at a medical school or academic medical center, or an employee of a government research institute, that has oversight over the person conducting the analysis and that is independent of the commercial sponsor. Details of this independent statistical analysis, the name and institutional affiliation of the independent statistician, and whether compensation or funding was received for conducting the analyses should be reported in the Acknowledgments section of the manuscript. The results of this independent statistical analysis should be the results reported in the manuscript.
+
+Back to Top
+
+Data and Resource Sharing and Availability
+
+The American Diabetes Association supports the efforts of researchers, funders, and agencies to make underlying research data and resources more accessible, more transparent, and easier to share. As part of this effort, as of January 1, 2019, Diabetes will require authors of original research studies to describe in their papers how readers can access the data and critical resources supporting their reported findings, methods, and conclusions.
+
+Diabetes has adapted and extended to resource sharing the following guidelines from Nature Research’s Policy ( go.nature.com/2bf4vqn ):
+
+All original research papers submitted to and published in Diabetes must provide statements about the availability of data and critical resources supporting the results reported in the article. The data and resource availability statements should be placed at the end of the “Research Design and Methods” section, under the subheading “Data and Resource Availability.” The section should contain separate statements on (1) Data Sharing and (2) Resource Sharing. Please access the complete policy at diabetesjournals.org/diabetes/pages/data-policy for more specific information and guidance related to these policies.
+
+Back to Top
+
+Clinical Trials, Systematic Reviews, and Meta-Analyses
+
+ADA journals adhere to ICMJE’s clinical trials registration policy, which is summarized in section III-L of ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals . ICMJE defines a clinical trial as "any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes." All clinical trials submitted to ADA journals must be registered with an ICMJE-approved clinical trial registry (such as clinicaltrials.gov) prior to patient enrollment. If your manuscript is considered a clinical trial but has not been registered, it will not be considered for publication in the journal. ADA accepts registration of clinical trials in any of the primary registries that participate in the World Health Organization International Clinical Trial Registry Platform . Authors must include the unique clinical trial number, the name of the registry, and the URL to the registration on the manuscript’s title page.
+
+Authors of reports on randomized controlled trials (RCTs) are required to complete the checklist outlined in the Consolidated Standards of Reporting Trials (CONSORT) Statement . The instructions and checklist are designed to ensure that information pertinent to the trial is included in the study report. ADA requires that the CONSORT checklist is submitted with RCT manuscripts; CONSORT information may be posted with accepted manuscripts as online-only supplementary materials at the request of the editors or the authors.
+
+Authors of reports on systematic reviews and meta-analyses are required to complete the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) . The PRISMA Statement consists of a 27-item checklist and a 4-phase flow diagram that have been developed to help authors improve the reporting of systematic reviews and meta-analyses. ADA requires that the completed checklist and diagram are submitted with systematic reviews and meta-analyses; PRISMA information may be posted with accepted manuscripts as online-only supplementary materials at the request of the editors or the authors.
+
+ADA journals require the reporting of sex for cells, tissues, and experimental animals and humans (i.e., male and female) where appropriate and suitable for the experimental design of the research effort; studies should report whether sex was considered a factor in the statistical analysis of the data.
+
+Back to Top
+
+Reporting on Human Islets
+
+Effective January 1, 2019, Diabetes requires authors of papers reporting data obtained from studies on human islets to report critical characteristics of the human islets used for research. Such information will facilitate comparisons among studies using isolated human islets and, to the extent possible, standardization of the preparations and methods used by individual laboratories. These objectives are aligned with the current emphasis placed on scientific rigor and reproducibility in research by a number of major funding organizations. For full details, see the complete Human Islet Policy .
+
+Back to Top
+
+Common Forms of Scientific Misconduct
+
+The most common forms of scientific misconduct, with minor modification from Analysis of Institutional Policies for Responding to Allegations of Scientific Misconduct by the U.S. Department of Health and Human Services’ Office of Research Integrity, are listed below.
+
+Falsification of data: ranging from fabrication to deceptive selective reporting of findings and omission of conflicting data, willful suppression and/or distortion of data, and inappropriate or fraudulent digital image manipulation. For more information about ADA’s image manipulation policies, please see the section below .
+
+Plagiarism: The appropriation of the language, ideas, or thoughts of another and representation of them as one’s own original work, or the duplication or re-use of one’s previously published work without proper acknowledgment. For more information about plagiarism and how ADA detects for plagiarism, see the section below .
+
+Improprieties of authorship: Improper assignment of credit, such as excluding others, misrepresentation of the same material as original in more than one publication, inclusion of individuals as authors who have not made a definite contribution to the work published; or submission of multi-authored publications without the concurrence of all authors.
+
+Violation of generally accepted research practices: Serious deviation from accepted practices in proposing or carrying out research, improper manipulation of experiments to obtain biased results, deceptive statistical or analytical manipulations, or improper reporting of results.
+
+Material failure to comply with federal requirements affecting research: Including but not limited to serious or substantial, repeated, willful violations involving the use of funds, care of animals, human subjects, investigational drugs, recombinant products, new devices, or radioactive, biologic, or chemical materials.
+
+Inappropriate behavior in relation to misconduct: Including inappropriate accusation of misconduct; failure to report known or suspected misconduct; withholding or destruction of information relevant to a claim of misconduct and retaliation against person involved in the allegation or investigation.
+
+Deliberate misrepresentation of qualifications, experience, or research accomplishments to advance the research program, to obtain external funding, or for other professional advancement.
+
+Misappropriation of funds or resources. For example, misuse of funds for personal gain.
+
+ADA’s plagiarism and image manipulation policies are further described below.
+
+Plagiarism
+
+Manuscripts submitted to ADA journals will be uploaded to CrossCheck/iThenticate , plagiarism detection software, to scan the document for plagiarized text. Plagiarism is scientific misconduct and will be addressed as such.
+
+According to WAME , "Plagiarism is the use of others' published and unpublished ideas or words (or other intellectual property) without attribution or permission, and presenting them as new and original rather than derived from an existing source. The intent and effect of plagiarism is to mislead the reader as to the contributions of the plagiarizer. This applies whether the ideas or words are taken from abstracts, research grant applications, Institutional Review Board applications, or unpublished or published manuscripts in any publication format (print or electronic)."
+
+Self-plagiarism refers to the practice of an author using portions of his/her previous writings on the same topic in another of his/her publications, without specifically and formally citing the previously published work. ADA will allow authors to reuse only their own succinctly written literature reviews and brief descriptions of methodologies or patient characteristics from previously published work. Authors who do so should disclose this information in their comments to the editors at the time of submission, and any reused methodology descriptions from previously published work should be properly cited. As mentioned before, all manuscripts submitted to ADA journals are scanned for possible plagiarized and reused text using the CrossCheck/iThenticate software. To avoid possible concerns or peer-review delays, authors should make a concerted effort to reword or rewrite text borrowed from the methodology descriptions of their own work. " Avoiding plagiarism, self-plagiarism, and other questionable writing practices ," a resource developed by Miguel Roig, PhD, with funding from ORI, provides useful information on best practices related to ethical writing.
+
+Cases of suspected plagiarism and inappropriate self-plagiarism will be referred to the Association’s Panel on Ethical Scientific Programs (ESP). Information on how such cases are addressed by the ESP can be found in the section below titled "Responses to Possible Scientific or Publishing Misconduct."
+
+Digital Image Manipulation
+
+ADA has adopted the statement developed by the Journal of Cell Biology [ J Cell Biol 166:11-15 (2004) ] as its policy on the manipulation of digital images:
+
+"No specific feature within an image may be enhanced, obscured, moved, removed, or introduced. The grouping of images from different parts of the same gel, or from different gels, fields, or exposures must be made explicit by the arrangement of the figure (i.e., using dividing lines) and in the text of the figure legend. Adjustments of brightness, contrast, or color balance are acceptable if they are applied to the whole image [that is, every pixel] and as long as they do not obscure, eliminate, or misrepresent any information present in the original, including backgrounds. Without any background information, it is not possible to see exactly how much of the original gel is actually shown. Non-linear adjustments (e.g., changes to gamma settings) must be disclosed in the figure legend.” For presented blots, noncontiguous lanes may be spliced together only when the lanes were run on the same gel at the same time. This alteration should be made apparent in the presented figure by inserting a thin dividing line between the lanes, and it should be clearly explained and described in the figure legend."
+At the revision stage, all authors are required to submit, together with the revised manuscript, a zip file titled "Source_Files.zip" that contains the original, uncropped and unedited photographs of all figures that represent gels, Western blots, microscopic photos, etc., intended to be published in the final version of the article, if accepted. Each gel/blot should be labeled as "Full unedited gel/blot for Figure X," and the authors should highlight which lanes of the unedited gel/blot correspond to those shown in the cropped images presented in the manuscript. This zip file will be temporarily archived in the manuscript submission site if the paper is accepted; it will not be available to readers unless specifically requested by the authors to be published online. Failure to provide such original photographs will delay, or even preclude, publication of a manuscript in ADA journals.
+
+Furthermore, all digital images in manuscripts accepted for publication will be scanned using image forensics software for any indication of improper manipulation. Cases of questionable or inappropriate image alterations will be referred to the Association’s Panel on Ethical Scientific Programs (ESP). The ESP may request the original data from the authors for comparison to the prepared figures. If the original data cannot be produced, the acceptance of the manuscript will be revoked. Cases of deliberate misrepresentation of data will result in revocation of acceptance, and will be reported to the corresponding author's home institution and/or funding agency as appropriate.
+
+For examples of what constitutes improper digital manipulation (as well as other forms of scientific misconduct), ADA encourages authors to refer to the 2006 editorial by the Journal of Clinical Investigation titled "Stop Misbehaving!" [ J Clin Invest 116:1740-1741 (2006) ].
+
+In addition, authors are encouraged to refer Adobe's white paper on using Photoshop in biomedical imaging. The paper provides useful information on maintaining image integrity, editing nondestructively, and the medical and scientific image workflow
+
+Back to Top
+
+Responses to Possible Scientific or Publishing Misconduct
+
+ADA journals are member journals of the Committee on Publication Ethics (COPE). COPE, established in 1997, is a charity registered in the U.K. The Committee is concerned with the integrity of peer-reviewed publications in science, particularly biomedicine.
+
+In cases of possible scientific or publishing misconduct, ADA will consult COPE’s 17 flowcharts that provide algorithms for editors to follow when they suspect publication misconduct. Cases that cannot be properly addressed by use of COPE’s algorithms will be investigated and addressed by ADA’s Panel on Ethical Scientific Programs (ESP) on a case-by-case basis.
+
+The ESP works on behalf of ADA scientific programs and publications to objectively and efficiently investigate cases of potential or perceived misconduct. The panel is comprised of expert independent investigators who share the Association’s vision for appropriateness in scientific procedures.
+
+ADA and the ESP take seriously all reported concerns and allegations. When investigating and responding to cases of suspected misconduct, the panel operates with the utmost regard for the sensitivity, confidentiality, and impartiality required to fairly resolve each case.
+
+The ESP strives to keep the number of inquiries and those involved to the minimum necessary to reach a recommendation for responding to the allegation.
+
+In accordance with the recommendations of WAME, if the inquiry concludes there is a reasonable possibility of misconduct, responses will be contingent on the apparent magnitude of the misconduct. Responses will depend on the circumstances of the case as well as the responses of the participating parties and institutions. To respond to each case, ADA will refer to COPE’s algorithms and the following options outlined by WAME , which have been slightly modified and are listed in approximate order of severity:
+
+A letter of explanation (and education) sent only to the person against whom the complaint is made, where there appears to be a genuine and innocent misunderstanding of principles or procedure.
+
+A letter of reprimand to the same party, warning of the consequences of future such instances, where the misunderstanding appears to be not entirely innocent.
+
+A formal letter as above, including a written request to the supervising institution to carry out an investigation and report the findings of the investigation in writing to the journal. ADA will review and take into consideration the recommendations of investigating institutions when determining how to further respond to cases. If the institution does not respond to ADA’s request for an investigation, or if it becomes evident that the investigation will not be completed within a reasonable amount of time, ADA may independently address the concerns or retract the paper in question.
+
+Publication of a notice of scientific or academic misconduct, such as redundant or duplicate publication or plagiarism, if appropriate and unequivocally documented. Such publication will not require approval of authors, and will be reported to the author(s)’ institution and, if appropriate, funding agency.
+
+Formal withdrawal or retraction of the paper from the scientific literature, published in the journal, informing readers and the indexing authorities (National Library of Medicine, etc) if there is a formal finding of misconduct by ADA or the author(s)’ institution. Such publication will not require approval of authors; will be reported to, if appropriate, the author(s)’ institution and/or funding agency; and will be readily visible and identifiable in the journal.
+
+ADA will refer to COPE’s Retraction Guidelines when considering the potential publication of a withdrawal or retraction notices in ADA Journals. More information about such considerations can be found in the “ Article Amendments ” section.
+
+Back to Top
+
+Reporting Concerns Related to Scientific Misconduct
+
+Any individual may report concerns related to possible misconduct involving ADA scientific programs or publications by email to [email&#160;protected] . Correspondents should provide as much information as possible to clearly describe the potential instances of misconduct, as well as the specific citation information or grant submission number, if available, for the work in question. These concerns will be reviewed by the Association’s Panel on Ethical Scientific Programs (ESP). The ESP will only review concerns related to possible research and scientific misconduct, and will not review challenges to any decision regarding a submitted manuscript, abstract, or grant application.
+
+Back to Top
+
+Use of Artificial Intelligence, Large Language Models, and Machine Learning
+
+The ADA has adopted and expanded the Journal of the American Medical Association (JAMA) guidance for authors, peer reviewers, and editors to address the roles of artificial intelligence (AI), large language models (LLMs), and machine learning in the development, review, and publication of content:
+
+The submission and publication of content created by artificial intelligence, language models, machine learning, or similar technologies is discouraged, unless part of formal research design or methods, and is not permitted without clear description of the content that was created and the name of the model or tool, version and extension numbers, and manufacturer. Authors must take responsibility for the integrity of the content generated by these models and tools.
+
+In general, these tools may be used responsibly in limited, transparent ways. See below for requirements related to AI and authorship, content creation, image integrity, reproduced material, and peer review.
+
+AI, Authorship, and Content Creation
+
+AI, LLMs, machine learning, or similar technologies do not qualify for authorship.
+
+The use of AI-assisted tools in the creation or modification of content submitted to ADA journals—including text, tables, figures, graphical abstracts, and multimedia (audio or video)—must be approached with caution and full transparency. All submitted content must accurately represent underlying data and concepts and must reflect the intellectual work of the authors.
+
+Permitted Use
+
+AI-assisted content generation is permitted only when all of the following conditions are met:
+
+Substantial Human Authorship
+
+Authors must retain primary creative and intellectual control over all content. AI tools may be used for assistance (e.g., editing, rendering, or refinement), but the final output must reflect substantive human input, interpretation, and validation from the authors. Content generated primarily or entirely by AI is not permitted.
+
+Scientific Accuracy and Integrity
+
+All content must be carefully reviewed and verified by the authors to ensure accurate representation of data, methods, and concepts. AI tools must not be used to fabricate, alter, enhance, or selectively emphasize features—particularly in images or multimedia—in a manner that could mislead readers.
+
+Clear Disclosure
+
+All use of AI tools must be fully disclosed in the manuscript. This information should be included in the Research Design and Methods or Acknowledgments section, as appropriate, and in the comments to the editors at the time of submission. (Use of basic tools for grammar, spelling, or reference formatting does not require disclosure.)
+
+Authors must disclose:
+
+The name and version of the AI tool(s) used
+
+A brief description of how the tool was used (e.g., data processing, image refinement)
+
+A statement confirming that the authors reviewed and verified the final output
+
+Rights and Permissions
+
+Submitted content must comply with all applicable copyright and licensing requirements. Authors are responsible for ensuring that AI-assisted content does not infringe on third-party rights and that all related permissions and licenses have been obtained prior to manuscript submission. Permission forms for reprinted or modified images should be clearly labeled and uploaded to the submission system.
+
+Prohibited Use
+
+Use of AI tools to generate images or multimedia that replace, simulate, or fabricate data or results
+
+Submission of content generated primarily or entirely by AI without meaningful human authorship
+
+Use of AI to alter original research images or multimedia in a way that changes their scientific meaning or interpretation
+
+Failure to disclose the use of AI tools in any aspect of content creation or modification
+
+AI and Editorial Review
+
+The journal reserves the right to request additional information regarding the creation of submitted content, including source files, prompts, or documentation of the generation process. Authors remain fully responsible for the accuracy, integrity, and originality of all content submitted to an ADA journal, regardless of the tools used. Content that does not meet these standards may be rejected or require revision.
+
+AI and Manuscript Peer Reviewers
+
+A manuscript peer reviewer may not enter any part of the manuscript or abstract or the text of the review into an LLM, chatbot, or similar AI tool, as it is a violation of confidentiality. Manuscripts submitted to the journal are confidential and may not be reused or shared in any way. AI tools are available to reviewers within the submission system to aid in the review process. Peer reviewers are responsible for all content included in a review.
+
+Back to Top
+
+Peer Review
+
+ADA journals employ a single-blinded review process: authors are blinded to the identities of the editors and reviewers responsible for the independent peer review of their manuscripts, but not vice versa. Original Articles, Brief Reports, Perspectives and Review Articles, and Supplemental Articles are invited for peer review by the editors.
+
+The Editor-in-Chief assesses each submission to the journal to determine whether the content and subject of the manuscript is appropriate for the journal. Due to an increasing number of submissions and limited editorial space, only those manuscripts that meet a priority score, as determined by the Editor, above the 50th percentile will be reviewed. Each manuscript that meets the priority score above the 50th percentile is assigned to an Associate Editor who is versed in the subject area of the manuscript. The Associate Editor will invite expert researchers to peer review the manuscript. Based on the reviews of three peer reviewers, the Associate Editor will recommend a decision to accept the manuscript for publication, reject the manuscript, or suggest that the authors revise and resubmit the manuscript. The Editor-in-Chief is responsible for determining and conveying the final decision on all manuscripts. The Editor-in-Chief may consult with other Editorial Board members if there is significant divergence of opinion among the Associate Editors and/or the peer reviewers on how a manuscript should be decided. All correspondence related to the peer review of each manuscript is confidential.
+
+The peer reviewers for ADA journals are experts chosen by the Associate Editors to provide written objective assessments of the strengths and weaknesses of original research manuscripts, with the aim of improving the reporting of research and identifying the most appropriate, timely, and highest-quality research for the journal. Researchers are invited to review manuscripts submitted to the journals on the bases of their objectivity, scientific knowledge, and level of expertise. Reviewers for ADA journals are required to disclose whether they have any competing interest related to the subject of the article or the authors (e.g., those working for a company whose product was tested, its competitors, or the same institution as the authors, etc.).
+
+ADA journals seek reviews that are professional, honest, courteous, prompt, and constructive. Editors may edit reviews before sending them to authors, or simply not send them if they feel they are not constructive or appropriate. The desired major elements of a high-quality review, as outlined by the WAME , are as follows:
+
+The reviewer should have identified and commented on major strengths and weaknesses of study design and methodology, and should identify the major strengths and weaknesses of the manuscript as a written communication, independent of the design, methodology, results, and interpretation of the study.
+
+The reviewer should comment accurately and constructively upon the quality of, and the author's interpretation of, the data, including acknowledgment of its limitations.
+
+The reviewer should comment on any ethical concerns raised by the study, or any evidence of potential scientific misconduct.
+
+The reviewer should provide the author with useful suggestions for improvement of the manuscript when appropriate.
+
+The reviewer's comments to the author should be cordial and constructively critical.
+
+The review should provide the editor the proper context and perspective to make a decision on acceptance (and/or revision) of the manuscript.
+
+Instructions for reviewers of ADA journals can be found online at diabetesjournals.org/journals/pages/reviewers .
+
+After each review is submitted, the Associate Editors rate the quality and the timeliness of the review, and this information is recorded in the peer-review database. Ratings of review quality and timeliness are periodically assessed to ensure optimal journal performance and, as such, contribute to decisions regarding ongoing review requests. Individual performance data are kept confidential.
+
+ADA recognizes that the submitted manuscript is a privileged communication, and reviewers are required to treat each manuscript as confidential. Reviewers are not allowed to retain, copy, or share manuscripts. Reviewers and editors are not permitted to make any personal or professional use of the data, arguments, or interpretations (other than those directly involved in its peer review) prior to publication unless they have the authors' specific permission or are writing an editorial or commentary to accompany the article.
+
+If reviewers suspect misconduct, they are asked to notify the editor in confidence; reviewers should not share their concerns with other parties. In cases involving reviewer- or editor-identified suspected misconduct (e.g., possible duplicate submission, plagiarism, etc.) in a submitted manuscript to ADA journals and a submitted manuscript to another publication, ADA journals may provide a review copy of a submitted paper to an editor of another journal, with the understanding that the review paper could not be shared with any outside party, in order to efficiently and fairly appraise the validity and legitimacy of such suspicions. This step would only be taken if the author(s) did not satisfactorily respond to an initial letter of inquiry from the editors.
+
+Manuscripts authored by the American Diabetes Association or ADA staff must first be vetted and reviewed by the appropriate ADA department and/or ADA volunteer committee (such as the Association’s Professional Practice Committee) prior to being submitted to an ADA journal. After an ADA-authored manuscript is submitted to an ADA journal, the editor-in-chief of the journal has the discretion to determine the level of peer review that should be assigned to the manuscript before it is accepted for publication.
+
+Information about each journal's acceptance rates, publication intervals, and other performance data can be found in the "About the Journal" page of the online journal. Updated statistics are posted in July/August of each year.
+
+Back to Top
+
+Manuscript Extenders
+
+ADA Journals and Professional Publications will consider for publication online-only “manuscript extenders” — that is, visual abstracts, video abstracts, infographics, and other forms of multimedia — assuming that such article components meet the following criteria:
+
+The materials are submitted along with the primary manuscript and manuscript materials in order to undergo a standard and thorough peer-review process.
+
+Manuscript extenders include only images that are original or are within the public domain.
+
+Copyright is transferred to ADA, as with all manuscript components submitted to ADA.
+
+The materials clearly list the authors of the accompanying article, the title of the article, and other relevant citation information; clearly disclose the appropriate funding statements and any potential conflicts of interest; and clearly indicate if a third party was employed to create the materials.
+
+Manuscript extenders should objectively summarize or complement the published article and should be free of bias; they should not be used to promote a commercially available product.
+
+Under certain circumstances, ADA may consider the publication of manuscript extenders after a paper has been published, but a fee will be applied depending on the level of review required, the format of the manuscript extender, and the cost and time required to update the online version of the article. Proposals and requests for more information for post-publication manuscript extenders can be sent to [email&#160;protected]
+
+ADA Journals and Professional Publications can accommodate a wide array of digital formats; however, we recommend that contributors refer to the following recommendations when creating their materials:
+
+Try to keep video and audio formats under 5 minutes. Based on usage statistics, most users “bounce” after 5 minutes.
+
+For visual abstracts, feel free to modify the attached templates for Diabetes , Diabetes Care , Clinical Diabetes , and Diabetes Spectrum .
+
+When it comes to infographics, avoid “info-scrolls.” A good aspect ratio is between 1:2 and 1:3.
+
+Lastly, be creative. Don’t hesitate to take a new approach to highlight your research, and don’t hesitate to contact ADA to explore opportunities to collaborate on any new formats for sharing your work.
+
+Back to Top
+
+Editorial Decisions
+
+In accordance with the recommendations of WAME , decisions about manuscripts submitted to ADA journals are based on the manuscripts’ importance, originality, clarity, and relevance to the journal's scope and content. Editors are asked to give equal consideration to studies with negative results despite adequate power, or those challenging previously published work.
+
+If an author chooses to appeal a decision, the author should contact the Editorial Office at [email&#160;protected] . The corresponding author should clearly explain the reason for appealing the decision. Depending on the reason, the Editorial Office will forward the appeal to either the Editor-in-Chief (if, for instance, the author disagrees with the recommendations of the reviewer or Associate Editors) or ADA’s Scientific & Medical Department (if, for example, the author alleges a form of editorial conflict of interest or misconduct).
+
+Manuscripts authored or co-authored by a member of the current Editorial Team will be decided by an independent "Ad Hoc Editor" (e.g., a previous editor not affiliated with the author’s editorial team). An Ad Hoc Editor will also be assigned manuscripts for which the Editor is required to recuse her/himself from the peer review process because of a potential conflict of interest or personal or professional bias. ADA Editorial Office staff will assist the Ad Hoc Editor with inviting and selecting reviewers. Members of the current Editorial Team are blinded to the peer review of manuscripts overseen by the Ad Hoc Editor.
+
+Back to Top
+
+Financial Obligations for Accepted Manuscripts
+
+Article-processing charges are assessed for non-invited articles to help defray the costs related to the peer review, editorial production and publication, access and dissemination, and archiving and indexing of articles.
+
+For articles submitted on or after February 1, 2024, article processing charges will be assessed at $175 per typeset journal page.
+
+In addition, ADA offers an “Open Choice” option for authors who wish to make their published article immediately accessible online to nonsubscribers. By paying an additional article-processing charge of $250 per page, authors may elect to have their articles freely available on the journal's website. Upon receipt of payment and on behalf of the author, ADA will also deposit the final version of the published article into PubMed Central.
+
+Authors will receive an invoice for publication fees, as well as a reprint order form, when page proofs become available. Unless otherwise indicated, it is assumed that the corresponding author takes responsibility for payment. Questions regarding billing or payment should be directed to [email&#160;protected] .
+
+Discount and Waiver Requests
+
+ADA recognizes that authors, their institutions, or their funding bodies, particularly those from low-income countries, may be unable to meet these financial obligations. In such cases, authors should submit requests for discounts or waivers of article-processing charges of accepted papers via the following online form: Publication Fee Requests .
+
+It should be noted that payment of publication fees or waiver status does not in any way influence the editorial decision-making process or the publication of any paper submitted to ADA journals.
+
+Back to Top
+
+Prepublication of Accepted Articles
+
+Articles accepted for publication in an ADA journal are published online ahead of print shortly after receipt of author proof corrections and are scheduled to appear in a future issue of the journal in print and online.
+
+Online Ahead of Print articles are citable by their unique DOI (digital object identifier). DOIs for ADA journal articles begin with 10.2337, followed by the article number assigned when the manuscript was submitted online via the manuscript submission system (e.g., 10.2337/dc11-1234).
+
+Back to Top
+
+Copyright, Reuse, Sharing, and Access
+
+Copyright
+
+The American Diabetes Association holds copyright on all content published in ADA journals, unless otherwise noted. Individual readers may use the content as long as the work is properly cited and linked to the version of record, the use is educational and not for profit, and the work is not altered. ADA permission is required to post articles on third-party websites (unless otherwise specified below under “Article sharing and access”) or to include articles in educational materials that are sold to students or used in courses for which tuition or other fees are charged. Refer to Copyright and License for complete information.
+
+Reuse
+
+Content published in ADA journals may not be reproduced without permission from ADA. All requests for reuse, with the exception of translations, are processed through the Copyright Clearance Center (CCC). To request permission from CCC, click on "Get Permissions" to the right of the online version of the article(s) containing the content you wish reuse.
+
+Reuse by authors
+
+Authors of ADA journal articles are permitted to reuse portions of their ADA-copyrighted work, including tables, images, and video, in their own work, and to reuse portions or all of their ADA-copyrighted work for educational purposes, without submitting a request to ADA, provided that the proper citation and copyright information is given.
+
+Specific examples of acceptable author reuse and sharing include:
+
+Reprinting the article in print collections of the author’s own writing.
+
+Reusing figures and tables created by the author in future works.
+
+Reproducing the article for use in courses the author is teaching.
+
+Distributing photocopies of the article to colleagues for non-commercial purposes only, but only for non-commercial purposes.
+
+Posting a copy of the article on the author's personal website, departmental website, and/or university intranet, with a hyperlink to the article on the journal website.
+
+Presenting the work orally in its entirety.
+
+Using the article in theses and/or dissertation.
+
+For additional information, see Reprints & Permissions
+
+Posting and Sharing
+
+Preprints
+
+A preprint is the pre-review version of a paper submitted to a journal, or any earlier draft.
+
+ADA journals will consider papers for publication if they have been deposited in an established preprint repository prior to submission to the journal , assuming that the author has retained copyright of the preprint (and not assigned it to a third party). At the time of submission and in the Acknowledgments section of the manuscript, authors should disclose whether the manuscript has been posted on a preprint server and should provide the specific DOI for the preprint.
+
+It should be noted that preprints are preliminary reports of work that have not yet been peer reviewed . ADA therefore emphasizes that preprints should not be used to influence clinical practice, health-related decisions, or health policy. Preprints should not be reported in the media as established information.
+
+Accepted manuscripts
+
+Authors are permitted to submit the final, accepted version of their manuscript to their funding body or institution for inclusion in their funding body or institution's database, archive, or repository; on their personal website; and on scholarly collaboration networks that subscribe to STM’s “ Voluntary Principles for Article Sharing on Scholarly Collaboration Networks .” These manuscripts may be made freely accessible to the public upon acceptance, provided that a link to the final article published in the ADA journal is included when available.
+
+ADA will automatically deposit all research funded by NIH or any U.S. Government agency into PubMed Central in order to comply with NIH’s Public Access policy, as described below. Therefore, it is not necessary for NIH-funded authors to deposit, or “self-archive,” their accepted manuscripts in PubMed Central.
+
+Published articles
+
+Authors and readers are encouraged to share links to final published articles on the journal website. Sharing a link is the best way to help readers access the most recent version of an article, as well as tools for reading, citing, and promoting the article. This can be facilitated by selecting the “Share” function to right of each online version of the article.
+
+Authors are permitted to share the final, published version of their articles in private research collaboration groups, including those hosted on scholarly collaboration networks that subscribe to STM’s “ Voluntary Principles for Article Sharing on Scholarly Collaboration Networks. ” Non-commercial subscribers may also share articles within private research collaboration groups convened for the specific purpose of researching a topic relevant to the article.
+
+Back to Top
+
+Public Access
+
+The American Diabetes Association (ADA) supports free access to ADA Journals ( Diabetes , Diabetes Care , Clinical Diabetes , and Diabetes Spectrum ) on the widest possible basis. Authors of accepted articles may chose to make their article freely accessible online immediately upon publication for a fee by selecting the Open Choice option.
+
+In addition, the following article types are always freely available online immediately upon publication:
+
+Editor-selected cover or feature articles
+
+ADA-authored articles, including ADA Statements and the annual “Standards of Medical Care in Diabetes”
+
+Commentaries
+
+Symposia articles
+
+Invited articles
+
+Online-only letters and Observations
+
+“In This Issue” article summaries
+
+“Patient Information” pages
+
+“Quality Improvement Success Stories”
+
+Supplemental material
+
+Errata and other amendments
+
+Access icons
+
+Access icons found to the left of article titles on tables of contents and search result views indicate the accessibility status of the article. Either an open lock or a green check mark means the full article is accessible to you. An open lock signifies access without a subscription. These articles are accessible to the public. A green checkmark means you are able to access to this article with your current personal or institutional subscription. A green lock means the article is currently only accessible with an active subscription.
+
+U.S. Government-funded research access policy
+
+ADA deposits the final print versions of articles funded by NIH and all U.S. Government agencies into PubMed Central (PMC) on behalf of authors. In compliance with the NIH public access policy, enacted on July 1, 2025, these articles will be made publicly available on PMC immediately upon publication in Diabetes Care , Diabetes , or Diabetes, Obesity, and Cardiometabolic CARE . This service is provided at no additional cost to authors.
+
+NIH-funded authors may self-deposit their accepted manuscripts in PMC; however, ADA will automatically deposit the final published article into PMC, to be released to the public upon publication in an ADA journal issue. Funded authors of PMC-deposited papers should refer to NIH’s “ How to Cite ” page for information on providing a valid Public Access code for indicating compliance until a PMCID is assigned. In short, the “PMC Journal In Process” designation is a valid and acceptable code that should display by default until a PMCID is assigned. For more information, see NIH Public Access Frequently Asked Questions .
+
+ADA Open Choice
+
+ADA offers an “Open Choice” option for authors who wish to make their published article immediately accessible online to nonsubscribers. By paying an additional article-processing charge, authors may elect to have their articles freely available on the journal's website. Upon receipt of payment, ADA will also deposit on behalf of authors the final version of the published article into PubMed Central. Complete information regarding article-processing charges is available in the section titled Financial Obligations .
+
+ADA will automatically deposit all research funded by NIH into PubMed Central in order to comply with NIH’s Public Access policy, as described above.
+
+As with all content published in ADA Journals, Open Choice articles are published under the terms of ADA’s Copyright and Reuse License .
+
+Back to Top
+
+AI Content Licensing Policy and Terms
+
+Please access the AI Content Licensing Policy of the American Diabetes Association (ADA) for information on how ADA content may be used within artificial intelligence systems. Its primary purpose is to protect ADA intellectual property, ensure the responsible handling of confidential and proprietary information, and require transparency from all organizations seeking to apply ADA content in AI environments. The policy sets consistent expectations, identifies prohibited uses, and establishes the minimum safeguards necessary to protect people with diabetes and related conditions, scientific and medical professionals, and the ADA’s reputation.
+
+Back to Top
+
+Permanency of Published Content
+
+All ADA journal articles are assigned a permanent DOI URL and will remain published on the ADA journal sites; all ADA journal articles are deposited into PubMed and are archived in CLOCKSS .
+
+Authors can revise and update their articles only by publishing an article amendment. See Article Amendments below for details on errata and other types of corrigendum. Only the most recently published version of an article is available on the ADA journal websites.
+
+The ADA participates in Crossmark , a multi-publisher initiative that developed a standard way for readers to know they have located the most current version of an article. By applying CrossMark policies , ADA is committed to maintaining the content it publishes and to alerting readers to changes if and when they occur.
+
+Clicking on the Crossmark logo (at the top of each ADA research article) will give you the status of the article, confirming it is the latest published version and linking to any published corrigenda; it may also give you additional information such as funding bodies and grant numbers.
+
+To maintain the integrity and completeness of the scholarly record, the policies in the following sections regarding corrigenda apply when published content needs to be corrected, updated, or retracted and represent current best practice in the scholarly publishing and library communities.
+
+Back to Top
+
+Article Amendments
+
+Requests for submitting errata, retractions, or other updates should first be sent to the Association Editorial Office . Depending on the nature of the request, the Editorial Office will consult with the Editors or the Panel on Ethical Scientific Programs on how to proceed with the request.
+
+Errata
+
+Errata refer to errors introduced to the article by the author(s) or the publisher. ADA journals will publish errata notices to communicate necessary corrections to such errors. Errata will be published in the print and online versions of the journal. Errata are listed in the table of contents, are linked online to the articles to which they pertain, and are indexed in public databases such as PubMed. Errata should clearly cite and describe the reported error(s), including at what stage the error(s) was introduced; should clearly communicate the necessary correction(s) to the error(s); and address whether the errors originated with ADA staff or with the author.
+
+Author’s Notes
+
+Articles are posted individually after proofs are returned from authors and before appearing in an issue. To preserve the integrity of electronically publishing articles, once an article is individually posted but not yet in an issue, changes cannot be made in place in the paper. However, an "Author's Note" may be added to the paper immediately before the References section when there is a critical error in the content of the paper. The "Author's Note" section gives the author an opportunity to correct this type of critical error before the article is put into an issue for printing and before it is reposted in an issue. The "Author's Note" section remains a permanent part of the article.
+
+Expressions of Concern
+
+Expressions of concern are used to alert readers to possible problems that could affect the reliability of the reported data or presented conclusions of the paper. ADA may publish an expression of concern to notify readers that the Association has contacted the author’s institution to request an investigation into possible anomalies (e.g., potential data fabrication or duplication) in a published paper. ADA will also consider publishing an expression of concern, or an update to an expression of concern, if there is inconclusive evidence of research or publication misconduct by the authors; if there is evidence that the data or findings are unreliable but the authors’ institution will not investigate the case; if there is reason to believe that an investigation into alleged misconduct related to the publication either has not been, or would not be, fair and impartial or conclusive; or if an investigation is underway but a judgement will not be available for a considerable time. Publication of an expression of concern will not require approval of the authors and will be readily visible and identifiable in the journal.
+
+Retractions
+
+The primary purposes of a retraction are to correct the literature, ensure its integrity, and alert readers to publications that contain erroneous and unreliable data or conclusions. ADA journals will consider retracting a publication if there is clear evidence that the findings are unreliable, either as a result of misconduct (e.g., data fabrication) or honest error (e.g., miscalculation or experimental error); if the findings have previously been published elsewhere without proper cross-referencing, permission, or justification; if significant portions of the paper have been plagiarized; if the paper reports unethical research; or if the authors fails to disclose a major competing interest likely to influence interpretations or recommendations.
+
+The editors of ADA journals will refer to the COPE Retraction Guidelines when considering whether to retract an article from publication. The editors may consult with the Association’s Panel on Ethical Scientific Programs (ESP) when reviewing retraction requests and recommendations. Recommendations may be forwarded to the American Diabetes Association, the publisher of ADA journals, for final review and approval.
+
+ADA journals will make every effort to ensure that published retraction notices:
+
+link to all electronic versions of the retracted article wherever possible
+
+clearly identify the retracted article by including the title and authors in the retraction heading
+
+are clearly identified as a retraction to distinguish it from other types of corrections or comments
+
+are published promptly to minimize the harmful effects from misleading publications
+
+are freely available to all readers
+
+Authors of submitted retraction notices should ensure that all coauthors listed on the original paper are aware of the problems with the paper and the pending retraction request. In cases where coauthors disagree, the editors will consult with the ESP to determine the most appropriate type of amendment; dissenting author(s) will be noted in the text of the published amendment.
+
+Retraction requests to ADA journals should clearly state the following information:
+
+the specific reasons and basis for the retraction (in order to distinguish cases of misconduct from those of honest error)
+
+who is retracting the article (e.g., the author; the head of the department, dean, or director of the laboratory where the paper was produced; or the editorial team of the journal)
+
+whether any coauthors do not agree with or support the request
+
+whether the issue was reviewed by the author(s)’ institution or funding agency.
+
+If a previously published retraction statement is itself misleading or does not properly or fully disclose issues of misconduct (e.g., plagiarism or the republication of data or figures from previously published articles), ADA journals will consider requests from authors or their affiliated institutions to publish an update to the retraction notice in order to better clarify or identify the problems with the retracted paper. Requests submitted by authors to update or emend retraction notices will be reviewed by the editorial team and the ESP. Updates to retraction notices should meet the guidelines and standards listed above.
+
+Addenda
+
+Addenda (or "updates") communicate additional information to a paper, either by request of the author(s) or in response to readers' request for clarification. Addenda are published only rarely. They will be reviewed by the editors to determine whether they are crucial to the reader's understanding of the published paper.
+
+Addenda should be signed by all authors. They will be published in the print and online versions of the journal. Addenda are listed in the table of contents, are linked online to the articles to which they pertain, and are indexed in public databases such as PubMed .
+
+Back to Top
+
+Media Embargos
+
+Other than reporting on details provided in a meeting abstract or meeting presentation, media representatives should refrain from reporting on studies submitted to or scheduled for publication in ADA journals until that study has completely undergone the peer review and editorial processes, and has been either posted on the journal website or published in the print version of the journal. Authors are discouraged from holding press conferences to publicize abstract results until their submitted manuscripts have completely undergone the peer-review and editorial processes.
+
+Back to Top
+
+Advertising
+
+Both electronic and print advertising submitted to ADA publications is reviewed by the Association’s Scientific & Medical Department. ADA has the right to reject any advertisement for any reason, which need not be disclosed to the party submitting the advertisement. Advertising submitted to ADA publications should clearly identify the advertiser and the product or service being offered. If the advertisement promotes a pharmaceutical product, the full generic name of each active ingredient in the drug product should be clearly listed. ADA journals will not deliberately place print or electronic advertising opposite or adjacent to editorial that discusses the product being advertised or that reports research on the advertised product, and ADA journals will not publish advertisements that refer to an article in the same issue of a publication. Advertising submitted to ADA publications should be distinct from editorial and should not appear to be editorial; advertising must not be deceptive or misleading or make false claims. Any advertisements that include indecent copy or contain negative content of a personal, racial, ethnic, medical, sexual orientation, or religious character will not be accepted.
+
+Solicitation of advertising for ADA publications will be carried out to fulfill the objective of supporting awareness among health professionals and consumers of useful products and services and to contribute to the financial support of the publications. Acceptance of advertising in ADA publications shall not be construed, however, as an endorsement, approval, recommendation, warranty or certification of the products or services by ADA or any group affiliated with it. Acceptance also does not imply responsibility on the part of ADA to ensure that the advertiser has complied with laws and regulations applicable to the marketing of the products. Acceptance of advertising does not imply that ADA has conducted an independent scientific review to validate product safety and efficacy or advertising claims. A company involved in an investigation or enforcement proceeding by a government agency with respect to claims made in marketing of a product to be advertised in an ADA publication must inform ADA of such litigation.
+
+Specific Provisions:
+
+Products or services must be safe and effective in the practice of medicine or to individuals with diabetes and their families. A company whose product submitted for advertisement in an ADA journal is being evaluated for safety and effectiveness must so inform the ADA.
+
+Companies submitting new products for advertisement may be required to provide information about product safety and effectiveness. If there is any question of safety or effectiveness, the appropriate staff person in the Scientific & Medical Division should see a product sample before acceptance/rejection.
+
+Advertisements for products that are subject to regulation by the Food & Drug Administration (FDA) will be accepted in ADA publications only if the products have met all FDA requirements to permit general marketing of the products.
+
+Advertisements for products subject to FDA approval of both the product and the advertising may be accepted in ADA publications without further review.
+
+Manufacturers whose products are subject to regulation by the FDA or Federal Trade Commission may be asked to submit a signed certification to ADA attesting that they have scientifically valid data on file to substantiate product claims or comparisons to other products.
+
+Companies submitting advertisements for ADA publications are required to indemnify the Association against claims based on the advertisements.
+
+Back to Top
+
+Supplements
+
+Editorial Supplements which are developed by non-profit groups, but sponsored by a pharmaceutical or other company, may be considered to be "under the cover of" one of ADA’s professional journals (either within an issue or bound separately) if approved in advance by the Association’s Scientific & Medical Department and the Editor-in-Chief of the journal. If approved, the journal Editor may appoint a special supplement editor to lead the journal’s peer review process. The supplement editor should be affiliated with ADA and should be an expert on the supplement topic. Approved Editorial Supplements should be completed prior to transition of a new Editor and editorial team for the journal.
+
+Supplements proposals for ADA journals should include a planned table of contents or, if based on a meeting or symposium, a planned agenda. The proposal should also address:
+
+The name of the organization(s) sponsoring and funding the supplement (not merely the name of the public relations agency handling its publication).
+
+If the supplement is based on a symposium, where and when the symposium was held and how the speakers and papers were selected.
+
+Whether authors were or will be paid and, if so, how much.
+
+If the proposal is approved, it will be forwarded to the Editor of the journal. Initial approval by the ADA does not commit the Editor to accept a proposal in whole or part. All manuscripts are subject to the same peer review as other manuscripts in the journal. In addition, ADA has adopted the following principles from ICMJE, as outlined in section III-G of ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals :
+
+The journal editor has complete control of the decision to publish all or any portions of the supplement. Editing by the funding organization is not permitted.
+
+The journal editor retains the authority to send supplement manuscripts for external peer review and to reject manuscripts submitted for the supplement.
+
+The journal editor must approve the appointment of any external editor of the supplement and take responsibility for the work of the external editor.
+
+The sources of funding for the research, publication, and the products the funding source make that are considered in the supplement must be clearly stated and prominently located in the supplement, preferably on each page.
+
+Advertising in supplements follow the same policies as those of the rest of the journal.
+
+Journal editors and supplement editors may not accept personal favors or personal remuneration from sponsors of supplements.
+
+Secondary publication in supplements (republication of papers previously published elsewhere) is not permitted.
+
+ADA’s principles of authorship, potential conflict of interest disclosure, and other publication policies also apply to supplements.
+
+Advertising Supplements are only considered for publication under the following conditions:
+
+Advertising supplements do not carry ADA’s name or logo.
+
+Content published in advertising supplements adheres to ICMJE’s Uniform Requirements for Manuscripts .
+
+Advertising supplements are not published under the title of an ADA periodical, nor are they are not formatted or designed to suggest that they are part of one of ADA’s periodicals.
+
+Advertising supplements are clearly labeled as advertising or sponsored material; the source and type of funding to produce the supplement are clearly described on the cover.
+
+Proposals for advertising supplements must be reviewed and approved by the Editor-in-Chief of the periodical in question, as well as the appropriate ADA staff member.
+
+ADA reserves the right to review all final content of an advertising supplement and to not publish an advertising supplement for any reason.
+
+Back to Top
+
+ADA Standards, Statements, Reports, and Reviews
+
+The ADA is actively involved in the development and dissemination of diabetes care standards, guidelines, and related documents. The ADA’s clinical practice recommendations are viewed as important resources for health care professionals who care for people with diabetes. The information below describes the type of recommendations, statements, and reports authored, convened, or endorsed by ADA. Each ADA-authored and/or -endorsed report will be considered for publication in an ADA journal and will be reviewed at the discretion of the journal’s editorial team before publication. Each article type is expected to adhere to the International Committee of Medical Journal Editor’s uniform requirements for manuscripts submitted to medical and scientific journals, as well as the relevant reporting guidelines for each article type.
+
+Standards of Care
+
+This document is an official ADA position, is authored by the ADA, and provides all of the ADA’s current clinical practice recommendations.
+
+To update the Standards of Care, the ADA’s Professional Practice Committee (PPC) performs an extensive clinical diabetes literature search, supplemented with input from ADA staff and the medical community at large. The PPC updates the Standards of Care annually. However, the Standards of Care is a “living” document, where notable updates are incorporated online should the PPC determine that new evidence or regulatory changes (e.g., drug approvals, label changes) merit immediate inclusion. More information on the “living Standards” can be found on DiabetesPro at professional.diabetes.org/standards-of-care/living-standards-update .
+
+The Standards of Care supersedes all previous ADA position statements—and the recommendations therein—on clinical topics within the purview of the Standards of Care; ADA position statements, while still containing valuable analysis, should not be considered the ADA’s current position. The Standards of Care receives annual review and approval by the ADA Board of Directors.
+
+ADA Statement
+
+An ADA statement is an official ADA point of view or belief that does not contain clinical practice recommendations and may be issued on advocacy, policy, economic, or medical issues related to diabetes.
+
+ADA statements undergo a formal review process, including a review by the appropriate national committee, ADA mission staff, and ADA Board of Directors.
+
+Consensus Report
+
+An ADA consensus report is a document on a particular topic that is authored by a technical expert panel under the auspices of ADA. The document does not reflect the official ADA position but rather represents the panel’s collective analysis, evaluation, and expert opinion. The primary objective of a consensus report is to provide clarity and insight on a medical or scientific matter related to diabetes for which the evidence is contradictory, emerging, or incomplete. The report also aims to highlight evidence gaps and to propose avenues for future research.
+
+Consensus reports undergo a formal review process, including external peer review and review by the ADA PPC and ADA scientific team, for publication.
+
+Scientific Review
+
+A scientific review is a balanced review and analysis of the literature on a scientific or medical topic related to diabetes.
+
+A scientific review is not an ADA position and does not contain clinical practice recommendations but is produced under the auspices of the Association by invited experts. The scientific review may provide a scientific rationale for clinical practice recommendations in the Standards of Care. The category may also include task force and expert committee reports.
+
+Back to Top
+
+Privacy and Data Collection Policies
+
+The ADA is committed to protecting privacy. For information on what data is collected and how it is used when you visit an ADA website, as well as information on opting out, please review the complete ADA Privacy Policy .
+
+The journals of the ADA collect personal information to a facilitate the review of submitted manuscripts. For details regarding the collection and use of this data, as well as instructions on removing account information, please review the policy on Data Collection from ADA Authors and Reviewers .
+
+Back to Top
+
+Additional Resources
+
+Information for Reviewers
+
+Diabetes Instructions for Authors
+
+Diabetes Car e Instructions for Authors
+
+Diabetes, Obesity, and CardioMetabolic CARE Instructions for Authors
+
+License and Public Access
+
+Reprints and Permissions
+
+Back to Top
+
+Questions
+
+Questions about any of the policies mentioned above should be directed to ADA's editorial office at [email&#160;protected] .
+
+Study Design
+
+In accordance with the recommendations of WAME , research submitted to ADA journals should be well justified, well planned, and appropriately designed so that it can properly address the research objective of the study described in the manuscript. Statistical issues, including power calculations, should be described to avoid futile studies that produce subject risk without enrollment sufficient to address the research objective. Outcomes should be specified at the start of the study. Research should be conducted to high standards of quality control and data analysis. Data and records, including the original versions of manuscripts, the original source files for figures and graphics, and other files and supporting materials, must be retained by authors and must be able to be produced for review, if requested by the editors. Fabrication, falsification, concealment, deceptive reporting, or misrepresentation of data constitutes scientific misconduct.
+
+In addition, and in line with WAME's recommendations, ADA requires documented review and approval from a formally constituted review board (institutional review board or ethics committee) for all studies involving people, medical records, and human tissues. For those investigators who do not have access to formal ethics review committees, the principles outlined in the World Medical Association's Declaration of Helsinki should be followed. If the study is judged exempt from review, a statement from the committee is required; authors should provide this statement at the time of manuscript submission. Informed consent by participants must be attained. If not possible, an institutional review board must decide if this is ethically acceptable; review board approval must be attested to and described in the comments to the editor upon manuscript submission and in the Research Design and Methods section of the manuscript itself.
+
+Studies and experiments using animals require full compliance with local, national, ethical, and regulatory principles, and local licensing arrangements.
+
+ADA journals require the reporting of sex for cells, tissues, and experimental animals and humans (i.e., male and female) where appropriate and suitable for the experimental design of the research effort; studies should report whether sex was considered a factor in the statistical analysis of the data.
+
+Back to Top
+
+Originality and Prior Publication
+
+ADA journals publish only original work that has not been previously published, unless otherwise specified below. All authors of manuscripts submitted to ADA journals must declare whether the manuscript or any part of it, regardless of the language in which it was originally written or published, has been published or is under consideration for publication elsewhere. ADA does not consider previous presentation of a study at a meeting, previous publication of an abstract affiliated with the proceedings of meetings, or prior posting of a study on a recognized preprint server (e.g., bioRxiv) to constitute prior publication. To be clear, ADA journals will still consider papers for publication if they are previously presented in these formats. At the time of submission and in the Acknowledgments section, authors should disclose whether the study described in the manuscript has been previously presented at a meeting, published in abstract form in the proceedings of a meeting, or posted on a preprint server.
+
+Any reference to or use of previously published material protected by copyright must be explicitly acknowledged in the manuscript. Posting of submitted material on a website may be considered prior publication and should be noted in the comments to the editor upon submission. Redundant publication—when multiple papers, without full cross-reference in the text, share the same data or results—is not permissible. At the time of submission, authors should disclose details of related papers they have authored, even if authored in a different language; similar papers in press; and any closely related papers previously published or currently under review at another journal.
+
+Back to Top
+
+Authorship and Contributions
+
+ADA journals subscribe to the requirements stated in ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals that authorship implies:
+
+Substantial contributions to conception and design of the work; or the acquisition, analysis, or interpretation of data for the work; and
+
+Drafting the work or revising it critically for important intellectual content; and
+
+Final approval of the version to be submitted to and published in the journal; and
+
+Agreement to be accountable for all aspects of the work in ensuring that questions related to the accuracy or integrity of any part of the work are appropriately investigated and resolved.
+
+All authors should meet these above conditions, and ADA requires for all listed authors to list their contributions to the study and/or manuscript in a section titled "Author Contributions" on the title page of the manuscript. If the article is accepted for publication, this information will be included after the main text in the published version of the manuscript.
+
+In addition, ADA has adopted the following ICMJE recommendations related to authorship and contributions:
+
+When a large, multicenter group has conducted the work, the group should identify the individuals who accept direct responsibility for the manuscript. These individuals should fully meet the criteria for authorship defined above, and these individuals must complete the mandatory Manuscript Submission Form , which requires authors to outline contributions and relevant conflict of interest.
+
+When submitting a manuscript authored by a group, the corresponding author should clearly indicate the preferred citation and identify all individual authors as well as the group name; other collaborators should be listed in the Acknowledgments . The National Library of Medicine (NLM) indexes the group name and the names of individuals the group has identified as being directly responsible for the manuscript; it also lists the names of collaborators if they are listed in Acknowledgments .
+
+Acquisition of funding, collection of data, collection of patient and/or samples from other species, or general supervision of the research group alone does not constitute authorship.
+
+All persons designated as authors should qualify for authorship, and all those who qualify should be listed.
+
+Each author should have participated sufficiently in the work to take public responsibility for appropriate portions of the content.
+
+All authors must take responsibility in writing for the accuracy of the manuscript, and one or more authors, such as the corresponding or lead author, must be the guarantor and take responsibility for the work as a whole.
+
+Back to Top
+
+Institutional / Employer-Affiliated Email Address Requirement for Corresponding Authors
+
+In today’s publishing environment, it is increasingly important to confirm the identities of authors. To help maintain the integrity of the scientific record, ADA journals require that the corresponding author provide an institutional or employer-assigned email address when submitting a manuscript.
+
+Using a verifiable, organization-based email address ensures accountability for scientific quality and establishes a clear connection between the corresponding author and the institution that provided the resources to perform the reported research. Personal, commercially hosted email accounts cannot reliably confirm identity and present a greater risk for fraudulent use of names and credentials.
+
+Guidelines
+
+The corresponding author must provide a valid institutional or employer-assigned email address. A personal (commercial) email address may be included as a secondary contact but cannot replace the institutional address.
+
+The institutional or employer email address should be readily identifiable as belonging to the individual corresponding author, either by including their name, initials, or a recognizable variation thereof.
+
+Email addresses consisting solely of numbers are not acceptable.
+
+Group or departmental accounts shared among multiple individuals are not permitted.
+
+Back to Top
+
+Acknowledgments
+
+The role of or contribution by any individual or entity included in the Acknowledgments section of the manuscript must be clearly defined. Editors or ADA staff may contact authors to clarify the roles or contributions of any person or entity acknowledged in the manuscript, particularly if that person or entity provided "editorial assistance" or help with "preparing" or "drafting" the manuscript. Authors should avoid vague or broad descriptions of contributions of acknowledged individuals or entities; descriptions of contributions should be clear, specific, and precise.
+
+ADA requires that authors list the employer or institutional affiliation of any individual mentioned in the Acknowledgments section. If this information is not included at the time of submission, editorial office staff will request the corresponding author to submit a new version of the manuscript that includes the required information.
+
+Back to Top
+
+Conflict of Interest
+
+ADA journals require all participants in the peer review and publication process to disclose all relationships that could be viewed as potential conflicts of interest. Editors may use information disclosed in conflict of interest and financial interest statements as a basis for editorial decisions.
+
+All authors should refer to the ADA Policy Statement on Duality of Interest . For all manuscript submissions, regardless of article type, authors should include conflict-of-interest statements in both the comments to the editors at the time of submission and within the Acknowledgments section of the manuscript itself. If authors have no relevant conflicts of interest to disclose, this should also be declared in both sections. ADA Journals also encourage authors to complete and submit ICMJE's Uniform Disclosure Form for Potential Conflicts of Interest with their manuscript submission.
+
+Examples of potential conflict of interest include:
+
+Employment, membership on the board of directors, or any fiduciary relationship with a third-party entity engaged in the development, manufacture, or sale of pharmaceutical or medical devices, supplies, or information
+
+Ownership of stock or receipt of honoraria, travel or meeting expenses, or consulting or review fees from a third-party entity, as described above
+
+Receipt of financial support or grants for research from a third-party entity, as described above
+
+Holding patents or receiving royalties related to the development of pharmaceutical or medical devices, supplies, or information
+
+Receipt of writing assistance, medicines, equipment, or administrative support from a third-party entity, as described above
+
+Membership on a scientific advisory panel or other standing scientific/medical committee
+
+Receipt of payment or honoraria for author contributions or author designation
+
+Any other relationships that readers could perceive to have influenced, or that give the appearance of potentially influencing, the content of the submitted work.
+
+Investigators must disclose potential conflicts of interest to study participants and should state in the manuscript whether they have done so.
+
+If the study was sponsored by a third party, authors should describe the role of the study sponsor in study design; collection, analysis, and interpretation of data; writing the report; and the decision to submit the report for publication. If the supporting source had no such involvement, the authors should so state. At the time of submission, ADA requires that the submitting author of a study funded by an agency with a proprietary or financial interest in indicate that she/he had full access to all of the data in the study and takes complete responsibility for the integrity of the data and the accuracy of the data analysis. This author, unless otherwise specified, will be listed in the published version of the article as the "guarantor" of the study.
+
+Please note that the editors may request a statistical analysis of all data by an independent biostatistician, and will decline to consider an article if a sponsor has asserted control over the authors’ right to publish.
+
+Peer reviewers for ADA publications are required to disclose to editors any conflicts of interest that could bias their opinions of the manuscript. Likewise, the Editor and Associate Editors are required to recuse themselves of any final decision on manuscripts for which they may have personal or professional biases. In such cases, a different member of the Editorial Team, or an "Ad Hoc Editor" (e.g., a previous Editor-in-Chief of the journal), will be appointed to adjudicate the review of the manuscript and render a decision on the manuscript.
+
+Authors are encouraged to provide editors with the names of persons they feel should not be asked to review a manuscript because of potential conflicts of interest. Authors should explain their concerns in their comments to the editor at the time of submission; the editors will take this information into account when determining who to invite to review the manuscript.
+
+Back to Top
+
+Data Access and Responsibility
+
+The American Diabetes Association has adopted the data access and responsibility policies developed by the Journal of the American Medical Association :
+
+For all reports (regardless of funding source) containing original data, at least one named author (e.g., the principal investigator) who is independent of any commercial funder or sponsor must indicate that he or she is the "guarantor" of the study (i.e., he or she had full access to all the data in the study and takes responsibility for the integrity of the data and the accuracy of the data analysis). A statement identifying the guarantor should be included in the Acknowledgments section at the end of the manuscript. Modified statements or generic statements indicating that all authors had such access are not acceptable.
+
+The statement should appear as follows:
+
+C.K. is the guarantor of this work and, as such, had full access to all the data in the study and takes responsibility for the integrity of the data and the accuracy of the data analysis.
+Modified statements or generic statements indicating that all authors had such access are not acceptable.
+
+For industry-sponsored studies, the editors reserve the right to request an analysis of the data (based on the entire raw dataset and evaluation of the study protocol, and prespecified plan for data analysis) by an independent statistician at an academic institution, rather than by statisticians employed by the sponsor or by a commercial contract research organization. In such cases, the independent biostatistician must be a faculty member at a medical school or academic medical center, or an employee of a government research institute, that has oversight over the person conducting the analysis and that is independent of the commercial sponsor. Details of this independent statistical analysis, the name and institutional affiliation of the independent statistician, and whether compensation or funding was received for conducting the analyses should be reported in the Acknowledgments section of the manuscript. The results of this independent statistical analysis should be the results reported in the manuscript.
+
+Back to Top
+
+Data and Resource Sharing and Availability
+
+The American Diabetes Association supports the efforts of researchers, funders, and agencies to make underlying research data and resources more accessible, more transparent, and easier to share. As part of this effort, as of January 1, 2019, Diabetes will require authors of original research studies to describe in their papers how readers can access the data and critical resources supporting their reported findings, methods, and conclusions.
+
+Diabetes has adapted and extended to resource sharing the following guidelines from Nature Research’s Policy ( go.nature.com/2bf4vqn ):
+
+All original research papers submitted to and published in Diabetes must provide statements about the availability of data and critical resources supporting the results reported in the article. The data and resource availability statements should be placed at the end of the “Research Design and Methods” section, under the subheading “Data and Resource Availability.” The section should contain separate statements on (1) Data Sharing and (2) Resource Sharing. Please access the complete policy at diabetesjournals.org/diabetes/pages/data-policy for more specific information and guidance related to these policies.
+
+Back to Top
+
+Clinical Trials, Systematic Reviews, and Meta-Analyses
+
+ADA journals adhere to ICMJE’s clinical trials registration policy, which is summarized in section III-L of ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals . ICMJE defines a clinical trial as "any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes." All clinical trials submitted to ADA journals must be registered with an ICMJE-approved clinical trial registry (such as clinicaltrials.gov) prior to patient enrollment. If your manuscript is considered a clinical trial but has not been registered, it will not be considered for publication in the journal. ADA accepts registration of clinical trials in any of the primary registries that participate in the World Health Organization International Clinical Trial Registry Platform . Authors must include the unique clinical trial number, the name of the registry, and the URL to the registration on the manuscript’s title page.
+
+Authors of reports on randomized controlled trials (RCTs) are required to complete the checklist outlined in the Consolidated Standards of Reporting Trials (CONSORT) Statement . The instructions and checklist are designed to ensure that information pertinent to the trial is included in the study report. ADA requires that the CONSORT checklist is submitted with RCT manuscripts; CONSORT information may be posted with accepted manuscripts as online-only supplementary materials at the request of the editors or the authors.
+
+Authors of reports on systematic reviews and meta-analyses are required to complete the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) . The PRISMA Statement consists of a 27-item checklist and a 4-phase flow diagram that have been developed to help authors improve the reporting of systematic reviews and meta-analyses. ADA requires that the completed checklist and diagram are submitted with systematic reviews and meta-analyses; PRISMA information may be posted with accepted manuscripts as online-only supplementary materials at the request of the editors or the authors.
+
+ADA journals require the reporting of sex for cells, tissues, and experimental animals and humans (i.e., male and female) where appropriate and suitable for the experimental design of the research effort; studies should report whether sex was considered a factor in the statistical analysis of the data.
+
+Back to Top
+
+Reporting on Human Islets
+
+Effective January 1, 2019, Diabetes requires authors of papers reporting data obtained from studies on human islets to report critical characteristics of the human islets used for research. Such information will facilitate comparisons among studies using isolated human islets and, to the extent possible, standardization of the preparations and methods used by individual laboratories. These objectives are aligned with the current emphasis placed on scientific rigor and reproducibility in research by a number of major funding organizations. For full details, see the complete Human Islet Policy .
+
+Back to Top
+
+Common Forms of Scientific Misconduct
+
+The most common forms of scientific misconduct, with minor modification from Analysis of Institutional Policies for Responding to Allegations of Scientific Misconduct by the U.S. Department of Health and Human Services’ Office of Research Integrity, are listed below.
+
+Falsification of data: ranging from fabrication to deceptive selective reporting of findings and omission of conflicting data, willful suppression and/or distortion of data, and inappropriate or fraudulent digital image manipulation. For more information about ADA’s image manipulation policies, please see the section below .
+
+Plagiarism: The appropriation of the language, ideas, or thoughts of another and representation of them as one’s own original work, or the duplication or re-use of one’s previously published work without proper acknowledgment. For more information about plagiarism and how ADA detects for plagiarism, see the section below .
+
+Improprieties of authorship: Improper assignment of credit, such as excluding others, misrepresentation of the same material as original in more than one publication, inclusion of individuals as authors who have not made a definite contribution to the work published; or submission of multi-authored publications without the concurrence of all authors.
+
+Violation of generally accepted research practices: Serious deviation from accepted practices in proposing or carrying out research, improper manipulation of experiments to obtain biased results, deceptive statistical or analytical manipulations, or improper reporting of results.
+
+Material failure to comply with federal requirements affecting research: Including but not limited to serious or substantial, repeated, willful violations involving the use of funds, care of animals, human subjects, investigational drugs, recombinant products, new devices, or radioactive, biologic, or chemical materials.
+
+Inappropriate behavior in relation to misconduct: Including inappropriate accusation of misconduct; failure to report known or suspected misconduct; withholding or destruction of information relevant to a claim of misconduct and retaliation against person involved in the allegation or investigation.
+
+Deliberate misrepresentation of qualifications, experience, or research accomplishments to advance the research program, to obtain external funding, or for other professional advancement.
+
+Misappropriation of funds or resources. For example, misuse of funds for personal gain.
+
+ADA’s plagiarism and image manipulation policies are further described below.
+
+Plagiarism
+
+Manuscripts submitted to ADA journals will be uploaded to CrossCheck/iThenticate , plagiarism detection software, to scan the document for plagiarized text. Plagiarism is scientific misconduct and will be addressed as such.
+
+According to WAME , "Plagiarism is the use of others' published and unpublished ideas or words (or other intellectual property) without attribution or permission, and presenting them as new and original rather than derived from an existing source. The intent and effect of plagiarism is to mislead the reader as to the contributions of the plagiarizer. This applies whether the ideas or words are taken from abstracts, research grant applications, Institutional Review Board applications, or unpublished or published manuscripts in any publication format (print or electronic)."
+
+Self-plagiarism refers to the practice of an author using portions of his/her previous writings on the same topic in another of his/her publications, without specifically and formally citing the previously published work. ADA will allow authors to reuse only their own succinctly written literature reviews and brief descriptions of methodologies or patient characteristics from previously published work. Authors who do so should disclose this information in their comments to the editors at the time of submission, and any reused methodology descriptions from previously published work should be properly cited. As mentioned before, all manuscripts submitted to ADA journals are scanned for possible plagiarized and reused text using the CrossCheck/iThenticate software. To avoid possible concerns or peer-review delays, authors should make a concerted effort to reword or rewrite text borrowed from the methodology descriptions of their own work. " Avoiding plagiarism, self-plagiarism, and other questionable writing practices ," a resource developed by Miguel Roig, PhD, with funding from ORI, provides useful information on best practices related to ethical writing.
+
+Cases of suspected plagiarism and inappropriate self-plagiarism will be referred to the Association’s Panel on Ethical Scientific Programs (ESP). Information on how such cases are addressed by the ESP can be found in the section below titled "Responses to Possible Scientific or Publishing Misconduct."
+
+Digital Image Manipulation
+
+ADA has adopted the statement developed by the Journal of Cell Biology [ J Cell Biol 166:11-15 (2004) ] as its policy on the manipulation of digital images:
+
+"No specific feature within an image may be enhanced, obscured, moved, removed, or introduced. The grouping of images from different parts of the same gel, or from different gels, fields, or exposures must be made explicit by the arrangement of the figure (i.e., using dividing lines) and in the text of the figure legend. Adjustments of brightness, contrast, or color balance are acceptable if they are applied to the whole image [that is, every pixel] and as long as they do not obscure, eliminate, or misrepresent any information present in the original, including backgrounds. Without any background information, it is not possible to see exactly how much of the original gel is actually shown. Non-linear adjustments (e.g., changes to gamma settings) must be disclosed in the figure legend.” For presented blots, noncontiguous lanes may be spliced together only when the lanes were run on the same gel at the same time. This alteration should be made apparent in the presented figure by inserting a thin dividing line between the lanes, and it should be clearly explained and described in the figure legend."
+At the revision stage, all authors are required to submit, together with the revised manuscript, a zip file titled "Source_Files.zip" that contains the original, uncropped and unedited photographs of all figures that represent gels, Western blots, microscopic photos, etc., intended to be published in the final version of the article, if accepted. Each gel/blot should be labeled as "Full unedited gel/blot for Figure X," and the authors should highlight which lanes of the unedited gel/blot correspond to those shown in the cropped images presented in the manuscript. This zip file will be temporarily archived in the manuscript submission site if the paper is accepted; it will not be available to readers unless specifically requested by the authors to be published online. Failure to provide such original photographs will delay, or even preclude, publication of a manuscript in ADA journals.
+
+Furthermore, all digital images in manuscripts accepted for publication will be scanned using image forensics software for any indication of improper manipulation. Cases of questionable or inappropriate image alterations will be referred to the Association’s Panel on Ethical Scientific Programs (ESP). The ESP may request the original data from the authors for comparison to the prepared figures. If the original data cannot be produced, the acceptance of the manuscript will be revoked. Cases of deliberate misrepresentation of data will result in revocation of acceptance, and will be reported to the corresponding author's home institution and/or funding agency as appropriate.
+
+For examples of what constitutes improper digital manipulation (as well as other forms of scientific misconduct), ADA encourages authors to refer to the 2006 editorial by the Journal of Clinical Investigation titled "Stop Misbehaving!" [ J Clin Invest 116:1740-1741 (2006) ].
+
+In addition, authors are encouraged to refer Adobe's white paper on using Photoshop in biomedical imaging. The paper provides useful information on maintaining image integrity, editing nondestructively, and the medical and scientific image workflow
+
+Back to Top
+
+Responses to Possible Scientific or Publishing Misconduct
+
+ADA journals are member journals of the Committee on Publication Ethics (COPE). COPE, established in 1997, is a charity registered in the U.K. The Committee is concerned with the integrity of peer-reviewed publications in science, particularly biomedicine.
+
+In cases of possible scientific or publishing misconduct, ADA will consult COPE’s 17 flowcharts that provide algorithms for editors to follow when they suspect publication misconduct. Cases that cannot be properly addressed by use of COPE’s algorithms will be investigated and addressed by ADA’s Panel on Ethical Scientific Programs (ESP) on a case-by-case basis.
+
+The ESP works on behalf of ADA scientific programs and publications to objectively and efficiently investigate cases of potential or perceived misconduct. The panel is comprised of expert independent investigators who share the Association’s vision for appropriateness in scientific procedures.
+
+ADA and the ESP take seriously all reported concerns and allegations. When investigating and responding to cases of suspected misconduct, the panel operates with the utmost regard for the sensitivity, confidentiality, and impartiality required to fairly resolve each case.
+
+The ESP strives to keep the number of inquiries and those involved to the minimum necessary to reach a recommendation for responding to the allegation.
+
+In accordance with the recommendations of WAME, if the inquiry concludes there is a reasonable possibility of misconduct, responses will be contingent on the apparent magnitude of the misconduct. Responses will depend on the circumstances of the case as well as the responses of the participating parties and institutions. To respond to each case, ADA will refer to COPE’s algorithms and the following options outlined by WAME , which have been slightly modified and are listed in approximate order of severity:
+
+A letter of explanation (and education) sent only to the person against whom the complaint is made, where there appears to be a genuine and innocent misunderstanding of principles or procedure.
+
+A letter of reprimand to the same party, warning of the consequences of future such instances, where the misunderstanding appears to be not entirely innocent.
+
+A formal letter as above, including a written request to the supervising institution to carry out an investigation and report the findings of the investigation in writing to the journal. ADA will review and take into consideration the recommendations of investigating institutions when determining how to further respond to cases. If the institution does not respond to ADA’s request for an investigation, or if it becomes evident that the investigation will not be completed within a reasonable amount of time, ADA may independently address the concerns or retract the paper in question.
+
+Publication of a notice of scientific or academic misconduct, such as redundant or duplicate publication or plagiarism, if appropriate and unequivocally documented. Such publication will not require approval of authors, and will be reported to the author(s)’ institution and, if appropriate, funding agency.
+
+Formal withdrawal or retraction of the paper from the scientific literature, published in the journal, informing readers and the indexing authorities (National Library of Medicine, etc) if there is a formal finding of misconduct by ADA or the author(s)’ institution. Such publication will not require approval of authors; will be reported to, if appropriate, the author(s)’ institution and/or funding agency; and will be readily visible and identifiable in the journal.
+
+ADA will refer to COPE’s Retraction Guidelines when considering the potential publication of a withdrawal or retraction notices in ADA Journals. More information about such considerations can be found in the “ Article Amendments ” section.
+
+Back to Top
+
+Reporting Concerns Related to Scientific Misconduct
+
+Any individual may report concerns related to possible misconduct involving ADA scientific programs or publications by email to [email&#160;protected] . Correspondents should provide as much information as possible to clearly describe the potential instances of misconduct, as well as the specific citation information or grant submission number, if available, for the work in question. These concerns will be reviewed by the Association’s Panel on Ethical Scientific Programs (ESP). The ESP will only review concerns related to possible research and scientific misconduct, and will not review challenges to any decision regarding a submitted manuscript, abstract, or grant application.
+
+Back to Top
+
+Use of Artificial Intelligence, Large Language Models, and Machine Learning
+
+The ADA has adopted and expanded the Journal of the American Medical Association (JAMA) guidance for authors, peer reviewers, and editors to address the roles of artificial intelligence (AI), large language models (LLMs), and machine learning in the development, review, and publication of content:
+
+The submission and publication of content created by artificial intelligence, language models, machine learning, or similar technologies is discouraged, unless part of formal research design or methods, and is not permitted without clear description of the content that was created and the name of the model or tool, version and extension numbers, and manufacturer. Authors must take responsibility for the integrity of the content generated by these models and tools.
+
+In general, these tools may be used responsibly in limited, transparent ways. See below for requirements related to AI and authorship, content creation, image integrity, reproduced material, and peer review.
+
+AI, Authorship, and Content Creation
+
+AI, LLMs, machine learning, or similar technologies do not qualify for authorship.
+
+The use of AI-assisted tools in the creation or modification of content submitted to ADA journals—including text, tables, figures, graphical abstracts, and multimedia (audio or video)—must be approached with caution and full transparency. All submitted content must accurately represent underlying data and concepts and must reflect the intellectual work of the authors.
+
+Permitted Use
+
+AI-assisted content generation is permitted only when all of the following conditions are met:
+
+Substantial Human Authorship
+
+Authors must retain primary creative and intellectual control over all content. AI tools may be used for assistance (e.g., editing, rendering, or refinement), but the final output must reflect substantive human input, interpretation, and validation from the authors. Content generated primarily or entirely by AI is not permitted.
+
+Scientific Accuracy and Integrity
+
+All content must be carefully reviewed and verified by the authors to ensure accurate representation of data, methods, and concepts. AI tools must not be used to fabricate, alter, enhance, or selectively emphasize features—particularly in images or multimedia—in a manner that could mislead readers.
+
+Clear Disclosure
+
+All use of AI tools must be fully disclosed in the manuscript. This information should be included in the Research Design and Methods or Acknowledgments section, as appropriate, and in the comments to the editors at the time of submission. (Use of basic tools for grammar, spelling, or reference formatting does not require disclosure.)
+
+Authors must disclose:
+
+The name and version of the AI tool(s) used
+
+A brief description of how the tool was used (e.g., data processing, image refinement)
+
+A statement confirming that the authors reviewed and verified the final output
+
+Rights and Permissions
+
+Submitted content must comply with all applicable copyright and licensing requirements. Authors are responsible for ensuring that AI-assisted content does not infringe on third-party rights and that all related permissions and licenses have been obtained prior to manuscript submission. Permission forms for reprinted or modified images should be clearly labeled and uploaded to the submission system.
+
+Prohibited Use
+
+Use of AI tools to generate images or multimedia that replace, simulate, or fabricate data or results
+
+Submission of content generated primarily or entirely by AI without meaningful human authorship
+
+Use of AI to alter original research images or multimedia in a way that changes their scientific meaning or interpretation
+
+Failure to disclose the use of AI tools in any aspect of content creation or modification
+
+AI and Editorial Review
+
+The journal reserves the right to request additional information regarding the creation of submitted content, including source files, prompts, or documentation of the generation process. Authors remain fully responsible for the accuracy, integrity, and originality of all content submitted to an ADA journal, regardless of the tools used. Content that does not meet these standards may be rejected or require revision.
+
+AI and Manuscript Peer Reviewers
+
+A manuscript peer reviewer may not enter any part of the manuscript or abstract or the text of the review into an LLM, chatbot, or similar AI tool, as it is a violation of confidentiality. Manuscripts submitted to the journal are confidential and may not be reused or shared in any way. AI tools are available to reviewers within the submission system to aid in the review process. Peer reviewers are responsible for all content included in a review.
+
+Back to Top
+
+Peer Review
+
+ADA journals employ a single-blinded review process: authors are blinded to the identities of the editors and reviewers responsible for the independent peer review of their manuscripts, but not vice versa. Original Articles, Brief Reports, Perspectives and Review Articles, and Supplemental Articles are invited for peer review by the editors.
+
+The Editor-in-Chief assesses each submission to the journal to determine whether the content and subject of the manuscript is appropriate for the journal. Due to an increasing number of submissions and limited editorial space, only those manuscripts that meet a priority score, as determined by the Editor, above the 50th percentile will be reviewed. Each manuscript that meets the priority score above the 50th percentile is assigned to an Associate Editor who is versed in the subject area of the manuscript. The Associate Editor will invite expert researchers to peer review the manuscript. Based on the reviews of three peer reviewers, the Associate Editor will recommend a decision to accept the manuscript for publication, reject the manuscript, or suggest that the authors revise and resubmit the manuscript. The Editor-in-Chief is responsible for determining and conveying the final decision on all manuscripts. The Editor-in-Chief may consult with other Editorial Board members if there is significant divergence of opinion among the Associate Editors and/or the peer reviewers on how a manuscript should be decided. All correspondence related to the peer review of each manuscript is confidential.
+
+The peer reviewers for ADA journals are experts chosen by the Associate Editors to provide written objective assessments of the strengths and weaknesses of original research manuscripts, with the aim of improving the reporting of research and identifying the most appropriate, timely, and highest-quality research for the journal. Researchers are invited to review manuscripts submitted to the journals on the bases of their objectivity, scientific knowledge, and level of expertise. Reviewers for ADA journals are required to disclose whether they have any competing interest related to the subject of the article or the authors (e.g., those working for a company whose product was tested, its competitors, or the same institution as the authors, etc.).
+
+ADA journals seek reviews that are professional, honest, courteous, prompt, and constructive. Editors may edit reviews before sending them to authors, or simply not send them if they feel they are not constructive or appropriate. The desired major elements of a high-quality review, as outlined by the WAME , are as follows:
+
+The reviewer should have identified and commented on major strengths and weaknesses of study design and methodology, and should identify the major strengths and weaknesses of the manuscript as a written communication, independent of the design, methodology, results, and interpretation of the study.
+
+The reviewer should comment accurately and constructively upon the quality of, and the author's interpretation of, the data, including acknowledgment of its limitations.
+
+The reviewer should comment on any ethical concerns raised by the study, or any evidence of potential scientific misconduct.
+
+The reviewer should provide the author with useful suggestions for improvement of the manuscript when appropriate.
+
+The reviewer's comments to the author should be cordial and constructively critical.
+
+The review should provide the editor the proper context and perspective to make a decision on acceptance (and/or revision) of the manuscript.
+
+Instructions for reviewers of ADA journals can be found online at diabetesjournals.org/journals/pages/reviewers .
+
+After each review is submitted, the Associate Editors rate the quality and the timeliness of the review, and this information is recorded in the peer-review database. Ratings of review quality and timeliness are periodically assessed to ensure optimal journal performance and, as such, contribute to decisions regarding ongoing review requests. Individual performance data are kept confidential.
+
+ADA recognizes that the submitted manuscript is a privileged communication, and reviewers are required to treat each manuscript as confidential. Reviewers are not allowed to retain, copy, or share manuscripts. Reviewers and editors are not permitted to make any personal or professional use of the data, arguments, or interpretations (other than those directly involved in its peer review) prior to publication unless they have the authors' specific permission or are writing an editorial or commentary to accompany the article.
+
+If reviewers suspect misconduct, they are asked to notify the editor in confidence; reviewers should not share their concerns with other parties. In cases involving reviewer- or editor-identified suspected misconduct (e.g., possible duplicate submission, plagiarism, etc.) in a submitted manuscript to ADA journals and a submitted manuscript to another publication, ADA journals may provide a review copy of a submitted paper to an editor of another journal, with the understanding that the review paper could not be shared with any outside party, in order to efficiently and fairly appraise the validity and legitimacy of such suspicions. This step would only be taken if the author(s) did not satisfactorily respond to an initial letter of inquiry from the editors.
+
+Manuscripts authored by the American Diabetes Association or ADA staff must first be vetted and reviewed by the appropriate ADA department and/or ADA volunteer committee (such as the Association’s Professional Practice Committee) prior to being submitted to an ADA journal. After an ADA-authored manuscript is submitted to an ADA journal, the editor-in-chief of the journal has the discretion to determine the level of peer review that should be assigned to the manuscript before it is accepted for publication.
+
+Information about each journal's acceptance rates, publication intervals, and other performance data can be found in the "About the Journal" page of the online journal. Updated statistics are posted in July/August of each year.
+
+Back to Top
+
+Manuscript Extenders
+
+ADA Journals and Professional Publications will consider for publication online-only “manuscript extenders” — that is, visual abstracts, video abstracts, infographics, and other forms of multimedia — assuming that such article components meet the following criteria:
+
+The materials are submitted along with the primary manuscript and manuscript materials in order to undergo a standard and thorough peer-review process.
+
+Manuscript extenders include only images that are original or are within the public domain.
+
+Copyright is transferred to ADA, as with all manuscript components submitted to ADA.
+
+The materials clearly list the authors of the accompanying article, the title of the article, and other relevant citation information; clearly disclose the appropriate funding statements and any potential conflicts of interest; and clearly indicate if a third party was employed to create the materials.
+
+Manuscript extenders should objectively summarize or complement the published article and should be free of bias; they should not be used to promote a commercially available product.
+
+Under certain circumstances, ADA may consider the publication of manuscript extenders after a paper has been published, but a fee will be applied depending on the level of review required, the format of the manuscript extender, and the cost and time required to update the online version of the article. Proposals and requests for more information for post-publication manuscript extenders can be sent to [email&#160;protected]
+
+ADA Journals and Professional Publications can accommodate a wide array of digital formats; however, we recommend that contributors refer to the following recommendations when creating their materials:
+
+Try to keep video and audio formats under 5 minutes. Based on usage statistics, most users “bounce” after 5 minutes.
+
+For visual abstracts, feel free to modify the attached templates for Diabetes , Diabetes Care , Clinical Diabetes , and Diabetes Spectrum .
+
+When it comes to infographics, avoid “info-scrolls.” A good aspect ratio is between 1:2 and 1:3.
+
+Lastly, be creative. Don’t hesitate to take a new approach to highlight your research, and don’t hesitate to contact ADA to explore opportunities to collaborate on any new formats for sharing your work.
+
+Back to Top
+
+Editorial Decisions
+
+In accordance with the recommendations of WAME , decisions about manuscripts submitted to ADA journals are based on the manuscripts’ importance, originality, clarity, and relevance to the journal's scope and content. Editors are asked to give equal consideration to studies with negative results despite adequate power, or those challenging previously published work.
+
+If an author chooses to appeal a decision, the author should contact the Editorial Office at [email&#160;protected] . The corresponding author should clearly explain the reason for appealing the decision. Depending on the reason, the Editorial Office will forward the appeal to either the Editor-in-Chief (if, for instance, the author disagrees with the recommendations of the reviewer or Associate Editors) or ADA’s Scientific & Medical Department (if, for example, the author alleges a form of editorial conflict of interest or misconduct).
+
+Manuscripts authored or co-authored by a member of the current Editorial Team will be decided by an independent "Ad Hoc Editor" (e.g., a previous editor not affiliated with the author’s editorial team). An Ad Hoc Editor will also be assigned manuscripts for which the Editor is required to recuse her/himself from the peer review process because of a potential conflict of interest or personal or professional bias. ADA Editorial Office staff will assist the Ad Hoc Editor with inviting and selecting reviewers. Members of the current Editorial Team are blinded to the peer review of manuscripts overseen by the Ad Hoc Editor.
+
+Back to Top
+
+Financial Obligations for Accepted Manuscripts
+
+Article-processing charges are assessed for non-invited articles to help defray the costs related to the peer review, editorial production and publication, access and dissemination, and archiving and indexing of articles.
+
+For articles submitted on or after February 1, 2024, article processing charges will be assessed at $175 per typeset journal page.
+
+In addition, ADA offers an “Open Choice” option for authors who wish to make their published article immediately accessible online to nonsubscribers. By paying an additional article-processing charge of $250 per page, authors may elect to have their articles freely available on the journal's website. Upon receipt of payment and on behalf of the author, ADA will also deposit the final version of the published article into PubMed Central.
+
+Authors will receive an invoice for publication fees, as well as a reprint order form, when page proofs become available. Unless otherwise indicated, it is assumed that the corresponding author takes responsibility for payment. Questions regarding billing or payment should be directed to [email&#160;protected] .
+
+Discount and Waiver Requests
+
+ADA recognizes that authors, their institutions, or their funding bodies, particularly those from low-income countries, may be unable to meet these financial obligations. In such cases, authors should submit requests for discounts or waivers of article-processing charges of accepted papers via the following online form: Publication Fee Requests .
+
+It should be noted that payment of publication fees or waiver status does not in any way influence the editorial decision-making process or the publication of any paper submitted to ADA journals.
+
+Back to Top
+
+Prepublication of Accepted Articles
+
+Articles accepted for publication in an ADA journal are published online ahead of print shortly after receipt of author proof corrections and are scheduled to appear in a future issue of the journal in print and online.
+
+Online Ahead of Print articles are citable by their unique DOI (digital object identifier). DOIs for ADA journal articles begin with 10.2337, followed by the article number assigned when the manuscript was submitted online via the manuscript submission system (e.g., 10.2337/dc11-1234).
+
+Back to Top
+
+Copyright, Reuse, Sharing, and Access
+
+Copyright
+
+The American Diabetes Association holds copyright on all content published in ADA journals, unless otherwise noted. Individual readers may use the content as long as the work is properly cited and linked to the version of record, the use is educational and not for profit, and the work is not altered. ADA permission is required to post articles on third-party websites (unless otherwise specified below under “Article sharing and access”) or to include articles in educational materials that are sold to students or used in courses for which tuition or other fees are charged. Refer to Copyright and License for complete information.
+
+Reuse
+
+Content published in ADA journals may not be reproduced without permission from ADA. All requests for reuse, with the exception of translations, are processed through the Copyright Clearance Center (CCC). To request permission from CCC, click on "Get Permissions" to the right of the online version of the article(s) containing the content you wish reuse.
+
+Reuse by authors
+
+Authors of ADA journal articles are permitted to reuse portions of their ADA-copyrighted work, including tables, images, and video, in their own work, and to reuse portions or all of their ADA-copyrighted work for educational purposes, without submitting a request to ADA, provided that the proper citation and copyright information is given.
+
+Specific examples of acceptable author reuse and sharing include:
+
+Reprinting the article in print collections of the author’s own writing.
+
+Reusing figures and tables created by the author in future works.
+
+Reproducing the article for use in courses the author is teaching.
+
+Distributing photocopies of the article to colleagues for non-commercial purposes only, but only for non-commercial purposes.
+
+Posting a copy of the article on the author's personal website, departmental website, and/or university intranet, with a hyperlink to the article on the journal website.
+
+Presenting the work orally in its entirety.
+
+Using the article in theses and/or dissertation.
+
+For additional information, see Reprints & Permissions
+
+Posting and Sharing
+
+Preprints
+
+A preprint is the pre-review version of a paper submitted to a journal, or any earlier draft.
+
+ADA journals will consider papers for publication if they have been deposited in an established preprint repository prior to submission to the journal , assuming that the author has retained copyright of the preprint (and not assigned it to a third party). At the time of submission and in the Acknowledgments section of the manuscript, authors should disclose whether the manuscript has been posted on a preprint server and should provide the specific DOI for the preprint.
+
+It should be noted that preprints are preliminary reports of work that have not yet been peer reviewed . ADA therefore emphasizes that preprints should not be used to influence clinical practice, health-related decisions, or health policy. Preprints should not be reported in the media as established information.
+
+Accepted manuscripts
+
+Authors are permitted to submit the final, accepted version of their manuscript to their funding body or institution for inclusion in their funding body or institution's database, archive, or repository; on their personal website; and on scholarly collaboration networks that subscribe to STM’s “ Voluntary Principles for Article Sharing on Scholarly Collaboration Networks .” These manuscripts may be made freely accessible to the public upon acceptance, provided that a link to the final article published in the ADA journal is included when available.
+
+ADA will automatically deposit all research funded by NIH into PubMed Central in order to comply with NIH’s Public Access policy, as described below. Therefore, it is not necessary for NIH-funded authors to deposit, or “self-archive,” their accepted manuscripts in PubMed Central.
+
+Published articles
+
+Authors and readers are encouraged to share links to final published articles on the journal website. Sharing a link is the best way to help readers access the most recent version of an article, as well as tools for reading, citing, and promoting the article. This can be facilitated by selecting the “Share” function to right of each online version of the article.
+
+Authors are permitted to share the final, published version of their articles in private research collaboration groups, including those hosted on scholarly collaboration networks that subscribe to STM’s “ Voluntary Principles for Article Sharing on Scholarly Collaboration Networks. ” Non-commercial subscribers may also share articles within private research collaboration groups convened for the specific purpose of researching a topic relevant to the article.
+
+Back to Top
+
+Public Access
+
+The American Diabetes Association (ADA) supports free access to ADA Journals ( Diabetes , Diabetes Care , Clinical Diabetes , and Diabetes Spectrum ) on the widest possible basis. Authors of accepted articles may chose to make their article freely accessible online immediately upon publication for a fee by selecting the Open Choice option.
+
+In addition, the following article types are always freely available online immediately upon publication:
+
+Editor-selected cover or feature articles
+
+ADA-authored articles, including ADA Statements and the annual “Standards of Medical Care in Diabetes”
+
+Commentaries
+
+Symposia articles
+
+Invited articles
+
+Online-only letters and Observations
+
+“In This Issue” article summaries
+
+“Patient Information” pages
+
+“Quality Improvement Success Stories”
+
+Supplemental material
+
+Errata and other amendments
+
+Access icons
+
+Access icons found to the left of article titles on tables of contents and search result views indicate the accessibility status of the article. Either an open lock or a green check mark means the full article is accessible to you. An open lock signifies access without a subscription. These articles are accessible to the public. A green checkmark means you are able to access to this article with your current personal or institutional subscription. A green lock means the article is currently only accessible with an active subscription.
+
+NIH public access policy
+
+ADA deposits the final print versions of articles funded by NIH into PubMed Central (PMC) on behalf of authors. In compliance with the NIH public access policy, enacted on July 1, 2025, these articles will be made publicly available on PMC immediately upon publication in Diabetes Care , Diabetes , or Diabetes, Obesity, and Cardiometabolic CARE . This service is provided at no additional cost to the authors.
+
+NIH-funded authors may self-deposit their accepted manuscripts in PMC; however, ADA will automatically deposit the final published article into PMC, to be released to the public upon publication in an ADA journal issue. Funded authors of PMC-deposited papers should refer to NIH’s “ How to Cite ” page for information on providing a valid Public Access code for indicating compliance until a PMCID is assigned. In short, the “PMC Journal In Process” designation is a valid and acceptable code that should display by default until a PMCID is assigned. For more information, see NIH Public Access Frequently Asked Questions .
+
+ADA Open Choice
+
+ADA offers an “Open Choice” option for authors who wish to make their published article immediately accessible online to nonsubscribers. By paying an additional article-processing charge, authors may elect to have their articles freely available on the journal's website. Upon receipt of payment, ADA will also deposit on behalf of authors the final version of the published article into PubMed Central. Complete information regarding article-processing charges is available in the section titled Financial Obligations .
+
+ADA will automatically deposit all research funded by NIH and any U.S. Government Agency into PubMed Central in order to comply with NIH’s Public Access policy, as described above.
+
+As with all content published in ADA Journals, Open Choice articles are published under the terms of ADA’s Copyright and Reuse License .
+
+Back to Top
+
+AI Content Licensing Policy and Terms
+
+Please access the AI Content Licensing Policy of the ADA for information on how ADA content may be used within artificial intelligence systems. Its primary purpose is to protect ADA intellectual property, ensure the responsible handling of confidential and proprietary information, and require transparency from all organizations seeking to apply ADA content in AI environments. The policy sets consistent expectations, identifies prohibited uses, and establishes the minimum safeguards necessary to protect people with diabetes and related conditions, scientific and medical professionals, and the ADA’s reputation.
+
+Permanency of Published Content
+
+All ADA journal articles are assigned a permanent DOI URL and will remain published on the ADA journal sites; all ADA journal articles are deposited into PubMed and are archived in CLOCKSS .
+
+Authors can revise and update their articles only by publishing an article amendment. See Article Amendments below for details on errata and other types of corrigendum. Only the most recently published version of an article is available on the ADA journal websites.
+
+The ADA participates in Crossmark , a multi-publisher initiative that developed a standard way for readers to know they have located the most current version of an article. By applying CrossMark policies , ADA is committed to maintaining the content it publishes and to alerting readers to changes if and when they occur.
+
+Clicking on the Crossmark logo (at the top of each ADA research article) will give you the status of the article, confirming it is the latest published version and linking to any published corrigenda; it may also give you additional information such as funding bodies and grant numbers.
+
+To maintain the integrity and completeness of the scholarly record, the policies in the following sections regarding corrigenda apply when published content needs to be corrected, updated, or retracted and represent current best practice in the scholarly publishing and library communities.
+
+Back to Top
+
+Article Amendments
+
+Requests for submitting errata, retractions, or other updates should first be sent to the Association Editorial Office . Depending on the nature of the request, the Editorial Office will consult with the Editors or the Panel on Ethical Scientific Programs on how to proceed with the request.
+
+Errata
+
+Errata refer to errors introduced to the article by the author(s) or the publisher. ADA journals will publish errata notices to communicate necessary corrections to such errors. Errata will be published in the print and online versions of the journal. Errata are listed in the table of contents, are linked online to the articles to which they pertain, and are indexed in public databases such as PubMed. Errata should clearly cite and describe the reported error(s), including at what stage the error(s) was introduced; should clearly communicate the necessary correction(s) to the error(s); and address whether the errors originated with ADA staff or with the author.
+
+Author’s Notes
+
+Articles are posted individually after proofs are returned from authors and before appearing in an issue. To preserve the integrity of electronically publishing articles, once an article is individually posted but not yet in an issue, changes cannot be made in place in the paper. However, an "Author's Note" may be added to the paper immediately before the References section when there is a critical error in the content of the paper. The "Author's Note" section gives the author an opportunity to correct this type of critical error before the article is put into an issue for printing and before it is reposted in an issue. The "Author's Note" section remains a permanent part of the article.
+
+Expressions of Concern
+
+Expressions of concern are used to alert readers to possible problems that could affect the reliability of the reported data or presented conclusions of the paper. ADA may publish an expression of concern to notify readers that the Association has contacted the author’s institution to request an investigation into possible anomalies (e.g., potential data fabrication or duplication) in a published paper. ADA will also consider publishing an expression of concern, or an update to an expression of concern, if there is inconclusive evidence of research or publication misconduct by the authors; if there is evidence that the data or findings are unreliable but the authors’ institution will not investigate the case; if there is reason to believe that an investigation into alleged misconduct related to the publication either has not been, or would not be, fair and impartial or conclusive; or if an investigation is underway but a judgement will not be available for a considerable time. Publication of an expression of concern will not require approval of the authors and will be readily visible and identifiable in the journal.
+
+Retractions
+
+The primary purposes of a retraction are to correct the literature, ensure its integrity, and alert readers to publications that contain erroneous and unreliable data or conclusions. ADA journals will consider retracting a publication if there is clear evidence that the findings are unreliable, either as a result of misconduct (e.g., data fabrication) or honest error (e.g., miscalculation or experimental error); if the findings have previously been published elsewhere without proper cross-referencing, permission, or justification; if significant portions of the paper have been plagiarized; if the paper reports unethical research; or if the authors fails to disclose a major competing interest likely to influence interpretations or recommendations.
+
+The editors of ADA journals will refer to the COPE Retraction Guidelines when considering whether to retract an article from publication. The editors may consult with the Association’s Panel on Ethical Scientific Programs (ESP) when reviewing retraction requests and recommendations. Recommendations may be forwarded to the American Diabetes Association, the publisher of ADA journals, for final review and approval.
+
+ADA journals will make every effort to ensure that published retraction notices:
+
+link to all electronic versions of the retracted article wherever possible
+
+clearly identify the retracted article by including the title and authors in the retraction heading
+
+are clearly identified as a retraction to distinguish it from other types of corrections or comments
+
+are published promptly to minimize the harmful effects from misleading publications
+
+are freely available to all readers
+
+Authors of submitted retraction notices should ensure that all coauthors listed on the original paper are aware of the problems with the paper and the pending retraction request. In cases where coauthors disagree, the editors will consult with the ESP to determine the most appropriate type of amendment; dissenting author(s) will be noted in the text of the published amendment.
+
+Retraction requests to ADA journals should clearly state the following information:
+
+the specific reasons and basis for the retraction (in order to distinguish cases of misconduct from those of honest error)
+
+who is retracting the article (e.g., the author; the head of the department, dean, or director of the laboratory where the paper was produced; or the editorial team of the journal)
+
+whether any coauthors do not agree with or support the request
+
+whether the issue was reviewed by the author(s)’ institution or funding agency.
+
+If a previously published retraction statement is itself misleading or does not properly or fully disclose issues of misconduct (e.g., plagiarism or the republication of data or figures from previously published articles), ADA journals will consider requests from authors or their affiliated institutions to publish an update to the retraction notice in order to better clarify or identify the problems with the retracted paper. Requests submitted by authors to update or emend retraction notices will be reviewed by the editorial team and the ESP. Updates to retraction notices should meet the guidelines and standards listed above.
+
+Addenda
+
+Addenda (or "updates") communicate additional information to a paper, either by request of the author(s) or in response to readers' request for clarification. Addenda are published only rarely. They will be reviewed by the editors to determine whether they are crucial to the reader's understanding of the published paper.
+
+Addenda should be signed by all authors. They will be published in the print and online versions of the journal. Addenda are listed in the table of contents, are linked online to the articles to which they pertain, and are indexed in public databases such as PubMed .
+
+Back to Top
+
+Media Embargos
+
+Other than reporting on details provided in a meeting abstract or meeting presentation, media representatives should refrain from reporting on studies submitted to or scheduled for publication in ADA journals until that study has completely undergone the peer review and editorial processes, and has been either posted on the journal website or published in the print version of the journal. Authors are discouraged from holding press conferences to publicize abstract results until their submitted manuscripts have completely undergone the peer-review and editorial processes.
+
+Back to Top
+
+Advertising
+
+Both electronic and print advertising submitted to ADA publications is reviewed by the Association’s Scientific & Medical Department. ADA has the right to reject any advertisement for any reason, which need not be disclosed to the party submitting the advertisement. Advertising submitted to ADA publications should clearly identify the advertiser and the product or service being offered. If the advertisement promotes a pharmaceutical product, the full generic name of each active ingredient in the drug product should be clearly listed. ADA journals will not deliberately place print or electronic advertising opposite or adjacent to editorial that discusses the product being advertised or that reports research on the advertised product, and ADA journals will not publish advertisements that refer to an article in the same issue of a publication. Advertising submitted to ADA publications should be distinct from editorial and should not appear to be editorial; advertising must not be deceptive or misleading or make false claims. Any advertisements that include indecent copy or contain negative content of a personal, racial, ethnic, medical, sexual orientation, or religious character will not be accepted.
+
+Solicitation of advertising for ADA publications will be carried out to fulfill the objective of supporting awareness among health professionals and consumers of useful products and services and to contribute to the financial support of the publications. Acceptance of advertising in ADA publications shall not be construed, however, as an endorsement, approval, recommendation, warranty or certification of the products or services by ADA or any group affiliated with it. Acceptance also does not imply responsibility on the part of ADA to ensure that the advertiser has complied with laws and regulations applicable to the marketing of the products. Acceptance of advertising does not imply that ADA has conducted an independent scientific review to validate product safety and efficacy or advertising claims. A company involved in an investigation or enforcement proceeding by a government agency with respect to claims made in marketing of a product to be advertised in an ADA publication must inform ADA of such litigation.
+
+Specific Provisions:
+
+Products or services must be safe and effective in the practice of medicine or to individuals with diabetes and their families. A company whose product submitted for advertisement in an ADA journal is being evaluated for safety and effectiveness must so inform the ADA.
+
+Companies submitting new products for advertisement may be required to provide information about product safety and effectiveness. If there is any question of safety or effectiveness, the appropriate staff person in the Scientific & Medical Division should see a product sample before acceptance/rejection.
+
+Advertisements for products that are subject to regulation by the Food & Drug Administration (FDA) will be accepted in ADA publications only if the products have met all FDA requirements to permit general marketing of the products.
+
+Advertisements for products subject to FDA approval of both the product and the advertising may be accepted in ADA publications without further review.
+
+Manufacturers whose products are subject to regulation by the FDA or Federal Trade Commission may be asked to submit a signed certification to ADA attesting that they have scientifically valid data on file to substantiate product claims or comparisons to other products.
+
+Companies submitting advertisements for ADA publications are required to indemnify the Association against claims based on the advertisements.
+
+Back to Top
+
+Supplements
+
+Editorial Supplements which are developed by non-profit groups, but sponsored by a pharmaceutical or other company, may be considered to be "under the cover of" one of ADA’s professional journals (either within an issue or bound separately) if approved in advance by the Association’s Scientific & Medical Department and the Editor-in-Chief of the journal. If approved, the journal Editor may appoint a special supplement editor to lead the journal’s peer review process. The supplement editor should be affiliated with ADA and should be an expert on the supplement topic. Approved Editorial Supplements should be completed prior to transition of a new Editor and editorial team for the journal.
+
+Supplements proposals for ADA journals should include a planned table of contents or, if based on a meeting or symposium, a planned agenda. The proposal should also address:
+
+The name of the organization(s) sponsoring and funding the supplement (not merely the name of the public relations agency handling its publication).
+
+If the supplement is based on a symposium, where and when the symposium was held and how the speakers and papers were selected.
+
+Whether authors were or will be paid and, if so, how much.
+
+If the proposal is approved, it will be forwarded to the Editor of the journal. Initial approval by the ADA does not commit the Editor to accept a proposal in whole or part. All manuscripts are subject to the same peer review as other manuscripts in the journal. In addition, ADA has adopted the following principles from ICMJE, as outlined in section III-G of ICMJE’s Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals :
+
+The journal editor has complete control of the decision to publish all or any portions of the supplement. Editing by the funding organization is not permitted.
+
+The journal editor retains the authority to send supplement manuscripts for external peer review and to reject manuscripts submitted for the supplement.
+
+The journal editor must approve the appointment of any external editor of the supplement and take responsibility for the work of the external editor.
+
+The sources of funding for the research, publication, and the products the funding source make that are considered in the supplement must be clearly stated and prominently located in the supplement, preferably on each page.
+
+Advertising in supplements follow the same policies as those of the rest of the journal.
+
+Journal editors and supplement editors may not accept personal favors or personal remuneration from sponsors of supplements.
+
+Secondary publication in supplements (republication of papers previously published elsewhere) is not permitted.
+
+ADA’s principles of authorship, potential conflict of interest disclosure, and other publication policies also apply to supplements.
+
+Advertising Supplements are only considered for publication under the following conditions:
+
+Advertising supplements do not carry ADA’s name or logo.
+
+Content published in advertising supplements adheres to ICMJE’s Uniform Requirements for Manuscripts .
+
+Advertising supplements are not published under the title of an ADA periodical, nor are they are not formatted or designed to suggest that they are part of one of ADA’s periodicals.
+
+Advertising supplements are clearly labeled as advertising or sponsored material; the source and type of funding to produce the supplement are clearly described on the cover.
+
+Proposals for advertising supplements must be reviewed and approved by the Editor-in-Chief of the periodical in question, as well as the appropriate ADA staff member.
+
+ADA reserves the right to review all final content of an advertising supplement and to not publish an advertising supplement for any reason.
+
+Back to Top
+
+ADA Standards, Statements, Reports, and Reviews
+
+The ADA is actively involved in the development and dissemination of diabetes care standards, guidelines, and related documents. The ADA’s clinical practice recommendations are viewed as important resources for health care professionals who care for people with diabetes. The information below describes the type of recommendations, statements, and reports authored, convened, or endorsed by ADA. Each ADA-authored and/or -endorsed report will be considered for publication in an ADA journal and will be reviewed at the discretion of the journal’s editorial team before publication. Each article type is expected to adhere to the International Committee of Medical Journal Editor’s uniform requirements for manuscripts submitted to medical and scientific journals, as well as the relevant reporting guidelines for each article type.
+
+Standards of Care
+
+This document is an official ADA position, is authored by the ADA, and provides all of the ADA’s current clinical practice recommendations.
+
+To update the Standards of Care, the ADA’s Professional Practice Committee (PPC) performs an extensive clinical diabetes literature search, supplemented with input from ADA staff and the medical community at large. The PPC updates the Standards of Care annually. However, the Standards of Care is a “living” document, where notable updates are incorporated online should the PPC determine that new evidence or regulatory changes (e.g., drug approvals, label changes) merit immediate inclusion. More information on the “living Standards” can be found on DiabetesPro at professional.diabetes.org/standards-of-care/living-standards-update .
+
+The Standards of Care supersedes all previous ADA position statements—and the recommendations therein—on clinical topics within the purview of the Standards of Care; ADA position statements, while still containing valuable analysis, should not be considered the ADA’s current position. The Standards of Care receives annual review and approval by the ADA Board of Directors.
+
+ADA Statement
+
+An ADA statement is an official ADA point of view or belief that does not contain clinical practice recommendations and may be issued on advocacy, policy, economic, or medical issues related to diabetes.
+
+ADA statements undergo a formal review process, including a review by the appropriate national committee, ADA mission staff, and ADA Board of Directors.
+
+Consensus Report
+
+An ADA consensus report is a document on a particular topic that is authored by a technical expert panel under the auspices of ADA. The document does not reflect the official ADA position but rather represents the panel’s collective analysis, evaluation, and expert opinion. The primary objective of a consensus report is to provide clarity and insight on a medical or scientific matter related to diabetes for which the evidence is contradictory, emerging, or incomplete. The report also aims to highlight evidence gaps and to propose avenues for future research.
+
+Consensus reports undergo a formal review process, including external peer review and review by the ADA PPC and ADA scientific team, for publication.
+
+Scientific Review
+
+A scientific review is a balanced review and analysis of the literature on a scientific or medical topic related to diabetes.
+
+A scientific review is not an ADA position and does not contain clinical practice recommendations but is produced under the auspices of the Association by invited experts. The scientific review may provide a scientific rationale for clinical practice recommendations in the Standards of Care. The category may also include task force and expert committee reports.
+
+Back to Top
+
+Privacy and Data Collection Policies
+
+The ADA is committed to protecting privacy. For information on what data is collected and how it is used when you visit an ADA website, as well as information on opting out, please review the complete ADA Privacy Policy .
+
+The journals of the ADA collect personal information to a facilitate the review of submitted manuscripts. For details regarding the collection and use of this data, as well as instructions on removing account information, please review the policy on Data Collection from ADA Authors and Reviewers .
+
+Back to Top
+
+Additional Resources
+
+Information for Reviewers
+
+Diabetes Instructions for Authors
+
+Diabetes Car e Instructions for Authors
+
+Clinical Diabetes Instructions for Authors
+
+Diabetes Spectrum Instructions for Authors
+
+License and Public Access
+
+Reprints and Permissions
+
+Back to Top
+
+Questions
+
+Questions about any of the policies mentioned above should be directed to ADA's editorial office at [email&#160;protected] .
+
+Advertisement
+
+Advertisement
+
+Journals
+
+Diabetes
+
+Diabetes Care
+
+Diabetes, Obesity, and CardioMetabolic CARE
+
+Clinical Diabetes
+
+Diabetes Spectrum
+
+ADA Standards of Care in Diabetes
+
+Scientific Sessions Abstracts
+
+BMJ Open Diabetes Research & Care
+
+Books
+
+ShopDiabetes.org
+
+ADA Professional Books
+
+Clinical Compendia
+
+Clinical Compendia Home
+
+News
+
+Latest News
+
+DiabetesPro SmartBrief
+
+Podcasts
+
+DOC Updates
+
+Diabetes Care "On Air"
+
+DiabetesBio
+
+Diabetes Day by Day
+
+DOC Updates: Special Editions
+
+The Points of CARE
+
+Other
+
+Special Collections
+
+DiabetesPro®
+
+Diabetes Food Hub™
+
+Know Diabetes By Heart™
+
+About
+
+About the ADA
+
+Journal Policies
+
+Accessibility
+
+For Reviewers
+
+Advertising in ADA Journals
+
+Reprints and Permission for Reuse
+
+Copyright Notice/Public Access Policy
+
+Privacy Policy
+
+Resources
+
+ADA Professional Membership
+
+ADA Member Directory
+
+Diabetes.org
+
+Bluesky
+
+X (Twitter)
+
+Facebook
+
+LinkedIn
+
+Contact Us
+
+Cookie Policy
+
+Accessibility
+
+Terms & Conditions
+
+Get Adobe Acrobat Reader
+
+© Copyright American Diabetes Association
+
+Close Modal
+
+Close Modal
+
+This Feature Is Available To Subscribers Only
+
+Sign In or Create an Account
+
+Close Modal
+
+Close Modal
+
+Sharing Unavailable
+
+Sharing content requires targeting cookies to be enabled. Please update your cookie preferences to use this feature.
+
+Update Cookie Preferences
+Cancel
+
+This site uses cookies. By continuing to use our website, you are agreeing to our privacy policy.
+
+Accept

@@ -50,12 +50,20 @@ step  machine-readable key                            Page Type             cont
       frontmatter `page-type: section`                Section unit          for-section
       frontmatter `page-type: narrative`              Narrative             for-narrative
       frontmatter `page-type: round`                  Paper round           for-round
-      frontmatter `page-type: insight`                DIKW insight          for-insight
-      frontmatter `page-type: brief`                  Application brief     for-brief
-      frontmatter `page-type: intervention`           Intervention design   for-intervention
-      frontmatter `page-type: artifact`               Application artifact for-artifact
+      frontmatter `page-type: insight`                Task whole-chain DIKW for-insight
+      frontmatter `page-type: meta`                   InsightBoard head     for-meta
+      frontmatter `page-type: data`                   InsightBoard D        for-data
+      frontmatter `page-type: information`            InsightBoard I        for-information
+      frontmatter `page-type: knowledge`              InsightBoard K        for-knowledge
+      frontmatter `page-type: wisdom`                 InsightBoard W        for-wisdom
+      frontmatter `page-type: brief`                  DesignBoard head      for-brief
+      frontmatter `page-type: principle`              DesignBoard P         for-principle
+      frontmatter `page-type: design`                 DesignBoard DS        for-design
       ─ retired 260820 · `page-type: dash` no longer resolves; the paper family's
         `/haipipe-paper status [family]` command reports the same rollup ─
+      ─ retired 260820 · `page-type: intervention` was RENAMED onto the free
+        `design` key, and `page-type: artifact` was absorbed into a per-division
+        acceptance row on the Design Page. Neither resolves ─
 ④     filename S-<Family>-<unit>-<slug>               Stage                 for-stage
 ⑤     filename Q<group><n>[<face>]-<slug>             Q decision            base only
 ```
@@ -121,14 +129,24 @@ page-types/
 task/            haipipe-page-for-task          one task-folder · closes when a
 page-types/                                     person reads a run-bound result
 
-application/     haipipe-page-for-brief         one application identity, audience,
-page-types/                                     venue, promise, and source selection
-                 haipipe-page-for-insight       one Application insight question;
-                                                Task-backed Probe → DIKW → handoff
-                 haipipe-page-for-intervention  one audience × job × venue Design;
-                                                handoffs → message divisions
-                 haipipe-page-for-artifact      one independently approvable delivery
-                                                unit, bound to handoff + render version
+application/     haipipe-page-for-meta          InsightBoard head · sources,
+page-types/                                     grain, freshness, Question Roster
+  the DIKW       haipipe-page-for-data          D · observed, run-bound
+  ladder, one    haipipe-page-for-information   I · derived from named D rows
+  page per       haipipe-page-for-knowledge     K · claimed · strength · rivals
+  LEVEL          haipipe-page-for-wisdom        W · counsel + the Design Handoff
+                 haipipe-page-for-brief         DesignBoard head · audience set,
+                                                venue scope, needs raised
+                 haipipe-page-for-principle     P · because <W>, do <move>,
+                                                within <rail> · the only layer
+                                                that reads the InsightBoard
+                 haipipe-page-for-design        DS · one audience × job × venue,
+                                                units as divisions
+
+task/            haipipe-page-for-insight       the CONSUMER-NEUTRAL whole chain
+page-types/                                     in one page, on the Insights Board
+                 ─ artifact RETIRED 260820: five of its six roles already lived in
+                   a Design division and the sixth, acceptance, is now a row ─
 
 ```
 
@@ -139,8 +157,10 @@ paper artifacts directly.
 When a variant moves, its installed symlink still points at the old folder, so re-run `install.sh --global` (repo root) or the skill silently stops resolving.
 
 Seed is the paper's venue-free identity page upstream of Narrative.
-Application's Brief, Insight, Intervention, and Artifact retain globally unique
-keys, so step ③ never needs family context to resolve a contract. Insight's
+Application's Meta, Insight, Brief, and Design retain globally unique keys, so
+step ③ never needs family context to resolve a contract. `design` was free to
+reuse: it was retired on 260819 with zero pages declaring it, and JL renamed
+`intervention` onto it on 260820 so one concept carries one word. Insight's
 placement is Application-owned while its evidence authority remains Task-backed.
 A slide deck is NOT a Page Type: a page's talk is plugin material at `<page>/slide/<page>-deck.html`, authored by an agent and regenerated on demand (JL 260815, ruled on QPf3; the retired variant's specimen is archived on that board).
 `-for-section` loads the base Page directly. It adds the section kind, the
@@ -408,7 +428,10 @@ work went instead:
                                        flexible page does anyway
   meeting   0 pages                    it is a PLUGIN, and
                                        haipipe-plugin-meeting already ships
-  skill     0 pages                    same: haipipe-plugin-skill already ships
+  skill     0 pages                    same: haipipe-plugin-skill already ships.
+                                       The six Skill-<n> pages that outlived the
+                                       type were deleted 260820; the count is
+                                       literal now, not aspirational
   view      0 pages declaring it        everything is a view now
 ```
 

@@ -1,4 +1,22 @@
 
+## 0.2.0 — 2026-08-21
+
+- **Resolved source re-pointed at the QBv bank** (JL 260821): the declared
+  universe `paper/venue/**/template.md` marked `section-page-template: 1` held
+  ZERO files — every Section silently resolved to the generic fallback. The
+  structure now comes from the QBv Venue Page's unit division matching
+  `section_kind`, reached through the governing Narrative's division-1 binding
+  (venue 0.3.0 made those divisions carry moves-as-slots, pack refusals,
+  format values, and the language per desk unit).
+- Raw pack `style.md` files stay informative and may never become
+  `structure-source`; a missing unit division is raised as a gap on the QBv
+  page, never filled locally.
+- **Two runtime groups** (JL 260821: "we will have 1-SC-Section and
+  2-SA-Appendix"): main reading order in `1-SC-main/` as `SC<NN>-<kind>`,
+  appendices in `2-SA-appendix/` as `SA<NN>-<slug>`, one contract for both;
+  Round moves to `3-RD-round/`.
+- Frontmatter gains version, summary, and `group-token: SC | SA`.
+
 ## Unreleased — 2026-08-16
 
 The outline this type supplies is RESOLVED, and it is now reachable in one step.
