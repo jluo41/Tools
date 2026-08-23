@@ -1,0 +1,14 @@
+{
+  "Calories": 13.0,
+  "Carbs": 2.18,
+  "Protein": 1.5,
+  "Fat": 0.2,
+  "Fiber": 1.0,
+  "NutritionSource": "bank_usda",
+  "NutritionConf": "ESTIMATED",
+  "NutritionBasis": "per_100g",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "chinese cabbage"
+}

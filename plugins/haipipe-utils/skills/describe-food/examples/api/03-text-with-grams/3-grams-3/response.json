@@ -1,0 +1,14 @@
+{
+  "Calories": 250.16,
+  "Carbs": 27.96,
+  "Protein": 19.27,
+  "Fat": 6.86,
+  "Fiber": 4.79,
+  "NutritionSource": "bank_usda",
+  "NutritionConf": "ESTIMATED",
+  "NutritionBasis": "per_meal",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Coarse grain steamed bread 50 g\nEgg 39 g\nSteamed pork dumplings 64 g"
+}

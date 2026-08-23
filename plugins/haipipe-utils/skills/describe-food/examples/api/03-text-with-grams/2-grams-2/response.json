@@ -1,0 +1,14 @@
+{
+  "Calories": 168.25,
+  "Carbs": 16.91,
+  "Protein": 7.26,
+  "Fat": 8.2,
+  "Fiber": 1.9,
+  "NutritionSource": "bank_usda",
+  "NutritionConf": "ESTIMATED",
+  "NutritionBasis": "per_meal",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Egg 50 g\nRice 25 g\nVegetable 100 g"
+}

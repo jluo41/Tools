@@ -1,0 +1,10 @@
+{
+  "InsulinClass": "long",
+  "OnsetMin": 105,
+  "PeakMin": null,
+  "DurationMin": 1440,
+  "Biphasic": false,
+  "InsulinResolved": "insulin glargine",
+  "PKSource": "label_table:insulin glargine",
+  "PKConf": "OK"
+}

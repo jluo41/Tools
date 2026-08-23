@@ -1,0 +1,10 @@
+{
+  "InsulinClass": null,
+  "OnsetMin": null,
+  "PeakMin": null,
+  "DurationMin": null,
+  "Biphasic": null,
+  "InsulinResolved": null,
+  "PKSource": "label_table:no_match",
+  "PKConf": "MISS"
+}

@@ -3,9 +3,15 @@ describe-exercise's NounSpec.
 
 WHERE THE GOLD COMES FROM
 ================================================================================
-There is no public corpus of free-text exercise logs coded to the Compendium --
-searched 260822, none exists -- so the gold has to come off this board. It does,
-and it is NOT circular:
+No public corpus of PATIENT-LOGGED exercise strings coded to the Compendium has
+been found, so the VALUE gold has to come off this board. It does, and it is NOT
+circular:
+
+(Corrected 260822: an earlier version of this docstring said no Compendium-coded
+corpus existed at all. CAPTURE-24 does -- 206 CPA codes, human-annotated at
+Cohen's kappa > 0.8, CC-BY. Its text is wearable-camera descriptions rather than
+a patient's own log entry, so it is not a drop-in for this gold, but it is a
+real external resource for the IDENTITY question and the claim was too broad.)
 
     MET_device = CaloriesBurned * 200 / (3.5 * kg * minutes)
 

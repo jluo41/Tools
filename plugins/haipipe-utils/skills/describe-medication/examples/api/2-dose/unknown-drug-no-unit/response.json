@@ -1,0 +1,15 @@
+{
+  "DoseValue": 5.0,
+  "DoseUnit": null,
+  "DoseBasis": null,
+  "DrugKey": null,
+  "Ingredient": null,
+  "BrandName": null,
+  "PharmClass": null,
+  "DosageForm": null,
+  "Route": null,
+  "NDC": null,
+  "MedSource": "lexicon:no_such_id",
+  "MedConf": "MISS",
+  "IsInsulin": false
+}

@@ -29,7 +29,8 @@ from typing import Dict, List, Optional, Sequence
 # them. A number without its basis is not interpretable and must never be
 # returned alone.
 NUTRIENTS = ("Calories", "Carbs", "Protein", "Fat", "Fiber")
-PROVENANCE = ("NutritionSource", "NutritionConf", "NutritionBasis")
+PROVENANCE = ("NutritionSource", "NutritionConf", "NutritionBasis",
+              "NutritionCoverage")
 
 DEFAULT_TRANSPORT = os.environ.get("FOODNORM_TRANSPORT", "local")
 DEFAULT_URL = os.environ.get("FOODNORM_URL", "http://127.0.0.1:8077")
@@ -42,6 +43,7 @@ def _empty(reason: str = "none") -> Dict:
     d["NutritionSource"] = reason
     d["NutritionConf"] = "MISS"
     d["NutritionBasis"] = None
+    d["NutritionCoverage"] = None
     return d
 
 

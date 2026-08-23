@@ -1,0 +1,14 @@
+{
+  "Calories": 145.32,
+  "Carbs": 17.03,
+  "Protein": 2.06,
+  "Fat": 7.68,
+  "Fiber": 1.43,
+  "NutritionSource": "bank_usda",
+  "NutritionConf": "ESTIMATED",
+  "NutritionBasis": "per_meal",
+  "NutritionCoverage": 0.5,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Nacho Cheese Tortilla Chips (28g); Diet Coke"
+}

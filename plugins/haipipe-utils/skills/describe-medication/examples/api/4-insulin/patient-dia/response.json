@@ -1,0 +1,10 @@
+{
+  "InsulinClass": "long",
+  "OnsetMin": 105,
+  "PeakMin": null,
+  "DurationMin": 420.0,
+  "Biphasic": false,
+  "InsulinResolved": "basal insulin",
+  "PKSource": "patient_dia:7.0h+label_table:basal insulin",
+  "PKConf": "GOOD"
+}

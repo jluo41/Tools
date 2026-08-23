@@ -1,0 +1,10 @@
+{
+  "InsulinClass": "ultra_long",
+  "OnsetMin": 60,
+  "PeakMin": null,
+  "DurationMin": 2520,
+  "Biphasic": false,
+  "InsulinResolved": "insulin degludec",
+  "PKSource": "combination:Xultophy",
+  "PKConf": "ALIAS"
+}

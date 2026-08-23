@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "Calories": 407.0,
+      "Carbs": 42.08,
+      "Protein": 18.76,
+      "Fat": 17.31,
+      "Fiber": 1.4,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "fried rice; egg"
+    },
+    {
+      "Calories": 0.0,
+      "Carbs": 12.0,
+      "Protein": 0.0,
+      "Fat": 0.0,
+      "Fiber": 0.0,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "milk"
+    },
+    {
+      "Calories": 407.0,
+      "Carbs": 42.08,
+      "Protein": 18.76,
+      "Fat": 17.31,
+      "Fiber": 1.4,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "fried rice; egg"
+    }
+  ],
+  "n": 3,
+  "version": "0.4.0"
+}

@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "Calories": 16.0,
+      "Carbs": 2.95,
+      "Protein": 0.62,
+      "Fat": 0.18,
+      "Fiber": 0.5,
+      "NutritionSource": "bank_usda",
+      "NutritionConf": "ESTIMATED",
+      "NutritionBasis": "per_meal",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "Cucumber 100g"
+    },
+    {
+      "Calories": null,
+      "Carbs": null,
+      "Protein": null,
+      "Fat": null,
+      "Fiber": null,
+      "NutritionSource": "none",
+      "NutritionConf": "MISS",
+      "NutritionBasis": null,
+      "NutritionCoverage": null,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "Just Carbs"
+    },
+    {
+      "Calories": null,
+      "Carbs": null,
+      "Protein": null,
+      "Fat": null,
+      "Fiber": null,
+      "NutritionSource": "none",
+      "NutritionConf": "MISS",
+      "NutritionBasis": null,
+      "NutritionCoverage": 0.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "xiaolongbao"
+    }
+  ],
+  "n": 3,
+  "version": "0.4.0"
+}

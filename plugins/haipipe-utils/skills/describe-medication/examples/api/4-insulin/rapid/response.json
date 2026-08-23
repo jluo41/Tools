@@ -1,0 +1,10 @@
+{
+  "InsulinClass": "rapid",
+  "OnsetMin": 10,
+  "PeakMin": 57,
+  "DurationMin": 300,
+  "Biphasic": false,
+  "InsulinResolved": "insulin lispro-aabc",
+  "PKSource": "label_table:insulin lispro-aabc",
+  "PKConf": "OK"
+}

@@ -39,3 +39,18 @@ plugins/haipipe-toolkit/skills/diagrams/*/board/
 # sidecar. Both are per-machine (sessions.json stores absolute paths) and
 # both self-create when missing, so they are never shared.
 .haipipe-board/
+
+# ── Virtualenvs, wherever a skill grows one ─────────────────────────────────
+# JL 260823: diagram-excalidraw/references/.venv is 138 MB and 100% virtualenv
+# (116.8 MB of it is playwright's bundled `node`). Zero source files. The env
+# self-creates from the skill's own requirements, so it is never shared.
+.venv/
+**/.venv/
+node_modules/
+**/node_modules/
+
+# ── legacy/ is retired material, and retired means deleted ──────────────────
+# 140 MB of a superseded diagram-skill copy plus a superseded dikw-full. It is
+# kept on disk only as a local reading reference; the live skills supersede it.
+# Ignored rather than committed so the repo does not carry two of everything.
+/legacy/

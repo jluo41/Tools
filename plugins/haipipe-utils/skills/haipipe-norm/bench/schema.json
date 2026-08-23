@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bench-v1",
+  "title": "bench-v1 -- one benchmark run over one describe-* member",
+  "description": "The shape of every file under an _XInfo folder's 6-bench/. 2-corpus is the RULER and never changes; 6-bench is the READING and there are many, so the two are different layers. A run names the code it graded, because a number with no commit is not a measurement.",
+  "type": "object",
+  "required": ["bench", "tag", "noun", "skill", "verdict", "checks"],
+  "properties": {
+    "bench": {"const": "B1_contract", "description": "which of the three benchmarks produced this file"},
+    "tag": {"type": "string", "description": "the run's name, chosen by whoever ran it"},
+    "at": {"type": "string", "description": "ISO timestamp"},
+    "git_head": {"type": "string", "description": "the commit the graded code was at. dirty is marked."},
+    "noun": {"type": "string"},
+    "skill": {"type": "string"},
+    "profile": {"type": "object", "description": "the member's declaration, echoed so a reader can see what was asserted without opening the source"},
+    "n_fixtures": {"type": "integer", "description": "cases discovered under 5-api-examples for this member"},
+    "n_replayed": {"type": "integer"},
+    "n_records": {"type": "integer", "description": "individual result dicts the checks ran over"},
+    "n_skipped": {"type": "integer"},
+    "skipped": {
+      "type": "array",
+      "description": "every case NOT replayed, with its reason. Never empty-by-omission: a benchmark that silently drops the hard cases reads as coverage it does not have.",
+      "items": {"type": "object", "required": ["case", "why"]}
+    },
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "n_checks_failed": {"type": "integer"},
+    "checks": {
+      "type": "object",
+      "description": "keyed C00..C11. Each carries the sentence it asserts, so the file is readable without the code.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "asserts"],
+        "properties": {
+          "status": {"enum": ["PASS", "FAIL", "NA", "ERROR"]},
+          "name": {"type": "string"},
+          "asserts": {"type": "string"},
+          "why_na": {"type": "string", "description": "required when status is NA. A check that opts out must say what it would have measured."},
+          "n": {"type": "integer"},
+          "n_bad": {"type": "integer"},
+          "failures": {"type": "array", "maxItems": 12}
+        }
+      }
+    }
+  }
+}

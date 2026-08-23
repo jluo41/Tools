@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Calories": 250.0,
+    "Carbs": 35.0,
+    "Protein": 6.0,
+    "Fat": 8.5,
+    "Fiber": 5.0,
+    "NutritionSource": "bank_observed|img:claude-vision:claude-sonnet-5",
+    "NutritionConf": "MEASURED",
+    "NutritionBasis": "per_serving",
+    "NutritionCoverage": 0.667,
+    "NameSource": "claude-vision:claude-sonnet-5",
+    "NameConf": 0.7,
+    "FoodNameResolved": "chicken pilaf; mashed potatoes; mixed vegetables"
+  },
+  "n_frames": 1,
+  "engine": "claude",
+  "version": "0.4.0"
+}

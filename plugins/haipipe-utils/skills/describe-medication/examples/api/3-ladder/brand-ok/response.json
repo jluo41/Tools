@@ -1,0 +1,15 @@
+{
+  "DoseValue": 1.0,
+  "DoseUnit": "count",
+  "DoseBasis": "per_administration",
+  "DrugKey": "Empagliflozin",
+  "Ingredient": "Empagliflozin",
+  "BrandName": "Jardiance",
+  "PharmClass": "Sodium-Glucose Cotransporter 2 Inhibitor [EPC], Sodium-Glucose Transporter 2 Inhibitors [MoA]",
+  "DosageForm": "TABLET, FILM COATED",
+  "Route": "ORAL",
+  "NDC": "0597-0153-3",
+  "MedSource": "fda_generic:empagliflozin",
+  "MedConf": "OK",
+  "IsInsulin": false
+}

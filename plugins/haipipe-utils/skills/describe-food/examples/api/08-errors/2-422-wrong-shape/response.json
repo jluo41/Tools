@@ -1,0 +1,14 @@
+{
+  "status": 422,
+  "detail": [
+    {
+      "type": "list_type",
+      "loc": [
+        "body",
+        "foods"
+      ],
+      "msg": "Input should be a valid list",
+      "input": "rice"
+    }
+  ]
+}

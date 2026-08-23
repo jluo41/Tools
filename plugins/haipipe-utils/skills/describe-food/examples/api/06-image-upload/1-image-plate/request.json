@@ -1,0 +1,10 @@
+{
+  "_multipart": "files",
+  "frames": [
+    "00000007-PHOTO-2020-5-1-20-48-0.jpg"
+  ],
+  "_frames_are_here": "the .jpg files sit in this folder; curl.sh uploads them",
+  "_origin": [
+    "/nvme1/group_share/0-RawDataStore/CGMacros/Source/CGMacros-001/photos/00000007-PHOTO-2020-5-1-20-48-0.jpg"
+  ]
+}

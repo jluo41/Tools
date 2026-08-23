@@ -1,0 +1,5 @@
+{
+  "item": "x",
+  "dose": 1.5,
+  "payload": "{\"MedicationType\": \"Basal Insulin\"}"
+}

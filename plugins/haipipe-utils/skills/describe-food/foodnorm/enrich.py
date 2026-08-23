@@ -29,6 +29,8 @@ and gate B are both closed.
 import pandas as pd
 from typing import Optional
 
+from .observed import lookup as observed_lookup
+
 
 def enrich_food_to_nutrition(
     df: pd.DataFrame,
@@ -40,6 +42,7 @@ def enrich_food_to_nutrition(
     cache_results: bool = True,
     on_error: str = "raise",
     verbose: bool = False,
+    use_observed: bool = True,
 ) -> pd.DataFrame:
     """
     Enrich a DataFrame with USDA nutrition data by resolving FoodName strings.
@@ -69,6 +72,9 @@ def enrich_food_to_nutrition(
                    the photos live is a property of the cohort, not of this
                    stage.
         cache_results: Cache resolved components across meals (default: True)
+        use_observed: consult the T0 observed bank before USDA (default: True).
+            Set False to measure the ladder against the USDA-only baseline; that
+            is how the T0 numbers in SKILL.md were produced.
         on_error: "raise" (default) or "skip" (leave NaN on failure).
                   Defaults to raise: this enricher once threw on every single row
                   and a caller's `except: continue` shipped a SourceSet with 100%
@@ -211,8 +217,36 @@ def enrich_food_to_nutrition(
     # confidently wrong food; propagating its numbers is worse than a NULL.
     TRUSTED = ("GOOD", "OK", "ALIAS")
 
-    def resolve_component(name):
-        """name -> (per-100g nutrition dict or None, quality string)"""
+    # THE BANK LADDER. A component is resolved at the highest tier that has it,
+    # and a meal is summed at ONE tier only -- T0 is per SERVING and T2 is per
+    # 100 g, and adding one to the other yields a number that is neither.
+    #
+    #   T0 observed   this exact string was logged, with numbers   MEASURED
+    #   T2 usda       fuzzy match against USDA FDC                 ESTIMATED
+    #
+    # T0 exists because the T2 error tail is real and undetectable: calibrated
+    # 260822 over 10,068 logged names, T2's median carb error is 2.0 g but 688
+    # names (10.0%) are wrong by more than 15 g, and six candidate signals for
+    # spotting them topped out at 2.4x lift on 72 names. 'Pepsi (12 oz)' came
+    # back from USDA at 0.00 g carbs labelled GOOD; it was logged with 41 g.
+    T_OBS, T_USDA = "observed", "usda"
+    TIER_RANK = {T_OBS: 0, T_USDA: 1}
+
+    def resolve_t0(name):
+        """name -> per-SERVING dict, or None. An exact retrieval, never a match."""
+        if not use_observed:
+            return None
+        obs = observed_lookup(name)
+        return obs["values"] if obs else None
+
+    def resolve_t2(name):
+        """name -> per-100 g dict or None, plus the legacy quality word.
+
+        Computed ONLY when it can be used: when T0 missed, or when the log
+        stated a gram amount. T0 cannot honour a stated portion -- its servings
+        have no mass in the bank -- so a gram-bearing component needs T2 even if
+        T0 has it. Skipping the query otherwise keeps a cook from paying ~12 ms
+        of FTS5 per distinct component it will not use."""
         if name in comp_cache:
             return comp_cache[name]
 
@@ -267,36 +301,89 @@ def enrich_food_to_nutrition(
             # carried grams, so all 90 were discarded. See QE1 D10, gate B.
             resolved = []
             for c in food_components:
-                per100, _q = resolve_component(c.name)
-                if per100 is None:
-                    continue                       # untrusted match: nothing to report
-                resolved.append((c.amount_g, per100))
-            n_resolved = len(resolved)
+                t0 = resolve_t0(c.name)
+                if t0 is not None:
+                    resolved.append((c.amount_g, t0, T_OBS))
+                # T2 is still worth having when the log stated grams, because
+                # only T2 can be scaled to them.
+                if t0 is None or c.amount_g is not None:
+                    t2, _q = resolve_t2(c.name)
+                    if t2 is not None:
+                        resolved.append((c.amount_g, t2, T_USDA))
 
-            if n_total == 0 or n_resolved == 0:
+            if n_total == 0 or not resolved:
                 nutrition = {k: None for k in NUTRIENT_KEYS}
                 nutrition["NutritionSource"] = "none"
                 nutrition["NutritionConf"] = "MISS"
                 nutrition["NutritionBasis"] = None
+                nutrition["NutritionCoverage"] = 0.0 if n_total else None
             else:
+                # PICK ONE TIER FOR THE WHOLE MEAL, never a mixture: a
+                # per-serving figure added to a per-100 g figure is neither.
+                # The pick is ordered
+                #
+                #   1. CAN IT HONOUR THE STATED PORTION?
+                #      A log that says '141 g' has given better information
+                #      than any bank's idea of a serving, and only T2's
+                #      per-100 g values can be scaled to it -- T0 is
+                #      denominated in servings whose mass the bank does not
+                #      know ('cup', 'large', 'medium (7" to 7-7/8" long)').
+                #      So when grams are stated, T2 wins. Shanghai, the one
+                #      cohort that consumes this resolver today, states grams
+                #      on every component; ignoring them to use a serving
+                #      default turned a correct 4.2 g cucumber into 0.15 g.
+                #   2. COVERAGE. One banana at T0 against three dishes at T2 is
+                #      better described by the three, and NutritionConf tells
+                #      the reader which they got.
+                #   3. TIER QUALITY, as the tie-break.
+                by_tier = {}
+                for amt, vals, tier in resolved:
+                    by_tier.setdefault(tier, []).append((amt, vals))
+
+                def _pick(t):
+                    grams = all(a is not None for a, _ in by_tier[t])
+                    return (1 if (grams and t == T_USDA) else 0,
+                            len(by_tier[t]), -TIER_RANK[t])
+
+                tier = max(by_tier, key=_pick)
+                at_tier = by_tier[tier]
+                n_resolved = len(at_tier)
                 # Portion basis is a MEAL-level property, because summing a
                 # gram-scaled component with an unscaled one yields a number
                 # that is neither. A portion is never invented: if any resolved
                 # component lacks grams the whole meal is reported per 100 g of
                 # each component, and the basis column says so.
-                stated = all(amt is not None for amt, _ in resolved)
-                total = {k: 0.0 for k in NUTRIENT_KEYS}
-                for amount_g, per100 in resolved:
-                    scale = (amount_g / 100.0) if stated else 1.0
-                    for k in NUTRIENT_KEYS:
-                        total[k] += per100[k] * scale
+                if tier == T_OBS:
+                    # T0 values are PER SERVING of the named food, and a
+                    # serving's mass is not in the bank -- 'cup', 'large',
+                    # 'medium (7" to 7-7/8" long)'. So a stated gram amount
+                    # cannot scale them and is deliberately NOT applied; the
+                    # basis column says per_serving and means it.
+                    total = {k: 0.0 for k in NUTRIENT_KEYS}
+                    for _amt, vals in at_tier:
+                        for k in NUTRIENT_KEYS:
+                            total[k] += vals[k]
+                    nutrition = {k: round(v, 2) for k, v in total.items()}
+                    nutrition["NutritionSource"] = "bank_observed"
+                    nutrition["NutritionConf"] = "MEASURED"
+                    nutrition["NutritionBasis"] = "per_serving"
+                else:
+                    stated = all(amt is not None for amt, _ in at_tier)
+                    total = {k: 0.0 for k in NUTRIENT_KEYS}
+                    for amount_g, per100 in at_tier:
+                        scale = (amount_g / 100.0) if stated else 1.0
+                        for k in NUTRIENT_KEYS:
+                            total[k] += per100[k] * scale
+                    nutrition = {k: round(v, 2) for k, v in total.items()}
+                    nutrition["NutritionSource"] = "bank_usda"
+                    nutrition["NutritionConf"] = "ESTIMATED"
+                    nutrition["NutritionBasis"] = "per_meal" if stated else "per_100g"
 
-                nutrition = {k: round(v, 2) for k, v in total.items()}
-                nutrition["NutritionSource"] = "bank_usda"
-                # A meal is only as good as its weakest resolved component: if
-                # any component was dropped, the totals UNDERSTATE the meal.
-                nutrition["NutritionConf"] = "GOOD" if n_resolved == n_total else "PARTIAL"
-                nutrition["NutritionBasis"] = "per_meal" if stated else "per_100g"
+                # Completeness is its OWN question and now its own column. It
+                # used to be folded into the confidence word as `PARTIAL`,
+                # which made one column answer two things: where the numbers
+                # came from, and how much of the meal they cover. Rule 5.
+                nutrition["NutritionCoverage"] = round(n_resolved / n_total, 3)
 
         except Exception as e:
             if on_error == "raise":
@@ -307,19 +394,30 @@ def enrich_food_to_nutrition(
             nutrition["NutritionSource"] = "none"
             nutrition["NutritionConf"] = "MISS"
             nutrition["NutritionBasis"] = None
+            nutrition["NutritionCoverage"] = None
 
         meal_cache[meal] = nutrition
 
-    for col in list(NUTRIENT_KEYS) + ["NutritionSource", "NutritionConf", "NutritionBasis"]:
+    for col in list(NUTRIENT_KEYS) + ["NutritionSource", "NutritionConf",
+                                      "NutritionBasis", "NutritionCoverage"]:
         df[col] = work.map(lambda m: meal_cache.get(m, {}).get(col) if pd.notna(m) else None)
 
     # Tag the provenance into NutritionSource too. A downstream that reads only
     # this one column must still be unable to mistake a model-named meal for a
     # reported one -- the name is the same TYPE either way, which is what makes
     # stage 0 the easiest place in the library to launder a guess.
-    derived = df["NameSource"].ne("typed") & df["NutritionSource"].eq("bank_usda")
+    # Tag EVERY resolved tier, not just bank_usda. Pinning this to one tier was
+    # a rule-5 break introduced with the ladder: a photo-derived name that hit
+    # the observed bank came back as plain `bank_observed`, so a model's guess
+    # became indistinguishable from a patient's own report. Written against the
+    # general condition so a future T1 is covered without this line changing.
+    derived = (df["NameSource"].ne("typed")
+               & df["NutritionSource"].notna()
+               & df["NutritionSource"].ne("none"))
     if derived.any():
-        df.loc[derived, "NutritionSource"] = "bank_usda|img:" + df.loc[derived, "NameSource"].astype(str)
+        df.loc[derived, "NutritionSource"] = (
+            df.loc[derived, "NutritionSource"].astype(str)
+            + "|img:" + df.loc[derived, "NameSource"].astype(str))
 
     if verbose:
         conf = df["NutritionConf"].value_counts(dropna=False).to_dict()

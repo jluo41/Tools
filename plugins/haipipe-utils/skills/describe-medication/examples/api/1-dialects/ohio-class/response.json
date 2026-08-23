@@ -1,0 +1,15 @@
+{
+  "DoseValue": 1.5,
+  "DoseUnit": "iu",
+  "DoseBasis": "per_administration",
+  "DrugKey": "basal insulin",
+  "Ingredient": null,
+  "BrandName": null,
+  "PharmClass": "basal insulin",
+  "DosageForm": null,
+  "Route": null,
+  "NDC": null,
+  "MedSource": "class_only:basal insulin",
+  "MedConf": "MISS",
+  "IsInsulin": true
+}

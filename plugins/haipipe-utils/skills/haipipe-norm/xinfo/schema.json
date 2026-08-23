@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "haipipe-norm/xinfo-v1",
+  "title": "_XInfo cohort record",
+  "description": "One entry of a _<Noun>Info/_stats.json. Every describe-* normalizer emits this SAME shape, so a benchmark that reads coverage, confidence or basis is written once and runs against all of them. Before this existed, _FoodInfo and _ExerciseInfo shared exactly two keys -- cohort and rows -- and a calibration benchmark would have had to be written four times.",
+  "type": "object",
+  "required": [
+    "noun",
+    "cohort",
+    "rows"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "noun": {
+      "type": "string",
+      "description": "food | exercise | medication | insulin"
+    },
+    "cohort": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "rows in this cohort's source frame. 0 means the frame exists and is empty, which is a fact worth keeping, not a cohort to omit."
+    },
+    "patients": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "kinds": {
+      "type": "object",
+      "description": "What the dialect layer TYPED each row as. Keys are noun-specific (a meal has shapes, an exercise row has session/rollup) but the field is universal, because rule 2 -- TYPE, DO NOT DELETE -- is universal. Must sum to rows.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "denominator": {
+      "type": "object",
+      "description": "THE HONEST DENOMINATOR, contributed by describe-exercise. A coverage claim needs a denominator of rows that COULD have been resolved. Counting a daily device roll-up as a miss measures the shape of the log, not the quality of the resolver: it moved exercise's headline from 8.6% to 95% without one line of resolver changing.",
+      "required": [
+        "resolvable"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "resolvable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "why each excluded row was excluded. resolvable + sum(excluded) must equal rows."
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "value_written"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value_written": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "rows that left with a real value in a value column. NOT the same as rows that resolved: rule 3 says WEAK resolves and still writes null."
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "description": "The distribution of this noun's confidence column. The whole family rests on 'only TRUSTED writes a value', and that rule is unfalsifiable until this is published per cohort. KEYS ARE THE NOUN'S OWN: describe-food ranks MEASURED/ESTIMATED/MISS -- did the value come from a measurement or a model -- while describe-medication ranks GOOD/OK/ALIAS/WEAK/MISS -- how likely the match is right. Those are different questions and forcing one vocabulary would flatten a real distinction. What a calibration benchmark needs is not one vocabulary but a DECLARED ORDER, which is what confidence_order is for.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "basis": {
+      "type": "object",
+      "description": "The distribution of the SCALE column -- <X>Basis for food and exercise, DoseUnit for medication. Rule 4 says a quantity without its scale is not interpretable; this is where a reader checks how often we actually have one.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "gradeable": {
+      "type": "object",
+      "description": "Rows that carry a GOLD this noun can be scored against, keyed by WHICH gold. Contributed by describe-food, whose SHAPE-vs-LABEL split is the reason it exists: gradability is a property of the TARGET columns, never of the input string. Shanghai's 3,470 diet rows are excluded here because their Carbs IS the normalizer's own output and grading them would be circular.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "origin": {
+      "type": "string",
+      "description": "one line: where this cohort's rows came from"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "This noun's confidence levels from MOST to LEAST trusted. Required whenever `confidence` is present. A calibration benchmark reads this, not a hard-coded list, and asserts that the error rate rises monotonically along it. Without it a confidence column is decoration."
+    },
+    "trusted": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The prefix of confidence_order that is allowed to write a value (rule 3). Everything after it must leave the value columns null."
+    }
+  }
+}

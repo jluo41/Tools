@@ -1,0 +1,4 @@
+{
+  "status": 415,
+  "detail": "file 0 is text/plain; want one of ['image/heic', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp']"
+}

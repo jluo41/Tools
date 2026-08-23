@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Calories": 118.0,
+    "Carbs": 3.0,
+    "Protein": 22.0,
+    "Fat": 2.0,
+    "Fiber": 0.0,
+    "NutritionSource": "bank_observed|img:claude-vision:claude-sonnet-5",
+    "NutritionConf": "MEASURED",
+    "NutritionBasis": "per_serving",
+    "NutritionCoverage": 1.0,
+    "NameSource": "claude-vision:claude-sonnet-5",
+    "NameConf": 0.3,
+    "FoodNameResolved": "protein shake"
+  },
+  "n_frames": 1,
+  "engine": "claude",
+  "version": "0.4.0"
+}

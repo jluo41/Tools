@@ -1,0 +1,16 @@
+# The worked examples ship the actual frames so each case is self-contained and
+# `bash curl.sh` runs from inside its own folder. Those frames are real CGMacros
+# subject photographs, so they stay OUT of git until their redistribution terms
+# are settled -- a photo pushed once is in the history forever.
+#
+# The TRANSCRIPTS are tracked: curl.sh, request.json, response.json. They are
+# what the examples are for. Regenerate the frames (and the replies) with
+#
+#     python examples/run_examples.py
+#
+api/**/*.jpg
+api/**/*.jpeg
+api/**/*.png
+api/**/*.heic
+# base64 request bodies embed the same frames.
+api/**/body.json

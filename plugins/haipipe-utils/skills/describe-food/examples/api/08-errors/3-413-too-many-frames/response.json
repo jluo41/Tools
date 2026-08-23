@@ -1,0 +1,4 @@
+{
+  "status": 413,
+  "detail": "5 frames exceeds FOODNORM_MAX_IMAGES=4; one meal is one or two frames"
+}

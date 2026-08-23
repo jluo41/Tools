@@ -1,0 +1,15 @@
+{
+  "DoseValue": 500.0,
+  "DoseUnit": "mg",
+  "DoseBasis": "per_administration",
+  "DrugKey": "metformin",
+  "Ingredient": "metformin",
+  "BrandName": "Metformin Hydrochloride",
+  "PharmClass": "Biguanide [EPC], Biguanides [CS]",
+  "DosageForm": "TABLET, FILM COATED, EXTENDED RELEASE",
+  "Route": "ORAL",
+  "NDC": null,
+  "MedSource": "fda_generic:metformin",
+  "MedConf": "OK",
+  "IsInsulin": false
+}

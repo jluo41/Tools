@@ -1,0 +1,15 @@
+{
+  "DoseValue": 10.0,
+  "DoseUnit": "iu",
+  "DoseBasis": "per_administration",
+  "DrugKey": "Insulin lispro",
+  "Ingredient": "Insulin lispro",
+  "BrandName": "Humalog",
+  "PharmClass": "Insulin Analog [EPC], Insulin [Chemical/Ingredient]",
+  "DosageForm": "INJECTION, SOLUTION",
+  "Route": "INTRAVENOUS; SUBCUTANEOUS",
+  "NDC": "0002-8213-0",
+  "MedSource": "fda_generic:insulin lispro",
+  "MedConf": "OK",
+  "IsInsulin": true
+}

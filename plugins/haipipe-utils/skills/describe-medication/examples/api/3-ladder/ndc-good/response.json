@@ -1,0 +1,15 @@
+{
+  "DoseValue": 1.0,
+  "DoseUnit": "count",
+  "DoseBasis": "per_administration",
+  "DrugKey": "Glyburide and Metformin Hydrochloride",
+  "Ingredient": "Glyburide and Metformin Hydrochloride",
+  "BrandName": "Glyburide and Metformin Hydrochloride",
+  "PharmClass": "Biguanide [EPC], Biguanides [CS], Sulfonylurea Compounds [CS], Sulfonylurea [EPC]",
+  "DosageForm": "TABLET, FILM COATED",
+  "Route": "ORAL",
+  "NDC": "65862-008-0",
+  "MedSource": "fda_ndc:65862-008-0",
+  "MedConf": "GOOD",
+  "IsInsulin": false
+}

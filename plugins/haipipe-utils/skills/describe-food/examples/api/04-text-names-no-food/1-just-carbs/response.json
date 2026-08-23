@@ -1,0 +1,14 @@
+{
+  "Calories": null,
+  "Carbs": null,
+  "Protein": null,
+  "Fat": null,
+  "Fiber": null,
+  "NutritionSource": "none",
+  "NutritionConf": "MISS",
+  "NutritionBasis": null,
+  "NutritionCoverage": null,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Just Carbs"
+}

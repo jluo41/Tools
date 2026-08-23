@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Calories": 727.0,
+    "Carbs": 87.82,
+    "Protein": 30.56,
+    "Fat": 20.37,
+    "Fiber": 7.8,
+    "NutritionSource": "bank_observed|img:claude-vision:claude-sonnet-5",
+    "NutritionConf": "MEASURED",
+    "NutritionBasis": "per_serving",
+    "NutritionCoverage": 1.0,
+    "NameSource": "claude-vision:claude-sonnet-5",
+    "NameConf": 0.6,
+    "FoodNameResolved": "rice pilaf; chicken curry; mashed potatoes; mixed vegetables"
+  },
+  "n_frames": 2,
+  "engine": "claude",
+  "version": "0.4.0"
+}

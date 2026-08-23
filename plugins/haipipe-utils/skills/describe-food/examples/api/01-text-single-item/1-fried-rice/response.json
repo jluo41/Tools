@@ -1,0 +1,14 @@
+{
+  "Calories": 333.0,
+  "Carbs": 41.7,
+  "Protein": 12.47,
+  "Fat": 12.34,
+  "Fiber": 1.4,
+  "NutritionSource": "bank_observed",
+  "NutritionConf": "MEASURED",
+  "NutritionBasis": "per_serving",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "fried rice"
+}

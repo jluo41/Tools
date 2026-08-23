@@ -1,0 +1,15 @@
+{
+  "DoseValue": 39.0,
+  "DoseUnit": "iu",
+  "DoseBasis": "per_administration",
+  "DrugKey": "Insulin lispro-aabc",
+  "Ingredient": "Insulin lispro-aabc",
+  "BrandName": "LYUMJEV",
+  "PharmClass": "Insulin Analog [EPC], Insulin [Chemical/Ingredient]",
+  "DosageForm": "INJECTION, SOLUTION",
+  "Route": "SUBCUTANEOUS",
+  "NDC": "0002-8235-0",
+  "MedSource": "fda_generic:insulin lispro-aabc",
+  "MedConf": "OK",
+  "IsInsulin": true
+}

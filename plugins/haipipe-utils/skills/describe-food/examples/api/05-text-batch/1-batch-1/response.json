@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "Calories": 204.0,
+      "Carbs": 44.08,
+      "Protein": 4.2,
+      "Fat": 0.44,
+      "Fiber": 0.6,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "white rice"
+    },
+    {
+      "Calories": 102.0,
+      "Carbs": 0.01,
+      "Protein": 0.12,
+      "Fat": 11.52,
+      "Fiber": 0.0,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "butter"
+    },
+    {
+      "Calories": 8.0,
+      "Carbs": 1.63,
+      "Protein": 0.5,
+      "Fat": 0.08,
+      "Fiber": 0.7,
+      "NutritionSource": "bank_observed",
+      "NutritionConf": "MEASURED",
+      "NutritionBasis": "per_serving",
+      "NutritionCoverage": 1.0,
+      "NameSource": "typed",
+      "NameConf": null,
+      "FoodNameResolved": "lettuce"
+    }
+  ],
+  "n": 3,
+  "version": "0.4.0"
+}

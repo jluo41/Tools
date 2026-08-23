@@ -1,0 +1,15 @@
+{
+  "DoseValue": 0.6,
+  "DoseUnit": "iu",
+  "DoseBasis": "per_administration",
+  "DrugKey": "Novolin R",
+  "Ingredient": null,
+  "BrandName": null,
+  "PharmClass": null,
+  "DosageForm": null,
+  "Route": null,
+  "NDC": null,
+  "MedSource": "fda:no_match",
+  "MedConf": "MISS",
+  "IsInsulin": true
+}

@@ -1,0 +1,14 @@
+{
+  "Calories": 77.0,
+  "Carbs": 0.56,
+  "Protein": 6.26,
+  "Fat": 5.28,
+  "Fiber": 0.0,
+  "NutritionSource": "bank_observed",
+  "NutritionConf": "MEASURED",
+  "NutritionBasis": "per_serving",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "boiled egg"
+}

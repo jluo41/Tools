@@ -32,11 +32,26 @@ order -- the tiers are ordered by priority and use `ORDER BY length(description)
 which systematically prefers the generic entry ("Cabbage, raw") over the specific
 one ("Cabbage, chinese (pak-choi)").
 
-CONTRACT: only GOOD / OK / ALIAS may be written into nutrition columns. WEAK and
-MISS stay NULL. A confidently wrong food is worse than a missing one -- and the
-`NutritionSource` / `NutritionConf` columns exist so downstream can tell which is
-which. `PARTIAL` means some component of the meal did not resolve, so the totals
-UNDERSTATE it.
+CONTRACT (rewritten 260822, after calibration): `NutritionConf` names WHERE THE
+NUMBERS CAME FROM, and nothing else.
+
+    MEASURED    the exact string was logged with these macros attached (T0)
+    ESTIMATED   fuzzy-matched against USDA FDC (T2). Calibrated over 10,068
+                logged names: median carb error 2.0 g, p90 15.0 g, and 10.0%
+                wrong by more than 15 g. That tail is not detectable from the
+                name; six candidate signals topped out at 2.4x lift on 72 names.
+    MISS        nothing trustworthy. Values are NULL.
+
+The old vocabulary -- GOOD / OK / ALIAS / WEAK / PARTIAL -- is retired. It was a
+coverage heuristic nobody had ever checked, in practice only ever emitted GOOD
+and MISS, and its best word promised a quality it could not deliver: USDA
+returned 'Pepsi (12 oz)' as 0.00 g of carbohydrate and labelled it GOOD.
+
+`PARTIAL` used to mean 'some component did not resolve', folding completeness
+into the confidence word so one column answered two questions. Completeness is
+now its own column, `NutritionCoverage`, a fraction of the meal's food
+components that the reported totals actually cover. Rule 5: provenance never
+folds.
 
 This package ships INSIDE its skill, at
 `Tools/plugins/haipipe-utils/skills/describe-food/foodnorm/`, beside the
@@ -59,7 +74,11 @@ from .constants import USDA_DB, STOPWORDS, PLACEHOLDERS
 from .alias_dict import ALIAS
 
 # Quality labels whose nutrition may be trusted downstream.
+# What may be written into a value column. The legacy component-level words
+# survive here because retrieve.classify() still speaks them internally; the
+# meal-level contract a caller sees is MEASURED / ESTIMATED / MISS.
 TRUSTED = ("GOOD", "OK", "ALIAS")
+CONF_VALUES = ("MEASURED", "ESTIMATED", "MISS")
 
 __all__ = [
     "normalize",
@@ -90,5 +109,6 @@ __all__ = [
     "STOPWORDS",
     "PLACEHOLDERS",
     "ALIAS",
+    "CONF_VALUES",
     "TRUSTED",
 ]

@@ -193,6 +193,61 @@ Initial 4-stage pipeline (decompose / retrieve / llm_rerank / aggregate).
 Never produced a nutrition value: the CLI could not import its own stages, and the
 library path threw on every row. See 3.0.0.
 
+## 0.5.0 — 2026-08-22 — the bank ladder
+
+Calibrated the confidence label for the first time, against 10,068 food names
+that WellDoc patients logged with macros attached, and then acted on what the
+calibration said.
+
+**Measured.** `GOOD` is informative (carb-share MAE 0.122 vs a 0.258 mean-guess
+baseline; median carb error 2.0 g) and has a tail its own name denies: p90
+15.0 g, p99 48.7 g, 688 names (10.0%) wrong by more than 15 g over 7,151
+records. `Pepsi (12 oz)` came back at 0.00 g of carbohydrate labelled GOOD; it
+was logged with 41 g. `air` came back at 77.5 g, also GOOD.
+
+**Measured, negative.** The tail is not detectable from the name. Six candidate
+signals topped out at 2.4x lift on 72 names; gating on three at once discarded
+25% of answers to move the bad rate from 10.0% to 8.8%.
+
+### Added
+- `foodnorm/observed.py` — T0 of a bank ladder. 28,408 entries built from
+  `ELogFoodItem`, denominated PER SERVING. Exact retrieval, never a match.
+- `code/scripts/haibuilder/0-external/e14_build_external_foodbank_observed.py`
+  and `_WorkSpace/ExternalStore/foodbank_observed/` with its PROVENANCE.md.
+- `NutritionCoverage` — the fraction of a meal's food components the reported
+  totals cover. Its own column, because completeness is its own question.
+- `healthz` now reports the observed bank and the confidence vocabulary, so a
+  deployment missing T0 is visible from outside the process.
+
+### Changed
+- **Confidence vocabulary.** `GOOD / OK / ALIAS / WEAK / PARTIAL` ->
+  `MEASURED / ESTIMATED / MISS`. The label now names its provenance instead of
+  scoring an unchecked heuristic. In 10,068 calls the old ladder only ever
+  emitted GOOD and MISS anyway.
+- A meal resolves at ONE tier. Tier picked by: can it honour a stated portion
+  (T2 only), then coverage, then tier quality. Shanghai states grams on every
+  component and therefore still resolves at T2 — unharmed, verified.
+- `NutritionBasis` gains `per_serving`. Across all 71,673 Diet rows the basis
+  split is now per_serving 69.1% / per_meal 5.3% / per_100g 0.4%.
+
+### Fixed
+- The `|img:` provenance tag was pinned to `bank_usda`, so a photo-derived name
+  that hit the observed bank lost it and a model's guess became
+  indistinguishable from a patient's report. Now tier-agnostic. (Introduced and
+  caught within this change.)
+- `c9` Shanghai builder's `final_columns` whitelist gained `NutritionCoverage`
+  in the same commit that created the column, rather than after someone noticed
+  it missing from a cooked frame — which is how `NutritionBasis` was lost once.
+
+### Coverage over all 71,673 Diet rows
+    MEASURED  49,508  69.1%      WellDoc2025CVS 89.3%   Shanghai 97.9% ESTIMATED
+    ESTIMATED  4,087   5.7%      WellDoc2022CGM 84.3%   CGMacros/OhioT1DM/
+    MISS      18,078  25.2%      WellDoc2025LLY 70.4%   dubosson 100% MISS
+
+T0 does not make estimation more accurate; it reduces how many rows depend on
+estimation. Circularity is stated in SKILL.md: T0 is built from WellDoc's own
+log, so no accuracy number for T0 on WellDoc names is published.
+
 ## 260819 -- the dialect layer, and L3 retired
 
 - `haiutils.food_enrichment.dialect` is new and now owns every parsing rule.

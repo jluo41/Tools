@@ -1,0 +1,10 @@
+{
+  "InsulinClass": "premix",
+  "OnsetMin": 15,
+  "PeakMin": 120,
+  "DurationMin": 1080,
+  "Biphasic": true,
+  "InsulinResolved": "insulin aspart 70/30",
+  "PKSource": "label_table:insulin aspart 70/30",
+  "PKConf": "OK"
+}

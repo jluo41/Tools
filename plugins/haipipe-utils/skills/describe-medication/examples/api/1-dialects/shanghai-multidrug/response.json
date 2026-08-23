@@ -1,0 +1,15 @@
+{
+  "DoseValue": 1.2,
+  "DoseUnit": "mg",
+  "DoseBasis": "per_administration",
+  "DrugKey": "liraglutide",
+  "Ingredient": "liraglutide",
+  "BrandName": "Liraglutide",
+  "PharmClass": "GLP-1 Receptor Agonist [EPC], Glucagon-Like Peptide 1 [CS], Glucagon-like Peptide-1 (GLP-1) Agonists [MoA]",
+  "DosageForm": "INJECTION",
+  "Route": "SUBCUTANEOUS",
+  "NDC": null,
+  "MedSource": "fda_generic:liraglutide",
+  "MedConf": "OK",
+  "IsInsulin": false
+}

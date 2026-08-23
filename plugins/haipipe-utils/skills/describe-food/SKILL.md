@@ -2,15 +2,118 @@
 name: describe-food
 description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-21"
+  version: "0.5.0"
+  last_updated: "2026-08-22"
   changelog: CHANGELOG.md
   summary: "The skill IS the library: foodnorm/ ships here, and callers reach it through normalize()."
-  measured: "77.4% joinable overall (Shanghai 93.7%, WellDoc 83-91%), no LLM"
+  measured: "69.1% of 71,673 Diet rows MEASURED, 5.7% ESTIMATED, 25.2% MISS. ESTIMATED carries median 2.0 g carb error, p90 15.0 g, 10% over 15 g."
 ---
 
 Skill: describe-food
 ================================================================================
+
+
+THE BANK LADDER, AND WHY THE CONFIDENCE WORDS CHANGED
+================================================================================
+
+Until 260822 every name went to one place -- USDA FDC, fuzzy-matched -- and came
+back labelled GOOD / OK / ALIAS / WEAK / PARTIAL. Those words had never been
+checked against anything.
+
+They were checked on 260822, against 10,068 food names that WellDoc patients
+logged with macros attached. GOOD is genuinely informative: carb-share MAE 0.122
+against a 0.258 mean-guess baseline, median carb error 2.0 g. It also has a tail
+that its own name denies:
+
+    p90  15.0 g of carbohydrate       688 names (10.0%), covering 7,151 records
+    p99  48.7 g
+
+    'Pepsi (12 oz)'    USDA -> 0.00 g carbs, labelled GOOD.   Logged: 41 g.
+    'Sprite (12 oz)'   USDA -> 0.00 g                          Logged: 38 g.
+    'Chicken Alfredo'  USDA -> 0.00 g                          Logged: 55.8 g.
+    'Collagen Powder'  USDA -> 79.7 g (it is pure protein)     Logged: 0 g.
+    'air'              USDA -> 77.5 g, labelled GOOD.
+
+For a CGM project a sugary drink read as zero carbohydrate is the worst single
+error available, because it is also the sharpest glucose excursion there is.
+
+AND THE TAIL IS NOT DETECTABLE FROM THE NAME. Six candidate signals were
+measured against it -- a near-zero carb prediction, `with`/`and` compounds,
+sugar-free/diet modifiers, beverage words, a parenthesised size, low support.
+The best reached 2.4x lift over base rate on 72 names. Gating on three at once
+discarded 25% of all answers to move the bad rate from 10.0% to 8.8%.
+
+So the answer is not a smarter matcher and not a cleverer gate. It is: DO NOT
+MATCH WHAT HAS ALREADY BEEN MEASURED.
+
+    T0  observed   the exact string was logged, with macros attached
+                   28,408 entries, ExternalStore/foodbank_observed/  -> MEASURED
+    T1  catalog    RESERVED: FoodID -> the app's own food catalog     -> MEASURED
+    T2  usda       fuzzy match against USDA FDC                       -> ESTIMATED
+    T3  none                                                          -> MISS
+
+A meal is resolved at ONE tier, never a mixture: T0 is denominated per SERVING
+and T2 per 100 g, and adding one to the other yields a number that is neither.
+The tier is picked by, in order:
+
+    1. CAN IT HONOUR THE STATED PORTION?  A log that says '141 g' has given
+       better information than any bank's idea of a serving, and only T2 can be
+       scaled to it. So when grams are stated, T2 wins -- which is why Shanghai,
+       the one cohort that consumes this resolver today and states grams on
+       every component, still resolves 97.9% ESTIMATED and is unharmed.
+    2. COVERAGE.  One banana at T0 against three dishes at T2 is better
+       described by the three.
+    3. TIER QUALITY, as the tie-break.
+
+WHAT T0 IS NOT: laboratory truth. FatSecret supplied 86.1% of these numbers,
+Welldoc's own source 10.6%, Calorie Mama (a photo model) 2.0%, Nutritionix 1.3%.
+They are WHAT THE APP TOLD THE PATIENT -- arguably the better modelling target,
+since the patient dosed insulin against this figure and not against an assay,
+but never to be called measured-in-a-lab. That is why the word is MEASURED and
+not TRUE.
+
+WHAT T0 DOES NOT DO: it does not make estimation more accurate. The T2 residual
+is exactly what it was. It reduces HOW MANY ROWS DEPEND ON ESTIMATION.
+
+    over all 71,673 Diet rows            MEASURED  49,508   69.1%
+                                         ESTIMATED  4,087    5.7%
+                                         MISS      18,078   25.2%
+
+    WellDoc2025CVS   89.3% MEASURED      Shanghai   97.9% ESTIMATED (states grams)
+    WellDoc2022CGM   84.3%               CGMacros / OhioT1DM / dubosson
+    WellDoc2025ALS   72.5%                          100% MISS (no food name at all)
+    WellDoc2025LLY   70.4%
+
+    basis   per_serving 69.1%   per_meal 5.3%   per_100g 0.4%
+
+That last line is the point of the whole exercise. `per_100g` means "we can tell
+you what this food IS but not how much of it there was", and it used to be the
+majority answer. A serving is a DOSE.
+
+CIRCULARITY, stated plainly: T0 is built from WellDoc's own food log, so
+measuring T0's accuracy against WellDoc names would be circular and no such
+number is published here. T0 is not a prediction; it is a JOIN that recovers
+per-item values the SourceFn discarded. The non-circular claim is the coverage
+table above.
+
+
+THE CONFIDENCE VOCABULARY
+================================================================================
+
+    MEASURED    the exact string was logged with these macros (T0/T1)
+    ESTIMATED   fuzzy-matched (T2). Median carb error 2.0 g, p90 15.0 g,
+                10.0% over 15 g, and that tail is not predictable.
+    MISS        nothing trustworthy. Values are NULL.
+
+`PARTIAL` is retired. It meant "some component did not resolve", folding
+completeness into the confidence word so that one column answered two questions.
+Completeness is now `NutritionCoverage`, the fraction of a meal's food components
+the reported totals actually cover. 92.7% of resolved meals are at 1.0. Rule 5:
+provenance never folds.
+
+REBUILD T0 with
+    python code/scripts/haibuilder/0-external/e14_build_external_foodbank_observed.py
+
 
 Normalize a `Diet.parquet` `FoodName` column into `Calories / Carbs / Protein /
 Fat / Fiber`, whatever dialect it was written in.

@@ -1,0 +1,15 @@
+{
+  "DoseValue": null,
+  "DoseUnit": null,
+  "DoseBasis": null,
+  "DrugKey": null,
+  "Ingredient": null,
+  "BrandName": null,
+  "PharmClass": null,
+  "DosageForm": null,
+  "Route": null,
+  "NDC": null,
+  "MedSource": "not_resolvable:sentinel",
+  "MedConf": "MISS",
+  "IsInsulin": false
+}

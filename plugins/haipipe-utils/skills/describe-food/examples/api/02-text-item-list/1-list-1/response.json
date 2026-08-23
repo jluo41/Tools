@@ -1,0 +1,14 @@
+{
+  "Calories": 70.0,
+  "Carbs": 13.06,
+  "Protein": 2.16,
+  "Fat": 0.96,
+  "Fiber": 0.6,
+  "NutritionSource": "bank_observed",
+  "NutritionConf": "MEASURED",
+  "NutritionBasis": "per_serving",
+  "NutritionCoverage": 0.5,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Toasted Bread; Decaf Coffee"
+}

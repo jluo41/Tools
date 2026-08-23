@@ -1,0 +1,14 @@
+{
+  "Calories": 16.0,
+  "Carbs": 2.95,
+  "Protein": 0.62,
+  "Fat": 0.18,
+  "Fiber": 0.5,
+  "NutritionSource": "bank_usda",
+  "NutritionConf": "ESTIMATED",
+  "NutritionBasis": "per_meal",
+  "NutritionCoverage": 1.0,
+  "NameSource": "typed",
+  "NameConf": null,
+  "FoodNameResolved": "Cucumber 100g"
+}
