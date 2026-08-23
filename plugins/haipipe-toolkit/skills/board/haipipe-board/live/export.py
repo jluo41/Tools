@@ -487,8 +487,20 @@ document.getElementById('rebuild').onclick = function () {
             code, out = self._run(cmd, timeout=180, cwd=out_dir, env=env)
         built = out_dir / (stem + "-master.pdf")
         pdf = out_dir / (stem + ".pdf")
-        if built.is_file():
+        # THIS run either produced a PDF or it did not, and that is not the same
+        # question as "is there a PDF here". Found 260822: a page whose new
+        # \input pulled in a table-body using macros declared only in that
+        # unit's own preview preamble failed every pass, left the PREVIOUS
+        # build's pdf untouched, and this door answered ok:true with a pdf URL
+        # and a view saying "compiled by lualatex". The reader was shown a
+        # three-minute-old artifact as if it were the one just built. Same shape
+        # as the truncation flag that could not fire: a success with no way to
+        # fail. The stale file is KEPT -- deleting a reader's last good artifact
+        # to punish a compile is worse -- but it is never presented as fresh.
+        fresh = built.is_file()
+        if fresh:
             built.replace(pdf)
+        stale = (not fresh) and pdf.is_file()
         # The plugin folder holds the artifact, not the build's residue: every
         # -master.* regenerates on the next run, and a failure's log tail is
         # already in the view page below.
@@ -509,7 +521,16 @@ document.getElementById('rebuild').onclick = function () {
                     % (" open" if not pdf.is_file() else "",
                        _esc(stem), self._url_of(tex), _esc(raw)))
         btn, script = self._rebuild_ui("latex", p)
-        if pdf.is_file():
+        if stale:
+            body = (btn + "<h1>⚠️ %s · STALE PDF</h1><p class='mut'>lualatex "
+                    "produced no PDF on this run, so the file below is from an "
+                    "EARLIER build and does not match the source. Log tail:</p>"
+                    "<pre>%s</pre>"
+                    "<iframe src='%s?t=%d' style='width:100%%;height:60vh;border:2px "
+                    "solid #c33;border-radius:8px'></iframe>%s"
+                    % (_esc(stem), _esc(out[-1200:] if out else ""),
+                       self._url_of(pdf), pdf.stat().st_mtime_ns, src_fold))
+        elif pdf.is_file():
             # the mtime rides the frame's URL, so a rebuild's reload can never
             # show a cached PDF as if it were the fresh one
             body = (btn + "<h1>📜 %s</h1><p class='mut'>compiled by lualatex · "
@@ -525,8 +546,14 @@ document.getElementById('rebuild').onclick = function () {
         view.write_text(_VIEW.format(title=_esc(stem + " · latex"),
                                      body=body + script),
                         encoding="utf-8")
+        if stale:
+            return ({"url": self._url_of(view), "tex": self._url_of(tex),
+                     "pdf": None, "stale_pdf": self._url_of(pdf)},
+                    "lualatex produced no PDF; %s.pdf is from an earlier build "
+                    "and does not match the source. Log tail:\n%s"
+                    % (stem, (out or "")[-1200:]))
         return {"ok": True, "url": self._url_of(view), "tex": self._url_of(tex),
-                "pdf": self._url_of(pdf) if pdf.is_file() else None}, None
+                "pdf": self._url_of(pdf) if fresh else None}, None
 
     # ---- POST /_board/word -------------------------------------------
     def export_word(self, p):
