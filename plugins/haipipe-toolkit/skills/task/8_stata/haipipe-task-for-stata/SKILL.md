@@ -4,9 +4,9 @@ description: "Unified Stata-engine task-folder specialist: handles all 4 stages 
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.7"
-  last_updated: "2026-07-05"
-  summary: "Unified Stata skill — topology-aware templates + contract aligned with production."
+  version: "0.2.8"
+  last_updated: "2026-08-22"
+  summary: "Unified Stata skill: topology-aware templates, production contract, and the CMS issue-register ID convention."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -299,6 +299,7 @@ Shared engine assets
 ```
 ref/stata-dialect.md            engine contract + {LNN} alphabet + script style/server constraints
 ref/cms-server-checklist.md     three-gate migration checklist (synth run / pre-flight / real-data validation)
+                                + the issue register and how an issue is named
 ref/ndc-drug-features.md        NDC drug-type feature pattern: tier 1 (class flags) vs tier 2 (named drugs) + coverage
 ref/run-ps1-template.ps1        THIN per-run entry for ORCHESTRATED stages (cms/case)
 ref/run-data-runner-template.ps1 SELF-ORCHESTRATING per-run entry for data-stage (preconditions + delegate)

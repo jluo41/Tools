@@ -6,6 +6,28 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.8] - 2026-08-22
+
+Added the issue-register section to `ref/cms-server-checklist.md`: where the
+register lives, and how an issue is named.
+
+The ID now starts with the owning TASK FOLDER (`R01-07`, `A11-04`), replacing a
+flat `S01..S37` counter. JL: "rename the issues starting with the task folder
+index or names, and then I can follow it." Two prefixes are not folders, because
+two kinds of problem have no single folder to open: `ENV-nn` is the server
+itself, `ALL-nn` is the .ps1 runner + config shape that repeats in every folder.
+
+Four rules recorded with it, each one paid for:
+- the prefix is the folder's own index, verbatim, never an abbreviation
+- every id is exactly 6 characters, because the register's tables are
+  hand-aligned and a variable-width id ruins every column
+- a renumber keeps a `was` column, since old ids are cited from code
+- cite an issue as `[ID]` in code. The bracket is what makes a sweep safe:
+  bare `S33` is also the ICD-10 code for lumbar sprain and bare `S10` is a
+  plan step id in `workflow/*.yaml`. Matching the bare form would have
+  corrupted 49 medical codes and 25 plan steps.
+
+
 ## [0.2.7] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.7.0; older entries below keep their original numbers).

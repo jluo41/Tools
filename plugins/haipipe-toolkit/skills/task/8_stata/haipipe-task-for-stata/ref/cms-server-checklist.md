@@ -28,6 +28,64 @@ Gate 3 on the server after the first real run.
 
 ---
 
+## The Issue Register, and how issues are named
+
+Every failure the server has ever produced lives in ONE register, and the
+register is the only place a new one is allowed to be written down:
+
+```
+_WorkSpace/0-CMS-Store/Issue-From-CMS-Server/
+    SERVER-READY-CHECK.md   the register: one line per issue, ID, status
+    ISSUE.md                the same issues DRAWN, one diagram each
+    AUDIT.md                the other axis: task folder vs its issues
+    YYMMDD/FINDINGS.md      the day it was seen, plus raw screenshots
+```
+
+**The ID starts with the TASK FOLDER.** Read the id, open that folder, the
+issue is in there. Ruled by JL on 260822, replacing a flat `S01..S37`
+counter that told a reader nothing about where to look.
+
+```
+ENV-nn   the SERVER itself: Stata, PowerShell, the filesystem.
+         No task folder can fix an ENV issue.
+ALL-nn   the .ps1 runner + config shape. The same shape sits in EVERY
+         task folder, so an ALL fix is a sweep, not one edit.
+
+A11-nn   tasks/A11_CMS-pipeline
+C01-nn   tasks/C01_CaseData_TraitOpioid
+C02-nn   tasks/C02_CaseData_TraitDiabetes
+R01-nn   tasks/R01_Reg_TraitOpioid
+R02-nn   tasks/R02_Reg_TraitDiabetesNDC
+```
+
+Four rules make it work:
+
+1. **The prefix is the folder's own index**, verbatim, not an abbreviation
+   invented for the register. `R01-07` and `tasks/R01_Reg_TraitOpioid` are
+   the same string. A folder with no issues has no prefix yet.
+2. **Every id is exactly 6 characters.** Column tables in these files are
+   hand-aligned, so a variable-width id silently ruins every one of them.
+   Pad the counter (`C02-01`, not `C02-1`).
+3. **A renumber keeps a `was` column.** Old ids stay resolvable, because
+   they are cited from code comments, day folders and QA files.
+4. **Cite an issue as `[ID]` in code.** The bracket is what makes a sweep
+   safe: bare `S33` is also the ICD-10 code for lumbar sprain, and bare
+   `S10` is a plan step id in `workflow/*.yaml`. A sweep that matched the
+   bare form would have corrupted 49 medical codes and 25 plan steps.
+
+```stata
+* [ALL-01] keeps the asset version out of the .ps1, where it goes stale.
+```
+
+**When a new failure appears**: add one register line, give it the owning
+folder's prefix and the next free counter, then add the `[ID]` citation at
+the line of code that causes it. If a static rule can catch it, add that
+rule to `tasks/_tools/check_server_ready.py` and put the rule id in the
+register's `gate` column. An issue with no gate is one only a person can
+find, and the register counts those on purpose.
+
+---
+
 # Gate 1: Local Synth Run
 
 **Purpose:** validate pipeline LOGIC end-to-end before touching the server.
