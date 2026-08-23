@@ -61,21 +61,128 @@ breaking the letter convention.
 Level 3: Task-folder
 ---------------------
 
-```
-{NN}_{task_name}/
-├── {NN}_{task_name}.py    ← the script (or notebook source via # %% cells)
-├── configs/               ← <run>.yaml — _meta: block + params (frozen pre-run)
-├── runs/                  ← <run>.sh — copies of ../../ref/run-sh-template.sh (haipipe-task)
-├── results/               ← <run>/runtime.yaml + light artifacts; pairs with runs/<run>.sh
-├── notebooks/             ← papermill output, one .ipynb per run
-├── sbatch/                ← optional, for within-task GPU partitioning
-└── diagram/               ← optional, only if task diverges from group narrative
-```
-
 A task-folder is one runnable unit. Run-script ↔ result-dir name pairing
 is mandatory: `runs/run_foo.sh` produces `results/run_foo/`.
 
+**A task-folder runs in one of TWO MODES** (JL 260821). Both are first-class.
+Neither is a fallback or a deprecation of the other, and the same folder can be
+run in either without being edited.
+
+```
+① SELF-SERVING · the classic shape · output STAYS in the folder
+   nobody but this folder owns the answers: exploration, a one-off check,
+   a fit, an eval nobody has commissioned. Unchanged since the beginning.
+
+{NN}_{task_name}/
+├── {NN}_{task_name}.py    the script (or notebook source via # %% cells)
+├── configs/               <run>.yaml — _meta: block + params (frozen pre-run)
+├── runs/                  <run>.sh — copies of ref/run-sh-template.sh
+├── results/               <run>/runtime.yaml + light artifacts
+├── notebooks/             papermill output, one .ipynb per run
+├── QA/                    <n>-<slug>.md digests, when `qa` is called
+├── CODE_REVIEW.md · RUN_AUDIT.md
+├── sbatch/                optional, for within-task GPU partitioning
+└── diagram/               optional, only if task diverges from group narrative
+
+
+② CONSUMER-SERVING · output goes to the CONSUMER'S STORE
+   a board, a paper, anything that owns its own answers. The folder becomes
+   SHARED CODE and holds nothing generated at all.
+
+{NN}_{task_name}/          the SAME folder, minus everything generated
+├── {NN}_{task_name}.py
+├── configs/               <run>.yaml + a `store:` key naming the destination
+├── runs/
+├── CODE_REVIEW.md         stays: it reviews CODE at a git_sha, not a cohort
+├── sbatch/  diagram/
+
+<store>/<this task's path under tasks/>/
+├── results/  notebooks/  QA/
+└── RUN_AUDIT.md           audits one RUN's results, so it follows them
+```
+
+**Where output lands is RESOLVED, never hardcoded.** `OUTPUT_ROOT` is the
+task-folder in mode ①, and `<store>/<path of this task under tasks/>` in mode
+②, mirroring the task tree so store and task map 1:1 both ways.
+
+```
+RESULT_STORE env      one caller overriding one run          wins
+config `store:` key   a standing declaration → MODE ②
+neither               OUTPUT_ROOT = the task-folder → MODE ①
+```
+
+**Which mode is right is decided by WHO OWNS THE ANSWER**, not by how big the
+task is or who launched it. Mode ① when the answer is only about the code that
+produced it; mode ② when a consumer's evidence base is what the answer joins.
+The test is: if a second cohort ran through this same code, would the two sets
+of answers need to be kept apart? Yes means mode ②, because one folder cannot
+hold two cohorts' results without one overwriting the other.
+
+In mode ② the task layer is handed a PATH and never a consumer identity, so a
+dispatching probe can supply it without breaching the stake wall — the executor
+writes where it is told and still cannot learn whose claim it serves.
+
+Nothing DATA-DEPENDENT may sit in the task-folder in mode ②, and that includes
+the converted `_source.ipynb` and `RUN_AUDIT.md`, which audits one run's
+results. `CODE_REVIEW.md` is the exception and stays with the code in both
+modes: it reviews the `.py` at a `git_sha` and returns the same verdict no
+matter which cohort the code is pointed at, which is why the pre-flight gate
+checks it against `git_sha` and not against an extract date. Being generated is
+not the test; being data-dependent is. In mode ① all of it stays exactly where
+it always has.
+
 NO README.md anywhere.
+
+
+What earns a task-folder
+-------------------------
+
+**A task-folder is one FUNCTION: one computation, one output contract, one
+code path.** Its identity is WHAT IT COMPUTES, never what data it computes on
+(JL 260821). "One runnable unit" was the older wording and it decided nothing:
+a cohort sweep is also runnable, and it is not ten folders.
+
+Three tests. A candidate folder must pass all three.
+
+```
+① REUSE    could this run unchanged on a different cohort?
+           NO → the cohort leaked into the code. Move it to config.
+
+② OUTPUT   does it own result files nobody else writes?
+           NO → it is not a folder, it is a division of one.
+
+③ RERUN    when the source refreshes, is this the smallest thing you re-run?
+           always re-run together with another → they are ONE folder.
+```
+
+Tests ② and ③ apply in both modes. **Test ① is BINDING in mode ② and merely
+good hygiene in mode ①**: a self-serving task that hardcodes its cohort is
+untidy, while a consumer-serving one that does the same cannot serve a second
+store at all, which is the entire reason output was moved out of the folder.
+A mode-① folder that later gets commissioned must pass ① before it can be, and
+that promotion is the usual moment the leak is discovered.
+
+What splits, and into what:
+
+```
+what changed                     you create            you do NOT create
+─────────────────────────────────────────────────────────────────────────
+new cohort / extract date        a new CONFIG          a new folder
+new segment (age, gender, site)  a new CONFIG          a new folder
+new consumer (board, paper)      a new STORE key       anything else
+different columns AND outputs    a new FOLDER
+a different output contract      a new FOLDER
+```
+
+Name the folder for what is computed, as a noun: `message_corpus`, never
+`young_male_corpus` and never `qd1_corpus`. A cohort, a segment or a consumer's
+question id appearing in a folder name is exactly the leak test ① catches, and
+it is visible before the code is even read.
+
+Duplication is the smell that says the rule was applied too finely. Ten folders
+each carrying near-identical scaffolding and differing only in a column list
+are one parameterised function wearing ten hats; prefer a config over an
+eleventh folder once that pattern is visible.
 
 
 Indexing & Naming

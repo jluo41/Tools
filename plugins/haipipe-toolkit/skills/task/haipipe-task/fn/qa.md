@@ -19,6 +19,18 @@ This layer WRITES these files, so this layer is canonical for their shape.
 NAMING: `QA/<n>-<slug>.md`, where `n` is CREATION ORDER — `ls QA/` IS the index.
 A plain descriptive slug, never an identifier handed in by whoever asked.
 
+WHERE: `$OUTPUT_ROOT/QA/` — the task-folder in self-serving mode, the consumer's
+store in consumer-serving mode, the same resolution `results/` uses and defined
+in `ref/hierarchy.md` § task-folder. A QA digest is an ANSWER, and an answer
+belongs to the data it was computed on, not to the code that computed it.
+
+⚠️ This is the gate's sharpest edge. Scan the WRONG bank and gate ① misses a
+`working` file, so two callers run the same work, or misses an `answered` one,
+so settled work is redone. When a store is in play, `--check-only`, the claim
+write and the Report completion must ALL address `$OUTPUT_ROOT/QA/`. Two
+cohorts sharing one task-folder have two separate banks and must never see
+each other's.
+
 The discovery twin states every one of these rules IDENTICALLY — same field names, same state
 values, same TTL constant. They must not drift.
 This file is the VERB.
@@ -137,7 +149,7 @@ That is what tells the next caller someone is already on it.
 
 ```bash
 QA_WORKING_TTL_HOURS=24
-QA_FILE="<task-folder>/QA/<n>-<slug>.md"
+QA_FILE="$OUTPUT_ROOT/QA/<n>-<slug>.md"    # task-folder, or the declared store
 mkdir -p "$(dirname "$QA_FILE")"
 
 if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF

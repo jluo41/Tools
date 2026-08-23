@@ -4,6 +4,85 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-08-21 — two defects found in the store change, both fixed
+---------------------------------------------------------------
+
+Caught by review before either shipped anywhere live.
+
+- **`CODE_REVIEW.md` was moved to `$OUTPUT_ROOT` and should not have been.**
+  The reviewer agent writes it to the task-folder, so in mode ② the pre-flight
+  gate would have looked in the store and blocked every run. It reviews the
+  `.py` at a `git_sha` and returns the same verdict whichever cohort the code
+  is pointed at, so it belongs with the code in BOTH modes. Being generated is
+  not the test; being DATA-DEPENDENT is. `RUN_AUDIT.md` audits one run's
+  results and does follow the output.
+- **`TASK_REL` silently produced an absolute path** when `TASK_DIR` held no
+  `/tasks/` segment, so a declared store received a garbage nested path instead
+  of an error. Now a `case` guard exits 2 and names the fix.
+
+Neither reached a live task-folder: the ten patched scripts carry no
+`CODE_REVIEW` gate and all sit under `tasks/`.
+
+2026-08-21 — two run modes, and what earns a task-folder (JL)
+--------------------------------------------------------------
+
+**A task-folder runs in one of TWO first-class modes.** Neither is a fallback.
+
+```
+① SELF-SERVING      output stays in the folder — the classic shape, unchanged
+② CONSUMER-SERVING  output goes to the store a consumer owns
+```
+
+Which one applies is decided by WHO OWNS THE ANSWER, not by task size or who
+launched the run. The test: if a second cohort ran through this same code,
+would the two sets of answers need to be kept apart? Yes means mode ②, because
+one folder cannot hold two cohorts' results without one overwriting the other.
+
+**What earns a task-folder** is now stated, where `ref/hierarchy.md` previously
+said only "one runnable unit" and decided nothing. A task-folder is one
+FUNCTION: one computation, one output contract, one code path; its identity is
+what it COMPUTES, never what data it computes on. Three tests — REUSE, OUTPUT,
+RERUN — with ② and ③ binding in both modes and ① binding only in mode ②, since
+a self-serving task that hardcodes its cohort is untidy while a
+consumer-serving one that does cannot serve a second store at all.
+
+New cohort, segment or extract date is a new CONFIG. New consumer is a new
+STORE key. Only different columns AND outputs earn a new FOLDER.
+
+2026-08-21 — output location is RESOLVED, not hardcoded (JL)
+------------------------------------------------------------
+
+A task-folder is SHARED CODE and a run of it is one CALL. Until now the run
+script wrote `$TASK_DIR/results/<run>/` unconditionally, so a second cohort
+could only be served by COPYING the task-folder. The folder now holds code and
+config only, and everything generated lands under `$OUTPUT_ROOT`:
+
+```
+RESULT_STORE env      one caller overriding one run                    wins
+config `store:` key   a standing declaration for this call
+neither               OUTPUT_ROOT = the task-folder                    default
+```
+
+The default is unchanged, so every existing task-folder and every other project
+keeps working untouched. A declared store mirrors the task tree inside itself,
+`<store>/<path under tasks/>`, so store and task map 1:1 both ways.
+
+- `ref/run-sh-template.sh` resolves `OUTPUT_ROOT`, exports `RESULT_DIR` and
+  `STORE_ROOT`, and moves `results/`, `notebooks/`, the converted
+  `_source.ipynb` and `CODE_REVIEW.md` under it. A review is generated, so it
+  follows the output.
+- The `.py` READS `RESULT_DIR` from the environment and never builds an output
+  path; the fallback keeps a bare `python <task>.py` debuggable.
+- `fn/qa.md`: the QA bank is `$OUTPUT_ROOT/QA/`. This is the sharpest edge —
+  scanning the wrong bank makes gate ① miss a `working` file (two callers run
+  the same work) or an `answered` one (settled work redone). Two cohorts
+  sharing a task-folder have two banks and must never see each other's.
+- A sibling task's OUTPUT is store-keyed too: state such config paths relative
+  to `$STORE_ROOT`, never to the task tree, or one cohort's numbers get joined
+  to another's.
+- The task layer is handed a PATH and never a consumer identity, so a
+  dispatching probe supplies the store without breaching the stake wall.
+
 ## [Unreleased] — 2026-07-14 — the task layer becomes consumer-unaware
 
 Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (APPROVED by JL 2026-07-14, rulings R1-R18).

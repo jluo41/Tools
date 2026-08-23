@@ -1,15 +1,15 @@
 ---
 name: haipipe-application
 description: >-
-  One door for building an Application Board from an application Brief, Application-local Insight Pages, audience/job Design Pages, and optional independently accepted Artifact Pages. Insight Pages live inside the Application folder but use Task-backed Probe, source/run, DIKW, staleness, and human-reading rules; Design Pages consume only settled Insight handoffs through PageX and never inspect Task/Discovery sources. Use for application setup or status, application insight, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, artifact review, deploy, retarget, or iteration. Trigger: application, application board, application insights, insight need, design page, intervention, message design, artifact, SMS, email, dashboard, checklist, report, review, deploy, iterate, PageX insight, /haipipe-application.
+  One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-08-20"
-  summary: "Application-local Insights: Brief → Insight Pages → Design Pages → optional Artifact Pages, with Task-backed evidence and PageX-only design consumption."
+  version: "0.12.0"
+  last_updated: "2026-08-21"
+  summary: "0.12.0 splits the question register out of Meta and by rung (JL 260821): MT01-MT04 question pages, one facing each of D/I/K/W, with Brief needs carrying register ids. Meta is inventory only."
 ---
 
-# /haipipe-application · understand for this application, then design
+# /haipipe-application · understand on one board, design on the other
 
 Read `PREFERENCES.md` first. This skill is the only user-facing Application door. Resolve the Application root, select one owning Page, and hand it to `haipipe-page` with the matching Page Type and current Page phase.
 
@@ -19,111 +19,180 @@ Read `PREFERENCES.md` first. This skill is the only user-facing Application door
 Task / Discovery evidence
           │ Probe · Task authority
           ▼
-Application Board
-Brief → Insight Page(s) → Design Page(s) → Artifact projection/Page → review → deploy
-             D→I→K→W          │ PageX
+🔎 InsightBoard                            🎨 DesignBoard
+Meta → Insight Page(s)  ──── PageX ────▶   Brief → Design Page(s) → ✅ accepted
+        D→I→K→W                                     R<n> divisions
+        + Design Handoff                            2-artifacts/ projections
 ```
 
-Application owns the folder, the design need, the contextual Wisdom, and delivery. Task rules still own how an Insight Page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
+Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how an Insight Page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
 
-## Four Page Types
+## Two boards, and why (JL 260820)
+
+One board carrying both halves made one Brief Page do two jobs and gave two different readers one queue. The halves have different readers: the InsightBoard's reader checks whether the evidence holds; the DesignBoard's reader signs off that a message may reach a patient. Different question, different gate, different board.
 
 ```text
-page-type: brief          exactly one · opportunity, audience set, outcome, venue scope, Insight Need Map
-page-type: insight        one per application insight question · Task-backed D→I→K→W + Design Handoff
-page-type: intervention   many · UI label Design Page · one audience × behavior job × primary venue
-page-type: artifact       optional · only an independently accepted/deployed unit promoted from a Design Page
+🔎 InsightBoard    reader: whoever checks the evidence     ends at: settled handoff
+🎨 DesignBoard     reader: whoever approves the send       ends at: accepted version
 ```
 
-Keep `page-type: intervention` as the stable globally unique machine key; call it **Design Page** in user-facing prose. No generic `page-type: design` contract is live.
+PageX crosses boards unchanged, because it binds by path rather than by board.
+
+## Page Types
+
+```text
+🔎 InsightBoard · framing asks, the chain answers, one page per LEVEL
+page-type: meta         exactly one · sources, grain, freshness · holds NO question
+page-type: question     exactly four · MT01-MT04, one register per rung · QD/QI/QK/QW
+                        ids · asks and tracks, never concludes · no probe/, no display/
+page-type: data         D · observed, run-bound, uninterpreted
+page-type: information  I · rates and contrasts derived from named D rows
+page-type: knowledge    K · a proposition with strength, rivals, boundary
+page-type: wisdom       W · counsel + the Design Handoff · the ONLY bindable level
+
+🎨 DesignBoard · frame, warrant, compose
+page-type: brief        exactly one · outcome, venue scope, audience SET, needs
+page-type: principle    P · because <W>, do <move>, within <rail> · the ONLY
+                        DesignBoard layer that reads the InsightBoard
+page-type: design       DS · one audience × job × venue · units as divisions
+
+`page-type: insight` is TASK-ONLY: the consumer-neutral whole chain in one page on
+the Task/Insights Board, which is where dataset-first exploration lives.
+```
+
+`page-type: intervention` and `page-type: artifact` were retired on 260820. Intervention was renamed to `design` because one concept wearing two words is what made readers ask whether Design and Artifact were the same thing. Artifact was absorbed: five of its six Content roles already existed inside a Design Page's unit division, and the sixth, acceptance, is now a per-division row.
 
 ## Verbs
 
 ```text
-enter | status | board         resolve the Application root and current frontier
+enter | status | board         open or scaffold the Application through fn/enter.md
+meta | data | sources          create/resume the one Meta Page through fn/meta.md
+question | ask | queue         register one question on the rung register it faces,
+                               MT01-MT04 · haipipe-page-for-question
+chain | understand | DIKW      open or extend one D→I→K→W chain through fn/chain.md
 brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
-insight | understand | DIKW    create/resume an Application-local Insight Page through fn/insight.md
-missing-insight | evidence-gap release one blocked need through fn/missing-insight.md
-intervention | design | message
-  | arc | components           create/resume one Design Page through fn/intervention.md
-artifact | promote | unit      promote/resume an independently accepted Artifact through fn/artifact.md
-review | audit | check         CHECK selected Design/Artifact versions and their trace
-deploy | ship | go-live        ship accepted versions only
-iterate | round | A/B          route measurements through Task work, refresh Insight, then reopen dependents
+design | intervention | message
+  | arc | components           create/resume one Design Page through fn/design.md
+artifact | project | render    generate a versioned projection through fn/artifact.md
+review | audit | check         CHECK selected Design versions and their trace
+accept                         record the per-division acceptance row · the last act
+retarget                       re-pin venue or audience and reopen dependent Design
 feedback | digest              run the existing family feedback procedures
 ```
 
-No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create a Board-shaped Application folder. Never infer an audience, behavior, or venue when that choice changes the design.
+No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create the two board folders. Never infer an audience, behavior, or venue when that choice changes the design.
 
-## Runtime folder
+## The Application ends at ACCEPTED
+
+```text
+🎨 DESIGN BOARD                          │  NOT THE APPLICATION
+─────────────────────────────────────────┼──────────────────────────────────
+brief    what we are building            │  🔧 implementation · build + ship it
+design   the messages, the rails         │  🧪 experiment     · run the A/B
+accept   "this exact version may go"     │  📊 collection     · gather what came back
+```
+
+Deciding a version may ship is a design judgment and stays here. Building it, shipping it, running the experiment, and collecting the result are separate work the task layer already owns through Plan → Build → Execute → Report. The Application has no `deploy/` folder and no round folder.
+
+## Runtime folders
+
+A board's folder name SAYS ITS SUBJECT (JL 260820). `InsightBoard/` and `DesignBoard/` alone tell a reader the kind and nothing else, and a reader opening an Application wants to know which data and which topic before opening anything.
+
+```text
+<DataSubject>-InsightBoard/     the subject is the DATA    SmsClickR4-InsightBoard/
+<DesignTopic>-DesignBoard/      the subject is the TOPIC   YoungMaleRefill-DesignBoard/
+```
+
+The subject is PascalCase; the suffix is the literal kind, so `ls *InsightBoard*` finds them all. The two subjects are named independently, which is what makes the count free: an Application may hold several InsightBoards when it reads distinct data, several DesignBoards when it designs for distinct topics, and any DesignBoard may PageX-bind any InsightBoard. Two boards is the common case, not the limit. No date suffix: the `<NN>-<topic>-<YYMMDD>` rule governs boards newly opened under `diagram/`, and these are runtime boards.
+
+A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821, e.g. `tasks/D01_*`, `discoveries/S01_*`) may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_InsightBoard-SMSR2Full`, `B01_DesignBoard-RefillFraming`. The prefix is project-local ordering only; the canonical shape stays `<Kind>-<Subject>`, and the letter never appears inside pages.
 
 ```text
 <application-root>/
-├── board.md
-├── STATUS.md                         compatibility projection; derive truth from Pages
-├── 0-brief/
-│   └── A00-brief/
-│       ├── A00-brief.md
-│       └── pagex/
-├── 1-insights/
-│   └── I<NN>-<slug>/
-│       ├── I<NN>-<slug>.md           page-type: insight
-│       ├── probe/                    Task/Discovery evidence cards
-│       ├── pagex/                    accepted existing-Page inputs
-│       └── display/                  optional evidence views
-├── 2-design/
-│   └── D<NN>-<audience>-<job>/
-│       ├── D<NN>-<audience>-<job>.md page-type: intervention
-│       ├── pagex/                    Brief + settled Insight handoffs
-│       ├── outline/
-│       └── display/                  message previews / interaction mockups
-├── 3-artifacts/                      versioned projections and promoted Artifact Pages
-├── 4-deploy/                         shipment records; no evidence edits
-└── 5-rounds/vYYMMDD/                 feedback, decisions, applied changes
+├── InsightBoard-<Cohort>/                e.g. InsightBoard-SMSR2Full
+│   ├── board.md
+│   ├── 0-MT-meta/
+│   │   ├── MT00-meta/                    sources · grain · freshness · NO question
+│   │   ├── MT01-question-data/           QD<n> · asks of 1-D-data/
+│   │   ├── MT02-question-information/    QI<n> · asks of 2-I-information/
+│   │   ├── MT03-question-knowledge/      QK<n> · asks of 3-K-knowledge/
+│   │   └── MT04-question-wisdom/         QW<n> · asks of 4-W-wisdom/ + board rollup
+│   ├── 1-D-data/D<NN>-<slug>/            observed · run-bound
+│   ├── 2-I-information/I<NN>-<slug>/     derived · cites D
+│   ├── 3-K-knowledge/K<NN>-<slug>/       claimed · cites I
+│   └── 4-W-wisdom/W<NN>-<slug>/          counsel + handoff · cites K
+└── DesignBoard-<Program>/                e.g. DesignBoard-RefillFraming
+    ├── board.md
+    ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
+    ├── 1-P-principle/P<NN>-<slug>/        cites W · the only crossing
+    └── 2-DS-design/DS<NN>-<slug>/         units as divisions
+        ├── pagex/ outline/ display/
+        └── render/                       the unit as the recipient sees it
 ```
 
-Do not create the legacy descriptions/themes/claims/advice ladder or a flat Application-wide `1-probes/`. Each Insight Page owns its own bounded `probe/`; Design Pages own none.
+A board is **one head page's scope**: one Meta is one source scope (one cohort), one Brief is one program scope (one outcome, venue and promise). A new cohort is a new InsightBoard; a new question is a new chain inside it. A new program is a new DesignBoard; a new audience is a new DS page inside it.
+
+Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each Insight Page owns its own bounded `probe/`; Meta, Brief, and Design Pages own none.
 
 ## The two authorities
 
 ```text
-Application Insights layer
+InsightBoard
   may PROBE Task/Discovery under haipipe-page-for-insight
   owns D→I→K and application-contextual W
 
-Application Design layer
+DesignBoard
   may use PageX only
   owns selection, design principles, message roles, concrete content, and acceptance
 ```
 
-The old sentence “Application owns no Probe” is too broad. The current law is: **Application Design Pages own no Probe; Application Insight Pages may Probe under Task-backed evidence authority.**
+The law: **Design Pages own no Probe; Insight Pages may Probe under Task-backed evidence authority.**
 
 ## Page flow
 
 ```text
+Meta
+  says what data exists, at what grain, how fresh, with what limits
+    ↓
+Question registers (MT01-MT04)
+  hold what is asked of each rung · a Brief need or a board-raised curiosity
+    ↓
+D→I→K→W chain pages
+  settle each question rung by rung and publish a Design Handoff at W
+    ↓ PageX exact file/scope binding, across boards
 Brief
-  defines the Application stake and Insight Need Map
+  states the opportunity, audience, outcome, venue scope, and the needs it raises
     ↓
-Insight Page(s)
-  settle each load-bearing question as D→I→K→W and publish a Design Handoff
-    ↓ PageX exact file/scope binding
 Design Page(s)
-  translate handoffs into principles, message architecture, repeated message divisions, and rails
+  translate handoffs into principles, message architecture, R<n> divisions, and rails
     ↓
-Artifact
-  normally a versioned projection; promote to a Page only when it can pass/fail/deploy independently
-    ↓
-Review → Deploy → Iterate
+Review → ✅ accepted · STOP
 ```
 
-## Phase behavior
+Brief and Meta are both head pages and may be written in either order. Meta may exist alone with four empty registers, because data can land before anyone knows what it is for; the registers fill as the Brief raises needs or as a reader of the inventory becomes curious, and a source landing in Meta may raise no question at all.
 
-- An Insight Page normally runs the full shared loop: `OUTLINE ⇄ PROBE ⇄ EVIDENCE → DRAFT → REVISE → CHECK`.
-- Brief and Design Pages select exact accepted Page material through PageX during OUTLINE and normally skip local PROBE/EVIDENCE.
-- A missing load-bearing premise creates/resumes a local Insight Page and holds only the dependent Brief/Design Aim.
-- Design Page Content uses one repeated division per message role, touchpoint, panel, section, or other jointly reviewed unit.
-- Artifact and projections use REVISE/COMPILE/CHECK for exact visible-version acceptance.
-- CHECK remains the human authority for applicability, taste, venue fit, safety, and deployment acceptance.
+## Dataset-first: where exploration goes before a Brief exists
+
+An InsightBoard Page must serve a named need, so it cannot be opened before a Brief raises one. That is deliberate, and it is not a dead end: exploration with no consumer yet belongs on the **Task/Insights Board**, as a `scope: task` Page opened through `/haipipe-task insight`.
+
+```text
+a dataset lands, no Brief yet
+        │
+        ▼
+🧪 /haipipe-task insight          scope: task · consumer-neutral · no serves:
+   D → I → K → W → Reusable Findings
+        │
+        │  ... later, a Brief raises a need this already answers
+        ▼
+   PageX binding                  borrowed straight into the Application
+        │
+        ▼
+🎨 Design Page                    no local Insight Page needed at all
+```
+
+`fn/insight.md` searches the Task/Insights Board FIRST and binds a settled `scope: task` Page rather than reopening the same question locally. A local `scope: application` Page is for what that search does not answer: the reading that only makes sense for this audience, this venue, this promise.
+
+The two scopes share one contract and one key, `page-type: insight`, with `scope:` picking the instance. Read `haipipe-page-for-insight` before writing either.
 
 ## Insight-to-design handoff
 
@@ -135,32 +204,39 @@ Application Need → neutral Question → D → I → K → contextual W → Des
 
 The Design Handoff names finding, strength, boundary, source versions, design consequence, forbidden overreach, and the Brief/Design need it serves. It does not write final message copy.
 
-Design Pages borrow the exact handoff file/scope through PageX. PageX answers “which Page material”; the Design Page answers “which move follows here.” Never copy probe cards or inspect Task `results/` from a Design Page.
+Design Pages borrow the exact handoff file/scope through PageX. PageX answers "which Page material"; the Design Page answers "which move follows here." Never copy probe cards or inspect Task `results/` from a Design Page.
 
-## Review and deployment gates
+## Review and acceptance gates
 
-A Design or promoted Artifact is deployable only when all are true:
+A Design division is acceptable only when all are true:
 
 ```text
-trace       every substantive move reaches a settled Insight Design Handoff
+trace         every substantive move reaches a settled Insight Design Handoff
 applicability the borrowed K/W actually covers this audience, context, and outcome
-venue       format, length, timing, interaction, and audience rules pass
-safety      prohibited moves and uncertainty language pass
-version     acceptance names design/handoff and visible render versions
-human       the exact visible version is explicitly accepted
+venue         format, length, timing, interaction, and audience rules pass
+safety        prohibited moves and uncertainty language pass
+version       acceptance names design/handoff and visible render versions
+human         the exact visible version is explicitly accepted
 ```
 
-Deployment records external state but never edits evidence or design to make a failed gate appear green. A changed Insight handoff, Design division, venue constraint, or render reopens acceptance.
+Acceptance is written on the division, not the page, so one unit may be accepted while a sibling is mid-revision. A changed Insight handoff, content edit, venue constraint, or re-render clears the affected division's `accepted:` row and only that row.
 
-## Iteration
+## Iteration is a handoff, not a stage
 
 ```text
-deployment log → Task Folder P-B-E-R → Application Insight refresh
-                                            │
-                                            └─ changed handoff reopens PageX-dependent Design
+✅ accepted ──▶ 🔧 shipped elsewhere
+                      │
+                      ▼
+                🧪 task folder · Plan → Build → Execute → Report
+                      │
+                      ▼
+                🔎 Insight Page refreshes · handoff v2
+                      │  PageX binding goes stale
+                      ▼
+                🎨 Design division reopens
 ```
 
-Application may propose the measurement question. Task owns execution; the Application-local Insight Page owns the refreshed DIKW reading and source staleness; the Design Page owns the response.
+The Application may propose the measurement question. Task owns execution; the InsightBoard's Insight Page owns the refreshed DIKW reading and source staleness; the Design Page owns the response. An experiment run is a task folder, its result reading is a task page, and its synthesis is an Insight Page. Check that the task layer does not already cover a need before proposing a new board family for it.
 
 ## Legacy compatibility
 
@@ -168,9 +244,12 @@ Existing Applications remain readable. Do not delete or bulk-rewrite their folde
 
 ```text
 legacy Seed + Venue + Pitch                    → Brief input
-legacy Descriptions + Themes + Claims + Advice → candidate local Insight Pages
-legacy Narrative + Display + Section-edit     → Design Page and Artifact input
+legacy Descriptions + Themes + Claims + Advice → candidate Insight Pages
+legacy Narrative + Display + Section-edit      → Design Page input
 legacy 1-probes/                               → historical bindings, read-only
+legacy 0-lifecycle/ single-folder Applications → read and fold into the two boards
+page-type: intervention on an existing page    → rename the key to design
+page-type: artifact on an existing page        → fold into its Design Page as a division
 external Task/Insights Board Pages             → valid PageX inputs; do not move them automatically
 ```
 
@@ -181,22 +260,25 @@ Compatibility means read-and-fold into the new target, not copy-and-continue the
 Derive status from disk, not prose:
 
 ```text
-frontier: brief | insight:<id> | design:<id> | artifact:<id> | review | deploy | iterate
-maturity: scoped | understood | designed | authored | reviewed | deployed | iterating
+frontier: meta | insight:<id> | brief | design:<id> | review | accepted
+maturity: scoped | understood | designed | authored | reviewed | accepted
 ```
 
-Also report unresolved Insight needs, stale Probe/PageX bindings, Design Page/message counts, promoted Artifact units, and accepted render versions.
+Also report open questions from the four registers (the wisdom register's rollup is the one-view source), stale Probe/PageX bindings, Design Page and division counts, and accepted render versions per division.
 
 ## Internal procedures
 
 ```text
-fn/brief.md             Brief create/resume and Insight Need Map
-fn/insight.md           Application-local Task-backed DIKW Page
+fn/enter.md             open an Application, or scaffold both boards from nothing
+fn/meta.md              Meta Page create/resume and the Source Inventory
+fn/chain.md             open or extend one D→I→K→W chain for one question
 fn/missing-insight.md   release a blocked need into fn/insight.md
-fn/intervention.md      multi-Page audience/job Design and message divisions
-fn/artifact.md          projection-first output; optional Page promotion
+fn/brief.md             Brief create/resume and the needs it raises
+fn/principle.md         one because/do/within rule, citing one W handoff
+fn/design.md            one audience/job/venue design, units as divisions
+fn/render.md            render a unit through the page's render/ plugin
 fn/feedback.md          family feedback
 fn/digest.md            session feedback digestion
 ```
 
-The old stage specialists remain compatibility readers during migration and are not the target architecture.
+The old stage specialists under `_old/` are compatibility readers during migration and are not the target architecture.

@@ -295,7 +295,11 @@ def check_board(d, rep):
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
     pages = {p.name: p for p in page_files(d)}
-    listed = re.findall(r"^((?:[QS]|Agent-|Meeting-|Design-)[^\s/]*\.md)\s*$", text, re.M)
+    # `[MIAD]\d` admits the Application runtime ids (M00-meta.md, I01-<slug>.md,
+    # A00-brief.md, D01-<slug>.md) that PAGENAME now discovers; without it every
+    # runtime board reported all of its own pages as not-in-pages (260820).
+    listed = re.findall(
+        r"^((?:[QS]|[A-Z]{1,2}\d|Agent-|Meeting-|Design-)[^\s/]*\.md)\s*$", text, re.M)
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
@@ -343,7 +347,11 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
             rep.add(ERROR, "missing-section", name, f"no `## {shown}` section")
     # `Skill-<unit>-<slug>` is the SKILL page kind (JL 260731), not a stage: it
     # mirrors a shipped unit and has no gate, so the stage sections are not owed.
-    if name.startswith("S") and not name.startswith("Skill-"):
+    # Stage ids are exactly what parse.py can classify as a stage: `S-<Word>-`
+    # or the legacy shorthand S<d>. A bare startswith("S") also claimed
+    # application families like SD00-seed and SA01-<slug> (260821), which are
+    # not stages; SM/SA shorthands left parse.py the same day.
+    if re.match(r"S(?:-|\d)", name):
         for canon in ("Stage Contract", "Content"):
             if not has_section(text, canon):
                 shown = " / ".join(alias_names(canon))
@@ -1170,9 +1178,14 @@ FENCE = "`" * 3
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # `stage` joined 260815: the restructure reduced this family's kinds to stage
 # and design, and QPs3's specimen declares `page-type: stage` explicitly.
+# 260820, Application two-board split: `meta` joined as the InsightBoard head;
+# `intervention` was renamed to the already-listed `design`, and `artifact` was
+# absorbed into a per-division `accepted:` row. Both are dropped, so a page still
+# carrying either key now reports page-type-unknown and gets migrated.
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
-                    "brief", "intervention", "artifact", "view", "stage")
+                    "meta", "question", "data", "information", "knowledge",
+                    "wisdom", "brief", "principle", "view", "stage")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 

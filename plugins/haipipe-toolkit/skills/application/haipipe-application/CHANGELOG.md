@@ -3,6 +3,69 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.12.0] — 2026-08-21
+
+- The question register split out of Meta and BY RUNG (JL 260821): four
+  `page-type: question` pages `MT01-question-data` … `MT04-question-wisdom`
+  in `0-MT-meta/`, each facing the ladder group that answers it. Question
+  ids carry the rung (`QD/QI/QK/QW`), one id space with the Brief; `N<n>`
+  need ids are retired. `MT04`'s Queue holds the board rollup.
+- Meta is inventory only (haipipe-page-for-meta 0.2.0): its division 7
+  Insight Roster is gone, which its own "raises no question" rule always
+  demanded. The MT group law: nothing in MT concludes; registers own no
+  `probe/` and no `display/`, because a probe brings back an answer and a
+  figure is one.
+- Verbs: `question | ask | queue` added; `insight` replaced by
+  `chain | understand | DIKW` through `fn/chain.md`, matching the fn/
+  folder as it exists.
+
+## [0.10.0] — 2026-08-20
+
+- Closed a live contract violation: `page-type: insight` was created by BOTH the
+  task layer and the Application, while the only contract it resolved to was
+  Application-only and demanded `application:` and `serves:`. `scope: task |
+  application` is now REQUIRED and picks the instance, the same shape
+  `page-type: dash` used with `dash_family:`. The `scope: application` field had
+  been sitting in the contract all along with no sibling to discriminate against.
+- Documented where DATASET-FIRST exploration goes. An InsightBoard Page must
+  serve a named need, so it cannot open before a Brief raises one; exploration
+  with no consumer is `scope: task` work on the Task/Insights Board, borrowed
+  later through PageX. `fn/insight.md` now searches that Board FIRST.
+- Resolved the Brief/Meta ordering contradiction: Meta may exist alone with an
+  empty Roster, because data can land before anyone knows what it is for.
+- Added `fn/enter.md`. The board's most-used verb had no written procedure.
+- Renamed the runtime group folders to carry their group token, `0-M-meta/`,
+  `1-I-insights/`, `0-A-brief/`, `1-D-design/`, which is what the board engine
+  resolves groups by. The previous names parsed to no group.
+- Replaced the retired `0-lifecycle/` fixture with a worked two-board specimen
+  that builds clean: `SmsClickR4-InsightBoard` and `YoungMaleRefill-DesignBoard`,
+  2 pages each, 0 error 0 warn, exercising the cross-board PageX hop and mixed
+  per-division acceptance.
+
+## [0.9.0] — 2026-08-20
+
+- Split the Application into TWO named boards (JL): a `<DataSubject>-InsightBoard`
+  headed by one Meta Page, and a `<DesignTopic>-DesignBoard` headed by one Brief.
+  The halves have different readers, so they get different boards. A folder name
+  says its subject, so `ls *-DesignBoard` finds them and the count is free.
+- Added `page-type: meta`, the InsightBoard head: source inventory, unit and grain,
+  population and window, freshness, known limits, and the Insight Roster. It was
+  split out of the Brief, whose divisions 6-7 served the insight side while 1-5
+  served delivery.
+- Renamed `page-type: intervention` to `page-type: design`. One concept carries one
+  word; the double naming is what made readers ask whether Design and Artifact were
+  the same thing. The key was free: zero pages declared `design` after its 260819
+  retirement.
+- Retired `page-type: artifact`. Five of its six Content roles already existed inside
+  a Design Page unit division, and the sixth, acceptance, is now a per-division
+  `accepted:` row. `2-artifacts/` survives as a projections folder holding no Pages.
+- Cut the Application at ACCEPTED. Dropped `4-deploy/`, `5-rounds/`, and the
+  `deploy` and `iterate` verbs: building, shipping, running the experiment, and
+  collecting data are task-layer work, which the 0.8.0 Iteration section already
+  said while keeping folders for it anyway.
+- Renamed `fn/intervention.md` to `fn/design.md`, added `fn/meta.md`, and rewrote
+  `fn/artifact.md` as a render-only verb with no promotion route.
+
 ## [0.8.0] — 2026-08-20
 
 - Moved Insight ownership into the Application skill set while retaining Task-backed

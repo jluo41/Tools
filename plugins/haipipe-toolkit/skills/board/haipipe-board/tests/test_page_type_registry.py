@@ -13,6 +13,9 @@ from cli.check import Report, check_page_type  # noqa: E402
 
 class PageTypeRegistryTest(unittest.TestCase):
     def test_current_cross_family_types_resolve_by_declared_key(self):
+        # `intervention` and `artifact` retired 260820 (renamed/absorbed into
+        # `design`); the InsightBoard decomposed into meta + question + DIKW
+        # levels 260820-21.
         for value in (
             "seed",
             "venue",
@@ -21,9 +24,15 @@ class PageTypeRegistryTest(unittest.TestCase):
             "round",
             "dash",
             "insight",
+            "meta",
+            "question",
+            "data",
+            "information",
+            "knowledge",
+            "wisdom",
             "brief",
-            "intervention",
-            "artifact",
+            "principle",
+            "design",
         ):
             with self.subTest(value=value):
                 report = Report()

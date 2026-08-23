@@ -1,0 +1,135 @@
+---
+name: haipipe-page-for-question
+description: >-
+  The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
+metadata:
+  version: "0.1.0"
+  last_updated: "2026-08-21"
+  summary: "New on 260821 (JL): the question register split out of MT00-meta's Insight Roster, one page per ladder rung so a question sits with the rung it faces."
+  group-token: "MT"
+  outline:
+    mode: grammar
+    source: "this SKILL.md"
+    shape: "division 1 is Queue, always first; every later division's first word is a question id Q[DIKW]<n>, in id order"
+---
+
+# /haipipe-page-for-question · hold what is asked of one rung, and how far it has got
+
+Load `haipipe-page` first, and `haipipe-plugin-pagex` when borrowing the inventory or a lower rung's register.
+
+Declare `page-type: question` and `question-rung: data | information | knowledge | wisdom`.
+
+Four pages exist per InsightBoard, in the `0-MT-meta/` group beside the Meta page:
+
+```text
+MT01-question-data/           question-rung: data           faces  1-D-data/
+MT02-question-information/    question-rung: information    faces  2-I-information/
+MT03-question-knowledge/      question-rung: knowledge      faces  3-K-knowledge/
+MT04-question-wisdom/         question-rung: wisdom         faces  4-W-wisdom/
+```
+
+## Why this Page exists
+
+Until 260821 a question could only be a table row: `N<n>` in the Brief's Insight Needs, mirrored into `MT00-meta`'s Insight Roster. Two defects followed. A question raised on the InsightBoard itself, by someone reading the data rather than by a Brief, had no home at all, and `haipipe-page-for-meta` forbids one, because Meta raises no question of its own. And a row cannot carry why the question is asked now, what would answer it, or what it is blocked on.
+
+JL ruled the split by rung on 260821, over a single flat register. A question is not asked of the board in general; it is asked of one rung, and the answer lands in that rung's group. Pairing the register with the group it faces is what makes the queue readable: `MT01`'s queue and `1-D-data/`'s pages are the two halves of one sentence.
+
+## Boundary
+
+```text
+MT00-meta          what data EXISTS                    describes, never asks
+MT0N-question-*    what is ASKED of one rung           asks, never concludes
+D/I/K/W page       the ANSWER                          concludes, cites its parent
+Brief              which needs BLOCK a design          raises, never answers
+```
+
+**Nothing in the MT group concludes.** A question page may say the segment size is unknown. It may not say the segment is small. The moment a division states a value, a comparison or a preference, it belongs on a D, I, K or W page and fails here.
+
+A question may be raised from either side. The Brief raises one when design is blocked; the board raises one when someone reading `MT00-meta` becomes curious. Both land here identically, and division 2 onward records which.
+
+## Question ids
+
+The rung letter is in the id, so a question names its own home.
+
+```text
+QD<n>   registered on MT01     answered in 1-D-data/
+QI<n>   registered on MT02     answered in 2-I-information/
+QK<n>   registered on MT03     answered in 3-K-knowledge/
+QW<n>   registered on MT04     answered in 4-W-wisdom/
+```
+
+Numbering runs per page, so `QD1` and `QI1` coexist. The id is permanent: a question that is re-targeted moves page and takes a NEW id, and its old division stays behind as a one-line tombstone naming the successor. Nothing that was ever raised silently disappears.
+
+## Fixed Content outline
+
+```text
+### 1 · Queue               this rung's questions, target, raiser, state, blocker
+#### 2 · Q<R>1 · <slug>     one division per question, in id order
+#### 3 · Q<R>2 · <slug>
+```
+
+**Queue** is the whole page in one screen. One row per question:
+
+```text
+id   question, one line              raised by   answering page   state
+─────────────────────────────────────────────────────────────────────────────
+QD1  what do the 13 arms say?        BR00 · N4   —                ⬜ ready
+QD2  which rows carry an opt-out?    MT00 read   D02-optout       🔨 EVIDENCE
+```
+
+`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `✅ answered` once that page closes, and `🚫 retired` for a tombstone.
+
+**Each question division** owes a reader four things and nothing else:
+
+- **The ask**, in one line, in the words the data uses.
+- **Why now**, which is what is blocked or what prompted it. A Brief-raised question names the Brief's Aim; a board-raised question names what was being read.
+- **What would answer it**, which is the shape of an acceptable answer, not a guess at its value. "A count of distinct message bodies per arm" is legitimate; "roughly thirteen distinct bodies" has already answered.
+- **Where it stands**, naming the answering page once one exists.
+
+A division that argues for an expected answer has decided, and fails the closing checks.
+
+## Aims and States carry the status
+
+One Aim per question, so the engine's own machinery is the status board. The `## States` section is what a reader checks and what `git diff` shows moving.
+
+```text
+## Aims                              ## States
+### A1 · Queue                       ### A1 · Queue
+- A1.1 every raised question         - ✅ A1.1 · four rows, all honest
+  is visible, answered or not
+#### A2 · QD1                        #### A2 · QD1
+- A2.1 the corpus is described       - ⬜ A2.1 · no answering page yet
+  Done when: QD1 reaches a D page
+```
+
+An Aim's **Done when** names the rung, and only this page's rung. `MT01`'s Aims close at a D page; a D page that turns out to license a recommendation has produced a W claim, and that is a new `QW<n>` on `MT04`, not a broader Done-when here.
+
+## Plugins
+
+```text
+outline/    ✅   the plan, like any page
+pagex/      ✅   borrow MT00's inventory and the rung below's register
+probe/      ❌   FORBIDDEN
+display/    ❌   FORBIDDEN
+```
+
+**A question page owns no `probe/`.** A probe card reaches Task or Discovery and brings an answer back; if a question page could raise one, the question and its answer would share a folder and the MT group would stop being question-only. The card belongs to the page that answers, at `<D|I|K|W page>/probe/PP<NN>-<slug>/`, and that page names the question id it serves.
+
+`display/` is forbidden for the same reason: a figure is an answer.
+
+## Staleness
+
+A question does not go stale; its answer does. When a source re-runs and reopens a D page, the question whose row names that page moves back from `✅ answered` to `🔨`. The Queue row is the visible consequence, and it is updated by whoever reopens the answering page.
+
+## Closing checks
+
+- Every question in the Queue has a division, and every division has a Queue row.
+- No division states a value, a comparison, a rank or a preference.
+- No question carries a hoped-for answer, in either its ask or its what-would-answer-it.
+- Every question names its raiser: a Brief need id, or what was being read.
+- Every `⬜ blocked on <id>` names a real id on this board.
+- Every question's target rung is this page's rung. A question facing another rung has been mis-filed and moves.
+- The page owns no `probe/` and no `display/`.
+- A re-targeted question left a tombstone naming its successor.
+
+This variant owns no scripts.

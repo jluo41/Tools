@@ -270,10 +270,29 @@ def parse_dir(d):
             p.stem,
             re.I,
         )
-        legacy_sm = re.match(r"(SM|SA|S)(\d+[a-z]?)", p.stem, re.I)
+        # 260821: SM/SA left this alternation. No live board carries an SM<n>
+        # or SA<n> shorthand page, and the paper family's section contract now
+        # claims SA as a runtime group token (2-SA-appendix), so SA01-<slug>
+        # must parse as app_m family SA, not as a legacy stage page.
+        legacy_sm = re.match(r"(S)(\d+[a-z]?)", p.stem, re.I)
         sm = full_sm or legacy_sm
-        if qm or sm or named_qm or skill_m or agent_m or meeting_m or design_m:
-            if design_m:
+        # 260820, Application runtime boards. M00-meta, I01-<slug>, A00-brief and
+        # D01-<slug> are the ids the Application spec has always named, and no
+        # matcher here claimed them, so an InsightBoard or DesignBoard parsed to
+        # zero pages: the roster was empty and every cross-board Related row
+        # reported unregistered-related-page. The letter is the family and the
+        # digits are the order, which is the same shape `qm` already uses.
+        app_m = re.match(r"([A-Z]{1,2})(\d+)-(.+)$", p.stem)
+        if (qm or sm or named_qm or skill_m or agent_m
+                or meeting_m or design_m or app_m):
+            if app_m:
+                family = app_m.group(1)
+                page_id = f"{app_m.group(1)}{app_m.group(2)}"
+                # letter orders the family, digits order inside it, so a board
+                # reads M -> I on an InsightBoard and A -> D on a DesignBoard.
+                key = (0, app_m.group(1), int(app_m.group(2)), "")
+                kind = "application"
+            elif design_m:
                 family = "design"
                 page_id = f"Design-{design_m.group(1)}"
                 # design rows sit where skill rows sat: after every lettered group

@@ -18,8 +18,10 @@ Build orchestrator organized around the **task hierarchy**:
 ```
 project           examples/Proj{...}/
   └── task-group  tasks/{G}{NN}_{name}/
-        └── task-folder  <name>/{*.py, configs/, runs/, results/, notebooks/}
-              QA/                              OPTIONAL — appears only when `qa` is called
+        └── task-folder  <name>/{*.py, configs/, runs/}      TWO MODES:
+              ① self-serving   output stays in the folder    results/ notebooks/ QA/
+              ② consumer-serving  output goes to a store     <store>/<task path>/
+              a `store:` key in the config picks ②; absent means ① (ref/hierarchy.md)
               `{NN}_<name>` is the RECOMMENDED name for a NEW folder — match the siblings
               in this group. It is NOT a filter: real task-folders include B4_fit_scaling_law
               and C3-Visual-ForecastScaling. Detect a task-folder by STRUCTURE, never by name.
@@ -116,6 +118,17 @@ Plan touches only `workflow/plan*.yaml`.
 Build touches only code/configs/runs. 
 Execute touches only `results/` and `notebooks/`. 
 Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
+
+Everything after Build that is DATA-DEPENDENT lands under `$OUTPUT_ROOT`;
+`CODE_REVIEW.md` is the exception and stays with the code, because it reviews
+the `.py` at a `git_sha` rather than a cohort's results. A task-folder
+runs in one of TWO first-class modes (JL 260821, `ref/hierarchy.md` § task-folder):
+SELF-SERVING keeps output in the folder, the classic shape, unchanged;
+CONSUMER-SERVING sends it to a store the consumer owns, which is what lets one
+folder answer the same question on a second cohort without being copied. Which
+one applies is decided by who owns the answer, not by who launched the run.
+Build's outputs stay in the task-folder either way, because code and config ARE
+the folder.
 
 **QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
 A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 

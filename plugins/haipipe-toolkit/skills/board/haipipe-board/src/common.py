@@ -184,8 +184,15 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # the design"): a unit's page is a DESIGN page holding the argument plus the
 # unit's material in plugins. `Skill-` stays legal so archives and other
 # families' boards keep parsing.
+# 260820, Application runtime boards. A ONE-OR-TWO letter family followed by a
+# DIGIT: MT00-meta, D01-<slug>, I01, K01, W01 on an InsightBoard; BR00-brief,
+# P01, DS01 on a DesignBoard. Generalised from a hardcoded [MIAD] set the same
+# day, so a new family needs no engine edit. The required digit is what keeps
+# AGENTS.md, DESIGN.md and MEMORY.md out; SKILL.md and STATUS.md do match, but
+# through the pre-existing [QS] branch, which is long-standing behaviour.
 PAGENAME = re.compile(
-    r"^(?:[QS][A-Za-z0-9]*|Agent-\d+|Meeting-\d+|Design-\d+)[-_A-Za-z0-9]*\.md$")
+    r"^(?:[QS][A-Za-z0-9]*|[A-Z]{1,2}\d[A-Za-z0-9]*|Agent-\d+|Meeting-\d+|Design-\d+)"
+    r"[-_A-Za-z0-9]*\.md$")
 
 
 def _vet_path(name, pattern):
@@ -254,9 +261,10 @@ def q_files(d):
 
 
 def page_files(d):
-    """Q, S, Design, Agent and Meeting pages at any depth, same exclusions.
-    A legacy Skill-* page still rides the S glob."""
-    for prefix in ("Q", "S", "Agent", "Meeting", "Design"):
+    """Q, S, Design, Agent, Meeting and Application runtime pages at any depth,
+    same exclusions. A legacy Skill-* page still rides the S glob, and the
+    M/I/A/D globs are wide on purpose: PAGENAME does the real filtering."""
+    for prefix in tuple("QSABCDEFGHIJKLMNOPRTUVWXYZ") + ("Agent", "Meeting", "Design"):
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):
