@@ -126,9 +126,12 @@ skills/
 └── insight/           🪦 RETIRED 2026-07-12 — tombstone only
 ```
 
-**`_archive/` is not live.** 39 archived `SKILL.md` files sit inside the tree
-(mostly under `paper/_archive/`). They are unregistered and never loaded — but they
-*do* show up in your greps. Exclude `_archive/` when searching.
+**There is no `_archive/` in this tree, and that is deliberate** (JL 260822:
+"我既然把它变成 archive 了，意思就是说要把它们都删掉"). Retiring a skill means
+DELETING it. Nine archive roots holding 487 files were removed on 260822; they are
+recoverable from git at `438d1c87` and nowhere else. A retired skill that stays on
+disk gets read, cited and followed — every archive root here had a live file
+pointing into it when it was deleted.
 
 
 Where to read next

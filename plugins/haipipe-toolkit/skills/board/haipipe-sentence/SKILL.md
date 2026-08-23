@@ -181,7 +181,7 @@ the sentence itself                         edited through the page, logged
 nothing                                     is ever silently deleted
 ```
 
-Resolved threads leave the stage for the archive the same way a retired page leaves for `_archive/`: recoverable, out of the read.
+Resolved threads leave the stage for the archive the same way a retired question leaves for a BOARD's own `_archive/`: recoverable, out of the read. (That board-level archive is live machinery and is not the skill-tree `_archive/` deleted on 260822.)
 
 ## 📂 Files
 

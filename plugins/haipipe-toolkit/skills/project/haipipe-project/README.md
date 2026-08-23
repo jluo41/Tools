@@ -21,7 +21,7 @@ Commands
   /haipipe-project digest [session] [--dry-run]   harvest feedback from a transcript
   /haipipe-project                         list projects + the two setup paths
 
-Setup is QUICK by default: folders ready (plus README + .gitignore for the repo kind), then stop. No metadata questionnaire, no diagram authoring, no seed tasks. Retired verbs (task/overview/review/summarize/organize) live in project/_archive/.
+Setup is QUICK by default: folders ready (plus README + .gitignore for the repo kind), then stop. No metadata questionnaire, no diagram authoring, no seed tasks. Retired verbs (task/overview/review/summarize/organize) were deleted 260822; git history is the only copy.
 
 ---
 

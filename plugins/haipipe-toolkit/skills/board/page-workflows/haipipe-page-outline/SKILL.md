@@ -6,13 +6,15 @@ description: >-
   PageX lane for exact accepted-Page bindings before prose is written. Task or
   Discovery obligations are handed to Probe's QA lane in the next phase. Its
   deliverable is a versioned file at <page>/outline/<stem>-outline-v<N>.md and it
-  exits only when a person approves it. Trigger: page outline, OUTLINE phase,
-  plan the page, PageX, accepted Page evidence, approve the outline,
-  /haipipe-page-outline.
+  exits only when a person approves it. The Page Type supplies WHICH WORDS the
+  plan may use; this phase supplies WHICH ARGUMENT their sequence makes, and
+  runs that as the first of five self-consistency checks. Trigger: page outline,
+  OUTLINE phase, plan the page, story arc, arc check, division order, PageX,
+  accepted Page evidence, approve the outline, /haipipe-page-outline.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-19"
-  summary: "Aims join the authority test and live in the plan file; the version rule protects a promise, never a format, so old-grammar plans are rewritten on their next pass and checks/outline.py fails bullet-missing-note."
+  version: "0.10.0"
+  last_updated: "2026-08-22"
+  summary: "0.10.0 takes the ARC: the Page Type supplies WHICH WORDS a page may use and this phase supplies WHICH ARGUMENT they are arranged to make, so the sequence-is-the-argument rule, the three forbidden orderings and the swap test move here from haipipe-page-for-task and reach all ten types; self-consistency grows to FIVE checks with ARC first, and its third test is that the heaviest finding owns a division rather than a bullet inside someone else's. 0.9.0 put Aims in the plan file and made the version rule protect a promise, never a format."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -98,22 +100,36 @@ ticks carry who and when (haipipe-page-draft §🕰, ruled 260820).
 
 ## 📐 The Page Type's `outline:` block is READ, not assumed
 
-**Every Page Type that exists already declares its mode.** All eleven do, in an
-`outline:` block under `metadata:`. Until 260819 nothing in this phase read it,
-so a plan's shape was whatever its author felt like:
+**Every Page Type that exists already declares its mode.** All ELEVEN LIVE types
+do, in an `outline:` block under `metadata:`. Until 260819 nothing in this phase
+read it, so a plan's shape was whatever its author felt like:
 
 ```text
-  mode: fixed      brief · dash · seed · venue · insight
+  mode: fixed      brief · insight · round · seed · venue          (5)
                    the type LISTS the divisions. Fill them. Do not add, drop
                    or reorder.
-  mode: grammar    intervention · narrative · task
+  mode: grammar    intervention · narrative · task                 (3)
                    a closed FIRST-WORD set plus an order rule. Choose how many
                    of each; write the free title after the fixed word.
-  mode: resolved   artifact · stage · section
+  mode: resolved   artifact · section · stage                      (3)
                    the outline lives OUTSIDE the type, at the path its `source:`
                    names. RESOLVE it first. A missing source is a HOLE, never
                    a licence to invent one.
 ```
+
+⚠️ **This list was wrong from 260819 to 260822**: it named `dash`, a RETIRED type,
+and omitted `round`, a live one. The COUNT was accidentally right, which is why
+nobody caught it for three days — and the retired type was still on disk, under an
+`_archive/`, answering greps and looking authoritative.
+
+That is what got the whole archive convention deleted the same day (JL: "我既然把
+它变成 archive 了，意思就是说要把它们都删掉…旧的东西会误导我们"). Nine archive
+roots, 487 files, removed from the skill tree; `skills/STRUCTURE.md` carries the
+rule. A retired type is now DELETED, so this list can only ever drift by omission,
+never by naming something that no longer exists.
+
+`find <skills>/*/page-types -maxdepth 1 -type d -name 'haipipe-page-for-*'` is the
+authority, and it is the only one.
 
 Probe is the evidence-acquisition family. OUTLINE owns its PageX branch because
 accepted Page context can change the plan before any QA work is dispatched.
@@ -142,6 +158,87 @@ finding against the person; it is the phase refusing to spend a human tick on a
 shape a file already answered.
 
 An operation does not identify OUTLINE. Adding a section to the PLAN is OUTLINE; adding a section to the PAGE is DRAFT. The two are different files.
+
+## 🎭 The TYPE gives the WORDS. This phase gives the ARGUMENT. (260822)
+
+Ruled by JL, deciding where a story arc belongs when there are ten Page Types:
+"我们也会有其他的 pages 所以这个 four types 就是我们提供什么样的 outline
+template，然后 haipipe-page-outline 目的就是想要讲什么样的 story arcs."
+
+```text
+  the PAGE TYPE     WHICH WORDS this page may use, in what order,
+  (10 of them)      and how many of each                     ── the TEMPLATE
+                    read from metadata.outline, §📐 above
+
+  THIS PHASE        WHICH ARGUMENT those words are arranged to make,
+  (one of it)       on this page, this round                 ── the ARC
+```
+
+**Why the split had to be made.** The rule below lived inside
+`haipipe-page-for-task` from its 0.7.0 until 260822, so nine other types had no
+statement of it at all — and the failure it prevents is not task-shaped. Any
+page whose divisions were ordered by the author's history passes every
+mechanical check and still fails its reader. A `fixed`-mode type suffers it too:
+the type lists the divisions, and the arc question becomes what each one is FOR
+and whether the list, filled this way, argues anything.
+
+**⛔ ROLE-COMPLETE IS NOT ARC-COHERENT.** A plan may carry every word its type
+allows, each division correct and each in present tense, and still not be a
+report. That is the commonest shape that passes every check and fails its
+reader, and it fails for one reason: the order came from the author's history
+instead of the reader's need.
+
+**Three orderings all read as a log, and the third is nearly invisible:**
+
+```text
+  ① run order          the order the scripts executed
+  ② config order       the order the yaml files sit in
+  ③ 🔴 LEARNING ORDER  the order the AUTHOR found things out
+```
+
+① and ② are easy to catch, because the division titles carry the machinery's own
+names. ③ survives every mechanical check. Each division states the present, cites
+its evidence and names what the reader learns; nothing on the page mentions a
+date. The diary is in the SPACING between divisions, and only a reader who does
+not already know the story can feel it.
+
+**The swap test, one question per boundary:**
+
+```text
+  For each pair of adjacent divisions, name why N must come before N+1.
+
+  ✅ "Method must precede Result, or the number cannot be believed."
+  ✅ "Data must precede Method, or the sample the method ran on is unknown."
+  ✅ "Concept must precede Landscape, or the field map is in unmet terms."
+  🔴 "That is the order we found them in."
+     └─ reorder. A reason that is a date is not a reason.
+```
+
+Ruled 260820 (JL, on a Board plan whose divisions ran old-machinery, its-gap,
+new-machinery, measurement, contract, proposal): every head was present tense and
+every count was checked, and the divisions still fell into three blocks that
+matched what was known before the session, what the session did, and what it left
+open. The repair merged the two machinery divisions into one, because they are two
+halves of one machine and their only separation was arrival time.
+
+**⛔ THE BIGGEST FINDING GETS A DIVISION, NOT A BULLET INSIDE SOMEONE ELSE'S**
+(260822, found by running this section against `QC1-postrain-replication` before
+writing it). That page's largest measured effect — training cutting
+non-termination roughly tenfold, on two benchmarks and two measurement surfaces —
+was bullet `B7` inside a division titled for the run that happened to produce it.
+The plan was coverage-complete, address-clean and value-checked. It was also
+mis-weighted, and no existing check could say so.
+
+```text
+  a finding's WEIGHT is not what produced it, it is what a reader carries away
+  ⇒ if the strongest sentence on the page cannot be found from the table of
+    contents, the arc is wrong even when every division is correct
+```
+
+**What this section does NOT do.** It does not choose the words — the type did
+that, and a word outside the type's set is a SHAPE failure, not an ARC failure.
+It does not judge whether the plan aims at the right thing; that is the person's,
+at `approved:`.
 
 ## 🚧 Why this is a phase and not a step inside DRAFT
 
@@ -177,12 +274,24 @@ this is a loop and not a line, and 260819 produced two worked cases on
 split tests and was folded away, and a count of 17 was recomputed as 13. Neither
 was a defect. A plan written before its evidence is a guess.
 
-## 🚦 Self-consistent means FOUR things, and each one is checkable
+## 🚦 Self-consistent means FIVE things, and each one is checkable
 
 "Until the outline is self-consistent" has to be a test, or the loop cannot stop
-and "it feels about right" becomes the gate. It is these four, in this order:
+and "it feels about right" becomes the gate. It is these five, in this order:
 
 ```text
+  ⓪ ARC        the division SEQUENCE argues something, and the plan says what
+               ⓪.1 the plan carries one `arc:` line: the argument the sequence
+                   makes, in one sentence. "This page reports the results of X"
+                   is a table of contents, not an argument, and fails.
+               ⓪.2 every ADJACENT PAIR passes the swap test (§🎭): name why N
+                   must precede N+1. A reason that is a date, a run name or a
+                   config name is not a reason.
+               ⓪.3 the plan's HEAVIEST finding has its own division. A finding
+                   a reader cannot reach from the division list is mis-weighted
+                   however correct its bullet is.
+               ⚠️ runs FIRST, because a plan with the wrong arc is not worth
+                  address-checking; the other four verify a shape ⓪ accepts.
   ① COVERAGE   the plan⇄disk join, BOTH directions. Forward: every mark is
                served by at least one card — the PROBE receipt already
                reports `coverage: n of n`. Reverse: every display unit on
@@ -198,10 +307,20 @@ and "it feels about right" becomes the gate. It is these four, in this order:
                `plan-shape-off-type`; no `page-type:` key = base order only
 ```
 
-**All four run BEFORE the person is asked.** That is what makes the human tick
+⚠️ **⓪ and ④ are different questions and neither substitutes for the other.**
+④ asks whether the words are the type's; ⓪ asks whether their order is an
+argument. A plan can pass ④ with every word legal and fail ⓪ because it is a run
+log wearing correct prefixes — which is precisely the failure §🎭 exists to name.
+
+**All five run BEFORE the person is asked.** That is what makes the human tick
 worth something: a machine says the plan is consistent with what is on disk, and
 the person answers the one question no file can, which is whether the plan is
 aimed at the right thing.
+
+⓪ is the one of the five a machine can only half-run: `arc:` present is
+mechanical, and whether the sentence is an argument is a judgement the phase
+makes and the person may overturn. It is stated as a check anyway, because a
+judgement with a written form is arguable and one with none is not.
 
 **An answered ask is APPENDED, never re-asked and never re-bulleted** (JL
 260819, on `📮 PP04 answered · 5 values`: "我们其实需要更新一下这个 bullet

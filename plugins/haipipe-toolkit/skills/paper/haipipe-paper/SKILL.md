@@ -190,7 +190,7 @@ build artifacts are never a second authority.
 
 The former S01–S10 stage contracts, stage resolver, S-page creator, S03/S04
 topic-entry tooling, stage-specific craft, and their helper scripts are
-retired. They belong under `paper/_old/` and are never loaded by this door.
+retired, and were DELETED 260822 rather than parked; this door never loaded them.
 
 An existing paper that still uses those files is migrated only on explicit
 request. Migration reads the old pages as evidence, creates current Seed,

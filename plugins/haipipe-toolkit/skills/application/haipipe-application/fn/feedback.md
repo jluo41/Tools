@@ -132,7 +132,7 @@ NO MATCH  (cross-cutting: stage strip, illuminate-every-stage, gate
           stages) ............................ -> orchestrator fallback (this folder)
 ```
 
-(Retired targets: `-ask` and `-minimap` live in `_archive/`; feedback about
+(Retired targets: `-ask` and `-minimap` were deleted 260822; feedback about
 their old behavior files to the fallback with a note.)
 
 When more than one keyword matches, prefer the MOST SPECIFIC. When the only

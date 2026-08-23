@@ -5,7 +5,8 @@ Status: draft (2026-06-20; probe layer rewritten to the v3 Q/A model 2026-07-14;
         insight layer RETIRED 2026-07-12; Board promoted to a first-class family
         2026-07-26)
 Scope: top-level mental model for the skill folder. Read this before grepping the
-       tree — 39 of its SKILL.md files are ARCHIVED, not live (see `_archive/` below).
+       tree. Since 260822 every SKILL.md under `skills/` is LIVE — there is no
+       `_archive/` any more (see "Retired means deleted" below).
 Spec:  the probe layer's contract is `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` (approved 2026-07-14).
 
 
@@ -119,8 +120,8 @@ There is no top-level `narrative` bucket. Narrative is one Paper Page Type under
 `discover`.
 
 There is no live `insight` bucket either — the insight layer (D/I/K/W cards) was
-RETIRED 2026-07-12 (JL); its skills are archived under `insight/_archive/` and
-de-registered. `skills/insight/` is a tombstone (README + CHANGELOG + `_archive/`).
+RETIRED 2026-07-12 (JL) and its skills were deleted on 260822. Nothing is left on
+disk; git history is the record.
 Settled evidence now lives where it landed: the general fact in the executor's
 `QA/<n>-<slug>.md`, and the consumer interpretation in the owning Page's local
 Probe card.
@@ -142,28 +143,37 @@ such as `/haipipe-data`, `/haipipe-nn`, `/haipipe-end`, and
 `/haipipe-individual` remain unchanged.
 
 
-`_archive/` — 39 dead SKILL.md files live INSIDE this tree
-==========================================================
+Retired means DELETED. There is no `_archive/`.
+==============================================
 
-Not every `SKILL.md` under `skills/` is a skill. **155 are live; 39 are archived.**
-An archived skill sits under an `_archive/` directory, is DE-REGISTERED (no plugin
-entry, not invocable), and is kept only so a decision can be traced back.
+Ruled 260822 by JL, on finding that `haipipe-page-outline` had been listing a
+retired page type as live for three days: "我既然把它变成 archive 了，意思就是说
+要把它们都删掉…旧的东西会误导我们."
+
+**Every `SKILL.md` under `skills/` is a skill.** Nine archive roots holding 487
+files — `paper/_old`, `paper/_archive`, `paper/page-types/_archive`,
+`board/page-types/_archive`, `project/_archive` and four inside `diagrams/` —
+were deleted that day.
+
+**Why keeping them was worse than losing them.** An archived file is
+de-registered and unloadable and it still gets READ, because it answers a grep
+and it looks authoritative. Every archive root deleted on 260822 had at least
+one LIVE file pointing into it: the application console pointed at a retired
+paper-runtime doc, `haipipe-project` told a reader its retired verbs "live in
+project/_archive/", and the outline phase's own roster of page types named
+`dash`, archived, while omitting `round`, live. The count in that roster was
+accidentally right, which is why nobody caught it.
 
 ```
-skills/**/_archive/**/SKILL.md     💀 NOT a skill. History. Do not follow it,
-                                      do not repair it, do not resurrect it.
-                                   ⚠️ it DOES answer a grep — that is the trap.
+retiring something   ─▶  DELETE it, and fix every reference that pointed at it
+                         in the same change
+recovering it        ─▶  git. The pre-deletion tree is Tools @ 438d1c87.
 ```
 
-Live archive roots: `application/_archive`, `paper/_archive`,
-`probe/agents/_archive`, `project/_archive`, `insight/_archive` (the whole
-retired layer).
-
-So: **exclude `_archive/` from every sweep** unless you are deliberately reading
-history — `grep -r ... --exclude-dir=_archive`. A hit inside `_archive/` is never
-a bug. The same courtesy applies to `CHANGELOG.md` files and dated `feedback/`
-records: they are ALLOWED to name dead machinery, because naming what died is
-their job.
+**What this does NOT touch.** A BOARD's own `_archive/` is a different thing and
+stays: `haipipe-board`'s `archive_question` verb parks a retired question there,
+and the build, checker and dashboards all skip it by design. That archive is
+inside a user's board folder, not inside this skill tree.
 
 
 Skill Identity And Refresh

@@ -113,7 +113,7 @@ Validation responsibility:
 
 - `/haipipe-task` (task-group / task-folder scaffolds) checks "no collision"
   at scaffold time; refuses to overwrite an existing index.
-  (Project-level audit verbs were retired 2026-07-03; originals in project/_archive.)
+  (Project-level audit verbs were retired 2026-07-03 and deleted 260822; see git.)
 
 
 Task-types (orthogonal to group letter)

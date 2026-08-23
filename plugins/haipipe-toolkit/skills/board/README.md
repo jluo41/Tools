@@ -101,9 +101,6 @@ board/
 ├── page-plugins/        one plugin per <page>/<name>/ folder · roster.md is
 │                        the single list of names
 ├── page-types/          the ONE variant THIS skill set owns
-│   ├── _archive/        retired variants · install.sh -prunes it, which is
-│   │                    the only thing keeping a duplicate `name:` off the
-│   │                    global skills dir
 │   └── haipipe-page-for-stage/
 ├── page-workflows/      the head skill, its six phase members, their agents
 │   ├── haipipe-page-workflow/
@@ -144,12 +141,16 @@ The design Board remains a working artifact at
 
 `page-types/`, `page-workflows/` and `page-plugins/` are organization folders,
 not skills of their own. The installer discovers every nested `SKILL.md`
-recursively — pruning `_archive/` and `_old/` — and every discovered skill must
-keep a globally unique `name:`. Uniqueness is not automatic: the archived
-`page-types/_archive/haipipe-page-for-stage-paper-era-260820/SKILL.md` still
-carries `name: haipipe-page-for-stage`, and only the prune keeps it from
-colliding with the live one. Retire a skill by moving it under `_archive/`,
-never by leaving it in place.
+recursively, and every discovered skill must keep a globally unique `name:`.
+
+**Retire a skill by DELETING it** (JL 260822). Until that day the rule here was
+to move it under `_archive/` and let `install.sh` prune the folder — and this
+README's own example was the reason the rule was overturned:
+`page-types/_archive/haipipe-page-for-stage-paper-era-260820/SKILL.md` carried
+`name: haipipe-page-for-stage`, colliding with the live one, and a prune was the
+only thing standing between a retired file and the global skills directory.
+A retired file that stays on disk still answers greps and still gets read.
+Git is the archive; `skills/STRUCTURE.md` carries the rule.
 
 Every Board-attached session makes its attachment public at the end of each
 reply: Board, page-group queue, board/group/page focus, work mode, next action,

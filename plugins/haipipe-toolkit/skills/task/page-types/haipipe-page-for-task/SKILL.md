@@ -1,16 +1,16 @@
 ---
 name: haipipe-page-for-task
 description: >-
-  The VARIANT contract for a TASK Page: one page per task-folder, and the TECHNICAL REPORT of what that folder found, carrying the one thing no file in it can hold, the READING of the result. Reporting is the form and reading is the closing act. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Why, Concept, Data, Method, Result, Meaning in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Meaning always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, technical report, report structure, reporting, division order, learning order, residual division, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
+  The VARIANT contract for a TASK Page: one page per task-folder, and the TECHNICAL REPORT of what that folder found, carrying the one thing no file in it can hold, the READING of the result. Reporting is the form and reading is the closing act. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Introduction, Concept, Landscape, Data, Method, Result, Conclusion in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Conclusion always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, technical report, report structure, reporting, division order, learning order, residual division, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-08-20"
-  summary: "A task page IS a technical report and closes when the result is READ; 0.7.0 states the arc the six words form, forbids LEARNING ORDER as a third kind of log, and makes a residual a division rather than a footnote. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Meaning stays one page-level division, always last."
+  version: "0.9.0"
+  last_updated: "2026-08-22"
+  summary: "A task page IS a technical report and closes when the result is READ; 0.9.0 renames Why to Introduction and admits it into the FLAT shape as division 1, adds Landscape after Concept for what the FIELD already established, and hands the type-agnostic arc rule — sequence-is-the-argument, the three forbidden orderings, the swap test — to haipipe-page-outline, keeping only WHICH WORDS here. 0.8.0 renames the last division Meaning to Conclusion by JL ruling, moves that word's demand into a rule, rules that a new RUN is a new READING row while only a new MESSAGE earns a new division, and rules that FLAT admits REPEATED Method and Result divisions plus a page-level Concept or Data. 0.7.0 states the arc the six words form, forbids LEARNING ORDER as a third kind of log, and makes a residual a division rather than a footnote. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Conclusion stays one page-level division, always last."
   folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved
     source: "this SKILL.md"
-    shape: "FLAT or NESTED; first word from {Why, Concept, Data, Method, Result, Meaning}; the sequence is the ARGUMENT, never run, config or learning order; a residual earns its own Result-role division; Meaning is one page-level division, always last"
+    shape: "FLAT or NESTED; first word from {Introduction, Concept, Landscape, Data, Method, Result, Conclusion}; Introduction when present is division 1 and appears once; Concept, Landscape, Data may sit page-level; Method, Landscape and Result repeat; a residual earns its own Result-role division; Conclusion is one page-level division, always last. The ARC that orders them is haipipe-page-outline's, not this type's"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,10 +42,10 @@ contract would restate that and then drift from it. `haipipe-task` and
   what the verdict binds    a run name       vs  a discovery folder + its QA file
 ```
 
-**What it does NOT change**: the grammar (`Why · Concept · Data · Method ·
-Result · Meaning`), the FLAT/NESTED fork, `Meaning` always last and page-level,
+**What it does NOT change**: the grammar (as of 0.9.0, `Introduction · Concept ·
+Landscape · Data · Method · Result · Conclusion`), the FLAT/NESTED fork, `Conclusion` always last and page-level,
 or the closing rule that a person must read the result against the folder's own
-question. A discovery page that skips `Meaning` is as unclosed as a task page.
+question. A discovery page that skips `Conclusion` is as unclosed as a task page.
 
 
 **LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a task-folder can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.
@@ -75,72 +75,61 @@ configs/ · runs/     how it was invoked       QA/<n>-<slug>.md  one caller's
 
 Not one of them ever says **"and therefore ___"**. `metrics.json` holds `0.83`; nothing on disk holds "0.83 means the approach works" or "0.83 is the same as the baseline, so this direction is dead". That sentence is a human judgment about an empirical result, it is what everyone downstream actually needs, and it is the only thing this page exists to carry.
 
-## 📰 The page IS a technical report, and the six words are its ARC
+## 📰 The page IS a technical report, and the seven words are its ARC
 
 A task page has one job with two halves, and the contract used to state only the
 second. **It REPORTS what the folder found, and it closes when a person READS
 that report against the folder's own question.** Reading is the closing act.
 Reporting is the FORM, and the form is what a reader gets wrong first.
 
-The six words are not a checklist of boxes to fill. They are the arc a technical
+The seven words are not a checklist of boxes to fill. They are the arc a technical
 report has always had, and each one earns its place from the one before it:
 
 ```text
-  Why      the reader does not yet care          ─┐
-  Concept  the reader cannot yet parse it         ├─ SETUP: without these the
-  Data     the reader cannot yet trust it         │  result cannot be read
-  Method   the reader cannot yet believe it      ─┘
-  Result   what came out                         ─── THE FINDING
-  Meaning  what it costs, and what to run next   ─── THE CONSEQUENCE
+  Introduction  the reader does not yet care        ─┐
+  Concept       the reader cannot yet parse it       │  SETUP: without these
+  Landscape     the reader cannot yet tell what      ├─ the result cannot be
+                is NEW about it                      │  read
+  Data          the reader cannot yet trust it       │
+  Method        the reader cannot yet believe it    ─┘
+  Result        what came out                       ─── THE FINDING
+  Conclusion    what it costs, and what to run next ─── THE CONSEQUENCE
 ```
 
-**⛔ THE SEQUENCE IS THE ARGUMENT, and role-complete is not arc-coherent.** A page
-may carry all six words, each division correct and each in present tense, and
-still not be a report. That is the commonest shape that passes every check and
-fails its reader, and it fails for one reason: the order came from the author's
-history instead of the reader's need.
+**Why `Landscape` sits after `Concept` and not straight after `Introduction`**
+(ruled 260822 by JL, who asked for it: "这 concept 可不可以加一些，比如说
+related work 呢"). A paper conventionally puts related work second, and this
+set does not, because this set orders by what the reader still LACKS. A field
+map written in terms the reader has not met is unreadable, so the vocabulary
+goes first and the map goes second. That is the same test every other boundary
+in this arc passes, applied one more time rather than an exception to it.
 
-**Three orderings all read as a log, and the third is nearly invisible:**
+**⛔ THE SEQUENCE IS THE ARGUMENT, and this contract no longer owns that rule.**
+A page may carry all seven words, each division correct and each in present
+tense, and still not be a report, because the order came from the author's
+history instead of the reader's need. That failure is not a task-page failure —
+it reaches every Page Type, and there are ten of them — so the rule, the three
+forbidden orderings (run · config · the order the AUTHOR found things out) and
+the per-boundary swap test moved to **`haipipe-page-outline` §🎭** on 260822,
+where the OUTLINE phase runs them as its ⓪ ARC check before any other check.
+
+**The split, stated once so neither side restates the other:**
 
 ```text
-  ① run order        the order the scripts executed
-  ② config order     the order the yaml files sit in
-  ③ 🔴 LEARNING ORDER  the order the AUTHOR found things out
+  THIS contract    WHICH WORDS a task page may use, in what order,
+                   and how many of each                      ── the TEMPLATE
+  haipipe-page-    WHICH ARGUMENT those words are arranged
+  outline §🎭      to make, on this page, this round          ── the ARC
 ```
 
-① and ② are already forbidden above, and both are easy to catch because the
-division titles carry the machinery's own names. ③ survives every mechanical
-check. Each division states the present, cites its evidence, and names what the
-reader learns; nothing on the page mentions a date. The diary is in the SPACING
-between divisions, and only a reader who does not already know the story can feel
-it.
-
-**The swap test, one question per boundary:**
-
-```text
-  For each pair of adjacent divisions, name why N must come before N+1.
-
-  ✅ "Method must precede Result, or the number cannot be believed."
-  ✅ "Data must precede Method, or the sample the method ran on is unknown."
-  🔴 "That is the order we found them in."
-     └─ reorder. A reason that is a date is not a reason.
-```
-
-Ruled 260820 (JL, on a Board plan whose divisions ran old-machinery, its-gap,
-new-machinery, measurement, contract, proposal): every head was present tense and
-every count was checked, and the divisions still fell into three blocks that
-matched what was known before the session, what the session did, and what it left
-open. The repair merged the two machinery divisions into one, because they are two
-halves of one machine and their only separation was arrival time.
-
-**A residual is a DIVISION, not a footnote.** `Meaning` carries a `not answered`
+**A residual is a DIVISION, not a footnote.** `Conclusion` carries a `not answered`
 row, and that row is a pointer, not the account. What the runs did NOT settle
-needs its own place before `Meaning`, or the reader assembles it from asides
+needs its own place before `Conclusion`, or the reader assembles it from asides
 scattered through `Result`:
 
 ```text
-  ✅  Data · Method · Result · <what is still not settled> · Meaning
-  🔴  Data · Method · Result · Meaning
+  ✅  Data · Method · Result · <what is still not settled> · Conclusion
+  🔴  Data · Method · Result · Conclusion
                         ▲
                         └── three residuals living as parenthetical remarks
                             inside a division whose job is the finding
@@ -160,7 +149,7 @@ pressure toward ③ is structural here and incidental elsewhere.
 
 ## 🏁 The closing rule, and why a rerun re-opens the page
 
-A task page closes on one typed record in its LAST division, `Meaning`, and nothing else closes it:
+A task page closes on one typed record in its LAST division, `Conclusion`, and nothing else closes it:
 
 ```
 READING · <date> · <who read it>
@@ -190,7 +179,7 @@ Diagram      raw data ─▶ input ─▶ code ─▶ results   the task's IPO s
 Content       🔒 one fixed word · ✍️ one free title, in ONE of two shapes
   FLAT     one topic  · the words ARE the divisions
   NESTED   many topics · a topic is the division, the words sit inside it
-  ### n · Meaning · <free>   exactly 1, ALWAYS LAST, in BOTH shapes
+  ### n · Conclusion · <free>   exactly 1, ALWAYS LAST, in BOTH shapes
 Aims         one Aim per question this task must answer
 States       per question: answered · needs another run · dropped
 Files        the task-folder paths, including every QA/<n>-<slug>.md
@@ -202,7 +191,36 @@ Files        the task-folder paths, including every QA/<n>-<slug>.md
 
 **One estimand per division**, so no single display has to pool two things that must not be compared.
 
-**Why the TASK exists** is orientation and belongs in Opening, in both shapes. **Why a TOPIC exists** is substance, and on a NESTED page it gets the topic-level `Why` paragraph; on a FLAT page there is only one topic, so the Opening already said it and no `Why` division is written.
+**⛔ A NEW RUN IS NOT A NEW DIVISION.** Ruled 260821, on a page whose task-folder
+holds a twelve-job programme with more models still to come. A task page's
+subject regenerates, so the pressure to grow it is constant and it always
+arrives in the same shape: a run finishes, and the obvious move is to append a
+`Result` division for it. Do that twelve times and the page is the run log this
+contract already forbids, wearing correct role prefixes.
+
+The two axes are different, and the contract already owns both:
+
+```text
+  a new RUN      ─▶  a new ROW in the Conclusion's READING record,
+                     naming its own verdict-run, ⬜ unread
+                     the page grows DOWN a table that was built to grow
+
+  a new MESSAGE  ─▶  a new Result division
+                     and only when the thing learned is not already
+                     said by a division that exists
+```
+
+Twelve runs may produce three messages, and then the page has three `Result`
+divisions and twelve READING rows. The test is not "did something run" but
+**"can an existing division absorb this without its title becoming a lie?"** If
+the title still holds, the run is a row and its number joins that division. If
+the title would have to change, that is the signal a division was earned.
+
+This is also what makes the page survive the work outlasting one sitting. The
+READING record is the resumable surface: any later session opens the page, reads
+which rows are ⬜, and knows where to start without reconstructing the argument.
+
+**Why the TASK exists** is written twice and they are not the same sentence: `## Opening` orients — what this page is and why a reader should care — and `### 1 · Introduction` argues — what the folder was run to settle, what was already established, and what this report claims. Before 260822 only the first existed on a FLAT page, which is why a reader met the finding before meeting the question. **Why a TOPIC exists** is substance, and on a NESTED page it gets the topic-level `Introduction` paragraph.
 
 ## 📋 The outline DRAFT hands over
 
@@ -215,17 +233,19 @@ The table below is what the 🧭 tab SHOWS a person before prose is written. It 
 ```text
 ###   division                            what the reader learns    evidence owed
 ──────────────────────────────────────────────────────────────────────────────────
- 1 ·  Data    · Four cohort numbers,       the number is not one    🔢 value
+ 1 ·  Introduction · What this folder was   why anyone should read   ─ none ─
+                run to settle               the four rows below
+ 2 ·  Data    · Four cohort numbers,       the number is not one    🔢 value
                 and none of them match
- 2 ·  Method  · Why Bonferroni makes       the test choice is the   🔢 value
+ 3 ·  Method  · Why Bonferroni makes       the test choice is the   🔢 value
                 19 of 19 mean something    reason the result counts
- 3 ·  Result  · 19 of 19 significant,      the headline + its one   🔢 value · 🖼 table
+ 4 ·  Result  · 19 of 19 significant,      the headline + its one   🔢 value · 🖼 table
                 and the two that are not   negative result
- 4 ·  Meaning · The verdict, and the       what it all bought       ✅ human, at CHECK
+ 5 ·  Conclusion · The verdict, and the       what it all bought       ✅ human, at CHECK
                 run that settles the rest
 ```
 
-That example is not invented. It is `QC1-descriptive-stats.md` re-titled: a real page with `page-type: task`, `task-folder: tasks/B01_descriptive_analysis/01_descriptive_stats`, sitting at `🟡 RESULTS IN, UNREAD`.
+That example is `QC1-descriptive-stats.md` re-titled, with the `Introduction` row added by the 0.9.0 ruling — the real page has four divisions, and the row above is what it would owe today: a real page with `page-type: task`, `task-folder: tasks/B01_descriptive_analysis/01_descriptive_stats`, sitting at `🟡 RESULTS IN, UNREAD`.
 
 ## 🔗 The ROLE is shared, the TITLE is free
 
@@ -250,69 +270,138 @@ The left half repeats word for word across all thirteen pages, which is what mak
          the chip         what the reader learns here
 ```
 
-**The closed prefix set, in the fixed order.** Six words, from a set that grows only by ruling:
+**The closed prefix set, in the fixed order.** Seven words, from a set that grows only by ruling:
 
 ```text
-prefix     answers                                  required?   where it may sit
+prefix       answers                                required?   where it may sit
 ──────────────────────────────────────────────────────────────────────────────────
-Why        why do this topic AT ALL                 optional    topic-level only
-           (why run an IV at all)
-Concept    what the terms MEAN                      optional    topic-level only
-           (what ipsatization is · what SPS is)
-Data       what went in, and the fact about it      optional    either shape
-           a reader must know
-Method     what was actually run, and what it       optional    either shape
-           was run INSTEAD OF
-Result     what came out                            ⭐ REQUIRED  either shape
-Meaning    what it means, and what to run next      🔒 exactly 1 the LAST division,
-                                                                 PAGE level, never
-                                                                 inside a topic
+Introduction the question this folder was run to    optional    either shape,
+             answer, what was already established,              and when present
+             and what this report will claim                    it is division 1
+Concept      what the terms MEAN                    optional    either shape
+             (what ipsatization is · what SPS is)
+Landscape    what the FIELD already established,    optional    either shape
+             and where this work sits against it                repeatable
+Data         what went in, and the fact about it    optional    either shape
+             a reader must know
+Method       what was actually run, and what it     optional    either shape
+             was run INSTEAD OF                                 repeatable
+Result       what came out                          ⭐ REQUIRED  either shape
+                                                                repeatable
+Conclusion   what it means, and what to run next    🔒 exactly 1 the LAST division,
+                                                                PAGE level, never
+                                                                inside a topic
 ──────────────────────────────────────────────────────────────────────────────────
-(Runs)     ─ deleted, into ## Files ─
+(Runs)       ─ deleted, into ## Files ─
+(Why)        ─ renamed Introduction 260822, see below ─
 ```
 
-`Why` and `Concept` were added on 260816 with the nested shape and only make sense there: a single-topic page states why it exists in its Opening, and a term it uses once is defined inline. `Concept` earns its place from JL's own standing rule, define every term the first time, and a task page is full of terms a reader has never met (SPS, ADI, ipsatization).
+`Concept` was added on 260816 and earns its place from JL's own standing rule, define every term the first time, and a task page is full of terms a reader has never met (SPS, ADI, ipsatization).
+
+**`Why` became `Introduction`, and it moved INTO the flat shape** (ruled 260822 by JL: "I think we should have an Introduction"). `Why` was topic-level only, on the argument that a single-topic page states its why in its `Opening`, so a FLAT page had no place to say why it exists. That argument conflated two different things, and every paper in existence keeps them apart:
+
+```text
+  ## Opening            the ABSTRACT. One paragraph, ABOVE ## Content.
+                        what this page IS, and why a reader should care.
+                        Fixed by the base frame; unchanged by this ruling.
+
+  ### 1 · Introduction  the report's FIRST DIVISION, INSIDE ## Content.
+                        the question this folder was run to answer,
+                        what was already established before it ran,
+                        and what this report will claim.
+```
+
+A reader who can find an abstract can find an introduction, and nobody confuses the two. What the old rule cost was concrete: a FLAT task page — the common shape — had six of the six words available and used five, and the one it could never use was the one that tells the reader what the work was FOR. `Introduction` is optional like every word but `Result`, and when a page writes one it is division 1, because an introduction that is not first is not an introduction.
+
+**`Landscape`, added 260822 by JL ruling** ("这 concept 可不可以加一些，比如说 related work 呢？相当于放一些 literature review 的东西"), holding what a report establishes about the FIELD rather than about its own runs.
+
+- **Why the set needed a seventh word at all.** External-evidence claims had nowhere legal to live. On `QC1-postrain-replication` two `route: discovery` probe cards — at what scale each framework has been demonstrated, and which organizations are documented as using one — served a division titled `Method · Both frameworks`, under a bullet whose own head reads `Two Claims That Rest On READMEs`. `Method` is defined four rows above as what was RUN and what it was run INSTEAD OF; a literature claim is neither, so the cards were filed under a word that excludes them.
+- **Why one word and not `Related Work`.** This same set rejected `So what` on 260816 for being two words: it widens the chip and makes the checker's grep awkward. That precedent stands, so the seventh word had to be one word doing the job of two.
+- **Why `Landscape` and not `Background`.** `Background` is the more familiar word and loses on the one thing that matters here: in ordinary use it covers the vocabulary AND the prior art, which is exactly the blur this set spent a word separating. `Landscape` cannot be confused with `Concept`, and it is already this repo's word for the same object one layer down — the discovery family writes `landscape.md` from a `landscape_review`, and a task page's `Landscape` division is written FROM those files. Two layers, one word, no translation.
+- **Why it repeats.** A page may map more than one field — the frameworks and the methods are different landscapes — and the argument for repeating `Method` and `Result` applies unchanged.
+- Rejected with it: `Prior` (one word, but grammatically incomplete as a chip: *prior what?*) and `Context` (vague, and it collides with `Introduction`).
 
 **A topic with no `Result` is not a topic.** Everything else is optional, because a topic that reused the page's cohort owes no `Data` and a topic with no fork owes no `Method`.
 
-**Why these four words and not `Task-Input` / `Task-Method` / `Task-Output` / `Task-Meaning`** (the first draft, JL 260816, revised the same session):
+**Why the core four are `Data` / `Method` / `Result` / `Conclusion` and not `Task-Input` / `Task-Method` / `Task-Output` / `Task-Meaning`** (the first draft, JL 260816, revised the same session):
 
 - **No `Task-` prefix.** `QPs1` §0.6 already ruled the identical case: the page id drops off the front of a chip "because the tab and the breadcrumb already say which page you are on". The page type says `task` in its own head key, so repeating it on every chip costs width and buys nothing.
 - **`Data` and `Result`, not `Input` and `Output`.** Input and output are the pipeline's words, and this same contract forbids the pipeline's words at division level twelve lines above. `Result` also matches the term already used here, RESULT FAMILY.
 - **`Method`, and it records the CHOICE, not the steps.** `Why` was tried first and is too narrow: of the thirteen real Method divisions, six are titled `Why X and not Y` but five state what was actually run (`Three tests, three questions`, `Residualize, then recompute, rather than adding a control term`), and a regression's specification is not a "why". What all thirteen DO share is a FORK: every title names something that could have gone another way, marked by `and not`, `rather than`, or `deliberately`. So the division holds the choice and its alternative, never a step list, because the steps are in the code and the code is in `## Files`.
-- **`Meaning` stays**, because it states the closing rule in the heading: the page closes when someone says what the result MEANS. A division named for the reader's takeaway beats one named for the act of reading, which is why this replaces the name `Reading` used elsewhere in this file.
-- Rejected: `So what` reads best of all for a weak English reader and loses on being two words, which widens the chip and makes the checker's grep awkward. `Verdict` and `Takeaway` are rarer words, and `Takeaway` is idiom.
+- **`Conclusion`, ruled 260821 by JL, replacing `Meaning`.** The set grows and CHANGES only by ruling, so the swap is recorded here rather than applied silently. `Meaning` was chosen on 260816 because the heading itself stated the closing rule: the page closes when someone says what the result MEANS, and a division named for the reader's takeaway beats one named for the act of reading, which is why it had replaced `Reading`. What that argument missed is that the reader already owns a name for this division. A task page IS a technical report (§📰), a report's last division has been called `Conclusion` for as long as there have been reports, and `Meaning` asks a reader to learn a local word for a section they can already find blindfolded.
+- `Conclusion` clears every bar the 260816 rejections set: one word, not rare, not idiom, and the checker's grep stays a plain alternation. It was never considered then, which is why it did not win then.
+- ⚠️ **What the rename gives up, and how it is paid back.** `Meaning` carried a demand inside the word: a division named for meaning cannot be filled with a restatement of the divisions above it. `Conclusion` is the softer word and invites exactly that summary. The demand therefore moves out of the name and into a rule: **a `Conclusion` division with no READING record in it is not written yet.** The closing rule below is unchanged; this line is what stops the word from loosening it.
+- Rejected 260816 and still rejected: `So what` reads best of all for a weak English reader and loses on being two words, which widens the chip and makes the checker's grep awkward. `Verdict` and `Takeaway` are rarer words, and `Takeaway` is idiom.
 
 ## 🪆 Two shapes, and the one-line test that picks between them
 
-A task page has one topic or several, and the six words sit at a different level in each case (JL 260816). Both shapes are legal; forcing either one is the defect.
+A task page has one topic or several, and the seven words sit at a different level in each case (JL 260816). Both shapes are legal; forcing either one is the defect.
 
 **FLAT · one topic.** The words ARE the divisions.
 
 ```text
-  ### 1 · Data    · Who is in the cohort, and the number that disagrees
-  ### 2 · Method  · Bonferroni across the whole family, not per test
-  ### 3 · Result  · 19 of 19 significant, and the two that are not
-  ### 4 · Meaning · The verdict, and the run that settles the rest
+  ### 1 · Introduction · What this folder was run to settle, and what it claims
+  ### 2 · Data    · Who is in the cohort, and the number that disagrees
+  ### 3 · Method  · Bonferroni across the whole family, not per test
+  ### 4 · Result  · 19 of 19 significant, and the two that are not
+  ### 5 · Conclusion · The verdict, and the run that settles the rest
 ```
+
+**FLAT DOES NOT MEAN ONE OF EACH.** Ruled 260821 by JL, writing a report whose
+shape a reader already owns: Introduction, Method 1..n, Result 1..n, Conclusion.
+The closed set fixes the ORDER of the words and the position of `Conclusion`. It
+never fixed their MULTIPLICITY, and the earlier text implying "Result repeats,
+everything else appears once" was describing the one example in front of it.
+
+```text
+  ###  1 · Introduction · <free>  first when written, exactly one
+  ###  2 · Concept · <free>     page-level, shared by every division below
+  ###  3 · Landscape · <free>   what the field already established
+  ###  4 · Data    · <free>
+  ###  5 · Method  · <free>     Method 1
+  ###  6 · Method  · <free>     Method 2      ← legal, and usually clearer than
+  ###  7 · Method  · <free>     Method 3        one Method with #### beneath it
+  ###  8 · Result  · <free>     Result 1
+  ###  9 · Result  · <free>     Result 2
+  ### 10 · Result  · <free>     what is still not settled  (the residual)
+  ### 11 · Conclusion · <free>  page-level, last, exactly one
+```
+
+`Concept`, `Landscape` and `Data` may sit at `###` in a FLAT page for the same
+reason they may in a NESTED one: they are page-level, shared by everything below,
+and the only alternative is to define a term, or place the work against its field,
+inside the first division that happens to need it.
+
+`Introduction` is FLAT-legal since 260822 and is division 1 whenever it is
+written. It does not repeat: a page with two introductions has none.
+
+**The distinction that still matters** is not how many divisions carry a word, it
+is whether a second topic needs its OWN `Data` or its OWN `Method`. If it does,
+the shape is NESTED and the pairing has to survive; if it does not, repeating the
+word at `###` is a flat report with several methods and several findings, which
+is what most task pages are.
+
+**The checker's FLAT line therefore admits `Introduction`, `Concept` and
+`Landscape` at `###`:**
+`^### \d+ · (Introduction|Concept|Landscape|Data|Method|Result|Conclusion) · `
 
 **NESTED · several topics.** A TOPIC is the division, and the words become its `####` paragraphs, numbered by the base's own depth grammar (`QPs1`: `### 3` is a division, `#### 3.2.1` is a paragraph, and the depth of the number says a group exists).
 
 ```text
   ### 1 · Main OLS: does the association hold at all
-  #### 1.1 · Why     · why the pooled estimate comes first
+  #### 1.1 · Introduction · why the pooled estimate comes first
   #### 1.2 · Concept · what SPS is, and what it is read out of
   #### 1.3 · Data    · the 83,230 with all ten scores
   #### 1.4 · Method  · joint OLS over ten traits, not ten separate correlations
   #### 1.5 · Result  · the standardized betas, largest first
 
   ### 2 · IV: what identification buys, and what it costs
-  #### 2.1 · Why     · why the pooled estimate is not enough
+  #### 2.1 · Introduction · why the pooled estimate is not enough
   #### 2.3 · Data    · the smaller instrument-eligible subsample  ← its OWN
   #### 2.4 · Method  · the instrument, and the one it was chosen over
   #### 2.5 · Result  · the second stage, and the first-stage F
 
-  ### 3 · Meaning · The verdict per topic, and what to run next
+  ### 3 · Conclusion · The verdict per topic, and what to run next
 ```
 
 **Why NESTED exists at all.** In FLAT, `Data` and `Method` appear once at the top, so a page whose IV runs on a different subsample than its main OLS cannot pair each result with the sample and spec that produced it. `2.3 · Data` above is the whole point: the pairing survives. A reader also gets to read one topic end to end instead of reading every `Data` and then every `Method`.
@@ -328,10 +417,10 @@ A task page has one topic or several, and the six words sit at a different level
   🚫 One topic forced into NESTED is six headings describing one regression.
 ```
 
-**🔒 `Meaning` NEVER goes inside a topic, in either shape.** It is always the last `###` division, exactly one per page. Per-topic readings would break the closing rule outright: with three topics read and two not, nothing could say whether the PAGE is closed. One record holds them all, one row per topic, each row naming its own run:
+**🔒 `Conclusion` NEVER goes inside a topic, in either shape.** It is always the last `###` division, exactly one per page. Per-topic readings would break the closing rule outright: with three topics read and two not, nothing could say whether the PAGE is closed. One record holds them all, one row per topic, each row naming its own run:
 
 ```text
-  ### n · Meaning · The verdict per topic, and what to run next
+  ### n · Conclusion · The verdict per topic, and what to run next
 
   READING · <date> · <who read it>
   Main OLS   verdict-run run_main   ✅ read · <what it means>
@@ -353,18 +442,19 @@ The page closes when every row is read. A rerun of ANY named run re-opens the pa
   ### 4 · <free topic title>     another topic
   #### 4.2 · Data   · <free>       ← a topic MAY still own one, and then
   #### 4.3 · Method · <free>         §2's page-level Data does not apply to it
-  ### n · Meaning · <free>       page-level, always, always last
+  ### n · Conclusion · <free>       page-level, always, always last
 ```
 
-A topic-level `Data` OVERRIDES the page-level one for that topic, and a topic that owns one says so. `Why` stays topic-level only, because the page's own why is its Opening.
+A topic-level `Data` OVERRIDES the page-level one for that topic, and a topic that owns one says so. On a NESTED page `Introduction` may sit at BOTH levels and they answer different questions: the page-level one says what the folder was run to settle, a topic-level one says why that topic is here rather than folded into its neighbour.
 
 **The checker greps at both levels**, and any other word before the first ` · ` is a finding:
 
 ```text
-  FLAT     ^### \d+ · (Data|Method|Result|Meaning) · 
-  NESTED   ^### \d+ · (Concept|Data|Meaning) · │ ^### \d+ · .+   word OR free title
-           ^#### \d+\.\d+ · (Why|Concept|Data|Method|Result) · 
-  BOTH     the LAST ### is Meaning, and Meaning appears once
+  FLAT     ^### \d+ · (Introduction|Concept|Landscape|Data|Method|Result|Conclusion) · 
+  NESTED   ^### \d+ · (Introduction|Concept|Landscape|Data|Conclusion) · │ ^### \d+ · .+
+           ^#### \d+\.\d+ · (Introduction|Concept|Landscape|Data|Method|Result) · 
+  BOTH     the LAST ### is Conclusion, and Conclusion appears once
+           Introduction, when present, is the FIRST ### and appears once
 ```
 
 ⛔ **AN EVIDENCE ENTRY IS A CARD, NOT A SENTENCE.** The `evidence owed` column above is the 🧭 tab's; the CARD is the file on disk and the 🚪 Probe tab is where a person reads it. A body sentence like `Evidence owed: probe/PP03-regression-n-gap, state raised.` is the defect: it duplicates a card that already renders, and it carries a `state:` the card owns, so the two disagree the moment the card moves. The page's prose cites a card by its bare id and says nothing about its state.
@@ -431,7 +521,7 @@ CD01-kmeans-five-traits
   state      pinned
 ```
 
-⚠️ **A code card goes STALE the way a value card does.** When the script changes under a pinned commit, the `Method` division's claim is no longer backed, exactly as a rerun un-backs the `Meaning` verdict. The two staleness rules are the same rule at two grains, and they are why a task page is re-openable by disk at all.
+⚠️ **A code card goes STALE the way a value card does.** When the script changes under a pinned commit, the `Method` division's claim is no longer backed, exactly as a rerun un-backs the `Conclusion` verdict. The two staleness rules are the same rule at two grains, and they are why a task page is re-openable by disk at all.
 
 **⛔ This type does NOT assign card kinds to division names.** Any division may owe any card: a `Result` may owe a 📚 citation when it is compared against a published benchmark, a `Data` may owe a 🖼 display when the cohort needs a flow diagram, a `Method` may owe a 🔢 value when the parameter it chose came out of a sweep. Fixing a kind per division would repeat this contract's own worst version, the five hardcoded divisions of 0.1.0, one level down: it would make DRAFT's `evidence owed` column decoration, since the answer would already be written here.
 
@@ -439,7 +529,7 @@ It also breaks on real tasks. `ref/task-structure.md` §"Skill-Runner Tasks" exe
 
 **WHO decides: DRAFT, per division, per page.** The `evidence owed` column of the outline is where it is written, and that column is the reason the outline is shown to a person before prose.
 
-**What IS fixed, and it is one line:** the `Meaning` division owes no card. Its evidence is the divisions above it plus a human judgment, which follows from the closing rule and needs no separate ruling.
+**What IS fixed, and it is one line:** the `Conclusion` division owes no card. Its evidence is the divisions above it plus a human judgment, which follows from the closing rule and needs no separate ruling.
 
 The table below is what usually happens on the thirteen real pages. It is a HINT for DRAFT, never a rule, and a page that departs from it is not a finding:
 
@@ -451,7 +541,7 @@ Method      💻 code                                   the fork points at the
                                                       script that took it
 Result      🔢 value · 🖼 display                     the numbers and what draws
                                                       them
-Meaning     ─ none ─   🔒 THE FIXED ONE                a person, at CHECK
+Conclusion     ─ none ─   🔒 THE FIXED ONE                a person, at CHECK
 ```
 
 ⬜ **This fourth kind probably belongs upstream, not here.** Any page arguing from code needs it, not only a task page: a paper's methods section has the same hole. Promoting `💻 code` into `haipipe-page-evidence` alongside the other three is the right home, and it is not done, because that contract is being edited in another session right now. Until it moves, this type owns the card and the checker greps for it here.
@@ -472,7 +562,7 @@ DRAFT's job on a task page is therefore mostly PROMOTION, not invention: take th
 
 **`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already written in `## States` as `A5.2`. A division that repeats States and Files is not a division.
 
-The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 citation · 🔢 value · 🖼 display. On a task page almost every row is 🔢 value, because the task-folder's own runs are what produce them, and each 🔢 names the run under rule ② below. A division with a blank evidence column is a division nobody can finish. The `Meaning` row is the exception: its evidence is the numbers the rows above already landed, and the hand that fills it is human.
+The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 citation · 🔢 value · 🖼 display. On a task page almost every row is 🔢 value, because the task-folder's own runs are what produce them, and each 🔢 names the run under rule ② below. A division with a blank evidence column is a division nobody can finish. The `Conclusion` row is the exception: its evidence is the numbers the rows above already landed, and the hand that fills it is human.
 
 **The run table is not a division.** The `<NAME>` token binding the four sister files (`ref/authoring-conventions.md` §1) — `configs/<NAME>.yaml`, `runs/<NAME>.sh`, `results/<NAME>/`, `notebooks/<NAME>.ipynb` — is what makes rule ② checkable, and it lives in `## Files` where a reader looks for machinery.
 
@@ -482,9 +572,9 @@ The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 cita
 
 **② Every shown number names its run.** A number on this page that names no run is a defect OF THIS PAGE, even when the number is correct. This is the display type's provenance rule applied one layer down, and the failure it prevents is the same one: a figure asserts without a sentence, and a table asserts without a run.
 
-**③ A rerun re-opens.** Stated above; restated here because it is the rule an automatic loop reaches by another door. A machine may refresh any result-family division's numbers from disk, since those are read from `results/<NAME>/`. **No machine writes the final `Meaning` division, and no machine moves `state:` to ✅**, for the same reason a machine may not accept a render: what it judges is whether a number answers a question, and a cold read of the markdown never reaches that.
+**③ A rerun re-opens.** Stated above; restated here because it is the rule an automatic loop reaches by another door. A machine may refresh any result-family division's numbers from disk, since those are read from `results/<NAME>/`. **No machine writes the final `Conclusion` division, and no machine moves `state:` to ✅**, for the same reason a machine may not accept a render: what it judges is whether a number answers a question, and a cold read of the markdown never reaches that.
 
-(This rule named `### 3 · Runs`, `### 4 · Results`, and `### 5 · Reading` by number until 0.2.0 stopped fixing them. Only `Meaning` is fixed now, and it is fixed by POSITION — the last division — not by a number, because DRAFT decides how many result families come before it.)
+(This rule named `### 3 · Runs`, `### 4 · Results`, and `### 5 · Reading` by number until 0.2.0 stopped fixing them. Only `Conclusion` is fixed now, and it is fixed by POSITION — the last division — not by a number, because DRAFT decides how many result families come before it.)
 
 **④ One authority each, between the page and `QA/`.** These two look alike and must not drift:
 

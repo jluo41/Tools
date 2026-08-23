@@ -39,7 +39,7 @@ task-group / task-folder / run scaffolding   -> /haipipe-task   (task/)
 eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper folder
-project audits / reorganization              -> retired; originals in project/_archive
+project audits / reorganization              -> retired 260822 and deleted; see git
 claims / evidence questions                  -> /haipipe-probe crossing + the
                                                 consuming Page's local probe plugin
 asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa
@@ -98,7 +98,7 @@ Step 2: Resolve verb.
   - "new" / "project" or a ProjX-* name      -> fn/project.md
   - task/task-group/task-folder/run verbs    -> tell the user: /haipipe-task
   - review/organize/inventory/overview verbs -> tell the user: retired
-                                                (originals in project/_archive)
+                                                (deleted 260822; see git)
   - no args -> list examples/ projects (one line each) + the two setup commands
 Step 3: Run the fn. Step 4: Present with the return contract tail.
 ```

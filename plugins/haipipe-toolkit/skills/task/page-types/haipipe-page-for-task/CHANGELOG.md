@@ -1,3 +1,110 @@
+## 0.9.0 · 2026-08-22 · `Introduction` enters the FLAT shape, `Landscape` enters the set, and the ARC leaves this contract
+
+Three rulings by JL in one session, and they split cleanly: two grow the WORD SET,
+one gives the ARC away.
+
+- **`Why` → `Introduction`, and it becomes FLAT-legal as division 1.** JL: "I think
+  we should have an Introduction". `Why` had been topic-level only, on the argument
+  that a single-topic page states its why in `## Opening`. That argument conflated
+  the ABSTRACT with the INTRODUCTION, which every paper keeps apart: Opening says
+  what this page is and why to care, in one paragraph above `## Content`;
+  `### 1 · Introduction` says what the folder was run to settle, what was already
+  established, and what this report claims.
+- **What the old rule cost, concretely.** `QC1-postrain-replication` is FLAT, the
+  common shape. It carries sixteen divisions using five of the six available words,
+  and the word it could never use was the one that tells a reader what the work was
+  FOR. Its reader met the finding before meeting the question.
+- **`Landscape`, added after `Concept`.** JL: "这 concept 可不可以加一些，比如说
+  related work 呢？相当于放一些 literature review 的东西". It holds what the FIELD
+  already established, as against what this folder's own runs established.
+- **Why the set needed it.** External-evidence claims had nowhere legal to live. On
+  the same page, two `route: discovery` cards — at what scale each framework has
+  been demonstrated, which organizations are documented as using one — served a
+  division titled `Method · Both frameworks`, under a bullet whose own head reads
+  `Two Claims That Rest On READMEs`. `Method` is defined as what was RUN and what it
+  was run INSTEAD OF; a literature claim is neither.
+- **Why one word, and why this one.** `Related Work` is two words, and this set
+  rejected `So what` in 260816 on exactly that ground — chip width and an awkward
+  grep — so the precedent forced a single word. `Background` loses because in
+  ordinary use it covers vocabulary AND prior art, which is the blur `Concept`
+  exists to prevent. `Landscape` cannot be confused with `Concept` and is already
+  this repo's word for the same object one layer down: the discovery family writes
+  `landscape.md` from a `landscape_review`, and a `Landscape` division is written
+  FROM those files. Rejected with it: `Prior` (incomplete as a chip) and `Context`
+  (vague, collides with `Introduction`).
+- **Why `Landscape` sits after `Concept` and not straight after `Introduction`.**
+  A paper conventionally puts related work second. This set orders by what the
+  reader still LACKS, and a field map written in terms the reader has not met is
+  unreadable. The vocabulary goes first. That is the same boundary test every other
+  pair in the arc passes, not an exception to it.
+- **The ARC moves to `haipipe-page-outline` §🎭.** JL: "我们也会有其他的 pages 所以
+  这个 four types 就是我们提供什么样的 outline template，然后 haipipe-page-outline
+  目的就是想要讲什么样的 story arcs". Sequence-is-the-argument, the three forbidden
+  orderings (run · config · the order the AUTHOR found things out) and the
+  per-boundary swap test were 0.7.0 material living in this type. They are not
+  task-specific — there are ten Page Types and every one of them can be ordered by
+  the author's history — so they belong to the phase that plans any page. What stays
+  here is WHICH WORDS; what leaves is WHICH ARGUMENT.
+- **Checker lines updated at both levels**, plus one new invariant: `Introduction`,
+  when present, is the FIRST `###` and appears once. A page with two introductions
+  has none.
+
+## 0.8.0 · 2026-08-21 · the last division is `Conclusion`, and the word it replaced left a rule behind
+
+JL ruled the closed prefix set's last word from `Meaning` to `Conclusion`. The set
+grows and changes only by ruling, so the swap is argued in SKILL.md rather than
+applied silently.
+
+- **Why now, and why it was cheap.** Zero pages in the repository used
+  `### n · Meaning ·`; the word had lived only in the contract. Renaming after the
+  first page would have been a migration, and this was the last moment it was not.
+- **Why `Conclusion` wins an argument `Meaning` won in 260816.** That ruling chose
+  `Meaning` because the heading stated the closing rule, and it rejected `So what`
+  (two words), `Verdict` and `Takeaway` (rare, idiom). `Conclusion` was never on
+  that list. It clears every bar those rejections set — one word, common, not
+  idiom, plain grep — and it is the name the reader already has: §📰 says a task
+  page IS a technical report, and a report's last division has always been called
+  this.
+- **⚠️ What was given up, and the rule that pays it back.** `Meaning` carried its
+  demand inside the word: you cannot fill a division named for meaning with a
+  restatement of the divisions above it. `Conclusion` is softer and invites exactly
+  that summary. The demand moved out of the name and into a line: **a `Conclusion`
+  division with no READING record in it is not written yet.** The closing rule
+  itself is unchanged.
+- Checker updated at both levels: `^### \d+ · (Data|Method|Result|Conclusion) · `,
+  and `the LAST ### is Conclusion`. The `#### ` nested alternation is untouched,
+  because this word never sat at topic level.
+- One occurrence of `Meaning` is deliberately preserved: the 260816 note rejecting
+  `Task-Input / Task-Method / Task-Output / Task-Meaning`. Rewriting a quoted
+  history to match a later ruling would make the record lie.
+
+Two more, ruled the same day on the same page:
+
+- **`⛔ A NEW RUN IS NOT A NEW DIVISION.`** A task page's subject regenerates, so
+  the pressure to append a `Result` division per finished run is constant, and
+  twelve of them produce the run log this contract already forbids wearing
+  correct role prefixes. The two axes are separated: a new RUN is a new ROW in
+  the READING record, which was built to grow; a new MESSAGE is a new division,
+  and only when no existing title can absorb it without becoming a lie. This is
+  also the answer to work outlasting one sitting — the READING record is the
+  resumable surface, and ⬜ rows say where to restart.
+- **`⛔ FLAT DOES NOT MEAN ONE OF EACH.`** Found by running 0.8.0's own checker
+  against the first page written to it: ten of eleven divisions passed and
+  `### 1 · Concept` was flagged, on a page whose shape JL had specified directly.
+  The closed set always fixed the ORDER of the words and the position of
+  `Conclusion`; it never fixed their MULTIPLICITY, and the line implying "Result
+  repeats, everything else appears once" was describing its one example. A flat
+  report with Method 1..n and Result 1..n is the ordinary shape of a technical
+  report and is now named as legal, with `Concept` and `Data` admitted at `###`
+  for the same page-level reason NESTED already admitted them. The FLAT grep
+  gains both words. The FLAT/NESTED test is unchanged and is still the only
+  thing that decides between the shapes.
+- **`template.md` now EXISTS.** §📂 Files has declared it since 0.1.0 and the file
+  was never written, which is precisely the failure the contract itself names as
+  the worst case: a declared artifact whose only deliverable was the sentence
+  declaring it. Every sibling under `paper/page-types/` ships one. It carries the
+  RULE comments inline, to be deleted as each is satisfied.
+
 ## 0.7.0 · 2026-08-20 · reporting is the FORM, and the sequence is the argument
 
 New section `📰 The page IS a technical report, and the six words are its ARC`,

@@ -56,7 +56,7 @@ paper/
 │   ├── haipipe-page-for-narrative/
 │   ├── haipipe-page-for-section/
 │   ├── haipipe-page-for-round/
-│   └── _archive/             retired literature/value/display/dash Page Types
+│                             (retired literature/value/display/dash Page Types deleted 260822)
 ├── venue/                    reusable playbooks and exemplars
 └── _old/                     retired stages and implementations; never auto-loaded
 ```

@@ -123,7 +123,7 @@ The map is part of the Board-Webpage-Index, not a third peer object, not another
 ```
 
 **Board-Folder — what exists and can be changed**
-The folder `BoardSkillBoard-260722/` contains `board.md` as the Board-level manifest, one numbered descriptive group folder for each page group (`7-QC-engine/`, the number being its place in `## Pages`), one Markdown file per Q/S page, `board.excalidraw` as the local whole-Board scene, `fig/` for image assets, `_archive/` for retired pages, and generated `board/`.
+The folder `BoardSkillBoard-260722/` contains `board.md` as the Board-level manifest, one numbered descriptive group folder for each page group (`7-QC-engine/`, the number being its place in `## Pages`), one Markdown file per Q/S page, `board.excalidraw` as the local whole-Board scene, `fig/` for image assets, and generated `board/`. Its `_archive/` of retired pages was deleted 260822 with every other archive in this tree.
 Markdown decides which pages exist and what they say.
 The canvas only records their visual placement and deliberately drawn relationship arrows.
 Everything under `board/` is derived and is never hand-edited.
@@ -402,24 +402,9 @@ Design-6             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.m
 Design-6-page-workflow.md            5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
 Design-7             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
 Design-8             5-QPw-page-workflow/QPw00a-page-agents/QPw00a-page-agents.md
-Design-6-haipipe-board-reviewer-agent.md         _archive/Design-6-haipipe-board-reviewer-agent.md
-Design-7-haipipe-board-creator-agent.md          _archive/Design-7-haipipe-board-creator-agent.md
-Design-8-haipipe-page-orchestrator-agent.md      _archive/Design-8-haipipe-page-orchestrator-agent.md
 # Agent-* joined Design-* (JL 260815); old ids stay resolvable.
-Agent-1              _archive/Design-6-haipipe-board-reviewer-agent.md
-Agent-1-haipipe-board-reviewer-agent.md      _archive/Design-6-haipipe-board-reviewer-agent.md
-Agent-2              _archive/Design-7-haipipe-board-creator-agent.md
-Agent-2-haipipe-board-creator-agent.md       _archive/Design-7-haipipe-board-creator-agent.md
-Agent-3              _archive/Design-8-haipipe-page-orchestrator-agent.md
-Agent-3-haipipe-page-orchestrator-agent.md   _archive/Design-8-haipipe-page-orchestrator-agent.md
 # Skill-* became Design-* (JL 260815); the old ids stay resolvable.
 # Design-1 and Design-2 archived 260816; every id still resolves.
-Design-1              _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
-Design-2              _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
-Skill-0              _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
-Skill-0-haipipe-board.md             _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
-Skill-5              _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
-Skill-5-haipipe-board-routing.md     _archive/Design-2-haipipe-board-routing/Design-2-haipipe-board-routing.md
 # QPs00 folded into QPs1 (JL 260816): the grammar page carries the unit's skill/ plugin; QPs00, Design-3 and Skill-3 all resolve there. The archived page sits at _archive/QPs00-haipipe-page/.
 Skill-3              3-QPs-page-structure/QPs1-overall/QPs1-overall.md
 Skill-3-haipipe-page.md              3-QPs-page-structure/QPs1-overall/QPs1-overall.md
@@ -443,7 +428,6 @@ QPf4b                    4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
 QPf4c                    4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
 QPf4d                    4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
 QA4                  1-QA-constitution/QA00-overview/QA00-overview.md
-QA4-board-skillset.md _archive/QA4-board-skillset.md
 # 260815 evening: the chat migration. QO ids were REUSED in-lane
 # (260801 precedent); the chat pages' morning ids resolve here.
 QO1-chat-per-question.md 4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
@@ -454,7 +438,6 @@ QO10                     8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
 QO11                     8-QO-operating/QO7-editlock/QO7-editlock.md
 QO12                     8-QO-operating/QO8-consolescope/QO8-consolescope.md
 QO13                     8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
-QPf2a               _archive/QPf2a-linked-drawings.md
 # 260815 restructure (JL): the ladder regroup. Every retired id
 # resolves here; a reused number follows the 260801 precedent.
 QB3                  4-QPf-page-folder/QPf1-folder/QPf1-folder.md
@@ -468,9 +451,6 @@ QBt1                 3-QPs-page-structure/QPs3-for-stage/QPs3-for-stage.md
 # The slide TYPE died 260815 (JL: the slide is the plugin version, optional on
 # every page); its QBt9 specimen is archived whole and QPf3 is now the plugin's page.
 # The same evening QPs2 swept to the two-kind hub; its ten-type record is archived whole.
-QBt9                 _archive/QBt9-for-slide.md
-QBt9-for-slide.md    _archive/QBt9-for-slide.md
-QPs2-page-types-260815-pre-sweep.md   _archive/QPs2-page-types-260815-pre-sweep.md
 QBt10                3-QPs-page-structure/QPs4-for-design/QPs4-for-design.md
 QC2c                 7-QC-engine/QC1c-livesplit/QC1c-livesplit.md
 QC3b                 7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
@@ -482,7 +462,6 @@ QD2                  4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
 QD3                  4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
 QD4                  4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
 QD5                  8-QO-operating/QO1-split-workspace/QO1-split-workspace.md
-QD5a                _archive/QPf2a-linked-drawings.md
 QD6                 8-QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
 QD7                  8-QO-operating/QO3-pagecost/QO3-pagecost.md
 QD8                  6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
@@ -493,9 +472,6 @@ QE4                  8-QO-operating/QO7-editlock/QO7-editlock.md
 QE5                  8-QO-operating/QO8-consolescope/QO8-consolescope.md
 QE6                  8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
 QF5                  6-QS-sentence/QS4-sentence-run/QS4-sentence-run.md
-Meeting-1            _archive/Meeting-1-260723-boardform-demo.md
-Skill-6              _archive/Skill-6-haipipe-page-for-skill.md
-Skill-8              _archive/Skill-8-haipipe-page-for-venue.md
 # the five paper-owned specimens moved to the paper board on 260809 (QB6 ruling A).
 # Declared here so every citation on this board still resolves and still clicks.
 QBt2                     ../PaperSkillBoard-260725/board/QBt/QBt2-for-venue.html
@@ -524,12 +500,9 @@ QC6                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
 QC8                 7-QC-engine/QC1c-livesplit/QC1c-livesplit.md
 QC9                 7-QC-engine/QC3-roundtrip/QC3-roundtrip.md
 QC10                7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md
-QD3m                8-QO-operating/_archive/QD3m-smooth-terminal.md
 QDa1                4-QPf-page-folder/QPf4a-chat-per-question/QPf4a-chat-per-question.md
 QDa2                4-QPf-page-folder/QPf4b-chat-sdk/QPf4b-chat-sdk.md
 QDa3                4-QPf-page-folder/QPf4c-chat-terminal/QPf4c-chat-terminal.md
-QDa4                8-QO-operating/_archive/QD4-liveupdate.md
-QD4-liveupdate      8-QO-operating/_archive/QD4-liveupdate.md
 QDa5                4-QPf-page-folder/QPf2-draw-attach/QPf2-draw-attach.md
 QB9                 5-QPw-page-workflow/QPw00-page-loop/QPw00-page-loop.md
 QB10                3-QPs-page-structure/QPs2-page-types/QPs2-page-types.md
@@ -553,7 +526,6 @@ QPw9                5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md
 QPw9-human-gate     5-QPw-page-workflow/QPw00g-human-gate/QPw00g-human-gate.md
 QD14                4-QPf-page-folder/QPf4d-chat-terminal-design/QPf4d-chat-terminal-design.md
 QDa6                8-QO-operating/QO2-session-status-strip/QO2-session-status-strip.md
-QDa7                8-QO-operating/_archive/QD7-boardagent.md
 QDb1                8-QO-operating/QO4-hosting/QO4-hosting.md
 QDb2                8-QO-operating/QO5-mountspace/QO5-mountspace.md
 QDb3                8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
@@ -564,18 +536,11 @@ QD9                 8-QO-operating/QO6-whereitruns/QO6-whereitruns.md
 QD10                8-QO-operating/QO7-editlock/QO7-editlock.md
 QD11                8-QO-operating/QO8-consolescope/QO8-consolescope.md
 QD12                8-QO-operating/QO9-bindaddress/QO9-bindaddress.md
-Q-Skill-haipipe-board                _archive/Design-1-haipipe-board/Design-1-haipipe-board.md
-Q-Skill-haipipe-board-index          _archive/Skill-1-haipipe-board-index.md
-Skill-1              _archive/Skill-1-haipipe-board-index.md
-Q-Skill-haipipe-board-reviewer-agent _archive/Design-6-haipipe-board-reviewer-agent.md
-Skill-2              _archive/Design-6-haipipe-board-reviewer-agent.md
 # QA0 and QA1 folded into QA00, the introduction chapter (JL 260816):
 # the words are its §4, the folders its §5. The archived pages sit whole
 # at _archive/QA0-three-folders/ and _archive/QA1-concepts/.
 QA0                  1-QA-constitution/QA00-overview/QA00-overview.md
-QA0-three-folders.md _archive/QA0-three-folders/QA0-three-folders.md
 QA1                  1-QA-constitution/QA00-overview/QA00-overview.md
-QA1-concepts.md      _archive/QA1-concepts/QA1-concepts.md
 QA1a                 1-QA-constitution/QA00-overview/QA00-overview.md
 # The QA restructure (JL 260816): QA became the CONSTITUTION, one page per
 # rung. QA5 moved to QC4 (it rules engine code), QA6a and QA6b folded into
@@ -584,44 +549,18 @@ QA5                  7-QC-engine/QC4-identity-and-scope/QC4-identity-and-scope.m
 QA5-identity-and-scope.md 7-QC-engine/QC4-identity-and-scope/QC4-identity-and-scope.md
 QA6a                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
 QA6b                 1-QA-constitution/QA6-skillfamily/QA6-skillfamily.md
-QA6a-skillmd.md      _archive/QA6a-skillmd/QA6a-skillmd.md
-QA6b-subskills.md    _archive/QA6b-subskills/QA6b-subskills.md
 QA2-question-group-design.md 1-QA-constitution/QA2-board-life/QA2-board-life.md
 QA2b                2-QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
 QAa0                3-QPs-page-structure/QPs1-overall/QPs1-overall.md
-QAa1                2-QB-board/_archive/QB4a-opening.md
-QAa2                2-QB-board/_archive/QB4b-diagram.md
-QAa3                2-QB-board/_archive/QB4c-content.md
-QAa4                2-QB-board/_archive/QB4d-items.md
-QAa5                2-QB-board/_archive/QB4e-where-we-are.md
-QAa7                2-QB-board/_archive/QB4f-files.md
-QAa6                2-QB-board/_archive/QB4g-folds.md
-QB8a                2-QB-board/_archive/QB5a-evidence-card.md
-QB8b                2-QB-board/_archive/QB5b-comments.md
-QB8c                2-QB-board/_archive/QB5c-editing.md
-QB5a                2-QB-board/_archive/QB5a-evidence-card.md
-QB5b                2-QB-board/_archive/QB5b-comments.md
-QB5c                2-QB-board/_archive/QB5c-editing.md
 QB5e                6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
 QB8d                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
-QAb1                2-QB-board/_archive/QB5a-evidence-card.md
-QAb2                2-QB-board/_archive/QB5c-editing.md
 QAb3                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
-QB4a                2-QB-board/_archive/QB4a-opening.md
-QB4b                2-QB-board/_archive/QB4b-diagram.md
-QB4c                2-QB-board/_archive/QB4c-content.md
-QB4d                2-QB-board/_archive/QB4d-items.md
-QB4e                2-QB-board/_archive/QB4e-where-we-are.md
-QB4f                2-QB-board/_archive/QB4f-files.md
-QB4g                2-QB-board/_archive/QB4g-folds.md
 QAb0                6-QS-sentence/QS1-overview/QS1-overview.md
 # (the row mapping QA6 to QB5b-comments left 260816: QA6 is a live page, and
 #  the comments face still resolves through QB5b and QB8b below.)
 QAb4                6-QS-sentence/QS2-sentence-details-lifecycle/QS2-sentence-details-lifecycle.md
 QA9                 9-QF-execute/QF1-acceptance/QF1-acceptance.md
 QA10                2-QB-board/QB2-board-webpage-design/QB2-board-webpage-design.md
-QA4a                2-QB-board/_archive/QB4b-diagram.md
-QA8                 2-QB-board/_archive/QB5a-evidence-card.md
 QA8a                6-QS-sentence/QS3-sentence-address/QS3-sentence-address.md
 SKILL.md            ../../board/haipipe-board/SKILL.md
 build.py            ../../board/haipipe-board/cli/build.py

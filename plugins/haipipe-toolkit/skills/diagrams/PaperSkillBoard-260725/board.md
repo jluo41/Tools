@@ -139,9 +139,6 @@ QC3-minimal-fixture.md
 QC4-fresh-agent-run.md
 
 ## Links
-QB4  _archive/2-QB-delivery-stage-era-260820/QB4-value/QB4-value.md
-QB10 _archive/2-QB-delivery-stage-era-260820/QB10-round/QB10-round.md
-QBt6 _archive/5-QBt6-dash-retired-260820/QBt6-for-dash/QBt6-for-dash.md
 
 ## Log
 

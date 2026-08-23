@@ -1,4 +1,0 @@
-interface:
-  display_name: "Haipipe Paper Project"
-  short_description: "Project gated S pages into isolated LaTeX candidates"
-  default_prompt: "Use the /haipipe-paper project verb (paper/haipipe-paper/fn/project.md) to validate or generate a paper projection candidate without changing submission files."

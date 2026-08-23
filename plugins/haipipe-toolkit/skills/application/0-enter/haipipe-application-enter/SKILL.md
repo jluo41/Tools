@@ -12,7 +12,7 @@ metadata:
 
 # haipipe-application-enter (Intervention Console)
 
-Open a concrete intervention folder as the **Intervention Console**: a context-aware working session for one active intervention. It mirrors the Paper Console (the `/haipipe-paper enter` verb). ⚠️ That console's own doc was RETIRED with the paper stage runtime and now sits at `../../../paper/_old/stage-runtime-260820/haipipe-paper-stage-runtime/ref/enter-console.md`; this console is the live one of the two.
+Open a concrete intervention folder as the **Intervention Console**: a context-aware working session for one active intervention. It mirrors the Paper Console (the `/haipipe-paper enter` verb). ⚠️ That console's own doc was RETIRED with the paper stage runtime and DELETED on 260822; this console is now the only one.
 
 The console:
 

@@ -109,7 +109,7 @@ Keyword -> skill map (first/most-specific match wins):
 inspect, review, summary, summarize, inventory,
   scan-status, eval status                           -> /haipipe-task (fn moved 2026-07-03)
 organize, reorganize, move files, restructure,
-  relocate, fix structure                            -> retired (originals in project/_archive)
+  relocate, fix structure                            -> retired 260822 and deleted
 workflow, IPO, phases, plan workflow                 -> haipipe-workflow
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting: project / task-group / task-folder SCAFFOLDING &

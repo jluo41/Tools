@@ -1,3 +1,39 @@
+## 0.10.0 — 2026-08-22 — this phase takes the ARC, and self-consistency becomes FIVE checks
+
+Ruled by JL while deciding where a story arc belongs when there are ten Page
+Types: "我们也会有其他的 pages 所以这个 four types 就是我们提供什么样的 outline
+template，然后 haipipe-page-outline 目的就是想要讲什么样的 story arcs."
+
+- **New §🎭 · the TYPE gives the WORDS, this phase gives the ARGUMENT.** The type's
+  `metadata.outline` block already said which words a page may use, in what order
+  and how many of each — §📐 has read it since 260819. What no contract owned was
+  which ARGUMENT those words are arranged to make.
+- **Three rules move here from `haipipe-page-for-task` 0.7.0**, where they had been
+  living since they were written: role-complete-is-not-arc-coherent, the three
+  forbidden orderings (run · config · the order the AUTHOR found things out), and
+  the per-boundary swap test. They are not task-shaped. Any page ordered by its
+  author's history passes every mechanical check and fails its reader, and nine
+  other types had no statement of the rule at all.
+- **One rule is new, and it came from running the section before writing it.** ⛔ THE
+  BIGGEST FINDING GETS A DIVISION, NOT A BULLET INSIDE SOMEONE ELSE'S. On
+  `QC1-postrain-replication` the largest measured effect on the board — training
+  cutting non-termination roughly tenfold, across two benchmarks and two
+  measurement surfaces — was bullet `B7` inside a division named for the run that
+  happened to produce it. That plan was coverage-complete, address-clean and
+  value-checked, and no existing check could say it was mis-weighted.
+- **Self-consistency goes from FOUR checks to FIVE, and ARC runs FIRST**, because a
+  plan with the wrong arc is not worth address-checking. Its three tests: an `arc:`
+  line stating the argument in one sentence (a table of contents fails it), every
+  adjacent pair passing the swap test, and the heaviest finding owning a division.
+- **⓪ and ④ are stated as different questions.** SHAPE asks whether the words are
+  the type's; ARC asks whether their order is an argument. A plan can pass SHAPE
+  with every word legal and fail ARC as a run log wearing correct prefixes.
+- **What ⓪ deliberately does not do**: choose the words (a word outside the type's
+  set is a SHAPE failure), or judge whether the plan aims at the right thing (that
+  is the person's, at `approved:`). It is also the one check a machine can only
+  half-run, and it is written as a check anyway, because a judgement with a written
+  form is arguable and one with none is not.
+
 ## 0.9.0 — 2026-08-19
 
 - **0.9.0 shipped in SKILL.md with no entry here.** Reconstructed from the
