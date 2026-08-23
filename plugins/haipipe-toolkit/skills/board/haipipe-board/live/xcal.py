@@ -56,10 +56,21 @@ class XcalMixin:
             for item in scene.get("haipipe", {}).get("imports", [])
         ]:
             resolved = path.resolve()
+            # The containment bound is the GROUP FOLDER, not the group's own
+            # draw/. `cli/draw.py` splits a FOLDED page's scene into that
+            # page's own draw/ plugin and writes the manifest source relative
+            # to the group draw dir, so the path is `../<page>/draw/<id>
+            # .excalidraw` and it legitimately leaves draw/ — draw.py:415-418
+            # says both forms must resolve "through the same join". Bounding at
+            # draw/ refused every folded page: a manifest the CLI writer had
+            # just produced could not be opened by the live editor at all, and
+            # the error blamed the manifest. Traversal is still refused, one
+            # level out (found 260823 on the first folded page to get a scene).
             try:
-                resolved.relative_to(group_path.parent.resolve())
+                resolved.relative_to(group_path.parent.parent.resolve())
             except ValueError as exc:
-                raise DrawError(f"import leaves draw/: {path}") from exc
+                raise DrawError(
+                    f"import leaves the Group folder: {path}") from exc
             digest.update(path.name.encode("utf-8"))
             digest.update(b"\0")
             digest.update(path.read_bytes())
