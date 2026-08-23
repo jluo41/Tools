@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="academic-report">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QPf5 · Display Units on a Page</title>
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../../../display/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/academic-report-extras.css">
+<link rel="stylesheet" href="../../../../../display/html-ppt/assets/animations/animations.css">
+<script>document.documentElement.setAttribute('data-js','1')</script>
+<style>
+/* No-JS fallback, ONLY when scripts are blocked (the stamp above never ran):
+   the URL fragment picks the slide and the stacked deck flattens to one
+   visible slide. With the runtime alive this block is inert — is-active owns
+   the stage, and a display:none here would freeze the deck on slide 1. */
+html:not([data-js]) .slide { display: none; position: relative;
+  opacity: 1; transform: none; pointer-events: auto; }
+html:not([data-js]) .slide:target { display: flex; }
+html:not([data-js]) .slide:first-of-type { display: flex; }
+html:not([data-js]) .slide:target ~ .slide:first-of-type { display: none; }
+</style>
+</head>
+<body><div class="deck">
+
+<section class="slide" id="s1" data-title="Cover">
+  <p class="kicker">QPf5 · 🟡 PARTIAL · owner JL</p>
+  <h1 class="h1">A page keeps its figures in <span class="gradient-text">the same folder shape</span> a paper uses</h1>
+  <p class="lede">One finished figure or table is a <strong>unit</strong>: a folder holding the approved numbers, the script that draws them, and the picture that came out. The display family already gave papers this shape — a page copies it, at a new address.</p>
+  <div class="deck-footer"><span class="dim2">QPf5-display · AI-generated deck, 260817</span><span class="slide-number" data-current="1" data-total="8"></span></div>
+  <div class="notes">Open by naming the question this page answers: where does a page keep its figures and tables. Say up front that almost nothing here is new invention — the folder shape is borrowed word for word, and the page side settles only address, display, pointing, and who says yes.</div>
+</section>
+
+<section class="slide" id="s2" data-title="Copy">
+  <p class="kicker">Why copy, not redesign</p>
+  <h2 class="h2">One rules file, two callers</h2>
+  <pre>
+  📜 display-unit-output-contract.md · one unit = one folder
+        |
+        +--&gt; 📄 the PAPER's adapter (built)
+        |      S05-display/display/⟨unit⟩/
+        |        --build-displays.py--&gt; displays/
+        |
+        +--&gt; 📋 the PAGE's adapter (this page's A1)
+               ⟨page⟩/display/⟨unit⟩/
+                 intake/ · recipe/       the sources
+                 assets/ · preview.pdf   the derived render
+                 README.md               claim · kind · status
+               shown as a tab in the right pane (A2)
+               accepted by a person, never by the pane (A3)
+  </pre>
+  <p class="dim mt-m">The rules file asks for exactly this, saying each caller "maps this bundle into its own layout through its own adapter". A page is just one more caller.</p>
+  <div class="notes">Stress that a second folder shape would force every drawing skill to learn two — that's the whole argument for copying. Point out the paper already does this in its S05-display stage with cli/build-displays.py, so the pattern is proven, not proposed.</div>
+</section>
+
+<section class="slide" id="s3" data-title="Tree">
+  <p class="kicker">§1 · Same shape, new address</p>
+  <h2 class="h2">One <code>display/</code> per page, one folder per unit</h2>
+  <pre>
+  ⟨page⟩/
+    ⟨page⟩.md                     the page, on stage
+    display/                      the plugin · discovery never enters
+      ⟨PageID⟩-Display1-⟨slug⟩/   ONE rendered unit
+        README.md      claim · kind · fragility · status
+        intake/        caller-owned, provenance-bound values
+          manifest.yaml
+          inputs/      small approved extracts only
+        recipe/        renderer-owned script, spec, receipts
+        float.tex      caption + label + asset reference
+        preview.tex    standalone wrapper inputting float.tex
+        preview.pdf    compiled look, what the tab frames
+        assets/        the WINNING render
+        candidates/    pre-decision renders
+        versions/      superseded variants, kept for history
+      ⟨PageID⟩-Display2-⟨slug⟩/   the next unit, same shape
+  </pre>
+  <p class="dim mt-m">The folders split in two: <code>intake/</code> and <code>recipe/</code> are yours to write; <code>assets/</code> and <code>preview.pdf</code> are rebuilt from them. A rebuild may replace the built half, and never touches the half you wrote.</p>
+  <div class="notes">Say the tree is copied from display-unit-output-contract.md word for word — resist any urge to improve it here. The one page-side change is the address: the unit sits inside the page's own display/ folder, so when the page moves, its figures move with it.</div>
+</section>
+
+<section class="slide" id="s4" data-title="Tab">
+  <p class="kicker">§2 · The tab, and pointing</p>
+  <h2 class="h2">Every unit shows as a card, and a sentence can point at it</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🖼 One card each</h4><p class="dim">The right pane frames each unit's <code>preview.pdf</code> (<code>body.py</code> ccpdf) with its README status. An empty <code>display/</code> is an empty state, not an error.</p></div>
+    <div class="card"><h4>🔄 Rebuild only</h4><p class="dim">🔄 builds <code>preview.pdf</code> again from <code>preview.tex</code>. It never reruns the recipe, never changes the inputs, and never changes a yes.</p></div>
+    <div class="card"><h4>Id becomes a button</h4><p class="dim">Name a unit's id in plain text and that id turns into a small button; click it and the card opens with its picture and its yes-or-no state.</p></div>
+    <div class="card"><h4>A machine's door</h4><p class="dim">A <code>&gt; Display:</code> line under a sentence, beside <code>&gt; Citation:</code> and <code>&gt; Value:</code> — so a program adds evidence without editing a person's words.</p></div>
+  </div>
+  <p class="dim mt-m">You may point at a unit that has no picture yet; the button then says a drawing is still owed. Exports carry the evidence too — the LaTeX PDF prints a named unit as a real figure right after its paragraph, and Word inserts the picture with its caption plus a 🖼 comment note.</p>
+  <div class="notes">Emphasize that a unit is EVIDENCE, which is why it attaches to a sentence the same way a citation or a value does. The two forms exist for two writers: the inline id for people, the > Display: line for machines.</div>
+</section>
+
+<section class="slide" id="s5" data-title="Hands">
+  <p class="kicker">§3 · Three hands, one yes</p>
+  <h2 class="h2">Drawing skills fill the folder, a person clicks the yes</h2>
+  <ul>
+    <li>🎨 <strong>renderer skills</strong> — <code>-table</code>, <code>-figure</code>, <code>-diagram</code>, <code>-illustration</code> write <code>recipe/</code> · <code>assets/</code> · <code>preview.pdf</code></li>
+    <li>🧑 <strong>a person</strong> — rules <code>intake/</code> and ticks <code>accepted:</code></li>
+    <li>🖼 <strong>the pane</strong> — shows everything · writes NOTHING</li>
+    <li>✅ in <code>accepted:</code> means a person looked at <em>one exact picture</em> and said yes</li>
+    <li>A machine that ticks it has faked a judgment, not saved time — so no machine may tick it</li>
+  </ul>
+  <p class="dim mt-m">The drawing skills already belong to the display family; this page adds none of its own.</p>
+  <div class="notes">This is the one rule on the page with teeth — say it plainly and don't soften it. The pane being read-only by build, not by policy, is what makes the rule enforceable.</div>
+</section>
+
+<section class="slide" id="s6" data-title="Kinds">
+  <p class="kicker">§3 · One door, five renderers</p>
+  <h2 class="h2">🚪 <code>haipipe-display</code> — say the ask, it picks the renderer</h2>
+  <pre>
+  🎲 data-driven · needs a ruled intake/ of numbers
+     📊 -table         CSV/JSON  ▶ booktabs · recipe = the spec
+     📈 -figure        results   ▶ plot     · recipe = the script
+  🧠 concept-driven · the intake is a spec, not numbers
+     📐 -diagram       FigureSpec JSON ▶ editable SVG
+     ✒️ -tex           .tex recipe ▶ vector PDF · a person writes it
+     🎨 -illustration  image-gen prompt ▶ concept figure
+  </pre>
+  <p class="dim mt-m">A data-driven skill may not go back to the raw data — it reads only the small approved copy in <code>intake/</code>. ✒️ earns its row because it is written in TeX itself, so it picks up the document's fonts and math and <code>float.tex</code> can pull it in directly; named after the MECHANISM, <code>haipipe-display-tex</code> covers a TikZ figure, an algorithm block, and a display equation alike (JL 260816). It still owes a compiled <code>assets/figure.pdf</code>.</p>
+  <div class="notes">Both units on this page were drawn by hand in TeX, so the ✒️ row is not hypothetical. Close by noting redraw depends on kind: a python figure reruns its script, a diagram redraws from its spec, an AI picture replays its saved prompt.</div>
+</section>
+
+<section class="slide" id="s7" data-title="Order">
+  <p class="kicker">§4 · The order of the work</p>
+  <h2 class="h2">Five steps — ① ③ ⑤ are a person's, ② ④ are the machine's</h2>
+  <pre>
+  ① INTAKE   🧑 the caller fills intake/: manifest.yaml + small
+                approved extracts, every value provenance-bound
+  ② RENDER   the matching renderer runs via task-for-display;
+                it fills recipe/ + candidates/
+  ③ PICK     🧑 a person picks the winner into assets/; losers
+                stay in candidates/ or versions/
+  ④ BUILD    preview.tex compiles to preview.pdf; --check
+                reports a stale unit instead of hiding it
+  ⑤ ACCEPT   🧑 a person reads the render and ticks accepted:
+  </pre>
+  <p class="dim mt-m">Nothing is drawn before a person approves the numbers. If the inputs change, the work runs forward again from ② to ⑤ and the old yes drops back to ⬜, because the picture a person agreed to no longer exists. Step ①'s numbers come from a PROBE (<code>QPf9</code>) → orchestrator → <code>haipipe-task</code> run → the answer at <code>&lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</code>; <code>intake/manifest.yaml</code> cites that holder <strong>by id</strong>, never by path, and never types a number by hand.</p>
+  <div class="notes">Ask once, point at it twice — that's QPf5-Display2's whole claim. The slides plugin on QPf3 already proves the id-to-path lookup works, so its template holds no digits at all and a hand-typed number has nowhere to live.</div>
+</section>
+
+<section class="slide" id="s8" data-title="Open">
+  <p class="kicker">Aims · A1–A4 + P1 · what is still owed</p>
+  <h1 class="h1">Folder shape and both units are <span class="gradient-text">real and working</span>; four things stay open</h1>
+  <p class="lede">🔨 <strong>A1.1</strong> — <code>build-displays.py</code> still takes a paper stage as its one argument and derives the paper root as <code>parents[1]</code>, so a page's <code>display/</code> is not yet a unit root and <code>--check</code> is owed. What landed is the id lookup: <code>dialect_paper.py</code> globs <code>display/*/float.tex</code> under the board folder and both exports find <code>&lt;page&gt;/display/</code> units (260815-16). 🧠 <strong>A2.1</strong> — the view and the <code>/_board/display</code> route live in <code>live/plugview.py</code>, the browser half in <code>assets/js/10-drawer/84-plugin-evidence.js</code>; the real-browser look waits on a server restart. 🧠 <strong>A3.1</strong> — waits on A2.1 and nothing else; <code>plug_display</code> is read-only by build. 🚧 <strong>P1</strong> — <code>display/</code> must join the folders discovery skips, known to <code>check.py</code> by name.</p>
+  <div class="deck-footer"><span class="dim2">QPf5-display · AI-generated deck, 260817</span><span class="slide-number" data-current="8" data-total="8"></span></div>
+  <div class="notes">Be precise about what PARTIAL means here: the shape works and both demo units are real, so the open items are seams, not doubts about the design. Two of the four are one server restart away, and the fifth thread — the git question — is still on the page for JL.</div>
+</section>
+
+</div>
+<script src="../../../../../display/html-ppt/assets/runtime.js"></script>
+</body></html>
+<!-- autodeck: claude · 260817 1438 · ask: 为什么这里没有把 display 给放进去？ -->
