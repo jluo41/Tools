@@ -1,0 +1,17 @@
+{
+  "activities": [
+    "Walk",
+    "Bicycling",
+    "Running",
+    "Strength_training",
+    "Gardening__Lawn"
+  ],
+  "minutes": [
+    25,
+    40,
+    20,
+    35,
+    60
+  ],
+  "weight_kg": 78
+}

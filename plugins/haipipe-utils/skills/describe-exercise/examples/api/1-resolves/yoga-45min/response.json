@@ -1,0 +1,16 @@
+{
+  "METValue": 2.3,
+  "ActiveMinutes": 45.0,
+  "CaloriesBurnedEst": 126.8,
+  "ActivityResolved": "Yoga, Hatha",
+  "ActivityCode": "02150",
+  "MajorHeading": "Conditioning Exercise",
+  "METReference": 2.3,
+  "METScale": "population",
+  "METScaleFactor": 1.0,
+  "ExerciseSource": "compendium2024:alias:02150",
+  "ExerciseConf": "ALIAS",
+  "ExerciseBasis": "per_session",
+  "TypeSource": "session|text",
+  "TypeConf": "LOGGED"
+}

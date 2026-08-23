@@ -1,0 +1,37 @@
+{
+  "count": 2,
+  "results": [
+    {
+      "METValue": 5.04,
+      "ActiveMinutes": 21.0,
+      "CaloriesBurnedEst": null,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "device",
+      "METScaleFactor": 1.3254,
+      "ExerciseSource": "compendium2024:alias:17190|scale:device:23:n5597:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_minute",
+      "TypeSource": "session|codebook:validic",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": null,
+      "ActiveMinutes": null,
+      "CaloriesBurnedEst": null,
+      "ActivityResolved": null,
+      "ActivityCode": null,
+      "MajorHeading": null,
+      "METReference": null,
+      "METScale": "population",
+      "METScaleFactor": null,
+      "ExerciseSource": "not_resolvable:opaque_code",
+      "ExerciseConf": "MISS",
+      "ExerciseBasis": null,
+      "TypeSource": "opaque_code|none",
+      "TypeConf": null
+    }
+  ]
+}

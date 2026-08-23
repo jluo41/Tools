@@ -1,0 +1,69 @@
+{
+  "count": 4,
+  "results": [
+    {
+      "METValue": 3.8,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 163.6,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "population",
+      "METScaleFactor": 1.0,
+      "ExerciseSource": "compendium2024:alias:17190",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|text",
+      "TypeConf": "LOGGED"
+    },
+    {
+      "METValue": 3.12,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 134.3,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:17190|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 5.04,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 217.0,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "device",
+      "METScaleFactor": 1.3254,
+      "ExerciseSource": "compendium2024:alias:17190|scale:device:23:n5597:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:validic",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 3.8,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 163.6,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "population",
+      "METScaleFactor": 1.0,
+      "ExerciseSource": "compendium2024:alias:17190",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:welldoc_app",
+      "TypeConf": "CODEBOOK"
+    }
+  ]
+}

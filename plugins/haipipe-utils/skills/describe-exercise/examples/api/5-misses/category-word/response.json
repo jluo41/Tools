@@ -1,0 +1,16 @@
+{
+  "METValue": null,
+  "ActiveMinutes": null,
+  "CaloriesBurnedEst": null,
+  "ActivityResolved": "Sports spectator, very excited, emotional, physically moving",
+  "ActivityCode": "15645",
+  "MajorHeading": "Sports",
+  "METReference": null,
+  "METScale": "population",
+  "METScaleFactor": null,
+  "ExerciseSource": "compendium2024:fuzzy:15645",
+  "ExerciseConf": "WEAK",
+  "ExerciseBasis": null,
+  "TypeSource": "session|text",
+  "TypeConf": "LOGGED"
+}

@@ -1,0 +1,16 @@
+{
+  "METValue": 5.74,
+  "ActiveMinutes": 131.0,
+  "CaloriesBurnedEst": 981.7,
+  "ActivityResolved": "Bicycling, general",
+  "ActivityCode": "01014",
+  "MajorHeading": "Bicycling",
+  "METReference": 7.0,
+  "METScale": "device",
+  "METScaleFactor": 0.8199,
+  "ExerciseSource": "compendium2024:alias:01014|scale:device:20:n8510:2026-08-22",
+  "ExerciseConf": "ALIAS",
+  "ExerciseBasis": "per_session",
+  "TypeSource": "session|codebook:apple",
+  "TypeConf": "CODEBOOK"
+}

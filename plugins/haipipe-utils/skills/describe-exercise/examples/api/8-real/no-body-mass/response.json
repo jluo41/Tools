@@ -1,0 +1,16 @@
+{
+  "METValue": 3.8,
+  "ActiveMinutes": 60.0,
+  "CaloriesBurnedEst": null,
+  "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+  "ActivityCode": "17190",
+  "MajorHeading": "Walking",
+  "METReference": 3.8,
+  "METScale": "population",
+  "METScaleFactor": 1.0,
+  "ExerciseSource": "compendium2024:alias:17190",
+  "ExerciseConf": "ALIAS",
+  "ExerciseBasis": "per_minute",
+  "TypeSource": "session|text",
+  "TypeConf": "LOGGED"
+}

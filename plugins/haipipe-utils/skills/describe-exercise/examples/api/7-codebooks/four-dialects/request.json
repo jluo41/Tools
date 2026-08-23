@@ -1,0 +1,16 @@
+{
+  "activities": [
+    "Walk",
+    "20052",
+    "1001",
+    "100"
+  ],
+  "source_ids": [
+    null,
+    20,
+    23,
+    1
+  ],
+  "minutes": 30,
+  "weight_kg": 82
+}

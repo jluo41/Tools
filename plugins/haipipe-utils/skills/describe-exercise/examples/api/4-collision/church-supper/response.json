@@ -1,0 +1,53 @@
+{
+  "count": 3,
+  "results": [
+    {
+      "METValue": 2.87,
+      "ActiveMinutes": 42.0,
+      "CaloriesBurnedEst": 168.8,
+      "ActivityResolved": "Resistance (weight) training, multiple exercises, 8-15 reps at varied resistance",
+      "ActivityCode": "02054",
+      "MajorHeading": "Conditioning Exercise",
+      "METReference": 3.5,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:02054|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 6.15,
+      "ActiveMinutes": 42.0,
+      "CaloriesBurnedEst": 361.6,
+      "ActivityResolved": "Jogging, general, self-selected pace",
+      "ActivityCode": "12020",
+      "MajorHeading": "Running",
+      "METReference": 7.5,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:12020|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 2.46,
+      "ActiveMinutes": 42.0,
+      "CaloriesBurnedEst": 144.6,
+      "ActivityResolved": "Body weight resistance exercises (e.g., squat, lunge, push-up, crunch), general",
+      "ActivityCode": "02056",
+      "MajorHeading": "Conditioning Exercise",
+      "METReference": 3.0,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:02056|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    }
+  ]
+}

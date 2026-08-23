@@ -1,0 +1,16 @@
+{
+  "METValue": null,
+  "ActiveMinutes": null,
+  "CaloriesBurnedEst": null,
+  "ActivityResolved": null,
+  "ActivityCode": null,
+  "MajorHeading": null,
+  "METReference": null,
+  "METScale": "population",
+  "METScaleFactor": null,
+  "ExerciseSource": "not_resolvable:placeholder",
+  "ExerciseConf": "MISS",
+  "ExerciseBasis": null,
+  "TypeSource": "placeholder|text",
+  "TypeConf": "LOGGED"
+}

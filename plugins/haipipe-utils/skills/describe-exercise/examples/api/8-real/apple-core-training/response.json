@@ -1,0 +1,16 @@
+{
+  "METValue": 2.3,
+  "ActiveMinutes": 44.0,
+  "CaloriesBurnedEst": 147.9,
+  "ActivityResolved": "Calisthenics (e.g., curl ups, abdominal crunches, plank), light effort",
+  "ActivityCode": "02024",
+  "MajorHeading": "Conditioning Exercise",
+  "METReference": 2.8,
+  "METScale": "device",
+  "METScaleFactor": 0.8199,
+  "ExerciseSource": "compendium2024:alias:02024|scale:device:20:n8510:2026-08-22",
+  "ExerciseConf": "ALIAS",
+  "ExerciseBasis": "per_session",
+  "TypeSource": "session|codebook:apple",
+  "TypeConf": "CODEBOOK"
+}

@@ -1,0 +1,16 @@
+{
+  "METValue": null,
+  "ActiveMinutes": null,
+  "CaloriesBurnedEst": null,
+  "ActivityResolved": null,
+  "ActivityCode": null,
+  "MajorHeading": null,
+  "METReference": null,
+  "METScale": "population",
+  "METScaleFactor": null,
+  "ExerciseSource": "compendium2024:no_match",
+  "ExerciseConf": "MISS",
+  "ExerciseBasis": null,
+  "TypeSource": "session|text",
+  "TypeConf": "LOGGED"
+}

@@ -1,0 +1,69 @@
+{
+  "count": 4,
+  "results": [
+    {
+      "METValue": 3.12,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 134.3,
+      "ActivityResolved": "Walking, 2.8 to 3.4 mph, level, moderate pace, firm surface",
+      "ActivityCode": "17190",
+      "MajorHeading": "Walking",
+      "METReference": 3.8,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:17190|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 6.15,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 264.8,
+      "ActivityResolved": "Jogging, general, self-selected pace",
+      "ActivityCode": "12020",
+      "MajorHeading": "Running",
+      "METReference": 7.5,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:12020|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 5.74,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 247.1,
+      "ActivityResolved": "Bicycling, general",
+      "ActivityCode": "01014",
+      "MajorHeading": "Bicycling",
+      "METReference": 7.0,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:01014|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    },
+    {
+      "METValue": 2.87,
+      "ActiveMinutes": 30.0,
+      "CaloriesBurnedEst": 123.6,
+      "ActivityResolved": "Resistance (weight) training, multiple exercises, 8-15 reps at varied resistance",
+      "ActivityCode": "02054",
+      "MajorHeading": "Conditioning Exercise",
+      "METReference": 3.5,
+      "METScale": "device",
+      "METScaleFactor": 0.8199,
+      "ExerciseSource": "compendium2024:alias:02054|scale:device:20:n8510:2026-08-22",
+      "ExerciseConf": "ALIAS",
+      "ExerciseBasis": "per_session",
+      "TypeSource": "session|codebook:apple",
+      "TypeConf": "CODEBOOK"
+    }
+  ]
+}
