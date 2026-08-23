@@ -1,12 +1,12 @@
-# The folder map: one Application, four Page families, one delivery tail
-state: ✅ SETTLED · canonical runtime tree shipped
+# The folder map: two named boards, four Page families
+state: ✅ SETTLED · two-board runtime tree shipped
 owner: JL
 
 ## Opening
 
 Where does each kind of Application work live?
 
-The runtime tree follows dependency order. Each Insight and Design Page owns its own folder; concrete outputs stay inside Design unless independently governed.
+An Application is two boards, each named for its subject. The InsightBoard holds what the data says; the DesignBoard holds what gets sent and who signed it. Every Page owns its own folder, group folders carry their group token, and concrete output stays a projection rather than becoming a Page.
 
 ### Writing Style
 
@@ -14,22 +14,31 @@ Use runtime paths, not skill-source paths, when explaining where application wor
 
 ## Diagram
 
+**The runtime tree**: two boards, named for their subjects.
+
 ```text
 <application-root>/
-├── 0-brief/
-│   └── brief.md
-├── 1-insights/
-│   └── <insight-id>/<insight-id>.md
-├── 2-design/
-│   └── <design-id>/<design-id>.md
+├── <DataSubject>-InsightBoard/          e.g. SmsClickR4-InsightBoard
+│   ├── board.md
+│   ├── 0-M-meta/M00-meta/               page-type: meta
+│   │   ├── pagex/
+│   │   └── display/
+│   └── 1-I-insights/I<NN>-<slug>/       page-type: insight · scope: application
+│       ├── probe/                       the ONLY probe/ in an Application
 │       ├── pagex/
-│       ├── outline/
-│       └── display|word|slide|.../
-├── 3-artifacts/
-│   └── <artifact-id>/<artifact-id>.md
-├── 4-deploy/
-└── 5-rounds/
+│       └── display/
+└── <DesignTopic>-DesignBoard/           e.g. YoungMaleRefill-DesignBoard
+    ├── board.md
+    ├── 0-A-brief/A00-brief/             page-type: brief
+    │   └── pagex/
+    ├── 1-D-design/D<NN>-<audience>-<job>/   page-type: design
+    │   ├── pagex/
+    │   ├── outline/
+    │   └── display/
+    └── 2-artifacts/                     projections only · no Pages
 ```
+
+Gone from this tree: `4-deploy/` and `5-rounds/`. The Application ends at ACCEPTED, and shipping and measurement are task-layer work.
 
 ## Content
 
@@ -84,3 +93,4 @@ Folders follow authority and dependency; they do not mirror every internal skill
 ## Log
 
 260820 · Added `1-insights/` and `2-design/`; made `3-artifacts/` optional.
+260820 · Replaced the single-board tree with two named boards, renamed the group folders to carry their token, and dropped `4-deploy/` and `5-rounds/`.

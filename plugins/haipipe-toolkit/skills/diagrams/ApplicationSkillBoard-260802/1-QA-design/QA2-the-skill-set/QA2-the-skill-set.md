@@ -20,8 +20,8 @@ haipipe-application 0.8.0
         │
         ├── haipipe-page-for-brief 0.2.0
         ├── haipipe-page-for-insight 0.3.0
-        ├── haipipe-page-for-intervention 0.2.0  ← user-facing Design
-        └── haipipe-page-for-artifact 0.2.0
+        ├── haipipe-page-for-design 0.3.0        ← key renamed from intervention
+        └── haipipe-page-for-meta 0.1.0          ← InsightBoard head (artifact retired)
 
 shared: haipipe-page · page-workflow · PageX · Probe · output plugins
 legacy: enter/lifecycle/ladder/phase skills → compatibility only

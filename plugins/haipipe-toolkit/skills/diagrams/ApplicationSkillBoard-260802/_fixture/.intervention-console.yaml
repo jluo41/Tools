@@ -1,9 +1,0 @@
-# .intervention-console.yaml — session state, re-derived from disk each session
-intervention_root: designs/Project-Application-SMSDesign/applications/01_sms_young_male
-active_intervention: 01_sms_young_male
-venue: ""
-current_layer: 0-seed
-maturity: prospect
-active_round: none
-open_needs: 1
-updated: 260718

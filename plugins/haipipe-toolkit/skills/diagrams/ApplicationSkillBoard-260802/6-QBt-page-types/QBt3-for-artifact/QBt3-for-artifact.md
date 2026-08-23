@@ -1,28 +1,29 @@
-# Application Artifact Page: an optional governance promotion
-state: 🟡 PARTIAL · contract 0.2.0 shipped · stale-version test pending
-page-type: artifact
+# Artifact retired: a Page Type that only relocated a signature
+
+state: ✅ SETTLED · `page-type: artifact` deleted 260820 · absorbed into a per-division row
 owner: JL
 
 ## Opening
 
-Does every message, card, or report section need its own Page?
+Does a delivery unit need its own Page Type, or is it already a part of the Design Page it came from?
 
-No. Concrete output normally remains a projection of its Design Page. Promote a unit to an Artifact Page only when it can be accepted, rejected, versioned, or deployed independently from its neighbors.
+It is already a part. `page-type: artifact` shipped on 260820 at 0.2.0 and was deleted the same day, once JL asked to keep one concept instead of two. Six Content roles were compared against a Design Page's `R<n>` unit division, and five of them already existed there character for character. The sixth, acceptance, differed only in where a reviewer's name and date got written.
 
 ### Writing Style
 
-Lead with the independent-governance reason for promotion. Show exact content and version separately from rationale.
+Name the role that was compared and where it already lived. A retirement record earns its place by showing the comparison, not by asserting the verdict.
 
 ## Diagram
 
 ```text
-Design projection
-      │
-      ├─ reviewed/deployed with neighbors ──▶ stay on Design Page
-      │
-      └─ independently governed ────────────▶ 📦 Artifact Page
-                                                   │
-                                  version + render + acceptance + deploy
+📦 for-artifact · role            🎨 where it already was
+──────────────────────────        ────────────────────────────────────────
+Unit contract               ══▶   R<n>: unit id · audience job · rail
+Authored content            ══▶   R<n>: "exact content or interaction"
+Variants / arms             ══▶   R<n>: "declared variants"
+Trace                       ══▶   R<n>: "Insight/Handoff refs · design move"
+Render / preview            ══▶   page: "Render and acceptance"
+Acceptance                  ══▶   page: "Render and acceptance"   ← the only delta
 ```
 
 ## Content
@@ -35,52 +36,58 @@ Design projection
 inputs → bounded contract → observable handoff
 ```
 
-The Page states which independent accept/reject/version/deploy decision makes promotion necessary.
+The admission rule read: *this unit may be accepted, rejected, revised, versioned, or deployed while a neighboring unit is not.* That sentence describes a signature grain, not a page kind.
 
-#### 2 · Source binding
+#### 2 · What replaced it
 
-Pins the Design Page, unit division, accepted handoffs, venue constraints, and rails that the Artifact may not broaden.
+Acceptance moved from the Page down to the division:
 
-#### 3 · Content and render
+```text
+R4 · abtest arm
+     accepted: JL 260818 · handoff I03@v1 · render v5
+```
 
-Owns one exact content version and its visible render or executable package.
+One division may be accepted while a sibling is mid-revision, which is the case the type existed for. The Page's `state:` line reports the system; each division's row reports the unit.
 
-#### 4 · Acceptance
+#### 3 · What would have been lost the other way
 
-Approval binds reviewer, date, source Design version, content version, and render/ package version. Any material input change invalidates acceptance.
+Collapsing in the opposite direction was rejected. A Design Page holds the audience/job strategy, the design principles, and the cross-unit rails covering escalation order, prohibited moves, and uncertainty language. Those exist only because the set is reviewed together. Keeping Artifact and dropping Design would have left coherence with no owner.
 
-#### 5 · Deployment
+#### 4 · What survives under the name
 
-Deployment records target, version, timestamp, receipt, rollback path, and the feedback route into the smallest affected Page.
+`2-artifacts/` remains a folder under each DesignBoard, holding versioned projections rendered from accepted divisions. It holds no Pages, and `fn/artifact.md` is now a render verb with no promotion route.
 
 ## Aims
 
 ### A1 · Contract
-- A1.1 · No Artifact Page exists merely because output exists.
-  **Done when:** every Page names an independent governance decision.
+- A1.1 · No Page Type exists solely to relocate a signature.
+  **Done when:** the contract is deleted and its one real rule lives on the division.
 
-#### A2 · Staleness
-- A2.1 · Changed Design or render invalidates prior acceptance.
-  **Done when:** a negative fixture fails before a refreshed version passes.
+#### A2 · Coverage
+- A2.1 · The case the type existed for still works.
+  **Done when:** one unit can be accepted while a sibling is mid-revision.
 
 ## States
 
 ### A1 · Contract
-- ✅ A1.1 · Required by Artifact Page Type 0.2.0.
+- ✅ A1.1 · `page-types/haipipe-page-for-artifact/` deleted 260820; `check.py` no longer accepts the key.
 
-#### A2 · Staleness
-- ⬜ A2.1 · Negative runtime fixture remains open.
+#### A2 · Coverage
+- ✅ A2.1 · Design Page Type 0.3.0 carries the per-division `accepted:` row.
 
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/page-types/haipipe-page-for-artifact/SKILL.md`
+- `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
+  The absorbing contract; see its acceptance-per-division section.
 - `../../../../application/haipipe-application/fn/artifact.md`
+  The surviving render verb.
 
 ## Law
 
-Artifact is a governance promotion, not the default container for every rendered unit.
+A page kind must change how a page CLOSES. A kind that changes only where a signature is written is a field, not a type.
 
 ## Log
 
-260820 · Made Artifact optional and projection-first.
+260820 · Shipped `page-type: artifact` 0.2.0 as an optional promotion.
+260820 · Retired it the same day (JL: "I think we only need to keep one conception"). Acceptance became a per-division row on the Design Page; the projections folder survives.

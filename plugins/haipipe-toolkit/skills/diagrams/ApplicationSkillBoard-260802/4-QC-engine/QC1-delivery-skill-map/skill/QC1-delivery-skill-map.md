@@ -1,0 +1,8 @@
+- haipipe-application · note: the only user-facing door; every verb routes through it
+- haipipe-page-for-meta · note: InsightBoard head, new 260820
+- haipipe-page-for-insight · note: two scopes, task and application
+- haipipe-page-for-brief · note: DesignBoard head
+- haipipe-page-for-design · note: renamed from for-intervention 260820
+- haipipe-plugin-pagex · note: the only input lane a Design Page has
+- haipipe-plugin-probe · note: Insight Pages only; Design Pages own no probe
+- haipipe-page · note: the base contract all four variants extend

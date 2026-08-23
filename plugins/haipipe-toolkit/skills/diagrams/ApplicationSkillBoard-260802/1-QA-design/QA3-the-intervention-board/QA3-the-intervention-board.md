@@ -64,8 +64,8 @@ Promote only when one unit can be accepted, rejected, versioned, or deployed ind
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/page-types/haipipe-page-for-intervention/SKILL.md`
-- `../../../../application/page-types/haipipe-page-for-artifact/SKILL.md`
+- `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
+- `../../../../application/page-types/haipipe-page-for-meta/SKILL.md`
 
 ## Law
 

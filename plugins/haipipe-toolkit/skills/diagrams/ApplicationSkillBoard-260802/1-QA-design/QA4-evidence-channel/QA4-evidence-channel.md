@@ -51,7 +51,7 @@ When evidence or accepted Pages change, refresh the local Insight and reopen onl
 ### A1 · Contract
 - A1.1 · No Design procedure dispatches Probe.
   **Done when:** routing and fresh-agent behavior both send missing knowledge to
-  `1-insights/`.
+  the InsightBoard's `1-I-insights/`.
 
 ## States
 

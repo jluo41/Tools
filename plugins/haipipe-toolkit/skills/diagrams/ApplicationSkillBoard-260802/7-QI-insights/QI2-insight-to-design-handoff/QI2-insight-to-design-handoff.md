@@ -85,7 +85,7 @@ Design divisions reopen. Unaffected messages stay accepted.
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/page-types/haipipe-page-for-intervention/SKILL.md`
+- `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
   The Design Page's Insight Use Map and no-Probe rule.
 - `../../../../application/haipipe-application/fn/missing-insight.md`
   The visible release procedure.
