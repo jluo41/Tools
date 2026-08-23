@@ -1,13 +1,21 @@
 ---
 name: haipipe-page-for-narrative
 description: >-
-  The Paper Page Type for one venue-aligned Narrative. It converts a stable Seed
-  and one Venue Page into claims, argument order, reader journey, evidence and
-  display allocation, and a detailed one-row-per-section outline. Use when
-  designing or retargeting a paper story, deciding claim roles, repairing the
-  section map, or giving Section Pages executable handoffs.
+  The Paper Page Type for one venue-aligned Narrative: how one paper is told to
+  one desk. It converts the Seed's Establishment Board and one shared Venue Page
+  into the paper's venue decision, claims with E-row parents, argument order,
+  reader journey, evidence and display allocation, and a detailed
+  one-row-per-section outline. One page per target venue, living beside the Seed
+  in the story group. Use when designing or retargeting a paper story, deciding
+  claim roles, repairing the section map, or giving Section Pages executable
+  handoffs. Trigger: narrative page, paper story, claim system, claim roles,
+  argument arc, reader journey, section map, venue decision, retarget,
+  page-type narrative, /haipipe-page-for-narrative.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
+  last_updated: "2026-08-21"
+  summary: "0.4.0 wires the joins its two 0.3.0 neighbors created (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, and Narratives live beside the Seed in one 0-SD-seed/ group as SD<NN> pages. Restored 260821 after a parallel-session collision reverted the file."
+  group-token: "SD"
   outline:
     mode: grammar
     source: "this SKILL.md"
@@ -17,16 +25,36 @@ metadata:
 # /haipipe-page-for-narrative · claims in reader order
 
 Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
-Declare `page-type: narrative` and record the Venue Page it reads.
+Declare `page-type: narrative` and record the shared Venue Page it binds.
+
+In a runtime paper board a Narrative lives BESIDE the Seed, in the one story
+group, as an `SD<NN>` page (JL 260821):
+
+```text
+0-SD-seed/
+├── SD00-seed/                    what the paper IS · venue-free · exactly one
+├── SD01-narrative-<venue>/       how it is told to desk 1
+└── SD02-narrative-<venue>/       how it is told to desk 2
+```
+
+The group law: the story group decides the telling; no manuscript prose lives
+here. SD00 stays venue-free; every SD<NN> above it names its venue.
 
 ## 📐 Grain and boundary
 
 There is one Narrative per target venue. A second target creates a second
 Narrative reading the same Seed.
 
+**The venue DECISION lives here; the venue RECORD does not.** A paper never
+creates a venue page: the shared QBv bank (one consumer-neutral page per desk,
+refreshed on the desk's clock) is bound through `pagex/`, and this page's Venue
+division owns only the decision and its local consequences.
+
 Narrative owns:
 
-- the venue-aligned audience, editor question, promise, pitch, and framing;
+- the venue decision, binding the shared QBv bank page by path;
+- the venue-aligned audience, editor question, promise, desk-shaped opening,
+  and framing (the venue-free one-minute pitch is the Seed's, division 2);
 - claims and their rhetorical roles;
 - the argument arc and reader journey;
 - one detailed outline row per manuscript or appendix Section;
@@ -42,11 +70,12 @@ The instance outline is a grammar, so divisions may be combined or repeated
 when the paper requires it. Every role below must remain inspectable.
 
 ```text
-1  Venue Position and Promise
-   target · audience · editor question · contribution promise · hard constraints
+1  Venue Decision
+   the chosen desk · the bound QBv bank page · audience · editor question ·
+   contribution promise · the local consequences of choosing this desk
 
 2  Claim System
-   claim id · exact proposition · role · importance · current evidence state · limit
+   claim id · exact proposition · E-row parent · role · current evidence state · limit
 
 3  Argument Arc
    dependency order: what must be understood before each claim can land
@@ -67,14 +96,19 @@ when the paper requires it. Every role below must remain inspectable.
 ## 🧾 Claims are required
 
 Without claims there is no narrative—only a topic list. Each consequential
-claim has a stable id and a precise sentence:
+claim has a stable id, a precise sentence, and an E-ROW PARENT on the Seed's
+Establishment Board:
 
 ```text
-claim-id | proposition | role | evidence ids | status | boundary | lands in
+claim-id | proposition | E-row parent | role | evidence ids | status | boundary | lands in
 ```
 
-Useful roles include setup, gap, mechanism, peak result, consequence, boundary,
-and contribution. A claim may be provisional, but it may not be invisible.
+A claim with no E-row parent is a new claim and belongs on the Seed first, or
+nowhere: crowning and ordering happen here, but LICENSING happens on the
+E-board, which is what keeps two Narratives from silently telling two
+different papers. Useful roles include setup, gap, mechanism, peak result,
+consequence, boundary, and contribution. A claim may be provisional, but it
+may not be invisible.
 
 Narrative may itself make evidence-dependent judgments. For example, “C2 is the
 peak claim” depends on the magnitude, credibility, and venue fit of its support.
