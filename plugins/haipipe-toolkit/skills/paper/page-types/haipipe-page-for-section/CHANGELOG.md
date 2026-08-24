@@ -1,4 +1,20 @@
 
+## 0.3.0 — 2026-08-23
+
+- **The 0.2.0 entry below had never reached the body** (found in the 260823
+  family review: the frontmatter still said 0.1.1 and `outline.source` still
+  pointed at the zero-file `section-page-template: 1` universe). The body now
+  resolves structure from the QBv Venue Page's Unit Guidance division matching
+  `section_kind`, through the governing Narrative's division-1 binding; the
+  generic fallback is unchanged and a missing unit division is raised as a gap
+  on the QBv page.
+- **Runtime homes take the 260823 scaffold grammar**: main units as
+  `S<D><NN>-<kind>` in the desk pair's `Ba1-…-main/` group, appendix units as
+  `A<D><NN>-<slug>` in `Ba2-…-appendix/`; `1-SC-main/`, `2-SA-appendix/` and
+  the `SC`/`SA` tokens are grandfathered.
+- Frontmatter gains `last_updated`, `summary`, and the parametric
+  `group-token: "S<D> | A<D>"`.
+
 ## 0.2.0 — 2026-08-21
 
 - **Resolved source re-pointed at the QBv bank** (JL 260821): the declared

@@ -11,9 +11,9 @@ description: >-
   Trigger: seed page, paper identity, pitch, one-minute story, establishment
   board, what can we claim, page-type seed, /haipipe-page-for-seed.
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   last_updated: "2026-08-23"
-  summary: "0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
+  summary: "0.4.1 (JL 260823): the birth certificate binds same-board by default — §5's first row points at this board's A0-EX-explore group per explore 0.2.0; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -158,9 +158,10 @@ during OUTLINE. An asset in `pagex/` with no §5 row, or a §6 citation naming
 an asset §5 does not row, is a defect.
 
 **The birth certificate** (0.4.0): when this paper graduated from an Explore
-Page, §5's first row binds that page — cross-repo through `pagex/`, the same
-pattern as a bank-page binding — and the Explore ledger's `graduated-to`
-points back here. A Seed claiming no origin when a ledger names it, or naming
+Page, §5's first row binds that page through `pagex/` — normally the
+`A0-EX-explore/` group on this same board, cross-repo only when the idea
+graduated out of ANOTHER paper's nursery — and the Explore ledger's
+`graduated-to` points back here. A Seed claiming no origin when a ledger names it, or naming
 an origin whose ledger does not show the graduation, is a defect on whichever
 side is missing. A retrofit Seed (paper predates the nursery) states that in
 its Log instead.

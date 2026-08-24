@@ -3,17 +3,18 @@ name: haipipe-page-for-explore
 description: >-
   The Paper Page Type for one research DIRECTION's exploration ledger: the
   nursery where candidate ideas are generated, novelty-checked claim by claim,
-  feasibility-piloted, and killed or graduated, before any paper repo exists.
-  One page per direction on a standing IdeaBoard; ideas are cheap and
+  feasibility-piloted, and killed or graduated, before the paper's Seed exists.
+  One page per direction at the head of the paper's own board
+  (paperboard/A0-EX-explore/), minted with the repo; ideas are cheap and
   disposable, the ledger is not. Use when brainstorming a direction, checking
   whether an idea has been done, recording a pilot, killing an idea, or
   graduating one into a new paper's Seed. Trigger: explore page, idea ledger,
   find ideas, brainstorm, novelty check, has this been done, kill this idea,
   graduate to seed, page-type explore, /haipipe-page-for-explore.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-23"
-  summary: "0.1.0 creates the P0 nursery page (JL 260823): one direction one page on a standing IdeaBoard; idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted. Methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
+  summary: "0.2.0 moves the nursery home (JL 260823): the explore page lives at the head of the paper's OWN board, paperboard/A0-EX-explore/, before the seed — the repo is minted with the explore page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
   group-token: "EX"
   outline:
     mode: grammar
@@ -29,15 +30,22 @@ Declare `page-type: explore`.
 ## 🌱 Grain and home
 
 One Explore Page holds ONE research direction and every candidate idea raised
-under it. It lives on a standing IdeaBoard, never on a paper board, because it
-precedes the paper repo's existence:
+under it. It lives at the HEAD of the paper's own board, before the Seed —
+the same locality law that puts an InsightBoard inside its application:
 
 ```text
-<Program>-IdeaBoard/
-└── 0-EX-explore/
-    ├── EX01-<direction-slug>/     one direction, many ideas, one ledger
-    └── EX02-<direction-slug>/
+Paper-<Slug>/paperboard/
+├── A0-EX-explore/
+│   └── EX01-<direction-slug>/     one direction, many ideas, one ledger
+└── A1-SD-story/                    the Seed this nursery graduates into
 ```
+
+**The repo precedes the Seed** (0.2.0): minting a paper's first Explore Page
+is what creates `Paper-<Slug>/` — as a git submodule immediately, per the
+scaffold rule — with only `paperboard/A0-EX-explore/` inside. The slug may
+start as the direction's name; a direction that dies leaves the repo standing
+as its own graveyard. A second EX page on one board is legal only when the
+direction genuinely forks and the fork stays this paper's.
 
 The page is EVERGREEN (♻️): it never closes while the direction is alive.
 Ideas on it are cheap — generated in batches, ranked, killed without ceremony.
@@ -63,8 +71,8 @@ One row per candidate, every column a state and never a blank:
 ```text
 id  idea (one line)         claims  novelty            pilot        verdict         graduated-to
 ────────────────────────────────────────────────────────────────────────────────────────────────
-i1  <one sentence>          3       HIGH · closest:    ✅ QA path   ✅ PROCEED      Paper-<Slug>
-                                    <prior> · delta:                 (JL 260823)    /paperboard
+i1  <one sentence>          3       HIGH · closest:    ✅ QA path   ✅ PROCEED      SD00 (here) ·
+                                    <prior> · delta:                 (JL 260823)    or Paper-<Other>
 i2  <one sentence>          4       LOW · <prior>      —            🚫 ABANDONED    —
 i3  <one sentence>          —       ⬜ unchecked        —            ⬜ open         —
 ```
@@ -122,11 +130,12 @@ One row may graduate to a Seed only when all three hold:
   recommendation; the verdict is human, and ABANDONED or MERGED rows never
   graduate.
 
-Graduation is a two-way act: the ledger's `graduated-to` names the new paper
-repo, and the new Seed's §5 binds THIS page through `pagex/` as its birth
-certificate. An Explore Page with a graduated row and no back-binding Seed, or
-a Seed claiming an origin this ledger does not show, is a defect on whichever
-side is missing.
+Graduation is a two-way act: the ledger's `graduated-to` names the Seed —
+normally `SD00` on this same board, or the new repo when an idea leaves for a
+DIFFERENT paper — and that Seed's §5 binds THIS page through `pagex/` as its
+birth certificate. An Explore Page with a graduated row and no back-binding
+Seed, or a Seed claiming an origin this ledger does not show, is a defect on
+whichever side is missing.
 
 ## ✋ Human authority
 

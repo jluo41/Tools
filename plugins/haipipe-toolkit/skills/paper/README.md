@@ -10,7 +10,8 @@ Five phases, gated by `haipipe-paper-workflow`; the venue bank is a library
 outside the journey (JL 260823):
 
 ```text
-P0 Explore    explore page · standing IdeaBoard · graduates one idea
+P0 Explore    explore page · head of the paper's own board (A0) · the repo
+              is minted with this page · graduates one idea
 P1 Establish  Seed · one per paper · venue-free · E-board with novelty column
 P2 Tell       Narrative · one per desk · §1 binds a bank Venue Page
 P3 Realize    Section Pages · one per map row · then assemble (a verb)

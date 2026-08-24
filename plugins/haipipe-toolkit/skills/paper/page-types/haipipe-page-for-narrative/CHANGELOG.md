@@ -1,3 +1,10 @@
+## 0.4.1 — 2026-08-23
+
+- Runtime home renamed to `paperboard/A1-SD-story/` under the 260823 scaffold
+  grammar; `0-SD-seed/` boards are grandfathered. Content otherwise unchanged —
+  this keeps the file in agreement with seed 0.4.0. (Entry added in the 260823
+  family review, which found the SKILL bumped to 0.4.1 with no log row here.)
+
 ## 0.4.0 — 2026-08-21
 
 - **One folder for the story** (JL 260821: "put the narrative and seed into one

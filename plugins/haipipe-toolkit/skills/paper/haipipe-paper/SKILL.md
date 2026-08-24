@@ -33,7 +33,8 @@ haipipe-paper
 `haipipe-paper-workflow` owns the gates; this figure is the reading order.
 
 ```text
-P0 Explore    💭 explore page · standing IdeaBoard · ideas cheap and disposable
+P0 Explore    💭 explore page · head of the paper's own board (A0) · the repo
+                 is minted with this page · ideas cheap and disposable
 │                gate G0: novelty judged per claim + pilot receipt + human PROCEED
 P1 Establish  🌱 seed · venue-free · E-board with novelty column
 │                gate G1: human-ticked outline · pitch sells only ✅ rows
@@ -50,8 +51,10 @@ P4 Respond    🔁 round · routes each concern once → seed / narrative / sect
 
 The six Page Types, one line each:
 
-- **Explore** is one research direction's idea ledger on a standing IdeaBoard;
-  killed ideas stay forever; graduates become Seeds.
+- **Explore** is one research direction's idea ledger at the head of its
+  paper's own board (`A0`), minted with the repo before any Seed exists;
+  killed ideas stay forever; graduates become this board's Seed (or, rarely, a
+  sibling repo's).
 - **Seed** is one venue-free identity per paper; it survives retargeting
   unchanged and binds its Explore origin as a birth certificate.
 - **Venue** is one evidence-backed desk record in the shared bank — a library
@@ -209,6 +212,7 @@ Paper-<Slug>/
 ├── paperboard/                 the board · FIXED name, tooling may rely on it
 │   ├── board.md
 │   ├── board/                  engine-generated HTML (build.py output)
+│   ├── A0-EX-explore/          the nursery · minted with the repo, before the seed
 │   ├── A1-SD-story/            seed + one narrative per desk
 │   ├── Ba1-SM-ms-main/         first desk's main units
 │   ├── Ba2-AM-ms-appendix/     first desk's appendix units
@@ -223,8 +227,8 @@ Paper-<Slug>/
 
 **Group-name grammar** — three characters, three meanings: UPPERCASE category
 (`A` story, `B` tellings, `C` rounds), lowercase desk-pair letter within `B`
-(`a`, `b`, `c`… in arrival order), digit for the member (`1` main, `2`
-appendix). Page tokens carry the desk too: `S<D>` main units, `A<D>` appendix
+(`a`, `b`, `c`… in arrival order), digit for the member in journey order (`A0`
+nursery before `A1` story; within a `B` pair, `1` main, `2` appendix). Page tokens carry the desk too: `S<D>` main units, `A<D>` appendix
 units, `<D>` the desk's letter — so `C1 lands in SM05 and SW01` reads without
 a legend. **Collision rule**: `<D>` is the first distinctive letter of the desk
 not already claimed on this board, and `D` itself is never available because

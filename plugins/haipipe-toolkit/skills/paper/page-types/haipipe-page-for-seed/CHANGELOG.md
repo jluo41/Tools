@@ -1,3 +1,11 @@
+## 0.4.1 — 2026-08-23
+
+- **The birth certificate becomes same-board by default**, following explore
+  0.2.0 (JL 260823: the nursery lives at `paperboard/A0-EX-explore/`, before
+  the seed): §5's first row normally binds the A0 group on this same board;
+  cross-repo pagex survives only for an idea graduating out of ANOTHER
+  paper's nursery.
+
 ## 0.4.0 — 2026-08-23
 
 - **Every ✅/🔨 E-row carries a novelty reading**: closest prior work, the

@@ -6,13 +6,15 @@ description: >-
   and binds prose to Page-local values, citations, probes, and displays. Use when
   outlining, drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.1.1"
+  version: "0.3.0"
+  last_updated: "2026-08-23"
+  summary: "0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
+  group-token: "S<D> | A<D>"
   outline:
     mode: resolved
-    source: "paper/venue/**/template.md"
-    marker: "section-page-template: 1"
+    source: "the governing Narrative's division-1 QBv binding → that Venue Page's Unit Guidance division matching section_kind"
     fallback: "paper/page-types/haipipe-page-for-section/ref/generic-template.md"
-    shape: "current Narrative row overlaid on a current venue-and-kind template or the explicit generic fallback"
+    shape: "current Narrative row overlaid on the resolved venue unit guidance or the explicit generic fallback"
 ---
 
 # /haipipe-page-for-section · execute one Narrative row
@@ -39,6 +41,20 @@ Seed boundary
 
 Prose never outranks a changed Narrative row or binding desk rule.
 
+## 🏠 Runtime home (0.3.0)
+
+```text
+paperboard/
+├── Ba1-SM-ms-main/        S<D><NN>-<kind>   first desk's main reading order
+├── Ba2-AM-ms-appendix/    A<D><NN>-<slug>   its appendix units
+└── Bb1-SW-wise-main/      a later desk's pair (a pair may be single)
+```
+
+Tokens carry the desk letter per the door's group grammar: `S<D>` for main
+units, `A<D>` for appendix units, `<D>` the desk's first distinctive letter.
+Older boards using `1-SC-main/`, `2-SA-appendix/` and the `SC`/`SA` tokens are
+grandfathered and migrate only on explicit request.
+
 ## 📥 Required contract block
 
 Record these fields in the Page before drafting:
@@ -52,7 +68,8 @@ entry-state         what the reader already believes/knows
 exit-state          what must be established on exit
 claim-ids           exact Narrative claims landing here
 venue-allocation    binding desk rules + observed pack guidance, distinguished
-structure-source    resolved venue × kind template or explicit generic fallback
+structure-source    resolved QBv unit division for this kind, or the explicit
+                    generic fallback
 evidence-allowlist  card, citation, value, and display ids
 transition-in/out   required joins to neighboring Sections
 ```
@@ -62,15 +79,16 @@ Narrative first.
 
 ## 🧱 Content outline
 
-Resolve paragraph or move divisions from the selected Venue and section kind.
-A venue template is current only when its first metadata block carries
-`section-page-template: 1`. Unmarked templates are stage-era playbook material:
-they may inform a typed pack observation, but they may not become
-`structure-source`. This prevents an old `0-lifecycle`, `1-probes`, or
-`5-section-edit` scaffold from silently reviving the retired Paper runtime.
+Resolve paragraph or move divisions from the QBv Venue Page's Unit Guidance
+division matching this Page's `section_kind`, reached through the governing
+Narrative's division-1 binding (0.2.0: the old `section-page-template: 1`
+universe held zero files, so it can no longer be a source). Raw pack `style.md`
+files and stage-era playbook material stay informative: they may feed a typed
+PACK OBSERVATION on the QBv page, but they may not become `structure-source`.
 
-If no marked venue template exists, use `ref/generic-template.md` and record the
-fallback; do not invent venue-specific rules.
+If the bound Venue Page has no unit division for this kind, use
+`ref/generic-template.md`, record the fallback, and raise the missing division
+as a gap on the QBv page; never invent venue-specific rules locally.
 
 Each Content division states:
 

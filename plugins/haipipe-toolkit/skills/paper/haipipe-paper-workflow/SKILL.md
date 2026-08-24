@@ -12,9 +12,9 @@ description: >-
   Trigger: paper journey, journey phase, what phase are we in, may we advance,
   phase gate, mint next page, assemble gate, /haipipe-paper-workflow.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-23"
-  summary: "0.1.0 (JL 260823): the thin five-phase machine over the six Page Types. Owns gates and receipts only; explicitly NOT a revival of the deleted S01-S10 stage lane, which owned content contracts and tooling. Gates are grep-able assertions; advancement is never scheduled."
+  summary: "0.2.0 (JL 260823): P0's home moves with explore 0.2.0 — the nursery lives at paperboard/A0, the repo is minted with the explore page before the seed, and G0's receipt becomes the same-board SD00 binding (the standing IdeaBoard is retired unshipped). 0.1.0: the thin five-phase machine over the six Page Types; owns gates and receipts only; explicitly NOT a revival of the deleted S01-S10 stage lane; gates are grep-able assertions; advancement is never scheduled."
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -45,7 +45,9 @@ content rule — that is the test it must keep passing.
 ```text
 phase          authority page                    what the phase produces
 ──────────────────────────────────────────────────────────────────────────────
-P0 Explore     explore  (standing IdeaBoard)     a graduated idea
+P0 Explore     explore  (paperboard/A0)          a graduated idea · the repo
+                                                 is minted WITH this page,
+                                                 before the seed
 P1 Establish   seed     (paperboard/A1)          a defensible identity + E-board
 P2 Tell        narrative (one per desk, A1)      a desk decision + section map
 P3 Realize     section  (one per unit, B pairs)  signed-off units
@@ -70,9 +72,11 @@ G0  Explore → Establish   precondition, tested on the ledger row alone:
                           per-claim novelty cells bound to QA files · a pilot
                           receipt or explicit waiver · a person's PROCEED tick
                           (or CAUTION with its risk accepted in the tick) ·
-                          receipt, recorded after the act: the new repo exists
-                          as a submodule and its Seed §5 binds the Explore
-                          Page back
+                          receipt, recorded after the act: SD00-seed exists in
+                          this board's A1-SD-story and its §5 first row binds
+                          the Explore Page back (an idea graduating into a
+                          DIFFERENT paper adds: that new repo exists as a
+                          submodule)
 
 G1  Establish → Tell      the Seed's outline is human-ticked · every ✅/🔨
                           E-row cites a §5 asset and carries its novelty
