@@ -1,9 +1,9 @@
 # Paper Page architecture: compose a paper from accepted Pages
 
-spine: Seed fixes the venue-free paper identity; Venue records one desk; Narrative orders claims for that desk; Section executes one Narrative row; Round routes feedback; `/haipipe-paper status` reports the graph.
+spine: Seed fixes the venue-free paper identity; Roadmap plans what it still owes and Collection registers what comes back; Narrative orders claims for one desk; Section executes one Narrative row; Round routes feedback; the venue bank is a library this board points at rather than holds.
 dialect: paper
 paper-root: _fixture
-close: The five Page Types, Paper composition boundary, venue catalog, and validation route agree; retired stage-era designs remain archived and are not registered as live Pages.
+close: The Page Types, the Paper composition boundary, and the validation route agree; the venue bank has its own board and is not registered here; retired stage-era designs remain archived and are not registered as live Pages.
 session: 8d4c966d-8db2-443b-9194-8dcb8a14b600
 
 ## Topic
@@ -14,7 +14,6 @@ It selects Pages, runs their shared lifecycle, assembles accepted outputs, and d
 
 - **QA · Architecture** fixes the Page graph and ownership boundaries.
 - **QBt · Page Types** carries one current specimen for each Paper Page Type.
-- **QBv · Venues** keeps the reusable venue catalog, one Page per target.
 - **QC · Composition and validation** explains the thin Paper door, Page-local plugins, and the tests that prove their route.
 
 The old Delivery, Delivery Element, stage Engine, and engine-skill mirror groups are preserved under `_archive/`.
@@ -54,8 +53,7 @@ The lanes remain physically separate as `pagex/` and `probe/`.
 PaperSkillBoard-260725/
 ├── 1-QA-architecture/       current graph and boundaries
 ├── 2-QBt-page-types/        five live Paper Page Type specimens
-├── 3-QBv-venue-packs/       sixteen venue targets
-├── 4-QC-composition/        Paper composition and validation
+├── 3-QC-composition/        Paper composition and validation
 ├── _archive/                retired stage-era design, preserved
 └── board/                   generated site, never hand-edited
 ```
@@ -103,27 +101,6 @@ QBt3-for-narrative.md
 QBt4-for-section.md
 QBt5-for-round.md
 
-### QBv · Venues
-One evidence-backed Page per journal, funder, or patent target.
-These Pages report desk rules and observed patterns; they do not choose the paper's target.
-
-QBv1-misq.md
-QBv2-isr.md
-QBv3-ms-is.md
-QBv4-ms-marketing.md
-QBv5-jama.md
-QBv6-jama-im.md
-QBv7-jama-network-open.md
-QBv8-npj-digital-medicine.md
-QBv9-nature-medicine.md
-QBv10-nature-communications.md
-QBv11-nature-human-behaviour.md
-QBv12-nature-machine-intelligence.md
-QBv13-pnas.md
-QBv14-diabetes-care.md
-QBv15-grant.md
-QBv16-patent.md
-
 ### QC · Composition and validation
 How the thin Paper door composes typed Pages, delegates evidence/build work to Page-local plugins, and proves that route works.
 
@@ -147,3 +124,5 @@ QC4-fresh-agent-run.md
 260820 · Grouped PageX under Probe while preserving separate PageX and Task/Discovery QA records.
 260820 · Merged validation into QC because the fixture and fresh-agent run prove the same composition contract.
 260820 · Retired Dash (QBt6) as a sixth Page Type: JL proposed merging it into Narrative, but only one of its four families (section) was Narrative-shaped, so the merge was rejected in favor of dropping it outright. It survives as `/haipipe-paper status [family]`, a command, not a Page Type. QBt6 moved to `_archive/5-QBt6-dash-retired-260820/`.
+
+260824 · The venue bank LEFT this board for `../../paper/venue/bank/`. It was a live library (seventeen desk pages, bound by real paper boards through pagex) parked inside an architecture explainer that had gone a generation stale, and it refreshes on each desk's clock rather than this board's. `_tools/sync-exemplars.py` went with it, because only venue pages run it. What stays here is the explainer, which is itself a generation behind and is being rebuilt: it still describes five Page Types where the family now has eight, and no journey at all.

@@ -46,7 +46,7 @@ Narrative receives the bounded contract and does not copy the entire Venue Page.
 
 ## Files
 - `../../paper/page-types/haipipe-page-for-venue/SKILL.md` · source contract
-- `3-QBv-venue-packs/` · live Venue Page instances
+- `../../paper/venue/bank/` · the venue bank board, where the live Venue Page instances moved 260824
 
 ## Log
 260820 · Kept Venue as its own evidence-heavy Page Type rather than part of Opening.
