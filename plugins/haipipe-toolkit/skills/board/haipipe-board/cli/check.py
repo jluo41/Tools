@@ -1218,10 +1218,14 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # `intervention` was renamed to the already-listed `design`, and `artifact` was
 # absorbed into a per-division `accepted:` row. Both are dropped, so a page still
 # carrying either key now reports page-type-unknown and gets migrated.
+# 260824, paper journey 0.5.0: `roadmap` and `collection` joined as the two
+# working pages of the establish loop (the Seed states the gaps, the Roadmap
+# plans the errands, the Collection registers the receipts).
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "principle", "view", "stage", "ideation")
+                    "wisdom", "brief", "principle", "view", "stage", "ideation",
+                    "roadmap", "collection")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 
