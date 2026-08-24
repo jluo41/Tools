@@ -5,7 +5,7 @@ description: >-
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823, reviewer audit): every dispatch pins mode: copilot so page-auto cannot defer a gate tick past a gate; an explicit phase-to-frontier mapping table; signed defined as the person's tick on the handoff division; the dataset-first PageX alternative to a local handoff. 0.1.0: six phases, two lanes, three gates."
+  summary: "0.3.0 (JL 260824): phases ④⑤⑥ keep their places but their interior law moved to /haipipe-design — FRAME resolves born-of:, COMPOSE runs card → release → arm-agent → judge, ACCEPT is the per-division row; this skill still derives the frontier and stops at the gates. 0.2.0 (JL 260823, reviewer audit): every dispatch pins mode: copilot so page-auto cannot defer a gate tick past a gate; an explicit phase-to-frontier mapping table; signed defined as the person's tick on the handoff division; the dataset-first PageX alternative to a local handoff. 0.1.0: six phases, two lanes, three gates."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
