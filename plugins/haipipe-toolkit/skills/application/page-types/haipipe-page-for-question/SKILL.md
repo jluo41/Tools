@@ -3,9 +3,9 @@ name: haipipe-page-for-question
 description: >-
   The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-21"
-  summary: "New on 260821 (JL): the question register split out of MT00-meta's Insight Roster, one page per ladder rung so a question sits with the rung it faces."
+  version: "0.2.0"
+  last_updated: "2026-08-23"
+  summary: "0.2.0 (JL 260823): on a partition-major board the Queue gains one column per partition; a question is written once and asked per partition, a blank cell is illegal, a dot cell is an explicit X-routing. 0.1.0 split the register out of MT00-meta by rung."
   group-token: "MT"
   outline:
     mode: grammar
@@ -59,6 +59,25 @@ QW<n>   registered on MT04     answered in 4-W-wisdom/
 ```
 
 Numbering runs per page, so `QD1` and `QI1` coexist. The id is permanent: a question that is re-targeted moves page and takes a NEW id, and its old division stays behind as a one-line tombstone naming the successor. Nothing that was ever raised silently disappears.
+
+## Partition-major boards: the Queue gains columns (0.2.0)
+
+On a partition-major InsightBoard (`haipipe-application` `ref/partition.md`) a question is written ONCE and asked per partition. The id stays partition-free, `QK1` and never `QK1-B`, and the Queue carries one column per partition registered on `MT00`:
+
+```text
+id   question                              F·full      B·youngmale   X·cross
+──────────────────────────────────────────────────────────────────────────────
+QK1  which arm separates, rivals out?      ✅ FK01     🔨 EVIDENCE   ·
+QK2  do the arm effects genuinely differ?  ·           ·             ⬜ ready
+```
+
+Three cell rules, all closing checks on this layout:
+
+- **A blank cell is illegal.** Every cell is a state, a `🚫` refusal with a reason, or a dot.
+- **A dot cell is an explicit routing, restated in the question's division.** A cross-partition question cannot be answered by a per-partition page, so its per-partition cells are `·` and its X cell is live; the reverse holds for per-partition questions with no cross half.
+- **A refused cell is the register's half of the mirror rule.** When a partition group is missing a page its template has, the refusal lives HERE, `🚫` plus the reason, so the gap is a recorded decision rather than a silence.
+
+The question's division stays ONE division; it records per-partition standing inside "where it stands" rather than splitting per partition. On a rung-major board this section does not apply and the Queue keeps its single-column shape.
 
 ## Fixed Content outline
 

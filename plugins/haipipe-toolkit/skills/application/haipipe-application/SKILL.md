@@ -4,9 +4,9 @@ description: >-
   One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-08-21"
-  summary: "0.12.0 splits the question register out of Meta and by rung (JL 260821): MT01-MT04 question pages, one facing each of D/I/K/W, with Brief needs carrying register ids. Meta is inventory only."
+  version: "0.14.0"
+  last_updated: "2026-08-23"
+  summary: "0.14.0 adds the sibling RUN head haipipe-application-workflow (JL 260823): six phases in two lanes, three human gates, dispatched here through the workflow verb. 0.13.0 added the partition-major InsightBoard layout with ref/partition.md as the grammar's single source."
 ---
 
 # /haipipe-application · understand on one board, design on the other
@@ -78,6 +78,9 @@ review | audit | check         CHECK selected Design versions and their trace
 accept                         record the per-division acceptance row · the last act
 retarget                       re-pin venue or audience and reopen dependent Design
 feedback | digest              run the existing family feedback procedures
+workflow | run | drive         drive the whole Application forward through the
+                               sibling RUN head, haipipe-application-workflow:
+                               six phases in two lanes, three blocking human gates
 ```
 
 No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create the two board folders. Never infer an audience, behavior, or venue when that choice changes the design.
@@ -131,6 +134,19 @@ A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821
 ```
 
 A board is **one head page's scope**: one Meta is one source scope (one cohort), one Brief is one program scope (one outcome, venue and promise). A new cohort is a new InsightBoard; a new question is a new chain inside it. A new program is a new DesignBoard; a new audience is a new DS page inside it.
+
+## Two InsightBoard layouts (JL 260823)
+
+The tree above is the default, RUNG-MAJOR: groups are the four rungs, and a subgroup is at most a column inside an I page. When subgroup analysis is first-class, the same ladder climbed per subgroup under identical thresholds, each subgroup producing its own K claims, the board lays out PARTITION-MAJOR instead:
+
+```text
+├── 0-MT-meta/            same head · the registers gain one Queue COLUMN per partition
+├── 1-F-full/             FD→FI→FK→FW · the template ladder on the whole extract
+├── 2-<L>-<slug>/         one group per partition · mirrors 1-F-full slug for slug
+└── <last>-X-cross/       contrast · heterogeneity · the POOL/SPLIT verdict
+```
+
+Page id = partition letter + rung letter + NN (`BK01` is partition B, Knowledge, first page); page types are unchanged. The grammar's single source is `ref/partition.md`: the mirror rule, the MT00 partition register, the shared-threshold rule, the X-only comparison law, and the SPLIT verdict as the only birth certificate a per-partition child board may cite. The choice of layout is made once, at scaffold.
 
 Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each Insight Page owns its own bounded `probe/`; Meta, Brief, and Design Pages own none.
 
@@ -279,6 +295,9 @@ fn/design.md            one audience/job/venue design, units as divisions
 fn/render.md            render a unit through the page's render/ plugin
 fn/feedback.md          family feedback
 fn/digest.md            session feedback digestion
+
+ref/partition.md        the partition-major layout grammar · a REFERENCE, not a verb:
+                        fn/ holds procedures someone runs; a grammar is consulted
 ```
 
 The old stage specialists under `_old/` are compatibility readers during migration and are not the target architecture.

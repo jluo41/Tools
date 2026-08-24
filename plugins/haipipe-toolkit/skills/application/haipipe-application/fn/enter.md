@@ -29,12 +29,15 @@ Then state the frontier and maturity from the vocabulary in `SKILL.md` §Status,
 
 ## Scaffold, only on an explicit yes
 
-Ask for two subjects before creating anything, because a board's folder name says its subject and renaming one later breaks every PageX binding into it.
+Ask for two subjects and one layout before creating anything, because a board's folder name says its subject and renaming one later breaks every PageX binding into it, and the InsightBoard's layout is made once, at scaffold.
 
 ```text
 what data will this read?      → <DataSubject>   PascalCase   SmsClickR4
 what is being designed?        → <DesignTopic>   PascalCase   YoungMaleRefill
+one story or several?          → layout          rung-major (default) | partition-major
 ```
+
+The layout ask decides the InsightBoard's group tree and nothing else. Rung-major is the default and the tree below; a subgroup that is at most a column inside an I page has not earned the other layout. Partition-major is for subgroup analysis as first-class, the same ladder per subgroup under shared thresholds: consult `ref/partition.md`, scaffold `1-F-full/` and the closing `X-cross` group in place of the four rung groups, let MT00 carry the partition register and the shared-threshold rule, and give every register Queue one column per partition (`haipipe-page-for-question` 0.2.0). The layout is never stored as a key; the group names on disk ARE the record.
 
 Create both boards with their head pages, then stop:
 
