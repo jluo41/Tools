@@ -3,9 +3,9 @@ name: haipipe-plugin-direction
 description: >-
   The direction/ plugin of a Design page: one strategy CARD per file, each declaring a bet BEFORE any artifact exists — stance toward named evidence, thesis (the design move), and expected effect with its falsification line. Cards are probe-shaped: proposed by the machine, RELEASED only by a person, then realized as one design/ unit by one arm-agent, or killed and kept as a tombstone. A card without an expected effect may not be released, which is the executable form of "never design for design's sake". Trigger: direction card, strategy card, design direction, stance, release a card, kill a direction, treatment candidate, /haipipe-plugin-direction.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-24"
-  summary: "New 260824 (JL): the design family's strategy-card plugin, probe-shaped. A direction has two lives: proposal (this plugin) and realization (the design/ unit that cites it back)."
+  summary: "0.2.0 (JL 260824): the three laws gained teeth — nine checker rules over direction/, each proven to fail on a one-way-broken board first, plus `mode: record` for pre-contract slates. 0.1.0: the strategy-card plugin, probe-shaped, with two lives."
 ---
 
 # /haipipe-plugin-direction · declare the bet before the artifact
@@ -45,6 +45,23 @@ landed: — | <DU id>                                                    (killed
 1. **Release is a person's act.** The machine proposes; only a person flips `released:`. A card at `proposed` blocks its own fan-out and nothing else, so proposing is always safe. This is the standing stop-after-draft ruling wearing its design clothes.
 2. **No expected effect, no release.** A card that cannot say what it is for and what would falsify it is not a bet; `ignore` cards state `baseline, calibrates` explicitly rather than leaving the field empty.
 3. **The grant narrows, never widens.** `grant` must sit inside the owning board's `reads:`; the unit's `evidence.md` must sit inside the grant. A `bet-against` card's grant includes the claim it bets against, because refuting something you may not read is not a bet either.
+
+## 🔎 What the checker enforces (260824)
+
+The three laws above stopped being prose on 260824. `check.py · check_design_family` reads every `direction/DR*.md` and reports:
+
+```text
+card-field-missing / -empty   any of the eight fields absent or blank
+card-state-word               a `state:` off the four-word ladder
+card-released-no-wager        released or landed with no expected effect   ← law 2
+card-released-unsigned        `state: released` with `released: ⬜`        ← law 1
+card-proposed-signed          a signature on a card still `proposed`
+card-grant-path               a grant entry resolving to nothing
+card-grant-outside-reads      a grant reaching outside the board's `reads:` ← law 3
+card-landed-ghost / -empty    `landed:` naming no unit, or missing on a landed card
+```
+
+Each was proven to FAIL on a board broken exactly that one way before it was trusted; the proofs are `tests/test_design_family.py`. A board may declare `mode: record` on board.md when it holds a PRE-CONTRACT artifact, which relaxes the vocabulary rules (a historical `released:`, no stance, no grant) and nothing structural.
 
 ## ⚙️ Writer
 

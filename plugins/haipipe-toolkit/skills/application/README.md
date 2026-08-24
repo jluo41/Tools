@@ -36,7 +36,8 @@ application/page-types/
 ├── haipipe-page-for-knowledge/    K · a proposition with strength, rivals, boundary
 ├── haipipe-page-for-wisdom/       W · counsel + Design Handoff · the only bindable level
 ├── haipipe-page-for-brief/        one DesignBoard head · what is being built, for whom
-├── haipipe-page-for-principle/    P · why this will work · the only crossing
+├── haipipe-page-for-principle/    P · why this will work · the WARRANT crossing,
+│                                      when promoted; cards grant evidence
 └── haipipe-page-for-design/       DS · one audience × job × venue message system
 ```
 
@@ -63,7 +64,7 @@ A board's folder name says its subject: the data for an InsightBoard, the topic 
 └── DesignBoard-<Program>/                e.g. DesignBoard-RefillFraming
     ├── board.md
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set · needs
-    ├── 1-P-principle/P<NN>-<slug>/       cites W · the only crossing
+    ├── 1-P-principle/P<NN>-<slug>/       cites W · the WARRANT crossing, promoted only
     └── 2-DS-design/DS<NN>-<slug>/        units as divisions · render/ plugin projections
 ```
 

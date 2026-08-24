@@ -1,11 +1,11 @@
 ---
 name: haipipe-page-for-principle
 description: >-
-  The Page Type contract for one PRINCIPLE page on a DesignBoard: a single executable design rule in the form because <W>, do <move>, within <rail>, citing exactly one Wisdom handoff from an InsightBoard. This is the ONLY DesignBoard layer that may read the InsightBoard; everything below it knows principles and nothing about evidence. Use when a settled handoff must become something a designer can act on, when a rule applies across several audiences, or when a design move has no stated warrant. Trigger: design principle, because do within, rail, warrant, page-type principle, /haipipe-page-for-principle.
+  The Page Type contract for one PRINCIPLE page on a DesignBoard: a single executable design rule in the form because <W>, do <move>, within <rail>, citing exactly one Wisdom handoff from an InsightBoard. When one exists it is the only layer that WARRANTS from the InsightBoard for more than one Design page; a direction card still GRANTS evidence by path, which is a different act. Use when a settled handoff must become something a designer can act on, when a rule applies across several audiences, or when a design move has no stated warrant. Trigger: design principle, because do within, rail, warrant, page-type principle, /haipipe-page-for-principle.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-20"
-  summary: "0.2.0 (JL 260824): DEMOTED to promotable. Principles do not exist by default; a direction card's stance carries the warrant inline. A principle page is earned by exactly two conditions: one warrant reused across two or more Design pages, or two InsightBoards in conflict needing an adjudication with a Log. 0.1.0: one rule, one warrant."
+  version: "0.2.1"
+  last_updated: "2026-08-24"
+  summary: "0.2.1 (JL 260824): the description and the wall still carried the pre-demotion doctrine (principle as the only InsightBoard reader, Design never binding a W) while 0.2.0 had already moved the warrant onto the card; the wall now shows TWO crossings, warrant and grant. 0.2.0: DEMOTED to promotable. Principles do not exist by default; a direction card's stance carries the warrant inline. A principle page is earned by exactly two conditions: one warrant reused across two or more Design pages, or two InsightBoards in conflict needing an adjudication with a Log. 0.1.0: one rule, one warrant."
   group-token: "P"
   outline:
     mode: fixed
@@ -32,16 +32,23 @@ because <W handoff>, do <move>, within <rail>
 
 If the sentence needs an "and" between two moves, it is two principles. A rule that cannot name a `W` is not a principle, it is a preference, and it belongs in the Brief's promise or nowhere.
 
-## The wall
+## The wall, as it stands after the demotion
 
 ```text
-🔎 InsightBoard  ──── PageX ────▶  1-P-principle/   ← the ONLY crossing
-                                        │
-                                        ▼
-                                   2-DS-design/     knows principles only
+🔎 InsightBoard ─ PageX ─▶ 1-P-principle/  ← a WARRANT crossing, when promoted
+                │                │
+                │                ▼
+                │           2-DS-design/   prose cites the card's stance, or a
+                │                          promoted principle; never a W, D, I
+                │                          or K page in its own sentences
+                └───────▶ direction/ card `grant:`  ← an EVIDENCE crossing, always
+                                           names InsightBoard pages by path so the
+                                           arm-agent has something to quote
 ```
 
-A Design page never binds a `W` page directly and never opens a `D`, `I` or `K` page at all. Routing every warrant through a principle is what stops design re-interpreting evidence, and it means a changed handoff reopens one principle rather than every design that leaned on it.
+Two crossings exist and they carry different things. A WARRANT says why a division may exist, and routing it through a principle is what stops design re-interpreting evidence, so a changed handoff reopens one principle rather than every design that leaned on it. A GRANT says what an arm-agent may cite while composing; it must name pages, because a rule cannot be quoted for a rate, and it narrows inside the board's `reads:` (`haipipe-design`, the Reads Law).
+
+What a Design page still may not do is reason from evidence in its own prose. A division's sentences cite its card or a promoted principle; they never re-derive a finding from a `W`, `D`, `I` or `K` page.
 
 ## Fixed Content outline
 

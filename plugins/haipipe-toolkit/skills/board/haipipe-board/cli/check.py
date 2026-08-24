@@ -1321,6 +1321,302 @@ def check_draw_folders(d, rep):
                         " — a leftover from an archive or merge?")
 
 
+CARD_FIELDS = ["state", "stance", "depth", "thesis", "expected effect",
+               "grant", "released", "landed"]
+CARD_STATES = {"proposed", "released", "landed", "killed"}
+UNIT_STATES = {"draft", "judged"}          # accepted@v<N> is matched separately
+DEPTHS = {"copy", "copy+why", "copy+why+expectation"}
+
+
+def _repo_root(d):
+    """The OUTERMOST checkout root, for evidence written repo-relative.
+
+    Not the nearest: boards live inside submodules, and a submodule carries a
+    `.git` FILE that satisfies `.exists()` just as a directory does. Stopping
+    at the first hit returns the submodule, whose tree has no `_WorkSpace`, so
+    every result-bank citation then reads as outside the grant.
+    """
+    found = None
+    for p in [d] + list(d.parents):
+        if (p / ".git").exists():
+            found = p
+    return found
+
+
+def _resolve_cited(raw, base, root):
+    """A cited path resolves either against its own file or against the repo."""
+    raw = raw.strip().strip("`").rstrip(".,;:")
+    if not raw or raw.startswith(("http", "#", "~")):
+        return None
+    for cand in [base / raw] + ([root / raw] if root else []):
+        try:
+            if cand.exists():
+                return cand.resolve()
+        except OSError:
+            pass
+    return None
+
+
+def _cited_paths(text):
+    """Every path-looking token in a page, backticked or bare.
+
+    The bare pattern must not be allowed to start INSIDE a path: `../../x.md`
+    also matches from its second character, which yields `./../x.md`, a string
+    that resolves to nothing and reads as a dead link. That false positive
+    fired on twenty-three real units the first time this ran.
+    """
+    out = []
+    for m in re.finditer(r'`([^`\s]+\.(?:md|csv|txt|parquet|json))[^`]*`', text):
+        out.append(m.group(1))
+    for m in re.finditer(r'(?<![`\w./])((?:\.\.?/|designs/|_WorkSpace/|examples/)'
+                         r'[^\s`)\]]+\.(?:md|csv|txt|parquet|json))', text):
+        out.append(m.group(1))
+    return list(dict.fromkeys(out))
+
+
+def _card_field(text, key):
+    m = re.search(r'^' + re.escape(key) + r':[ \t]*(.*)$', text, re.M)
+    return m.group(1).strip() if m else None
+
+
+def check_design_family(d, rep):
+    """The design family's laws, given teeth (JL 260824).
+
+    Until this ran, the family had eight written laws and two checks, both of
+    them about `reads:`. A session on 260824 produced four real defects and a
+    human or an agent caught every one: a dispatch packet that over-quoted its
+    grant, a duplicate message counted twice, a grant path one directory short,
+    and a unit citing its own card through a dead link. The last of those broke
+    the plugin's first law, that the wager lives on the card and the unit cites
+    it, and nothing mechanical noticed. These checks are that gap closed.
+
+    A board may declare `mode: record` on board.md. A record board holds a
+    pre-contract artifact, so its cards carry a historical `released:` and may
+    have no stance and no grant; the vocabulary was written after the thing it
+    describes, and forcing the words would forge a provenance. Everything
+    structural is still checked on a record board: files, depth, resolvable
+    references, and the evidence-within-grant chain when a grant exists.
+    """
+    bmd = d / "board.md"
+    if not bmd.is_file():
+        return
+    btext = bmd.read_text(encoding="utf-8")
+    record = (_card_field(btext, "mode") or "").strip() == "record"
+    root = _repo_root(d)
+    reads = _card_field(btext, "reads") or ""
+    read_dirs = set()
+    for entry in [e.strip() for e in reads.split("·") if e.strip()]:
+        # A board named in `reads:` is two places on disk: its page tree, and
+        # the result bank its tasks write to. A grant that cites the bank is
+        # citing that board's own evidence, so both count as inside the read.
+        cands = [d.parent / entry, Path(entry)]
+        if root:
+            cands.append(root / "_WorkSpace" / "InsightBoardResult" / entry)
+        for cand in cands:
+            if cand.is_dir():
+                read_dirs.add(cand.resolve())
+
+    for cards_dir in sorted(d.rglob("direction")):
+        if not cards_dir.is_dir():
+            continue
+        parts = cards_dir.relative_to(d).parts
+        if "board" in parts or any(p.startswith("_") for p in parts):
+            continue
+        page = cards_dir.parent
+        units_dir = page / "design"
+        for card in sorted(cards_dir.glob("DR*.md")):
+            cname = f"{page.name} · {card.name}"
+            ctext = card.read_text(encoding="utf-8")
+            vals = {k: _card_field(ctext, k) for k in CARD_FIELDS}
+
+            for k in CARD_FIELDS:
+                if vals[k] is None:
+                    rep.add(ERROR, "card-field-missing", cname,
+                            f"a direction card declares `{k}:`; without it the bet is "
+                            "not written down, which is the one thing the card is for")
+                elif not vals[k]:
+                    rep.add(ERROR, "card-field-empty", cname,
+                            f"`{k}:` is present but empty")
+
+            state = (vals["state"] or "").split()[0] if vals["state"] else ""
+            if state and state not in CARD_STATES:
+                rep.add(ERROR, "card-state-word", cname,
+                        f"`state: {state}` is not on the ladder "
+                        f"{' · '.join(sorted(CARD_STATES))}")
+
+            # Law: no expected effect, no release.
+            eff = (vals["expected effect"] or "").strip()
+            if state in {"released", "landed"} and len(eff) < 12:
+                rep.add(ERROR, "card-released-no-wager", cname,
+                        "a card at `released` or `landed` must say what it is for and "
+                        "what would falsify it; releasing a card with no wager is "
+                        "designing for design's sake, which this plugin exists to stop")
+
+            # Law: release is a person's act, recorded.
+            rel = (vals["released"] or "").strip()
+            if state in {"released", "landed"} and rel in {"", "⬜", "-", "—"}:
+                rep.add(ERROR, "card-released-unsigned", cname,
+                        "`state:` says released but `released:` carries no signature; "
+                        "a release with nobody's name on it passed no gate")
+            if state == "proposed" and rel not in {"", "⬜", "-", "—"}:
+                rep.add(ERROR, "card-proposed-signed", cname,
+                        "`released:` is signed while `state:` still says proposed")
+
+            # Law: the grant narrows, never widens.
+            grant_paths = set()
+            graw = (vals["grant"] or "").strip()
+            if graw and not graw.lower().startswith("none"):
+                for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
+                    hit = _resolve_cited(raw, card.parent, root)
+                    if hit is None:
+                        rep.add(ERROR, "card-grant-path", f"{cname} -> {raw}",
+                                "a grant entry resolves to nothing, so every citation "
+                                "under it is unverifiable")
+                        continue
+                    grant_paths.add(hit)
+                    if read_dirs and not any(
+                            r == hit or r in hit.parents for r in read_dirs) \
+                            and d.resolve() not in hit.parents:
+                        rep.add(ERROR, "card-grant-outside-reads", f"{cname} -> {raw}",
+                                "a grant entry sits outside every board named in "
+                                "`reads:`; the chain must narrow at each level")
+            elif not record and state in {"released", "landed"} \
+                    and not (vals["stance"] or "").startswith("ignore"):
+                rep.add(WARN, "card-grant-none", cname,
+                        "a card with no grant may cite nothing; only an `ignore` "
+                        "card is normally born that way")
+
+            # Law: one released card, one unit.
+            landed = (vals["landed"] or "").strip()
+            if landed and landed not in {"—", "-", ""} and state != "killed":
+                if not (units_dir / landed).is_dir() and \
+                        not list(units_dir.glob(landed + "*")):
+                    rep.add(ERROR, "card-landed-ghost", f"{cname} -> {landed}",
+                            "`landed:` names a unit folder that is not on disk")
+            if state == "landed" and landed in {"—", "-", ""}:
+                rep.add(ERROR, "card-landed-empty", cname,
+                        "`state: landed` with no unit named")
+
+        # ── the units ────────────────────────────────────────────────────────
+        if not units_dir.is_dir():
+            continue
+        for unit in sorted(p for p in units_dir.iterdir() if p.is_dir()):
+            if unit.name.startswith("_"):
+                continue
+            uname = f"{page.name} · {unit.name}"
+            readme = unit / "README.md"
+            if not readme.is_file():
+                rep.add(ERROR, "unit-no-readme", uname,
+                        "a unit folder without README.md has no identity")
+                continue
+            rtext = readme.read_text(encoding="utf-8")
+            depth = (_card_field(rtext, "depth") or "").strip()
+            ustate = (_card_field(rtext, "state") or "").strip()
+
+            for req in ["spec.md", "evidence.md"]:
+                if not (unit / req).is_file():
+                    rep.add(ERROR, "unit-file-missing", f"{uname} -> {req}",
+                            "the unit contract names README, spec, evidence and content/")
+            if not (unit / "content").is_dir() or not any((unit / "content").iterdir()):
+                rep.add(ERROR, "unit-no-content", uname,
+                        "content/ is the artifact itself; an empty one is not a design")
+            if depth and depth not in DEPTHS:
+                rep.add(ERROR, "unit-depth-word", uname,
+                        f"`depth: {depth}` is not one of {' · '.join(sorted(DEPTHS))}")
+            if depth.startswith("copy+why") and not (unit / "why.md").is_file():
+                rep.add(ERROR, "unit-depth-no-why", uname,
+                        f"`depth: {depth}` promises a why.md and there is none")
+            if depth == "copy" and (unit / "why.md").is_file():
+                rep.add(WARN, "unit-depth-extra-why", uname,
+                        "`depth: copy` carries a why.md it did not declare")
+            if ustate and not record and ustate not in UNIT_STATES \
+                    and not re.match(r"accepted@v\d+$", ustate):
+                rep.add(ERROR, "unit-state-word", uname,
+                        f"`state: {ustate}` is not draft, judged or accepted@v<N>")
+
+            # Law: the wager lives on the card, and the unit CITES it.
+            back = (_card_field(rtext, "direction") or "").strip()
+            owner = None
+            if not back:
+                rep.add(ERROR, "unit-no-direction", uname,
+                        "README declares no `direction:`, so the unit names no bet")
+            else:
+                hits = list(cards_dir.glob(back + "*.md"))
+                if not hits:
+                    rep.add(ERROR, "unit-direction-ghost", f"{uname} -> {back}",
+                            "`direction:` names a card that is not in direction/")
+                else:
+                    owner = hits[0]
+
+            # Every relative reference inside the unit must resolve. A dead
+            # pointer to the owning card makes the wager unreachable from the
+            # artifact, which is exactly how DU03 failed on 260824.
+            for f in sorted(unit.rglob("*.md")):
+                ftext = f.read_text(encoding="utf-8")
+                for raw in _cited_paths(ftext):
+                    if not raw.startswith("."):
+                        continue
+                    if _resolve_cited(raw, f.parent, root) is None:
+                        rep.add(ERROR, "unit-dead-reference",
+                                f"{uname} · {f.name} -> {raw}",
+                                "a relative reference inside a unit resolves to "
+                                "nothing; if it points at the owning card, the "
+                                "wager is unreachable from the artifact")
+
+            # Law: evidence within grant. Only citations that leave this board
+            # are evidence; a pointer to the unit's own card is structure.
+            ev = unit / "evidence.md"
+            if ev.is_file() and owner is not None:
+                gtext = owner.read_text(encoding="utf-8")
+                graw = (_card_field(gtext, "grant") or "").strip()
+                if graw and not graw.lower().startswith("none"):
+                    granted = set()
+                    for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
+                        hit = _resolve_cited(raw, owner.parent, root)
+                        if hit:
+                            granted.add(hit)
+                    for raw in _cited_paths(ev.read_text(encoding="utf-8")):
+                        hit = _resolve_cited(raw, ev.parent, root)
+                        if hit is None or d.resolve() in hit.parents:
+                            continue
+                        if hit not in granted:
+                            rep.add(ERROR, "unit-evidence-outside-grant",
+                                    f"{uname} -> {raw}",
+                                    "this unit cites evidence its card never granted; "
+                                    "the chain reads -> grant -> evidence narrows at "
+                                    "every step and this widens it")
+
+
+def check_plugin_roster(d, rep):
+    """A page subfolder is board material only if the roster names it.
+
+    The roster states this as its own opening law, and it has been broken three
+    times: `outline/` was real storage for four days before it had a row,
+    `direction/` and `design/` shipped with contracts and no row, and
+    `render/` shipped a SKILL that pointed at "the row this plugin expands"
+    while that row did not exist. Prose could not stop it; a scan can.
+    """
+    roster = HERE.parent / "haipipe-plugin" / "ref" / "roster.md"
+    if not roster.is_file():
+        return
+    names = set(re.findall(r'^\|\s*`([a-z_]+)/`', roster.read_text(encoding="utf-8"), re.M))
+    if not names:
+        return
+    for md in sorted(d.rglob("*.md")):
+        parts = md.relative_to(d).parts
+        if "board" in parts or any(p.startswith("_") for p in parts):
+            continue
+        page = md.parent
+        if md.stem != page.name:
+            continue
+        for sub in sorted(p for p in page.iterdir() if p.is_dir()):
+            if sub.name.startswith("_") or sub.name in names:
+                continue
+            rep.add(WARN, "plugin-not-rostered", f"{page.name}/{sub.name}/",
+                    "this subfolder is not on the plugin roster, so no surface, "
+                    "writer or boundary is declared for it; add the row first")
+
+
 def check_page(d, rep):
     """The built site: local hrefs resolve, tags balance, ids are unique.
 
@@ -1552,6 +1848,8 @@ def main():
         check_face(p, name, rep, links, page_ids, decision_only)
     check_topic_entries(d, pages, rep)
     check_draw_folders(d, rep)
+    check_design_family(d, rep)
+    check_plugin_roster(d, rep)
     check_page(d, rep)
     check_css(rep)
     if not a.no_template:

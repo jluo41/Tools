@@ -141,9 +141,11 @@ page-types/                                     grain, freshness · NO question
                                                 venue scope, needs raised
                  haipipe-page-for-principle     P · because <W>, do <move>,
                                                 within <rail> · the only layer
-                                                that reads the InsightBoard
+                                                that WARRANTS from the InsightBoard
                  haipipe-page-for-design        DS · one audience × job × venue,
-                                                units as divisions
+                                                units as divisions · its direction/
+                                                cards GRANT evidence by path, which
+                                                is a different act from warranting
 
 task/            haipipe-page-for-insight       the CONSUMER-NEUTRAL whole chain
 page-types/                                     in one page, on the Insights Board

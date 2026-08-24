@@ -4,9 +4,9 @@ description: >-
   The design door of the Application family: one place assembling the laws for a DesignBoard that designs as BETS. A board declares reads: (which InsightBoards anything on it may cite); a Brief declares born-of: (the signed W handoff or the mandate it exists because of); a Design page proposes strategy cards in its direction/ plugin (stance toward evidence, thesis, expected effect), a person releases each card, one arm-agent realizes each released card as one artifact unit in the design/ plugin, a judge checks the unit against its compiled spec, and a person accepts each division. Ends at ACCEPTED, never ships. Use for creating or driving a DesignBoard, writing a brief, proposing or releasing direction cards, realizing units, message or email or UI design, reviewing and accepting. Trigger: design board, design door, direction card, release cards, design unit, message design, email design, ui design, born-of, reads whitelist, stance, /haipipe-design.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-24"
-  summary: "New 260824 (JL): the design door, living inside the application family (a DesignBoard cannot exist outside an Application). Board and page layers invent nothing; the new machinery is two page plugins, one agent, and three declarations (reads:, born-of:, stance)."
+  summary: "0.2.0 (JL 260824): the Reads Law now says a grant NAMES InsightBoard pages without breaching the principle layer's warrant monopoly, and covers a board that declares no reads: at all — `mode: record`, for pre-contract artifacts. 0.1.0: the door, two plugins, one agent, three declarations."
 ---
 
 # /haipipe-design · design as bets, within a declared grant
@@ -33,6 +33,10 @@ Authority to cite evidence narrows at every level, and each level must sit insid
 ③ DR card     stance: follow A01·W01 · grant   the bet's evidence · ⊆ ①
 ④ DU unit     evidence.md rows                 what the artifact cites · ⊆ ③
 ```
+
+A grant NAMES InsightBoard pages by path, and that is not a breach of the principle layer's monopoly: `haipipe-page-for-principle` owns the WARRANT, the reason a division may exist, while a grant is the evidence an arm-agent may quote while composing. Warranting and granting are different acts and the chain above governs only the second.
+
+**A board with no `reads:` at all.** Declaring none is legal and means exactly what it says: nothing on this board may cite anything, so every card's grant is `none` and every unit's `evidence.md` records an absence. That is the correct shape for a board holding a PRE-CONTRACT artifact, one produced before this vocabulary existed, and such a board declares `mode: record` on `board.md`. Record mode relaxes the WORDS and nothing structural: a card may carry a historical `released:` rather than a person's tick, may have no stance, and a unit may sit at `state: historical-record`; files, depth, resolvable references and evidence-within-grant are still checked. Writing a `reads:` line for a source that carries no run identity would assert a grant chain that never existed, which is the one thing a record board must not do.
 
 ## The two births of a Brief
 

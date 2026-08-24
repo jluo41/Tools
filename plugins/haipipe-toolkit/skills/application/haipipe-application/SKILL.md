@@ -131,13 +131,17 @@ A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821
 │   ├── 3-K-knowledge/K<NN>-<slug>/       claimed · cites I
 │   └── 4-W-wisdom/W<NN>-<slug>/          counsel + handoff · cites K
 └── DesignBoard-<Program>/                e.g. DesignBoard-RefillFraming
-    ├── board.md
+    ├── board.md                          reads: · the evidence whitelist
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
-    ├── 1-P-principle/P<NN>-<slug>/        cites W · the only crossing
+    ├── 1-P-principle/P<NN>-<slug>/        cites W · the only WARRANT crossing
     └── 2-DS-design/DS<NN>-<slug>/         units as divisions
-        ├── pagex/ outline/ display/
-        └── render/                       the unit as the recipient sees it
+        ├── direction/                    strategy cards · the bet, before any copy
+        ├── design/                       artifact units · one per released card
+        ├── render/                       the unit as the recipient sees it
+        └── pagex/ outline/ display/
 ```
+
+The InsightBoard tree above is the RUNG-MAJOR layout; the next section gives the partition-major alternative, and a page's path depends on which one its board uses.
 
 A board is **one head page's scope**: one Meta is one source scope (one prepared extract), one Brief is one program scope (one outcome, venue and promise). A new source extract is a new InsightBoard; a new question is a new chain inside it. A SUBGROUP of an existing extract is never a new board by default: it is a partition (next section), and it may become its own board only by citing a SPLIT verdict (`ref/partition.md`). A new program is a new DesignBoard; a new audience is a new DS page inside it.
 
