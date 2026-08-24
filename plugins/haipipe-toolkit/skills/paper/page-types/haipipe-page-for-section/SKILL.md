@@ -6,9 +6,9 @@ description: >-
   and binds prose to Page-local values, citations, probes, and displays. Use when
   outlining, drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.3.1"
+  version: "0.4.0"
   last_updated: "2026-08-24"
-  summary: "0.3.1 (JL 260824): the tracked tex lives in the telling's DESK ROOM (<N>-<desk><year>/sections/), its figures include from that room's displays/ copies and its keys resolve in that room's reference.bib — rooms are self-contained per the door's room law; board address is 0-paperboard/. 0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
+  summary: "0.4.0 (JL 260824): one B group per desk (journey 0.5.0) — the desk's main units, appendix units, AND its rounds share B<x>-<desk>/, so one folder tells one desk's whole downstream story; split Ba1/Ba2 pair groups grandfathered. 0.3.1 (JL 260824): the tracked tex lives in the telling's DESK ROOM (<N>-<desk><year>/sections/), its figures include from that room's displays/ copies and its keys resolve in that room's reference.bib — rooms are self-contained per the door's room law; board address is 0-paperboard/. 0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
   group-token: "S<D> | A<D>"
   outline:
     mode: resolved
@@ -41,17 +41,21 @@ Seed boundary
 
 Prose never outranks a changed Narrative row or binding desk rule.
 
-## 🏠 Runtime home (0.3.1)
+## 🏠 Runtime home (0.4.0)
 
 ```text
 0-paperboard/
-├── Ba1-SM-ms-main/        S<D><NN>-<kind>   first desk's main reading order
-├── Ba2-AM-ms-appendix/    A<D><NN>-<slug>   its appendix units
-└── Bb1-SW-wise-main/      a later desk's pair (a pair may be single)
+├── Ba-<desk1>/            S<D><NN>-<kind>   the desk's main reading order
+│                          A<D><NN>-<slug>   its appendix units
+│                          RD<NN>-<event>    its rounds live here too (P6)
+└── Bb-<desk2>/            a later desk, same shape
 ```
 
-Tokens carry the desk letter per the door's group grammar: `S<D>` for main
-units, `A<D>` for appendix units, `<D>` the desk's first distinctive letter.
+One B group per desk (journey 0.5.0): the desk's main units, appendix units,
+and rounds share the group, so one folder tells one desk's whole downstream
+story. Tokens carry the desk letter per the door's group grammar: `S<D>` for
+main units, `A<D>` for appendix units, `<D>` the desk's first distinctive
+letter; split Ba1/Ba2 pair groups are grandfathered.
 
 **Where the words live (0.3.1)**: the tex a unit page tracks sits in its
 telling's desk room, `<N>-<desk><year>/sections/`, and that room is

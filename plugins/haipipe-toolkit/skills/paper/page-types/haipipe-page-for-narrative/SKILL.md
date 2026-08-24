@@ -2,20 +2,22 @@
 name: haipipe-page-for-narrative
 description: >-
   The Paper Page Type for one venue-aligned Narrative: how one paper is told to
-  one desk. It converts the Seed's Establishment Board and one shared Venue Page
+  one desk. It converts the Seed's §8 handoff (carrying its Establishment
+  Board ids) and one shared Venue Page
   into the paper's venue decision, claims with E-row parents, argument order,
   reader journey, evidence and display allocation, and a detailed
-  one-row-per-section outline. One page per target venue, living beside the Seed
-  in the story group. Use when designing or retargeting a paper story, deciding
+  one-row-per-section outline. One page per target venue, in the paper's own
+  narrative group (A2-NA) beside the venue-free story group. Use when
+  designing or retargeting a paper story, deciding
   claim roles, repairing the section map, or giving Section Pages executable
   handoffs. Trigger: narrative page, paper story, claim system, claim roles,
   argument arc, reader journey, section map, venue decision, retarget,
   page-type narrative, /haipipe-page-for-narrative.
 metadata:
-  version: "0.4.3"
+  version: "0.5.0"
   last_updated: "2026-08-24"
-  summary: "0.4.3 (JL 260824): ideation-first story order — narratives start at SD02, after SD00-ideation and SD01-seed. 0.4.2 (JL 260824): the map row names the telling's DESK ROOM files (<N>-<desk><year>/sections/...), because each telling owns a self-contained room with its own displays/ copies and reference.bib per the door's room law; board address is 0-paperboard/. 0.4.1 renames the runtime home to the A1-SD-story group under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, Narratives live beside the Seed as SD<NN> pages."
-  group-token: "SD"
+  summary: "0.5.0 (JL 260824): narratives move OUT of the story group into their own A2-NA-narrative group — NA<NN>-narrative-<desk>, one page per desk in arrival order, token NA — because journey 0.5.0 makes the story group the venue-free P0-P3 head (ideation, seed, roadmap, collection) and Narrative the P4 phase; SD-numbered narratives are grandfathered. 0.4.4 (JL 260824): ideation 0.5.0 vocabulary in the story-group figure (SD00 line reads 'the ideas'). 0.4.3 (JL 260824): ideation-first story order — narratives start at SD02, after SD00-ideation and SD01-seed. 0.4.2 (JL 260824): the map row names the telling's DESK ROOM files (<N>-<desk><year>/sections/...), because each telling owns a self-contained room with its own displays/ copies and reference.bib per the door's room law; board address is 0-paperboard/. 0.4.1 renames the runtime home to the A1-SD-story group under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page."
+  group-token: "NA"
   outline:
     mode: grammar
     source: "this SKILL.md"
@@ -27,21 +29,23 @@ metadata:
 Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
 Declare `page-type: narrative` and record the shared Venue Page it binds.
 
-In a runtime paper board a Narrative lives BESIDE the Seed, in the one story
-group, as an `SD<NN>` page (JL 260821; home renamed under the 260823 scaffold
-grammar, `0-SD-seed/` boards grandfathered):
+In a runtime paper board Narratives are the P4 group of their own — one page
+per desk, in arrival order, reading the story group's Seed from next door
+(journey 0.5.0, JL 260824; SD-numbered narratives inside the story group are
+grandfathered):
 
 ```text
-0-paperboard/A1-SD-story/
-├── SD00-ideation/                the nursery · the story's page zero
-├── SD01-seed/                    what the paper IS · venue-free · exactly one
-├── SD02-narrative-<venue>/       how it is told to desk 1
-└── SD03-narrative-<venue>/       how it is told to desk 2
+0-paperboard/
+├── A1-SD-story/                  P0-P3 · ideation · seed · roadmap · collection
+│                                 the venue-free head this group never joins
+└── A2-NA-narrative/
+    ├── NA01-narrative-<desk>/    how the paper is told to desk 1
+    └── NA02-narrative-<desk>/    how it is told to desk 2
 ```
 
-The group law: the story group decides the telling; no manuscript prose lives
-here. SD00 raises ideas and SD01 stays venue-free; every SD<NN> above SD01
-names its venue.
+The group law: the narrative group decides the telling, one desk one page; no
+manuscript prose lives here, and every NA<NN> names its desk in its slug. The
+story group stays wholly venue-free — a venue word inside A1 is a leak.
 
 ## 📐 Grain and boundary
 
@@ -153,7 +157,9 @@ authority over Narrative.
 Narrative uses the same Page-local lanes as every Page:
 
 ```text
-pagex/     Probe's accepted-Page lane: Seed, Venue, analysis, or literature Pages
+pagex/     Probe's accepted-Page lane: the Seed (§8 handoff only — never the
+           Roadmap or Collection), the bank Venue Page, analysis or
+           literature Pages
 probe/     Probe's Task/Discovery QA lane: unresolved judgments and missing support
 bibex/     citations supporting framing, method rationale, limitations, or claims
 display/   zero or more maps, tables, or figures that make the argument inspectable

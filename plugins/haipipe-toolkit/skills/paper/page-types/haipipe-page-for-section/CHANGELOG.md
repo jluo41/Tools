@@ -1,3 +1,9 @@
+## 0.4.0 — 2026-08-24
+
+- **One B group per desk** (JL 260824, journey 0.5.0): main units, appendix
+  units, and the desk's rounds share `B<x>-<desk>/`; split Ba1/Ba2 pair
+  groups grandfathered. Tokens S<D>/A<D> unchanged.
+
 
 ## 0.3.0 — 2026-08-23
 

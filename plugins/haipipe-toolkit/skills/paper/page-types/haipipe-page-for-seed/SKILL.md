@@ -11,9 +11,9 @@ description: >-
   Trigger: seed page, paper identity, pitch, one-minute story, establishment
   board, what can we claim, page-type seed, /haipipe-page-for-seed.
 metadata:
-  version: "0.4.4"
+  version: "0.5.0"
   last_updated: "2026-08-24"
-  summary: "0.4.4 (JL 260824): ideation 0.5.0 vocabulary — the origin page's cell is `went to` (was graduated-to), 'ledger/nursery/graduation' wording dropped from the birth-certificate clause and checks. 0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
+  summary: "0.5.0 (JL 260824): journey 0.5.0 story order — the story group becomes the venue-free P0-P3 head (SD00-ideation, SD01-seed, SD02-roadmap, SD03-collection) and Narratives move out to A2-NA-narrative; the Seed is the establish loop's scoreboard: Roadmap plans against its §6 gaps, Collection proposes settles, and this page alone writes E-row flips, each citing the landed QA path. 0.4.4 (JL 260824): ideation 0.5.0 vocabulary — the origin page's cell is `went to` (was graduated-to), 'ledger/nursery/graduation' wording dropped from the birth-certificate clause and checks. 0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -25,21 +25,24 @@ metadata:
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: seed`. In a runtime paper board this page lives at
-`0-paperboard/A1-SD-story/SD01-seed/`, second page of the story group it
-shares with its Ideation origin and the paper's Narratives (scaffold grammar
-JL 260823, ideation-first order JL 260824; older boards are grandfathered):
+`0-paperboard/A1-SD-story/SD01-seed/`, second page of the venue-free story
+group it shares with its Ideation origin and the establish loop's two working
+pages (journey 0.5.0, JL 260824; older boards with narratives inside this
+group are grandfathered):
 
 ```text
 0-paperboard/A1-SD-story/
 ├── SD00-ideation/                the ideas this paper came from
 ├── SD01-seed/                    what the paper IS · venue-free · exactly one
-├── SD02-narrative-<venue>/       how it is told to desk 1
-└── SD03-narrative-<venue>/       how it is told to desk 2
+├── SD02-roadmap/                 where to go next · plans against §6's gaps
+└── SD03-collection/              what came back · proposes the settles
 ```
 
-The group law: the story group decides the telling; no manuscript prose lives
-here. SD00 raises ideas and SD01 stays venue-free; every SD<NN> above SD01
-names its venue.
+The group law: the story group is the paper's venue-free head (P0–P3); no
+manuscript prose and no venue word lives here — the tellings start next door
+in `A2-NA-narrative/`. In the establish loop this page is the SCOREBOARD:
+the Roadmap plans, the Collection registers, and the Seed ALONE writes E-row
+flips, each flip citing the landed QA path the other two pages carry.
 
 ## 🌱 Grain and boundary
 

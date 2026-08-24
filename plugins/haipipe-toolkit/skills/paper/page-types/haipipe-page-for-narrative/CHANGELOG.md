@@ -1,7 +1,28 @@
+## 0.5.0 — 2026-08-24
+
+- **Narratives move out of the story group** (JL 260824, journey 0.5.0):
+  home is now `A2-NA-narrative/NA<NN>-narrative-<desk>`, one page per desk in
+  arrival order, token NA. The story group becomes the venue-free P0-P3 head
+  (ideation, seed, roadmap, collection); SD-numbered narratives grandfathered.
+
+## 0.4.4 — 2026-08-24
+
+- **Ideation 0.5.0 vocabulary** (JL 260824): the story-group figure's SD00
+  line reads "the ideas · the story's page zero". No mechanics changed.
+
 ## 0.4.3 — 2026-08-24
 
 - **Ideation-first story order** (JL 260824): narratives start at SD02, after
-  SD00-ideation and SD01-seed; the map row names the telling's desk-room files.
+  SD00-ideation and SD01-seed.
+
+## 0.4.2 — 2026-08-24
+
+- **The map row names the telling's DESK ROOM files**
+  (`<N>-<desk><year>/sections/...`), because each telling owns a
+  self-contained room with its own displays/ copies and reference.bib per the
+  door's room law; board address is `0-paperboard/`. (Entry added in the
+  260824 family audit, which found the version named in the summary with no
+  log row here.)
 
 ## 0.4.1 — 2026-08-23
 

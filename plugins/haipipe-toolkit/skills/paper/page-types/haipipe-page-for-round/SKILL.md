@@ -11,9 +11,9 @@ description: >-
   Use when opening, triaging, applying, answering, checking, or closing a paper
   revision round.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823): a Round parents to a NAMED Narrative — including a foreign-desk round whose telling has no page on this board, which parents to the Seed with the desk named in intake; the routing table gains the Seed as a destination for concerns demanding evidence the paper does not hold. Runtime home C1-RD-round; received letters live inside the Round page's folder, never at repo root."
+  version: "0.3.0"
+  last_updated: "2026-08-24"
+  summary: "0.3.0 (JL 260824): rounds move into their desk's own B group (B<x>-<desk>/RD<NN>-<event>/) beside that desk's section pages, per journey 0.5.0's P5-P6 group mapping; the lone C1-RD-round group is grandfathered; a foreign-desk round mints its desk's B group even when it holds only RD pages. 0.2.0 (JL 260823): a Round parents to a NAMED Narrative — including a foreign-desk round whose telling has no page on this board, which parents to the Seed with the desk named in intake; the routing table gains the Seed as a destination for concerns demanding evidence the paper does not hold; received letters live inside the Round page's folder, never at repo root."
   group-token: "RD"
   outline:
     mode: fixed
@@ -72,7 +72,12 @@ response-due      date, explicit none, or unknown
 Store supplied letters or memos INSIDE this Round page's folder — a received
 letter floating at the repo root is homeless material (JL 260823). Preserve
 their wording; never rewrite received material into a cleaner second source.
-The runtime group is `0-paperboard/C1-RD-round/RD<NN>-<desk>-<event>/`.
+The runtime home is the DESK'S OWN B GROUP (journey 0.5.0, JL 260824):
+`0-paperboard/B<x>-<desk>/RD<NN>-<event>/`, beside that desk's section pages,
+so one group tells one desk's whole downstream story — P5 units and P6
+rounds together. A foreign-desk round mints its desk's B group even when the
+group holds only RD pages. Boards with the older lone `C1-RD-round/` group
+are grandfathered.
 
 ## 📐 Required Content roles
 

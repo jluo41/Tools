@@ -1,3 +1,11 @@
+## 0.5.0 — 2026-08-24
+
+- **The story group becomes the venue-free P0-P3 head** (JL 260824, journey
+  0.5.0): SD02-roadmap and SD03-collection join beside the seed; narratives
+  leave for A2-NA-narrative. The Seed is the establish loop's SCOREBOARD:
+  Roadmap plans against §6's gaps, Collection proposes settles, and this page
+  alone writes E-row flips, each citing the landed QA path.
+
 ## 0.4.4 — 2026-08-24
 
 - **Ideation 0.5.0 vocabulary** (JL 260824): the origin page's exit cell is

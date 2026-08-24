@@ -1,3 +1,20 @@
+## 0.5.2 — 2026-08-24
+
+- **Fork clause repaired** (pre-commit audit, JL 260824): the grain-and-home
+  section still read "a second ideation page … takes the next free SD number",
+  a rule journey 0.5.0 had silently broken by fixing the story group's four
+  roles one each (SD00 ideation · SD01 seed · SD02 roadmap · SD03 collection).
+  A second ideation page would both violate "one each" and sort a P0 page after
+  the P3 page. Now: a board holds exactly ONE ideation page, and a direction
+  that genuinely forks mints its own `Paper-<Slug>/` with its own SD00, the two
+  linked through the originating row's `went to`. No other rule changed.
+
+## 0.5.1 — 2026-08-24
+
+- Home figure gains the story group's two new siblings — SD02-roadmap and
+  SD03-collection per journey 0.5.0 — and notes the tellings live next door
+  in A2-NA-narrative.
+
 ## 0.5.0 — 2026-08-24
 
 - **The page adopts the source reports' own structure** (JL 260824: "尽量 map

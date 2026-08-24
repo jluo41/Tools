@@ -1,3 +1,21 @@
+## 0.5.0 — 2026-08-24
+
+- **Seven phases, named by their authority pages** (JL 260824: "phase 和 page
+  名字起得一模一样"): Ideation (ideate) → Seed (establish) → Roadmap (route) →
+  Collection (collect) → Narrative (tell) → Section (realize) → Round
+  (respond). The old verbs survive as parenthesized aliases (JL: keep the
+  word in the phase's parentheses); the naming law forbids any future phase
+  from taking a name its authority page does not carry.
+- **Roadmap and Collection promoted to full journey phases** (JL 260824,
+  overruling the engine-inside-P1 design): P1↔P2↔P3 is the establish loop —
+  Seed states gaps, Roadmap plans and a person releases, Collection collects
+  and the settle is written back on the Seed; the loop's only exit is G4.
+- **Gates renumbered G0-G7** with the old G1-G4 gazetted in-file; new G1
+  (skeleton stands), G2 (every gap has a released row or waiver), G3 (lap
+  done-when + settle on the Seed).
+- **Group mapping**: P0-P3 → A1-SD-story, P4 → A2-NA-narrative, P5-P6 → one
+  B group per desk holding sections AND rounds; old layouts grandfathered.
+
 ## 0.4.0 — 2026-08-24
 
 - **Ideation-first story order** (JL 260824, with ideation 0.4.0): P0's

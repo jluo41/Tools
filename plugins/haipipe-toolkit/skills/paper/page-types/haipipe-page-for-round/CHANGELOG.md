@@ -1,3 +1,10 @@
+## 0.3.0 — 2026-08-24
+
+- **Rounds live in their desk's B group** (JL 260824, journey 0.5.0 P5-P6
+  mapping): `B<x>-<desk>/RD<NN>-<event>/` beside that desk's section pages;
+  the lone C1-RD-round group is grandfathered; a foreign-desk round mints its
+  desk's B group even when the group holds only RD pages.
+
 ## 0.2.0 — 2026-08-23
 
 - **A Round parents to a NAMED Narrative — or to the Seed when the telling has
