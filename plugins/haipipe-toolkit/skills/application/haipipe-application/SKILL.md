@@ -4,9 +4,9 @@ description: >-
   One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.16.0"
-  last_updated: "2026-08-23"
-  summary: "0.15.0 is the contradiction sweep (JL 260823, four-reviewer audit): dead fn pointers cleared, the cohort rule qualified against the SPLIT-verdict licensing rule, the probe authority line corrected, and the four rung contracts + meta + question updated for partition-major in step. 0.14.0 added the sibling RUN head; 0.13.0 the partition-major layout."
+  version: "0.17.0"
+  last_updated: "2026-08-24"
+  summary: "0.17.0 (JL 260824): the principle row still said P is the ONLY DesignBoard layer that reads the InsightBoard, a claim a line break hid from the 260824 sweep and that every direction card contradicts; P is now the promoted WARRANT crossing and a card GRANTS by path. The workflow row reads five phases named by their authority page, four blocking gates. 0.15.0 is the contradiction sweep (JL 260823, four-reviewer audit): dead fn pointers cleared, the cohort rule qualified against the SPLIT-verdict licensing rule, the probe authority line corrected, and the four rung contracts + meta + question updated for partition-major in step. 0.14.0 added the sibling RUN head; 0.13.0 the partition-major layout."
 ---
 
 # /haipipe-application · understand on one board, design on the other
@@ -52,8 +52,9 @@ page-type: wisdom       W · counsel + the Design Handoff · the ONLY bindable l
 
 🎨 DesignBoard · frame, warrant, compose
 page-type: brief        exactly one · outcome, venue scope, audience SET, needs
-page-type: principle    P · because <W>, do <move>, within <rail> · the ONLY
-                        DesignBoard layer that reads the InsightBoard
+page-type: principle    P · because <W>, do <move>, within <rail> · PROMOTED
+                        only · the WARRANT crossing when it exists; a direction
+                        card GRANTS evidence by path, a different act
 page-type: design       DS · one audience × job × venue · units as divisions
 
 `page-type: insight` is TASK-ONLY: the consumer-neutral whole chain in one page on
@@ -80,7 +81,9 @@ retarget                       re-pin venue or audience and reopen dependent Des
 feedback | digest              run the existing family feedback procedures
 workflow | run | drive         drive the whole Application forward through the
                                sibling RUN head, haipipe-application-workflow:
-                               six phases in two lanes, three blocking human gates
+                               five phases in two lanes, four blocking human gates.
+                               Phases are named by their authority page: Meta,
+                               Chain, Wisdom · Brief, Design
 
 design-side verbs (brief · design · direction · release · realize · judge ·
 render · accept) are OWNED by the sibling door /haipipe-design since 260824:
