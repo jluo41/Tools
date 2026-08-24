@@ -10,7 +10,7 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Claim → Information Cited → Strength → Rivals → Boundary"
+    shape: "Claim → Information Cited → Strength → Rivals → Boundary; the pooling-verdict page reads Knowledge Cited at division 2"
   parent: haipipe-page-for-task
 ---
 

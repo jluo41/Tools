@@ -10,7 +10,7 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Question → Data Cited → Derivation → Patterns → Null and Contradiction"
+    shape: "Question → Data Cited → Derivation → Patterns → Null and Contradiction; the X contrast page reads Information Cited at division 2"
   parent: haipipe-page-for-task
 ---
 

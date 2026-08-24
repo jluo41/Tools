@@ -10,7 +10,7 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "purpose → source inventory → unit and grain → population and window → freshness → known limits"
+    shape: "purpose → source inventory → unit and grain → population and window → freshness → known limits; partition-major inserts Partition Register → Shared Thresholds after purpose"
 ---
 
 # /haipipe-page-for-meta · say what data this Application has, before asking anything of it
