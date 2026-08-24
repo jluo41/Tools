@@ -1,3 +1,10 @@
+## 0.4.4 — 2026-08-24
+
+- **Ideation 0.5.0 vocabulary** (JL 260824): the origin page's exit cell is
+  `went to` (was `graduated-to`); the birth-certificate clause and closing
+  checks drop the ledger/nursery/graduation wording. Binding mechanics
+  unchanged.
+
 ## 0.4.3 — 2026-08-24
 
 - **Ideation-first story order** (JL 260824): the seed lives at SD01-seed;

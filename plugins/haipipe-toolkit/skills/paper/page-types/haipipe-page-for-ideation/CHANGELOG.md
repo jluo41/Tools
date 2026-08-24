@@ -1,3 +1,17 @@
+## 0.5.0 — 2026-08-24
+
+- **The page adopts the source reports' own structure** (JL 260824: "尽量 map
+  他们的 structure…永远不要创建一些'一眼 AI'的词"): coined vocabulary dropped —
+  no more Idea Ledger / nursery / Graduations / batch intake. Divisions are
+  now Direction · Ideas (ranked) · one `Idea <n>: <title>` division per idea
+  carrying IDEA_REPORT.md's own fields (Method · Hypothesis · Minimum
+  experiment · Expected outcome · Core Claims · Pilot result · Risk ·
+  Reviewer's likely objection · Recommendation) · Eliminated Ideas (the
+  report's table, rows permanent) · Suggested Execution Order. The summary
+  table's exit column is `went to`; verdicts use the Novelty Report's own
+  words (PROCEED / PROCEED WITH CAUTION / ABANDON, plus ⬜ open). The 0.4.1
+  routing, grain adapters, and human-authority rules carry over unchanged.
+
 ## 0.4.1 — 2026-08-24
 
 - **The outline shape hardens its intake interfaces** (JL 260824: "我们是想把

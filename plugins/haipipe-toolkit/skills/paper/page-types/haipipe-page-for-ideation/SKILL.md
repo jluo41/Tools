@@ -1,28 +1,29 @@
 ---
 name: haipipe-page-for-ideation
 description: >-
-  The Paper Page Type for one research DIRECTION's ideation ledger: the
-  nursery where candidate ideas are generated, novelty-checked claim by claim,
-  feasibility-piloted, and killed or graduated, before the paper's Seed exists.
-  One page per direction at the head of the paper's own board
-  (0-paperboard/A1-SD-story/SD00-ideation/), minted with the repo; ideas are cheap and
-  disposable, the ledger is not. Use when brainstorming a direction, checking
-  whether an idea has been done, recording a pilot, killing an idea, or
-  graduating one into a new paper's Seed. Trigger: ideation page, idea ledger,
-  find ideas, brainstorm, novelty check, has this been done, kill this idea,
-  graduate to seed, page-type ideation, /haipipe-page-for-ideation.
+  The Paper Page Type for one research DIRECTION's ideas, kept in the words of
+  the reports that produce them: ideas are generated and ranked
+  (idea-creator → IDEA_REPORT.md), novelty-checked claim by claim
+  (novelty-check → Core Claims), piloted, and either eliminated or sent to a
+  Seed — all before the paper's Seed exists. One page per direction at the
+  story group's head (0-paperboard/A1-SD-story/SD00-ideation/), minted with
+  the repo. Use when brainstorming a direction, checking whether an idea has
+  been done, recording a pilot, eliminating an idea, or sending one to a new
+  paper's Seed. Trigger: ideation page, find ideas, brainstorm, novelty check,
+  has this been done, eliminate this idea, went to seed, page-type ideation,
+  /haipipe-page-for-ideation.
 metadata:
-  version: "0.4.1"
+  version: "0.5.0"
   last_updated: "2026-08-24"
-  summary: "0.4.1 (JL 260824): the outline shape hardens its intake interfaces — every i<n> division carries three fixed bullets (claims · novelty · pilot), the Ledger carries a batch-intake bullet naming the generate run each batch came from, and the 📮 routing is written into the shape itself: novelty → /haipipe-discovery-idea novelty_check QA, pilot → task-layer QA; the ARIS /idea-creator and /novelty-check skills stay methodology references, never direct writers. A retrofit single-idea ledger may nest i1 as a Ledger sub-division. 0.4.0 (JL 260824): the nursery joins the STORY GROUP — no separate A0 group; the ideation page is the story's page zero, A1-SD-story/SD00-ideation/, token SD, and the seed shifts to SD01. 0.3.0 renames the type (JL 260824): explore → IDEATION — the phase is the act of thinking up ideas, before the seed; page-type ideation, token ID, home A0-ID-ideation, skill haipipe-page-for-ideation. 0.2.0 moves the nursery home (JL 260823): the ideation page lives at the head of the paper's OWN board, paperboard/A0-ID-ideation/, before the seed — the repo is minted with the ideation page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
+  summary: "0.5.0 (JL 260824): the page adopts the SOURCE REPORTS' OWN STRUCTURE and drops the coined vocabulary ('Idea Ledger', 'nursery', 'Graduations', 'batch intake' are gone) — divisions are now Direction · Ideas (ranked) · one division per idea titled `Idea <n>: <title>` carrying IDEA_REPORT's own fields (Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims · Pilot result · Risk · Reviewer's likely objection · Recommendation) · Eliminated Ideas (the report's table, rows permanent) · Suggested Execution Order (order + went to <seed>). The summary table's last column is `went to`; the verdict vocabulary is the Novelty Report's own (PROCEED / PROCEED WITH CAUTION / ABANDON, plus ⬜ open). Standing rule recorded the same day: never coin '一眼 AI' words — mirror the stored artifact's field names. 0.4.1 (JL 260824): intake interfaces hardened; routing contract-fixed (novelty → /haipipe-discovery-idea novelty_check QA, pilot → task QA); ARIS skills demoted to methodology references; grain adapters (one question per claim; novel/partial/preempted/inconclusive → HIGH/MEDIUM/LOW/⬜). 0.4.0 (JL 260824): joins the STORY GROUP as page zero, A1-SD-story/SD00-ideation/, token SD; seed shifts to SD01. 0.3.0 renames explore → IDEATION. 0.2.0 moves the page onto the paper's own board; repo minted with it. 0.1.0 created the P0 page: claim-level novelty, pilot receipts, permanent eliminated rows, ARIS methodology."
   group-token: "SD"
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "division 1 is Direction, division 2 is Idea Ledger with a batch-intake bullet naming each generate run; every later division's first word is an idea id i<n>, in id order, each carrying the three fixed bullets claims · novelty · pilot (a retrofit ledger may nest its single graduated idea as a Ledger sub-division); Graduations is last"
+    shape: "division 1 is Direction, division 2 is Ideas (ranked) with a source bullet naming each IDEA_REPORT it drew from; every later idea division is titled Idea <n>: <title>, in rank order, carrying the report's own fields (Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims · Pilot result · Risk · Reviewer's likely objection · Recommendation); Eliminated Ideas and then Suggested Execution Order close the page (a retrofit page may nest its single idea under division 2)"
 ---
 
-# /haipipe-page-for-ideation · run the nursery one direction at a time
+# /haipipe-page-for-ideation · one direction's ideas, in the reports' own words
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: ideation`.
@@ -30,14 +31,14 @@ Declare `page-type: ideation`.
 ## 🌱 Grain and home
 
 One Ideation Page holds ONE research direction and every candidate idea raised
-under it. It is the story group's PAGE ZERO (0.4.0) — no separate group; the
-nursery sits in the same group as the Seed it graduates into, before it:
+under it. It is the story group's PAGE ZERO (0.4.0) — no separate group; it
+sits in the same group as the Seed its best idea becomes, before it:
 
 ```text
 Paper-<Slug>/0-paperboard/
 └── A1-SD-story/
-    ├── SD00-ideation/              one direction, many ideas, one ledger
-    ├── SD01-seed/                  what one graduated idea became
+    ├── SD00-ideation/              one direction, its ideas, ranked
+    ├── SD01-seed/                  what the winning idea became
     └── SD02-narrative-<venue>/     how the paper is told, desk by desk
 ```
 
@@ -45,67 +46,90 @@ Paper-<Slug>/0-paperboard/
 what creates `Paper-<Slug>/` — as a git submodule immediately, per the
 scaffold rule — with only `0-paperboard/A1-SD-story/SD00-ideation/` inside.
 The direction's name may seed the repo slug; a direction that dies leaves the
-repo standing as its own graveyard. A second ideation page on one board is
-legal only when the direction genuinely forks and the fork stays this paper's;
-it takes the next free SD number, and the story order stays readable because
+repo standing as its own record. A second ideation page on one board is legal
+only when the direction genuinely forks and the fork stays this paper's; it
+takes the next free SD number, and the story order stays readable because
 board.md lists the story group in journey order.
 
 The page is EVERGREEN (♻️): it never closes while the direction is alive.
-Ideas on it are cheap — generated in batches, ranked, killed without ceremony.
-What is never cheap is the ledger row: a killed idea's row stays forever,
-because the graveyard is what stops the same idea being re-thought in new
-words six months later.
+Ideas are cheap — generated in batches, ranked, eliminated without ceremony.
+What is never cheap is the row: an eliminated idea's row stays forever,
+because the record is what stops the same idea being re-thought in new words
+six months later.
 
-## 📐 Content outline
+## 📐 Content outline · the source reports' structure
 
-```text
-### 1 · Direction            🔒 what question space, why now, what would make
-                                any idea here worth a paper
-### 2 · Idea Ledger          🔥 the whole nursery in one screen · one row per idea
-                                · one batch-intake bullet per generate run,
-                                  naming its ideas.md and QA file
-#### 3 · i1 · <slug>         one division per candidate, in id order, each with
-                                the three fixed bullets:
-                                claims  · 3-5 propositions that must be novel
-                                novelty · 📮 → /haipipe-discovery-idea
-                                          novelty_check QA · per-claim closest
-                                          prior + delta + H/M/L
-                                pilot   · 📮 → task-layer QA, or explicit waiver
-#### 4 · i2 · <slug>         (same three bullets)
-### N · Graduations          ♻️ who left, when, to which Seed
-```
-
-The three bullets are the page's intake interfaces: an OUTLINE minted from
-this shape already routes its 📮 marks, so PROBE raises cards addressed to the
-right layer instead of rediscovering the wiring. A retrofit ledger whose only
-idea has already graduated may nest that idea as a Ledger sub-division
-(`#### 2.1 · i1 · <slug>`) instead of a standalone division; the three-bullet
-law still applies inside it.
-
-## 📊 The Idea Ledger · division 2
-
-One row per candidate, every column a state and never a blank:
+The divisions mirror IDEA_REPORT.md (idea-creator) section for section, with
+the Novelty Check Report's Core Claims folded into each idea's division:
 
 ```text
-id  idea (one line)         claims  novelty            pilot        verdict         graduated-to
-────────────────────────────────────────────────────────────────────────────────────────────────
-i1  <one sentence>          3       HIGH · closest:    ✅ QA path   ✅ PROCEED      SD01 (here) ·
-                                    <prior> · delta:                 (JL 260823)    or Paper-<Other>
-i2  <one sentence>          4       LOW · <prior>      —            🚫 ABANDONED    —
-i3  <one sentence>          —       ⬜ unchecked        —            ⬜ open         —
+### 1 · Direction                    🔒 the research direction · why now ·
+                                        what makes an idea here worth a paper
+### 2 · Ideas (ranked)               🔥 summary table, one row per live idea
+                                        · one source bullet per IDEA_REPORT drawn from
+### 3 · Idea 1: <title>              one division per idea, in rank order,
+                                        the report's own fields (list below)
+### 4 · Idea 2: <title>
+### N-1 · Eliminated Ideas           ♻️ the report's table: | Idea | Reason eliminated |
+                                        rows permanent
+### N · Suggested Execution Order    ♻️ what to do first · who went to which Seed
 ```
 
-Verdict vocabulary: `⬜ open`, `✅ PROCEED`, `⚠️ CAUTION` (proceed with named
-risk), `🚫 ABANDONED` (reason in the division), `🔀 MERGED → i<m>`. ABANDONED
-and MERGED rows are never deleted. A `—` cell is legal only where the verdict
-makes the column moot (an ABANDONED row's pilot, an open row's graduated-to);
-on a live row every cell is a state or a bound path.
+A retrofit page whose single idea already became the paper may nest that idea
+under division 2 (`#### 2.1 · Idea 1: <title>`); the field list still applies
+inside it.
 
-## 🔬 Claim-level novelty, not paper-level
+## 📊 Ideas (ranked) · division 2
 
-An idea is never novelty-checked as a blob. Its division first states 3-5 core
-claims that would need to be novel; each claim is checked separately and the
-ledger's novelty cell summarizes the worst of them:
+The summary table, one row per live idea, every cell a state and never a
+blank:
+
+```text
+id  idea (one line)                  novelty            pilot           verdict              went to
+────────────────────────────────────────────────────────────────────────────────────────────────────
+i1  <one sentence>                   HIGH · closest:    ✅ QA path      ✅ PROCEED           SD01 (here) ·
+                                     <prior>                            (JL 260823)          or Paper-<Other>
+i2  <one sentence>                   ⬜ unchecked        —               ⬜ open               —
+```
+
+Verdict vocabulary — the Novelty Report's own recommendation words, decided
+by a person: `⬜ open`, `✅ PROCEED`, `⚠️ PROCEED WITH CAUTION` (the named
+risk accepted in the tick), `🚫 ABANDON`. An abandoned or merged idea moves
+its row to Eliminated Ideas with its reason; its division stays as history. A
+`—` cell is legal only where the verdict makes the column moot; on a live row
+every cell is a state or a bound path.
+
+Each batch of ideas enters through a source bullet naming the IDEA_REPORT (or
+ideas.md) and QA file it came from; ideas do not appear from nowhere.
+
+## 🧾 Each idea's division · the report's fields
+
+One division per idea, titled `Idea <n>: <title>`, carrying IDEA_REPORT.md's
+own field names — no translation layer:
+
+```text
+Method                        what we actually do, 2-4 concrete steps, plain language
+Hypothesis                    one sentence
+Minimum experiment            the smallest run that would show signal
+Expected outcome              what success/failure looks like
+Core Claims                   one line per claim: claim — HIGH/MEDIUM/LOW — closest work
+                              📮 → /haipipe-discovery-idea novelty_check QA, one question per claim
+Pilot result                  POSITIVE/NEGATIVE/SKIPPED + the receipt
+                              📮 → task-layer QA, or an explicit waiver
+Risk                          what could sink it
+Reviewer's likely objection   the strongest counterargument
+Recommendation                the machine's PROCEED/CAUTION/ABANDON with reasons;
+                              the table's verdict cell is the person's answer to it
+```
+
+A retrofit page fills only the fields its receipts support and marks the rest
+`⬜`; inventing history is worse than a visible blank.
+
+## 🔬 Core Claims, checked one by one
+
+An idea is never novelty-checked as a blob. Its division states 3-5 Core
+Claims that would need to be novel; each claim is checked separately and the
+table's novelty cell records the WORST of them:
 
 ```text
 claim → multi-source search (≥3 query shapes · recent-years window)
@@ -113,23 +137,23 @@ claim → multi-source search (≥3 query shapes · recent-years window)
       → every cited prior work verified by id/DOI before it enters the page
 ```
 
-"Applying X to Y" is not novel unless the application would reveal a surprising
-finding; when the method is not novel but the finding would be, the division
-says so explicitly. A prior-work citation that cannot be resolved is written
-`[UNVERIFIED]`, never silently trusted. (Discipline adopted from the ARIS
-`novelty-check` reference and from this workspace's own fabricated-citation
-incidents.)
+"Applying X to Y" is not novel unless the application would reveal a
+surprising finding; when the method is not novel but the finding would be, the
+division says so explicitly. A prior-work citation that cannot be resolved is
+written `[UNVERIFIED]`, never silently trusted. (Discipline adopted from the
+ARIS `novelty-check` reference and from this workspace's own
+fabricated-citation incidents.)
 
-## 🃏 The ledger records; it never executes
+## 🃏 The page records; it never executes
 
 The Ideation Page is a consumer. Searching, reading, and piloting are
 Task/Discovery-layer work, and their receipts are QA files this page binds by
 path:
 
 ```text
-novelty cell     ← /haipipe-discovery-idea novelty_check QA (or Search/Review QA)
-ideation batch   ← /haipipe-discovery-idea generate → ideas.md + its QA file
-pilot cell       ← task-layer QA file (small, budgeted, disposable run)
+Core Claims lines   ← /haipipe-discovery-idea novelty_check QA (or Search/Review QA)
+Ideas + divisions   ← /haipipe-discovery-idea generate → IDEA_REPORT/ideas.md + QA
+Pilot result        ← task-layer QA file (small, budgeted, disposable run)
 ```
 
 The standing executor for both idea lanes is the discovery layer's Idea type
@@ -143,55 +167,54 @@ Two grain adapters, because the executor speaks per-idea and this page reads
 per-claim: (1) claim-level novelty is achieved by DISPATCH GRAIN — each claim
 is commissioned as its own question, so each gets its own QA file, matching
 the discovery layer's one-question-one-file law; (2) the executor's
-novelty_check vocabulary maps onto the cell's reading as
+novelty_check vocabulary maps onto the page's reading as
 `novel → HIGH · partial → MEDIUM · preempted → LOW · inconclusive → stays ⬜
-(or [UNVERIFIED] when the prior work would not resolve)`, and the cell keeps
-summarizing the WORST claim.
+(or [UNVERIFIED] when the prior work would not resolve)`, and the novelty
+cell keeps recording the WORST claim.
 
 A pilot is a feasibility receipt, not a result: budget it small, time-box it,
 and record a failed pilot as honestly as a passed one. A cell asserting a
 verdict with no QA path behind it is a defect.
 
-## 🎓 The graduation gate
+## 🎓 Sending an idea to a Seed
 
-One row may graduate to a Seed only when all three hold:
+An idea's row may name a Seed in `went to` only when all three hold:
 
-- its novelty cell carries a per-claim verdict from an independent context,
-- its pilot cell binds a feasibility receipt (or records an explicit,
+- its Core Claims each carry a novelty reading from an independent context,
+- its Pilot result binds a feasibility receipt (or records an explicit,
   reasoned waiver),
-- a person has ticked PROCEED on that row, or CAUTION with its named risk
-  accepted in the tick — the machine reports PROCEED/CAUTION/ABANDON as a
-  recommendation; the verdict is human, and ABANDONED or MERGED rows never
-  graduate.
+- a person has ticked PROCEED on that row, or PROCEED WITH CAUTION with its
+  named risk accepted in the tick — the machine writes only the
+  Recommendation field; the verdict is human, and eliminated ideas never
+  leave.
 
-Graduation is a two-way act: the ledger's `graduated-to` names the Seed —
-normally `SD01` beside this page, or the new repo when an idea leaves for a
-DIFFERENT paper — and that Seed's §5 binds THIS page through `pagex/` as its
-birth certificate. An Ideation Page with a graduated row and no back-binding
-Seed, or a Seed claiming an origin this ledger does not show, is a defect on
-whichever side is missing.
+It is a two-way act: `went to` names the Seed — normally `SD01` beside this
+page, or the new repo when an idea leaves for a DIFFERENT paper — and that
+Seed's §5 first row binds THIS page back through `pagex/`. A row naming a
+Seed that does not bind back, or a Seed claiming an origin this page does not
+show, is a defect on whichever side is missing.
 
 ## ✋ Human authority
 
 A machine may generate ideas, run searches and pilots through the proper
-layers, fill novelty cells, and recommend verdicts. It may not tick PROCEED,
-ABANDON a row, or graduate one. Killing an idea is as human an act as
-committing to it.
+layers, fill Core Claims lines, and write Recommendation fields. It may not
+tick a verdict, eliminate an idea, or send one to a Seed. Killing an idea is
+as human an act as committing to it.
 
 ## ✅ Closing checks
 
 - Division 1 names one direction and what would make an idea worth a paper.
-- Every ledger row has no blank cell; every verdict is from the fixed
-  vocabulary.
-- Every i<n> division (standalone or retrofit-nested) carries the three fixed
-  bullets — claims, novelty, pilot — and the Ledger names each batch's
-  generate run, or states why none exists.
-- Every novelty cell traces to per-claim QA files; every cited prior work is
-  verified or marked `[UNVERIFIED]`.
-- Every pilot cell binds a QA path or an explicit waiver.
-- Every PROCEED/ABANDONED verdict carries a person's tick and date.
-- Every graduated row names its Seed, and that Seed binds this page back.
-- ABANDONED and MERGED rows are all present; nothing raised has vanished.
+- Every row in Ideas (ranked) has no blank cell; every verdict is from the
+  fixed vocabulary; every batch names its source IDEA_REPORT, or the page
+  states why none exists.
+- Every idea division carries the report's fields, filled or honestly `⬜`.
+- Every Core Claims line traces to a per-claim QA file; every cited prior
+  work is verified or marked `[UNVERIFIED]`.
+- Every Pilot result binds a QA path or an explicit waiver.
+- Every verdict carries a person's tick and date.
+- Every `went to` names a Seed that binds this page back.
+- Eliminated Ideas holds every idea ever dropped, each with its reason;
+  nothing raised has vanished.
 
 This variant owns no scripts. The generic Page template and workflow own the
 frame, plugins, receipts, and lifecycle.

@@ -11,9 +11,9 @@ description: >-
   Trigger: seed page, paper identity, pitch, one-minute story, establishment
   board, what can we claim, page-type seed, /haipipe-page-for-seed.
 metadata:
-  version: "0.4.3"
+  version: "0.4.4"
   last_updated: "2026-08-24"
-  summary: "0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
+  summary: "0.4.4 (JL 260824): ideation 0.5.0 vocabulary — the origin page's cell is `went to` (was graduated-to), 'ledger/nursery/graduation' wording dropped from the birth-certificate clause and checks. 0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -31,7 +31,7 @@ JL 260823, ideation-first order JL 260824; older boards are grandfathered):
 
 ```text
 0-paperboard/A1-SD-story/
-├── SD00-ideation/                the nursery this paper graduated from
+├── SD00-ideation/                the ideas this paper came from
 ├── SD01-seed/                    what the paper IS · venue-free · exactly one
 ├── SD02-narrative-<venue>/       how it is told to desk 1
 └── SD03-narrative-<venue>/       how it is told to desk 2
@@ -159,13 +159,13 @@ Probe's `pagex/` lane binds exactly what §5 rows, by path and bounded scope,
 during OUTLINE. An asset in `pagex/` with no §5 row, or a §6 citation naming
 an asset §5 does not row, is a defect.
 
-**The birth certificate** (0.4.0): when this paper graduated from an Ideation
+**The birth certificate** (0.4.0): when this paper came from an Ideation
 Page, §5's first row binds that page through `pagex/` — normally `SD00-ideation`
 beside this page in the story group, cross-repo only when the idea
-graduated out of ANOTHER paper's nursery — and the Ideation ledger's
-`graduated-to` points back here. A Seed claiming no origin when a ledger names it, or naming
-an origin whose ledger does not show the graduation, is a defect on whichever
-side is missing. A retrofit Seed (paper predates the nursery) states that in
+left ANOTHER paper's ideation page — and that page's `went to` cell
+points back here. A Seed claiming no origin when an ideation page names it, or naming
+an origin whose page does not show the exit, is a defect on whichever
+side is missing. A retrofit Seed (paper predates the ideation page) states that in
 its Log instead.
 
 ## 🃏 Evidence rule
@@ -207,7 +207,7 @@ open tensions     what Narrative must order rather than silently settle
   asset by id (⬜ rows may cite nothing).
 - Every ✅/🔨 E-row carries a claim-level novelty reading with a verified
   closest-prior citation or an explicit `[UNVERIFIED]` mark.
-- The Ideation origin is bound in §5 and reciprocated by the ledger, or the
+- The Ideation origin is bound in §5 and reciprocated by that page, or the
   Log states the Seed is a retrofit.
 - Every §5 asset is bound in `pagex/`, and `pagex/` holds nothing §5 does
   not row.
