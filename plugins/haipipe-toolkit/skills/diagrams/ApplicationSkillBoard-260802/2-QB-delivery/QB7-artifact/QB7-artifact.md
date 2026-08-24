@@ -141,13 +141,13 @@ So the artifact today is traceable but not reproducible, and whether that is the
 ## Files
 
 ### ⚙️ Engines
-- `../../application/3-deliver/haipipe-application-artifact/SKILL.md`
+- `../../../../application/_old/3-deliver/haipipe-application-artifact/SKILL.md`
   The draft verb; JL's ruling lands here as changed COMPOSE and REVISE rules, so open it first when the ruling arrives.
-- `../../application/1-lifecycle/5-section-edit/haipipe-application-section-edit/SKILL.md`
+- `../../../../application/_old/1-lifecycle/5-section-edit/haipipe-application-section-edit/SKILL.md`
   The sectioned-venue prose lane into `0-sections/`; opened only if the ruling splits by venue.
 
 ### 📥 Input files
-- `../PaperSkillBoard-260725/2-QB-delivery/QB6-main/QB6-main.md`
+- `../../../PaperSkillBoard-260725/board.md`
   The precedent this page reads, cited in prose as QB6@paper: one authored source, every manuscript file a projection of it.
 
 ## Glossary

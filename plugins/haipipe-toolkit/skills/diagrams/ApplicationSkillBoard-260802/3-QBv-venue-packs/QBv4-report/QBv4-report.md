@@ -249,11 +249,11 @@ Both holes go to JL as Decision Now rows, and this page holds them open.
 
 ## Files
 
-- `../../application/venue/venue-report/README.md`
+- `../../../../application/venue/venue-report/README.md`
   The hub: the stage gates, the constraints, the six-section spine, and the lifecycle mappings; edit here when the venue's demands change.
-- `../../application/venue/venue-report/style-profile.md`
+- `../../../../application/venue/venue-report/style-profile.md`
   The voice examples, the per-audience drafting rules, and the self-review checklist; edit here when an audience row changes.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   What every pack must declare and the settlement ladder; the ruler §5's gaps are measured against.
 
 ## Glossary

@@ -87,7 +87,7 @@ Design divisions reopen. Unaffected messages stay accepted.
 ### 📋 Contracts
 - `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
   The Design Page's Insight Use Map and no-Probe rule.
-- `../../../../application/haipipe-application/fn/missing-insight.md`
+- `../../../../application/haipipe-application/fn/chain.md`
   The visible release procedure.
 - `../../../../board/page-plugins/haipipe-plugin-pagex/SKILL.md`
   Accepted-Page acquisition and binding.

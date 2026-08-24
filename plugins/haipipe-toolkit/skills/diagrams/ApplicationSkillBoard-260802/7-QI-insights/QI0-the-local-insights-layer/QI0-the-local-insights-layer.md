@@ -91,7 +91,7 @@ Existing consumer-neutral Insight Pages on another Board remain valid PageX inpu
 ### 📋 Contracts
 - `../../../../application/haipipe-application/SKILL.md`
   The public ownership and runtime contract.
-- `../../../../application/page-types/haipipe-page-for-insight/SKILL.md`
+- `../../../../task/page-types/haipipe-page-for-insight/SKILL.md`
   The Insight Page contract, both scopes.
 
 ### 🔗 Related Board Pages

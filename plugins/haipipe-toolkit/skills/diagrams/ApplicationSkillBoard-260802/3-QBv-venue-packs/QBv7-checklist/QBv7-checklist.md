@@ -221,11 +221,11 @@ The K/W-versus-advice drift of §3 is not a GAP, because both answers exist in t
 
 ## Files
 
-- `../../application/venue/venue-checklist/README.md`
+- `../../../../application/venue/venue-checklist/README.md`
   The hub: the constraints, the stages block, the medium bar, the three slots, and the lifecycle mappings; a rule change on this page starts here.
-- `../../application/venue/venue-checklist/style-profile.md`
+- `../../../../application/venue/venue-checklist/style-profile.md`
   The two audience voices, the four drafting rules, and the five-row self-review; the A3.1 write-back lands here too.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   What every venue pack must carry; both GAP rows in §6 are measured against it.
 
 ## Glossary

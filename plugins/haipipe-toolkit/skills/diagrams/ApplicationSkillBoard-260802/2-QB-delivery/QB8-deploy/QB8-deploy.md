@@ -143,10 +143,10 @@ Whatever implements it inherits part 2's gate whole; a convenient auto-ship flag
 **Flat today, paper's shape tomorrow**: where the four skills would live.
 
 ```text
-  📁 application/3-deliver/ · today, flat
+  📁 application/_old/3-deliver/ · today, flat
      haipipe-application-artifact · review · claim-audit · deploy
 
-  📁 application/3-deliver/ · proposed, mirroring paper
+  📁 application/_old/3-deliver/ · proposed, mirroring paper
      1-build/  ── haipipe-application-artifact
      2-audit/  ── haipipe-application-review · claim-audit
      4-ship/   ── haipipe-application-deploy
@@ -220,16 +220,16 @@ The move is cheapest now: deploy is a stub, so no implementation path has harden
 
 ⚙️ **Engines** · what RUNS the subject
 
-- `../../application/3-deliver/haipipe-application-review/SKILL.md`
+- `../../../../application/_old/3-deliver/haipipe-application-review/SKILL.md`
   The review pass; open it to change the checklist or the verdict rules.
-- `../../application/3-deliver/haipipe-application-claim-audit/SKILL.md`
+- `../../../../application/_old/3-deliver/haipipe-application-claim-audit/SKILL.md`
   The trace pass; open it to change what counts as a finding.
-- `../../application/3-deliver/haipipe-application-deploy/SKILL.md`
+- `../../../../application/_old/3-deliver/haipipe-application-deploy/SKILL.md`
   The ship step, still a stub; implementation lands here and must keep the gate.
 
 📥 **Input files** · what the work reads
 
-- `../PaperSkillBoard-260725/2-QB-delivery/QB9-build/QB9-build.md`
+- `../../../PaperSkillBoard-260725/board.md`
   QB9@paper, the precedent this page mirrors: candidates a human reviews before anything becomes the submission.
 
 ## Glossary

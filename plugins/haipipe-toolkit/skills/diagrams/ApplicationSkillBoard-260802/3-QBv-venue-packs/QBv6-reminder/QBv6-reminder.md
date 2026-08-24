@@ -211,11 +211,11 @@ So a reminder aimed at a patient and one aimed at a clinician currently read fro
 
 ## Files
 
-- `../../application/venue/venue-reminder/README.md`
+- `../../../../application/venue/venue-reminder/README.md`
   The hub this page reads: the constraints, the stages block, the light bar, the 3-slot template, and the claims and draft mappings; a gate or budget change starts here.
-- `../../application/venue/venue-reminder/style-profile.md`
+- `../../../../application/venue/venue-reminder/style-profile.md`
   The voice examples, the five drafting rules, and the self-review checklist; a tone or rotation change starts here.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   What every venue pack must carry; §4 measures this pack against it.
 
 ## Glossary

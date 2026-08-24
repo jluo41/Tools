@@ -223,11 +223,11 @@ The pack names no app and no screen anywhere, so every draft must source its tar
 
 ## Files
 
-- `../../application/venue/venue-push/README.md`
+- `../../../../application/venue/venue-push/README.md`
   The pack's hub: the constraints, the stages block, the light settlement, the two-slot template, and the claims and draft mappings; a change to what push gates starts here.
-- `../../application/venue/venue-push/style-profile.md`
+- `../../../../application/venue/venue-push/style-profile.md`
   The three voice rows, the four drafting rules, and the five-box self-review checklist; a change to how push sounds starts here.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   What every venue pack owes; the yardstick §5's GAP items are measured against.
 
 ## Glossary

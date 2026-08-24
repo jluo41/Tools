@@ -87,9 +87,9 @@ Publishes exact K/W rows, strength, boundary, allowed use, prohibited inference,
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/page-types/haipipe-page-for-insight/SKILL.md`
+- `../../../../task/page-types/haipipe-page-for-insight/SKILL.md`
   Canonical Page Type and division grammar.
-- `../../../../application/haipipe-application/fn/insight.md`
+- `../../../../application/haipipe-application/fn/chain.md`
   Public route for create, refresh, and missing-insight work.
 
 ## Law

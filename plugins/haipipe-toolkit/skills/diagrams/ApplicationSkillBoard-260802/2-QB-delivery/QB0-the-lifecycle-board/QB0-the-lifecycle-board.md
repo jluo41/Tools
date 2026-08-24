@@ -330,15 +330,15 @@ The gate ledger is a row inside `STATUS.md`, listed here only so a reader who lo
   The six-facet coverage floor that `§3` counts pages from.
 - `../QB6-display/QB6-display.md`
   The venue gate that lets `§7` mark the Display group skipped rather than proposed.
-- `../PaperSkillBoard-260725/2-QB-delivery/QB0-paper-board-layout/QB0-paper-board-layout.md`
+- `../../../PaperSkillBoard-260725/board.md`
   The paper board's own layout page, whose per-unit and control-page rules this proposal follows.
-- `../../application/README.md`
+- `../../../../application/README.md`
   The ladder, the intervention-folder layout, and the maturity vocabulary.
 
 ### Contracts
-- `../../board/haipipe-board/ref/page-template.md`
+- `../../../../board/haipipe-board/ref/page-template.md`
   The base every page kind varies from, including the S-page identity line each unit page carries.
-- `../../board/haipipe-board-sentence/`
+- `../../../../board/haipipe-board-sentence/`
   The contract for what attaches to a row inside a page: lanes, cards, links.
 
 ## Law

@@ -1,6 +1,6 @@
 # /haipipe-application: an InsightBoard and a DesignBoard
 
-spine: An Application is two named boards. A `<DataSubject>-InsightBoard` is headed by one Meta Page saying what data exists and holds Insight Pages that settle each raised need as D→I→K→W under Task-backed evidence authority; a `<DesignTopic>-DesignBoard` is headed by one Brief saying what is being built and for whom, and holds Design Pages that consume exact Design Handoffs through PageX and carry each message as a division with its own acceptance row.
+spine: An Application is two named boards. A `<DataSubject>-InsightBoard` is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds one page per LEVEL, D then I then K then W, under Task-backed evidence authority; a `<DesignTopic>-DesignBoard` is headed by one Brief saying what is being built and for whom, and holds Design Pages that consume signed Design Handoffs through PageX, propose each message as a released BET before composing it, and carry each landed unit as a division with its own acceptance row.
 close: Meta, Insight, Brief, and Design Page contracts ship from the Application skill set; the public Application door routes all four; Design Pages never Probe; the Application ends at ACCEPTED and hands shipping and measurement to the task layer; one fresh-context run proves the route and Board checks expose any remaining migration debt.
 session: 9bab8e87-20eb-4ebf-8e73-b23cec29ad11
 
@@ -18,6 +18,8 @@ pipeline, and without either half's reader having to read the other's queue?
   projections, mirroring QI on the delivery side.
 - **QBt · Page Types** specifies Meta, Brief, and Design, and records why Artifact
   was retired; QI owns the fourth live Page Type specimen, Insight.
+- **QC3 · The Workflow** carries the RUN head: five journey phases named by their
+  authority page, six gates, and the two loops the lanes turn in.
 - **QB · Legacy Delivery** preserves the old ladder only as migration evidence.
 - **QBv · Venue Packs** supplies channel constraints.
 - **QC · Engine** maps public verbs to Page contracts, and its QC1 `skill/`
@@ -33,21 +35,24 @@ Task folders · Discovery folders · accepted existing Pages
                     ▼
 🔎 <DataSubject>-InsightBoard          🎨 <DesignTopic>-DesignBoard
 ┌────────────────────────┐             ┌────────────────────────┐
-│ 📊 M00-meta            │             │ 📌 A00-brief           │
+│ 📊 MT00-meta           │             │ 📌 BR00-brief          │
 │ sources · grain        │             │ audience · outcome     │
-│ window · freshness     │             │ venue scope · promise  │
-│ + Insight Roster       │             │ + needs RAISED         │
-└───────────┬────────────┘             └───────────┬────────────┘
-            ▼                                      ▼
-┌────────────────────────┐   PageX     ┌────────────────────────┐
-│ 🔎 Insight Pages × N   │────────────▶│ 🎨 Design Pages × N    │
-│ D → I → K → W          │             │ audience × job × venue │
-│ + Design Handoff       │             │ R<n> divisions,        │
-└────────────────────────┘             │ each with accepted:    │
+│ window · freshness     │             │ venue scope · kill     │
+│ holds NO question      │             │ born-of: · needs OUT   │
+│ 📋 MT01-MT04 registers │             └───────────┬────────────┘
+│ one per rung · QD/QI/  │                         ▼
+│ QK/QW ids              │             ┌────────────────────────┐
+└───────────┬────────────┘   PageX     │ 🎨 DS<NN> Design Pages │
+            ▼              ────────────▶│ audience × job × venue │
+┌────────────────────────┐  a SIGNED   │ 📇 direction/ the BETS │
+│ D → I → K → W          │  handoff    │ 🎨 design/    the UNITS│
+│ one page per LEVEL     │             │ 📱 render/    what the │
+│ four Page Types        │             │    recipient sees      │
+│ + Design Handoff ✋    │             │ divisions, each with   │
+└────────────────────────┘             │ accepted: ✋           │
             ▲ PageX                    └───────────┬────────────┘
             │                                      ▼
     accepted Pages                          ✅ ACCEPTED · STOP
-                                    2-artifacts/ holds projections only
 
 shipping, the experiment, and data collection are TASK-LAYER work
 ```
@@ -104,7 +109,8 @@ ApplicationSkillBoard-260802/
 ├── 5-QF-execute/             checks and fresh-context proof
 ├── 6-QBt-page-types/         Meta · Brief · Design · Artifact retirement
 ├── 7-QI-insights/            InsightBoard layer and Page Type
-├── 8-QD-design/              DesignBoard layer, acceptance grain, projections
+├── 8-QD-design/              DesignBoard layer, acceptance grain, projections,
+│                             and the design-as-bets family (QD3)
 ├── _fixture/                 validation fixture
 └── board/                    generated site
 ```
@@ -117,7 +123,7 @@ the reading authority.
 
 ### QA · Architecture
 What Application owns, where its runtime files live, and how evidence work stays
-separate from design work.
+separate from design work. QA6 adds the two InsightBoard layouts ruled 260823.
 
 QA0-the-board-map.md
 QA1-the-folder-map.md
@@ -125,6 +131,7 @@ QA2-the-skill-set.md
 QA3-the-intervention-board.md
 QA4-evidence-channel.md
 QA5-board-naming.md
+QA6-the-two-layouts.md
 
 ### QB · Legacy Delivery
 The previous lifecycle ladder retained as migration evidence. These pages do not
@@ -154,7 +161,7 @@ QBv7-checklist.md
 QBv8-ui-card.md
 
 ### QC · Engine
-How the public Application door routes to the four Page contracts. The six
+How the public Application door routes to the Page contracts, and how the RUN head drives them. QC3 carries the five-phase machine; QC2 is kept as the record of the stage engine it replaced. The six
 `Skill-<n>` pages were deleted on 260820: a Skill page COPIED a SKILL.md into
 board prose, so five of the six documented skills that had been moved to `_old/`
 hours earlier. QC1 now carries a `skill/` plugin list instead, which stores a
@@ -162,6 +169,7 @@ name rather than a copy and reads each skill's version and description live.
 
 QC1-delivery-skill-map.md
 QC2-stage-engine.md
+QC3-the-workflow.md
 
 ### QF · Execute
 Mechanical checks, Board receipts, and fresh-context skill validation.
@@ -190,14 +198,15 @@ QI2-insight-to-design-handoff.md
 ### QD · Design
 The delivery-side counterpart to QI. Where the DesignBoard stops, what one
 signature covers, and why the rendered output is derived rather than a Page.
-QBt2 keeps the Design Page's shape; these pages own its rules.
+QBt2 keeps the Design Page's shape; these pages own its rules. QD3 adds the 260824 design family, where a design is a BET declared before the artifact exists.
 
 QD0-the-design-layer.md
 QD1-the-acceptance-grain.md
 QD2-projections.md
+QD3-design-as-bets.md
 
 ## Links
-QBv1@paper ../PaperSkillBoard-260725/3-QBv-venue-packs/QBv1-misq/QBv1-misq.md
+paper-board ../PaperSkillBoard-260725/board.md
 README.md ../../application/README.md
 PHILOSOPHY.md ../../application/_old/PHILOSOPHY.md
 haipipe-application/ ../../application/haipipe-application/
@@ -206,3 +215,10 @@ for-insight/ ../../task/page-types/haipipe-page-for-insight/
 for-design/ ../../application/page-types/haipipe-page-for-design/
 for-meta/ ../../application/page-types/haipipe-page-for-meta/
 for-principle/ ../../application/page-types/haipipe-page-for-principle/
+for-wisdom/ ../../application/page-types/haipipe-page-for-wisdom/
+for-question/ ../../application/page-types/haipipe-page-for-question/
+haipipe-design/ ../../application/haipipe-design/
+workflow/ ../../application/haipipe-application-workflow/
+partition.md ../../application/haipipe-application/ref/partition.md
+direction-plugin/ ../../board/page-plugins/haipipe-plugin-direction/
+design-plugin/ ../../board/page-plugins/haipipe-plugin-design/

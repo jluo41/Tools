@@ -257,7 +257,7 @@ The `_SCHEMA.md` implies a gate should apply these checks; the mechanism is abse
   The schema every venue pack must answer; used to identify which gaps represent genuine missing answers vs. deliberate scope limits.
 
 ### Contracts
-- `QBv1@paper` (`../PaperSkillBoard-260725/5-QBv-venue-packs/QBv1-misq/QBv1-misq.md`)
+- `QBv1@paper` (`../../../PaperSkillBoard-260725/board.md`)
   Shape precedent for a venue pack page in this board family: desk-personality Opening, Content organized by what the venue gates, Aims and States mirroring Content divisions; adapted here with channel rather than journal desk as the organizing concept.
 
 

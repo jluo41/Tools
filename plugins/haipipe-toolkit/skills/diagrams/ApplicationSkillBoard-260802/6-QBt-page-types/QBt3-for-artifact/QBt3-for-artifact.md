@@ -80,7 +80,7 @@ Collapsing in the opposite direction was rejected. A Design Page holds the audie
 ### 📋 Contracts
 - `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
   The absorbing contract; see its acceptance-per-division section.
-- `../../../../application/haipipe-application/fn/artifact.md`
+- `../../../../application/haipipe-application/fn/render.md`
   The surviving render verb.
 
 ## Law

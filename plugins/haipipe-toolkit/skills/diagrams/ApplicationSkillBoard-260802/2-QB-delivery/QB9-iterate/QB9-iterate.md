@@ -196,13 +196,13 @@ Who may write retired is the first Decision Now row; that nothing writes iterati
 ## Files
 
 ### ⚙️ Engines
-- `../../application/4-iterate/haipipe-application-iterate/SKILL.md`
+- `../../../../application/_old/4-iterate/haipipe-application-iterate/SKILL.md`
   The loop itself: ingest, ladder backfill (step 4), triage (steps 5 and 6), kill handling (step 7); the ladder-first rule changes here.
-- `../../application/0-enter/haipipe-application-round/SKILL.md`
+- `../../../../application/_old/0-enter/haipipe-application-round/SKILL.md`
   The carrier: scaffolds `1-rounds/vYYMMDD/`, routes todo items to the owning stages, closes the round.
 
 ### 📥 Input files
-- `../PaperSkillBoard-260725/2-QB-delivery/QB10-round/QB10-round.md`
+- `../../../PaperSkillBoard-260725/board.md`
   The paper precedent (QB10@paper): one batch kept together from review to resubmission, the rule this page transplants.
 
 ## Glossary

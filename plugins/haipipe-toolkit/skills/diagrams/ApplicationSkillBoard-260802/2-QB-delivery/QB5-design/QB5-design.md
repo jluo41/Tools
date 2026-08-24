@@ -240,7 +240,7 @@ The visible tag and the named settling claim are what make the bet legible rathe
 
 - `/Users/jluo/Desktop/drfirst-ai-space/Tools/plugins/haipipe-toolkit/skills/application/_old/1-lifecycle/3-narrative/haipipe-application-narrative/SKILL.md`
   Stage 3 of the application lifecycle; shows how narrative reads both 1d-advice (content-WHAT) and 2-venue Artifact Principles (channel-HOW) when composing beats.
-- `../PaperSkillBoard-260725/2-QB-delivery/QB2-work/QB2-work.md`
+- `../../../PaperSkillBoard-260725/board.md`
   Cited as QB2@paper; paper's Work page owns the narrative arc built from the claim ledger, and this page's §3 establishes the application analog.
 
 

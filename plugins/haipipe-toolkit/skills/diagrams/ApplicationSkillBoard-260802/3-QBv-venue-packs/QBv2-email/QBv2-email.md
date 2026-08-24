@@ -280,11 +280,11 @@ This page records the hole rather than writing compliance doctrine into a venue 
 
 ## Files
 
-- `../../application/venue/venue-email/README.md`
+- `../../../../application/venue/venue-email/README.md`
   The hub: constraints, stage gates, the settlement bar, and the lifecycle mappings; the first file to edit when this venue's rules change.
-- `../../application/venue/venue-email/style-profile.md`
+- `../../../../application/venue/venue-email/style-profile.md`
   The two voice examples, the drafting rules, and the self-review checklist; edit here when the tone or the desk's checklist changes.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   What every venue pack owes: the stages block, the settlement definitions, and the pack layout this page audits venue-email against.
 
 ## Glossary

@@ -73,7 +73,7 @@ Someone will edit a rendered file directly, usually while reading it aloud in a 
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/haipipe-application/fn/artifact.md`
+- `../../../../application/haipipe-application/fn/render.md`
   The render procedure, its refusal condition, and the stamps.
 - `../../../../application/page-types/haipipe-page-for-design/SKILL.md`
   Where `2-artifacts/` is declared a projections folder holding no Pages.

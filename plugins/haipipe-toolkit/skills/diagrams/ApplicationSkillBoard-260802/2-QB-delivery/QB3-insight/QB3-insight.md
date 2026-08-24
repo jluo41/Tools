@@ -210,11 +210,11 @@ The Decision Now row in States puts that choice, 1b exit or 1c intake, in front 
 
 ## Files
 
-- `../../application/1-lifecycle/1b-themes/haipipe-application-themes/SKILL.md`
+- `../../../../application/_old/1-lifecycle/1b-themes/haipipe-application-themes/SKILL.md`
   The engine that runs rung 1b; the grounding law, the lens sweep, and the CHECK list change here first, and this page's contract table must follow.
-- `../../application/README.md`
+- `../../../../application/README.md`
   The family structure contract: the ladder, the per-rung lens and reservoir table, and the D, I, K, W reading this page delivers as a consumer concern.
-- `../PaperSkillBoard-260725/2-QB-delivery/QB3-literature/QB3-literature.md`
+- `../../../PaperSkillBoard-260725/board.md`
   The paper board's page at this position; the precedent for delivering externally grounded evidence as a concern, and the page shape this one mirrors.
 
 ## Glossary

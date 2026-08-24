@@ -61,8 +61,8 @@ When evidence or accepted Pages change, refresh the local Insight and reopen onl
 ## Files
 
 ### 📋 Contracts
-- `../../../../application/haipipe-application/fn/missing-insight.md`
-- `../../../../application/page-types/haipipe-page-for-insight/SKILL.md`
+- `../../../../application/haipipe-application/fn/chain.md`
+- `../../../../task/page-types/haipipe-page-for-insight/SKILL.md`
 - `../../../../board/page-plugins/haipipe-plugin-pagex/SKILL.md`
 
 ## Law

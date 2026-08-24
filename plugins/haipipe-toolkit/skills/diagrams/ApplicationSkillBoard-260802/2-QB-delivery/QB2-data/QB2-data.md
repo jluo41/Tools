@@ -178,11 +178,11 @@ Whether its cell path counts as a resolving pointer, or whether every pre-fill m
 
 📥 **Input files** · what this page read
 
-- `../../application/1-lifecycle/1a-descriptions/haipipe-application-descriptions/SKILL.md`
+- `../../../../application/_old/1-lifecycle/1a-descriptions/haipipe-application-descriptions/SKILL.md`
   The rung contract: the anchored-entry rule, the four phases, the done-criteria, and the refresh and stamp mechanics quoted in §1 to §3.
-- `../../application/README.md`
+- `../../../../application/README.md`
   The family structure: the flywheel figure, the lens and reservoir table, and the D-to-W framing the Opening leans on.
-- `../PaperSkillBoard-260725/2-QB-delivery/QB2-work/QB2-work.md`
+- `../../../PaperSkillBoard-260725/board.md`
   QB2@paper, the precedent: the paper's Work grows the banks through explicit probes, and this page states the application analog.
 
 ## Glossary

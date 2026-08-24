@@ -72,10 +72,9 @@ The router shows the blocked Aim, question, target, PageX matches, destination l
 
 ### 📋 Procedures
 - `../../../../application/haipipe-application/fn/brief.md`
-- `../../../../application/haipipe-application/fn/insight.md`
+- `../../../../application/haipipe-application/fn/chain.md`
 - `../../../../application/haipipe-application/fn/design.md`
-- `../../../../application/haipipe-application/fn/artifact.md`
-- `../../../../application/haipipe-application/fn/missing-insight.md`
+- `../../../../application/haipipe-application/fn/render.md`
 
 ## Law
 

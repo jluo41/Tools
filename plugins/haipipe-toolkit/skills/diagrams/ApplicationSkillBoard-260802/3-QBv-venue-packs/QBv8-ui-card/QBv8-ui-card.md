@@ -232,11 +232,11 @@ The clash blocks nothing, because a drafter loses nothing by drawing the wirefra
 
 ## Files
 
-- `../../application/venue/venue-ui-card/README.md`
+- `../../../../application/venue/venue-ui-card/README.md`
   Edit here to change what the channel gates: the constraints, the stage block, the full settlement bar, and the lifecycle mappings.
-- `../../application/venue/venue-ui-card/style-profile.md`
+- `../../../../application/venue/venue-ui-card/style-profile.md`
   Edit here to change how a card sounds: the voice examples, the drafting rules, the audience pairing, and the self-review checklist.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   The pack contract every venue answers to, and the line that makes GAP-1 a gap.
 
 ## Glossary

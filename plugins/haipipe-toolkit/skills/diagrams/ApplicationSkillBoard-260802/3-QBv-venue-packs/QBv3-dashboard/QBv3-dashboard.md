@@ -213,11 +213,11 @@ None of these is filled on this page: each waits on the Decision Now row in Stat
 
 ## Files
 
-- `../../application/venue/venue-dashboard/README.md`
+- `../../../../application/venue/venue-dashboard/README.md`
   The hub: the constraints, the stages block, the full settlement bar, and the five lifecycle mappings; change what the channel gates here.
-- `../../application/venue/venue-dashboard/style-profile.md`
+- `../../../../application/venue/venue-dashboard/style-profile.md`
   The voice wireframe, the five drafting rules, and the checklist that is this channel's desk; change what refuses a spec here.
-- `../../application/venue/_SCHEMA.md`
+- `../../../../application/venue/_SCHEMA.md`
   The uniform pack shape every venue obeys, the settlement-bar definitions, and the stage summary row this page reads against; a GAP in §4 is measured against this file.
 
 ## Glossary

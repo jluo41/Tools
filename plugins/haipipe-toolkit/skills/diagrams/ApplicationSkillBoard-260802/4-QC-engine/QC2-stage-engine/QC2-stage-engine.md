@@ -121,7 +121,7 @@ All at once removes the mixed period and takes one review, at the price of one l
 
 ### A3 · 🔁 The cutover order
 - A3.1 · Every per-stage skill folder is retired in the ruled order.
-  **Done when:** All ten index rows read migrated: true and no per-stage skill folder remains under application/1-lifecycle/.
+  **Done when:** All ten index rows read migrated: true and no per-stage skill folder remains under application/_old/1-lifecycle/.
 
 ### P · Page-level
 - P1 · JL has ruled the three Decision Now rows.
@@ -171,16 +171,12 @@ All at once removes the mixed period and takes one review, at the price of one l
 ## Files
 
 ### Engines
-- `../../application/1-lifecycle/haipipe-application-lifecycle/SKILL.md`
+- `../../../../application/_old/1-lifecycle/haipipe-application-lifecycle/SKILL.md`
   The orchestrator the engine augments or replaces; the third Decision Now row decides its fate, and it is the first file to edit once JL rules.
 
 ### Input files
-- `../../paper/1-lifecycle/haipipe-paper-stage/SKILL.md`
+- `../../../../paper/haipipe-paper-workflow/SKILL.md`
   The paper router this page ports: stage resolution, one-stage-one-file loading, and the migrated handoff.
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`
-  The proven index shape: key, order, dir, triggers, migrated; all eight rows read true today.
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md`
-  The 24-field required core the application contract form starts from.
 
 ## Glossary
 - 🏗 **stage engine**: paper's layout where one router reads stages/index.yml and loads a single stages/<dir>/stage.md per invocation; the thing this page ports.

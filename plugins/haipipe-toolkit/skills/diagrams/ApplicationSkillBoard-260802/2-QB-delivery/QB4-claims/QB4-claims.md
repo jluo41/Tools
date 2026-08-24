@@ -171,11 +171,11 @@ That loopback is the ladder working: the refutation is caught for the cost of a 
 ## Files
 
 ### 📋 Contracts
-- `../../application/1-lifecycle/1c-claims/haipipe-application-claims/SKILL.md`
+- `../../../../application/_old/1-lifecycle/1c-claims/haipipe-application-claims/SKILL.md`
   The shipped rung this page mirrors; change the ledger's sections or the settlement gate there first, then update this page in the same round.
 
 ### 📥 Input files
-- `../PaperSkillBoard-260725/2-QB-delivery/QB4-value/QB4-value.md`
+- `../../../PaperSkillBoard-260725/board.md`
   QB4@paper, the paper board's Value concern; read it for the precedent this page's status-to-judged-artifact binding follows.
 
 ## Glossary
@@ -184,7 +184,7 @@ That loopback is the ladder working: the refutation is caught for the cost of a 
 - 📌 **PP reference**: a claim's pointer into the intervention's flat probe pool `1-probes/PPNN_<topic>/`, where its evidence questions are bound and answered.
 - 🏋️ **load-bearing**: a claim the shipped artifact's counsel actually leans on; the settlement gate treats its GAPs more strictly than a stray one's.
 - 🎪 **the tail**: the ledger's consumers downstream: rung 1d-advice first, then the venue-aligned stages that adopt or decline its entries.
-- 📄 **QB4@paper**: this page's plain token for the paper design board's Value page, `../PaperSkillBoard-260725/2-QB-delivery/QB4-value/QB4-value.md`.
+- 📄 **QB4@paper**: this page's plain token for the paper design board's Value page, `../../../PaperSkillBoard-260725/board.md`.
 
 ## Log
 

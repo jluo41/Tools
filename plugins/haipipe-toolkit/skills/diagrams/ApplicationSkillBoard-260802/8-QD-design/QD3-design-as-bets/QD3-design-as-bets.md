@@ -57,11 +57,11 @@ Authority to cite evidence narrows at every level, and each level sits inside th
 ④ DU unit    evidence.md rows           what the artifact cites, ⊆ ③
 ```
 
-Enforcement is two-sided: at dispatch the agent's packet contains only granted evidence, so it cannot wander; at judge the set-differences are checked. On 260824 the packet handed to one agent quoted two figures the granted section did not contain, and the agent refused them and recorded the exclusion, which is the chain working against the person who wrote the packet.
+Enforcement is two-sided: at dispatch the agent's packet contains only granted evidence, so it cannot wander; at judge the set-differences are checked. A packet handed to one agent once quoted two figures the granted section did not contain; the agent refused them and recorded the exclusion, which is the chain working against the person who wrote the packet.
 
 #### 3 · Warrant and grant are different acts
 
-This distinction was conflated in four documents until 260824 and every card contradicted them:
+This distinction was conflated in four documents until the sweep recorded in the Log, and every card contradicted them:
 
 ```text
 WARRANT   why a division may EXIST      rides on the card's stance; moves to a

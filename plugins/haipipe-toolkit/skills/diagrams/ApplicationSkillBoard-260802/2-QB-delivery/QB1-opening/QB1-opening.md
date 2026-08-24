@@ -262,13 +262,13 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 
 📋 **Contracts** · what carries a rule between this page and another
 
-- `../PaperSkillBoard-260725/2-QB-delivery/QB1-opening/QB1-opening.md` · the paper precedent, cited in prose as QB1@paper; it holds the ruling this page mirrors, that the venue decision is Opening's and the venue catalog is not
+- `../../../PaperSkillBoard-260725/board.md` · the paper precedent, cited in prose as QB1@paper; it holds the ruling this page mirrors, that the venue decision is Opening's and the venue catalog is not
 
 📥 **Input files** · what this page reads and restates
 
-- `../../application/1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` · the seed contract `§2` restates: five sections, feasibility-only probes, forward pointers
-- `../../application/1-lifecycle/haipipe-application-venue/SKILL.md` · the venue contract `§3` restates: three STATUS rows, Artifact Principles, retarget semantics
-- `../../application/1-lifecycle/2-pitch/haipipe-application-pitch/SKILL.md` · the pitch contract `§4` restates: anchored theory of change, the [primary] designation
+- `../../../../application/_old/1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` · the seed contract `§2` restates: five sections, feasibility-only probes, forward pointers
+- `../../../../application/_old/1-lifecycle/haipipe-application-venue/SKILL.md` · the venue contract `§3` restates: three STATUS rows, Artifact Principles, retarget semantics
+- `../../../../application/_old/1-lifecycle/2-pitch/haipipe-application-pitch/SKILL.md` · the pitch contract `§4` restates: anchored theory of change, the [primary] designation
 - `_fixture/0-lifecycle/0-seed/0-seed.md` · the worked seed every example on this page comes from
 - `_fixture/0-lifecycle/0-seed/_LOG_0-seed.md` · the fixture's phase journal and its three `[FORWARD -> CLAIMS]` pointers
 - `_fixture/STATUS.md` · where the pin's three rows will land on the fixture; today it states the venue is unpinned

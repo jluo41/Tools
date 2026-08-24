@@ -149,11 +149,11 @@ What QB5@paper never faced is the gate: on a skipped venue the venue template ow
 ## Files
 
 ### Engines
-- `../../../../application/1-lifecycle/4-display/haipipe-application-display/SKILL.md`
+- `../../../../application/_old/1-lifecycle/4-display/haipipe-application-display/SKILL.md`
   The stage this page maps; the gate roster, the four unit fields, LAW 1, and the done list live here, so a change to any of them starts in this file.
 
 ### Input files
-- `../PaperSkillBoard-260725/2-QB-delivery/QB5-display/QB5-display.md`
+- `../../../PaperSkillBoard-260725/board.md`
   The paper board's seam ruling this page adopts as QB5@paper; open it when the two families' seams look like they disagree.
 
 ## Glossary
