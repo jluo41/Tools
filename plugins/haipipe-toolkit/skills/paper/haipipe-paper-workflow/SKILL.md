@@ -1,7 +1,7 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level phase machine: five phases (Explore → Establish → Tell →
+  The paper-level phase machine: five phases (Ideate → Establish → Tell →
   Realize → Respond), one gate between each, every gate a checkable assertion
   over existing Pages. It owns transitions and phase receipts only — content
   authority stays with the six Page Type contracts, lifecycle authority with
@@ -12,9 +12,9 @@ description: >-
   Trigger: paper journey, journey phase, what phase are we in, may we advance,
   phase gate, mint next page, assemble gate, /haipipe-paper-workflow.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823): P0's home moves with explore 0.2.0 — the nursery lives at paperboard/A0, the repo is minted with the explore page before the seed, and G0's receipt becomes the same-board SD00 binding (the standing IdeaBoard is retired unshipped). 0.1.0: the thin five-phase machine over the six Page Types; owns gates and receipts only; explicitly NOT a revival of the deleted S01-S10 stage lane; gates are grep-able assertions; advancement is never scheduled."
+  version: "0.4.0"
+  last_updated: "2026-08-24"
+  summary: "0.4.0 (JL 260824): ideation-first story order per ideation 0.4.0 — P0's authority page is A1-SD-story/SD00-ideation (the separate A0 group is abolished), the seed sits at SD01, and G0's receipt reads: SD01-seed exists and its §5 first row binds SD00-ideation back. 0.3.0 (JL 260824): P0 renamed IDEATE — ideation page, token ID, home A0-ID-ideation, per the type rename in ideation 0.3.0. 0.2.0 (JL 260823): P0's home moves with explore 0.2.0 — the nursery lives at paperboard/A0, the repo is minted with the explore page before the seed, and G0's receipt becomes the same-board SD00 binding (the standing IdeaBoard is retired unshipped). 0.1.0: the thin five-phase machine over the six Page Types; owns gates and receipts only; explicitly NOT a revival of the deleted S01-S10 stage lane; gates are grep-able assertions; advancement is never scheduled."
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -45,10 +45,10 @@ content rule — that is the test it must keep passing.
 ```text
 phase          authority page                    what the phase produces
 ──────────────────────────────────────────────────────────────────────────────
-P0 Explore     explore  (paperboard/A0)          a graduated idea · the repo
+P0 Ideate      ideation (A1-SD-story/SD00)       a graduated idea · the repo
                                                  is minted WITH this page,
                                                  before the seed
-P1 Establish   seed     (paperboard/A1)          a defensible identity + E-board
+P1 Establish   seed     (A1-SD-story/SD01)       a defensible identity + E-board
 P2 Tell        narrative (one per desk, A1)      a desk decision + section map
 P3 Realize     section  (one per unit, B pairs)  signed-off units
    P3.9        assemble — a VERB, not a phase    the built deliverable ·
@@ -68,13 +68,13 @@ Each gate is an assertion over pages that already exist. A gate that cannot be
 tested by reading named files is misdesigned.
 
 ```text
-G0  Explore → Establish   precondition, tested on the ledger row alone:
+G0  Ideate → Establish    precondition, tested on the ledger row alone:
                           per-claim novelty cells bound to QA files · a pilot
                           receipt or explicit waiver · a person's PROCEED tick
                           (or CAUTION with its risk accepted in the tick) ·
-                          receipt, recorded after the act: SD00-seed exists in
+                          receipt, recorded after the act: SD01-seed exists in
                           this board's A1-SD-story and its §5 first row binds
-                          the Explore Page back (an idea graduating into a
+                          SD00-ideation back (an idea graduating into a
                           DIFFERENT paper adds: that new repo exists as a
                           submodule)
 
@@ -104,7 +104,7 @@ G4  Respond (per round)   every received concern appears exactly once in the
 ## 🧾 Phase receipts
 
 A phase transition leaves exactly one receipt: a dated Log row on the page
-that granted it (the Explore Page for G0, the Seed for G1, the Narrative for
+that granted it (the Ideation Page for G0, the Seed for G1, the Narrative for
 G2 and G3, the Round for G4), stating the gate, the assertion results, and who
 ticked. No separate receipt store exists; the pages are the record.
 

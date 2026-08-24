@@ -1,3 +1,18 @@
+## 0.4.0 — 2026-08-24
+
+- **The nursery joins the story group as page zero** (JL 260824: no separate
+  A0 group; home A1-SD-story/SD00-ideation, token SD, the seed shifts to SD01;
+  a second ideation page takes the next free SD number).
+
+## 0.3.0 — 2026-08-24
+
+- **Renamed: explore → IDEATION** (JL 260824: "我们不叫 exploration 了,我们改叫
+  ideation 吧(想 idea 的过程),然后才是 seed"): the P0 act is thinking up
+  ideas, and the name now says so. Page type `ideation`, group token `ID`,
+  home `A0-ID-ideation/`, skill `haipipe-page-for-ideation`, door verb
+  `/haipipe-paper ideate`. Contract content unchanged; the engine whitelist
+  swaps `explore` for `ideation` with no shipped page on the old key.
+
 ## 0.2.0 — 2026-08-23
 
 - **The nursery moves into the paper's own board** (JL 260823: "应该放到对应的

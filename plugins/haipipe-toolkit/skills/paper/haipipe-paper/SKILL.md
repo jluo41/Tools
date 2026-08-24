@@ -2,12 +2,12 @@
 name: haipipe-paper
 description: >-
   The one public door for planning, writing, building, and revising a paper as a
-  graph of Board Pages. It routes Explore, Seed, Venue, Narrative, Section, and
+  graph of Board Pages. It routes Ideation, Seed, Venue, Narrative, Section, and
   Round Pages to their Page Type contracts, reads the five-phase journey
-  (Explore → Establish → Tell → Realize → Respond) through
+  (Ideate → Establish → Tell → Realize → Respond) through
   haipipe-paper-workflow's gates, and runs each Page through the shared
-  OUTLINE–PROBE–EVIDENCE–DRAFT–REVISE/COMPILE–CHECK workflow. Use for idea
-  exploration, paper setup, narrative and per-section outlines, evidence-backed
+  OUTLINE–PROBE–EVIDENCE–DRAFT–REVISE/COMPILE–CHECK workflow. Use for
+  ideation, paper setup, narrative and per-section outlines, evidence-backed
   drafting, paper status, compilation, export, or review rounds. The current
   architecture has no View layer and no S01–S10 paper-stage router.
 ---
@@ -33,7 +33,7 @@ haipipe-paper
 `haipipe-paper-workflow` owns the gates; this figure is the reading order.
 
 ```text
-P0 Explore    💭 explore page · head of the paper's own board (A0) · the repo
+P0 Ideate     💭 ideation page · the story group's page zero (SD00) · the repo
                  is minted with this page · ideas cheap and disposable
 │                gate G0: novelty judged per claim + pilot receipt + human PROCEED
 P1 Establish  🌱 seed · venue-free · E-board with novelty column
@@ -51,12 +51,12 @@ P4 Respond    🔁 round · routes each concern once → seed / narrative / sect
 
 The six Page Types, one line each:
 
-- **Explore** is one research direction's idea ledger at the head of its
-  paper's own board (`A0`), minted with the repo before any Seed exists;
+- **Ideation** is one research direction's idea ledger, the story group's page
+  zero (`SD00-ideation`), minted with the repo before any Seed exists;
   killed ideas stay forever; graduates become this board's Seed (or, rarely, a
   sibling repo's).
 - **Seed** is one venue-free identity per paper; it survives retargeting
-  unchanged and binds its Explore origin as a birth certificate.
+  unchanged and binds its Ideation origin as a birth certificate.
 - **Venue** is one evidence-backed desk record in the shared bank — a library
   asset outside the journey; the decision to target it lives on a Narrative.
 - **Narrative** is one desk's telling: venue decision, claim system, argument
@@ -145,7 +145,7 @@ Resolve the paper root and target Page before changing anything.
 
 | User intent | Route |
 |---|---|
-| brainstorm, novelty-check, kill, or graduate an idea | `haipipe-page-for-explore` |
+| brainstorm, novelty-check, kill, or graduate an idea | `haipipe-page-for-ideation` |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
 | create or repair paper identity | `haipipe-page-for-seed` |
 | inspect or record a target venue | `haipipe-page-for-venue` |
@@ -161,7 +161,7 @@ Resolve the paper root and target Page before changing anything.
 ### Paper verbs
 
 ```text
-/haipipe-paper explore <direction|idea-id> [phase]
+/haipipe-paper ideate <direction|idea-id> [phase]
 /haipipe-paper enter [paper]
 /haipipe-paper status [paper] [section|probe|citation|display]
 /haipipe-paper journey [paper]         read the journey position · test the gates ·
@@ -202,41 +202,56 @@ claims must carry Page-local evidence cards just like claims on any other Page.
 Narrative does not become evidence-free merely because its output is an
 outline.
 
-## 📂 Paper folder scaffold (JL 260823)
+## 📂 Paper folder scaffold (JL 260823 · desk rooms JL 260824)
 
-A new paper repo — created as a git submodule immediately — takes plain,
-prefix-free top-level names and a fixed board address:
+A new paper repo — created as a git submodule immediately — is one numbered
+board plus one self-contained DESK ROOM per telling, in arrival order:
 
 ```text
 Paper-<Slug>/
-├── paperboard/                 the board · FIXED name, tooling may rely on it
-│   ├── board.md
+├── 0-paperboard/               the board · 0 is ALWAYS the board · FIXED name,
+│   ├── board.md                tooling may rely on it
 │   ├── board/                  engine-generated HTML (build.py output)
-│   ├── A0-EX-explore/          the nursery · minted with the repo, before the seed
-│   ├── A1-SD-story/            seed + one narrative per desk
+│   ├── A1-SD-story/            SD00-ideation · SD01-seed · SD02+ one narrative
+│   │                           per desk · the nursery is the story's page zero
 │   ├── Ba1-SM-ms-main/         first desk's main units
 │   ├── Ba2-AM-ms-appendix/     first desk's appendix units
 │   ├── Bb1-SW-wise-main/       second desk's main units (pair may be single)
 │   └── C1-RD-round/            RD<NN>-<desk>-<event>/ · letters live inside
-├── sections/                   the words · tex reader units
-├── displays/                   the figures and tables · shared by all tellings
-├── <desk><year>/               one deliverable room per desk (e.g. wise2026/)
-├── reference.bib · class files · compile scripts
+├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
+│   ├── sections/               matches the desk's arrival order, the same order
+│   ├── displays/               that assigned its lowercase B-pair letter
+│   ├── reference.bib
+│   └── master tex · class/style files · compile script · the deliverable PDF
+├── 2-<desk><year>/             second desk's room (e.g. 2-wise2026/) · same shape
 └── README.md
 ```
 
+**The room law (JL 260824)**: a desk room is self-contained — its tex reads
+only its own `sections/`, includes only from its own `displays/`, cites only
+its own `reference.bib`, and compiles alone. Rooms never reach into each
+other. Evidence AUTHORITY never moves into a room: `displays/` holds COPIES of
+accepted page-local `display/` units, and `reference.bib` is assembled from
+the consuming pages' `bibex/` — reuse across tellings goes through the board
+(pagex, page display units), never through a shared folder. The old shared
+top-level `sections/`, `displays/`, and root `reference.bib` are retired for
+new repos: a second telling that wants the first telling's figure copies it
+from the owning page into its own room, with the page as provenance.
+
 **Group-name grammar** — three characters, three meanings: UPPERCASE category
 (`A` story, `B` tellings, `C` rounds), lowercase desk-pair letter within `B`
-(`a`, `b`, `c`… in arrival order), digit for the member in journey order (`A0`
-nursery before `A1` story; within a `B` pair, `1` main, `2` appendix). Page tokens carry the desk too: `S<D>` main units, `A<D>` appendix
+(`a`, `b`, `c`… in arrival order), digit for the member in journey order
+(within a `B` pair, `1` main, `2` appendix; the nursery needs no group of its
+own — it is the story group's page zero, `SD00-ideation`). Page tokens carry the desk too: `S<D>` main units, `A<D>` appendix
 units, `<D>` the desk's letter — so `C1 lands in SM05 and SW01` reads without
 a legend. **Collision rule**: `<D>` is the first distinctive letter of the desk
 not already claimed on this board, and `D` itself is never available because
 `SD` is the story group's token; two desks sharing an initial resolve by the
 later arrival taking its next distinctive letter. Review letters live inside their Round page's folder, never at the
-repo root. Existing boards (`0-<Slug>PaperBoard/`, `0-sections/`, `SC`/`SA`
-tokens) are grandfathered and migrate only on explicit request, because the
-rename touches tex `\input` paths, pagex symlinks, and compile scripts.
+repo root. Existing repos (`0-<Slug>PaperBoard/`, bare `paperboard/`,
+`0-sections/`, `0-display/`, a shared root `reference.bib`, `SC`/`SA` tokens)
+are grandfathered and migrate only on explicit request, because the rename
+touches tex `\input` paths, pagex symlinks, and compile scripts.
 
 ## 📦 Assembly and delivery
 
@@ -246,7 +261,7 @@ or Discovery folders.
 ```text
 accepted Narrative + accepted Sections + accepted display units
                               ↓
-                generated sections/ · appendices/ · paper TeX
+        the desk room: sections/ · displays/ copies · room TeX
                               ↓
                      PDF · DOCX · Overleaf package
 ```

@@ -1,3 +1,14 @@
+## 0.4.3 — 2026-08-24
+
+- **Ideation-first story order** (JL 260824): the seed lives at SD01-seed;
+  its birth certificate binds SD00-ideation beside it in the story group.
+
+## 0.4.2 — 2026-08-24
+
+- **Explore renamed IDEATION** (with ideation 0.3.0): §5's first row points at
+  this board's `A0-ID-ideation/` group; "Ideation Page" and "Ideation ledger"
+  throughout the birth-certificate clause and closing checks.
+
 ## 0.4.1 — 2026-08-23
 
 - **The birth certificate becomes same-board by default**, following explore

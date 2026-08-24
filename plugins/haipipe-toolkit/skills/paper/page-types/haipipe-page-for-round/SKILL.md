@@ -72,7 +72,7 @@ response-due      date, explicit none, or unknown
 Store supplied letters or memos INSIDE this Round page's folder — a received
 letter floating at the repo root is homeless material (JL 260823). Preserve
 their wording; never rewrite received material into a cleaner second source.
-The runtime group is `paperboard/C1-RD-round/RD<NN>-<desk>-<event>/`.
+The runtime group is `0-paperboard/C1-RD-round/RD<NN>-<desk>-<event>/`.
 
 ## 📐 Required Content roles
 

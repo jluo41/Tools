@@ -1,3 +1,17 @@
+## 0.4.0 — 2026-08-24
+
+- **Ideation-first story order** (JL 260824, with ideation 0.4.0): P0's
+  authority page is A1-SD-story/SD00-ideation, the seed sits at SD01, and G0's
+  receipt reads: SD01-seed exists and its §5 first row binds SD00-ideation
+  back. The separate A0 group is abolished.
+
+## 0.3.0 — 2026-08-24
+
+- **P0 renamed IDEATE** (JL 260824, with ideation 0.3.0: the P0 act is
+  thinking up ideas — "想 idea 的过程,然后才是 seed"): the journey reads
+  Ideate → Establish → Tell → Realize → Respond; authority page `ideation`
+  at `0-paperboard/A0-ID-ideation/`; G0 is `Ideate → Establish`.
+
 ## 0.2.0 — 2026-08-23
 
 - **P0's home moves with explore 0.2.0** (JL 260823: the nursery belongs in

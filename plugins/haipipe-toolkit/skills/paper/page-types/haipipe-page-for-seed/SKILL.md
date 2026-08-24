@@ -11,9 +11,9 @@ description: >-
   Trigger: seed page, paper identity, pitch, one-minute story, establishment
   board, what can we claim, page-type seed, /haipipe-page-for-seed.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-23"
-  summary: "0.4.1 (JL 260823): the birth certificate binds same-board by default — §5's first row points at this board's A0-EX-explore group per explore 0.2.0; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
+  version: "0.4.3"
+  last_updated: "2026-08-24"
+  summary: "0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -25,19 +25,21 @@ metadata:
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: seed`. In a runtime paper board this page lives at
-`paperboard/A1-SD-story/SD00-seed/`, the head of the story group it shares
-with the paper's Narratives (scaffold grammar JL 260823; boards older than it,
-`0-SD-seed/`, are grandfathered):
+`0-paperboard/A1-SD-story/SD01-seed/`, second page of the story group it
+shares with its Ideation origin and the paper's Narratives (scaffold grammar
+JL 260823, ideation-first order JL 260824; older boards are grandfathered):
 
 ```text
-paperboard/A1-SD-story/
-├── SD00-seed/                    what the paper IS · venue-free · exactly one
-├── SD01-narrative-<venue>/       how it is told to desk 1
-└── SD02-narrative-<venue>/       how it is told to desk 2
+0-paperboard/A1-SD-story/
+├── SD00-ideation/                the nursery this paper graduated from
+├── SD01-seed/                    what the paper IS · venue-free · exactly one
+├── SD02-narrative-<venue>/       how it is told to desk 1
+└── SD03-narrative-<venue>/       how it is told to desk 2
 ```
 
 The group law: the story group decides the telling; no manuscript prose lives
-here. SD00 stays venue-free; every SD<NN> above it names its venue.
+here. SD00 raises ideas and SD01 stays venue-free; every SD<NN> above SD01
+names its venue.
 
 ## 🌱 Grain and boundary
 
@@ -157,10 +159,10 @@ Probe's `pagex/` lane binds exactly what §5 rows, by path and bounded scope,
 during OUTLINE. An asset in `pagex/` with no §5 row, or a §6 citation naming
 an asset §5 does not row, is a defect.
 
-**The birth certificate** (0.4.0): when this paper graduated from an Explore
-Page, §5's first row binds that page through `pagex/` — normally the
-`A0-EX-explore/` group on this same board, cross-repo only when the idea
-graduated out of ANOTHER paper's nursery — and the Explore ledger's
+**The birth certificate** (0.4.0): when this paper graduated from an Ideation
+Page, §5's first row binds that page through `pagex/` — normally `SD00-ideation`
+beside this page in the story group, cross-repo only when the idea
+graduated out of ANOTHER paper's nursery — and the Ideation ledger's
 `graduated-to` points back here. A Seed claiming no origin when a ledger names it, or naming
 an origin whose ledger does not show the graduation, is a defect on whichever
 side is missing. A retrofit Seed (paper predates the nursery) states that in
@@ -205,7 +207,7 @@ open tensions     what Narrative must order rather than silently settle
   asset by id (⬜ rows may cite nothing).
 - Every ✅/🔨 E-row carries a claim-level novelty reading with a verified
   closest-prior citation or an explicit `[UNVERIFIED]` mark.
-- The Explore origin is bound in §5 and reciprocated by the ledger, or the
+- The Ideation origin is bound in §5 and reciprocated by the ledger, or the
   Log states the Seed is a retrofit.
 - Every §5 asset is bound in `pagex/`, and `pagex/` holds nothing §5 does
   not row.

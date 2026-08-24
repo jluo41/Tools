@@ -1,3 +1,8 @@
+## 0.4.3 — 2026-08-24
+
+- **Ideation-first story order** (JL 260824): narratives start at SD02, after
+  SD00-ideation and SD01-seed; the map row names the telling's desk-room files.
+
 ## 0.4.1 — 2026-08-23
 
 - Runtime home renamed to `paperboard/A1-SD-story/` under the 260823 scaffold

@@ -1,51 +1,54 @@
 ---
-name: haipipe-page-for-explore
+name: haipipe-page-for-ideation
 description: >-
-  The Paper Page Type for one research DIRECTION's exploration ledger: the
+  The Paper Page Type for one research DIRECTION's ideation ledger: the
   nursery where candidate ideas are generated, novelty-checked claim by claim,
   feasibility-piloted, and killed or graduated, before the paper's Seed exists.
   One page per direction at the head of the paper's own board
-  (paperboard/A0-EX-explore/), minted with the repo; ideas are cheap and
+  (0-paperboard/A1-SD-story/SD00-ideation/), minted with the repo; ideas are cheap and
   disposable, the ledger is not. Use when brainstorming a direction, checking
   whether an idea has been done, recording a pilot, killing an idea, or
-  graduating one into a new paper's Seed. Trigger: explore page, idea ledger,
+  graduating one into a new paper's Seed. Trigger: ideation page, idea ledger,
   find ideas, brainstorm, novelty check, has this been done, kill this idea,
-  graduate to seed, page-type explore, /haipipe-page-for-explore.
+  graduate to seed, page-type ideation, /haipipe-page-for-ideation.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-23"
-  summary: "0.2.0 moves the nursery home (JL 260823): the explore page lives at the head of the paper's OWN board, paperboard/A0-EX-explore/, before the seed — the repo is minted with the explore page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
-  group-token: "EX"
+  version: "0.4.0"
+  last_updated: "2026-08-24"
+  summary: "0.4.0 (JL 260824): the nursery joins the STORY GROUP — no separate A0 group; the ideation page is the story's page zero, A1-SD-story/SD00-ideation/, token SD, and the seed shifts to SD01. 0.3.0 renames the type (JL 260824): explore → IDEATION — the phase is the act of thinking up ideas, before the seed; page-type ideation, token ID, home A0-ID-ideation, skill haipipe-page-for-ideation. 0.2.0 moves the nursery home (JL 260823): the ideation page lives at the head of the paper's OWN board, paperboard/A0-ID-ideation/, before the seed — the repo is minted with the ideation page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
+  group-token: "SD"
   outline:
     mode: grammar
     source: "this SKILL.md"
     shape: "division 1 is Direction, division 2 is Idea Ledger; every later division's first word is an idea id i<n>, in id order; Graduations is last"
 ---
 
-# /haipipe-page-for-explore · run the nursery one direction at a time
+# /haipipe-page-for-ideation · run the nursery one direction at a time
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
-Declare `page-type: explore`.
+Declare `page-type: ideation`.
 
 ## 🌱 Grain and home
 
-One Explore Page holds ONE research direction and every candidate idea raised
-under it. It lives at the HEAD of the paper's own board, before the Seed —
-the same locality law that puts an InsightBoard inside its application:
+One Ideation Page holds ONE research direction and every candidate idea raised
+under it. It is the story group's PAGE ZERO (0.4.0) — no separate group; the
+nursery sits in the same group as the Seed it graduates into, before it:
 
 ```text
-Paper-<Slug>/paperboard/
-├── A0-EX-explore/
-│   └── EX01-<direction-slug>/     one direction, many ideas, one ledger
-└── A1-SD-story/                    the Seed this nursery graduates into
+Paper-<Slug>/0-paperboard/
+└── A1-SD-story/
+    ├── SD00-ideation/              one direction, many ideas, one ledger
+    ├── SD01-seed/                  what one graduated idea became
+    └── SD02-narrative-<venue>/     how the paper is told, desk by desk
 ```
 
-**The repo precedes the Seed** (0.2.0): minting a paper's first Explore Page
-is what creates `Paper-<Slug>/` — as a git submodule immediately, per the
-scaffold rule — with only `paperboard/A0-EX-explore/` inside. The slug may
-start as the direction's name; a direction that dies leaves the repo standing
-as its own graveyard. A second EX page on one board is legal only when the
-direction genuinely forks and the fork stays this paper's.
+**The repo precedes the Seed** (0.2.0): minting a paper's Ideation Page is
+what creates `Paper-<Slug>/` — as a git submodule immediately, per the
+scaffold rule — with only `0-paperboard/A1-SD-story/SD00-ideation/` inside.
+The direction's name may seed the repo slug; a direction that dies leaves the
+repo standing as its own graveyard. A second ideation page on one board is
+legal only when the direction genuinely forks and the fork stays this paper's;
+it takes the next free SD number, and the story order stays readable because
+board.md lists the story group in journey order.
 
 The page is EVERGREEN (♻️): it never closes while the direction is alive.
 Ideas on it are cheap — generated in batches, ranked, killed without ceremony.
@@ -71,7 +74,7 @@ One row per candidate, every column a state and never a blank:
 ```text
 id  idea (one line)         claims  novelty            pilot        verdict         graduated-to
 ────────────────────────────────────────────────────────────────────────────────────────────────
-i1  <one sentence>          3       HIGH · closest:    ✅ QA path   ✅ PROCEED      SD00 (here) ·
+i1  <one sentence>          3       HIGH · closest:    ✅ QA path   ✅ PROCEED      SD01 (here) ·
                                     <prior> · delta:                 (JL 260823)    or Paper-<Other>
 i2  <one sentence>          4       LOW · <prior>      —            🚫 ABANDONED    —
 i3  <one sentence>          —       ⬜ unchecked        —            ⬜ open         —
@@ -104,7 +107,7 @@ incidents.)
 
 ## 🃏 The ledger records; it never executes
 
-The Explore Page is a consumer. Searching, reading, and piloting are
+The Ideation Page is a consumer. Searching, reading, and piloting are
 Task/Discovery-layer work, and their receipts are QA files this page binds by
 path:
 
@@ -131,9 +134,9 @@ One row may graduate to a Seed only when all three hold:
   graduate.
 
 Graduation is a two-way act: the ledger's `graduated-to` names the Seed —
-normally `SD00` on this same board, or the new repo when an idea leaves for a
+normally `SD01` beside this page, or the new repo when an idea leaves for a
 DIFFERENT paper — and that Seed's §5 binds THIS page through `pagex/` as its
-birth certificate. An Explore Page with a graduated row and no back-binding
+birth certificate. An Ideation Page with a graduated row and no back-binding
 Seed, or a Seed claiming an origin this ledger does not show, is a defect on
 whichever side is missing.
 

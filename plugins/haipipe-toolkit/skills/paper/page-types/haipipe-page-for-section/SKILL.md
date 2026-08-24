@@ -6,9 +6,9 @@ description: >-
   and binds prose to Page-local values, citations, probes, and displays. Use when
   outlining, drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-23"
-  summary: "0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
+  version: "0.3.1"
+  last_updated: "2026-08-24"
+  summary: "0.3.1 (JL 260824): the tracked tex lives in the telling's DESK ROOM (<N>-<desk><year>/sections/), its figures include from that room's displays/ copies and its keys resolve in that room's reference.bib — rooms are self-contained per the door's room law; board address is 0-paperboard/. 0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
   group-token: "S<D> | A<D>"
   outline:
     mode: resolved
@@ -41,10 +41,10 @@ Seed boundary
 
 Prose never outranks a changed Narrative row or binding desk rule.
 
-## 🏠 Runtime home (0.3.0)
+## 🏠 Runtime home (0.3.1)
 
 ```text
-paperboard/
+0-paperboard/
 ├── Ba1-SM-ms-main/        S<D><NN>-<kind>   first desk's main reading order
 ├── Ba2-AM-ms-appendix/    A<D><NN>-<slug>   its appendix units
 └── Bb1-SW-wise-main/      a later desk's pair (a pair may be single)
@@ -52,8 +52,20 @@ paperboard/
 
 Tokens carry the desk letter per the door's group grammar: `S<D>` for main
 units, `A<D>` for appendix units, `<D>` the desk's first distinctive letter.
-Older boards using `1-SC-main/`, `2-SA-appendix/` and the `SC`/`SA` tokens are
-grandfathered and migrate only on explicit request.
+
+**Where the words live (0.3.1)**: the tex a unit page tracks sits in its
+telling's desk room, `<N>-<desk><year>/sections/`, and that room is
+self-contained per the door's room law — the unit's `\includegraphics` paths
+resolve inside the room's `displays/` (copies of accepted page-local display
+units), and its citation keys resolve in the room's own `reference.bib`
+(assembled from the consuming pages' `bibex/`). A unit whose tex reaches into
+another room, a shared top-level folder, or a page's `display/` directly is a
+defect: copy the artifact into the room and name the owning page as
+provenance.
+
+Older repos using `1-SC-main/`, `2-SA-appendix/`, the `SC`/`SA` tokens, or a
+shared `0-sections/`/`0-display/` are grandfathered and migrate only on
+explicit request.
 
 ## 📥 Required contract block
 

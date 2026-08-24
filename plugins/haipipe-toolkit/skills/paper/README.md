@@ -10,7 +10,7 @@ Five phases, gated by `haipipe-paper-workflow`; the venue bank is a library
 outside the journey (JL 260823):
 
 ```text
-P0 Explore    explore page · head of the paper's own board (A0) · the repo
+P0 Ideate     ideation page · the story group's page zero (SD00) · the repo
               is minted with this page · graduates one idea
 P1 Establish  Seed · one per paper · venue-free · E-board with novelty column
 P2 Tell       Narrative · one per desk · §1 binds a bank Venue Page
@@ -55,7 +55,7 @@ paper/
 ├── haipipe-paper-workflow/
 │   └── SKILL.md              the five-phase gate machine; transitions only
 ├── page-types/
-│   ├── haipipe-page-for-explore/
+│   ├── haipipe-page-for-ideation/
 │   ├── haipipe-page-for-seed/
 │   ├── haipipe-page-for-venue/
 │   ├── haipipe-page-for-narrative/

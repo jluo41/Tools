@@ -12,9 +12,9 @@ description: >-
   argument arc, reader journey, section map, venue decision, retarget,
   page-type narrative, /haipipe-page-for-narrative.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-23"
-  summary: "0.4.1 renames the runtime home to paperboard/A1-SD-story/ under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, Narratives live beside the Seed as SD<NN> pages."
+  version: "0.4.3"
+  last_updated: "2026-08-24"
+  summary: "0.4.3 (JL 260824): ideation-first story order — narratives start at SD02, after SD00-ideation and SD01-seed. 0.4.2 (JL 260824): the map row names the telling's DESK ROOM files (<N>-<desk><year>/sections/...), because each telling owns a self-contained room with its own displays/ copies and reference.bib per the door's room law; board address is 0-paperboard/. 0.4.1 renames the runtime home to the A1-SD-story group under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, Narratives live beside the Seed as SD<NN> pages."
   group-token: "SD"
   outline:
     mode: grammar
@@ -32,14 +32,16 @@ group, as an `SD<NN>` page (JL 260821; home renamed under the 260823 scaffold
 grammar, `0-SD-seed/` boards grandfathered):
 
 ```text
-paperboard/A1-SD-story/
-├── SD00-seed/                    what the paper IS · venue-free · exactly one
-├── SD01-narrative-<venue>/       how it is told to desk 1
-└── SD02-narrative-<venue>/       how it is told to desk 2
+0-paperboard/A1-SD-story/
+├── SD00-ideation/                the nursery · the story's page zero
+├── SD01-seed/                    what the paper IS · venue-free · exactly one
+├── SD02-narrative-<venue>/       how it is told to desk 1
+└── SD03-narrative-<venue>/       how it is told to desk 2
 ```
 
 The group law: the story group decides the telling; no manuscript prose lives
-here. SD00 stays venue-free; every SD<NN> above it names its venue.
+here. SD00 raises ideas and SD01 stays venue-free; every SD<NN> above SD01
+names its venue.
 
 ## 📐 Grain and boundary
 
@@ -124,6 +126,7 @@ fresh Section agent does not invent the paper's logic.
 ```text
 section-id
 section kind and working title
+room files · the tex under this telling's desk room, <N>-<desk><year>/sections/
 reader question
 reader state on entry
 reader state on exit
