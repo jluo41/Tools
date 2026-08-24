@@ -101,7 +101,9 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
 # paper on this SPACE claiming `/b/lifecycle` (JL 260803: "the lifecycle is not
 # good, I prefer it to be misq-xxxx-lifecycle"). These names take the owning
 # folder as a prefix; every other board keeps the slug it already had.
-GENERIC_BOARD_NAMES = {"lifecycle", "board", "boards", "diagram", "diagrams"}
+GENERIC_BOARD_NAMES = {
+    "lifecycle", "board", "boards", "diagram", "diagrams", "paperboard",
+}
 
 
 def board_slug(name: str, parent: str = "") -> str:
@@ -147,17 +149,17 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
     folded = (slug or "").strip().lower()
     if not folded:
         return None
-    board = None
+    matches = []
     for manifest in _manifests(root):
         candidate = manifest.parent
         if _skip(candidate, root):
             continue
         if folded in (board_slug(candidate.name, candidate.parent.name),
                       candidate.name.lower()):
-            board = candidate
-            break
-    if board is None:
+            matches.append(candidate)
+    if len(matches) != 1:
         return None
+    board = matches[0]
 
     site = board / "board"
     rel = board.relative_to(root).as_posix()
@@ -176,7 +178,7 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
     return "/" + quote(f"{rel}/board/index.html", safe="/")
 
 
-def render_home(root: Path) -> str:
+def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
     """One table, one row per board — the same shape as a board Index's page
     table (`bstat`), because that is the layout JL reads fastest (260819:
     "arrange the board like the page index"). Kind headers are the gray group
@@ -223,9 +225,13 @@ def render_home(root: Path) -> str:
 <tr><th>board</th><th>title</th><th>🎯 settled</th><th>open</th></tr></thead>
 <tbody>{table}</tbody></table></div>''' if rows
             else '<p class="empty">No board.md files found below this SPACE root.</p>')
+    label = html.escape(space_name.strip() or "SPACE")
+    heading = html.escape(f"JJ-LUO / {space_name.strip()} Boards" if space_name.strip() else "SPACE Boards")
+    url_note = (f' · <a href="{html.escape(public_url, quote=True)}">{html.escape(public_url)}</a>'
+                if public_url.strip() else "")
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SPACE Boards</title><style>
+<title>{heading}</title><style>
 :root{{color-scheme:light;--ink:#202124;--mut:#6b7280;--line:#e5e7eb;--bg:#fafafa;--card:#fff;--accent:#2867b2}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
 main{{max-width:1060px;margin:0 auto;padding:clamp(22px,5vw,56px) clamp(16px,4vw,36px)}}
@@ -243,12 +249,16 @@ td.bact{{white-space:nowrap;text-align:right}}
 .open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap}}.open:hover{{text-decoration:underline}}
 .split{{color:var(--mut);font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-right:8px;font-size:12px}}.split:hover{{color:var(--accent);border-color:var(--accent)}}
 .build{{color:#a05a00;font-weight:700;font-size:12px}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
-</style></head><body><main><h1>🏠 SPACE Boards</h1><p class="lead">{len(cards)} boards discovered in this SPACE. This home is a read-only map; each row opens that Board's own Index. Hover a title for the board's spine.</p>{body}</main></body></html>'''
+</style></head><body><main><h1>🏠 {heading}</h1><p class="lead">{label}: {len(cards)} boards discovered{url_note}. This home is a read-only map; each row opens that Board's own Index. Hover a title for the board's spine.</p>{body}</main></body></html>'''
 
 
 class HomeMixin:
     def serve_home(self):
-        body = render_home(self.root).encode("utf-8")
+        body = render_home(
+            self.root,
+            getattr(self, "space_name", ""),
+            getattr(self, "public_url", ""),
+        ).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -258,7 +268,8 @@ class HomeMixin:
             self.wfile.write(body)
 
     def is_home_request(self):
-        return urlsplit(self.path).path.rstrip("/") == "/boards"
+        path = urlsplit(self.path).path.rstrip("/") or "/"
+        return path in {"/", "/boards"}
 
     def short_request(self):
         """`/b/<slug>` or `/b/<slug>/<page-id>`, or None for anything else."""

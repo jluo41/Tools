@@ -14,6 +14,8 @@ from live.home import (HomeMixin, board_slug, discover_boards, render_home,
 class SpaceHomeTest(unittest.TestCase):
     def test_public_route_is_boards_not_the_private_api_namespace(self):
         request = HomeMixin()
+        request.path = "/"
+        self.assertTrue(request.is_home_request())
         request.path = "/boards/"
         self.assertTrue(request.is_home_request())
         request.path = "/_board/home"
@@ -37,9 +39,15 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertTrue(cards[0]["ready"])
             page = render_home(root)
             self.assertIn("A &lt;Board&gt;", page)
-            self.assertIn("Open board", page)
+            self.assertIn("Open →", page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
             self.assertEqual(cards[0]["kind"], "Task Board")
+
+    def test_home_can_be_branded_for_a_space(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            page = render_home(Path(tmp), "Physician-SPACE", "https://physician.jjluo.com")
+            self.assertIn("JJ-LUO / Physician-SPACE Boards", page)
+            self.assertIn("https://physician.jjluo.com", page)
 
     def test_groups_task_paper_and_skill_boards_with_skill_precedence(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -92,8 +100,21 @@ class ShortRouteTest(unittest.TestCase):
         self.assertEqual(
             board_slug("0-lifecycle", "Paper-Personality2Opioid-MISQ2026"),
             "personality2opioid-misq2026-lifecycle")
+        self.assertEqual(
+            board_slug("0-paperboard", "Paper-Personality2Opioid-MISQ2026"),
+            "personality2opioid-misq2026-paperboard")
         self.assertEqual(board_slug("01-boardform-260722", "diagrams"), "boardform")
         self.assertEqual(board_slug("plain"), "plain")
+
+    def test_ambiguous_slug_is_a_miss_not_a_random_board(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for owner in ("Paper-One", "Paper-Two"):
+                board = root / owner / "0-paperboard"
+                (board / "board").mkdir(parents=True)
+                (board / "board.md").write_text("# Paper\nspine: s\n")
+                (board / "board" / "index.html").write_text("index")
+            self.assertIsNone(resolve_short(root, "paperboard"))
 
     def test_resolves_index_page_and_group(self):
         with tempfile.TemporaryDirectory() as tmp:

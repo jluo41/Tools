@@ -1,0 +1,67 @@
+schema: jjluo-space-registry/v1
+brand:
+  display_name: JJ-LUO
+  domain: jjluo.com
+  note: DNS is lowercase; the brand is written as JJ-LUO.
+  house_url: https://jjluo.com
+
+workspace:
+  root: ..
+  root_relative_to: repository
+  path_relative_to: workspace_root
+  note: The four SPACE repositories are sibling directories of Tools-SPACE.
+
+url_policy:
+  space: https://{space}.jjluo.com
+  board_home: https://{space}.jjluo.com/boards
+  board: https://{space}.jjluo.com/b/{board}
+  board_alias: ""
+  board_alias_note: The live Board server already owns /b/{board}; do not create a second board registry.
+
+deployment:
+  tunnel: jjluo-spaces
+  mode: private-readonly-first
+  access: cloudflare-access
+  service_ports:
+    physician: 5601
+    welldoc: 5602
+    reach: 5603
+    drfirst: 5604
+  note: One tunnel can publish all four hostnames; each service must be rooted at one SPACE only.
+
+statuses:
+  - planned
+  - active
+  - review
+  - paused
+  - archived
+
+spaces:
+  - id: physician
+    name: Physician-SPACE
+    domain: physician.jjluo.com
+    path: Physician-SPACE
+    mirror_path: Tools-SPACE/spaces/Physician-SPACE
+    status: active
+    description: Physician review, clinical evaluation, and healthcare AI workflows.
+
+  - id: welldoc
+    name: WellDoc-SPACE
+    domain: welldoc.jjluo.com
+    path: WellDoc-SPACE
+    status: active
+    description: Continuous glucose monitoring, patient engagement, and healthcare AI workflows.
+
+  - id: reach
+    name: REACH-SPACE
+    domain: reach.jjluo.com
+    path: REACH-SPACE
+    status: active
+    description: REACH healthcare ML research, EHR data, and deployment workflows.
+
+  - id: drfirst
+    name: DrFirst-SPACE
+    domain: drfirst.jjluo.com
+    path: DrFirst-SPACE
+    status: active
+    description: DrFirst healthcare personalization, messaging, and ML workflows.
