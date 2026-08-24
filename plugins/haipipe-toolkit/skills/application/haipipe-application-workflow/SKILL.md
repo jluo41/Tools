@@ -3,7 +3,7 @@ name: haipipe-application-workflow
 description: >-
   The RUN router of the Application family: drives one Application's TWO boards through six phases in two lanes, InsightBoard SCOPE, CLIMB, HANDOFF and DesignBoard FRAME, COMPOSE, ACCEPT, joined only at the PageX crossing. It owns phase derivation from disk, the dispatch of each page into haipipe-page-workflow, the partition-major climb order, and the three human gates that always block: probe release, handoff signing, and acceptance. It never contains page machinery and never crosses past ACCEPTED, because building and shipping are task-layer work. Use when an Application must be driven forward, when someone asks what the next runnable page is, when a run must stop at the right gate, or when a stalled Application needs its frontier named. Trigger: application workflow, run the application, drive the boards, next page, application frontier, application run, what is runnable, /haipipe-application-workflow.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-08-23"
   summary: "0.2.0 (JL 260823, reviewer audit): every dispatch pins mode: copilot so page-auto cannot defer a gate tick past a gate; an explicit phase-to-frontier mapping table; signed defined as the person's tick on the handoff division; the dataset-first PageX alternative to a local handoff. 0.1.0: six phases, two lanes, three gates."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -96,6 +96,10 @@ repeat   until the frontier phase closes or a gate blocks
 ```
 
 A page whose inputs do not exist yet is not runnable, and naming WHY it is not runnable is this skill's answer, never scaffolding the missing input silently.
+
+## The design lane delegates (0.3.0)
+
+Phases ④⑤⑥ keep their places in this map, but their interior law is `/haipipe-design`'s since 260824: FRAME resolves `born-of:`, COMPOSE runs the card → release → arm-agent → judge cycle, and ACCEPT is the per-division row. This skill still derives the lane's frontier and still stops at its gates; it no longer states design-side rules of its own.
 
 ## The three gates always block
 

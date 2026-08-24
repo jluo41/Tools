@@ -100,3 +100,46 @@ class BoardStoreContractTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BoardReadsTest(unittest.TestCase):
+    """`reads:` — the design board's evidence whitelist (JL 260824)."""
+
+    def setUp(self):
+        import tempfile
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        (self.tmp / "A01_InsightBoard-X").mkdir()
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def codes(self, line):
+        (self.tmp / "B01_DesignBoard-Y").mkdir(exist_ok=True)
+        (self.tmp / "B01_DesignBoard-Y/board.md").write_text(
+            board_src(line), encoding="utf-8")
+        rep = Report()
+        check_board(self.tmp / "B01_DesignBoard-Y", rep)
+        return [row[1] for row in rep.rows]
+
+    def test_reads_is_optional(self):
+        codes = self.codes("")
+        self.assertNotIn("board-reads-target", codes)
+
+    def test_sibling_board_name_passes(self):
+        codes = self.codes("reads: A01_InsightBoard-X\n")
+        self.assertNotIn("board-reads-target", codes)
+        self.assertNotIn("board-reads-path", codes)
+
+    def test_dead_entry_is_an_error(self):
+        # The grant chain starts at reads:, so a dead entry poisons every
+        # citation beneath it.
+        self.assertIn("board-reads-target",
+                      self.codes("reads: A99_InsightBoard-Nowhere\n"))
+
+    def test_climbing_entry_is_an_error(self):
+        self.assertIn("board-reads-path", self.codes("reads: ../../elsewhere\n"))
+
+    def test_multiple_entries_each_checked(self):
+        codes = self.codes("reads: A01_InsightBoard-X · A99_Gone\n")
+        self.assertIn("board-reads-target", codes)

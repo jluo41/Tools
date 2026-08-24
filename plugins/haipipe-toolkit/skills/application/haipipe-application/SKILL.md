@@ -4,7 +4,7 @@ description: >-
   One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.15.0"
+  version: "0.16.0"
   last_updated: "2026-08-23"
   summary: "0.15.0 is the contradiction sweep (JL 260823, four-reviewer audit): dead fn pointers cleared, the cohort rule qualified against the SPLIT-verdict licensing rule, the probe authority line corrected, and the four rung contracts + meta + question updated for partition-major in step. 0.14.0 added the sibling RUN head; 0.13.0 the partition-major layout."
 ---
@@ -81,6 +81,12 @@ feedback | digest              run the existing family feedback procedures
 workflow | run | drive         drive the whole Application forward through the
                                sibling RUN head, haipipe-application-workflow:
                                six phases in two lanes, three blocking human gates
+
+design-side verbs (brief · design · direction · release · realize · judge ·
+render · accept) are OWNED by the sibling door /haipipe-design since 260824:
+reads:/born-of:/stance laws, direction cards, artifact units, the arm-agent.
+The rows above remain as forwards; fn/brief.md and fn/design.md stay as the
+page-level procedures both doors share.
 ```
 
 No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create the two board folders. Never infer an audience, behavior, or venue when that choice changes the design.

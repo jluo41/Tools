@@ -3,9 +3,9 @@ name: haipipe-page-for-brief
 description: >-
   The Page Type contract for the one BRIEF Page that heads a DesignBoard. It fixes the opportunity, audience set, behavior/outcome, venue scope, promise, the insight needs this Application raises, optional core PageX inputs, and the Design Page roster. The data inventory it used to carry moved to the InsightBoard's Meta Page on 260820. Use when starting or retargeting an Application, deciding what must be understood before design, folding legacy Seed/Venue/Pitch decisions, or checking which Design work the Application authorizes. Trigger: application brief, design brief, audience roster, behavior change, venue scope, insight needs, design roster, page-type brief, /haipipe-page-for-brief.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   last_updated: "2026-08-20"
-  summary: "Heads the DesignBoard: delivery framing plus the needs it raises; the source inventory and insight roster moved to haipipe-page-for-meta."
+  summary: "0.4.0 (JL 260824): born-of: required — a Brief is born mandate-first (a person names the program, needs raised open) or evidence-first (signed W handoffs propose it; opportunity/audience/outcome/kill drafted from the handoff fields, settled needs born answered). Earlier: heads the DesignBoard; the source inventory and insight roster moved to meta."
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -31,6 +31,10 @@ the needs this board RAISES          the roster of which Insight Page ANSWERS ea
 ```
 
 The Brief still raises needs, because a need is a delivery-side statement of what design cannot proceed without. It no longer tracks their answers; the rung question registers (`MT01`-`MT04`) do, so each row has one writer.
+
+## The two births (0.4.0)
+
+Declare `born-of:` beside `page-type:`. `born-of: mandate` is a person's program decision, and every need is raised open. `born-of: <W id list>` is evidence-first: each named W page must carry a SIGNED Design Handoff on a board named in this board's `reads:`; the opportunity, audience, outcome and kill divisions are DRAFTED from the handoffs' finding, context, strength/boundary and forbidden clauses, then edited by a person; needs whose chains already settled are born answered with their register ids. A Brief whose `born-of:` does not resolve fails its closing checks.
 
 ## Boundary
 

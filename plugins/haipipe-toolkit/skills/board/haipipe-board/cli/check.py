@@ -309,6 +309,26 @@ def check_board(d, rep):
                     "`~`; a dispatching probe resolves it once and hands the executor "
                     "an absolute path, so a climbing path resolves differently "
                     "depending on who dispatched")
+    # `reads:` (JL 260824, the design family): the board's evidence whitelist.
+    # Each entry is a sibling board's folder name; a direction card's grant and
+    # a unit's evidence must sit inside it, so a name that resolves to nothing
+    # makes the whole chain unverifiable.
+    reads = re.search(r"^reads:\s*(\S.*?)\s*$", text, re.M)
+    if reads:
+        for entry in [e.strip() for e in reads.group(1).split("\u00b7")]:
+            if not entry:
+                continue
+            if entry.startswith("~") or ".." in entry.split("/"):
+                rep.add(ERROR, "board-reads-path", f"board.md -> {entry}",
+                        "a `reads:` entry must be a plain sibling-board name or a "
+                        "repo-relative path with no `..` and no `~`")
+                continue
+            cand = [d.parent / entry, Path(entry)]
+            if not any(c.is_dir() for c in cand):
+                rep.add(ERROR, "board-reads-target", f"board.md -> {entry}",
+                        "a `reads:` entry names no board on disk; the grant chain "
+                        "(reads -> card grant -> unit evidence) starts here, so a "
+                        "dead entry makes every citation under it unverifiable")
 
     pages = {p.name: p for p in page_files(d)}
     # `[MIAD]\d` admits the Application runtime ids (M00-meta.md, I01-<slug>.md,
@@ -1201,7 +1221,7 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "principle", "view", "stage", "explore")
+                    "wisdom", "brief", "principle", "view", "stage", "ideation")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 

@@ -3,7 +3,7 @@ name: haipipe-page-for-design
 description: >-
   The Page Type contract for an Application DESIGN PAGE on the DesignBoard, machine key `page-type: design`. This page lives in `<DesignBoard>/2-DS-design/DS<NN>-<slug>/`, one page per audience x behavior job x primary venue. A DesignBoard may own many Design Pages; each serves one audience × behavior job × primary venue, consumes the Brief and settled InsightBoard Design Handoffs through PageX, then authors principles, a message/unit map, repeated message divisions, variants, rails, and a per-division acceptance row. The Page ENDS AT ACCEPTED: it never ships and never measures. Use for SMS/email/dashboard/checklist/report/message design, audience-specific strategy, message sequences, interaction components, or retargeting. Trigger: design page, message strategy, audience job, message map, message divisions, component map, variants, accept a unit, page-type design, /haipipe-page-for-design.
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-08-20"
   summary: "Token DS. Cites P pages, never the InsightBoard. Units are divisions with per-division acceptance; renders live in the page's render/ plugin."
   outline:
@@ -38,7 +38,7 @@ Design Page    message roles, content, rails, render, acceptance · cites
 NOT this Page  building it · shipping it · running the experiment · collecting data
 ```
 
-Design performs composition, not evidence settlement. It owns `pagex/` and no `probe/`.
+Design performs composition, not evidence settlement. It owns `pagex/` and no `probe/`. Since 0.5.0 it owns TWO plugins of its own (JL 260824): `direction/` (haipipe-plugin-direction), the strategy cards proposed before any artifact and released only by a person; and `design/` (haipipe-plugin-design), the artifact units, one per released card, written by one arm-agent each. Every unit-citing division carries a `stance:` taken verbatim from its card, and a division without a stance is illegal. The wager terms (expected effect, falsification line) live on the card only; the page and the unit cite, never restate.
 
 **This Page ends at ACCEPTED (JL 260820).** Deciding that an exact version may go is a design judgment and belongs here. Building it, shipping it, running the A/B, and collecting what came back are separate work owned by the task layer. A Design Page has no deploy record and no round folder.
 
@@ -97,6 +97,8 @@ PageX binds exact files and scopes, and it crosses boards unchanged because it b
 ```text
 <application-root>/<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>/
 ├── D<NN>-<audience>-<job>.md
+├── direction/       strategy cards · haipipe-plugin-direction
+├── design/          artifact units · haipipe-plugin-design
 ├── pagex/
 ├── outline/
 └── display/
