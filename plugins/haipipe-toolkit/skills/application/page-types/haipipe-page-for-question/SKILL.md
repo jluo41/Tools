@@ -3,7 +3,7 @@ name: haipipe-page-for-question
 description: >-
   The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-23"
   summary: "0.2.0 (JL 260823): on a partition-major board the Queue gains one column per partition; a question is written once and asked per partition, a blank cell is illegal, a dot cell is an explicit X-routing. 0.1.0 split the register out of MT00-meta by rung."
   group-token: "MT"
@@ -22,17 +22,20 @@ Declare `page-type: question` and `question-rung: data | information | knowledge
 Four pages exist per InsightBoard, in the `0-MT-meta/` group beside the Meta page:
 
 ```text
-MT01-question-data/           question-rung: data           faces  1-D-data/
-MT02-question-information/    question-rung: information    faces  2-I-information/
-MT03-question-knowledge/      question-rung: knowledge      faces  3-K-knowledge/
-MT04-question-wisdom/         question-rung: wisdom         faces  4-W-wisdom/
+MT01-question-data/           question-rung: data           faces the D rung
+MT02-question-information/    question-rung: information    faces the I rung
+MT03-question-knowledge/      question-rung: knowledge      faces the K rung
+MT04-question-wisdom/         question-rung: wisdom         faces the W rung
+
+rung-major: the rung is one group (1-D-data/ .. 4-W-wisdom/)
+partition-major: the rung spans every partition group (ref/partition.md)
 ```
 
 ## Why this Page exists
 
 Until 260821 a question could only be a table row: `N<n>` in the Brief's Insight Needs, mirrored into `MT00-meta`'s Insight Roster. Two defects followed. A question raised on the InsightBoard itself, by someone reading the data rather than by a Brief, had no home at all, and `haipipe-page-for-meta` forbids one, because Meta raises no question of its own. And a row cannot carry why the question is asked now, what would answer it, or what it is blocked on.
 
-JL ruled the split by rung on 260821, over a single flat register. A question is not asked of the board in general; it is asked of one rung, and the answer lands in that rung's group. Pairing the register with the group it faces is what makes the queue readable: `MT01`'s queue and `1-D-data/`'s pages are the two halves of one sentence.
+JL ruled the split by rung on 260821, over a single flat register. A question is not asked of the board in general; it is asked of one rung, and the answer lands in that rung's group. Pairing the register with the rung it faces is what makes the queue readable: `MT01`'s queue and the D pages that answer it are the two halves of one sentence.
 
 ## Boundary
 
@@ -52,17 +55,17 @@ A question may be raised from either side. The Brief raises one when design is b
 The rung letter is in the id, so a question names its own home.
 
 ```text
-QD<n>   registered on MT01     answered in 1-D-data/
-QI<n>   registered on MT02     answered in 2-I-information/
-QK<n>   registered on MT03     answered in 3-K-knowledge/
-QW<n>   registered on MT04     answered in 4-W-wisdom/
+QD<n>   registered on MT01     answered on the D rung, in the owning group(s)
+QI<n>   registered on MT02     answered on the I rung, in the owning group(s)
+QK<n>   registered on MT03     answered on the K rung, in the owning group(s)
+QW<n>   registered on MT04     answered on the W rung, in the owning group(s)
 ```
 
 Numbering runs per page, so `QD1` and `QI1` coexist. The id is permanent: a question that is re-targeted moves page and takes a NEW id, and its old division stays behind as a one-line tombstone naming the successor. Nothing that was ever raised silently disappears.
 
 ## Partition-major boards: the Queue gains columns (0.2.0)
 
-On a partition-major InsightBoard (`haipipe-application` `ref/partition.md`) a question is written ONCE and asked per partition. The id stays partition-free, `QK1` and never `QK1-B`, and the Queue carries one column per partition registered on `MT00`:
+On a partition-major InsightBoard (`haipipe-application` `ref/partition.md`) a question is written ONCE and asked per partition. The id stays partition-free, `QK1` and never `QK1-B`. The Queue carries one column per partition registered on `MT00`, plus an X column whenever the register holds an X-routed question; X is the cross GROUP, not a partition, so a register with no cross question carries no X column:
 
 ```text
 id   question                              F·full      B·youngmale   X·cross
@@ -96,7 +99,7 @@ QD1  what do the 13 arms say?        BR00 · N4   —                ⬜ ready
 QD2  which rows carry an opt-out?    MT00 read   D02-optout       🔨 EVIDENCE
 ```
 
-`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `✅ answered` once that page closes, and `🚫 retired` for a tombstone.
+`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `✅ answered` once that page closes, and `🚫 retired` for a tombstone. A cell or row may name the planned answering page beside `⬜` (`⬜ FD01`), which reads: the page is allocated and still planned.
 
 **Each question division** owes a reader four things and nothing else:
 
@@ -150,5 +153,6 @@ A question does not go stale; its answer does. When a source re-runs and reopens
 - Every question's target rung is this page's rung. A question facing another rung has been mis-filed and moves.
 - The page owns no `probe/` and no `display/`.
 - A re-targeted question left a tombstone naming its successor.
+- Partition-major only: no cell is blank; every dot cell's routing is restated in its question's division; every 🚫 cell carries a reason.
 
 This variant owns no scripts.

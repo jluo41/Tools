@@ -7,7 +7,8 @@
 5. Give each source an as-of date and the staleness condition that reopens dependent D pages.
 6. Record known limits: missingness, instrumentation gaps, suspected bias. Empty is a claim and needs a sentence saying so.
 7. Ensure the group's four question registers exist beside this page, `MT01-question-data` through `MT04-question-wisdom` under `haipipe-page-for-question`. Write no question into them from here: a Brief need lands through the `question` verb, and empty registers are a valid state, not a gap.
-8. Run the Page workflow until CHECK settles or holds the Page.
+8. On a partition-major board (`ref/partition.md`) this page also carries the Partition Register and Shared Thresholds divisions, per `haipipe-page-for-meta` 0.3.0; they are this page's content, not a register's.
+9. Run the Page workflow until CHECK settles or holds the Page.
 
 Describe only. A sentence that interprets, compares, ranks, or recommends belongs on a D, I, K or W page and fails here. Meta holds no question; the registers do.
 

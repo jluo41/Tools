@@ -30,7 +30,7 @@ venue scope · promise                window, freshness, known limits
 the needs this board RAISES          the roster of which Insight Page ANSWERS each
 ```
 
-The Brief still raises needs, because a need is a delivery-side statement of what design cannot proceed without. It no longer tracks their answers; the Meta Page's Insight Roster does, so each row has one writer.
+The Brief still raises needs, because a need is a delivery-side statement of what design cannot proceed without. It no longer tracks their answers; the rung question registers (`MT01`-`MT04`) do, so each row has one writer.
 
 ## Boundary
 
@@ -61,15 +61,15 @@ Brief frames needs; it does not perform DIKW and does not prescribe the answers 
 - **Outcome and Kill Criteria** makes success, guardrails, and abandonment observable.
 - **Venue Scope** pins one or more allowed delivery channels without designing their messages.
 - **Promise** states the ceiling the Application may offer.
-- **Insight Needs Raised** gives each required understanding a stable id, a one-line question, a target DIKW level, the affected audience/job, and the blocked Aim. It carries no answer and no preferred result. The InsightBoard's Meta Page rosters which Insight Page took each id.
+- **Insight Needs Raised** gives each required understanding a stable id, a one-line question, a target DIKW level, the affected audience/job, and the blocked Aim. It carries no answer and no preferred result. The matching question register records which page took each id, and the board rollup lives on the wisdom register's Queue.
 - **Core PageX Inputs** binds already accepted Pages that apply across the board. A candidate is not a binding.
 - **Design Roster and Handoff** releases the initial Design Page roster, one row per audience × behavior job × primary venue.
 
 ## Runtime shape
 
 ```text
-<application-root>/<DesignTopic>-DesignBoard/0-A-brief/A00-brief/
-├── A00-brief.md
+<application-root>/<DesignTopic>-DesignBoard/0-BR-brief/BR00-brief/
+├── BR00-brief.md
 └── pagex/       accepted core Page inputs only
 ```
 
@@ -78,7 +78,7 @@ Brief frames needs; it does not perform DIKW and does not prescribe the answers 
 - Opportunity, audience set, behavior, outcome, kill criteria, and venue scope are visible.
 - Every load-bearing premise is either an accepted PageX input or a raised Insight Need.
 - No Insight Need contains a preferred answer.
-- Every raised need has a stable id the Meta Page's Roster can key on.
+- Every raised need has a stable id a question register can key on (`QD`/`QI`/`QK`/`QW`).
 - Every planned Design Page names one audience, behavior job, and primary venue.
 - No source inventory, grain table, or freshness row remains on this Page.
 - A fresh Insight or Design agent can start from Division 8 without reading legacy stages.

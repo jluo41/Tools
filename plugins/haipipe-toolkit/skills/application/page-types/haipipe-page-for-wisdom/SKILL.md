@@ -3,9 +3,9 @@ name: haipipe-page-for-wisdom
 description: >-
   The Page Type contract for one WISDOM page on an InsightBoard: what a Knowledge claim means for this application's audience, context and risk, plus the Design Handoff that is the only thing a DesignBoard may bind. It counsels; it never writes message copy. Use when a settled claim must become guidance, when a design need must be released, or when deployment data has refreshed a claim and the counsel built on it must be re-read. Trigger: wisdom page, counsel, design handoff, applicability, forbidden overreach, page-type wisdom, /haipipe-page-for-wisdom.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-20"
-  summary: "Contextual counsel plus the Design Handoff. The only level a DesignBoard may bind, and the only one that may mention an audience."
+  version: "0.2.0"
+  last_updated: "2026-08-23"
+  summary: "0.2.0 (JL 260823): partition-major home path, verdict-conditioned counsel, and the DEFERRAL close: under POOL a non-template W page closes by deferring to the template W by id and exports no handoff. 0.1.0: contextual counsel plus the Design Handoff."
   group-token: "W"
   outline:
     mode: fixed
@@ -18,7 +18,7 @@ metadata:
 
 Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when reaching Task or Discovery sources and `haipipe-plugin-pagex` when citing another page on this board.
 
-Declare `page-type: wisdom`. This page lives in `<InsightBoard>/4-W-wisdom/W<NN>-<slug>/`.
+Declare `page-type: wisdom`. On a rung-major board this page lives in `<InsightBoard>/4-W-wisdom/W<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>W<NN>-<slug>/`, and the group token is the partition letter.
 
 One page owes a reader exactly this: **what to do about it here, and what must not be concluded**.
 
@@ -33,22 +33,24 @@ One page owes a reader exactly this: **what to do about it here, and what must n
 ```
 
 - **Context** is the first place an audience or a venue may be named. Everything below D through K stayed about the world; this division is where the application enters.
-- **Counsel** carries `W<n>` rows, each naming its K parent. A counsel useful in practice still fails if no K parent warrants it.
+- **Counsel** carries `W<n>` rows, each naming its K parent. A counsel useful in practice still fails if no K parent warrants it. The verbs are do, avoid, leave undecided, or, on a partition-major non-template page only, defer to `<W id>`. A counsel may be CONDITIONED on the pooling-verdict K page, which counts as a K parent.
 - **Forbidden Overreach** is required. It is the clause that stops a designer asserting a cause the data never established.
 - **Design Handoff** exports finding, strength, boundary, source versions, design consequence, forbidden overreach, unresolved gaps and the `serves:` need id. It contains no message copy.
 
 **Only a W page carries a Design Handoff.** A question that stopped at K is not yet usable by a DesignBoard, and its register's Queue row shows exactly that.
 
+**The deferral close (partition-major only).** Under a POOL verdict every non-template W page closes as a DEFERRAL: its Counsel is one row, defer to the template W by id, citing the pooling-verdict K page as its parent, and its Design Handoff division is a pointer to the template W's handoff. A deferring W page exports NO handoff of its own, so nothing downstream can bind it, which is the point. The deferral close is legal only when a POOL verdict page is cited, and the template W page may never defer.
+
 ## Closing rule
 
-This page closes when every counsel names a K parent, the forbidden clause is written, and the handoff reads standalone.
+This page closes when every counsel names a K parent, the forbidden clause is written, and the handoff reads standalone. A deferral close instead requires exactly one counsel row deferring to the template W by id and citing a POOL verdict page.
 
 ## Closing checks
 
 - Every W row names the K row it rests on.
 - The counsel never exceeds what its K parent's strength and boundary support.
 - Forbidden Overreach is populated.
-- The handoff carries finding, strength, boundary, sources, consequence, forbidden, gaps.
+- The handoff carries finding, strength, boundary, sources, consequence, forbidden, gaps; a deferring W page instead points at the template W's handoff and exports none.
 - No final message copy appears anywhere on the page.
 - A fresh Design agent can use the handoff without opening any D, I or K page.
 
@@ -64,6 +66,6 @@ A parent page changing REOPENS every child row that cited it. That propagation i
 
 ## Register
 
-The question this page answers is registered once on `MT04-question-wisdom`, the register facing this group, whose Queue division also carries the board rollup that reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
+The question this page answers is registered once on `MT04-question-wisdom`, the register facing this rung, whose Queue division also carries the board rollup that reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
 
 This variant owns no scripts.

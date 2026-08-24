@@ -3,9 +3,9 @@ name: haipipe-page-for-knowledge
 description: >-
   The Page Type contract for one KNOWLEDGE page on an InsightBoard: a supported proposition carrying strength, rival explanations and boundary conditions, derived from named Information rows. It claims; it does not advise. Use when a pattern must become something the design can lean on, when rivals must be recorded before a claim travels, or when a Wisdom page is about to counsel from an unstated claim. Trigger: knowledge page, proposition, strength, rivals, boundary conditions, page-type knowledge, /haipipe-page-for-knowledge.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-20"
-  summary: "A proposition with strength, rivals and boundary. The last level that is still about the world rather than about this application."
+  version: "0.2.0"
+  last_updated: "2026-08-23"
+  summary: "0.2.0 (JL 260823): partition-major home path, and the pooling-verdict K page may cite the heterogeneity K row (K-from-K, one step) since its subject is a claim about claims. 0.1.0: a proposition with strength, rivals and boundary."
   group-token: "K"
   outline:
     mode: fixed
@@ -18,7 +18,7 @@ metadata:
 
 Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when reaching Task or Discovery sources and `haipipe-plugin-pagex` when citing another page on this board.
 
-Declare `page-type: knowledge`. This page lives in `<InsightBoard>/3-K-knowledge/K<NN>-<slug>/`.
+Declare `page-type: knowledge`. On a rung-major board this page lives in `<InsightBoard>/3-K-knowledge/K<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>K<NN>-<slug>/`, and the group token is the partition letter.
 
 One page owes a reader exactly this: **what is true, how strongly, and where it stops being true**.
 
@@ -32,7 +32,7 @@ One page owes a reader exactly this: **what is true, how strongly, and where it 
 ### 5 · Boundary            population, window, unit, and what it cannot cover
 ```
 
-- **Claim** states one proposition per `K<n>`. A claim spanning two mechanisms is two claims.
+- **Claim** states one proposition per `K<n>`. A claim spanning two mechanisms is two claims. On the pooling-verdict page (partition-major only) division 2 is **Knowledge Cited**: the verdict's subject is the heterogeneity claim itself, so its parent is that K row, one step and no further. Its verdict states exchangeability, POOL or SPLIT; the W-page obligations that follow are imposed by `ref/partition.md`, never asserted by the row.
 - **Strength** is one of three words plus the reason, never a number implying precision the design cannot use.
 - **Rivals** is required. A claim with no rivals listed has not been tested, it has been asserted.
 - **Boundary** is what travels downstream with the claim and constrains every Wisdom row built on it.
@@ -41,14 +41,14 @@ A claim may be WEAK and still belong here. What it may not do is reach Wisdom wi
 
 ## Closing rule
 
-This page closes when the proposition names its Information parents, its strength, its unelimimated rivals and its boundary.
+This page closes when the proposition names its Information parents, its strength, its uneliminated rivals and its boundary.
 
 ## Closing checks
 
-- Every K row cites the I rows it rests on.
+- Every K row cites the I rows it rests on; the pooling-verdict K row instead cites the heterogeneity K row, one step and no further.
 - Strength is one of STRONG, MODERATE, WEAK, with a stated reason.
 - Rivals are listed and each is marked eliminated or not.
-- No K row recommends an action: that is Wisdom.
+- No K row recommends an action: that is Wisdom. A POOL/SPLIT verdict is a claim about exchangeability, not a recommendation; its consequences for W pages are `ref/partition.md`'s rules.
 - The boundary is specific enough that a Wisdom page can test applicability against it.
 
 ## Chain law
@@ -63,6 +63,6 @@ A parent page changing REOPENS every child row that cited it. That propagation i
 
 ## Register
 
-The question this page answers is registered once on `MT03-question-knowledge`, the register facing this group; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
+The question this page answers is registered once on `MT03-question-knowledge`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
 
 This variant owns no scripts.

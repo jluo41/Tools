@@ -4,9 +4,9 @@ description: >-
   One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
   last_updated: "2026-08-23"
-  summary: "0.14.0 adds the sibling RUN head haipipe-application-workflow (JL 260823): six phases in two lanes, three human gates, dispatched here through the workflow verb. 0.13.0 added the partition-major InsightBoard layout with ref/partition.md as the grammar's single source."
+  summary: "0.15.0 is the contradiction sweep (JL 260823, four-reviewer audit): dead fn pointers cleared, the cohort rule qualified against the SPLIT-verdict licensing rule, the probe authority line corrected, and the four rung contracts + meta + question updated for partition-major in step. 0.14.0 added the sibling RUN head; 0.13.0 the partition-major layout."
 ---
 
 # /haipipe-application · understand on one board, design on the other
@@ -73,7 +73,7 @@ chain | understand | DIKW      open or extend one D→I→K→W chain through fn
 brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
 design | intervention | message
   | arc | components           create/resume one Design Page through fn/design.md
-artifact | project | render    generate a versioned projection through fn/artifact.md
+artifact | project | render    generate a versioned projection through fn/render.md
 review | audit | check         CHECK selected Design versions and their trace
 accept                         record the per-division acceptance row · the last act
 retarget                       re-pin venue or audience and reopen dependent Design
@@ -133,7 +133,7 @@ A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821
         └── render/                       the unit as the recipient sees it
 ```
 
-A board is **one head page's scope**: one Meta is one source scope (one cohort), one Brief is one program scope (one outcome, venue and promise). A new cohort is a new InsightBoard; a new question is a new chain inside it. A new program is a new DesignBoard; a new audience is a new DS page inside it.
+A board is **one head page's scope**: one Meta is one source scope (one prepared extract), one Brief is one program scope (one outcome, venue and promise). A new source extract is a new InsightBoard; a new question is a new chain inside it. A SUBGROUP of an existing extract is never a new board by default: it is a partition (next section), and it may become its own board only by citing a SPLIT verdict (`ref/partition.md`). A new program is a new DesignBoard; a new audience is a new DS page inside it.
 
 ## Two InsightBoard layouts (JL 260823)
 
@@ -143,7 +143,7 @@ The tree above is the default, RUNG-MAJOR: groups are the four rungs, and a subg
 ├── 0-MT-meta/            same head · the registers gain one Queue COLUMN per partition
 ├── 1-F-full/             FD→FI→FK→FW · the template ladder on the whole extract
 ├── 2-<L>-<slug>/         one group per partition · mirrors 1-F-full slug for slug
-└── <last>-X-cross/       contrast · heterogeneity · the POOL/SPLIT verdict
+└── 9-X-cross/            contrast · heterogeneity · the POOL/SPLIT verdict (pinned at 9)
 ```
 
 Page id = partition letter + rung letter + NN (`BK01` is partition B, Knowledge, first page); page types are unchanged. The grammar's single source is `ref/partition.md`: the mirror rule, the MT00 partition register, the shared-threshold rule, the X-only comparison law, and the SPLIT verdict as the only birth certificate a per-partition child board may cite. The choice of layout is made once, at scaffold.
@@ -154,7 +154,8 @@ Do not create the legacy descriptions/themes/claims/advice ladder, a flat Applic
 
 ```text
 InsightBoard
-  may PROBE Task/Discovery under haipipe-page-for-insight
+  may PROBE Task/Discovery under Task-backed evidence authority
+  (the rung contracts inherit haipipe-page-for-task; page-type: insight itself is task-only)
   owns D→I→K and application-contextual W
 
 DesignBoard
@@ -206,7 +207,7 @@ a dataset lands, no Brief yet
 🎨 Design Page                    no local Insight Page needed at all
 ```
 
-`fn/insight.md` searches the Task/Insights Board FIRST and binds a settled `scope: task` Page rather than reopening the same question locally. A local `scope: application` Page is for what that search does not answer: the reading that only makes sense for this audience, this venue, this promise.
+The chain verb (`fn/chain.md`, step 2) searches the Task/Insights Board FIRST and binds a settled `scope: task` Page rather than reopening the same question locally. A local chain is for what that search does not answer: the reading that only makes sense for this audience, this venue, this promise.
 
 The two scopes share one contract and one key, `page-type: insight`, with `scope:` picking the instance. Read `haipipe-page-for-insight` before writing either.
 
@@ -288,7 +289,6 @@ Also report open questions from the four registers (the wisdom register's rollup
 fn/enter.md             open an Application, or scaffold both boards from nothing
 fn/meta.md              Meta Page create/resume and the Source Inventory
 fn/chain.md             open or extend one D→I→K→W chain for one question
-fn/missing-insight.md   release a blocked need into fn/insight.md
 fn/brief.md             Brief create/resume and the needs it raises
 fn/principle.md         one because/do/within rule, citing one W handoff
 fn/design.md            one audience/job/venue design, units as divisions

@@ -61,7 +61,7 @@ Each repeated unit division carries:
 ```text
 unit id · recipient moment · audience job · Insight/Handoff refs · design move
 exact content or interaction · declared variants · safety rail · next trigger
-accepted: <reviewer> <YYMMDD> · handoff <I-id>@v<N> · render v<N>
+accepted: <reviewer> <YYMMDD> · handoff <W-id>@v<N> · render v<N>
 ```
 
 Do not create empty Narrative or Display divisions. Use one division per jointly reviewed message/unit.
@@ -75,7 +75,7 @@ RETIRED · a second Page                 CURRENT · a row on the division
 ─────────────────────────               ───────────────────────────────────
 3-artifacts/A01-<unit>/A01.md           R4 · abtest arm
   page-type: artifact                     accepted: JL 260818
-  Acceptance: reviewer/date/versions      handoff I03@v1 · render v5
+  Acceptance: reviewer/date/versions      handoff W01@v1 · render v5
 ```
 
 One division may be accepted while a sibling is mid-revision, which is the case the retired type existed for. The Page's own `state:` line reports the system; each division's row reports the unit. A changed handoff, content edit, venue constraint, or re-render clears the affected division's `accepted:` row and only that row.
@@ -90,12 +90,12 @@ settled Insight Handoff ─ PageX ─┼─▶ Design Page
 accepted prior Design ─── PageX ─┘
 ```
 
-PageX binds exact files and scopes, and it crosses boards unchanged because it binds by path: a DesignBoard page borrows `../SmsClickR4-InsightBoard/1-I-insights/I03-<slug>/I03-<slug>.md#8` the same way it borrows a local file. The Insight Use Map records why they apply here. Never inspect Task `results/`, dispatch Discovery, or copy an Insight Page's Probe cards.
+PageX binds exact files and scopes, and it crosses boards unchanged because it binds by path: a DesignBoard page borrows `../SmsClickR4-InsightBoard/4-W-wisdom/W01-<slug>/W01-<slug>.md#5` (a settled Design Handoff, through its principle) the same way it borrows a local file. The Insight Use Map records why they apply here. Never inspect Task `results/`, dispatch Discovery, or copy an Insight Page's Probe cards.
 
 ## Runtime shape
 
 ```text
-<application-root>/<DesignTopic>-DesignBoard/1-D-design/D<NN>-<audience>-<job>/
+<application-root>/<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>/
 ├── D<NN>-<audience>-<job>.md
 ├── pagex/
 ├── outline/

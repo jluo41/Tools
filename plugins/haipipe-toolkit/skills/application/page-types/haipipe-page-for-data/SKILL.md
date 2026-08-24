@@ -18,7 +18,7 @@ metadata:
 
 Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when reaching Task or Discovery sources and `haipipe-plugin-pagex` when citing another page on this board.
 
-Declare `page-type: data`. This page lives in `<InsightBoard>/1-D-data/D<NN>-<slug>/`.
+Declare `page-type: data`. On a rung-major board this page lives in `<InsightBoard>/1-D-data/D<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>D<NN>-<slug>/`, and the group token is the partition letter. Row ids stay `D<n>` either way: the partition letter belongs to the PAGE id, never to a row.
 
 One page owes a reader exactly this: **what was observed, and from which run**.
 
@@ -45,7 +45,7 @@ This page closes when every D row names a resolvable run and a person has read t
 - Every D row resolves to a run identity and an extract date.
 - No row compares, ranks, rates or explains: those are Information.
 - Exclusions carry reasons.
-- A re-run of the named source visibly reopens this page and only this page first.
+- A re-run of the named source visibly reopens this page first, and on a partition-major board its partition mirrors with it, because one extract feeds every partition's D pages through different configs.
 
 ## Chain law
 
@@ -59,6 +59,6 @@ A parent page changing REOPENS every child row that cited it. That propagation i
 
 ## Register
 
-The question this page answers is registered once on `MT01-question-data`, the register facing this group; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
+The question this page answers is registered once on `MT01-question-data`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
 
 This variant owns no scripts.

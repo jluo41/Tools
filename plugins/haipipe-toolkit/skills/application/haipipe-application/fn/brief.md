@@ -1,7 +1,7 @@
 # `brief` · create or resume the Application Brief
 
 1. Resolve the Application root and read `board.md`, current Pages, and venue packs.
-2. Find the one `page-type: brief` Page. If absent, create `<DesignTopic>-DesignBoard/0-A-brief/A00-brief/A00-brief.md` through `haipipe-page` and load `haipipe-page-for-brief`.
+2. Find the one `page-type: brief` Page. If absent, create `<DesignTopic>-DesignBoard/0-BR-brief/BR00-brief/BR00-brief.md` through `haipipe-page` and load `haipipe-page-for-brief`.
 3. Fold legacy Seed, Venue, and Pitch decisions as compatibility inputs without deleting or extending the old spine.
 4. Define opportunity, audience set, behavior/outcome, venue scope, promise, and the insight needs this board raises, each with a stable id.
 5. Bind already accepted core Pages through PageX; release unsettled rows to `fn/insight.md` rather than probing from Brief.

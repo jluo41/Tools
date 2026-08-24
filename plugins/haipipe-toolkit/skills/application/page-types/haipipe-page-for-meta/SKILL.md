@@ -26,8 +26,8 @@ The word is `meta`, not `opening`, because `## Opening` is already a required se
 Until 260820 the Application had one Brief carrying eight divisions, and they served two different readers: divisions 1-5 said what we are building and for whom, divisions 6-7 said what we must understand and from what sources. JL split the Application into an InsightBoard and a DesignBoard, and the Brief split on its own seam. This Page is the insight half.
 
 ```text
-🔎 InsightBoard          M00-meta    what data we have          ← this contract
-🎨 DesignBoard           A00-brief   what we are building       haipipe-page-for-brief
+🔎 InsightBoard          MT00-meta   what data we have          ← this contract
+🎨 DesignBoard           BR00-brief  what we are building       haipipe-page-for-brief
 ```
 
 ## Boundary
@@ -56,6 +56,8 @@ Meta also holds no question. Since 260821 questions live beside it in the same g
 ### 5 · Freshness and Staleness
 ### 6 · Known Limits
 ```
+
+On a partition-major board (`haipipe-application` `ref/partition.md`) two more divisions are REQUIRED, in this order after Purpose and Scope: **Partition Register**, one row per partition with letter, name, filter and group folder, plus the X group listed beside them with no filter, so the register doubles as the complete group map; and **Shared Thresholds**, the one statement of where the threshold file lives and the rule that no config or page may restate a value from it. No other page may define a partition or a threshold.
 
 - **Purpose and Scope** names the Application this board serves and what the data is on hand for. One paragraph.
 - **Source Inventory** lists every source with its owner, path or table, run identity, and dated extract. A source with no resolvable run identity is a finding, not a row.
@@ -87,6 +89,7 @@ A source's as-of date changing does not rewrite this Page's prose. It updates th
 - Every source has a stated unit, grain, population, and covered window.
 - Every source has an as-of date and a staleness condition.
 - Known Limits is populated, or says explicitly that none are known.
+- Partition-major only: every partition has a letter, name, filter and group folder; the threshold file is named with its PENDING/live status; no other page defines either.
 - No division interprets, compares, ranks, or recommends.
 - No question lives here, raised or recorded: the group's question registers own both.
 
