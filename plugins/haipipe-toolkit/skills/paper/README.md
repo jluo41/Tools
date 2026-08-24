@@ -71,6 +71,7 @@ paper/
 │   ├── haipipe-page-for-round/
 │                             (retired literature/value/display/dash Page Types deleted 260822)
 ├── venue/                    reusable playbooks and exemplars
+├── TODO.md                   open issues future sessions pick up (task-family format)
 └── _old/                     retired stages and implementations; never auto-loaded
 ```
 
