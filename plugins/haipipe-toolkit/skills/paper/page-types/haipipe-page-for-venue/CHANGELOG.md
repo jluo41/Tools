@@ -1,3 +1,16 @@
+## 0.4.0 — 2026-08-23
+
+- **Two profiles, declared per page.** A venue page is PACK-BACKED (exemplar
+  pack behind it, measured budgets, QBv1-misq the reference) or CfP-ONLY (a
+  call-for-papers is the only source, every length a DESK RULE, QBv17-wise the
+  reference). A CfP-only page is legitimately short and says, where a pack
+  observation would sit, that none exists. Ruled after QBv17-wise, the bank's
+  first workshop desk, was drafted at ~200 lines against 700+ line siblings.
+- **The bank is a library, not a phase.** The five-phase paper journey (JL
+  260823, haipipe-paper-workflow) never advances by writing a venue page; the
+  targeting DECISION lives on the consuming Narrative's §1, and a missing desk
+  gets its bank page minted as a sub-step of starting that Narrative.
+
 ## 0.3.2 — 2026-08-21
 
 Backfilling the two divisions 0.3.1 measured as missing. `QBv7` is done and is

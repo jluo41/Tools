@@ -11,9 +11,9 @@ description: >-
   Trigger: seed page, paper identity, pitch, one-minute story, establishment
   board, what can we claim, page-type seed, /haipipe-page-for-seed.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-21"
-  summary: "0.3.0 re-cuts the shape (JL 260821): Pitch lands at division 2 as BLUF with placeholder discipline; Establishment splits from Boundaries so the only volatile division is the proposition board; Source Pages is named the PageX seedbed. Restored 260821 after a parallel-session collision reverted the file; the changelog never lost the entry."
+  version: "0.4.0"
+  last_updated: "2026-08-23"
+  summary: "0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -25,11 +25,12 @@ metadata:
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: seed`. In a runtime paper board this page lives at
-`0-SD-seed/SD00-seed/`, the head of the story group it shares with the
-paper's Narratives (JL 260821):
+`paperboard/A1-SD-story/SD00-seed/`, the head of the story group it shares
+with the paper's Narratives (scaffold grammar JL 260823; boards older than it,
+`0-SD-seed/`, are grandfathered):
 
 ```text
-0-SD-seed/
+paperboard/A1-SD-story/
 ├── SD00-seed/                    what the paper IS · venue-free · exactly one
 ├── SD01-narrative-<venue>/       how it is told to desk 1
 └── SD02-narrative-<venue>/       how it is told to desk 2
@@ -131,6 +132,15 @@ or the handoff with a status it does not have. Evidence changing flips rows
 here and nowhere else: this division is why the rest of the Seed can be
 stable.
 
+**Every ✅ and 🔨 row also carries its novelty reading** (0.4.0): the closest
+prior work, the delta against it, and a HIGH/MEDIUM/LOW call — judged at the
+CLAIM level, never for the paper as a blob, and traced to discovery-layer QA
+files whose cited papers are id-verified. A row selling HIGH novelty on an
+unresolved citation is a defect; `[UNVERIFIED]` is honest, silence is not.
+The board's novelty column is what makes "is this idea any good?" a readable
+property instead of an opinion: idea quality = how many rows can flip ✅ and
+what their deltas are worth.
+
 ## 🔗 Source Pages and PageX · division 5
 
 Division 5 is the paper's READ SCOPE: which existing pages, task outputs and
@@ -146,6 +156,14 @@ outline bullet (source: page) ──▶ pagex/ binds the file ──▶ §5 rows
 Probe's `pagex/` lane binds exactly what §5 rows, by path and bounded scope,
 during OUTLINE. An asset in `pagex/` with no §5 row, or a §6 citation naming
 an asset §5 does not row, is a defect.
+
+**The birth certificate** (0.4.0): when this paper graduated from an Explore
+Page, §5's first row binds that page — cross-repo through `pagex/`, the same
+pattern as a bank-page binding — and the Explore ledger's `graduated-to`
+points back here. A Seed claiming no origin when a ledger names it, or naming
+an origin whose ledger does not show the graduation, is a defect on whichever
+side is missing. A retrofit Seed (paper predates the nursery) states that in
+its Log instead.
 
 ## 🃏 Evidence rule
 
@@ -184,6 +202,10 @@ open tensions     what Narrative must order rather than silently settle
   explicit `⟦pending E<n>⟧` placeholder naming a real row.
 - Every E-row is marked established, provisional, or absent, and cites a §5
   asset by id (⬜ rows may cite nothing).
+- Every ✅/🔨 E-row carries a claim-level novelty reading with a verified
+  closest-prior citation or an explicit `[UNVERIFIED]` mark.
+- The Explore origin is bound in §5 and reciprocated by the ledger, or the
+  Log states the Seed is a retrofit.
 - Every §5 asset is bound in `pagex/`, and `pagex/` holds nothing §5 does
   not row.
 - The Establishment Board is unranked: no headline marker, no importance

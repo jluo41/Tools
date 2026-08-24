@@ -12,9 +12,9 @@ description: >-
   argument arc, reader journey, section map, venue decision, retarget,
   page-type narrative, /haipipe-page-for-narrative.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-21"
-  summary: "0.4.0 wires the joins its two 0.3.0 neighbors created (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, and Narratives live beside the Seed in one 0-SD-seed/ group as SD<NN> pages. Restored 260821 after a parallel-session collision reverted the file."
+  version: "0.4.1"
+  last_updated: "2026-08-23"
+  summary: "0.4.1 renames the runtime home to paperboard/A1-SD-story/ under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page, Narratives live beside the Seed as SD<NN> pages."
   group-token: "SD"
   outline:
     mode: grammar
@@ -28,10 +28,11 @@ Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
 Declare `page-type: narrative` and record the shared Venue Page it binds.
 
 In a runtime paper board a Narrative lives BESIDE the Seed, in the one story
-group, as an `SD<NN>` page (JL 260821):
+group, as an `SD<NN>` page (JL 260821; home renamed under the 260823 scaffold
+grammar, `0-SD-seed/` boards grandfathered):
 
 ```text
-0-SD-seed/
+paperboard/A1-SD-story/
 ├── SD00-seed/                    what the paper IS · venue-free · exactly one
 ├── SD01-narrative-<venue>/       how it is told to desk 1
 └── SD02-narrative-<venue>/       how it is told to desk 2

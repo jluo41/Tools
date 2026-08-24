@@ -181,17 +181,17 @@ haipipe-application-display       1-lifecycle/4-display/haipipe-application-disp
 haipipe-application-section-edit  1-lifecycle/5-section-edit/haipipe-application-section-edit/feedback/
 haipipe-application-venue         1-lifecycle/haipipe-application-venue/feedback/
 haipipe-application-lifecycle     1-lifecycle/haipipe-application-lifecycle/feedback/
-haipipe-application-draft         2-phase/0-draft/haipipe-application-draft/feedback/
-haipipe-application-evidence         2-phase/1-evidence/haipipe-application-evidence/feedback/
-haipipe-application-revise        2-phase/2-revise/haipipe-application-revise/feedback/
-haipipe-application-check         2-phase/3-check/haipipe-application-check/feedback/
+haipipe-application-draft         _old/ (retired; last feedback under _old/2-phase*/0-draft/)
+haipipe-application-evidence      _old/ (retired; last feedback under _old/2-phase*/1-evidence/)
+haipipe-application-revise        _old/ (retired; last feedback under _old/2-phase*/2-revise/)
+haipipe-application-check         _old/ (retired; last feedback under _old/2-phase*/3-check/)
 haipipe-application-artifact      3-deliver/haipipe-application-artifact/feedback/
 haipipe-application-review        3-deliver/haipipe-application-review/feedback/
 haipipe-application-claim-audit   3-deliver/haipipe-application-claim-audit/feedback/
 haipipe-application-deploy        3-deliver/haipipe-application-deploy/feedback/
 haipipe-application-iterate       4-iterate/haipipe-application-iterate/feedback/
-haipipe-application-round         0-enter/haipipe-application-round/feedback/
-haipipe-application-enter         0-enter/haipipe-application-enter/feedback/
+haipipe-application-round         _old/ (retired; last feedback under _old/0-enter*/)
+haipipe-application-enter         _old/ (retired 260823; the live verb is fn/enter.md)
 ORCHESTRATOR FALLBACK             haipipe-application/feedback/   (this skill's own folder)
 ```
 

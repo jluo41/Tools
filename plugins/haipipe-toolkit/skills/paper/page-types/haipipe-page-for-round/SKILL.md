@@ -4,12 +4,17 @@ description: >-
   The Paper Page Type for one bounded feedback-and-response cycle, such as an
   editor decision, reviewer round, coauthor pass, or internal submission
   review. It preserves the received material, atomizes every concern into a
-  coverage ledger, records human dispositions, routes changes to owning
-  Narrative and Section Pages, binds each response to checked evidence and
+  coverage ledger, records human dispositions, routes changes to the Seed's
+  Establishment Board or the owning Narrative and Section Pages, binds each
+  response to checked evidence and
   revised Page versions, and closes with an approved response/build receipt.
   Use when opening, triaging, applying, answering, checking, or closing a paper
   revision round.
 metadata:
+  version: "0.2.0"
+  last_updated: "2026-08-23"
+  summary: "0.2.0 (JL 260823): a Round parents to a NAMED Narrative — including a foreign-desk round whose telling has no page on this board, which parents to the Seed with the desk named in intake; the routing table gains the Seed as a destination for concerns demanding evidence the paper does not hold. Runtime home C1-RD-round; received letters live inside the Round page's folder, never at repo root."
+  group-token: "RD"
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -51,17 +56,23 @@ Record the Round identity before triage:
 
 ```text
 round-id          stable id within this paper
-round-kind        editor-review · reviewer-review · coauthor · internal
+round-kind        editor-review · reviewer-review · coauthor · internal ·
+                  foreign-desk (a review of this work's telling at a desk
+                  with no Narrative on this board)
 venue-page        selected Venue Page and version, or explicit none
-narrative         governing Narrative Page and version
+narrative         governing Narrative Page and version · a foreign-desk
+                  round parents to the SEED instead, with the desk named in
+                  received-from, because its evidence still routes here
 base-build        exact manuscript/PDF/version that received the feedback
 received-from     editor, reviewer labels, coauthor, or internal authority
 received-at       date and source location
 response-due      date, explicit none, or unknown
 ```
 
-Store supplied letters or memos as linked inputs; preserve their wording. Never
-rewrite received material into a cleaner second source.
+Store supplied letters or memos INSIDE this Round page's folder — a received
+letter floating at the repo root is homeless material (JL 260823). Preserve
+their wording; never rewrite received material into a cleaner second source.
+The runtime group is `paperboard/C1-RD-round/RD<NN>-<desk>-<event>/`.
 
 ## 📐 Required Content roles
 
@@ -125,6 +136,7 @@ Keep authority with the artifact being changed:
 
 | Concern | Owning destination |
 |---|---|
+| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Seed's Establishment Board — a new or reopened E-row |
 | contribution, claim role, or paper order | current Narrative Page and row |
 | section argument, wording, placement, or limitation | owning Section Page |
 | missing analysis or factual support | consuming Page's `probe/` and proof |

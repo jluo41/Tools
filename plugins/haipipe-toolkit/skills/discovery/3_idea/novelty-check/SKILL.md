@@ -4,9 +4,9 @@ description: Verify research idea novelty against recent literature. Use when us
 argument-hint: "[method-or-idea-description]"
 allowed-tools: WebSearch, WebFetch, Grep, Read, Glob, mcp__codex__codex
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
-  summary: "Verify research idea novelty against recent literature."
+  version: "0.2.0"
+  last_updated: "2026-08-23"
+  summary: "0.2.0 ports two content deltas from the updated ARIS reference (a431e28 -> 9cbb6aa): the anti-hallucination verification rule for prior-work entries (verify or tag [UNVERIFIED], never fabricate ids) and the dossier-file pattern for long reviewer prompts; replaces the stale ARIS trace plumbing with the family's own report rule. Keeps the local venue-filter directive and per-paper subsection format ARIS lacks. 0.1.0 was the initial localized import."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -105,7 +105,9 @@ One paper per subsection, full title in the heading — NEVER a table (paper tab
 - Check both the method AND the experimental setting for novelty
 - If the method is not novel but the FINDING would be, say so explicitly
 - Always check the most recent 6 months of arXiv — the field moves fast
+- **Anti-hallucination for prior work (0.2.0).** Every paper named in the report must be VERIFIED before it appears: resolve its arXiv id via the arXiv API `id_list` (see `1_search/arxiv`), or its DOI/title via Semantic Scholar or Crossref (see `1_search/semantic-scholar`). An entry that cannot be resolved is tagged `[UNVERIFIED]` and its uncertainty surfaced — never dropped silently, and NEVER given a fabricated arXiv id, DOI, or title from memory. This is the same discipline the paper family's Explore/Seed pages assume when they bind this skill's QA output.
+- **Long inputs go through a dossier file (0.2.0).** When the method description plus the Phase-B paper list outgrows a short note, write `NOVELTY_DOSSIER.md` inside the discovery-folder (method, core claims, candidate papers, the exact questions) and hand the reviewer the file path instead of pasting it inline.
 
-## Review Tracing
+## Recording the run
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`. Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+This layer's record is the discovery-folder itself: the verdict lands in the folder's terminal file and, when a question caused the run, in its `QA/<n>-<slug>.md` digest. The ARIS `.aris/traces/` machinery does not exist in this repo; do not hunt for `save_trace.sh`.

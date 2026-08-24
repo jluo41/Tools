@@ -1201,7 +1201,7 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "principle", "view", "stage")
+                    "wisdom", "brief", "principle", "view", "stage", "explore")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 

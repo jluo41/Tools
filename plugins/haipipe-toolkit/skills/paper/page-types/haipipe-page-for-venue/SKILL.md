@@ -7,7 +7,9 @@ description: >-
   and hands a verified venue contract to Narrative and Section Pages. Use when
   researching, creating, refreshing, comparing, or checking a venue Page.
 metadata:
-  version: "0.2.0"
+  version: "0.4.0"
+  last_updated: "2026-08-23"
+  summary: "0.4.0 (JL 260823): names the two profiles — pack-backed reference vs CfP-only rules-record — so a workshop page is not underweight against QBv1-misq; declares the bank a LIBRARY outside the five-phase journey, the targeting DECISION living on a Narrative's §1. Two-profile section references QBv17-wise as the CfP-only exemplar."
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -34,6 +36,32 @@ Section      how one unit satisfies its Narrative row and desk constraints
 A target may be a journal, funder, conference, regulator, or patent office. Use
 the target's own document units when journal section kinds do not apply.
 
+**The bank is a library, not a phase** (JL 260823). Venue Pages live in the
+shared QBv bank and sit outside the paper journey: nothing about a paper
+advances by writing one. The decision to target a desk lives on that paper's
+Narrative §1, which binds the bank page and never restates it; a missing desk
+gets its bank page minted as a sub-step of starting that Narrative.
+
+## 📚 Two profiles (0.4.0)
+
+A venue page declares which of two profiles it is, because their evidentiary
+floors differ by an order of magnitude and a reader must not misread one as an
+underweight instance of the other:
+
+```text
+PACK-BACKED    an exemplar pack sits behind it · budgets are measured ·
+               PACK OBSERVATION rows are expected throughout
+               (reference implementation: QBv1-misq)
+CfP-ONLY       a call-for-papers or published rule sheet is the ONLY source ·
+               every length is a DESK RULE · the page SAYS, where a pack
+               observation would normally sit, that none exists
+               (reference implementation: QBv17-wise)
+```
+
+A CfP-only page is legitimately short. What it may never do is fill the gap
+with invented observations; its two honest moves are the DESK RULE and the
+marked OWN ESTIMATE.
+
 ## ⚖️ Authority and provenance
 
 Every venue statement is typed:
@@ -54,7 +82,8 @@ the desk wins for compliance and the disagreement remains visible.
 
 ```text
 1  Target Identity and Scope
-   target · article/application category · audience · what this Page covers
+   target · article/application category · audience · what this Page covers ·
+   the page's PROFILE, declared: pack-backed or CfP-only (0.4.0)
 
 2  Fit and Desk Reject
    contributions rewarded · methods permitted · explicit or observed rejection tests

@@ -2,12 +2,14 @@
 name: haipipe-paper
 description: >-
   The one public door for planning, writing, building, and revising a paper as a
-  graph of Board Pages. It routes Seed, Venue, Narrative, Section, and Round
-  Pages to their Page Type contracts and runs each through the shared
-  OUTLINE–PROBE–EVIDENCE–DRAFT–REVISE/COMPILE–CHECK workflow. Use for paper
-  setup, narrative and per-section outlines, evidence-backed drafting, paper
-  status, compilation, export, or review rounds. The current architecture has
-  no View layer and no S01–S10 paper-stage router.
+  graph of Board Pages. It routes Explore, Seed, Venue, Narrative, Section, and
+  Round Pages to their Page Type contracts, reads the five-phase journey
+  (Explore → Establish → Tell → Realize → Respond) through
+  haipipe-paper-workflow's gates, and runs each Page through the shared
+  OUTLINE–PROBE–EVIDENCE–DRAFT–REVISE/COMPILE–CHECK workflow. Use for idea
+  exploration, paper setup, narrative and per-section outlines, evidence-backed
+  drafting, paper status, compilation, export, or review rounds. The current
+  architecture has no View layer and no S01–S10 paper-stage router.
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -19,33 +21,50 @@ Load in this order:
 
 ```text
 haipipe-paper
+  → haipipe-paper-workflow, when the question is the journey or a gate
   → haipipe-page
   → one Paper Page Type, when applicable
   → haipipe-page-workflow for RUN
   → the Page-local plugins actually required
 ```
 
-## 🧭 The active paper model
+## 🧭 The five-phase journey (JL 260823)
+
+`haipipe-paper-workflow` owns the gates; this figure is the reading order.
 
 ```text
-                         ┌──────── Venue A ──────── Narrative A ─┐
-Paper intent ──▶ Seed ───┤                                         ├─▶ Section Pages
-                         └──────── Venue B ──────── Narrative B ─┘       │
-                                                                        ▼
-                                                         assemble · build ──▶ Round
-                                                                ▲             │
-                                                                └── checked changes
+P0 Explore    💭 explore page · standing IdeaBoard · ideas cheap and disposable
+│                gate G0: novelty judged per claim + pilot receipt + human PROCEED
+P1 Establish  🌱 seed · venue-free · E-board with novelty column
+│                gate G1: human-ticked outline · pitch sells only ✅ rows
+P2 Tell       🧭 narrative · one per desk · §1 IS the venue decision
+│                gate G2: bank page bound · claims parented · map rows budgeted
+P3 Realize    📄 sections · one per map row · sign-off = per-unit CHECK ✅
+│  P3.9          assemble — a verb, not a phase · runs anytime; G3 marks the
+│                build SUBMISSION-READY vs DRAFT · the upload is a human act
+P4 Respond    🔁 round · routes each concern once → seed / narrative / section
+
+   📚 venue = library, never a phase: the QBv bank is consulted at P2 §1,
+      and a missing desk gets its bank page minted as a sub-step.
 ```
 
-- **Seed** is one venue-free identity per paper.
-- **Venue** is one evidence-backed record per submission target.
-- **Narrative** is one venue-aligned argument architecture per target. It owns
-  claims, reader order, and the detailed one-row-per-section outline.
+The six Page Types, one line each:
+
+- **Explore** is one research direction's idea ledger on a standing IdeaBoard;
+  killed ideas stay forever; graduates become Seeds.
+- **Seed** is one venue-free identity per paper; it survives retargeting
+  unchanged and binds its Explore origin as a birth certificate.
+- **Venue** is one evidence-backed desk record in the shared bank — a library
+  asset outside the journey; the decision to target it lives on a Narrative.
+- **Narrative** is one desk's telling: venue decision, claim system, argument
+  order, and the one-row-per-section map. One desk, one page; retargeting
+  mints a sibling from the same Seed.
 - **Section** is one reader-ordered manuscript or appendix unit executing one
-  Narrative row.
-- **Round** is one bounded feedback-and-response cycle against one paper build.
-  It routes accepted work back to the owning Narrative and Section Pages and
-  closes with a checked response/build receipt.
+  Narrative row; the tex owns the words, the page owns the tracking.
+- **Round** is one bounded feedback batch parented to a named Narrative. It
+  routes every concern exactly once — to the Seed when new evidence is
+  demanded, to the Narrative for retelling, to a Section for rework — and
+  closes with a checked response receipt.
 
 `/haipipe-paper status [paper] [section|probe|citation|display]` regenerates
 the same rollup a Dash Page used to hold, as an optional drill-down on the
@@ -123,6 +142,8 @@ Resolve the paper root and target Page before changing anything.
 
 | User intent | Route |
 |---|---|
+| brainstorm, novelty-check, kill, or graduate an idea | `haipipe-page-for-explore` |
+| ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
 | create or repair paper identity | `haipipe-page-for-seed` |
 | inspect or record a target venue | `haipipe-page-for-venue` |
 | design claims, arc, or per-section outline | `haipipe-page-for-narrative` |
@@ -137,17 +158,25 @@ Resolve the paper root and target Page before changing anything.
 ### Paper verbs
 
 ```text
+/haipipe-paper explore <direction|idea-id> [phase]
 /haipipe-paper enter [paper]
 /haipipe-paper status [paper] [section|probe|citation|display]
+/haipipe-paper journey [paper]         read the journey position · test the gates ·
+                                       never advances anything
 /haipipe-paper seed [paper] [phase]
 /haipipe-paper venue <target> [phase]
 /haipipe-paper narrative <target> [phase]
 /haipipe-paper section <section-id> [phase]
 /haipipe-paper round <new|id>
-/haipipe-paper assemble [paper]
+/haipipe-paper assemble [paper]        runs anytime · a build made while gate G3
+                                       fails is watermarked DRAFT in its receipt
 ```
 
-When the user names a concrete Page, prefer that Page over inferring a stage
+Every `[phase]` above is a PAGE phase (OUTLINE…CHECK). The journey's five
+positions are never called by that word in a verb; `haipipe-paper-workflow`
+carries the terminology law.
+
+When the user names a concrete Page, prefer that Page over inferring a phase
 from a broad verb. When a phase is omitted for an existing Page, inspect its
 latest receipt and use the shared workflow's authority test.
 
@@ -169,6 +198,41 @@ paper's peak claim or that a mechanism is sufficiently established. Those
 claims must carry Page-local evidence cards just like claims on any other Page.
 Narrative does not become evidence-free merely because its output is an
 outline.
+
+## 📂 Paper folder scaffold (JL 260823)
+
+A new paper repo — created as a git submodule immediately — takes plain,
+prefix-free top-level names and a fixed board address:
+
+```text
+Paper-<Slug>/
+├── paperboard/                 the board · FIXED name, tooling may rely on it
+│   ├── board.md
+│   ├── board/                  engine-generated HTML (build.py output)
+│   ├── A1-SD-story/            seed + one narrative per desk
+│   ├── Ba1-SM-ms-main/         first desk's main units
+│   ├── Ba2-AM-ms-appendix/     first desk's appendix units
+│   ├── Bb1-SW-wise-main/       second desk's main units (pair may be single)
+│   └── C1-RD-round/            RD<NN>-<desk>-<event>/ · letters live inside
+├── sections/                   the words · tex reader units
+├── displays/                   the figures and tables · shared by all tellings
+├── <desk><year>/               one deliverable room per desk (e.g. wise2026/)
+├── reference.bib · class files · compile scripts
+└── README.md
+```
+
+**Group-name grammar** — three characters, three meanings: UPPERCASE category
+(`A` story, `B` tellings, `C` rounds), lowercase desk-pair letter within `B`
+(`a`, `b`, `c`… in arrival order), digit for the member (`1` main, `2`
+appendix). Page tokens carry the desk too: `S<D>` main units, `A<D>` appendix
+units, `<D>` the desk's letter — so `C1 lands in SM05 and SW01` reads without
+a legend. **Collision rule**: `<D>` is the first distinctive letter of the desk
+not already claimed on this board, and `D` itself is never available because
+`SD` is the story group's token; two desks sharing an initial resolve by the
+later arrival taking its next distinctive letter. Review letters live inside their Round page's folder, never at the
+repo root. Existing boards (`0-<Slug>PaperBoard/`, `0-sections/`, `SC`/`SA`
+tokens) are grandfathered and migrate only on explicit request, because the
+rename touches tex `\input` paths, pagex symlinks, and compile scripts.
 
 ## 📦 Assembly and delivery
 
@@ -224,7 +288,8 @@ Before reporting Paper work complete:
 ```text
 paper/
 ├── haipipe-paper/          public door; one routing contract
-├── page-types/             five active Paper Page Type contracts
+├── haipipe-paper-workflow/ the five-phase gate machine; owns transitions only
+├── page-types/             six active Paper Page Type contracts
 ├── venue/                  reusable venue playbooks and exemplars
 ├── _old/                   retired stages and implementations; never auto-loaded
 └── README.md               architecture and maintenance boundary

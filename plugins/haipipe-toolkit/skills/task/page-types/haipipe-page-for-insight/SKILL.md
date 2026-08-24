@@ -121,12 +121,12 @@ a scope: task Page may ALSO be borrowed straight into a scope: application
 Page, which is the normal route when exploration preceded the Brief
 ```
 
-This is the only Application Page Type allowed to inspect Task/Discovery sources through Probe. Meta, Brief, and Design Pages own no `probe/` and cannot copy this Page's cards.
+On its board this Page Type inspects Task/Discovery sources through Probe. A consuming Paper or Application borrows a settled chain through PageX and never copies this Page's cards.
 
 ## Runtime shape
 
 ```text
-<application-root>/<DataSubject>-InsightBoard/1-I-insights/I<NN>-<slug>/
+<task-board>/I<NN>-<slug>/                the Task/Insights Board, never an Application board
 ├── I<NN>-<slug>.md
 ├── probe/       Task/Discovery cards and bindings
 ├── pagex/       accepted cross-Page inputs

@@ -23,6 +23,8 @@ MT01-MT04 say what is ASKED of each rung           render/ plugin projects accep
 
 Folder ownership does not transfer evidence authority. A D page lives in the Application folder but follows Task source/run/staleness rules.
 
+Two sibling skills head the family: `haipipe-application/` is the door (what an Application IS, the verbs), `haipipe-application-workflow/` is the RUN head (six phases in two lanes, three blocking human gates). An InsightBoard has two layouts, chosen once at scaffold: rung-major (groups are the four rungs, the default) and partition-major (groups are partitions, `F` template + `9-X-cross`; grammar in `haipipe-application/ref/partition.md`).
+
 ## Page Types
 
 ```text

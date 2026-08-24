@@ -6,15 +6,16 @@ under `_old/` and is never loaded by the current Paper door.
 
 ## Active architecture
 
+Five phases, gated by `haipipe-paper-workflow`; the venue bank is a library
+outside the journey (JL 260823):
+
 ```text
-Paper intent
-   └── Seed                              one per paper; venue-free
-        ├── Venue A ── Narrative A       one narrative per target
-        └── Venue B ── Narrative B
-                          └── Section Pages
-                                └── assemble · build ── Round
-                                                          └── routes accepted work
-                                                              back to owning Pages
+P0 Explore    explore page · standing IdeaBoard · graduates one idea
+P1 Establish  Seed · one per paper · venue-free · E-board with novelty column
+P2 Tell       Narrative · one per desk · §1 binds a bank Venue Page
+P3 Realize    Section Pages · one per map row · then assemble (a verb)
+P4 Respond    Round · parented to a named Narrative · routes each concern
+              once → Seed / Narrative / Section
 ```
 
 Each Page runs the shared workflow and owns the evidence it uses:
@@ -50,7 +51,10 @@ lanes, not Page Types.
 paper/
 ├── haipipe-paper/
 │   └── SKILL.md              one public Paper door and routing contract
+├── haipipe-paper-workflow/
+│   └── SKILL.md              the five-phase gate machine; transitions only
 ├── page-types/
+│   ├── haipipe-page-for-explore/
 │   ├── haipipe-page-for-seed/
 │   ├── haipipe-page-for-venue/
 │   ├── haipipe-page-for-narrative/
@@ -66,6 +70,7 @@ paper/
 | Layer | Owns |
 |---|---|
 | `haipipe-paper` | Paper routing, Page graph, assembly, delivery |
+| `haipipe-paper-workflow` | the five phases, their gates, phase receipts — never content |
 | `haipipe-page` | Shared Page shape and CREATE/WORK ON verbs |
 | Paper Page Type | The persistent shape and closing rule of one paper artifact |
 | `haipipe-page-workflow` | OUTLINE through CHECK, receipts, stop rules |

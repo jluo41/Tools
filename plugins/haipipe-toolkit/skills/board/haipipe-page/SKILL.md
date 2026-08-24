@@ -3,7 +3,7 @@ name: haipipe-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK. Page Type variants live under page-types/; the workflow lives under page-workflows/, whose head skill haipipe-page-workflow owns RUN. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN hands off to haipipe-page-workflow, which drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, page contract, Page Type, Page Phase, outline draft probe evidence revise compile check, seven phases, which phase, rewrite Opening, section evaluation, which section, base page, /haipipe-page.
 metadata:
-  version: "0.38.0"
+  version: "0.38.1"
   last_updated: "2026-08-20"
   summary: "Twelve live Page Type variants ship across five skill sets; five retired types, including View and Dash, no longer resolve."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -130,7 +130,9 @@ task/            haipipe-page-for-task          one task-folder · closes when a
 page-types/                                     person reads a run-bound result
 
 application/     haipipe-page-for-meta          InsightBoard head · sources,
-page-types/                                     grain, freshness, Question Roster
+page-types/                                     grain, freshness · NO question
+                 haipipe-page-for-question      MT01-MT04 · one register per rung
+                                                · asks and tracks, never concludes
   the DIKW       haipipe-page-for-data          D · observed, run-bound
   ladder, one    haipipe-page-for-information   I · derived from named D rows
   page per       haipipe-page-for-knowledge     K · claimed · strength · rivals

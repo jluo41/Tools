@@ -1,3 +1,17 @@
+## 0.4.0 — 2026-08-23
+
+- **Every ✅/🔨 E-row carries a novelty reading**: closest prior work, the
+  delta, HIGH/MEDIUM/LOW — judged per CLAIM, never for the paper as a blob
+  (the ARIS idea-discovery lesson, Tools/references/aris), traced to
+  discovery-layer QA files with id-verified citations; `[UNVERIFIED]` is
+  honest, silence is not. Idea quality becomes a readable property of the
+  board: how many rows can flip ✅ and what their deltas are worth.
+- **The birth certificate**: §5's first row binds the Explore Page this paper
+  graduated from (cross-repo pagex, the bank-page pattern) and the ledger's
+  graduated-to points back; retrofit Seeds say so in the Log instead.
+- **Runtime home renamed** to `paperboard/A1-SD-story/` under the 260823
+  scaffold grammar; `0-SD-seed/` boards are grandfathered.
+
 ## 0.3.0 — 2026-08-21
 
 - **Pitch returns, at division 2, as BLUF.** JL 260821: the pitch is the
