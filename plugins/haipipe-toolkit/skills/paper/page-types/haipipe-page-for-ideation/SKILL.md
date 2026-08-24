@@ -12,14 +12,14 @@ description: >-
   find ideas, brainstorm, novelty check, has this been done, kill this idea,
   graduate to seed, page-type ideation, /haipipe-page-for-ideation.
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   last_updated: "2026-08-24"
-  summary: "0.4.0 (JL 260824): the nursery joins the STORY GROUP — no separate A0 group; the ideation page is the story's page zero, A1-SD-story/SD00-ideation/, token SD, and the seed shifts to SD01. 0.3.0 renames the type (JL 260824): explore → IDEATION — the phase is the act of thinking up ideas, before the seed; page-type ideation, token ID, home A0-ID-ideation, skill haipipe-page-for-ideation. 0.2.0 moves the nursery home (JL 260823): the ideation page lives at the head of the paper's OWN board, paperboard/A0-ID-ideation/, before the seed — the repo is minted with the ideation page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
+  summary: "0.4.1 (JL 260824): the outline shape hardens its intake interfaces — every i<n> division carries three fixed bullets (claims · novelty · pilot), the Ledger carries a batch-intake bullet naming the generate run each batch came from, and the 📮 routing is written into the shape itself: novelty → /haipipe-discovery-idea novelty_check QA, pilot → task-layer QA; the ARIS /idea-creator and /novelty-check skills stay methodology references, never direct writers. A retrofit single-idea ledger may nest i1 as a Ledger sub-division. 0.4.0 (JL 260824): the nursery joins the STORY GROUP — no separate A0 group; the ideation page is the story's page zero, A1-SD-story/SD00-ideation/, token SD, and the seed shifts to SD01. 0.3.0 renames the type (JL 260824): explore → IDEATION — the phase is the act of thinking up ideas, before the seed; page-type ideation, token ID, home A0-ID-ideation, skill haipipe-page-for-ideation. 0.2.0 moves the nursery home (JL 260823): the ideation page lives at the head of the paper's OWN board, paperboard/A0-ID-ideation/, before the seed — the repo is minted with the ideation page, the same locality law that puts an InsightBoard inside its application; the standing IdeaBoard is retired. 0.1.0 created the P0 nursery page: idea ledger with claim-level novelty and pilot receipts; graduation gate to a Seed; ABANDONED rows never deleted; methodology informed by the ARIS idea-discovery reference (Tools/references/aris)."
   group-token: "SD"
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "division 1 is Direction, division 2 is Idea Ledger; every later division's first word is an idea id i<n>, in id order; Graduations is last"
+    shape: "division 1 is Direction, division 2 is Idea Ledger with a batch-intake bullet naming each generate run; every later division's first word is an idea id i<n>, in id order, each carrying the three fixed bullets claims · novelty · pilot (a retrofit ledger may nest its single graduated idea as a Ledger sub-division); Graduations is last"
 ---
 
 # /haipipe-page-for-ideation · run the nursery one direction at a time
@@ -62,10 +62,25 @@ words six months later.
 ### 1 · Direction            🔒 what question space, why now, what would make
                                 any idea here worth a paper
 ### 2 · Idea Ledger          🔥 the whole nursery in one screen · one row per idea
-#### 3 · i1 · <slug>         one division per candidate, in id order
-#### 4 · i2 · <slug>
+                                · one batch-intake bullet per generate run,
+                                  naming its ideas.md and QA file
+#### 3 · i1 · <slug>         one division per candidate, in id order, each with
+                                the three fixed bullets:
+                                claims  · 3-5 propositions that must be novel
+                                novelty · 📮 → /haipipe-discovery-idea
+                                          novelty_check QA · per-claim closest
+                                          prior + delta + H/M/L
+                                pilot   · 📮 → task-layer QA, or explicit waiver
+#### 4 · i2 · <slug>         (same three bullets)
 ### N · Graduations          ♻️ who left, when, to which Seed
 ```
+
+The three bullets are the page's intake interfaces: an OUTLINE minted from
+this shape already routes its 📮 marks, so PROBE raises cards addressed to the
+right layer instead of rediscovering the wiring. A retrofit ledger whose only
+idea has already graduated may nest that idea as a Ledger sub-division
+(`#### 2.1 · i1 · <slug>`) instead of a standalone division; the three-bullet
+law still applies inside it.
 
 ## 📊 The Idea Ledger · division 2
 
@@ -112,10 +127,26 @@ Task/Discovery-layer work, and their receipts are QA files this page binds by
 path:
 
 ```text
-novelty cell     ← discovery-layer Search/Review QA files
-ideation batch   ← discovery-layer Idea QA files
+novelty cell     ← /haipipe-discovery-idea novelty_check QA (or Search/Review QA)
+ideation batch   ← /haipipe-discovery-idea generate → ideas.md + its QA file
 pilot cell       ← task-layer QA file (small, budgeted, disposable run)
 ```
+
+The standing executor for both idea lanes is the discovery layer's Idea type
+(`/haipipe-discovery-idea`). The ARIS `idea-creator` and `novelty-check`
+skills (Tools/references/aris) are the methodology this wiring absorbed —
+claim-level checking, verified citations, budgeted pilots, ranked batches —
+and remain references: their output enters this page only after it has become
+a discovery- or task-layer QA file, never by direct write.
+
+Two grain adapters, because the executor speaks per-idea and this page reads
+per-claim: (1) claim-level novelty is achieved by DISPATCH GRAIN — each claim
+is commissioned as its own question, so each gets its own QA file, matching
+the discovery layer's one-question-one-file law; (2) the executor's
+novelty_check vocabulary maps onto the cell's reading as
+`novel → HIGH · partial → MEDIUM · preempted → LOW · inconclusive → stays ⬜
+(or [UNVERIFIED] when the prior work would not resolve)`, and the cell keeps
+summarizing the WORST claim.
 
 A pilot is a feasibility receipt, not a result: budget it small, time-box it,
 and record a failed pilot as honestly as a passed one. A cell asserting a
@@ -152,6 +183,9 @@ committing to it.
 - Division 1 names one direction and what would make an idea worth a paper.
 - Every ledger row has no blank cell; every verdict is from the fixed
   vocabulary.
+- Every i<n> division (standalone or retrofit-nested) carries the three fixed
+  bullets — claims, novelty, pilot — and the Ledger names each batch's
+  generate run, or states why none exists.
 - Every novelty cell traces to per-claim QA files; every cited prior work is
   verified or marked `[UNVERIFIED]`.
 - Every pilot cell binds a QA path or an explicit waiver.

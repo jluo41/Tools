@@ -1,3 +1,21 @@
+## 0.4.1 — 2026-08-24
+
+- **The outline shape hardens its intake interfaces** (JL 260824: "我们是想把
+  novelty check 和 ideation 的内容存到这个 file 里面去"): every `i<n>` division
+  carries three fixed bullets — claims · novelty · pilot — and the Ledger
+  carries a batch-intake bullet naming each generate run's `ideas.md` + QA.
+  The 📮 routing is written into the shape itself: novelty →
+  `/haipipe-discovery-idea` novelty_check QA, pilot → task-layer QA, batches →
+  `/haipipe-discovery-idea` generate. The ARIS `idea-creator` and
+  `novelty-check` skills stay methodology references — their output enters the
+  page only as discovery-/task-layer QA files, never by direct write. A
+  retrofit single-idea ledger may nest `i1` as a Ledger sub-division
+  (`#### 2.1`); the three-bullet law applies inside it. Two grain adapters
+  close the audit's vocabulary gap: per-claim novelty = one commissioned
+  question per claim (one QA file each), and the executor's verdict vocabulary
+  maps `novel → HIGH · partial → MEDIUM · preempted → LOW · inconclusive →
+  ⬜/[UNVERIFIED]`, the cell summarizing the worst claim.
+
 ## 0.4.0 — 2026-08-24
 
 - **The nursery joins the story group as page zero** (JL 260824: no separate
