@@ -39,7 +39,8 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertTrue(cards[0]["ready"])
             page = render_home(root)
             self.assertIn("A &lt;Board&gt;", page)
-            self.assertIn("Open →", page)
+            self.assertIn("Open board", page)
+            self.assertIn("board-grid", page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
             self.assertEqual(cards[0]["kind"], "Task Board")
 

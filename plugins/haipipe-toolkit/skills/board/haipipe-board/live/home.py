@@ -179,77 +179,104 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
 
 
 def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
-    """One table, one row per board — the same shape as a board Index's page
-    table (`bstat`), because that is the layout JL reads fastest (260819:
-    "arrange the board like the page index"). Kind headers are the gray group
-    rows; the spine is a hover tooltip, not a column, so 13 boards fit one
-    screen without scrolling."""
+    """Render a compact, mobile-first directory for the boards in one SPACE."""
     cards = discover_boards(root)
-    rows = []
+    sections = []
+    settled_total = sum(int(card["settled"]) for card in cards)
+    page_total = sum(int(card["pages"]) for card in cards)
+    ready_total = sum(bool(card["ready"]) for card in cards)
     for kind, icon in BOARD_KINDS:
         kind_cards = [card for card in cards if card["kind"] == kind]
         if not kind_cards:
             continue
-        rows.append(f'<tr class="bsg"><td colspan="4">{icon} {kind}s · {len(kind_cards)}</td></tr>')
+        board_cards = []
         for card in kind_cards:
             title = html.escape(str(card["title"]))
             spine = html.escape(str(card["spine"]), quote=True)
             path = html.escape(str(card["path"]))
             slug = html.escape(str(card["slug"]))
             href = html.escape(str(card["href"]), quote=True)
-            pages, settled = card["pages"], card["settled"]
+            search = html.escape(
+                " ".join((str(card["title"]), str(card["slug"]),
+                          str(card["path"]), str(card["spine"]), kind)),
+                quote=True,
+            )
+            pages, settled = int(card["pages"]), int(card["settled"])
             if card["ready"]:
-                state = "✅" if pages and settled == pages else "🟡"
-                cls = "bs-ok" if pages and settled == pages else "bs-warn"
-                id_cell = f'<a href="{href}">{state} {slug}</a>'
-                title_cell = (f'<a class="bt" href="{href}" title="{spine}">{title}</a>'
-                              f'<br><span class="path">{path}</span>')
+                complete = bool(pages and settled == pages)
+                status_class = "ready" if complete else "active"
+                status_label = "Settled" if complete else "Active"
                 # Two doors, because they are two different jobs: reading the
                 # board is one document, OPERATING it (QD5) is three panes with
                 # a chat beside the page. Same board either way.
                 # The split is what a board opens as now, so it is the plain
                 # link; `?plain` is the opt-out back to the one-document board.
-                action = (f'<a class="split" href="{href}?plain"'
-                          f' title="The one-document board: sidebar, page and drawer in a single page">↗ plain</a>'
-                          f'<a class="open" href="{href}">Open →</a>')
+                action = (f'<a class="primary" href="{href}">Open board <span aria-hidden="true">↗</span></a>'
+                          f'<a class="secondary" href="{href}?plain"'
+                          f' title="Open the one-document board">Plain</a>')
             else:
-                state, cls = "🔴", "bs-no"
-                id_cell = f'{state} {slug}'
-                title_cell = (f'<span class="bt" title="{spine}">{title}</span>'
-                              f'<br><span class="path">{path}</span>')
-                action = '<span class="build">Build needed</span>'
-            rows.append(f'<tr><th class="bsp">{id_cell}</th><td>{title_cell}</td>'
-                        f'<td class="{cls}">{settled}/{pages}</td><td class="bact">{action}</td></tr>')
-    table = "\n".join(rows)
-    body = (f'''<div class="bwrap"><table class="bhome"><thead>
-<tr><th>board</th><th>title</th><th>🎯 settled</th><th>open</th></tr></thead>
-<tbody>{table}</tbody></table></div>''' if rows
-            else '<p class="empty">No board.md files found below this SPACE root.</p>')
+                status_class = "build"
+                status_label = "Needs build"
+                action = '<span class="build-note">Build needed</span>'
+            page_label = f"{settled}/{pages} settled" if pages else "No pages yet"
+            actions = f'<div class="actions">{action}</div>'
+            board_cards.append(
+                f'''<article class="board-card" data-search="{search}">
+  <div class="card-top"><span class="kind">{icon} {kind}</span>
+    <span class="status {status_class}"><span class="dot" aria-hidden="true"></span>{status_label}</span></div>
+  <h3><a href="{href}" title="{spine}">{title}</a></h3>
+  <p class="board-id">/{slug}</p>
+  <div class="card-meta"><span>{page_label}</span><span class="path" title="{path}">{path}</span></div>
+  {actions}
+</article>''')
+        sections.append(
+            f'''<section class="board-group" data-group>
+  <div class="group-head"><h2>{icon} {html.escape(kind)}s</h2><span>{len(kind_cards)}</span></div>
+  <div class="board-grid">{"".join(board_cards)}</div>
+</section>''')
+    body = ("\n".join(sections) if sections else
+            '<p class="empty">No board.md files found below this SPACE root.</p>')
     label = html.escape(space_name.strip() or "SPACE")
     heading = html.escape(f"JJ-LUO / {space_name.strip()} Boards" if space_name.strip() else "SPACE Boards")
-    url_note = (f' · <a href="{html.escape(public_url, quote=True)}">{html.escape(public_url)}</a>'
-                if public_url.strip() else "")
+    public = html.escape(public_url.strip(), quote=True)
+    url_note = (f'<a href="{public}">{public}</a>' if public else "")
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{heading}</title><style>
-:root{{color-scheme:light;--ink:#202124;--mut:#6b7280;--line:#e5e7eb;--bg:#fafafa;--card:#fff;--accent:#2867b2}}
+:root{{color-scheme:light;--ink:#17212b;--mut:#667085;--line:#d9e0e7;--bg:#f4f6f8;--surface:#fff;--accent:#0f6b78;--accent-soft:#e5f3f2;--green:#176b42;--green-soft:#e8f5ed;--amber:#9a5b00;--amber-soft:#fff4dc;--red:#b42318}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
-main{{max-width:1060px;margin:0 auto;padding:clamp(22px,5vw,56px) clamp(16px,4vw,36px)}}
-h1{{font-size:clamp(28px,5vw,46px);letter-spacing:-.04em;margin:0 0 6px}}.lead{{margin:0 0 20px;color:var(--mut)}}
-.bwrap{{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 1px 2px #00000008}}
-table.bhome{{width:100%;border-collapse:collapse}}
-.bhome th,.bhome td{{padding:8px 14px;text-align:left;vertical-align:top;font-size:14px;border-top:1px solid var(--line)}}
-.bhome thead th{{border-top:0;background:#f9fafb;color:var(--mut);font-size:12px;font-weight:700}}
-tr.bsg td{{background:#f3f4f6;font-weight:700;font-size:13px;color:#374151}}
-th.bsp{{white-space:nowrap;font-weight:700}}th.bsp a{{color:var(--ink);text-decoration:none}}th.bsp a:hover{{text-decoration:underline}}
-a.bt{{color:var(--ink);text-decoration:none;font-weight:600}}a.bt:hover{{text-decoration:underline}}span.bt{{font-weight:600}}
-.path{{color:var(--mut);font:11px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}
-td.bs-ok{{color:#116329;font-weight:700;white-space:nowrap}}td.bs-warn{{color:#9a6700;font-weight:700;white-space:nowrap}}td.bs-no{{color:#cf222e;font-weight:700;white-space:nowrap}}
-td.bact{{white-space:nowrap;text-align:right}}
-.open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap}}.open:hover{{text-decoration:underline}}
-.split{{color:var(--mut);font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-right:8px;font-size:12px}}.split:hover{{color:var(--accent);border-color:var(--accent)}}
-.build{{color:#a05a00;font-weight:700;font-size:12px}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
-</style></head><body><main><h1>🏠 {heading}</h1><p class="lead">{label}: {len(cards)} boards discovered{url_note}. This home is a read-only map; each row opens that Board's own Index. Hover a title for the board's spine.</p>{body}</main></body></html>'''
+main{{max-width:1120px;margin:0 auto;padding:30px 22px 52px}}
+.eyebrow{{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}}
+h1{{font-size:36px;line-height:1.12;letter-spacing:0;margin:6px 0 8px}}.header-meta{{display:flex;gap:12px;align-items:center;color:var(--mut);font-size:13px;flex-wrap:wrap}}.header-meta a{{color:var(--accent);text-decoration:none}}.header-meta a:hover{{text-decoration:underline}}
+.toolbar{{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 14px}}.search{{display:flex;align-items:center;gap:8px;flex:1;max-width:460px;color:var(--mut)}}.search input{{width:100%;min-height:42px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);font:inherit;padding:9px 12px;outline:none}}.search input:focus{{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}}.filter-count{{color:var(--mut);font-size:13px;white-space:nowrap}}
+.summary{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:30px}}.metric{{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:13px 15px}}.metric strong{{display:block;font-size:24px;line-height:1.15}}.metric span{{display:block;color:var(--mut);font-size:12px;margin-top:3px}}
+.board-group{{margin:0 0 28px}}.group-head{{display:flex;align-items:center;gap:9px;margin:0 0 10px}}.group-head h2{{font-size:15px;line-height:1.2;margin:0;font-weight:800}}.group-head span{{min-width:25px;border-radius:999px;background:#e7ebef;color:var(--mut);font-size:12px;font-weight:800;text-align:center;padding:2px 7px}}
+.board-grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}.board-card{{display:flex;min-width:0;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:16px;box-shadow:0 1px 2px #1822300b}}.board-card:hover{{border-color:#b8c7d1;box-shadow:0 4px 14px #18223012}}.card-top,.card-meta{{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}}.kind{{color:var(--mut);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}.status{{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-size:11px;font-weight:800;padding:3px 8px;white-space:nowrap}}.dot{{width:7px;height:7px;border-radius:50%;background:currentColor}}.status.ready{{color:var(--green);background:var(--green-soft)}}.status.active{{color:var(--amber);background:var(--amber-soft)}}.status.build{{color:var(--red);background:#fef0ef}}
+.board-card h3{{font-size:18px;line-height:1.25;margin:16px 0 3px;overflow-wrap:anywhere}}.board-card h3 a{{color:var(--ink);text-decoration:none}}.board-card h3 a:hover{{color:var(--accent)}}.board-id{{margin:0;color:var(--accent);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.card-meta{{margin-top:15px;color:var(--mut);font-size:12px}}.path{{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}}.actions{{display:flex;align-items:center;gap:8px;margin-top:15px}}.primary,.secondary{{display:inline-flex;align-items:center;justify-content:center;min-height:34px;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:800;text-decoration:none}}.primary{{background:var(--accent);color:#fff}}.primary:hover{{background:#0a5661}}.secondary{{border:1px solid var(--line);color:var(--mut);background:var(--surface)}}.secondary:hover{{border-color:var(--accent);color:var(--accent)}}.build-note{{color:var(--red);font-size:12px;font-weight:800}}.empty,.no-results{{border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--mut);padding:22px}}[hidden]{{display:none!important}}
+@media (max-width:680px){{main{{padding:22px 14px 38px}}h1{{font-size:28px}}.toolbar{{align-items:stretch;flex-direction:column;margin-top:22px}}.search{{max-width:none}}.filter-count{{font-size:12px}}.summary{{gap:7px;margin-bottom:26px}}.metric{{padding:11px 10px}}.metric strong{{font-size:20px}}.metric span{{font-size:11px}}.board-grid{{grid-template-columns:1fr}}.board-card{{padding:14px}}.board-card h3{{font-size:17px}}.card-meta{{gap:8px}}.path{{max-width:52%}}}}
+</style></head><body><main><header class="site-head"><div class="eyebrow">JJ-LUO · Private Space</div><h1>🏠 {heading}</h1><div class="header-meta"><span>{label} board directory</span>{f'<span aria-hidden="true">·</span>{url_note}' if url_note else ''}</div></header>
+<div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="board-filter" type="search" placeholder="Filter boards" aria-label="Filter boards" autocomplete="off"></label><span class="filter-count" id="filter-count">{len(cards)} boards</span></div>
+<section class="summary" aria-label="Board summary"><div class="metric"><strong>{len(cards)}</strong><span>Total boards</span></div><div class="metric"><strong>{ready_total}</strong><span>Ready to open</span></div><div class="metric"><strong>{settled_total}/{page_total}</strong><span>Pages settled</span></div></section>
+<div id="board-groups">{body}</div><p id="no-results" class="no-results" hidden>No matching boards.</p></main><script>
+const filter = document.getElementById('board-filter');
+const count = document.getElementById('filter-count');
+const noResults = document.getElementById('no-results');
+const cards = Array.from(document.querySelectorAll('.board-card'));
+const groups = Array.from(document.querySelectorAll('[data-group]'));
+function applyFilter() {{
+  const query = filter.value.trim().toLowerCase();
+  let visible = 0;
+  cards.forEach((card) => {{
+    const match = !query || card.dataset.search.toLowerCase().includes(query);
+    card.hidden = !match;
+    if (match) visible += 1;
+  }});
+  groups.forEach((group) => {{ group.hidden = !group.querySelector('.board-card:not([hidden])'); }});
+  count.textContent = query ? visible + ' matching' : cards.length + ' boards';
+  noResults.hidden = visible !== 0 || !query;
+}}
+filter.addEventListener('input', applyFilter);
+</script></body></html>'''
 
 
 class HomeMixin:
