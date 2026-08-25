@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="board-assets" content="c863718e70df">
+<meta name="board-css" content="7b9350dfa91a">
+<meta name="board-js" content="dc2a35ae05fa">
+<title>Paper Board: Cross-event normalization for CGM prediction</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjIwMC4wMCIgd2lkdGg9IjIwMC4wMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iYm9hcmQtbWFyay1zdmciIHZpZXdCb3g9IjAuMDAgMC4wMCAyMDAuMDAgMjAwLjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0iYm9hcmQtbWFyay10aXRsZSI+CiAgPHRpdGxlIGlkPSJib2FyZC1tYXJrLXRpdGxlIj5IQUktUGlwZSBCb2FyZDwvdGl0bGU+CiAgPGRlZnM+CiAgICA8IS0tIEVhY2ggZmFjZSBoYXMgaXRzIG93biByZXN0cmFpbmVkIGdyYWRpZW50IHNvIHRoZSBtYXJrIGtlZXBzIHRoZSBjaG9zZW4KICAgICAgICAgZm9sZGVkLWNhcmQgZGVwdGggd2l0aG91dCBkZXBlbmRpbmcgb24gc2hhZG93cyBvciByYXN0ZXIgZWZmZWN0cy4gLS0+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvYXJkLW1hcmstdG9wIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIGNsYXNzPSJib2FyZC1tYXJrLXRvcC1hIiBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMyOTQ3ZDYiLz4KICAgICAgPHN0b3AgY2xhc3M9ImJvYXJkLW1hcmstdG9wLWIiIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFkMzViNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYm9hcmQtbWFyay1sZWZ0IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIGNsYXNzPSJib2FyZC1tYXJrLWxlZnQtYSIgb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjYjM5NGY2Ii8+CiAgICAgIDxzdG9wIGNsYXNzPSJib2FyZC1tYXJrLWxlZnQtYiIgb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTU2OWVlIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJib2FyZC1tYXJrLXJpZ2h0IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIGNsYXNzPSJib2FyZC1tYXJrLXJpZ2h0LWEiIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzE2NzhmZiIvPgogICAgICA8c3RvcCBjbGFzcz0iYm9hcmQtbWFyay1yaWdodC1iIiBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwODYyZWUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvYXJkLW1hcmstYm90dG9tIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIGNsYXNzPSJib2FyZC1tYXJrLWJvdHRvbS1hIiBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwODI5NjUiLz4KICAgICAgPHN0b3AgY2xhc3M9ImJvYXJkLW1hcmstYm90dG9tLWIiIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAxMWE0YSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDwhLS0gVGhlIGNlbnRyZSBpcyBhIHJlYWwgYXBlcnR1cmUsIG5vdCBhIHdoaXRlIG92ZXJsYXksIHNvIHRoZSBtYXJrIHdvcmtzCiAgICAgICAgIG9uIHRoZSBCb2FyZCdzIGxpZ2h0IGFuZCBkYXJrIHN1cmZhY2VzLiAtLT4KICAgIDxjbGlwUGF0aCBpZD0iYm9hcmQtbWFyay1hcGVydHVyZSI+CiAgICAgIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIgogICAgICAgICAgICBkPSJNMCAwaDIwMHYyMDBIMHpNNzggNzJoNDR2NDdIOTZsLTI2IDI3YTYgNiAwIDAgMS04IDBsLTYtNiAyMi0yMnoiLz4KICAgIDwvY2xpcFBhdGg+CiAgPC9kZWZzPgoKICA8ZyBjbGlwLXBhdGg9InVybCgjYm9hcmQtbWFyay1hcGVydHVyZSkiPgogICAgPCEtLSBCYWNrIGZhY2UgLS0+CiAgICA8cmVjdCB4PSIzNiIgeT0iOCIgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyMCIgZmlsbD0idXJsKCNib2FyZC1tYXJrLXRvcCkiLz4KCiAgICA8IS0tIFNpZGUgZmFjZXM6IGRpYWdvbmFsIGlubmVyIHNob3VsZGVycyBleHBvc2UgdGhlIGJhY2sgZmFjZSBhbmQgY3JlYXRlCiAgICAgICAgIHRoZSBpbnRlcmxvY2tpbmctYm9hcmQgc2lsaG91ZXR0ZSBvZiB0aGUgc2VsZWN0ZWQgcmFzdGVyIGNvbmNlcHQuIC0tPgogICAgPHBhdGggZmlsbD0idXJsKCNib2FyZC1tYXJrLWxlZnQpIgogICAgICAgICAgZD0iTTI4IDM0aDQ0bDM2IDM4djUxbC0zNiA0M0gyOEEyMCAyMCAwIDAgMSA4IDE0NlY1NGEyMCAyMCAwIDAgMSAyMC0yMHoiLz4KICAgIDxwYXRoIGZpbGw9InVybCgjYm9hcmQtbWFyay1yaWdodCkiCiAgICAgICAgICBkPSJNMTI4IDM0aDQ0YTIwIDIwIDAgMCAxIDIwIDIwdjkyYTIwIDIwIDAgMCAxLTIwIDIwaC02NFY3MnoiLz4KCiAgICA8IS0tIEZyb250IGZhY2UgLS0+CiAgICA8cmVjdCB4PSIzNiIgeT0iMTE2IiB3aWR0aD0iMTI4IiBoZWlnaHQ9Ijc2IiByeD0iMjAiIGZpbGw9InVybCgjYm9hcmQtbWFyay1ib3R0b20pIi8+CiAgPC9nPgo8L3N2Zz4=">
+<link rel="stylesheet" href="_assets/board.css?v=7b9350dfa91a">
+</head><body class="single split" data-board="/Users/jluo41/Desktop/WellDoc-SPACE/Tools/papers/Paper-CGM-CrossEventNormalization/0-paperboard" data-board-root="" data-xcal=""><button type="button" id="sbtoggle" class="sbtoggle" aria-label="pages">☰</button><div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages"><a class="sb-top" data-page="top" href="index.html">🗂 Index</a><a class="sb-g" href="A1-SD-story.html">A1-SD-story · venue-free story</a><a class="sb-p" data-page="SD00" href="A1-SD-story/SD00-ideation.html"><span class="s">🟡</span><span class="i">SD00</span><span class="t">---</span><span class="sb-x" title="sections">▸</span></a><div class="sb-out" data-out="SD00"><a class="sb-s" data-k="opening" href="A1-SD-story/SD00-ideation.html"><span class="t">🧭 Opening</span><span class="m">the lead, and this drawer</span></a><a class="sb-s" data-k="diagram" href="A1-SD-story/SD00-ideation.html"><span class="t">🖼 Diagram</span><span class="m">1 figure · no canvas</span></a><a class="sb-s" data-k="content" href="A1-SD-story/SD00-ideation.html"><span class="t">📚 Content</span><span class="m">6 divisions</span></a><a class="sb-ss" data-k="content" data-div="0" href="A1-SD-story/SD00-ideation.html">1 · Direction</a><a class="sb-ss" data-k="content" data-div="1" href="A1-SD-story/SD00-ideation.html">2 · Ideas (ranked)</a><a class="sb-ss" data-k="content" data-div="2" href="A1-SD-story/SD00-ideation.html">3 · Idea 1: Identity and quantity as separate axes</a><a class="sb-ss" data-k="content" data-div="3" href="A1-SD-story/SD00-ideation.html">4 · Idea 2: Leakage-aware cross-event evaluation</a><a class="sb-ss" data-k="content" data-div="4" href="A1-SD-story/SD00-ideation.html">5 · Eliminated Ideas</a><a class="sb-ss" data-k="content" data-div="5" href="A1-SD-story/SD00-ideation.html">6 · Suggested Execution Order</a><a class="sb-s" data-k="items" href="A1-SD-story/SD00-ideation.html"><span class="t">🎯 Aims</span><span class="m">4 active</span></a><a class="sb-ss" data-k="items" data-t="A1 · 🧭 Direction" href="A1-SD-story/SD00-ideation.html">A1 · 🧭 Direction · 0/2</a><a class="sb-ss" data-k="items" data-t="A2 · 🔥 Ideas (ranked)" href="A1-SD-story/SD00-ideation.html">A2 · 🔥 Ideas (ranked) · 0/1</a><a class="sb-ss" data-k="items" data-t="A3 · 🧪 Idea 1: Identity and quantity as separate axes" href="A1-SD-story/SD00-ideation.html">A3 · 🧪 Idea 1: Identity and quantity as separate axes · 0/1</a><a class="sb-s" data-k="now" href="A1-SD-story/SD00-ideation.html"><span class="t">📍 States</span><span class="m">the present state</span></a><a class="sb-ss" data-k="now" data-t="S · 🧭 Current state" href="A1-SD-story/SD00-ideation.html">S · 🧭 Current state</a><a class="sb-ss" data-k="now" data-t="Decision Now" href="A1-SD-story/SD00-ideation.html">Decision Now · 1 to tick</a><a class="sb-s" data-k="files" href="A1-SD-story/SD00-ideation.html"><span class="t">📎 Files</span><span class="m">7 files</span></a></div></nav><div class="wrap" id="top" data-bsession="">
+<nav class="sitebar" aria-label="Breadcrumb"><a href="/boards">🏠 Boards</a><span class="sb-sep">›</span><a href="index.html">🗂 Index</a></nav>
+<div class="board-heading"><span class="board-mark" aria-hidden="true"><svg height="200.00" width="200.00" xmlns="http://www.w3.org/2000/svg" class="board-mark-svg" viewBox="0.00 0.00 200.00 200.00" role="img" aria-labelledby="board-mark-title">
+  <title id="board-mark-title">HAI-Pipe Board</title>
+  <defs>
+    <!-- Each face has its own restrained gradient so the mark keeps the chosen
+         folded-card depth without depending on shadows or raster effects. -->
+    <linearGradient id="board-mark-top" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-top-a" offset="0" stop-color="#2947d6"/>
+      <stop class="board-mark-top-b" offset="1" stop-color="#1d35b5"/>
+    </linearGradient>
+    <linearGradient id="board-mark-left" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-left-a" offset="0" stop-color="#b394f6"/>
+      <stop class="board-mark-left-b" offset="1" stop-color="#9569ee"/>
+    </linearGradient>
+    <linearGradient id="board-mark-right" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-right-a" offset="0" stop-color="#1678ff"/>
+      <stop class="board-mark-right-b" offset="1" stop-color="#0862ee"/>
+    </linearGradient>
+    <linearGradient id="board-mark-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-bottom-a" offset="0" stop-color="#082965"/>
+      <stop class="board-mark-bottom-b" offset="1" stop-color="#011a4a"/>
+    </linearGradient>
+    <!-- The centre is a real aperture, not a white overlay, so the mark works
+         on the Board's light and dark surfaces. -->
+    <clipPath id="board-mark-aperture">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M0 0h200v200H0zM78 72h44v47H96l-26 27a6 6 0 0 1-8 0l-6-6 22-22z"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#board-mark-aperture)">
+    <!-- Back face -->
+    <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#board-mark-top)"/>
+
+    <!-- Side faces: diagonal inner shoulders expose the back face and create
+         the interlocking-board silhouette of the selected raster concept. -->
+    <path fill="url(#board-mark-left)"
+          d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z"/>
+    <path fill="url(#board-mark-right)"
+          d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z"/>
+
+    <!-- Front face -->
+    <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#board-mark-bottom)"/>
+  </g>
+</svg></span><h1 class="h1">Paper Board: Cross-event normalization for CGM prediction</h1></div><div class="spine"><p><b>🦴 Spine</b> establish whether provenance-aware cross-event normalization makes heterogeneous diabetes events useful to CGM prediction.</p><p><b>🏁 Close when</b> the paper has a checked Narrative and checked Sections, or the direction is explicitly held with its reason recorded.</p></div><details class="board-status"><summary>SECTION MATRIX · every page × every section, computed at build</summary><div class="bstat-scroll"><table class="bstat"><thead><tr><th>page</th><th>🧭</th><th>🖼</th><th>📚</th><th>🎯</th><th>📍</th><th>📎</th><th>🗄</th></tr></thead><tbody><tr class="bsg"><td colspan="8">A1-SD-story · venue-free story</td></tr><tr><th class="bsp"><a href="A1-SD-story/SD00-ideation.html">🟡 SD00</a></th><td class="bs-ok"><a href="A1-SD-story/SD00-ideation.html" data-k="opening">✓</a></td><td class="bs-ok"><a href="A1-SD-story/SD00-ideation.html" data-k="diagram">▧1</a></td><td class="bs-warn"><a href="A1-SD-story/SD00-ideation.html" data-k="content">6÷·0🖼</a></td><td class="bs-warn"><a href="A1-SD-story/SD00-ideation.html" data-k="items">0/4</a></td><td class="bs-dn"><a href="A1-SD-story/SD00-ideation.html" data-k="now">DN·1</a></td><td class="bs-ok"><a href="A1-SD-story/SD00-ideation.html" data-k="files">7</a></td><td class="bs-no"><a href="A1-SD-story/SD00-ideation.html" data-k="folds">—</a></td></tr></tbody></table></div><p class="bstat-legend">📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; 🎯 <code>met/total</code> aims &nbsp;·&nbsp; 📍 <code>DN·k</code> Decision Now ticks owed, <code>e</code> dated entries &nbsp;·&nbsp; 📎 <code>n·gg</code> files · groups &nbsp;·&nbsp; 🗄 <code>Ln</code> Log lines &nbsp;·&nbsp; a cell opens its section</p></details><h3 class="sec" id="qlist">ALL PAGES</h3><div class="idx"><div class="grp" id="group-A1-SD-story" data-g="A1-SD-story · venue-free story"><span class="gt"><a href="A1-SD-story.html">A1-SD-story · venue-free story</a></span></div><a class="ir wip" href="A1-SD-story/SD00-ideation.html" data-f="A1-SD-story/SD00-ideation/SD00-ideation.md" title="0% done"><span class="s">🟡</span><span class="i">SD00</span><span class="t">---</span><span class="w">🔧 research team</span></a></div><section class="activity" id="activity" aria-labelledby="activity-title">
+<div class="act-head">
+  <div><span class="act-kicker">ACTIVITY</span><h2 id="activity-title">When, then where</h2></div>
+  <span class="act-status" id="activity-status">waiting for the board server</span>
+</div>
+<p class="act-note">One update is one dated line in one page's <code>## Log</code>. The count is read from the Markdown itself, so it sees every change any tool made, not only the ones a browser watched.</p>
+<div id="activity-body"><p class="act-empty">Open this board through <code>serve.py</code> to count updates. The dashboard is an enhancement; the board remains complete without it.</p></div>
+</section>
+</div><div id="popcards"></div>
+<script src="_assets/board.js?v=dc2a35ae05fa"></script></body></html>
