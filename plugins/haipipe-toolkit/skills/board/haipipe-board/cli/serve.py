@@ -85,6 +85,7 @@ from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # no
 # serve.py is now what build.py became on 260724: a thin CLI plus the routing
 # table.  Each area is a mixin; the class below is only their assembly order.
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
+from live.auth import AuthMixin, AuthConfigError, host_is_loopback
 from live.activity import ActivityMixin
 from live.home import HomeMixin
 from live.write import WriteMixin
@@ -128,8 +129,10 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
+    space_name = ""
+    public_url = ""
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
     # not recorded"). A timer cannot observe a browser session that already
@@ -206,6 +209,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         SimpleHTTPRequestHandler.end_headers(self)
 
     def do_GET(self):
+        if not self.require_auth():
+            return
         if self.is_home_request():
             return self.serve_home()
         short = self.short_request()
@@ -296,6 +301,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return ctype + "; charset=utf-8"
         return ctype
     def do_HEAD(self):
+        if not self.require_auth():
+            return
         if self.is_home_request():
             return self.serve_home()
         short = self.short_request()
@@ -315,6 +322,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
             return self.proxy_term()
         return SimpleHTTPRequestHandler.do_HEAD(self)
     def do_POST(self):
+        if not self.require_auth():
+            return
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -634,7 +643,20 @@ if __name__ == "__main__":
     ap.add_argument("--no-hold", action="store_true",
                     help="QD2 M1 fuse: boot a claude per POST like before, "
                          "instead of holding one per question")
+    ap.add_argument("--auth-file", metavar="PATH",
+                    help="optional username:password file; required for a non-loopback host")
+    ap.add_argument("--space-name", default="",
+                    help="display name for the SPACE Home, e.g. Physician-SPACE")
+    ap.add_argument("--public-url", default="",
+                    help="reader-facing URL shown by the SPACE Home")
     a = ap.parse_args()
+    auth_file = Path(a.auth_file).expanduser().resolve() if a.auth_file else None
+    if not host_is_loopback(a.host) and auth_file is None:
+        ap.error("--auth-file is required when --host is not loopback")
+    try:
+        Handler.configure_auth(auth_file)
+    except AuthConfigError as exc:
+        ap.error(str(exc))
     # 260731 三次踩同一个坑：用系统 python 起 5599，页面照样 200，可 💬 每一轮
     # 都 400（claude_agent_sdk 要 3.10+）。人记不住的规矩交给代码——当前解释器
     # 没有 SDK 而 --root 下有 .venv 时，原地 exec 换成 venv 的 python 重启自己；
@@ -652,6 +674,8 @@ if __name__ == "__main__":
     if a.daemon:
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
+    Handler.space_name = a.space_name.strip()
+    Handler.public_url = a.public_url.strip()
     base.BIND_HOST = a.host
     srv = ThreadingHTTPServer((a.host, a.port),
                               partial(Handler, directory=str(Handler.root)))
@@ -663,7 +687,7 @@ if __name__ == "__main__":
     # no exposure that a local process does not already have, and it means
     # choosing a wider address never costs you the narrow one.
     loop = None
-    if a.host not in ("127.0.0.1", "0.0.0.0", "localhost"):
+    if not host_is_loopback(a.host) and a.host != "0.0.0.0":
         try:
             loop = ThreadingHTTPServer(("127.0.0.1", a.port),
                                        partial(Handler, directory=str(Handler.root)))
@@ -679,9 +703,10 @@ if __name__ == "__main__":
     print(f"📡 http://{a.host}:{a.port}  root={Handler.root}\n"
           + ("" if not loop else
              f"   ＋ http://127.0.0.1:{a.port} 也在听（VS Code / ssh -L 走的是这个）\n")
-          + ("" if a.host == "127.0.0.1" else
+          + ("" if host_is_loopback(a.host) else
              f"   ⚠️ 绑的不是 loopback：{a.host} 能到的设备都能用 /_term/ 开 shell\n")
           + f"   评论 / 状态：直接写在这台机器上\n"
+          f"   认证：{'on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
           f"   OAuth 来源：{src}"
           + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")
