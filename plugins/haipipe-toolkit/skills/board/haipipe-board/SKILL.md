@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.143.0"
-  last_updated: "2026-08-21"
-  summary: "Application runtime page families (M/I/A/D) now resolve: PAGENAME, page_files, the ## Pages registry, and parse.py all admit them, verified regression-free on five boards. Log row is one line, 15-35 words; the rule and its example live at haipipe-page-draft §📏."
+  version: "0.144.0"
+  last_updated: "2026-08-27"
+  summary: "The repository root .server_config is the primary hosting contract for Board startup and links, with the shared SPACE registry retained for ownership and fallback context."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -246,6 +246,20 @@ Resolve the attachment in this order:
 
 If more than one Board remains plausible, do not guess: report a blocked attachment and ask which Board to use.
 
+Then resolve the Board's **surrounding operating context** before changing it:
+
+1. Read the Board folder's parent unit and the repository root, not only the one `board.md` file.
+2. If the repository root contains `.server_config/`, make it the **primary hosting configuration**. Read `.server_config/README.md` for the shareable protocol and `.server_config/settings.env` only for non-secret `JJLUO_*` startup values such as bind host, port, public URL, SPACE name, and auth-file path. `serve.py` and `status.py` use these values when their corresponding CLI flags are omitted. Never print credential contents or edit `settings.env` implicitly.
+3. Look for the shared SPACE registry at `spaces/registry.yaml` from a Tools root or `Tools/spaces/registry.yaml` from a SPACE root. The registry enumerates the neighboring `*-SPACE` repositories and identifies the one that owns the Board; it supplies ownership and fallback context and does not override an existing root `.server_config`.
+4. When the Board is inside a registered SPACE but has no root `.server_config/`, read that SPACE's public configuration page, `<SPACE>/.server_config/README.md`. Machine-local values may also exist beside it in `settings.env`; never print, copy, or edit that local file unless the user explicitly asks for a machine setting.
+5. If no registry entry matches the Board's repository root, say that it is an unmounted/local Board. Never infer an owner from a similar folder name.
+
+This surrounding-folder read is bounded: the Board's parent unit, repository root, SPACE registry, and matched configuration page are context; recursively inventorying unrelated sibling projects is not.
+
+There are **two registries with different jobs**. `board.md ## Pages` is the only registry of Pages on one Board. `spaces/registry.yaml` is the registry of SPACE ownership, domains, roots, ports, and configuration pages. The Board Home still discovers Boards by walking the owning SPACE for `board.md`; never add a hand-maintained Board list to the SPACE registry.
+
+**Configuration sync is same-round, but only when the fact changed.** A change to a SPACE id/name, root, domain, port, public URL, short route, mount, or discovery policy updates the shared registry and the matched `.server_config/README.md` in the same round. A Page title, Page prose, or ordinary Board decision does not mutate SPACE configuration. When the corresponding configuration page is outside the writable repository, report the exact companion edit instead of silently pretending it landed.
+
 The strip uses a small closed vocabulary:
 
 - `queue` = the page group declared by `board.md ## Pages`; a page derives its queue automatically, a group is its own queue, and whole-Board work is `board-level · cross-group`.
@@ -374,8 +388,14 @@ When the user says "open `<board folder>`", do these three steps, and **do not j
 **Resolving a board URL in a shell**: how the deep link is built.
 
 ```bash
+ROOT=<repo root>
 BD=<board folder path relative to the repo root>   # e.g. Tools/plugins/.../diagram/01-boardform-260722
-BOARD_BASE_URL="${HAIPIPE_BOARD_URL:-$(sed -n 's/^[[:space:]]*export[[:space:]]*HAIPIPE_BOARD_URL=//p' env.sh | tail -1)}"
+BOARD_BASE_URL=""
+if [ -f "$ROOT/.server_config/settings.env" ]; then
+  BOARD_BASE_URL="$(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?JJLUO_PUBLIC_URL[[:space:]]*=[[:space:]]*([^[:space:]#]+).*$/\2/p' "$ROOT/.server_config/settings.env" | tail -1 | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")"
+  BOARD_BASE_URL="${BOARD_BASE_URL:-$(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?JJLUO_TAILSCALE_URL[[:space:]]*=[[:space:]]*([^[:space:]#]+).*$/\2/p' "$ROOT/.server_config/settings.env" | tail -1 | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")}"
+fi
+BOARD_BASE_URL="${BOARD_BASE_URL:-${HAIPIPE_BOARD_URL:-$(sed -n 's/^[[:space:]]*export[[:space:]]*HAIPIPE_BOARD_URL=//p' "$ROOT/env.sh" | tail -1)}}"
 BOARD_BASE_URL="${BOARD_BASE_URL:-http://127.0.0.1:5599}"
 S=$(ls -t "$TMPDIR"/vscode-ipc-*.sock 2>/dev/null | head -1)
 B=$(ls -t ~/.vscode-server/cli/servers/*/server/bin/helpers/browser.sh 2>/dev/null | head -1)
@@ -389,10 +409,10 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "$BOARD_BASE_URL/$BD/board/index.html"
 You must go through the IPC above, handing the URL to the VS Code on the user's side.
 **On a local machine** (not Remote-SSH: there those two globs find nothing) just run `open "$BOARD_BASE_URL/<board>/board/index.html"`: it goes over http (only then is the comment layer alive), and it still never touches `file://`.
 
-`BOARD_BASE_URL` and the `status.py` at the end of every reply use the same reader-facing setting: the current environment's `HAIPIPE_BOARD_URL` wins, then only that one item read from the repo root `env.sh`, and only then the fallback `http://127.0.0.1:5599`.
+`BOARD_BASE_URL` and the `status.py` at the end of every reply use the same reader-facing setting: an explicit CLI value wins, then `JJLUO_PUBLIC_URL` (or `JJLUO_TAILSCALE_URL`) in the repository root's `.server_config/settings.env`, then the current environment's `HAIPIPE_BOARD_URL`, then the one item read from the repo root `env.sh`, and only then the fallback `http://127.0.0.1:5599`. The root `.server_config` is the source of truth for the host, port, public URL, and auth-file path when startup flags are omitted.
 Never write one machine's Tailscale IP into shared skill source.
 
-This needs `serve.py` running on 5599 (start it first if it is not, see the serve section).
+This needs `serve.py` running on the configured port (or 5599 when no root `.server_config/settings.env` is present; start it first if it is not, see the serve section).
 `#top` returns to the index, `#QA6` jumps straight to one question, `#all` expands everything.
 
 ### open · start a **new** board
@@ -517,12 +537,11 @@ One server handles every board: it serves the repo root, not one board.
 **Serving a board**: the command that puts it on a URL.
 
 ```bash
-.venv/bin/python <skill>/cli/serve.py --root <repo root> --port 5599
+.venv/bin/python <skill>/cli/serve.py --root <repo root>
 ```
 
-`HAIPIPE_BOARD_URL` decides only the domain handed to the reader; the listener is still controlled separately by `--host`.
-If the reader URL is a Tailscale IP, you must pass the same `--host <tailscale-ip>` explicitly at startup.
-The Board has no authentication and `/_term/` is a real shell, so the listener in shared source stays on loopback by default.
+When the repository root has `.server_config/settings.env`, this command uses its `JJLUO_BIND_HOST` or `JJLUO_TAILSCALE_ADDRESS`, `JJLUO_LOCAL_PORT` or `JJLUO_TAILSCALE_PORT`, `JJLUO_SPACE_NAME`, `JJLUO_PUBLIC_URL` (or `JJLUO_TAILSCALE_URL`), and `JJLUO_AUTH_FILE`. An explicit CLI flag wins over the matching config value; without a config file, the listener falls back to loopback on port 5599.
+The Board may be protected with the configured auth file. A non-loopback listener requires authentication because `/_term/` is a real shell; keep credentials in the ignored machine-local config and never commit them.
 
 Once it is running, the board is not only readable: **comments land directly on disk**, and every page's plugin surfaces come alive in the right pane, the tab rail leading with 📂 Folder.
 ⚖️ One question, one session · one session, one window · N questions, N terminals.
@@ -708,7 +727,7 @@ The scripts and packages in the skill root:
 | `live/activity.py` | 446 lines: focus-time spans and the aggregates behind the Activity component |
 | `live/chat.py` | 1332 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
 | `live/term.py` | 857 lines: the `/_term/` PTY, parking, and reattachment |
-| `src/` | The build and audit code split by topic, including `page_context.py` for checked scoped Page reads and `page_lifecycle.py` for deterministic RUN receipt validation; `build.py` and `serve.py` stay thin entries (QB5) |
+| `src/` | The build and audit code split by topic, including `page_context.py` for checked scoped Page reads, `page_lifecycle.py` for deterministic RUN receipt validation, and `server_config.py` for safe root `.server_config/settings.env` reads; `build.py` and `serve.py` stay thin entries (QB5) |
 | `cli/stage.py` | Explicitly create and sync an S page's inherited requirements, Venue links, and page Writing Style inheritance |
 | `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
 | `status.py` | Derive the visible session status strip at the end of every reply from Board, page group, and page; read-only, writes no state file. **The one script still at the top level, deliberately**: the reply-footer automation invokes it by absolute path, so moving it into `cli/` would silently break every board attachment |

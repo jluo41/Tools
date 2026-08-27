@@ -32,7 +32,7 @@ board_context:
   discovery: walk-board-manifests-under-owning-space
   config_page: "{space_path}/.server_config/README.md"
   local_settings: "{space_path}/.server_config/settings.env"
-  note: The manifest identifies a Board and its Pages; this registry identifies the owning SPACE. The local settings file is not a shared configuration page.
+  note: The manifest identifies a Board and its Pages; this registry identifies the owning SPACE. When present, the repository-root .server_config is the primary hosting source; the local settings file is not a shared configuration page.
 
 deployment:
   tunnel: none-for-space-services

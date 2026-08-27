@@ -28,6 +28,7 @@ from . import base
 from . import turnring
 from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from .structure import page_id_of
+from src.server_config import load_server_config, server_config_dir
 
 
 # ── 权限：跟 Claude Code CLI 一样，该问就问（JL, 260723 1550）──────
@@ -60,6 +61,119 @@ def quality_tool_allowed(name):
 
 # 真正会改盘上文件的工具 —— 只有跑过这些，才配说「改动已写盘」。
 WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+
+
+def _space_entries(registry):
+    """Read the small checked-in registry shape without adding a YAML runtime."""
+    if not registry or not registry.is_file():
+        return []
+    entries, current, in_spaces = [], None, False
+    for raw in registry.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if raw == "spaces:":
+            in_spaces = True
+            continue
+        if not in_spaces:
+            continue
+        match = re.match(r"^  - id:\s*(\S+)\s*$", raw)
+        if match:
+            if current:
+                entries.append(current)
+            current = {"id": match.group(1).strip("\"'")}
+            continue
+        field = re.match(r"^    (name|path|config_page):\s*(.+?)\s*$", raw)
+        if current is not None and field:
+            current[field.group(1)] = field.group(2).strip().strip("\"'")
+    if current:
+        entries.append(current)
+    return entries
+
+
+def operating_context(board, root):
+    """Point a Board session at its bounded surrounding SPACE context.
+
+    A Board's own manifest answers which Board/Page is attached.  The shared
+    registry and the SPACE's public config page answer where that Board is
+    mounted and served.  They are intentionally pointers, not eagerly parsed
+    copies: the launched agent reads the live sources when the user's task
+    actually touches one of those facts.
+    """
+    root = Path(root).resolve()
+    board = Path(board).resolve()
+    registries = (
+        root / "spaces" / "registry.yaml",
+        root / "Tools" / "spaces" / "registry.yaml",
+    )
+    registry = next((p for p in registries if p.is_file()), None)
+    entries = _space_entries(registry)
+    owner = next(
+        (entry for entry in entries
+         if root.name in {entry.get("name"), Path(entry.get("path", "")).name}),
+        None,
+    )
+    config_page = root / ".server_config" / "README.md"
+    config_dir = server_config_dir(root)
+    server_values = load_server_config(root)
+
+    lines = [
+        "",
+        "SURROUNDING BOARD CONTEXT (inspect before configuration changes):",
+        "  · Owning unit: " + str(board.parent),
+        "  · Repository / served root: " + str(root),
+    ]
+    if registry:
+        lines.append("  · SPACE registry: " + str(registry.relative_to(root)))
+    else:
+        lines.append("  · SPACE registry: not found under this root")
+    if owner:
+        lines.append(
+            "  · Owning SPACE: {} · {}".format(
+                owner.get("id", "?"), owner.get("name", root.name)
+            )
+        )
+    elif entries:
+        lines.append(
+            "  · Owning SPACE: unregistered/local root; registered neighbors: "
+            + " · ".join(entry.get("id", "?") for entry in entries)
+        )
+    else:
+        lines.append("  · Owning SPACE: unregistered/local root")
+    if config_dir.is_dir():
+        lines.append("  · Root .server_config: PRIMARY hosting configuration")
+        if config_page.is_file():
+            lines.append("  · Shareable hosting protocol: .server_config/README.md")
+        if (config_dir / "settings.env").is_file():
+            lines.append("  · Machine-local hosting settings: .server_config/settings.env")
+            for key, label in (
+                ("JJLUO_SPACE_NAME", "space name"),
+                ("JJLUO_PUBLIC_URL", "reader URL"),
+                ("JJLUO_TAILSCALE_URL", "reader URL"),
+                ("JJLUO_BIND_HOST", "bind host"),
+                ("JJLUO_TAILSCALE_ADDRESS", "Tailscale address"),
+                ("JJLUO_LOCAL_PORT", "listener port"),
+                ("JJLUO_TAILSCALE_PORT", "Tailscale port"),
+                ("JJLUO_ACCESS_MODE", "access mode"),
+            ):
+                if server_values.get(key):
+                    lines.append(f"  · Config {label}: {server_values[key]}")
+            if server_values.get("JJLUO_AUTH_FILE"):
+                lines.append("  · Config auth file: present (contents never print)")
+    elif config_page.is_file():
+        lines.append("  · Public SPACE config page: .server_config/README.md")
+    else:
+        lines.append("  · Public SPACE config page: none at this root")
+    lines.extend([
+        "For hosting, use the root .server_config values first; an explicit user "
+        "or CLI override may win. Use the registry only as ownership/fallback "
+        "context. Read the parent unit and matched config page when the task "
+        "changes Board identity, SPACE routing, hosting, mount, or discovery. "
+        "Update a changed public configuration fact in the same round; ordinary "
+        "Page/Board prose does not mutate SPACE configuration.",
+        "`board.md ## Pages` is the Page registry. The SPACE registry is not a "
+        "Board list. Machine-local `.server_config/settings.env` may be read for "
+        "non-secret startup values, but never print its secrets or edit it "
+        "implicitly.",
+    ])
+    return lines
 
 
 def board_prime_context(board, root):
@@ -103,6 +217,7 @@ def board_prime_context(board, root):
         "grouping in board.md, cross-question consistency. Deep work inside one "
         "question belongs to that question's own chat. Read board.md for the full "
         "picture; wait for the user's instruction.")
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, "board", root))
     return "\n".join(lines)
 
@@ -233,6 +348,7 @@ def group_prime_context(f, board, root):
         "page's own chat. Read the pages for the full picture; wait for the "
         "user's instruction.")
     lines.extend(drawing_owner_context(f, root))
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, letter, root))
     return "\n".join(lines)
 
@@ -289,6 +405,7 @@ def prime_context(f, board, root):
     lines.append("Read that file for the full picture. You already know which page and board "
                  "this is; wait for the user's instruction.")
     lines.extend(drawing_owner_context(f, root))
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, qid, root))
     return "\n".join(lines)
 

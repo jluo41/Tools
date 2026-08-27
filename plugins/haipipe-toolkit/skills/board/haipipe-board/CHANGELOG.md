@@ -1,3 +1,15 @@
+## 0.144.0 — 2026-08-27
+
+- The repository root's `.server_config/` is now the primary hosting contract
+  for Board startup and reader links. `serve.py` reads non-secret `JJLUO_*`
+  host, port, public URL, SPACE name, and auth-file path values when matching
+  flags are omitted; explicit CLI values still win.
+- `status.py` and the Board launcher follow the same precedence, while the
+  shared SPACE registry remains ownership and fallback context. `settings.env`
+  is parsed by a whitelist and is never executed or printed.
+- Board operating context now tells launched sessions where the shareable
+  `.server_config/README.md` protocol and machine-local `settings.env` live.
+
 ## 2026-08-21 · the owed-tick ledger
 
 `src/page_phase.py` gains `owed_ledger()` and `render_ledger()`;

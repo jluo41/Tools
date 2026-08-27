@@ -1,7 +1,9 @@
 import importlib.util
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
@@ -110,6 +112,24 @@ class StatusStripTest(unittest.TestCase):
             strip,
         )
 
+    def test_root_server_config_url_precedes_environment_url(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (root / ".server_config").mkdir()
+        (root / ".server_config" / "settings.env").write_text(
+            "JJLUO_PUBLIC_URL=http://tailnet.example.test:5601\n"
+            "JJLUO_AUTH_FILE=${HOME}/.config/jjluo-spaces/test.auth\n",
+            encoding="utf-8",
+        )
+        with patch.dict(os.environ, {"HAIPIPE_BOARD_URL": "http://wrong.test:5599"}):
+            strip = STATUS.render(board, focus="QB1", root=root)
+        self.assertIn(
+            "(http://tailnet.example.test:5601/diagram/01-test-260726/"
+            "board.html#QB1)",
+            strip,
+        )
+        self.assertNotIn("wrong.test", strip)
+
     def test_unowned_sourcing_is_blocked(self):
         temp, root, board = self.fixture()
         self.addCleanup(temp.cleanup)
@@ -144,6 +164,34 @@ class StatusStripTest(unittest.TestCase):
         prime = SERVE.prime_context(board / "board.md", board, root)
         self.assertIn('--focus "board"', prime)
         self.assertIn("board-level work is yours", prime.casefold())
+
+    def test_launcher_points_to_surrounding_space_configuration(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (root / "spaces").mkdir()
+        (root / "spaces" / "registry.yaml").write_text(
+            "schema: test\n"
+            "spaces:\n"
+            "  - id: test\n"
+            "    name: " + root.name + "\n"
+            "    path: " + root.name + "\n"
+            "    config_page: " + root.name + "/.server_config/README.md\n",
+            encoding="utf-8",
+        )
+        (root / ".server_config").mkdir()
+        (root / ".server_config" / "README.md").write_text(
+            "# Test SPACE configuration\n", encoding="utf-8"
+        )
+
+        prime = SERVE.prime_context(board / "QB1-evidence.md", board, root)
+
+        self.assertIn("SURROUNDING BOARD CONTEXT", prime)
+        self.assertIn("SPACE registry: spaces/registry.yaml", prime)
+        self.assertIn("Owning SPACE: test", prime)
+        self.assertIn("Shareable hosting protocol: .server_config/README.md", prime)
+        self.assertIn("Root .server_config: PRIMARY hosting configuration", prime)
+        self.assertIn("ordinary Page/Board prose does not mutate", prime)
+        self.assertIn("settings.env` may be read for non-secret startup values", prime)
 
 
 if __name__ == "__main__":

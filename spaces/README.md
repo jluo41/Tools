@@ -28,10 +28,13 @@ service, not as a fifth SPACE.
 ## Board context and configuration
 
 Resolving a Board has two layers. The nearest or explicitly attached
-`board.md` identifies the Board and its `## Pages` registry. The repository
-around that Board identifies its owning SPACE; match that repository against
-`registry.yaml`, then read the entry's `config_page` before changing any public
-host, port, route, mount, root, or discovery setting.
+`board.md` identifies the Board and its `## Pages` registry. If the Board's
+repository root contains `.server_config/`, that directory is the primary
+hosting configuration: read its `README.md` and non-secret `JJLUO_*` startup
+values before using registry data. The repository around that Board identifies
+its owning SPACE; match it against `registry.yaml` for ownership and fallback
+context before changing any public host, port, route, mount, root, or discovery
+setting.
 
 The four neighboring SPACE folders are part of this lookup even when the
 current working directory is `Tools-SPACE`. Inspect the registry first, then
@@ -45,9 +48,10 @@ registry; this file remains the SPACE registry.
 
 When a public configuration fact changes, update `registry.yaml` and the
 matched `.server_config/README.md` in the same round. The adjacent
-`settings.env` is machine-local and may contain local paths; do not print,
-copy, or edit it unless the user explicitly requests a machine setting. Page
-title and prose changes do not require a SPACE configuration write.
+`settings.env` is machine-local and may contain local paths; it is read only
+for non-secret startup values and does not get printed or edited implicitly.
+Explicit user or CLI values may override root config; registry data does not.
+Page title and prose changes do not require a SPACE configuration write.
 
 ## Board URLs
 

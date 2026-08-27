@@ -3,9 +3,9 @@ name: haipipe-board-routing
 description: >-
   The WRITE verb of the board family, at BOTH altitudes. Page altitude: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write; it loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. Board and group altitude (absorbed from haipipe-board-index on 260802): propose a board's structure with the human before any file exists, materialize it after approval, keep each group's engine-pages-folder lane block current with src/lanes.py, and move pages when a group is renamed or split. It may update an Aim State from inspected evidence, and closes a Decision Now row the human has already answered while never ticking one nobody answered and never changing a page-level human gate. Use when work happened and the board must record it, and when the board's own structure is what changed: route this to the board, write it back, which page owns this, claim the question, board structure, page group, group map, lanes, regroup, propose a board. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. It does NOT render HTML: haipipe-board owns build, serve, page and sentence. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, board structure, board index, page group, group map, lanes, regroup, /haipipe-board-routing.
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-08-03"
-  summary: "Absorbs haipipe-board-index: one WRITE verb now owns both altitudes, so a group-altitude input finally has somewhere to land."
+  version: "0.10.0"
+  last_updated: "2026-08-27"
+  summary: "Routed Board writes resolve root .server_config as the primary hosting contract, with SPACE registry data retained for ownership and fallback context."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -127,8 +127,13 @@ Rendering the index, checking a page, and checking a sentence all belong to `hai
                           deserves NO write, because a copy drifts
 
 2  RESOLVE the board     the session's attached board, or the nearest board.md
-                         above the working path; two plausible boards = ask,
-                         never guess
+   + operating context   above the working path; inspect the parent unit and
+                         repository root first. If root .server_config exists,
+                         read its README.md and non-secret settings.env values
+                         as the primary hosting contract. Then inspect
+                         spaces/registry.yaml (or Tools/spaces/registry.yaml)
+                         for ownership/fallback context; two plausible boards
+                         or SPACE owners = ask, never guess
 
 3  FIND the owner        read board.md ## Pages, the ONLY registry; an id does
                          not reliably predict a folder (pages move, letters are
@@ -142,6 +147,21 @@ Rendering the index, checking a page, and checking a sentence all belong to `hai
                          boundary; the sentence spec says how the line must
                          read (dated, signed, one sentence per line)
 ```
+
+`board.md ## Pages` remains the ONLY Page registry. The shared SPACE registry is
+not a second list of Boards: it owns neighboring SPACE repositories and their
+delivery configuration, while Board Home discovers Boards by walking the
+matched SPACE for `board.md`.
+
+If the input changes a SPACE id/name, root, domain, port, public URL, short
+route, mount, or discovery policy, the routed Board write and the companion
+configuration edit are one round: update the shared registry and the matched
+`.server_config/README.md`. When the Board repository already has a root
+`.server_config`, its host, port, public URL, and auth-file path are the primary
+startup inputs; explicit user or CLI values may override them, while registry
+data does not. Ordinary Page prose, Page titles, and Board decisions do not
+touch SPACE configuration. Never print credentials or edit machine-local
+`settings.env` without an explicit request.
 
 ## ⚖️ The two write laws, inherited not invented
 

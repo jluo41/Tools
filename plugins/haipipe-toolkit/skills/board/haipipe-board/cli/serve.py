@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Serve boards AND accept comment writes — from the machine the files live on.
 
-    python3 serve.py [--root DIR] [--port 5599]
+    python3 serve.py [--root DIR] [--port PORT]
+
+When --host, --port, --space-name, --public-url, or --auth-file is omitted,
+the matching non-secret setting in <root>/.server_config/settings.env is used.
 
 Why this exists (JL, 260723): the first design had the browser write the .md
 itself via the File System Access API. That cannot work here — the browser runs
@@ -77,6 +80,7 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
 from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # noqa: E402
+from src.server_config import load_server_config, server_config_dir  # noqa: E402
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
 # POST /_board/stop 把旗子立起来，chat 循环在下一条消息处收工，
@@ -632,10 +636,12 @@ if __name__ == "__main__":
         os.environ.pop(_k, None)
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".")
-    ap.add_argument("--port", type=int, default=5599)
-    ap.add_argument("--host", default="127.0.0.1",
+    ap.add_argument("--port", type=int, default=None,
+                    help="listener port; root .server_config wins when omitted")
+    ap.add_argument("--host", default=None,
                     help="绑哪个地址。默认只绑 loopback；给 tailnet 地址（100.x）"
-                         "就能从自己别的设备直接打开，不用 VS Code 转发端口")
+                         "就能从自己别的设备直接打开，不用 VS Code 转发端口；"
+                         "root .server_config wins when omitted")
     ap.add_argument("--daemon", metavar="LOGFILE",
                     help="后台跑，输出写进这个文件")
     ap.add_argument("--ttyd", action="store_true",
@@ -650,8 +656,29 @@ if __name__ == "__main__":
     ap.add_argument("--public-url", default="",
                     help="reader-facing URL shown by the SPACE Home")
     a = ap.parse_args()
-    auth_file = Path(a.auth_file).expanduser().resolve() if a.auth_file else None
-    if not host_is_loopback(a.host) and auth_file is None:
+    config = load_server_config(a.root)
+    config_dir = server_config_dir(a.root)
+    host = (a.host or config.get("JJLUO_BIND_HOST") or
+            config.get("JJLUO_TAILSCALE_ADDRESS") or "127.0.0.1").strip()
+    port = a.port
+    if port is None:
+        raw_port = config.get("JJLUO_LOCAL_PORT") or config.get("JJLUO_TAILSCALE_PORT")
+        try:
+            port = int(raw_port) if raw_port else 5599
+        except ValueError:
+            ap.error(f"invalid port in {config_dir / 'settings.env'}: {raw_port!r}")
+    auth_arg = a.auth_file or config.get("JJLUO_AUTH_FILE")
+    if auth_arg:
+        auth_path = Path(auth_arg).expanduser()
+        if not auth_path.is_absolute() and not a.auth_file:
+            auth_path = Path(a.root).resolve() / auth_path
+        auth_file = auth_path.resolve()
+    else:
+        auth_file = None
+    space_name = (a.space_name or config.get("JJLUO_SPACE_NAME") or "").strip()
+    public_url = (a.public_url or config.get("JJLUO_PUBLIC_URL") or
+                  config.get("JJLUO_TAILSCALE_URL") or "").strip()
+    if not host_is_loopback(host) and auth_file is None:
         ap.error("--auth-file is required when --host is not loopback")
     try:
         Handler.configure_auth(auth_file)
@@ -674,10 +701,10 @@ if __name__ == "__main__":
     if a.daemon:
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
-    Handler.space_name = a.space_name.strip()
-    Handler.public_url = a.public_url.strip()
-    base.BIND_HOST = a.host
-    srv = ThreadingHTTPServer((a.host, a.port),
+    Handler.space_name = space_name
+    Handler.public_url = public_url
+    base.BIND_HOST = host
+    srv = ThreadingHTTPServer((host, port),
                               partial(Handler, directory=str(Handler.root)))
     # A non-loopback --host binds THAT ADDRESS ONLY, which quietly breaks the
     # path most people are actually on: a VS Code / ssh -L forward connects to
@@ -687,24 +714,24 @@ if __name__ == "__main__":
     # no exposure that a local process does not already have, and it means
     # choosing a wider address never costs you the narrow one.
     loop = None
-    if not host_is_loopback(a.host) and a.host != "0.0.0.0":
+    if not host_is_loopback(host) and host != "0.0.0.0":
         try:
-            loop = ThreadingHTTPServer(("127.0.0.1", a.port),
+            loop = ThreadingHTTPServer(("127.0.0.1", port),
                                        partial(Handler, directory=str(Handler.root)))
             threading.Thread(target=loop.serve_forever, daemon=True).start()
         except OSError as e:
-            print(f"   ⚠️ loopback {a.port} 没起来：{e}", flush=True)
+            print(f"   ⚠️ loopback {port} 没起来：{e}", flush=True)
     tok, src = oauth_token(Handler.root)
     try:
         import claude_agent_sdk  # noqa: F401
         sdk = "on"
     except ImportError:
         sdk = "off（这个 Python 没装 SDK，聊天接口不可用）"
-    print(f"📡 http://{a.host}:{a.port}  root={Handler.root}\n"
+    print(f"📡 http://{host}:{port}  root={Handler.root}\n"
           + ("" if not loop else
-             f"   ＋ http://127.0.0.1:{a.port} 也在听（VS Code / ssh -L 走的是这个）\n")
-          + ("" if host_is_loopback(a.host) else
-             f"   ⚠️ 绑的不是 loopback：{a.host} 能到的设备都能用 /_term/ 开 shell\n")
+             f"   ＋ http://127.0.0.1:{port} 也在听（VS Code / ssh -L 走的是这个）\n")
+          + ("" if host_is_loopback(host) else
+             f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n")
           + f"   评论 / 状态：直接写在这台机器上\n"
           f"   认证：{'on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
