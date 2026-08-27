@@ -11,9 +11,9 @@ description: >-
   Use when opening, triaging, applying, answering, checking, or closing a paper
   revision round.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-24"
-  summary: "0.3.0 (JL 260824): rounds move into their desk's own B group (B<x>-<desk>/RD<NN>-<event>/) beside that desk's section pages, per journey 0.5.0's P5-P6 group mapping; the lone C1-RD-round group is grandfathered; a foreign-desk round mints its desk's B group even when it holds only RD pages. 0.2.0 (JL 260823): a Round parents to a NAMED Narrative — including a foreign-desk round whose telling has no page on this board, which parents to the Seed with the desk named in intake; the routing table gains the Seed as a destination for concerns demanding evidence the paper does not hold; received letters live inside the Round page's folder, never at repo root."
+  version: "0.3.1"
+  last_updated: "2026-08-27"
+  summary: "0.3.1 (JL 260827): gate-receipt duty sunk from the workflow's receipts law into this contract — G7's receipt Log row lives on this page. 0.3.0 (JL 260824): rounds move into their desk's own B group (B<x>-<desk>/RD<NN>-<event>/) beside that desk's section pages, per journey 0.5.0's P5-P6 group mapping; the lone C1-RD-round group is grandfathered; a foreign-desk round mints its desk's B group even when it holds only RD pages. 0.2.0 (JL 260823): a Round parents to a NAMED Narrative — including a foreign-desk round whose telling has no page on this board, which parents to the Seed with the desk named in intake; the routing table gains the Seed as a destination for concerns demanding evidence the paper does not hold; received letters live inside the Round page's folder, never at repo root."
   group-token: "RD"
   outline:
     mode: fixed
@@ -196,6 +196,10 @@ Reserve these acts for a person:
 A machine may propose dispositions, route accepted work, and close an already
 answered Decision Now row with the human's words. It may not manufacture the
 decision or mark the Round closed from ledger counts alone.
+
+Gate G7 (the per-round gate) leaves its receipt Log row on this page,
+stating the gate, the assertion results, and who approved the response
+receipt.
 
 ## ✅ Closing checks
 

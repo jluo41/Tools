@@ -94,7 +94,7 @@ The eight Page Types, one line each:
 
 `/haipipe-paper status [paper] [section|probe|citation|display]` regenerates
 the same rollup a Dash Page used to hold, as an optional drill-down on the
-existing status command instead of a sixth Page Type: it reports every unit,
+existing status command instead of a Page Type of its own: it reports every unit,
 obligation, and gap in one family and never decides anything, so it earns no
 lifecycle, no CHECK gate, and no `page-type:` key (retired 260820, JL: it
 covered four families and only one of them — section — was ever
@@ -341,8 +341,9 @@ paper/
 ├── haipipe-paper/          public door; one routing contract
 ├── haipipe-paper-workflow/ the seven-phase gate machine; owns transitions only
 ├── page-types/             eight active Paper Page Type contracts
-├── venue/                  reusable venue playbooks and exemplars
-├── _old/                   retired stages and implementations; never auto-loaded
+├── venue/                  the shared QBv desk bank (bank/), prose playbooks,
+│                           and the literature bank
+├── TODO.md                 deferred design work, one entry per item
 └── README.md               architecture and maintenance boundary
 ```
 

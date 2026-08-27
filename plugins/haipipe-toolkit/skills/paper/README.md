@@ -1,8 +1,8 @@
 # Paper skill family
 
 `paper/` composes a manuscript from evidence-bearing Board Pages. The active
-architecture is Page-first. The former numbered S-stage runtime is retired
-under `_old/` and is never loaded by the current Paper door.
+architecture is Page-first. The former numbered S-stage runtime was retired
+and DELETED 260822 rather than parked; no `_old/` archive exists here.
 
 ## Active architecture
 
@@ -70,9 +70,9 @@ paper/
 │   ├── haipipe-page-for-section/
 │   ├── haipipe-page-for-round/
 │                             (retired literature/value/display/dash Page Types deleted 260822)
-├── venue/                    reusable playbooks and exemplars
-├── TODO.md                   open issues future sessions pick up (task-family format)
-└── _old/                     retired stages and implementations; never auto-loaded
+├── venue/                    the shared QBv desk bank (bank/), prose playbooks,
+│                             and the literature bank
+└── TODO.md                   open issues future sessions pick up (task-family format)
 ```
 
 ## Ownership

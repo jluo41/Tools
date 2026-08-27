@@ -14,9 +14,9 @@ description: >-
   campaign plan, release a direction, serves E-row, page-type roadmap,
   /haipipe-page-for-roadmap.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-24"
-  summary: "0.1.0 (JL 260824): the campaign plan page, born with journey 0.5.0 — P2 Roadmap (route) of the establish loop. One page per paper at A1-SD-story/SD02-roadmap/; a Direction Board of eight-column rows, each serving a Seed E-row; ⬜ proposed → ▶️ released (a person's act) → 🔵 running → ✅ landed / 🚫 dropped, rows never deleted; the page plans and never executes — dispatch and intake belong to the Collection Page, the E-row flip to the Seed."
+  version: "0.1.1"
+  last_updated: "2026-08-27"
+  summary: "0.1.1 (JL 260827): gate-receipt duty sunk from the workflow's receipts law into this contract — G2's receipt Log row lives on this page (the gate the live SD02-roadmap passed on 260824 without leaving a receipt, because only the collection contract carried the duty locally). 0.1.0 (JL 260824): the campaign plan page, born with journey 0.5.0 — P2 Roadmap (route) of the establish loop. One page per paper at A1-SD-story/SD02-roadmap/; a Direction Board of eight-column rows, each serving a Seed E-row; ⬜ proposed → ▶️ released (a person's act) → 🔵 running → ✅ landed / 🚫 dropped, rows never deleted; the page plans and never executes — dispatch and intake belong to the Collection Page, the E-row flip to the Seed."
   group-token: "SD"
   outline:
     mode: grammar
@@ -98,6 +98,8 @@ A machine proposes rows, estimates budgets, and recommends order; only a
 person flips ⬜ proposed to ▶️ released, row by row, with initials and date in
 the row's division. Gate G2 (Roadmap → Collection) reads exactly this: every
 🔨/⬜ E-row has a ▶️ row serving it or an explicit waiver on the Seed's Log.
+Its receipt Log row lives here: when the gate passes, this page's Log records
+the gate, the rows released, and who released them.
 Dropping a row is as human an act as releasing it.
 
 ## 🃏 The plan records; it never executes
