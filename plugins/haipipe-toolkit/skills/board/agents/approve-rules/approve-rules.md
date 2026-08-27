@@ -49,12 +49,20 @@ R10 THE AGENT WRITES `checked:`, NEVER `approved:`. Two fields, two authors,
     on two lines:
 
     ```text
-    checked:  ✅ auto <YYMMDD> · approve-rules R1-R9 pass     🤖 the agent
+    checked:  ✅ auto <YYMMDD> · approve-rules R1-R11 pass    🤖 the agent
     approved: ✅ JL <YYMMDD>                                   🧑 the person
     ```
 
     The producer of a plan never checks its own plan: the approver runs in a
     fresh context.
+
+R11 DIVISION HEADINGS ARE SHORT NAMES, NOT SUMMARY SENTENCES. Each division
+    uses exactly `## C<n> · <name>` with no second ` ·` clause. The name is at
+    most 8 English words and at most 56 characters. Its explanation belongs in
+    `arc:`, a paragraph brief, or the bullets below it. The name must also
+    identify its concrete subject: counts or generic roles such as `one
+    contract`, `two readers`, `the boundary`, or `the service` fail when the
+    actual object names are required to understand the division.
 ```
 
 ⚖️ **Why two fields and not one** (resolved 260818, after the first live run).
@@ -91,4 +99,4 @@ waiting on one reader.
 ```
 
 Every one of these changes with what the person wants and cannot be written
-once. They are the 🛑, and the 🛑 outranks every R1-R10 pass beneath it.
+once. They are the 🛑, and the 🛑 outranks every R1-R11 pass beneath it.

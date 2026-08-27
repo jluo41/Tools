@@ -96,6 +96,25 @@ The plan goes down to the BULLET, and a bullet is a POINT, not a sentence (JL 26
 
 Bullets, not prose: each line says what that point will establish, and carries what it owes.
 
+**A division heading is a short name, never a summary sentence.** Write exactly
+one separator: `## C<n> · <name>`. The name is at most 8 English words and at
+most 56 characters. A second ` ·` clause is forbidden. Put the reason this
+division exists in `arc:`, its paragraph briefs, or its bullets. This keeps the
+division list readable without opening any detail.
+
+**Short is not enough: the name must identify its own subject.** Do not hide
+the concrete objects behind counts or generic role words such as `one
+contract`, `two readers`, `the boundary`, or `the service`. Name the actual
+objects when the reader needs them to understand the division, such as
+`BatchReader`, `OnlineReader`, `Data API`, or `S3`.
+
+```text
+  ❌ ## C1 · Data and feature boundary · The reader contract starts by fixing what readers return
+  ✅ ## C1 · Data vs. features
+  ❌ ## C2 · One contract, two readers
+  ✅ ## C2 · Shared lookup rules for BatchReader and OnlineReader
+```
+
 ```markdown
 # QC1-visitlbp · outline v1
 outline-version: v1
@@ -103,7 +122,7 @@ supersedes: —
 date: 260817
 approved: ⬜            🚧 a person ticks this. No machine may.
 
-## C3 · Method · The code that produced every number on this page
+## C3 · Method
 
 ### C3.P1 · What actually runs
 - B1 · Script Census

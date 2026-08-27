@@ -1,0 +1,19 @@
+task: A02.01 application_workflow
+group: A02_application_workflow
+type: design
+intent: "Define and implement a canonical two-block workflow for Application: Insight and Design."
+inputs:
+  - current Application workflow, Application, and Design skill contracts
+  - current Paper workflow for comparison
+  - shared Page workflow contract
+process:
+  - make Insight explicit as I0 Meta, I1 Chain, and I2 Wisdom
+  - make Design explicit as D0 Brief and D1 Design
+  - retain G0-G5 as cross-phase gates and keep acceptance as a gate
+  - define block inputs, outputs, receipts, human gates, and routing ownership
+  - update Application indexes, diagrams, fixtures, and validation checks
+  - validate fresh-context routing and known-broken gate behavior
+outputs:
+  - README.md with the Application Workflow issue and fix plan
+  - updated Application workflow contracts and references
+  - validation evidence for Insight and Design gate behavior
