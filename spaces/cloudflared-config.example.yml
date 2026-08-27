@@ -4,12 +4,6 @@ tunnel: REPLACE_WITH_TUNNEL_UUID
 credentials-file: /REPLACE_WITH_SECRET_PATH/tunnel-credentials.json
 
 ingress:
-  - hostname: physician.jjluo.com
-    service: http://127.0.0.1:5601
-  - hostname: welldoc.jjluo.com
-    service: http://127.0.0.1:5602
-  - hostname: reach.jjluo.com
-    service: http://127.0.0.1:5603
-  - hostname: drfirst.jjluo.com
-    service: http://127.0.0.1:5604
+  # SPACE board services are tailnet-only and intentionally have no
+  # Cloudflare hostname routes. Keep this fallback for unrelated routes.
   - service: http_status:404
