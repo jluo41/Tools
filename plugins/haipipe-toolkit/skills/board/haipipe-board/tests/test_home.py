@@ -40,7 +40,10 @@ class SpaceHomeTest(unittest.TestCase):
             page = render_home(root)
             self.assertIn("A &lt;Board&gt;", page)
             self.assertIn("Open board", page)
-            self.assertIn("board-grid", page)
+            self.assertIn('class="board-list"', page)
+            self.assertIn('class="board-row"', page)
+            self.assertIn("grid-template-columns:minmax(0,2.5fr)", page)
+            self.assertNotIn("repeat(2,minmax(0,1fr))", page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
             self.assertEqual(cards[0]["kind"], "Task Board")
 

@@ -221,18 +221,20 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
             page_label = f"{settled}/{pages} settled" if pages else "No pages yet"
             actions = f'<div class="actions">{action}</div>'
             board_cards.append(
-                f'''<article class="board-card" data-search="{search}">
-  <div class="card-top"><span class="kind">{icon} {kind}</span>
-    <span class="status {status_class}"><span class="dot" aria-hidden="true"></span>{status_label}</span></div>
+                f'''<article class="board-row" data-search="{search}">
+  <div class="row-main"><div class="row-kicker"><span class="kind">{icon} {kind}</span></div>
   <h3><a href="{href}" title="{spine}">{title}</a></h3>
   <p class="board-id">/{slug}</p>
-  <div class="card-meta"><span>{page_label}</span><span class="path" title="{path}">{path}</span></div>
+  </div>
+  <div class="row-status"><span class="status {status_class}"><span class="dot" aria-hidden="true"></span>{status_label}</span></div>
+  <div class="row-pages"><span class="meta-label">Pages</span><strong>{page_label}</strong></div>
+  <div class="row-path"><span class="meta-label">Path</span><span class="path" title="{path}">{path}</span></div>
   {actions}
 </article>''')
         sections.append(
             f'''<section class="board-group" data-group>
   <div class="group-head"><h2>{icon} {html.escape(kind)}s</h2><span>{len(kind_cards)}</span></div>
-  <div class="board-grid">{"".join(board_cards)}</div>
+  <div class="board-list">{"".join(board_cards)}</div>
 </section>''')
     body = ("\n".join(sections) if sections else
             '<p class="empty">No board.md files found below this SPACE root.</p>')
@@ -251,9 +253,10 @@ h1{{font-size:36px;line-height:1.12;letter-spacing:0;margin:6px 0 8px}}.header-m
 .toolbar{{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 14px}}.search{{display:flex;align-items:center;gap:8px;flex:1;max-width:460px;color:var(--mut)}}.search input{{width:100%;min-height:42px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);font:inherit;padding:9px 12px;outline:none}}.search input:focus{{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}}.filter-count{{color:var(--mut);font-size:13px;white-space:nowrap}}
 .summary{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:30px}}.metric{{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:13px 15px}}.metric strong{{display:block;font-size:24px;line-height:1.15}}.metric span{{display:block;color:var(--mut);font-size:12px;margin-top:3px}}
 .board-group{{margin:0 0 28px}}.group-head{{display:flex;align-items:center;gap:9px;margin:0 0 10px}}.group-head h2{{font-size:15px;line-height:1.2;margin:0;font-weight:800}}.group-head span{{min-width:25px;border-radius:999px;background:#e7ebef;color:var(--mut);font-size:12px;font-weight:800;text-align:center;padding:2px 7px}}
-.board-grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}.board-card{{display:flex;min-width:0;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:16px;box-shadow:0 1px 2px #1822300b}}.board-card:hover{{border-color:#b8c7d1;box-shadow:0 4px 14px #18223012}}.card-top,.card-meta{{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}}.kind{{color:var(--mut);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}.status{{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-size:11px;font-weight:800;padding:3px 8px;white-space:nowrap}}.dot{{width:7px;height:7px;border-radius:50%;background:currentColor}}.status.ready{{color:var(--green);background:var(--green-soft)}}.status.active{{color:var(--amber);background:var(--amber-soft)}}.status.build{{color:var(--red);background:#fef0ef}}
-.board-card h3{{font-size:18px;line-height:1.25;margin:16px 0 3px;overflow-wrap:anywhere}}.board-card h3 a{{color:var(--ink);text-decoration:none}}.board-card h3 a:hover{{color:var(--accent)}}.board-id{{margin:0;color:var(--accent);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.card-meta{{margin-top:15px;color:var(--mut);font-size:12px}}.path{{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}}.actions{{display:flex;align-items:center;gap:8px;margin-top:15px}}.primary,.secondary{{display:inline-flex;align-items:center;justify-content:center;min-height:34px;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:800;text-decoration:none}}.primary{{background:var(--accent);color:#fff}}.primary:hover{{background:#0a5661}}.secondary{{border:1px solid var(--line);color:var(--mut);background:var(--surface)}}.secondary:hover{{border-color:var(--accent);color:var(--accent)}}.build-note{{color:var(--red);font-size:12px;font-weight:800}}.empty,.no-results{{border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--mut);padding:22px}}[hidden]{{display:none!important}}
-@media (max-width:680px){{main{{padding:22px 14px 38px}}h1{{font-size:28px}}.toolbar{{align-items:stretch;flex-direction:column;margin-top:22px}}.search{{max-width:none}}.filter-count{{font-size:12px}}.summary{{gap:7px;margin-bottom:26px}}.metric{{padding:11px 10px}}.metric strong{{font-size:20px}}.metric span{{font-size:11px}}.board-grid{{grid-template-columns:1fr}}.board-card{{padding:14px}}.board-card h3{{font-size:17px}}.card-meta{{gap:8px}}.path{{max-width:52%}}}}
+.board-list{{display:grid;gap:8px}}.board-row{{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(90px,auto) minmax(105px,auto) minmax(0,1.5fr) auto;align-items:center;column-gap:18px;min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:13px 16px;box-shadow:0 1px 2px #1822300b}}.board-row:hover{{border-color:#b8c7d1;box-shadow:0 4px 14px #18223012}}.row-main,.row-path{{min-width:0}}.row-kicker{{display:flex;align-items:center;min-width:0}}.kind{{color:var(--mut);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}.status{{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-size:11px;font-weight:800;padding:3px 8px;white-space:nowrap}}.dot{{width:7px;height:7px;border-radius:50%;background:currentColor}}.status.ready{{color:var(--green);background:var(--green-soft)}}.status.active{{color:var(--amber);background:var(--amber-soft)}}.status.build{{color:var(--red);background:#fef0ef}}
+.board-row h3{{font-size:16px;line-height:1.25;margin:5px 0 2px;overflow-wrap:anywhere}}.board-row h3 a{{color:var(--ink);text-decoration:none}}.board-row h3 a:hover{{color:var(--accent)}}.board-id{{margin:0;color:var(--accent);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.meta-label{{display:block;color:var(--mut);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}}.row-pages{{min-width:0;color:var(--mut);font-size:12px}}.row-pages strong{{display:block;color:var(--ink);font-size:13px;line-height:1.25;margin-top:2px;white-space:nowrap}}.row-path{{color:var(--mut);font-size:12px}}.row-path .path{{display:block;min-width:0;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}}.row-status{{justify-self:start}}.actions{{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;margin-top:0;white-space:nowrap}}.primary,.secondary{{display:inline-flex;align-items:center;justify-content:center;min-height:34px;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:800;text-decoration:none}}.primary{{background:var(--accent);color:#fff}}.primary:hover{{background:#0a5661}}.secondary{{border:1px solid var(--line);color:var(--mut);background:var(--surface)}}.secondary:hover{{border-color:var(--accent);color:var(--accent)}}.build-note{{color:var(--red);font-size:12px;font-weight:800}}.empty,.no-results{{border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--mut);padding:22px}}[hidden]{{display:none!important}}
+@media (max-width:980px){{.board-row{{grid-template-columns:minmax(0,1fr) minmax(100px,auto) minmax(105px,auto);row-gap:10px}}.row-main{{grid-column:1 / 4}}.row-status{{grid-column:2;grid-row:2}}.row-pages{{grid-column:3;grid-row:2}}.row-path{{grid-column:1 / 4;grid-row:3}}.actions{{grid-column:1 / 4;grid-row:4;justify-content:flex-start}}}}
+@media (max-width:680px){{main{{padding:22px 14px 38px}}h1{{font-size:28px}}.toolbar{{align-items:stretch;flex-direction:column;margin-top:22px}}.search{{max-width:none}}.filter-count{{font-size:12px}}.summary{{gap:7px;margin-bottom:26px}}.metric{{padding:11px 10px}}.metric strong{{font-size:20px}}.metric span{{font-size:11px}}.board-row{{grid-template-columns:minmax(0,1fr) auto;padding:13px 14px;row-gap:9px}}.row-main{{grid-column:1;grid-row:1}}.row-status{{grid-column:2;grid-row:1}}.row-pages{{grid-column:1;grid-row:2}}.row-path{{grid-column:1 / 3;grid-row:3}}.actions{{grid-column:1 / 3;grid-row:4}}.board-row h3{{font-size:17px}}}}
 </style></head><body><main><header class="site-head"><div class="eyebrow">JJ-LUO · Private Space</div><h1>🏠 {heading}</h1><div class="header-meta"><span>{label} board directory</span>{f'<span aria-hidden="true">·</span>{url_note}' if url_note else ''}</div></header>
 <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="board-filter" type="search" placeholder="Filter boards" aria-label="Filter boards" autocomplete="off"></label><span class="filter-count" id="filter-count">{len(cards)} boards</span></div>
 <section class="summary" aria-label="Board summary"><div class="metric"><strong>{len(cards)}</strong><span>Total boards</span></div><div class="metric"><strong>{ready_total}</strong><span>Ready to open</span></div><div class="metric"><strong>{settled_total}/{page_total}</strong><span>Pages settled</span></div></section>
@@ -261,7 +264,7 @@ h1{{font-size:36px;line-height:1.12;letter-spacing:0;margin:6px 0 8px}}.header-m
 const filter = document.getElementById('board-filter');
 const count = document.getElementById('filter-count');
 const noResults = document.getElementById('no-results');
-const cards = Array.from(document.querySelectorAll('.board-card'));
+const cards = Array.from(document.querySelectorAll('.board-row'));
 const groups = Array.from(document.querySelectorAll('[data-group]'));
 function applyFilter() {{
   const query = filter.value.trim().toLowerCase();
@@ -271,7 +274,7 @@ function applyFilter() {{
     card.hidden = !match;
     if (match) visible += 1;
   }});
-  groups.forEach((group) => {{ group.hidden = !group.querySelector('.board-card:not([hidden])'); }});
+  groups.forEach((group) => {{ group.hidden = !group.querySelector('.board-row:not([hidden])'); }});
   count.textContent = query ? visible + ' matching' : cards.length + ' boards';
   noResults.hidden = visible !== 0 || !query;
 }}
