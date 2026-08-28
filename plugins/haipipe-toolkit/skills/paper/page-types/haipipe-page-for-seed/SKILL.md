@@ -1,19 +1,14 @@
 ---
 name: haipipe-page-for-seed
 description: >-
-  The Paper Page Type for one venue-free Seed per paper. It establishes the
-  stable research identity, the BLUF pitch with placeholder discipline, the
-  research question, stakes, read scope, the Establishment Board of defensible
-  propositions, boundaries, and a bounded handoff to venue-specific
-  Narratives. Use when starting a paper, repairing its identity, telling the
-  one-minute story, checking what the evidence licenses, separating the paper
-  from venue framing, or retargeting without rewriting what the study is.
-  Trigger: seed page, paper identity, pitch, one-minute story, establishment
-  board, what can we claim, page-type seed, /haipipe-page-for-seed.
+  Paper Page Type for a paper's venue-free identity: research question, pitch,
+  stakes, and the Establishment Board of what the evidence licenses. Use when
+  starting a paper, telling its one-minute story, or retargeting to a new
+  venue without rewriting the study. Trigger: seed page, paper identity,
+  pitch, establishment board, page-type seed.
 metadata:
-  version: "0.5.1"
+  version: "0.5.2"
   last_updated: "2026-08-27"
-  summary: "0.5.1 (JL 260827): gate-receipt duty sunk from the workflow's receipts law into this contract — G1's and G4's receipt Log rows live on this page. 0.5.0 (JL 260824): journey 0.5.0 story order — the story group becomes the venue-free P0-P3 head (SD00-ideation, SD01-seed, SD02-roadmap, SD03-collection) and Narratives move out to A2-NA-narrative; the Seed is the establish loop's scoreboard: Roadmap plans against its §6 gaps, Collection proposes settles, and this page alone writes E-row flips, each citing the landed QA path. 0.4.4 (JL 260824): ideation 0.5.0 vocabulary — the origin page's cell is `went to` (was graduated-to), 'ledger/nursery/graduation' wording dropped from the birth-certificate clause and checks. 0.4.3 (JL 260824): ideation joins the story group as page zero — the seed is SD01-seed, its birth certificate binds SD00-ideation beside it. 0.4.2 (JL 260824): explore renamed IDEATION — §5's first row points at this board's ideation page. 0.4.1 (JL 260823): the birth certificate binds same-board by default; cross-repo only when the idea came from another paper's nursery. 0.4.0 (JL 260823): every ✅/🔨 E-row carries a novelty reading (closest prior · delta · H/M/L, claim-level per the ARIS lesson); §5's first row binds the Explore Page that graduated this paper as its birth certificate; runtime home renamed to paperboard/A1-SD-story (old boards grandfathered). 0.3.0 re-cut the shape (JL 260821): BLUF pitch at division 2, Establishment split from Boundaries, Source Pages named the PageX seedbed."
   group-token: "SD"
   outline:
     mode: fixed
@@ -140,7 +135,11 @@ stable.
 **Every ✅ and 🔨 row also carries its novelty reading** (0.4.0): the closest
 prior work, the delta against it, and a HIGH/MEDIUM/LOW call — judged at the
 CLAIM level, never for the paper as a blob, and traced to discovery-layer QA
-files whose cited papers are id-verified. A row selling HIGH novelty on an
+files whose cited papers are id-verified. The H/M/L call reads the discovery
+layer's own verdicts through the fixed adapter (novel → HIGH · partial →
+MEDIUM · preempted → LOW · inconclusive → stays ⬜; ideation 0.4.1's table,
+restated here because the settle pen is this page's). A row selling HIGH
+novelty on an
 unresolved citation is a defect; `[UNVERIFIED]` is honest, silence is not.
 The board's novelty column is what makes "is this idea any good?" a readable
 property instead of an opinion: idea quality = how many rows can flip ✅ and

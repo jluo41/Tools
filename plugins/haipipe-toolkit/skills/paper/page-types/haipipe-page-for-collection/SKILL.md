@@ -1,21 +1,14 @@
 ---
 name: haipipe-page-for-collection
 description: >-
-  The Paper Page Type for one paper's evidence intake desk: it dispatches the
-  Roadmap's released direction rows through the probe lanes, registers every
-  QA receipt that comes back, groups the campaign into laps, and proposes —
-  never writes — the E-row flips the Seed settles. QA files stay the
-  substance; this page registers and never restates, so no second evidence
-  authority exists. One page per paper, evergreen, fourth page of the story
-  group. Use when dispatching released directions, registering landed
-  receipts, closing a lap, reading what is still out running, or preparing
-  the settle back onto the Seed. Trigger: collection page, collection,
-  intake, lap, receipts landed, register QA, dispatch released rows, settle
-  to seed, page-type collection, /haipipe-page-for-collection.
+  Paper Page Type for a paper's evidence intake desk: dispatches the Roadmap's
+  released directions, registers every QA receipt that comes back, and groups
+  the campaign into laps. Use when dispatching directions, registering
+  receipts, closing a lap, or seeing what is still out. Trigger: collection
+  page, intake, lap, register QA, page-type collection.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-24"
-  summary: "0.1.0 (JL 260824): the intake-desk page, born with journey 0.5.0 — P3 Collection (collect) of the establish loop. One page per paper at A1-SD-story/SD03-collection/; its probe/ lane holds one dispatch card per released Roadmap row; middle divisions are laps L<n> (which rows ran, which QA paths landed, which E-flips are proposed); the Intake law forbids restating QA content — register, never a second authority; the settle pen stays the Seed's."
+  version: "0.1.1"
+  last_updated: "2026-08-27"
   group-token: "SD"
   outline:
     mode: grammar
@@ -83,6 +76,12 @@ Gate G3 (Collection → Seed) reads a lap: done-when tests hold, every card
 binds a landed QA path, and the settle is written on the Seed — its receipt
 Log row lives here.
 
+A settle proposal reads discovery verdicts through the shared adapter
+(novel → HIGH · partial → MEDIUM · preempted → LOW · inconclusive → stays
+⬜), and the intake re-check screens every closest-prior list for this
+paper's own preprints and versions, which are never prior art against their
+own manuscript unless the Seed rules otherwise.
+
 ## 🃏 Dispatch rides the existing probe machinery
 
 This page's `probe/` lane IS the campaign's dispatch surface: one card per
@@ -90,6 +89,12 @@ released direction row, stripped to a neutral Q-executor and handed to the
 task/discovery orchestrators exactly as any page's PROBE phase does. Nothing
 new is invented — the orchestrators, QA banks, claim rules, and `working`
 state discipline all apply unchanged.
+
+A card whose executor died before Report is HELD, never answered: the lap
+registers the halt AS a halt and re-dispatches under the executor layer's
+reclaim rule. A null result is a COMPLETED search that found nothing; a halt
+gathered nothing and rejected nothing, and conflating the two mis-decides
+the claim the card serves.
 
 ```text
 pagex/     binds SD02-roadmap (the released rows) and SD01-seed (the E-rows

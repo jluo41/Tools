@@ -9,6 +9,10 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
 
+## [0.3.5] — 2026-08-27
+
+- Known-dead claim exit added to gate ①: a `working` ticket whose executor is KNOWN to have died before Report (the run ended without completing the file) is reclaimed immediately — fresh `started:`/`by:` on the SAME file, or superseded — with no TTL wait, and a ticket is NEVER deleted. Found in the 260827 paper field test: three executors died mid-lap and the actor's only lawful options were "wait out the TTL" or improvise; it improvised delete-and-remint, which erased claim history.
+
 ## [0.3.4] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.4.0; older entries below keep their original numbers).
