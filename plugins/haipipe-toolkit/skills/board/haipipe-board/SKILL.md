@@ -8,7 +8,7 @@ description: >-
   board/index.html to VS Code, not create one. Trigger: board, open a board,
   add a question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.145.0"
+  version: "0.146.0"
   last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -339,12 +339,20 @@ And the prior question: most proposed decisions do not belong there at all. The 
 
 ## 🔨 Actions
 
-Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
+Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **preview · view · open · add · stage · build · sync · link · close**
 Live (needs `cli/serve.py` running): **serve · excalidraw · comment**
 Routed to `haipipe-page`: **create a page · update a page · run one page lifecycle**
 Routed to `haipipe-sentence`: **comment · edit · card**
 
-That is 11 verbs here, plus six routed actions this skill does not run itself.
+That is 12 verbs here, plus six routed actions this skill does not run itself.
+
+`preview` answers "what does this say" at every altitude with one tool,
+`cli/preview.py <path>`, which resolves the grain from the path itself: a
+board folder prints spine + Topic + one roster line per page (id, type,
+state tally, title); a group folder prints its pages' roster lines; a page
+prints the full page preview (`haipipe-page` owns that grain's contract).
+It reads and never writes, and it is a gist, never a substitute for the
+read a verb owes.
 
 **One door** (JL 260802: "you can just say, haipipe-board update the page etc, it will route to the haipipe-page"). Anything about ONE PAGE routes to `haipipe-page`, which owns the page contract and drives that page end to end:
 

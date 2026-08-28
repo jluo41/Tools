@@ -1,3 +1,12 @@
+## 0.146.0 — 2026-08-28
+
+- `cli/preview.py` grows to three grains, resolved from the path itself (JL
+  request): a board folder prints spine + Topic + one roster line per page
+  (id, type, state tally, title), a group folder prints its pages' roster
+  lines, a page keeps the full preview. `preview` joins the offline verbs.
+  A page at `✅2 🔨1` shows its open obligation in the roster without
+  opening it.
+
 ## 0.145.0 — 2026-08-28
 
 - `cli/preview.py` is new: one screen of what a page SAYS — title, Opening's

@@ -1,3 +1,9 @@
+## 0.40.1 — 2026-08-28
+
+- `preview.py` now also takes a group or board folder (one roster line per
+  page); those grains belong to `haipipe-board` 0.146.0, and this contract's
+  preview subsection points there instead of a glob recipe.
+
 ## 0.40.0 — 2026-08-28
 
 The 260828 field test (PaperSkillBoard-260725 repair, 14 minutes, 12 frictions)

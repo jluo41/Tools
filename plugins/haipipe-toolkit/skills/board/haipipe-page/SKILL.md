@@ -8,7 +8,7 @@ description: >-
   Trigger: create a page, new page, update a page, preview a page, what does
   this page say, run page lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.40.0"
+  version: "0.40.1"
   last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -373,8 +373,9 @@ Say any of these and this skill runs it. You never call the engine yourself.
 paragraph, the Aims joined to their States, the Content division list, and
 the last Log row. It works because the contract already made those the
 page's summary surfaces; the tool only collects them. Use it to answer
-"what is this page about" before opening it, to pick between candidate
-Related Board Pages, or to scan a group (`preview.py <dir>/*/`). Preview is
+"what is this page about" before opening it, or to pick between candidate
+Related Board Pages. The same tool takes a group or board folder and prints
+one roster line per page; those grains are `haipipe-board`'s. Preview is
 a gist, never a substitute: WORK ON step 1 still owes the whole-file read.
 
 ### Create a new page on a topic
