@@ -440,3 +440,18 @@ Parked at user request before the bench run; NO ruling yet on either. Both decis
 - Grammar hardened (ref/partition.md): X pinned at 9; reserved partition letters F/X/Q/S/M; one threshold file per task GROUP, PENDING until written; the template needs full.yaml; adopt pre-existing config names and check their store: key; the template W never defers.
 - Family id sweep: M00-meta/A00-brief → MT00-meta/BR00-brief everywhere live (meta and brief contracts, fn/enter.md, fn/brief.md); brief 0.3.x rekeyed needs from the retired Insight Roster to the question registers; design contract's runtime shape, PageX example and handoff ids corrected to DS<NN>/W-parents.
 - Verbs made layout-aware: fn/chain.md resolves the partition group from the register cell; fn/meta.md step 8 points MT00 at the partition divisions.
+
+## [0.16.0] — 2026-08-24
+
+- Design-side verbs (brief, design, direction, release, realize, judge, render, accept) OWNED by the new sibling door `/haipipe-design`; the verb rows remain as forwards, `fn/brief.md` and `fn/design.md` stay shared.
+
+## [0.17.0] — 2026-08-24
+
+- The principle row still said P is the ONLY DesignBoard layer that reads the InsightBoard, a claim a line break hid from the 260824 sweep and that every direction card contradicts; P is now the promoted WARRANT crossing and a card GRANTS by path. The workflow row reads five phases named by their authority page, four blocking gates.
+
+## [0.18.0] — 2026-08-27
+
+- Insight-side verbs OWNED by the new sibling door `/haipipe-insight` (0.1.0), symmetric to the 260824 design-side split: meta, question, chain, partition, verdict, settle, handoff. The verb rows here remain as forwards; `fn/meta.md` and `fn/chain.md` stay as the page-level procedures both doors share, and `ref/partition.md` stays this skill's file because moving it would break its existing references — the door cites it.
+- The door assembles what was already law: the one-dataset rule, the Climb Law (each rung cites only named rows of the rung below, two X-group exceptions), the three pens (register/chain/handoff), and the two ✋ gates on that board (probe release, handoff signing). Nothing new is legislated; the split gives the InsightBoard the same one-place law home the DesignBoard got in haipipe-design 0.1.0.
+- The reused name is disclaimed in the door itself: the `/haipipe-insight` retired in 6.6.0 (260717) was a KB evidence layer; the new door holds board law and no evidence.
+- Cold-read audit fixes (260827, fresh-context tester): §Dataset-first reworded — a chain page must serve a question REGISTERED on MT01-MT04, need-first or curiosity-first, so the sentence no longer refuses the curiosity birth the door legalizes; the loose "Insight Page" alias for rung/chain pages removed from all live prose (`page-type: insight` is task-only); the insight-side forwards gain `check`.

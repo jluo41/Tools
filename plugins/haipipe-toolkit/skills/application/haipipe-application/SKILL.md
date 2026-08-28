@@ -4,9 +4,9 @@ description: >-
   One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-08-24"
-  summary: "0.17.0 (JL 260824): the principle row still said P is the ONLY DesignBoard layer that reads the InsightBoard, a claim a line break hid from the 260824 sweep and that every direction card contradicts; P is now the promoted WARRANT crossing and a card GRANTS by path. The workflow row reads five phases named by their authority page, four blocking gates. 0.15.0 is the contradiction sweep (JL 260823, four-reviewer audit): dead fn pointers cleared, the cohort rule qualified against the SPLIT-verdict licensing rule, the probe authority line corrected, and the four rung contracts + meta + question updated for partition-major in step. 0.14.0 added the sibling RUN head; 0.13.0 the partition-major layout."
+  version: "0.18.0"
+  last_updated: "2026-08-27"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-application · understand on one board, design on the other
@@ -20,12 +20,12 @@ Task / Discovery evidence
           │ Probe · Task authority
           ▼
 🔎 InsightBoard                            🎨 DesignBoard
-Meta → Insight Page(s)  ──── PageX ────▶   Brief → Design Page(s) → ✅ accepted
+Meta → chain pages      ──── PageX ────▶   Brief → Design Page(s) → ✅ accepted
         D→I→K→W                                     R<n> divisions
         + Design Handoff                            2-artifacts/ projections
 ```
 
-Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how an Insight Page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
+Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how a chain page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
 
 ## Two boards, and why (JL 260820)
 
@@ -84,6 +84,12 @@ workflow | run | drive         drive the whole Application forward through the
                                five phases in two lanes, four blocking human gates.
                                Phases are named by their authority page: Meta,
                                Chain, Wisdom · Brief, Design
+
+insight-side verbs (meta · question · chain · partition · verdict · settle ·
+handoff · check) are OWNED by the sibling door /haipipe-insight since 260827: the
+one-dataset law, the Climb Law, the three pens, the two ✋ gates on that board.
+The rows above remain as forwards; fn/meta.md and fn/chain.md stay as the
+page-level procedures both doors share.
 
 design-side verbs (brief · design · direction · release · realize · judge ·
 render · accept) are OWNED by the sibling door /haipipe-design since 260824:
@@ -156,12 +162,13 @@ The tree above is the default, RUNG-MAJOR: groups are the four rungs, and a subg
 ├── 0-MT-meta/            same head · the registers gain one Queue COLUMN per partition
 ├── 1-F-full/             FD→FI→FK→FW · the template ladder on the whole extract
 ├── 2-<L>-<slug>/         one group per partition · mirrors 1-F-full slug for slug
-└── 9-X-cross/            contrast · heterogeneity · the POOL/SPLIT verdict (pinned at 9)
+└── X-cross/              contrast · heterogeneity · the POOL/SPLIT verdict
+                          (index-free: letters sort last · legacy: 9-X-cross/)
 ```
 
 Page id = partition letter + rung letter + NN (`BK01` is partition B, Knowledge, first page); page types are unchanged. The grammar's single source is `ref/partition.md`: the mirror rule, the MT00 partition register, the shared-threshold rule, the X-only comparison law, and the SPLIT verdict as the only birth certificate a per-partition child board may cite. The choice of layout is made once, at scaffold.
 
-Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each Insight Page owns its own bounded `probe/`; Meta, Brief, and Design Pages own none.
+Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each rung page owns its own bounded `probe/`; Meta, the registers, Brief, and Design Pages own none.
 
 ## The two authorities
 
@@ -176,7 +183,7 @@ DesignBoard
   owns selection, design principles, message roles, concrete content, and acceptance
 ```
 
-The law: **Design Pages own no Probe; Insight Pages may Probe under Task-backed evidence authority.**
+The law: **Design Pages own no Probe; rung pages may Probe under Task-backed evidence authority.**
 
 ## Page flow
 
@@ -203,7 +210,7 @@ Brief and Meta are both head pages and may be written in either order. Meta may 
 
 ## Dataset-first: where exploration goes before a Brief exists
 
-An InsightBoard Page must serve a named need, so it cannot be opened before a Brief raises one. That is deliberate, and it is not a dead end: exploration with no consumer yet belongs on the **Task/Insights Board**, as a `scope: task` Page opened through `/haipipe-task insight`.
+An InsightBoard chain page must serve a question registered on MT01-MT04 — raised by a Brief need or by a reader's curiosity, the two births `/haipipe-insight` rules. What no chain page may serve is no question at all: exploration with no register row belongs on the **Task/Insights Board**, as a `scope: task` Page opened through `/haipipe-task insight`.
 
 ```text
 a dataset lands, no Brief yet
@@ -217,7 +224,7 @@ a dataset lands, no Brief yet
    PageX binding                  borrowed straight into the Application
         │
         ▼
-🎨 Design Page                    no local Insight Page needed at all
+🎨 Design Page                    no local chain page needed at all
 ```
 
 The chain verb (`fn/chain.md`, step 2) searches the Task/Insights Board FIRST and binds a settled `scope: task` Page rather than reopening the same question locally. A local chain is for what that search does not answer: the reading that only makes sense for this audience, this venue, this promise.
@@ -226,7 +233,7 @@ The two scopes share one contract and one key, `page-type: insight`, with `scope
 
 ## Insight-to-design handoff
 
-An Insight Page keeps D/I/K evidence-led and lets W become Application-contextual only after K settles:
+A chain keeps D/I/K evidence-led and lets W become Application-contextual only after K settles:
 
 ```text
 Application Need → neutral Question → D → I → K → contextual W → Design Handoff
@@ -260,13 +267,13 @@ Acceptance is written on the division, not the page, so one unit may be accepted
                 🧪 task folder · Plan → Build → Execute → Report
                       │
                       ▼
-                🔎 Insight Page refreshes · handoff v2
+                🔎 chain page refreshes · handoff v2
                       │  PageX binding goes stale
                       ▼
                 🎨 Design division reopens
 ```
 
-The Application may propose the measurement question. Task owns execution; the InsightBoard's Insight Page owns the refreshed DIKW reading and source staleness; the Design Page owns the response. An experiment run is a task folder, its result reading is a task page, and its synthesis is an Insight Page. Check that the task layer does not already cover a need before proposing a new board family for it.
+The Application may propose the measurement question. Task owns execution; the InsightBoard's chain owns the refreshed DIKW reading and source staleness; the Design Page owns the response. An experiment run is a task folder, its result reading is a task page, and its synthesis is a chain page. Check that the task layer does not already cover a need before proposing a new board family for it.
 
 ## Legacy compatibility
 
@@ -274,7 +281,7 @@ Existing Applications remain readable. Do not delete or bulk-rewrite their folde
 
 ```text
 legacy Seed + Venue + Pitch                    → Brief input
-legacy Descriptions + Themes + Claims + Advice → candidate Insight Pages
+legacy Descriptions + Themes + Claims + Advice → candidate chain pages
 legacy Narrative + Display + Section-edit      → Design Page input
 legacy 1-probes/                               → historical bindings, read-only
 legacy 0-lifecycle/ single-folder Applications → read and fold into the two boards

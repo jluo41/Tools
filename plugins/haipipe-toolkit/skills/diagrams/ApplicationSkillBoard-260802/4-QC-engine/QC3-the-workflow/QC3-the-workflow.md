@@ -1,6 +1,6 @@
 # The workflow: five phases named by their authority page, and six gates
 
-state: ✅ SETTLED · 0.4.0 restyled on the paper family 260824 · ACCEPT retired as a phase
+state: ✅ SETTLED · 0.5.0 delegates the climb loop's law to /haipipe-insight 260827 · ACCEPT retired as a phase
 owner: JL
 
 ## Opening
@@ -55,7 +55,7 @@ The naming law is also a test. ACCEPT's acceptance row lives on the Design page'
 #### 3 · Two loops, each with three pens that never cross
 
 ```text
-CLIMB LOOP  P0 → P1 → P2 → P0
+CLIMB LOOP  P0 → P1 → P2 → P0, law delegated to /haipipe-insight
   register writes STATE, never a finding
   chain pages write FINDINGS, never their own register cell
   handoff EXPORTS, never re-derives
@@ -129,6 +129,12 @@ A phase transition leaves one dated Log row on the page that GRANTED it. No sepa
   The phase machine this page documents.
 - `../../../../application/haipipe-application/SKILL.md`
   The door whose `frontier:` scalar must never disagree with the phase reading.
+- `../../../../application/haipipe-insight/SKILL.md`
+  The insight door the climb loop's law is delegated to since 0.5.0.
+- `../../../../application/haipipe-insight-workflow/SKILL.md`
+  The insight lane's interior phase machine since 0.6.0: I0-I5, gates GI0-GI6, the cell frontier.
+- `../../../../application/haipipe-design-workflow/SKILL.md`
+  The design lane's interior phase machine since 0.7.0: D0-D4, gates GD0-GD5, the division frontier, rounds, reflect/prospect, the EMIT edge.
 - `../../../../paper/haipipe-paper-workflow/SKILL.md`
   The sibling machine the naming law, the gazette and the receipt rule were taken from.
 
@@ -141,3 +147,7 @@ A journey phase is named by its authority page. A position that cannot name one 
 260824 · Restyled on `haipipe-paper-workflow` 0.5.0: phases named by authority page with verb aliases, gates numbered G0-G5, a gazette of retired names, the never-scheduled rule, and receipts moved onto the granting pages.
 
 260824 · ACCEPT retired as a phase and the fourth human gate named. The file had said "three gates" since the design family added card release the same day.
+
+260827 · The climb loop's law delegated to the new insight door `/haipipe-insight` (workflow 0.5.0), exactly as 0.3.0 delegated the compose loop to `/haipipe-design`; the workflow keeps the lap, the order and gates G0-G3. Each lane now has its own law door, two ✋ gates per door.
+
+260827 · The design lane's interior machine landed, `/haipipe-design-workflow` (app workflow 0.7.0): D0-D4 named by the lane's artifact classes (a stated extension of the naming law from page to artifact), the division as frontier unit, rounds that always complete, the two-faced verdict — reflect (ex-post) · prospect (ex-ante) — and the EMIT edge into the insight registers. Both lanes now carry door + machine, fully symmetric.

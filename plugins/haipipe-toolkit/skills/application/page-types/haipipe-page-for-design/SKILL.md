@@ -3,9 +3,9 @@ name: haipipe-page-for-design
 description: >-
   The Page Type contract for an Application DESIGN PAGE on the DesignBoard, machine key `page-type: design`. This page lives in `<DesignBoard>/2-DS-design/DS<NN>-<slug>/`, one page per audience x behavior job x primary venue. A DesignBoard may own many Design Pages; each serves one audience × behavior job × primary venue, consumes the Brief and settled InsightBoard Design Handoffs through PageX, then authors principles, a message/unit map, repeated message divisions, variants, rails, and a per-division acceptance row. The Page ENDS AT ACCEPTED: it never ships and never measures. Use for SMS/email/dashboard/checklist/report/message design, audience-specific strategy, message sequences, interaction components, or retargeting. Trigger: design page, message strategy, audience job, message map, message divisions, component map, variants, accept a unit, page-type design, /haipipe-page-for-design.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-24"
-  summary: "0.6.0 (JL 260824): WARRANT and GRANT separated — a division still warrants from a P page, while a direction card GRANTS InsightBoard pages by path, which 0.5.0's boundary wrongly forbade. Runtime shape corrected (DS<NN> file name, render/ present) and the PageX example made layout-aware."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   outline:
     mode: grammar
     source: "accepted Brief + PageX Insight handoffs + venue pack"
@@ -69,6 +69,8 @@ unit id · recipient moment · audience job · Insight/Handoff refs · design mo
 exact content or interaction · declared variants · safety rail · next trigger
 accepted: <reviewer> <YYMMDD> · handoff <W-id>@v<N> · render v<N>
 ```
+
+A division may instead close by RAISING what it lacks (haipipe-design-workflow's EMIT edge, 260827): `emitted: <YYMMDD> · <BR00 need id> · <what was missing>` — a terminal equal in rank to `accepted:`, whose need row on BR00 births the register question need-first. A division carries exactly one of the two terminals, never both.
 
 Do not create empty Narrative or Display divisions. Use one division per jointly reviewed message/unit.
 

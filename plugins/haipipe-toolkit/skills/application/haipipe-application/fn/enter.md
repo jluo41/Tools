@@ -37,7 +37,7 @@ what is being designed?        → <DesignTopic>   PascalCase   YoungMaleRefill
 one story or several?          → layout          rung-major (default) | partition-major
 ```
 
-The layout ask decides the InsightBoard's group tree and nothing else. Rung-major is the default and the tree below; a subgroup that is at most a column inside an I page has not earned the other layout. Partition-major is for subgroup analysis as first-class, the same ladder per subgroup under shared thresholds: consult `ref/partition.md`, scaffold `1-F-full/` and `9-X-cross/` (X pinned at 9 so later partitions rename nothing) in place of the four rung groups, let MT00 carry the partition register and the shared-threshold rule, and give every register Queue one column per partition (`haipipe-page-for-question` 0.2.1). The layout is never stored as a key; the group names on disk ARE the record.
+The layout ask decides the InsightBoard's group tree and nothing else. Rung-major is the default and the tree below; a subgroup that is at most a column inside an I page has not earned the other layout. Partition-major is for subgroup analysis as first-class, the same ladder per subgroup under shared thresholds: consult `ref/partition.md`, scaffold `1-F-full/` and `X-cross/` (index-free: letters sort after digits, so X seats itself last and later partitions rename nothing) in place of the four rung groups, let MT00 carry the partition register and the shared-threshold rule, and give every register Queue one column per partition (`haipipe-page-for-question` 0.2.1). The layout is never stored as a key; the group names on disk ARE the record.
 
 Create both boards with their head pages, then stop:
 

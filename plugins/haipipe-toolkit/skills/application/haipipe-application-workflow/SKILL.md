@@ -9,8 +9,9 @@ description: >-
   on a register, climb one rung, settle back onto the register, lap after lap,
   until the question is answered or refused. It owns transitions, gates and
   phase receipts only — content authority stays with the Page Type contracts,
-  lifecycle authority with haipipe-page-workflow, design-side law with
-  haipipe-design, and every verdict with an independent CHECK plus a human tick.
+  lifecycle authority with haipipe-page-workflow, insight-side law with
+  haipipe-insight, design-side law with haipipe-design, and every verdict with
+  an independent CHECK plus a human tick.
   "Journey phase" (P0-P4) and "Page phase" (OUTLINE…CHECK) are distinct words by
   law. Use when asking where an Application is, whether it may advance, what the
   next runnable page is, or where a run must stop. Trigger: application
@@ -18,9 +19,8 @@ description: >-
   frontier, what is runnable, climb loop, compose loop, phase gate,
   /haipipe-application-workflow.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-24"
-  summary: "0.4.0 (JL 260824, restyled after haipipe-paper-workflow 0.5.0): phases are NAMED BY THEIR AUTHORITY PAGE with the old verb kept as a parenthesized alias — Meta (scope), Chain (climb), Wisdom (hand off), Brief (frame), Design (compose) — so no second vocabulary is maintained; ⑥ ACCEPT is retired AS A PHASE because its acceptance row lives on P4's own division and a phase with no authority page of its own is a gate wearing a phase's clothes; gates are now numbered G0-G5 as grep-able assertions; the FOURTH human gate (card release, added by haipipe-design and previously unlisted here) is named; receipts move onto the pages that grant them, the paper family's rule, and the unaudited _runs log is demoted to a trace; adds the terminology law, the group mapping, a gazette of retired names, and the never-scheduled rule. 0.3.0: the design lane's interior law moved to /haipipe-design. 0.2.0: mode: copilot pinned on every dispatch; phase-to-frontier mapping; signed defined. 0.1.0: six phases, two lanes, three gates."
+  version: "0.8.0"
+  last_updated: "2026-08-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,9 +28,9 @@ metadata:
 
 Load `haipipe-application` first; it says what an Application IS and this file is
 its phase authority. It never edits a Page, never runs a Page's lifecycle (that
-is `haipipe-page-workflow`), never states design-side rules (that is
-`haipipe-design` since 0.3.0), and never judges content (that is CHECK plus the
-human ticks).
+is `haipipe-page-workflow`), never states either board's interior law (that is
+`haipipe-design` since 0.3.0 and `haipipe-insight` since 0.5.0), and never
+judges content (that is CHECK plus the human ticks).
 
 ## 🔤 Terminology law
 
@@ -47,7 +47,11 @@ Each keeps its old verb as a parenthesized ALIAS: Meta (scope), Chain (climb),
 Wisdom (hand off), Brief (frame), Design (compose). The alias is legal in prose,
 never in a folder or page id. A future phase inherits this law, and a candidate
 phase that cannot name an authority page of its own is not a phase — that test
-is what retired ACCEPT.
+is what retired ACCEPT. One tier extends this law since 0.8.0: a lane machine
+whose grain is finer than the page (the design lane, where one DS page hosts
+many threads) names its phases by authority ARTIFACT class instead — an on-disk
+class with its own state words — under the same cannot-name-one-is-a-gate test
+(`haipipe-design-workflow`).
 
 ## 🧭 Why this is not the retired lifecycle lane
 
@@ -98,13 +102,14 @@ one-way street the later gates protect. RUN is deliberately not ADVANCE: a
 reopened source drops a chain back into P1 while another design sits at G5. **The
 phase names name the FRONTIER, never a completed stage.**
 
-## 🔁 The climb loop (P0 → P1 → P2 → P0)
+## 🔁 The climb loop (P0 → P1 → P2 → P0, delegated)
 
+`haipipe-insight` owns this loop's law; this file owns only its order and gates.
 The register is the scoreboard, the chain is the work, the handoff is the export.
 One lap:
 
 ```text
-a register cell states the gap (⬜/🔨 on MT01-MT04)
+a register cell states the gap (any unsettled state on MT01-MT04)
    → P1 opens the NEXT rung only · probes raised · ✋ a person releases each card
    → answers land · the rung closes CHECK
    → the rung was W? → P2 · ✋ a person signs the Design Handoff
@@ -115,8 +120,9 @@ a register cell states the gap (⬜/🔨 on MT01-MT04)
 
 Three pens, never crossed: the **register** writes STATE and never a finding, the
 **chain pages** write FINDINGS and never their own register cell, the **handoff**
-exports and never re-derives. The join is one string in three places: the register
-cell's cite = the closing page's id = the handoff's SERVES row. The loop's only
+exports and never re-derives. The join is a round trip through one question id:
+the register row's cell cites the closing page by id, and that page's handoff
+SERVES row names the register's question id back. The loop's only
 exit is through the register at G3, so a Design page reads a signed handoff and
 never reads a D, I or K page's prose — two consumers can never keep separate
 books.
@@ -128,7 +134,8 @@ books.
 ```text
 the Brief's roster names a DS page
    → cards proposed at `proposed` in direction/
-   → ✋ a person releases each card, card by card — a machine proposes, never releases
+   → ✋ a person releases each card — card by card, or by a recorded blanket over
+     NAMED cards (haipipe-plugin-direction law 1) · a machine proposes, never releases
    → one arm-agent per released card → one unit in design/ → judge against its spec
    → the division cites the unit id, its stance, and a render version
    → ✋ a person accepts the division                                          G5
@@ -147,9 +154,12 @@ tested by reading named files is misdesigned.**
 G0  Meta → Chain        MT00 is past 🔴 and its source resolves to a run · MT01-MT04
                         exist · every question carries a register row with a state cell
 
-G1  Chain → Wisdom      this question's D/I/K rungs are CHECK-closed, each value bound
-                        to a QA file by path · on a partition-major board the X group's
-                        pooling verdict exists, because every W page cites it
+G1  Chain → Wisdom      the chain behind this question's frontier page is CHECK-closed
+                        down to D — walked by citations, since a question faces ONE
+                        rung and the pages below are found through Cited divisions —
+                        each value bound to a QA file by path · on a partition-major
+                        board the X group's pooling verdict exists, because every W
+                        page cites it
 
 G2  Wisdom → signed     ✋ the W page's Design Handoff division carries the person's
                         tick. SIGNED means exactly that tick, written by the person at
@@ -162,13 +172,14 @@ G4  Brief → Design      BR00 is past 🔴 · `born-of:` resolves · every need
                         carries a register id · the board's `reads:` names every
                         InsightBoard anything on it may cite
 
-G5  Design → accepted   ✋ every division carries an acceptance row naming a reviewer,
-                        the unit id and a render version, and the render EXISTS and is
-                        current · then STOP: ACCEPTED ends the Application
+G5  Design → accepted   ✋ every landed division carries an acceptance row satisfying
+                        the Design page contract's grammar (haipipe-page-for-design),
+                        or an emitted: terminal, and every accepted render EXISTS and
+                        is current · then STOP: ACCEPTED ends the Application
 ```
 
 **The four human gates never have an auto mode**, because all four are a person's
-by contract. Two sit between phases and two sit inside one:
+by contract. Two sit between phases and two sit inside a phase, one each in P1 and P4:
 
 ```text
 ✋ probe release    INSIDE P1, per page: cards are PRESENTED after drafting and
@@ -192,7 +203,7 @@ and the person's owed decision, then end the run.
 P0        0-MT-meta/            MT00-meta · MT01-MT04 question registers
 P1        rung-major:           1-D-data/ · 2-I-information/ · 3-K-knowledge/
           partition-major:      <N>-<L>-<partition>/ with the partition letter
-                                prefixed to every page id, plus 9-X-cross/
+                                prefixed to every page id, plus the X-cross/ group (legacy: 9-X-cross/)
 P2        the W page of whichever layout above (4-W-wisdom/ or <N>-<L>-*/…W…)
 P3        0-BR-brief/BR00-brief/
 P4        2-DS-design/DS<NN>-<audience>-<job>-<venue>/ and its plugins
@@ -204,20 +215,41 @@ P4        2-DS-design/DS<NN>-<audience>-<job>-<venue>/ and its plugins
 `ref/partition.md` rules the partition grammar; this file rules only the ORDER,
 below.
 
-## 🪜 Partition-major climb order
+## 🪜 The insight lane's interior machine
 
-On a partition-major InsightBoard, P1 has a fixed order, because the cross group
-consumes the mirrored ladders and every W page cites the verdict:
+Since 0.6.0 the insight lane has its own phase machine, `haipipe-insight-workflow`,
+which refines this file's lane without contradicting it:
 
 ```text
-F's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ X group
-                                                                  │ XI → XK → verdict
-                                                                  ▼
-                                                 every W page last, template
-                                                 included, all citing the verdict
+this file    🔎 P0 Meta        P1 Chain            P2 Wisdom
+that file    I0 Meta + I1 Question   I2 Data · I3 Information · I4 Knowledge   I5 Wisdom
+gates        G0-G3 read the same register cells GI0-GI6 assert over
+frontier     per QUESTION here     per CELL (question × partition) there
 ```
 
-A rung-major board has no constraint beyond each chain's own D→I→K→W order.
+The partition-major climb order (F's D/I/K first, mirrors in parallel, X, every W
+last citing the verdict) moved to that machine, which owns it; a rung-major board
+has no constraint beyond each chain's own D→I→K→W order. This file stays the
+authority for the TWO-LANE view: the crossing, gates G0-G5, and where a run stops.
+
+## 🎰 The design lane's interior machine
+
+Since 0.7.0 the design lane has the symmetric machine, `haipipe-design-workflow`,
+which refines this file's lane without contradicting it:
+
+```text
+this file    🎨 P3 Brief                P4 Design
+that file    D0 Brief    D1 Direction · D2 Unit · D3 Verdict · D4 Division
+gates        G4 = GD0 · G5 = GD5's all-accepted close
+frontier     per DESIGN-PAGE here      per DIVISION (card → unit → row) there
+```
+
+That machine adds the ROUND (one D0→D4 pass, round one always completes), the
+two-faced verdict — reflect (ex-post) · prospect (ex-ante) — and the EMIT edge,
+under which a division exits by raising a register question instead of being
+accepted; the emitted question enters the insight lane as a need-first birth.
+This file stays the authority for the two-lane view, the crossing, gates G0-G5,
+and where a run stops.
 
 ## 📜 Gazette of retired names (0.4.0)
 

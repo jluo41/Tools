@@ -91,6 +91,8 @@ Existing consumer-neutral Insight Pages on another Board remain valid PageX inpu
 ### 📋 Contracts
 - `../../../../application/haipipe-application/SKILL.md`
   The public ownership and runtime contract.
+- `../../../../application/haipipe-insight/SKILL.md`
+  The InsightBoard's own law door since 260827: one dataset, the Climb Law, the three pens.
 - `../../../../task/page-types/haipipe-page-for-insight/SKILL.md`
   The Insight Page contract, both scopes.
 
@@ -107,3 +109,4 @@ Application owns the **placement and consumer** of its Insight Pages; Task owns 
 260820 · Moved the live Insight Page Type into `application/page-types/` and retained Task-backed Probe/source/run/staleness rules.
 260820 · Split the Application into two boards, so this layer became the `<DataSubject>-InsightBoard` rather than a `1-insights/` folder inside one board.
 260820 · Added `scope: task | application` after the single-contract collision surfaced, and raised the ownership ruling above.
+260827 · The layer gained its own law door, `/haipipe-insight`, symmetric to `/haipipe-design`: the one-dataset law, the Climb Law and the three pens in one place, the workflow keeping only order and gates. The reused slash name is disclaimed in the door itself: the KB layer retired 260717 held evidence; this door holds none.

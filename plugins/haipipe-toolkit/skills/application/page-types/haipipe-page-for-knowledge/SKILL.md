@@ -3,9 +3,9 @@ name: haipipe-page-for-knowledge
 description: >-
   The Page Type contract for one KNOWLEDGE page on an InsightBoard: a supported proposition carrying strength, rival explanations and boundary conditions, derived from named Information rows. It claims; it does not advise. Use when a pattern must become something the design can lean on, when rivals must be recorded before a claim travels, or when a Wisdom page is about to counsel from an unstated claim. Trigger: knowledge page, proposition, strength, rivals, boundary conditions, page-type knowledge, /haipipe-page-for-knowledge.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823): partition-major home path, and the pooling-verdict K page may cite the heterogeneity K row (K-from-K, one step) since its subject is a claim about claims. 0.1.0: a proposition with strength, rivals and boundary."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "K"
   outline:
     mode: fixed
@@ -63,6 +63,6 @@ A parent page changing REOPENS every child row that cited it. That propagation i
 
 ## Register
 
-The question this page answers is registered once on `MT03-question-knowledge`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
+The question this page answers is registered once on `MT03-question-knowledge`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. When the page is created, the LAP'S REGISTER PEN records this page's id in its question's Queue row (`⬜ <id>`): the write is the register's even when the mint occasions it, so the three pens stay uncrossed.
 
 This variant owns no scripts.

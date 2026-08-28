@@ -1591,6 +1591,94 @@ def check_design_family(d, rep):
                                     "every step and this widens it")
 
 
+def check_insight_family(d, rep):
+    """The insight family's first teeth (JL 260828, fieldtest rounds 1-2).
+
+    Two live runs on A00 produced eighteen frictions caught by a human or a
+    cold agent and none by machinery. The three mechanical ones land here:
+    a Design Handoff whose signature gate has no row to test (round 1 #2),
+    a refusal token spelled three ways on one board (round 2 F7/F12), and a
+    settled-partial cell whose licensing sentence the cited page does not
+    know it carries (round 2 F14). Each is proven to FAIL in
+    tests/test_insight_family.py before being trusted.
+    """
+    for md in sorted(d.rglob("*.md")):
+        parts = md.relative_to(d).parts
+        if "board" in parts or any(pt.startswith("_") for pt in parts):
+            continue
+        try:
+            text = md.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        m = re.search(r"^page-type:\s*(\w+)", text, re.M)
+        ptype = m.group(1) if m else ""
+        name = md.name
+
+        if ptype == "wisdom":
+            # A deferring W page exports no handoff and owes no signature; the
+            # SERVES row is the handoff's marker (for-wisdom 0.3.0).
+            if re.search(r"^SERVES\b", text, re.M):
+                if not re.search(r"^signed:", text, re.M):
+                    rep.add(ERROR, "wisdom-handoff-no-signed-row", name,
+                            "a Design Handoff carries a `signed:` row (for-wisdom "
+                            "0.3.0); without one the signature gate GI5 has nothing "
+                            "to test, which is how two settled cells fell back on a "
+                            "version bump")
+                elif re.search(r"^signed:\s*⬜", text, re.M):
+                    rep.add(WARN, "wisdom-handoff-unsigned", name,
+                            "the handoff's `signed:` row is ⬜ — GI5 blocks, and a "
+                            "DesignBoard binding this handoff is non-conformant "
+                            "until a person signs")
+
+        if ptype == "question":
+            for bad in re.findall(r"🚫\s?F\s?only\b|🚫F-only", text):
+                rep.add(WARN, "refusal-token-legacy", name,
+                        f"`{bad}` is not the token: a mark's spelling includes its "
+                        "spacing and the canonical form is `🚫 F-only` "
+                        "(for-question 0.4.1); a checker grepping the token misses "
+                        "every legacy cell")
+            spaced = len(re.findall(r"[🟡🚫⬜](?=[A-Za-z])", text))
+            if spaced:
+                rep.add(WARN, "mark-spacing-legacy", name,
+                        f"{spaced} cell mark(s) run straight into a word (🟡BI03, "
+                        "🚫thin, ⬜OPEN): a mark's spelling includes its spacing "
+                        "(insight-workflow §Marks), and two spellings in one "
+                        "column defeat the mark; re-spell in an authorized sweep "
+                        "that re-pads the table")
+            # One Queue row holds one cell per PARTITION COLUMN, so a single
+            # line may carry several `final` cells; matching once per line
+            # missed every column after the first on live A00 (QI3·C, QI7·C).
+            hits = []
+            for line in text.splitlines():
+                lm = re.match(r"(Q[DIKW]\d+)", line)
+                if lm:
+                    for pid in re.findall(r"🟡\s*([A-Z]{1,3}\d{2})\s+final", line):
+                        hits.append((lm.group(1), pid))
+            for qid, pid in hits:
+                cited = next((c for c in d.rglob(f"{pid}-*/{pid}-*.md")
+                              if "board" not in c.relative_to(d).parts), None)
+                if cited is None:
+                    rep.add(ERROR, "partial-final-ghost-page", name,
+                            f"`🟡 {pid} final` cites a page this board does not hold")
+                else:
+                    ctext = cited.read_text(encoding="utf-8")
+                    lm = re.search(r"^## Log\s*$", ctext, re.M)
+                    log = ctext[lm.end():] if lm else ""
+                    # WARN, not ERROR, deliberately: a missing receipt is
+                    # repairable debt on a settled decision, not broken
+                    # structure — but it is scanned in ## Log ONLY, because a
+                    # dated line elsewhere is prose, not a receipt (round 3
+                    # friction 10: checker weaker than statute both ways).
+                    if not re.search(rf"^\d{{6}} .*{qid}.*final|^\d{{6}} .*final.*{qid}",
+                                     log, re.M):
+                        rep.add(WARN, "partial-final-no-page-receipt", name,
+                                f"`{qid}` leans on a sentence in {pid} and {pid}'s "
+                                "## Log does not record it: the flip leaves TWO "
+                                "receipts (insight-workflow §Marks), because a "
+                                "citation invisible from the cited end cannot "
+                                "carry staleness")
+
+
 def check_plugin_roster(d, rep):
     """A page subfolder is board material only if the roster names it.
 
@@ -1853,6 +1941,7 @@ def main():
     check_topic_entries(d, pages, rep)
     check_draw_folders(d, rep)
     check_design_family(d, rep)
+    check_insight_family(d, rep)
     check_plugin_roster(d, rep)
     check_page(d, rep)
     check_css(rep)

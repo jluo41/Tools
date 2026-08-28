@@ -3,9 +3,9 @@ name: haipipe-page-for-question
 description: >-
   The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823): on a partition-major board the Queue gains one column per partition; a question is written once and asked per partition, a blank cell is illegal, a dot cell is an explicit X-routing. 0.1.0 split the register out of MT00-meta by rung."
+  version: "0.4.1"
+  last_updated: "2026-08-27"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "MT"
   outline:
     mode: grammar
@@ -99,7 +99,7 @@ QD1  what do the 13 arms say?        BR00 · N4   —                ⬜ ready
 QD2  which rows carry an opt-out?    MT00 read   D02-optout       🔨 EVIDENCE
 ```
 
-`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `✅ answered` once that page closes, and `🚫 retired` for a tombstone. A cell or row may name the planned answering page beside `⬜` (`⬜ FD01`), which reads: the page is allocated and still planned.
+`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `🟡 partial` when part of the ask has closed and more is owed, `✅ answered` once the answering page closes, and `🚫 <reason>` when the cell closes WITHOUT an answer — refusal reasons (thin, F-only, defer, no-measure) and the tombstone (`🚫 retired`) share ONE grammar: 🚫 always means closed-without-answer, and the reason follows. Only `✅` and `🚫` settle. A `🟡` is never folded into an answered count and keeps its row lap-eligible UNTIL its page states why the remainder cannot close: the cell then reads `🟡 <page> final`, is settled-partial, leaves the lap, and still never joins an answered count. A cell or row may name the planned answering page beside `⬜` (`⬜ FD01`), which reads: the page is allocated and still planned; a `⬜` may also carry a short reason annotation (`⬜ calc` — computed, not yet authored), and an annotated `⬜` is still OPEN, never a refusal. When a header count and the Queue rows disagree, the Queue rows are the record and the header is stale — and "header" means EVERY on-register restatement of the Queue: the state line, the Diagram, the Opening. Status WORDS derive by fixed mapping (any lap-eligible cell → 🟡 PARTIAL; all cells terminal → ✅ SETTLED), so reconciling them is the same register-pen act as reconciling a count. A mark's spelling includes its spacing (`🚫 F-only`, never `🚫Fonly`); canonical forward, and a live board is re-spelled only in an authorized sweep that re-pads its tables in the same pass. The `⬜` annotations are the register pen's, like every cell mark: a note about work is state.
 
 **Each question division** owes a reader four things and nothing else:
 

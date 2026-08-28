@@ -1,5 +1,5 @@
 # The skill set: one door, four Page Types, shared Page machinery
-state: ✅ SETTLED · versions, ownership, and installed resolver verified
+state: ✅ SETTLED · a 260820 census; the live roster is QC1's skill/ plugin
 owner: JL
 
 ## Opening
@@ -90,3 +90,4 @@ Task-backed evidence rules are inherited authority, not folder ownership.
 260820 · Reduced the target surface to one router plus four Application-owned
 Page Types.
 260820 · Refreshed project skill links and verified the moved Insight skill in two fresh contexts.
+260827 · Census superseded, page kept as the 260820 record: the family now has FOUR heads (umbrella, workflow RUN head, and one law door per board: /haipipe-insight new today, /haipipe-design since 260824) and nine Page Types. The live list is QC1's skill/ plugin, which reads versions from disk instead of copying them here.

@@ -3,9 +3,9 @@ name: haipipe-page-for-information
 description: >-
   The Page Type contract for one INFORMATION page on an InsightBoard: rates, contrasts, segments and distributions derived from named Data rows. It organises; it does not yet claim. Use when observations must be turned into a comparable pattern, when several Data pages must be combined, or when a Knowledge page is about to assert something with no derivation behind it. Trigger: information page, rates, contrasts, segments, derived pattern, page-type information, /haipipe-page-for-information.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-23"
-  summary: "0.2.0 (JL 260823): partition-major home path, and the X contrast page may derive from mirrored I rows (I-from-I across partition groups), the one legal same-rung citation. 0.1.0: derived from named D rows; a rate is Information, a proposition about it is Knowledge."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "I"
   outline:
     mode: fixed
@@ -61,6 +61,6 @@ A parent page changing REOPENS every child row that cited it. That propagation i
 
 ## Register
 
-The question this page answers is registered once on `MT02-question-information`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. Write this page's id into its question's Queue row when the page is created.
+The question this page answers is registered once on `MT02-question-information`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. When the page is created, the LAP'S REGISTER PEN records this page's id in its question's Queue row (`⬜ <id>`): the write is the register's even when the mint occasions it, so the three pens stay uncrossed.
 
 This variant owns no scripts.

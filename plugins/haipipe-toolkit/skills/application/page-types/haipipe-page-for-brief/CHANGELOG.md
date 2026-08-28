@@ -1,3 +1,7 @@
+## 0.4.0 — 2026-08-24
+
+- `born-of:` required — a Brief is born mandate-first (a person names the program, needs raised open) or evidence-first (signed W handoffs propose it; opportunity/audience/outcome/kill drafted from the handoff fields, settled needs born answered).
+
 ## 0.3.0 — 2026-08-20
 
 - Now heads the DesignBoard rather than the whole Application.

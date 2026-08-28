@@ -5,7 +5,7 @@ description: >-
 metadata:
   version: "0.4.0"
   last_updated: "2026-08-20"
-  summary: "0.4.0 (JL 260824): born-of: required — a Brief is born mandate-first (a person names the program, needs raised open) or evidence-first (signed W handoffs propose it; opportunity/audience/outcome/kill drafted from the handoff fields, settled needs born answered). Earlier: heads the DesignBoard; the source inventory and insight roster moved to meta."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   outline:
     mode: fixed
     source: "this SKILL.md"

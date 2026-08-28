@@ -5,7 +5,7 @@ description: >-
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-21"
-  summary: "0.2.0 removes the Insight Roster: questions moved to the four question registers MT01-MT04 (JL 260821), so Meta is inventory only, which its own no-question rule always demanded."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "MT"
   outline:
     mode: fixed

@@ -5,9 +5,9 @@ An InsightBoard reads ONE dataset either as one story or as several told the sam
 ## When each layout applies
 
 ```text
-rung-major        A01 style · one data view · groups are the four rungs
+rung-major        one data view · groups are the four rungs
                   pick when partitions are at most a COLUMN inside an I page
-partition-major   A02 style · subgroups are first-class · groups are partitions
+partition-major   subgroups are first-class · groups are partitions
                   pick when each subgroup must produce its OWN K claims and W counsel
 ```
 
@@ -21,10 +21,11 @@ The choice is per board and is made once, at scaffold. A rung-major board whose 
 ├── 0-MT-meta/                MT00 + the four question registers (unchanged shape)
 ├── 1-F-full/                 the TEMPLATE ladder · the whole extract, no filter
 ├── 2-<L>-<slug>/             one group per partition · mirrors 1-F-full slug for slug
-└── 9-X-cross/                the ONLY non-mirroring group · comparison lives here
+└── X-cross/                  the ONLY non-mirroring group · comparison lives here
+                              (no index: letters sort last · legacy boards: 9-X-cross/)
 ```
 
-X is PINNED at 9: adding a partition inserts a group before it and renames nothing, because a group rename breaks every PageX binding into it. Partition groups take 2, 3, 4... in the order they are registered on MT00.
+X carries NO index: letters sort after digits, so `X-cross/` seats itself last in every listing, forever, and adding a partition renames nothing — a group rename would break every PageX binding into it. Partition groups take 2, 3, 4... in the order they are registered on MT00. Boards scaffolded before 260827 carry the legacy pin `9-X-cross/`; both forms are legal and a live board is never renamed for this. There is never a second X group: X is the one comparing group, however many columns it compares — and a board reaching past a handful of audiences is almost always misreading covariates as audiences (I-page columns) or holding several programmes that should be several boards.
 
 1. **Page id = partition letter + rung letter + NN.** `BK01` reads: partition B, Knowledge, first page. The engine's `[A-Z]{1,2}\d` id grammar already parses this; no engine change exists or is needed. Within a group the rung letters D, I, K, W sort in climbing order, so `ls` reads as the ladder. Reserved letters: F names the template and X the cross group; Q, S and M may never name a partition, because they collide with question ids (a partition-Q data page would be `QD01`), the engine's S page class, and the MT head group.
 2. **F is the template.** Every partition group mirrors `1-F-full/` slug for slug: `FD02-funnel-counts` begets `BD02-funnel-counts`. The mirror is checkable by set-diff (`ls */?D01-*` style); a page missing from a partition group must be a registered refusal on the owning MT register, written `🚫` with a reason, never a silent gap.
@@ -63,4 +64,4 @@ engine          no regex, renderer or checker change; the id grammar already fit
 
 ## Worked example
 
-`designs/Project-Application-SMSDesign/applications/A02_InsightBoard-SMSR2Partitioned/`: partitions F (full, config `full.yaml`) and B (youngmale, the pre-existing `young_male.yaml`), X group `9-X-cross/` holding `XI01-partition-contrast → XK01-heterogeneity → XK02-pooling-verdict`, registers MT01-MT04 carrying one column per partition plus X where routed, tasks reused from `tasks/D01_cohort_profile/`.
+`designs/Project-Application-SMSDesign/applications/A00_InsightBoard-SMSR2v1-260821/`: the template partition F in `1-F-full/` (config `full.yaml`) plus registered subgroup partitions from `2-B-youngmale/` on, X group `9-X-cross/` holding `XI01-partition-contrast → XK01-heterogeneity → XK02-pooling-verdict` (a POOL verdict as of 260827, so every non-template W defers), registers MT01-MT04 carrying one column per partition plus X where routed, tasks reused from `tasks/D01_cohort_profile/`.

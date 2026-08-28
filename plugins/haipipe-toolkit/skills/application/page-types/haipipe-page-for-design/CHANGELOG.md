@@ -1,3 +1,15 @@
+## 0.6.0 — 2026-08-24
+
+- WARRANT and GRANT separated — a division still warrants from a P page, while a direction card GRANTS InsightBoard pages by path, which 0.5.0's boundary wrongly forbade. Runtime shape corrected (DS<NN> file name, render/ present) and the PageX example made layout-aware.
+
+## 0.5.0 — 2026-08-24
+
+- The design-as-bets family joined the page: `direction/` cards and `design/` units as plugins, units as divisions with per-division acceptance. The citation boundary as then written forbade grants; 0.6.0 corrected it.
+
+## 0.4.0 — 2026-08-21
+
+- The two-boards restructure: token DS, cites P pages, renders live in the page's `render/` plugin.
+
 ## 0.3.0 — 2026-08-20
 
 - Renamed from `haipipe-page-for-intervention`; the machine key is now
@@ -21,3 +33,5 @@
   scoped to one audience × behavior job × primary venue.
 - Added Insight Use Map, message/unit map, repeated message divisions, rails,
   variants, and visible-projection acceptance.
+
+- 0.6.1 (260827): the division gains its second terminal — `emitted: <YYMMDD> · <BR00 need id> · <what was missing>`, equal in rank to accepted:, the on-page half of haipipe-design-workflow's EMIT edge; exactly one terminal per division.

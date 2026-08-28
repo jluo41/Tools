@@ -5,7 +5,7 @@ An Application is TWO boards. One understands the data; the other designs what g
 ```text
 🔎 InsightBoard                                    🎨 DesignBoard
 Meta + Question registers → D→I→K→W  ── PageX ──▶  Brief → Principle → Design → ✅ accepted
-MT00 says what EXISTS                              only P reads the InsightBoard
+MT00 says what EXISTS                              P warrants when promoted; cards GRANT by path
 MT01-MT04 say what is ASKED of each rung           render/ plugin projects accepted divisions
 ```
 
@@ -18,12 +18,12 @@ MT01-MT04 say what is ASKED of each rung           render/ plugin projects accep
 | InsightBoard · Question registers | what is asked of each rung, raiser, state, the board rollup (on MT04) | any answer, any probe |
 | InsightBoard · D/I/K/W | Task-backed Probe, observations → patterns → claims → counsel, Design Handoff (W only) | final message copy |
 | DesignBoard · Brief | opportunity, audience, outcome, venue scope, needs raised | the answers to those needs |
-| DesignBoard · Principle | because-<W>-do-<move>-within-<rail> warrants · the ONLY DesignBoard reader of the InsightBoard | raw Task/Discovery inspection |
+| DesignBoard · Principle | because-<W>-do-<move>-within-<rail> warrants · the promoted WARRANT crossing (a direction card GRANTS evidence by path, a different act) | raw Task/Discovery inspection |
 | DesignBoard · Design | PageX selection, message system, per-division acceptance | probing anything |
 
 Folder ownership does not transfer evidence authority. A D page lives in the Application folder but follows Task source/run/staleness rules.
 
-Two sibling skills head the family: `haipipe-application/` is the door (what an Application IS, the verbs), `haipipe-application-workflow/` is the RUN head (five phases in two lanes named by their authority pages — Meta, Chain, Wisdom · Brief, Design — with gates G0-G5, four of which a person must open). An InsightBoard has two layouts, chosen once at scaffold: rung-major (groups are the four rungs, the default) and partition-major (groups are partitions, `F` template + `9-X-cross`; grammar in `haipipe-application/ref/partition.md`).
+Six sibling skills head the family: `haipipe-application/` is the umbrella door (what an Application IS, the pairing, PageX, ends-at-ACCEPTED), `haipipe-application-workflow/` is the RUN head (five phases in two lanes named by their authority pages — Meta, Chain, Wisdom · Brief, Design — with gates G0-G5; four human gates in all, two per door — G2 handoff and G5 acceptance between phases, probe release and card release inside P1 and P4), each board has its own law door — `haipipe-insight/` (the one-dataset law, the Climb Law, the three pens, probe release + handoff signing) and `haipipe-design/` (the Reads Law, direction cards, artifact units, card release + acceptance) — and each lane additionally has its own phase machine — `haipipe-insight-workflow/` (I0-I5 named by the lane's six page types, gates GI0-GI6, the register cell as frontier unit, refining P0-P2 as I0+I1 / I2-I4 / I5) and `haipipe-design-workflow/` (D0-D4 named by the lane's artifact classes, gates GD0-GD5, the division as frontier unit, rounds with the reflect/prospect verdict and the EMIT edge, refining P3-P4 as D0 / D1-D4). An InsightBoard has two layouts, chosen once at scaffold: rung-major (groups are the four rungs, the default) and partition-major (groups are partitions, `F` template + the index-free `X-cross`; grammar in `haipipe-application/ref/partition.md`).
 
 ## Page Types
 
