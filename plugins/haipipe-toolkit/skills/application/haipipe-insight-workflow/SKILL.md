@@ -3,8 +3,8 @@ name: haipipe-insight-workflow
 description: >-
   The InsightBoard-level phase machine: six phases named after the six page types the lane owns — I0 Meta (scope) → I1 Question (ask) → I2 Data (observe) → I3 Information (derive) → I4 Knowledge (claim) → I5 Wisdom (hand off) — with gates GI0-GI6, each a checkable assertion over existing pages. The frontier's atomic unit is the register CELL (one question × one partition): phases climb the rows, partitions widen the columns, only the X group lets columns meet, and a partition is born at I0 and nowhere else. It refines the application machine's insight lane (P0 = I0+I1, P1 = I2-I4, P2 = I5) and owns the partition-major climb order; interior law stays with the door /haipipe-insight, page lifecycle with haipipe-page-workflow, every verdict with an independent CHECK plus a human tick. Use when asking which rung a question sits on, whether a cell may advance, what the next runnable page is, where a new subgroup enters, or where a run must stop. Trigger: insight workflow, run the insight board, climb the ladder, next rung, frontier cell, insight phase, add a partition, partition column, /haipipe-insight-workflow.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-27"
+  version: "0.5.0"
+  last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -85,6 +85,21 @@ time as epoch          a new window / next round   a NEW EXTRACT → a NEW Insig
                                                    (the one-dataset law), with MT00's
                                                    freshness rule owning the seam
 ```
+
+The second named case is the COVARIATE, and it fails ① rather than ②:
+
+```text
+a covariate            a ZIP attribute, an income     fails ① → an I COLUMN, never a
+                       band, a drug class, an         group · `ref/partition.md` names
+                       exposure history               the failure: a board past a
+                                                      handful of audiences is almost
+                                                      always misreading covariates as
+                                                      audiences
+```
+
+A covariate cuts ACROSS every audience instead of partitioning it, so its rows are already counted in the groups it overlaps and no arithmetic can separate them. The tell is mechanical and now checked (`partition-cross-cutting`): a candidate filtering on a column NO sibling partition filters on shares no axis with them, which is what slicing across looks like on disk. Registered anyway, it corrupts the X group specifically, because a contrast that subtracts mirrored I rows double-counts the people two overlapping groups share.
+
+**Clause ① has an arithmetic proof, and it is now a checker rule.** Disjoint subgroups of ONE extract cannot cover more than that extract, so partition percentages summing above 100% is a breach nobody has to argue about (`partition-sum-over-100`). A00 registered two covariate partitions on 260828 and ran to 136.79% with the board checker green for the whole window; a human reader caught it, which is the case these two rules exist to remove.
 
 The deep reason: the partition axis exists so the pooling verdict can ask "one counsel or several," and counsel is PER-AUDIENCE — the insight lane's partition columns mirror the design lane's DS-page audience axis. A dimension that could never become an audience can never split the counsel, so making it a partition buys mirrors nobody will consume.
 

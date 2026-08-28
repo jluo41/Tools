@@ -1,5 +1,11 @@
 # haipipe-insight-workflow · version history
 
+0.5.0 · 260828 · the covariate row, and clause ① made mechanical
+- The partition test's failure routing gains its SECOND named case. Time wore three guises and had three homes; a COVARIATE had none, so a session wanting a socioeconomic cut could either break clause ① or abandon a good idea. It now routes where `ref/partition.md` already said it belongs, to an I COLUMN, with the reason stated: a covariate cuts ACROSS audiences rather than partitioning them, so its rows are already counted in the groups it overlaps.
+- Clause ① stops being prose. The file called all three admission clauses "each mechanically checkable" and none of the three was checked by anything until today. Two rules now exist in `haipipe-board`'s `check.py`: `partition-sum-over-100` (ERROR — disjoint subgroups of one extract cannot cover more than the extract, so percentages summing past 100% is a breach on arithmetic alone) and `partition-cross-cutting` (WARN — a partition filtering on a column no sibling filters on shares no axis with them). A third, `partition-column-unregistered`, catches a filter column MT00 names nowhere outside its own register.
+- Occasion: A00 registered `J · minorityzip` and `L · lowincome` on 260828, ran to 136.79% coverage across seven subgroup partitions, grew a page under one of them, and the board checker stayed green for the entire window. A human reader caught it. Both were retired the same day; these rules exist so the next one is caught by the machine.
+- Migration: OWE-ON-NEXT-TOUCH for prose. The two checker rules are live immediately and are the deliberate exception — a board whose partitions overlap is producing wrong cross-group contrasts now, not on next touch.
+
 0.1.0 · 260827 · JL
 - New skill: the InsightBoard-level phase machine, requested as the insight lane's counterpart to haipipe-paper-workflow and haipipe-page-workflow having machines of their own.
 - Six phases named by the lane's six page types (the application machine's naming law, which the lane can satisfy rung by rung): I0 Meta (scope), I1 Question (ask), I2 Data (observe), I3 Information (derive), I4 Knowledge (claim), I5 Wisdom (hand off). One-digit I<n> is a phase, two-digit (+letter) is a page — the digit-count rule that already separates P0 from P01.

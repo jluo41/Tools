@@ -3,8 +3,8 @@ name: haipipe-page-for-information
 description: >-
   The Page Type contract for one INFORMATION page on an InsightBoard: rates, contrasts, segments and distributions derived from named Data rows. It organises; it does not yet claim. Use when observations must be turned into a comparable pattern, when several Data pages must be combined, or when a Knowledge page is about to assert something with no derivation behind it. Trigger: information page, rates, contrasts, segments, derived pattern, page-type information, /haipipe-page-for-information.
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-08-23"
+  version: "0.3.0"
+  last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "I"
   outline:
@@ -23,6 +23,20 @@ Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `hai
 Declare `page-type: information`. On a rung-major board this page lives in `<InsightBoard>/2-I-information/I<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>I<NN>-<slug>/`, and the group token is the partition letter.
 
 One page owes a reader exactly this: **what pattern the observations form**.
+
+## Boundary
+
+```text
+D page                      what was OBSERVED, run-bound      counts, never compares
+MT02-question-information   what is ASKED of this rung        asks, never concludes
+I page                      what PATTERN the observations     derives, never claims
+                            form
+K page                      what is TRUE, and how strongly    claims, carries rivals
+```
+
+**An I page never claims.** A rate, a contrast, a segment, a distribution or a trend is an I row; strength, cause, because, therefore, mechanism and should are K's words or W's. The test is mechanical: a row a reader could dispute on any ground OTHER than arithmetic has stopped deriving and started claiming, and belongs one rung up with its rivals attached.
+
+An I page is also where a COVARIATE is read. A cut of the data that is not an audience — a ZIP-level attribute, an income band, a drug class, an exposure history — is a column on this page, never a partition group, and `haipipe-insight-workflow`'s partition test routes it here by name.
 
 ## Fixed Content outline
 
@@ -50,19 +64,18 @@ This page closes when every I row derives from named D rows and the nulls are vi
 - No I row asserts strength, cause, or a recommendation.
 - Division 5 is populated or explicitly says nothing null was found.
 - Every figure has a stated derivation a reader could repeat.
+- If a register cell names this page `🟡 <id> final`, a `## Log` row here names that question id and why the remainder cannot close.
 
 ## Chain law
 
-```text
-source/run → D<n> → I<n> → K<n> → W<n> → Design Handoff
-```
+This rung sits in the six-level lifting chain stated ONCE for the family, at `haipipe-insight` §The Climb Law: MT00's extract → D → I → K → W → a signed Handoff, each rung citing only named ROWS of the rung below, nulls and contradictions surviving upward, a level free to narrow what its parent said and never to broaden it, and a parent's change REOPENING every child row that cited it. It is cited here and deliberately not copied: four contracts restating one law in four places is how a patch comes to contradict itself.
 
-Every page cites its parent page by id in its Source Map, and every ROW cites the parent ROW it derives from. No level cites a later level as evidence. Nulls, negatives and contradictions survive upward; a level may narrow what its parent said and may never broaden it.
-
-A parent page changing REOPENS every child row that cited it. That propagation is why the levels are separate pages: one re-run touches one D page, and staleness travels by citation rather than by hand.
+This rung owns ONE exception, and it is the board's only legal same-rung citation: an X contrast page derives from MIRRORED I rows across partition groups, because a delta of two rates has no D row of its own (division 2 above).
 
 ## Register
 
 The question this page answers is registered once on `MT02-question-information`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. When the page is created, the LAP'S REGISTER PEN records this page's id in its question's Queue row (`⬜ <id>`): the write is the register's even when the mint occasions it, so the three pens stay uncrossed.
+
+**The 🟡 receipt duty.** When this page closes part of its question and cannot close the rest, its register cell reads `🟡 <this page> final` (`haipipe-page-for-question`) and THIS page owes the sentence licensing it: a `## Log` row naming the question id and why the remainder cannot close. The register pen writes the cell, the page writes the reason, and neither may write the other's half. A cell reading final over a page carrying no such row is the defect the pair exists to prevent, because settled-partial and abandoned are indistinguishable on disk otherwise.
 
 This variant owns no scripts.

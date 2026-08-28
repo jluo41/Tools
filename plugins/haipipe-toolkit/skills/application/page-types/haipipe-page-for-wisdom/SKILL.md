@@ -3,8 +3,8 @@ name: haipipe-page-for-wisdom
 description: >-
   The Page Type contract for one WISDOM page on an InsightBoard: what a Knowledge claim means for this application's audience, context and risk, plus the Design Handoff that is the only thing a DesignBoard may bind. It counsels; it never writes message copy. Use when a settled claim must become guidance, when a design need must be released, or when deployment data has refreshed a claim and the counsel built on it must be re-read. Trigger: wisdom page, counsel, design handoff, applicability, forbidden overreach, page-type wisdom, /haipipe-page-for-wisdom.
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-08-27"
+  version: "0.4.0"
+  last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "W"
   outline:
@@ -21,6 +21,20 @@ Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `hai
 Declare `page-type: wisdom`. On a rung-major board this page lives in `<InsightBoard>/4-W-wisdom/W<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>W<NN>-<slug>/`, and the group token is the partition letter.
 
 One page owes a reader exactly this: **what to do about it here, and what must not be concluded**.
+
+## Boundary
+
+```text
+K page                what is TRUE, how strongly            claims, never advises
+MT04-question-wisdom  what is ASKED of this rung            asks, never concludes
+W page                what it MEANS here, and what must     counsels, never composes
+                      NOT be concluded
+Design page           the artifact a person would receive   composes, on a DesignBoard
+```
+
+**A W page never writes copy.** Counsel names a move and its limit; a subject line, a message body, a button label, a send-time value or a variant name is a DesignBoard artifact and fails here even when it would be obvious. The seam is the Design Handoff: above it lies what the evidence permits, below it lies someone else's authorship, and the handoff is the only thing that crosses.
+
+This is also the LAST rung. Nothing below the handoff on this board may re-derive, and a DesignBoard binds the signed handoff rather than any D, I or K page's prose, so two consumers can never keep separate books.
 
 ## Fixed Content outline
 
@@ -54,19 +68,21 @@ This page closes when every counsel names a K parent, the forbidden clause is wr
 - `signed:` is `⬜` or a person's `✅ <initials> <YYMMDD>`; a machine writing it is a reported error.
 - No final message copy appears anywhere on the page.
 - A fresh Design agent can use the handoff without opening any D, I or K page.
+- If a register cell names this page `🟡 <id> final`, a `## Log` row here names that question id and why the remainder cannot close.
+- Under a POOL verdict every non-template W page EXISTS, closed as a deferral. An absent page is an open cell, never a legal deferral.
 
 ## Chain law
 
-```text
-source/run → D<n> → I<n> → K<n> → W<n> → Design Handoff
-```
+This rung sits in the six-level lifting chain stated ONCE for the family, at `haipipe-insight` §The Climb Law: MT00's extract → D → I → K → W → a signed Handoff, each rung citing only named ROWS of the rung below, nulls and contradictions surviving upward, a level free to narrow what its parent said and never to broaden it, and a parent's change REOPENING every child row that cited it. It is cited here and deliberately not copied: four contracts restating one law in four places is how a patch comes to contradict itself.
 
-Every page cites its parent page by id in its Source Map, and every ROW cites the parent ROW it derives from. No level cites a later level as evidence. Nulls, negatives and contradictions survive upward; a level may narrow what its parent said and may never broaden it.
-
-A parent page changing REOPENS every child row that cited it. That propagation is why the levels are separate pages: one re-run touches one D page, and staleness travels by citation rather than by hand.
+This rung owns no exception, and it is where the chain ENDS. A reopened K parent reopens the counsel resting on it, and a counsel whose K parent moved carries a signature standing over evidence that changed, which is exactly the failure the `signed:` row exists to make visible.
 
 ## Register
 
 The question this page answers is registered once on `MT04-question-wisdom`, the register facing this rung, whose Queue division also carries the board rollup that reassembles a chain spanning four pages. When the page is created, the LAP'S REGISTER PEN records this page's id in its question's Queue row (`⬜ <id>`): the write is the register's even when the mint occasions it, so the three pens stay uncrossed.
+
+**The 🟡 receipt duty.** When this page closes part of its question and cannot close the rest, its register cell reads `🟡 <this page> final` (`haipipe-page-for-question`) and THIS page owes the sentence licensing it: a `## Log` row naming the question id and why the remainder cannot close. The register pen writes the cell, the page writes the reason, and neither may write the other's half. A cell reading final over a page carrying no such row is the defect the pair exists to prevent, because settled-partial and abandoned are indistinguishable on disk otherwise.
+
+**A deferral is a CLOSE, not a block.** Under a POOL verdict a non-template W page has everything it needs the moment the verdict exists: its counsel row defers to the template W by id, it exports no handoff, and its register cell settles. Leaving it unwritten because the counsel "is blocked" holds a W-rung cell open on a question the verdict already answered, which is the one way a correct deferral turns into a false frontier.
 
 This variant owns no scripts.

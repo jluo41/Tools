@@ -94,3 +94,68 @@ Deciding that an exact version may go is a design judgment and stays on the Desi
 ## Compatibility
 
 Legacy stage skills under `_old/` remain readers during migration. New work does not copy the descriptions/themes/claims/advice ladder, a flat `1-probes/`, a `4-deploy/`, or a `5-rounds/`. An existing page carrying `page-type: intervention` has its key renamed to `design`; one carrying `page-type: artifact` folds into its Design Page as a division. A Meta page still carrying an Insight Roster moves those rows to the four registers, keeping each question's raiser. External settled Insight Pages remain valid PageX inputs and are never moved automatically.
+
+## Family status
+
+Run 260828 · regenerate with `/haipipe-skillset-status` over `skills/application/` · every SKILL.md in this family read in full that session · field records counted off `designs/Project-Application-SMSDesign/applications/` and the four fieldtest rounds of 260827-28. A row whose field record is empty reads `(provisional)` whatever its static score.
+
+**DOOR** · does every road lead somewhere
+
+```text
+| skill                | ver    | routes | resolve | stale                  | scaffold | desc shape |
+|----------------------|--------|--------|---------|------------------------|----------|------------|
+| haipipe-application  | 0.18.0 |   8    |  8/8    | ✗ draws `direction/`,  | ◐        | ✓          |
+|                      | 260827 |        |         |   retired 260828       |          |            |
+| haipipe-insight      | 0.6.0  |  14    | 14/14   | none                   | ✓        | ✓          |
+| haipipe-design       | 0.6.0  |  10    | 10/10   | none                   | ✓        | ✓          |
+```
+
+Both lane doors now carry a `page types this door owns` roster (0.6.0 each); before that the folder was the only ownership signal and it holds all nine contracts flat. The umbrella's runtime tree still draws the retired `direction/` folder, which no longer exists on disk anywhere.
+
+**MACHINE** · how much of the machine has ever run
+
+```text
+| skill                         | ver   | phases | gates | receipt owner | fired live | gazette |
+|-------------------------------|-------|--------|-------|---------------|------------|---------|
+| haipipe-application-workflow  | 0.8.0 |   5    |   6   |     6/6       |    2/6     |   ✓     |
+| haipipe-insight-workflow      | 0.4.0 |   6    |   7   |     7/7       |    2/7     |   —     |
+| haipipe-design-workflow       | 0.6.0 |   5    |   6   |     6/6       |    5/6     |   —     |
+```
+
+`fired live` counts gate ids appearing on the two live boards, not in the workflow files. Every gate names the page whose Log row is its receipt, which is the property that makes the unfired ones auditable later rather than merely unwritten.
+
+**CONTRACT** · the eight properties · ✓ 1 · ◐ 0.5 · ✗ 0 · — not applicable
+
+```text
+| contract         | ver     | ①  | ②  | ③  | ④ | ⑤  | ⑥  | ⑦  | ⑧  | instances | tier      |
+|------------------|---------|----|----|----|---|----|----|----|----|-----------|-----------|
+| for-meta         | 0.2.0   | ◐  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     1     | EXERCISED |
+| for-question     | 0.4.2   | ✓  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     4     | EXERCISED |
+| for-data         | 0.2.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |     8     | EXERCISED |
+| for-information  | 0.3.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |    80     | EXERCISED |
+| for-knowledge    | 0.3.0   | ✓  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |    12     | EXERCISED |
+| for-wisdom       | 0.4.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |     7     | EXERCISED |
+| for-brief        | 0.4.0   | ◐  | ✓  | ◐  | — | ✓  | ✗  | ✓  | ✓  |     1     | USED      |
+| for-design       | 0.6.1   | ✓  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     1     | USED      |
+| for-principle    | 0.2.1   | ✓  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     2     | USED      |
+```
+
+The four rung contracts earned ⑥ and ⑧ on 260828: `## Boundary` and the 🟡-final receipt duty. The five remaining ⑥ failures are the same defect at different addresses — a gate's receipt duty (GI0 on MT00, GI1/GI6 on a register, G4/GD0 on BR00, GD1-GD5 on the DS page) is stated only in the machine file, and the ruler is explicit that this does not count. ④ is `—` family-wide: no page type here carries a size-or-budget clause, which is correct for contracts and worth revisiting only if a board ever commissions its own runs.
+
+**LIBRARY** · assets, and whose clock they keep
+
+```text
+| asset            | count | neutral | clock | consumed at        | oldest verify |
+|------------------|-------|---------|-------|--------------------|---------------|
+| venue/ packs     |   8   |   ✓     |  ✗    | D2 realize · GD3   |     none      |
+```
+
+Eight packs (sms · email · dashboard · report · push · reminder · checklist · ui-card) under one `_SCHEMA.md`, correctly written for no single consumer and read by the designer at realize and the judge at GD3. **No pack carries a verify date at all**, so the bank has no staleness floor and nothing can say whether an exemplar still reflects its venue.
+
+**CRAFT** · none. This family owns no transform with its own scope; `check.py` belongs to the board family.
+
+### The two knife points
+
+**① The receipt duty is homeless in five contracts.** Each gate's receipt is defined in a workflow file and owed by a page whose contract never mentions it, so a page author reading only their own contract cannot know what they owe. The four rung contracts were fixed on 260828; MT00, the registers, BR00 and the DS page still are not, and those four carry the family's oldest receipts.
+
+**② The ruler cannot see between contracts, and that is where this family's live defects are.** Three of them were live this week: seven of nine `last_updated` fields contradicted their own CHANGELOG, all nine reconciled on 260828; three skills still draw a `direction/` folder retired on 260828 (`haipipe-application`, `for-design`, `for-principle`); and until 260828 four contracts carried byte-identical copies of one chain law. None of the eight properties scores any of these, because all three are relations BETWEEN files. A ninth property — *shared law is cited, not copied; derived headers agree with their source* — would catch all three, and is the single highest-value addition to the instrument.

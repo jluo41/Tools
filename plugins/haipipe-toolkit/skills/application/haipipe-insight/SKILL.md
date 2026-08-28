@@ -4,8 +4,8 @@ description: >-
   The insight door of the Application family: one place assembling the laws for an InsightBoard that answers as a CLIMB. A board reads ONE dataset (Meta declares the extract; a subgroup is a partition, never a sibling board); four registers hold what is ASKED of each rung and never conclude; chain pages lift evidence one rung at a time — D observes run-bound, I derives from named D rows, K claims from named I rows, W counsels from named K rows — every value bound to a Task/Discovery QA file by path; and the W page exports a Design Handoff a person signs, the only thing a DesignBoard may bind. Ends at the signed handoff, never designs. Use for creating or driving an InsightBoard, registering questions, climbing a chain, partitions and the pooling verdict, settling a register, issuing or signing a Design Handoff. Trigger: insight board, insight door, question register, raise a question, climb, chain, lap, DIKW, rung, data page, knowledge claim, wisdom counsel, design handoff, partition, pooling verdict, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-27"
+  version: "0.6.0"
+  last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -107,6 +107,19 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
 ```
 
 The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page owns its own bounded `probe/`; Meta and the four registers own none, and no flat `1-probes/` exists. The `A<NN>_` prefix above is a project-local ordering option, not the canonical shape, which stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
+
+## The page types this door owns
+
+```text
+MT00        haipipe-page-for-meta          what data EXISTS · one per board
+MT01-MT04   haipipe-page-for-question      what is ASKED of one rung · four per board
+D rung      haipipe-page-for-data          observed · run-bound · never compares
+I rung      haipipe-page-for-information   derived from named D rows · never claims
+K rung      haipipe-page-for-knowledge     claimed from named I rows · never advises
+W rung      haipipe-page-for-wisdom        counsel + the signed Design Handoff
+```
+
+SIX, and no others: a page on an InsightBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/`, the same folder holding the design door's three, so the folder cannot say who owns what and this roster is where the insight half is named. Versions are never restated here — `/haipipe-skillset-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
 
 ## Verbs
 
