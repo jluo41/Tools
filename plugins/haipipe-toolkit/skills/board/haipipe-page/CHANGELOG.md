@@ -1,3 +1,61 @@
+## 0.39.0 — 2026-08-28
+
+The contract had grown into five documents in one file — a type registry, a
+section grammar, a writing guide, a verb door, an evaluation rubric — and no
+reader needed more than a quarter of it, so no reader ever proofread the rest.
+Measured before the rewrite: 32% of the file was two sections telling the same
+retirement story, and they had already contradicted each other. −25% by
+character; every rule kept, every retirement narration moved here.
+
+- **The inventory is DERIVED.** `haipipe-board/cli/pagetypes.py` (new) reads
+  the three places a Page Type actually lives — the shipped `*/page-types/`
+  folders, `check.py`'s `PAGE_TYPE_VALUES`, and every `page-type:` line on the
+  boards — and emits the table between markers in §🧬. `--check` exits 1 on
+  drift. The hand-written table could not stay equal to a Python tuple and a
+  folder listing, and on 260828 it was wrong in both directions at once: four
+  keys were live on disk with no row (`question` 4 pages, `roadmap` 2,
+  `ideation` 2, `collection` 2), and six keys the table called retired were
+  still accepted by the checker. Drift is a finding now, not a paragraph.
+  First run: 7 drifts, all real.
+- **§🗂 `The Page Types that exist, and why the rest went (260819)` DELETED.**
+  It was a second telling of §🧬 and carried the false rows: it listed
+  `intervention` and `artifact` as live application types 355 lines after the
+  same file declared both retired. Its two unique rulings — no key is the
+  DEFAULT, and a discovery folder does not get its own type — moved into §🧬.
+- **§📁 `What a page is on disk` ADDED.** The base contract for what a page IS
+  never showed the page's own folder; `<page-dir>/` lived in `haipipe-paper`
+  and `paper/README.md`, so a consumer owned the definition of the thing. The
+  lane roster stays `haipipe-plugin`'s.
+- **The admission test opens §🧬 as the grain law.** "A property every page
+  carries cannot tell one kind of page from another" is the sentence that
+  decides what earns a Page Type, and it was buried mid-file inside a
+  retirement argument.
+- **§✍️ gains a HEADING law**, five mechanical tests, governing this
+  contract's own `##`, every page's `###` divisions, and every skill's H1:
+  states the law not the topic · no count · no date · no self-reference · a
+  clause after the comma earns its place only by ruling out a real mistake.
+  Test ⑤ catches machine prose, whose commonest form is the negative
+  restatement. Applied to this file the same day: eleven headings rewritten,
+  `Seven Page Phases, independent of Page Type` → `Phases, independent of
+  type` (the count had said `Four` until the 260817 split), `Three verbs, and
+  this skill is the door for all three` → `Create · work on · run`, and the H1
+  from a noun phrase about the document to `one shape every page keeps`.
+- **§✅ `Closing checks` ADDED**, the one property this contract failed on its
+  own eight-property ruler: every variant carries grep-able closing checks and
+  the base carried none, which is why it could drift unnoticed.
+- **History evicted to this file**, per the standing erasure ruling ("a doc
+  states the CURRENT contract and never names the dead thing"). Gone from the
+  contract: the dash merge-then-retire story, the four types deleted 260819,
+  the display/literature/value retirement argument, the slide-deck history,
+  the Writing Style relocation, the section renames, the `## Boundary`
+  removal narration, the 260802 scope measurement. What survived is only
+  history that is still a live rule — `route:` still parses, the retired
+  section names still alias, the top-level `## Writing Style` still parses.
+- Two false claims deleted rather than corrected, because neither was
+  load-bearing: "TWELVE Page Type variants ship across five skill sets" (19
+  across four), and a roster row naming `subjective-label/page-types/` as the
+  owner of `haipipe-page-for-labeling`, a folder that does not exist.
+
 ## 0.38.0 — 2026-08-20
 
 - **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-page-for-narrative`
