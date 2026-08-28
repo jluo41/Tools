@@ -7,6 +7,15 @@ match SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x`
 and never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.0 — 2026-08-28
+
+- SIZE joins every class table (JL: "也需要说一下它总共有多少个字…够不够简洁"):
+  each row carries `<SKILL.md chars>/<desc chars>` — the invocation load and
+  the every-session listing tax — gathered by command, read against the
+  skill's own class median (⚠ at 2×), heaviest member always named. The
+  calibration is haipipe-page 0.39.0's −25% with zero rules lost. Worked
+  example re-measured: roadmap flags ⚠ 15.5k/669 (1.8×/2.1× class median).
+
 ## 0.2.0 — 2026-08-28
 
 - **Five classes, five tables, each with its own columns** (JL 260828: "每个表

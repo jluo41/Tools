@@ -12,7 +12,7 @@ description: >-
   quality, contract quality, score the contracts, which contract is weakest,
   contract audit, 契约质量, 技能状态, /haipipe-skillset-status.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -55,7 +55,7 @@ nobody's gate ever reads is a CRAFT even if it is long.
 ## 🚪 DOOR · does every road lead somewhere
 
 ```text
-| skill | ver | routes | resolve | stale | scaffold | desc shape |
+| skill | ver | size | routes | resolve | stale | scaffold | desc shape |
 ```
 
 ```text
@@ -77,7 +77,7 @@ each against `find -type d -name`.
 ## ⚙️ MACHINE · how much of the machine has ever run
 
 ```text
-| skill | ver | phases | gates | receipt owner | fired live | gazette |
+| skill | ver | size | phases | gates | receipt owner | fired live | gazette |
 ```
 
 ```text
@@ -152,7 +152,7 @@ skill exists to catch.
 ## 📚 LIBRARY · assets, and whose clock they keep
 
 ```text
-| asset | count | neutral | clock | consumed at | oldest verify |
+| asset | count | size | neutral | clock | consumed at | oldest verify |
 ```
 
 ```text
@@ -168,7 +168,7 @@ oldest verify  the staleness floor · one date, the worst one
 ## 🔧 CRAFT · a tool, and what it may touch
 
 ```text
-| skill | ver | last | lives in | scope | reversible |
+| skill | ver | size | last | lives in | scope | reversible |
 ```
 
 ```text
@@ -178,6 +178,25 @@ reversible   can its output be diffed against its input and undone
 lives in     its real folder · a craft used by one family but stored in
              another is worth showing, not hiding
 ```
+
+## 📦 Size · what a skill weighs, and whether it earns it
+
+Every table's `size` cell is two numbers, `<SKILL.md chars>/<desc chars>`,
+formatted like `18.8k/286`, both gathered by command:
+
+```text
+SKILL.md chars   what one invocation LOADS · wc -c SKILL.md
+desc chars       what EVERY session pays in the skill listing, invoked or
+                 not · len(frontmatter description)
+```
+
+Size is read against the skill's own CLASS in the family, never absolutely:
+flag ⚠ when a member exceeds 2× its class median on either number, and always
+name the family's heaviest member in the reading. A big skill is not a defect
+by itself; a big skill whose extra weight is retirement narration, a second
+telling, or copied law is — the calibration is haipipe-page 0.39.0, which cut
+25% by character with zero rules lost, most of it two sections telling the
+same story. A rule the reader never reaches is not shipped.
 
 ## 🧮 Reading the tables
 
@@ -204,6 +223,7 @@ report that ranks without saying what to write next has done half the job.
      instances     grep 'page-type:' under the real boards only
      gates fired   grep gate ids in the boards' Log rows
      assets        count the bank, read its oldest verify date
+     sizes         wc -c each SKILL.md · desc length from frontmatter
 5  emit five tables + the top-two knife points · unknown counters are `?`,
    never a guess
 6  after any rewrite, re-run that row · the score travels in the commit message
@@ -228,21 +248,21 @@ Five tables, abbreviated to the shape. The full run is in
 
 ```text
 DOOR
-| haipipe-paper | ⚠ NONE | 12 | 12 OK | 0 | matches | use-when ✓ |
+| haipipe-paper | ⚠ NONE | 18.8k/286 | 12 | 12 OK | 0 | matches | use-when ✓ |
 
 MACHINE
-| haipipe-paper-workflow | 0.6.0 | 6 | 8 | 8/8 | 4/8 | ✓ |
+| haipipe-paper-workflow | 0.6.0 | 12.3k/303 | 6 | 8 | 8/8 | 4/8 | ✓ |
 
 CONTRACT
-| roadmap   | 0.3.1 | ✓✓✓✓✓✓✓✓ | 8/8 · EXERCISED     | 2 boards |
-| narrative | 0.5.2 | ✓✓✓◐✗✓◐✓ | 6/8 · USED          | G5 never ran |
-| round     | 0.3.1 | ✓✓✓✗✓✓◐✓ | 6.5/8 (provisional) | 0 instances ever |
+| roadmap   | 0.3.1 | ⚠ 15.5k/669 | ✓✓✓✓✓✓✓✓ | 8/8 · EXERCISED     | 2 boards |
+| narrative | 0.5.2 | 7.5k/374 | ✓✓✓◐✗✓◐✓ | 6/8 · USED          | G5 never ran |
+| round     | 0.3.1 | 8.7k/325 | ✓✓✓✗✓✓◐✓ | 6.5/8 (provisional) | 0 instances ever |
 
 LIBRARY
-| venue/bank | 17 | ✓ | the desk's own | G5 · §1 | ? |
+| venue/bank | 17 | — | ✓ | the desk's own | G5 · §1 | ? |
 
 CRAFT
-| haipipe-paper-revise-humanizer | 0.2.6 | 08-05 | writing/ | section tex | ✓ |
+| haipipe-paper-revise-humanizer | 0.2.6 | 8.8k/336 | 08-05 | writing/ | section tex | ✓ |
 
 knife 1  DOOR ver is MISSING · the only family member you cannot date-check,
          and the file every other rewrite obliges · needed: version: and
@@ -253,5 +273,7 @@ knife 2  MACHINE fired 4/8 · G5/G6/G7 have never left the page · needed:
 ```
 
 Two classes carried the news the old one-table ruler could not: the DOOR's
-missing version, and the MACHINE's unfired half. Neither is a page type, and
+missing version, and the MACHINE's unfired half. The size column carries a
+third: roadmap's ⚠ 15.5k/669 is 1.8× its class median on the body and 2.1× on
+the description — the family's heaviest contract, priced for its next trim. Neither is a page type, and
 neither would have appeared on the eight-property table at all.
