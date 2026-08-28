@@ -1,6 +1,6 @@
 # QBt5 · Close one bounded feedback cycle as a Round
 
-state: ✅ SETTLED · current Round contract validated
+state: ✅ SETTLED · 0.3.1 current 260828 · routes to Seed, Narrative, or Section under gate G7
 page-type: round
 owner: JL
 method: atomize one feedback batch and route every item to its owning Page
@@ -10,7 +10,7 @@ How can a paper answer one editor, reviewer, coauthor, or internal feedback batc
 Round preserves the intake, gives every atomic concern a ledger row, records human dispositions, and routes accepted work to owning Pages.
 It closes only with checked Page versions, response artifacts, and human approval.
 
-**Where this page sits**: Round begins from one named build and returns checked work to assembly.
+**Where this page sits**: Round begins from one named build and returns checked work to assembly. It lives as an `RD<NN>` page in the desk's `B<x>-<desk>/` group, parented to that desk's Narrative; feedback from a desk this board never told mints that desk's B group even when it holds only RD pages.
 
 ## Writing Style
 Preserve received wording by quote or faithful pointer.
@@ -20,9 +20,12 @@ Distinguish completed changes from promises and deferred work.
 **Round routing**: feedback is tracked here while substantive edits stay with their owners.
 
 ```text
-feedback + base build ─▶ ledger ─┬─▶ Narrative
-                                 ├─▶ Section/plugins
+feedback + base build ─▶ ledger ─┬─▶ Seed        when new evidence is demanded
+                                 ├─▶ Narrative   for a retelling
+                                 ├─▶ Section/plugins  for a rework
                                  └─▶ response + revised build
+gate G7: every concern ledgered and routed exactly once ·
+a person approves the response receipt
 ```
 
 ## Content
@@ -50,3 +53,4 @@ The Round never becomes a second home for revised prose or substantive paper evi
 
 ## Log
 260820 · Promoted review and rebuttal into one persistent feedback Page Type.
+260828 · Refreshed to 0.3.1: routing gained the Seed as a target (a concern demanding evidence the paper does not hold reopens the establish loop), gate G7 names the coverage rule, and the page's home is the desk's B group. No Round instance has ever run; the contract is field-untested and its status row reads (provisional).

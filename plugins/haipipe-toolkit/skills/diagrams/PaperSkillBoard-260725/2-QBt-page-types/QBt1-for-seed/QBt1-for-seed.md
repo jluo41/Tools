@@ -1,6 +1,6 @@
 # QBt1 · Establish a venue-free Seed that survives retargeting
 
-state: ✅ SETTLED · 0.3.0 shape ruled 260821 · pitch at division 2 · eight divisions
+state: ✅ SETTLED · 0.5.3 · eight divisions hold · novelty column + ideation birth certificate
 page-type: seed
 owner: JL
 method: test whether the Page remains valid after replacing the selected venue
@@ -46,7 +46,9 @@ establishment board · boundaries · Narrative handoff
 
 The pitch is BLUF, the one-minute story at division 2: hook, the study in a clause, the headline finding, who should care. Placeholders `⟦pending E<n>⟧` are legal until the cited row flips ✅, so the pitch doubles as the paper's progress bar.
 The Establishment Board is flat and unranked; each Narrative crowns its own headline, and the pitch's lead is the general listener's, not a desk's.
-The handoff carries ids, status, interpretation, and limits rather than copied raw evidence.
+Since 0.4.0 every ✅/🔨 E-row also carries its novelty reading, so "is this idea any good?" stays a readable column, not a memory.
+Since the journey landed, §5's first row binds the paper's `SD00-ideation` page through `pagex/` as a birth certificate, and only the Seed's pen flips E-rows; the Roadmap proposes settles and never writes them.
+The handoff carries ids, status, interpretation, and limits rather than copied raw evidence; a Narrative reads §8 and never the Roadmap directly.
 
 ## Aims
 ### A1 · 🌱 Seed contract
@@ -66,3 +68,4 @@ The handoff carries ids, status, interpretation, and limits rather than copied r
 ## Log
 260820 · Replaced the combined Opening type with a stable Seed type.
 260821 · 0.3.0 shape ruled by JL: pitch returns venue-free at division 2 as BLUF with placeholders; Establishment splits from Boundaries on the lifetime seam; Source Pages named the PageX seedbed; eight divisions.
+260828 · Refreshed to 0.5.3: the eight divisions hold; E-rows gained the novelty column (0.4.0), §5's first row binds SD00-ideation as the birth certificate, and the establish loop fixed the two-pens rule (Roadmap proposes settles, Seed alone flips).

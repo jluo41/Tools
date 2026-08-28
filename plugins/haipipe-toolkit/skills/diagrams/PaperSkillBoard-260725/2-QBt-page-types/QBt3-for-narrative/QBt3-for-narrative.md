@@ -1,6 +1,6 @@
 # QBt3 · Turn Seed and Venue into a detailed Narrative map
 
-state: ✅ SETTLED · 0.4.0 ruled 260821 · claims carry E-parents · lives beside the Seed
+state: ✅ SETTLED · 0.5.2 current 260828 · claims carry E-parents · one NA page per desk in its own group
 page-type: narrative
 owner: JL
 method: require exact claims with licensed parents and one executable row per reader-ordered Section
@@ -11,7 +11,7 @@ Narrative owns the paper's venue decision, claim system, argument arc, reader jo
 Every claim is a selection from the Seed's Establishment Board, never new merchandise.
 It does not write final Section prose.
 
-**Where this page sits**: it lives beside the Seed in `0-SD-seed/` as `SD<NN>-narrative-<venue>`, reads SD00 and one QBv bank page, then hands one row to each Section.
+**Where this page sits**: it lives in `A2-NA-narrative/` as `NA<NN>-narrative-<desk>`, one page per desk numbered in arrival order; it reads the Seed's §8 handoff (never the Roadmap directly) and one QBv bank page, then hands one row to each Section.
 
 ## Writing Style
 Write exact propositions rather than themes.
@@ -19,17 +19,20 @@ Name each claim's E-row parent; a role never exceeds what the parent's status li
 Make each Section row detailed enough that a fresh writer does not invent the logic.
 
 ## Diagram
-**The story group**: one folder holds what the paper is and every telling of it.
+**The story head and the tellings**: the venue-free head is one group, every telling is its own NA page.
 
 ```text
-0-SD-seed/
-├── 🌱 SD00-seed            E-rows · pitch · handoff · venue-free
-├── 🧭 SD01-narrative-misq  claims cite E-rows · binds 🏛 QBv1 via pagex/
-└── 🧭 SD02-narrative-jama  a retarget is a NEW SD page, never a rewrite
-                 ├─ row 1 ─▶ Section 1
+A1-SD-story/                       the venue-free head, one each
+├── 💭 SD00-ideation · 🌱 SD01-seed · 🗺 SD02-roadmap
+A2-NA-narrative/                   one page per desk, arrival order
+├── 🧭 NA01-narrative-misq   claims cite E-rows · binds 🏛 QBv1 via pagex/
+└── 🧭 NA02-narrative-jama   a retarget is a NEW NA page, never a rewrite
+                 ├─ row 1 ─▶ Section 1     (in that desk's B group)
                  ├─ row 2 ─▶ Section 2
                  └─ row n ─▶ Appendix n
 ```
+
+Boards laid out under the pre-0.5.0 grammar (narratives inside the SD story group) are grandfathered and migrate only on explicit request.
 
 ## Content
 ### 1 · Narrative contract
@@ -62,3 +65,4 @@ A material row change reopens its Section because current prose never outranks t
 ## Log
 260820 · Made Narrative the governing venue-aligned paper outline.
 260821 · 0.4.0 ruled by JL: Narratives move into `0-SD-seed/` beside the Seed as SD<NN> pages; every claim cites its Seed E-row parent with role capped by parent status; division 1 owns the venue decision and binds the QBv bank page.
+260828 · Refreshed to 0.5.2: journey 0.5.0 moved Narratives into their own `A2-NA-narrative/` group as `NA<NN>-narrative-<desk>` pages (SD ids now belong to the story head: ideation, seed, roadmap); a Narrative enters through gate G4 and reads the Seed's §8 handoff, never the Roadmap. The claim law and division-1 venue binding are unchanged.

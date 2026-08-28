@@ -34,6 +34,7 @@ submission rules · cost/clock/odds · gaps/handoff
 ```
 
 Narrative receives the bounded contract and does not copy the entire Venue Page.
+In the journey, Venue is a library and never a phase: the QBv bank is consulted at P3 §1, a missing desk gets its bank page minted as a sub-step, and the page refreshes on the desk's clock, never a paper's.
 
 ## Aims
 ### A1 · 🏛 Venue contract
@@ -50,3 +51,4 @@ Narrative receives the bounded contract and does not copy the entire Venue Page.
 
 ## Log
 260820 · Kept Venue as its own evidence-heavy Page Type rather than part of Opening.
+260828 · Registered the journey standing: Venue (0.4.0) is a library consulted at P3 §1, never a phase; the seventeen live desk pages stay in `../../paper/venue/bank/` on the desks' own clocks.

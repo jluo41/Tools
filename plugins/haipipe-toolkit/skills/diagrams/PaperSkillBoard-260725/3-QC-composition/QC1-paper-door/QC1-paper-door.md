@@ -31,15 +31,20 @@ user intent ─▶ Paper door ─┬─▶ typed Page
 **Composition law**: route, inspect, and assemble without becoming a second authoring tree.
 
 ```text
-seed · venue · narrative · section · round
+ideate · seed · roadmap · venue · narrative · section · round
                     │
                     └─▶ accepted outputs ─▶ paper build
 
-/haipipe-paper status [family] ─▶ regenerated rollup, not a Page Type
+/haipipe-paper journey [paper]        ─▶ reads the phase, tests the gates,
+                                          never advances anything
+/haipipe-paper assemble [paper]       ─▶ runs anytime · DRAFT-watermarked
+                                          until gate G6 holds
+/haipipe-paper status [family]        ─▶ regenerated rollup, not a Page Type
 ```
 
-Retargeting preserves Seed, creates or updates Venue, and creates a distinct Narrative.
-Assembly reads accepted Narrative, Section, and display outputs rather than mining raw Task or Discovery folders.
+The door loads `haipipe-paper-workflow` when the question is the journey or a gate; the workflow owns transitions and never content.
+Retargeting preserves Seed, binds the target's shared Venue Page from the bank, and creates a distinct Narrative.
+Assembly reads accepted Narrative, Section, and display outputs rather than mining raw Task or Discovery folders, and ships from the desk's self-contained room.
 
 ## Aims
 ### A1 · 🚪 Paper door
@@ -48,7 +53,7 @@ Assembly reads accepted Narrative, Section, and display outputs rather than mini
 
 ## States
 ### A1 · 🚪 Paper door
-- ✅ A1.1 · The current door routes five Page Types, one status command, and accepted-output assembly.
+- ✅ A1.1 · The current door routes seven Page Types, the journey machine, two commands (status, journey), and accepted-output assembly.
 
 ## Files
 - `../../paper/haipipe-paper/SKILL.md` · current public door
@@ -57,3 +62,4 @@ Assembly reads accepted Narrative, Section, and display outputs rather than mini
 ## Log
 260820 · Reduced the Paper runtime to routing, graph integrity, assembly, and delivery.
 260820 · Dropped Dash as a Page Type; `/haipipe-paper status [family]` now covers the same rollup as a command.
+260828 · Registered the journey-era door: ideate/roadmap/journey/assemble verbs, seven routed Page Types, workflow delegation for gates. Known knife point per the family status: the door's own frontmatter still has no version, the one family member that cannot be date-checked.
