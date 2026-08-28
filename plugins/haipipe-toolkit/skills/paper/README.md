@@ -75,6 +75,69 @@ paper/
 └── TODO.md                   open issues future sessions pick up (task-family format)
 ```
 
+## Family status
+
+as of 2026-08-28 · regenerate with `/haipipe-skillset-status paper` · this block is a dated receipt, never a second authority
+
+Five classes, five column sets. A row with an empty field record is `(provisional)` whatever its static score.
+
+```text
+DOOR · does every road lead somewhere
+| skill         | ver    | routes | resolve | stale | scaffold | desc shape |
+|---------------|--------|--------|---------|-------|----------|------------|
+| haipipe-paper | ⚠ NONE | 12     | 12 OK   | 0     | matches  | use-when ✓ |
+```
+
+```text
+MACHINE · how much of the machine has ever run
+| skill                  | ver   | phases | gates | receipt owner | fired live | gazette |
+|------------------------|-------|--------|-------|---------------|------------|---------|
+| haipipe-paper-workflow | 0.6.0 | 6      | 8     | 8/8           | 4/8        | ✓       |
+                                    fired: G0 G2 G3 G4 · never: G1 G5 G6 G7
+```
+
+```text
+CONTRACT · the eight properties  (① why ② 词 ③ 址 ④ 量 ⑤ 格 ⑥ 据 ⑦ 查 ⑧ 界)
+| contract  | ver   | ①| ②| ③| ④| ⑤| ⑥| ⑦| ⑧| total               | field record        |
+|-----------|-------|--|--|--|--|--|--|--|--|---------------------|---------------------|
+| roadmap   | 0.3.1 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
+| seed      | 0.5.3 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · settle + G4 ran |
+| ideation  | 0.5.4 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · CHECK routed HOLD |
+| venue     | 0.4.0 | ✓| ✓| ✓| —| ✓| —| ✓| ✓| 6/6 · EXERCISED     | 17 desk pages, consumed |
+| section   | 0.4.0 | ✓| ✓| ✓| ◐| ◐| —| ✓| ✓| 6/7 · EXERCISED     | 16 pages, most-used |
+| narrative | 0.5.2 | ✓| ✓| ✓| ◐| ✗| ✓| ◐| ✓| 6/8 · USED          | 2 pages · G5 never ran |
+| round     | 0.3.1 | ✓| ✓| ✓| ✗| ✓| ✓| ◐| ✓| 6.5/8 (provisional) | 0 instances ever |
+```
+
+```text
+LIBRARY · assets, and whose clock they keep
+| asset            | count | neutral | clock          | consumed at | oldest verify |
+|------------------|-------|---------|----------------|-------------|---------------|
+| venue/bank       | 17    | ✓       | the desk's own | G5 · §1     | ?             |
+| venue/playbook-* | 8     | ✓       | the desk's own | narrative   | ?             |
+| venue/literature | 3     | ✓       | ad hoc         | narrative   | ?             |
+```
+
+```text
+CRAFT · a tool, and what it may touch
+| skill                          | ver   | last  | lives in | scope       | reversible |
+|--------------------------------|-------|-------|----------|-------------|------------|
+| haipipe-paper-revise-humanizer | 0.2.6 | 08-05 | writing/ | section tex | ✓          |
+```
+
+Knife points, in the order their repair buys the most:
+
+```text
+1  DOOR ver is MISSING · the one family member that cannot be date-checked,
+   and the file every other rewrite obliges · needed: version: and
+   last_updated: in its frontmatter · next hit: the very next rewrite
+2  MACHINE fired 4/8 · G5/G6/G7 have never left the page · needed: nothing
+   written, only run · next hit: the MS narrative opens G5, the first
+   decision letter opens G7 — that opening IS the field test
+3  roadmap 0.3.1 carries a law its CHANGELOG labels 0.4.0 · needed: the
+   version reconcile · next hit: the next reader asking what 0.3.1 means
+```
+
 ## Ownership
 
 | Layer | Owns |
