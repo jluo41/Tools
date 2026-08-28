@@ -1,11 +1,13 @@
 ---
 name: haipipe-plugin-latex
 description: >-
-  The latex/ plugin of a Board page: compile the page's Content to a DERIVED and regenerable PDF in its local latex/ folder through the /_board/latex route, the shared Page-plugin md2tex.py, and lualatex. Owns the caller contract: paper-root discovery, the board's --keep-fences default, the wrapper master, staleness, and what a failure shows. Loads haipipe-plugin for the four-facet contract and never restates it; holds no copy of any writer. Trigger: latex plugin, compile the page, page pdf, tex export, latex tab, rebuild the tex, keep fences, /haipipe-plugin-latex.
+  The latex/ plugin of a Board page: compile the page's Content to a derived,
+  regenerable PDF in its local latex/ folder via md2tex.py and lualatex.
+  Trigger: latex plugin, compile the page, page pdf, tex export, latex tab,
+  rebuild the tex, /haipipe-plugin-latex.
 metadata:
   version: "0.2.1"
   last_updated: "2026-08-21"
-  summary: "The compiled document now opens with the Page's complete canonical H1 title and embeds every cited rendered Display, PNG/JPG-rendered figures included."
 ---
 # /haipipe-plugin-latex · the page compiled, by the paper family's own writer
 

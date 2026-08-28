@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
   version: "0.1.0"
   last_updated: "2026-07-10"
-  summary: "Patient -> chart -> models -> on-demand prediction -> analysis."
 ---
 
 Skill: inlab-human-console

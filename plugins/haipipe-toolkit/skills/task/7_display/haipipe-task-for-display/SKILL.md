@@ -1,12 +1,16 @@
 ---
 name: haipipe-task-for-display
-description: "display-input task-folder specialist: scaffolds {NN}_<name>/ task-folders in the display task-group (default C-series) that produce a verified display-ready summary CSV plus provenance -> results/<run>/{source_data.csv, provenance.json}. The Paper Display stage snapshots that input into a display unit; this task does not own the final paper asset. Called by /haipipe-task when task-type=display."
+description: >-
+  display-input task-folder specialist: scaffolds {NN}_<name>/ folders in the
+  display task-group (default C-series) producing a verified display-ready
+  summary CSV plus provenance. The Paper Display stage snapshots that input;
+  this task does not own the final paper asset. Called by /haipipe-task when
+  task-type=display.
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-27"
-  summary: "display-input task-folder build specialist: task produces verified summary data; Display owns paper-facing rendering."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

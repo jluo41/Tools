@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.4"
   last_updated: "2026-07-08"
-  summary: "Stage 4 (AIData) specialist with multi-partition CaseSet merge."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

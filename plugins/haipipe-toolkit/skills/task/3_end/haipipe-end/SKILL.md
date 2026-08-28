@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "0.1.2"
   last_updated: "2026-07-08"
-  summary: "Run any Stage 6 endpoint work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

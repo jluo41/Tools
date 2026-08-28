@@ -1,11 +1,15 @@
 ---
 name: haipipe-page-for-task
 description: >-
-  The VARIANT contract for a TASK Page: one page per task-folder, and the TECHNICAL REPORT of what that folder found, carrying the one thing no file in it can hold, the READING of the result. Reporting is the form and reading is the closing act. It loads haipipe-page for the base frame and adds only what a task page needs: the closing rule that a person must read the numbers against the task's own question, the verdict bound to one run name so a rerun RE-OPENS the page, a Content shape whose divisions each open with one word from the closed set Introduction, Concept, Landscape, Data, Method, Result, Conclusion in one of two shapes, FLAT when the page has one topic and NESTED with one division per topic when a second topic needs its own Data or Method, with Conclusion always the single last division, the outline with its evidence column that DRAFT hands over before prose, and the rule that every shown number names the run that produced it. Use when writing or fixing a task page, when results exist but nobody wrote what they mean, when a number on a page traces to no run, when a page's divisions have copied the task-folder's own directory names, or when a task closed green while its own question stayed unanswered. Trigger: task page, task folder page, technical report, report structure, reporting, division order, learning order, residual division, results reading, verdict, verdict-run, rerun reopens, result family, page-type task, /haipipe-page-for-task.
+  The VARIANT contract for a TASK Page: one page per task-folder, and the
+  technical report of what that folder found — carrying the READING of the
+  result, which no file in the folder can hold. Every shown number names the
+  run that produced it, and a rerun reopens the page. Use when results exist
+  but nobody wrote what they mean. Trigger: task page, technical report,
+  results reading, verdict, rerun reopens, page-type task.
 metadata:
   version: "0.9.0"
   last_updated: "2026-08-22"
-  summary: "A task page IS a technical report and closes when the result is READ; 0.9.0 renames Why to Introduction and admits it into the FLAT shape as division 1, adds Landscape after Concept for what the FIELD already established, and hands the type-agnostic arc rule — sequence-is-the-argument, the three forbidden orderings, the swap test — to haipipe-page-outline, keeping only WHICH WORDS here. 0.8.0 renames the last division Meaning to Conclusion by JL ruling, moves that word's demand into a rule, rules that a new RUN is a new READING row while only a new MESSAGE earns a new division, and rules that FLAT admits REPEATED Method and Result divisions plus a page-level Concept or Data. 0.7.0 states the arc the six words form, forbids LEARNING ORDER as a third kind of log, and makes a residual a division rather than a footnote. 0.5.0 adds the FLAT/NESTED fork so one page can carry several topics, each with its own Data and Method, while Conclusion stays one page-level division, always last."
   folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved

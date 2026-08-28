@@ -1,12 +1,16 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw extraction task-folder specialist: scaffolds {NN}_<name>/ task-folders in the raw-extraction task-group (default R-series). Two patterns: extract-wide-process-local (Databricks -> parquet -> local Python; non-PHI) and server-resident (all-Spark pipeline staying on the catalog volume; PHI cohorts, e.g. A00_rawstore_*). Called by /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw."
+description: >-
+  Raw extraction task-folder specialist: scaffolds {NN}_<name>/ folders in the
+  raw-extraction task-group (default R-series). Two patterns:
+  extract-wide-process-local (non-PHI) and server-resident all-Spark (PHI
+  cohorts). Called by /haipipe-task when task-type=raw. Cross-references
+  /haipipe-data-raw.
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.4"
   last_updated: "2026-07-08"
-  summary: "Raw extraction task-folder build specialist (Pattern 1 local / Pattern 2 PHI server-resident)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

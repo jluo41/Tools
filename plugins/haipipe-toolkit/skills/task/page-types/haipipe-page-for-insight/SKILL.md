@@ -1,11 +1,15 @@
 ---
 name: haipipe-page-for-insight
 description: >-
-  The Page Type contract for one CONSUMER-NEUTRAL Insight Page on the Task/Insights Board: a whole D→I→K→W chain in one page, opened because a question is worth answering and carrying no downstream stake. This is where DATASET-FIRST exploration lives, before any Application has raised a need. An Application does NOT use this type: its InsightBoard decomposes the chain into separate D, I, K and W pages, and borrows a settled chain from here through PageX. Use when a dataset lands with no consumer yet, when a task result deserves interpretation nobody commissioned, or when several task outputs must be synthesised for reuse. Trigger: task insight, consumer-neutral insight, DIKW page, dataset exploration, insights board, page-type insight, /haipipe-page-for-insight.
+  The Page Type for one CONSUMER-NEUTRAL Insight Page on the Task/Insights
+  Board: a whole D→I→K→W chain in one page, carrying no downstream stake. This
+  is where dataset-first exploration lives, before any Application raises a
+  need; an Application borrows a settled chain from here through PageX.
+  Trigger: task insight, DIKW page, dataset exploration, insights board,
+  page-type insight.
 metadata:
   version: "0.6.0"
   last_updated: "2026-08-20"
-  summary: "Task-only now. The application scope moved to four separate D/I/K/W Page Types on the InsightBoard; this stays the consumer-neutral whole-chain page."
   outline:
     mode: fixed
     source: "this SKILL.md"

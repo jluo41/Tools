@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-display
 description: >-
-  The display/ plugin of a Board page: the page treated as a small paper, shipping figure and table UNITS at <page>/display/<stem>-DisplayN-<slug>/ under the display family's unit contract adopted verbatim. Owns the page-side delta only: the unit address and naming, routing a claim to the right renderer skill by kind, the five-step walk whose accepted: tick is human-only, and the citation move: a unit's id named in the content sentence chips as an evidence card in place, with the > Display: lane as the machine's filing surface. Loads haipipe-plugin for the four-facet contract and never restates it; cites the display family's unit contract and never forks it. Trigger: display plugin, page display, display unit, make a figure for this page, tikz unit, algorithm block, equation float, display tab, evidence card, > Display lane, cite a display, accepted tick, /haipipe-plugin-display.
+  The display/ plugin of a Board page: figure and table UNITS at
+  <page>/display/<stem>-DisplayN-<slug>/, routed to a renderer by kind, with a
+  human-only accepted: tick. A unit's id named in prose chips as an evidence
+  card. Trigger: display plugin, page display, display unit, make a figure for
+  this page, cite a display, /haipipe-plugin-display.
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-17"
-  summary: "0.3.0 writes down where a data unit's numbers come from: intake freezes FROM a probe card's proof/ with the card's own sha256, never from the workspace a second time, so staleness is computable and a unit cannot exist before a card has answered."
 ---
 # /haipipe-plugin-display · the page as a small paper, its figures as accepted units
 

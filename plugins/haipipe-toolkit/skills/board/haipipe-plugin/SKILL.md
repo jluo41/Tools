@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin
 description: >-
-  The PLUGIN contract of a Board page: every subfolder of a page's home folder is a plugin, defined once by four things — STORAGE (what files live in <page>/<name>/), SURFACE (its tab in the split's right pane), WRITER (the one tool that lands files there), BOUNDARY (discovery never enters it). The roster in ref/roster.md is the single list of plugin names; adding a plugin is one roster row plus one drawer registration, never a shell edit. Trigger: page plugin, plugin folder, plugin roster, plugin tab, right pane tab, draw folder, slide folder, chat folder, latex export, word export, bibex, add a plugin, /haipipe-plugin.
+  The PLUGIN contract of a Board page: every subfolder of a page's folder is a
+  plugin, defined by four things — STORAGE, SURFACE (its tab), WRITER,
+  BOUNDARY. ref/roster.md is the single list of plugin names. Trigger: page
+  plugin, plugin folder, plugin roster, plugin tab, add a plugin,
+  /haipipe-plugin.
 metadata:
   version: "0.1.4"
   last_updated: "2026-08-21"
-  summary: "0.1.4 (260824): direction/ and design/ joined the roster 🟡 (the design family: strategy cards and artifact units; contracts shipped, tabs pending). 0.1.3: task/ and meeting/ went 🟢."
 ---
 
 # /haipipe-plugin · a page's material, as one contract

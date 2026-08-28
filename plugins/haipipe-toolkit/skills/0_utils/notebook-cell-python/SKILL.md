@@ -5,7 +5,6 @@ allowed-tools: Bash, Read, Write, Edit
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
-  summary: "Cell-based .py ↔ .ipynb workflow — the .py is source-of-truth, the .ipynb is auto-derived for browser viewing of code + outputs + figures."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

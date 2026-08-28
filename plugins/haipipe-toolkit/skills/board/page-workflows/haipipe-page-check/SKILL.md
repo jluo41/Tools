@@ -1,11 +1,15 @@
 ---
 name: haipipe-page-check
 description: >-
-  The CHECK phase contract for any Board Page. CHECK judges one concrete rendered version against its purpose, Aims, evidence, Page Type, and local closing rule, records findings where they apply, and routes the work to CLOSE, OUTLINE, PROBE, EVIDENCE, DRAFT, REVISE, or HOLD; it does not cure its own substantive findings. It judges the BUILT deliverable, not only the Markdown: a declared display unit that never rendered, a cited unit the projection never embedded, and a PDF without the Page's own title are CHECK findings, not cosmetics. Load haipipe-page, the matching Page Type, this contract, and haipipe-sentence when findings use sentence lanes, then any family checker. Use when reviewing a Page version, running a declared gate, planting findings in context, choosing the next phase, or preventing a checker from silently revising what it judged. Trigger: page check, CHECK phase, quality gate, review version, close round, route finding, restart phase, human decision, declared not rendered, cited not embedded, check the pdf, check the docx, /haipipe-page-check.
+  The CHECK phase contract for any Board Page: judge one rendered version
+  against its purpose, Aims, evidence, and Page Type, then route to CLOSE,
+  OUTLINE, PROBE, EVIDENCE, DRAFT, REVISE, or HOLD. It judges the BUILT
+  deliverable, not only the Markdown, and never cures its own findings.
+  Trigger: page check, CHECK phase, quality gate, review version, check the
+  pdf, /haipipe-page-check.
 metadata:
   version: "0.6.1"
   last_updated: "2026-08-18"
-  summary: "FIVE person-reserved ticks, not four: the 260818 roster omitted the probe card's read:, and two of the five revert when inputs change."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

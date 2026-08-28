@@ -1,11 +1,13 @@
 ---
 name: haipipe-plugin-chat
 description: >-
-  The chat/ plugin of a Board page: ONE 💬 Chat tab whose GUI/TUI form is chosen inside it, and <page>/chat/<YYMMDD-HHMM>/ as the PRIMARY home for sessions worth keeping. Owns what is ruled — one tab, the form segment, the record shape — and carries the one open row visibly: the landing step (what writes a kept session in) is QPf4's open decision, not this file's to invent. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: chat plugin, chat tab, keep this session, kept conversation, chat record, GUI chat, TUI chat, /haipipe-plugin-chat.
+  The chat/ plugin of a Board page: one 💬 Chat tab, with
+  <page>/chat/<YYMMDD-HHMM>/ as the home for sessions worth keeping. Trigger:
+  chat plugin, chat tab, keep this session, kept conversation, chat record,
+  /haipipe-plugin-chat.
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-15"
-  summary: "Initial draft in the thin-door round (JL 260815); the landing rule stays an OPEN row pointing at QPf4, because a skill must not freeze a question a page still owns."
 ---
 # /haipipe-plugin-chat · one Chat, its record in the folder, its form chosen inside
 

@@ -1,11 +1,14 @@
 ---
 name: haipipe-page-revise
 description: >-
-  The REVISE phase contract for any Board Page. REVISE improves the realization of the current round while the Page's purpose and Aims stay fixed; it may add, delete, move, or rewrite, so edit shape never distinguishes it from DRAFT. REVISE is also where the page BECOMES ITS ARTIFACTS: it cites each drawn unit by id in the prose, writes the caption that ties the figure to this page's claim, and rebuilds latex/ and word/ so the deliverable a person opens matches the source. It no longer draws: EVIDENCE holds the display walk's render/pick/build steps since 260819. Load haipipe-page first, then the matching Page Type, then this contract, and finally the stage's declared family craft files. Use when incorporating landed evidence or feedback, citing a drawn display unit, rebuilding the PDF or docx, improving structure or prose under fixed Aims, deciding whether a change instead requires a new DRAFT round, or preserving an unanswered hole rather than inventing its answer. Trigger: page revise, REVISE phase, fixed Aims, rewrite, add paragraph, delete section, move argument, land answer, render the display, rebuild the pdf, rebuild the docx, candidate diff, /haipipe-page-revise.
+  The REVISE phase contract for any Board Page: improve the realization of the
+  current round while purpose and Aims stay fixed. Also where the page becomes
+  its artifacts — cites each drawn unit by id, writes the caption, and
+  rebuilds latex/ and word/. Trigger: page revise, REVISE phase, fixed Aims,
+  land answer, rebuild the pdf, rebuild the docx, /haipipe-page-revise.
 metadata:
   version: "0.5.0"
   last_updated: "2026-08-18"
-  summary: "0.5.0 gives RENDER/PICK/BUILD back to EVIDENCE (JL 260819): a lane that returned an intake folder instead of a figure was the only one of three that landed nothing usable. REVISE keeps the sentence, the caption, and the latex + word rebuild."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

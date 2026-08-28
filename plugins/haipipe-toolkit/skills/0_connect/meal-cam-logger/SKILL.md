@@ -4,7 +4,6 @@ description: "Log meals in real time from a webcam or IP camera. Opens a capture
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
-  summary: "Log meals in real time from a webcam or IP camera."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

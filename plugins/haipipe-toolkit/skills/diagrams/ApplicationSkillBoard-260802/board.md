@@ -201,13 +201,14 @@ QI3-the-climb-machine.md
 ### QD · Design
 The delivery-side counterpart to QI. Where the DesignBoard stops, what one
 signature covers, and why the rendered output is derived rather than a Page.
-QBt2 keeps the Design Page's shape; these pages own its rules. QD3 adds the 260824 design family, where a design is a BET declared before the artifact exists; QD4 registers the 59 verified sources grounding the design round's five phases.
+QBt2 keeps the Design Page's shape; these pages own its rules. QD3 adds the 260824 design family, where a design is a BET declared before the artifact exists; QD4 registers the 59 verified sources grounding the design round's five phases; QD5 rules that realize is two movements, since a lane whose every surface narrows can only conclude.
 
 QD0-the-design-layer.md
 QD1-the-acceptance-grain.md
 QD2-projections.md
 QD3-design-as-bets.md
 QD4-round-theory.md
+QD5-open-and-close.md
 
 ## Links
 paper-board ../PaperSkillBoard-260725/board.md

@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.1"
   last_updated: "2026-07-08"
-  summary: "MetaFn specialist — design and review of the model-metadata-lookup function in an Endpoint_Set."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

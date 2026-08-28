@@ -1,11 +1,14 @@
 ---
 name: haipipe-board-routing
 description: >-
-  The WRITE verb of the board family, at BOTH altitudes. Page altitude: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write; it loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. Board and group altitude (absorbed from haipipe-board-index on 260802): propose a board's structure with the human before any file exists, materialize it after approval, keep each group's engine-pages-folder lane block current with src/lanes.py, and move pages when a group is renamed or split. It may update an Aim State from inspected evidence, and closes a Decision Now row the human has already answered while never ticking one nobody answered and never changing a page-level human gate. Use when work happened and the board must record it, and when the board's own structure is what changed: route this to the board, write it back, which page owns this, claim the question, board structure, page group, group map, lanes, regroup, propose a board. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. It does NOT render HTML: haipipe-board owns build, serve, page and sentence. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, board structure, board index, page group, group map, lanes, regroup, /haipipe-board-routing.
+  The WRITE verb of the board family: take one input — a decision, finding,
+  correction, status change — and land it on the owning page and section. Also
+  proposes and materializes a board's structure and page groups. Use when work
+  happened and the board must record it. Trigger: route, write back, owning
+  page, we decided, board structure, regroup, /haipipe-board-routing.
 metadata:
   version: "0.10.0"
   last_updated: "2026-08-27"
-  summary: "Routed Board writes resolve root .server_config as the primary hosting contract, with SPACE registry data retained for ownership and fallback context."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

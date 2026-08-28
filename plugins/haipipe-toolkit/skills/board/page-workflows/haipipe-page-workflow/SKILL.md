@@ -1,11 +1,14 @@
 ---
 name: haipipe-page-workflow
 description: >-
-  The RUN router of the page family: the head skill of page-workflows/, combining OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and CHECK into one bounded, auditable, non-linear loop over ONE Board Page. It owns the raw-material packet, the phase receipt written under the Board's _runs/page/ folder, the producer/judge role separation, and the stop rules; the sibling contracts own their phases, haipipe-page owns what a page IS, and haipipe-board owns the executable machinery. RUN is deliberately not ADVANCE: a Page may repeat a phase, branch, HOLD, or return to DRAFT in a new round, and only CHECK may CLOSE. Use when one Page must be driven through the automatic loop, when a run receipt must be audited, or when a workflow surface needs the page lifecycle's one authoritative state source. Trigger: run a page, run page lifecycle, automatic page loop, audit page workflow, page run receipt, RUN router, DERC, DPRC, page workflow head, /haipipe-page-workflow.
+  The RUN router of the page family: combines OUTLINE, DRAFT, PROBE, EVIDENCE,
+  REVISE, COMPILE and CHECK into one bounded, auditable, non-linear loop over
+  ONE Board Page, owning the phase receipt and stop rules. RUN is not ADVANCE;
+  only CHECK may CLOSE. Trigger: run a page, run page lifecycle, automatic
+  page loop, page run receipt, /haipipe-page-workflow.
 metadata:
   version: "0.21.0"
   last_updated: "2026-08-21"
-  summary: "mode: copilot | auto — one rule set read two ways; auto defers four ticks onto the --owed ledger and hardens the fifth."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

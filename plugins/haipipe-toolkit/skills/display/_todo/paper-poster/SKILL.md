@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-24"
-  summary: "Compiled paper → poster content plan → dispatch to haipipe-display-poster. Owns extraction; owns no layout."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

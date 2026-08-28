@@ -4,7 +4,6 @@ description: "JHU Research-IT helpdesk chatbot. Answers how-to and where-is ques
 metadata:
   version: "0.1.0"
   last_updated: "2026-06-25"
-  summary: "JHU Research-IT helpdesk chatbot grounded in a local WIKI knowledge base."
   changelog:
     - "0.1.0 (2026-06-25): initial scaffold. WIKI seeded from public JHU/Epic docs; internal specifics left as [TODO: JL] stubs."
 ---

@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-task
 description: >-
-  The task/ plugin of a Board page: the fourth citation twin (bibex → literature, skill → the skill tree, pagex → other pages, this one → tasks/), a page's ranked list of task FOLDERS it is written about, materialized as relative symlinks to whole directories under <page>/task/<project>/<inner>/, with live status read off plan.yaml / report.yaml / QA/*.md — never a hand-typed word. Owns the page-side delta only: the store grammar, the directory-not-file mint rule (task's own inversion of pagex's file-not-folder rule), the tasks/-ancestor vet, and the status reader. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: task plugin, task folder link, link a task folder, task status, which task folder, task tab, /haipipe-plugin-task.
+  The task/ plugin of a Board page: the page's ranked list of task FOLDERS it
+  is written about, as relative symlinks to whole directories, with live
+  status read off plan.yaml / report.yaml / QA/*.md. Links directories, not
+  files. Trigger: task plugin, link a task folder, task status, which task
+  folder, /haipipe-plugin-task.
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-18"
-  summary: "Born QPf13, alongside meeting/'s haipipe-plugin-meeting: JL wanted two new plugins, task (which task folder backs this page) and meeting (what talk backs it), added the same round."
 ---
 # /haipipe-plugin-task · a page's own task folders, linked whole, status read live
 

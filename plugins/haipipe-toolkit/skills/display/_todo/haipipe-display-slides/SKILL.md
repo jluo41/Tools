@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex,
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-24"
-  summary: "Talk outline + figures/ → beamer → PDF + PPTX, with speaker notes and talk script. Renders what it is given; never reads the source it came from."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

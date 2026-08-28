@@ -5,7 +5,6 @@ metadata:
   version: "0.5.0"
   last_updated: "2026-08-22"
   changelog: CHANGELOG.md
-  summary: "The skill IS the library: foodnorm/ ships here, and callers reach it through normalize()."
   measured: "69.1% of 71,673 Diet rows MEASURED, 5.7% ESTIMATED, 25.2% MISS. ESTIMATED carries median 2.0 g carb error, p90 15.0 g, 10% over 15 g."
 ---
 

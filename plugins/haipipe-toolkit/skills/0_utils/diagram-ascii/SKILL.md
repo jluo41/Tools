@@ -1,11 +1,15 @@
 ---
 name: diagram-ascii
-description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking, AND the two-box shape every substantive chat reply opens with (✅ ANSWER, then 🧑 YOURS, then a 🤖 MINE list). Use when the user wants to sketch an idea, map a codebase, visualize a flow inline during discussion, show pipeline progress, or when a reply must lead with its answer and the one action the reader owns. Output is plain-text with liberal emoji for visual punch.
+description: >-
+  Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and
+  progress tracking, AND the two-box shape every substantive chat reply opens
+  with (✅ ANSWER, then 🧑 YOURS, then a 🤖 MINE list). Use to sketch an idea,
+  map a codebase, visualize a flow inline, or when a reply must lead with its
+  answer.
 version: "0.3.0"
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-19"
-  summary: "0.3.0 makes the two reply boxes RULES ONLY, top and bottom, 78 columns: side pipes capped the text at ~58 columns and wrapped sentences that fit."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

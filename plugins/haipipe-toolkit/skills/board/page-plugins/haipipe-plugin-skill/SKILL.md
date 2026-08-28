@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-skill
 description: >-
-  The skill/ plugin of a Board page: the page's skill LIST at <page>/skill/<stem>.md (PRIMARY) — one `- <name>` row per related skill OR AGENT, where the ORDER of the rows IS the person's rank (top = most related) — worked through a derived 🛠 index of cards the person drags to rank. Owns the three-route contract (scan-seed, drag-order, entry) and its one law: the scan seeds names at the bottom and the person ranks them; a `removed` row is the person's ✕ and is never re-seeded. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: skill plugin, skill list, skill map, page dependencies, which skills does this page depend on, which agents does this page dispatch, drag to rank, add a skill, add an agent, remove a skill, skill tab, /haipipe-plugin-skill.
+  The skill/ plugin of a Board page: the page's ranked list of related skills
+  and agents at <page>/skill/<stem>.md, one row each, row order being the
+  person's rank. A scan seeds names; the person ranks them. Trigger: skill
+  plugin, skill list, which skills does this page depend on, drag to rank, add
+  a skill, /haipipe-plugin-skill.
 metadata:
   version: "0.2.1"
   last_updated: "2026-08-16"
-  summary: "Agents joined the list (JL 260816): an agents/<name>-agent.md is a first-class 🤖 row, same rank, same ✕; its open door is the live markdown view."
 ---
 # /haipipe-plugin-skill · which skills stand behind this page
 

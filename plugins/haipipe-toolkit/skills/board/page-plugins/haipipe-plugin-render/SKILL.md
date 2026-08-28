@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-render
 description: >-
-  The render/ plugin of a Board page: the page's own units as the RECIPIENT sees them, at <page>/render/<stem>-<unit>-v<N>.<ext> (DERIVED), with a manifest carrying three version stamps. It exists so a human can accept a message they have actually seen, since an acceptance row names a render version. The venue picks the extension and the preview shape. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: render plugin, message preview, as the recipient sees it, character count, render version, sms preview, /haipipe-plugin-render.
+  The render/ plugin of a Board page: the page's units as the RECIPIENT sees
+  them, at <page>/render/<stem>-<unit>-v<N>.<ext>, derived, so a person can
+  accept a message they have actually seen. Trigger: render plugin, message
+  preview, as the recipient sees it, render version, sms preview,
+  /haipipe-plugin-render.
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-20"
-  summary: "New 260820: replaces the board-level artifacts/ folder. A render is one page's derived output, so it is a plugin like latex and word, not a group."
 ---
 
 # /haipipe-plugin-render · the unit, as the recipient sees it

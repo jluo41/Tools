@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.3"
   last_updated: "2026-07-04"
-  summary: "agent task-folder build specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

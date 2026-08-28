@@ -8,7 +8,6 @@ description: >-
 metadata:
   version: "0.4.0"
   last_updated: "2026-08-24"
-  summary: "0.4.0 (JL 260824): one B group per desk (journey 0.5.0) — the desk's main units, appendix units, AND its rounds share B<x>-<desk>/, so one folder tells one desk's whole downstream story; split Ba1/Ba2 pair groups grandfathered. 0.3.1 (JL 260824): the tracked tex lives in the telling's DESK ROOM (<N>-<desk><year>/sections/), its figures include from that room's displays/ copies and its keys resolve in that room's reference.bib — rooms are self-contained per the door's room law; board address is 0-paperboard/. 0.3.0 (JL 260823): lands on disk what the 0.2.0 CHANGELOG entry recorded but the body never received — structure resolves from the QBv Venue Page's Unit Guidance division matching section_kind, through the governing Narrative's division-1 binding, never from the zero-file template universe; runtime homes take the 260823 scaffold grammar (Ba1/Ba2 desk pairs, tokens S<D>/A<D>; 1-SC-main and 2-SA-appendix boards grandfathered)."
   group-token: "S<D> | A<D>"
   outline:
     mode: resolved

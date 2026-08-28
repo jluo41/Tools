@@ -1,19 +1,14 @@
 ---
 name: haipipe-plugin-folder
 description: >-
-  The 📂 Folder tab of a Board page: the rail's FIRST surface, showing what the
-  page's folder actually HOLDS — one row per plugin subfolder with file count,
-  weight, newest age, and the ⚠️ STALE flag when a DERIVED plugin (latex, word,
-  bibex, slide, display) predates the page's .md. The meta-plugin: it owns NO
-  subfolder, stores NOTHING (GET /_board/folderstat renders live on every
-  open), and writes nothing — its material is the folder itself. Loads
-  haipipe-plugin for the four-facet contract and never restates it. Trigger:
-  folder plugin, folder tab, page-folder status, what does this page hold,
-  stale plugin, folder status, first tab, /haipipe-plugin-folder.
+  The 📂 Folder tab of a Board page: the rail's first surface, one row per
+  plugin subfolder with file count, weight, age, and a ⚠️ STALE flag when a
+  derived plugin predates the page's .md. Stores nothing, renders live.
+  Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
+  first tab, /haipipe-plugin-folder.
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-16"
-  summary: "The unfold shows a folder's STRUCTURE, not a flat path list (JL 260816): owned files first, one branch per subfolder, symlinks marked."
 ---
 # /haipipe-plugin-folder · the folder is the truth, the first tab shows it
 

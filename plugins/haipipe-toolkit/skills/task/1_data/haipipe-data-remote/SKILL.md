@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Grep, Glob
 metadata:
   version: "0.1.3"
   last_updated: "2026-07-08"
-  summary: "Cross-stage transport specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

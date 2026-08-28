@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.4"
   last_updated: "2026-07-08"
-  summary: "Local self-hosted deploy specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

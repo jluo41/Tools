@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-word
 description: >-
-  The WORD plugin of a Board page: export one page's prose as a coauthor .docx with a PDF twin, flowing paragraph-per-paragraph prose (never the source's sentence-per-line), citations and a References section resolved from the page's own bibex/ bib, and evidence riding as anchored Word comments. Loads on top of haipipe-plugin's contract; the shared Page-plugin writer is called by path. Trigger: word plugin, word export, docx export, page to word, coauthor docx, PDF twin, join paragraphs, /haipipe-plugin-word.
+  The WORD plugin of a Board page: export the page's prose as a coauthor .docx
+  with a PDF twin — flowing paragraphs, citations and References resolved from
+  the page's own bibex/ bib, evidence as anchored Word comments. Trigger: word
+  plugin, word export, docx export, page to word, coauthor docx,
+  /haipipe-plugin-word.
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-16"
-  summary: "The docx now opens with the Page's complete H1 title; rendered Display evidence still embeds through the temp ref bridge."
 ---
 
 # /haipipe-plugin-word · one page, as a document a coauthor can mark up

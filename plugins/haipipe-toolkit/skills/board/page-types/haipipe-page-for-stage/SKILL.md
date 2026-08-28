@@ -1,18 +1,14 @@
 ---
 name: haipipe-page-for-stage
 description: >-
-  The generic Page Type for one explicitly chained lifecycle stage on a Board.
-  It requires a board-local or owning-family stage contract and manages
-  requires, style-from, provides, and a human gate. Current Paper work does not
-  create Stage Pages: it uses Seed, Venue, Narrative, Section, Round, and Dash.
-  Use for Application or another family that still declares a live local stage
-  contract, or when migrating a legacy S Page. Trigger: stage page, S page,
-  chained page, stage contract, requires, style-from, provides, human gate,
-  legacy Paper stage migration, /haipipe-page-for-stage.
+  The generic Page Type for one explicitly chained lifecycle stage on a Board,
+  managing requires, style-from, provides, and a human gate. Current Paper
+  work does not use it. Use for a family that still declares a live local
+  stage contract, or when migrating a legacy S Page. Trigger: stage page, S
+  page, chained page, stage contract, /haipipe-page-for-stage.
 metadata:
   version: "0.7.0"
   last_updated: "2026-08-20"
-  summary: "Generic chained Stage Page only; the current Paper architecture has no S01-S10 runtime."
   outline:
     mode: resolved
     source: "the owning Board/family's live stage-contract path declared on the Page"

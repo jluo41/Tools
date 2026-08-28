@@ -5,7 +5,6 @@ argument-hint: "[what to display, or a unit/intake path]"
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-16"
-  summary: "The ✒️ tex kind gained its skill (JL 260816), so the door now routes five renderers and names none as unowned."
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract

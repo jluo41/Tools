@@ -1,11 +1,16 @@
 ---
 name: haipipe-task
-description: "Task-family door for execution and reusable insight. It runs Plan → Build → Execute → Report on task-folders, iterates task-groups, dispatches type specialists, answers source questions through `qa`, and creates or resumes consumer-neutral DIKW Insight Pages on the Task/Insights Board through `insight`. Use for task execution, Task Board status, QA files, result interpretation, DIKW synthesis, or an Insight Page that Paper/Application will consume through PageX. Trigger: task, task folder, task group, Task Board, Insights Board, plan, build, execute, report, run, scan-status, qa, insight, DIKW, /haipipe-task."
+description: >-
+  Task-family door for execution and reusable insight: runs Plan → Build →
+  Execute → Report on task-folders, iterates task-groups, answers source
+  questions through `qa`, and creates DIKW Insight Pages through `insight`.
+  Use for task execution, Task Board status, QA files, or result
+  interpretation. Trigger: task, task folder, task group, Task Board, plan,
+  build, execute, report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
   version: "0.7.0"
   last_updated: "2026-08-17"
-  summary: "Task now has two surfaces: P-B-E-R executes work; the Task/Insights Board turns Task/Discovery evidence into consumer-neutral DIKW Insight Pages. QA remains the source-side question door."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

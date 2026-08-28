@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-value
 description: >-
-  The 🧮 value surface of a Board page: every NUMBER the page owes or uses, one row each, joined in both directions between the `## Values` block of each probe card and the `PP<NN>.v<n>` citations in the page's own prose. It has NO storage of its own and no writer: a value already lives in a probe card's proof/ with its source, run and sha256, so a second folder for it would be one thing filed twice. What was missing was never a folder but one more level of ADDRESS, and this surface is what makes that address checkable. It answers the one question neither the 🚪 probe strip nor the 🧭 outline tab can: which number in this prose came from where, and which answered number is nobody using. Loads haipipe-plugin for the four-facet contract and haipipe-plugin-probe for the card and its Values block, and restates neither. Trigger: value plugin, value tab, 🧮 tab, PP01.v2, which value, value id, unsourced number, unused value, one card many values, cite a number, where did this number come from, /haipipe-plugin-value.
+  The 🧮 value surface of a Board page: every number the page owes or uses, one
+  row each, joining each probe card's ## Values block to the PP<NN>.v<n>
+  citations in the prose. No storage of its own. Answers which number came
+  from where, and which answered number nobody uses. Trigger: value plugin,
+  value tab, PP01.v2, unsourced number, cite a number, /haipipe-plugin-value.
 metadata:
   version: "0.1.1"
   last_updated: "2026-08-19"
-  summary: "First contract, on JL's 260819 ruling that a value needs its own identity: a card is one question whose answer holds several numbers, and a sentence uses one of them."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

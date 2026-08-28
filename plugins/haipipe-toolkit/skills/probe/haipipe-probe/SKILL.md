@@ -1,23 +1,16 @@
 ---
 name: haipipe-probe
 description: >-
-  The shared evidence-acquisition router for a consumer Page. Probe first types
-  the source: existing accepted Pages go through its PageX lane, while Task or
-  Discovery questions go through its QA lane with stake stripping,
-  MATCH-before-DISPATCH, and exact-path answer binding. It owns the COST LADDER
-  (T0 JOIN · T1 LOCAL · T2 REUSE · T3 ENRICH · T4 FRESH — only T3/T4 summon an
-  agent, and most questions should land on T2) and the ENRICH DEPTH ladder the
-  executor picks from without the probe ever learning which rung ran. A missing
-  task folder is T4, never a refusal. Consumer plugins own the two local
-  surfaces. Trigger: probe, PageX, existing Page evidence, Task evidence,
-  Discovery evidence, Q-consumer, Q-executor, QA bank, QA file, match before
-  dispatch, A-executor, cost ladder, cheap probe, token tax, no task folder,
-  T2 reuse, enrich depth, /haipipe-probe.
+  The shared evidence-acquisition router for a consumer Page: accepted Pages
+  go through the PageX lane, Task or Discovery questions through the QA lane
+  with stake stripping and MATCH-before-DISPATCH. Owns the cost ladder T0 JOIN
+  · T1 LOCAL · T2 REUSE · T3 ENRICH · T4 FRESH, where only T3/T4 summon an
+  agent. Trigger: probe, PageX, Task evidence, Q-consumer, Q-executor, QA
+  bank, match before dispatch, cost ladder, /haipipe-probe.
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
   version: "0.18.0"
   last_updated: "2026-08-21"
-  summary: "R13 the cost ladder and R15 the enrich depth are back: five gears instead of one, and \"no task folder\" stops being a HOLD."
 ---
 
 # /haipipe-probe · choose the PageX or QA evidence lane

@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex,
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-24"
-  summary: "Content plan + figures/ → tcbposter → A0/A1 PDF + PPTX + SVG. Renders what it is given; never reads the source it came from."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,18 +1,14 @@
 ---
 name: haipipe-page-evidence
 description: >-
-  The EVIDENCE phase contract for a Board Page. It lands every support item
-  promised by the approved outline into the Page-local plugin that owns it:
-  citation in bibex/, Task-or-Discovery answer and values in probe/, and frozen
-  display material in display/. It never writes Content. Probe's PageX branch
-  has already read existing accepted Pages during OUTLINE; EVIDENCE runs only
-  the return half of Probe's Task/Discovery QA branch. Trigger: page evidence, EVIDENCE phase, bind an
-  answer, citation evidence, probe value, display intake, evidence bundle,
-  /haipipe-page-evidence.
+  The EVIDENCE phase contract for a Board Page: land every support item the
+  approved outline promised into the plugin that owns it — citations in
+  bibex/, Task or Discovery answers and values in probe/, frozen display
+  material in display/. Never writes Content. Trigger: page evidence, EVIDENCE
+  phase, bind an answer, probe value, display intake, /haipipe-page-evidence.
 metadata:
   version: "0.12.0"
   last_updated: "2026-08-20"
-  summary: "Land bibex/display plus Probe's QA returns; its PageX branch already ran in OUTLINE."
 ---
 
 # /haipipe-page-evidence · land support before prose uses it

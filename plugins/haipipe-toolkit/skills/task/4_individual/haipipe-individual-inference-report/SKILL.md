@@ -1,12 +1,16 @@
 ---
 name: haipipe-individual-inference-report
-description: "Per-individual prediction-interpretation report: loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report -- structured JSON + natural-language text -- for an audience persona (patient / clinician / etc.). Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
+description: >-
+  Per-individual prediction-interpretation report: loads one individual's data
+  and recent CGM, hits the deployed endpoint, then asks Claude to compose a
+  dual-layer report — structured JSON plus natural language — for an audience
+  persona. Trigger: individual report, prediction interpretation, generate
+  patient message, /haipipe-individual-inference-report.
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
-  summary: "Per-individual prediction-interpretation report."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

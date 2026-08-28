@@ -1,12 +1,16 @@
 ---
 name: claude-response-format
-description: "Canonical spec for the assistant's chat reply format in this workspace: every substantive reply is organized into `## [emoji] Short Headline` sections (one emoji + a short readable headline, content beneath); turns that change files end with a git-derived file-change report and a CONDITIONAL 'which files to review' list. The repo CLAUDE.md points here to make it always-on. Trigger: response format, reply format, section headers, emoji headers, file-change report, 回复格式."
+description: >-
+  Canonical spec for the assistant's chat reply format in this workspace:
+  every substantive reply is organized into `## [emoji] Short Headline`
+  sections; turns that change files end with a git-derived file-change report.
+  The repo CLAUDE.md points here to make it always-on. Trigger: response
+  format, reply format, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
   version: "0.1.2"
   last_updated: "2026-06-26"
-  summary: "Emoji headline format for chat replies + end-of-run file-change & conditional review report."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

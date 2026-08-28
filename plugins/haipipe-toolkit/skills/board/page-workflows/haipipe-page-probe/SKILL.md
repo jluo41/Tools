@@ -1,17 +1,14 @@
 ---
 name: haipipe-page-probe
 description: >-
-  The PROBE phase contract for a Board Page. It turns each approved Task- or
-  Discovery-backed outline obligation into one Page-local probe card, preserves
-  the stake behind the wall, MATCHES the selected QA bank before DISPATCH, and
-  stops when every such obligation is served. This is the QA branch of the
-  Probe family; PageX is its existing-Page branch and runs in OUTLINE. Trigger: page probe, PROBE phase,
-  raise a probe card, Task evidence, Discovery evidence, Q-consumer,
-  Q-executor, match before dispatch, /haipipe-page-probe.
+  The PROBE phase contract for a Board Page: turn each approved Task- or
+  Discovery-backed outline obligation into one page-local probe card, keep the
+  stake behind the wall, and MATCH the QA bank before DISPATCH. PageX is the
+  sibling lane and runs in OUTLINE. Trigger: page probe, PROBE phase, raise a
+  probe card, Task evidence, match before dispatch, /haipipe-page-probe.
 metadata:
   version: "0.11.0"
   last_updated: "2026-08-21"
-  summary: "A missing task folder is T4, not a HOLD; the receipt reports the tier spread so a starving bank is visible."
 ---
 
 # /haipipe-page-probe · run Probe's Task/Discovery QA branch

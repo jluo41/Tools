@@ -1,12 +1,16 @@
 ---
 name: haipipe-paper-revise-humanizer
-description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue voice. Six-layer audit plus a venue-grounded SciWrite clarity pass. Default mode applies fixes directly with %% {CC-humanizer}: why-comments; explicit original-preserving or sentence-apparatus review produces word-level Note-lane candidates instead. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, sentence apparatus, /haipipe-paper-revise-humanizer."
+description: >-
+  Remove AI-writing patterns from academic prose while preserving scholarly
+  precision, evidence-tied claims, and venue voice. Six-layer audit plus a
+  venue-grounded clarity pass; default mode applies fixes directly with %%
+  why-comments. Trigger: humanize, de-AI, remove AI tells, academic voice,
+  humanizer, /haipipe-paper-revise-humanizer.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   argument_hint: "[section-or-file] [--grant] [--venue <venue>]"
   version: "0.2.6"
   last_updated: "2026-08-05"
-  summary: "De-AI academic prose via six-layer audit plus venue-grounded SciWrite clarity gates; supports auditable candidate-diff review."
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

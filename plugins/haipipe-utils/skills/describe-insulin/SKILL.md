@@ -4,7 +4,6 @@ description: "Turn an insulin product name into pharmacokinetic parameters: clas
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-22"
-  summary: "The skill IS the library: insnorm/ ships here, reached through normalize() or an HTTP URL."
   measured: "263,417 of 263,491 insulin rows get an action curve or a stated reason not to; on MEPS the molecule is right 93.6% of the time it answers; against 1,831 prescriber-recorded DIAs the table runs 0.5 h short on rapid analogues"
   chain: "consumes describe-medication's DrugKey"
 ---

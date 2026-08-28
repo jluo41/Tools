@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
   version: "0.2.5"
   last_updated: "2026-07-19"
-  summary: "IPO workflow designer + builder + reporter — the basic orchestration unit. The report schema names no consumer; a consumer dispatches its question straight to an executor orchestrator and gets a path back."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

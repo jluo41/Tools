@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.3"
   last_updated: "2026-07-08"
-  summary: "data-pipeline task-folder specialist (scaffold + execute + partition)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

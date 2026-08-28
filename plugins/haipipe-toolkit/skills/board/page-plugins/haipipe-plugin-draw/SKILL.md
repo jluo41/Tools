@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-draw
 description: >-
-  The draw/ plugin of a Board page: one PRIMARY Excalidraw scene per owner, page scenes in <page>/draw/, the group scene beside its pages, composed live and saved to exactly one owner. Owns the ownership rule, the two group-editor modes, the split/sync/compose/verify commands, and the ✨ autodraw writer with its style contract: transparent shapes, color on the stroke, Comic Shanns text. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: draw plugin, attach a drawing, page scene, group scene, excalidraw source, arrange instance, edit page source, draw split, draw sync, draw it, autodraw, generate a drawing, drawing style, /haipipe-plugin-draw.
+  The draw/ plugin of a Board page: one Excalidraw scene per owner, page
+  scenes in <page>/draw/ and the group scene beside its pages. Owns
+  split/sync/compose/verify and the ✨ autodraw writer. Trigger: draw plugin,
+  attach a drawing, page scene, group scene, excalidraw, autodraw, draw it,
+  /haipipe-plugin-draw.
 metadata:
   version: "0.2.1"
   last_updated: "2026-08-16"
-  summary: "Added the ✨ autodraw writer, the mint, the style contract (transparent fills, stroke color, Comic Shanns), and the verbatim ascii copy above the drawn version (JL 260816)."
 ---
 # /haipipe-plugin-draw · one scene per owner, saved to exactly one owner
 

@@ -1,11 +1,15 @@
 ---
 name: haipipe-plugin-bibex
 description: >-
-  The bibex/ plugin of a Board page: the page's OWN bib at <page>/bibex/<stem>.bib (PRIMARY) worked through a derived citation workbench — status chips, Scholar/DOI links, the human ✓ verified tick, the ✎ edit, and the ＋ add pen. Owns the three-route contract (refresh seed-imports, verify, entry) and the one law over all of them: bibtex is never GENERATED, only subset from a bib a person already wrote or landed verbatim from a person's hand. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: bibex plugin, page bib, citation workbench, verify a citation, add a bib entry, subset the bib, bibex tab, /haipipe-plugin-bibex.
+  The bibex/ plugin of a Board page: the page's own bib at
+  <page>/bibex/<stem>.bib, worked through a citation workbench with status
+  chips, DOI links, and a human ✓ verified tick. Law: bibtex is never
+  generated, only subset or landed verbatim. Trigger: bibex plugin, page bib,
+  citation workbench, verify a citation, add a bib entry,
+  /haipipe-plugin-bibex.
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-15"
-  summary: "Initial draft in the thin-door round (JL 260815): the workbench's verbs and citation-craft's no-generation law, out of the roster row."
 ---
 # /haipipe-plugin-bibex · the page's own bib, never composed by a machine
 

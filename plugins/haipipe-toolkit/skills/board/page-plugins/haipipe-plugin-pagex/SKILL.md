@@ -1,11 +1,14 @@
 ---
 name: haipipe-plugin-pagex
 description: >-
-  The pagex/ plugin of a Board page: the Page-local borrow list in pagex/ is PRIMARY, with one row per file taken from another Page anywhere in the repo and row order expressing the person's rank. Relative symlinks make borrowed material live without copying. Owns the seed-and-re-mint, drag-order, and pen routes; the target vet; and two laws: PageX links files rather than Page home folders, and scanning seeds while a person ranks. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: pagex plugin, which parts of that page do we use, folder inventory, seed borrows from prose, borrow a file from another page, reference other pages, reuse a component from another page, symlink plugin, page citations into pages, dangling borrow, pagex tab, /haipipe-plugin-pagex.
+  The pagex/ plugin of a Board page: the page-local borrow list, one row per
+  file taken from another Page anywhere in the repo, row order expressing the
+  person's rank, made live by relative symlinks. Links files, never Page home
+  folders. Trigger: pagex plugin, borrow a file from another page, reference
+  other pages, symlink plugin, /haipipe-plugin-pagex.
 metadata:
   version: "0.6.0"
   last_updated: "2026-08-20"
-  summary: "PageX is Probe's accepted-Page lane, selected and bound during OUTLINE."
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages
 

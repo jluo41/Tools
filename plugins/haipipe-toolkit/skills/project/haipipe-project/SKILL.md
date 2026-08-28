@@ -1,11 +1,15 @@
 ---
 name: haipipe-project
-description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/name; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; top-level probes/ and insights/ are retired). Probe is Page-local: its PageX lane binds accepted Pages and its QA lane binds exact Task/Discovery QA paths; this scaffold creates none of those optional folders. Each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
+description: >-
+  Quick project setup: create the container folders and stop. Project-* is
+  repo-backed (gh repo under a user-chosen org, submodule at examples/name);
+  ProjX-* is a plain directory. Owns ONLY the container layout: tasks/
+  discoveries/ papers/ applications/ diagram/. Trigger: new project, project
+  scaffold, repo project, project submodule, /haipipe-project.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.4"
   last_updated: "2026-08-05"
-  summary: "Project SETUP only: create top-level containers. Task/Discovery leaves may later own QA files; consuming Pages may later own local probe cards. The scaffold creates neither and never creates _ASK/_ANS."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

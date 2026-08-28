@@ -1,11 +1,14 @@
 ---
 name: haipipe-page-draft
 description: >-
-  The DRAFT phase contract for any Board Page. DRAFT is the PLANNING phase: it is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round, It ENTERS on an approved outline (phase ①, haipipe-page-outline) and executes it, naming no division the plan did not name. It is not identified by an empty file, first typing, or adding text. Load haipipe-page first, then the matching Page Type under page-types/, then this contract, and finally the stage's declared family craft files. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or naming a hole and the Aim it costs without opening a card for it. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, the page's promise, owned hole, stake, draft boundary, who creates the card, /haipipe-page-draft.
+  The DRAFT phase contract for any Board Page: the planning phase with
+  authority over the Page's purpose, Aims, and promised shape for one round.
+  Enters on an approved outline and executes it, naming no division the plan
+  did not name. Trigger: page draft, DRAFT phase, define purpose, reopen Aims,
+  new round, owned hole, /haipipe-page-draft.
 metadata:
   version: "0.9.1"
   last_updated: "2026-08-21"
-  summary: "DRAFT creates no card: it enters on landed evidence and writes each Point as sentences citing ids; PROBE (phase ②, before it) turned the marks into cards, and a hole is the blocked exception. A Log row is one line, 15-35 words, not a paragraph."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

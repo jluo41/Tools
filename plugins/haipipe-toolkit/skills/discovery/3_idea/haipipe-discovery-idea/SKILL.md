@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.0"
   last_updated: "2026-07-03"
-  summary: "Type specialist owning Idea: generate -> ideas.md, novelty_check -> verdict.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

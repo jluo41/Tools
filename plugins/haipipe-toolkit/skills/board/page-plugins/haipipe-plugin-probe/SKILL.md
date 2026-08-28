@@ -1,19 +1,14 @@
 ---
 name: haipipe-plugin-probe
 description: >-
-  The Task/Discovery QA lane of the Board Page's Probe family: one evidence
-  question per folder at <page>/probe/PP<NN>-<slug>/. consumer/ holds the
-  stake-bearing question; executor/ holds the stripped question and returned
-  bank answer; proof/ holds small aggregate evidence with provenance; card.md is
-  the reader-facing head. PageX is the sibling accepted-Page lane and owns no QA
-  card. Loads haipipe-plugin for the four-facet contract and haipipe-probe for
-  source routing and crossing. Trigger: probe plugin, QA probe, probe card,
-  probe folder, Task evidence, Discovery evidence, Q-executor, Q-consumer,
-  A-executor, stake wall, proof folder, cite a probe, /haipipe-plugin-probe.
+  The Task/Discovery QA lane of a Board Page's Probe family: one evidence
+  question per folder at <page>/probe/PP<NN>-<slug>/ — consumer/ holds the
+  stake-bearing question, executor/ the stripped one, proof/ the evidence,
+  card.md the reader-facing head. Trigger: probe plugin, QA probe, probe card,
+  Task evidence, Q-consumer, Q-executor, /haipipe-plugin-probe.
 metadata:
   version: "0.9.2"
   last_updated: "2026-08-21"
-  summary: "QA Probe stores the consumer interpretation behind the wall, separate from both the bank answer and later Page prose."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 # /haipipe-plugin-probe · Probe's Task/Discovery QA lane

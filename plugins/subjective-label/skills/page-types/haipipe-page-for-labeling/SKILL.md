@@ -5,7 +5,6 @@ description: >-
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-07"
-  summary: "Ships from the plugin that maintains it, not from the board family."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,20 +1,15 @@
 ---
 name: haipipe-page-outline
 description: >-
-  The OUTLINE phase contract for any Board Page, and phase ① of the page workflow.
-  It agrees the Page shape, types each evidence obligation, and uses Probe's
-  PageX lane for exact accepted-Page bindings before prose is written. Task or
-  Discovery obligations are handed to Probe's QA lane in the next phase. Its
-  deliverable is a versioned file at <page>/outline/<stem>-outline-v<N>.md and it
-  exits only when a person approves it. The Page Type supplies WHICH WORDS the
-  plan may use; this phase supplies WHICH ARGUMENT their sequence makes, and
-  runs that as the first of five self-consistency checks. Trigger: page outline,
-  OUTLINE phase, plan the page, story arc, arc check, division order, PageX,
-  accepted Page evidence, approve the outline, /haipipe-page-outline.
+  The OUTLINE phase contract for any Board Page, phase ①: agree the Page
+  shape, type each evidence obligation, and use Probe's PageX lane for
+  accepted-Page bindings before prose is written. Deliverable is
+  <page>/outline/<stem>-outline-v<N>.md; exits only when a person approves it.
+  Trigger: page outline, OUTLINE phase, plan the page, PageX, approve the
+  outline, /haipipe-page-outline.
 metadata:
   version: "0.10.0"
   last_updated: "2026-08-22"
-  summary: "0.10.0 takes the ARC: the Page Type supplies WHICH WORDS a page may use and this phase supplies WHICH ARGUMENT they are arranged to make, so the sequence-is-the-argument rule, the three forbidden orderings and the swap test move here from haipipe-page-for-task and reach all ten types; self-consistency grows to FIVE checks with ARC first, and its third test is that the heaviest finding owns a division rather than a bullet inside someone else's. 0.9.0 put Aims in the plan file and made the version rule protect a promise, never a format."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,11 +1,15 @@
 ---
 name: haipipe-plugin-outline
 description: >-
-  The 🧭 outline surface of a Board page: the page RE-READ one Content division at a time, each division card carrying its own Aims, State rows, and Files rows instead of leaving them in three separate lists, and above them the PLAN card read from the page's own versioned outline file. The plan is primary material; the surface is rule-based and read-only, rendered from the file and live plugin folders on every open, and calls no model because the division tie is already in the material (`### A<n>` group grammar first, then the `§N` anchor). It is the DELIVERABLE of OUTLINE, phase ① of the page workflow, and the surface where that outline is read and approved before any prose is written; each division card also carries an evidence row read live from the page's probe/, display/ and bibex/ folders. Owns only its delta: the anchor grammar, the two lenses, the 🌐 page-wide card, the derived Evidence Bundle, and the two promises its checker guards. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: outline plugin, outline tab, 🧭 tab, page outline, OUTLINE phase, outline gate, evidence column, evidence bundle, what does this page owe, read the page by division, section anchor, §N anchor, which division does this aim belong to, by progress lens, page-wide, approve the outline, /haipipe-plugin-outline.
+  The 🧭 outline surface of a Board page: the page re-read one Content division
+  at a time, each card carrying its Aims, State, Files and evidence rows,
+  above them the PLAN card from the page's versioned outline file. Read-only,
+  and the deliverable of the OUTLINE phase. Trigger: outline plugin, outline
+  tab, page outline, OUTLINE phase, evidence bundle, approve the outline,
+  /haipipe-plugin-outline.
 metadata:
   version: "0.15.0"
   last_updated: "2026-08-17"
-  summary: "0.9.0 names the derived Evidence Bundle: one frozen Point joins sentence scaffolds, live Probe/Bibex/proof/Display material, and owner feedback without creating a duplicate folder."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

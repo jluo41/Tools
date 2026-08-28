@@ -1,11 +1,13 @@
 ---
 name: haipipe-plugin-slide
 description: >-
-  The slide/ plugin of a Board page: the page's deck at <page>/slide/<stem>-deck.html, DERIVED and regenerable, AUTHORED from the page's own .md by /_board/autodeck (claude -p), framed ?plain in the 🎞 tab with ✨ Regenerate on both doors. Owns the authoring contract: overwrite-always, validation before write, html-ppt as the never-copied runtime. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: slide plugin, page deck, regenerate the deck, slides tab, autodeck, deck from the page, /haipipe-plugin-slide.
+  The slide/ plugin of a Board page: the page's deck at
+  <page>/slide/<stem>-deck.html, derived and regenerable, authored from the
+  page's own .md by /_board/autodeck. Trigger: slide plugin, page deck,
+  regenerate the deck, slides tab, autodeck, /haipipe-plugin-slide.
 metadata:
   version: "0.1.1"
   last_updated: "2026-08-15"
-  summary: "Initial draft in the thin-door round (JL 260815), then caught up with the same evening's retirements: authoring is the only path."
 ---
 # /haipipe-plugin-slide · the page's deck, authored from the page's own words
 

@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.3"
   last_updated: "2026-07-08"
-  summary: "Endpoint_Set artifact-as-whole specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

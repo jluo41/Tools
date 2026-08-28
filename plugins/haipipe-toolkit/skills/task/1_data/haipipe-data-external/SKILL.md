@@ -1,12 +1,16 @@
 ---
 name: haipipe-data-external
-description: "External-reference specialist: builds/runs/reviews ExternalFn (e_build_external_*.py), inspects ExternalStore, loads dimension + engagement assets, previews joins into Source/Record sets. Called by /haipipe-data (recommended entry); direct invocation works stage-scoped. Trigger: external, ExternalFn, dimension, lookup, reference, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5, zip3, engagement features, vendor data."
+description: >-
+  External-reference specialist: builds/runs/reviews ExternalFn, inspects
+  ExternalStore, loads dimension and engagement assets, previews joins into
+  Source/Record sets. Called by /haipipe-data. Trigger: external, ExternalFn,
+  dimension, lookup, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5,
+  zip3, engagement features, vendor data.
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.2"
   last_updated: "2026-07-08"
-  summary: "External-reference specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

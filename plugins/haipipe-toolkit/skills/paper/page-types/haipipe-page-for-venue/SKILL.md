@@ -1,15 +1,14 @@
 ---
 name: haipipe-page-for-venue
 description: >-
-  The Paper Page Type for one external submission target such as a journal,
-  funder, or patent office. It separates binding desk rules from observed venue
-  patterns, records provenance and timing, exposes disagreements and unknowns,
-  and hands a verified venue contract to Narrative and Section Pages. Use when
-  researching, creating, refreshing, comparing, or checking a venue Page.
+  Paper Page Type for one external submission target: a journal, funder, or
+  patent office. Separates binding desk rules from observed venue patterns,
+  records provenance, and hands a verified venue contract to Narrative and
+  Section Pages. Use when researching, creating, refreshing, or comparing a
+  venue Page.
 metadata:
   version: "0.4.0"
   last_updated: "2026-08-23"
-  summary: "0.4.0 (JL 260823): names the two profiles — pack-backed reference vs CfP-only rules-record — so a workshop page is not underweight against QBv1-misq; declares the bank a LIBRARY outside the five-phase journey, the targeting DECISION living on a Narrative's §1. Two-profile section references QBv17-wise as the CfP-only exemplar."
   outline:
     mode: fixed
     source: "this SKILL.md"

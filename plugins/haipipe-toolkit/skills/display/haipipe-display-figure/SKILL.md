@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex,
 metadata:
   version: "0.2.1"
   last_updated: "2026-07-27"
-  summary: "Generate publication-quality data plots from a provenance-bound Display Intake."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,6 +1,12 @@
 ---
 name: haipipe-task-llm-engine
-description: Inspect, maintain, and run Physician-SPACE native LLM Agent SDK runtimes. Use for LLM engine status, Claude, Codex, or DeepSeek calls, OAuth/API-key model routing, LLMRec A1/A2/B search-and-recommend campaigns, SDK-session isolation, CallStore recovery, adding models or scales, and validating LLM task folders. Route existing LLMRec work to its project adapter; deploy the generic engine only when explicitly requested.
+description: >-
+  Inspect, maintain, and run Physician-SPACE native LLM Agent SDK runtimes.
+  Use for LLM engine status, Claude/Codex/DeepSeek calls, model routing,
+  LLMRec campaigns, CallStore recovery, or validating LLM task folders. Route
+  existing LLMRec work to its project adapter. Trigger: llm engine, agent sdk,
+  llmrec, callstore.
+
 ---
 
 # LLM engine task specialist

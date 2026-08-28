@@ -1,11 +1,15 @@
 ---
 name: haipipe-display-tex
-description: "Author a TeX-NATIVE display unit by hand: a TikZ figure, an algorithm2e block, or a display equation, written as one .tex in the unit's recipe/ and \\input by float.tex, so the display shares the document's own fonts, math, and macros. The writer is a PERSON, not a script. Use when user says tikz, TikZ 图, 用 LaTeX 画图, TeX-native figure, algorithm block, 算法框, display equation, 公式 float, a figure that must match the paper's fonts or carry real math. Not for data plots (haipipe-display-figure), editable SVG schematics (haipipe-display-diagram), or AI concept art (haipipe-display-illustration)."
+description: >-
+  Author a TeX-NATIVE display unit by hand: a TikZ figure, an algorithm2e
+  block, or a display equation, written as one .tex in the unit's recipe/ so
+  it shares the document's fonts, math and macros. The writer is a PERSON, not
+  a script. Not for data plots, editable SVG schematics, or AI concept art.
+  Use when user says tikz, TikZ 图, 用 LaTeX 画图, algorithm block, 算法框, 公式 float.
 argument-hint: "[what to draw, and the unit directory]"
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-16"
-  summary: "The ✒️ tex kind gets its craft written down (JL 260816), from the two TikZ units QPf5 authored by hand: the two-compile law, the preamble declaration, and the sizing rule."
 ---
 
 # /haipipe-display-tex · the display the document itself draws

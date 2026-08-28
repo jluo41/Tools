@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.8"
   last_updated: "2026-08-22"
-  summary: "Unified Stata skill: topology-aware templates, production contract, and the CMS issue-register ID convention."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

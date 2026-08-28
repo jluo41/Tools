@@ -1,11 +1,15 @@
 ---
 name: haipipe-sentence
 description: >-
-  The SENTENCE contract of a board, as a loadable spec: the sentence as the board's atomic unit, its dotted address, the > comment lanes and who may write one, the evidence card on a span of words, editing, per-location chat focus, and the lifecycle of attached records (archive, never delete). Load this when an agent must write ONE line that reads like the board without operating the whole board: a routed log line, a comment into a lane, a chat focus packet, or the paper family's evidence card. TWO USES, and this skill is the door for both: RUN a verb on one sentence (comment on it, edit it, put a card on its words) or LOAD it as a pure contract with no board open. Trigger: comment on this sentence, edit this sentence, card on these words, sentence contract, comment lane, > lane, evidence card, sentence address, apparatus, /haipipe-sentence.
+  The SENTENCE contract of a board: the sentence as its atomic unit, with a
+  dotted address, > comment lanes, evidence cards on a span of words, and
+  archived records. Load when an agent must write ONE line that reads like the
+  board without operating the whole board. Trigger: comment on this sentence,
+  edit this sentence, card on these words, sentence address,
+  /haipipe-sentence.
 metadata:
   version: "0.4.1"
   last_updated: "2026-08-10"
-  summary: "A generic exact-span Card now turns an exact current-Board Page id in its payload into a live Page route; detached popovers relink with the split site."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
