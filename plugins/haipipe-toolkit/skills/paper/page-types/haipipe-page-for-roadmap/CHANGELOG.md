@@ -7,6 +7,26 @@ match SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on
 `0.x.x` and never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.5.0 — 2026-08-28
+
+- **A block's task group lives in the TASK LAYER's home, never in the paper
+  repo** (JL 260828), OVERRIDING 0.3.1: the executor path is
+  `examples/<Project>/tasks/{G}{NN}_<name>/`. The reason is the symmetry with
+  discoveries — evidence layers are consumer-neutral and a page binds them by
+  path, so a task group inside the paper would make the paper both the
+  consumer of its evidence and the executor of it.
+- WHICH project is decided by the block's INPUTS: a block reading only the
+  workspace stores belongs to the consuming project; a block reading another
+  project's task outputs is EXTENDED there rather than copied over. The task
+  layer's own contract owns everything below the group folder (group naming,
+  the four phases and their file ownership, the serving mode, the guardrails)
+  and this page neither restates nor overrides it.
+- Consequences carried through the family: the Block Board's worked example
+  now shows full `<Proj>/tasks/E0<n>_<name>` executor cells instead of bare
+  `tasks/B<n>_<slug>`, with the block id and the group name named as the same
+  object under each layer's grammar; and the paper door drops `tasks/` from
+  its repo scaffold, replacing it with the one-line law and a pointer here.
+
 ## 0.4.0 — 2026-08-28
 
 - **MATCH BEFORE SCAFFOLD**, a new executor-column law. Before a block's folder
@@ -22,7 +42,7 @@ match SKILL.md frontmatter `version:`. Newest first.
   Probe matches QUESTIONS against a QA bank; a roadmap block matches INPUTS
   against the workspace's task groups. Same failure, same remedy.
 
-## 0.3.1 — 2026-08-28
+## 0.3.1 — 2026-08-28  · SUPERSEDED BY 0.5.0
 
 - **A block's task-group home is planned before release** (JL 260828: "这个
   task folder 放哪里,提前规划好"): default `Paper-<Slug>/tasks/B<n>_<slug>/`
@@ -32,6 +52,10 @@ match SKILL.md frontmatter `version:`. Newest first.
   the host project's `tasks/` is a written exception taking that project's
   own grammar. Closes the unpinned-base ambiguity the PNAS board's bare
   `tasks/B1_exam_corpus` cells exposed.
+- What 0.5.0 overrides is only the DEFAULT LOCATION. The ruling this entry
+  actually made — a block's task-group home is decided and written BEFORE the
+  person releases it, never discovered afterwards — stands unchanged, and
+  0.5.0 supplies the address it resolves to.
 
 ## 0.3.0 — 2026-08-28
 

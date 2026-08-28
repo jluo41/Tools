@@ -248,9 +248,6 @@ Paper-<Slug>/
 │   │                           A<D>NN appendix units, AND its RD<NN> rounds
 │   └── Bb-<desk2>/             second desk, same shape (may hold only RD
 │                               pages for a foreign-desk round)
-├── tasks/                      the campaign's task groups, B<n>_<slug>/ per
-│                               roadmap block (jobs = task folders, runs =
-│                               configs) · heavy data stays in the stores
 ├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
 │   ├── sections/               matches the desk's arrival order, the same order
 │   ├── displays/               that assigned its lowercase B letter
@@ -259,6 +256,13 @@ Paper-<Slug>/
 ├── 2-<desk><year>/             second desk's room (e.g. 2-wise2026/) · same shape
 └── README.md
 ```
+
+**No `tasks/` here (JL 260828)**: a roadmap block's task group lives in the
+TASK LAYER's own home, `examples/<Project>/tasks/{G}{NN}_<name>/`, never inside
+the paper repo. The symmetry is with discoveries — evidence layers are
+consumer-neutral and a page binds them by path, so a task inside the paper
+would make the paper both the consumer of its evidence and the executor of it.
+`haipipe-page-for-roadmap` carries the law and the which-project test.
 
 **The room law (JL 260824)**: a desk room is self-contained — its tex reads
 only its own `sections/`, includes only from its own `displays/`, cites only

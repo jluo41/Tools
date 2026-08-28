@@ -101,7 +101,7 @@ MACHINE · how much of the machine has ever run
 CONTRACT · the eight properties  (① why ② 词 ③ 址 ④ 量 ⑤ 格 ⑥ 据 ⑦ 查 ⑧ 界)
 | contract  | ver   | ①| ②| ③| ④| ⑤| ⑥| ⑦| ⑧| total               | field record        |
 |-----------|-------|--|--|--|--|--|--|--|--|---------------------|---------------------|
-| roadmap   | 0.4.0 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
+| roadmap   | 0.5.0 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
 | seed      | 0.5.3 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · settle + G4 ran |
 | ideation  | 0.5.4 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · CHECK routed HOLD |
 | venue     | 0.4.0 | ✓| ✓| ✓| —| ✓| —| ✓| ✓| 6/6 · EXERCISED     | 17 desk pages, consumed |
@@ -146,8 +146,11 @@ Knife points, in the order their repair buys the most:
    needed: one legality sentence per field, roadmap-column style · next
    hit: the C5 inheritance decision when the MS round opens
 
-repaired 260828 · DOOR ver MISSING → 0.1.0 · roadmap 0.3.1 → 0.4.0 with its
-CHANGELOG reordered newest-first and the duplicate 0.2.0 sections merged
+repaired 260828 · DOOR ver MISSING → 0.1.0 · roadmap 0.3.1 → 0.5.0, its
+CHANGELOG reordered newest-first with the duplicate 0.2.0 sections merged,
+and the executor-home law reversed: a block's task group lives in the task
+layer's own home, examples/<Project>/tasks/{G}{NN}_<name>/, never in the
+paper repo — the door's scaffold dropped its tasks/ line to match
 ```
 
 ## Ownership

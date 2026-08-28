@@ -12,7 +12,7 @@ description: >-
   campaign plan, task group, block job run, lap, register QA, intake,
   page-type roadmap.
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-08-28"
   group-token: "SD"
   outline:
@@ -98,15 +98,20 @@ One row per block, eight columns, every cell a state and never a blank:
 ```text
 id  block             serves   executor                done-when              budget  status       receipt
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-B1  exam corpus       E2 E3    tasks/B1_exam_corpus    every arm carries an   4d      ✅ landed    QA/3-….md
-    出卷 · 4 jobs                                      outcome and one tag;   no
+B1  exam corpus       E2 E3    <Proj>/tasks/           every arm carries an   4d      ✅ landed    QA/3-….md
+    出卷 · 4 jobs              E01_exam_corpus         outcome and one tag;   no
     34 runs                                            agreement reported     access
-B2  elicitation       E1 E5    tasks/B2_elicitation    222 outputs on disk,   2d +    🔵 running   —
-    3 jobs · 222 runs                                  no outcome in any      API
+B2  elicitation       E1 E5    <Proj>/tasks/           222 outputs on disk,   2d +    🔵 running   —
+    3 jobs · 222 runs          E02_elicitation         no outcome in any      API
                                                        prompt                 spend
-B3  grading           E1 E4    tasks/B3_grading        ΔAUC CI excludes 0     3d      ⬜ proposed  —
-    4 jobs · 26 runs                                                          needs B2
+B3  grading           E1 E4    <Proj>/tasks/           ΔAUC CI excludes 0     3d      ⬜ proposed  —
+    4 jobs · 26 runs           E03_grading                                    needs B2
 ```
+
+`<Proj>` abbreviates `examples/<Project>` for width; the cell holds the full
+path. The folder name is the TASK layer's `{G}{NN}_<name>`, not the block id —
+`B2` and `E02_elicitation` are the same object under each layer's own grammar,
+and the row is what joins them.
 
 The id column carries the block id and, under it, its job and run counts, so
 the board's one screen also states the campaign's size. A row whose counts are
@@ -126,7 +131,7 @@ Column laws:
   sake.
 - **executor** is the block's own task-group path, and it lives in the TASK
   LAYER's own home, `examples/<Project>/tasks/{G}{NN}_<name>/`, never inside the
-  paper repo (JL 260828, overriding 0.3.0). The symmetry is with discoveries:
+  paper repo (JL 260828, overriding 0.3.1). The symmetry is with discoveries:
   evidence layers are consumer-neutral and a page binds them by path, so a task
   inside the paper would make the paper both the consumer of evidence and its
   executor. WHICH project is decided by the block's INPUTS: a block reading only
