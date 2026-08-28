@@ -138,6 +138,17 @@ closed vs routed back), `post-close` (repairs after CLOSE — escaped defects).
 Tier: **EXERCISED** instances ≥ 1 and a fieldtest or CHECK pass · **USED**
 instances ≥ 1, neither · **UNTESTED** zero instances ⇒ `(provisional)`.
 
+**The population law.** `instances` counts pages on REAL boards — the work
+products under `examples/` — and never the skill-documentation boards under
+`skills/diagrams/`, whose pages carry a `page-type:` line because they
+DESCRIBE a type, not because they instantiate it. Counting those makes an
+unused contract look exercised, and the tier is the thing that breaks: the
+paper family's round contract shows 1 page under the wide count and 0 under
+this one, and 0 is the true answer — no `RD<NN>` folder has ever existed.
+Whichever population a table uses, **the column must say which**; two tables
+answering the same-sounding question with different numbers is the drift this
+skill exists to catch.
+
 ## 📚 LIBRARY · assets, and whose clock they keep
 
 ```text
@@ -185,7 +196,12 @@ report that ranks without saying what to write next has done half the job.
 4  gather the mechanical facts by command, not by recollection:
      versions      grep version:/last_updated: across the family
      routes        grep skill names in the door, test each with find
-     instances     grep 'page-type:' across the boards
+     inventory     haipipe-board/cli/pagetypes.py · the DERIVED page-type
+                   table (page-types/ folders x check.py PAGE_TYPE_VALUES x
+                   every page-type: line) · `--check` exits 1 on drift and
+                   names each row · its counts use the WIDE population, so
+                   read them through the population law before scoring
+     instances     grep 'page-type:' under the real boards only
      gates fired   grep gate ids in the boards' Log rows
      assets        count the bank, read its oldest verify date
 5  emit five tables + the top-two knife points · unknown counters are `?`,

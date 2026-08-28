@@ -12,7 +12,7 @@ description: >-
   campaign plan, task group, block job run, lap, register QA, intake,
   page-type roadmap.
 metadata:
-  version: "0.3.1"
+  version: "0.4.0"
   last_updated: "2026-08-28"
   group-token: "SD"
   outline:
@@ -124,18 +124,19 @@ Column laws:
   obligation). A block serving nothing may not be released — the same law
   the design family holds for direction cards: no exploring for exploring's
   sake.
-- **executor** is the block's own task-group path, and its home is planned
-  BEFORE release: the default is the PAPER REPO's own task home,
-  `Paper-<Slug>/tasks/B<n>_<slug>/` — the `B<n>` grammar is the paper's and
-  cannot collide with the host project's `{Letter}{NN}_{slug}` task groups,
-  and the campaign's code, configs and reports stay with the paper whose
-  evidence they are (heavy data still lands in the workspace stores, per the
-  task layer's own law; run scripts walk up to the checkout's env.sh as any
-  submodule's do). A block that must run inside the host project's `tasks/`
-  (shared env rails, PHI) names that full path in its cell and takes the
-  project's own group-naming grammar there — the exception is written, never
-  defaulted into. The row and the task group are the SAME OBJECT seen from
-  two sides: this page states why the block exists and when it is done,
+- **executor** is the block's own task-group path, and it lives in the TASK
+  LAYER's own home, `examples/<Project>/tasks/{G}{NN}_<name>/`, never inside the
+  paper repo (JL 260828, overriding 0.3.0). The symmetry is with discoveries:
+  evidence layers are consumer-neutral and a page binds them by path, so a task
+  inside the paper would make the paper both the consumer of evidence and its
+  executor. WHICH project is decided by the block's INPUTS: a block reading only
+  workspace stores belongs to the consuming project, and a block reading another
+  project's task outputs is EXTENDED there rather than copied here. The task
+  layer's own contract owns everything below the group folder — group naming,
+  the four phases and their strict file ownership, the self-serving versus
+  consumer-serving mode, and the guardrails — and this page neither restates nor
+  overrides it. The row and the task group are the SAME OBJECT seen from two
+  sides: this page states why the block exists and when it is done,
   `/haipipe-task` runs it. This page never runs anything.
 - **MATCH BEFORE SCAFFOLD** (JL 260828). Before a block's folder is created,
   the sibling projects' `tasks/` are searched for a task group already covering

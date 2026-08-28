@@ -5,7 +5,12 @@ description: >-
   Pages. Routes Ideation, Seed, Roadmap, Venue, Narrative, Section and Round
   Pages to their contracts and runs each through the page lifecycle.
   Use for paper setup, status, drafting, compiling, or review rounds.
-
+metadata:
+  version: "0.1.0"
+  last_updated: "2026-08-28"
+  # First NUMBERED version, not the first version: this door shipped unversioned
+  # from 260620 through 125 commits, so it was the one family member no reader
+  # could date-check. Numbering starts here; git holds everything before it.
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages

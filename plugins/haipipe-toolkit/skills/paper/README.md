@@ -83,9 +83,10 @@ Five classes, five column sets. A row with an empty field record is `(provisiona
 
 ```text
 DOOR · does every road lead somewhere
-| skill         | ver    | routes | resolve | stale | scaffold | desc shape |
-|---------------|--------|--------|---------|-------|----------|------------|
-| haipipe-paper | ⚠ NONE | 12     | 12 OK   | 0     | matches  | use-when ✓ |
+| skill         | ver   | routes | resolve | stale | scaffold | desc shape |
+|---------------|-------|--------|---------|-------|----------|------------|
+| haipipe-paper | 0.1.0 | 12     | 12 OK   | 0     | matches  | use-when ✓ |
+                  first NUMBERED version, 260828 · unversioned for 125 commits
 ```
 
 ```text
@@ -100,7 +101,7 @@ MACHINE · how much of the machine has ever run
 CONTRACT · the eight properties  (① why ② 词 ③ 址 ④ 量 ⑤ 格 ⑥ 据 ⑦ 查 ⑧ 界)
 | contract  | ver   | ①| ②| ③| ④| ⑤| ⑥| ⑦| ⑧| total               | field record        |
 |-----------|-------|--|--|--|--|--|--|--|--|---------------------|---------------------|
-| roadmap   | 0.3.1 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
+| roadmap   | 0.4.0 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
 | seed      | 0.5.3 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · settle + G4 ran |
 | ideation  | 0.5.4 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · CHECK routed HOLD |
 | venue     | 0.4.0 | ✓| ✓| ✓| —| ✓| —| ✓| ✓| 6/6 · EXERCISED     | 17 desk pages, consumed |
@@ -108,6 +109,12 @@ CONTRACT · the eight properties  (① why ② 词 ③ 址 ④ 量 ⑤ 格 ⑥ �
 | narrative | 0.5.2 | ✓| ✓| ✓| ◐| ✗| ✓| ◐| ✓| 6/8 · USED          | 2 pages · G5 never ran |
 | round     | 0.3.1 | ✓| ✓| ✓| ✗| ✓| ✓| ◐| ✓| 6.5/8 (provisional) | 0 instances ever |
 ```
+
+Population: `instances` counts pages on the REAL paper boards under `examples/`.
+
+It excludes the skill-documentation boards under `skills/diagrams/`, whose pages carry a `page-type:` line because they DESCRIBE a type rather than instantiate one.
+
+`haipipe-board/cli/pagetypes.py` counts the WIDE population and so reports higher numbers (round 1, seed 9, section 17); read its table through this law before scoring a tier.
 
 ```text
 LIBRARY · assets, and whose clock they keep
@@ -128,14 +135,19 @@ CRAFT · a tool, and what it may touch
 Knife points, in the order their repair buys the most:
 
 ```text
-1  DOOR ver is MISSING · the one family member that cannot be date-checked,
-   and the file every other rewrite obliges · needed: version: and
-   last_updated: in its frontmatter · next hit: the very next rewrite
-2  MACHINE fired 4/8 · G5/G6/G7 have never left the page · needed: nothing
+1  MACHINE fired 4/8 · G5/G6/G7 have never left the page · needed: nothing
    written, only run · next hit: the MS narrative opens G5, the first
    decision letter opens G7 — that opening IS the field test
-3  roadmap 0.3.1 carries a law its CHANGELOG labels 0.4.0 · needed: the
-   version reconcile · next hit: the next reader asking what 0.3.1 means
+2  collection: 2 live pages and NO contract ships · the expected residue of
+   the 260828 merge, now reported by `pagetypes.py --check` · needed: fold
+   the two grandfathered SD03 pages, or state the grandfather in the engine
+   · next hit: every run of the drift check until one of the two happens
+3  narrative ⑤ · the 17-field section-map row carries no per-field law ·
+   needed: one legality sentence per field, roadmap-column style · next
+   hit: the C5 inheritance decision when the MS round opens
+
+repaired 260828 · DOOR ver MISSING → 0.1.0 · roadmap 0.3.1 → 0.4.0 with its
+CHANGELOG reordered newest-first and the duplicate 0.2.0 sections merged
 ```
 
 ## Ownership
