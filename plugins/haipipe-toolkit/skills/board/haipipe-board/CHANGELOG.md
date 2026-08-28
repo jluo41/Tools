@@ -1,3 +1,16 @@
+## 0.145.0 — 2026-08-28
+
+- `cli/preview.py` is new: one screen of what a page SAYS — title, Opening's
+  visible paragraph, Aims joined to States, Content divisions, last Log row.
+  The fourth strip beside pagestatus (group), pagephase (phase), and
+  pagecontext (related packet), which all answer WHERE and never WHAT.
+- `check.py --rules` prints every finding code with its message, derived from
+  the checker's own `rep.add` calls so the roster cannot drift, and needs no
+  board argument. The 260828 field test (friction F11) found the checker's
+  104 laws teachable only through error text discovered after writing, citing
+  rulings by page ids a fresh reader cannot reach; this makes the rulebook
+  readable first.
+
 ## 0.144.0 — 2026-08-27
 
 - The repository root's `.server_config/` is now the primary hosting contract

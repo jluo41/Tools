@@ -1,3 +1,21 @@
+## 0.40.0 — 2026-08-28
+
+The 260828 field test (PaperSkillBoard-260725 repair, 14 minutes, 12 frictions)
+settled 10 MATCH · 1 SKILL GAP · 3 EXPECTATION GAP against a sealed ledger.
+This release is the gap's repair plus one commissioned feature.
+
+- PREVIEW joins the verbs (JL request): `haipipe-board/cli/preview.py <page>`
+  prints one screen — title, the Opening's visible paragraph, Aims joined to
+  their States, the Content division list, the last Log row. The contract had
+  already made those the page's summary surfaces; the tool only collects them.
+  A gist, never a substitute for WORK ON's whole-file read.
+- The laws are now readable before the act (frictions F11/F2, gap E13): the
+  engine block points at `check.py --rules` (every finding code + message,
+  derived from the checker's own source) and at `pagetypes.py` (the live type
+  inventory). The field actor had learned all 19 of its WARNs from error text
+  after writing, and counted Page Types by git archaeology, because nothing on
+  a skill surface pointed at either.
+
 ## 0.39.0 — 2026-08-28
 
 The contract had grown into five documents in one file — a type registry, a

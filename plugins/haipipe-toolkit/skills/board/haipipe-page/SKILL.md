@@ -3,11 +3,12 @@ name: haipipe-page
 description: >-
   The PAGE contract and router of a Board: one Page combines a stable Page
   Type with a current Page Phase (OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE,
-  COMPILE, CHECK). Three verbs: CREATE scaffolds a Page, WORK ON repairs one,
-  RUN hands off to haipipe-page-workflow. Trigger: create a page, new page,
-  update a page, run page lifecycle, Page Type, Page Phase, /haipipe-page.
+  COMPILE, CHECK). Four verbs: PREVIEW prints what a Page says, CREATE
+  scaffolds one, WORK ON repairs one, RUN hands off to haipipe-page-workflow.
+  Trigger: create a page, new page, update a page, preview a page, what does
+  this page say, run page lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.39.0"
+  version: "0.40.0"
   last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -355,15 +356,26 @@ for `ALL`. `check.py` rejects a malformed row, a path outside the Board, a dead
 Page, a mismatched Page id, or a missing scope before an agent can silently
 work without that context.
 
-## 🚪 Create · work on · run
+## 🚪 Preview · create · work on · run
 
 Say any of these and this skill runs it. You never call the engine yourself.
 
 ```text
+👁 PREVIEW    /haipipe-page preview <page>                 read verb, writes nothing
 📄 CREATE     /haipipe-page create a new page on <topic>   [on <board>]
 🔧 WORK ON    /haipipe-page working on <page>              or just the path
 🔁 RUN        /haipipe-page run <page> [from <phase>]
 ```
+
+### Preview what a page says
+
+`cli/preview.py <page>` prints one screen: the title, the Opening's visible
+paragraph, the Aims joined to their States, the Content division list, and
+the last Log row. It works because the contract already made those the
+page's summary surfaces; the tool only collects them. Use it to answer
+"what is this page about" before opening it, to pick between candidate
+Related Board Pages, or to scan a group (`preview.py <dir>/*/`). Preview is
+a gist, never a substitute: WORK ON step 1 still owes the whole-file read.
 
 ### Create a new page on a topic
 
@@ -437,10 +449,19 @@ starts at CHECK.
 The engine the direct verbs call, so nobody has to remember it:
 
 ```bash
+python3 <toolkit>/skills/board/haipipe-board/cli/preview.py <page>
 python3 <toolkit>/skills/board/haipipe-board/cli/build.py <board-folder>
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> | grep '^<PAGE>'
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> --summary
+python3 <toolkit>/skills/board/haipipe-board/cli/check.py --rules
+python3 <toolkit>/skills/board/haipipe-board/cli/pagetypes.py
 ```
+
+`--rules` prints all finding codes with their messages, and `pagetypes.py`
+prints the live type inventory: the 260828 field test showed both existed
+only as error text or a generated block nobody was pointed at, so the actor
+learned the laws AFTER writing and counted types by git archaeology. This
+block is the pointer that was missing.
 
 `watch.py` rebuilds on any `.md` save, so "build" is usually already done; a
 change to `.py`, `.css` or `.js` is not watched and needs the build run once.
@@ -651,6 +672,13 @@ that criterion until the owner resolves it.
 
 Review four distinct axes:
 
+The mechanical rulebook is readable BEFORE writing: `check.py --rules`
+prints every finding code with its message, derived from the checker's own
+source so the roster cannot drift. Error text on a run is a reminder of a
+law you could have read, never its first teaching (a 260828 field test
+found an actor learning all its WARNs only after writing; this flag is
+that repair).
+
 | Axis | Question | Judge |
 |---|---|---|
 | Mechanics | Is the required structure present, ordered, addressable, and internally consistent? | `check.py` |
@@ -746,7 +774,7 @@ haipipe-page/
 
 Reads `haipipe-board/ref/page-template.md` and `ref/board-form.md` §4 (the
 section mapping and requiredness) and §8 (on-stage order) as the authority; owns
-no scripts. The inventory generator is
-`haipipe-board/cli/pagetypes.py`, which lives with the machinery like every
-other script this contract calls. The lifecycle packet and receipt spec belong
+no scripts. The inventory generator (`haipipe-board/cli/pagetypes.py`) and the
+preview strip (`haipipe-board/cli/preview.py`) live with the machinery like
+every other script this contract calls. The lifecycle packet and receipt spec belong
 to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`.

@@ -1920,9 +1920,46 @@ def check_template(rep, quiet):
                         "the shared source did not render with the documented Q/S-specific placement")
 
 
+def print_rules():
+    """The rulebook, derived from this file's own rep.add calls.
+
+    The 260828 field test found the checker's laws teachable only through
+    error text, discovered after writing (friction F11). This prints every
+    finding code with its message template BEFORE anyone writes, from the
+    same source the findings come from, so the roster cannot drift.
+    """
+    src = Path(__file__).read_text(encoding="utf-8")
+    rules = {}
+    for m in re.finditer(r'rep\.add\(\s*(ERROR|WARN|GAP),\s*"([a-z0-9-]+)"', src):
+        level, code = m.group(1), m.group(2)
+        # the call text: balance parens from the match to its closing one
+        depth, i = 0, m.start()
+        while i < len(src):
+            if src[i] == "(":
+                depth += 1
+            elif src[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        call = src[m.start():i]
+        literals = re.findall(r'"((?:[^"\\]|\\.)*)"', call)[1:]  # drop the code itself
+        msg = " ".join(s for s in literals
+                       if len(re.sub(r"\{[^}]*\}", "", s).split()) >= 2)
+        entry = rules.setdefault((level, code), {"msg": msg, "sites": 0})
+        entry["sites"] += 1
+        if not entry["msg"]:
+            entry["msg"] = msg
+    order = {ERROR: 0, WARN: 1, GAP: 2}
+    print(f"{len(rules)} finding codes, derived from this file's rep.add calls\n")
+    for (level, code), e in sorted(rules.items(), key=lambda kv: (order[kv[0][0]], kv[0][1])):
+        sites = f" ({e['sites']} sites)" if e["sites"] > 1 else ""
+        print(f"{level:<6} {code:<26} {e['msg'] or '(message is fully computed)'}{sites}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="structural half of QA9")
-    ap.add_argument("board", help="the board folder")
+    ap.add_argument("board", nargs="?", help="the board folder")
     ap.add_argument("--strict", action="store_true",
                     help="exit 1 on any ERROR (JL's ruling on blocking is open; default reports)")
     ap.add_argument("--quiet", action="store_true", help="findings only, no summary")
@@ -1931,7 +1968,16 @@ def main():
     ap.add_argument("--summary", action="store_true",
                     help="score instead of a list: findings per rule and the "
                          "worst pages, so 'how are we doing' is one command")
+    ap.add_argument("--rules", action="store_true",
+                    help="print every finding code and its message, no board "
+                         "needed: the laws, readable before writing")
     a = ap.parse_args()
+
+    if a.rules:
+        print_rules()
+        return 0
+    if not a.board:
+        ap.error("a board folder is required unless --rules")
 
     d = Path(a.board).resolve()
     rep = Report()
