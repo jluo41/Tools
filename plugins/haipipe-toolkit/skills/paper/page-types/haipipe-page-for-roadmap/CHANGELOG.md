@@ -1,3 +1,14 @@
+## 0.3.1 — 2026-08-28
+
+- **A block's task-group home is planned before release** (JL 260828: "这个
+  task folder 放哪里,提前规划好"): default `Paper-<Slug>/tasks/B<n>_<slug>/`
+  — the paper repo owns its campaign's task groups, so the B<n> grammar
+  cannot collide with the host project's `{Letter}{NN}_{slug}` groups and
+  the campaign's code/configs/reports travel with the paper. Running inside
+  the host project's `tasks/` is a written exception taking that project's
+  own grammar. Closes the unpinned-base ambiguity the PNAS board's bare
+  `tasks/B1_exam_corpus` cells exposed.
+
 ## 0.3.0 — 2026-08-28
 
 - **The Collection page folded in** (JL 260828: "把 roadmap 和 collection 合并到
@@ -83,3 +94,18 @@ match SKILL.md frontmatter `version:`. Newest first.
 - Sibling contracts updated to the same vocabulary: the paper door, the
   workflow's G2 line, and the collection page's dispatch language. `R<n>` rows
   on existing boards are grandfathered and migrate only on request.
+
+## 0.4.0 — 2026-08-28
+
+- **MATCH BEFORE SCAFFOLD**, a new executor-column law. Before a block's folder
+  is created, the sibling projects' `tasks/` are searched for a group already
+  covering the same inputs, and the verdict is written on the block's division
+  as REUSE, EXTEND or NEW. A block whose division carries no match verdict may
+  not be released.
+- The law exists because the failure is observed, not hypothesised: a block was
+  scaffolded to recompute arm-level outcomes from raw parquet while a sibling
+  project's task group had produced the same arm-effectiveness analysis months
+  earlier. Nobody looked, because nothing required looking.
+- This is the probe family's match-before-dispatch law applied one layer down.
+  Probe matches QUESTIONS against a QA bank; a roadmap block matches INPUTS
+  against the workspace's task groups. Same failure, same remedy.

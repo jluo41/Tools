@@ -12,7 +12,7 @@ description: >-
   campaign plan, task group, block job run, lap, register QA, intake,
   page-type roadmap.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-28"
   group-token: "SD"
   outline:
@@ -124,11 +124,29 @@ Column laws:
   obligation). A block serving nothing may not be released — the same law
   the design family holds for direction cards: no exploring for exploring's
   sake.
-- **executor** is the block's own task-group path, normally
-  `tasks/B<n>_<slug>/` in the consuming project. The row and the task group
-  are the SAME OBJECT seen from two sides: this page states why the block
-  exists and when it is done, `/haipipe-task` runs it. This page never runs
-  anything.
+- **executor** is the block's own task-group path, and its home is planned
+  BEFORE release: the default is the PAPER REPO's own task home,
+  `Paper-<Slug>/tasks/B<n>_<slug>/` — the `B<n>` grammar is the paper's and
+  cannot collide with the host project's `{Letter}{NN}_{slug}` task groups,
+  and the campaign's code, configs and reports stay with the paper whose
+  evidence they are (heavy data still lands in the workspace stores, per the
+  task layer's own law; run scripts walk up to the checkout's env.sh as any
+  submodule's do). A block that must run inside the host project's `tasks/`
+  (shared env rails, PHI) names that full path in its cell and takes the
+  project's own group-naming grammar there — the exception is written, never
+  defaulted into. The row and the task group are the SAME OBJECT seen from
+  two sides: this page states why the block exists and when it is done,
+  `/haipipe-task` runs it. This page never runs anything.
+- **MATCH BEFORE SCAFFOLD** (JL 260828). Before a block's folder is created,
+  the sibling projects' `tasks/` are searched for a task group already covering
+  the same inputs, and the verdict is written on the block's division as REUSE
+  (bind the existing outputs by path and drop the job), EXTEND (add a run there,
+  not a copy here) or NEW (nothing covers it). This is the probe family's
+  match-before-dispatch law applied one layer down, and it exists because the
+  failure it prevents is real and was observed: a block was scaffolded to
+  recompute arm-level outcomes that a sibling project's task group had already
+  produced months earlier. A block whose division carries no match verdict may
+  not be released.
 - **done-when** is a testable sentence, not a vibe — it is what G3 reads.
 - **receipt** is the QA file path the block landed; the same string appears
   in the lap division that registered it and in the E-row cite that flipped

@@ -243,6 +243,9 @@ Paper-<Slug>/
 │   │                           A<D>NN appendix units, AND its RD<NN> rounds
 │   └── Bb-<desk2>/             second desk, same shape (may hold only RD
 │                               pages for a foreign-desk round)
+├── tasks/                      the campaign's task groups, B<n>_<slug>/ per
+│                               roadmap block (jobs = task folders, runs =
+│                               configs) · heavy data stays in the stores
 ├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
 │   ├── sections/               matches the desk's arrival order, the same order
 │   ├── displays/               that assigned its lowercase B letter
