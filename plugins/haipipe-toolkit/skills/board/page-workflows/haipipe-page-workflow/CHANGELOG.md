@@ -1,3 +1,12 @@
+## 0.22.0 — 2026-08-28
+
+- Two pre-dispatch duties before CHECK, priced on the SD02-roadmap live run
+  (three serialized checks, ~27% of spend settling as tax): ① cure every debt
+  the version itself registers before buying a cold judge — CHECK against a
+  known-dirty version returns the page's own registration as a route; ② the
+  producing phase's exit sweep is a mechanical pre-dispatch step, not advice —
+  the one skipped sweep left a stale States clause and forced a third CHECK.
+
 ## 0.21.0 — 2026-08-21
 
 - **`mode: copilot | auto` is in the packet, and the controller acts on it.**

@@ -7,7 +7,7 @@ description: >-
   only CHECK may CLOSE. Trigger: run a page, run page lifecycle, automatic
   page loop, page run receipt, /haipipe-page-workflow.
 metadata:
-  version: "0.21.0"
+  version: "0.22.0"
   last_updated: "2026-08-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -464,6 +464,20 @@ exercised and audited, rather than when one known edit is enough.
    materialize that phase's Related Board Pages packet with
    `haipipe-board/cli/pagecontext.py`; an invalid row or missing scope is a
    named HOLD, never omitted context.
+
+   Two duties precede any dispatch to CHECK, both priced on a live run (260828):
+
+   ```text
+   ① CURE SELF-REGISTERED DEBTS FIRST   a version whose own state line or Open
+     division names an uncured debt is a KNOWN-DIRTY version; a cold judge
+     bought against it returns the registration as its route, which is a paid
+     confirmation (~77k tokens and one whole round on the run that priced it)
+   ② RUN THE EXIT SWEEP                 the producing phase's exit checklist
+     (the official-document sweep in the draft and revise contracts) is a
+     MECHANICAL pre-dispatch step: grep each cured fact's keywords across the
+     state line, Aims, States and Open, so no clause still tells the old story
+     (one skipped sweep forced a third CHECK on the same run)
+   ```
 2. Invoke `haipipe-board/ref/page-lifecycle.workflow.js` with the packet,
    **FROM THE MAIN SESSION**, as ONE object with the packet in `args`:
 
