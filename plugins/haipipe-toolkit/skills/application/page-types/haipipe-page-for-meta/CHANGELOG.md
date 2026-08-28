@@ -1,3 +1,9 @@
+## 0.3.0 — 2026-08-28
+
+- Gains `## Receipts`. GI0 and every PARTITION BIRTH leave their dated Log row on this page, and until now that duty lived only in `haipipe-insight-workflow` §Phase receipts — which the ruler is explicit does not count, because the page's author reads the page's contract and not the machine file. This closes the last ⑥ gap on the insight side together with for-question 0.5.0.
+- The birth receipt is the load-bearing half. A partition's register ROW is the only place it was ever declared, and retiring a partition edits that row away: on 260828 A00 minted `J · minorityzip` and `L · lowincome`, discovered both failed clause ①, and withdrew them — after which the register alone reads as though the board never considered a socioeconomic cut. The Log row is what preserves which candidate failed which clause, which is the part that stops the next reader proposing the same cut.
+- Migration: OWE-ON-NEXT-TOUCH. The new closing check adds no gate a person must pass; a live MT00 owes its birth rows when next opened.
+
 ## 0.2.0 — 2026-08-21
 
 - The Insight Roster is gone. JL split the question register out of this page

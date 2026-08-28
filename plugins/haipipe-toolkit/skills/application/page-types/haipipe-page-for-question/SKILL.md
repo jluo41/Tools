@@ -3,7 +3,7 @@ name: haipipe-page-for-question
 description: >-
   The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
 metadata:
-  version: "0.4.2"
+  version: "0.5.0"
   last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "MT"
@@ -139,6 +139,19 @@ display/    ❌   FORBIDDEN
 
 `display/` is forbidden for the same reason: a figure is an answer.
 
+## Receipts
+
+Two of the lane's gates leave their dated `## Log` row on THIS page (`haipipe-insight-workflow` §Phase receipts), and a duty stated only in the machine file is a duty the page's author never reads:
+
+```text
+GI1 Question → Data   the cell's row carries target, raiser, what-would-answer and a
+                      state cell · its partition group exists on disk
+GI6 settle            the cell flipped ✅, or 🚫 with a reason, or `🟡 <page> final` —
+                      always naming the page that closed it
+```
+
+A `🟡 <page> final` flip leaves TWO receipts and this page owns the FIRST: a Log row QUOTING the sentence on the answering page that licenses the partial close. The answering page owns the second, in its own `## Log`, under its own contract. Neither pen may write the other's half, and the reason both exist is that a citation invisible from one end cannot carry staleness — a settled-partial cell whose licensing page does not know it was cited goes stale silently when that page changes.
+
 ## Staleness
 
 A question does not go stale; its answer does. When a source re-runs and reopens a D page, the question whose row names that page moves back from `✅ answered` to `🔨`. The Queue row is the visible consequence, and it is updated by whoever reopens the answering page.
@@ -154,5 +167,6 @@ A question does not go stale; its answer does. When a source re-runs and reopens
 - The page owns no `probe/` and no `display/`.
 - A re-targeted question left a tombstone naming its successor.
 - Partition-major only: no cell is blank; every dot cell's routing is restated in its question's division; every 🚫 cell carries a reason.
+- Every settle this page granted (GI6) has a dated `## Log` row naming the cell and the closing page, and a `🟡 <page> final` flip's row QUOTES the licensing sentence.
 
 This variant owns no scripts.

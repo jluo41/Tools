@@ -3,8 +3,8 @@ name: haipipe-page-for-meta
 description: >-
   The Page Type contract for the one META Page that heads an InsightBoard: what data this Application actually has before anyone asks a question of it. It fixes the source inventory, unit and grain, population, time window, freshness and staleness rule, and known limits. It performs no DIKW, reaches no finding, and holds no question: the group's four question registers (haipipe-page-for-question) own those. Use when opening an InsightBoard, when nobody can say what data is on hand, or when a source refreshes or a new extract lands. Trigger: data meta, source inventory, what data do we have, dataset description, grain, coverage, freshness, page-type meta, /haipipe-page-for-meta.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-21"
+  version: "0.3.0"
+  last_updated: "2026-08-28"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "MT"
   outline:
@@ -79,6 +79,20 @@ On a partition-major board (`haipipe-application` `ref/partition.md`) two more d
 
 Meta owns no `probe/`. Probing is a D/I/K/W page's authority; Meta only names what the sources are.
 
+## Receipts
+
+Two of the lane's transitions leave their dated `## Log` row on THIS page (`haipipe-insight-workflow` §Phase receipts), and a duty stated only in the machine file is a duty the page's author never reads:
+
+```text
+GI0 Meta → Question   this page past 🔴, its source resolving to a run, the four
+                      registers existing · partition-major also needs the partition
+                      register and the shared-threshold pointer
+a PARTITION BIRTH     one row added to the Partition Register: letter, name, filter,
+                      config, group folder — a partition is born HERE and nowhere else
+```
+
+The birth receipt is the load-bearing one. The register row is the only place a partition was ever declared, and retiring a partition edits that row away, so a board that minted and then withdrew one reads afterwards as though it never considered it. What the Log row preserves is the part that cannot be recovered: which candidate failed which clause of the partition test, and why — exactly what stops the next reader proposing the same cut again.
+
 ## Staleness
 
 A source's as-of date changing does not rewrite this Page's prose. It updates that source's Freshness row and marks every D page whose Source and Run division names it. The question registers' Queue rows are the visible consequence.
@@ -92,5 +106,6 @@ A source's as-of date changing does not rewrite this Page's prose. It updates th
 - Partition-major only: every partition has a letter, name, filter and group folder; the threshold file is named with its PENDING/live status; no other page defines either.
 - No division interprets, compares, ranks, or recommends.
 - No question lives here, raised or recorded: the group's question registers own both.
+- Every transition whose receipt this page owns — GI0, and each partition's birth — has a dated `## Log` row, and a retired partition's row survives its register row's removal.
 
 This variant owns no scripts.

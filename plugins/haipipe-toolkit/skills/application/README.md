@@ -129,8 +129,8 @@ Both lane doors now carry a `page types this door owns` roster (0.6.0 each); bef
 ```text
 | contract         | ver     | ①  | ②  | ③  | ④ | ⑤  | ⑥  | ⑦  | ⑧  | instances | tier      |
 |------------------|---------|----|----|----|---|----|----|----|----|-----------|-----------|
-| for-meta         | 0.2.0   | ◐  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     1     | EXERCISED |
-| for-question     | 0.4.2   | ✓  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     4     | EXERCISED |
+| for-meta         | 0.3.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |     1     | EXERCISED |
+| for-question     | 0.5.0   | ✓  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |     4     | EXERCISED |
 | for-data         | 0.2.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |     8     | EXERCISED |
 | for-information  | 0.3.0   | ◐  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |    80     | EXERCISED |
 | for-knowledge    | 0.3.0   | ✓  | ✓  | ✓  | — | ✓  | ✓  | ✓  | ✓  |    12     | EXERCISED |
@@ -140,7 +140,7 @@ Both lane doors now carry a `page types this door owns` roster (0.6.0 each); bef
 | for-principle    | 0.2.1   | ✓  | ✓  | ✓  | — | ✓  | ✗  | ✓  | ✓  |     2     | USED      |
 ```
 
-The four rung contracts earned ⑥ and ⑧ on 260828: `## Boundary` and the 🟡-final receipt duty. The five remaining ⑥ failures are the same defect at different addresses — a gate's receipt duty (GI0 on MT00, GI1/GI6 on a register, G4/GD0 on BR00, GD1-GD5 on the DS page) is stated only in the machine file, and the ruler is explicit that this does not count. ④ is `—` family-wide: no page type here carries a size-or-budget clause, which is correct for contracts and worth revisiting only if a board ever commissions its own runs.
+The whole insight lane earned ⑥ on 260828: `## Boundary` and the 🟡-final receipt duty across the four rungs, then `## Receipts` on MT00 (GI0, every partition birth) and on the registers (GI1, GI6, the register's half of the 🟡-final pair). The three remaining ⑥ failures are all design-side, and all the same defect at different addresses — a gate's receipt duty (G4/GD0 on BR00, GD1-GD5 on the DS page) stated only in the machine file, which the ruler is explicit does not count. ④ is `—` family-wide: no page type here carries a size-or-budget clause, which is correct for contracts and worth revisiting only if a board ever commissions its own runs.
 
 **LIBRARY** · assets, and whose clock they keep
 
@@ -156,6 +156,6 @@ Eight packs (sms · email · dashboard · report · push · reminder · checklis
 
 ### The two knife points
 
-**① The receipt duty is homeless in five contracts.** Each gate's receipt is defined in a workflow file and owed by a page whose contract never mentions it, so a page author reading only their own contract cannot know what they owe. The four rung contracts were fixed on 260828; MT00, the registers, BR00 and the DS page still are not, and those four carry the family's oldest receipts.
+**① The receipt duty is still homeless on the design side.** Each gate's receipt is defined in a workflow file and owed by a page whose contract never mentions it, so an author reading only their own contract cannot know what they owe. The insight lane closed this on 260828 across all six of its contracts; `for-brief` and `for-design` have not, and between them they carry G4/GD0 and GD1-GD5 — every receipt the design lane produces.
 
 **② The ruler cannot see between contracts, and that is where this family's live defects are.** Three of them were live this week: seven of nine `last_updated` fields contradicted their own CHANGELOG, all nine reconciled on 260828; three skills still draw a `direction/` folder retired on 260828 (`haipipe-application`, `for-design`, `for-principle`); and until 260828 four contracts carried byte-identical copies of one chain law. None of the eight properties scores any of these, because all three are relations BETWEEN files. A ninth property — *shared law is cited, not copied; derived headers agree with their source* — would catch all three, and is the single highest-value addition to the instrument.
