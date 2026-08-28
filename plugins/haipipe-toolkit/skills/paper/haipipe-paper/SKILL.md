@@ -1,17 +1,11 @@
 ---
 name: haipipe-paper
 description: >-
-  The one public door for planning, writing, building, and revising a paper as a
-  graph of Board Pages. It routes Ideation, Seed, Roadmap, Collection, Venue,
-  Narrative, Section, and Round Pages to their Page Type contracts, reads the
-  seven-phase journey (Ideation → Seed → Roadmap → Collection → Narrative →
-  Section → Round, each phase named by its authority page) through
-  haipipe-paper-workflow's gates, and runs each Page through the shared
-  OUTLINE–PROBE–EVIDENCE–DRAFT–REVISE/COMPILE–CHECK workflow. Use for
-  ideation, paper setup, campaign planning and receipt collection, narrative
-  and per-section outlines, evidence-backed drafting, paper status,
-  compilation, export, or review rounds. The current architecture has no View
-  layer and no S01–S10 paper-stage router.
+  The one door for planning, writing, and revising a paper as a graph of Board
+  Pages. Routes Ideation, Seed, Roadmap, Venue, Narrative, Section and Round
+  Pages to their contracts and runs each through the page lifecycle.
+  Use for paper setup, status, drafting, compiling, or review rounds.
+
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -30,7 +24,7 @@ haipipe-paper
   → the Page-local plugins actually required
 ```
 
-## 🧭 The seven-phase journey (JL 260824)
+## 🧭 The six-phase journey (JL 260828)
 
 `haipipe-paper-workflow` owns the gates; this figure is the reading order.
 Every phase is named by its authority page (the naming law), with the old
@@ -42,30 +36,30 @@ P0 Ideation (ideate)      💭 SD00 · the repo is minted with this page ·
 │                            gate G0: novelty per claim + pilot + human PROCEED
 P1 Seed (establish)       🌱 SD01 · venue-free · E-board with novelty column
 │                            gate G1: skeleton stands · gap list readable
-P2 Roadmap (route)        🗺 SD02 · direction rows serving E-rows · ✋ released
+P2 Roadmap (route)        🗺 SD02 · BLOCK rows serving E-rows · ✋ released ·
+│                            then the receipts land on its lap divisions
 │                            gate G2: every 🔨/⬜ E-row has a ▶️ row or waiver
-P3 Collection (collect)   📥 SD03 · dispatch cards · receipts land, lap by lap
 │                            gate G3: done-when holds · settle written on Seed
-│  ↺ P1↔P2↔P3 = the establish loop · exits only through the Seed:
+│  ↺ P1↔P2 = the establish loop · exits only through the Seed:
 │                            gate G4: ticked outline · novelty column ·
 │                            pitch sells only ✅ rows
-P4 Narrative (tell)       🧭 NA · one per desk · §1 IS the venue decision
+P3 Narrative (tell)       🧭 NA · one per desk · §1 IS the venue decision
 │                            gate G5: bank page bound · claims parented ·
 │                            map rows budgeted
-P5 Section (realize)      📄 one per map row · sign-off = per-unit CHECK ✅
-│  P5.9                      assemble — a verb, not a phase · runs anytime;
+P4 Section (realize)      📄 one per map row · sign-off = per-unit CHECK ✅
+│  P4.9                      assemble — a verb, not a phase · runs anytime;
 │                            G6 marks the build SUBMISSION-READY vs DRAFT ·
 │                            the upload is a human act
-P6 Round (respond)        🔁 routes each concern once → seed / narrative /
+P5 Round (respond)        🔁 routes each concern once → seed / narrative /
                              section · gate G7: every concern ledgered and
                              routed exactly once · a person approves the
                              response receipt
 
-   📚 venue = library, never a phase: the QBv bank is consulted at P4 §1,
+   📚 venue = library, never a phase: the QBv bank is consulted at P3 §1,
       and a missing desk gets its bank page minted as a sub-step.
 ```
 
-The eight Page Types, one line each:
+The seven Page Types, one line each:
 
 - **Ideation** is one research direction's ideas, ranked in the source
   reports' own structure (IDEA_REPORT / Novelty Check Report fields), the
@@ -74,12 +68,14 @@ The eight Page Types, one line each:
   names this board's Seed (or, rarely, a sibling repo's).
 - **Seed** is one venue-free identity per paper; it survives retargeting
   unchanged and binds its Ideation origin as a birth certificate.
-- **Roadmap** is one paper's campaign plan: direction rows (data, model,
-  analysis, …) each serving a Seed E-row, with executor, done-when, budget,
-  and a person's row-by-row release; it plans and never executes.
-- **Collection** is the intake desk: one dispatch card per released direction
-  row, landed QA receipts registered lap by lap, and settle PROPOSALS the
-  Seed alone writes; QA files stay the substance — register, never restate.
+- **Roadmap** is one paper's campaign, plan and intake on one page: BLOCK
+  rows (data, model, analysis, …) each serving a Seed E-row, with executor,
+  done-when, budget, and a person's block-by-block release — a block is a
+  task group, its jobs are task folders, its runs are configurations,
+  addressed `B<n>T<n>r<n>` — then one dispatch card per released block, the
+  landed QA receipts registered lap by lap, and settle PROPOSALS the Seed
+  alone writes; QA files stay the substance — register, never restate; the
+  page plans and registers, and never executes.
 - **Venue** is one evidence-backed desk record in the shared bank — a library
   asset outside the journey; the decision to target it lives on a Narrative.
 - **Narrative** is one desk's telling: venue decision, claim system, argument
@@ -171,8 +167,7 @@ Resolve the paper root and target Page before changing anything.
 | brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-page-for-ideation` |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
 | create or repair paper identity | `haipipe-page-for-seed` |
-| plan the campaign, open or release direction rows | `haipipe-page-for-roadmap` |
-| dispatch released rows, register receipts, close a lap | `haipipe-page-for-collection` |
+| plan the campaign, release a block, register receipts, close a lap | `haipipe-page-for-roadmap` |
 | inspect or record a target venue | `haipipe-page-for-venue` |
 | design claims, arc, or per-section outline | `haipipe-page-for-narrative` |
 | write or revise one manuscript/appendix unit | `haipipe-page-for-section` |
@@ -193,7 +188,6 @@ Resolve the paper root and target Page before changing anything.
                                        never advances anything
 /haipipe-paper seed [paper] [phase]
 /haipipe-paper roadmap [paper] [phase]
-/haipipe-paper collection [paper] [phase]
 /haipipe-paper venue <target> [phase]
 /haipipe-paper narrative <target> [phase]
 /haipipe-paper section <section-id> [phase]
@@ -202,7 +196,7 @@ Resolve the paper root and target Page before changing anything.
                                        fails is watermarked DRAFT in its receipt
 ```
 
-Every `[phase]` above is a PAGE phase (OUTLINE…CHECK). The journey's seven
+Every `[phase]` above is a PAGE phase (OUTLINE…CHECK). The journey's six
 positions are never called by that word in a verb; `haipipe-paper-workflow`
 carries the terminology law.
 
@@ -233,19 +227,19 @@ outline.
 
 A new paper repo — created as a git submodule immediately — is one numbered
 board plus one self-contained DESK ROOM per telling, in arrival order. Board
-groups map onto the journey: P0–P3 in the story group, P4 in the narrative
-group, P5–P6 in one group per desk:
+groups map onto the journey: P0–P2 in the story group, P3 in the narrative
+group, P4–P5 in one group per desk:
 
 ```text
 Paper-<Slug>/
 ├── 0-paperboard/               the board · 0 is ALWAYS the board · FIXED name,
 │   ├── board.md                tooling may rely on it
 │   ├── board/                  engine-generated HTML (build.py output)
-│   ├── A1-SD-story/            P0-P3 · SD00-ideation · SD01-seed ·
-│   │                           SD02-roadmap · SD03-collection · venue-free head
-│   ├── A2-NA-narrative/        P4 · NA<NN>-narrative-<desk> · one page per
+│   ├── A1-SD-story/            P0-P2 · SD00-ideation · SD01-seed ·
+│   │                           SD02-roadmap · venue-free head
+│   ├── A2-NA-narrative/        P3 · NA<NN>-narrative-<desk> · one page per
 │   │                           desk, numbered in arrival order
-│   ├── Ba-<desk1>/             P5-P6 · first desk's S<D>NN main units,
+│   ├── Ba-<desk1>/             P4-P5 · first desk's S<D>NN main units,
 │   │                           A<D>NN appendix units, AND its RD<NN> rounds
 │   └── Bb-<desk2>/             second desk, same shape (may hold only RD
 │                               pages for a foreign-desk round)
@@ -270,7 +264,7 @@ new repos: a second telling that wants the first telling's figure copies it
 from the owning page into its own room, with the page as provenance.
 
 **Group-name grammar (JL 260824)** — `A` groups carry the per-paper journey
-(`A1-SD-story` for P0–P3, `A2-NA-narrative` for P4); `B` groups are one per
+(`A1-SD-story` for P0–P2, `A2-NA-narrative` for P3); `B` groups are one per
 desk in lowercase arrival order (`Ba`, `Bb`, `Bc`…), each hosting that desk's
 three token families together: `S<D>` main units, `A<D>` appendix units, and
 `RD` rounds — so `RD01 lands in SM05 and SW01` reads without a legend.
@@ -282,7 +276,8 @@ next distinctive letter. Review letters live inside their Round page's
 folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `paperboard/`, `0-sections/`, `0-display/`, a shared root `reference.bib`,
 `SC`/`SA` tokens, narratives inside the SD story group, a lone `C1-RD-round`
-group) are grandfathered and migrate only on explicit request, because the
+group, a story group holding a separate `SD03-collection` page) are
+grandfathered and migrate only on explicit request, because the
 rename touches tex `\input` paths, pagex symlinks, and compile scripts.
 
 ## 📦 Assembly and delivery

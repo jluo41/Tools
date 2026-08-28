@@ -1,26 +1,14 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level phase machine: seven phases named after their authority
-  pages — Ideation (ideate) → Seed (establish) → Roadmap (route) →
-  Collection (collect) → Narrative (tell) → Section (realize) → Round
-  (respond) — one gate between each, every gate a checkable assertion over
-  existing Pages. Seed, Roadmap, and Collection form the establish loop:
-  route where to go, collect the receipts, settle them back onto the Seed,
-  lap after lap, until the Seed can face a desk. It owns transitions and
-  phase receipts only — content authority stays with the Page Type
-  contracts, lifecycle authority with haipipe-page-workflow, and every
-  verdict with an independent CHECK plus a human tick. "Journey phase"
-  (P0-P6) and "Page phase" (OUTLINE…CHECK) are distinct words by law. Use
-  when asking where a paper is in the journey, whether it may advance, what
-  to mint next, or when running assemble. Trigger: paper journey, journey
-  phase, what phase are we in, may we advance, phase gate, mint next page,
-  establish loop, roadmap phase, collection phase, assemble gate,
+  The paper-level phase machine: six phases (Ideation -> Seed -> Roadmap ->
+  Narrative -> Section -> Round) with a checkable gate between each. Use when
+  asking where a paper is, whether it may advance, or what to mint next.
+  Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-24"
-  summary: "0.5.0 (JL 260824): seven phases, each named by its authority page type with the old verb kept as its parenthesized alias — Ideation (ideate), Seed (establish), Roadmap (route), Collection (collect), Narrative (tell), Section (realize), Round (respond) — so no second vocabulary needs remembering; Roadmap and Collection are promoted to full journey phases and P1-P3 form the establish loop (route → collect → settle back onto the Seed); groups map P0-P3 → A1-SD-story, P4 → A2-NA-narrative, P5-P6 → one B group per desk; old names and gate numbers gazetted in-file. 0.4.0 (JL 260824): ideation-first story order per ideation 0.4.0 — P0's authority page is A1-SD-story/SD00-ideation, the seed sits at SD01, and G0's receipt reads: SD01-seed exists and its §5 first row binds SD00-ideation back. 0.3.0 (JL 260824): P0 renamed IDEATE per the type rename in ideation 0.3.0. 0.2.0 (JL 260823): the nursery moved onto the paper's own board. 0.1.0: the thin five-phase machine over the Page Types; owns gates and receipts only; explicitly NOT a revival of the deleted S01-S10 stage lane; gates are grep-able assertions; advancement is never scheduled."
+  version: "0.6.0"
+  last_updated: "2026-08-28"
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -31,20 +19,20 @@ never judges content (that is CHECK plus the human ticks).
 
 ## 🔤 Terminology law
 
-A **journey phase** is one of the seven positions below (P0–P6). A **Page
+A **journey phase** is one of the six positions below (P0–P5). A **Page
 phase** is one step of `haipipe-page-workflow`'s OUTLINE…CHECK loop. Every
 `[phase]` argument in the door's verbs is a PAGE phase; a bare "phase" in any
 Paper document must be readable as exactly one of the two, or it is a defect —
 the same law the Round contract holds for "Paper Round" versus "workflow
-round". Prefer "journey" when speaking of P0–P6.
+round". Prefer "journey" when speaking of P0–P5.
 
 **The naming law (0.5.0)**: a journey phase is NAMED BY ITS AUTHORITY PAGE
-TYPE — Ideation, Seed, Roadmap, Collection, Narrative, Section, Round — so
-nobody maintains a second vocabulary. Each phase keeps its old verb as a
+TYPE — Ideation, Seed, Roadmap, Narrative, Section, Round — so nobody
+maintains a second vocabulary. Each phase keeps its old verb as a
 parenthesized ALIAS — Ideation (ideate), Seed (establish), Roadmap (route),
-Collection (collect), Narrative (tell), Section (realize), Round (respond) —
-legal in prose, never in a folder or page id. A future phase inherits this
-law: it takes its authority page's name and may carry one verb alias.
+Narrative (tell), Section (realize), Round (respond) — legal in prose, never
+in a folder or page id. A future phase inherits this law: it takes its
+authority page's name and may carry one verb alias.
 
 ## 🧭 Why this is not the retired stage lane
 
@@ -54,7 +42,7 @@ Type contracts, and this file only states WHICH page holds authority in each
 phase and WHEN the next one may be minted. Deleting this file would lose no
 content rule — that is the test it must keep passing.
 
-## 🗺 The seven phases
+## 🗺 The six phases
 
 ```text
 phase                     authority page                 what the phase produces
@@ -64,49 +52,50 @@ P0 Ideation (ideate)      ideation   (A1-SD-story/SD00)  a winning idea sent to
                                                          minted WITH this page
 P1 Seed (establish)       seed       (A1-SD-story/SD01)  a defensible identity
                                                          + E-board
-P2 Roadmap (route)        roadmap    (A1-SD-story/SD02)  released direction
-                                                         rows: where to go, who
-                                                         runs it, done-when
-P3 Collection (collect)   collection (A1-SD-story/SD03)  landed QA receipts,
+P2 Roadmap (route)        roadmap    (A1-SD-story/SD02)  released blocks: where
+                                                         to go, who runs it,
+                                                         done-when · then the
+                                                         landed QA receipts,
                                                          lap by lap, settled
                                                          back onto the Seed
-   ↺ P1↔P2↔P3 is the ESTABLISH LOOP · exits only through the Seed at G4
-P4 Narrative (tell)       narrative  (A2-NA, 1 per desk) a desk decision +
+   ↺ P1↔P2 is the ESTABLISH LOOP · exits only through the Seed at G4
+P3 Narrative (tell)       narrative  (A2-NA, 1 per desk) a desk decision +
                                                          section map
-P5 Section (realize)      section    (B group, per row)  signed-off units
-   P5.9                   assemble — a VERB, not a phase the built deliverable ·
+P4 Section (realize)      section    (B group, per row)  signed-off units
+   P4.9                   assemble — a VERB, not a phase the built deliverable ·
                                                          DRAFT until G6 holds
-P6 Round (respond)        round      (in the desk's B)   routed concerns +
+P5 Round (respond)        round      (in the desk's B)   routed concerns +
                                                          response
 
-library                   venue      (QBv bank)          consulted at P4 §1 ·
+library                   venue      (QBv bank)          consulted at P3 §1 ·
                                                          never a phase
 ```
 
-P0 and P6 are the cheap loop zones: ideas are disposable, rounds recur.
-P1–P3 cycle as one loop; P4–P5 are the expensive one-way street the later
-gates protect. A round may reopen P1, P4, or P5; a retarget mints a new P4
+P0 and P5 are the cheap loop zones: ideas are disposable, rounds recur.
+P1–P2 cycle as one loop; P3–P4 are the expensive one-way street the later
+gates protect. A round may reopen P1, P3, or P4; a retarget mints a new P3
 from the unchanged seed.
 
-## 🔁 The establish loop (P1 → P2 → P3 → P1)
+## 🔁 The establish loop (P1 → P2 → P1)
 
-The Seed is the scoreboard, the Roadmap is the campaign plan, the Collection
-is the intake desk. One lap:
+The Seed is the scoreboard; the Roadmap is the campaign plan AND the intake
+desk, one page. One lap:
 
 ```text
 Seed §6 states the gaps (⬜/🔨 E-rows)
-   → Roadmap proposes direction rows · a person releases them (G2)
-   → Collection dispatches through the probe lanes · receipts land (G3)
+   → Roadmap proposes BLOCK rows · a person releases them, block by block (G2)
+   → the Roadmap dispatches through its probe lane · receipts land on its
+     lap divisions (G3)
    → settle: the Seed's E-rows flip ✅ citing the landed QA files
-   → gaps remain → next lap at P2 · gaps closed or waived → face G4
+   → gaps remain → next lap on the Roadmap · gaps closed or waived → face G4
 ```
 
-Three pens, never crossed: the Roadmap writes plans, the Collection registers
-receipts, the Seed alone writes E-row flips. The join is one string in three
-places: an E-row's cite = the direction row's receipt = the lap's QA path.
+Two pens, never crossed: the Roadmap plans and registers; the Seed alone
+writes E-row flips. The join is one string on two pages: an E-row's cite =
+the block row's receipt = the lap's QA path (the last two on the same page).
 The loop's only exit is through the Seed at G4 — a Narrative reads the Seed's
-§8 handoff and never reads the Roadmap or Collection directly, so two
-tellings can never keep separate books.
+§8 handoff and never reads the Roadmap directly, so two tellings can never
+keep separate books.
 
 ## 🚪 The gates
 
@@ -129,16 +118,16 @@ G1  Seed → Roadmap         the Seed skeleton stands: its outline is
                            human-ticked and §6 states every proposition as an
                            ⬜/🔨/✅ row, so the gap list is readable
 
-G2  Roadmap → Collection   every 🔨/⬜ E-row names a ▶️ released direction row
-                           that serves it, or carries an explicit waiver on
-                           the Seed's Log · release is a person's act, row by
-                           row — a machine proposes and never releases
+G2  Roadmap plan →         every 🔨/⬜ E-row names a ▶️ released block row
+    dispatch               that serves it, or carries an explicit waiver on
+                           the Seed's Log · release is a person's act, block
+                           by block — a machine proposes and never releases
 
-G3  Collection → Seed      the lap's done-when tests hold · every dispatched
+G3  lap → Seed             the lap's done-when tests hold · every dispatched
                            card binds a landed QA path · the settle is written
                            on the Seed: each flipped E-row cites the QA file
-                           its direction row landed · gaps remain → the next
-                           lap re-enters at P2
+                           its block row landed · gaps remain → the next lap
+                           on the Roadmap
 
 G4  Seed → Narrative       the Seed's current outline is human-ticked · every
                            ✅/🔨 E-row cites a §5 asset and carries its novelty
@@ -163,30 +152,41 @@ G7  Round (per round)      every received concern appears exactly once in the
                            — and a person approves the response receipt
 ```
 
-## 🗃 Group mapping (JL 260824)
+Gate numbers are stable across 0.6.0: G2 and G3 both read the Roadmap now
+(its plan face and its lap face), and no other gate moved.
+
+## 🗃 Group mapping (JL 260828)
 
 ```text
-P0–P3   A1-SD-story/         SD00-ideation · SD01-seed · SD02-roadmap ·
-                             SD03-collection — the venue-free head, one each
-P4      A2-NA-narrative/     NA<NN>-narrative-<desk>, one page per desk,
+P0–P2   A1-SD-story/         SD00-ideation · SD01-seed · SD02-roadmap —
+                             the venue-free head, one each
+P3      A2-NA-narrative/     NA<NN>-narrative-<desk>, one page per desk,
                              numbered in arrival order
-P5–P6   B<x>-<desk>/         one group per desk: its section pages (S<D>/A<D>
+P4–P5   B<x>-<desk>/         one group per desk: its section pages (S<D>/A<D>
                              tokens) AND its rounds (RD token) live together
 ```
 
 A foreign-desk round (feedback from a desk this board never told) mints that
 desk's B group even when the group holds only RD pages. Boards laid out under
 the pre-0.5.0 grammar (narratives inside the SD story group, a lone
-C1-RD-round group) are grandfathered and migrate only on explicit request.
+C1-RD-round group), and boards holding a separate `SD03-collection` page from
+the 0.5.0 era, are grandfathered and migrate only on explicit request.
 
-## 📜 Gazette of retired names (0.5.0)
+## 📜 Gazette of retired names
 
-Documents dated before 260824 use the old vocabulary; read them against this
-table and do not rewrite frozen files:
+Documents dated before the version shown use the old vocabulary; read them
+against this table and do not rewrite frozen files:
 
 ```text
 old phase name        new phase (alias)          old gate         new gate
 ──────────────────────────────────────────────────────────────────────────
+— 0.6.0 (260828): the Collection page folded into the Roadmap ——————————
+P3 Collection         P2 Roadmap (route) ·       G3 (unchanged    G3
+   (collect)          its lap divisions          number)
+P4 Narrative (tell)   P3 Narrative (tell)        G5               G5
+P5 Section (realize)  P4 Section (realize)       G6               G6
+P6 Round (respond)    P5 Round (respond)         G7               G7
+— 0.5.0 (260824) ————————————————————————————————————————————————————————
 P0 Ideate / Explore   P0 Ideation (ideate)       G0               G0
 P1 Establish          P1 Seed (establish)        G1 (est→tell)    G4
 P2 Tell               P4 Narrative (tell)        G2               G5
@@ -200,9 +200,9 @@ P4 Respond            P6 Round (respond)         G4               G7
 
 A phase transition leaves exactly one receipt: a dated Log row on the page
 that granted it (the Ideation Page for G0, the Seed for G1 and G4, the
-Roadmap for G2, the Collection for G3, the Narrative for G5 and G6, the Round
-for G7), stating the gate, the assertion results, and who ticked. No separate
-receipt store exists; the pages are the record.
+Roadmap for G2 and G3, the Narrative for G5 and G6, the Round for G7),
+stating the gate, the assertion results, and who ticked. No separate receipt
+store exists; the pages are the record.
 
 ## ⏱ Advancement is never scheduled
 
@@ -217,7 +217,8 @@ keep going, never good enough.)
 
 Phase is read, not stored: it is the highest gate whose assertion currently
 holds, per telling. Inside the establish loop the reading is the lap: a paper
-with released rows still running sits at P3 Collection; one whose last lap
-settled and left gaps sits at P2 Roadmap. Two tellings of one paper may sit
-in different phases — the MS telling in P6 while a WISE telling is in P5 —
-because P4 onward is per-narrative. P0–P3 are per-paper and shared.
+with released blocks still running sits at P2 with cards out; one whose last
+lap settled and left gaps sits at P2 planning the next release. Two tellings
+of one paper may sit in different phases — the MS telling in P5 while a WISE
+telling is in P4 — because P3 onward is per-narrative. P0–P2 are per-paper
+and shared.

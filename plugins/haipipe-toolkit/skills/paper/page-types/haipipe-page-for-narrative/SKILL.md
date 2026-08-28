@@ -1,22 +1,15 @@
 ---
 name: haipipe-page-for-narrative
 description: >-
-  The Paper Page Type for one venue-aligned Narrative: how one paper is told to
-  one desk. It converts the Seed's §8 handoff (carrying its Establishment
-  Board ids) and one shared Venue Page
-  into the paper's venue decision, claims with E-row parents, argument order,
-  reader journey, evidence and display allocation, and a detailed
-  one-row-per-section outline. One page per target venue, in the paper's own
-  narrative group (A2-NA) beside the venue-free story group. Use when
-  designing or retargeting a paper story, deciding
-  claim roles, repairing the section map, or giving Section Pages executable
-  handoffs. Trigger: narrative page, paper story, claim system, claim roles,
-  argument arc, reader journey, section map, venue decision, retarget,
-  page-type narrative, /haipipe-page-for-narrative.
+  Paper Page Type for one venue-aligned narrative: how one paper is told to
+  one desk. Turns the Seed's handoff plus a Venue Page into claims, argument
+  order, display allocation, and a one-row-per-section outline. Use when
+  designing or retargeting a paper story, or repairing its section map.
+  Trigger: narrative page, paper story, claim roles, section map, page-type
+  narrative.
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-08-27"
-  summary: "0.5.1 (JL 260827): gate-receipt duty sunk from the workflow's receipts law into this contract — G5's and G6's receipt Log rows live on this page; a Section page never holds a gate receipt. 0.5.0 (JL 260824): narratives move OUT of the story group into their own A2-NA-narrative group — NA<NN>-narrative-<desk>, one page per desk in arrival order, token NA — because journey 0.5.0 makes the story group the venue-free P0-P3 head (ideation, seed, roadmap, collection) and Narrative the P4 phase; SD-numbered narratives are grandfathered. 0.4.4 (JL 260824): ideation 0.5.0 vocabulary in the story-group figure (SD00 line reads 'the ideas'). 0.4.3 (JL 260824): ideation-first story order — narratives start at SD02, after SD00-ideation and SD01-seed. 0.4.2 (JL 260824): the map row names the telling's DESK ROOM files (<N>-<desk><year>/sections/...), because each telling owns a self-contained room with its own displays/ copies and reference.bib per the door's room law; board address is 0-paperboard/. 0.4.1 renames the runtime home to the A1-SD-story group under the 260823 scaffold grammar (0-SD-seed/ boards grandfathered), keeping the seed contract 0.4.0 and this file in agreement. 0.4.0 wires the joins (JL 260821): every claim cites its Seed E-row parent, division 1 is the paper's venue DECISION binding the shared QBv bank page."
+  version: "0.5.2"
+  last_updated: "2026-08-28"
   group-token: "NA"
   outline:
     mode: grammar
@@ -29,14 +22,14 @@ metadata:
 Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
 Declare `page-type: narrative` and record the shared Venue Page it binds.
 
-In a runtime paper board Narratives are the P4 group of their own — one page
+In a runtime paper board Narratives are the P3 group of their own — one page
 per desk, in arrival order, reading the story group's Seed from next door
-(journey 0.5.0, JL 260824; SD-numbered narratives inside the story group are
+(journey 0.6.0, JL 260828; SD-numbered narratives inside the story group are
 grandfathered):
 
 ```text
 0-paperboard/
-├── A1-SD-story/                  P0-P3 · ideation · seed · roadmap · collection
+├── A1-SD-story/                  P0-P2 · ideation · seed · roadmap
 │                                 the venue-free head this group never joins
 └── A2-NA-narrative/
     ├── NA01-narrative-<desk>/    how the paper is told to desk 1
@@ -158,7 +151,7 @@ Narrative uses the same Page-local lanes as every Page:
 
 ```text
 pagex/     Probe's accepted-Page lane: the Seed (§8 handoff only — never the
-           Roadmap or Collection), the bank Venue Page, analysis or
+           Roadmap), the bank Venue Page, analysis or
            literature Pages
 probe/     Probe's Task/Discovery QA lane: unresolved judgments and missing support
 bibex/     citations supporting framing, method rationale, limitations, or claims

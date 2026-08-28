@@ -1,21 +1,14 @@
 ---
 name: haipipe-page-for-ideation
 description: >-
-  The Paper Page Type for one research DIRECTION's ideas, kept in the words of
-  the reports that produce them: ideas are generated and ranked
-  (idea-creator → IDEA_REPORT.md), novelty-checked claim by claim
-  (novelty-check → Core Claims), piloted, and either eliminated or sent to a
-  Seed — all before the paper's Seed exists. One page per direction at the
-  story group's head (0-paperboard/A1-SD-story/SD00-ideation/), minted with
-  the repo. Use when brainstorming a direction, checking whether an idea has
-  been done, recording a pilot, eliminating an idea, or sending one to a new
-  paper's Seed. Trigger: ideation page, find ideas, brainstorm, novelty check,
-  has this been done, eliminate this idea, went to seed, page-type ideation,
-  /haipipe-page-for-ideation.
+  Paper Page Type for one research direction's ideas, before any paper's Seed
+  exists: generate and rank ideas, novelty-check them, record pilots, then
+  eliminate or send one to a Seed. Use when brainstorming a direction or
+  checking whether an idea has been done. Trigger: ideation page, find ideas,
+  brainstorm, novelty check, page-type ideation.
 metadata:
-  version: "0.5.3"
-  last_updated: "2026-08-27"
-  summary: "0.5.3 (JL 260827): gate-receipt duty sunk from the workflow's receipts law into this contract — G0's receipt Log row lives on this page; found when SD02-roadmap missed its G2 receipt because only the collection contract carried the duty locally. 0.5.2 (JL 260824): contradiction repair found in the pre-commit audit — the fork clause still said a second ideation page 'takes the next free SD number', which journey 0.5.0 had made impossible by fixing SD02/SD03 as the roadmap and the collection ('one each'); a board now holds exactly ONE ideation page and a genuine fork mints its own repo, the two linked through the originating row's `went to`. 0.5.1 (JL 260824): the home figure gains the story group's two new siblings — SD02-roadmap and SD03-collection per journey 0.5.0 — and notes the tellings live next door in A2-NA-narrative. 0.5.0 (JL 260824): the page adopts the SOURCE REPORTS' OWN STRUCTURE and drops the coined vocabulary ('Idea Ledger', 'nursery', 'Graduations', 'batch intake' are gone) — divisions are now Direction · Ideas (ranked) · one division per idea titled `Idea <n>: <title>` carrying IDEA_REPORT's own fields (Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims · Pilot result · Risk · Reviewer's likely objection · Recommendation) · Eliminated Ideas (the report's table, rows permanent) · Suggested Execution Order (order + went to <seed>). The summary table's last column is `went to`; the verdict vocabulary is the Novelty Report's own (PROCEED / PROCEED WITH CAUTION / ABANDON, plus ⬜ open). Standing rule recorded the same day: never coin '一眼 AI' words — mirror the stored artifact's field names. 0.4.1 (JL 260824): intake interfaces hardened; routing contract-fixed (novelty → /haipipe-discovery-idea novelty_check QA, pilot → task QA); ARIS skills demoted to methodology references; grain adapters (one question per claim; novel/partial/preempted/inconclusive → HIGH/MEDIUM/LOW/⬜). 0.4.0 (JL 260824): joins the STORY GROUP as page zero, A1-SD-story/SD00-ideation/, token SD; seed shifts to SD01. 0.3.0 renames explore → IDEATION. 0.2.0 moves the page onto the paper's own board; repo minted with it. 0.1.0 created the P0 page: claim-level novelty, pilot receipts, permanent eliminated rows, ARIS methodology."
+  version: "0.5.4"
+  last_updated: "2026-08-28"
   group-token: "SD"
   outline:
     mode: grammar
@@ -36,11 +29,11 @@ sits in the same group as the Seed its best idea becomes, before it:
 
 ```text
 Paper-<Slug>/0-paperboard/
-└── A1-SD-story/                    the venue-free P0-P3 head (journey 0.5.0)
+└── A1-SD-story/                    the venue-free P0-P2 head (journey 0.6.0)
     ├── SD00-ideation/              one direction, its ideas, ranked
     ├── SD01-seed/                  what the winning idea became
-    ├── SD02-roadmap/               where the campaign goes next
-    └── SD03-collection/            what the campaign brought back
+    └── SD02-roadmap/               where the campaign goes next, and what
+                                    it brought back
 ```
 
 (The tellings live next door in `A2-NA-narrative/`, one page per desk.)
@@ -50,12 +43,11 @@ what creates `Paper-<Slug>/` — as a git submodule immediately, per the
 scaffold rule — with only `0-paperboard/A1-SD-story/SD00-ideation/` inside.
 The direction's name may seed the repo slug; a direction that dies leaves the
 repo standing as its own record. **A board holds exactly ONE ideation page**
-(journey 0.5.0 fixes the story group's four roles, one each): a direction that
+(the journey fixes the story group's roles, one each): a direction that
 genuinely forks is a new direction, so it mints its own `Paper-<Slug>/` with
 its own `SD00-ideation`, and the two pages cross-reference through the
 originating row's `went to`. Before 0.5.0 a fork could take "the next free SD
-number"; that reading died when SD02 and SD03 became the roadmap and the
-collection.
+number"; that reading died when the journey fixed every SD number's role.
 
 The page is EVERGREEN (♻️): it never closes while the direction is alive.
 Ideas are cheap — generated in batches, ranked, eliminated without ceremony.

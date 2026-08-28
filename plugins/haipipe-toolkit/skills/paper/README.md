@@ -6,8 +6,8 @@ and DELETED 260822 rather than parked; no `_old/` archive exists here.
 
 ## Active architecture
 
-Seven phases, each named by its authority page, gated by
-`haipipe-paper-workflow` (journey 0.5.0, JL 260824); the venue bank is a
+Six phases, each named by its authority page, gated by
+`haipipe-paper-workflow` (journey 0.6.0, JL 260828); the venue bank is a
 library outside the journey:
 
 ```text
@@ -15,12 +15,13 @@ P0 Ideation (ideate)     SD00 · the repo is minted with this page · sends one
                          idea to its Seed
 P1 Seed (establish)      SD01 · one per paper · venue-free · E-board with
                          novelty column
-P2 Roadmap (route)       SD02 · direction rows serving E-rows · person-released
-P3 Collection (collect)  SD03 · dispatch cards · receipts registered lap by lap
-   ↺ P1↔P2↔P3 = the establish loop · exits only through the Seed at G4
-P4 Narrative (tell)      NA · one per desk · §1 binds a bank Venue Page
-P5 Section (realize)     one per map row · then assemble (a verb) at G6
-P6 Round (respond)       in the desk's B group · routes each concern once →
+P2 Roadmap (route)       SD02 · block rows serving E-rows · person-released ·
+                         then dispatch cards and receipts, lap by lap, on the
+                         same page
+   ↺ P1↔P2 = the establish loop · exits only through the Seed at G4
+P3 Narrative (tell)      NA · one per desk · §1 binds a bank Venue Page
+P4 Section (realize)     one per map row · then assemble (a verb) at G6
+P5 Round (respond)       in the desk's B group · routes each concern once →
                          Seed / Narrative / Section · gates G0-G7 in the
                          workflow file
 ```
@@ -59,12 +60,11 @@ paper/
 ├── haipipe-paper/
 │   └── SKILL.md              one public Paper door and routing contract
 ├── haipipe-paper-workflow/
-│   └── SKILL.md              the seven-phase gate machine; transitions only
+│   └── SKILL.md              the six-phase gate machine; transitions only
 ├── page-types/
 │   ├── haipipe-page-for-ideation/
 │   ├── haipipe-page-for-seed/
 │   ├── haipipe-page-for-roadmap/
-│   ├── haipipe-page-for-collection/
 │   ├── haipipe-page-for-venue/
 │   ├── haipipe-page-for-narrative/
 │   ├── haipipe-page-for-section/
@@ -80,7 +80,7 @@ paper/
 | Layer | Owns |
 |---|---|
 | `haipipe-paper` | Paper routing, Page graph, assembly, delivery |
-| `haipipe-paper-workflow` | the seven phases, their gates, phase receipts — never content |
+| `haipipe-paper-workflow` | the six phases, their gates, phase receipts — never content |
 | `haipipe-page` | Shared Page shape and CREATE/WORK ON verbs |
 | Paper Page Type | The persistent shape and closing rule of one paper artifact |
 | `haipipe-page-workflow` | OUTLINE through CHECK, receipts, stop rules |

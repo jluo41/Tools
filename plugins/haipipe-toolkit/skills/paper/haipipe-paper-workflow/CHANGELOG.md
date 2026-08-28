@@ -1,3 +1,18 @@
+## 0.6.0 — 2026-08-28
+
+- **Six phases: the Collection page folded into the Roadmap** (JL 260828: the
+  two were plan and result of the same campaign, one-to-one; the lap-L1 field
+  test showed every Collection edit forcing a mirrored Roadmap edit). P2
+  Roadmap (route) now carries plan AND intake; Narrative, Section, Round
+  renumber P3/P4/P5. The establish loop is P1↔P2.
+- **Gate numbers unchanged**: G2 (plan → dispatch) and G3 (lap → Seed) both
+  read the Roadmap now — its plan face and its lap face — and both leave
+  their receipt Log rows there. Three pens become two: the Roadmap plans and
+  registers; the Seed alone flips.
+- Group mapping: P0–P2 in A1-SD-story (three pages), P3 in A2-NA-narrative,
+  P4–P5 in the desks' B groups. Boards with a separate SD03-collection page
+  are grandfathered; the gazette gains the 0.6.0 renumber rows.
+
 ## 0.5.0 — 2026-08-24
 
 - **Seven phases, named by their authority pages** (JL 260824: "phase 和 page

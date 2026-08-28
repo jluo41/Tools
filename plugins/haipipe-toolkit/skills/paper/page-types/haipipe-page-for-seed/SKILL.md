@@ -7,8 +7,8 @@ description: >-
   venue without rewriting the study. Trigger: seed page, paper identity,
   pitch, establishment board, page-type seed.
 metadata:
-  version: "0.5.2"
-  last_updated: "2026-08-27"
+  version: "0.5.3"
+  last_updated: "2026-08-28"
   group-token: "SD"
   outline:
     mode: fixed
@@ -29,15 +29,15 @@ group are grandfathered):
 0-paperboard/A1-SD-story/
 ├── SD00-ideation/                the ideas this paper came from
 ├── SD01-seed/                    what the paper IS · venue-free · exactly one
-├── SD02-roadmap/                 where to go next · plans against §6's gaps
-└── SD03-collection/              what came back · proposes the settles
+└── SD02-roadmap/                 where to go next AND what came back ·
+                                  plans against §6's gaps, proposes the settles
 ```
 
-The group law: the story group is the paper's venue-free head (P0–P3); no
+The group law: the story group is the paper's venue-free head (P0–P2); no
 manuscript prose and no venue word lives here — the tellings start next door
 in `A2-NA-narrative/`. In the establish loop this page is the SCOREBOARD:
-the Roadmap plans, the Collection registers, and the Seed ALONE writes E-row
-flips, each flip citing the landed QA path the other two pages carry.
+the Roadmap plans and registers, and the Seed ALONE writes E-row
+flips, each flip citing the landed QA path the Roadmap's lap carries.
 
 ## 🌱 Grain and boundary
 
