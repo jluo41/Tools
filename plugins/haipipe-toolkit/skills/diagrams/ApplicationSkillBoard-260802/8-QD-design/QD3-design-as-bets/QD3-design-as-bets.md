@@ -123,11 +123,9 @@ A board holding a PRE-CONTRACT slate declares `mode: record` on `board.md`. It r
 ### 📋 Contracts
 - `../../../../application/haipipe-design/SKILL.md`
   The design door: the Reads Law, the two births, the verbs.
-- `../../../../board/page-plugins/haipipe-plugin-direction/SKILL.md`
-  The card grammar, the release gate, and the grant chain.
 - `../../../../board/page-plugins/haipipe-plugin-design/SKILL.md`
-  The unit anatomy, the compiled spec, and the kind routing.
-- `../../../../application/haipipe-design/agents/haipipe-design-arm-agent.md`
+  The card grammar and release gate (§card, absorbed from the deleted haipipe-plugin-direction 260828), the unit anatomy, the compiled spec, and the kind routing.
+- `../../../../application/haipipe-design/agents/haipipe-designer-agent.md`
   The realizer's packet, procedure and refusals.
 
 ## Law
@@ -139,3 +137,4 @@ The wager lives on the card. A unit cites it and never restates it, and no machi
 260824 · The design family shipped: two page plugins, one agent, one door, and three declarations (`reads:`, `born-of:`, `stance:`). The board layer invented nothing else.
 
 260824 · The laws gained teeth. Twenty-three checker rules over `direction/` and `design/`, each proven to FAIL on a board broken exactly that one way before being trusted, after a run in which four real defects were caught by a human or an agent and none by the machinery.
+260828 · One thread, one folder (JL: "no need to have a new direction folder"): the card moved into its unit as card.md, direction/ retired, DR/DU numbering collapsed to DU, both pointer fields died with the folder split, and release-before-realize became a checker ERROR (unit-realized-before-release, proven to FAIL). B00 migrated same day, 0 error.

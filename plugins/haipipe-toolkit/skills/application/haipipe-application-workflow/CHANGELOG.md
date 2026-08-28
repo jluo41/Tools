@@ -44,3 +44,5 @@
 - The naming law gains its stated tier: a lane machine finer-grained than the page names phases by authority ARTIFACT class, same cannot-name-one-is-a-gate test.
 - G5 defers to haipipe-page-for-design's acceptance-row grammar (the old field list failed every live accepted row on B00) and admits the emitted: terminal.
 - The compose loop's release line admits the recorded blanket over NAMED cards (haipipe-plugin-direction 0.3.0), which B00's live run had already used without a law behind it.
+
+- 0.8.1 (260828, same-day sync riders): the compose-loop sketch reads card.md-in-thread-folder (one-thread-one-folder merge) and cites haipipe-plugin-design §card law 1 (haipipe-plugin-direction deleted); the design-lane phase list gained D1 Card and D5 PageDown.

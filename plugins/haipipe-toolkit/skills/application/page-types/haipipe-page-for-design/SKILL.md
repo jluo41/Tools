@@ -4,7 +4,7 @@ description: >-
   The Page Type contract for an Application DESIGN PAGE on the DesignBoard, machine key `page-type: design`. This page lives in `<DesignBoard>/2-DS-design/DS<NN>-<slug>/`, one page per audience x behavior job x primary venue. A DesignBoard may own many Design Pages; each serves one audience × behavior job × primary venue, consumes the Brief and settled InsightBoard Design Handoffs through PageX, then authors principles, a message/unit map, repeated message divisions, variants, rails, and a per-division acceptance row. The Page ENDS AT ACCEPTED: it never ships and never measures. Use for SMS/email/dashboard/checklist/report/message design, audience-specific strategy, message sequences, interaction components, or retargeting. Trigger: design page, message strategy, audience job, message map, message divisions, component map, variants, accept a unit, page-type design, /haipipe-page-for-design.
 metadata:
   version: "0.6.1"
-  last_updated: "2026-08-24"
+  last_updated: "2026-08-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   outline:
     mode: grammar
@@ -44,7 +44,7 @@ NOT this Page  building it · shipping it · running the experiment · collectin
 
 **Warrant and grant are different things, and 0.5.0 conflated them.** A WARRANT says why a division may exist; since the 260824 demotion it rides inline on the card's `stance:` by default, and moves onto a P page only when promotion earns one. A GRANT says what an arm-agent may quote while composing, and it must name InsightBoard pages by path, because an agent cannot be handed a rule and asked to quote a rate. An exploration card is the clearest case: it exists to resolve a named uncertainty, and that uncertainty lives on a K row no principle restates. The chain reads `board reads:` ⊇ `card grant` ⊇ `unit evidence.md`, and it governs the grant only.
 
-Design performs composition, not evidence settlement. It owns `pagex/` and no `probe/`. Since 0.5.0 it owns TWO plugins of its own (JL 260824): `direction/` (haipipe-plugin-direction), the strategy cards proposed before any artifact and released only by a person; and `design/` (haipipe-plugin-design), the artifact units, one per released card, written by one arm-agent each. Every unit-citing division carries a `stance:` taken verbatim from its card, and a division without a stance is illegal. The wager terms (expected effect, falsification line) live on the card only; the page and the unit cite, never restate.
+Design performs composition, not evidence settlement. It owns `pagex/` and no `probe/`. Since 260828 it owns ONE plugin of its own, `design/` (haipipe-plugin-design): one THREAD per folder, card.md first — the design card proposed before any artifact and released only by a person (§card) — with the artifact unit growing beside it after release, written by one designer each. (0.5.0 split this across two plugins, `direction/` + `design/`; JL merged them when the one-thread-one-folder layout made two laws over one folder a drift source.) Every unit-citing division carries a `stance:` taken verbatim from its card, and a division without a stance is illegal. The wager terms (expected effect, falsification line) live on the card only; the page and the unit cite, never restate.
 
 **This Page ends at ACCEPTED (JL 260820).** Deciding that an exact version may go is a design judgment and belongs here. Building it, shipping it, running the A/B, and collecting what came back are separate work owned by the task layer. A Design Page has no deploy record and no round folder.
 
@@ -105,8 +105,7 @@ PageX binds exact files and scopes, and it crosses boards unchanged because it b
 ```text
 <application-root>/<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>/
 ├── DS<NN>-<audience>-<job>.md    the page, named for its own folder
-├── direction/       strategy cards · haipipe-plugin-direction
-├── design/          artifact units · haipipe-plugin-design
+├── design/          threads · haipipe-plugin-design · card.md first, unit beside it
 ├── render/          the unit as the recipient sees it · read BEFORE accepting
 ├── pagex/
 ├── outline/

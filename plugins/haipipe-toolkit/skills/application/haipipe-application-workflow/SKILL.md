@@ -19,7 +19,7 @@ description: >-
   frontier, what is runnable, climb loop, compose loop, phase gate,
   /haipipe-application-workflow.
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-08-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -133,10 +133,10 @@ books.
 
 ```text
 the Brief's roster names a DS page
-   → cards proposed at `proposed` in direction/
+   → cards proposed at `proposed`, each card.md the first file of its thread folder in design/
    → ✋ a person releases each card — card by card, or by a recorded blanket over
-     NAMED cards (haipipe-plugin-direction law 1) · a machine proposes, never releases
-   → one arm-agent per released card → one unit in design/ → judge against its spec
+     NAMED cards (haipipe-plugin-design §card law 1) · a machine proposes, never releases
+   → one designer per released card → the unit grows beside the card → judge against its spec
    → the division cites the unit id, its stance, and a render version
    → ✋ a person accepts the division                                          G5
 ```
@@ -186,7 +186,7 @@ by contract. Two sit between phases and two sit inside a phase, one each in P1 a
                     dispatched only on explicit approval (JL ruling, standing)
 ✋ handoff          at G2: signed by a person, never ticked by a machine
 ✋ card release     INSIDE P4, per card: `state: proposed` → `released`, a person's
-                    act (haipipe-plugin-direction law 1). Added by the design family
+                    act (haipipe-plugin-design §card law 1). Added by the design family
                     on 260824 and unlisted here until 0.4.0 — this file said "three
                     gates" while four were live
 ✋ acceptance       at G5: the exact visible version is explicitly accepted
@@ -239,7 +239,7 @@ which refines this file's lane without contradicting it:
 
 ```text
 this file    🎨 P3 Brief                P4 Design
-that file    D0 Brief    D1 Direction · D2 Unit · D3 Verdict · D4 Division
+that file    D0 Brief    D1 Card · D2 Unit · D3 Verdict · D4 Division · D5 PageDown
 gates        G4 = GD0 · G5 = GD5's all-accepted close
 frontier     per DESIGN-PAGE here      per DIVISION (card → unit → row) there
 ```

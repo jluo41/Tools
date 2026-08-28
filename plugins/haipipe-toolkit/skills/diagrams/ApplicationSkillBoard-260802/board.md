@@ -227,5 +227,4 @@ haipipe-insight/ ../../application/haipipe-insight/
 insight-workflow/ ../../application/haipipe-insight-workflow/
 workflow/ ../../application/haipipe-application-workflow/
 partition.md ../../application/haipipe-application/ref/partition.md
-direction-plugin/ ../../board/page-plugins/haipipe-plugin-direction/
 design-plugin/ ../../board/page-plugins/haipipe-plugin-design/

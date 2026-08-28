@@ -4,7 +4,7 @@ description: >-
   The Page Type contract for the one BRIEF Page that heads a DesignBoard. It fixes the opportunity, audience set, behavior/outcome, venue scope, promise, the insight needs this Application raises, optional core PageX inputs, and the Design Page roster. The data inventory it used to carry moved to the InsightBoard's Meta Page on 260820. Use when starting or retargeting an Application, deciding what must be understood before design, folding legacy Seed/Venue/Pitch decisions, or checking which Design work the Application authorizes. Trigger: application brief, design brief, audience roster, behavior change, venue scope, insight needs, design roster, page-type brief, /haipipe-page-for-brief.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-08-20"
+  last_updated: "2026-08-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   outline:
     mode: fixed

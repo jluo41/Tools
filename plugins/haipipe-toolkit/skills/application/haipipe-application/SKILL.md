@@ -93,7 +93,7 @@ page-level procedures both doors share.
 
 design-side verbs (brief · design · direction · release · realize · judge ·
 render · accept) are OWNED by the sibling door /haipipe-design since 260824:
-reads:/born-of:/stance laws, direction cards, artifact units, the arm-agent.
+reads:/born-of:/stance laws, design cards, artifact units, the arm-agent.
 The rows above remain as forwards; fn/brief.md and fn/design.md stay as the
 page-level procedures both doors share.
 ```
@@ -144,7 +144,7 @@ A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
     ├── 1-P-principle/P<NN>-<slug>/        cites W · the only WARRANT crossing
     └── 2-DS-design/DS<NN>-<slug>/         units as divisions
-        ├── direction/                    strategy cards · the bet, before any copy
+        ├── direction/                    design cards · the bet, before any copy
         ├── design/                       artifact units · one per released card
         ├── render/                       the unit as the recipient sees it
         └── pagex/ outline/ display/

@@ -7,7 +7,7 @@ owner: JL
 
 Why must a design unit OPEN a space before it closes one, when every other surface in the family converges?
 
-Because a lane built only from convergence surfaces can only ever conclude, and design is not conclusion. Two live field rounds proved it on disk: with the whole machine passing every gate, the arms produced zero new copy both times, first quoting fielded templates and then merely renominating them. Nothing was broken. Every surface the family owned narrows what already exists, a spec that COMPILES, an evidence file that BINDS, a judge that CHECKS, so the lawful maximum was redistribution and creation had no legal address. This page rules that the divergence surface is a structural requirement of a design lane, registers what grounds it, and states the seam that keeps the open honest.
+Because a lane built only from convergence surfaces can only ever conclude, and design is not conclusion. Two live field rounds proved it on disk: with the whole machine passing every gate, the designers produced zero new copy both times, first quoting fielded templates and then merely renominating them. Nothing was broken. Every surface the family owned narrows what already exists, a spec that COMPILES, an evidence file that BINDS, a judge that CHECKS, so the lawful maximum was redistribution and creation had no legal address. This page rules that the divergence surface is a structural requirement of a design lane, registers what grounds it, and states the seam that keeps the open honest.
 
 ### Writing Style
 
@@ -42,7 +42,7 @@ State the defect from the run that revealed it, then the rule, then the anchor. 
 **What two rounds showed, with nothing broken**: the evidence for this page's ruling is a passing machine.
 
 ```text
-round   date     what the arms produced          what the law permitted
+round   date     what the designers produced          what the law permitted
 ──────────────────────────────────────────────────────────────────────────
 2       260827   one unit QUOTED two fielded     grant-only citation +
                  templates, authored no copy     a wisdom page forbidding
@@ -52,7 +52,7 @@ round   date     what the arms produced          what the law permitted
                  authored this round"            a tailoring thesis
 ```
 
-Both rounds passed every gate. That is the finding: the retreat was not a failure of the arms but the lane's lawful maximum, because the arm's every writable surface asked what the evidence already licensed, and never what could be true. A generate stance was added after round 3 to license bold copy; it was not enough on its own, because licensing an act the process has no room to perform changes nothing. The room is what this page adds.
+Both rounds passed every gate. That is the finding: the retreat was not a failure of the designers but the lane's lawful maximum, because the designer's every writable surface asked what the evidence already licensed, and never what could be true. A generate stance was added after round 3 to license bold copy; it was not enough on its own, because licensing an act the process has no room to perform changes nothing. The room is what this page adds.
 
 #### 2 · Why open: quantity under deferred judgment
 
@@ -69,7 +69,7 @@ Jansson & Smith 1991  Design Studies          10.1016/0142-694X(91)90003-F
 Muñoz Adánez 2005     Spanish J. of Psychology  10.1017/s1138741600005096
 ```
 
-C-K theory is the formal statement of §1's defect and the strongest anchor this page has: design reasons across a Knowledge space of propositions with truth values and a Concept space of propositions that are UNDECIDABLE in current knowledge, and convergence applied before the concept space has expanded is not merely suboptimal but ill-posed, since the candidates it would select among do not exist yet. That is precisely what a lane of only-converging surfaces does, and it is why the fix had to be a new surface rather than a new permission. Guilford's structure-of-intellect separates divergent from convergent production as distinct operations, which is why this page treats them as two movements rather than two moods of one. Osborn's deferred-judgment and quantity rules are the operational form, and the controlled test of the quantity principle supports the explicit floor rather than an implicit "generate some". Production blocking shows generation degrades when it must take turns with judgment; parallel prototyping beat serial on quality AND divergence together, so the open is not a tax paid for the close; and fixation names what the sequencing guards against, an example seen first anchoring everything after it, which is why the arm diverges BEFORE re-reading fielded copy.
+C-K theory is the formal statement of §1's defect and the strongest anchor this page has: design reasons across a Knowledge space of propositions with truth values and a Concept space of propositions that are UNDECIDABLE in current knowledge, and convergence applied before the concept space has expanded is not merely suboptimal but ill-posed, since the candidates it would select among do not exist yet. That is precisely what a lane of only-converging surfaces does, and it is why the fix had to be a new surface rather than a new permission. Guilford's structure-of-intellect separates divergent from convergent production as distinct operations, which is why this page treats them as two movements rather than two moods of one. Osborn's deferred-judgment and quantity rules are the operational form, and the controlled test of the quantity principle supports the explicit floor rather than an implicit "generate some". Production blocking shows generation degrades when it must take turns with judgment; parallel prototyping beat serial on quality AND divergence together, so the open is not a tax paid for the close; and fixation names what the sequencing guards against, an example seen first anchoring everything after it, which is why the designer diverges BEFORE re-reading fielded copy.
 
 #### 3 · Why close: convergence is where the evidence chain attaches
 
@@ -83,7 +83,7 @@ Toh & Miller 2016     Research in Eng. Design 10.1007/s00163-015-0212-1
 Simon 1956            Psychological Review    10.1037/h0042769
 ```
 
-QOC's design space analysis is the shape of the selection table this family adopts, options set against criteria with the reasoning kept, and IBIS is the same commitment one generation earlier: positions recorded with their arguments, not silently dropped. The hybrid-structure result is why arms fan out in parallel and only then select. The concept-selection line shows the close is where risk aversion bites, which is why the family keeps acceptance a PERSON's act and separate from generation. Satisficing bounds the open: a candidate set is enough when one workable option survives the criteria, not when the space is exhausted.
+QOC's design space analysis is the shape of the selection table this family adopts, options set against criteria with the reasoning kept, and IBIS is the same commitment one generation earlier: positions recorded with their arguments, not silently dropped. The hybrid-structure result is why designers fan out in parallel and only then select. The concept-selection line shows the close is where risk aversion bites, which is why the family keeps acceptance a PERSON's act and separate from generation. Satisficing bounds the open: a candidate set is enough when one workable option survives the criteria, not when the space is exhausted.
 
 #### 4 · The seam: what keeps the open honest
 
@@ -92,7 +92,7 @@ QOC's design space analysis is the shape of the selection table this family adop
 ```text
 rot                                  rule that prevents it
 ──────────────────────────────────────────────────────────────────────────
-theatre · candidates written to      the arm may NOT rail-check, score, cite
+theatre · candidates written to      the designer may NOT rail-check, score, cite
 be discarded, the finalist decided   or self-censor while diverging; judging
 in advance                           while generating is the forbidden move
 laundering · a sketch cited later    ideation.md claims nothing and cites
@@ -105,7 +105,7 @@ re-scores the discards and the       finalists ⊆ candidates, dispositions
 deferral is undone after the fact    reasoned — and never re-judges a discard
 ```
 
-The fourth is the subtle one and it is why the audit is scoped the way it is. Deferred judgment that a later actor may reopen was never deferred; it was postponed, and an arm that expects its sketches to be graded will sketch defensively. Intuition is admitted on the same reasoning: a candidate may be labeled `intuition` with no justification at generation time and earn its warrant at selection, which is the abductive order this board already ruled on, the leap first and the warrant after.
+The fourth is the subtle one and it is why the audit is scoped the way it is. Deferred judgment that a later actor may reopen was never deferred; it was postponed, and a designer that expects its sketches to be graded will sketch defensively. Intuition is admitted on the same reasoning: a candidate may be labeled `intuition` with no justification at generation time and earn its warrant at selection, which is the abductive order this board already ruled on, the leap first and the warrant after.
 
 #### 5 · Both information regimes design
 
@@ -138,7 +138,7 @@ own best idea afterwards         to be fielded rather than a chosen winner ·
                                  selection failure is why the field decides
 quality against quantity shows   the floor is five and there is no ceiling
 DIMINISHING RETURNS rather       rule, because a cap would be a second
-than being unbounded             judgment on generation; the arm stops when
+than being unbounded             judgment on generation; the designer stops when
                                  the angles are covered, not at a quota
 the active ingredient may be     goal-first is a REQUIRED angle, not an
 well-specified GOALS rather      optional one, and the Brief's outcome is
@@ -147,7 +147,7 @@ than divergence as such          what makes it specific · unstructured
                                  mode this qualification names
 ```
 
-The strongest of the three deserves stating plainly, since it argues against a tempting shortcut: because generators cannot reliably identify their own best candidate, an arm that diverges and then picks ONE finalist has spent the open and thrown away most of what it bought. Fielding the variant set is what converts the open into evidence, and it is the same argument the family already makes for parallel arms, arriving here from the ideation literature instead.
+The strongest of the three deserves stating plainly, since it argues against a tempting shortcut: because generators cannot reliably identify their own best candidate, a designer that diverges and then picks ONE finalist has spent the open and thrown away most of what it bought. Fielding the variant set is what converts the open into evidence, and it is the same argument the family already makes for parallel designers, arriving here from the ideation literature instead.
 
 #### 7 · What the machine checks, and what is owed
 
@@ -211,12 +211,12 @@ Until those three rules land, the checks are the judge's cold read, which is a w
 
 - `../../../../board/page-plugins/haipipe-plugin-design/SKILL.md`
   0.6.0 · `ideation.md` in the unit anatomy and the two movements, with the novelty duty this page's §6 checks.
-- `../../../../board/page-plugins/haipipe-plugin-direction/SKILL.md`
-  0.5.0 · law 4, the generate stance and its two warrant legs, including the brief-only regime of §5.
+- `../../../../board/page-plugins/haipipe-plugin-design/SKILL.md`
+  §card law 4 (written as haipipe-plugin-direction 0.5.0, absorbed here 260828) · the generate stance and its two warrant legs, including the brief-only regime of §5.
 - `../../../../application/haipipe-design-workflow/SKILL.md`
   0.4.0 · the three postures and the GD2/GD3 teeth.
-- `../../../../application/haipipe-design/agents/haipipe-design-arm-agent.md`
-  The two-movement generate branch the arm executes, with the fixation guard as its step order.
+- `../../../../application/haipipe-design/agents/haipipe-designer-agent.md`
+  The two-movement generate branch the designer executes, with the fixation guard as its step order.
 
 ### 📥 Input files
 
@@ -242,10 +242,11 @@ A lane whose every surface narrows can only conclude. A design lane holds at lea
 
 ## Discussion
 
-The open and the close are one phase and not two, which is why they share a file rather than becoming D2a and D2b. Splitting them would mint a gate between generating and selecting, and a gate is a place where a person or a judge intervenes, which is exactly the deferred-judgment breach §4 rules against. The file is the seam: one arm, one folder, two movements, no handoff in between.
+The open and the close are one phase and not two, which is why they share a file rather than becoming D2a and D2b. Splitting them would mint a gate between generating and selecting, and a gate is a place where a person or a judge intervenes, which is exactly the deferred-judgment breach §4 rules against. The file is the seam: one designer, one folder, two movements, no handoff in between.
 
 ## Log
 
 260828 · Born after two field rounds produced zero new copy while passing every gate. JL ruled the open and the close are the point: design opens from the data and then closes, and the necessity of both belongs on the board.
 260828 · The divergence sweep landed as `S02_design-process-theory/06`, fifteen sources verified live against Crossref and OpenAlex. C-K theory verified and is now the page's formal anchor: converging before the concept space expands is ill-posed, not merely early.
 260828 · Three qualifications folded in as §6 rather than dropped. The selection-failure finding argues for fielding the variant set instead of picking one finalist, and the goal-setting reinterpretation is why goal-first is a required angle.
+260828 · The thread folder merge landed beneath this page's rules unchanged: ideation.md and the pool anatomy now sit beside their card.md rather than across a folder boundary from it.

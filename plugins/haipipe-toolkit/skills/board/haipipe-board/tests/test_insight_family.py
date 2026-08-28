@@ -8,11 +8,46 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cli.check import Report, check_insight_family
+from cli.check import Report, check_insight_family, check_partition_register
 
 W_PAGE = "1-F-full/FW01-send-salience/FW01-send-salience.md"
 Q_PAGE = "0-MT-meta/MT02-question-information/MT02-question-information.md"
 I_PAGE = "1-F-full/BI03-audience/BI03-audience.md"
+M_PAGE = "0-MT-meta/MT00-meta/MT00-meta.md"
+
+M_OK = """# MT00
+page-type: meta
+
+**Partitions**: the only place a partition is defined.
+
+```text
+letter name          population block                config        group
+─────────────────────────────────────────────────────────────────────────
+F      full          where: []  declared unfiltered  full.yaml     1-F-full/
+                     400,000 of 400,000 rows · 100.0000%
+B      youngmale     patient_gender eq M             ymale.yaml    2-B-youngmale/
+                     AND age lte 35.0
+                      50,000 of 400,000 rows ·  12.5000%
+C      youngfemale   patient_gender eq F             yfem.yaml     3-C-youngfemale/
+                     AND age lte 35.0
+                     100,000 of 400,000 rows ·  25.0000%
+X      cross         no rows of its own              (none)        9-X-cross/
+```
+"""
+
+OVERLAP_ROW = """D      older         age gte 55.0                    older.yaml    4-D-older/
+                     280,000 of 400,000 rows ·  70.0000%
+X      cross"""
+
+COVARIATE_ROW = """J      lowincome     income_level lte 3              lowinc.yaml   7-J-lowincome/
+                      40,000 of 400,000 rows ·  10.0000%
+X      cross"""
+
+
+def pcheck(text):
+    rep = Report()
+    check_partition_register(text, "MT00-meta.md", rep)
+    return [c for _, c, _, _ in rep.rows]
 
 W_OK = """# FW01
 page-type: wisdom
@@ -41,9 +76,9 @@ page-type: information
 """
 
 
-def build(tmp, w=W_OK, q=Q_OK, i=I_OK):
+def build(tmp, w=W_OK, q=Q_OK, i=I_OK, m=M_OK):
     d = Path(tmp) / "A00_InsightBoard-Test"
-    for rel, text in ((W_PAGE, w), (Q_PAGE, q), (I_PAGE, i)):
+    for rel, text in ((W_PAGE, w), (Q_PAGE, q), (I_PAGE, i), (M_PAGE, m)):
         f = d / rel
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(text, encoding="utf-8")
@@ -119,6 +154,48 @@ class TestInsightFamily(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             d = build(tmp, q=Q_OK.replace("🟡 BI03 final", "🟡 ZI99 final"))
             self.assertIn("partial-final-ghost-page", codes(d))
+
+
+class TestPartitionRegister(unittest.TestCase):
+    """Clause ① of the partition test, proven on the shape that broke A00."""
+
+    def test_intact_register_is_clean(self):
+        self.assertEqual(pcheck(M_OK), [])
+
+    def test_overlapping_partitions_exceed_the_extract(self):
+        # 12.5 + 25.0 + 70.0 = 107.5%: three disjoint cuts of one extract
+        # cannot cover more than the extract, whatever the filters say.
+        self.assertIn("partition-sum-over-100",
+                      pcheck(M_OK.replace("X      cross", OVERLAP_ROW, 1)))
+
+    def test_covariate_partition_is_cross_cutting(self):
+        # 10% keeps the sum legal, so ONLY the axis rule may catch it —
+        # income_level shares no column with patient_gender or age.
+        codes_ = pcheck(M_OK.replace("X      cross", COVARIATE_ROW, 1))
+        self.assertIn("partition-cross-cutting", codes_)
+        self.assertNotIn("partition-sum-over-100", codes_)
+
+    def test_template_and_cross_are_exempt(self):
+        # F is 100% by construction and X holds no rows; counting either would
+        # fire on every conformant partition-major board ever built.
+        self.assertNotIn("partition-sum-over-100", pcheck(M_OK))
+        self.assertNotIn("partition-cross-cutting", pcheck(M_OK))
+
+    def test_one_partition_is_never_cross_cutting(self):
+        solo = M_OK.replace("""C      youngfemale   patient_gender eq F             yfem.yaml     3-C-youngfemale/
+                     AND age lte 35.0
+                     100,000 of 400,000 rows ·  25.0000%
+""", "")
+        self.assertEqual(pcheck(solo), [])
+
+    def test_unparseable_register_is_silent(self):
+        self.assertEqual(pcheck("# MT00\npage-type: meta\n\nno register here\n"), [])
+
+    def test_rounding_does_not_trip_the_sum(self):
+        # Percentages are printed rounded; a rule firing at 100.01% is a rule
+        # people learn to skip.
+        near = M_OK.replace("·  12.5000%", "·  75.2000%").replace("·  25.0000%", "·  25.0000%")
+        self.assertEqual(pcheck(near), [])
 
 
 if __name__ == "__main__":

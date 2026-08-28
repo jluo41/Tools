@@ -323,7 +323,10 @@ def check_board(d, rep):
                         "a `reads:` entry must be a plain sibling-board name or a "
                         "repo-relative path with no `..` and no `~`")
                 continue
-            cand = [d.parent / entry, Path(entry)]
+            # repo-relative means from the CHECKOUT ROOT, never the invoker's
+            # cwd: the same board must check identically from anywhere.
+            _rr = _repo_root(d)
+            cand = [d.parent / entry] + ([_rr / entry] if _rr else [])
             if not any(c.is_dir() for c in cand):
                 rep.add(ERROR, "board-reads-target", f"board.md -> {entry}",
                         "a `reads:` entry names no board on disk; the grant chain "
@@ -1326,7 +1329,10 @@ def check_draw_folders(d, rep):
 
 
 CARD_FIELDS = ["state", "stance", "depth", "thesis", "expected effect",
-               "grant", "released", "landed"]
+               "grant", "released"]   # `landed:` retired 260828: the card and
+                                      # its unit share a folder, so the folder
+                                      # IS the binding and a pointer would only
+                                      # be one more thing that can dangle
 CARD_STATES = {"proposed", "released", "landed", "killed"}
 UNIT_STATES = {"draft", "judged"}          # accepted@v<N> is matched separately
 DEPTHS = {"copy", "copy+why", "copy+why+expectation"}
@@ -1413,45 +1419,74 @@ def check_design_family(d, rep):
         # A board named in `reads:` is two places on disk: its page tree, and
         # the result bank its tasks write to. A grant that cites the bank is
         # citing that board's own evidence, so both count as inside the read.
-        cands = [d.parent / entry, Path(entry)]
+        # A repo-relative entry resolves from the checkout root, never the
+        # invoker's cwd: the same board must check identically from anywhere.
+        cands = [d.parent / entry]
         if root:
-            cands.append(root / "_WorkSpace" / "InsightBoardResult" / entry)
+            cands += [root / entry,
+                      root / "_WorkSpace" / "InsightBoardResult" / entry]
         for cand in cands:
             if cand.is_dir():
                 read_dirs.add(cand.resolve())
 
-    for cards_dir in sorted(d.rglob("direction")):
-        if not cards_dir.is_dir():
+    for units_dir in sorted(d.rglob("design")):
+        if not units_dir.is_dir():
             continue
-        parts = cards_dir.relative_to(d).parts
+        parts = units_dir.relative_to(d).parts
         if "board" in parts or any(p.startswith("_") for p in parts):
             continue
-        page = cards_dir.parent
-        units_dir = page / "design"
-        for card in sorted(cards_dir.glob("DR*.md")):
-            cname = f"{page.name} · {card.name}"
+        page = units_dir.parent
+        if not page.name.startswith("DS"):
+            continue
+
+        for unit in sorted(p for p in units_dir.iterdir() if p.is_dir()):
+            if unit.name.startswith("_"):
+                continue
+            uname = f"{page.name} · {unit.name}"
+
+            # ── the card, first file of the thread (260828: one thread, one
+            # folder — the card is card.md inside the unit it commissions) ──
+            card = unit / "card.md"
+            if not card.is_file():
+                rep.add(ERROR, "unit-no-card", uname,
+                        "a thread folder without card.md names no bet; the card "
+                        "is the folder's birth certificate and its first file")
+                continue
             ctext = card.read_text(encoding="utf-8")
             vals = {k: _card_field(ctext, k) for k in CARD_FIELDS}
 
             for k in CARD_FIELDS:
                 if vals[k] is None:
-                    rep.add(ERROR, "card-field-missing", cname,
-                            f"a direction card declares `{k}:`; without it the bet is "
+                    rep.add(ERROR, "card-field-missing", uname,
+                            f"a design card declares `{k}:`; without it the bet is "
                             "not written down, which is the one thing the card is for")
                 elif not vals[k]:
-                    rep.add(ERROR, "card-field-empty", cname,
+                    rep.add(ERROR, "card-field-empty", uname,
                             f"`{k}:` is present but empty")
 
             state = (vals["state"] or "").split()[0] if vals["state"] else ""
             if state and state not in CARD_STATES:
-                rep.add(ERROR, "card-state-word", cname,
+                rep.add(ERROR, "card-state-word", uname,
                         f"`state: {state}` is not on the ladder "
                         f"{' · '.join(sorted(CARD_STATES))}")
+
+            # Law: release before realize, now checkable as folder purity.
+            siblings = [f.name for f in unit.iterdir()
+                        if f.name not in {"card.md"} and not f.name.startswith(".")]
+            if state == "proposed" and siblings:
+                rep.add(ERROR, "unit-realized-before-release",
+                        f"{uname} -> {' · '.join(sorted(siblings)[:4])}",
+                        "the card still says proposed but the folder already holds "
+                        "more than card.md; realizing an unreleased card passes a "
+                        "person's gate mechanically")
+            if state == "killed" and siblings:
+                rep.add(WARN, "unit-tombstone-extra", uname,
+                        "a killed thread is a tombstone: card.md and nothing else")
 
             # Law: no expected effect, no release.
             eff = (vals["expected effect"] or "").strip()
             if state in {"released", "landed"} and len(eff) < 12:
-                rep.add(ERROR, "card-released-no-wager", cname,
+                rep.add(ERROR, "card-released-no-wager", uname,
                         "a card at `released` or `landed` must say what it is for and "
                         "what would falsify it; releasing a card with no wager is "
                         "designing for design's sake, which this plugin exists to stop")
@@ -1459,11 +1494,11 @@ def check_design_family(d, rep):
             # Law: release is a person's act, recorded.
             rel = (vals["released"] or "").strip()
             if state in {"released", "landed"} and rel in {"", "⬜", "-", "—"}:
-                rep.add(ERROR, "card-released-unsigned", cname,
+                rep.add(ERROR, "card-released-unsigned", uname,
                         "`state:` says released but `released:` carries no signature; "
                         "a release with nobody's name on it passed no gate")
             if state == "proposed" and rel not in {"", "⬜", "-", "—"}:
-                rep.add(ERROR, "card-proposed-signed", cname,
+                rep.add(ERROR, "card-proposed-signed", uname,
                         "`released:` is signed while `state:` still says proposed")
 
             # Law: the grant narrows, never widens.
@@ -1471,47 +1506,33 @@ def check_design_family(d, rep):
             graw = (vals["grant"] or "").strip()
             if graw and not graw.lower().startswith("none"):
                 for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
-                    hit = _resolve_cited(raw, card.parent, root)
+                    hit = _resolve_cited(raw, unit, root)
                     if hit is None:
-                        rep.add(ERROR, "card-grant-path", f"{cname} -> {raw}",
+                        rep.add(ERROR, "card-grant-path", f"{uname} -> {raw}",
                                 "a grant entry resolves to nothing, so every citation "
                                 "under it is unverifiable")
                         continue
                     grant_paths.add(hit)
                     if read_dirs and not any(
-                            r == hit or r in hit.parents for r in read_dirs) \
-                            and d.resolve() not in hit.parents:
-                        rep.add(ERROR, "card-grant-outside-reads", f"{cname} -> {raw}",
+                            r == hit or r in hit.parents for r in read_dirs)                             and d.resolve() not in hit.parents:
+                        rep.add(ERROR, "card-grant-outside-reads", f"{uname} -> {raw}",
                                 "a grant entry sits outside every board named in "
                                 "`reads:`; the chain must narrow at each level")
-            elif not record and state in {"released", "landed"} \
-                    and not (vals["stance"] or "").startswith("ignore"):
-                rep.add(WARN, "card-grant-none", cname,
+            elif not record and state in {"released", "landed"}                     and not (vals["stance"] or "").startswith("ignore"):
+                rep.add(WARN, "card-grant-none", uname,
                         "a card with no grant may cite nothing; only an `ignore` "
                         "card is normally born that way")
 
-            # Law: one released card, one unit.
-            landed = (vals["landed"] or "").strip()
-            if landed and landed not in {"—", "-", ""} and state != "killed":
-                if not (units_dir / landed).is_dir() and \
-                        not list(units_dir.glob(landed + "*")):
-                    rep.add(ERROR, "card-landed-ghost", f"{cname} -> {landed}",
-                            "`landed:` names a unit folder that is not on disk")
-            if state == "landed" and landed in {"—", "-", ""}:
-                rep.add(ERROR, "card-landed-empty", cname,
-                        "`state: landed` with no unit named")
-
-        # ── the units ────────────────────────────────────────────────────────
-        if not units_dir.is_dir():
-            continue
-        for unit in sorted(p for p in units_dir.iterdir() if p.is_dir()):
-            if unit.name.startswith("_"):
+            # ── the realization, when the state says there is one ────────────
+            if state in {"proposed", "killed"}:
                 continue
-            uname = f"{page.name} · {unit.name}"
             readme = unit / "README.md"
+            if state == "landed" and not readme.is_file():
+                rep.add(ERROR, "card-landed-bare", uname,
+                        "`state: landed` but the folder holds no README.md; a "
+                        "landing with no unit behind it is the ghost pointer's "
+                        "old failure wearing the new layout")
             if not readme.is_file():
-                rep.add(ERROR, "unit-no-readme", uname,
-                        "a unit folder without README.md has no identity")
                 continue
             rtext = readme.read_text(encoding="utf-8")
             depth = (_card_field(rtext, "depth") or "").strip()
@@ -1520,7 +1541,8 @@ def check_design_family(d, rep):
             for req in ["spec.md", "evidence.md"]:
                 if not (unit / req).is_file():
                     rep.add(ERROR, "unit-file-missing", f"{uname} -> {req}",
-                            "the unit contract names README, spec, evidence and content/")
+                            "the unit contract names card, README, spec, evidence "
+                            "and content/")
             if not (unit / "content").is_dir() or not any((unit / "content").iterdir()):
                 rep.add(ERROR, "unit-no-content", uname,
                         "content/ is the artifact itself; an empty one is not a design")
@@ -1533,28 +1555,13 @@ def check_design_family(d, rep):
             if depth == "copy" and (unit / "why.md").is_file():
                 rep.add(WARN, "unit-depth-extra-why", uname,
                         "`depth: copy` carries a why.md it did not declare")
-            if ustate and not record and ustate not in UNIT_STATES \
-                    and not re.match(r"accepted@v\d+$", ustate):
+            if ustate and not record and ustate not in UNIT_STATES                     and not re.match(r"accepted@v\d+$", ustate):
                 rep.add(ERROR, "unit-state-word", uname,
                         f"`state: {ustate}` is not draft, judged or accepted@v<N>")
 
-            # Law: the wager lives on the card, and the unit CITES it.
-            back = (_card_field(rtext, "direction") or "").strip()
-            owner = None
-            if not back:
-                rep.add(ERROR, "unit-no-direction", uname,
-                        "README declares no `direction:`, so the unit names no bet")
-            else:
-                hits = list(cards_dir.glob(back + "*.md"))
-                if not hits:
-                    rep.add(ERROR, "unit-direction-ghost", f"{uname} -> {back}",
-                            "`direction:` names a card that is not in direction/")
-                else:
-                    owner = hits[0]
-
-            # Every relative reference inside the unit must resolve. A dead
-            # pointer to the owning card makes the wager unreachable from the
-            # artifact, which is exactly how DU03 failed on 260824.
+            # Every relative reference inside the unit must resolve. The
+            # cross-folder pointer that dangled on 260824 is structurally gone,
+            # but a dead reference anywhere still breaks the chain of custody.
             for f in sorted(unit.rglob("*.md")):
                 ftext = f.read_text(encoding="utf-8")
                 for raw in _cited_paths(ftext):
@@ -1564,26 +1571,19 @@ def check_design_family(d, rep):
                         rep.add(ERROR, "unit-dead-reference",
                                 f"{uname} · {f.name} -> {raw}",
                                 "a relative reference inside a unit resolves to "
-                                "nothing; if it points at the owning card, the "
-                                "wager is unreachable from the artifact")
+                                "nothing, and every citation under it is "
+                                "unverifiable")
 
             # Law: evidence within grant. Only citations that leave this board
-            # are evidence; a pointer to the unit's own card is structure.
+            # are evidence; a pointer inside the unit's own folder is structure.
             ev = unit / "evidence.md"
-            if ev.is_file() and owner is not None:
-                gtext = owner.read_text(encoding="utf-8")
-                graw = (_card_field(gtext, "grant") or "").strip()
+            if ev.is_file():
                 if graw and not graw.lower().startswith("none"):
-                    granted = set()
-                    for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
-                        hit = _resolve_cited(raw, owner.parent, root)
-                        if hit:
-                            granted.add(hit)
                     for raw in _cited_paths(ev.read_text(encoding="utf-8")):
                         hit = _resolve_cited(raw, ev.parent, root)
                         if hit is None or d.resolve() in hit.parents:
                             continue
-                        if hit not in granted:
+                        if hit not in grant_paths:
                             rep.add(ERROR, "unit-evidence-outside-grant",
                                     f"{uname} -> {raw}",
                                     "this unit cites evidence its card never granted; "
@@ -1629,6 +1629,9 @@ def check_insight_family(d, rep):
                             "the handoff's `signed:` row is ⬜ — GI5 blocks, and a "
                             "DesignBoard binding this handoff is non-conformant "
                             "until a person signs")
+
+        if ptype == "meta":
+            check_partition_register(text, name, rep)
 
         if ptype == "question":
             for bad in re.findall(r"🚫\s?F\s?only\b|🚫F-only", text):
@@ -1682,6 +1685,106 @@ def check_insight_family(d, rep):
                                 "receipts (insight-workflow §Marks), because a "
                                 "citation invisible from the cited end cannot "
                                 "carry staleness")
+
+
+PARTITION_KEYWORDS = {
+    "where", "and", "or", "not", "in", "eq", "ne", "lte", "gte", "declared",
+    "unfiltered", "rows", "of", "no", "its", "own", "none", "null", "true",
+    "false", "template", "row", "the", "test", "partition", "that", "passed",
+    "contains", "every", "below", "fails", "clause", "construction", "which",
+    "exempts", "from", "seated", "yaml", "cross", "full",
+}
+
+
+def _partition_rows(text):
+    """MT00's partition register as (letter, name, population text, percent).
+
+    Returns [] when the register does not parse. A rule that guesses at a
+    layout it does not recognise reports noise, and noise is how a checker
+    gets ignored.
+    """
+    m = re.search(r"\*\*Partitions\*\*.*?```text\n(.*?)```", text, re.S)
+    if not m:
+        return []
+    rows, cur = [], None
+    for line in m.group(1).splitlines():
+        head = re.match(r"^([A-Z])\s{2,}(\S+)\s+(.*)$", line)
+        if head:
+            cur = [head.group(1), head.group(2), head.group(3)]
+            rows.append(cur)
+        elif cur is not None and line.strip():
+            cur[2] += " " + line.strip()
+    out = []
+    for letter, nm, body in rows:
+        pm = re.search(r"·\s*([\d.]+)\s*%", body)
+        out.append((letter, nm, body, float(pm.group(1)) if pm else None))
+    return out
+
+
+def _filter_columns(body):
+    """The column identifiers a partition's population block filters on."""
+    body = re.sub(r"[\d,]+ of [\d,]+ rows.*", " ", body)
+    body = re.sub(r"\S+\.yaml|\S+/", " ", body)
+    return {w for w in re.findall(r"\b[a-z][a-z0-9_]{2,}\b", body)
+            if w not in PARTITION_KEYWORDS}
+
+
+def check_partition_register(text, name, rep):
+    """The partition test's clause ① made mechanical (JL 260828, a live breach).
+
+    `haipipe-insight-workflow` calls the three admission clauses "each
+    mechanically checkable" and until 260828 none of the three was checked by
+    anything. A00 registered `J · minorityzip` and `L · lowincome`, ran to
+    136.79% coverage across seven subgroup partitions, grew a page under one,
+    and this checker stayed green for the whole window; a human reader caught
+    it. Clause ① is the one with a proof that needs no judgment: disjoint
+    subgroups of ONE extract cannot cover more than the extract.
+
+    F is the template and X is the cross group, and both are excluded by the
+    statute itself — F "fails ① by construction, which the test exempts it
+    from", and X holds no rows of its own.
+    """
+    rows = [r for r in _partition_rows(text) if r[0] not in ("F", "X")]
+    if len(rows) < 2:
+        return
+
+    pcts = [r[3] for r in rows if r[3] is not None]
+    if len(pcts) == len(rows):
+        total = sum(pcts)
+        # 100.5 not 100.0: the register prints rounded percentages, and a rule
+        # that fires on rounding is a rule people learn to skip.
+        if total > 100.5:
+            named = " + ".join(f"{r[0]}·{r[1]} {r[3]:.2f}%" for r in rows)
+            rep.add(ERROR, "partition-sum-over-100", name,
+                    f"registered subgroup partitions cover {total:.2f}% of the "
+                    f"extract ({named}) — disjoint groups of ONE extract cannot "
+                    "exceed 100%, so clause ① is broken on arithmetic alone "
+                    "(insight-workflow §The partition test): a coverage gap is "
+                    "legal where an overlap never is, and overlapping groups "
+                    "make every X contrast double-count the people they share")
+
+    cols = {r[0]: _filter_columns(r[2]) for r in rows}
+    for letter, nm, _, _ in rows:
+        mine = cols[letter]
+        if not mine:
+            continue
+        if all(not (mine & cols[other]) for other in cols if other != letter):
+            rep.add(WARN, "partition-cross-cutting", name,
+                    f"`{letter} · {nm}` filters on {sorted(mine)}, a column no "
+                    "sibling partition filters on: a cut sharing no axis with "
+                    "its siblings slices ACROSS them, which is a COVARIATE and "
+                    "belongs in an I-page column, never a group "
+                    "(insight-workflow §The partition test, the covariate row)")
+
+    # A third rule was written and DROPPED the same hour: "a filter column MT00
+    # names nowhere outside its own register". It fired four times on a
+    # corrected A00 over `patient_gender`, which the page discusses at length in
+    # prose without ever declaring as a column, and it passed `age` only because
+    # substring matching found it inside "coverage". A rule that needs prose to
+    # say a column's name in one exact place reports a documentation habit, not
+    # a defect — and the covariate rule above already catches the case that
+    # motivated it, since an unregistered filter column is almost always a
+    # column no sibling shares.
 
 
 def check_plugin_roster(d, rep):

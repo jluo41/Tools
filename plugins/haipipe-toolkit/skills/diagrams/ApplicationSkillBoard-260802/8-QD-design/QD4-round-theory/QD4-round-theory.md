@@ -1,13 +1,13 @@
 # The round in the literature: why each design phase exists
 
-state: ✅ SETTLED · 59 verified sources across five QA files ground D0-D4
+state: ✅ SETTLED · 59 sources ground D0-D4 · open: D5 PageDown owes its anchors
 owner: JL
 
 ## Opening
 
-Why does the design round have these five phases, and not a house convention someone liked?
+Why does the design round have these phases, and not a house convention someone liked?
 
-Because each phase is the operational form of an established finding. The round is `haipipe-design-workflow`'s D0-D4: frame a brief, bet a direction, realize units in parallel, evaluate each with two verdicts, then accept or emit a question and turn. A 260827 discovery sweep verified 59 sources behind those choices, every citation resolved live against Crossref, OpenAlex or arXiv, and this page registers the anchors and points at the five QA files that carry the full lists. The skill itself stays lean and cites this page, never the papers.
+Because each phase is the operational form of an established finding. The round is `haipipe-design-workflow`'s D0-D4, plus the D5 PageDown seal added 260828: frame a brief, bet a card, realize units in parallel, evaluate each with two verdicts, accept or emit a question, then page the round down: the grown pages reread as documents before the round may close. D5's literature slot is OPEN: it was added from a live failure (six rounds froze the pages at round 1), and its anchors, likely the documentation-decay and living-document literatures, are owed a discovery sweep of their own. A 260827 discovery sweep verified 59 sources behind those choices, every citation resolved live against Crossref, OpenAlex or arXiv, and this page registers the anchors and points at the five QA files that carry the full lists. The skill itself stays lean and cites this page, never the papers.
 
 ### Writing Style
 
