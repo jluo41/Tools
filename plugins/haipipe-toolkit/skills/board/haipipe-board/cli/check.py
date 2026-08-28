@@ -1637,7 +1637,12 @@ def check_insight_family(d, rep):
                         "spacing and the canonical form is `🚫 F-only` "
                         "(for-question 0.4.1); a checker grepping the token misses "
                         "every legacy cell")
-            spaced = len(re.findall(r"[🟡🚫⬜](?=[A-Za-z])", text))
+            lmq = re.search(r"^## Log\s*$", text, re.M)
+            queue_side = text[:lmq.start()] if lmq else text
+            # ## Log is excluded: a receipt QUOTING a retired token is a
+            # mention, not a mark (round 4 friction 2 — the sweep's own
+            # receipt tripped the rule it was satisfying).
+            spaced = len(re.findall(r"[🟡🚫⬜](?=[A-Za-z])", queue_side))
             if spaced:
                 rep.add(WARN, "mark-spacing-legacy", name,
                         f"{spaced} cell mark(s) run straight into a word (🟡BI03, "

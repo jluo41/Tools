@@ -103,6 +103,12 @@ class TestInsightFamily(unittest.TestCase):
                 d = build(tmp, q=Q_OK.replace("🟡 BI03 final", bad))
                 self.assertIn("mark-spacing-legacy", codes(d), bad)
 
+    def test_mark_mention_in_log_is_not_flagged(self):
+        with TemporaryDirectory() as tmp:
+            q = Q_OK + "\n## Log\n\n260828 · sweep retired the legacy token 🚫Fonly from this Queue.\n"
+            d = build(tmp, q=q)
+            self.assertNotIn("mark-spacing-legacy", codes(d))
+
     def test_receipt_outside_log_section_still_warns(self):
         with TemporaryDirectory() as tmp:
             i = "# BI03\npage-type: information\n\n260828 · QI3 final receipt in prose, not Log.\n\n## Log\n"

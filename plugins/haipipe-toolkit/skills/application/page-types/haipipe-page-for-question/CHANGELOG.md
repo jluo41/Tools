@@ -10,3 +10,5 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 - 0.4.0 (260827, fieldtest F13 + the 🟡 termination law): the 🚫 grammar unified — refusal reasons and the tombstone share one form, `🚫 <reason>`, closed-without-answer always; and a `🟡` cell gains its exit — `🟡 <page> final` when the page states why the remainder cannot close, settled-partial, out of the lap, never in an answered count. A00's 8 🟡 cells were blocked by vocabulary, not evidence.
 
 - 0.4.1 (260828, fieldtest round 2 F9/F12/F13/F10): the derived-header rule covers EVERY on-register restatement (state line, Diagram, Opening) and status WORDS by fixed mapping; a token's spelling includes its spacing (`🚫 F-only`), canonical forward with authorized-sweep migration; ⬜ annotations are the register pen's.
+
+- 0.4.2 (260828, round 4 Fr3): the compressed-count grammar — a rollup abbreviates a token only as `<mark>(<letter>)` with a legend mapping; where the grammar is silent, legends invent.

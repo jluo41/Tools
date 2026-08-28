@@ -4,7 +4,7 @@ description: >-
   The insight door of the Application family: one place assembling the laws for an InsightBoard that answers as a CLIMB. A board reads ONE dataset (Meta declares the extract; a subgroup is a partition, never a sibling board); four registers hold what is ASKED of each rung and never conclude; chain pages lift evidence one rung at a time — D observes run-bound, I derives from named D rows, K claims from named I rows, W counsels from named K rows — every value bound to a Task/Discovery QA file by path; and the W page exports a Design Handoff a person signs, the only thing a DesignBoard may bind. Ends at the signed handoff, never designs. Use for creating or driving an InsightBoard, registering questions, climbing a chain, partitions and the pooling verdict, settling a register, issuing or signing a Design Handoff. Trigger: insight board, insight door, question register, raise a question, climb, chain, lap, DIKW, rung, data page, knowledge claim, wisdom counsel, design handoff, partition, pooling verdict, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-08-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -147,9 +147,14 @@ lap entry: pick one frontier question, a register cell not yet settled
            mode: copilot — cards raised at PROBE (a card is the
            probe plugin's `probe/PP<NN>-<slug>/card.md`, states
            and shape per board/haipipe-plugin/ref/roster.md —
-           this door POINTS, it does not restate) · ✋ a person
-           releases each · answers land at EVIDENCE bound to
-           QA paths · the rung closes CHECK
+           this door POINTS, it does not restate) · MATCH the
+           QA bank BEFORE raising and AGAIN at dispatch — a
+           released card whose numbers the bank already holds
+           reuses them and dispatches NOTHING, because a re-run
+           reproducing known numbers under a new timestamp
+           muddies the run identity closed pages already bind ·
+           ✋ a person releases each · answers land at EVIDENCE
+           bound to QA paths · the rung closes CHECK
 ④ SIGN     only when the rung was W: draft the Design Handoff    pen: W page
            division · ✋ a person signs at that page's CHECK (G2)
 ⑤ SETTLE   flip the register cell ✅, 🚫 with a reason, or        pen: register

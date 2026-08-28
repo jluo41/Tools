@@ -3,7 +3,7 @@ name: haipipe-page-for-information
 description: >-
   The Page Type contract for one INFORMATION page on an InsightBoard: rates, contrasts, segments and distributions derived from named Data rows. It organises; it does not yet claim. Use when observations must be turned into a comparable pattern, when several Data pages must be combined, or when a Knowledge page is about to assert something with no derivation behind it. Trigger: information page, rates, contrasts, segments, derived pattern, page-type information, /haipipe-page-for-information.
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-08-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   group-token: "I"
@@ -15,6 +15,8 @@ metadata:
 ---
 
 # /haipipe-page-for-information · derive the pattern, from named Data rows
+
+A value's provenance in Content names its QA anchor by path; the run identity lives in the anchor, never in a bare date code in prose — the attribution rule and the provenance duty stop colliding when the path carries both.
 
 Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when reaching Task or Discovery sources and `haipipe-plugin-pagex` when citing another page on this board.
 
