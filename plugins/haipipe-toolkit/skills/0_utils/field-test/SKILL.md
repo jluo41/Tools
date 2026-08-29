@@ -1,14 +1,14 @@
 ---
-name: haipipe-fieldtest
+name: field-test
 description: >-
-  The field-test method for a skill family: run a REAL task through the skills as shipped, against a PRE-REGISTERED expectation of how the run should go, and learn from every place actual and expected diverge. A 🛠 DESIGN desk authors the skills, writes the commission AND an expectation ledger (per step: which law is exercised, what should happen, what should land on disk); a 🏃 FIELD desk — a separate session holding the shipped files and none of the design conversation — executes the real work under the skills' own human gates, keeping a numbered FRICTION LOG; a 📡 monitor watches transcript and disk read-only. Afterward the desks' two halves are joined: each expectation row settles as MATCH, SKILL GAP (reality right, law unclear/wrong/missing), or EXPECTATION GAP (law fine, the designer's model was wrong — also learning). Gaps become law patches and checker teeth (each proven to FAIL first); every run lands a SCORECARD (time from date stamps, tokens from receipts and /cost, format and semantic quality, a tax line naming avoidable spend); loop with a fresh slice of real work until a run returns zero new gaps. Use when a new or reworked skill family needs proof it runs, or when deciding whether a skill set is good enough to trust. Trigger: fieldtest, field test, field run, expectation ledger, friction log, scorecard, token tax, commission packet, expected vs actual, does the run match the skill, two desks, skill conformance, 实测, 试跑, 对表, /haipipe-fieldtest.
+  The field-test method for a skill family: run a REAL task through the skills as shipped, against a PRE-REGISTERED expectation of how the run should go, and learn from every place actual and expected diverge. A 🛠 DESIGN desk authors the skills, writes the commission AND an expectation ledger (per step: which law is exercised, what should happen, what should land on disk); a 🏃 FIELD desk — a separate session holding the shipped files and none of the design conversation — executes the real work under the skills' own human gates, keeping a numbered FRICTION LOG; a 📡 monitor watches transcript and disk read-only. Afterward the desks' two halves are joined: each expectation row settles as MATCH, SKILL GAP (reality right, law unclear/wrong/missing), or EXPECTATION GAP (law fine, the designer's model was wrong — also learning). Gaps become law patches and checker teeth (each proven to FAIL first); every run lands a SCORECARD (time from date stamps, tokens from receipts and /cost, format and semantic quality, a tax line naming avoidable spend); loop with a fresh slice of real work until a run returns zero new gaps. Use when a new or reworked skill family needs proof it runs, or when deciding whether a skill set is good enough to trust. Trigger: fieldtest, field test, field run, expectation ledger, friction log, scorecard, token tax, commission packet, expected vs actual, does the run match the skill, two desks, skill conformance, 实测, 试跑, 对表, /field-test.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-28"
+  version: "0.4.0"
+  last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-fieldtest · run the real task, against a written expectation
+# /field-test · run the real task, against a written expectation
 
 A skill is a claim about how work will go. A field test checks the claim the only way it can be checked: give the skills to a desk that holds nothing but the shipped files, hand it a REAL task, and compare what actually happens with what the designer wrote down IN ADVANCE that should happen. Both sides can lose: a divergence may mean the law is wrong, or that the designer's model of the work was — and the second kind is learning too, which is why the expectation is written before the run and never after.
 

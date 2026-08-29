@@ -1,4 +1,10 @@
-# haipipe-fieldtest · version history
+# field-test · version history
+
+0.4.0 · 260829 · JL
+- RENAMED `haipipe-fieldtest` -> `field-test`, two changes in one. The `haipipe-` prefix marks a skill that OPERATES the HAI-Pipe lifecycle and speaks its vocabulary (stage letters, task-folders, Pages, units); this one is a method that takes any skill family, real work and a written expectation, and returns law patches. It joins the unprefixed methods in `0_utils`: `claude-response-format`, `diagram-ascii`, `notebook-cell-python`, and `remote-error` (renamed the same day, same reason). JL: "I want to rename the /haipipe-fieldtest to be /field-test as well."
+- `fieldtest` written as one word became `field-test`, matching the hyphen the description itself has used since 0.1.0 ("The field-test method for a skill family"). The bare word `fieldtest` STAYS in the trigger list as an alias, because that is what a person types.
+- Swept: `SKILL.md:2` name, `:11` title, `:4` trigger `/field-test`; `haipipe-skillset-status/SKILL.md:36`; `remote-error/SKILL.md:21,315` + its CHANGELOG; `haipipe-insight-workflow/CHANGELOG.md:25`. The friction-log folder the method produces followed the id: `diagrams/PaperSkillBoard-260725/_fieldtest/` -> `_field-test/`, with `board.md:58` updated.
+- No rule, desk, law or scorecard column changed. This is a rename only.
 
 0.3.0 · 260828 · JL
 - THE SCORECARD: every run now records, at settle, time (from `date` stamps, field and design desks separately), tokens (operator-pasted `/cost` for the field session, exact task receipts for every dispatched judge), format quality (checker before→after, CHECK rounds to CLOSE), semantic quality (ledger tally, frictions by severity, the independent CHECK's verdict), a TAX LINE naming every avoidable spend with its lesson, and a rate with unit and grade named. JL: "把 metric evaluation 也加进去 … 记录下来之后,以后我们做 Field Test 就不用说这么多了."

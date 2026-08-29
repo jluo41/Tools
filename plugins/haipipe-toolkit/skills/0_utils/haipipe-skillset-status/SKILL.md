@@ -33,7 +33,7 @@ not a grade. The paper family's round contract was the founding
 counterexample: complete on paper, zero instances ever.
 
 Born 260828 (JL: "每一类表有不同的 column"), generalizing the page-type-only
-ruler of 0.1.0. Sibling of `haipipe-fieldtest`: fieldtest checks a family
+ruler of 0.1.0. Sibling of `field-test`: fieldtest checks a family
 against a pre-registered run; this check scores a family against fixed
 properties plus its accumulated record. This one picks WHICH skill to rewrite;
 fieldtest proves the rewrite runs.

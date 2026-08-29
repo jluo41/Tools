@@ -1,109 +1,159 @@
 ---
 name: claude-response-format
 description: >-
-  Canonical spec for the assistant's chat reply format in this workspace:
-  every substantive reply is organized into `## [emoji] Short Headline`
-  sections; turns that change files end with a git-derived file-change report.
-  The repo CLAUDE.md points here to make it always-on. Trigger: response
-  format, reply format, section headers, emoji headers, 回复格式.
+  Canonical spec for the assistant's chat reply format in this workspace: the
+  answer on line 1, then everything else as a nested OUTLINE of bullets under
+  `## [emoji] Short Headline` sections. Prose paragraphs are not a format here;
+  a paragraph is a bullet that has not been split yet. Turns that change files
+  end with a git-derived file-change section, also as bullets. The repo
+  CLAUDE.md points here to make it always-on. Trigger: response format, reply
+  format, outline format, bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-06-26"
+  version: "0.2.0"
+  last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: claude-response-format (0_utils)
 =======================================
 
-Canonical format for conversational replies in this workspace. CLAUDE.md Rule 5
-points here; this file is the detailed spec + examples. The CLAUDE.md line is
-what makes it always-on — this skill is the reference it cites.
+Canonical format for conversational replies in this workspace. `~/.claude/CLAUDE.md`
+points here; this file is the detailed spec. The CLAUDE.md line is what makes it
+always-on, this skill is the reference it cites.
 
 Scope
 -----
 
-- Applies to CHAT replies — what the assistant writes back to the user.
-- Does NOT apply to file / doc contents. Those keep CLAUDE.md Rule 4 (ASCII
-  headers `===` / `---`, no `##`). Never let this format leak into `.md`/`.tex`
-  files the assistant authors.
+- Applies to CHAT replies, meaning what the assistant writes back to the user.
+- Does NOT apply to file or document contents. Those keep the repo's own rules
+  (ASCII headers `===` / `---`, no `##`). Never let this format leak into a
+  `.md` or `.tex` file the assistant authors.
+
 
 The format
 ----------
 
-Every substantive reply is split into one or more sections. Each section is:
+**Line 1 is the answer.** A bare answer, before any heading, before any bullet.
+A closed question gets its yes, its no, or its one name, and nothing else on
+that line. Never build up to it.
+
+**Everything after line 1 is an OUTLINE.** Sections, then nested bullets. There
+are no prose paragraphs in a reply. A paragraph is a bullet that has not been
+split yet.
 
 ```
+<the answer, one line>
+
 ## [emoji] Short Headline
-<content for that section>
+- **Lead-in label** — the fact, on one line
+  - the detail that qualifies it
+  - the second detail
+- **Next label** — the next fact
 ```
 
-- `[emoji]` — ONE emoji that fits the section's role. Suggestive palette (not
-  fixed): 🧩 short answer · 🎯 recommendation · ⚠️ caveat/risk · 🛠️ how-to ·
-  📋 summary/list · 🔍 findings · ✅ done · 🙋 question for you · 📁 file changes ·
-  👀 files to review · 🧪 experiment · 💡 idea · 📊 results · 🚧 in progress.
-  Pick what fits.
-- `Short Headline` — a short, readable, natural-language headline, ~2-5 words,
-  title case (e.g. `My Recommendation`, `What Actually Works`, `Next Step`).
-  NOT kebab-case — write it like a headline a human would scan.
-- Content sits beneath the header: prose, bullets, tables, code — all fine.
-
-Guidance
---------
-
-- Structure any non-trivial reply into sections; order them most-important-first.
-- A trivial one-line reply can be a single section, or skip the header entirely
-  if it would only add noise — judgment call, don't be robotic about it.
-- Don't over-fragment: ~2-5 sections for a typical reply; each earns its header.
-- Keep headlines honest to the content; don't pad to hit a count.
-- One emoji per header, at the start, right after `## `.
-
-End-of-run file report (📁)
----------------------------
-
-End ANY turn that changed files with a `## 📁 file-changes` section. Derive the
-list from git — never from memory:
-
-    git status --short
-    git -C <submodule> status --short      # if a submodule (e.g. Tools/) was touched
-
-Group the entries: code / scripts; generated artifacts (`.ipynb`, results, build
-outputs); data side-effects (`_WorkSpace/…`, `local/…`). Flag anything NOT
-git-ignored that must not be committed (e.g. data stores).
-
-Which files to review (👀) — conditional
------------------------------------------
-
-Add a `## 👀 which-files-to-review` section ONLY when files were really changed
-AND some warrant a human read. Skip it entirely for trivial / mechanical / no-op
-turns — it is not mandatory.
-
-When shown, name the human-judgment files (hand-written logic, prose / docs, the
-largest diff, the highest transcription risk), ranked by what most needs a human
-eye. Mark derived / generated / copied files "derived — skip" so the user knows
-not to bother (e.g. an `.ipynb` converted from a `.py`).
-
-Examples
---------
+Rules, all countable
+--------------------
 
 ```
+one bullet = one fact          if it holds two, it is two bullets
+<= 2 lines per bullet          a third line means it needs a child bullet
+<= 3 levels of nesting         level 4 means the section is really two sections
+<= 6 top-level bullets         per section; more means split the section
+bold lead-in label             on every top-level bullet, so the page is scannable
+numbers live IN the bullet     never in a sentence after the list
+0 prose paragraphs             the whole reply, headings and bullets only
+```
+
+The lead-in label is a noun or a short phrase, then an em-dash-free separator
+(a colon, or a spaced hyphen), then the fact. It is what makes the reply
+readable at a glance without reading any bullet in full.
+
+Sections
+--------
+
+- **Header shape** — `## [emoji] Short Headline`, one emoji, then a 2 to 5 word
+  headline in title case. Not kebab-case; write it like a headline a human scans.
+- **Emoji palette**, suggestive and not fixed — 🧩 short answer · 🎯 recommendation ·
+  ⚠️ caveat or risk · 🛠️ how-to · 📋 summary · 🔍 findings · ✅ done ·
+  🙋 question for you · 📁 file changes · 👀 files to review · 🧪 experiment ·
+  💡 idea · 📊 results · 🚧 in progress.
+- **How many** — 2 to 5 for a typical reply, ordered most important first. One
+  section is fine for a small reply. A trivial reply can be the answer line alone.
+- **Honest headlines** — the headline names what is under it. Never pad to hit a count.
+
+When a code block is still allowed
+----------------------------------
+
+Bullets are the default. A fenced block earns its place only when the content is
+genuinely two-dimensional and a list would destroy it:
+
+```
+a folder TREE, before and after, side by side
+a table whose columns are compared across rows
+verbatim output: a log, an error, a return block, a command
+a file:line report
+```
+
+Everything else that used to be an ASCII diagram becomes nested bullets. If a
+block is only a list drawn with box characters, it was never a diagram.
+
+Carried over, unchanged
+-----------------------
+
+- **Define every term at first use**, inline, even when it looks obvious.
+  Write `AAMC = Association of American Medical Colleges`, not `AAMC`.
+- **Say the real name** — real file paths, real field names, real function names.
+  No nicknames, no invented vocabulary, and never pass a subagent's coined word
+  through without translating it first.
+- **No em-dashes.** Use a colon, a semicolon, a comma, parentheses, or a new sentence.
+
+File changes (📁)
+-----------------
+
+End ANY turn that changed files with a `## 📁 File Changes` section, as bullets,
+derived from git and never from memory:
+
+```
+git status --short
+git -C <submodule> status --short      # if a submodule such as Tools/ was touched
+```
+
+- **Group them** — code and scripts · generated artifacts (`.ipynb`, results,
+  build output) · data side effects (`_WorkSpace/…`, `local/…`).
+- **Flag the dangerous** — anything NOT git-ignored that must not be committed,
+  such as a data store.
+
+Files to review (👀), conditional
+---------------------------------
+
+- **Only when** files really changed AND some warrant a human read. Skip it for
+  trivial, mechanical or no-op turns. It is not mandatory.
+- **Rank by** what most needs a human eye: hand-written logic, prose and docs,
+  the largest diff, the highest transcription risk.
+- **Mark the rest** `derived — skip`, so the user knows not to bother.
+
+Example
+-------
+
+```
+Yes, and one cheap test settles it.
+
 ## 🧩 Short Answer
-Yes — and one cheap test settles it.
-
-## ⚠️ The Catch
-A skill alone can't make a behavior always-on; it only runs when invoked.
+- **The claim holds** — the back-test resolves direction before any build
+- **The catch** — a skill alone cannot make a behavior always-on; it runs only
+  when invoked
 
 ## 🎯 My Recommendation
-Run the back-test first, because it resolves the direction before any build.
+- **Run the back-test first** — it is 20 minutes and it decides the next week
+  - if it comes back flat, the build is dead and nothing was spent
+  - if it comes back positive, the build has its target already chosen
 
 ## 📁 File Changes
-code:    code-dev/1-PIPELINE/3-Case-WorkSpace/builder_x.py
-derived: code/haifn/fn_case/x.py  (rebuilt from builder — skip)
-
-## 👀 Files to Review
-builder_x.py — the hand-written CaseFn logic; the generated x.py is derived — skip.
+- **code** — `code-dev/1-PIPELINE/3-Case-WorkSpace/builder_x.py`
+- **derived** — `code/haifn/fn_case/x.py`, rebuilt from the builder, skip
 
 ## 🙋 What I Need From You
-Pick the model: Bedrock (BAA-covered) vs a local in-VPC model.
+- **Pick the model** — Bedrock (BAA-covered) or a local in-VPC model
 ```

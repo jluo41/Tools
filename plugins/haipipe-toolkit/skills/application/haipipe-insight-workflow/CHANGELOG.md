@@ -22,7 +22,7 @@
 - Domain neutrality stated as law (🌐): the machine is content-free; domain enters only at the extract (MT00), the questions (registers), and the venue packs — substituting all three re-instantiates the machine. The counsel unit is whatever MT00 declares, so the partition test generalizes past humans-receiving-SMS.
 - The INSTRUMENT SHADOW: the routing and partition tests have a mechanical echo in the task layer — column = same folder per partition config, partition = config never code, X = own folder reading siblings' outputs, new extract = same folders under a new source config. Convergent reasoning (code) is reused across groups and extracts; divergent reasoning (the page's reading) never is.
 
-0.2.0 · 260827 · JL (the first fieldtest's law bin, run on A00 — see /haipipe-fieldtest)
+0.2.0 · 260827 · JL (the first fieldtest's law bin, run on A00 — see /field-test)
 - GI5 made testable (F2/F3): the signature is now an ARTIFACT — for-wisdom 0.3.0 adds the handoff's `signed:` row (`⬜` until a person writes `✅ <initials> <YYMMDD>`, machine-write is an error); GI5 reads that row; a deferring W owes none.
 - The routing test gains its third class (F4): F-ONLY questions — properties of the extract, identical in every partition — answered once on the template, refused `🚫 F-only` per column; 9 of A00's 39 rows had no seat in the old binary.
 - The partition test amended (F5, F6): non-exhaustive is legal (a coverage gap reads by the template alone; an overlap never passes) and the template F is exempt by construction — it contains the partitions and seats on MT00 as the TEMPLATE row.
