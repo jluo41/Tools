@@ -140,13 +140,18 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 
 ### 1 · What <target> means now
 
-**<caption>**: <the classes, and whether a policy is closed behind them yet>.
+**<caption>**: quoted from `policy/versions/G_<t>/cheatsheet.md`, <closed | PROPOSED, not closed>.
+
+<!-- RULE · §1 QUOTES the built label. The block below is the cheatsheet's, and the seed
+     cases in 1.2-1.5 come from `policy/versions/G_<t>/gallery.md`, each with its item id.
+     Redrafting a rule here makes a second source of truth; the policy version wins. -->
 
 ```text
-📜 G_<t>  ·  <closed | PROPOSED, not closed>
-   🟢 HIGH   <the rule>
-   🔵 LOW    <the rule>
-   ⚪ NONE    <the rule>
+📜 G_<t> cheatsheet  ·  <closed | PROPOSED, not closed>
+   🟢 HIGH   <the rule, verbatim>
+   🔵 LOW    <the rule, verbatim>
+   ⚪ NONE    <the rule, verbatim>
+   🗺 regions <the seven tests, one line>
 ```
 
 #### 1.1 · What LOW means here
@@ -185,24 +190,30 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 📌 <n> rounds closed · <n> items in cumulative gold · <which policy is open>
 ```
 
-**Round <n>** · closed <YYMMDD> · policy G_<t> · <n> items
-  🎯 challenge  <where the policy and the human disagreed>
-  📊 audit      <agreement on the comparable stratum>
-  📜 diff       <what moved in the policy>
-  🗺 coverage   <which regions are still thin>
+**round_<t>** · closed <YYMMDD> · G_<t-1> → G_<t> · <n> items (<n> challenge / <n> audit)
+  🃏 card       <the gap the card targeted, and what it expected>
+  🎯 actual     <what happened vs the forecast, from view/result.md>
+  📜 diff       <what moved in the policy · how many prior rows flipped>
+  🗺 register   <which cells settled · which are still open>
+  🚦 route      <another round | freeze | HOLD>
 
-<!-- RULE · record lines, never a markdown table. Newest first. Adding a round adds four lines
-     at the top and moves no heading. -->
+<!-- RULE · record lines, never a markdown table. Newest first. One record indexes ONE round
+     unit `rounds/round_<t>/` (ref-assets.md §3): card and forecast from the unit, actual from
+     its view/result.md, route from its checkpoint. Adding a round adds five lines at the top
+     and moves no heading. -->
 
 ### 3 · Gates: may we stop?
 
-**<caption>**: all gates must pass before the policy may freeze.
+**<caption>**: read from `rounds/round_<t>/checkpoint.json` (the newest), all must pass before Freeze.
+
+<!-- RULE · every gate row reads its value from the newest checkpoint and names it; coverage
+     reads register.md. A number no checkpoint holds is not evidence. -->
 
 ```text
-📊 quality     <reading vs threshold>   <state>
-📉 stability   <how many checkpoints>   <state>
-🗺 coverage    <thin regions>           <state>
-🚨 risk        <routed fraction>        <state>
+📊 quality     <reading vs threshold · checkpoint-<t>>   <state>
+📉 stability   <streak k of K comparable checkpoints>    <state>
+🗺 coverage    <register cells still open>               <state>
+🚨 risk        <routed fraction · checkpoint-<t>>        <state>
 ```
 
 #### 3.1 · <which gate is actually blocking, and what closes it>
@@ -212,9 +223,10 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 **Locked until the gates pass**: this division stays empty on purpose, and the emptiness is the status.
 
 ```text
-🔒 G*   <frozen version, or "not frozen">
-🧪 T*   <the seal: which split or sample, its size, read or unread>
-📊 S*   <scorecards, or "no executor scored">
+🔏 handoff  <handoff/label-v1.yaml id + checksum, or "not written">
+🔒 G*       <frozen version, or "not frozen">
+🧪 T*       <the seal: which split or sample, its size, read or unread>
+📊 S*       <scorecards, or "no executor scored">
 ```
 
 ### 5 · The labeled corpus
@@ -270,13 +282,16 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 **The run on disk**:
 
 ```text
-runs/<corpus>-<target>/
-├── project.json            corpus checksum · authority · schema · model registry
-├── config.yaml             batch size · thresholds · executor list
-├── policy/                 closed versions, immutable, each with its diff
-├── gold/cumulative.jsonl   human-confirmed rows only
-├── rounds/round-N/         one folder per closed round
-└── test/sealed/            reserved, unread
+runs/<corpus>-<target>/                the job folder, ref-assets.md §1
+├── config.yaml              schemas · thresholds · consecutive_rounds_k · executors
+├── register.md              seven regions × open / covered / risky
+├── corpus/manifest.json     ids · text checksum
+├── policy/versions/G_<t>/   closed, immutable · + cheatsheet.md · gallery.md (§1 quotes these)
+├── gold/cumulative.jsonl    human-confirmed rows only
+├── rounds/round_<t>/        one ROUND UNIT per closed round: card · manifest · evidence ·
+│                            prospect · events · checkpoint.json · view/ (§2 indexes these)
+├── handoff/label-v1.yaml    written once at P2 Freeze (§4 shows it)
+└── test/sealed/             reserved, unread
 ```
 
 **The corpus**: <path, and the field the unit is read from.>

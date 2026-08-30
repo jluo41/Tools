@@ -119,7 +119,7 @@ K rung      haipipe-page-for-knowledge     claimed from named I rows · never ad
 W rung      haipipe-page-for-wisdom        counsel + the signed Design Handoff
 ```
 
-SIX, and no others: a page on an InsightBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/`, the same folder holding the design door's three, so the folder cannot say who owns what and this roster is where the insight half is named. Versions are never restated here — `/haipipe-skillset-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
+SIX, and no others: a page on an InsightBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/`, the same folder holding the design door's three, so the folder cannot say who owns what and this roster is where the insight half is named. Versions are never restated here — `/skill-set-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
 
 ## Verbs
 

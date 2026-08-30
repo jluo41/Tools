@@ -9,6 +9,10 @@ description: >-
   human gates and forbidden acts live in label-scanning. Use when running or
   resuming an evaluation, a production scan, a risk queue, an audit or a
   repair, or /label-scanning-workflow.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /label-scanning-workflow · one run at a time, one-way
@@ -16,8 +20,8 @@ description: >-
 Load `subjective-label` (family), `subjective-label-workflow` (phase numbers,
 gates G3-G6) and `label-scanning` (the law) first. This file says only in what
 ORDER the Scanning side runs, what it resumes, and which receipt each step
-writes. Nothing here may start without a valid Label Handoff checksum bound
-in the run's manifest.
+writes. Nothing here may start without a valid Label Handoff; the first step of each
+phase binds its checksum into that phase's registry or manifest.
 
 ## P3 Test · order
 
@@ -25,9 +29,10 @@ The human step is first and locks before any executor runs.
 
 ```text
 GOLD
- 1 bind       rehash the handoff; write evaluation/registry.yaml binding its checksum,
-              candidate executors, families, wrappers, baseline, metrics, repeats,
-              quality floors, selection rule                      → evaluation/registry.yaml
+ 1 bind       rehash the handoff; the Final Evaluator writes evaluation/registry.yaml
+              with the fields ref-assets.md §8 lists (handoff checksum, candidates,
+              wrappers, baseline, metrics, repeats, floors, selection rule)
+                                                                  → evaluation/registry.yaml
  2 release    Test Custodian authorizes test text release, logs it → test/sealed/access_log.jsonl
  3 first      blind human record per test item, executor outputs hidden
                                                                   → test/final/human_first.jsonl

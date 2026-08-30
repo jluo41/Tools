@@ -37,7 +37,7 @@
     {
       "name": "subjective-label",
       "description": "Human-grounded subjective labeling with separate Building and Scanning doors joined by a signed, auditable handoff",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "source": "./plugins/subjective-label",
       "category": "research"
     }

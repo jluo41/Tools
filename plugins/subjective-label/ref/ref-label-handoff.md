@@ -72,7 +72,8 @@ invalidated_by: null
 
 ## Creation gate
 
-The Building door may create the handoff, as its P2 Freeze phase, only when:
+The Building side creates the handoff at P2 Freeze, through the Label Handoff
+Keeper, only when:
 
 - every cited calibration checkpoint is closed and comparable;
 - the configured stopping conjunction passes for the required streak;

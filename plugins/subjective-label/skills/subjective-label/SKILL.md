@@ -9,6 +9,10 @@ description: >-
   subjective annotation job; defining H/L/N and boundary regions; calibration
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
   or /subjective-label.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /subjective-label · build the label, then scan under it
@@ -36,10 +40,16 @@ Building   "Is this what the human means?"        ends at a signed Label Handoff
 Scanning   "Was that frozen meaning executed?"    ends at audited D*
 ```
 
-`label-building` owns the Building-side laws and verbs.
-`label-scanning` owns the Scanning-side laws and verbs.
-`subjective-label-workflow` owns only journey phases, gates, routes, and
-receipts across both sides.
+Three layers, never mixed:
+
+```text
+LAW      label-building · label-scanning          who may decide, human gates, verbs, forbidden acts
+ORDER    label-building-workflow · label-scanning-workflow   step order, resume, run receipts
+CROSSING subjective-label-workflow               phase numbers P0-P5, gates G0-G6, handoff validity, invalidation
+```
+
+A rule that fits two layers goes in the door. Phase and gate numbers are
+declared in `subjective-label-workflow` only.
 
 ## The crossing
 
@@ -65,7 +75,7 @@ consuming the crossing.
 | owner | canonical artifacts | forbidden |
 |---|---|---|
 | shared job | corpus manifest/items, config, cache | assigning semantic gold |
-| Building | policy versions, rounds, Sessions, cumulative human gold, sealed-test reservation, Label Handoff | opening test text; production labeling |
+| Building | policy versions, round units, Sessions, cumulative human gold, register, sealed-test reservation, Label Handoff | opening test text; production labeling |
 | Scanning | released test gold, evaluation registry/predictions/scorecards, production runs, terminal labels, final audits, `D*` | revising human meaning silently |
 
 Rendered `REPORT.md` and `.state.json` are views or caches. Closed artifacts and
@@ -75,9 +85,12 @@ their gate receipts win whenever a rendered view disagrees.
 
 ```text
 enter | status            resolve the job and derive both frontiers from disk
-building | build | teach  forward to /label-building
-scanning | scan           forward to /label-scanning
-workflow | run | drive    forward to /subjective-label-workflow
+building | build | teach  forward to /label-building (law), which hands execution
+                          to /label-building-workflow (order)
+scanning | scan           forward to /label-scanning (law), which hands execution
+                          to /label-scanning-workflow (order)
+workflow | run | drive    forward to /subjective-label-workflow, which hands the
+                          runnable side to its ORDER machine
 feedback | digest         use the existing family feedback procedures
 ```
 
@@ -122,7 +135,9 @@ consensus. Maintain:
   provenance.
 
 Read `../../ref/ref-contract.md` for authority and claim rules and
-`../../ref/ref-assets.md` for canonical artifact locations.
+`../../ref/ref-assets.md` for canonical artifact locations. Every `../../ref/`
+path is relative to this skill's REAL folder inside the plugin; when the skill
+was loaded through a symlink (`~/.claude/skills/...`), resolve it first.
 
 ## Implementation truth
 

@@ -77,7 +77,7 @@ paper/
 
 ## Family status
 
-as of 2026-08-28 · regenerate with `/haipipe-skillset-status paper` · this block is a dated receipt, never a second authority
+as of 2026-08-28 · regenerate with `/skill-set-status paper` · this block is a dated receipt, never a second authority
 
 Five classes, five column sets. A row with an empty field record is `(provisional)` whatever its static score.
 

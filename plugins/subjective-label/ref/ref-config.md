@@ -141,7 +141,7 @@ Every weak executor registry entry must include:
   model: "..."
   version: "..."
   family: "..."
-  wrapper: wrappers/weak-a.yaml
+  wrapper: policy/versions/G_NN/wrappers/weak-a.yaml   # wrappers live inside the policy version
   decoding: {temperature: 0}
   role: seen | heldout | production_candidate
 ```

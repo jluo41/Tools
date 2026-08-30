@@ -15,8 +15,10 @@ P0 Contract → P1 Round × N → P2 Freeze → signed Label Handoff
 P3 Test → P4 Scan → P5 Audit → complete
 ```
 
-`subjective-label-workflow` is the phase and gate authority. The sibling doors
-own their interior laws and verbs.
+`subjective-label-workflow` declares the phase numbers and gates and owns the
+crossing. `label-building-workflow` and `label-scanning-workflow` order the
+steps inside their side. The doors `label-building` and `label-scanning` own
+the law: authority, human gates, verbs, forbidden acts.
 
 Canonical states:
 
@@ -47,10 +49,13 @@ Contract creates no gold and does not open protected test text.
 
 ## 3. P1 Calibration Round
 
-A round begins from one closed state and closes only at a Checkpoint:
+A round is one unit folder `rounds/round_<t>/` (`ref-assets.md` §3). It is
+born as a card a person releases, begins from one closed state, and closes
+only at a Checkpoint:
 
 ```text
 closed G_(t-1) + D_(t-1)
+        ↓ CARD released · PROSPECT written
         ↓ PREPARE
 candidate pool + frozen batch + sealed weak predictions
         ↓ JUDGE
@@ -58,7 +63,8 @@ human-first locks + final human decisions
         ↓ LEARN
 policy proposals + backward impact + audit/challenge evidence
         ↓ CLOSE
-checkpoint → closed G_t + D_t → repeat / freeze / HOLD
+checkpoint → closed G_t + D_t → register cells settled → view/ rendered
+        → repeat / freeze / HOLD
 ```
 
 PREPARE, JUDGE, LEARN, and CLOSE are round steps, not journey phases. Round 1
@@ -103,10 +109,11 @@ It carries a protected-manifest checksum, never protected ids or text.
 
 Validate the handoff; preregister candidate executors, model-family roles,
 wrappers, baselines, metrics, repeats, quality floors, and selection rule;
-authorize test-text release; collect blind human `T*` (the GOLD step); close
-candidate predictions before opening gold, produce comparable scorecards, and
-qualify a production route only when every required floor passes (the SCORE
-step).
+authorize test-text release; collect and LOCK blind human `T*` before any
+candidate prediction (the GOLD step); then run every candidate with gold
+hidden, close every prediction run before scoring, produce comparable
+scorecards, and qualify a production route only when every required floor
+passes (the SCORE step).
 
 Public data is optional external validity and never project gold.
 

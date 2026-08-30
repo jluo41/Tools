@@ -7,9 +7,11 @@ corpus under that frozen meaning.
 
 ```text
 subjective-label                         one user-facing umbrella
-├── label-building                      semantic calibration side
-├── label-scanning                      execution and reliability side
-└── subjective-label-workflow           phases, gates, routes, receipts only
+├── label-building                      Building side LAW: authority, human gates, verbs
+├── label-building-workflow             Building side ORDER: round steps, item resume, round receipts
+├── label-scanning                      Scanning side LAW
+├── label-scanning-workflow             Scanning side ORDER: test lock, runs, risk queue, audit loop
+└── subjective-label-workflow           the CROSSING: phase numbers P0-P5, gates G0-G6, handoff, invalidation
 ```
 
 The split follows one authority boundary:
@@ -39,6 +41,12 @@ diagnose, draft, and execute; their consensus never creates human gold.
 Pick, seal, judge, learn, measure, and decide are steps or verbs inside one
 Round; GOLD and SCORE are the two steps inside Test. "Another round" is a route.
 
+A Round is a UNIT on disk (`ref/ref-assets.md` §3): `card.md` (the wager a
+person releases), `README.md`, `manifest.yaml`, `evidence.md`, `prospect.md`,
+the event files, `checkpoint.json`, and a rendered `view/`. Every policy version
+carries a rendered `cheatsheet.md` and `gallery.md`; the project keeps a
+`register.md` of the seven regions.
+
 ## The Label Handoff
 
 `handoff/label-v1.yaml` is the only legal crossing. It binds corpus, schema,
@@ -51,9 +59,11 @@ exact handoff checksum and cannot edit Building artifacts.
 | skill | responsibility |
 |---|---|
 | `/subjective-label` | auto-route the job through the family |
-| `/label-building` | Contract, calibration Round, Freeze |
-| `/label-scanning` | Test, production Scan, final Audit |
-| `/subjective-label-workflow` | derive frontier and test gates |
+| `/label-building` | the Building law: Contract, Round, Freeze |
+| `/label-building-workflow` | the Building order: card, prepare, prospect, judge, learn, close |
+| `/label-scanning` | the Scanning law: Test, Scan, Audit |
+| `/label-scanning-workflow` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
+| `/subjective-label-workflow` | phase numbers, gates, the crossing |
 
 Retired names route through the umbrella: `/label-init` and `/label-round` go
 to `/label-building`; `/label-evaluate` and `/label-complete` go to
@@ -66,13 +76,14 @@ subjective-label/
 ├── .claude-plugin/plugin.json
 ├── skills/
 │   ├── subjective-label/
-│   ├── label-building/
-│   ├── label-scanning/
+│   ├── label-building/ · label-building-workflow/
+│   ├── label-scanning/ · label-scanning-workflow/
 │   ├── subjective-label-workflow/
 │   └── page-types/haipipe-page-for-labeling/
 ├── agents/                              bounded execution roles
 ├── engine/                                 partial technical primitives
 ├── ref/                                 authority, artifact, and handoff contracts
+├── fixtures/                            job-mini (mock job) + its rendered board
 └── diagram/                             design history and rendered board
 ```
 
@@ -90,6 +101,9 @@ public-dataset convergence, or unvalidated nearest-neighbor inheritance.
 - `D*`: completed corpus with one terminal disposition per item;
 - final audit and full provenance.
 
-Version 0.4.0 introduces the Application-style umbrella + sibling-door +
+Version 0.4.0 introduced the Application-style umbrella + sibling-door +
 workflow organization, the Building / Scanning names, and the signed Label
-Handoff boundary.
+Handoff boundary. Version 0.5.0 split each side into a LAW door and an ORDER
+workflow, defined the round unit, register, and rendered views, and shipped the
+`fixtures/job-mini/` job with its rendered board as the family's acceptance
+fixture.

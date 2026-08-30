@@ -1,158 +1,121 @@
 ---
 name: label-building
 description: >-
-  The Building-side door of the subjective-label family: establish one human's
-  meaning for one vague target over one corpus, reserve a sealed final test,
-  run resumable calibration rounds that select attention, seal weak-model
-  guesses, collect human-first judgments, learn rules, and close checkpoints,
-  then freeze G* and D_cal* into a signed Label Handoff. Use for new labeling
-  jobs, calibration, human annotation sessions, boundary discovery, guideline
-  revision, stopping decisions, freeze, or /label-building.
+  The Building-side door of the subjective-label family, and its LAW: who is
+  the semantic authority, what each of Contract, Round and Freeze may and may
+  not create, which decisions are human gates, which verbs exist, and what is
+  forbidden. It ends at a signed Label Handoff and never evaluates executors or
+  scans the corpus. The order of steps lives in label-building-workflow. Use for
+  new labeling jobs, calibration rounds, human annotation sessions, boundary
+  discovery, guideline revision, stopping decisions, freeze, or /label-building.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /label-building · build one meaning and freeze it
+# /label-building · the law of building one meaning
 
-`subjective-label` is the family umbrella. This sibling door owns the laws and
-verbs of the Building side, symmetric to `/label-scanning`. It ends at a
-signed Label Handoff and never evaluates executors or scans the remaining
-corpus.
+`subjective-label` is the family umbrella; `subjective-label-workflow` declares
+the phase numbers and gates; `label-building-workflow` orders the steps. This
+door owns the LAW of the Building side, symmetric to `/label-scanning`. Nothing
+here says in what order a step runs.
 
 ## Authority
 
 One identified human decides class, region, semantic rules, concept revisions,
 stopping signoff, and accepted risk. The strong calibration agent controls the
-interaction order and records inspectable human input; it cannot create gold or
-accept its own rule proposal.
+interaction and records inspectable human input; it cannot create gold, accept
+its own rule proposal, or hint at a sealed prediction before the lock.
 
 Weak executors are independent diagnostic readers. Their sealed predictions may
-select challenge cases and expose guideline failures after the human-first lock.
-Agreement is a sampling stratum, never gold.
+select challenge cases and expose guideline failures after the human-first
+lock. Agreement among them is a sampling stratum, never gold.
 
-## The Building side
-
-```text
-P0 Contract (scope)
-      ↓
-P1 Round (calibrate) ↺
-      ↓ stopping gates pass
-P2 Freeze (sign)  ──▶ Label Handoff ──▶ Label Scanning
-```
-
-`Contract`, `Round`, and `Freeze` are journey phases because each has an
-authority artifact: the closed config plus corpus manifest, one closed
-checkpoint, and `handoff/label-v1.yaml`. Freeze opens no new content authority:
-it signs and packages artifacts that are already closed.
-
-## Contract
-
-The Contract authority is the closed job configuration plus corpus manifest.
-Before any semantic development:
-
-1. validate stable ids, text, target population, and corpus checksum;
-2. record the vague trait seed and identified human authority;
-3. declare class, region, uncertainty, and unresolved schemas;
-4. reserve final-test identifiers through the Test Custodian without exposing
-   their ids or text to development agents;
-5. create the canonical artifact scaffold and retrieval cache provenance.
-
-The contract creates no gold and makes no claim that the guideline is mature.
-
-## One calibration round
-
-A round is one resumable unit from a closed `G_(t-1)`/`D_(t-1)` to one closed
-checkpoint. The verbs below are steps, not journey phases:
+## The three phases and what each may create
 
 ```text
-PREPARE   pick attention → seal independent weak predictions
-JUDGE     human-first decision → immutable lock → reveal → final decision
-LEARN     propose minimal rules → resolve backward impact → measure evidence
-CLOSE     checkpoint D_t/G_t → another round, freeze, or HOLD
+P0 Contract   one valid job: corpus, target, authority, schemas, sealed reservation
+              creates NO label, NO claim that the guideline is mature
+P1 Round      one closed checkpoint: D_t (human-confirmed gold) + G_t (closed policy)
+              creates gold ONLY through a human event inside a closed checkpoint
+P2 Freeze     one signed Label Handoff binding exact G* and D_cal*
+              creates NO new content; it packages what is already closed
 ```
 
-### PREPARE
+Each phase is a phase because it has an authority artifact of its own; the
+artifacts are named in `subjective-label-workflow`.
 
-- Round 1 draws a declared random development sample and has no prelabels or
-  inherited regions.
-- Later rounds retrieve a broad candidate pool around all seven regions,
-  novelty, sparse coverage, risk, and unresolved cases.
-- Freeze a human batch containing challenge cases plus a probability or weighted
-  consensus-audit arm.
-- Run registered weak executors independently under the prior closed policy and
-  seal their predictions before any human-first event.
+## The round unit
 
-### JUDGE
+A round is one folder, `rounds/round_<t>/`, born as a card and closed by a
+checkpoint (`../../ref/ref-assets.md` §3). Laws of the unit:
 
-For every item, show item text and the prior closed policy without weak outputs;
-record human-first class, region, uncertainty, evidence, and rejected alternative;
-lock that event; then reveal structured comparisons when useful and record the
-human's final decision. Classify a change as correction, clarification, concept
-revision, or unresolved. Unresolved is never `NONE`.
+1. **Card before work.** The card states the register cell it targets, its two
+   arms, its seed, and its expected finding. A person releases it; a machine
+   never does. Round 1's card names no cell and draws at random.
+2. **Seal before sight.** Every weak prediction is sealed before the human's
+   first record for that item exists; a seal that follows a first record
+   voids the round's blinding check.
+3. **Forecast before judgment.** `prospect.md` is written before the first
+   item is shown, so the checkpoint can score the round against it.
+4. **Views are not authority.** `view/` and `README.md` are rendered from the
+   canonical files; `checkpoint.json` is the only artifact that promotes gold
+   and policy.
+5. **A locked event is never replayed.** A dead chat resumes at the open item;
+   it does not reopen a seal or a lock.
 
-Calibration Sessions are item-resumable. Never replay a completed human-first
-event or reopen a seal merely because a chat ended.
+## The register
 
-### LEARN
-
-Turn accepted human evidence into the smallest general policy change. Separate
-semantic, procedural, casebook, wrapper, and editorial edits. Show the human
-every substantive rule and affected prior label; the human accepts, rejects, or
-narrows it. Report representative audit evidence separately from adaptively
-selected challenge evidence.
-
-### CLOSE
-
-The Checkpoint Keeper verifies completeness, blinding, leakage, regression,
-coverage, risk, and checksums. Only a closed checkpoint promotes cumulative
-human gold and a policy version. Route to:
-
-```text
-another round   a declared gap remains worth the human cost
-freeze          quality, stability, coverage, risk, and human signoff all pass
-HOLD            evidence, implementation, or human authority is missing
-```
-
-"Another round?" is a route, never a phase.
-
-## Freeze
-
-The Label Handoff Keeper rehashes the exact `G*` and `D_cal*`, confirms
-sealed-test custody with the Test Custodian, records the human's signature
-naming those checksums and the lineage, and writes `handoff/label-v1.yaml`
-once. That signature is a second, later human tick: the stopping signoff
-recorded at CLOSE approves stopping, it does not sign the handoff. Read `../../ref/ref-label-handoff.md` for the fields and the creation
-gate. A handoff is valid only when every stopping gate passed for the configured
-consecutive comparable checkpoints and the signature names the exact lineage.
+`register.md` holds the seven diagnostic regions (H, L, N, HL, LN, HN, HLN)
+as cells, each `open`, `covered`, or `risky`. A round card names the cell(s)
+it targets; CLOSE settles them. The Building side may route to Freeze only
+when no cell is `open`, or the human has explicitly accepted a named open cell
+as a limitation carried into the handoff.
 
 ## Human gates
 
 ```text
-meaning       the human confirms the target and schema            (P0)
-item          the human creates each first/final judgment          (P1)
-rule          the human accepts each substantive semantic patch    (P1)
-freeze        the human signs the exact G* and D_cal* checksums    (P2)
+meaning    the human confirms the target and the schema, including what LOW means  (P0)
+release    the human releases each round card                                       (P1)
+item       the human creates every first and final judgment                         (P1)
+rule       the human accepts, rejects, or narrows every substantive semantic patch  (P1)
+stop       the human signs off stopping on the checkpoint's evidence                (P1 CLOSE)
+freeze     the human signs the exact G* and D_cal* checksums and the lineage        (P2)
 ```
 
-A batch-selection charter may pre-authorize mechanical sampling classes for one
-bounded run. It cannot pre-authorize item labels, semantic rules, or freeze.
+`stop` and `freeze` are two ticks: stopping approves that no round is owed;
+freeze signs the handoff. A batch-selection charter may pre-authorize
+mechanical sampling classes for one bounded run; it cannot pre-authorize a
+release, a label, a rule, a stop, or a freeze.
 
 ## Verbs
 
 ```text
 enter | status      resolve the Building frontier from closed artifacts
 start | contract    establish or resume P0 without creating gold
-round               run or resume exactly one P1 round
-prepare             pick the batch and seal predictions for the open round
-judge | label       resume item-level human-first Sessions
-learn | rules       propose and adjudicate policy changes
-checkpoint | next   close the round and record its route
-freeze              run P2: test G2 and record the human-signed Label Handoff
+round               run or resume exactly one P1 round unit
+card                propose a round card for a person to release
+prepare · judge · learn · checkpoint   the round steps, ordered by label-building-workflow
+freeze              run P2 and record the human-signed Label Handoff
 reopen              open a new policy lineage and invalidate downstream claims
-workflow | run      ask the family workflow to drive the Building frontier
+workflow | run      hand the frontier to label-building-workflow
 ```
+
+## Forbidden
+
+- a label, region, or rule created by model majority, unanimity, nearest
+  neighbor, classifier confidence, or a persona panel;
+- `NONE` used for an unresolved item;
+- a sealed-test id or text inside any round file;
+- a round closed with a failing Keeper check;
+- a checkpoint, `D_t`, `G_t`, or handoff edited after close;
+- this door writing `T*` gold, a scorecard, a production label, or an audit
+  claim.
 
 ## Ends at the handoff
 
-This door writes no `T*` gold, executor scorecard, production label, or audit
-claim. If a selector, sealed runner, Session recorder, Checkpoint Keeper, Test
-Custodian, or Label Handoff Keeper is missing, stop at the last closed artifact
-and return a structured `HOLD`.
+When a selector, sealed runner, Session recorder, Checkpoint Keeper, Test
+Custodian, or Label Handoff Keeper is absent, the Building side stops at its
+last closed artifact and returns a structured `HOLD`; it never emulates the
+missing role.

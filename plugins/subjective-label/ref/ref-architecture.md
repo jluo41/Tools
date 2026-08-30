@@ -22,8 +22,9 @@ subjective-label umbrella
     ├── Production executor + terminal reconciler
     └── Final audit keeper
 
-subjective-label-workflow sits above both sides and owns only phases, gates,
-routes, and receipts.
+subjective-label-workflow sits above both sides and owns the phase numbers,
+gates, and the crossing; label-building-workflow and label-scanning-workflow
+order the steps inside each side; the doors own the law.
 ```
 
 The sibling doors have different questions and write authority. Building asks

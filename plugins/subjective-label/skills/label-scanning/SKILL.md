@@ -1,108 +1,72 @@
 ---
 name: label-scanning
 description: >-
-  The Scanning-side door of the subjective-label family: consume one immutable
-  signed Label Handoff, create blind human gold on its sealed test, qualify
-  executors with preregistered scorecards, scan the remaining corpus through a
-  frozen risk-aware route, reconcile one terminal disposition per item, and run
-  an independent probability audit before materializing D*. Use for sealed
-  evaluation, model qualification, production labeling, risk queues, corpus
-  scanning, spot checks, repair, final audit, or /label-scanning.
+  The Scanning-side door of the subjective-label family, and its LAW: what a
+  frozen Label Handoff permits, what Test, Scan and Audit may and may not
+  create, which decisions are human gates, which verbs exist, and what is
+  forbidden. It begins from one signed handoff and ends at audited D*. The
+  order of steps lives in label-scanning-workflow. Use for sealed evaluation,
+  model qualification, production labeling, risk queues, corpus scanning, spot
+  checks, repair, final audit, or /label-scanning.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /label-scanning · execute a frozen meaning and audit the result
+# /label-scanning · the law of executing a frozen meaning
 
-`subjective-label` is the family umbrella. This sibling door owns the laws and
-verbs of the Scanning side, symmetric to `/label-building`. It begins from
-one valid signed Label Handoff, never from an open guideline draft.
+`subjective-label` is the family umbrella; `subjective-label-workflow` declares
+the phase numbers and gates; `label-scanning-workflow` orders the steps. This
+door owns the LAW of the Scanning side, symmetric to `/label-building`.
 
 ## Boundary
 
 Scanning may choose and execute an implementation of `G*`; it may not redefine
 the human construct. `G*`, `D_cal*`, the corpus snapshot, and the sealed-test
-reservation are read-only inputs bound by handoff checksum.
+reservation are read-only inputs bound by the handoff checksum. A semantic
+defect found here is preserved as evidence and returned to Building under a new
+lineage; it is never patched inside a scanning run, and neither are wrappers,
+thresholds, or routing.
 
-If evaluation or production reveals a semantic defect, preserve the evidence,
-return to Label Building under a new lineage, and apply test-invalidation
-rules. Never patch `G*`, wrappers, thresholds, or routing silently inside a
-scanning run.
-
-## The Scanning side
+## The three phases and what each may create
 
 ```text
-P3 Test (qualify) → P4 Scan (execute) → P5 Audit (verify) → D*
-      no pass ──▶ HOLD / human-only / reopen Building
-                                Audit fail ──▶ repair, rescan, or reopen
+P3 Test    blind human gold T* on the sealed test, then comparable scorecards,
+           then ONE qualified route under the preregistered rule, or none
+P4 Scan    one terminal disposition per in-scope item, provenance-tiered;
+           a candidate corpus, NOT yet D*
+P5 Audit   an immutable audit receipt and, on pass, D* with bounded claims
 ```
 
-The three phases are named by their authority artifacts: blind test gold plus
-frozen scorecards, a production scan run, and a final audit receipt.
+Public datasets may supply separately labeled external-validity evidence. They
+never replace project-specific `T*` and never license production.
 
-## Test · qualify
+## Laws of the run
 
-Two ordered steps. The human's step comes first and is the phase's reason for
-being; the machine's step may not start until the human's is locked.
-
-### GOLD
-
-1. Validate the Label Handoff, freeze the executor registry, minimal-instruction
-   baseline, wrappers, metrics, repeats, quality floors, and selection rule.
-2. Have the Test Custodian authorize protected text release only after `G*`
-   freeze; preserve access logs.
-3. Collect blind human class, region, uncertainty, evidence, and consistency
-   records on the released test while all executor outputs remain hidden.
-4. Lock `T*`.
-
-### SCORE
-
-5. Run registered executors independently while gold remains hidden; close
-   every prediction run before scoring.
-6. Produce absolute, per-class, per-region, uplift, held-out-family, stability,
-   cost, and failure scorecards with intervals.
-7. Apply the preregistered rule. "Best among failures" is not qualified.
-
-Public datasets may provide separately labeled external-validity evidence. They
-never replace project-specific `T*` or license production.
-
-## Scan · execute
-
-1. Freeze a production manifest binding handoff, executor, wrapper, route,
-   thresholds, abstention, risk rules, budget, shards, and audit design.
-2. Run a frozen preflight; preserve it when proposing a different manifest.
-3. Execute append-only, idempotent attempts with full version and input checksums.
-4. Route declared disagreement, uncertainty, novelty, drift, protected strata,
-   failures, and known shared-error neighborhoods to human review.
-5. Reconcile exactly one terminal disposition per in-scope item: human-confirmed,
-   audited-machine, machine-accepted, accepted-unresolved, excluded, or invalid.
-
-Human production review semantically overrides machine output but does not edit
-the frozen policy. Over-capacity items remain unresolved, never `NONE`.
-
-## Audit · verify
-
-Freeze the target population, strata, seed, inclusion probabilities, blind-human
-protocol, thresholds, and protected claims before sampling. The human judges the
-audit sample before seeing production labels. Estimate weighted error with
-intervals, inspect route and protected-stratum failures, and write an immutable
-audit receipt.
-
-Routes:
-
-```text
-pass       materialize D* with bounded claims and provenance shares
-repair     repair declared strata, then re-audit under a new receipt
-rescan     reopen the affected production run under a new manifest
-semantic   return to Building; invalidate downstream claims as required
-limit      a person explicitly accepts a narrowed claim and named limitation
-```
+1. **Gold before prediction.** No executor runs on the test before `T*` is
+   locked; no score is computed while any prediction run is open.
+2. **Registry before release.** Candidates, wrappers, metrics, floors, and
+   the selection rule are frozen before protected text is released; a
+   registry edited afterwards invalidates the test.
+3. **"Best among failures" is not qualified.** A route qualifies only by
+   passing every required floor; otherwise the route is human-only or `HOLD`.
+4. **A manifest is immutable.** A changed executor, wrapper, or threshold is a
+   new production run with its own preflight.
+5. **Human review overrides, never edits.** A human production decision
+   overrides the machine's label for that item and changes no policy.
+6. **Unresolved is never `NONE`.** Over-capacity or undecidable items keep the
+   `accepted-unresolved` disposition.
+7. **The auditor is blind.** The audit design is frozen, and the human judges
+   the sample, before any production label is shown.
 
 ## Human gates
 
 ```text
-test gold      the human judges T* blind to every executor prediction   (P3)
-risk queue     the human decides escalated production items              (P4)
-audit gold     the human judges the audit sample blind to production     (P5)
-limitation     the human explicitly accepts any bounded final limitation (P5)
+test gold     the human judges T* blind to every executor prediction         (P3)
+risk queue    the human decides every escalated production item              (P4)
+audit gold    the human judges the audit sample blind to production labels   (P5)
+limitation    the human explicitly accepts any bounded final limitation      (P5)
 ```
 
 No model, ensemble, or confidence threshold may write these decisions.
@@ -111,22 +75,27 @@ No model, ensemble, or confidence threshold may write these decisions.
 
 ```text
 enter | status       resolve the Scanning frontier from the bound handoff
-test | qualify       run or resume P3: GOLD, then SCORE
-scan | produce       run or resume P4 production and risk reconciliation
-audit | spot-check   run or resume P5 blind final audit
-repair               apply an audit-owned repair and preserve the prior receipt
+test | qualify       run or resume P3
+scan | produce       run or resume P4
+audit | spot-check   run or resume P5
+repair               apply an audit-owned repair under a new audit folder
 reopen-building      route a semantic failure to a new Building lineage
-workflow | run       ask the family workflow to drive the Scanning frontier
+workflow | run       hand the frontier to label-scanning-workflow
 ```
+
+## Forbidden
+
+- starting from `policy/current`, a draft, or an invalidated handoff;
+- panel majority, nearest-neighbor inheritance, or untracked batch output as
+  a terminal label;
+- a scorecard on a test whose gold was visible to the executor;
+- `D*` claimed without the bound final audit receipt;
+- editing `G*`, `D_cal*`, a checkpoint, or a Building artifact of any kind.
 
 ## Ends at audited D*
 
 `D*` exists only after every in-scope item has one terminal disposition and the
-final audit passes or records an explicitly accepted bounded limitation. It
-links the Label Handoff, `T*`, selected scorecard, production manifest, audit
-receipt, repairs, and provenance shares.
-
-If custody, blind-human recording, sealed execution, production reconciliation,
-probability auditing, or provenance writing is absent, return `HOLD`. Do not
-fall back to panel majority, nearest-neighbor inheritance, or untracked batch
-outputs.
+final audit passes or records an explicitly accepted bounded limitation. When
+the Test Custodian, a blind Session recorder, the Final Evaluator, the
+Production Executor with its reconciler, or the Final Audit Keeper is absent,
+return `HOLD`; never emulate the missing role.

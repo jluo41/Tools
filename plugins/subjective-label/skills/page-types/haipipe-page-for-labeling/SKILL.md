@@ -11,7 +11,7 @@ description: >-
   when rounds become sections, when freeze is mistaken for completion, when a
   score has no bound handoff, or when a machine proposal is read as gold.
 metadata:
-  version: "0.3.1"
+  version: "0.4.0"
   last_updated: "2026-08-30"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -52,17 +52,21 @@ Size does not decide it, and neither does how long the page grows.
 **A round is a RECORD, never a division.**
 
 Rounds keep arriving, and the base fixes the section order, so a `###` per round would make the Page grow without end and change shape every round.
-One `### 2 · Rounds` division holds them all, newest first, as record blocks:
+One `### 2 · Rounds` division holds them all, newest first, as record blocks.
+A round is a UNIT on disk (`ref/ref-assets.md` §3), and the record is its
+readable index: it names the unit, quotes the card's wager, and scores the
+prospect against what happened.
 
 ```markdown
-**Round 3** · closed 260806 · policy G_3 · 60 items
-  🎯 challenge  policy and the human disagreed on 11 of 60
-  📊 audit      agreement 0.86 on the consensus stratum
-  📜 diff       rule 3 and rule 4 added; no rule dropped
-  🗺 coverage   region 5 still thin at 3 items
+**round_03** · closed 260806 · G_02 → G_03 · 60 items (40 challenge / 20 audit)
+  🃏 card       gap HL, LN · expected disagreement on HL
+  🎯 actual     disagreed on 11 of 60 · forecast said 9 (view/result.md)
+  📜 diff       rule 3 and rule 4 added; no rule dropped · 2 prior rows flipped
+  🗺 register   HL covered · LN still open at 3 items
+  🚦 route      another round
 ```
 
-Round 12 costs exactly what round 2 cost: four lines at the top, and no heading moves.
+Round 12 costs exactly what round 2 cost: five lines at the top, and no heading moves.
 Record lines, never a markdown table.
 The heavy artifacts stay in the run folder on disk; this ledger is the readable index into them.
 
@@ -77,6 +81,13 @@ A labeling page's Content mirrors a run in progress. It does not argue a questio
 ### 4 · Handoff, sealed test, scores empty until P2 Freeze signs the handoff
 ### 5 · Scanned corpus and audit     empty until Scanning runs
 ```
+
+**§1 QUOTES the built label; it never redrafts it.** The current policy version
+carries two rendered files, `cheatsheet.md` (the class rules and seven region
+tests on one screen) and `gallery.md` (real confirmed items per region with the
+human's reason); §1 shows the cheatsheet block and draws its seed cases from the
+gallery, each with its item id. A §1 whose rules disagree with the closed
+`G_<t>` is a stale view, and the policy version wins.
 
 **§1 must SAY what LOW means on this page**, because it differs by target and a reader cannot guess.
 On a graded trait, LOW is a weaker HIGH.
@@ -99,6 +110,10 @@ A3  the Building gates: quality · stability · coverage · risk        ← one 
 A4  the signed handoff and seal hold, and every candidate executor is scored on them
 A5  the scanned corpus is complete with provenance, and the audit says what is reliable
 ```
+
+**A gate row READS its value from the newest `checkpoint.json`** (quality,
+stability streak, coverage from `register.md`, risk), naming the checkpoint
+that produced it. A gate row with a number no checkpoint holds is not evidence.
 
 The payoff is that `## States` answers "may we stop" with no second source of truth, and a reader scanning it sees which gate blocks.
 A control button on a division may read that state to decide whether it is enabled; it must never write a state of its own.
@@ -149,6 +164,11 @@ row in §4 and opens Scanning; it does not complete the Page. A job deliberately
 parked is `⏸️`, and a job with open Building or Scanning gates is `🟡` however
 many rounds closed or however good its scorecard looks. `state:` never reads
 `✅` from round metrics, a freeze signature alone, or model qualification.
+
+`state:` is DERIVED, never typed from memory: 🟡 while any checkpoint or
+scanning receipt is open, the handoff row in §4 shows `handoff/label-v1.yaml`'s
+id and checksum once it exists (and stays empty as status before), §5 shows
+`D*`'s manifest once the audit receipt closes, and ✅ requires that receipt.
 
 ## 📄 Files
 

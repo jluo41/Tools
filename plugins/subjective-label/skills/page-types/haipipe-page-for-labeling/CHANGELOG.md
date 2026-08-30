@@ -53,3 +53,7 @@ The board family keeps the three variants it does maintain. The `label` value st
 ## 0.3.1 · 2026-08-30
 
 **Vocabulary follows the family rename.** The two sides are now Building and Scanning (JL 260830: Part 1 builds the label; both sides label something, so "Labeling" named nothing). Division 3 is `Building gates`; division 4 unlocks at `P2 Freeze`, which is a phase since the handoff file is its own artifact; the family contracts this page loads are `subjective-label`, `label-building`, `label-scanning`, `subjective-label-workflow`. No rule of the page itself changed.
+
+## 0.4.0 · 2026-08-30
+
+**The page reads the units.** §2's record is the readable index of one round UNIT (`ref-assets.md` §3): it names `rounds/round_<t>/`, quotes the card's gap and expectation, scores prospect vs actual from `view/result.md`, shows the register movement, and carries the route. §1 quotes the policy version's rendered `cheatsheet.md` and draws seed cases from `gallery.md` by item id, never redrafting rules. §3 gate rows read the newest `checkpoint.json` and name it. §4 shows the handoff id + checksum or stays empty as status; §5 shows `D*` or stays empty. `state:` is derived from checkpoints, the handoff, and the audit receipt. Both templates updated to the 0.4.0 family layout (six phases, three layers).

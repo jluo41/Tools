@@ -8,6 +8,10 @@ description: >-
   human gates and forbidden acts live in label-building. Use when running or
   resuming a calibration round, opening a round card, resuming a Session,
   closing a checkpoint, or /label-building-workflow.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /label-building-workflow · one round at a time, resumable per item
@@ -38,8 +42,9 @@ file it leaves behind.
 5 cache      embed every eligible item once                   → cache/embeddings/
 ```
 
-G0 (family workflow) is tested on these five files. Contract runs once; a
-rerun with a changed corpus checksum is a new job, not a resume.
+G0 (family workflow) is tested on the five P0 files it names; `cache/embeddings/`
+is provenance, not a gate input. Contract runs once; a rerun with a changed
+corpus checksum is a new job, not a resume.
 
 ## P1 Round · order
 
@@ -135,9 +140,9 @@ not close; it stays `judged` with the failing check named.
 6 return     to subjective-label-workflow, which owns the crossing
 ```
 
-If step 2 fails, the route is `another round` with the failing gate named. If
-the Keeper or Custodian is absent, return `HOLD` at step 2 with the frontier
-preserved.
+If step 1 fails, the route is `another round` with the failing gate named. If
+the Keeper or Custodian is absent, `label-building` §Ends at the handoff rules
+`HOLD`; this machine stops at step 2 with the frontier preserved.
 
 ## Receipts this machine writes
 
@@ -146,7 +151,8 @@ card.md released:        the person's release of the batch (before PREPARE)
 sessions/ events         item-level, append-only, the resume source
 checkpoint.json          the round receipt; the only artifact that promotes gold and policy
 README.md closed:        keeper · date · route
-handoff/label-v1.yaml    the P2 receipt, owned by the family crossing
+handoff/label-v1.yaml    the P2 receipt: written once by the Label Handoff Keeper,
+                         its validity tested by the family crossing at G3
 ```
 
 ## Return

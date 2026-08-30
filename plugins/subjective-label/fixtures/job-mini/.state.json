@@ -1,0 +1,12 @@
+{
+  "schema_version": "subjective-label/state-v3",
+  "building_frontier": "Round",
+  "scanning_frontier": "not-runnable",
+  "handoff_checksum": null,
+  "open_round": null,
+  "closed_policy": "G_02",
+  "cumulative_gold": "D_02 (18 rows)",
+  "sealed_test_status": "reserved",
+  "latest_checkpoint": "checkpoint-02",
+  "implementation_holds": []
+}

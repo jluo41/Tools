@@ -97,7 +97,7 @@ Legacy stage skills under `_old/` remain readers during migration. New work does
 
 ## Family status
 
-Run 260828 · regenerate with `/haipipe-skillset-status` over `skills/application/` · every SKILL.md in this family read in full that session · field records counted off `designs/Project-Application-SMSDesign/applications/` and the four fieldtest rounds of 260827-28. A row whose field record is empty reads `(provisional)` whatever its static score.
+Run 260828 · regenerate with `/skill-set-status` over `skills/application/` · every SKILL.md in this family read in full that session · field records counted off `designs/Project-Application-SMSDesign/applications/` and the four fieldtest rounds of 260827-28. A row whose field record is empty reads `(provisional)` whatever its static score.
 
 **DOOR** · does every road lead somewhere
 

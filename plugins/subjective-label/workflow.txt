@@ -45,6 +45,10 @@ WORD LAW
 
   item event      one human-first or final judgment
 
+  round unit      rounds/round_<t>/ · card.md → README · manifest · evidence · prospect
+                  → events → checkpoint.json → view/   (ref/ref-assets.md §3)
+  register        register.md · seven regions × open / covered / risky
+
 Pick, seal, label, rules, measure, and next are not journey phases.
 
 
@@ -64,9 +68,9 @@ USER SURFACE
 ────────────
 
   /subjective-label              auto-route one next runnable action
-  /label-building                contract, calibrate, freeze
-  /label-scanning                test, scan, audit
-  /subjective-label-workflow     inspect phases and gates
+  /label-building                the Building LAW · /label-building-workflow  the Building ORDER
+  /label-scanning                the Scanning LAW · /label-scanning-workflow  the Scanning ORDER
+  /subjective-label-workflow     phase numbers, gates, the crossing
 
 
 STOP RULE

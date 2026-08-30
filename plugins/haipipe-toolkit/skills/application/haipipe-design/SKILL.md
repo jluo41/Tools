@@ -121,7 +121,7 @@ PR<NN>    haipipe-page-for-principle   because <W>, do <move>, within <rail> ·
                                        promoted only, hence the vacant group above
 ```
 
-THREE, and no others: a page on a DesignBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/` beside the insight door's six, so the folder cannot say who owns what and this roster is where the design half is named. Versions are never restated here — `/haipipe-skillset-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
+THREE, and no others: a page on a DesignBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/` beside the insight door's six, so the folder cannot say who owns what and this roster is where the design half is named. Versions are never restated here — `/skill-set-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
 
 ## Verbs
 

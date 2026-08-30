@@ -8,6 +8,10 @@ description: >-
   no step order, no semantic rule, no item judgment, no executor prediction,
   and no audit verdict. Use when asking where a labeling job is, whether it may
   cross, why it is blocked, or /subjective-label-workflow.
+metadata:
+  version: "0.5.0"
+  last_updated: "2026-08-30"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /subjective-label-workflow · the numbers, the gates, the crossing
@@ -23,19 +27,20 @@ A **journey phase** is one of P0-P5 and is named by its authority artifact. A
 **step** is an action inside a phase and is named by the side workflow that
 orders it. A **gate** is an assertion over named existing artifacts. A **route**
 is a gate's outcome. If a proposed phase cannot name an authority artifact of
-its own, it is a step, a gate, or a route. No file other than this one may
-introduce a phase number or a gate number.
+its own, it is a step, a gate, or a route. Other files USE these numbers as names;
+no file other than this one may DEFINE one or attach a different meaning to it.
 
 ## Six phases, two sides
 
 ```text
 🏗 Building side                 authority artifact
 P0 Contract                      config.yaml + corpus/manifest.json + test/sealed/status.json
+                                 + register.md + policy/versions/G_00/manifest.yaml
 P1 Round × N                     rounds/round_<t>/checkpoint.json
 P2 Freeze                        handoff/label-v1.yaml
         ───────────── the crossing: one immutable Label Handoff ─────────────
 🔍 Scanning side
-P3 Test                          test/final/lock.json + evaluation/summary.md
+P3 Test                          evaluation/summary.md (which cites test/final/lock.json)
 P4 Scan                          production/run_<n>/manifest.yaml
 P5 Audit                         audit/final_<n>/receipt.json → corpus/final/D_star.jsonl
 ```
@@ -47,10 +52,10 @@ verify). One artifact never answers both sides' questions.
 ## Seven gates, one line each
 
 ```text
-G0 Contract → Round    the five Contract files exist and rehash; sealed ids are outside the development pool
+G0 Contract → Round    the five P0 files above exist and rehash; sealed ids are outside the development pool
 G1 Round close         checkpoint.json closed by the Keeper with every check passing (label-building-workflow §CLOSE)
-G2 Round → Freeze      quality floor + stability streak + coverage (no open register cell, or one the human accepted) + risk, on comparable checkpoints; custody valid; human signature on exact G* and D_cal*; handoff written and rehashed
-G3 Freeze → Test       handoff valid and current; evaluation/registry.yaml frozen before any protected text release
+G2 Round → Freeze      quality floor + stability streak of K comparable checkpoints (K = config.yaml consecutive_rounds_k) + coverage (no open register cell, or one the human accepted) + risk; custody valid; the human's STOP signoff recorded in the last checkpoint
+G3 Freeze → Test       handoff written by the Keeper, carrying the human's FREEZE signature on exact G* and D_cal*, status valid, every checksum rehashing; evaluation/registry.yaml frozen against that checksum before any protected text release
 G4 Test → Scan         test/final/lock.json precedes every prediction run; every run closed before scoring; one route passes every floor, or an explicit human-only route is frozen
 G5 Scan → Audit        one terminal disposition per in-scope id, none duplicated or missing; risk queue reconciled; audit design frozen before the auditor sees production labels
 G6 Audit → Complete    blind probability audit valid; findings and intervals recorded; protected strata checked; repairs closed; D* manifest links every upstream checksum; any limitation explicitly accepted
@@ -107,6 +112,7 @@ derive    the Building frontier from checkpoints, the Scanning frontier from run
           handoff validity from the crossing
 select    the single runnable phase, or the blocking human gate, or HOLD
 hand      P0-P2 → label-building-workflow · P3-P5 → label-scanning-workflow
+          (each ORDER machine loads its LAW door first; the law is never skipped)
 fold      advance only when the owning receipt exists and its gate passes
 stop      at a human gate, HOLD, invalidation, step limit, or completed action
 ```

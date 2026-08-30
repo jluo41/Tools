@@ -1,0 +1,52 @@
+{
+  "round": "round_01",
+  "closed": "2026-08-30",
+  "policy_out": "G_01",
+  "n_items": 10,
+  "metrics": {
+    "audit_agreement": 0.7,
+    "disagreed": null,
+    "note": "agreement vs G_00 seed rules, 7 of 10"
+  },
+  "coverage": {
+    "H": 2,
+    "L": 4,
+    "N": 4,
+    "HL": 0,
+    "LN": 0,
+    "HN": 0,
+    "HLN": 0
+  },
+  "gates": {
+    "quality": {
+      "value": 0.7,
+      "floor": 0.8,
+      "pass": false
+    },
+    "stability": {
+      "streak": 1,
+      "k": 2,
+      "pass": false
+    },
+    "coverage": {
+      "open_cells": [
+        "HL",
+        "LN",
+        "HN",
+        "HLN"
+      ],
+      "pass": false
+    },
+    "risk": {
+      "routed": 0.0,
+      "max": 0.1,
+      "pass": true
+    }
+  },
+  "route": "another round",
+  "human_stop_signoff": false,
+  "checksums": {
+    "human_final": "2c5516d6a18f6311420038938ae67ac9986d21bd9579815b21c3d176bf9c36c1",
+    "manifest": "ed9940e780d01c8ba39f29529e0fab78e3f721cb7e081cb63ff66e2843de9e11"
+  }
+}
