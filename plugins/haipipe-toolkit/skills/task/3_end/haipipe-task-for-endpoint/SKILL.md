@@ -1,7 +1,7 @@
 ---
 name: haipipe-task-for-endpoint
-description: "endpoint task-folder specialist: scaffolds AND executes {NN}_<name>/ task-folders that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) via c_endpoint_nb.py. Called by /haipipe-task when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
-argument-hint: "[project_id] [group] [task-name]"
+description: "endpoint job specialist: scaffolds AND executes {NN}_<name>/ jobs that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) via c_endpoint_nb.py. Called by /haipipe-task when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.3"
@@ -12,7 +12,7 @@ metadata:
 Skill: haipipe-task-for-endpoint
 =================================
 
-Scaffolds an **endpoint task-folder** (default C-series; letters are project-specific).
+Scaffolds an **endpoint job** (default C-series; letters are project-specific).
 Takes a trained ModelInstance_Set (Stage 5, with examples) and packages it into a self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
 The task `.py` is an exact copy of `code/scripts/haistepnb/c_endpoint_nb.py`.
@@ -40,7 +40,7 @@ What this scaffolds
 
 ```
 tasks/C{NN}_{group_name}/
-  └── {NN}_{task_name}/
+  └── {NN}_{job_name}/
       ├── 1_{task_name}.py           ← exact copy of c_endpoint_nb.py
       ├── configs/
       │   └── run_{task_name}.yaml   ← endpoint config (5 Fn names + model ref)
@@ -177,7 +177,7 @@ Cross-references
 Scaffold flow
 -------------
 
-  1. Identify project + task-group (letter C).
+  1. Identify project + block (letter C).
   2. Collect metadata (NN, name, model ref, 5 Fn names, _meta).
   3. Copy `c_endpoint_nb.py` to task folder (exact copy).
   4. Seed config from `ref/config-seed.yaml`.

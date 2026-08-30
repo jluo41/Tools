@@ -8,18 +8,18 @@ This is what the creator agent does during Phase 2 (Build).
 When to call
 ------------
 
-As Phase 2: Build of the `/haipipe-task` lifecycle on a Stata task folder.
-Also callable standalone: `/haipipe-task-for-stata build <task-folder-path>`
+As Phase 2: Build of the `/haipipe-task` lifecycle on a Stata job folder.
+Also callable standalone: `/haipipe-task-for-stata build <job-path>`
 
 Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).
 
 
-Mode: existing task folder (match-existing)
+Mode: existing job folder (match-existing)
 -------------------------------------------
 
-When building into a task folder that already has authored code (e.g., adding a new cohort config to an existing data-pipeline task):
+When building into a job folder that already has authored code (e.g., adding a new cohort config to an existing data-pipeline task):
 
-1. **Read existing patterns first.** Scan the task folder for:
+1. **Read existing patterns first.** Scan the job folder for:
    - Resolve-StataExe function presence (if yes, use it in new files)
    - Config structure (section headers, global naming conventions)
    - Runner structure (thin delegate vs self-orchestrating)
@@ -28,8 +28,8 @@ When building into a task folder that already has authored code (e.g., adding a 
    - STATATMP setup (if yes, replicate in new orchestrators)
 
 2. **Match, do not override.** New files MUST follow the conventions
-   already established in the task folder, even if those conventions
-   differ from the default templates. Consistency within a task folder
+   already established in the job folder, even if those conventions
+   differ from the default templates. Consistency within a job folder
    beats template compliance.
 
 3. **When to deviate.** Only deviate from existing patterns when:

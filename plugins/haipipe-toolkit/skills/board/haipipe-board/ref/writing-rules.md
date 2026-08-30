@@ -55,7 +55,7 @@ These are not style preferences. `build.py` renders each section a specific way,
 - **No author notes to self**
   Do not write explanations of the markup or the tooling into the page (for example a note about why an ascii figure is left-anchored). The reader needs the content, not the reasoning behind how it was typeset.
 - **A short heading is a phrase, not a sentence**
-  The complete question belongs in `## Opening`. Keep the `# title` and every item heading short.
+  The complete question belongs in `## Opening`. Keep the `# title` and every item heading short. A Page title targets three to five visible words and never exceeds six (JL 260827); acronyms, identifiers, and hyphenated compounds count as one word, and a colon does not create a second allowance.
 - **Give numbers**
   "Basically done" and "works well" say nothing. Write "2 of 7 questions are clear", "agreement fell from 0.93 to 0.67".
 - **Each question is self-contained**

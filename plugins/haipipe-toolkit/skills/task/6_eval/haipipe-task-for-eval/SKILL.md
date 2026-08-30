@@ -1,7 +1,7 @@
 ---
 name: haipipe-task-for-eval
-description: "evaluation task-folder specialist: scaffolds {NN}_<name>/ task-folders in the eval task-group (default B-series) that score a trained model against an AIData split -> results/<run>/metrics.json. Called by /haipipe-task when task-type=eval. Cross-references /haipipe-end or a future eval skill."
-argument-hint: "[project_id] [group] [task-name]"
+description: "evaluation job specialist: scaffolds {NN}_<name>/ jobs in the eval block (default B-series) that score a trained model against an AIData split -> results/<run>/metrics.json. Called by /haipipe-task when task-type=eval. Cross-references /haipipe-end or a future eval skill."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.2"
@@ -12,7 +12,7 @@ metadata:
 Skill: haipipe-task-for-eval
 =================================
 
-Scaffolds an **evaluation task-folder**.
+Scaffolds an **evaluation job**.
 Consumes a trained ModelInstance + an AIData split; produces metrics + optional diagnostic plots under `results/<run>/`.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
@@ -24,9 +24,9 @@ What this scaffolds
 -------------------
 
 ```
-tasks/B{NN}_<group_name>/                    ← B-series group (evaluation)
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+tasks/B{NN}_<block_name>/                    ← B-series group (evaluation)
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── configs/
     │   └── eval_<target>.yaml               seeded from ref/config-seed.yaml
     ├── runs/
@@ -54,7 +54,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.
@@ -78,7 +78,7 @@ next:      suggested next command (run.sh / next eval target)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

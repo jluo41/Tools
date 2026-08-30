@@ -1,3 +1,11 @@
+## 0.40.2 — 2026-08-29
+
+- Page titles now target three to five visible words and have a hard ceiling of
+  six. Acronyms, identifiers, and hyphenated compounds count as one word; a
+  colon does not create a second allowance, and the page id is not part of the
+  title. The shared template inherits the rule, and `check.py` reports
+  `title-too-long` when a Page exceeds it.
+
 ## 0.40.1 — 2026-08-28
 
 - `preview.py` now also takes a group or board folder (one roster line per

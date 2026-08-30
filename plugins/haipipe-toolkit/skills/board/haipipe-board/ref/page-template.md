@@ -1,4 +1,4 @@
-# Short title in sentence case: say what this page is FOR
+# Short purpose title
 <!-- On an S page the title carries the page's identity first: `S <Family> <unit> · <short title>`,
      for example `S Main 7 · §6 Results`. build.py derives the Content heading from it
      (`📚 Content · Main 7 §6 Results`), so a bare phrase there produces a heading that names nothing.
@@ -27,12 +27,15 @@ provides: one compact phrase naming the downstream handoff
        optional = delete the whole section, heading included, if unused.
      The top four lines follow the same rule: # title, state, owner are required; method is
      optional (delete the whole line).
-       - the title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801).
+       - the title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801),
+         targets three to five visible words, and never exceeds six (JL 260827).
+         Acronyms, identifiers, and hyphenated compounds count as one word; punctuation-only
+         separators do not count. A colon does not create a second allowance: the complete
+         visible title still stays within six words. The page id is not part of the title.
          Capitalize the first word and proper nouns and nothing else, so `Page Template design`
          is wrong twice over: it mixes two cases, and it names a topic instead of a purpose.
-         A colon may carry a short subtitle, and that is usually where the purpose lands:
-         `The page template: one grammar every page kind obeys`, `The code's shape: one Law,
-         three files`. A defined term keeps its capitals (`Mounting a SPACE`). On the Index the
+         Prefer compact titles such as `BCarrier header-line joins`, `AMI admission and CABG`,
+         or `CABG regression design`. A defined term keeps its capitals (`Mounting a SPACE`). On the Index the
          title is the only line a reader gets before choosing, so a title naming only its
          subject makes them open the page to learn what the page was for.
        - the first state token is exactly one of 🔴 (not started), 🟡 (in progress),

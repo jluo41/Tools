@@ -14,10 +14,10 @@ quality. Enrich to see positives; keep a random NONE quota so over-firing on the
 95% is still measured. ALWAYS report base rate alongside any κ.
 
 Usage:
-    python lib/sample.py probe  --corpus c.jsonl --lexicon lex.json
-    python lib/sample.py sample --corpus c.jsonl --lexicon lex.json --confounds conf.json \
+    python engine/sample.py probe  --corpus c.jsonl --lexicon lex.json
+    python engine/sample.py sample --corpus c.jsonl --lexicon lex.json --confounds conf.json \
                                 --per-stratum 8 --none-quota 0.33 --out batch.jsonl [--exclude ids.txt] [--seed 42]
-    python lib/sample.py selftest
+    python engine/sample.py selftest
 
 Inputs: lexicon.json = {stratum: regex, ...}   confounds.json = {sibling: regex, ...}
         (both LLM-generated per construct; nothing hardcoded here)

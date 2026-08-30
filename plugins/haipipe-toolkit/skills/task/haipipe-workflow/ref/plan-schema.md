@@ -25,18 +25,18 @@ input:
   files_in:                              # files the workflow starts with
     - ref/source_fn_template.py
     - ref/record_fn_template.py
-    - examples/ProjA/tasks/A01_pretraining/   # target task-group
+    - examples/ProjA/tasks/A01_pretraining/   # target block
 
 # ─── P: Phases ───────────────────────────────────────────────────
 phases:
 
   - title: Load
-    detail: "read templates and task-group structure"
+    detail: "read templates and block structure"
     steps:
       - label: "read template"
         type: agent                      # agent | skill | workflow
         required: true
-        prompt: "Read ref/source_fn_template.py and task-group structure"
+        prompt: "Read ref/source_fn_template.py and block structure"
         files_in:
           - ref/source_fn_template.py
           - ref/record_fn_template.py
@@ -330,7 +330,7 @@ answered. It is gone, along with the mailbox mechanism it served. A report descr
 run did; it never names anyone downstream, because this layer does not know that anyone is
 downstream.
 
-When a run answers a QUESTION, the answer is a FILE — the task-folder's readable digest at
-`<task-folder>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
+When a run answers a QUESTION, the answer is a FILE — the job's readable digest at
+`<job>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
 asked reads that file. Nothing is written back, no id is recorded, and no field points
 outward.

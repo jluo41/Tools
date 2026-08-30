@@ -49,7 +49,7 @@ When to call
 ------------
 
 ```
-/haipipe-task plan <task-folder-path>
+/haipipe-task plan <job-path>
 ```
 
 

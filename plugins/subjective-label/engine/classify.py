@@ -68,7 +68,7 @@ def _vec_path_for(project_dir: Path, text: str) -> Path:
 
 
 def _load_vectors(project_dir: Path, items: list[dict]):
-    """Load embedding vectors for items. Requires lib/embed.py to have been
+    """Load embedding vectors for items. Requires engine/embed.py to have been
     run first (so vectors are cached)."""
     import numpy as np  # noqa: PLC0415
     vecs = []
@@ -84,7 +84,7 @@ def _load_vectors(project_dir: Path, items: list[dict]):
     if missing:
         raise FileNotFoundError(
             f"{len(missing)} items missing embedding vectors (e.g. {missing[:3]}). "
-            "Run `python lib/embed.py ... embed` first."
+            "Run `python engine/embed.py ... embed` first."
         )
     return np.vstack(vecs), ids
 

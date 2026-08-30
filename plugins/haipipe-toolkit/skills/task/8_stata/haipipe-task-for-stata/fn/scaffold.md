@@ -1,4 +1,4 @@
-fn-scaffold: Scaffold a Stata task-folder
+fn-scaffold: Scaffold a Stata job
 ==========================================
 
 Unified scaffold for all 4 Stata stages.
@@ -7,11 +7,11 @@ Read `ref/stata-dialect.md` first for the engine contract.
 Output: `tasks/{G}{NN}_<group>/{LNN}_{task_name}/` where {L} = stage letter (A=cms, B=case, C=data, D=reg).
 
 
-Step 1 -- Identify project + task-group
+Step 1 -- Identify project + block
 ----------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block.
 
 
 Step 2 -- Resolve stage
@@ -119,5 +119,5 @@ MUST NOT
 First-run gate
 ---------------
 
-Before hand-copy to the CMS server, run `haipipe-task-reviewer-agent` on the task folder.
+Before hand-copy to the CMS server, run `haipipe-task-reviewer-agent` on the job folder.
 The reviewer enforces the "Script style + server constraints" contract in `ref/stata-dialect.md` (Windows PowerShell 5.1 only, ASCII files, thin headers, no ceremony).

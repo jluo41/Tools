@@ -1,4 +1,4 @@
-fn-execute: Execute a data-pipeline task-folder
+fn-execute: Execute a data-pipeline job
 ==================================================
 
 Stage-aware execution of an existing data-pipeline task.

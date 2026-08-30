@@ -16,7 +16,7 @@ Automatically when `/haipipe-task` targets an existing task folder (not scaffold
 Also callable standalone:
 
 ```
-/haipipe-task audit <task-folder-path>
+/haipipe-task audit <job-path>
 ```
 
 
@@ -25,10 +25,13 @@ Procedure
 
 ### Step 1 — Discover run names
 
-Scan directories and collect all unique run names.
-The exact directories depend on the task engine:
+Scan directories and collect all unique run names. First detect the job
+SHAPE (hierarchy.md "Two job shapes"): a scripts/ dir with {NN}_* children =
+NESTED, else FLAT. In a nested job a run's NAME is the PATH `<task>/<run>`,
+and every glob goes one level deeper — flat globs at the job root match
+nothing there, so a shallow audit would report a working nested job as empty.
 
-**Python/papermill tasks:**
+**Python/papermill tasks (FLAT):**
 ```
 NAMES_FROM_CONFIGS   = stem of each configs/*.yaml
 NAMES_FROM_RUNS      = stem of each runs/*.{sh,ps1} (dedupe .sh/.ps1 pairs)
@@ -36,6 +39,15 @@ NAMES_FROM_RESULTS   = name of each results/*/ subfolder
 NAMES_FROM_NOTEBOOKS = stem of each notebooks/*.ipynb
 
 ALL_NAMES = union of all four sets
+```
+
+**Python/papermill tasks (NESTED)** — same four sets, one task deeper,
+keyed by `<task>/<run>` (skip `0-*` shared dirs, they are never tasks):
+```
+NAMES_FROM_CONFIGS   = <task>/<stem> of each scripts/*/config/*.yaml
+NAMES_FROM_RUNS      = <task>/<stem> of each runs/*/*.{sh,ps1}
+NAMES_FROM_RESULTS   = <task>/<name> of each results/*/*/
+NAMES_FROM_NOTEBOOKS = <task>/<stem> of each notebooks/*/*.ipynb  (excl. _source)
 ```
 
 **Stata tasks** (configs may be .do or .yaml, no notebooks):
@@ -63,7 +75,8 @@ The fix: generate a thin `.do` wrapper that loads the source selector + shared c
 For each name in ALL_NAMES, check sisters exist.
 The "four sisters" vary by engine:
 
-**Python:** configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
+**Python (flat):**   configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
+**Python (nested):** scripts/<task>/config/<run>.yaml + runs/<task>/<run>.sh + results/<task>/<run>/ + notebooks/<task>/<run>.ipynb
 **Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
 
 ```

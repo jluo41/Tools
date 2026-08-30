@@ -1167,10 +1167,44 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
     """
     global REGISTER
     out, fence, blt, lg, flang = [], None, None, None, ""
+    pipe_table = None
     ifence = None    # 缩进在 item 下的 ``` 块：收进这个 item 的折叠区（JL 260724）
     last_p, appar = None, {}   # 最近一句正文的 out 下标 → 它收集到的 `>` 装置行（QA8）
     pbreak = True   # 源文件里空行=段落边界；下一句正文要戴 pnew（句址 P 的分段依据）
     para_head = False          # 上一行是不是 #### 段落标题（决定紧跟的 (…) 是不是它的活儿）
+
+    def table_flush():
+        """Render one consecutive Markdown pipe-table block as a real table.
+
+        The page renderer used to leave pipe rows as ordinary paragraphs, which
+        made wide Job Matrices unreadable on the shareable Board page. Keep the
+        source as Markdown, but give the reader the same table surface already
+        used by the live drawer's markdown renderer.
+        """
+        nonlocal pipe_table, last_p
+        if pipe_table is None:
+            return
+        flush()
+        cells = [[c.strip() for c in row.strip().strip("|").split("|")]
+                 for row in pipe_table]
+        separator = (
+            len(cells) > 1
+            and all(re.fullmatch(r":?-{2,}:?", cell) for cell in cells[1] if cell)
+        )
+        header = cells[0] if cells else []
+        body_rows = cells[2:] if separator else cells[1:]
+        html = ['<div class="mdtable"><table class="mdt"><thead><tr>']
+        html.extend(f"<th>{inline(cell)}</th>" for cell in header)
+        html.append("</tr></thead><tbody>")
+        for row in body_rows:
+            html.append("<tr>")
+            for cell in row:
+                html.append(f"<td>{inline(cell)}</td>")
+            html.append("</tr>")
+        html.append("</tbody></table></div>")
+        out.append("".join(html))
+        pipe_table = None
+        last_p = None
 
     def flush():
         """把攒着的要点 / 勾选项吐出来。两者共用「小标题 + 缩进解释」这套结构。"""
@@ -1237,6 +1271,17 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
         blt = None
 
     for ln in (txt or "").split("\n"):
+        is_pipe_row = (ln.lstrip().startswith("|")
+                       and "|" in ln.lstrip()[1:])
+        if pipe_table is not None:
+            if is_pipe_row and fence is None and ifence is None:
+                pipe_table.append(ln)
+                continue
+            table_flush()
+        if (is_pipe_row and fence is None and ifence is None
+                and blt is None and lg is None):
+            pipe_table = [ln]
+            continue
         # A `<!-- haipipe:… -->` MACHINE MARKER never reaches the page (JL
         # 260726, seeing six of them printed on the first generated skill page).
         # `parse.strip_notes` keeps them on purpose, because the file is where
@@ -1483,6 +1528,7 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
                     EMBED_SEEN.add(_key)
                     out.append(_fig)
             EMBEDS.clear()
+    table_flush()
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():

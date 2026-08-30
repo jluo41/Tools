@@ -9,15 +9,17 @@
 
 # store — OPTIONAL, top level (NOT inside _meta: the run script greps it before
 # any YAML is parsed). Where this call's GENERATED output lands: results/,
-# notebooks/, QA/, CODE_REVIEW.md, RUN_AUDIT.md. Repo-relative or absolute.
-# Omit it and output stays in the task-folder, which is the default and what
+# notebooks/, QA/, RUN_AUDIT.md. (CODE_REVIEW.md NEVER follows the store: it
+# reviews code at a git_sha and stays in the job — the pre-flight gate reads
+# $TASK_DIR/CODE_REVIEW.md only.) Repo-relative or absolute.
+# Omit it and output stays in the job, which is the default and what
 # most tasks want.
 #
 # Declare one when a CONSUMER owns the answers — an InsightBoard reading one
 # cohort, say. The task tree is then mirrored inside the store, so the same
-# task-folder serves a second cohort under a second store without being copied.
+# job serves a second cohort under a second store without being copied.
 # A sibling task's output is store-keyed too: point at it relative to the store
-# root, never to the task tree. See ref/hierarchy.md § task-folder.
+# root, never to the task tree. See ref/hierarchy.md § job.
 #
 # store: _WorkSpace/InsightBoardResult/A01_InsightBoard-SMSR2Full
 

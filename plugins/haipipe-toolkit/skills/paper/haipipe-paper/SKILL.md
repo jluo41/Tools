@@ -310,6 +310,44 @@ plugins build the accepted Page; the Paper assembly reads those accepted,
 versioned outputs and the display artifacts they bind. Generated prose and
 build artifacts are never a second authority.
 
+## 🚦 Submission-readiness gate (G6 · before submission)
+
+Use this gate after assembly and before labeling any PDF/DOCX
+`SUBMISSION-READY`. Read [`ref/submission-readiness.md`](ref/submission-readiness.md)
+and the target venue's current author instructions. A clean render is necessary
+but never sufficient: the gate must close evidence, story, reporting, files, and
+human approval together.
+
+Run the gate in this order:
+
+1. **Freeze evidence.** Name one primary estimand and one primary claim. Bind
+   every number, interval, sample size, display, and consequential sentence to
+   accepted evidence. Mark provisional, exploratory, unrecomputed, and
+   unsupported items explicitly; do not promote them through polished prose.
+2. **Check the story.** Confirm that the title, Key Points, abstract, lead
+   Results paragraph, Discussion opening, and Conclusion make the same claim.
+   Keep inherited methods or upstream features as enablers unless the paper's
+   evidence supports a separate methodological claim. Keep distinct papers,
+   diseases, estimands, and causal interpretations separate.
+3. **Check reporting and displays.** Reconcile design labels, dates, eligibility,
+   missingness, analytic N, uncertainty, clustering, multiplicity, ethics, and
+   prespecified versus secondary analyses. Confirm that every table, figure,
+   supplement item, legend, and checklist is final, cited, and rendered.
+4. **Check submission files.** Apply the venue's current limits and required
+   structure to the title page, abstract, Key Points, main text, references,
+   tables, figures, supplement, cover letter, reporting checklist, and metadata.
+   Fill authorship, funding, conflicts, data/code sharing, consent/IRB, and AI
+   disclosure fields; never leave placeholders in a submission package.
+5. **Run the final human pass.** Read the assembled document linearly for
+   clinical clarity, claim strength, citation support, AI-like promotional
+   language, unexplained abbreviations, repetition, and formatting. A person
+   must approve the evidence scope and the final build before G6 closes.
+
+The build remains `DRAFT` when any hard blocker is open, even if the document
+compiles and passes visual checks. A human may explicitly waive a noncritical
+item; the waiver belongs in the build receipt and does not waive venue rules,
+unsupported claims, missing evidence, or required disclosures.
+
 ## 🧱 Retired architecture boundary
 
 The former S01–S10 stage contracts, stage resolver, S-page creator, S03/S04
@@ -338,6 +376,8 @@ Before reporting Paper work complete:
 - Every Round covers one feedback batch, routes every item exactly once, and
   names checked target-Page versions plus an approved response/build receipt.
 - The built PDF/DOCX is regenerated from the accepted Page versions.
+- G6 submission-readiness is either closed or explicitly recorded as a DRAFT
+  with named hard blockers and a human owner.
 - Static skill validation, repository checks, and a fresh-context skill test
   have passed after any skill edit.
 

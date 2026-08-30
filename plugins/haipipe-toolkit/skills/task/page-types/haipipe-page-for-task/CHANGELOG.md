@@ -320,14 +320,14 @@ First contract, written on JL's question "我们对这个 task 的配置定义�
 - That re-openability is what admits the type under the admission law
   (`QPs2-page-types.md` §1): a stage page closes when a human gate passes and stays
   closed; a task page is re-openable BY DISK, because its subject regenerates.
-- Head keys: `page-type: task` (required, because 31% of real task-folders do not
-  match the `{NN}_<name>` convention, so no filename can mark one), `task-folder:`
+- Head keys: `page-type: task` (required, because 31% of real jobs do not
+  match the `{NN}_<name>` convention, so no filename can mark one), `job:`
   (the companion already on disk), `verdict-run:`.
 - Four binding rules: by path never by copy · every number names its run · a rerun
   re-opens · one authority each between the page and `QA/<n>-<slug>.md`.
 - ⬜ Open ruling for JL, unchanged from 0.1.0: `ref/task-structure.md` §"Task-level
   diagram/" already ships `01-overview · 02-design · 03-runs · 04-progress` per
-  task-folder, in .txt files nothing renders. Either the page absorbs them or they
+  job, in .txt files nothing renders. Either the page absorbs them or they
   stay as its source. Until ruled, the page names them in `## Files` and does not
   duplicate their prose.
 - ⬜ No `template.md` yet: a template serializes the typed record, and freezing its

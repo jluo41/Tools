@@ -164,7 +164,7 @@ optional extreme cases. Nothing else.
 | `sample_candidates.py` confound strata | **`discriminant_from`-driven** confound strata |
 | P02 datasets | **autonomy-license battery** + registry-match |
 | P01 executor-independence | generic **clarity** metric |
-| B01–B03 labeler/kappa/iterate | promote to `lib/label.py` + `lib/kappa.py` (canonical, de-physician-ized) |
+| B01–B03 labeler/kappa/iterate | promote to `engine/label.py` + `engine/kappa.py` (canonical, de-physician-ized) |
 
 ---
 
@@ -172,13 +172,13 @@ optional extreme cases. Nothing else.
 
 | Step | Change | Files | Fixes |
 |---|---|---|---|
-| **S0** | canonical engine: `lib/label.py` (multi-engine labeler, validator≠labeler) + `lib/kappa.py` | new lib | base |
+| **S0** | canonical engine: `engine/label.py` (multi-engine labeler, validator≠labeler) + `engine/kappa.py` | new engine | base |
 | **S1** | config contract (Part 6); strip hardcoding | `ref/ref-config.md`(new), `sl-init` template, `INIT.md` | F2 |
-| **S2** | construct auto-selection: `lib/construct.py` (multi-LLM propose → objective-score → select + divergence report) | new lib, `moderator`/`INIT.md` | Part 3 |
-| **S3** | metrics split: `lib/kappa.py` emits reliability / executor-independence / generalization / objective-score | `lib/kappa.py`, `ref-output-style.md` | F4 |
+| **S2** | construct auto-selection: `engine/construct.py` (multi-LLM propose → objective-score → select + divergence report) | new engine, `moderator`/`INIT.md` | Part 3 |
+| **S3** | metrics split: `engine/kappa.py` emits reliability / executor-independence / generalization / objective-score | `engine/kappa.py`, `ref-output-style.md` | F4 |
 | **S4** | three sets + convergence gate (held-out + objective) | `INIT.md`, `sl-init`, `sl-iterate`, `moderator` | F7,F8 |
-| **S5** | base-rate two pools + construct→probe; hard-case via classifier (not embedding); delete "guideline reshapes embedding" | `lib/sample.py`(new), `sampler-agent`, `ref-schema` | F5,F6 |
-| **S6** | autonomy license battery + registry-match on public per-rater sets | `sl-validate`, `validator-agent`, `ref-datasets`→registry, `lib/license.py`(new) | F1,F2,F3 |
+| **S5** | base-rate two pools + construct→probe; hard-case via classifier (not embedding); delete "guideline reshapes embedding" | `engine/sample.py`(new), `sampler-agent`, `ref-schema` | F5,F6 |
+| **S6** | autonomy license battery + registry-match on public per-rater sets | `sl-validate`, `validator-agent`, `ref-datasets`→registry, `engine/license.py`(new) | F1,F2,F3 |
 
 Dependency: S0 → {S2, S3}; S1 → S2; S2 → S4; S5 ∥ (S2–S4); S6 last (needs S3).
 
@@ -209,30 +209,30 @@ Dependency: S0 → {S2, S3}; S1 → S2; S2 → S4; S5 ∥ (S2–S4); S6 last (ne
 
 ## Part 12 — Implementation status (2026-07-21)
 
-Engine code + docs for S0–S6 **built and unit-tested** (5 lib selftests green;
+Engine code + docs for S0–S6 **built and unit-tested** (5 engine selftests green;
 `label.py` parser verified — no selftest since it needs OAuth). All in
 `plugins/subjective-label/`, **uncommitted**.
 
 | step | built | tested |
 |------|-------|--------|
-| S0 canonical `lib/label.py` + `lib/kappa.py` | ✅ | B03 reproduces Cohen κ 0.9322 · binary/5-pt run |
+| S0 canonical `engine/label.py` + `engine/kappa.py` | ✅ | B03 reproduces Cohen κ 0.9322 · binary/5-pt run |
 | S1 `ref/ref-config.md` + sl-init align | ✅ | non-physician (sarcasm) config expressible |
-| S2 `lib/construct.py` (discriminance×info select) | ✅ | good wins · redundant/degenerate → 0 |
+| S2 `engine/construct.py` (discriminance×info select) | ✅ | good wins · redundant/degenerate → 0 |
 | S3 `kappa.py` executor_independence | ✅ | three signals separated |
-| S4 `lib/converge.py` + three-set / held-out gate | ✅ | catches the B03 OVERFIT (0.93/0.67) trap |
-| S5 `lib/sample.py` base-rate + two pools | ✅ | real corpus 6.6% · enriched strata |
-| S6 `lib/license.py` + registry + sl-validate | ✅ | good agent PASS / random BELOW |
+| S4 `engine/converge.py` + three-set / held-out gate | ✅ | catches the B03 OVERFIT (0.93/0.67) trap |
+| S5 `engine/sample.py` base-rate + two pools | ✅ | real corpus 6.6% · enriched strata |
+| S6 `engine/license.py` + registry + sl-validate | ✅ | good agent PASS / random BELOW |
 
 **NOT yet done = real runs (execution, not engine code):**
-- establish the autonomy license on REAL public data (download POPQuorn/DICES → run engine → `lib/license.py`)
+- establish the autonomy license on REAL public data (download POPQuorn/DICES → run engine → `engine/license.py`)
 - construct auto-selection on the physician instance (needs `objective` wired — discriminance now, opioid-downstream when the regression/PHI is accessible)
-- the LLM `construct→probe` lexicon generation that feeds `lib/sample.py`
+- the LLM `construct→probe` lexicon generation that feeds `engine/sample.py`
 - the ≥2nd-annotator / objective decisions in Part 11
 
 ## Related files
 
 - `plugins/subjective-label/skills/*/SKILL.md`, `skills/subjective-label/INIT.md`
-- `plugins/subjective-label/lib/{embed,classify}.py` (+ new label/kappa/sample/construct/license)
+- `plugins/subjective-label/engine/{embed,classify}.py` (+ new label/kappa/sample/construct/license)
 - `plugins/subjective-label/ref/ref-datasets.md` → registry/battery
 - `examples/Project-Subjective-Label/discoveries/P02_external-validation-datasets/` — battery audit
 - `examples/Project-Subjective-Label/tasks/B02_dim_openness/` — junjie's base-rate scaffold (to generalize)

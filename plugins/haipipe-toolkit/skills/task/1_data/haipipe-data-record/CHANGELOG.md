@@ -12,7 +12,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.3.0] — 2026-07-08
 
-- skill-diagnose fixes: Recipe/config locations -> task-folder configs/; dead `test/test_haistep` block removed from templates/config.yaml; `scripts.haistep.record` -> `scripts.haistepcli.record`; CHANGELOG reordered newest-first.
+- skill-diagnose fixes: Recipe/config locations -> job configs/; dead `test/test_haistep` block removed from templates/config.yaml; `scripts.haistep.record` -> `scripts.haistepcli.record`; CHANGELOG reordered newest-first.
 - (2026-07-08 earlier, unversioned at the time — recorded here) builder home repointed from code-dev/ to `02_record_fn_develop_<cohort>/`.
 
 ## [1.2.0] — 2026-07-04

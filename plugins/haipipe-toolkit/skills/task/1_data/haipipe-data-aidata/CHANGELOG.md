@@ -12,7 +12,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.4.0] — 2026-07-08
 
-- skill-diagnose fixes: documented store layout corrected from `{aidata_name}/@{aidata_version}/` to the real `{ParentSetName}/@v{N}AIData-{aidata_name}/` (concepts + SKILL + template; verified against all 4 on-disk sets); split-name note added (config-driven; shipped MIMIC uses train/validation/test); Recipe location -> task-folder configs/; dead test block removed; `scripts.haistep.aidata` -> `scripts.haistepcli.aidata`; CHANGELOG reordered newest-first.
+- skill-diagnose fixes: documented store layout corrected from `{aidata_name}/@{aidata_version}/` to the real `{ParentSetName}/@v{N}AIData-{aidata_name}/` (concepts + SKILL + template; verified against all 4 on-disk sets); split-name note added (config-driven; shipped MIMIC uses train/validation/test); Recipe location -> job configs/; dead test block removed; `scripts.haistep.aidata` -> `scripts.haistepcli.aidata`; CHANGELOG reordered newest-first.
 - ref/worked-example.md REBASED from the WellDoc SMS RCT to MIMIC-IV mortality — every claim now checkable against the real `4-AIDataStore/MimicIV31_MimicAdmissionEntry/@v0AIData-MimicMortality/` asset (JL: "ok, go ahead and fix all of them" — approved recommended option A).
 - (2026-07-08 earlier, unversioned at the time — recorded here) builder home repointed from code-dev/ to `04_aidata_fn_develop_<cohort>/`.
 

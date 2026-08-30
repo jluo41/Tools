@@ -4,26 +4,34 @@ This reference defines roles, access, write authority, and call order for the re
 One human is the semantic authority.
 Models create evidence and execution artifacts but do not substitute for that authority.
 
-## 1. Topology
+## 1. Family topology
 
 ```text
-Human semantic authority
-          ↕
-Strong calibration agent
-  ├── Embedder
-  ├── Candidate selector
-  ├── Weak executors
-  ├── Comparison auditor
-  ├── Guideline optimizer
-  ├── Checkpoint keeper
-  ├── Test custodian
-  ├── Final evaluator
-  ├── Production executor
-  └── Final audit keeper
+subjective-label umbrella
+├── 🏗 label-building
+│   ├── Human semantic authority ↔ Strong calibration agent
+│   ├── Embedder · Candidate selector · Weak executors
+│   ├── Comparison auditor · Guideline optimizer · Checkpoint keeper
+│   └── Test custodian (reservation only) · Label Handoff keeper
+│
+├──────────── signed Label Handoff ────────────▶
+│
+└── 🔍 label-scanning
+    ├── Test custodian (authorized release)
+    ├── Final evaluator
+    ├── Production executor + terminal reconciler
+    └── Final audit keeper
+
+subjective-label-workflow sits above both sides and owns only phases, gates,
+routes, and receipts.
 ```
 
-The strong calibration agent is the only conversational door for the human.
-This does not grant it semantic or canonical-write authority.
+The sibling doors have different questions and write authority. Building asks
+whether the construct matches the human and ends at the handoff. Scanning asks
+whether that frozen construct was executed reliably and ends at audited `D*`.
+The strong calibration agent remains the only conversational door for semantic
+and blind-human judgments; this does not grant it semantic or canonical-write
+authority.
 
 ## 2. Authority matrix
 
@@ -80,18 +88,19 @@ Committee requirements:
 Consensus is one sampling stratum.
 Every later human batch includes a stratified random consensus audit.
 
-## 5. Selection call graph
+## 5. Building call graph
 
 Round 1:
 
 ```text
-router → initializer → embedder → random sampler → strong calibration agent → checkpoint keeper
+umbrella → label-building Contract → Test Custodian reserve → embedder
+         → random sampler → strong calibration agent → checkpoint keeper
 ```
 
 Round 2 onward:
 
 ```text
-router
+umbrella → label-building Round
 → candidate selector
    → embedder
    → optional classifier or region scorer
@@ -103,11 +112,20 @@ router
 → checkpoint keeper
 ```
 
+After the stopping conjunction and human signoff pass:
+
+```text
+label-building freeze (P2)
+→ Label Handoff keeper rehashes G* + D_cal* + custody
+→ records the signed immutable Label Handoff
+→ subjective-label-workflow tests G2
+```
+
 ## 6. Final evaluation call graph
 
 ```text
-router
-→ verify QD4 stop and frozen G*
+umbrella → label-scanning Test
+→ verify valid Label Handoff
 → test custodian releases T* text
 → strong calibration agent records blind human gold
 → test custodian locks gold
@@ -120,8 +138,8 @@ The evaluator remains read-only over `G*`, wrappers, test gold, and candidate re
 ## 7. Production and audit call graph
 
 ```text
-router
-→ production-policy selection from frozen evidence
+umbrella → label-scanning Scan
+→ production-policy selection from frozen scorecards and handoff
 → preflight
 → production executor
 → human risk review through strong calibration agent
@@ -142,6 +160,7 @@ A semantic failure returns the project to calibration and follows final-test inv
 | one executor's predictions | that executor's registered run |
 | human-first and final Session records | strong agent recording inspectable human input |
 | cumulative human gold and closed policy | Checkpoint Keeper |
+| signed Label Handoff | Label Handoff Keeper recording the human freeze signature |
 | sealed manifest and access log | Test Custodian |
 | final predictions and scorecards | Final Evaluator |
 | production attempts and terminal labels | Production Executor plus reconciler |

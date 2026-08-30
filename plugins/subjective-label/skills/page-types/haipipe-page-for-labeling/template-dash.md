@@ -24,7 +24,7 @@ page-type: labeling
 owner: <who maintains the roster>
 
 <!-- RULE · `page-type:` is REQUIRED and it is not decoration. The 🔌 Plugin menu's
-     🏷 Labeling entry gates on it, so a page that omits the key gets no labeling
+     🏗 Building entry gates on it, so a page that omits the key gets no labeling
      surface however labeling-shaped its filename is. The key beats the filename. -->
 method: inventory the runs and their blocking gate; no stage writes this page
 

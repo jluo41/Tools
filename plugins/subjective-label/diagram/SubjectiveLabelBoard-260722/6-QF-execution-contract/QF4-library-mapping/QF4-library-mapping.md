@@ -19,7 +19,7 @@ This page maps reuse, retired paths, missing engines, and the later code gate.
 
 **Honesty**: Do not call a contract implemented when no script writes or validates its artifacts.
 
-**Scope**: Record code work but make no `lib/*.py` change on this page.
+**Scope**: Record code work but make no `engine/*.py` change on this page.
 
 ## Diagram
 **Implementation map**: reusable primitives feed a later orchestration layer, while retired authority paths stay disabled.
@@ -150,17 +150,17 @@ Until then, canonical skills HOLD at missing engine boundaries and may operate o
 ## Files
 
 ### Engines · what a later implementation plan inspects
-- `../../lib/embed.py`
+- `../../engine/embed.py`
   Reusable vector and retrieval primitive.
-- `../../lib/sample.py`
+- `../../engine/sample.py`
   Seeded sampling primitive requiring revised manifests and strata.
-- `../../lib/label.py`
+- `../../engine/label.py`
   Model-execution primitive requiring policy, wrapper, reason, and seal provenance.
-- `../../lib/kappa.py`
+- `../../engine/kappa.py`
   Metric primitive requiring new contexts rather than convergence authority.
-- `../../lib/classify.py`
+- `../../engine/classify.py`
   Optional scorer or validated production executor.
-- `../../lib/converge.py`
+- `../../engine/converge.py`
   Existing stop logic requiring replacement by the four-gate contract.
 
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE

@@ -3,6 +3,68 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.8.1] — 2026-08-30
+
+- **No orchestration-only job** (JL, the j05 ruling: "I don't understand this
+  job name" → "split them into each job, so the job folder is self-contained"
+  → "no more j05"). A job audits its OWN outputs at the tail of its run ticket
+  and writes a receipt that MIRRORS the run dir under `audits/`; order between
+  jobs is a data dependency, `required_audits` naming the exact upstream run,
+  never a scheduler job. ref/hierarchy.md (block paragraph, nested tree
+  `sbatch/` line), ref/block-job-task-run.md R9.
+- Pilot (LLMRec b02): `j05_audit_ladder` dissolved into
+  `audit_{a1,a2,b,c2}_outputs.py`, per-job `sbatch/run_all_arms.sh`, per-job
+  `derive_model_arm_configs.py`; shared checks in
+  `code/haiutils/agent_sdk/audit.py`; 118 tickets audit themselves; the
+  9_agent llm-engine skill commands re-pointed to the jobs' own tickets.
+
+## [0.8.0] — 2026-08-29
+
+- Hierarchy renamed onto Databricks: BLOCK (was task-group) > JOB (was
+  task-folder, THE self-contained unit) > TASK (new level: scripts/{NN}_*/
+  with config/ always a folder) > RUN (a config stem — an execution, never a
+  folder). Authority absorbed from ref/block-job-task-run.md into
+  ref/hierarchy.md + ref/task-structure.md; old verbs `task-folder` /
+  `task-group` stay as aliases of `job` / `block`.
+- Two job shapes: NESTED canonical (scripts/0-libs shared + tasks; runs/,
+  results/, notebooks/ mirrored at <task>/<run>), FLAT legacy accepted —
+  ref/run-sh-template.sh auto-detects from the ticket's own path (verified
+  both shapes + RESULT_STORE override on a mock repo, 260829).
+- `store:` is a JOB property declared once (0-libs/config-defaults.yaml
+  nested, configs/_defaults.yaml flat); per-run keys still honored as legacy.
+- Two drift checks (task↔ticket, config↔ticket) made possible by the
+  mirrored naming; documented with verified commands.
+- Prefer FEW blocks: the letter is the block's identity (LLMRec audit:
+  15 blocks / 32 jobs → 5 says the same thing).
+- Same-day follow-ons (originally excluded, then done): a 68-file vocabulary
+  sweep across the whole skills/task family (specialists, agents, page-types,
+  fn/*.md; 290 replacements), a `job` alias on the workflow js input key, and
+  a 5-reviewer audit whose fixes made the agent triad, fn/run+audit, the
+  workflow js prompts, the stata dialect, and page-for-task shape-aware
+  (nested <task>/<run> vs flat legacy).
+- ONE GRAMMAR at every level (JL 260829, evening): `bNN_ · jNN_ · tNN_ ·
+  rNN_<stem>` — level letter + two digits + stranger-test words. Block letter
+  schemes and letter families retired (a family shows in the name). The
+  address is the four prefixes joined, read off the path (`b02j01t01r03`);
+  run-sh-template.sh reads them, computes nothing. Proven on a mock repo.
+- LIBRARIES AND PROMPTS (JL 260830): code that several jobs import lives in the
+  SPACE package `code/haiutils/` (LLMRec's agent runtime → haiutils.agent_sdk),
+  never at project/block level; prompts are config and sit in
+  scripts/tNN_*/config/prompts/ beside the config that names them, resolved
+  relative to the config file; a job may be pure orchestration (sbatch/ +
+  layout helpers) for a DAG that spans sibling jobs.
+- A BLOCK IS A FOLDER OF JOBS AND NOTHING ELSE (JL 260829): no sbatch/, no
+  shared code, no results above a job; jobs that share a DAG or a library are
+  one job. Under scripts/, `tNN_*` = task, anything else = shared code, named
+  freely (0-libs/ for Stata, src/ or code/ for Python).
+- Naming law (JL 260829): the STRANGER TEST — `<noun>_<qualifier>`, shape
+  words never alone, coined terms only when the block overview defines them;
+  scaffolds refuse failing names (SKILL.md Step 3b NAME GATE, hierarchy.md
+  "Naming", spec R8).
+- Still open: the PowerShell store-resolution gap (block-job-task-run.md
+  § Code that must change) and the other skill families' vocabulary (~84
+  non-diagram mentions, boundary-reviewed as alias-safe).
+
 ## [0.7.0] — 2026-08-17
 
 - Added the `insight` knowledge door and `fn/insight.md`.

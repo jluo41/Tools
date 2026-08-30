@@ -89,7 +89,7 @@ are now built as engine code (not yet run). Read board.md for live status.
   📐 sl-init Step 3: "Sampler calls Embedder to cluster the corpus (12-20
      clusters). Picks ~30-40 items: centroid + edge from each cluster."
   🏃 ❌ NOT WIRED. No embedding index, no cluster assignment, no classifier
-     artifact under any task folder. lib/embed.py (597) + classify.py (388)
+     artifact under any task folder. engine/embed.py (597) + classify.py (388)
      have no caller.
   🎙️ 7 anchors — 3 label centroids + 3 pairwise midpoints + centre — 20 items
      each ⇒ 140.
@@ -325,7 +325,7 @@ are now built as engine code (not yet run). Read board.md for live status.
         ❓ Worth it? Anchoring contamination is invisible after the fact.
   3. ⚠️ This board could become the thing nobody fills.
         📌 precedent: the plugin's feedback/ — four entries, all 2026-06-27.
-           And lib/embed.py: 597 lines, never called.
+           And engine/embed.py: 597 lines, never called.
 
   🔴 THE OPEN RULINGS — as of 2026-07-21 (see ../board.md for live status)
 
@@ -340,10 +340,10 @@ are now built as engine code (not yet run). Read board.md for live status.
   Tools commit 1eb432f6 (Zeleikun Di, 2026-07-21 23:28, +1616 lines) landed the
   engine for much of the 🟠 OWED list above — as CODE, unit-tested, NOT yet run
   on real data:
-     R11/R7-flaw  → lib/converge.py  three-set gate ("catches the B03 OVERFIT
+     R11/R7-flaw  → engine/converge.py  three-set gate ("catches the B03 OVERFIT
                     (0.93/0.67) trap")
-     R13          → lib/license.py   public per-rater battery + ceiling assert
-     S2 wiring    → lib/sample.py    base-rate two pools
-     S3 peers     → lib/label.py     validator model ≠ labeler model
+     R13          → engine/license.py   public per-rater battery + ceiling assert
+     S2 wiring    → engine/sample.py    base-rate two pools
+     S3 peers     → engine/label.py     validator model ≠ labeler model
   ⇒ that is why this audit is SUPERSEDED. The live board is ../board.md, whose
     six subsections are the REAL RUNS this code has not yet had.

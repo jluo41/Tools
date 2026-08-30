@@ -126,14 +126,14 @@ Deploy (FastAPI):
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
   2. `scripts/serve_local.py` is a REFERENCE TEMPLATE, not a runnable
      entrypoint: skill-internal code is examples/reference only, never run
-     in-place (owner rule 2026-07-05). COPY it into the serving task-folder
+     in-place (owner rule 2026-07-05). COPY it into the serving job
      first. It is a generic FastAPI wrapper that calls
      `Endpoint_Set.inference()` behind `POST /invocations`. Routes:
        GET  /health       — liveness + endpoint_loaded flag
        GET  /meta         — mirrors MetaFn metadata_response.body
        POST /invocations  — accepts the Endpoint_Set's documented payload
                             (typically `dataframe_records` per Input2SrcFn)
-  3. Invocation (from the task-folder copy):
+  3. Invocation (from the job copy):
        cp <skill>/scripts/serve_local.py tasks/<G>{NN}_<group>/{NN}_<task>/
        ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
        PORT=8765 \

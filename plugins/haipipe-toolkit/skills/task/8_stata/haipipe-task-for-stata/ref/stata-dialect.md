@@ -1,10 +1,10 @@
 Stata Execution Dialect — shared engine contract
 ==================================================
 
-This is the **layer-2 execution contract** for Stata task-folders, owned by `haipipe-task-for-stata` (this skill's `ref/`).
+This is the **layer-2 execution contract** for Stata jobs, owned by `haipipe-task-for-stata` (this skill's `ref/`).
 The parent `/haipipe-task` is the high-level router (default dialect Python + papermill); this document defines the parallel Stata + PowerShell + `.log` dialect that all 4 Stata stages (cms/case/data/reg) share.
 
-The **structure invariants** (3-level hierarchy, RUNNAME spine, run↔result pairing, light/heavy split, diagram-as-doc) are UNCHANGED.
+The **structure invariants** (the block > job > task > run hierarchy — 4 levels since 260829 — the RUNNAME spine, run↔result pairing, light/heavy split, diagram-as-doc) are shared with the Python dialect.
 Only the execution engine differs.
 Read `../../../haipipe-task/ref/hierarchy.md` first for the invariants; this file only describes what swaps out.
 
@@ -13,7 +13,7 @@ Three orthogonal axes
 ----------------------
 
 ```
-hierarchy   project → task-group → task-folder       (engine-agnostic; see hierarchy.md)
+hierarchy   project → block → job → task   (engine-agnostic; see hierarchy.md "Two job shapes")
 engine      Python+papermill   |   Stata+PowerShell  (this file picks the 2nd)
 task-type   cms · case · data · reg                  (per-specialist semantics)
 ```
@@ -93,8 +93,27 @@ headline:   Bene_Info-2015 11,783,927 x 121
 ```
 
 
-Anatomy of a Stata task-folder
+Anatomy of a Stata job
 -------------------------------
+
+Two shapes, per hierarchy.md "Two job shapes". The NESTED shape is what the
+production data/reg jobs already use (e.g. OpioidRx R03_Reg_TraitCABG/
+C01_data_pipeline_cabg and D01-reg_visitami_leftdigit):
+
+```
+{LNN}_{stage}[_<study>]/            NESTED (data/reg stages, current production)
+├── sbatch/<all>.ps1                submit the whole DAG (calls tickets in order)
+├── scripts/
+│   ├── 0-libs/                     shared: lib-*.do + the runner .ps1 + config-defaults.do
+│   └── {N}_{task_name}/            one TASK = one pipeline: config*.do (the run's
+│                                   globals, IN the task) + run-*-pipeline.do + step-*.do
+├── runs/<task-named>.ps1           thin tickets, one per task run
+├── results/<run>/                  log/*.txt · report artifacts · config_snapshot.do
+└── workflow/ · diagram/ · ISSUES.md
+```
+
+The FLAT dispatcher shape below is the cms/case-stage anatomy (and the legacy
+form of data/reg):
 
 ```
 {LNN}_{stage}_pipeline/
@@ -113,13 +132,13 @@ Anatomy of a Stata task-folder
 └── diagram/                   ← doc surface (NEVER README.md); see diagram-ascii
 ```
 
-The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at the task ROOT — they are the task's entry + execution machinery (the Stata analog of Python's root `{task}.py` + papermill).
+The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at the job ROOT — they are the flat job's entry + execution machinery (the Stata analog of Python's root `{task}.py` + papermill).
 Only the per-step WORKERS go in `scripts/`.
 Three ref templates seed them: `run-ps1-template.ps1` (the thin per-run entry), `run-stage-year-template.ps1` (the orchestrator), `dispatcher-do-template.do` (the dispatcher).
 
 Roles, precisely:
 
-- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir> <ws_root>`. Sets `global ws_root` FIRST, loads `configs/<cfg>.do`, sets up dirs, opens a per-step log, dispatches to `scripts/<step>.do`, skips if output exists (idempotent), closes log. Code paths (`configs/`, `scripts/`) are task-folder-relative; the DATA root arrives absolute as `<ws_root>`. The file name is FREE — nothing references it by a hardcoded path.
+- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir> <ws_root>`. Sets `global ws_root` FIRST, loads `configs/<cfg>.do`, sets up dirs, opens a per-step log, dispatches to `scripts/<step>.do`, skips if output exists (idempotent), closes log. Code paths (`configs/`, `scripts/`) are job-relative; the DATA root arrives absolute as `<ws_root>`. The file name is FREE — nothing references it by a hardcoded path.
 - **`run_{stage}_year.ps1`** — the engine for one run: `$stata` variable at top (one editable line), resolves `ws_root` by walking up to `pyproject.toml`, runs Stata with the working dir set to `$PSScriptRoot` (the task folder), and sequences the dispatcher's steps in dependency-correct phases (within-phase parallelism via `Start-Process ... -PassThru | Wait-Process`). <=30 lines — see the script style contract below.
 - **`runs/<run>.ps1`** — the RUNNAME entry, THIN: one comment line + one call into the orchestrator with this run's parameters (`& "$PSScriptRoot\..\run_<stage>_year.ps1" -cfg <cfg> -year <year>`). One file per run identity so run ↔ `results/<run>/` pairing stays 1:1.
 - **`sbatch/`** — fans across runs: `foreach ($y in 2015..2020) { & "$PSScriptRoot\..\runs\run_<stage>_$y.ps1" }`. No logic of its own.
@@ -230,10 +249,14 @@ foreach ($y in 2015..2020) { & "$PSScriptRoot\..\runs\run_cms_$y.ps1" }
 ```
 
 
-Dispatcher coding style (multi-line braces)
---------------------------------------------
+Brace style — every `if` body on its own line
+----------------------------------------------
 
-The dispatcher's `step → worker` ladder (and any `if/else if` chain) uses ONE house style: **multi-line braces, never one-liners.** Each branch opens `{` on the condition line, the body sits on its OWN indented line, and `}` is alone on the next line — even for a single-command branch:
+**Every `if` in a `.do` uses multi-line braces, never a one-liner.** The condition line opens `{`, the body sits on its OWN indented line, and `}` is alone on the next line, even for a single-command branch. This covers the dispatcher's `step → worker` ladder, every `if/else if` chain, and every `capture` / `_rc` guard.
+
+This is a READABILITY and edit-safety rule, not a runnability blocker, and the distinction matters when you read existing code: the one-line form RUNS. The server-proven snapshot `Report-From-CMS-Server/v0827_Code0827/` carries 43 one-line `if`s, three of them exactly `if _rc == 0 global file_policy "\`_polalt'"`. Do not "fix" those on the belief that they are broken; write new code in the brace form because a brace form is never in doubt, never traps when someone later wraps the body with `///`, and shows the branch in a diff.
+
+Ruled by JL on 260829, on reading the `capture quietly describe, varlist` guard added for `[C01-05]`.
 
 ```stata
 // GOOD
@@ -245,6 +268,20 @@ else if "`step'" == "claims_erase" {
 // diffs and edits error-prone
 else if "`step'" == "claims_erase" { do "scripts/feat/_old/shared-claims-erase.do" `year' }
 else if "`step'" == "bene_year"    local out_file "${out_bene_beneobsdt_year}"
+```
+
+The same shape for a `capture` guard, which is where this came up:
+
+```stata
+// GOOD
+capture quietly describe, varlist
+if _rc == 0 {
+    local vars_before "`r(varlist)'"
+}
+
+// AVOID — runs, but the branch is invisible in a diff and cannot take a `///` wrap
+capture quietly describe, varlist
+if _rc == 0 local vars_before "`r(varlist)'"
 ```
 
 Section labels (`// PDE`, `// CLAIMS`, …) above a group of branches are fine and encouraged — a full-line `//` comment between a `}` and the next `else if` is tolerated by Stata (verified) and does not break brace matching.
@@ -331,7 +368,7 @@ Pre-hand-copy review (agent, not in-script plumbing)
 -----------------------------------------------------
 
 There is NO in-script review gate — runners stay thin (rule B3).
-Instead, run `haipipe-task-reviewer-agent` on the task-folder BEFORE hand-copying files to the server.
+Instead, run `haipipe-task-reviewer-agent` on the job BEFORE hand-copying files to the server.
 It checks the contract above (structure S, runnability A, readability B, pipeline correctness C) plus a machine pre-flight (PS 5.1 parse-check, non-ASCII byte scan, grep gate for pwsh/ssc/distinct), and writes `CODE_REVIEW.md` + the hand-port file list.
 For Stata this matters MORE than for Python — silent merge / keep-var / sample-definition bugs run clean and produce numbers.
 
@@ -353,13 +390,17 @@ data    assemble cross-year analysis table   ANALYSIS-CMS-Filter.dta   *-Data-St
 reg     estimate (OLS / IV / LPM / 2-part)   coef tables (.tex/.csv)   results/      (LIGHT)
 ```
 
-This is an ACCEPTED project-local override.
+This stage table is the pipeline ONTOLOGY, not the BLOCK letter scheme: it
+surfaces as the `{LNN}` JOB-level alphabet below. The actual BLOCK letters
+stay project-specific as always (OpioidRx uses A=external/cms, B=case-data,
+R=one regression topic per block — a third scheme, and the project's own
+scheme wins).
 Document it in the project's `diagram/` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
 `regen_task_log.py`'s `LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate for these folders; the type hint it prints is cosmetic and does not affect correctness.
 
-### Task-folder `{LNN}` stage-letter alphabet
+### Job `{LNN}` stage-letter alphabet
 
-Stata task-FOLDERS use `{L}{NN}_{stage}_pipeline[_<study>]`, where the leading letter `L` encodes the pipeline STAGE (so alphabetical sort = pipeline order), and `NN` is a stable study/cohort id (or a within-stage sequence where no study axis exists):
+Stata JOBS use `{L}{NN}_{stage}_pipeline[_<study>]`, where the leading letter `L` encodes the pipeline STAGE (so alphabetical sort = pipeline order), and `NN` is a stable study/cohort id (or a within-stage sequence where no study axis exists):
 
 ```
 L   stage   produces                  store
@@ -371,7 +412,7 @@ D   reg     coef tables (.tex/.csv)   results/      (LIGHT)
 ```
 
 So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic `cms` stage (run once, reused) sits alone with `NN` as a plain sequence (`A01`, `A02`).
-These task-folder letters reuse `A/B/C/D` (which mean training/eval/display/data at the GROUP level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the GROUP letter.
+These job letters reuse `A/B/C/D` (which mean training/eval/display/data at the BLOCK level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the BLOCK letter.
 Note it in the project `diagram/` so it reads clearly.
 
 

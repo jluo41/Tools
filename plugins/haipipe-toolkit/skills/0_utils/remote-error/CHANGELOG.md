@@ -6,6 +6,83 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.9.0] - 2026-08-29
+
+The WHAT block must be the repo file, byte for byte. JL: "you didn't change
+this!!! I will follow this to update the server, you get it? Didn't the skill
+mention this?"
+
+It did not, and that gap cost six runs. The skill already said THE SKILL CHANGES
+THE CODE, and phase 3 already edited the canonical. What was missing is the
+other half: the reply may not then quote something ELSE. Across 260829 the repo
+held the `capture` + warning form while the reply offered a "minimum edit" of
+two words, and then a four-line `set trace on` variant that existed in no file
+at all. The person was copying from the reply, so every screenshot afterwards
+showed a third version that matched neither.
+
+The rule now stands in the CARRY bullet: never a "simpler version to type by
+hand", never a "minimum edit", never a shortened variant the repo does not hold.
+If a shorter or a diagnostic form is the right one, write THAT form into the
+canonical, sync it, and quote it.
+
+The temptation it removes is real and looked helpful each time: the person was
+hand-typing on an isolated machine and had made a typo in every attempt, so a
+shorter block seemed kinder. It was not. A short block that disagrees with the
+file is worse than a long block that matches it.
+
+
+## [0.8.0] - 2026-08-29
+
+WHERE is back in front of WHAT. 0.7.0 flipped it and should not have.
+
+Two separate rulings were made on this section and 0.7.0 collapsed them into
+one. The ORDER was settled first, by JL's own edit, with its reason written
+down: a change is unreadable until you know where it is, and with two files
+changed a reader who met the code first cannot tell which block belonged to
+which. The RENDERING was settled second, when he pointed at a reply and said
+"I want to have this format": two bold labels, each with one fenced block, and
+`// was` / `// now` together in ONE block rather than separate lowercase
+`before` and `after` fences.
+
+0.7.0 read the second ruling as replacing the first and flipped the order along
+with the rendering. It did not: he was pointing at the labels and the blocks,
+not at the sequence. Corrected on his word: "I mean you should put where before
+what."
+
+0.8.0 keeps every part of the 0.7.0 rendering and only moves the pair back:
+WHERE, then WHAT, then WHY as unlabelled, unfenced sentences. The paragraph
+under the example now records BOTH rulings and which one governs what, so the
+next reader cannot collapse them again.
+
+
+## [0.7.0] - 2026-08-29
+
+The 🛠️ section's group is now **WHAT** then **WHERE**, two bold labels each
+carrying one fenced block, with WHY as plain sentences under them. JL pointed at
+a reply that used that shape: "I want to have this format."
+
+This REPLACES the WHERE-first ordering with separate lowercase `before` and
+`after` blocks, which had been written into 0.6.0 on the argument that "a change
+is unreadable until you know where it is". The argument is sound for a reply
+that changes many files, and it lost anyway, because the shape it produced put
+three fences and four labels between the reader and one two-line edit.
+
+What the new shape fixes:
+
+- `// was` and `// now` live in ONE fenced block, in the file's own language, so
+  the eye compares the two halves without a heading in between.
+- WHERE is one block, not a two-line stanza: directory, then the file with its
+  `:NN-NN`, then CANONICAL or COPY, then how many copies the sync fed.
+- WHY loses its label and its fence. It is prose about a rule, and fencing it
+  made it look like something to copy.
+
+The multi-file case is handled by repeating the pair, one WHAT/WHERE per file,
+which keeps a path attached to its own code without leading on it.
+
+The section is written verbatim into SKILL.md as an indented literal, not
+described, so the next run copies the shape rather than reconstructing it.
+
+
 ## [0.6.0] - 2026-08-29
 
 The trailing return block is GONE. JL pasted it back and said "I dont want this."

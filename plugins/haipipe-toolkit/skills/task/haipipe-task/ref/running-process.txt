@@ -1,4 +1,4 @@
-🚀 Running Process — One Task-Folder, End to End
+🚀 Running Process — One Job, End to End
 ═══════════════════════════════════════════════════════════════
 
 How a single execution flows from authored .py to reviewable notebook,
@@ -81,7 +81,7 @@ every task-type — papermill, always.
 
 ─§ Two notebooks, two roles ────────────────────────────────
 
-  📁 {task}/                        ← task-folder root
+  📁 {task}/                        ← job root
      │
      ├── 🐍 {NN}_{task_name}.py     ← AUTHORED (diff-friendly, edit here)
      │
@@ -177,7 +177,7 @@ every task-type — papermill, always.
 
 ─§ sbatch is exogenous to the task ─────────────────────────
 
-  📁 sbatch lives at the GROUP level — outside any single task-folder.
+  📁 sbatch lives at the GROUP level — outside any single job.
      It coordinates multiple runs across the group's tasks.
 
    tasks/{G}{NN}_{group_name}/

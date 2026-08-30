@@ -36,7 +36,7 @@ page-type: labeling
 owner: <the human semantic authority>
 
 <!-- RULE · `page-type:` is REQUIRED and it is not decoration. The 🔌 Plugin menu's
-     🏷 Labeling entry gates on it, so a page that omits the key gets no labeling
+     🏗 Building entry gates on it, so a page that omits the key gets no labeling
      surface however labeling-shaped its filename is. The key beats the filename. -->
 method: <one line: which loop, on what, until what>
 

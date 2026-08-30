@@ -14,9 +14,9 @@ Downloading the datasets + running the engine + projecting labels is orchestrati
 (label-evaluate); it is network/compute-heavy and run when a license is established.
 
 Usage:
-    python lib/license.py assess --agent agent.jsonl --raters raters.jsonl \
+    python engine/license.py assess --agent agent.jsonl --raters raters.jsonl \
                                  --labels HIGH,LOW,NONE --type categorical [--eps 0.0]
-    python lib/license.py selftest
+    python engine/license.py selftest
 
 Inputs (jsonl):
     agent:  {"item_id": "...", "pred": "<label>"}

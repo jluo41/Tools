@@ -48,6 +48,8 @@ Human-readable Markdown files are rendered views and never a second source of tr
 ├── gold/
 │   ├── cumulative.jsonl
 │   └── cumulative.md
+├── handoff/
+│   └── label-v1.yaml
 ├── test/
 │   ├── sealed/
 │   │   ├── manifest.enc-or-protected
@@ -136,7 +138,19 @@ Each row links to the human event, policy, round, checkpoint, and any later supe
 At calibration stopping, the closed cumulative file is frozen by checksum as `D_cal*`.
 It remains development gold and is not copied or renamed to completed `D*`.
 
-## 5. Annotation policy
+## 5. Label Handoff
+
+`handoff/label-v1.yaml` is the only authority crossing from Label Building
+to Label Scanning. It binds the corpus snapshot, schema, `G*`, `D_cal*`,
+sealed-test manifest checksum, stopping evidence, lineage, and human freeze
+signature without carrying protected ids or test text. Read
+`ref-label-handoff.md` for the complete contract.
+
+The handoff is immutable after close. Scanning binds its exact checksum rather
+than following `policy/current`; a semantic change creates a new lineage and
+invalidation receipt.
+
+## 6. Annotation policy
 
 Every policy version has one manifest and separate components:
 
@@ -154,7 +168,7 @@ Every policy version has one manifest and separate components:
 `policy/current` points to the latest closed version.
 It never points to a draft.
 
-## 6. Sealed test
+## 7. Sealed test
 
 The sealed manifest exists at initialization and is readable only by the custodian until `G*` freezes.
 Its protected identifier storage may be encrypted or isolated by filesystem permissions.
@@ -171,7 +185,7 @@ The access log records:
 
 Final human-gold files appear only after authorized release and remain hidden from candidate executors until their predictions close.
 
-## 7. Evaluation
+## 8. Evaluation
 
 `registry.yaml` freezes:
 
@@ -185,7 +199,7 @@ Final human-gold files appear only after authorized release and remain hidden fr
 Every prediction is append-only and linked to one run.
 Every scorecard links to predictions, `T*` gold, metric code or definition, intervals, costs, and errors.
 
-## 8. Production
+## 9. Production
 
 The production manifest freezes the selected policy, executor route, thresholds, risk rules, budgets, shard plan, and preflight evidence.
 Attempts are append-only and idempotent by item plus run identity.
@@ -199,7 +213,7 @@ completed corpus from reconciled terminal rows. Its manifest links the corpus sn
 and accepted limitations. Before that close, terminal labels are a completed-corpus
 candidate rather than `D*`.
 
-## 9. Final audit
+## 10. Final audit
 
 The final audit design freezes its target population, strata, seed, probabilities, blind-human protocol, thresholds, and protected claims.
 Findings link each error to production route, policy, executor, class, region, and risk neighborhood.
@@ -207,7 +221,7 @@ Findings link each error to production route, policy, executor, class, region, a
 Repairs are versioned and followed by new evidence.
 The final report states provenance shares, weighted error and interval, protected-stratum results, accepted limitations, and any reopened scope.
 
-## 10. Write ownership
+## 11. Write ownership
 
 | artifact | canonical writer |
 |---|---|
@@ -216,12 +230,13 @@ The final report states provenance shares, weighted error and interval, protecte
 | executor predictions | registered executor run |
 | Session human records | Strong Calibration Agent recording human input |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |
+| signed Label Handoff | Label Handoff Keeper recording the human freeze signature |
 | sealed manifest and access log | Test Custodian |
 | final predictions and scorecards | Final Evaluator |
 | production attempts and terminal labels | Production Executor plus reconciler |
 | final audit and repair receipt | Final Audit Keeper |
 
-## 11. Migration
+## 12. Migration
 
 Before writing v2 artifacts, inventory old gallery, guideline, iteration, validation, and output files.
 Classify each old label as human-confirmed, model-only, or unknown from inspectable evidence.

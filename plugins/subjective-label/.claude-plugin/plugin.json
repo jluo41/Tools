@@ -1,7 +1,7 @@
 {
   "name": "subjective-label",
-  "version": "0.3.0",
-  "description": "Multi-agent panel for subjective text annotation with stage-aware sampling, active-learning hard-example mining, and a 3-tier cascade (embedding k-NN → trained classifier → LLM panel) for scale. One researcher + 9 AI workers converge on a labeling guideline validated against public-dataset human consensus (κ).",
+  "version": "0.4.0",
+  "description": "Human-grounded subjective labeling in two sibling sides: Label Building calibrates and freezes one identified human's construct into a signed Label Handoff; Label Scanning qualifies executors on sealed human gold, labels the corpus under that frozen handoff, and closes with an independent probability audit.",
   "author": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
@@ -10,11 +10,11 @@
   "keywords": [
     "annotation",
     "subjective",
-    "multi-agent",
+    "human-grounded",
     "labeling",
-    "kappa",
+    "sealed-test",
     "human-in-the-loop",
-    "panel",
-    "disagreement"
+    "provenance",
+    "audit"
   ]
 }

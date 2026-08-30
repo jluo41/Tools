@@ -1,3 +1,20 @@
+## 0.147.0 — 2026-08-29
+
+- **Page titles have a length.** `check.py` reports `title-too-long` past six
+  visible words (target three to five); `ref/page-template.md` and
+  `ref/writing-rules.md` carry the same rule so a new page inherits it. The
+  count drops a leading id-shaped token, because the heading is written
+  `{id} · {title}` and the id is not part of the title: without that, every
+  page on PaperSkillBoard-260725 was scored one word too long.
+- **A stale render now says so.** `check.py` reports `board-build-stale` when
+  any source `.md` is newer than `board/index.html`. On 260829 a nine-day-old
+  render shipped 184 `dead-href` ERRORs that a rebuild took to 0, and a second
+  board's 141 went to 7 the same way: a stale build and real link rot were
+  indistinguishable in the report, so the sources got debugged for a finding
+  the build owned.
+- Markdown pipe tables render into their own horizontal scroll box
+  (`.mdtable` / `.mdt`), so a wide matrix does not widen the Board.
+
 ## 0.146.0 — 2026-08-28
 
 - `cli/preview.py` grows to three grains, resolved from the path itself (JL

@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-for-task
 description: >-
-  The VARIANT contract for a TASK Page: one page per task-folder, and the
+  The VARIANT contract for a TASK Page: one page per job, and the
   technical report of what that folder found — carrying the READING of the
   result, which no file in the folder can hold. Every shown number names the
   run that produced it, and a rerun reopens the page. Use when results exist
@@ -47,26 +47,26 @@ contract would restate that and then drift from it. `haipipe-task` and
 ```
 
 **What it does NOT change**: the grammar (as of 0.9.0, `Introduction · Concept ·
-Landscape · Data · Method · Result · Conclusion`), the FLAT/NESTED fork, `Conclusion` always last and page-level,
+Landscape · Data · Method · Result · Conclusion`), the FLAT/NESTED fork (⚠️ these two words here describe the PAGE's division layout — one topic vs many; hierarchy.md reuses the same pair for a JOB's folder shape, a different axis entirely), `Conclusion` always last and page-level,
 or the closing rule that a person must read the result against the folder's own
 question. A discovery page that skips `Conclusion` is as unclosed as a task page.
 
 
-**LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a task-folder can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.
+**LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a job can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.
 
-**The kind this variant covers**: one page per TASK-FOLDER.
+**The kind this variant covers**: one page per JOB.
 
 ```
 kind      subject                              closes when
 ──────────────────────────────────────────────────────────────────────
-Task      ONE task-folder: inputs · code ·     a person READS the result against
+Task      ONE job: inputs · code ·            a person READS the result against
           runs · results                        the task's own question, and the
                                                 reading names the run it is bound to
 ```
 
-**The type key.** A task page declares `page-type: task` in its frontmatter, and the line is REQUIRED: a task page wears whatever name its task-folder has (`A01.01`, `B4_fit_scaling_law`, `C3-Visual-ForecastScaling`), and 31% of real task-folders do not match the `{NN}_<name>` convention at all, so no filename shape can mark one. The `page-type:` key beats the filename (base, type resolution step ③).
+**The type key.** A task page declares `page-type: task` in its frontmatter, and the line is REQUIRED: a task page wears whatever name its job has (`A01.01`, `B4_fit_scaling_law`, `C3-Visual-ForecastScaling`), and 31% of real jobs do not match the `{NN}_<name>` convention at all, so no filename shape can mark one. The `page-type:` key beats the filename (base, type resolution step ③).
 
-## 📕 What the task-folder already holds, and what it can never hold
+## 📕 What the job already holds, and what it can never hold
 
 Every one of these already exists on disk before a page is written, so the page must not re-hold any of them:
 
@@ -159,6 +159,9 @@ A task page closes on one typed record in its LAST division, `Conclusion`, and n
 READING · <date> · <who read it>
 <topic>   verdict-run <run>   ✅ read · <what it means, in plain words>
 <topic>   verdict-run <run>   ⬜ unread
+   RULE · in a NESTED job (hierarchy.md "Two job shapes") <run> is the PATH
+   <task>/<run> — run stems are unique only within their task, so a bare stem
+   is ambiguous the moment two tasks share one (both having a `wide`, say)
 answers       Aim A1 · A2     which of this task's questions are now answered
 not answered  A3              what these runs did NOT settle
 next run      <the run that would settle it, or "none: the question is dead">
@@ -186,7 +189,7 @@ Content       🔒 one fixed word · ✍️ one free title, in ONE of two shapes
   ### n · Conclusion · <free>   exactly 1, ALWAYS LAST, in BOTH shapes
 Aims         one Aim per question this task must answer
 States       per question: answered · needs another run · dropped
-Files        the task-folder paths, including every QA/<n>-<slug>.md
+Files        the job paths, including every QA/<n>-<slug>.md
 ```
 
 **⛔ A division names what the READER LEARNS, never where the material came from.** `Inputs`, `Runs`, `Provenance` and `Run receipts` are MACHINERY, and a task page is the single most likely page in the system to lead with them, because its subject IS a folder and the folder's own names are sitting right there. Copying `configs/ runs/ results/` into `### 1 · Inputs`, `### 2 · Steps`, `### 3 · Runs` hands the reader the author's filing system instead of the finding. The machinery goes in `## Files`, or in a final appendix division, and never at the front. This is the base rule (`haipipe-page-draft` §🗂), restated here because this type walks into it by construction.
@@ -195,7 +198,7 @@ Files        the task-folder paths, including every QA/<n>-<slug>.md
 
 **One estimand per division**, so no single display has to pool two things that must not be compared.
 
-**⛔ A NEW RUN IS NOT A NEW DIVISION.** Ruled 260821, on a page whose task-folder
+**⛔ A NEW RUN IS NOT A NEW DIVISION.** Ruled 260821, on a page whose job
 holds a twelve-job programme with more models still to come. A task page's
 subject regenerates, so the pressure to grow it is constant and it always
 arrives in the same shape: a run finishes, and the obvious move is to append a
@@ -249,7 +252,7 @@ The table below is what the 🧭 tab SHOWS a person before prose is written. It 
                 run that settles the rest
 ```
 
-That example is `QC1-descriptive-stats.md` re-titled, with the `Introduction` row added by the 0.9.0 ruling — the real page has four divisions, and the row above is what it would owe today: a real page with `page-type: task`, `task-folder: tasks/B01_descriptive_analysis/01_descriptive_stats`, sitting at `🟡 RESULTS IN, UNREAD`.
+That example is `QC1-descriptive-stats.md` re-titled, with the `Introduction` row added by the 0.9.0 ruling — the real page has four divisions, and the row above is what it would owe today: a real page with `page-type: task`, `job: tasks/B01_descriptive_analysis/01_descriptive_stats`, sitting at `🟡 RESULTS IN, UNREAD`.
 
 ## 🔗 The ROLE is shared, the TITLE is free
 
@@ -498,7 +501,7 @@ data           the filter, the join, and why this    QD4 · requiring all ten sc
 
 `haipipe-page-evidence` ships THREE card kinds, and `probe` is not a fourth one: the value card LIVES in the probe lane, at `<page>/probe/PP<NN>-<slug>/card.md`. Probe is the folder, value is the kind, and they are one card.
 
-A task page needs a fourth kind that genuinely does not exist yet: **the CODE card**, which binds a claim to the task-folder that produced it (JL 260816, "when I say the method, I mean link it to the task-folder"). A `Method` division saying `k-means on five traits and not on ten` is unbacked prose until something on disk points at the script that ran the k-means.
+A task page needs a fourth kind that genuinely does not exist yet: **the CODE card**, which binds a claim to the job that produced it (JL 260816, "when I say the method, I mean link it to the job"). A `Method` division saying `k-means on five traits and not on ten` is unbacked prose until something on disk points at the script that ran the k-means.
 
 ```text
 kind          the card on disk                          BINDS TO                 GATE 🧑
@@ -507,7 +510,7 @@ kind          the card on disk                          BINDS TO                
 🔢 value      <page>/probe/PP<NN>-<slug>/card.md        a QA file in the bank    state: bound
 🖼 display    <page>/display/<stem>-Display<N>-…        a frozen intake +        accepted: ✅
                                                         its named renderer
-💻 code  ⭐   <page>/code/CD<NN>-<slug>/card.md          the TASK-FOLDER,        state: pinned
+💻 code  ⭐   <page>/code/CD<NN>-<slug>/card.md          the JOB,                 state: pinned
               ⭐ NEW for this type                        by path + commit
 ```
 
@@ -519,17 +522,21 @@ CD01-kmeans-five-traits
   config     configs/run_k5.yaml
   run        runs/run_k5.sh
   notebook   notebooks/run_k5.ipynb
-  commit     <sha of the task-folder at the run>
+  commit     <sha of the job at the run>
   fork       k-means on FIVE traits · instead of ten, because EmotionStability
              covers 68.4% and requiring ten drops most of the sample
   state      pinned
 ```
 
+(The same card on a NESTED job carries the task segment throughout:
+`script scripts/01_clustering/clustering.py · config scripts/01_clustering/config/k5.yaml ·
+run runs/01_clustering/k5.sh · notebook notebooks/01_clustering/k5.ipynb`.)
+
 ⚠️ **A code card goes STALE the way a value card does.** When the script changes under a pinned commit, the `Method` division's claim is no longer backed, exactly as a rerun un-backs the `Conclusion` verdict. The two staleness rules are the same rule at two grains, and they are why a task page is re-openable by disk at all.
 
 **⛔ This type does NOT assign card kinds to division names.** Any division may owe any card: a `Result` may owe a 📚 citation when it is compared against a published benchmark, a `Data` may owe a 🖼 display when the cohort needs a flow diagram, a `Method` may owe a 🔢 value when the parameter it chose came out of a sweep. Fixing a kind per division would repeat this contract's own worst version, the five hardcoded divisions of 0.1.0, one level down: it would make DRAFT's `evidence owed` column decoration, since the answer would already be written here.
 
-It also breaks on real tasks. `ref/task-structure.md` §"Skill-Runner Tasks" exempts a whole class of task-folder from having any `*.py` at all, so a `Method` division on one of those has no script to pin and a required 💻 code card would be unfillable by construction.
+It also breaks on real tasks. `ref/task-structure.md` §"Skill-Runner Jobs (Exemption)" exempts a whole class of job from having any `*.py` at all, so a `Method` division on one of those has no script to pin and a required 💻 code card would be unfillable by construction.
 
 **WHO decides: DRAFT, per division, per page.** The `evidence owed` column of the outline is where it is written, and that column is the reason the outline is shown to a person before prose.
 
@@ -566,7 +573,7 @@ DRAFT's job on a task page is therefore mostly PROMOTION, not invention: take th
 
 **`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already written in `## States` as `A5.2`. A division that repeats States and Files is not a division.
 
-The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 citation · 🔢 value · 🖼 display. On a task page almost every row is 🔢 value, because the task-folder's own runs are what produce them, and each 🔢 names the run under rule ② below. A division with a blank evidence column is a division nobody can finish. The `Conclusion` row is the exception: its evidence is the numbers the rows above already landed, and the hand that fills it is human.
+The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 citation · 🔢 value · 🖼 display. On a task page almost every row is 🔢 value, because the job's own runs are what produce them, and each 🔢 names the run under rule ② below. A division with a blank evidence column is a division nobody can finish. The `Conclusion` row is the exception: its evidence is the numbers the rows above already landed, and the hand that fills it is human.
 
 **The run table is not a division.** The `<NAME>` token binding the four sister files (`ref/authoring-conventions.md` §1) — `configs/<NAME>.yaml`, `runs/<NAME>.sh`, `results/<NAME>/`, `notebooks/<NAME>.ipynb` — is what makes rule ② checkable, and it lives in `## Files` where a reader looks for machinery.
 
@@ -592,12 +599,13 @@ the page           the task's OWN standing reading · edited over rounds · on t
 
 ## 📥📤 What this page reads, and what it hands on
 
-**A page is a unit of work** (`QPs1` §7). A task page is the one variant whose companion folder ALREADY EXISTS: it declares `task-folder:` in its head rather than generating a folder of its own.
+**A page is a unit of work** (`QPs1` §7). A task page is the one variant whose companion folder ALREADY EXISTS: it declares `job:` in its head rather than generating a folder of its own.
 
 ```text
- 📥 INPUT   tasks/{G}{NN}_<group>/{NN}_<task>/     ✍️ authored elsewhere, by the task layer
-              *.py · configs/ · runs/              what ran
-              results/<run>/ · notebooks/<run>/    what came out
+ 📥 INPUT   tasks/{G}{NN}_<block>/{NN}_<job>/     ✍️ authored elsewhere, by the task layer
+              code + configs + runs/               what ran (flat: *.py · configs/ · runs/;
+                                                   nested: scripts/<task>/ · runs/<task>/)
+              results/<run>/ · notebooks/<run>/    what came out (nested: results/<task>/<run>/)
               plan.yaml · report.yaml              intent and record
               QA/<n>-<slug>.md                     digests written for outside callers
 
@@ -605,7 +613,7 @@ the page           the task's OWN standing reading · edited over rounds · on t
             rows saying which of this task's questions are now answered
 ```
 
-⚠️ **`diagram/*.txt` inside a task-folder is the shape this page replaces.** `ref/task-structure.md` §"Task-level diagram/" already specifies `01-overview.txt` (what/why/inputs/outputs), `02-design.txt` (the approach), `03-runs.txt` (the run table), and `04-progress.txt` (a dated log): divisions 1, 2 and 3 plus `## Log`, in four .txt files that nothing renders and nobody opens. A task with a page does not keep both. **Open ruling for JL**: the page absorbs `diagram/`, or `diagram/` stays as the source the page renders from. Until it is ruled, a task page names the .txt files in `## Files` and does not duplicate their prose.
+⚠️ **`diagram/*.txt` inside a job is the shape this page replaces.** `ref/task-structure.md` §"Job-level diagram/" already specifies `01-overview.txt` (what/why/inputs/outputs), `02-design.txt` (the approach), `03-runs.txt` (the run table), and `04-progress.txt` (a dated log): divisions 1, 2 and 3 plus `## Log`, in four .txt files that nothing renders and nobody opens. A task with a page does not keep both. **Open ruling for JL**: the page absorbs `diagram/`, or `diagram/` stays as the source the page renders from. Until it is ruled, a task page names the .txt files in `## Files` and does not duplicate their prose.
 
 ## 📂 Files
 

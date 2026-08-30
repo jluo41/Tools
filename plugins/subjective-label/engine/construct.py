@@ -2,7 +2,7 @@
 
 The MECHANICS of "pick the best operational construct against an objective":
 given several candidate labelings of a shared sample (produced by multi-LLM
-proposals executed via lib/label.py) + sibling-construct labelings, score each
+proposals executed via engine/label.py) + sibling-construct labelings, score each
 candidate and select the winner. Also emits a DIVERGENCE report (items where the
 candidates most disagree = the ambiguous region a guideline must pin down).
 
@@ -20,8 +20,8 @@ Degenerate guard: a labeling that is nearly constant (e.g. all-NONE) is triviall
 label entropy), which is ~0 for a constant labeling.
 
 Usage:
-    python lib/construct.py score --candidates cand.jsonl --siblings sib.jsonl [--objective discriminance]
-    python lib/construct.py selftest
+    python engine/construct.py score --candidates cand.jsonl --siblings sib.jsonl [--objective discriminance]
+    python engine/construct.py selftest
 
 Input files (jsonl, one object per line):
     candidates: {"candidate": "<id>", "labels": {"<item_id>": "<label>", ...}}

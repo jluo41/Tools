@@ -18,7 +18,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ### Changed (JL: "这个skill内部的code，还是不要运行，只是当作examples reference来用，到最后还是要写到task folder里的")
 
-- scripts/serve_local.py repositioned as a REFERENCE TEMPLATE: never run in-place from the skill; copy into the serving task-folder and run there (Deploy FastAPI steps 2-3 rewritten). Same rule likely applies to the 4_individual family's scripts/ dirs (flagged in SKILLSET_REVIEW F11, awaiting JL).
+- scripts/serve_local.py repositioned as a REFERENCE TEMPLATE: never run in-place from the skill; copy into the serving job and run there (Deploy FastAPI steps 2-3 rewritten). Same rule likely applies to the 4_individual family's scripts/ dirs (flagged in SKILLSET_REVIEW F11, awaiting JL).
 
 ## [1.2.0] — 2026-07-05
 

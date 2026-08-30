@@ -5,7 +5,7 @@ fn-run: Scaffold a New Run
 > JL: do not break the sentences. One line one sentence.
 >> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
-A run is the unit of execution within a task-folder.
+A run is the unit of execution within a job.
 The four sister files share one NAME token:
 
 ```
@@ -24,17 +24,24 @@ runlogs/<DATE>-runlog.md        📝 daily index + narrative (run.sh appends)
 This scaffold creates the **pre-run** half (config + run.sh); the rest is auto-created by `runs/<NAME>.sh` at execution.
 
 
-Step 1 — Resolve task-folder + NAME
+Step 1 — Resolve job + shape + NAME
 ------------------------------------
 
-Auto-detect task-folder from cwd.
-If cwd is not a task-folder, ASK.
+Auto-detect job from cwd.
+If cwd is not a job, ASK.
+
+Detect the job SHAPE (hierarchy.md "Two job shapes"): a scripts/ dir with
+{NN}_* children = NESTED, else FLAT legacy. In a nested job also resolve
+TASK_SEG — which scripts/<task>/ this run belongs to (cwd inside one wins;
+one task total = that one; else ASK). Never scaffold a flat ticket into a
+nested job: the template's own auto-detect would then resolve the wrong
+config and script paths.
 
 ASK for `<NAME>` if not given.
 Constraints:
   - Convention: prefix with `run_` (e.g. `run_seed42_baseline`)
   - Descriptive — encodes the variant (seed/arch/data slice)
-  - Unique within this task-folder (refuse on collision)
+  - Unique within this job (refuse on collision)
   - Lowercase, snake_case, `[a-z0-9_]+`
 
 
@@ -63,18 +70,18 @@ Step 3 — Create files
 ----------------------
 
 ```
-configs/<NAME>.yaml
+config — configs/<NAME>.yaml (flat) · scripts/<TASK_SEG>/config/<NAME>.yaml (nested)
   Copy from ../ref/config-meta-template.yaml.
   Fill in _meta: block with values from Step 2.
   Leave params section as a comment placeholder for user to fill.
 
-runs/<NAME>.sh
-  Copy from ../ref/run-sh-template.sh.
-  Edit line `TASK_NAME=...` to match the task .py basename.
+ticket — runs/<NAME>.sh (flat) · runs/<TASK_SEG>/<NAME>.sh (nested)
+  Copy from ../ref/run-sh-template.sh (it detects the shape from its own path).
+  Edit line `TASK_NAME=...` to match the .py basename.
   chmod +x.
 
-results/<NAME>/
-  mkdir -p (empty; run.sh will populate runtime.yaml at launch).
+results/<NAME>/ (flat) · results/<TASK_SEG>/<NAME>/ (nested)
+  mkdir -p (empty; the ticket will populate runtime.yaml at launch).
 
 notebooks/
   mkdir -p if missing (shared per task, not per run).
@@ -113,7 +120,7 @@ Next:
 Risk profile
 -------------
 
-CREATES files under existing task-folder.
+CREATES files under existing job.
 Refuses to overwrite.
 For moving / renaming an existing run, see `-organize` specialist.
 

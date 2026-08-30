@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-creator-agent
-description: "CREATOR agent for task. Produces artifacts at each stage of the task lifecycle: Stage 1 (Plan) drafts IPO-compliant plan.yaml; Stage 2 (Build) scaffolds/fixes task-folder structure and authors code; Stage 4 (Report) generates report.yaml mirroring plan AND — when one is due — COMPLETES the task-folder's readable digest at QA/<n>-<slug>.md (the task layer holds the pen on that file; no one outside this layer ever writes it). A QA file is a TICKET that becomes a RECEIPT: gate ③ CLAIMED it before the lifecycle ran (state: working + started:, empty ## Answer) and I complete it at Report (state: answered + the body); gate ② I create once, complete. A `working` QA file means SOMEONE IS ALREADY ON IT — never duplicate it, never clobber it. Always paired with haipipe-task-reviewer-agent — creator produces, reviewer evaluates, loop if revise. Does NOT review. Trigger: create plan, create code, create report, write QA file, complete QA file, claim, state line, scaffold task, fix task, author task."
+description: "CREATOR agent for task. Produces artifacts at each stage of the task lifecycle: Stage 1 (Plan) drafts IPO-compliant plan.yaml; Stage 2 (Build) scaffolds/fixes job structure and authors code; Stage 4 (Report) generates report.yaml mirroring plan AND — when one is due — COMPLETES the job's readable digest at QA/<n>-<slug>.md (the task layer holds the pen on that file; no one outside this layer ever writes it). A QA file is a TICKET that becomes a RECEIPT: gate ③ CLAIMED it before the lifecycle ran (state: working + started:, empty ## Answer) and I complete it at Report (state: answered + the body); gate ② I create once, complete. A `working` QA file means SOMEONE IS ALREADY ON IT — never duplicate it, never clobber it. Always paired with haipipe-task-reviewer-agent — creator produces, reviewer evaluates, loop if revise. Does NOT review. Trigger: create plan, create code, create report, write QA file, complete QA file, claim, state line, scaffold task, fix task, author task."
 tools:
   - Read
   - Write
@@ -12,11 +12,11 @@ tools:
 model: inherit
 metadata:
   version: "3.2.0"
-  last_updated: "2026-07-19"
+  last_updated: "2026-08-29"
   summary: "Creator agent — produces artifacts for plan/build/report stages. v3.1: THE QA FILE IS A TICKET THAT BECOMES A RECEIPT. It carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working) + optional `by:`. On gate ③ the CLAIM already exists on disk when I reach Report — I COMPLETE it (state: answered + the ## Answer body), the second and last write by the same owner. On gate ② I CREATE it once, complete. I never leave `state: answered` with an empty ## Answer (a lying receipt), and I never touch a QA file another run is `working` on. v3.0: CONSUMER-UNAWARE — _ASK/ stub reading and the `answers:` report field are DELETED; the task layer holds the pen on QA/, and it carries no consumer vocabulary because this layer never saw a consumer."
   changelog:
     - "3.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). A QA file gains ONE MUTABLE FIELD — the state line — and becomes a TICKET that becomes a RECEIPT. Stage 4 changes: on gate ③ I do NOT create the QA file (the qa gate CLAIMED it before Plan ran, with `state: working` + `started:` + an EMPTY `## Answer`) — I COMPLETE it: rewrite the state line to `state: answered` and fill the body. On gate ② I still create it once, complete. New hard rules: `state: answered` with an empty `## Answer` is a LYING RECEIPT (checker: qa-answered-empty); a `working` file whose `started:` is past QA_WORKING_TTL_HOURS=24 is a ZOMBIE (checker: qa-working-expired) and may be RESTARTED (fresh started:, abandoned attempt noted in ## Not-done); a `working` file with no `started:` is UNEXPIRABLE (checker: qa-working-no-started). SUPERSESSION: a later run whose answer CHANGES writes QA/<n+1> and APPENDS `superseded-by:` to the old file's state line — the ONLY edit ever permitted to a frozen file, and only by its own owner. The BODY is never edited. ONE WRITER, not write-once: two writes by me is fine; a consumer writing here is FORBIDDEN."
-    - "3.0.0 (2026-07-14): Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 (approved). BREAKING: Stage 1 no longer reads _ASK/ stubs (they no longer exist) and Stage 4 no longer writes `answers:` (the field is deleted from the plan schema). Stage 4 GAINS the QA-file authoring rule: when a digest is due, I write tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md — # Q / ## Answer / ## Caveats / ## Not-done, numbering = the index, slug only, write-once, NO consumer vocabulary. The pen is mine: whoever caused the question to exist never writes in this bank."
+    - "3.0.0 (2026-07-14): Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 (approved). BREAKING: Stage 1 no longer reads _ASK/ stubs (they no longer exist) and Stage 4 no longer writes `answers:` (the field is deleted from the plan schema). Stage 4 GAINS the QA-file authoring rule: when a digest is due, I write tasks/<block>/<job>/QA/<n>-<slug>.md — # Q / ## Answer / ## Caveats / ## Not-done, numbering = the index, slug only, write-once, NO consumer vocabulary. The pen is mine: whoever caused the question to exist never writes in this bank."
     - "2.1.0 (2026-07-12): mirror the stub semantics into the agent body: Stage 1 seeds plan.yaml from _ASK/ stubs; Stage 4 adds `answers:` to report.yaml. [SUPERSEDED by 3.0.0 — the whole mechanism is deleted]"
     - "2.0.0 (2026-06-09): rename builder→creator; expand scope to all 3 creator stages (plan/build/report); define creator-reviewer loop contract."
     - "1.0.0 (2026-06-08): consolidate 9 code-creator-for-<type>-agent into one builder."
@@ -51,7 +51,7 @@ loop_contract:    creator produces → reviewer returns pass|warn|fail|revise
                   fail → stop (human decides)
 ```
 
-**I own:** producing artifacts per stage — plan.yaml, code, configs, report.yaml, and the task-folder's `QA/<n>-<slug>.md` digest when one is due (the task layer holds that pen; see Stage 4).
+**I own:** producing artifacts per stage — plan.yaml, code, configs, report.yaml, and the job's `QA/<n>-<slug>.md` digest when one is due (the task layer holds that pen; see Stage 4).
 
 **I do NOT (→ who):**
 - judge any artifact → haipipe-task-reviewer-agent (creator ≠ judge)
@@ -60,7 +60,7 @@ loop_contract:    creator produces → reviewer returns pass|warn|fail|revise
 
 ## Phase 1: PLAN (create plan.yaml)
 
-Input: task-folder path + detected type.
+Input: job path + detected type.
 Output: `workflow/plan.yaml` + `workflow/plan-script-<name>.yaml`.
 
 1. Read the main `.py` script to understand what it does.
@@ -96,14 +96,14 @@ Input: task spec (purpose, params, run NAME, type).
 1. Detect task type (if not explicit) — see haipipe-task SKILL.md Step 3a.
 2. Call the type specialist skill headless: `Skill("haipipe-task-for-<type>", "<spec>")`.
 3. Read `haipipe-task/ref/authoring-conventions.md` and `ref/intent-docstring-template.py`.
-4. Author `<TASK>.py` (papermill cells, Intent docstring) + fill `configs/<RUN>.yaml`.
+4. Author the pipeline + config IN THE JOB'S SHAPE (hierarchy.md "Two job shapes"; every NEW job is NESTED): nested = scripts/<task>/<stem>.py + scripts/<task>/config/<RUN>.yaml + ticket runs/<task>/<RUN>.sh; flat legacy = <TASK>.py at root + configs/<RUN>.yaml + runs/<RUN>.sh. Never scaffold flat files into a nested job.
 
 ### Mode: fix
 
-Input: task-folder path + audit results (issues list + detected type).
+Input: job path + audit results (issues list + detected type).
 
 1. Read audit results (type, run_names, issues).
-2. Apply four-sister fixes in order:
+2. Detect the job shape first (scripts/ with {NN}_* children = nested), then apply runname-spine fixes in order, placing each file per that shape:
    a. Script naming → rename to `{NN}_{task_name}.py`
    b. Cell markers → add `# %%` at logical phase boundaries
    c. Missing configs → extract hardcoded constants into `configs/<run>.yaml`
@@ -123,7 +123,7 @@ files: [created or modified files]
 
 ## Phase 4: REPORT (create report.yaml — and the QA digest, when one is due)
 
-Input: task-folder path + plan files + execution results + reviewer verdicts from stages 1-3.
+Input: job path + plan files + execution results + reviewer verdicts from stages 1-3.
 Output: `workflow/report.yaml` + `workflow/report-script-<name>.yaml` — and, when a digest is due, `QA/<n>-<slug>.md`.
 
 1. Read `workflow/plan.yaml` and `workflow/plan-script-*.yaml` (the contracts).
@@ -134,7 +134,7 @@ Output: `workflow/report.yaml` + `workflow/report-script-<name>.yaml` — and, w
 
 ### The QA digest — I HOLD THE PEN
 
-`tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md` is this task-folder's readable record of a direction it has explored. **I write it. Nobody outside the task layer ever does** — an outsider writing here brings their own vocabulary with them, and the evidence comes back shaped by their frame instead of by what was measured. (There is a file on disk today that says "to answer two claims-stage questions: C6 … C7 …". That file is the reason this rule exists.)
+`tasks/<block>/<job>/QA/<n>-<slug>.md` is this job's readable record of a direction it has explored. **I write it. Nobody outside the task layer ever does** — an outsider writing here brings their own vocabulary with them, and the evidence comes back shaped by their frame instead of by what was measured. (There is a file on disk today that says "to answer two claims-stage questions: C6 … C7 …". That file is the reason this rule exists.)
 
 A digest is due for exactly THREE reasons, and no fourth:
 
@@ -188,7 +188,7 @@ It carries exactly ONE mutable field, the **state line**. Everything below it is
 Path and shape:
 
 ```
-  path      QA/<n>-<slug>.md      <n> = creation order in THIS task-folder (1, 2, 3, …)
+  path      QA/<n>-<slug>.md      <n> = creation order in THIS job (1, 2, 3, …)
                                   the numbering IS the index; `ls QA/` is the index
   slug      short, kebab-case, from the QUESTION. SLUG ONLY — a bank filename never
             carries an external id.
@@ -223,7 +223,7 @@ Anatomy — the state line, then exactly these sections:
 - by:      <run id | agent | human>
 
 ## Answer
-<plain words, usable by a reader who has never opened this task-folder.>
+<plain words, usable by a reader who has never opened this job.>
 <every load-bearing number carries an anchor: [→ results/<run>/metrics.json]>
 
 ## Caveats

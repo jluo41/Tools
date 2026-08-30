@@ -152,7 +152,7 @@ A phase with one route is not a decision, and a phase with several is not free t
 ## Files
 
 ### Contracts · what this Page describes
-- `../../skills/page-workflows/label-init/SKILL.md`
+- `../../skills/label-building/SKILL.md`
   The command that runs this phase.
 - `../../agents/moderator-agent.md`
   The hand that drafts the meaning and never decides it.

@@ -8,8 +8,8 @@ description: >-
   board/index.html to VS Code, not create one. Trigger: board, open a board,
   add a question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.146.0"
-  last_updated: "2026-08-28"
+  version: "0.147.0"
+  last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

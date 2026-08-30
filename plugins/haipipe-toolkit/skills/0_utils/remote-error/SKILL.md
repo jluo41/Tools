@@ -4,7 +4,7 @@ description: "The RETURN leg of work on a machine this session cannot reach: a p
 argument-hint: "<paste the error text or screenshot>  [--profile <name>]  [--register <dir where the report is written>]  [--unit <task folder>]  [--session <name of this debugging round>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
+  version: "0.9.0"
   last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -310,50 +310,58 @@ scroll past. The reply ends on 🙋 Your Call, which is a question to them.
 Phase 3 edits the canonical file. So this section is written in the PAST tense
 and reports work that is already done, in three parts, in this order:
 
-One GROUP per file changed, and every group runs in this order. The place comes
-first: a change is unreadable until you know where it is.
+One GROUP per file changed. Every group is two bold labels, each followed by one
+fenced block, then the WHY as plain sentences. **WHERE comes first.**
 
 ```
-WHERE    the file, then the lines, on their own line. Full repo-relative path,
-         whether it is CANONICAL or a COPY, and how many copies the sync fed.
+**WHERE**   one fenced block. The directory on its own line, then the file with
+            its LINES as `:NN-NN`, then whether it is CANONICAL or a COPY, then
+            how many copies the sync fed. First, because a change is unreadable
+            until you know where it is, and with two files changed a reader who
+            met the code first cannot tell which block belonged to which.
 
-BEFORE   the lines exactly as they were, fenced. The smallest quotable unit,
-         never a diff of the whole file.
+**WHAT**    one fenced block, in the language of the file. Inside it, `// was`
+            above the old lines and `// now` above the new ones. The smallest
+            quotable unit, never a diff of the whole file. Both halves in ONE
+            block, so the eye compares them without a heading in between.
 
-AFTER    the same lines as they are now, fenced.
-
-WHY      the rule this generalizes to, in one sentence, plus the one sentence
-         on where the rule does NOT apply, so a later sweep does not over-apply
-         it. The [ID] cited at the changed line is what makes that sweep safe.
+WHY         plain sentences under the two blocks, no label and no fence: the
+            rule this generalizes to, and where the rule does NOT apply, so a
+            later sweep does not over-apply it. The [ID] cited at the changed
+            line is what makes that sweep safe.
 ```
 
-The shape on screen, one file:
+The shape on screen, verbatim, one file:
 
-```
-tasks/00_cms-stata-template/C00_data_pipeline_template/scripts/0-libs/lib-state-end.do
-lines 47-56 · CANONICAL · synced to 3 C-stage jobs
+    **WHERE**
 
-before
-    state_write_table
-    state_write_report "`focus_vars'"
+    ```
+    tasks/00_cms-stata-template/C00_data_pipeline_template/scripts/0-libs/
+      lib-state-end.do   :47-56   CANONICAL  -> synced to 3 C-stage jobs
+    ```
 
-after
-    capture state_write_table
-    if _rc != 0 {
-        display as error "  WARNING: state_write_table failed, rc=" _rc
-    }
-    capture state_write_report "`focus_vars'"
-    if _rc != 0 {
-        display as error "  WARNING: state_write_report failed, rc=" _rc
-    }
+    **WHAT**
 
-why  a receipt writer must never be able to kill the run it is describing.
-     Not applied to the step body itself, where a failure IS the result.
-```
+    ```stata
+    // was
+        state_write_table
+        state_write_report "`focus_vars'"
 
-Never lead with the diff and name the file after it. A reader who meets the code
-first has to hold it in their head until the path arrives, and with two files
-changed they cannot tell which block belonged to which.
+    // now
+        capture state_write_table
+        if _rc != 0 {
+            display as error "  WARNING: state_write_table failed, rc=" _rc
+        }
+    ```
+
+    - A receipt writer must never be able to kill the run it is describing.
+    - Not applied to the step body itself, where a failure IS the result.
+
+Two files changed means two WHERE/WHAT pairs, which keeps a path attached to its
+own code. Ruled by JL on 260829, twice: the ORDER is his from the first ruling
+and never moved, and the RENDERING is the second, the two bold labels with
+`// was` and `// now` in one block. 0.7.0 wrongly read the second as replacing
+the first and flipped the order; 0.8.0 puts it back.
 
 Then exactly two bullets, in this order, and nothing else:
 
@@ -362,6 +370,16 @@ CARRY  what the person copies to the machine, and ONE string to grep in the
        copied file to prove the fix travelled. This is the only step left to
        them, because their copy on the machine is a different file that nobody
        has touched.
+
+       THE WHAT BLOCK IS THE REPO FILE, BYTE FOR BYTE. Never offer a "simpler
+       version to type by hand", a "minimum edit", or a shortened variant that
+       the repo does not hold. The person copies from the repo; the moment the
+       reply and the file disagree, every later screenshot is of a third thing
+       that exists nowhere, and each round of that costs them a full run.
+       If a shorter or a diagnostic form is the right one, WRITE THAT FORM INTO
+       THE CANONICAL and sync it, then quote it. Ruled by JL on 260829, after
+       six hand-edits diverged from the repo: "you didn't change this!!! I will
+       follow this to update the server, you get it?"
 GATE   the verdict line, last: <UNIT> n/<total>. Never "this will run".
 ```
 

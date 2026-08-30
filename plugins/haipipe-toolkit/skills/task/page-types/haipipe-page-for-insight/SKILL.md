@@ -42,7 +42,7 @@ An Application borrows a settled chain from here through PageX rather than reope
 
 ```text
 INHERIT from Task Page              REPLACE for Insight Page
-source/run binding                  one-task-folder grain → one application insight question
+source/run binding                  one-job grain → one application insight question
 every shown number names a run      Why/Method/Result grammar → D→I→K→W
 rerun reopens dependent reading     task verdict → Design Handoff
 human reads the result              one source → several Task/Discovery/Page sources allowed

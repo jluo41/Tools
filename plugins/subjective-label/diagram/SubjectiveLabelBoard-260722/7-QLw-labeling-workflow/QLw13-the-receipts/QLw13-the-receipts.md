@@ -184,9 +184,9 @@ why         two sources drift, and the one that drifts silently is always
 ### Contracts · what this Page borrows and what it changes
 - `../../../../haipipe-toolkit/skills/board/page-workflows/haipipe-page-workflow/ref/page-run-contract.md`
   The packet and receipt spec this page borrows, and whose per-phase granularity it changes for phase 4.
-- `../../skills/page-workflows/label-round/SKILL.md`
+- `../../skills/label-building/SKILL.md`
   Carries the unimplemented promise "Resume the recorded open phase when one exists".
-- `../../skills/page-workflows/label-status/SKILL.md`
+- `../../skills/subjective-label/SKILL.md`
   Reads closed artifacts today, and should read the receipt chain.
 
 ## Law

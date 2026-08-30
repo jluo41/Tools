@@ -49,3 +49,7 @@ Found by writing a second run page from the specimen and running `stage.py sync`
 Was `haipipe-toolkit/skills/board/page-types/`, is now `subjective-label/skills/`. This is not a new rule: `haipipe-board`'s own 260803 ruling already says a Page Type variant ships WHERE THE BOARD FAMILY MAINTAINS IT, and closes with "who maintains it is the line that held twice; who consumes it never did". Every rule in this contract comes from the subjective-label method, and the board family maintains none of it, so the original placement was wrong by the rule that was already written. JL 260807: a `for-<type>` variant may live in any skill set.
 
 The board family keeps the three variants it does maintain. The `label` value stays in `check.py`'s `PAGE_TYPE_VALUES`, because that list is the board engine's, not this contract's.
+
+## 0.3.1 · 2026-08-30
+
+**Vocabulary follows the family rename.** The two sides are now Building and Scanning (JL 260830: Part 1 builds the label; both sides label something, so "Labeling" named nothing). Division 3 is `Building gates`; division 4 unlocks at `P2 Freeze`, which is a phase since the handoff file is its own artifact; the family contracts this page loads are `subjective-label`, `label-building`, `label-scanning`, `subjective-label-workflow`. No rule of the page itself changed.

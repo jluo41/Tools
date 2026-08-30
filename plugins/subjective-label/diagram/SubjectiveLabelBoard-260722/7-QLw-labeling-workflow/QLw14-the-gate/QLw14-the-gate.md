@@ -153,7 +153,7 @@ blocked     which of the zero-findings checks is not yet zero, and
 ### Contracts · what this Page governs
 - `../../skills/page-types/haipipe-page-for-labeling/SKILL.md`
   Fixes that a page's ✅ means a person signed the freeze, which is the fifth tick.
-- `../../skills/page-workflows/label-status/SKILL.md`
+- `../../skills/subjective-label/SKILL.md`
   The read-only surface that should report what is unsigned and today does not.
 - `../../agents/moderator-agent.md`
   The hand that elicits every tick and may write none of them.

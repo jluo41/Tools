@@ -8,8 +8,8 @@ description: >-
   Trigger: create a page, new page, update a page, preview a page, what does
   this page say, run page lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.40.1"
-  last_updated: "2026-08-28"
+  version: "0.40.2"
+  last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -386,7 +386,8 @@ a gist, never a substitute: WORK ON step 1 still owes the whole-file read.
    lifecycle stage) and copy `haipipe-board/ref/page-template.md` to it. Never
    retype the shape from memory: the template's guide sentences ARE the
    contract.
-3. Write the title so it states the page's PURPOSE, in sentence case.
+3. Write a three-to-five-word title that states the page's PURPOSE in
+   sentence case; six visible words is the hard maximum.
 4. Write the Opening: the visible paragraph above the first blank line,
    everything else below it.
 5. Write Content as numbered parts, each opening with a caption, a
@@ -493,16 +494,20 @@ transcript CLAIMS, not verify it. So a machine may update an Aim's State only
 from evidence it can inspect, and may propose a human ruling as a
 `### Decision Now` row.
 
-### The title states a purpose, in sentence case
+### The title states a purpose, short, in sentence case
 
-Capitalize the first word and proper nouns and nothing else; a defined term
-keeps its capitals. A colon may carry a short subtitle, and that is usually
-where the purpose lands: `The page template: one grammar every page kind obeys`
-rather than `Page Template design`, which mixes two cases and names only a
-topic. On the Index the title is the only line a reader gets before choosing, so
-a title naming its subject alone makes them open the page to learn what the page
-was for. Sentence case is a string test a checker can own; whether the title
-states a purpose is a judgment and belongs to the Evaluation contract.
+Target three to five visible words and never exceed six (JL 260827). Count
+whitespace-separated words after ignoring punctuation-only separators; an
+acronym, identifier, or hyphenated compound counts as one word. A colon does not
+create a second allowance: the whole visible title still fits under six words,
+and the page id is not part of it. Capitalize the first word and proper nouns and
+nothing else; a defined term keeps its capitals. Prefer `One grammar every page
+obeys`, `AMI admission and CABG`, or `CABG regression design` over `Page Template
+design`, which mixes two cases and names only a topic. On the Index the title is
+the only line a reader gets before choosing, so a title naming its subject alone
+makes them open the page to learn what the page was for. Length and sentence case
+are string tests a checker can own (`title-too-long`); whether the title states a
+purpose is a judgment and belongs to the Evaluation contract.
 
 ### A heading is a lookup key
 

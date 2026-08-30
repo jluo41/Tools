@@ -1,7 +1,7 @@
 metrics.json — Schema
 ======================
 
-Location: `results/<NAME>/metrics.json`
+Location: `results/<NAME>/metrics.json` (flat job) · `results/<task>/<NAME>/metrics.json` (nested job)
 Owner:    Written by the task's `*.py` / `*.do` at finalize. May be edited by
           re-running the task; never hand-edited.
 Status:   Source-of-truth for the measured NUMBERS of ONE run. `runtime.yaml`

@@ -1,205 +1,150 @@
-# Reference: revised lifecycle and state machine
+# Reference: two-side lifecycle and state machine
 
-The plugin operates at three nested scales: project lifecycle, Calibration Round, and Human-AI Session.
-The scales have different units and closure rules and must not be collapsed into one generic iteration.
+The subjective-label family has two sibling sides joined by one immutable Label
+Handoff. The scales are journey phase, calibration round, round step, and item
+event. They have different units and closure rules.
 
-## 1. Project lifecycle
+## 1. Family lifecycle
 
 ```text
-/label-init
-    ↓
-/label-round × N
-    ↓ four-gate stop + human signoff
-freeze G*
-    ↓
-/label-evaluate
-    ↓ eligible production policy
-/label-complete
-    ↓ final corpus audit
-complete
-
-/label-status reads every state without mutation
+🏗 Label Building
+P0 Contract → P1 Round × N → P2 Freeze → signed Label Handoff
+                                              │
+                                              ▼
+🔍 Label Scanning
+P3 Test → P4 Scan → P5 Audit → complete
 ```
+
+`subjective-label-workflow` is the phase and gate authority. The sibling doors
+own their interior laws and verbs.
 
 Canonical states:
 
 ```text
 new
-→ initialized
+→ contracted
 → calibrating
-→ calibration_stopped
-→ evaluating
-→ evaluated
-→ producing
+→ frozen            (handoff signed)
+→ testing
+→ qualified
+→ scanning
 → auditing
 → complete
 ```
 
-`hold` is an explicit side state with a reason and owner.
-Any semantic change after `calibration_stopped` returns the project to `calibrating` under a new policy lineage and invalidates downstream claims as required.
+`hold` is an explicit side state with a reason and owner. A semantic change
+after handoff creates a new Building lineage and invalidates downstream claims
+as required.
 
-## 2. Initialization
+## 2. P0 Contract
 
-`/label-init` performs these responsibilities in order:
+Contract validates one corpus snapshot with stable ids and text, records one
+target and identified human semantic authority, declares class/region/
+uncertainty schemas, reserves protected test identifiers before development,
+creates the artifact scaffold, and records retrieval-cache provenance.
 
-1. Validate one corpus snapshot with stable ids and text.
-2. Record the vague trait seed and the identified human semantic authority.
-3. Establish the H/L/N class schema, seven diagnostic regions, and separate uncertainty field as the default contract.
-4. Reserve sealed-test identifiers from a declared sampling frame without exposing their text.
-5. Compute stable corpus embeddings for retrieval and cache them by model plus text hash.
-6. Create project, policy, round, gold, test, evaluation, production, and audit directories.
-7. Draw Round 1 randomly from the eligible development pool, usually about 50 to 60 items as a configurable starting point.
+Contract creates no gold and does not open protected test text.
 
-Initialization does not assign gold labels, seven-region truth, or a complete guideline.
-Those first semantic artifacts emerge inside Round 1 dialogue.
-
-## 3. Calibration Round
+## 3. P1 Calibration Round
 
 A round begins from one closed state and closes only at a Checkpoint:
 
 ```text
-G_(t-1) closed + D_(t-1)
-        ↓
-C_t candidate pool
-        ↓
-P_t sealed weak-model prelabels
-        ↓
-B_t frozen human batch
-        ↓
-one or more Human-AI Sessions
-        ↓
-Y*_t human final records + G_t draft
-        ↓
-Checkpoint t
-        ↓
-D_t cumulative human gold + G_t closed
+closed G_(t-1) + D_(t-1)
+        ↓ PREPARE
+candidate pool + frozen batch + sealed weak predictions
+        ↓ JUDGE
+human-first locks + final human decisions
+        ↓ LEARN
+policy proposals + backward impact + audit/challenge evidence
+        ↓ CLOSE
+checkpoint → closed G_t + D_t → repeat / freeze / HOLD
 ```
 
-Round 1 is the exception at the front of this sequence:
+PREPARE, JUDGE, LEARN, and CLOSE are round steps, not journey phases. Round 1
+uses a declared random development batch and no model prelabels or inherited
+regions. Later rounds combine targeted challenge cases with a probability or
+weighted consensus-audit arm.
 
-- it receives the random initialization batch directly;
-- it has no prior weak prelabels or valid seven-region selector;
-- class labels, region assignments, reasons, and the first policy draft co-emerge through dialogue.
+## 4. Human-AI Session
 
-Round 2 onward uses the full candidate and prelabel funnel.
-
-## 4. Later-round selection
-
-Candidate generation produces broad `C_t`, such as about 200 items, before the smaller human batch is chosen.
-The selector uses seven-region retrieval, lightweight rankers, diversity, novelty, sparse-region capacity, and a random coverage reserve.
-Embeddings and classifiers rank candidates but cannot assign human gold.
-
-Independent weak executors apply `G_(t-1)` to `C_t` and create sealed `P_t`.
-Each output contains a class prediction, optional predicted region, confidence, concise structured reason, executor identity, wrapper identity, and seal checksum.
-
-`B_t` combines:
-
-- class and rule disagreement;
-- geometry-model mismatch;
-- novelty and sparse-region coverage;
-- carryover unresolved cases;
-- a stratified random consensus audit.
-
-Batch membership and audit probabilities freeze before the Session.
-
-## 5. Human-AI Session
-
-A Session is one resumable conversation inside a round.
 For every item:
 
-1. Show the human the item and prior closed policy without weak-model predictions.
-2. Save the human-first class, region, uncertainty, evidence, and rejected alternative.
-3. Lock the first-pass record.
-4. Reveal the sealed prediction comparison.
-5. Ask contrast and counterfactual questions.
-6. Save the final human record and classify any change as correction, clarification, or concept revision.
-7. Draft policy changes and backward-impact candidates without accepting them automatically.
+1. show item text and the prior closed policy without weak predictions;
+2. save human-first class, region, uncertainty, evidence, and alternative;
+3. lock the first-pass record;
+4. reveal sealed structured comparisons when useful;
+5. save the final human decision and typed change;
+6. propose policy and backward-impact candidates without self-acceptance.
 
-The human may leave an item unresolved with a typed reason.
-Unresolved is not a class and never becomes `NONE`.
+Sessions resume per item. Unresolved is a workflow disposition, never `NONE`.
 
-## 6. Checkpoint
+## 5. Checkpoint and stopping
 
-The Checkpoint Keeper validates and closes:
+The Checkpoint Keeper validates every batch disposition, human evidence,
+cumulative gold, policy changes, regression effects, audit/challenge separation,
+coverage, risk, checksums, and the next route.
 
-- every item disposition in `B_t`;
-- `Y*_t` human evidence;
-- cumulative human gold `D_t`;
-- accepted policy changes and regression evidence;
-- closed `G_t` plus checksums and parent;
-- audit and challenge metrics;
-- coverage matrix and risk ledger;
-- backward-impact ownership;
-- next project state.
+Calibration may route to P2 Freeze only when quality, stability, coverage,
+acceptable risk, and human signoff all pass for the configured comparable
+streak. A low plateau, elapsed time, round limit, or model agreement does not
+pass.
 
-No new round may use `G_t` or `D_t` before checkpoint closure.
-A draft or partially written Session cannot promote itself.
+## 6. P2 Freeze
 
-## 7. Round measurements
+Freeze exact `G*` and `D_cal*`, verify sealed-test custody, obtain the human
+signature, and materialize `handoff/label-v1.yaml`. Read
+`ref-label-handoff.md` for fields and invalidation.
 
-Two score families close every round:
+The handoff ends Building and is the only input authority Scanning may consume.
+It carries a protected-manifest checksum, never protected ids or text.
 
-| family | source | purpose |
-|---|---|---|
-| audit | probability or weighted sample with a comparable target population | quality trajectory and stopping |
-| challenge | adaptively selected disagreement, mismatch, boundary, and novelty cases | policy discovery and diagnosis |
+## 7. P3 Test
 
-Correction loss compares `P_t` with `Y*_t` per executor.
-Policy deltas separate semantic, procedural, casebook, wrapper, and editorial changes.
+Validate the handoff; preregister candidate executors, model-family roles,
+wrappers, baselines, metrics, repeats, quality floors, and selection rule;
+authorize test-text release; collect blind human `T*` (the GOLD step); close
+candidate predictions before opening gold, produce comparable scorecards, and
+qualify a production route only when every required floor passes (the SCORE
+step).
 
-## 8. Stopping
+Public data is optional external validity and never project gold.
 
-Stop calibration only when quality, stability, coverage, and risk all pass for configured `K` consecutive comparable checkpoints and the human signs off.
-A stable score below the quality floor does not converge.
+## 8. P4 Scan
 
-Calibration stop freezes `G*` plus the cumulative human calibration gold as `D_cal*`,
-then closes development. `D_cal*` is not the completed corpus `D*`.
-It does not complete the corpus.
+Freeze a production manifest, run preflight, execute append-only idempotent
+attempts, route declared risks to human review, and reconcile exactly one
+terminal candidate per in-scope item. Production human decisions override model
+outputs semantically but do not revise `G*`.
 
-## 9. Final evaluation
+The candidate is not `D*` until P5 closes.
 
-`/label-evaluate` requires `calibration_stopped` and a valid sealed-test manifest.
-It performs:
+## 9. P5 Audit
 
-1. authorized test-text release after the freeze;
-2. blind human labeling under `G*` without executor predictions;
-3. final human-gold lock;
-4. execution by registered seen and held-out candidates;
-5. absolute metrics, guideline uplift, transfer, stability, cost, and failure scorecards;
-6. invalidation recording if results are used to modify a scored component.
+Freeze a probability audit design before inspection, collect blind human audit
+gold, estimate weighted errors and intervals, inspect protected strata and
+routes, and write an immutable receipt. Route to pass, repair, rescan, narrowed
+human-accepted limitation, or semantic reopen.
 
-Public datasets may support separate engine-level external validity.
-They cannot replace the project-specific sealed human test.
+Complete means every in-scope item has one terminal disposition and the audit
+supports the exact bounded claim materialized with `D*`.
 
-## 10. Corpus completion
-
-`/label-complete` selects one frozen production policy from eligible scorecards and the predefined quality-risk-cost rule.
-It then:
-
-1. runs a preflight sample;
-2. labels the eligible remainder through idempotent attempts;
-3. routes disagreement, uncertainty, novelty, failures, and known error strata to the human;
-4. reconciles one terminal disposition per item;
-5. runs a blind probability audit of machine-accepted labels;
-6. repairs or reopens failed strata;
-7. writes final provenance shares and bounded reliability claims.
-
-Complete means every in-scope item has a terminal disposition and the final audit passes or has an explicitly accepted limitation.
-
-## 11. Compatibility commands
+## 10. Retired names
 
 ```text
-/sl-init     → /label-init        /sl-status   → /label-status
-/sl-round    → /label-round       /sl-iterate  → /label-round
-/sl-evaluate → /label-evaluate    /sl-validate → /label-evaluate
-/sl-complete → /label-complete    /sl-scale    → /label-complete
+/label-init · /label-round          → /label-building
+/label-evaluate · /label-complete   → /label-scanning
+/label-status                       → /subjective-label status
+subjective-labeling (draft name)    → label-building
+subjective-scanning (draft name)    → label-scanning
 ```
 
-The router resolves legacy names and announces the canonical command before dispatch.
-They do not preserve old panel-consensus, public-kappa, or static-cascade semantics.
+Legacy `/sl-*` names forward through the same routes. None of them preserves
+old panel-consensus, public-kappa, or static-cascade semantics.
 
-## 12. Implementation status
+## 11. Implementation status
 
-The lifecycle above is the governing contract.
-Current libraries provide partial technical primitives but do not yet automate every seal, checkpoint, final-test, production, and audit operation.
-Skills must emit an explicit implementation HOLD where a required engine unit has not shipped.
+This lifecycle is the governing contract. Existing libraries provide partial
+technical primitives and may still contain legacy code paths. Skills emit an
+explicit `HOLD` when a required keeper, seal, writer, runner, reconciler, or
+auditor has not shipped; they never manufacture a successful phase receipt.

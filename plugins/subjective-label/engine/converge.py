@@ -11,8 +11,8 @@ Three sets feed this (see ref-config.md eval + note-update.md):
   objective     → objective_score (construct fitness; S2)
 
 Usage:
-    python lib/converge.py --project-dir <task>     # reads eval/trajectory.jsonl + config
-    python lib/converge.py selftest
+    python engine/converge.py --project-dir <task>     # reads eval/trajectory.jsonl + config
+    python engine/converge.py selftest
 
 trajectory rows (one per version) may carry any of:
     anchor_kappa | kappa_majority_vs_gold   (anchor correctness)

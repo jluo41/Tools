@@ -1,17 +1,17 @@
-fn-scaffold: Scaffold an LLM-agent task-folder
+fn-scaffold: Scaffold an LLM-agent job
 =================================================
 
 Call an LLM agent (Claude / GPT) with prompts + tools for an analysis, summarization, or audit task.
 Group letter default: **F** (agent).
 
-Output: `tasks/F{NN}_<group>/{NN}_<task_name>/`.
+Output: `tasks/F{NN}_<group>/{NN}_<job_name>/`.
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **F**; scaffold a new `F{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **F**; scaffold a new `F{NN}_<block_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -31,8 +31,8 @@ Step 3 — Create skeleton
 
 ```
 F{NN}_<group>/
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── prompts/
     │   ├── system.md                       system prompt
     │   └── user.md                         user prompt template (with {placeholders})
@@ -66,7 +66,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/agent_<name>.sh`.
-Set `TASK_NAME="{NN}_{task_name}"`.
+Set `TASK_NAME="{NN}_{job_name}"`.
 
 
 Step 6 — Cross-skill link
@@ -81,7 +81,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded agent task <NN>_<name> under F{NN}_<group>.
+summary:   Scaffolded agent job <NN>_<name> under F{NN}_<group>.
 artifacts: [paths created including prompts/system.md, prompts/user.md]
 next:      edit prompts/, set inputs in config, then run.sh
 ```
@@ -104,7 +104,7 @@ First-run gate
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     task-folder to produce a fresh `CODE_REVIEW.md`:
+     job to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:

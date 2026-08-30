@@ -1,6 +1,13 @@
 Subjective-Label Init: Design
 ==============================
 
+> **Legacy design note (pre-0.4.0; non-authoritative).** This file preserves the
+> design history and must not drive a run. Load `subjective-label`,
+> `label-building`, `label-scanning`, and
+> `subjective-label-workflow` for the current two-side family. In particular,
+> public-dataset kappa, panel majority, gallery inheritance, and the old
+> init/iterate/validate/scale spine are retired.
+
 How a vague labeling idea becomes a deployable guideline, a validated gold
 dataset, and a performance proof — with evaluation at every stage.
 
@@ -441,7 +448,7 @@ process is working.
   Trajectory shape       Meaning                     Action
   ────────────────       ───────                     ──────
   Monotonically up       Process is working           Keep going
-  Plateau                Guideline has converged      Ready for /label-evaluate
+  Plateau                Guideline has converged      Ready for /label-scanning test
   Drop after a change    That change hurt             Revert or investigate
   Oscillating            Rules contradict each other  Step back, simplify
 ```
@@ -576,7 +583,7 @@ The Full Picture
   └─────────┘   └──────────┘   └──────────┘   └──────────────────────────┘
                                                         │
                                                         ↓
-                                                  ALL PASS → /label-complete
+                                                  ALL PASS → /label-scanning scan
                                                   ANY FAIL → back to PROCESS
 ```
 
@@ -590,4 +597,4 @@ Init is complete when ALL FOUR evaluations pass:
   E3: Guideline + LLM reproduces gold labels at or above human ceiling
   E4: Process converged efficiently, user confirms intent was captured
 
-Then: /label-round (for further refinement) or /label-complete (for full corpus).
+Then: /label-building round (for further refinement) or /label-scanning scan (for full corpus).

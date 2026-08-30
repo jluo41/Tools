@@ -196,7 +196,7 @@ S5 reviewers then distinguished all four artifacts correctly.
 
 ## 7. Residual implementation holds
 
-The migration intentionally did not modify `lib/` or application code. Fresh agents
+The migration intentionally did not modify `engine/` or application code. Fresh agents
 verified that the repository does not yet evidence every v2 unit, including sealed-test
 custody, random Round 1 manifests, immutable Session events, sealed independent
 prelabeling, v2 C_t/B_t builders, checkpoint promotion, final scorecards, idempotent

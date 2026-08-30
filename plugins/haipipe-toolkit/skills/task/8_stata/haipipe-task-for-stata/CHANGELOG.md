@@ -6,6 +6,40 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.0] - 2026-08-29
+
+`ref/stata-dialect.md`: the multi-line brace rule now covers EVERY `if` in a
+`.do`, not only the dispatcher's `step -> worker` ladder. JL ruled it on 260829
+after reading the `capture quietly describe, varlist` guard written for
+`[C01-05]`: "you might be rewrite all the things like this with { }".
+
+The section was renamed from "Dispatcher coding style (multi-line braces)" to
+"Brace style - every `if` body on its own line", and gained the `capture` / `_rc`
+guard as a second worked example, since that is the shape that prompted it.
+
+It is written as a READABILITY and edit-safety rule, explicitly NOT a
+runnability blocker, because the one-line form is proven on the server: the
+`v0827_Code0827` snapshot carries 43 one-line `if`s, three of them exactly
+`if _rc == 0 global file_policy "`_polalt'"`. Without that sentence the next
+reader would "repair" 43 working lines. The reasons to use braces anyway are
+that a brace form is never in doubt, never traps when the body is later wrapped
+with `///`, and shows the branch in a diff.
+
+No checker rule was added. A gate that failed those 43 proven sites would be
+noise, and this is style for new code.
+
+
+## [0.2.9] - 2026-08-29
+
+Named the boundary of the server-check mode. It is the OUTBOUND leg: everything
+done before the code reaches the server. The return leg, where an error comes
+back and has to become a rule, moved to the new sibling skill
+`remote-error` in this same folder.
+
+Both skills read this folder's `ref/cms-server-checklist.md`, so the three-gate
+numbering and the issue-ID grammar stay identical across the two.
+
+
 ## [0.2.8] - 2026-08-22
 
 Added the issue-register section to `ref/cms-server-checklist.md`: where the

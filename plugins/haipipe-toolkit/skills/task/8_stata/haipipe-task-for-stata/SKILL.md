@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-stata
-description: "Unified Stata-engine task-folder specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode for the CMS secure server. Called by /haipipe-task when engine=Stata. Engine = Stata + PowerShell + logs (not Python/papermill)."
-argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
+description: "Unified Stata-engine job specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode for the CMS secure server. Called by /haipipe-task when engine=Stata. Engine = Stata + PowerShell + logs (not Python/papermill)."
+argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [job]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.8"
-  last_updated: "2026-08-22"
+  version: "0.3.0"
+  last_updated: "2026-08-29"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,7 +16,7 @@ This is the UNIFIED Stata skill -- handles all 4 stages (cms/case/data/reg) inte
 Called by `/haipipe-task` when engine=Stata.
 Each stage scaffolds a different pipeline phase; all share one engine contract (`ref/stata-dialect.md`).
 
-Two modes: **BUILD** (scaffold task folders) and **SERVER CHECK** (validate before/after CMS server migration).
+Two modes: **BUILD** (scaffold job folders) and **SERVER CHECK** (validate before/after CMS server migration).
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the worker `.do` files).
 Always end with the structured return block (status / task_folder / run_name / files).
@@ -34,8 +34,8 @@ data    stata-data     C              *-Data-Store  (heavy)
 reg     stata-reg      D              results/      (LIGHT)
 ```
 
-The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order (`A`cms -> `B`case -> `C`data -> `D`reg).
-Full definition: the "Task-folder `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
+The `{LNN}` letter encodes the stage so a job sorts in pipeline order (`A`cms -> `B`case -> `C`data -> `D`reg).
+Full definition: the "Job `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
 
 
 Stage disambiguation
@@ -74,7 +74,7 @@ Stage: cms
 
 ```
 tasks/{G}{NN}_<group>/
-+-- A{NN}_cms_pipeline/                          <- task-folder letter A = cms stage ({LNN})
++-- A{NN}_cms_pipeline/                          <- job letter A = cms stage ({LNN})
     +-- A{NN}_cms_pipeline.do                    dispatcher: <config> <step> <year> <results_dir> <ws_root>
     +-- scripts/                                 worker .do per step (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
     +-- configs/
@@ -213,6 +213,10 @@ Server check mode
 
 When invoked with "server check", "pre-flight", "cms server checklist", or "before hand-copy", this skill runs in CHECK mode instead of BUILD mode.
 
+This is the OUTBOUND leg only: everything done BEFORE the code reaches the server.
+When an error comes BACK from a run, hand off to `remote-error` (in `skills/0_utils/`, because that loop is engine-neutral), which owns the return leg: reason, fix the canonical, name the lines, land the lesson in the issue register.
+It reads this folder's `ref/cms-server-checklist.md` through its own `ref/profile-cms-stata.md`, so the gate numbering and the issue-ID grammar stay identical across the two.
+
 Three gates -- each catches different failure modes:
 
 ```
@@ -227,12 +231,12 @@ Execution:
 
 ```
 Step 1 — Read ref/cms-server-checklist.md
-Step 2 — Glob the task folder for .ps1, .do files
+Step 2 — Glob the job folder for .ps1, .do files
 Step 3 — Run applicable gate checks:
          Gate 1: if synth results exist, check L1-L10
          Gate 2: always -- byte-scan, grep, parse-check (B1-F6)
          Gate 3: if user pastes server output, check R1-R10
-Step 4 — Write SERVER_CHECK.md in the task folder (verdict + file list)
+Step 4 — Write SERVER_CHECK.md in the job folder (verdict + file list)
 ```
 
 Return:
@@ -253,7 +257,7 @@ Dispatch table (scope → fn/)
 ```
 Scope              fn/ file                  When
 ────────────────── ───────────────────────── ──────────────────────────────
-scaffold (new)     fn/scaffold.md             new task folder creation
+scaffold (new)     fn/scaffold.md             new job folder creation
 audit (existing)   fn/audit-stata.md          /haipipe-task audit (or auto)
 plan (existing)    fn/plan-stata.md           /haipipe-task plan
 build (existing)   fn/build-stata.md          /haipipe-task build
@@ -261,12 +265,12 @@ execute            fn/execute-stata.md        /haipipe-task execute
 report (existing)  fn/report-stata.md         /haipipe-task report
 ```
 
-For an EXISTING task folder, the full lifecycle is:
+For an EXISTING job folder, the full lifecycle is:
   audit → plan → build → execute → report
 Each stage reads its fn/ file.
 For explicit commands (`plan`, `audit`, etc.), run ONLY that step.
 
-For a NEW task folder, only `fn/scaffold.md` runs.
+For a NEW job folder, only `fn/scaffold.md` runs.
 
 
 Routing protocol
@@ -279,11 +283,11 @@ Step 1: Detect AUTO_MODE (same triggers as `/haipipe-task`: `--auto`, env, or pa
 Step 2: Resolve stage via the cascade above.
 
 Step 3: Verify ancestors exist (project -> group), mirroring `/haipipe-task` Step 3b.
-If a `--project-id` / `--group` is given and missing, scaffold via `/haipipe-task` (project / task-group) first; else ASK / block.
+If a `--project-id` / `--group` is given and missing, scaffold via `/haipipe-task` (project / block) first; else ASK / block.
 
 Step 4: Branch by scope:
-  - NEW task folder → read `fn/scaffold.md`, execute
-  - EXISTING task folder → dispatch to lifecycle fn/:
+  - NEW job folder → read `fn/scaffold.md`, execute
+  - EXISTING job folder → dispatch to lifecycle fn/:
     (a) `fn/audit-stata.md` — Stata-aware pre-flight (extends generic four-sister)
     (b) `fn/plan-stata.md` — generate IPO plan.yaml + plan-script-*.yaml using `ref/workflow-plan-sample-<stage>.yaml`
     (c) `fn/build-stata.md` — author .do/.ps1 code (extends scaffold into full authoring)
@@ -309,7 +313,7 @@ ref/dispatcher-do-template.do   DISPATCHER (5-arg: <config> <step> <year> <resul
 Three portability rules (DO NOT re-derive per task -- the templates already bake them):
   1. Stata exe = ONE resolvable location: hardcoded `$stata` line (cms-stage) OR
      `Resolve-StataExe` function (data/reg/case-stage). See rule A5 in stata-dialect.md.
-  2. Run from the task folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
+  2. Run from the job folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
 
 All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in `ref/stata-dialect.md` -- CMS server is Windows PowerShell 5.1 only (no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` + `sbatch/`.
@@ -341,13 +345,13 @@ ref/workflow-plan-sample-reg.yaml     IPO phases for reg stage
 Workflow lifecycle
 ------------------
 
-When `/haipipe-task` targets an EXISTING task-folder of this type, it runs the Stata lifecycle via the fn/ dispatch table above.
+When `/haipipe-task` targets an EXISTING job of this type, it runs the Stata lifecycle via the fn/ dispatch table above.
 Each fn/ procedure reads its ref/ inputs:
 
 ```
-fn/audit-stata.md    reads: (task folder .do/.ps1 files)
+fn/audit-stata.md    reads: (job folder .do/.ps1 files)
 fn/plan-stata.md     reads: ref/workflow-plan-sample-<stage>.yaml
-                            ../../haipipe-task/ref/workflow-template.yaml
+                            ../../../haipipe-task/ref/workflow-template.yaml
                             ../../../haipipe-workflow/ref/plan-schema.md
 fn/build-stata.md    reads: ref/config-seed-<stage>.do (+ ref/config-seed-reg-run.do for reg)
                             ref/dispatcher-do-template.do (cms/case/data)
@@ -357,7 +361,7 @@ fn/execute-stata.md  reads: ref/cms-server-checklist.md (server mode)
 fn/report-stata.md   reads: workflow/plan.yaml + results/*/log/*.txt
 ```
 
-This closes the gap where the old skill only had `fn/scaffold.md` (new task creation) but no procedures for the plan/audit/build/execute/report lifecycle on existing task folders.
+This closes the gap where the old skill only had `fn/scaffold.md` (new task creation) but no procedures for the plan/audit/build/execute/report lifecycle on existing job folders.
 
 
 Return contract

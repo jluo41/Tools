@@ -1,10 +1,18 @@
 ---
 name: haipipe-page-for-labeling
 description: >-
-  The VARIANT contract for a LABELING run Page: one Page per corpus and label target being labeled by a human authority, plus one control page per family. It loads haipipe-page for the base frame and adds only what a run Page needs: the per-unit test that makes one corpus plus one target one Page, the rule that a round is a RECORD and never a division so the Page cannot grow without end, five Content divisions that mirror the run rather than argue a question, Aims that ARE the stopping gates so States answers "may we stop" without a second source of truth, the rule that an empty division is a status, and the evidence rules that a quoted item carries its id and that a machine may propose a class but only a human session makes it gold. Use when writing or fixing a labeling Page, when rounds are turning into sections, when a page shows a score with no round behind it, or when a machine's proposed label is being read as gold. Trigger: labeling page, S-Label, label run, calibration round, annotation policy, gold, sealed test, stopping gate, region, H L N, /haipipe-page-for-labeling.
+  The VARIANT contract for a SUBJECTIVE-LABEL job Page: one Page per corpus and
+  target, spanning the Building and Scanning sides plus one control page per
+  family. It loads haipipe-page for the base frame and adds only what a run Page
+  needs: a round is a RECORD and never a division; five Content divisions show
+  meaning, rounds, Building stop gates, signed handoff/scorecards, and audited
+  corpus completion; an empty division is status; quoted items carry ids; and
+  only a human event creates gold. Use when writing or fixing a labeling Page,
+  when rounds become sections, when freeze is mistaken for completion, when a
+  score has no bound handoff, or when a machine proposal is read as gold.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-07"
+  version: "0.3.1"
+  last_updated: "2026-08-30"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,18 +22,21 @@ metadata:
 This file adds only what a labeling page needs and an ordinary stage page does not.
 It never repeats a base rule, because a copied rule goes a night out of date while the contract moves.
 
-**What a labeling run is** comes from the `subjective-label` plugin's own board, `diagram/02-subjective-label-260722`, whose QA0 through QF5 fix the method.
-This file never restates that method. It says only what the BOARD PAGE must carry.
+**What a labeling job is** comes from the plugin's current family contracts:
+`subjective-label`, `label-building`, `label-scanning`, and
+`subjective-label-workflow`. The historical design Board records how those laws
+were reached; it is not a second runtime authority. This file says only what the
+BOARD PAGE must carry.
 
 ## 🧩 The two kinds
 
 ```
 kind          filename                          subject                closes when
 ──────────────────────────────────────────────────────────────────────────────────────
-control       S-Label-Dash.md                   which runs exist and   never; it is an
+control       S-Label-Dash.md                   which jobs exist and   never; it is an
                                                 where each one stands  inventory
 per-unit run  S-Label-<n>-<corpus>-<target>.md  ONE corpus and ONE     its human gate
-                                                label target           passes
+                                                label target           and final audit close
 ```
 
 **The test for a unit is QC3b's, and it is about people, not files**: can a person say yes to one thing here while saying no to the thing beside it?
@@ -62,9 +73,9 @@ A labeling page's Content mirrors a run in progress. It does not argue a questio
 ```
 ### 1 · What <target> means now      the boundary as the human draws it TODAY, with real items
 ### 2 · Rounds                       the ledger
-### 3 · Gates: may we stop?          the current reading of each stopping gate
-### 4 · Freeze, sealed test, scores  empty until the policy freezes
-### 5 · The labeled corpus           empty until the executor runs
+### 3 · Building gates               may the Label Handoff be signed?
+### 4 · Handoff, sealed test, scores empty until P2 Freeze signs the handoff
+### 5 · Scanned corpus and audit     empty until Scanning runs
 ```
 
 **§1 must SAY what LOW means on this page**, because it differs by target and a reader cannot guess.
@@ -84,9 +95,9 @@ On a labeling page those targets are already defined by the method's stopping ga
 ```
 A1  the policy is executable, and every rule is traceable to its round
 A2  every closed round is reproducible from its own folder
-A3  the stopping gates: quality · stability · coverage · risk        ← one Aim item each
-A4  the seal holds, and every candidate executor is scored on it
-A5  the corpus is complete with provenance, and the audit says what is reliable
+A3  the Building gates: quality · stability · coverage · risk        ← one Aim item each
+A4  the signed handoff and seal hold, and every candidate executor is scored on them
+A5  the scanned corpus is complete with provenance, and the audit says what is reliable
 ```
 
 The payoff is that `## States` answers "may we stop" with no second source of truth, and a reader scanning it sees which gate blocks.
@@ -132,9 +143,12 @@ An Aim tracking a run's gate belongs on that run's page, or the same fact lives 
 
 ## 🚦 State
 
-This is an S page, so `✅` means this page's own human gate passed, and the index counts it under the `Label` family.
-A run that is deliberately parked is `⏸️`, and a run whose gates are still open is `🟡` however many rounds have closed.
-`state:` never reads `✅` because the rounds went well; it reads `✅` because a person signed the freeze.
+This is an S page, so `✅` means the whole job reached audited `D*`, and the
+index counts it under the `Label` family. A signed freeze changes the handoff
+row in §4 and opens Scanning; it does not complete the Page. A job deliberately
+parked is `⏸️`, and a job with open Building or Scanning gates is `🟡` however
+many rounds closed or however good its scorecard looks. `state:` never reads
+`✅` from round metrics, a freeze signature alone, or model qualification.
 
 ## 📄 Files
 

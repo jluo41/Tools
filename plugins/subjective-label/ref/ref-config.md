@@ -10,7 +10,7 @@ schema_version: subjective-label/v2
 
 project:
   id: example-project
-  description: "One human-grounded subjective-labeling project"
+  description: "One human-grounded subjective-label project"
 
 corpus:
   path: reviews.jsonl
@@ -166,14 +166,16 @@ Diagnostic enrichment is reported separately from the representative headline sa
 
 ## 7. Runtime state
 
-`.state.json` is written by authorized keepers and may contain:
+`.state.json` is a derived cache written by authorized keepers and may contain:
 
 ```json
 {
-  "schema_version": "subjective-label/state-v2",
-  "project_status": "calibrating",
+  "schema_version": "subjective-label/state-v3",
+  "building_frontier": "Contract | Round | Freeze | HOLD",
+  "scanning_frontier": "not-runnable | Test | Scan | Audit | complete | HOLD",
+  "handoff_checksum": null,
   "open_round": "round-02",
-  "round_phase": "candidate | prelabel | batch | session | checkpoint",
+  "round_step": "prepare | judge | learn | close",
   "closed_policy": "G_1",
   "cumulative_gold": "D_1",
   "sealed_test_status": "reserved",
@@ -182,8 +184,9 @@ Diagnostic enrichment is reported separately from the representative headline sa
 }
 ```
 
-State points to immutable artifacts by id or checksum.
-It does not duplicate their contents.
+State points to immutable artifacts by id or checksum and does not duplicate
+their contents. `subjective-label-workflow` derives phase from the gate-granting
+artifacts; when this cache disagrees, the artifacts win.
 
 ## 8. Migration from v1
 

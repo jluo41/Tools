@@ -17,13 +17,18 @@ skill's own `ref/`; this file is only the cross-type rules.
 1. The four sister files (one NAME token)
 -----------------------------------------
 
+Paths below are the FLAT legacy shape; in a NESTED job (canonical for new
+jobs, hierarchy.md "Two job shapes") the same four files live one task deeper:
+scripts/<task>/config/<NAME>.yaml · runs/<task>/<NAME>.sh ·
+results/<task>/<NAME>/ · notebooks/<task>/<NAME>.ipynb.
+
 ```
-ALWAYS IN THE TASK-FOLDER
+ALWAYS IN THE JOB
 configs/<NAME>.yaml       📥 frozen input (_meta + params)
 runs/<NAME>.sh            ▶️  entry (wraps papermill + auto-logs)
 
-UNDER $OUTPUT_ROOT — the task-folder in self-serving mode, a declared store
-when a consumer owns the answers (ref/hierarchy.md § task-folder)
+UNDER $OUTPUT_ROOT — the job in self-serving mode, a declared store
+when a consumer owns the answers (ref/hierarchy.md § job)
 results/<NAME>/           📊 light artifacts + runtime.yaml + metrics.json
 notebooks/<NAME>.ipynb    📓 papermill executed-notebook record
 ```
@@ -32,14 +37,16 @@ The `.py` must READ its output directory and never build one:
 
 ```python
 results_dir = (Path(os.environ["RESULT_DIR"]) if "RESULT_DIR" in os.environ
-               else TASK_DIR / "results" / run_name)
+               else TASK_DIR / "results" / run_name)   # flat fallback; a nested
+               # job's bare-python debug path is results/<task>/<run> — but the
+               # ticket always exports RESULT_DIR, so only debugging sees this
 ```
 
 `runs/<NAME>.sh` exports `RESULT_DIR`; the fallback keeps a bare
 `python <task>.py` runnable for local debugging. A `.py` that writes
 `TASK_DIR / "results"` unconditionally cannot serve a store, so a second
 cohort would overwrite the first one's answers. See `hierarchy.md` §
-task-folder for how `OUTPUT_ROOT` resolves.
+job for how `OUTPUT_ROOT` resolves.
 
 **A sibling task's OUTPUT is store-keyed too.** When a config points at another
 task's result file, state that path relative to the store root, never to the
@@ -59,7 +66,7 @@ eng_path = Path(base) / cfg["input"]["engagement_join_from_task"]
 ```
 
 `<NAME>` is `run_`-prefixed, snake_case, `[a-z0-9_]+`, encodes the variant
-(seed / arch / data slice), unique within the task-folder.
+(seed / arch / data slice), unique within the job.
 
 
 2. The `_meta` contract (REQUIRED before any run)

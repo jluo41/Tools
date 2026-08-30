@@ -1,7 +1,7 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting task-folder specialist: scaffolds {NN}_<name>/ task-folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
-argument-hint: "[project_id] [group] [task-name]"
+description: "model-fitting job specialist: scaffolds {NN}_<name>/ jobs that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.2"
@@ -12,7 +12,7 @@ metadata:
 Skill: haipipe-task-for-fit
 =====================================
 
-Scaffolds a **model-training task-folder**.
+Scaffolds a **model-training job**.
 Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
@@ -31,9 +31,9 @@ What this scaffolds
 -------------------
 
 ```
-tasks/A{NN}_<group_name>/                    ← A-series group (model-run)
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+tasks/A{NN}_<block_name>/                    ← A-series group (model-run)
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── configs/
     │   └── 5_model_<name>.yaml              seeded from ref/config-seed.yaml
     ├── runs/
@@ -66,7 +66,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.
@@ -101,7 +101,7 @@ Quick pointers:
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

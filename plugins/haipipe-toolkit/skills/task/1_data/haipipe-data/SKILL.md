@@ -66,7 +66,7 @@ PARTITION_INDEX = ""    # "" = all; int = run one partition (1-based)
 NUM_WORKERS    = 1      # >1 = parallel (Stage 3 Case only)
 ```
 
-Recipe — create a task-folder instance:
+Recipe — create a job instance:
 
 ```
 1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/{NN}_{task_name}.py

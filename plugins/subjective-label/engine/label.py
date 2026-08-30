@@ -10,9 +10,9 @@ Two engines act as two independent annotators → their pairwise agreement is a
 reliability signal (NOT ground truth; see note-update.md).
 
 Usage:
-    python lib/label.py --project-dir <task> --version v01 --engine both
-    python lib/label.py --project-dir <task> --version v01 --labels HIGH,LOW,NONE
-    python lib/label.py --project-dir <task> --version v01 --input eval/anchor_set.jsonl --tag anchor
+    python engine/label.py --project-dir <task> --version v01 --engine both
+    python engine/label.py --project-dir <task> --version v01 --labels HIGH,LOW,NONE
+    python engine/label.py --project-dir <task> --version v01 --input eval/anchor_set.jsonl --tag anchor
 
 Output: <project>/eval/per_version/<tag>_<engine>_results.jsonl
 Config source: <project>/config.yaml

@@ -89,11 +89,11 @@ Inline-exec rules that bite task authors:
 
 ---
 
-Task-folder deltas for Databricks-native groups
+Job deltas for Databricks-native groups
 ================================================
 
 A task group that runs ON Databricks (e.g. A00_rawstore_<cohort>) keeps the
-standard task-folder layout (configs/ runs/ results/ notebooks/) and adds:
+standard job layout (configs/ runs/ results/ notebooks/) and adds:
 
   _databricks/        .ipynb copies of every stage + orchestrator, converted
                       from the .py sources — this is what the workspace

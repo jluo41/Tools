@@ -146,15 +146,18 @@ If a deploy fails because of a missing/malformed field here, the fix lives in th
 
 ---
 
-Task-folder lifecycle (00_develop → 01_package)
+Job lifecycle (00_develop → 01_package)
 -------------------------------------------------
 
-In the /haipipe-task convention, endpoint work lives in the project's endpoint task-group (default C-series):
+In the /haipipe-task convention, endpoint work lives in the project's endpoint block (default C-series):
 
 ```
 examples/<project>/tasks/C01_endpoint_*/
-├── 00_endpoint_set_fn_develop/         ← DEVELOP: build + test all Fns
-│   ├── a1_build_metafn.py              ← each builder is its own run
+├── 00_endpoint_set_fn_develop/         ← DEVELOP job: build + test all Fns
+│   │                                     (7 builders in one flat job = the legacy
+│   │                                      multi-pipeline layout; the 260829 canonical
+│   │                                      form is one scripts/<task>/ per builder)
+│   ├── a1_build_metafn.py              ← each builder is its own TASK
 │   ├── b1_build_trigfn.py
 │   ├── c1_build_postfn.py
 │   ├── d1_build_src2inputfn.py         ← roundtrip test with real data

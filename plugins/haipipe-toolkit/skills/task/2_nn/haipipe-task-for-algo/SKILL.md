@@ -1,7 +1,7 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev task-folder specialist: scaffolds {NN}_<name>/ task-folders in the algo-dev task-group (default X_algo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
-argument-hint: "[project_id] [group] [task-name]"
+description: "algo-dev job specialist: scaffolds {NN}_<name>/ jobs in the algo-dev block (default X_algo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.2"
@@ -12,7 +12,7 @@ metadata:
 Skill: haipipe-task-for-algo
 =================================
 
-Scaffolds an **algo-dev smoke-test task-folder**.
+Scaffolds an **algo-dev smoke-test job**.
 Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end.
 This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
 
@@ -74,7 +74,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.
@@ -98,7 +98,7 @@ next:      suggested next command (run the demo / /haipipe-nn-algo refine)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

@@ -1,7 +1,7 @@
 ---
 name: haipipe-task-for-data
-description: "data-pipeline task-folder specialist: scaffolds AND executes {NN}_<name>/ task-folders that run Stage 1-4 builders (Source/Record/Case/AIData) with multi-partition support. Called by /haipipe-task when task-type=data. Cross-references /haipipe-data for Fn authoring."
-argument-hint: "[project_id] [group] [task-name]"
+description: "data-pipeline job specialist: scaffolds AND executes {NN}_<name>/ jobs that run Stage 1-4 builders (Source/Record/Case/AIData) with multi-partition support. Called by /haipipe-task when task-type=data. Cross-references /haipipe-data for Fn authoring."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.3"
@@ -12,8 +12,8 @@ metadata:
 Skill: haipipe-task-for-data
 =================================
 
-Scaffolds AND executes **data-pipeline task-folders** — runnable examples that invoke Stage 1-4 builders.
-Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the task-folder keeps light pointers and a notebook of the run.
+Scaffolds AND executes **data-pipeline jobs** — runnable examples that invoke Stage 1-4 builders.
+Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the job keeps light pointers and a notebook of the run.
 
 **Two modes:**
 - **Scaffold** (new task): creates skeleton from notebook template
@@ -24,9 +24,9 @@ What this scaffolds
 -------------------
 
 ```
-tasks/{G}{NN}_<group_name>/                 ← group (letter is project-specific)
-└── {NN}_<task_name>/                       ← task-folder
-    ├── {NN}_<task_name>.py                 source (instantiation of haistepnb template)
+tasks/{G}{NN}_<block_name>/                 ← group (letter is project-specific)
+└── {NN}_<job_name>/                       ← job
+    ├── {NN}_<job_name>.py                 source (instantiation of haistepnb template)
     ├── configs/
     │   └── run_<task_name>.yaml            seeded from ref/config-seed.yaml
     ├── runs/
@@ -157,7 +157,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, stage, _meta block).
   3. Copy notebook template from `haistepnb/{N}_{stage}_nb.py`, set CONFIG default.
   4. Seed config from `ref/config-seed.yaml` (with partition fields for Stage 2+).
@@ -193,7 +193,7 @@ next:      suggested next command
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

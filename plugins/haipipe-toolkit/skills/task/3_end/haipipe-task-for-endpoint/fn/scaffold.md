@@ -1,18 +1,18 @@
-fn-scaffold: Scaffold an endpoint-packaging task-folder
+fn-scaffold: Scaffold an endpoint-packaging job
 ========================================================
 
 Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set (Stage 6) via `Endpoint_Pipeline`.
 Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme); the default ABC convention uses **C** for endpoint groups.
 
-Output: `tasks/C{NN}_<group>/{NN}_<task_name>/` (or the project's letter).
+Output: `tasks/C{NN}_<group>/{NN}_<job_name>/` (or the project's letter).
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
 - AUTO_MODE: infer group from cwd or return `status: blocked`.
-  Interactive: ASK task-group. Scaffold `C{NN}_<group_name>/` if needed
+  Interactive: ASK block. Scaffold `C{NN}_<block_name>/` if needed
   (or the project's endpoint letter).
 
 
@@ -36,7 +36,7 @@ Step 3 — Create skeleton
 
 ```
 C{NN}_<group>/
-└── {NN}_<task_name>/
+└── {NN}_<job_name>/
     ├── 1_<task_name>.py                exact copy of code/scripts/haistepnb/c_endpoint_nb.py
     ├── configs/
     │   └── run_<task_name>.yaml        from ref/config-seed.yaml
@@ -65,7 +65,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
-Set `TASK_NAME="{NN}_{task_name}"`.
+Set `TASK_NAME="{NN}_{job_name}"`.
 The body sources `.venv` + `env.sh` (Endpoint_Pipeline needs the haipipe import path + store env vars).
 
 

@@ -1,17 +1,17 @@
-fn-scaffold: Scaffold an evaluation task-folder
+fn-scaffold: Scaffold an evaluation job
 ================================================
 
 Score a trained ModelInstance on an AIData split; produce metrics under `results/<run>/`.
 Group letter default: **B** (evaluation).
 
-Output: `tasks/B{NN}_<group>/{NN}_<task_name>/`.
+Output: `tasks/B{NN}_<group>/{NN}_<job_name>/`.
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **B**; scaffold a new `B{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **B**; scaffold a new `B{NN}_<block_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -32,8 +32,8 @@ Step 3 — Create skeleton
 
 ```
 B{NN}_<group>/
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── configs/
     │   └── eval_<target>.yaml              from ref/config-seed.yaml
     ├── runs/
@@ -59,7 +59,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/eval_<target>.sh`.
-Set `TASK_NAME="{NN}_{task_name}"`.
+Set `TASK_NAME="{NN}_{job_name}"`.
 
 
 Step 6 — Cross-skill link
@@ -75,7 +75,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded evaluation task <NN>_<name> under B{NN}_<group>.
+summary:   Scaffolded evaluation job <NN>_<name> under B{NN}_<group>.
 artifacts: [paths created]
 next:      run the eval, then /haipipe-task-for-display
 ```
@@ -97,7 +97,7 @@ First-run gate
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     task-folder to produce a fresh `CODE_REVIEW.md`:
+     job to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:

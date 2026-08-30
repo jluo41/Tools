@@ -9,9 +9,9 @@ NOT frozen to tri-polar Cohen's κ. Ported from the per-task `compute_kappa.py`
   inter-annot : Krippendorff α (nominal for categorical, interval for ordinal)
 
 Usage:
-    python lib/kappa.py --project-dir <task> --version v04                 # reads config labels
-    python lib/kappa.py --project-dir <task> --version v04 --labels HIGH,LOW,NONE --type categorical
-    python lib/kappa.py --selftest                                         # metric sanity checks
+    python engine/kappa.py --project-dir <task> --version v04                 # reads config labels
+    python engine/kappa.py --project-dir <task> --version v04 --labels HIGH,LOW,NONE --type categorical
+    python engine/kappa.py --selftest                                         # metric sanity checks
 
 Reads:  <project>/eval/anchor_set.jsonl (gold) + eval/per_version/<version>_<engine>_results.jsonl
 Writes: <project>/eval/trajectory.jsonl (one row per version)

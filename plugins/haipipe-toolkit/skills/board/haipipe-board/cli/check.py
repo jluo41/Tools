@@ -55,6 +55,9 @@ from src.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
+MAX_PAGE_TITLE_WORDS = 6
+# `Q<group><n>-<slug>` or `S-<Family>-<unit>-<slug>`, as the heading writes it.
+PAGE_ID_RE = re.compile(r"Q[A-Za-z]*\d+[\w-]*|S-[\w-]+")
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
 # The generated Board site can link to live server routes. They do not resolve
 # as files beside an HTML page, so checker must recognize them rather than
@@ -378,8 +381,24 @@ def check_board(d, rep):
 def check_face(path, name, rep, links, page_ids, decision_only=False):
     text = path.read_text(encoding="utf-8")
 
-    if not re.search(r"^#\s+\S", text, re.M):
+    title_match = re.search(r"^#\s+(\S.*?)\s*$", text, re.M)
+    if not title_match:
         rep.add(ERROR, "missing-title", name, "no `# title` line")
+    else:
+        title = title_match.group(1)
+        # The heading is written `{id} · {title}` (src/page_board.py), and the
+        # page id is not part of the title, so drop a leading id-shaped token.
+        head, sep, tail = title.partition("\u00b7")
+        if sep and PAGE_ID_RE.fullmatch(head.strip()):
+            title = tail.strip()
+        # Visible words are semantic tokens, not punctuation-only separators.
+        # A hyphenated compound, slash-joined identifier, or acronym is one word.
+        words = re.findall(r"[A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*", title)
+        if len(words) > MAX_PAGE_TITLE_WORDS:
+            line = text[:title_match.start()].count("\n") + 1
+            rep.add(WARN, "title-too-long", f"{name}:{line}",
+                    f"title has {len(words)} visible words; target 3-5 and keep the whole "
+                    f"title at or below {MAX_PAGE_TITLE_WORDS} (JL 260827)")
     for canon in REQUIRED:
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
@@ -1829,6 +1848,20 @@ def check_page(d, rep):
     if not (site / "index.html").exists():
         rep.add(ERROR, "no-html", "board/index.html", "not built yet; run build.py")
         return
+
+    # A stale build is indistinguishable from link rot in this report: on 260829
+    # a 9-day-old render shipped 184 dead-href ERRORs that a rebuild took to 0,
+    # because the site still pointed at page-types deleted upstream. Say so
+    # first, so nobody debugs the sources for a finding the build owns.
+    built = (site / "index.html").stat().st_mtime
+    newer = [f for f in d.rglob("*.md")
+             if "/board/" not in f.as_posix() and f.stat().st_mtime > built]
+    if newer:
+        rep.add(WARN, "board-build-stale", "board/index.html",
+                f"{len(newer)} source .md newer than the render "
+                f"(e.g. {newer[0].relative_to(d).as_posix()}); run build.py before "
+                f"trusting dead-href or completeness findings")
+
     pages = sorted(site.glob("*.html")) + sorted(site.glob("*/*.html"))
 
     for html in pages:

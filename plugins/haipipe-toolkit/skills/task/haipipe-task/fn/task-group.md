@@ -1,9 +1,9 @@
-fn-task-group: Scaffold a New Task-Group
+fn-block: Scaffold a New Block
 ==========================================
 
-A task-group holds related task-folders that share context: one diagram narrative, one sbatch coordinator, one group letter.
+A block holds related jobs that share context: one diagram narrative, one sbatch coordinator, one group letter.
 
-Output: `examples/{PROJECT_ID}/tasks/{G}{NN}_{group_name}/`.
+Output: `examples/{PROJECT_ID}/tasks/bNN_{group_name}/` (b = the level letter; NN = next free index in pipeline order).
 
 
 Step 1 — Identify project (auto-cascade if missing)
@@ -41,10 +41,13 @@ Step 2 — Collect metadata
   2-digit index (NN)  next free index within letter (no gaps; start 01).
                       Exception: `X_algo/` has no NN (singleton per project).
 
-  snake_case name     descriptive name (e.g. pretraining_clm, data_wellreadi,
-                                            paper_figures, subject_views).
+  snake_case name     <noun>_<qualifier>, passing the STRANGER TEST (hierarchy.md
+                      "Naming"): a reader who never opened the folder reads WHAT
+                      THING and WHICH ONE off the name. e.g. physician_ground_truth,
+                      llm_recommendation_runs, paper_figures. ⛔ a shape word alone
+                      (data, analysis, pool, rank) — REFUSE and ask "what thing?".
 
-  Compose: `{G}{NN}_{group_name}` (e.g. `A01_pretraining_clm`,
+  Compose: `bNN_{group_name}` (e.g. `b01_physician_ground_truth`, `b02_llm_recommendation_runs`; the old letter form `A01_pretraining_clm` is legacy —
                                        `D01_data_wellreadi`,
                                        `C01_paper_figures`),
            or `X_algo` (no NN, no name suffix).
@@ -60,13 +63,13 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-tasks/{G}{NN}_{group_name}/
+tasks/bNN_{group_name}/
 ├── sbatch/
 │   └── env.sh                ← seed with project env vars
 └── (no README.md)
 ```
 
-If the group is **cohesive** (multiple related task-folders coming): also create `diagram/` and author via `/diagram-ascii`:
+If the group is **cohesive** (multiple related jobs coming): also create `diagram/` and author via `/diagram-ascii`:
 
 ```
 01-overview.txt    Group purpose / scope / how tasks relate
@@ -83,10 +86,10 @@ Then bundle:
 ```
 
 
-Step 4 — Optionally proceed to first task-folder
+Step 4 — Optionally proceed to first job
 -------------------------------------------------
 
-Seed the first task within this group via the orchestrator's task-folder scaffold: `Skill("haipipe-task", args="task-folder <type> ...")`
+Seed the first task within this group via the orchestrator's job scaffold: `Skill("haipipe-task", args="job <type> ...")`
 (SKILL.md Step 3a dispatches to the type specialist).
 
 

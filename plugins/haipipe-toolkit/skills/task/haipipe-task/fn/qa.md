@@ -19,16 +19,16 @@ This layer WRITES these files, so this layer is canonical for their shape.
 NAMING: `QA/<n>-<slug>.md`, where `n` is CREATION ORDER — `ls QA/` IS the index.
 A plain descriptive slug, never an identifier handed in by whoever asked.
 
-WHERE: `$OUTPUT_ROOT/QA/` — the task-folder in self-serving mode, the consumer's
+WHERE: `$OUTPUT_ROOT/QA/` — the job in self-serving mode, the consumer's
 store in consumer-serving mode, the same resolution `results/` uses and defined
-in `ref/hierarchy.md` § task-folder. A QA digest is an ANSWER, and an answer
+in `ref/hierarchy.md` § job. A QA digest is an ANSWER, and an answer
 belongs to the data it was computed on, not to the code that computed it.
 
 ⚠️ This is the gate's sharpest edge. Scan the WRONG bank and gate ① misses a
 `working` file, so two callers run the same work, or misses an `answered` one,
 so settled work is redone. When a store is in play, `--check-only`, the claim
 write and the Report completion must ALL address `$OUTPUT_ROOT/QA/`. Two
-cohorts sharing one task-folder have two separate banks and must never see
+cohorts sharing one job have two separate banks and must never see
 each other's.
 
 The discovery twin states every one of these rules IDENTICALLY — same field names, same state
@@ -40,7 +40,7 @@ Usage
 ------
 
 ```
-/haipipe-task qa "<question>" [<task-folder>]     answer it
+/haipipe-task qa "<question>" [<job>]     answer it
 /haipipe-task qa "<question>" --check-only        detect only. write nothing. run nothing.
 ```
 
@@ -52,11 +52,11 @@ Never act on it.
 Never launder it.
 Never refuse over it.
 
-**`<task-folder>`** — optional, e.g. `tasks/B01_evaluation_pretrain/B4_fit_scaling_law/`.
-Absent → scan every task-folder under the project's `tasks/`.
-A task-folder is ANY directory holding work: a `*.py`, `workflow/`, `results/`, `configs/` or `runs/`.
+**`<job>`** — optional, e.g. `tasks/B01_evaluation_pretrain/B4_fit_scaling_law/`.
+Absent → scan every job under the project's `tasks/`.
+A job is ANY directory holding work: a `*.py`, `workflow/`, `results/`, `configs/` or `runs/`.
 ⛔ NEVER filter by name.
-`{NN}_<name>` is the majority convention, but 31% of real task-folders do not match it (`B4_fit_scaling_law`, `C3-Visual-ForecastScaling`).
+`{NN}_<name>` is the majority convention, but 31% of real jobs do not match it (`B4_fit_scaling_law`, `C3-Visual-ForecastScaling`).
 A name filter goes silently blind to a third of the bank.
 
 **`--check-only`** — the consumer's MATCH step calls this.
@@ -87,7 +87,7 @@ The gate — ① ② ③, shallowest first
   ③ RUN IT      neither → run the lifecycle at the shallowest depth (below),
                 then complete the QA file at Report.                              agent
 
-  🚫 REFUSE     not this layer's question, or not this task-folder's
+  🚫 REFUSE     not this layer's question, or not this job's
                 → return the reason + the re-route. the CALLER re-routes.
 ```
 
@@ -119,7 +119,7 @@ How deep (③) — the depth IS the entry point into Plan → Build → Execute 
 ```
   depth 0  READ         results/ already hold it       → enter at REPORT. nothing runs.
   depth 1  NEW RUN      existing script, new config    → enter at EXECUTE
-                          + configs/<new>.yaml  + runs/<new>/
+                          + configs/<new>.yaml  + runs/<new>/  (nested job: scripts/<task>/config/<new>.yaml + runs/<task>/<new>.sh)
   depth 2  NEW SCRIPT   in scope, nothing computes it  → enter at BUILD
                           + <new>.py  + workflow/plan-script-<new>.yaml
   depth 3  NEW FOLDER   outside this folder's scope    → full lifecycle, sibling folder
@@ -128,11 +128,11 @@ How deep (③) — the depth IS the entry point into Plan → Build → Execute 
 **Depth 1** reuses the code and only adds a config and a run.
 Never edit an old run.
 
-**Depth 3** mints a new task-folder — NAME IT TO MATCH ITS SIBLINGS.
-Read the existing task-folders in the group and follow THEIR convention: `01_foo` where they number, `B7_foo` where they letter.
+**Depth 3** mints a new job — NAME IT TO MATCH ITS SIBLINGS.
+Read the existing jobs in the group and follow THEIR convention: `01_foo` where they number, `B7_foo` where they letter.
 Do not impose a scheme.
 
-**Scope test (2 vs 3)** — does the question fit THIS task-folder's `workflow/plan.yaml` IPO, same inputs and same process family?
+**Scope test (2 vs 3)** — does the question fit THIS job's `workflow/plan.yaml` IPO, same inputs and same process family?
 Yes → new script.
 No → new folder.
 
@@ -149,7 +149,7 @@ That is what tells the next caller someone is already on it.
 
 ```bash
 QA_WORKING_TTL_HOURS=24
-QA_FILE="$OUTPUT_ROOT/QA/<n>-<slug>.md"    # task-folder, or the declared store
+QA_FILE="$OUTPUT_ROOT/QA/<n>-<slug>.md"    # job, or the declared store
 mkdir -p "$(dirname "$QA_FILE")"
 
 if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF
@@ -198,7 +198,7 @@ What is frozen, what moves
 ---------------------------
 
 ```
-  ACCRETES (add-only)   QA files · configs/ · runs/ · scripts · task-folders
+  ACCRETES (add-only)   QA files · configs/ · runs/ · scripts · jobs
   FROZEN                past results/ · a QA file's BODY, once written
   MUTABLE               a QA file's `state:` line — the ONE mutable field
                         plan.yaml — this layer's own

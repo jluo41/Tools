@@ -8,8 +8,8 @@ Runs as an overlay — the generic audit runs first, then this adds Stata items.
 When to call
 ------------
 
-Automatically as part of the `/haipipe-task` lifecycle on any existing Stata task folder.
-Also callable standalone: `/haipipe-task-for-stata audit <task-folder-path>`
+Automatically as part of the `/haipipe-task` lifecycle on any existing Stata job folder.
+Also callable standalone: `/haipipe-task-for-stata audit <job-path>`
 
 
 Procedure

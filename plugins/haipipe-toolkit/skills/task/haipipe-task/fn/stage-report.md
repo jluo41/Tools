@@ -32,7 +32,7 @@ When to call
 ------------
 
 ```
-/haipipe-task report <task-folder-path>
+/haipipe-task report <job-path>
 ```
 
 

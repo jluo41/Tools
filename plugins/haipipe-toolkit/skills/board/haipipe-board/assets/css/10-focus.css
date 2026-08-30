@@ -150,6 +150,17 @@ body.split .q .ql{font-size:13px;margin:0 0 8px}
 .cbody{padding:5px 0 10px 17px}
 .cbody.prelude{padding-left:0}
 .cbody p{margin:0 0 8px;line-height:1.65}
+/* Markdown pipe tables in page content. Keep the table inside its own scroll
+   box so the Job Matrix can stay wide without widening the whole Board. */
+.mdtable{max-width:100%;overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line);
+ border-radius:var(--radius-surface);background:var(--bg)}
+.mdt{border-collapse:collapse;min-width:100%;font-size:12px;line-height:1.45}
+.mdt th,.mdt td{padding:7px 9px;border-bottom:1px solid var(--line);
+ border-right:1px solid var(--line);vertical-align:top;text-align:left}
+.mdt th:last-child,.mdt td:last-child{border-right:none}
+.mdt tr:last-child td{border-bottom:none}
+.mdt th{background:var(--card);font-weight:650;white-space:nowrap;color:var(--fg)}
+.mdt code{font-size:11px}
 
 /* 勾选清单：md 里写 - [ ] / - [x] */
 .ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65;
