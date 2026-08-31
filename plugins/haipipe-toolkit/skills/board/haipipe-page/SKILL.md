@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.47.0"
+  version: "0.47.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -74,7 +74,8 @@ A folder is created only when it is used. Values have a surface but no folder:
 each lives inside one probe card's `## Values` block and is cited as
 `PP<NN>.v<n>`. When a page's numbers come from code, ONE collection job
 (task-type `page`, contract `task/haipipe-task-for-page`) answers all its
-task-route cards and ranks first in the page's `task/` lane. The seven `outline/` files, their ids, labels and writers are
+task-route cards and ranks first among the page's `evidence/pagex/` links
+(the task lane merged there, JL 260831). The seven `outline/` files, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A phase loads those two refs, not the plugin
 skill (which owns the tab).

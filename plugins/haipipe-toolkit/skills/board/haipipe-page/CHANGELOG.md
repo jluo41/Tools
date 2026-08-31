@@ -1,5 +1,12 @@
 ## 0.43.0 — 2026-08-31
 
+## 0.47.1 · 2026-08-31
+
+Internal drift caught by the /skill-inspect --score review: the collection-job
+paragraph still ranked the job in the retired `task/` lane; it ranks among
+`evidence/pagex/` links now (the merge this same file's tree already stated).
+
+
 ## 0.47.0 · 2026-08-31
 
 The category page folder (JL's evening rulings, v3): evidence/ holds bibex ·

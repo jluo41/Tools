@@ -157,3 +157,19 @@ Every Board-attached session makes its attachment public at the end of each
 reply: Board, page-group queue, board/group/page focus, work mode, next action,
 and deep link. `status.py` derives a concise three-line block from Board files
 and never writes a shared status ledger.
+
+## Family status
+
+Run 260831 · regenerate: `/skill-inspect board --score` (0_utils/skill-inspect, SCORE mode)
+
+```text
+CONTRACT
+| haipipe-page | 0.47.1 | 23.8k/416 | ✓✓✓✓✓✓◐✓ | 7.5/8 · EXERCISED | ~178 pages, 10 real boards |
+knife 1  its own closing check `pagetypes.py --check exits 0` FAILS today
+         (7 drift + 3 registry-gap: collection·labeling·view live pages with
+         no law) · needed: owners or retirement for those keys, nothing in
+         this file · next hit: every closing-check read
+knife 2  ⑦ grep-able-checks is ◐: "each ## answers one reader question" is
+         judgment, not grep · needed: fold it into the reviewer's rubric row
+         and keep only mechanical checks in §✅
+```

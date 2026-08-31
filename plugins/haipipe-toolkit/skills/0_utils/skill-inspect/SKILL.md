@@ -1,32 +1,34 @@
 ---
 name: skill-inspect
 description: >-
-  Inspect one skill family (or one skill) and return its EXPECTED STRUCTURE
-  as an outline: the skills it holds, the folder tree its contracts declare,
-  and — against a target folder — what exists, what is missing, what is extra.
-  Read-only; the report is the deliverable. Sits in 0_utils beside
-  skill-set-status (scores contract QUALITY, picks what to rewrite) and
-  field-test (proves a rewrite RUNS cold); this one states WHAT IS and WHAT
-  WOULD BE created. Use before redesigning a family, after adding a skill, or
-  when asking "what folders does this skill set make?". Trigger: skill
-  inspect, inspect the skill set, expected structure, what folders to create,
-  family inventory, skill roster, /skill-inspect.
+  Inspect one skill family (or one skill), two modes. INVENTORY (default):
+  the skills it holds, the folder tree its contracts declare, and against a
+  target folder what exists, is missing, or is extra. SCORE (--score): the
+  five-class quality tables (DOOR, MACHINE, CONTRACT, LIBRARY, CRAFT), each
+  class on its own columns, static score beside dynamic field record, a row
+  with no field record provisional — absorbed from skill-set-status 260831.
+  Read-only; the report is the deliverable; field-test stays the sibling that
+  proves a rewrite RUNS cold. Trigger: skill inspect, inspect the skill set,
+  expected structure, family inventory, skillset status, family status,
+  score the contracts, contract audit, review this skill, /skill-inspect.
 argument-hint: "<family-folder | skill-name> [--target <folder to diff against>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /skill-inspect · what this family is, and what it would put on disk
 
-Three utilities, three questions, never merged: `skill-set-status` asks HOW
-GOOD each contract is (five classes, five column sets, provisional without a
-field record); `field-test` asks DOES a rewrite run in a cold context;
-this one asks WHAT IS HERE and WHAT WOULD APPEAR — the inventory, the
-declared tree, and the diff against a real folder. Load the other two by
-name when their question is the one being asked.
+Two modes, two questions, one skill (JL 260831 merged skill-set-status in):
+INVENTORY asks WHAT IS HERE and WHAT WOULD APPEAR — the four-section report
+below; SCORE asks HOW GOOD each member is — the five-class tables in
+`ref/score-classes.md` (classify by what a skill OWNS; static score beside
+dynamic field record; no field record ⇒ `(provisional)`; read every file in
+full, never score from memory; the result lands in the family's README under
+`Family status`, dated, with the regenerating command). `field-test` stays
+the sibling that proves a rewrite RUNS cold.
 
 ## ⚡ Brief
 
@@ -97,15 +99,25 @@ allowed to meet.
 - **Version + date come from frontmatter and CHANGELOG**, never from git
   blame; an instance count comes from one glob stated in the report.
 
+## 📏 SCORE mode · --score
+
+Load `ref/score-classes.md` and follow it whole: enumerate, classify into the
+five classes, read each SKILL.md in full this session, gather every mechanical
+fact by command (versions, routes, `pagetypes.py` inventory through the
+population law, instances from REAL boards only, gates fired from Log rows,
+sizes as `<SKILL.md chars>/<desc chars>`), emit the class tables plus the top
+two knife points, and stamp the result into the family README. A single-skill
+call scores that one row on its class's columns.
+
 ## 📂 Files
 
 ```text
 skill-inspect/
-├── SKILL.md        this method
-└── CHANGELOG.md    version history
+├── SKILL.md               this method
+├── ref/score-classes.md   the five classes, columns, size and population laws
+└── CHANGELOG.md           version history
 ```
 
 Owns no scripts yet; when the walk is mechanized it becomes one `cli/` script
-here, proven to fail first on a family with a known gap. Siblings:
-`0_utils/skill-set-status` · `0_utils/field-test` · the reply shape is
-`0_utils/claude-response-format`.
+here, proven to fail first on a family with a known gap. Sibling: `0_utils/field-test`; the reply shape is `0_utils/claude-response-format`.
+`skill-set-status` merged in 260831 and rests in `0_utils/_old/`.
