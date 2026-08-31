@@ -1,5 +1,14 @@
 ## 0.151.2 — 2026-08-31
 
+## 0.152.3 · 2026-08-31
+
+Third wall bug, same family (JAMA repro): a bullet carrying an evidence mark
+AND a 🎯 aim ref classified as the aim kind, dropping the evidence row —
+🎯 now annotates and never classifies (evidence marks win; aim only when
+alone). SA04 flipped owed 0 → owed 2; SM02/SM03 rows appeared. JAMA walls
+regenerated.
+
+
 ## 0.152.2 · 2026-08-31
 
 Two evidence-wall bugs (JAMAOpioidBoard's repro): ① the bullet walkers read

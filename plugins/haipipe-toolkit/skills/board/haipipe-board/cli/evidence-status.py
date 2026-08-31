@@ -75,9 +75,20 @@ def bullets(plan_text):
             body += " " + lines[j].strip(); j += 1
         i = j
         hit, hit_at = None, -1
+        aim_hit, aim_at = None, -1
         for emo, kind in lo._MARK.items():
             at = body.rfind(emo)
+            if at < 0:
+                continue
+            # 🎯 ANNOTATES a bullet; it never changes its evidence kind.
+            # A "📮 PP02   🎯 A5.1" bullet is a probe row (JAMA repro 260831:
+            # SA04 read owed 0 with both slots marked; SM03's 🖼+🎯 dropped).
+            if kind == "aim":
+                if at > aim_at: aim_hit, aim_at = (emo, kind), at
+                continue
             if at > hit_at: hit, hit_at = (emo, kind), at
+        if hit is None and aim_hit is not None:
+            hit, hit_at = aim_hit, aim_at
         if hit is None:
             yield f"C{c}.P{p}.B{b}", head, None, []
             continue
