@@ -1,5 +1,18 @@
 ## 0.43.0 — 2026-08-31
 
+## 0.47.0 · 2026-08-31
+
+The category page folder (JL's evening rulings, v3): evidence/ holds bibex ·
+probe · display · pagex · code · materials; delivery/ holds latex · word ·
+slide · render; runs/ is the one execution door (code anywhere in the folder,
+only a runs/ ticket calls it, simple-code law); meeting leaves the page
+(project/SPACE level, parsed into outline/); the task lane merges into pagex
+(a task folder IS a page folder); logging/ retired. Migration = per page,
+whole, with flat-name SYMLINK STUBS so unpatched engine paths keep resolving;
+piloted on QPf1-folder (bibex 200 via stub, 🧾 tab 200, roster scan silent).
+Engine de-symlinking is tracked debt, per file.
+
+
 ## 0.46.0 · 2026-08-31
 
 The unit symmetry (JL: "we should have the workflow and outline in both of

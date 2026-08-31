@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.46.0"
+  version: "0.47.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -43,15 +43,23 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ```text
 <page>/
 ├── <page>.md      Opening · Diagram · Content · Aims           THIS contract
-├── outline/       the plan (versioned, ticked) and six record files:
-│                  requirement · discussion · feedback · evidence · files · log
-│                                                              haipipe-plugin-outline
-├── pagex/         Probe's accepted-Page lane: files borrowed from other Pages
-├── probe/         Probe's Task/Discovery lane: cards, proof, and values
-├── bibex/         citation cards, source notes, the page's own .bib
-├── display/       zero or more independently accepted display units
-├── latex/ word/   generated projections, when requested
-└── …              every other lane on the plugin roster
+├── outline/       HUMAN process: the plan (versioned, ticked) and six record
+│                  files: requirement · discussion · feedback · evidence ·
+│                  files · log — parsed MEETINGS land here (JL 260831)
+├── workflow/      MACHINE process: one receipt per phase pass
+├── runs/          THE ONE DOOR for executing the unit's own code: tickets +
+│                  one dated record per run (the simple-code law)
+├── evidence/      what backs the page (category folder, JL 260831):
+│   ├── bibex/     citations · verified:
+│   ├── probe/     cards + values (PP<NN>.v<n>) · read:
+│   ├── display/   units, recipes inside · accepted:
+│   ├── pagex/     every link out: borrowed pages AND task units (the
+│   │              collection job first; the task lane merged here)
+│   ├── code/      scripts that MAKE evidence, called only via runs/
+│   └── materials/ dated captures
+├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
+├── chat/          the live conversation lane
+└── draw/          authored scenes
 ```
 
 **The unit symmetry (JL 260831)**: a task folder is a page folder with the

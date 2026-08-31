@@ -171,6 +171,7 @@ It falls back to the board root only when the group's pages disagree, and an emp
       The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] THIS page became the first CATEGORY folder pilot: bibex/probe/display moved under evidence/, latex/word/slide under delivery/, flat names kept as symlink stubs so every unpatched engine path still resolves (bibex saved view 200 via stub, 🧾 tab 200, roster scan silent). Roster gained evidence/ · delivery/ · runs/ rows; meeting leaves the page, task merges into pagex, logging retired. De-symlink debt: ~60 engine sites move to a lane resolver file by file, then the stubs go.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] a plugin IS a lane and a SKILL.md is EARNED BY LAW: the roster row is the record; retire/merge candidates tiered (value+folder now, latex+word+slide → one export later). A `code/` lane is agreed: the unit's own SIMPLE scripts with their run records INSIDE the code lane (runs folded into code, JL's call), `logging/` row retires into it; not yet minted.
 - 🔎 260816 · [REVISE-CC] third reviewer pass: §2 numbering, the MISQ path, and the bibex proof
       Six findings arrived, three of them already cured by the tree rewrite that landed in between, and the three live ones were all about evidence a second person cannot check.
