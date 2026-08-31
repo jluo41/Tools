@@ -1,3 +1,9 @@
+## 0.50.0 · 2026-08-31
+
+studio/ (JL: "this one is closer to the human"): the third category folder,
+holding chat/ and draw/ — the person's own room on the page, where they talk
+and sketch and the chat may redraw on their ask. Earned by nature, not count.
+
 ## 0.49.1 · 2026-08-31
 
 A unit may carry README.md, DERIVED only (JL): a generated projection of the

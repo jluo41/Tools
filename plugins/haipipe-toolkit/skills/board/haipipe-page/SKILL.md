@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.49.1"
+  version: "0.50.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -65,8 +65,10 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │   │              collection job first; the task lane merged here)
 │   └── materials/ dated captures
 ├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
-├── chat/          the live conversation lane
-└── draw/          authored scenes
+└── studio/        the HUMAN's room on the page (JL 260831): closest to
+    ├── chat/      the person · you talk here, sessions kept
+    └── draw/      you draw here, one scene per owner; the chat may
+                   redraw the scene's named elements on your ask
 ```
 
 **The unit symmetry (JL 260831)**: a task folder is a page folder with the

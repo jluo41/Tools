@@ -7,7 +7,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.1.7"
+  version: "0.1.8"
   last_updated: "2026-08-21"
 ---
 
@@ -66,12 +66,13 @@ This contract stays the base every one of them loads on top of; the board pages 
 
 ## 🗂 Category folders and the execution door (260831)
 
-A unit folder has TWO PARTS (JL 260831 v5). The UPPER, page part: two
+A unit folder has TWO PARTS (JL 260831 v5). The UPPER, page part: three
 CATEGORY folders that group lanes without changing any lane's grammar,
 writer or gate — `evidence/` (bibex · probe · display · pagex · materials —
-what the page CITES, each behind its human gate) and `delivery/` (latex ·
-word · slide · render — what leaves the page) — plus outline/, workflow/,
-chat/, draw/. The LOWER, code part: the unit root IS the code home, as a
+what the page CITES, each behind its human gate), `delivery/` (latex · word ·
+slide · render — what leaves the page) and `studio/` (chat · draw — the
+HUMAN's room: the person talks and sketches, and the chat may redraw on
+their ask) — plus outline/ and workflow/. The LOWER, code part: the unit root IS the code home, as a
 task folder already is — `scripts/` (any language, `config/` inside; a
 script may equally live inside an evidence lane) with `runs/` and
 `results/` REQUIRED wherever code exists. `runs/` is the ONE door: only a
