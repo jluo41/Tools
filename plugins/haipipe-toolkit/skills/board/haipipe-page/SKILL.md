@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.45.0"
+  version: "0.46.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -53,6 +53,14 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ├── latex/ word/   generated projections, when requested
 └── …              every other lane on the plugin roster
 ```
+
+**The unit symmetry (JL 260831)**: a task folder is a page folder with the
+execution family added, and BOTH carry the same two process lanes:
+`outline/` is the HUMAN half (the agreed plan a person ticks, the open
+threads, the log) and `workflow/` is the MACHINE half (on a page, one
+receipt per pass under `workflow/receipts/`; on a task, `plan.yaml` and
+`report.yaml`). A receipt was formerly folded under a log record; the log
+record stays, the receipt body lands in `workflow/`.
 
 A folder is created only when it is used. Values have a surface but no folder:
 each lives inside one probe card's `## Values` block and is cited as

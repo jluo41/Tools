@@ -8,7 +8,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, D<nn> thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.20.0"
+  version: "0.20.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -31,7 +31,10 @@ this file.
 ## 🗂 The folder · product beside process
 
 `<page>.md` is the PRODUCT: what the page asserts. `<page>/outline/` is the
-PROCESS: how it came to assert it. Seven kinds, one flat file each with the
+PROCESS: how it came to assert it. Since 260831 the folder is legal on any
+UNIT, task folders included (the unit symmetry, `haipipe-page` §📁): same
+kinds, same grammar; a task folder simply never owes the venue-only
+requirement file. Seven kinds, one flat file each with the
 stem; only the plan is many-per-page, by version.
 
 ```text

@@ -1,3 +1,11 @@
+
+## 0.11.0 · 2026-08-31
+
+The unit symmetry (JL): outline/ (human half: ticked prose plan, D<nn>
+threads, log — the page family's record shape) is legal in a task folder,
+beside workflow/ (machine half, unchanged). Pilots with the first
+haipipe-task-for-page collection job.
+
 haipipe-task — Changelog
 ========================
 

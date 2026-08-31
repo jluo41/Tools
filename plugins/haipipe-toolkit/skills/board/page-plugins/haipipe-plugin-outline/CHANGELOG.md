@@ -1,5 +1,11 @@
 ## 0.20.0 — 2026-08-31
 
+## 0.20.1 · 2026-08-31
+
+Scope: outline/ is legal on any unit folder, task folders included (the unit
+symmetry); same kinds and grammar, no venue requirement file owed there.
+
+
 Rewritten to one lane, "the folder and the tab": 846 → 194 lines, present
 tense. The grammars a writer or parser needs are now FILES a phase loads
 instead of paragraphs inside this skill:

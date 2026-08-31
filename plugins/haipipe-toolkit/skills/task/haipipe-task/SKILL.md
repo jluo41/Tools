@@ -204,6 +204,8 @@ So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ 
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
+**The unit symmetry (JL 260831)**: a task folder is a special page folder, and both carry the same two process lanes. `workflow/` is the MACHINE half (this folder, unchanged). `outline/` is the HUMAN half and is now legal in a task folder too: the prose plan a person ticks, the open `D<nn>` threads, and the log, in the page family's record shape (`haipipe-plugin-outline/ref/record-shape.md`). The board renders a task's `tNN_<task>.md` as a page already; `outline/` gives its human decisions the same home a page's have. First real instance: the page-serving collection job (`haipipe-task-for-page`).
+
 A task ends at Report: it produces `results/` and stops. 
 
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.

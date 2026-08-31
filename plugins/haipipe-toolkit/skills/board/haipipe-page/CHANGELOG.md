@@ -1,5 +1,16 @@
 ## 0.43.0 — 2026-08-31
 
+## 0.46.0 · 2026-08-31
+
+The unit symmetry (JL: "we should have the workflow and outline in both of
+them"): every unit folder, page or task, carries outline/ (human half) AND
+workflow/ (machine half). On a page, workflow/receipts/ takes one receipt per
+pass, written by the RUN controller; the log record keeps its one-line
+headline and points there. Roster row `workflow/` added; task side keeps its
+plan.yaml/report.yaml unchanged and gains outline/ with its first real
+collection job.
+
+
 ## 0.45.0 · 2026-08-31
 
 The Page Type registry (JL: "the page types might be a function in other
