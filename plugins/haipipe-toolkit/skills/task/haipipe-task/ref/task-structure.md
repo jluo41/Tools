@@ -92,12 +92,14 @@ valid, detected by tooling from the ticket's own path.
 
 NESTED (canonical):
 
-  scripts/        CODE. `tNN_*` children are TASKS, one script pipeline
-                  each, holding config/ + code (nothing generated); ANY other
-                  child is SHARED code — 0-libs/ (Stata), src/ or code/
-                  (Python) — holding job-wide libs + the defaults that carry
-                  the job's `store:`.
-  runs/           TICKETS, mirroring scripts/ task names: runs/<task>/<run>.sh
+  tNN_*/          TASKS, directly under the job (260830), one script pipeline
+                  each, holding code + config/ + runs/ + the page tNN_*.md
+                  (nothing generated).
+  src/            SHARED — job-wide libs plus the defaults that carry the
+                  job's `store:`. ONE name for every engine, Stata included.
+                  `0-libs/` is read but never written (hierarchy.md "The
+                  0-libs exemption"); `code/` is the SPACE's package, not this.
+  runs/           TICKETS, one runs/ inside each task folder: <task>/runs/<run>.sh
                   names a config and submits; carries NO parameters and never
                   repeats its own name (derive task + run from $0).
   results/        light summaries, two levels: results/<task>/<run>/
@@ -130,7 +132,7 @@ to nested rather than piling a second .py at root.
 JOBS DO NOT HAVE A README.md. The doc surface is block/diagram/ (cohesive
 blocks) or job/diagram/ (divergent jobs).
 
-Task-folder rules (scripts/tNN_{task_name}/):
+Task-folder rules (tNN_{task_name}/):
   - config/ is ALWAYS a folder, even holding one file; the STEM is the run
     name. Prompts are config: config/prompts/<x>.md beside the config that
     names it, resolved relative to the config file (JL 260830). A config is EXECUTED (or `include`d), not passed as a payload, so it
@@ -154,7 +156,7 @@ results/ rules:
   - LIGHT only: report.md, metrics.json, small PNGs, .csv, .tex. HEAVY
     (weights, checkpoints, large arrays) goes to _WorkSpace/; authority:
     authoring-conventions.md §3.
-  - path-paired with runs/: runs/<task>/<run>.sh <-> results/<task>/<run>/
+  - path-paired with runs/: <task>/runs/<run>.sh <-> results/<task>/<run>/
     (flat: runs/run_1m.sh <-> results/run_1m/).
   - where results/ ROOTS is resolved, never hardcoded: $OUTPUT_ROOT is the
     job in mode ①, <store>/<job path under tasks/> in mode ② — the `store:`
@@ -163,7 +165,7 @@ results/ rules:
 notebooks/ rules:
   - two files, both under notebooks/: the generated template
     notebooks/<task>/_source.ipynb, and the runtime record
-    notebooks/<task>/<run>.ipynb paired with runs/<task>/<run>.sh.
+    notebooks/<task>/<run>.ipynb paired with <task>/runs/<run>.sh.
     Source of truth is always the .py; both .ipynb are build artifacts.
     Conceptual model: ref/hierarchy.md "Two notebooks, two roles".
   - two build modes:
@@ -336,27 +338,32 @@ owns the whole engine contract, including its ticket template.
 
 ---
 
-Relationship: scripts/ <-> runs/ <-> results/ <-> notebooks/
-===========================================================
+Relationship: the task folder <-> results/ <-> notebooks/
+=========================================================
 
-  scripts/01_train_num/train_num.py ────> notebooks/01_train_num/_source.ipynb
-                                          (template, rebuilt by every ticket)
+  AUTHORED — all of it inside ONE self-contained task folder (260830):
 
-  scripts/01_train_num/config/run_1m.yaml ─┐
-  runs/01_train_num/run_1m.sh ─────────────┼──> notebooks/01_train_num/run_1m.ipynb
-                                           │    results/01_train_num/run_1m/
-  scripts/01_train_num/config/run_5m.yaml ─┐
-  runs/01_train_num/run_5m.sh ─────────────┼──> notebooks/01_train_num/run_5m.ipynb
-                                           │    results/01_train_num/run_5m/
-                                           │
-  sbatch/gpu0.sh ──────────────────────────┴──> calls runs/01_train_num/run_1m.sh, ...
-                                                (one sbatch coordinates one or several tickets)
+  t01_train_num/train_num.py ──────────────> notebooks/t01_train_num/_source.ipynb
+                                             (template, rebuilt by every ticket)
+
+  t01_train_num/config/r01_1m.yaml ─┐
+  t01_train_num/runs/r01_1m.sh ─────┼──────> notebooks/t01_train_num/r01_1m.ipynb
+                                    │        results/t01_train_num/r01_1m/
+  t01_train_num/config/r02_5m.yaml ─┐
+  t01_train_num/runs/r02_5m.sh ─────┼──────> notebooks/t01_train_num/r02_5m.ipynb
+                                    │        results/t01_train_num/r02_5m/
+                                    │
+  GENERATED — at JOB level, mirrored by <task>/<run>.
+
+  sbatch/run_job_dag.sh ────────────┴──────> spans TASKS: t01 then t02 then t03
+  t01_train_num/sbatch/run_task_sweep.sh ──> loops THIS task's tickets only
 
   - config/ holds the YAML for each run; CONFIG STEM == RUN NAME == TICKET STEM
-  - runs/ holds one ticket per config (atomic, parameterless)
-  - notebooks/ and results/ repeat the same <task>/<run> path
-  - one task = one .py pipeline, multiple configs, multiple runs; sbatch/
-    scripts orchestrate which tickets go on which GPU.
+  - runs/ sits BESIDE config/ in the task, one ticket per config (parameterless)
+  - notebooks/ and results/ stay at job level and repeat the <task>/<run> path
+  - one task = one .py pipeline, multiple configs, multiple runs
+  - a batcher that spans tasks is the job's; one that serves a single task is
+    the task's (hierarchy.md "WHICH sbatch, and where").
   - flat legacy jobs: drop the <task>/ segment everywhere above
     (the four-sister <NAME> token, authoring-conventions.md §1).
 

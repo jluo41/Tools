@@ -76,7 +76,7 @@ For each name in ALL_NAMES, check sisters exist.
 The "four sisters" vary by engine:
 
 **Python (flat):**   configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
-**Python (nested):** scripts/<task>/config/<run>.yaml + runs/<task>/<run>.sh + results/<task>/<run>/ + notebooks/<task>/<run>.ipynb
+**Python (nested):** <task>/config/<run>.yaml + <task>/runs/<run>.sh + results/<task>/<run>/ + notebooks/<task>/<run>.ipynb
 **Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
 
 ```

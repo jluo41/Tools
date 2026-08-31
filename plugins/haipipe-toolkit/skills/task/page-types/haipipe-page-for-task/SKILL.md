@@ -1,15 +1,15 @@
 ---
 name: haipipe-page-for-task
 description: >-
-  The VARIANT contract for a TASK Page: one page per job, and the
+  The VARIANT contract for a TASK Page: one page per task, and the
   technical report of what that folder found — carrying the READING of the
   result, which no file in the folder can hold. Every shown number names the
   run that produced it, and a rerun reopens the page. Use when results exist
   but nobody wrote what they mean. Trigger: task page, technical report,
   results reading, verdict, rerun reopens, page-type task.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-22"
+  version: "0.10.0"
+  last_updated: "2026-08-30"
   folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved
@@ -54,7 +54,16 @@ question. A discovery page that skips `Conclusion` is as unclosed as a task page
 
 **LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a job can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.
 
-**The kind this variant covers**: one page per JOB.
+**The kind this variant covers**: one page per TASK.
+
+⚠️ **REBOUND 260830 (JL), from JOB to TASK.** A job holds many tasks — Proj1's
+`j04_aidatastore` holds eight — and one page reading eight unrelated computations
+is a folder listing, not a reading. Since 260830 a task is SELF-CONTAINED and its
+page lives inside it as `tNN_<name>/tNN_<name>.md`, so the page and the thing it
+reads are one folder. Pages already written against a job stay valid and are read
+as covering that job's whole task set; new ones are written per task.
+
+The page's address IS the task's address: `b02j01t03`, read off the path.
 
 ```
 kind      subject                              closes when
@@ -529,8 +538,8 @@ CD01-kmeans-five-traits
 ```
 
 (The same card on a NESTED job carries the task segment throughout:
-`script scripts/01_clustering/clustering.py · config scripts/01_clustering/config/k5.yaml ·
-run runs/01_clustering/k5.sh · notebook notebooks/01_clustering/k5.ipynb`.)
+`script t01_clustering/clustering.py · config t01_clustering/config/r05_k5.yaml ·
+run t01_clustering/runs/r05_k5.sh · notebook notebooks/t01_clustering/r05_k5.ipynb`.)
 
 ⚠️ **A code card goes STALE the way a value card does.** When the script changes under a pinned commit, the `Method` division's claim is no longer backed, exactly as a rerun un-backs the `Conclusion` verdict. The two staleness rules are the same rule at two grains, and they are why a task page is re-openable by disk at all.
 
@@ -602,9 +611,9 @@ the page           the task's OWN standing reading · edited over rounds · on t
 **A page is a unit of work** (`QPs1` §7). A task page is the one variant whose companion folder ALREADY EXISTS: it declares `job:` in its head rather than generating a folder of its own.
 
 ```text
- 📥 INPUT   tasks/{G}{NN}_<block>/{NN}_<job>/     ✍️ authored elsewhere, by the task layer
-              code + configs + runs/               what ran (flat: *.py · configs/ · runs/;
-                                                   nested: scripts/<task>/ · runs/<task>/)
+ 📥 INPUT   tasks/bNN_<block>/jNN_<job>/<task>/   ✍️ authored elsewhere, by the task layer
+              code + config/ + runs/               what ran (flat: *.py · configs/ · runs/;
+                                                   nested 260830: <task>/config/ · <task>/runs/)
               results/<run>/ · notebooks/<run>/    what came out (nested: results/<task>/<run>/)
               plan.yaml · report.yaml              intent and record
               QA/<n>-<slug>.md                     digests written for outside callers

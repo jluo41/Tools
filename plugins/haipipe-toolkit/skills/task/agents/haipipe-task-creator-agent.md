@@ -96,7 +96,7 @@ Input: task spec (purpose, params, run NAME, type).
 1. Detect task type (if not explicit) — see haipipe-task SKILL.md Step 3a.
 2. Call the type specialist skill headless: `Skill("haipipe-task-for-<type>", "<spec>")`.
 3. Read `haipipe-task/ref/authoring-conventions.md` and `ref/intent-docstring-template.py`.
-4. Author the pipeline + config IN THE JOB'S SHAPE (hierarchy.md "Two job shapes"; every NEW job is NESTED): nested = scripts/<task>/<stem>.py + scripts/<task>/config/<RUN>.yaml + ticket runs/<task>/<RUN>.sh; flat legacy = <TASK>.py at root + configs/<RUN>.yaml + runs/<RUN>.sh. Never scaffold flat files into a nested job.
+4. Author the pipeline + config IN THE JOB'S SHAPE (hierarchy.md "Two job shapes"; every NEW job is NESTED): nested 260830 = `<task>/<stem>.py` + `<task>/config/<RUN>.yaml` + ticket `<task>/runs/<RUN>.sh` + the page `<task>/<task>.md`, all inside ONE self-contained task folder directly under the job, with shared material in `src/`; nested pre-260830 = the same under `scripts/<task>/` and `runs/<task>/`; flat legacy = `<TASK>.py` at root + `configs/<RUN>.yaml` + `runs/<RUN>.sh`. Never scaffold flat files into a nested job, and never split a new task across `scripts/` and `runs/`.
 
 ### Mode: fix
 

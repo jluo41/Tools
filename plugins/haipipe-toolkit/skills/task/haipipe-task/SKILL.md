@@ -11,8 +11,8 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-08-29"
+  version: "0.9.0"
+  last_updated: "2026-08-30"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,9 +27,15 @@ Build orchestrator organized around the **task hierarchy** (settled JL
 project        examples/Proj{...}/
   └── block    tasks/bNN_{name}/           one large topic; prefer FEW blocks
         └── job    jNN_{name}/              self-contained, submittable (= Databricks Job)
-              ├── scripts/tNN_<task>/       TASKS: one script pipeline each, with config/rNN_<stem>.yaml
-              ├── runs/<task>/rNN_<stem>.sh TICKETS: name a config, submit, no params
-              └── results/<task>/<run>/     a RUN is an execution, never a folder of its own
+              ├── tNN_<task>/              TASK = PAGE, self-contained (260830):
+              │     ├── tNN_<task>.md          the page a reader opens
+              │     ├── <stem>.py              the pipeline
+              │     ├── config/rNN_<stem>.yaml the run's identity
+              │     └── runs/rNN_<stem>.sh     TICKET: names the config beside it, no params
+              ├── src/                     shared by more than one task in this job
+              ├── sbatch/                  batcher that SPANS tasks (one for a single
+              │                            task goes in tNN_<task>/sbatch/ instead)
+              └── results/<task>/<run>/    a RUN is an execution, never a folder of its own
               ONE GRAMMAR at every level: <level letter b·j·t·r><NN>_<noun>_<qualifier>;
               the address is the prefixes joined, read off the path: b02j01t01r03
               (legacy FLAT job: .py at root + flat configs/ runs/ — one implicit task)
@@ -119,9 +125,9 @@ All four phases answer one question: **"is the implementation right?"**
 ```
 Plan (规)     creates   workflow/plan.yaml + workflow/plan-script-<name>.yaml (task + script IPO)
               agents    creator drafts → reviewer checks IPO compliance → ↺
-Build (建)    creates   scripts/<task>/{code + config/<run>.yaml} · runs/<task>/<run>.sh ·
+Build (建)    creates   <task>/{code + config/<run>.yaml} · <task>/runs/<run>.sh ·
                         CODE_REVIEW.md (Gate 1)   (flat legacy: .py at root, configs/ + runs/ flat)
-              agents    creator writes → reviewer Gate-1 review → ↺   · then human: bash runs/<task>/<run>.sh
+              agents    creator writes → reviewer Gate-1 review → ↺   · then human: bash <task>/runs/<run>.sh
 Execute (行)  generates results/<task>/<run>/{metrics.json, runtime.yaml, *.md, *.csv} · notebooks/<task>/<run>.ipynb
               agents    none — just `bash runs/<run>.sh` (human or autoExecute)
 Report (报)   creates   workflow/report.yaml + report-script-<name>.yaml · RUN_AUDIT.md (Gate 2)
@@ -141,7 +147,7 @@ Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is
 
 A job's mode is a property of what it is FOR, not of each execution, so it is
 settled when the job is created and persisted as the JOB's `store:` declaration
-(scripts/0-libs/config-defaults.yaml nested, configs/_defaults.yaml flat —
+(src/config-defaults.yaml nested, configs/_defaults.yaml flat —
 never per-run, JL 260829). Run time never asks again.
 
 Four branches. Only ONE of them prompts:

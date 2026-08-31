@@ -19,7 +19,7 @@ was a limit worth removing:
 The replacement grades the API itself, over 11 SHAPE x LABEL cells, under both
 weightings, with a PatientID-level split:
 
-    examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/
+    examples/Proj1-CGM-RawData/tasks/AY1_foodrec_v1/00_benchmark/
       python build_gold.py                      # freeze the corpus
       python run_bench.py --n 400 --tag <name>  # grade it
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     if args.bench:
         print("--bench is retired. Corpus-scale grading now lives at\n"
-              "  examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/\n"
+              "  examples/Proj1-CGM-RawData/tasks/AY1_foodrec_v1/00_benchmark/\n"
               "and grades the API rather than the retriever. Running L1 + L2 only.\n")
 
     fails = run_l1_contract() + run_l2_golden()

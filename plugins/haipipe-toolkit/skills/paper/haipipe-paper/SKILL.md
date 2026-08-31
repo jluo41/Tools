@@ -4,13 +4,12 @@ description: >-
   The one door for planning, writing, and revising a paper as a graph of Board
   Pages. Routes Ideation, Seed, Roadmap, Venue, Narrative, Section and Round
   Pages to their contracts and runs each through the page lifecycle.
-  Use for paper setup, status, drafting, compiling, or review rounds.
+  Use for paper setup, status, drafting, complete-paper assembly, compiling,
+  or review rounds.
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-28"
-  # First NUMBERED version, not the first version: this door shipped unversioned
-  # from 260620 through 125 commits, so it was the one family member no reader
-  # could date-check. Numbering starts here; git holds everything before it.
+  summary: "Adds the paper-level source-driven assembly contract; page-level Word export remains a separate plugin."
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -27,6 +26,7 @@ haipipe-paper
   → one Paper Page Type, when applicable
   → haipipe-page-workflow for RUN
   → the Page-local plugins actually required
+  → haipipe-paper-assemble, for complete-paper DOCX/PDF/supplement assembly
 ```
 
 ## 🧭 The six-phase journey (JL 260828)
@@ -180,7 +180,7 @@ Resolve the paper root and target Page before changing anything.
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-page-workflow` |
 | compile or export one Page | Page-local `latex/` or `word/` plugin |
-| assemble the paper | accepted Narrative/Sections plus their plugin outputs |
+| assemble the paper | `haipipe-paper-assemble` from the desk-room source and accepted bindings |
 | respond to reviewers | a Round Page plus affected Narrative/Sections |
 
 ### Paper verbs
@@ -294,21 +294,40 @@ rename touches tex `\input` paths, pagex symlinks, and compile scripts.
 
 ## 📦 Assembly and delivery
 
-Paper assembly reads accepted Page outputs; it does not silently mine raw Task
-or Discovery folders.
+Paper assembly is a source-driven projection, governed by
+`haipipe-paper-assemble`. It does not silently mine raw Task or Discovery
+folders, and it does not use a previous Word file as a template or input.
 
 ```text
-accepted Narrative + accepted Sections + accepted display units
-                              ↓
-        the desk room: sections/ · displays/ copies · room TeX
-                              ↓
-                     PDF · DOCX · Overleaf package
+Board/Page authority                  Desk-room source of record
+boundary · claims · evidence         master.tex · sections/*.tex
+acceptance · display bindings        displays/ · reference.bib
+             \                         /
+              accepted bindings + paper-build.toml
+                               ↓
+             shared assembly engine + venue profile
+                               ↓
+       main DOCX/PDF · supplement · snapshots · manifest · QA
 ```
 
-Paper does not maintain a second build engine. Page-local `latex/` and `word/`
-plugins build the accepted Page; the Paper assembly reads those accepted,
-versioned outputs and the display artifacts they bind. Generated prose and
-build artifacts are never a second authority.
+The Page-local `latex/` and `word/` plugins remain useful for reviewing one
+Section Page. They are not the complete-paper assembly input. The complete
+paper builder reads the active desk room, whose TeX wording is the source of
+record for the deliverable and whose files must stay inside that room.
+
+Every desk room that emits a complete Word document should declare a
+`paper-build.toml` (or an equivalent registered config) containing the source
+room, master, sections, displays, bibliography, output names, and venue
+profile. The reusable engine owns parsing, document events, rendering,
+manifests, and QA; the paper contributes configuration and only a narrowly
+scoped adapter for unusual constructs. See
+`haipipe-paper-assemble/SKILL.md` for the full contract.
+
+Assembly may run before G6. Such an output is a `DRAFT`; it becomes a
+`SUBMISSION-READY` candidate only when the Section CHECK bindings, source
+manifest, build QA, and human decision required by the workflow all hold.
+Generated DOCX/PDF/snapshots are derived artifacts and are overwritten by a
+rebuild; corrections must return to the source Section/config.
 
 ## 🚦 Submission-readiness gate (G6 · before submission)
 
@@ -375,7 +394,10 @@ Before reporting Paper work complete:
 - Every display has its own intake, artifacts, bindings, and acceptance state.
 - Every Round covers one feedback batch, routes every item exactly once, and
   names checked target-Page versions plus an approved response/build receipt.
-- The built PDF/DOCX is regenerated from the accepted Page versions.
+- The complete-paper PDF/DOCX is regenerated from the active desk-room source,
+  accepted Page bindings/versions, and declared `paper-build.toml` config.
+- The build manifest records the source/config/profile/engine versions and the
+  output QA result; no generated Word file is used as an input.
 - G6 submission-readiness is either closed or explicitly recorded as a DRAFT
   with named hard blockers and a human owner.
 - Static skill validation, repository checks, and a fresh-context skill test
@@ -387,6 +409,7 @@ Before reporting Paper work complete:
 paper/
 ├── haipipe-paper/          public door; one routing contract
 ├── haipipe-paper-workflow/ the seven-phase gate machine; owns transitions only
+├── haipipe-paper-assemble/  complete-paper DOCX/PDF/supplement build contract
 ├── page-types/             eight active Paper Page Type contracts
 ├── venue/                  the shared QBv desk bank (bank/), prose playbooks,
 │                           and the literature bank

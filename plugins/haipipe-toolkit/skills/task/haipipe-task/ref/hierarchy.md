@@ -10,9 +10,32 @@ LEVEL   FOLDER                                DATABRICKS      ONE-LINER
 ─────   ───────────────────────────────────   ─────────────   ─────────────────────────────
 BLOCK   tasks/bNN_{block_name}/               (none — free)   one large topic
 JOB     jNN_{job_name}/                       Job             self-contained, submittable
-TASK    scripts/tNN_{task_name}/              Task            one script pipeline
-RUN     config/rNN_{stem}.yaml                Run             one submission of one task
+TASK    jNN_{job_name}/tNN_{task_name}/       Task            one script pipeline = one PAGE
+RUN     tNN_{task_name}/config/rNN_{stem}.yaml Run            one submission of one task
 ```
+
+**The TASK is the PAGE (JL 260830).** A task folder is SELF-CONTAINED: its code, its
+`config/`, its `runs/` tickets and its page `tNN_{task_name}.md` sit together, directly
+under the job. It maps 1:1 onto a Board page, so the three document levels line up and
+`haipipe-page` and `haipipe-task` address the same folder:
+
+```
+BOARD   diagram/<NN>-<topic>-<YYMMDD>/   ←→   BLOCK  tasks/bNN_<topic>/  (+ board.md)
+  GROUP   1-QA-<slug>/                   ←→     JOB    jNN_<question_group>/
+    PAGE    QA1-<slug>/QA1-<slug>.md     ←→       TASK   tNN_<name>/tNN_<name>.md
+            (no counterpart)             ←→         RUN    rNN_<stem>  — an execution
+```
+
+The dividing line inside a job is **authored vs generated**: the task folder holds what a
+person wrote; the job folder holds what a machine produced (`results/`, `notebooks/`,
+`QA/`, `workflow/`). That is the same line mode ② already draws, which is why a
+consumer-serving job still moves whole folders to its store.
+
+⚠️ **Still open at 260830, do not read as settled**: (a) the Databricks column above, since
+a Databricks Task is a DAG node that takes clusters and params from its Job and is not
+self-contained; (b) "prefer FEW blocks" below, which pulls against a block being as
+independent as a board; (c) whether a job's name should read as a question group rather
+than as the store it fills; (d) the migration bill for the ~342 jobs still in the old shape.
 
 **One grammar at every level (JL 260829): `<level letter><NN>_<noun>_<qualifier>`.**
 The level letter (b · j · t · r) says WHICH LEVEL a name is, the two digits give
@@ -52,7 +75,8 @@ Level 2: Block
 
 ```
 tasks/bNN_{block_name}/              b01_physician_ground_truth  ·  b02_llm_recommendation_runs
-├── jNN_{job1}/        ← jobs, and NOTHING runnable beside them
+├── board.md           ← the block's head: title · state · owner · Opening · Pages
+├── jNN_{job1}/        ← jobs (= question groups), and NOTHING runnable beside them
 ├── jNN_{job2}/
 └── diagram/           ← docs only (01-overview, 02-tasks, 03-progress, 04-design + group.excalidraw)
 ```
@@ -104,19 +128,28 @@ git source, one set of job_clusters; tasks reference, never redefine.)
 
 ```
 jNN_{job_name}/
-├── sbatch/                     batch-submit THIS job's tickets (loops, locks, GPU assignment); never another job's
-├── scripts/                    CODE
-│   ├── 0-libs/                 shared inside this job (name it 0-libs/, src/ or code/ — any
-│   │                           non-tNN_ folder under scripts/ is shared code); job-wide
-│   │                           defaults + `store:` live here
-│   └── tNN_{task_name}/        ← TASKS (Level 4)
-│       ├── config/             ALWAYS a folder; rNN_{stem}.yaml — the NUMBER is the run's identity, the stem its description
-│       │   └── prompts/        PROMPTS ARE CONFIG (JL 260830): a prompt file sits beside the config that names it,
-│       │                       and code resolves `prompts/x.md` relative to the CONFIG file, never to the code
-│       └── <stem>.py           the pipeline (or run-pipeline.do + step-*.do in the Stata dialect)
-├── runs/                       TICKETS, carry NO params; mirrors scripts/ task names
-│   └── tNN_{task_name}/
-│       └── rNN_{stem}.sh       names a config, submits — nothing else
+│                               ┌─ AUTHORED: what a person wrote ────────────────
+├── sbatch/                     batch-submit tickets ACROSS tasks (the job's DAG); never another
+│                               job's, and never a sweep over ONE task — that one lives in the
+│                               task, as tNN_{task_name}/sbatch/ (see "sbatch", below)
+├── src/                        SHARED inside this job — code, defaults, prompts, anything more
+│                               than one task uses; job-wide defaults + `store:` live here.
+│                               ONE name for EVERY engine, Stata included (JL 260830):
+│                               a reader, a checker or an agent must not have to know
+│                               the engine before it can find the shared code. Not
+│                               `code/`, which the SPACE's own package owns. `0-libs/`
+│                               stays READABLE for the one tree that still uses it
+│                               (see "The 0-libs exemption"), and is never scaffolded.
+├── tNN_{task_name}/            ← TASKS (Level 4), directly under the job. AUTHORED side.
+│   ├── tNN_{task_name}.md      the PAGE: Opening · Diagram · Content · Aims · States · Files
+│   ├── <stem>.py               the pipeline (or run-pipeline.do + step-*.do in the Stata dialect)
+│   ├── config/                 ALWAYS a folder; rNN_{stem}.yaml — the NUMBER is the run's identity, the stem its description
+│   │   └── prompts/            PROMPTS ARE CONFIG (JL 260830): a prompt file sits beside the config that names it,
+│   │                           and code resolves `prompts/x.md` relative to the CONFIG file, never to the code
+│   └── runs/                   TICKETS, carry NO params
+│       ├── rNN_{stem}.sh       names the config beside it, submits — nothing else
+│       └── (a task-scoped batcher, if any, sits in tNN_{task_name}/sbatch/)
+│                               └─ GENERATED: what a machine produced ───────────
 ├── results/                    JOB level, two levels deep: results/<task>/<run>/
 ├── notebooks/                  papermill records, mirrored: notebooks/<task>/<run>.ipynb
 │                               (+ the generated template notebooks/<task>/_source.ipynb)
@@ -179,7 +212,7 @@ neither               OUTPUT_ROOT = the job folder → MODE ①
 ```
 
 **`store:` is a JOB property, declared ONCE — never per-run** (JL 260829).
-Nested shape: in `scripts/0-libs/` (config-defaults.yaml, or config-defaults.do
+Nested shape: in `src/` (config-defaults.yaml, or config-defaults.do
 in the Stata dialect). Flat shape: in the run's config, but one value across
 all of them. The moment two runs of one job land in two places,
 `ls results/*/*/` stops being the job's output inventory, which is the whole
@@ -228,19 +261,26 @@ NO README.md anywhere.
 Level 4: Task
 --------------
 
-A task is one script pipeline: `scripts/tNN_{task_name}/`, runnable alone but
-only inside its job, because it resolves the job's shared code (`../0-libs/`,
-`../src/`). Its task name is unique
+A task is one script pipeline: `tNN_{task_name}/`, runnable alone but
+only inside its job, because it resolves the job's shared code (`../src/`).
+Its task name is unique
 WITHIN the job, not globally (= Databricks task_key).
 
 ```
-scripts/
-├── 0-libs/                     SHARED code — call it 0-libs/ (Stata), src/ or code/ (Python);
+jNN_{job_name}/
+├── src/                        SHARED — whatever more than one task in this job uses;
 │                               the rule is: `tNN_*` = exactly one task, anything else = shared.
-└── tNN_{task_name}/
+└── tNN_{task_name}/            the task is SELF-CONTAINED and IS the page
+    ├── tNN_{task_name}.md      the PAGE, named for its own folder, as a Board page is
     ├── config/                 ALWAYS a folder, even holding one file, so no
     │   ├── r01_base.yaml       reader ever stats the path to learn the rule.
     │   └── r02_wide.yaml       rNN is the run's identity; the stem describes it.
+    ├── runs/                   the tickets, beside the configs they name
+    │   ├── r01_base.sh
+    │   └── r02_wide.sh
+    ├── sbatch/                 OPTIONAL: a batcher that loops over THIS task's
+    │                           tickets only (a sweep, a GPU partition). One that
+    │                           spans tasks belongs at job level instead.
     ├── <stem>.py               code beside its config: a config is EXECUTED
     └── <stem>.ipynb            (or `include`d, in Stata), not passed in as a
                                 payload, so it is debugged in the same session
@@ -249,7 +289,7 @@ scripts/
 
 Rules (JL 260829):
 
-- A TICKET CARRIES NO PARAMETERS. `runs/<task>/<run>.sh` names a config and
+- A TICKET CARRIES NO PARAMETERS. `<task>/runs/<run>.sh` names a config and
   submits; it defines nothing of its own and never repeats its own name —
   derive task and run from the ticket's path ($0), so a rename breaks nothing.
 - A VARIANT IS A CONFIG, NOT A NEW TICKET SCHEME. Two runs of one task differ
@@ -290,7 +330,7 @@ new segment (age, gender, site)  a new CONFIG          a new task
 new consumer (board, paper)      a new STORE key       anything else
 different columns AND outputs    a new TASK
 a different output contract      a new TASK (or a new JOB, if it also
-                                 stops sharing 0-libs and the store)
+                                 stops sharing src/ and the store)
 ```
 
 Name the task for what is computed, as a noun that passes the stranger
@@ -309,13 +349,15 @@ eleventh task once that pattern is visible.
 Every link in the shape is a folder name, so every link is checkable:
 
 ```
-# every task has tickets, every ticket has a task  (tNN_ only: src/, 0-libs/ are not tasks)
-comm -3 <(ls runs/) <(ls scripts/ | grep '^t[0-9][0-9]_')
+# every config has a ticket, every ticket has a config — now INSIDE one task folder,
+# so the two can no longer drift across parallel trees; run it per task:
+for t in t[0-9][0-9]_*/; do
+  comm -3 <(ls "$t/config" 2>/dev/null | grep -v '^_' | sed 's/\.[^.]*$//' | sort) \
+          <(ls "$t/runs"   2>/dev/null | sed 's/\.sh$//' | sort)
+done
 
-# every config has a ticket, every ticket has a config
-comm -3 <(find scripts -path "*/config/*" -type f \
-            | sed "s|^scripts/||; s|/config/|/|; s|\.[^./]*$||" | sort) \
-        <(find runs -type f | sed "s|^runs/||; s|\.[^./]*$||" | sort)
+# every task's output is filed under its own name  (tNN_ only: src/ is not a task)
+comm -3 <(ls -d t[0-9][0-9]_*/ | sed 's|/$||' | sort) <(ls results/ 2>/dev/null | sort)
 ```
 
 Both must print nothing (left column = config with no ticket, right = ticket
@@ -423,7 +465,7 @@ other           (none required)             results/<task>/<run>/
 
 (Flat legacy jobs: drop the `<task>/` segment.) The task TYPE decides the
 config's SKELETON (which keys it carries), never its FILENAME — the filename
-is always the run name (config/<run>.yaml pairing runs/<task>/<run>.sh).
+is always the run name (config/<run>.yaml pairing <task>/runs/<run>.sh).
 
 Running process — papermill, always
 ------------------------------------
@@ -438,7 +480,7 @@ folders in the hierarchy; **Run is a name**, not a folder.
 
   Project   examples/Proj{...}/                          (Level 1)
   Job       tasks/bNN_{block}/jNN_{job}/                (Levels 2-3)
-  Task      scripts/tNN_{task_name}/                     (Level 4; implicit in flat jobs)
+  Task      tNN_{task_name}/                     (Level 4; implicit in flat jobs)
   Run       rNN_{stem}                                   (e.g. "r03_fold00_opus"; flat legacy: "run_1m")
 
 ### RUNNAME — the spine of one execution
@@ -448,10 +490,10 @@ projections**. Pairing them by name is mandatory; tooling depends on it.
 
 ```
 NESTED                                 FLAT (legacy, task segment dropped)
-scripts/<task>/config/<run>.yaml  📥   configs/<run>.yaml       inputs
-runs/<task>/<run>.sh              ▶️    runs/<run>.sh            entry (ticket)
-results/<task>/<run>/             📊   results/<run>/           light outputs
-notebooks/<task>/<run>.ipynb      📓   notebooks/<run>.ipynb    execution record
+<task>/config/<run>.yaml          📥   configs/<run>.yaml       inputs      ┐ authored,
+<task>/runs/<run>.sh              ▶️    runs/<run>.sh            entry       ┘ in the task
+results/<task>/<run>/             📊   results/<run>/           light out   ┐ generated,
+notebooks/<task>/<run>.ipynb      📓   notebooks/<run>.ipynb    exec record ┘ at job level
 ```
 
 If you change the run name, you change all four. They are one entity in
@@ -482,7 +524,7 @@ preview-convert beside the .py while writing; that file is untracked scratch.)
    🧑 author
        │
        ▼ edits
-   🐍 scripts/<task>/<stem>.py        (notebook-cell source, # %% blocks)
+   🐍 <task>/<stem>.py        (notebook-cell source, # %% blocks)
        │
        ▼ convert (one-shot, auto by the ticket — but you can preview)
    📓 notebooks/<task>/_source.ipynb  (template, for visual review)
@@ -497,12 +539,12 @@ so the author can **read** the cell flow during review, not edit it.
 ### Execution flow (what a ticket does)
 
 ```
-▶️  runs/<task>/<run>.sh
+▶️  <task>/runs/<run>.sh
    │
    ▼ Step 1: convert .py → template .ipynb beside it
    ▼ Step 2: papermill inject parameters + execute
        papermill <template>.ipynb notebooks/<task>/<run>.ipynb \
-                 -p config scripts/<task>/config/<run>.yaml ...
+                 -p config <task>/config/<run>.yaml ...
    │
    ▼ outputs split by weight
        📊 light artifacts  →  results/<task>/<run>/{eval.json, model_path.txt}
@@ -525,10 +567,79 @@ Heavy artifacts in `results/` is a hard error — caught by `-inspect`.
 
 ### sbatch — exogenous to the task
 
-`sbatch/` coordinates, never computes, and lives in the JOB: it submits
-this job's DAG or GPU-partitions a sweep. There is no block-level sbatch —
-a batcher that spans jobs is proof those jobs are one job. It carries no
-parameters — tickets do not either; parameters live only in config/.
+`sbatch/` coordinates, never computes. It carries no parameters — tickets do
+not either; parameters live only in config/. There is no block-level sbatch: a
+batcher that spans jobs is proof those jobs are one job.
+
+**WHICH sbatch, and where (JL 260830).** Since a task is now self-contained, the
+same question the rest of the folder answers decides this one: does the batcher
+span tasks, or serve exactly one?
+
+```
+jNN_{job}/sbatch/              SPANS TASKS — submits the job's DAG, t01 then t02
+                               then t03; orders work no single task can order.
+jNN_{job}/tNN_{task}/sbatch/   SERVES ONE TASK — a sweep over that task's own
+                               tickets, a GPU partition of its configs. It sits
+                               beside the runs/ it loops over, so the task still
+                               moves, copies and reviews in one piece.
+```
+
+Test: if you deleted every other task in the job, would this batcher still make
+sense? Yes means it belongs in the task. A `sbatch/<task>/` folder at job level
+is the older mirrored spelling and stays readable, but a new task-scoped batcher
+scaffolds inside the task.
+
+### The `0-libs` exemption
+
+`0-libs/` was the pre-260830 name for the shared folder, and it survives in exactly
+one tree: `Project-Personality-OpioidRx` (Physician-SPACE), 12 job folders whose
+`.do` and `.ps1` files carry **868 references** to it. That project ships to the CMS
+secure server, so a rename there costs a full re-upload through the slow remote loop
+(`/remote-error`) and buys nothing that runs.
+
+So it is an EXEMPTION WITH A NUMBER, not a naming rule. It is specifically NOT
+"`0-libs/` is the Stata name": Stata scaffolds `src/` like every other engine, and
+that project keeps `0-libs/` because of what a rename would cost it, not because of
+what language it is written in. Tooling READS both; nothing WRITES `0-libs/`.
+
+**MANY .sh in one sbatch/ (JL 260830).** A batcher folder usually grows past one
+file, and the files are ALTERNATIVE ENTRY POINTS, not a sequence — a person picks
+one. So they are NOT numbered: numbering implies an order that does not exist and
+invites `01_` to be run before `02_` when they are two ways to do the same thing.
+
+```
+sbatch/
+├── run_job_dag.sh          the default: every task of this job, in order
+├── run_from_t03.sh         a partial DAG — resume, or re-do a tail
+└── run_job_dag.slurm.sh    an ENGINE VARIANT of a run_ script: <name>.<engine>.sh
+```
+
+**NO `env.sh` here (JL 260830).** The environment is the SPACE's, not the job's:
+`<SPACE>/env.sh` at the repo root, sourced by the TICKET
+(`source "$REPO_ROOT/env.sh"`), which is where it already happens. A per-job
+`env.sh` would be a second place for the same settings to disagree, and a
+batcher that sets environment is doing the ticket's job.
+
+Three rules, all checkable:
+
+```
+① every file in sbatch/ starts with `run_`      it is an entry point, or it is
+                                                 not a batcher — no env, no libs
+② an engine variant is <name>.<engine>.sh        slurm · local · databricks
+③ a job-level run_ script must reference at least TWO different tNN_ task
+  folders. One means it serves a single task, and it belongs in that task's
+  own sbatch/ instead — the rule that keeps the job-level folder from
+  silently becoming a dumping ground.
+```
+
+Check ③ mechanically, from the job folder:
+
+```
+for f in sbatch/run_*.sh; do
+  n=$(grep -oE 't[0-9][0-9]_[a-z0-9_]+' "$f" | sort -u | wc -l)
+  [ "$n" -ge 2 ] || echo "$f spans $n task(s) — move it into that task"
+done
+```
 
 ### Task-types decide
 

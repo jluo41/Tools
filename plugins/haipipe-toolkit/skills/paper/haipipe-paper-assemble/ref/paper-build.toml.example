@@ -1,0 +1,27 @@
+[paper]
+id = "Paper-<slug>"
+desk = "<desk><year>"
+source_format = "latex-room"
+venue_profile = "<venue-profile>"
+
+[source]
+room = "../1-<desk><year>"
+master = "<master>.tex"
+sections = "sections"
+displays = "displays"
+bibliography = "reference.bib"
+
+[outputs]
+main_docx = "<stem>-submission-draft.docx"
+supplement_docx = "<stem>-online-supplement-draft.docx"
+section_snapshots = "draft-sections"
+assets = "submission-assets"
+manifest = "build-manifest.json"
+qa_report = "build-qa.json"
+
+# Optional profile overrides belong here only when the venue profile declares
+# them configurable. They never hold manuscript prose or evidence.
+[profile]
+# main_text_word_limit = 4000
+# include_references = true
+# include_supplement = true

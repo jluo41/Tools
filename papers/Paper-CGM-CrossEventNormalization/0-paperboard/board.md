@@ -98,7 +98,7 @@ SD00-ideation.md
 - `../README.md` - project intake summary and source paths.
 - `_WorkSpace/0-RawDataStore/0-EventNorm/` - local event-normalization contracts,
   examples, corpora, and benchmark runs.
-- `examples/ProjA-CGM-Raw2AIData/diagram/01-DataBoard-260818/` - local DataBoard
+- `examples/Proj1-CGM-RawData/diagram/01-DataBoard-260818/` - local DataBoard
   and source analysis.
 
 ## Human decisions required later

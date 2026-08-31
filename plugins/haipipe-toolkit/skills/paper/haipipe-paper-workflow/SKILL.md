@@ -139,7 +139,8 @@ G5  Narrative → Section    the Narrative's §1 binds one bank page · every cl
                            names its unit page and budget
 
 G6  Section → assemble     every map row's unit page is CHECK-closed
-                           (✅ SETTLED) · assemble itself RUNS ANYTIME — a
+                           (✅ SETTLED) · `/haipipe-paper-assemble` itself
+                           RUNS ANYTIME from the active desk-room source — a
                            build made while G6 fails is watermarked DRAFT in
                            its receipt, one made while it holds is
                            SUBMISSION-READY · the gate informs, the person

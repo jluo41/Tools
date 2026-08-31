@@ -76,7 +76,7 @@ From the repository root:
 
 # Deterministic LLMRec contract validation; no provider call
 B=examples/Project-LLMRec-Physician/tasks/b02_llm_recommendation_runs
-.venv/bin/python $B/j03_B_open_recommendation/scripts/t05_transport_smoke_claude_codex/verify_llmrec_agent_sdk.py
+.venv/bin/python $B/j03_B_open_recommendation/t05_transport_smoke_claude_codex/verify_llmrec_agent_sdk.py
 
 # One model at one scale = three tickets in order, each auditing ITS OWN outputs into a receipt
 # (j02 refuses to start until j01's receipt for that exact run exists; no orchestration job since 260830)

@@ -61,6 +61,9 @@ paper/
 │   └── SKILL.md              one public Paper door and routing contract
 ├── haipipe-paper-workflow/
 │   └── SKILL.md              the six-phase gate machine; transitions only
+├── haipipe-paper-assemble/
+│   ├── SKILL.md              complete-paper source-driven DOCX/PDF contract
+│   └── ref/                   config example and assembly references
 ├── page-types/
 │   ├── haipipe-page-for-ideation/
 │   ├── haipipe-page-for-seed/
@@ -159,11 +162,22 @@ paper repo — the door's scaffold dropped its tasks/ line to match
 |---|---|
 | `haipipe-paper` | Paper routing, Page graph, assembly, delivery |
 | `haipipe-paper-workflow` | the six phases, their gates, phase receipts — never content |
+| `haipipe-paper-assemble` | source-driven complete-paper document build, config, manifest, and QA |
 | `haipipe-page` | Shared Page shape and CREATE/WORK ON verbs |
 | Paper Page Type | The persistent shape and closing rule of one paper artifact |
 | `haipipe-page-workflow` | OUTLINE through CHECK, receipts, stop rules |
 | Page plugins | probes, storage-less value joins, citations, displays, PageX, generated formats |
 | `haipipe-board` | rendering, serving, checking, and Board registration |
+
+## Complete-paper document build
+
+There are two different Word exports. `haipipe-plugin-word` renders one Page
+for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
+from the active desk-room master/sections/displays/bibliography. The latter is
+deterministic and source-driven: generated Word files and section snapshots
+are outputs only, never inputs. New papers should provide a small
+`paper-build.toml` and select a venue profile; they should not copy a large
+paper-specific `build_word.py`.
 
 ## Retired architecture policy
 

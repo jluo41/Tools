@@ -48,7 +48,7 @@ exist.
 - Local synced event-normalization artifacts:
   `_WorkSpace/0-RawDataStore/0-EventNorm/`.
 - Local synced DataBoard and source analysis:
-  `examples/ProjA-CGM-Raw2AIData/diagram/01-DataBoard-260818/`.
+  `examples/Proj1-CGM-RawData/diagram/01-DataBoard-260818/`.
 
 ## Next gate
 

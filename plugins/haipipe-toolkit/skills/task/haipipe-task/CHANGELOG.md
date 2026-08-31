@@ -3,6 +3,47 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.9.0] — 2026-08-30
+
+- **THE TASK IS THE PAGE, and it is self-contained** (JL: "I think under the job,
+  the task will be the page, so task is more like the page... the runs and configs
+  should within the task folder as well"). A task folder now sits DIRECTLY under
+  the job and holds its own code, `config/`, `runs/` and `tNN_<name>.md`; the
+  `scripts/` level is gone. The three document levels of a Board line up with the
+  three folder levels of a job: BOARD↔BLOCK, GROUP↔JOB, PAGE↔TASK, and RUN keeps
+  no counterpart because an execution is not a document.
+- **The dividing line inside a job is AUTHORED vs GENERATED.** The task folder
+  holds what a person wrote; the job holds what a machine produced (`results/`,
+  `notebooks/`, `QA/`, `workflow/`). This is the line mode ② already drew, which
+  is why a consumer-serving job still moves whole folders to its store.
+- **Shared job code is `src/`, one name for every engine** (JL: "you can change
+  the 0-libs to whatever, like code or src"). Not `code/`, which the SPACE's own
+  package owns. Deliberately NOT an engine rule: `0-libs/` survives only in
+  `Project-Personality-OpioidRx` (12 folders, 868 references, behind the CMS
+  remote loop), recorded in hierarchy.md as "The 0-libs exemption" — a migration
+  cost with a number, not a Stata convention. Tooling reads it; nothing writes it.
+- **`sbatch/` splits by the same question**: one that SPANS tasks stays at job
+  level, one that serves a single task moves into `tNN_<task>/sbatch/`. Many `.sh`
+  in one `sbatch/` are alternative ENTRY POINTS, so they are not numbered: every
+  file is `env.sh` or `run_*.sh`, an engine variant is `<name>.<engine>.sh`, and a
+  job-level `run_` script must reference at least two different `tNN_` folders.
+- **The shape detector changed and was a live bug.** `ref/run-sh-template.sh`
+  decided flat-vs-nested from the ticket's parent folder name being `runs`, which
+  the new shape also produces — every new ticket would have been read as flat and
+  written `results/<run>/` instead of `results/<task>/<run>/`. The grandparent now
+  breaks the tie (`t[0-9][0-9]_*` = a task folder), proven against all three
+  shapes before being trusted.
+- Swept across the family: `hierarchy.md` (level table, board↔block mapping,
+  Levels 2-4, both drift checks, RUNNAME projections, sbatch), `SKILL.md`,
+  `block-job-task-run.md`, `task-structure.md`, `authoring-conventions.md`,
+  `task-lifecycle.workflow.js`, `workflow-template.yaml`, `fn/audit.md`,
+  `fn/run.md`, `fn/qa.md`, and both task agents. STILL OPEN and marked as such in
+  `hierarchy.md`: the Databricks column, "prefer FEW blocks" against a block being
+  board-independent, whether a job name should read as a question group, and the
+  migration bill for the jobs still in the old shape.
+- Type specialists under `3_end/`, `4_individual/`, `8_stata/` and `9_agent/` are
+  NOT yet updated; they still scaffold the pre-260830 shape.
+
 ## [0.8.1] — 2026-08-30
 
 - **No orchestration-only job** (JL, the j05 ruling: "I don't understand this

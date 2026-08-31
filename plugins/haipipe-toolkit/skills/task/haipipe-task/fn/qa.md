@@ -119,7 +119,7 @@ How deep (③) — the depth IS the entry point into Plan → Build → Execute 
 ```
   depth 0  READ         results/ already hold it       → enter at REPORT. nothing runs.
   depth 1  NEW RUN      existing script, new config    → enter at EXECUTE
-                          + configs/<new>.yaml  + runs/<new>/  (nested job: scripts/<task>/config/<new>.yaml + runs/<task>/<new>.sh)
+                          + configs/<new>.yaml  + <task>/runs/  (nested job: <task>/config/<new>.yaml + <task>/runs/<new>.sh)
   depth 2  NEW SCRIPT   in scope, nothing computes it  → enter at BUILD
                           + <new>.py  + workflow/plan-script-<new>.yaml
   depth 3  NEW FOLDER   outside this folder's scope    → full lifecycle, sibling folder

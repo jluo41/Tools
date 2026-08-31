@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Template for a TICKET: runs/<task>/<run>.sh (nested job) or runs/<run>.sh
+# Template for a TICKET: <task>/runs/<run>.sh (nested job) or runs/<run>.sh
 # (flat legacy job). Shape is auto-detected from this script's own path.
 # =============================================================================
 # Each run.sh is a thin wrapper that:
@@ -26,7 +26,7 @@
 set -uo pipefail
 
 # ─── Manual config: edit for the task ──────────────────────────────────────
-TASK_NAME="01_pretrain_baseline"          # the .py stem: scripts/<task>/<stem>.py (nested) or <stem>.py at job root (flat)
+TASK_NAME="01_pretrain_baseline"          # the .py stem: <task>/<stem>.py (nested) or <stem>.py at job root (flat)
 
 # ─── 1. Resolve identity from $0 (a ticket never repeats its own name) ─────
 # Canonicalize FIRST: a symlinked ticket must resolve shape + job from its
@@ -35,20 +35,33 @@ TASK_NAME="01_pretrain_baseline"          # the .py stem: scripts/<task>/<stem>.
 TICKET="$(realpath "$0" 2>/dev/null || echo "$0")"
 RUN_NAME="$(basename "$TICKET" .sh)"                       # e.g. wide, run_1m
 _TICKET_PARENT="$(cd "$(dirname "$TICKET")" && pwd)"
-if [ "$(basename "$_TICKET_PARENT")" = "runs" ]; then
-  TASK_SEG=""                                              # FLAT legacy: runs/<run>.sh
-  TASK_DIR="$(cd "$_TICKET_PARENT/.." && pwd)"             # the job folder
-else
-  TASK_SEG="$(basename "$_TICKET_PARENT")"                 # NESTED: runs/<task>/<run>.sh
-  TASK_DIR="$(cd "$_TICKET_PARENT/../.." && pwd)"          # the job folder
-fi
+_TICKET_GRAND="$(basename "$(dirname "$_TICKET_PARENT")")"
+# THREE shapes now live side by side, and two of them put the ticket in a dir
+# named `runs`, so the parent's name ALONE no longer decides (JL 260830). The
+# grandparent breaks the tie: a task folder is `tNN_*`, a job folder is not.
+case "$(basename "$_TICKET_PARENT")" in
+  runs)
+    case "$_TICKET_GRAND" in
+      t[0-9][0-9]_*)
+        TASK_SEG="$_TICKET_GRAND"                          # NESTED: <task>/runs/<run>.sh
+        TASK_DIR="$(cd "$_TICKET_PARENT/../.." && pwd)" ;;
+      *)
+        TASK_SEG=""                                        # FLAT legacy: runs/<run>.sh
+        TASK_DIR="$(cd "$_TICKET_PARENT/.." && pwd)" ;;
+    esac ;;
+  *)
+    TASK_SEG="$(basename "$_TICKET_PARENT")"               # NESTED pre-260830: <task>/runs/<run>.sh
+    TASK_DIR="$(cd "$_TICKET_PARENT/../.." && pwd)" ;;
+esac
 # TASK_DIR is the JOB folder (name kept: the .py's TASK_DIR contract predates
 # the 260829 rename). TASK_SEG is the task segment, empty in flat jobs.
 REPO_ROOT="$(git -C "$TASK_DIR" rev-parse --show-toplevel)"
 STARTED="$(date -Iseconds)"                                # 2026-05-24T14:30:01-04:00
 
-if [ -n "$TASK_SEG" ]; then
-  CONFIG="scripts/${TASK_SEG}/config/${RUN_NAME}.yaml"     # nested: config lives IN the task
+if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
+  CONFIG="${TASK_SEG}/config/${RUN_NAME}.yaml"             # nested: config lives IN the task
+elif [ -n "$TASK_SEG" ]; then
+  CONFIG="scripts/${TASK_SEG}/config/${RUN_NAME}.yaml"     # nested pre-260830
 else
   CONFIG="configs/${RUN_NAME}.yaml"                        # flat legacy
 fi
@@ -67,10 +80,11 @@ fi
 # The task layer is told a PATH, never a consumer identity: a dispatching probe
 # supplies the store, and the executor still cannot learn whose claim it serves.
 # `store:` is a JOB property (JL 260829): declared once in the job's defaults
-# (scripts/0-libs/config-defaults.yaml nested, configs/_defaults.yaml flat);
+# (src/config-defaults.yaml nested, configs/_defaults.yaml flat);
 # a run config carrying its own is legacy and still honored, run-first.
 STORE="${RESULT_STORE:-$(sed -n 's/^store:[[:space:]]*//p' "$TASK_DIR/$CONFIG" \
-  "$TASK_DIR/scripts/0-libs/config-defaults.yaml" "$TASK_DIR/configs/_defaults.yaml" \
+  "$TASK_DIR/src/config-defaults.yaml" \
+  "$TASK_DIR/configs/_defaults.yaml" \
   2>/dev/null | head -1)}"
 if [ -n "$STORE" ]; then
   case "$STORE" in /*) : ;; *) STORE="$REPO_ROOT/$STORE" ;; esac   # repo-relative allowed

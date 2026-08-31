@@ -19,7 +19,7 @@ skill's own `ref/`; this file is only the cross-type rules.
 
 Paths below are the FLAT legacy shape; in a NESTED job (canonical for new
 jobs, hierarchy.md "Two job shapes") the same four files live one task deeper:
-scripts/<task>/config/<NAME>.yaml · runs/<task>/<NAME>.sh ·
+<task>/config/<NAME>.yaml · <task>/runs/<NAME>.sh ·
 results/<task>/<NAME>/ · notebooks/<task>/<NAME>.ipynb.
 
 ```

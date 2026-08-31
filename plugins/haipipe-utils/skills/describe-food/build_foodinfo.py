@@ -48,7 +48,7 @@ from xinfo import CohortStats, copy_api_examples, link_reference, write  # noqa:
 # parent with every raw cohort dump.
 DEST = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo"
 EXTERNAL = ROOT / "_WorkSpace/ExternalStore"
-BENCH = ROOT / "examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark"
+BENCH = ROOT / "examples/Proj1-CGM-RawData/tasks/AY1_foodrec_v1/00_benchmark"
 
 ORIGIN = {
     "CGMacros": "study protocol: meal photos + laboratory macros",
@@ -175,7 +175,7 @@ def main():
             "one cohort that cannot grade it.", "",
             "The frozen corpus and the current baseline are in `2-corpus/`; the",
             "benchmark that produces them stays a task, at",
-            "`examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/`.",
+            "`examples/Proj1-CGM-RawData/tasks/AY1_foodrec_v1/00_benchmark/`.",
         ])
     print(f"\nwrote {rep['dest']}  ·  {rep['cohorts']} cohorts  ·  "
           f"{n_ex} api examples  ·  conforming: {not rep['problems']}")

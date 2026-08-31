@@ -156,7 +156,8 @@ examples/<project>/tasks/C01_endpoint_*/
 ├── 00_endpoint_set_fn_develop/         ← DEVELOP job: build + test all Fns
 │   │                                     (7 builders in one flat job = the legacy
 │   │                                      multi-pipeline layout; the 260829 canonical
-│   │                                      form is one scripts/<task>/ per builder)
+│   │                                      form is one tNN_<task>/ per builder, directly
+│   │                                      under the job since 260830)
 │   ├── a1_build_metafn.py              ← each builder is its own TASK
 │   ├── b1_build_trigfn.py
 │   ├── c1_build_postfn.py

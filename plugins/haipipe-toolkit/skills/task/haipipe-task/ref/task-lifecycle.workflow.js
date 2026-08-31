@@ -148,12 +148,13 @@ phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
-  // Two job shapes (hierarchy.md "Two job shapes"): NESTED — scripts/<task>/config/<run>.yaml,
-// runs/<task>/<run>.sh, results/<task>/<run>/, notebooks/<task>/<run>.ipynb, shared 0-libs/;
+  // Two job shapes (hierarchy.md "Two job shapes"): NESTED — <task>/config/<run>.yaml,
+// <task>/runs/<run>.sh, results/<task>/<run>/, notebooks/<task>/<run>.ipynb, shared src/;
 // FLAT legacy — configs/<run>.yaml + runs/<run>.sh at job root. Detect from the folder
-// (a scripts/ dir with {NN}_* children = nested) and verify the MATCHING structure.
+// (a tNN_* child dir at job root = nested 260830; a scripts/ dir with tNN_* children =
+// nested pre-260830; neither = flat) and verify the MATCHING structure.
 const shapeRule =
-  `\n\nJOB SHAPE: jobs are NESTED (scripts/<task>/config/<run>.yaml · runs/<task>/<run>.sh · ` +
+  `\n\nJOB SHAPE: jobs are NESTED (<task>/config/<run>.yaml · <task>/runs/<run>.sh · ` +
   `results/<task>/<run>/ · notebooks/<task>/<run>.ipynb) or FLAT legacy (configs/<run>.yaml · ` +
   `runs/<run>.sh at job root). Detect the shape from the folder (scripts/ with {NN}_* children ` +
   `= nested) and verify/create files in THAT shape — never "fix" a nested job flat. ` +
@@ -235,13 +236,13 @@ let runResult = null
 let executeReview = null
 
 if (!runExecute) {
-  log('Execute: skipped — run manually: bash runs/<RUN>.sh (nested: runs/<task>/<RUN>.sh)')
+  log('Execute: skipped — run manually: bash runs/<RUN>.sh (nested: <task>/runs/<RUN>.sh)')
   runResult = { status: 'skipped', note: 'run manually or set autoExecute=true' }
 } else {
   phase('Execute')
   runResult = await agent(
     `Stage: EXECUTE. Task folder: ${folder}.\n` +
-    `Run the job's ticket (runs/<RUN>.sh, or runs/<task>/<RUN>.sh in a nested job). Report status. Do NOT modify code.` + shapeRule,
+    `Run the job's ticket (runs/<RUN>.sh, or <task>/runs/<RUN>.sh in a nested job). Report status. Do NOT modify code.` + shapeRule,
     { label: 'execute:run', phase: 'Execute', schema: RUN_RESULT }
   )
 

@@ -1,3 +1,20 @@
+## 0.10.0 · 2026-08-30 · the page rebinds from the JOB to the TASK
+
+JL settled the task-layer hierarchy the same day: a task is now SELF-CONTAINED and
+its page lives inside it. One sentence in this contract carried the old binding.
+
+- **"one page per JOB" → "one page per TASK".** A job holds many tasks — Proj1's
+  `j04_aidatastore` holds eight — and one page reading eight unrelated
+  computations is a folder listing, not a reading. The page now lives at
+  `tNN_<name>/tNN_<name>.md`, so the page and the thing it reads are one folder,
+  and the page's address IS the task's: `b02j01t03`, read off the path.
+- **`job:` → `task:` in the template**, with `job:` and `task-folder:` kept as
+  readable aliases. A page still carrying `job:` is read as covering that job's
+  whole task set; nothing on disk breaks.
+- Run-token paths follow the task into its folder: `<task>/config/<run>.yaml` and
+  `<task>/runs/<run>.sh`, with `results/` and `notebooks/` staying at job level
+  because they are generated.
+
 ## 0.9.0 · 2026-08-22 · `Introduction` enters the FLAT shape, `Landscape` enters the set, and the ARC leaves this contract
 
 Three rulings by JL in one session, and they split cleanly: two grow the WORD SET,

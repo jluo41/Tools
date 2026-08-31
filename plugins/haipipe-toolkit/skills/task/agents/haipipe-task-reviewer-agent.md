@@ -81,7 +81,7 @@ runs/*.sh exists     → Python dialect (may also have .ps1)
 ```
 [ ] IPO completeness: input, process, output sections all present
 [ ] input paths resolve to real files or _WorkSpace/ directories
-[ ] config references point to existing run configs (configs/<name>.yaml flat · scripts/<task>/config/<name>.yaml nested)
+[ ] config references point to existing run configs (configs/<name>.yaml flat · <task>/config/<name>.yaml nested)
 [ ] no duplicate of an existing task in the same block
 [ ] _meta block (purpose/input/output) is consistent with IPO
 [ ] output names don't collide with existing results/
@@ -106,16 +106,19 @@ Verdict: `pass` | `revise` (with specific feedback for creator)
 
 ### Python dialect flow
 
-> **JOB SHAPE (260829):** a job is NESTED (scripts/<task>/config/<run>.yaml ·
-> runs/<task>/<run>.sh · results/<task>/<run>/ · notebooks/<task>/<run>.ipynb,
-> shared scripts/0-libs/) or FLAT legacy (configs/<run>.yaml · runs/<run>.sh at
-> job root). Detect first — a scripts/ dir with {NN}_* children = nested — and
-> read/write every per-run path in THAT shape. Never audit a nested job with
+> **JOB SHAPE (260830):** a job is NESTED (`<task>/config/<run>.yaml` ·
+> `<task>/runs/<run>.sh` · `results/<task>/<run>/` · `notebooks/<task>/<run>.ipynb`,
+> shared `src/`) or FLAT legacy (configs/<run>.yaml · runs/<run>.sh at job root).
+> DETECT FIRST, in this order:
+>   a `tNN_*` child dir at JOB ROOT            → nested, 260830 shape
+>   a `scripts/` dir with `tNN_*` children     → nested, pre-260830 shape
+>   neither                                    → flat legacy
+> then read/write every per-run path in THAT shape. Never audit a nested job with
 > flat globs: they match nothing at the root and report a working job as empty.
 > Authority: haipipe-task/ref/hierarchy.md "Two job shapes".
 
-1. Read the pipeline `.py` Intent docstring — `<TASK>.py` at job root (flat) or `scripts/<task>/<stem>.py` (nested)
-2. Read the run config `_meta:` block — `configs/<RUN>.yaml` (flat) or `scripts/<task>/config/<RUN>.yaml` (nested)
+1. Read the pipeline `.py` Intent docstring — `<TASK>.py` at job root (flat) or `<task>/<stem>.py` (nested)
+2. Read the run config `_meta:` block — `configs/<RUN>.yaml` (flat) or `<task>/config/<RUN>.yaml` (nested)
 3. Read imported modules if local
 4. Compare intent vs code cell-by-cell
 5. Fresh-agent review (independence from creator provided by clean context):

@@ -32,7 +32,7 @@ If cwd is not a job, ASK.
 
 Detect the job SHAPE (hierarchy.md "Two job shapes"): a scripts/ dir with
 {NN}_* children = NESTED, else FLAT legacy. In a nested job also resolve
-TASK_SEG — which scripts/<task>/ this run belongs to (cwd inside one wins;
+TASK_SEG — which <task>/ this run belongs to (cwd inside one wins;
 one task total = that one; else ASK). Never scaffold a flat ticket into a
 nested job: the template's own auto-detect would then resolve the wrong
 config and script paths.
@@ -70,7 +70,8 @@ Step 3 — Create files
 ----------------------
 
 ```
-config — configs/<NAME>.yaml (flat) · scripts/<TASK_SEG>/config/<NAME>.yaml (nested)
+config — configs/<NAME>.yaml (flat) · <TASK_SEG>/config/<NAME>.yaml (nested 260830)
+         · scripts/<TASK_SEG>/config/<NAME>.yaml (nested pre-260830)
   Copy from ../ref/config-meta-template.yaml.
   Fill in _meta: block with values from Step 2.
   Leave params section as a comment placeholder for user to fill.

@@ -19,7 +19,7 @@ task_folder: <PATH_TO_JOB>              # relative to project root. (The Workflo
                                         # still spelled task_folder.)
                                         # NESTED jobs (hierarchy.md "Two job shapes"):
                                         # every files_in/files_out example below gains a
-                                        # task segment — scripts/<task>/config/<RUN>.yaml,
+                                        # task segment — <task>/config/<RUN>.yaml,
                                         # results/<task>/<RUN>/..., notebooks/<task>/<RUN>.ipynb.
 
 # ─── I: Input ────────────────────────────────────────────────────

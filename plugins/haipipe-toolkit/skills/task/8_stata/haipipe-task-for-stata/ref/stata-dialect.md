@@ -104,7 +104,9 @@ C01_data_pipeline_cabg and D01-reg_visitami_leftdigit):
 {LNN}_{stage}[_<study>]/            NESTED (data/reg stages, current production)
 ├── sbatch/<all>.ps1                submit the whole DAG (calls tickets in order)
 ├── scripts/
-│   ├── 0-libs/                     shared: lib-*.do + the runner .ps1 + config-defaults.do
+│   ├── src/                        shared: lib-*.do + the runner .ps1 + config-defaults.do
+│   │                               (was 0-libs/; the OpioidRx tree keeps that name —
+│   │                                hierarchy.md "The 0-libs exemption")
 │   └── {N}_{task_name}/            one TASK = one pipeline: config*.do (the run's
 │                                   globals, IN the task) + run-*-pipeline.do + step-*.do
 ├── runs/<task-named>.ps1           thin tickets, one per task run

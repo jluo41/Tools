@@ -25,9 +25,10 @@ means two things in one workspace is a defect.
           = Databricks Job. THE unit of self-containment. Only a Job can be
           scheduled. A job never reaches into a sibling job.
 
-  TASK    one script pipeline                scripts/t01_claude_agent_sdk/
+  TASK    one script pipeline = one PAGE     t01_claude_agent_sdk/
           = Databricks Task. task_key is unique WITHIN the job, not globally.
-          Runnable alone, but only inside its job: it resolves ../../0-libs/.
+          SELF-CONTAINED (260830): its code, config/, runs/ and its page
+          t01_….md sit together. It resolves the job's shared code at ../src/.
 
   RUN     one submission of one task         config/r03_fold00_opus.yaml
           = Databricks Run. An EXECUTION, not a variant and not a directory
@@ -46,14 +47,12 @@ The shape
 
   tasks/
   └── b07_reg_trait_cabg/                     BLOCK   (was R03_Reg_TraitCABG)
-      ├── 0-libs/                                     code shared by several jobs of the block
       └── j02_reg_visitami_leftdigit/         JOB     (was D01-reg_visitami_leftdigit)
-          ├── sbatch/run-...-all.ps1                submit the whole DAG
-          ├── scripts/                              CODE
-          │   ├── 0-libs/                           shared inside this job
-          │   │   ├── config-defaults.do            job-wide defaults + `store:`
-          │   │   └── lib-*.do
-          │   └── t01_reg_..._lifedigits/     TASK  open THIS to debug
+          ├── sbatch/run_job_dag.ps1                submit the whole DAG (spans tasks)
+          ├── src/                                  shared inside this job
+          │   ├── config-defaults.do                job-wide defaults + `store:`
+          │   └── lib-*.do
+          └── t01_reg_..._lifedigits/         TASK  open THIS to debug
           │       ├── config/                       ALWAYS a folder
           │       │   ├── r01_base.do               rNN = the run's identity, stem = its description
           │       │   └── r02_wide.do
@@ -87,7 +86,7 @@ One execution has one address, READ OFF THE PATH, never counted from `ls`
     p      project slug — only across projects; inside a repo, drop it
     b02    the block folder's prefix      tasks/b02_llm_recommendation_runs/
     j01    the job folder's prefix        j01_A1_search_physicians/
-    t01    the task folder's prefix       scripts/t01_claude_agent_sdk/
+    t01    the task folder's prefix       t01_claude_agent_sdk/
     r03    the config file's prefix       config/r03_fold00_opus.yaml
 ```
 
@@ -123,7 +122,7 @@ R2  CONFIG LIVES IN THE TASK, ALWAYS AS A FOLDER. PROMPTS ARE CONFIG: a prompt
     to learn the rule.
 
 R3  A TICKET CARRIES NO PARAMETERS.
-    runs/<task>/<run>.ps1 names a config and submits. It must not define a
+    <task>/runs/<run>.ps1 names a config and submits. It must not define a
     parameter of its own, and it must not repeat its own name: derive the task
     from $PSScriptRoot. Today runs/run_reg_visitami_any_15_24_lifedigits.ps1
     writes that name THREE times (filename, arg 1, arg 2); renaming the task
@@ -133,16 +132,18 @@ R4  A VARIANT IS A CONFIG, NOT A NEW TICKET SCHEME.
     Two runs of one task differ only by config stem. Two DIFFERENT pipelines
     are two task folders.
 
-R5  `scripts/0-*` IS SHARED AND IS NEVER A TASK. `scripts/NN_*` IS EXACTLY ONE
-    TASK. Existing: 0-libs/, 0-check-inputs/. Loose files currently use a
-    competing `_` prefix (_lib-describe.do, _load-raw-standard.do,
-    _resolve-raw-dir.do) — unify those onto `0-`.
+R5  UNDER A JOB, `tNN_*` IS EXACTLY ONE TASK AND EVERYTHING ELSE IS NOT.
+    Shared material lives in `src/`, one name for every engine (`0-libs/` is read
+    but never written — hierarchy.md "The 0-libs exemption"); the reserved
+    siblings are `sbatch/ results/ notebooks/ QA/ workflow/ diagram/`. Loose
+    files currently use a competing `_` prefix (_lib-describe.do,
+    _load-raw-standard.do, _resolve-raw-dir.do) — unify those into `src/`.
 
 R6  ZERO-PAD THE INDEX TO TWO DIGITS.
     Single digits sort wrong: 10_data_VisitOsteo currently sorts BEFORE
     1_data_VisitAMI and before 2_data_VisitLBP.
 
-R7  `store:` IS A JOB PROPERTY, DECLARED ONCE IN scripts/0-libs/.
+R7  `store:` IS A JOB PROPERTY, DECLARED ONCE IN src/.
     Never per-run. The moment two runs of one job land in two places,
     `ls results/*/*/` stops being the job's output inventory, which is the
     whole reason results sits at job level. Mirrors the Databricks rule: a Job
@@ -190,7 +191,7 @@ Code that must change
 =====================
 
 DONE 260829 (v0.8.0): ref/run-sh-template.sh resolves both shapes — nested
-CONFIG scripts/<task>/config/<run>.yaml and two-level
+CONFIG <task>/config/<run>.yaml and two-level
 RESULTS_DIR=$OUTPUT_ROOT/results/<task>/<run>, verified on a mock repo.
 
 STILL OPEN:
