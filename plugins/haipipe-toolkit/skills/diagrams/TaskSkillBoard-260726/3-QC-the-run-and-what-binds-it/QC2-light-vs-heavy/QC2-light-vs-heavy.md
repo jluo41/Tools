@@ -79,14 +79,14 @@ go there, not what the numbered stores mean or how they are organized.
 - [ ] 🧹 Check the existing bank
       107 task-folders, none audited for this. A single committed checkpoint is already permanent, so the value here is knowing rather than fixing.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The rule is documented in `hierarchy.md` and `authoring-conventions.md` §3 with an explicit
 extension list, and `task-structure.md` calls a heavy artifact in `results/` a hard error caught by
 inspection.
-
 Nothing enforces it today. The run footer prints every file written in both destinations, which is
 the raw material for a check nobody performs.
-
 - 260726 CC · 📦 Wrote the asymmetry down
       The refs state the rule; they do not say why one direction is a hard error and the other is a nuisance. Permanence in git history is the reason, and it is the only argument that survives someone asking whether the rule could be relaxed.
 
@@ -100,3 +100,5 @@ the raw material for a check nobody performs.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

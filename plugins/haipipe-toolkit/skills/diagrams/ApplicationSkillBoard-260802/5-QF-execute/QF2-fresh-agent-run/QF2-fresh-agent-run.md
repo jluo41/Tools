@@ -65,20 +65,18 @@ Legacy stage specialists remain installed as compatibility readers and are track
 ## Aims
 
 ### A1 · Contract
-- A1.1 · The new agent finds and loads the revised public skill.
+- ✅ A1.1 · The new agent finds and loads the revised public skill.
   **Done when:** its process names the skill source rather than relying on prompt hints.
+  **Now:** Both agents loaded the installed Application and Page contracts.
+
 
 #### A2 · Behavior
-- A2.1 · The route satisfies all six criteria.
+- ✅ A2.1 · The route satisfies all six criteria.
   **Done when:** no architecture-critical divergence remains.
+  **Now:** Both routes satisfied all six criteria after the roster cleanup.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Both agents loaded the installed Application and Page contracts.
-
-#### A2 · Behavior
-- ✅ A2.1 · Both routes satisfied all six criteria after the roster cleanup.
+## Discussion
 
 ## Files
 
@@ -94,3 +92,5 @@ The test agent receives the problem, not the desired solution outline.
 
 260820 · First fresh run passed SMS sequencing, local Insight routing, and Artifact admission; its stale-roster finding was repaired.
 260820 · Second fresh run passed multi-audience Design splitting and found no behavior-critical route divergence.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -49,20 +49,20 @@ A material row change reopens its Section because current prose never outranks t
 
 ## Aims
 ### A1 · 🧭 Narrative contract
-- A1.1 · Narrative provides one complete and versioned execution row per Section.
+- ✅ A1.1 · Narrative provides one complete and versioned execution row per Section.
   **Done when:** every claim and reader transition has a visible landing place and evidence state.
-- A1.2 · No claim outruns its license.
+  **Now:** The current contract requires claims and a detailed per-section outline.
+- ✅ A1.2 · No claim outruns its license.
   **Done when:** every claim names an E-parent and no peak role rests on 🔨 or ⬜.
+  **Now:** The 0.4.0 claim law makes the license check mechanical.
 
-## States
-### A1 · 🧭 Narrative contract
-- ✅ A1.1 · The current contract requires claims and a detailed per-section outline.
-- ✅ A1.2 · The 0.4.0 claim law makes the license check mechanical.
 
 ## Files
-- `../../paper/page-types/haipipe-page-for-narrative/SKILL.md` · source contract
+- `../../paper/workflow-phases/haipipe-paper-narrative/SKILL.md` · source contract
 
 ## Log
 260820 · Made Narrative the governing venue-aligned paper outline.
 260821 · 0.4.0 ruled by JL: Narratives move into `0-SD-seed/` beside the Seed as SD<NN> pages; every claim cites its Seed E-row parent with role capped by parent status; division 1 owns the venue decision and binds the QBv bank page.
 260828 · Refreshed to 0.5.2: journey 0.5.0 moved Narratives into their own `A2-NA-narrative/` group as `NA<NN>-narrative-<desk>` pages (SD ids now belong to the story head: ideation, seed, roadmap); a Narrative enters through gate G4 and reads the Seed's §8 handoff, never the Roadmap. The claim law and division-1 venue binding are unchanged.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

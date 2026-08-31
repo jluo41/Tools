@@ -90,13 +90,13 @@ rather than assuming.
 - [ ] 📝 State the three reasons in the reporter's own contract
       They live in `SKILL.md` prose. The creator agent, which actually decides at Report, does not carry them.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The contract exists in `fn/qa.md` and the shape is stable: `# Q`, `## Answer` with anchors,
 `## Caveats`, `## Not-done`, ordered by creation so `ls` is the index.
-
 Adoption is 1 of 107 task-folders, and no checker verifies the vocabulary rule that is the whole
 point of the format.
-
 - 260726 CC · 📏 Counted the adoption and declined to call it a bug
       One digest across the bank. Because reason ③ is a judgment nobody reviews, a low number is evidence about how often the layer writes for its future self, not proof of a defect.
 
@@ -110,3 +110,5 @@ point of the format.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

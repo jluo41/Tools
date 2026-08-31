@@ -45,12 +45,10 @@ LaTeX and Word generate projections from an accepted Page and do not become pros
 
 ## Aims
 ### A1 · 🧩 Plugin composition
-- A1.1 · Every Page-local plugin has one non-overlapping read and write boundary.
+- ✅ A1.1 · Every Page-local plugin has one non-overlapping read and write boundary.
   **Done when:** Probe's PageX and QA lanes, Bibex, Display, LaTeX, and Word compose without duplicated evidence.
+  **Now:** PageX now sits under Probe while keeping an independent Page-local record.
 
-## States
-### A1 · 🧩 Plugin composition
-- ✅ A1.1 · PageX now sits under Probe while keeping an independent Page-local record.
 
 ## Files
 - `../../board/page-plugins/haipipe-plugin-pagex/SKILL.md` · existing Page reader
@@ -59,3 +57,5 @@ LaTeX and Word generate projections from an accepted Page and do not become pros
 
 ## Log
 260820 · Grouped PageX and QA acquisition under Probe without merging their storage or phases.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

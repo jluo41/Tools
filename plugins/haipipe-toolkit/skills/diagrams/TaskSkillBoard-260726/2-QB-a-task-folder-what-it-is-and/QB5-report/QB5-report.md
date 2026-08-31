@@ -77,10 +77,11 @@ auditing would make the audit worthless.
 - [ ] 📋 State the three reasons a digest is due
       They are in `SKILL.md` prose. In the reporter's own contract, where the decision is actually made, they are not.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The phase runs and produces both artifacts. Its rigour is capped by `QB2`: with plans that name
 files rather than fields, the audit compares existence rather than content.
-
 - 260726 CC · 🧭 Named the two gates as opposites
       Gate 1 sees code without numbers, Gate 2 sees numbers without intent. Written down because the pair is easy to mistake for one review done twice, and the first thing that happens then is that one of them gets removed as redundant.
 
@@ -94,3 +95,5 @@ files rather than fields, the audit compares existence rather than content.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

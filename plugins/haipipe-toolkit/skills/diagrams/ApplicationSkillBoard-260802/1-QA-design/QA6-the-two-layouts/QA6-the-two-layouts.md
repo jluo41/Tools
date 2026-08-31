@@ -75,27 +75,24 @@ The task that produces a partition's evidence is the SAME task with a different 
 ## Aims
 
 ### A1 · One dataset, one board
-- A1.1 · A subgroup cannot become a board by accident.
+- ✅ A1.1 · A subgroup cannot become a board by accident.
   **Done when:** the only path to a child board names a SPLIT verdict.
+  **Now:** Ruled 260823; `ref/partition.md` carries the grammar and the door carries the layout choice.
+
 
 #### A2 · Mirror
-- A2.1 · A gap in a partition is visible as a refusal, not as an absence.
+- ✅ A2.1 · A gap in a partition is visible as a refusal, not as an absence.
   **Done when:** every template slug has a mirror page or a registered 🚫.
+  **Now:** Ruled; a partition added by a second session on 260824 exercised it and its missing census page was the rule catching a real gap.
+
 
 #### A5 · Verdict
-- A5.1 · No W page counsels a partition-specific action under POOL.
+- ✅ A5.1 · No W page counsels a partition-specific action under POOL.
   **Done when:** a differing partition W closes as a DEFERRAL with no handoff.
+  **Now:** Ruled with the DEFERRAL close, and the template exemption stated.
 
-## States
 
-### A1 · One dataset, one board
-- ✅ A1.1 · Ruled 260823; `ref/partition.md` carries the grammar and the door carries the layout choice.
-
-#### A2 · Mirror
-- ✅ A2.1 · Ruled; a partition added by a second session on 260824 exercised it and its missing census page was the rule catching a real gap.
-
-#### A5 · Verdict
-- ✅ A5.1 · Ruled with the DEFERRAL close, and the template exemption stated.
+## Discussion
 
 ## Files
 
@@ -119,3 +116,5 @@ An InsightBoard reads ONE dataset. A subgroup is a partition inside it, and beco
 260827 · The partition test now guards this ruling's door (QI3, the workflow's I0): audience stratum only, three named properties, with time's three guises routed to their existing homes instead of into partitions.
 
 260827 · The pin retired (JL): X carries no index, since letters sort after digits the seat is permanent without a magic number; `9-X-cross/` grandfathered on live boards.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

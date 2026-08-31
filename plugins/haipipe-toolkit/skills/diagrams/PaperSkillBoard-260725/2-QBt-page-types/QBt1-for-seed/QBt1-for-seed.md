@@ -52,20 +52,20 @@ The handoff carries ids, status, interpretation, and limits rather than copied r
 
 ## Aims
 ### A1 · 🌱 Seed contract
-- A1.1 · Seed remains valid across venue retargeting.
+- ✅ A1.1 · Seed remains valid across venue retargeting.
   **Done when:** no venue-specific promise or paper order appears in the Page.
-- A1.2 · The pitch cannot over-claim silently.
+  **Now:** The current type contract is venue-free and evidence-bearing.
+- ✅ A1.2 · The pitch cannot over-claim silently.
   **Done when:** every selling sentence cites an ✅ E-row or a named placeholder.
+  **Now:** The 0.3.0 placeholder discipline makes the check mechanical.
 
-## States
-### A1 · 🌱 Seed contract
-- ✅ A1.1 · The current type contract is venue-free and evidence-bearing.
-- ✅ A1.2 · The 0.3.0 placeholder discipline makes the check mechanical.
 
 ## Files
-- `../../paper/page-types/haipipe-page-for-seed/SKILL.md` · source contract
+- `../../paper/workflow-phases/haipipe-paper-seed/SKILL.md` · source contract
 
 ## Log
 260820 · Replaced the combined Opening type with a stable Seed type.
 260821 · 0.3.0 shape ruled by JL: pitch returns venue-free at division 2 as BLUF with placeholders; Establishment splits from Boundaries on the lifetime seam; Source Pages named the PageX seedbed; eight divisions.
 260828 · Refreshed to 0.5.3: the eight divisions hold; E-rows gained the novelty column (0.4.0), §5's first row binds SD00-ideation as the birth certificate, and the establish loop fixed the two-pens rule (Roadmap proposes settles, Seed alone flips).
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

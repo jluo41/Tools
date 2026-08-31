@@ -166,26 +166,6 @@ So a reminder aimed at a patient and one aimed at a clinician currently read fro
 
 ## Aims
 
-### A1 · 🚪 What the channel gates: three stages fire, three skip
-- A1.1 · A reminder pin reads its gates and its bar from this pack instead of from memory.
-  **Done when:** a venue pin for reminder records the three skipped stages and the light bar with `README.md` named as the source.
-
-### A2 · 🔁 What the channel rewards: a rotating set, never one message
-- A2.1 · A reminder draft is a rotating set, never a single message.
-  **Done when:** a draft under this venue shows 3 to 5 variants whose motivation slot varies while the prompt and encouragement slots hold still.
-
-### A3 · ❌ What desk-rejects a reminder design
-- A3.1 · The refusals are checked before release rather than found in review.
-  **Done when:** a draft's self-review records length, tone, variation, the question hook, and the advice frontmatter, closing the checklist's dropped hook.
-
-### A4 · 🕳 What the pack does not know: the schedule is the intervention
-- A4.1 · Every scheduling GAP in §4 is closed by the pack or ruled out of it.
-  **Done when:** the Decision Now row is answered and each scheduling GAP carries either a pack line or the ruling that it lives per intervention.
-- A4.2 · The two schema-demanded parts the folder lacks exist or are waived.
-  **Done when:** `venue-reminder/exemplars/` holds at least one real artifact and the style-profile carries tone-by-audience rows, or JL waives each with the reason recorded.
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 Does the scheduling vocabulary go into the pack, or stay per intervention?
@@ -196,18 +176,33 @@ So a reminder aimed at a patient and one aimed at a clinician currently read fro
       🛑 `Blocks` A4.1; the §4 scheduling GAPs cannot close until this is answered
       🤖 `If nobody answers` B, the pack stays as it is on disk today
 
+
 ### A1 · 🚪 What the channel gates: three stages fire, three skip
-- ⬜ A1.1 · Not started. The stages block and `claims_settlement: light` sit in `README.md`; no pin has been checked against them from this page.
+- ⬜ A1.1 · A reminder pin reads its gates and its bar from this pack instead of from memory.
+  **Done when:** a venue pin for reminder records the three skipped stages and the light bar with `README.md` named as the source.
+  **Now:** Not started. The stages block and `claims_settlement: light` sit in `README.md`; no pin has been checked against them from this page.
+
 
 ### A2 · 🔁 What the channel rewards: a rotating set, never one message
-- ⬜ A2.1 · Not started. The rotation rule is stated twice (README constraints, drafting rule 1) and its only enforcement is the manual checklist.
+- ⬜ A2.1 · A reminder draft is a rotating set, never a single message.
+  **Done when:** a draft under this venue shows 3 to 5 variants whose motivation slot varies while the prompt and encouragement slots hold still.
+  **Now:** Not started. The rotation rule is stated twice (README constraints, drafting rule 1) and its only enforcement is the manual checklist.
+
 
 ### A3 · ❌ What desk-rejects a reminder design
-- ⬜ A3.1 · Not started. The checklist sits at the end of `style-profile.md` and covers four of the five drafting rules; the question hook has no row.
+- ⬜ A3.1 · The refusals are checked before release rather than found in review.
+  **Done when:** a draft's self-review records length, tone, variation, the question hook, and the advice frontmatter, closing the checklist's dropped hook.
+  **Now:** Not started. The checklist sits at the end of `style-profile.md` and covers four of the five drafting rules; the question hook has no row.
+
 
 ### A4 · 🕳 What the pack does not know: the schedule is the intervention
-- 🧠 A4.1 · Waiting on JL; the Decision Now row above holds the scheduling ruling.
-- ⬜ A4.2 · Not started. `exemplars/` is absent on disk and `style-profile.md` carries no tone-by-audience rows (checked 260802).
+- 🧠 A4.1 · Every scheduling GAP in §4 is closed by the pack or ruled out of it.
+  **Done when:** the Decision Now row is answered and each scheduling GAP carries either a pack line or the ruling that it lives per intervention.
+  **Now:** Waiting on JL; the Decision Now row above holds the scheduling ruling.
+- ⬜ A4.2 · The two schema-demanded parts the folder lacks exist or are waived.
+  **Done when:** `venue-reminder/exemplars/` holds at least one real artifact and the style-profile carries tone-by-audience rows, or JL waives each with the reason recorded.
+  **Now:** Not started. `exemplars/` is absent on disk and `style-profile.md` carries no tone-by-audience rows (checked 260802).
+
 
 ## Files
 
@@ -230,3 +225,5 @@ So a reminder aimed at a patient and one aimed at a clinician currently read fro
 ## Log
 
 260802 · Opened as one of the QBv venue-pack pages, from `application/venue/venue-reminder/` read against `_SCHEMA.md`, with the desk-personality shape adapted from QBv1@paper. GAPs recorded: the scheduling vocabulary (anchor event, offset, escalation, stop rule) and the missing `exemplars/` and tone-by-audience rows in §4, plus the checklist's dropped question hook in §3; the scheduling ruling is parked with JL as the one Decision Now row.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

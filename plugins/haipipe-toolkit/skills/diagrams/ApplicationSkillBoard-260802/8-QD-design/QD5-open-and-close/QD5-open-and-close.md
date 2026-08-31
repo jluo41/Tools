@@ -169,41 +169,31 @@ Until those three rules land, the checks are the judge's cold read, which is a w
 
 ### A1 · The defect: a lane of convergence surfaces cannot design
 
-- A1.1 · The lane holds at least one surface that widens.
+- ✅ A1.1 · The lane holds at least one surface that widens.
   **Done when:** a named on-disk file in the unit anatomy admits candidates that cite nothing and claim nothing.
+  **Now:** `ideation.md` joins the generate unit's anatomy in `haipipe-plugin-design` 0.6.0; the grant-only law is scoped to the citation surfaces and does not reach it.
+
 
 #### A4 · The seam: what keeps the open honest
 
-- A4.1 · Every way the open could rot has a rule against it.
+- ✅ A4.1 · Every way the open could rot has a rule against it.
   **Done when:** theatre, laundering, erasure and retroactive judgment each name the rule that prevents them.
+  **Now:** Four rots, four rules, in §4; the judge's audit is scoped to selection honesty so deferred judgment cannot be undone downstream.
+
 
 #### A6 · The bounds of the open, and what they change
 
-- A6.1 · The ruling names where it stops.
+- ✅ A6.1 · The ruling names where it stops.
   **Done when:** each qualifying finding is paired with the machine behaviour it changes or confirms.
+  **Now:** Three qualifications in §6, each paired with its consequence: the variant set is fielded rather than one finalist picked, the floor is five with no ceiling rule, and goal-first is a required angle.
+
 
 #### A7 · What the machine checks, and what is owed
 
-- A7.1 · The gap between ruled and enforced is stated, never implied.
+- ✅ A7.1 · The gap between ruled and enforced is stated, never implied.
   **Done when:** every owed checker rule is listed with its prove-FAIL-first obligation.
+  **Now:** Three rules owed and named in §7, each carrying the prove-FAIL-first obligation; the interim guarantee is stated as the judge's cold read.
 
-## States
-
-### A1 · The defect: a lane of convergence surfaces cannot design
-
-- ✅ A1.1 · `ideation.md` joins the generate unit's anatomy in `haipipe-plugin-design` 0.6.0; the grant-only law is scoped to the citation surfaces and does not reach it.
-
-#### A4 · The seam: what keeps the open honest
-
-- ✅ A4.1 · Four rots, four rules, in §4; the judge's audit is scoped to selection honesty so deferred judgment cannot be undone downstream.
-
-#### A6 · The bounds of the open, and what they change
-
-- ✅ A6.1 · Three qualifications in §6, each paired with its consequence: the variant set is fielded rather than one finalist picked, the floor is five with no ceiling rule, and goal-first is a required angle.
-
-#### A7 · What the machine checks, and what is owed
-
-- ✅ A7.1 · Three rules owed and named in §7, each carrying the prove-FAIL-first obligation; the interim guarantee is stated as the judge's cold read.
 
 ## Files
 
@@ -250,3 +240,5 @@ The open and the close are one phase and not two, which is why they share a file
 260828 · The divergence sweep landed as `S02_design-process-theory/06`, fifteen sources verified live against Crossref and OpenAlex. C-K theory verified and is now the page's formal anchor: converging before the concept space expands is ill-posed, not merely early.
 260828 · Three qualifications folded in as §6 rather than dropped. The selection-failure finding argues for fielding the variant set instead of picking one finalist, and the goal-setting reinterpretation is why goal-first is a required angle.
 260828 · The thread folder merge landed beneath this page's rules unchanged: ideation.md and the pool anatomy now sit beside their card.md rather than across a folder boundary from it.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

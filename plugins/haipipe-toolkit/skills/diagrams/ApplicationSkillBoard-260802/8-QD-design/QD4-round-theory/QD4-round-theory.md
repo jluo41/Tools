@@ -121,20 +121,18 @@ Two sweeps independently failed to verify the Schön 1983 monograph and one caug
 ## Aims
 
 ### A1 · Frame: satisficing, not completeness
-- A1.1 · Every phase of the round names verified literature it operationalizes.
+- ✅ A1.1 · Every phase of the round names verified literature it operationalizes.
   **Done when:** each of D0-D4 cites at least two verified anchors and its QA file.
+  **Now:** Five phases, five QA files, 59 verified sources; the skill's own literature section is a pointer to this page.
+
 
 #### A6 · What did not survive verification
-- A6.1 · Nothing on this page is citable-from-memory.
+- ✅ A6.1 · Nothing on this page is citable-from-memory.
   **Done when:** every anchor row carries a live-resolved id and every exclusion is listed.
+  **Now:** All 59 resolved against Crossref/OpenAlex/arXiv on 260827; five exclusions recorded in §6 with their replacements.
 
-## States
 
-### A1 · Frame: satisficing, not completeness
-- ✅ A1.1 · Five phases, five QA files, 59 verified sources; the skill's own literature section is a pointer to this page.
-
-#### A6 · What did not survive verification
-- ✅ A6.1 · All 59 resolved against Crossref/OpenAlex/arXiv on 260827; five exclusions recorded in §6 with their replacements.
+## Discussion
 
 ## Files
 
@@ -169,3 +167,5 @@ A phase with no verified finding behind it is a preference that found a rulebook
 ## Log
 
 260827 · Born from the design-workflow draft: JL ruled the literature lives on a board page, not in the skill. Five discovery agents (Sonnet, serial fallback after five identical fan-out stalls) returned 59 verified sources in five QA files; the five colliding `S02_*` groups they minted were merged into `S02_design-process-theory/01-05` the same day.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -53,20 +53,16 @@ Lists candidate Design Pages by audience × behavior job × primary venue. The r
 ## Aims
 
 ### A1 · Contract
-- A1.1 · Insight and Design work can start without inventing audience or outcome.
+- ✅ A1.1 · Insight and Design work can start without inventing audience or outcome.
   **Done when:** both receive exact Brief refs and unresolved needs.
+  **Now:** Required by Brief Page Type 0.2.0.
+
 
 ### P · Specimen
-- P1 · One runtime Brief passes Page CHECK.
+- ⬜ P1 · One runtime Brief passes Page CHECK.
   **Done when:** a materialized application uses the 0.2.0 contract.
+  **Now:** Runtime specimen remains open.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Required by Brief Page Type 0.2.0.
-
-### P · Specimen
-- ⬜ P1 · Runtime specimen remains open.
 
 ## Files
 
@@ -81,3 +77,5 @@ The Brief decides what the Application is trying to do and what it still needs t
 ## Log
 
 260820 · Added Insight Need Map and many-Design roster to Brief 0.2.0.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

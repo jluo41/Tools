@@ -69,18 +69,16 @@ A journey-era rerun of this fixture is the open obligation this page tracks.
 
 ## Aims
 ### A1 · 🧑‍🔬 Fresh-agent behavior
-- A1.1 · A fresh agent executes a realistic current Paper task through the intended route.
+- ✅ A1.1 · A fresh agent executes a realistic current Paper task through the intended route.
   **Done when:** process evidence covers trigger, routing, evidence lanes, handoffs, checks, and stop gates.
-- A1.2 · Any divergence is repaired and the test is repeated.
+  **Now:** The final fresh agent followed the Page-first route as of the 260820 five-type graph.
+- ✅ A1.2 · Any divergence is repaired and the test is repeated.
   **Done when:** the final fresh run behaves as designed.
-- A1.3 · The journey-era architecture earns the same behavioral proof.
+  **Now:** Earlier contradictions were repaired and the rerun passed.
+- 🔨 A1.3 · The journey-era architecture earns the same behavioral proof.
   **Done when:** a fresh-context run traverses the seven-type graph with the establish loop, or the remaining gates fire on live boards and are registered here.
+  **Now:** The journey machine's gates are live-fired 4/8 on real boards (G0 G2 G3 G4); a journey-era fresh rerun of this fixture has not happened.
 
-## States
-### A1 · 🧑‍🔬 Fresh-agent behavior
-- ✅ A1.1 · The final fresh agent followed the Page-first route as of the 260820 five-type graph.
-- ✅ A1.2 · Earlier contradictions were repaired and the rerun passed.
-- 🔨 A1.3 · The journey machine's gates are live-fired 4/8 on real boards (G0 G2 G3 G4); a journey-era fresh rerun of this fixture has not happened.
 
 ## Files
 - `3-QC-composition/QC3-minimal-fixture/QC3-minimal-fixture.md` · validation subject
@@ -92,3 +90,5 @@ A journey-era rerun of this fixture is the open obligation this page tracks.
 260820 · Final fresh-context rerun passed after enforcing the template guard and legal repair routes.
 260820 · Moved from QF2 to QC4 so behavioral validation closes the composition topic it tests.
 260828 · Scoped the receipt to the five-type graph it actually observed; registered the journey's live-fire record (G0 G2 G3 G4 on two boards; G1 G5 G6 G7 never) from the family status, and opened A1.3 for the journey-era rerun. Repaired the `4-QC-composition/` path left dead by the 260820 regroup.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

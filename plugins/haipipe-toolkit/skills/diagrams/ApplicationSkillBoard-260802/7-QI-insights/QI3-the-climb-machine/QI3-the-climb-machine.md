@@ -71,27 +71,24 @@ A 🚫 with a reason is a terminal state equal in rank to ✅: a board rich in r
 ## Aims
 
 ### A1 · The phases are the rungs
-- A1.1 · Every phase names a page type a reader can open.
+- ✅ A1.1 · Every phase names a page type a reader can open.
   **Done when:** the six names are the six contracts and none is a bare verb.
+  **Now:** Six phases, six contracts; verdict and settle failed the naming test and are gates GI4 and GI6.
+
 
 #### A3 · The two tests at the doors
-- A3.1 · Column-versus-partition is decided by test, never by taste.
+- ✅ A3.1 · Column-versus-partition is decided by test, never by taste.
   **Done when:** each test's inputs are named fields a checker could read.
+  **Now:** The partition test reads three named properties at I0; the routing test reads the what-would-answer field at I1.
+
 
 #### A5 · The instrument shadow
-- A5.1 · Classification and task-folder reuse always agree.
+- ✅ A5.1 · Classification and task-folder reuse always agree.
   **Done when:** a partition needing its own code is reportable as a defect.
+  **Now:** Ruled in the workflow with the disproof direction stated; A00's ⬜calc cells are the one-call-many-columns case in the wild.
 
-## States
 
-### A1 · The phases are the rungs
-- ✅ A1.1 · Six phases, six contracts; verdict and settle failed the naming test and are gates GI4 and GI6.
-
-#### A3 · The two tests at the doors
-- ✅ A3.1 · The partition test reads three named properties at I0; the routing test reads the what-would-answer field at I1.
-
-#### A5 · The instrument shadow
-- ✅ A5.1 · Ruled in the workflow with the disproof direction stated; A00's ⬜calc cells are the one-call-many-columns case in the wild.
+## Discussion
 
 ## Files
 
@@ -120,3 +117,5 @@ Phases climb the rows, partitions widen the columns, and only X lets columns mee
 260827 · The insight lane gained its phase machine, haipipe-insight-workflow 0.1.0, the same shape the paper and page families already had; verdict and settle became gates by the naming test.
 
 260827 · The two door tests and the instrument shadow ruled in one sitting (JL): partition = audience stratum with time as the canonical refusal, routing by the what-would-answer field, and task-folder reuse as the mechanical echo of both.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

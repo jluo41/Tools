@@ -66,21 +66,19 @@ Design divisions reopen. Unaffected messages stay accepted.
 ## Aims
 
 ### A1 · Contract
-- A1.1 · Every design move reaches one exact accepted handoff.
+- ✅ A1.1 · Every design move reaches one exact accepted handoff.
   **Done when:** the Insight Use Map has no unsupported adopted row.
+  **Now:** Required by Design Page Type 0.2.0.
+
 
 #### A2 · Boundary
-- A2.1 · Missing knowledge never triggers inline Design research.
+- ✅ A2.1 · Missing knowledge never triggers inline Design research.
   **Done when:** a fresh run routes it to a local Insight Page and stops the
   unsupported design move.
+  **Now:** Two fresh agents stopped unsupported design moves and released local Insight Pages.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Required by Design Page Type 0.2.0.
-
-#### A2 · Boundary
-- ✅ A2.1 · Two fresh agents stopped unsupported design moves and released local Insight Pages.
+## Discussion
 
 ## Files
 
@@ -100,3 +98,5 @@ PageX reads accepted Pages. Probe reads Task/Discovery evidence. A Design Page u
 
 260820 · Split PageX consumption from Probe acquisition at the Application layer.
 260820 · Fresh-context SMS and email scenarios verified exact PageX consumption and local Insight release.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

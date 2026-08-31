@@ -174,30 +174,6 @@ The clash blocks nothing, because a drafter loses nothing by drawing the wirefra
 
 ## Aims
 
-### A1 · 🚦 What the channel gates
-- A1.1 · The stage block and the full bar bind at pin time instead of being recalled.
-  **Done when:** an intervention pinned to venue-ui-card shows the stages_skipped row in its STATUS.md and its claims CHECK gate names `claims_settlement: full`.
-
-### A2 · 📏 What the channel requires
-- A2.1 · Every ui-card draft ships the wireframe and names a data source per live element.
-  **Done when:** a draft is returned as incomplete without both, citing §2's contract.
-
-### A3 · 🧑‍⚕️ Who reads the card
-- A3.1 · The audience row is chosen before the voice is written.
-  **Done when:** a card draft states patient, clinician, designer, or dev, and its tone matches that pairing row.
-
-### A4 · ❌ What desk-rejects a ui-card
-- A4.1 · The refusal list runs as a review check, not as taste.
-  **Done when:** a review pass on a real card cites the checklist or rule line behind every finding.
-
-### A5 · 🕳 What the pack does not know
-- A5.1 · The three GAPs carry rulings instead of silence.
-  **Done when:** exemplars/, the host question, and the compliance question each have a JL ruling recorded on this page or a filled pack section behind them.
-- A5.2 · The wireframe clash is reconciled in the pack.
-  **Done when:** `README.md` and `style-profile.md` state the same wireframe rule, and the Log names which file moved.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Does venue-ui-card get the exemplars/ folder the schema promises?
       📍 `Part 5.1` the GAP it settles
@@ -214,21 +190,39 @@ The clash blocks nothing, because a drafter loses nothing by drawing the wirefra
       🛑 `Blocks` any deployment-ready card spec: a draft can pass every pack rule and still not fit its host.
       🤖 `If nobody answers` the pack stays as it is and nobody records the host rules, so the blind spot in §5.2 persists.
 
+
 ### A1 · 🚦 What the channel gates
-- ⬜ A1.1 · Not started; the stage block is prose in the pack README, and no pin has been checked against it from this page.
+- ⬜ A1.1 · The stage block and the full bar bind at pin time instead of being recalled.
+  **Done when:** an intervention pinned to venue-ui-card shows the stages_skipped row in its STATUS.md and its claims CHECK gate names `claims_settlement: full`.
+  **Now:** Not started; the stage block is prose in the pack README, and no pin has been checked against it from this page.
+
 
 ### A2 · 📏 What the channel requires
-- ⬜ A2.1 · Not started; the contract is six checklist lines and five drafting rules in `style-profile.md`, recorded here as §2.
+- ⬜ A2.1 · Every ui-card draft ships the wireframe and names a data source per live element.
+  **Done when:** a draft is returned as incomplete without both, citing §2's contract.
+  **Now:** Not started; the contract is six checklist lines and five drafting rules in `style-profile.md`, recorded here as §2.
+
 
 ### A3 · 🧑‍⚕️ Who reads the card
-- ⬜ A3.1 · Not started; the pairing table has four rows and nothing on this page shows one being picked.
+- ⬜ A3.1 · The audience row is chosen before the voice is written.
+  **Done when:** a card draft states patient, clinician, designer, or dev, and its tone matches that pairing row.
+  **Now:** Not started; the pairing table has four rows and nothing on this page shows one being picked.
+
 
 ### A4 · ❌ What desk-rejects a ui-card
-- ⬜ A4.1 · Not started.
+- ⬜ A4.1 · The refusal list runs as a review check, not as taste.
+  **Done when:** a review pass on a real card cites the checklist or rule line behind every finding.
+  **Now:** Not started.
+
 
 ### A5 · 🕳 What the pack does not know
-- 🧠 A5.1 · Waiting on JL; both Decision Now rows above are open.
-- ⬜ A5.2 · Not started; §5.4 records the clash and both pack files still disagree.
+- 🧠 A5.1 · The three GAPs carry rulings instead of silence.
+  **Done when:** exemplars/, the host question, and the compliance question each have a JL ruling recorded on this page or a filled pack section behind them.
+  **Now:** Waiting on JL; both Decision Now rows above are open.
+- ⬜ A5.2 · The wireframe clash is reconciled in the pack.
+  **Done when:** `README.md` and `style-profile.md` state the same wireframe rule, and the Log names which file moved.
+  **Now:** Not started; §5.4 records the clash and both pack files still disagree.
+
 
 ## Files
 
@@ -249,3 +243,5 @@ The clash blocks nothing, because a drafter loses nothing by drawing the wirefra
 ## Log
 
 260802 · Opened from `venue/venue-ui-card/` and `venue/_SCHEMA.md` with the shape adapted from QBv1@paper; recorded three GAPs (exemplars/ absent, host unnamed, compliance unrecorded) and one internal clash (the wireframe rule), and raised two Decision Now rows for JL.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -86,23 +86,21 @@ One row only. A second audience would be a second Design Page, not a second divi
 ## Aims
 
 ### A1 · Opportunity
-- A1.1 · Audience, outcome, kill criteria and venue are all observable.
+- ✅ A1.1 · Audience, outcome, kill criteria and venue are all observable.
   **Done when:** each has a division and none is stated as an intention.
+  **Now:** Divisions 2 through 4 fix all four.
+
 
 #### P · Insight Needs Raised
-- P1 · The responsiveness premise is settled before design leans on it.
+- ✅ P1 · The responsiveness premise is settled before design leans on it.
   **Done when:** N1 has a settled handoff.
-- P2 · The timing premise is settled or explicitly held.
+  **Now:** Met by `SmsClickR4-InsightBoard` I01 handoff v2.
+- ❄️ P2 · The timing premise is settled or explicitly held.
   **Done when:** N2 is answered, or recorded as unanswerable with a reason.
+  **Now:** Held on purpose. The send hour is absent from the extract, so this is blocked on data collection, not on analysis.
 
-## States
 
-### A1 · Opportunity
-- ✅ A1.1 · Divisions 2 through 4 fix all four.
-
-#### P · Insight Needs Raised
-- ✅ P1 · Met by `SmsClickR4-InsightBoard` I01 handoff v2.
-- ❄️ P2 · Held on purpose. The send hour is absent from the extract, so this is blocked on data collection, not on analysis.
+## Discussion
 
 ## Files
 
@@ -121,3 +119,5 @@ A Brief raises needs and never answers them. A need written with its answer impl
 ## Log
 
 260820 · Fixed the audience and venue, raised N1 and N2, released D01.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

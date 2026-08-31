@@ -48,19 +48,19 @@ The receipt is recorded after the act: the Seed exists in `A1-SD-story/`, its §
 
 ## Aims
 ### A1 · 💭 Ideation contract
-- A1.1 · Every idea the direction ever weighed remains readable on one page.
+- ✅ A1.1 · Every idea the direction ever weighed remains readable on one page.
   **Done when:** eliminated ideas keep their divisions and the winning idea's `went to` resolves.
-- A1.2 · No idea reaches a Seed without its G0 evidence.
+  **Now:** The 0.5.0 shape adopts the source reports' own structure, so nothing is re-summarized.
+- ✅ A1.2 · No idea reaches a Seed without its G0 evidence.
   **Done when:** the summary row shows per-claim novelty, pilot or waiver, and a person's tick.
+  **Now:** G0 has fired live (2 boards; one CHECK routed HOLD), per the family status of 260828.
 
-## States
-### A1 · 💭 Ideation contract
-- ✅ A1.1 · The 0.5.0 shape adopts the source reports' own structure, so nothing is re-summarized.
-- ✅ A1.2 · G0 has fired live (2 boards; one CHECK routed HOLD), per the family status of 260828.
 
 ## Files
-- `../../paper/page-types/haipipe-page-for-ideation/SKILL.md` · source contract
+- `../../paper/workflow-phases/haipipe-paper-ideation/SKILL.md` · source contract
 - `../../paper/haipipe-paper-workflow/SKILL.md` · gate G0 and the P0 phase
 
 ## Log
 260828 · Specimen minted during the field repair. The QBt6 id previously named Dash, retired 260820; its archive folder was deleted 260822 under retired-means-deleted, freeing the id. Ideation entered the family with the journey (260824, 0.4.x→0.5.4): page zero, minted with the repo, G0 to the Seed.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

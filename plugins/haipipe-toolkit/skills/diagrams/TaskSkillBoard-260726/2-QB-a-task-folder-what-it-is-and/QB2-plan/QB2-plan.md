@@ -73,10 +73,11 @@ the contract-versus-evidence comparison has never been exercised at scale.
 - [ ] 📈 Decide whether the 86 planless folders matter
       21 of 107 have `workflow/`. Either the rest are legacy and exempt, or the phase is not actually mandatory, and the docs currently imply the second while reading like the first.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The phase runs, the schema exists, and the completeness question is untouched. Nothing here has
 been ruled.
-
 - 260726 CC · 📏 Counted the adoption
       21 of 107 task-folders carry a `workflow/`. Written from `SKILL.md` and `fn/stage-plan.md`.
 
@@ -88,3 +89,5 @@ been ruled.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

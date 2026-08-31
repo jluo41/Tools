@@ -46,12 +46,10 @@ Inside the establish loop the pens never cross: the Roadmap plans and registers,
 
 ## Aims
 ### A1 · 🧱 Ownership boundary
-- A1.1 · Every durable paper artifact has one owner and one read path.
+- ✅ A1.1 · Every durable paper artifact has one owner and one read path.
   **Done when:** Paper, journey, Page, plugins, Probe's two lanes, Task, and Discovery roles do not overlap.
+  **Now:** The live architecture assigns one owner to each artifact and binding.
 
-## States
-### A1 · 🧱 Ownership boundary
-- ✅ A1.1 · The live architecture assigns one owner to each artifact and binding.
 
 ## Files
 - `3-QC-composition/QC1-paper-door/QC1-paper-door.md` · composition boundary
@@ -61,3 +59,5 @@ Inside the establish loop the pens never cross: the Roadmap plans and registers,
 ## Log
 260820 · Grouped PageX under Probe while preserving separate PageX and QA records.
 260828 · Added the journey lane: `haipipe-paper-workflow` owns phases and gates, never content; recorded the establish-loop two-pens rule. Repaired the `4-QC-composition/` paths left dead by the 260820 regroup.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

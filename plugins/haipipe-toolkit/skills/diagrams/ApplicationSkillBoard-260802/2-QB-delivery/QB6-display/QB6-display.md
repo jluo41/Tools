@@ -114,20 +114,6 @@ What QB5@paper never faced is the gate: on a skipped venue the venue template ow
 
 ## Aims
 
-### A1 · 🚦 The venue gate
-- A1.1 · This page states the gate exactly as the stage doc does.
-  **Done when:** the skipped, optional, and required venue sets in Part 1 match the stage doc, and the re-run rule on venue change is stated beside them.
-
-### A2 · 🧩 The unit and its job
-- A2.1 · The stage's deliverable is readable from this page alone.
-  **Done when:** Part 2 carries the four unit fields, the three unit statuses, and the five done conditions, without sending the reader to the stage doc.
-
-### A3 · 🤝 The seam with the shared Display layer
-- A3.1 · The seam ruling is adopted for the intervention family.
-  **Done when:** JL answers the Decision Now row, and the chosen form of the seam lands in this page's Law with the date and the rejected option.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Adopt QB5@paper's seam verbatim, or amend it for skipped venues?
       📍 `Part 3` the seam with the shared Display layer
@@ -137,14 +123,24 @@ What QB5@paper never faced is the gate: on a skipped venue the venue template ow
       🛑 `Blocks` A3.1, which stays open until the ruling lands in Law.
       🤖 `If nobody answers` A holds provisionally, because it is the only seam anyone has written down.
 
+
 ### A1 · 🚦 The venue gate
-- ✅ A1.1 · Met at creation; Part 1 carries the gate and the re-run rule from the stage doc read on 260802.
+- ✅ A1.1 · This page states the gate exactly as the stage doc does.
+  **Done when:** the skipped, optional, and required venue sets in Part 1 match the stage doc, and the re-run rule on venue change is stated beside them.
+  **Now:** Met at creation; Part 1 carries the gate and the re-run rule from the stage doc read on 260802.
+
 
 ### A2 · 🧩 The unit and its job
-- ✅ A2.1 · Met at creation; Part 2 carries the four fields, the three statuses, and the five done conditions from the stage doc read on 260802.
+- ✅ A2.1 · The stage's deliverable is readable from this page alone.
+  **Done when:** Part 2 carries the four unit fields, the three unit statuses, and the five done conditions, without sending the reader to the stage doc.
+  **Now:** Met at creation; Part 2 carries the four fields, the three statuses, and the five done conditions from the stage doc read on 260802.
+
 
 ### A3 · 🤝 The seam with the shared Display layer
-- 🧠 A3.1 · Waiting on JL; the Decision Now row above holds the choice, and LAW 1 behaves as option A in the meantime.
+- 🧠 A3.1 · The seam ruling is adopted for the intervention family.
+  **Done when:** JL answers the Decision Now row, and the chosen form of the seam lands in this page's Law with the date and the rejected option.
+  **Now:** Waiting on JL; the Decision Now row above holds the choice, and LAW 1 behaves as option A in the meantime.
+
 
 ## Files
 
@@ -167,3 +163,5 @@ What QB5@paper never faced is the gate: on a skipped venue the venue template ow
 ## Log
 
 260802 · Page created: the venue gate and the unit contract stated from the stage doc, and QB5@paper's seam raised to JL for adoption in Decision Now.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

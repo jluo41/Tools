@@ -96,27 +96,24 @@ A board holding a PRE-CONTRACT slate declares `mode: record` on `board.md`. It r
 ## Aims
 
 ### A1 · The two lives of a direction
-- A1.1 · The wager exists in exactly one place and cannot drift.
+- ✅ A1.1 · The wager exists in exactly one place and cannot drift.
   **Done when:** the unit cites the card and no unit restates an expected effect.
+  **Now:** `unit-dead-reference` fires when a unit's pointer to its card does not resolve, written after one did not on 260824 and left the wager unreachable while every self-check reported clean.
+
 
 #### A2 · Reads Law
-- A2.1 · Every citation is inside a grant that is inside the board's `reads:`.
+- ✅ A2.1 · Every citation is inside a grant that is inside the board's `reads:`.
   **Done when:** the three set-differences are checkable without reading prose.
+  **Now:** `card-grant-outside-reads` and `unit-evidence-outside-grant` check two of the three; the third is the board's own `reads:` resolution.
+
 
 #### A5 · Gates
-- A5.1 · Release and acceptance are a person's, mechanically.
+- ✅ A5.1 · Release and acceptance are a person's, mechanically.
   **Done when:** a machine writing either field is a reported error, not a convention.
+  **Now:** `card-released-unsigned` and `card-proposed-signed` catch both directions; `card-released-no-wager` refuses a release with no falsifiable claim.
 
-## States
 
-### A1 · The two lives of a direction
-- ✅ A1.1 · `unit-dead-reference` fires when a unit's pointer to its card does not resolve, written after one did not on 260824 and left the wager unreachable while every self-check reported clean.
-
-#### A2 · Reads Law
-- ✅ A2.1 · `card-grant-outside-reads` and `unit-evidence-outside-grant` check two of the three; the third is the board's own `reads:` resolution.
-
-#### A5 · Gates
-- ✅ A5.1 · `card-released-unsigned` and `card-proposed-signed` catch both directions; `card-released-no-wager` refuses a release with no falsifiable claim.
+## Discussion
 
 ## Files
 
@@ -138,3 +135,5 @@ The wager lives on the card. A unit cites it and never restates it, and no machi
 
 260824 · The laws gained teeth. Twenty-three checker rules over `direction/` and `design/`, each proven to FAIL on a board broken exactly that one way before being trusted, after a run in which four real defects were caught by a human or an agent and none by the machinery.
 260828 · One thread, one folder (JL: "no need to have a new direction folder"): the card moved into its unit as card.md, direction/ retired, DR/DU numbering collapsed to DU, both pointer fields died with the folder split, and release-before-realize became a checker ERROR (unit-realized-before-release, proven to FAIL). B00 migrated same day, 0 error.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

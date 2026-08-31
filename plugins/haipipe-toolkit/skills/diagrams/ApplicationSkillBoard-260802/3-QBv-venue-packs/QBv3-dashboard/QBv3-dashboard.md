@@ -172,24 +172,6 @@ None of these is filled on this page: each waits on the Decision Now row in Stat
 
 ## Aims
 
-### A1 · 🚦 What the channel gates
-- A1.1 · The full settlement bar is applied by the claims CHECK gate rather than remembered.
-  **Done when:** a dashboard intervention's claims gate names the judged answer behind every load-bearing claim before artifact work starts.
-
-### A2 · 🏆 What the channel rewards
-- A2.1 · Every display-map unit carries its five fields.
-  **Done when:** a dashboard display map has no unit missing type, claim, Job, C-id, or data source.
-
-### A3 · ❌ What refuses a dashboard
-- A3.1 · The self-review checklist runs as a gate, not as decoration in the spec.
-  **Done when:** a dashboard spec draft records a verdict per checklist row instead of shipping unticked boxes.
-
-### A4 · 🕳 What the pack cannot answer
-- A4.1 · Each GAP row is filled in the pack or explicitly declined.
-  **Done when:** every GAP row in §4 points at a pack file that answers it, or at the dated ruling that declined it.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 When do the pack's four GAPs get filled?
       📍 `Part` §4
@@ -199,17 +181,30 @@ None of these is filled on this page: each waits on the Decision Now row in Stat
       🛑 `Blocks` nothing this page can see; the pack's two files name no pinned intervention
       🤖 `If nobody answers` A takes effect
 
+
 ### A1 · 🚦 What the channel gates
-- ⬜ A1.1 · Not started. The bar is declared in the README and defined in the schema, and this page has seen no dashboard run apply it.
+- ⬜ A1.1 · The full settlement bar is applied by the claims CHECK gate rather than remembered.
+  **Done when:** a dashboard intervention's claims gate names the judged answer behind every load-bearing claim before artifact work starts.
+  **Now:** Not started. The bar is declared in the README and defined in the schema, and this page has seen no dashboard run apply it.
+
 
 ### A2 · 🏆 What the channel rewards
-- ⬜ A2.1 · Not started. The five fields are listed in the README's Display mapping, and the pack's only worked example carries two of them (claim, source) per card.
+- ⬜ A2.1 · Every display-map unit carries its five fields.
+  **Done when:** a dashboard display map has no unit missing type, claim, Job, C-id, or data source.
+  **Now:** Not started. The five fields are listed in the README's Display mapping, and the pack's only worked example carries two of them (claim, source) per card.
+
 
 ### A3 · ❌ What refuses a dashboard
-- ⬜ A3.1 · Not started. The checklist exists as five unticked boxes in `style-profile.md` and nothing runs it.
+- ⬜ A3.1 · The self-review checklist runs as a gate, not as decoration in the spec.
+  **Done when:** a dashboard spec draft records a verdict per checklist row instead of shipping unticked boxes.
+  **Now:** Not started. The checklist exists as five unticked boxes in `style-profile.md` and nothing runs it.
+
 
 ### A4 · 🕳 What the pack cannot answer
-- 🧠 A4.1 · Waiting on the Decision Now row above; until it is answered the four GAPs stay recorded and unfilled.
+- 🧠 A4.1 · Each GAP row is filled in the pack or explicitly declined.
+  **Done when:** every GAP row in §4 points at a pack file that answers it, or at the dated ruling that declined it.
+  **Now:** Waiting on the Decision Now row above; until it is answered the four GAPs stay recorded and unfilled.
+
 
 ## Files
 
@@ -229,3 +224,5 @@ None of these is filled on this page: each waits on the Decision Now row in Stat
 ## Log
 
 260802 · Opened with the QBv venue-pack pages, from `venue/venue-dashboard/` at two files (README.md, style-profile.md). The stages block, the full bar, the drill-down arc, the display map, and the checklist were recorded from the pack against `_SCHEMA.md`, and four unanswered demands were recorded as GAP rows in §4 with the fill timing put to JL in Decision Now. Shape adapted from QBv1@paper.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

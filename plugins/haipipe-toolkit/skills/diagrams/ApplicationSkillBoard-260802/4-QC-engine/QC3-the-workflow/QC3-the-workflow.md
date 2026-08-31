@@ -100,27 +100,24 @@ A phase transition leaves one dated Log row on the page that GRANTED it. No sepa
 ## Aims
 
 ### A1 · The naming law
-- A1.1 · Every phase name identifies a page a reader can open.
+- ✅ A1.1 · Every phase name identifies a page a reader can open.
   **Done when:** each of the five names a page type or role, and none is a bare verb.
+  **Now:** Five phases, five authority pages; ACCEPT failed the test and became G5.
+
 
 #### A4 · Gates
-- A4.1 · Every gate is testable by reading named files.
+- ✅ A4.1 · Every gate is testable by reading named files.
   **Done when:** no gate's assertion requires interpreting prose.
+  **Now:** G0 through G5 each name the files they read.
+
 
 #### A6 · Receipts
-- A6.1 · The record cannot drift from the artifact.
+- ✅ A6.1 · The record cannot drift from the artifact.
   **Done when:** the pages are authoritative and any trace is explicitly subordinate.
+  **Now:** Receipts moved onto the granting pages on 260824; the run log is a trace.
 
-## States
 
-### A1 · The naming law
-- ✅ A1.1 · Five phases, five authority pages; ACCEPT failed the test and became G5.
-
-#### A4 · Gates
-- ✅ A4.1 · G0 through G5 each name the files they read.
-
-#### A6 · Receipts
-- ✅ A6.1 · Receipts moved onto the granting pages on 260824; the run log is a trace.
+## Discussion
 
 ## Files
 
@@ -151,3 +148,5 @@ A journey phase is named by its authority page. A position that cannot name one 
 260827 · The climb loop's law delegated to the new insight door `/haipipe-insight` (workflow 0.5.0), exactly as 0.3.0 delegated the compose loop to `/haipipe-design`; the workflow keeps the lap, the order and gates G0-G3. Each lane now has its own law door, two ✋ gates per door.
 
 260827 · The design lane's interior machine landed, `/haipipe-design-workflow` (app workflow 0.7.0): D0-D4 named by the lane's artifact classes (a stated extension of the naming law from page to artifact), the division as frontier unit, rounds that always complete, the two-faced verdict — reflect (ex-post) · prospect (ex-ante) — and the EMIT edge into the insight registers. Both lanes now carry door + machine, fully symmetric.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

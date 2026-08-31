@@ -53,12 +53,10 @@ A downstream integration run passes only when edits land on owning Pages and the
 
 ## Aims
 ### A1 · 🧪 Minimal fixture
-- A1.1 · One bounded fixture specifies every live Paper Page Type and critical handoff.
+- ✅ A1.1 · One bounded fixture specifies every live Paper Page Type and critical handoff.
   **Done when:** the inputs, expected edges, receipts, and stop gates are explicit enough for a clean-context run.
+  **Now:** The test shape, evidence lanes, handoffs, and expected receipt are explicit.
 
-## States
-### A1 · 🧪 Minimal fixture
-- ✅ A1.1 · The test shape, evidence lanes, handoffs, and expected receipt are explicit.
 
 ## Files
 - `_fixture/` · Board-local validation material (260820 five-type era)
@@ -69,3 +67,5 @@ A downstream integration run passes only when edits land on owning Pages and the
 260820 · Moved from QF1 to QC3 so validation closes the composition topic it tests.
 260820 · Dash dropped from the fixture's Page Type count (six → five); the status rollup stays as a non-Page edge in the diagram.
 260828 · Spec raised to the seven-type journey graph (Ideation, establish loop, bank Venue, assemble verb); the on-disk `_fixture/` material still covers the five-type era, and building the loop's fixture edges is the registered open obligation. Repaired the `4-QC-composition/` path left dead by the 260820 regroup.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

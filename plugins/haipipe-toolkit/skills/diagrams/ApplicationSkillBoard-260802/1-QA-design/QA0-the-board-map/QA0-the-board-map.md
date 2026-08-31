@@ -59,13 +59,10 @@ QF records validation. “Skill written” is not “system works.”
 ## Aims
 
 ### A1 · Contract
-- A1.1 · A reader can identify the authority for any Application question.
+- ✅ A1.1 · A reader can identify the authority for any Application question.
   **Done when:** the map distinguishes architecture, insight, type, route, and proof.
+  **Now:** The Board index and this Page show the same dependency order.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · The Board index and this Page show the same dependency order.
 
 ## Files
 
@@ -81,3 +78,5 @@ No historical page or venue pack may override the four current Page Type contrac
 
 260820 · Replaced the external Insight Board → single Intervention map with the
 Application-local Brief → Insights → many Design Pages architecture.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

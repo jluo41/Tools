@@ -164,28 +164,6 @@ The move is cheapest now: deploy is a stub, so no implementation path has harden
 
 ## Aims
 
-### A1 · 🔍 The two audit passes
-- A1.1 · Every reviewed artifact carries both reports.
-  **Done when:** each artifact whose frontmatter reads reviewed has a `REVIEW-<variant-slug>.md` with a pass verdict and appears in `CLAIM_AUDIT.md` with no open finding.
-
-### A2 · 🚪 The gate: nothing self-promotes
-- A2.1 · A named person owns the production approval.
-  **Done when:** JL answers the second Decision Now row and the ruling is written into the deploy skill's prerequisites.
-- A2.2 · No code path flips reviewed to deployed on its own.
-  **Done when:** the implemented deploy skill refuses production without a recorded approval, and one test run proves the refusal.
-
-### A3 · 🔁 Deploy ships, then feeds the ladder
-- A3.1 · Deploy is implemented past the stub.
-  **Done when:** one artifact is packaged and delivered to a staging or test channel through the implemented skill, with a verified test send.
-- A3.2 · A shipped variant's results land back in 1a.
-  **Done when:** one deployment's A/B results are written into 1a-descriptions and the next round's themes can cite them.
-
-### A4 · 📁 The bucket shape: one proposal for 3-deliver
-- A4.1 · The 3-deliver folder shape is ruled, one way or the other.
-  **Done when:** the first Decision Now row is answered and the folder layout matches the ruling.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Do we re-bucket application/3-deliver into paper's layout?
       📍 `Part 4` the flat layout is today's fact; the mapping is artifact to 1-build, review and claim-audit to 2-audit, deploy to 4-ship
@@ -202,19 +180,36 @@ The move is cheapest now: deploy is a stub, so no implementation path has harden
       `B ·` the intervention's owner approves and JL is informed: scales past one person, and moves the approval one step away from the board's decider
       🛑 `Blocks` the first production deploy, and A2.1
 
+
 ### A1 · 🔍 The two audit passes
-- ⬜ A1.1 · Not started here; the two skills exist as contracts (review 0.1.1, claim-audit 0.1.2) and no run report is cited on this page yet.
+- ⬜ A1.1 · Every reviewed artifact carries both reports.
+  **Done when:** each artifact whose frontmatter reads reviewed has a `REVIEW-<variant-slug>.md` with a pass verdict and appears in `CLAIM_AUDIT.md` with no open finding.
+  **Now:** Not started here; the two skills exist as contracts (review 0.1.1, claim-audit 0.1.2) and no run report is cited on this page yet.
+
 
 ### A2 · 🚪 The gate: nothing self-promotes
-- 🧠 A2.1 · Waiting on JL; the second Decision Now row above carries the options.
-- ⬜ A2.2 · Not started; there is no code path to refuse anything while deploy is a stub.
+- 🧠 A2.1 · A named person owns the production approval.
+  **Done when:** JL answers the second Decision Now row and the ruling is written into the deploy skill's prerequisites.
+  **Now:** Waiting on JL; the second Decision Now row above carries the options.
+- ⬜ A2.2 · No code path flips reviewed to deployed on its own.
+  **Done when:** the implemented deploy skill refuses production without a recorded approval, and one test run proves the refusal.
+  **Now:** Not started; there is no code path to refuse anything while deploy is a stub.
+
 
 ### A3 · 🔁 Deploy ships, then feeds the ladder
-- ⬜ A3.1 · Not started; the deploy SKILL.md declares itself STUB at 0.1.1.
-- ⬜ A3.2 · Not started; nothing has shipped, so nothing has flowed back.
+- ⬜ A3.1 · Deploy is implemented past the stub.
+  **Done when:** one artifact is packaged and delivered to a staging or test channel through the implemented skill, with a verified test send.
+  **Now:** Not started; the deploy SKILL.md declares itself STUB at 0.1.1.
+- ⬜ A3.2 · A shipped variant's results land back in 1a.
+  **Done when:** one deployment's A/B results are written into 1a-descriptions and the next round's themes can cite them.
+  **Now:** Not started; nothing has shipped, so nothing has flowed back.
+
 
 ### A4 · 📁 The bucket shape: one proposal for 3-deliver
-- 🧠 A4.1 · Waiting on JL; the first Decision Now row above carries the options.
+- 🧠 A4.1 · The 3-deliver folder shape is ruled, one way or the other.
+  **Done when:** the first Decision Now row is answered and the folder layout matches the ruling.
+  **Now:** Waiting on JL; the first Decision Now row above carries the options.
+
 
 ## Files
 
@@ -243,3 +238,5 @@ The move is cheapest now: deploy is a stub, so no implementation path has harden
 ## Log
 
 260802 · Page created: the three 3-deliver skills quoted as they stand, QB9@paper's promote asymmetry mirrored as the ship gate, and two rulings put in front of JL: the 3-deliver re-bucketing and who may say go for production.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

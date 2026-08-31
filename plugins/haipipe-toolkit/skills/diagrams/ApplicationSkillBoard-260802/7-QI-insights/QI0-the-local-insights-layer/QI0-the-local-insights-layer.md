@@ -60,31 +60,30 @@ Existing consumer-neutral Insight Pages on another Board remain valid PageX inpu
 
 ## Aims
 
-### A1 · Contract
-- A1.1 · Placement and evidence authority are separate and explicit.
-  **Done when:** the public door, Page Type, and Board all state the same split.
-
-#### P · Runtime
-- P1 · Application insights have one canonical home.
-  **Done when:** the runtime map uses `<DataSubject>-InsightBoard/1-I-insights/` and no current Application procedure routes new work to an external Task Board by default.
-- P2 · Both scopes resolve to one contract with no collision.
-  **Done when:** `scope:` is required and each scope's required fields are stated.
-
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Shipped in Application 0.10.0 and Insight Page Type 0.5.0.
-
-#### P · Runtime
-- ✅ P1 · The public router and Insight procedure use `<DataSubject>-InsightBoard/1-I-insights/`; the worked specimen builds clean at 2 pages, 0 error.
-- ✅ P2 · `scope: task | application` is required and the resolution table names it.
-
 ### Decision Now
 - [ ] 🗣 Which skill set owns `haipipe-page-for-insight`, now that both layers create the Page Type?
       It ships under `application/page-types/` while its `parent:` is `haipipe-page-for-task` and the task layer creates `scope: task` Pages against it. `haipipe-page` §🧬 says the folder a variant sits in names its owner, so today the folder says Application owns a contract Task also depends on.
       A · leave it in `application/page-types/`. Nothing breaks, both layers resolve it by name, and the folder simply stops being a reliable ownership signal.
       B · move it to `task/page-types/` beside its parent. The folder tells the truth again, and evidence authority and contract home finally agree.
       → CC recommends B, because the contract's own text says evidence discipline is Task's and a reader who trusts the folder rule is currently misled. It is a folder move plus a symlink refresh, not a rewrite.
+
+
+### A1 · Contract
+- ✅ A1.1 · Placement and evidence authority are separate and explicit.
+  **Done when:** the public door, Page Type, and Board all state the same split.
+  **Now:** Shipped in Application 0.10.0 and Insight Page Type 0.5.0.
+
+
+#### P · Runtime
+- ✅ P1 · Application insights have one canonical home.
+  **Done when:** the runtime map uses `<DataSubject>-InsightBoard/1-I-insights/` and no current Application procedure routes new work to an external Task Board by default.
+  **Now:** The public router and Insight procedure use `<DataSubject>-InsightBoard/1-I-insights/`; the worked specimen builds clean at 2 pages, 0 error.
+- ✅ P2 · Both scopes resolve to one contract with no collision.
+  **Done when:** `scope:` is required and each scope's required fields are stated.
+  **Now:** `scope: task | application` is required and the resolution table names it.
+
+
+## Discussion
 
 ## Files
 
@@ -110,3 +109,5 @@ Application owns the **placement and consumer** of its Insight Pages; Task owns 
 260820 · Split the Application into two boards, so this layer became the `<DataSubject>-InsightBoard` rather than a `1-insights/` folder inside one board.
 260820 · Added `scope: task | application` after the single-contract collision surfaced, and raised the ownership ruling above.
 260827 · The layer gained its own law door, `/haipipe-insight`, symmetric to `/haipipe-design`: the one-dataset law, the Climb Law and the three pens in one place, the workflow keeping only order and gates. The reused slash name is disclaimed in the door itself: the KB layer retired 260717 held evidence; this door holds none.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

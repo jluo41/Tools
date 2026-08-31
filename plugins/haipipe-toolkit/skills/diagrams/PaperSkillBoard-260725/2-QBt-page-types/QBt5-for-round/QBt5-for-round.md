@@ -41,16 +41,16 @@ The Round never becomes a second home for revised prose or substantive paper evi
 
 ## Aims
 ### A1 · 🔄 Round contract
-- A1.1 · One feedback batch closes without missing or duplicating a concern.
+- ✅ A1.1 · One feedback batch closes without missing or duplicating a concern.
   **Done when:** all ledger items have terminal dispositions and checked destinations.
+  **Now:** The current contract distinguishes Paper Rounds from Page workflow rounds.
 
-## States
-### A1 · 🔄 Round contract
-- ✅ A1.1 · The current contract distinguishes Paper Rounds from Page workflow rounds.
 
 ## Files
-- `../../paper/page-types/haipipe-page-for-round/SKILL.md` · source contract
+- `../../paper/workflow-phases/haipipe-paper-round/SKILL.md` · source contract
 
 ## Log
 260820 · Promoted review and rebuttal into one persistent feedback Page Type.
 260828 · Refreshed to 0.3.1: routing gained the Seed as a target (a concern demanding evidence the paper does not hold reopens the establish loop), gate G7 names the coverage rule, and the page's home is the desk's B group. No Round instance has ever run; the contract is field-untested and its status row reads (provisional).
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

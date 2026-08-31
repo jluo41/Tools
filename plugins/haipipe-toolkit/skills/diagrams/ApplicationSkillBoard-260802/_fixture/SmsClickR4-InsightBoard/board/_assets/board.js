@@ -3335,7 +3335,8 @@ function boardDirPath() {
      chat box is not overruled on every page. */
   var TUIDEF = 'board-tui-default';
   function tuiIsDefault() {
-    try { return localStorage.getItem(TUIDEF) !== '0'; } catch (e) { return true; }
+    /* GUI unless the reader chose TUI (JL 260831); the shell's radio writes this key. */
+    try { return localStorage.getItem(TUIDEF) === '1'; } catch (e) { return false; }
   }
   window.__boardTuiDefault = tuiIsDefault;
   window.__boardOpenDefaultView = async function () {
@@ -3795,7 +3796,8 @@ function boardDirPath() {
      would be noise. Those keep going straight to the last-used view. */
   var TUIKEY = 'board-tui-default';
   function tuiDefault() {
-    try { return localStorage.getItem(TUIKEY) !== '0'; } catch (e) { return true; }
+    /* GUI unless the reader chose TUI (JL 260831); the shell's radio writes this key. */
+    try { return localStorage.getItem(TUIKEY) === '1'; } catch (e) { return false; }
   }
   var pick = document.createElement('div');
   pick.id = 'chatpick';

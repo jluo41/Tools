@@ -75,10 +75,11 @@ is worse than having none.
 - [ ] 🧪 Graduate the first Law
       Nothing has graduated yet, because nothing is ✅. The first one will show whether the destination list above survives contact.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The board is one day old and nothing has graduated. Nineteen faces exist, all 🔴 or 🟡, and the
 mechanism above is stated rather than exercised.
-
 - 260726 CC · 🌱 Opened
       Modelled on `QA3@paper`, which states the same mechanism for the paper family. The one addition here is the caution about the QA file, because this family WRITES QA files while a different board RULES them, and that split has no counterpart on the paper side.
 
@@ -92,3 +93,5 @@ mechanism above is stated rather than exercised.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

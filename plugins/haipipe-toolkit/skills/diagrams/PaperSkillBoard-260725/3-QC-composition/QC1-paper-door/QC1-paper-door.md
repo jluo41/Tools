@@ -48,12 +48,10 @@ Assembly reads accepted Narrative, Section, and display outputs rather than mini
 
 ## Aims
 ### A1 · 🚪 Paper door
-- A1.1 · Every public Paper verb resolves to one durable owner.
+- ✅ A1.1 · Every public Paper verb resolves to one durable owner.
   **Done when:** no active verb depends on a retired stage contract or duplicate build engine.
+  **Now:** The current door routes seven Page Types, the journey machine, two commands (status, journey), and accepted-output assembly.
 
-## States
-### A1 · 🚪 Paper door
-- ✅ A1.1 · The current door routes seven Page Types, the journey machine, two commands (status, journey), and accepted-output assembly.
 
 ## Files
 - `../../paper/haipipe-paper/SKILL.md` · current public door
@@ -63,3 +61,5 @@ Assembly reads accepted Narrative, Section, and display outputs rather than mini
 260820 · Reduced the Paper runtime to routing, graph integrity, assembly, and delivery.
 260820 · Dropped Dash as a Page Type; `/haipipe-paper status [family]` now covers the same rollup as a command.
 260828 · Registered the journey-era door: ideate/roadmap/journey/assemble verbs, seven routed Page Types, workflow delegation for gates. Known knife point per the family status: the door's own frontmatter still has no version, the one family member that cannot be date-checked.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

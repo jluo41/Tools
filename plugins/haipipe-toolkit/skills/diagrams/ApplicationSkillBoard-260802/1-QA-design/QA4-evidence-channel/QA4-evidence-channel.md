@@ -49,14 +49,11 @@ When evidence or accepted Pages change, refresh the local Insight and reopen onl
 ## Aims
 
 ### A1 · Contract
-- A1.1 · No Design procedure dispatches Probe.
+- ✅ A1.1 · No Design procedure dispatches Probe.
   **Done when:** routing and fresh-agent behavior both send missing knowledge to
   the InsightBoard's `1-I-insights/`.
+  **Now:** Both fresh agents routed missing premises to local Insight Pages and kept Probe out of Design.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Both fresh agents routed missing premises to local Insight Pages and kept Probe out of Design.
 
 ## Files
 
@@ -75,3 +72,5 @@ Insight Page may cross from the second route back into the first.
 260820 · Narrowed the old “Application owns no Probe” rule to “Design owns no
 Probe; Application-local Insight may Probe under Task-backed authority.”
 260820 · Two fresh-context runs verified the boundary on SMS and multi-audience email scenarios.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

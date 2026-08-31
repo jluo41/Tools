@@ -96,27 +96,24 @@ N2 has no page and cannot get one from this data: division 6 records that send h
 ## Aims
 
 ### A1 · Purpose and Scope
-- A1.1 · Every source names an owner, a run identity, and a dated extract.
+- ✅ A1.1 · Every source names an owner, a run identity, and a dated extract.
   **Done when:** no row in division 2 is missing one of the three.
+  **Now:** Three sources, each with owner, run, and extract date.
+
 
 #### P · Grain
-- P1 · A reader cannot confuse a per-invitation rate with a per-person rate.
+- ✅ P1 · A reader cannot confuse a per-invitation rate with a per-person rate.
   **Done when:** division 3 states the join and the multiplicity.
+  **Now:** The join and the sends-outnumber-people warning are stated.
+
 
 #### P2 · Insight Roster
-- P2.1 · Every raised need is visible, answered or not.
+- 🧠 P2.1 · Every raised need is visible, answered or not.
   **Done when:** each need has a row and an honest state.
+  **Now:** N2 is rostered and open. It is blocked on data that does not exist in this extract, not on effort.
 
-## States
 
-### A1 · Purpose and Scope
-- ✅ A1.1 · Three sources, each with owner, run, and extract date.
-
-#### P · Grain
-- ✅ P1 · The join and the sends-outnumber-people warning are stated.
-
-#### P2 · Insight Roster
-- 🧠 P2.1 · N2 is rostered and open. It is blocked on data that does not exist in this extract, not on effort.
+## Discussion
 
 ## Files
 
@@ -135,3 +132,5 @@ Meta describes and never concludes. A number here carries its source and its dat
 ## Log
 
 260820 · Created as the InsightBoard head for the two-board fixture.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

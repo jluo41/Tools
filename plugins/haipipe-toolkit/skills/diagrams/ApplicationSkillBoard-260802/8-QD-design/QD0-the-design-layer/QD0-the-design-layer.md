@@ -56,20 +56,18 @@ The task layer already carries two surfaces: P-B-E-R for execution and a Task Bo
 ## Aims
 
 ### A1 · Contract
-- A1.1 · The board's last act is acceptance, and nothing downstream lives here.
+- ✅ A1.1 · The board's last act is acceptance, and nothing downstream lives here.
   **Done when:** no deploy record, shipment log, or measurement round can be written to a Design Page.
+  **Now:** `4-deploy/` and `5-rounds/` removed in Application 0.9.0; the `deploy` and `iterate` verbs are gone and Design Page Type 0.3.0 forbids the records.
+
 
 #### A2 · Closure
-- A2.1 · The feedback loop closes without a stage on this board.
+- ✅ A2.1 · The feedback loop closes without a stage on this board.
   **Done when:** the documented return path runs task → Insight → stale binding → reopened division.
+  **Now:** The public door's Iteration section is now a handoff diagram, not a stage.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · `4-deploy/` and `5-rounds/` removed in Application 0.9.0; the `deploy` and `iterate` verbs are gone and Design Page Type 0.3.0 forbids the records.
-
-#### A2 · Closure
-- ✅ A2.1 · The public door's Iteration section is now a handoff diagram, not a stage.
+## Discussion
 
 ## Files
 
@@ -86,3 +84,5 @@ The DesignBoard ends at ACCEPTED. It never owns SHIPPED and never owns MEASURED.
 ## Log
 
 260820 · Cut the board at acceptance and removed `4-deploy/` and `5-rounds/` (JL: "you just stop at designing, the implementation is another thing").
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -166,32 +166,6 @@ The K/W-versus-advice drift of §3 is not a GAP, because both answers exist in t
 
 ## Aims
 
-### A1 · 🚪 What the channel gates, and how deep claims must settle
-- A1.1 · The stages block and the medium bar are applied by the pin and the claims gate rather than recalled by a drafter.
-  **Done when:** a checklist pin writes `stages_skipped` from this README and a claims CHECK run names medium as its bar.
-
-### A2 · ☐ The artifact: three slots, 5 to 12 completable items
-- A2.1 · Every checklist draft fills the three slots inside the item band.
-  **Done when:** a draft names its goal, carries 5 to 12 items each in the action-verb form, and states its completion line.
-
-### A3 · 🔀 What every item traces to, and where the pack's words drift
-- A3.1 · The tracing rung is single, ruled, and written back into both pack files.
-  **Done when:** `README.md` and `style-profile.md` name the same rung the ruling picked, and the draft gate checks that rung only.
-
-### A4 · 🗣 Audience and voice: two worked examples carry the whole axis
-- A4.1 · Tone-by-audience rows exist in the style profile for at least the two audiences its examples show.
-  **Done when:** the profile states tone, language, and evidence depth per audience, and a drafter needs no inference from the examples.
-
-### A5 · ❌ What desk-rejects a checklist
-- A5.1 · The five-row self-review runs as a recorded draft gate, not a suggestion.
-  **Done when:** a checklist draft's round records its self-review result before release.
-
-### A6 · 🕳 What the schema demands that the pack lacks
-- A6.1 · `exemplars/` exists and holds at least one real checklist artifact.
-  **Done when:** `venue-checklist/exemplars/` is on disk with a real artifact and this page's Files points at it.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Which rung does a checklist item trace to: a 1c claim, the pack's K/W entry, or a 1d advice entry, the frontmatter's A?
       📍 `§3` the tracing rule and the drift it carries
@@ -201,23 +175,42 @@ The K/W-versus-advice drift of §3 is not a GAP, because both answers exist in t
       🛑 `Blocks` A3.1, and any edit to the pack's two files
       🤖 `If nobody answers` nothing changes on disk, the README keeps saying K/W, and the drift stands
 
+
 ### A1 · 🚪 What the channel gates, and how deep claims must settle
-- ⬜ A1.1 · Not started on this page's evidence; the schema names the pin as the translator and no checklist pin is cited here.
+- ⬜ A1.1 · The stages block and the medium bar are applied by the pin and the claims gate rather than recalled by a drafter.
+  **Done when:** a checklist pin writes `stages_skipped` from this README and a claims CHECK run names medium as its bar.
+  **Now:** Not started on this page's evidence; the schema names the pin as the translator and no checklist pin is cited here.
+
 
 ### A2 · ☐ The artifact: three slots, 5 to 12 completable items
-- ⬜ A2.1 · Not started; no checklist draft stands behind this page's sources.
+- ⬜ A2.1 · Every checklist draft fills the three slots inside the item band.
+  **Done when:** a draft names its goal, carries 5 to 12 items each in the action-verb form, and states its completion line.
+  **Now:** Not started; no checklist draft stands behind this page's sources.
+
 
 ### A3 · 🔀 What every item traces to, and where the pack's words drift
-- 🧠 A3.1 · Waiting on the Decision Now row above; no write-back before the ruling.
+- 🧠 A3.1 · The tracing rung is single, ruled, and written back into both pack files.
+  **Done when:** `README.md` and `style-profile.md` name the same rung the ruling picked, and the draft gate checks that rung only.
+  **Now:** Waiting on the Decision Now row above; no write-back before the ruling.
+
 
 ### A4 · 🗣 Audience and voice: two worked examples carry the whole axis
-- ⬜ A4.1 · Not started; the profile carries two examples and zero tone rows, read 260802.
+- ⬜ A4.1 · Tone-by-audience rows exist in the style profile for at least the two audiences its examples show.
+  **Done when:** the profile states tone, language, and evidence depth per audience, and a drafter needs no inference from the examples.
+  **Now:** Not started; the profile carries two examples and zero tone rows, read 260802.
+
 
 ### A5 · ❌ What desk-rejects a checklist
-- ⬜ A5.1 · Not started; the self-review block exists in the profile and nothing records a run of it.
+- ⬜ A5.1 · The five-row self-review runs as a recorded draft gate, not a suggestion.
+  **Done when:** a checklist draft's round records its self-review result before release.
+  **Now:** Not started; the self-review block exists in the profile and nothing records a run of it.
+
 
 ### A6 · 🕳 What the schema demands that the pack lacks
-- ⬜ A6.1 · Not started; `exemplars/` is absent on disk, checked 260802.
+- ⬜ A6.1 · `exemplars/` exists and holds at least one real checklist artifact.
+  **Done when:** `venue-checklist/exemplars/` is on disk with a real artifact and this page's Files points at it.
+  **Now:** Not started; `exemplars/` is absent on disk, checked 260802.
+
 
 ## Files
 
@@ -237,3 +230,5 @@ The K/W-versus-advice drift of §3 is not a GAP, because both answers exist in t
 ## Log
 
 260802 · Opened from `venue-checklist/`, two files read against `_SCHEMA.md`; the two schema GAPs (no exemplars/, no tone-by-audience rows) recorded in §6, and the K/W-versus-advice tracing rung put to JL in Decision Now.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -128,13 +128,6 @@ starts specifying what a board IS has crossed into a folder we do not own.
 - [ ] 🔗 Point at the two boards we consult without restating them
       `QA8@paper` owns the shared-page seam; `QC1@probe` owns the QA state line. A copy here would drift within the week.
 
-## States
-The map is drawn and nothing is ruled. Seven folders exist on disk with the counts above, and the
-eighth cell is genuinely empty: no task-group anywhere carries a board.
-
-- 260726 CC · 🗺 Board opened, map drawn
-      Written from `SKILL.md`, `DESIGN.md` and `ref/hierarchy.md`, with the folder counts measured on disk rather than taken from the docs. The docs and the disk disagree in one place worth noting here: `ref/task-structure.md` calls a group-level `diagram/` mandatory for cohesive groups, and 5 of 67 groups have one.
-
 ## Files
 - `SKILL.md`
   The router, and the current statement of the one door in and the one door out.
@@ -146,6 +139,15 @@ eighth cell is genuinely empty: no task-group anywhere carries a board.
 ## Discussion
 > CC 260726: the grid is deliberately the same shape as `QA1@paper` so the two can be read side by side, but one row means the opposite thing. There, `⑤` is a door the paper goes OUT through and the paper skill owns neither channel. Here, `⑤` is a door a consumer comes IN through, and we own neither of the two shared skills either. The symmetry is real; the direction is inverted, and a reader who carries the paper board's reading across will get the probe row exactly backwards.
 
+
+### From the retired States section (merged 260831)
+The map is drawn and nothing is ruled. Seven folders exist on disk with the counts above, and the
+eighth cell is genuinely empty: no task-group anywhere carries a board.
+- 260726 CC · 🗺 Board opened, map drawn
+      Written from `SKILL.md`, `DESIGN.md` and `ref/hierarchy.md`, with the folder counts measured on disk rather than taken from the docs. The docs and the disk disagree in one place worth noting here: `ref/task-structure.md` calls a group-level `diagram/` mandatory for cohesive groups, and 5 of 67 groups have one.
+
 ## Log
 260816 · The board took the two shape rules the Board family had landed. The group folders now carry their place in `## Pages` as a leading number, `1-` through `5-QE-shipping-the-skill`, so the folder listing and the board read in one order. Then every page took a folder of its own, `1-QA-where-things-live/QA1-the-map/QA1-the-map.md`, the shape ruled on 260815, which is what gives a page's drawing, deck or export somewhere to live. Both moves were made by `cli/refold.py` and its sibling in the Board engine, and the check came back with nothing new: same 19 pages, no new error, no new warning. Alongside it every dead link was repaired: the paper design board had been renamed and folded, and the probe design board retired on 260804, so its ids now point at `haipipe-probe`, which carries those rulings.
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

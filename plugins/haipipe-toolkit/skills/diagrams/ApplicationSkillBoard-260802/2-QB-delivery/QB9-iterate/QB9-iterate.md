@@ -150,22 +150,6 @@ Who may write retired is the first Decision Now row; that nothing writes iterati
 
 ## Aims
 
-### A1 · 📜 The delivery contract
-- A1.1 · The ladder-first gate binds every iteration.
-  **Done when:** no decision in a round's `decisions.md` cites a metric that is not already a dated D entry in 1a.
-- A1.2 · One A/B batch is followable end to end.
-  **Done when:** a later reader can reconstruct one batch from a single `vYYMMDD/` folder: raw numbers, verdicts, routes, and the backfill log, with nothing split across rounds.
-
-### A2 · 🪜 Staleness propagates up the ladder
-- A2.1 · A refresh re-opens exactly the affected rungs and nothing else.
-  **Done when:** the stamp's reach is ruled in Decision Now, the 1a refresh implements that ruling, and a test refresh stamps every entry the ruling names and no other.
-
-### A3 · 🔁 The outer loop and the maturity words
-- A3.1 · Maturity moves from deployed to iterating to retired, written by the lifecycle rather than by hand.
-  **Done when:** the first ingested batch sets iterating, and retired is written only per the kill-authority ruling, always with a reason.
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 Does a met kill criterion retire the intervention by itself, or only flag it for JL?
@@ -183,15 +167,27 @@ Who may write retired is the first Decision Now row; that nothing writes iterati
       ⭐ `B ·` whole chain: the stamp follows the citation chain from D through T and C to A, which commits you to chain-walking in the 1a refresh and more stamps per batch; CC recommends B because the ladder's own citation rule makes one-hop stamping structurally unable to reach 1d.
       🛑 `Blocks` A2.1: the stamping rule cannot be implemented or tested until its reach is ruled.
 
+
 ### A1 · 📜 The delivery contract
-- 🧠 A1.1 · The rule is written (skill step 4, the Gate row here); verifying it waits on a live batch, and nothing read for this page shows one yet.
-- 🧠 A1.2 · The carrier exists: the round skill scaffolds the five-file `vYYMMDD/` folder and the `latest.md` pointer; whether a real batch stayed whole waits on the same live batch.
+- 🧠 A1.1 · The ladder-first gate binds every iteration.
+  **Done when:** no decision in a round's `decisions.md` cites a metric that is not already a dated D entry in 1a.
+  **Now:** The rule is written (skill step 4, the Gate row here); verifying it waits on a live batch, and nothing read for this page shows one yet.
+- 🧠 A1.2 · One A/B batch is followable end to end.
+  **Done when:** a later reader can reconstruct one batch from a single `vYYMMDD/` folder: raw numbers, verdicts, routes, and the backfill log, with nothing split across rounds.
+  **Now:** The carrier exists: the round skill scaffolds the five-file `vYYMMDD/` folder and the `latest.md` pointer; whether a real batch stayed whole waits on the same live batch.
+
 
 ### A2 · 🪜 Staleness propagates up the ladder
-- 🧠 A2.1 · Waiting on the stamp-reach ruling; the skill's one-hop wording and the chain intent disagree (§2.2).
+- 🧠 A2.1 · A refresh re-opens exactly the affected rungs and nothing else.
+  **Done when:** the stamp's reach is ruled in Decision Now, the 1a refresh implements that ruling, and a test refresh stamps every entry the ruling names and no other.
+  **Now:** Waiting on the stamp-reach ruling; the skill's one-hop wording and the chain intent disagree (§2.2).
+
 
 ### A3 · 🔁 The outer loop and the maturity words
-- 🧠 A3.1 · Waiting on the kill-authority ruling; today step 7 writes retired directly, and no step writes iterating.
+- 🧠 A3.1 · Maturity moves from deployed to iterating to retired, written by the lifecycle rather than by hand.
+  **Done when:** the first ingested batch sets iterating, and retired is written only per the kill-authority ruling, always with a reason.
+  **Now:** Waiting on the kill-authority ruling; today step 7 writes retired directly, and no step writes iterating.
+
 
 ## Files
 
@@ -217,3 +213,5 @@ Who may write retired is the first Decision Now row; that nothing writes iterati
 ## Log
 
 260802 · Page created: Iterate stated as the outer loop with the ladder-first gate and the staleness chain, and two rulings put to JL (kill authority, stamp reach).
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

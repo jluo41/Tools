@@ -53,13 +53,10 @@ Promote only when one unit can be accepted, rejected, versioned, or deployed ind
 ## Aims
 
 ### A1 · Contract
-- A1.1 · The public skill never assumes exactly one Intervention.
+- ✅ A1.1 · The public skill never assumes exactly one Intervention.
   **Done when:** it routes many Design Pages and an optional Artifact layer.
+  **Now:** Shipped in Application 0.8.0 and Design Page Type 0.2.0.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Shipped in Application 0.8.0 and Design Page Type 0.2.0.
 
 ## Files
 
@@ -74,3 +71,5 @@ The Application is the container; Design Pages are its compositional units.
 ## Log
 
 260820 · Replaced “exactly one Intervention” with many audience/job/venue Designs.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

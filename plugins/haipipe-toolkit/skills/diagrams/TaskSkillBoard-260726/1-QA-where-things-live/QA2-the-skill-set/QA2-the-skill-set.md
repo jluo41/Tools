@@ -101,10 +101,11 @@ fifth phase would be a different skill family, not a new type.
 - [x] 💡 Separate execution from reusable insight
       `/haipipe-task insight` creates or resumes an Insight Page; Probe reads Task/Discovery evidence there, and PageX exports only the settled Page.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The package runs and is in daily use across 67 groups. The routing rule is stated and Stata is a
 clean instance of it. Nothing about the board entry exists.
-
 - 260817 CC · 💡 The family now exposes two surfaces
       Execution keeps Plan → Build → Execute → Report. Insight uses the shared Page lifecycle and a fixed D→I→K→W contract; it is not another engine domain.
 - 260817 CC · 📏 Recounted from disk
@@ -121,3 +122,5 @@ clean instance of it. Nothing about the board entry exists.
 ## Log
 260817 · Added the Task/Insights Board surface, `insight` routing, the two Page Types, and the Probe-in/PageX-out boundary.
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

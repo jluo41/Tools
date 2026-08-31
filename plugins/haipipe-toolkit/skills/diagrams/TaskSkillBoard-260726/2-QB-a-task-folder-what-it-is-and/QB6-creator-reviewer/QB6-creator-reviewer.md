@@ -76,14 +76,14 @@ as deliberate rather than as an oversight: three phases have a pair, one has a h
 - [ ] 🔁 Rule what a second `revise` means
       The ladder bounds `warn` at two and says nothing about repeated `revise`. An infinite loop is prevented by the workflow's own limits rather than by a stated rule.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Implemented and in use: three agents in `task/agents/`, driven by
 `ref/task-lifecycle.workflow.js`, with the creator/reviewer invariant stated in `SKILL.md`.
-
 The two open items are both about what the loop leaves behind rather than how it runs. A warn that
 was advanced past, and a reviewer that knows which defect class it owns, are the difference between
 a gate and a formality.
-
 - 260726 CC · 🧠 Stated independence as structural
       `SKILL.md` says the reviewer's independence comes from fresh-agent reasoning. Written here as the thing being bought, because a team under time pressure will otherwise collapse the pair into one careful agent and lose exactly the property that made it work.
 
@@ -99,3 +99,5 @@ a gate and a formality.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

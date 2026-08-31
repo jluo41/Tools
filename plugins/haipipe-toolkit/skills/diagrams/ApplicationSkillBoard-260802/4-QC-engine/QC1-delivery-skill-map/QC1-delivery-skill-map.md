@@ -55,14 +55,11 @@ The router shows the blocked Aim, question, target, PageX matches, destination l
 ## Aims
 
 ### A1 · Contract
-- A1.1 · The same intent reaches one current contract.
+- ✅ A1.1 · The same intent reaches one current contract.
   **Done when:** brief, insight, design, artifact, and missing-knowledge phrases
   cannot fall through to a legacy stage.
+  **Now:** Route table ships in Application 0.8.0.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Route table ships in Application 0.8.0.
 
 ## Files
 
@@ -84,3 +81,5 @@ The router selects authority; it does not author Page content.
 
 260820 · Replaced the nine-stage route crosswalk with four Page routes and a delivery tail.
 260820 · Deleted the six `Skill-<n>` pages and took their job as a `skill/` plugin list (JL: "the skill will be the skill-plugin to replace them"). A Skill page COPIED a SKILL.md into board prose, so five of the six described skills that had moved to `_old/` hours earlier; the plugin stores a name and reads version and description live, so it cannot drift the same way.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

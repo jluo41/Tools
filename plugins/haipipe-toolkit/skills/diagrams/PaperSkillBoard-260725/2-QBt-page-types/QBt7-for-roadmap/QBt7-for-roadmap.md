@@ -52,19 +52,19 @@ There is no separate Collection page: the lap divisions are the campaign's intak
 
 ## Aims
 ### A1 · 🗺 Roadmap contract
-- A1.1 · Every open Seed gap has a released route or a visible waiver.
+- ✅ A1.1 · Every open Seed gap has a released route or a visible waiver.
   **Done when:** G2 reads clean: each 🔨/⬜ E-row names a ▶️ block row or a waiver on the Seed's Log.
-- A1.2 · Every landed receipt is registered where the plan promised it.
+  **Now:** The 0.3.x contract makes G2 a readable assertion over the Block Board.
+- ✅ A1.2 · Every landed receipt is registered where the plan promised it.
   **Done when:** G3 reads clean: done-when holds, every dispatched card binds a landed QA path, and the settle is written on the Seed.
+  **Now:** G2 and G3 have fired live (2 boards, 1 field test, 3 gaps patched), per the family status of 260828.
 
-## States
-### A1 · 🗺 Roadmap contract
-- ✅ A1.1 · The 0.3.x contract makes G2 a readable assertion over the Block Board.
-- ✅ A1.2 · G2 and G3 have fired live (2 boards, 1 field test, 3 gaps patched), per the family status of 260828.
 
 ## Files
-- `../../paper/page-types/haipipe-page-for-roadmap/SKILL.md` · source contract
+- `../../paper/workflow-phases/haipipe-paper-roadmap/SKILL.md` · source contract
 - `../../paper/haipipe-paper-workflow/SKILL.md` · gates G2/G3 and the establish loop
 
 ## Log
 260828 · Specimen minted during the field repair. Roadmap entered the family with the journey (260824) as the route phase's authority page; this morning it absorbed the Collection page (0.3.0) and pinned each block's task-group home (0.3.1). Known knife point: the contract file says 0.3.1 while its CHANGELOG labels the same law 0.4.0; the family's own status lists the reconcile as open.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0
