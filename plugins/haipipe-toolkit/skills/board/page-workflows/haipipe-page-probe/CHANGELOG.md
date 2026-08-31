@@ -1,5 +1,3 @@
-## 0.11.0 — 2026-08-21
-
 ## 0.12.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
@@ -14,6 +12,7 @@ The TASK-route batch gets a home: the page's collection job
 the dispatched questions via `/haipipe-task qa "<q>" <job>`. The one-door rule
 (haipipe-probe-q-executor-agent) and the Discovery route are unchanged.
 
+## 0.11.0 — 2026-08-21
 
 - **A missing task folder stopped being a HOLD.** §🔀's `no allowed bank can
   answer → HOLD` read as "no folder exists", so a perfectly answerable question

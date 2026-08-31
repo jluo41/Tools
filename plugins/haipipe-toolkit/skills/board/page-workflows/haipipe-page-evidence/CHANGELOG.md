@@ -1,5 +1,3 @@
-## 0.12.0 — 2026-08-20
-
 ## 0.13.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
@@ -14,6 +12,7 @@ Value lane: when the page has a collection job (`task/haipipe-task-for-page`),
 `values.yaml`; a refresh-run diff that drifts a bound value re-lands here and
 is absorbed at OUTLINE.
 
+## 0.12.0 — 2026-08-20
 
 - **0.12.0 shipped in SKILL.md with no entry here.** Reconstructed from the
   frontmatter: EVIDENCE lands the bibex and display lanes plus Probe's QA

@@ -1,5 +1,3 @@
-## 0.43.0 — 2026-08-31
-
 ## 0.47.1 · 2026-08-31
 
 Internal drift caught by the /skill-inspect --score review: the collection-job
@@ -54,6 +52,8 @@ first in the `task/` lane — as the code-shaped answerer of a page's task-route
 cards. The card address `PP<NN>.v<n>` and every phase authority are unchanged.
 
 
+
+## 0.43.0 — 2026-08-31
 Rewritten to one lane, "what a page IS": 787 → 395 lines, present tense, no
 attribution in the law (who ruled and when lives here). Each rule now has one
 home and this file points at it:

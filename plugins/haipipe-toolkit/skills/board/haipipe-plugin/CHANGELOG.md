@@ -1,5 +1,3 @@
-## 0.1.3 — 2026-08-21
-
 ## 0.1.5 · 2026-08-31
 
 Category folders (evidence/, delivery/), the runs/ execution door and the
@@ -12,6 +10,7 @@ The `task/` row's ranked list now states that the page's collection job
 (task-type `page`, `haipipe-task-for-page`) ranks first when one exists; the
 lane's storage, surface and writer are unchanged.
 
+## 0.1.3 — 2026-08-21
 
 - **`ref/roster.md` gains the `outline/` row it had been missing since 260817.**
   The file's own opening law is that a subfolder of a page's home folder is board
