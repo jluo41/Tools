@@ -1,3 +1,14 @@
+## 0.48.0 · 2026-08-31
+
+v4 of the category folder (JL: "code results and config should be separated
+from the evidence"): the execution family gets its own top-level `code/`
+(scripts any language · config/ · runs/ = the one door · results/), out of
+evidence/. The gate line separates them: evidence is CITED material behind a
+human gate; code/results is machinery, regenerable, gate-free, never PHI; a
+result becomes evidence only when a probe card binds it. On a task unit this
+family IS the folder root, so the page mirrors the task exactly.
+
+
 ## 0.47.1 · 2026-08-31
 
 Internal drift caught by the /skill-inspect --score review: the collection-job

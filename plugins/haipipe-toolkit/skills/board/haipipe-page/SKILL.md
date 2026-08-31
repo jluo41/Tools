@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.47.1"
+  version: "0.48.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,15 +47,18 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │                  files: requirement · discussion · feedback · evidence ·
 │                  files · log — parsed MEETINGS land here (JL 260831)
 ├── workflow/      MACHINE process: one receipt per phase pass
-├── runs/          THE ONE DOOR for executing the unit's own code: tickets +
-│                  one dated record per run (the simple-code law)
-├── evidence/      what backs the page (category folder, JL 260831):
+├── code/          the EXECUTION family, any language (JL 260831 v4):
+│   ├── <scripts>  .py · .do · … at its root
+│   ├── config/    run identities
+│   ├── runs/      tickets + one dated record per run · THE ONE DOOR
+│   └── results/   regenerable outputs, never PHI; a result becomes
+│                  evidence only when a probe card binds it
+├── evidence/      what the page CITES, each lane behind its gate:
 │   ├── bibex/     citations · verified:
 │   ├── probe/     cards + values (PP<NN>.v<n>) · read:
 │   ├── display/   units, recipes inside · accepted:
 │   ├── pagex/     every link out: borrowed pages AND task units (the
 │   │              collection job first; the task lane merged here)
-│   ├── code/      scripts that MAKE evidence, called only via runs/
 │   └── materials/ dated captures
 ├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
 ├── chat/          the live conversation lane
