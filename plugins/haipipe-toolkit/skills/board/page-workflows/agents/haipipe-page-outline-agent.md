@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-outline-agent
-description: "Write-scoped OUTLINE producer for one Board Page, phase ① and the head of the converging PREPARE loop. In a fresh context it writes or revises the versioned plan under <page>/outline/, folds returned evidence back into the plan (one pass per PREPARE round, haipipe-page-workflow §🧭), runs the four self-consistency checks (coverage, address, value, shape), and emits a phase receipt. It writes ONE file, never the page itself, never ticks approved:, and never raises a card. Trigger: page outline producer, OUTLINE phase, fold evidence into the plan, outline pass, PREPARE round, four checks, plan v2, outline agent."
+description: "Write-scoped OUTLINE producer for one Board Page, phase ① and the head of the converging PREPARE loop. In a fresh context it writes or revises the versioned plan under <page>/outline/, folds returned evidence back into the plan (one pass per PREPARE round, haipipe-page-workflow §🧭), runs the five checks (arc, coverage, address, value, shape), and emits a phase receipt. It writes the plan, the open D<nn> threads and one log record under <page>/outline/, never the page itself, never ticks approved:, and never raises a card. Trigger: page outline producer, OUTLINE phase, fold evidence into the plan, outline pass, PREPARE round, five checks, plan v2, outline agent."
 tools:
   - Read
   - Write

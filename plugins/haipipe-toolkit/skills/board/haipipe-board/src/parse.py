@@ -139,6 +139,11 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     while i < len(lines) and not lines[i].strip():
         i += 1
     qt = lines[i].lstrip("# ").strip() if i < len(lines) else qid
+    # A paper page titles itself `SD00 · Ideation · …`, and every surface that
+    # shows the title already prints the id beside it (the h2's `.hid`, the
+    # index row's `.i`, the tab title), so the id came out two or three times
+    # per header (JL 260831: "make this cleaner"). Strip it ONCE, here.
+    qt = re.sub(r"^" + re.escape(qid) + r"\s*[·•:\-–—]\s*", "", qt) or qt
     i += 1
     meta = {
         "state": "🔴",

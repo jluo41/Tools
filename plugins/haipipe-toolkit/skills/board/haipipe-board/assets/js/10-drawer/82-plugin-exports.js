@@ -1,4 +1,4 @@
-/* 📜📝📚 Exports · the DERIVED paper-facing plugins: latex/, word/, bibex/.
+/* 📜📝 Exports · the DERIVED paper-facing plugins: latex/ and word/.
  *
  * WHAT THIS FILE OWNS, and it is one thing: WHERE each export's artifact LIVES
  * and which door writes it. The writers themselves are the paper family's
@@ -73,9 +73,10 @@
     { id: 'latex', label: '📜 LaTeX', route: 'latex', ext: '-view.html',
       hint: 'the compiled PDF with the raw .tex one fold below' },
     { id: 'word', label: '📝 Word', route: 'word', ext: '-view.html',
-      hint: 'a coauthor .docx with its PDF twin, via md2docx' },
-    { id: 'bibex', label: '📚 BibEx', route: 'bibex', ext: '-bib.html',
-      hint: 'this page’s citations, subset from the paper’s .bib' }
+      hint: 'a coauthor .docx with its PDF twin, via md2docx' }
+    /* bibex folded into the 🧾 Evidence tab (84-plugin-evidence.js, JL
+       260831); its /_board/bibex builder route stays and the Evidence
+       segment presses it on demand. */
   ];
 
   if (window.boardPlugins) {

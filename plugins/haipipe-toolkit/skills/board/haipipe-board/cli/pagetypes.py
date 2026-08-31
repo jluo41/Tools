@@ -12,6 +12,8 @@ became this script's output and the drift became a finding.
 Three sources, and each answers a different question:
 
     the FOLDERS   skills/*/page-types/haipipe-page-for-<key>/   who maintains it
+                  + paper/workflow-phases/haipipe-paper-<key>/  (paper, 260831)
+                  + paper/haipipe-paper-venue/
     the ENGINE    cli/check.py PAGE_TYPE_VALUES                 what resolves
     the BOARDS    every `page-type:` line on disk                what is in use
 
@@ -48,12 +50,24 @@ def engine_keys() -> set[str]:
 
 
 def contract_keys() -> dict[str, str]:
-    """key -> owning skill set, from the shipped page-types/ folders."""
+    """key -> owning skill set, from the shipped contract folders.
+
+    Most families ship variants under page-types/. Paper's types are 1:1 with
+    journey phases, so since 260831 they ship as workflow-phases/haipipe-paper-
+    <key>/ plus the non-phase paper/haipipe-paper-venue/.
+    """
     found = {}
     for d in sorted(SKILLS.glob("*/page-types/haipipe-page-for-*")):
         if not d.is_dir() or not (d / "SKILL.md").exists():
             continue
         found[d.name.removeprefix("haipipe-page-for-")] = d.parents[1].name
+    for d in sorted(SKILLS.glob("*/workflow-phases/haipipe-paper-*")):
+        if not d.is_dir() or not (d / "SKILL.md").exists():
+            continue
+        found[d.name.removeprefix("haipipe-paper-")] = d.parents[1].name
+    venue = SKILLS / "paper" / "haipipe-paper-venue"
+    if (venue / "SKILL.md").exists():
+        found["venue"] = "paper"
     return found
 
 
@@ -105,6 +119,49 @@ def drift(rows) -> list[str]:
     return out
 
 
+REGISTRY = SKILLS / "board" / "haipipe-page" / "ref" / "type-registry.md"
+
+
+def registry_check(rows) -> list[str]:
+    """The registry tooth: every engine key has a record; usage needs law.
+
+    A missing or unparseable registry RAISES (a name that does not resolve
+    must raise, GATE-3), never returns an empty problem list.
+    """
+    import yaml
+    text = REGISTRY.read_text(encoding="utf-8")            # missing file raises
+    m = re.search(r"```yaml\n(.*?)```", text, re.S)
+    if not m:
+        sys.exit(f"pagetypes: {REGISTRY.name} has no ```yaml block")
+    reg = yaml.safe_load(m.group(1))
+    out = []
+    row_by_key = {r["key"]: r for r in rows}
+    for key, r in row_by_key.items():
+        rec = reg.get(key)
+        if rec is None:
+            out.append(f"{key}: engine key has no registry record")
+            continue
+        standing = rec.get("standing", "")
+        if standing == "contract":
+            law = rec.get("law", "")
+            if not law or not (SKILLS / law).is_dir():
+                out.append(f"{key}: registry law path does not resolve: {law!r}")
+            if r["owner"] == "—":
+                out.append(f"{key}: registry says contract, no shipped folder claims the key")
+            for field in ("mode", "evidence", "closing"):
+                if not rec.get(field):
+                    out.append(f"{key}: contract record missing field {field!r}")
+        elif standing == "key-only":
+            if r["pages"]:
+                out.append(f"registry-gap {key}: {r['pages']} live page(s), standing key-only — usage without law")
+        else:
+            out.append(f"{key}: unknown standing {standing!r}")
+    for key in reg:
+        if key not in row_by_key:
+            out.append(f"{key}: registry names a key the engine does not accept")
+    return out
+
+
 def table(rows, counts: bool = True) -> str:
     """The written block omits page COUNTS on purpose.
 
@@ -143,8 +200,11 @@ def main() -> int:
         problems = drift(rows)
         for p in problems:
             print(f"drift · {p}")
-        print(f"{len(rows)} keys · {len(problems)} drift")
-        return 1 if problems else 0
+        reg_problems = registry_check(rows)
+        for p in reg_problems:
+            print(f"registry · {p}")
+        print(f"{len(rows)} keys · {len(problems)} drift · {len(reg_problems)} registry")
+        return 1 if problems or reg_problems else 0
 
     if args.write:
         text = PAGE_CONTRACT.read_text(encoding="utf-8")

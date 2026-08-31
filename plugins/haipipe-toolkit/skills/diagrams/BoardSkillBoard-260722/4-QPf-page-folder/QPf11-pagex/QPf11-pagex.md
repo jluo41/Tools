@@ -185,51 +185,73 @@ And every shortcut row carries a 🔗 with its full target on hover, so a borrow
 
 ## Aims
 ### A1 · 📐 What you keep, and what gets rebuilt
-- A1.1 · A rebuild never touches the list you wrote.
+- ✅ A1.1 · A rebuild never touches the list you wrote.
   **Done when:** Running a rebuild over a hand-written list leaves it exactly as it was.
-- A1.2 · You can edit the list from the tab: add, remove, put back, and reorder.
+  **Now:** A rebuild over the four-line list left it byte for byte the same, because the seeder skips a path the store already holds and writes nothing when it seeded nothing.
+- 🔨 A1.2 · You can edit the list from the tab: add, remove, put back, and reorder.
   **Done when:** All four actions work from the tab, and nothing outside the tab writes the list.
+  **Now:** Reorder is proven by the store, whose lines stand QPf10 · QPs1 · QPf1 · QPf3 while their notes read 9× · 16× · 7× · 4×; add, remove and put back are `pagex_entry` routes that its four scan-seeded, tombstone-free rows do not yet exercise.
+
 
 ### A2 · 🌍 Which files a line may point at
-- A2.1 · A rebuild makes shortcuts from the list only, and deletes nothing it did not make.
+- ✅ A2.1 · A rebuild makes shortcuts from the list only, and deletes nothing it did not make.
   **Done when:** It creates one shortcut per live line and leaves every other file alone.
-- A2.2 · A file outside the repo is refused, and so is a whole page folder.
+  **Now:** Four lines, four shortcuts, and nothing else in the folder moved, because the minter only ever unlinks a symlink inside `pagex/`.
+- 🔨 A2.2 · A file outside the repo is refused, and so is a whole page folder.
   **Done when:** Both refusals happen on a test line, each showing its reason on the card.
+  **Now:** The vet in `_pagex_mint` gives an out-of-repo target and a folder a refusal with its reason, and the ＋ pen turns both away at the door, but no refused row sits in the store, so neither reason has yet been read off a card.
+
 
 ### A3 · 🚧 Why a borrowed page never becomes a second page
-- A3.1 · A board with borrowed pages still builds clean.
+- ✅ A3.1 · A board with borrowed pages still builds clean.
   **Done when:** A build and check show no ghost page and no duplicate-name warning.
+  **Now:** `_in_plugin` stops the page hunt at the `pagex` segment, so the four borrowed pages stay invisible and this group still holds its 16 QPf pages with no `QPs1` among them.
+
 
 ### A4 · 🔍 The list fills itself; you put it in order
-- A4.1 · The machine reads which pages this page names, and how often, and suggests them.
+- ✅ A4.1 · The machine reads which pages this page names, and how often, and suggests them.
   **Done when:** One click fills the list, in that order, with nobody reading the page by hand.
-- A4.2 · You can ask which pages anywhere have a given kind of folder.
+  **Now:** One click wrote all four lines and built all four shortcuts with nothing typed, and every line still carries the count from the day it was seeded.
+- ❄️ A4.2 · You can ask which pages anywhere have a given kind of folder.
   **Done when:** One search returns files from more than one board in a single list.
-- A4.3 · A suggested page shows how settled it is.
+  **Now:** The repo-wide search went out with the picker it lived in, and `_scan_route` reads this board only, so the ＋-by-path pen is the whole cross-board reach today.
+- ✅ A4.3 · A suggested page shows how settled it is.
   **Done when:** Its badge changes after that page's own status line changes.
+  **Now:** `_head_state` reads each source page's own `state:` line at mint, and QPf3-slide's card followed that page from `🟡 PARTIAL` to `✅ SETTLED` without anyone touching this list.
+
 
 ### A5 · 🗂 What of a page you use, and what you do not
-- A5.1 · A card shows which parts of a page you use, and takes an unused part in one click.
+- ✅ A5.1 · A card shows which parts of a page you use, and takes an unused part in one click.
   **Done when:** Each card reads `using N of M` over that page's folder, with ＋ use on every part you left.
+  **Now:** The four cards read `using 1 of 2`, `1 of 3`, `1 of 4` and `1 of 7` over their source folders, and every part left carries ＋ use, which takes that folder in one click.
+
 
 ### A6 · 🚪 Opening a borrow, and getting back
-- A6.1 · Going into a borrow is never a one-way door.
+- ✅ A6.1 · Going into a borrow is never a one-way door.
   **Done when:** The framed page has ☰ back to the cards and ← → across your list, in your order.
+  **Now:** `/_board/pagexview` frames the borrowed page under ← ☰ →, walking the store's own order, and offers a link that opens it on its own.
+
 
 ### A8 · 🔗 What the card and the folder row must admit
-- A8.1 · Opening a borrow lands on the readable page, not the raw file.
+- 🔨 A8.1 · Opening a borrow lands on the readable page, not the raw file.
   **Done when:** A card's title opens the rendered page, and the raw file is a second, smaller door.
-- A8.2 · The tab groups borrows by source page, each file opens, and a dead one says so.
+  **Now:** `_rendered_url` sends a card's title to `board/<group>/<stem>.html`, but the raw file lost its door when the inventory replaced the old `where` fold.
+- 🔨 A8.2 · The tab groups borrows by source page, each file opens, and a dead one says so.
   **Done when:** All three are seen on one page holding a live borrow and a broken one.
-- A8.3 · This folder is never marked out of date, because a shortcut cannot fall behind.
+  **Now:** Cards group by source page and a dead borrow is badged `⚠ dangling`, but a file row under a card is the file's name beside a ✕, with nothing on it to click.
+- ✅ A8.3 · This folder is never marked out of date, because a shortcut cannot fall behind.
   **Done when:** A page with shortcuts shows an age and no stale mark in the 📂 tab.
-- A8.4 · A borrowed file always reads as a shortcut, never as a copy.
+  **Now:** `folderstat.py` keeps `pagex/` out of its DERIVED set, so the 📂 tab gives this folder an age and no stale mark.
+- ✅ A8.4 · A borrowed file always reads as a shortcut, never as a copy.
   **Done when:** The 📂 tab names the shortcut's target on the row, so nobody has to ask.
+  **Now:** `folderstat.py` prints a 🔗 on every symlink row with the full target on hover, so a borrowed file is never counted as this page's own bytes.
 
-## States
+
+## Discussion
+
+### From the retired States section (merged 260831)
 This page is the plugin's first user.
 Its own folder holds a four-line list and four live shortcuts, so everything below is read off real borrows and not a test.
-
 ### 🗣 Decision Now
 - [ ] 🗣 Does a seed ever go DEEPER than the named page's own `.md`?
       📍 `Part` §4, the seeding
@@ -239,34 +261,6 @@ Its own folder holds a four-line list and four live shortcuts, so everything bel
       `C ·` seed shallow, then offer a one-click "go deeper" on the card: no dropdown and no note, just the named page's files listed under it once you ask
       🛑 `Blocks` nothing; the pen already reaches any file, and §5's ＋ use reaches a whole folder
       🤖 `If nobody answers` A. That is what shipped.
-
-### A1 · 📐 What you keep, and what gets rebuilt
-- ✅ A1.1 · A rebuild over the four-line list left it byte for byte the same, because the seeder skips a path the store already holds and writes nothing when it seeded nothing.
-- 🔨 A1.2 · Reorder is proven by the store, whose lines stand QPf10 · QPs1 · QPf1 · QPf3 while their notes read 9× · 16× · 7× · 4×; add, remove and put back are `pagex_entry` routes that its four scan-seeded, tombstone-free rows do not yet exercise.
-
-### A2 · 🌍 Which files a line may point at
-- ✅ A2.1 · Four lines, four shortcuts, and nothing else in the folder moved, because the minter only ever unlinks a symlink inside `pagex/`.
-- 🔨 A2.2 · The vet in `_pagex_mint` gives an out-of-repo target and a folder a refusal with its reason, and the ＋ pen turns both away at the door, but no refused row sits in the store, so neither reason has yet been read off a card.
-
-### A3 · 🚧 Why a borrowed page never becomes a second page
-- ✅ A3.1 · `_in_plugin` stops the page hunt at the `pagex` segment, so the four borrowed pages stay invisible and this group still holds its 16 QPf pages with no `QPs1` among them.
-
-### A4 · 🔍 The list fills itself; you put it in order
-- ✅ A4.1 · One click wrote all four lines and built all four shortcuts with nothing typed, and every line still carries the count from the day it was seeded.
-- ❄️ A4.2 · The repo-wide search went out with the picker it lived in, and `_scan_route` reads this board only, so the ＋-by-path pen is the whole cross-board reach today.
-- ✅ A4.3 · `_head_state` reads each source page's own `state:` line at mint, and QPf3-slide's card followed that page from `🟡 PARTIAL` to `✅ SETTLED` without anyone touching this list.
-
-### A5 · 🗂 What of a page you use, and what you do not
-- ✅ A5.1 · The four cards read `using 1 of 2`, `1 of 3`, `1 of 4` and `1 of 7` over their source folders, and every part left carries ＋ use, which takes that folder in one click.
-
-### A6 · 🚪 Opening a borrow, and getting back
-- ✅ A6.1 · `/_board/pagexview` frames the borrowed page under ← ☰ →, walking the store's own order, and offers a link that opens it on its own.
-
-### A8 · 🔗 What the card and the folder row must admit
-- 🔨 A8.1 · `_rendered_url` sends a card's title to `board/<group>/<stem>.html`, but the raw file lost its door when the inventory replaced the old `where` fold.
-- 🔨 A8.2 · Cards group by source page and a dead borrow is badged `⚠ dangling`, but a file row under a card is the file's name beside a ✕, with nothing on it to click.
-- ✅ A8.3 · `folderstat.py` keeps `pagex/` out of its DERIVED set, so the 📂 tab gives this folder an age and no stale mark.
-- ✅ A8.4 · `folderstat.py` prints a 🔗 on every symlink row with the full target on hover, so a borrowed file is never counted as this page's own bytes.
 
 ## Files
 ### ⚙️ Engines
@@ -313,3 +307,5 @@ Its own folder holds a four-line list and four live shortcuts, so everything bel
 - 260816 · [DRAFT-CC] the finding got its contract (JL: "我们怎么知道，比如说我们是需要这一个配置还是那一个配置？它会通过什么方法去做这个搜寻呢？"): the first two drafts specified the ROW and never how a row is found, and with 16 pages on this board carrying a `skill/` list browsing is no method at all. §4 now carries two routes for two starting points: the prose scan, ranked by mention count, which reaches inside this board only, and the shape query, folderstat widened to the tree, which is the only one that crosses boards, plus the source page's live state on every candidate. That last one was not designed but observed: scanning QPf11 put QPs1 far ahead of QPf10, QPf3, and QPf1, and reading their heads showed QPs1 reopened that same day, so the most-wanted borrow was the least settled. A4 opened with three aims and the Law took the note-required line; CC decided it, because nothing stopped on it.
 - 260816 · [DRAFT-CC] the first worked borrow (JL: "我们可能会引用这个 skill 配置来帮我们给现在这个 QPf11，你觉得该怎么引用呢?"): QPs1-overall's skill list became the specimen row in the worked-borrow division, and it refined the contract twice: the minted link now keeps the source's inner path (QPs1's page md and skill list share a basename, so the flat layout of the first draft collides), and the pagex-vs-skill-pen line was drawn, since pagex borrows to READ while seeding QPf11's own list is the skill plugin's door.
 - 260816 · [DRAFT-CC] page born from JL's ask ("我想有这样一个 plugin，能把需要引用的这些 pages 给组织起来… 按需引用… 可以用软链接"): the third citation twin, file-level borrowing materialized as symlinks. JL ruled the name `pagex/` over `use/` and `pages/`, and the reach repo-wide over same-board, in the same session; CC's boundary read of `_in_plugin` (src/common.py:207) grounded the never-link-a-page-home law. Roster row added as 📋 declared.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -35,10 +35,24 @@ def _pages(board: Path, group: str | None):
 def _count(pd: Path, md: Path):
     t = md.read_text(encoding="utf-8", errors="replace")
     r = {}
-    r["div"] = len(re.findall(r"^### \d+ · ", t, re.M))
-    r["sub"] = len(re.findall(r"^#### \d+\.\d+ · ", t, re.M))
+    # Match check.py:1176's division grammar, not a narrower one. A Section
+    # Page numbers its divisions by the MANUSCRIPT (`### §6.1 Main Results`),
+    # which check.py accepts via `§?[\d.]+` and this file used to miss, so all
+    # 15 Section Pages of a paper board read as `§ 0` (JL 260830: "it barely
+    # doesn't work"). One grammar, one place.
+    r["div"] = len(re.findall(r"^### §?[\d.]+(?: · | )\S", t, re.M))
+    r["sub"] = len(re.findall(r"^#### §?[\d.]+(?: · | )\S", t, re.M))
     r["aim"] = len(re.findall(r"^- (?:[⬜🔨🧠✅❄️] )?[AP]\d+\.\d+ · ", t, re.M))
     r["st"]  = len(re.findall(r"^- [⬜🔨🧠✅❄️] [AP]\d+\.\d+ · ", t, re.M))
+    # LEGACY checkbox Aims are a form the engine supports on purpose
+    # (src/common.py aim_progress -> mode="legacy"), and every Section Page of
+    # a paper board uses it. Counting only the canonical form printed `aim 0`
+    # for all 15 of them (JL 260830). `- [ ] 🗣` is a Decision row and is
+    # counted in `dec`, so it is excluded here.
+    if not r["aim"]:
+        legacy = [m for m in re.findall(r"(?m)^- \[([ xX])\] (\S)", t) if m[1] != "🗣"]
+        r["aim"] = len(legacy)
+        r["st"] = sum(1 for box, _ in legacy if box.lower() == "x")
     r["dec"] = len(re.findall(r"^- \[[ x]\] 🗣", t, re.M))
     r["law"] = len(re.findall(r"^- (?:\d{6} \w+ · )?[^\s] \*\*", t, re.M))
     r["dia"] = t.count("```text")   # an INLINE ascii block, never a display unit

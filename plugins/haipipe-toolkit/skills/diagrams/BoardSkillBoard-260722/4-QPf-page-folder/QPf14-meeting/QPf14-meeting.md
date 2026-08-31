@@ -68,31 +68,30 @@ A folder name colliding with an existing stamp (two meetings kept in the same mi
 
 ## Aims
 ### A1 · 🗣 What gets kept, and what the folder name means
-- A1.1 · A kept meeting always carries a digest; a transcript is optional.
+- 🔨 A1.1 · A kept meeting always carries a digest; a transcript is optional.
   **Done when:** Submitting the form with an empty digest is refused, and with an empty transcript succeeds.
-- A1.2 · Two meetings kept in the same minute both land, neither overwritten.
+  **Now:** An empty digest was refused (`"a meeting needs at least a digest: what it decided"`) before any folder was written; a real digest with cast and transcript landed at `meeting/260818-2215/`, both proven directly over HTTP against the same two routes the tab's own form calls. The form itself, the `#mdigest`/`#mtranscript`/`#mcast` inputs and the `keepmeeting` click handler, was never driven from a browser; this machine has no Chrome extension attached.
+- ✅ A1.2 · Two meetings kept in the same minute both land, neither overwritten.
   **Done when:** Keeping two meetings within the same server minute produces two folders.
+  **Now:** A second submission in the same server minute landed at `260818-2215-2`, proving the collision suffix; it was a test artifact, not a real meeting, so it was removed by hand from disk afterward (this plugin's own writer has no delete route, by design, so the cleanup was not through it).
+
 
 ### A2 · ⚖️ Why standalone, and what that costs
-- A2.1 · This plugin's cards never link to a `Meeting-<n>` page, and its SKILL.md states why.
+- ✅ A2.1 · This plugin's cards never link to a `Meeting-<n>` page, and its SKILL.md states why.
   **Done when:** A cold read of the skill and the view shows no such link and states the routing boundary in one place.
+  **Now:** Neither `live/meeting.py` nor `87-plugin-meeting.js` names a `Meeting-<n>` path anywhere, and this page's own §2 states the boundary in one place.
+
 
 ### A3 · 👁 Read-only view, one writer
-- A3.1 · The view lists kept meetings newest first and writes nothing but itself.
+- ✅ A3.1 · The view lists kept meetings newest first and writes nothing but itself.
   **Done when:** Opening the tab after keeping three meetings shows all three in reverse chronological order, and the store folder gains no other file.
+  **Now:** `_meeting_render` sorted the kept folder correctly and the rendered card showed the digest text, the `cast:` line, and a `transcript.md` link, all read straight off the files on disk.
 
-## States
+
+## Discussion
+
+### From the retired States section (merged 260831)
 This page keeps its own worked specimen, kept `260818-2215`: a real digest, a real cast line, a real transcript excerpt.
-
-### A1 · 🗣 What gets kept, and what the folder name means
-- 🔨 A1.1 · An empty digest was refused (`"a meeting needs at least a digest: what it decided"`) before any folder was written; a real digest with cast and transcript landed at `meeting/260818-2215/`, both proven directly over HTTP against the same two routes the tab's own form calls. The form itself, the `#mdigest`/`#mtranscript`/`#mcast` inputs and the `keepmeeting` click handler, was never driven from a browser; this machine has no Chrome extension attached.
-- ✅ A1.2 · A second submission in the same server minute landed at `260818-2215-2`, proving the collision suffix; it was a test artifact, not a real meeting, so it was removed by hand from disk afterward (this plugin's own writer has no delete route, by design, so the cleanup was not through it).
-
-### A2 · ⚖️ Why standalone, and what that costs
-- ✅ A2.1 · Neither `live/meeting.py` nor `87-plugin-meeting.js` names a `Meeting-<n>` path anywhere, and this page's own §2 states the boundary in one place.
-
-### A3 · 👁 Read-only view, one writer
-- ✅ A3.1 · `_meeting_render` sorted the kept folder correctly and the rendered card showed the digest text, the `cast:` line, and a `transcript.md` link, all read straight off the files on disk.
 
 ## Files
 ### ⚙️ Engines
@@ -124,3 +123,5 @@ This page keeps its own worked specimen, kept `260818-2215`: a real digest, a re
 - 🚢 260818 · [DRAFT-CC, JL ruled] page born from JL's ask on the QPf plugin board ("meeting: what communication is related to this page"), asked in the same breath as `task` (`QPf13`).
       Two shapes were offered: point kept meetings at the separate `Meeting-<n>` page type, or keep the roster's own 260815-declared standalone shape; JL chose standalone.
       `live/meeting.py` shipped whole the same round: the dated-folder writer, the newest-first read-only view, and the keep form; the roster row moved from 📋 declared to 🟢 built.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

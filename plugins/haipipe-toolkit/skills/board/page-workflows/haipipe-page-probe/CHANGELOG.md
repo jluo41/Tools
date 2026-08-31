@@ -1,5 +1,13 @@
 ## 0.11.0 — 2026-08-21
 
+## 0.12.0 · 2026-08-31
+
+The TASK-route batch gets a home: the page's collection job
+(`task/haipipe-task-for-page`) enters the MATCH ladder at step 2 and receives
+the dispatched questions via `/haipipe-task qa "<q>" <job>`. The one-door rule
+(haipipe-probe-q-executor-agent) and the Discovery route are unchanged.
+
+
 - **A missing task folder stopped being a HOLD.** §🔀's `no allowed bank can
   answer → HOLD` read as "no folder exists", so a perfectly answerable question
   could stall the page. It now reads `no bank can answer IN PRINCIPLE (route:

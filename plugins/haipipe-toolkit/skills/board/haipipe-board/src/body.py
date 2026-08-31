@@ -1586,8 +1586,14 @@ def _hang_badge(p_html, badge):
     是关键 —— 有空白就有断行机会，徽标就又可能被推到下一行。
     """
     hung = f'<span class="sbz">{badge}</span>'
-    if p_html.startswith("<p>") and p_html.endswith("</p>"):
-        return "<p>" + p_html[3:-4].rstrip() + hung + "</p>"
+    # Any `<p …>` counts, not only a bare `<p>`: since 260819 a sentence that
+    # opens a paragraph is `<p class="pnew">`, and the old `startswith("<p>")`
+    # test let its badge fall OUTSIDE the closing tag, where the block break
+    # put it on a line of its own again (JL 260831, the Title of SM00).
+    m = re.match(r"^<p(\s[^>]*)?>", p_html)
+    if m and p_html.rstrip().endswith("</p>"):
+        body = p_html.rstrip()[m.end():-4].rstrip()
+        return p_html[:m.end()] + body + hung + "</p>"
     return p_html.rstrip() + hung
 
 # ── 💬 Discussion as a real THREAD (JL 260802) ─────────────────────────────

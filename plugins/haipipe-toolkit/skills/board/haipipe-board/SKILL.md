@@ -8,8 +8,8 @@ description: >-
   board/index.html to VS Code, not create one. Trigger: board, open a board,
   add a question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.147.0"
-  last_updated: "2026-08-29"
+  version: "0.151.2"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -39,7 +39,7 @@ The rest of this board family (`../`) is what other agents LOAD or CALL without 
 ```
 haipipe-page       SPEC + ROUTER · the shared Page frame and the
                          Page Type × Page Phase composition
-page-types/              the ONE variant this skill set owns; the other eleven
+page-types/              the ONE variant this skill set owns; the others
                          live in the skill set that owns them (see below)
   haipipe-page-for-stage
                          TYPE · S-<Family>-<unit> lifecycle pages
@@ -101,15 +101,17 @@ which calls the same creator for exactly one DRAFT, EVIDENCE, or REVISE authorit
 then a mechanical builder/version snapshot, then the reviewer for CHECK. The
 orchestrator stores the exact result under `_runs/page/` and audits it; it never
 writes Page prose, and the reviewer never cures its own finding.
-**A Page Type variant ships under the `page-types/` folder of the SKILL SET THAT OWNS IT (JL 260809).**
-Every skill set carries its own `page-types/`, so the folder a variant sits in is what names its owner.
-Twelve variants ship across five skill sets: one here, five in `paper/page-types/`, one in `task/page-types/`, four in `application/page-types/`, and one in `subjective-label/skills/page-types/`.
+**A Page Type variant ships in the folder of the SKILL SET THAT OWNS IT (JL 260809; paper amended JL 260831).**
+Most skill sets carry a `page-types/` folder, so the folder a variant sits in is what names its owner.
+Paper is the exception: its types are 1:1 with journey phases, so they ship as six phase skills under `paper/workflow-phases/` (each still owning its `page-type:` key) plus the non-phase `paper/haipipe-paper-venue/`.
+The live inventory with owners and counts is `cli/pagetypes.py` output, never a prose count.
 (`for-slide` retired 260815: a deck is `slide/` plugin material, written by `/_board/autodeck` under the `haipipe-plugin` contract.)
 
 ```
 board/page-types/         for-stage
-paper/page-types/         for-seed · for-venue · for-narrative · for-section
-                          · for-round
+paper/workflow-phases/    haipipe-paper-ideation · -seed · -roadmap ·
+                          -narrative · -section · -round
+paper/                    haipipe-paper-venue (library lane, not a phase)
 task/page-types/          for-task
 application/page-types/   for-brief · for-insight · for-intervention · for-artifact
 subjective-label/…/       for-labeling
@@ -553,7 +555,7 @@ One server handles every board: it serves the repo root, not one board.
 ```
 
 When the repository root has `.server_config/settings.env`, this command uses its `JJLUO_BIND_HOST` or `JJLUO_TAILSCALE_ADDRESS`, `JJLUO_LOCAL_PORT` or `JJLUO_TAILSCALE_PORT`, `JJLUO_SPACE_NAME`, `JJLUO_PUBLIC_URL` (or `JJLUO_TAILSCALE_URL`), and `JJLUO_AUTH_FILE`. An explicit CLI flag wins over the matching config value; without a config file, the listener falls back to loopback on port 5599.
-The Board may be protected with the configured auth file. A non-loopback listener requires authentication because `/_term/` is a real shell; keep credentials in the ignored machine-local config and never commit them.
+The Board may be protected with the configured auth file. A non-loopback listener normally requires authentication because `/_term/` is a real shell; `serve.py --no-auth` is an explicit exception for a trusted private network such as Tailscale, and exposes that shell to every reachable device. Keep credentials in the ignored machine-local config and never commit them.
 
 Once it is running, the board is not only readable: **comments land directly on disk**, and every page's plugin surfaces come alive in the right pane, the tab rail leading with 📂 Folder.
 ⚖️ One question, one session · one session, one window · N questions, N terminals.
@@ -610,8 +612,8 @@ After finishing any substantive work under a page (a file written, an experiment
 | Write back where | What to write |
 |---|---|
 | `## Aims` | Durable target states, grouped under their owning Content division. Change these only when intent changes. |
-| `## States` | One factual current State row per Aim: ⬜ not started, 🔨 being worked on now, 🧠 waiting on a person or on something outside this page, ✅ met with the evidence named, or ❄️ on ice. The old `🟡` / `🟠` / `⏸️` still parse (`src/common.py`), but nothing new is written with them. |
-| `## Log` | One line for each state transition or material change: `YYMMDD HHMM · what changed`. The line is short, 15-35 words, the headline fact only; `haipipe-page-draft §📏` owns the rule and its before/after example. |
+| `## States` | ⛔ RETIRED 260819, merged into `## Aims`; a page that still carries one is reported `retired-section`. One Aim row now carries its tick, its `Done when:` test AND its `Now:` fact. |
+| `## Log` | ⛔ Moved 260830 to `outline/<stem>-log.md` (`haipipe-plugin-outline` 0.16.1). Still `YYMMDD HHMM · what changed`, still 15-35 words, newest-first; only its home changed. The page's `## Files` keeps one row pointing at it. |
 | `state:` | On a Q page, every Aim met or explicitly held → starts with ✅; on an S page, only its human gate may produce ✅. Progress made → starts with 🟡; deliberately parked → starts with ⏸️. The standard labels are SETTLED / PARTIAL / ON HOLD, and a human-readable note may be appended after them. |
 | the `> Comment WHO` / `> ✎` lines under a sentence | The sentence comments and edit records added, replied to, or confirmed this round |
 
@@ -649,7 +651,7 @@ The sentence in `close:` IS the closing condition, so write it so that it can be
 
 ## 📐 One page (routed)
 
-A page's whole anatomy — the metadata head, the fixed on-stage order Opening → Diagram → Content → Aims → States, Files, and the folded tail — is `haipipe-page`'s to state, with the kinds under `page-types/` and the workflow under `page-workflows/`.
+A page's whole anatomy — the metadata head, the fixed on-stage order Opening → Diagram → Content → Aims → States, Files, and the folded tail — is `haipipe-page`'s to state, with the kinds in each owner's variant folder (`page-types/`, or paper's `workflow-phases/`) and the workflow under `page-workflows/`.
 The door keeps only the two facts its own verbs depend on:
 
 - A NEW page is always `state: 🔴 OPEN`, and the first emoji of `state:` is the machine state (✅ · 🟡 · 🔴 · ⏸️ · 🗂 FOLDED); a readable note may follow, never replacing it.

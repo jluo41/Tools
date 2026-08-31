@@ -1,3 +1,80 @@
+## 0.43.0 — 2026-08-31
+
+## 0.45.0 · 2026-08-31
+
+The Page Type registry (JL: "the page types might be a function in other
+skills' content"): `ref/type-registry.md` holds one record per engine key —
+`outline` (mode; shape stays in a contract's frontmatter) · `evidence` (what
+the kind owes exactly; feeds PROBE and the collection job) · `prose` ·
+`closing`, with `standing: contract | key-only`. `cli/pagetypes.py --check`
+grew the tooth: engine↔registry drift, contract records with missing fields
+or dead law paths, and `registry-gap` for a key-only record with live pages
+(fires today on collection·labeling·view; the missing-field branch proven on
+a broken record first). Zero-page application types stay shipped, marked
+dormant in their records — retiring their folders touches a family other
+sessions run.
+
+
+## 0.44.0 · 2026-08-31
+
+Pointer, not inline (JL asked whether to fold it in): §📁 names the page-serving
+collection job — task-type `page`, contract `task/haipipe-task-for-page`, ranked
+first in the `task/` lane — as the code-shaped answerer of a page's task-route
+cards. The card address `PP<NN>.v<n>` and every phase authority are unchanged.
+
+
+Rewritten to one lane, "what a page IS": 787 → 395 lines, present tense, no
+attribution in the law (who ruled and when lives here). Each rule now has one
+home and this file points at it:
+- **Moved out**: the four-axis evaluation rubric, its four verdicts, review
+  units and batch-voice test → `haipipe-page-check` §📏 (this file keeps the
+  requirement-resolution order and a pointer); the five heading tests and the
+  H1 verb-phrase rule → `haipipe-board/ref/writing-rules.md` §A heading is a
+  lookup key; the write-for-the-render examples → one line each, owned by
+  `page-template.md` and `writing-rules.md`.
+- **Retired from the page contract**: the five-row section table with
+  `folds Discussion · Law · Lesson · Glossary · Log` (log, discussion and
+  files live in `outline/`; the folds are `Law · Lesson · Glossary`); every
+  reference to `## States`, `## Files` and a page-side `## Log`; the ten-step
+  create and eight-step work-on lists, now one paragraph each; the retired
+  `route:` step ② row of the type table; the `##`-heading narration of what
+  keys used to mean.
+- **Stated for the first time**: a pass may run inside a person's session or
+  as the phase's agent, and both leave the same trace (artifact, one log
+  record, receipt); a person's chat ruling is transcribed with the quote;
+  `outline/` is the process folder with seven record kinds, grammar in
+  `haipipe-plugin-outline/ref/`; the location grammar gains the bullet address
+  and the `D<nn>` thread.
+- **Kept as is**: the type-resolution table and the generated inventory block
+  (its `—` cells are `pagetypes.py`'s output, not hand-written); `### Decision
+  Now` inside Aims (the one-home question, `D<nn>` versus Decision Now, is an
+  open ruling and is not decided here).
+
+## 0.42.0 — 2026-08-31
+
+- **The page is the Aims' only home** (JL 260831, BoardSkillBoard QPf12 row 2:
+  "In the Page as well, and should map to the content"). Reverses
+  haipipe-plugin-outline 0.16.0's "the page keeps no copy": one row per Aim
+  with tick, `Done when:` and `Now:` on the page; the plan keeps the shape and
+  its 🎯 marks and no Aim rows; `### A<n>` maps to Content division `<n>`,
+  which `check.py group-no-division` already enforces.
+- **`## Files` retired from the page** (QPf12 row 3, "A"): the action map is
+  `outline/<stem>-files.md`, `### F<n>` records with `Path` and `Role`, the
+  a Related Board Page as a record with `Role: related` and its row verbatim; `pagecontext.py` and
+  `check.py` read it, the 🧭 tab shows it as 📎 Files.
+
+## 0.41.0 — 2026-08-31
+
+- **The contract now states the 260819 merge it had only logged.** 0.34.0
+  retired `## States` into `## Aims`, yet the section table, the conveys
+  table, `🎯 One Aim, one State`, Decision Now, preview, create and work-on
+  steps all still named States as a required section (JL 260831, on the
+  MISQ paper board: "I think we removed the state from the page as well").
+  One Aim is one row: tick, target, `Done when:`, `Now:`; a live ask is the
+  Aim's `Now:` line marked `🧠`; `### Decision Now` keeps its shape and is
+  reserved inside Aims. `haipipe-board/ref/page-template.md` and
+  `ref/board-form.md` §4 carry the same change in the same round.
+
 ## 0.40.2 — 2026-08-29
 
 - Page titles now target three to five visible words and have a hard ceiling of
@@ -90,7 +167,7 @@ character; every rule kept, every retirement narration moved here.
 
 ## 0.38.0 — 2026-08-20
 
-- **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-page-for-narrative`
+- **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-paper-narrative`
   instead; the merge was rejected because Dash covered four families
   (`section · probe · citation · display`) and only `section` was ever
   Narrative-shaped, so folding it in would have stranded the other three with

@@ -175,33 +175,6 @@ This is the same rule that made "1 display declared, 0 unit folders on disk" a s
 
 ## Aims
 
-### A1 · 📮 PROBE is the only phase that creates a card
-- A1.1 · No card on this board exists for an unapproved plan.
-  Done when every `probe/PP<NN>-<slug>/` on this board traces to an outline file carrying `approved: ✅`.
-- A1.2 · The three contradicting sentences from before 260817 are gone from all three contracts.
-  Done when a grep of the draft, evidence, and outline-plugin contracts finds one answer to who creates the card.
-
-### A2 · 🔢 One mark is not one card
-- A2.1 · No two cards on this board carry the same Q-executor.
-  Done when a sweep of `executor/` across this board finds no duplicate question.
-- A2.2 · A bullet's done test reads its whole backlink rather than any one card.
-  Done when a checker fails a bullet marked done while one card in its `serves:` set is unlanded.
-
-### A3 · 🔗 MATCH runs before any dispatch, and PageX is reuse rather than a second bank
-- A3.1 · Every dispatched card's receipt carries its match trace.
-  Done when every PROBE receipt under `_runs/page/` has one `match:` row per obligation.
-- A3.2 · No `reuse` verdict was recorded from a shortlist score alone.
-  Done when every `reuse` row names an opened candidate file rather than a match endpoint response.
-
-### A4 · 🧭 Only some marks are questions
-- A4.1 · No card on this board was opened for a 🖼, 🧮, 🎯, or ✅ mark.
-  Done when every card on this board traces to a 🔢 mark or to a 📚 mark whose key was unknown.
-
-### A5 · 🔀 Exit, routing, and the count that stops the phase
-- A5.1 · No PROBE run has reported a pass while its coverage was short.
-  Done when every PROBE receipt with `coverage` below full carries `next: HOLD`.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule what PROBE does with a 📚 mark whose key is unknown but whose SOURCE is known
       📍 `Part` §4, only some marks are questions
@@ -211,23 +184,45 @@ This is the same rule that made "1 display declared, 0 unit folders on disk" a s
       🛑 `Blocks` A4.1, and the 📚 lane's exit test on QPw4
       🤖 `If nobody answers` A takes effect, because the bibex law already puts the entry in a person's hands
 
+
 ### A1 · 📮 PROBE is the only phase that creates a card
-- ⬜ A1.1 · Not measurable yet, because no outline on this board carries `approved: ✅`.
-- ✅ A1.2 · Met. The 260817 round corrected all three contracts and `haipipe-page-probe` shipped as the single answer.
+- ⬜ A1.1 · No card on this board exists for an unapproved plan.
+  Done when every `probe/PP<NN>-<slug>/` on this board traces to an outline file carrying `approved: ✅`.
+  **Now:** Not measurable yet, because no outline on this board carries `approved: ✅`.
+- ✅ A1.2 · The three contradicting sentences from before 260817 are gone from all three contracts.
+  Done when a grep of the draft, evidence, and outline-plugin contracts finds one answer to who creates the card.
+  **Now:** Met. The 260817 round corrected all three contracts and `haipipe-page-probe` shipped as the single answer.
+
 
 ### A2 · 🔢 One mark is not one card
-- ⬜ A2.1 · Not measured. No sweep of `executor/` for duplicate questions has been run.
-- ⬜ A2.2 · Not started. No checker reads a bullet's backlink as a set.
+- ⬜ A2.1 · No two cards on this board carry the same Q-executor.
+  Done when a sweep of `executor/` across this board finds no duplicate question.
+  **Now:** Not measured. No sweep of `executor/` for duplicate questions has been run.
+- ⬜ A2.2 · A bullet's done test reads its whole backlink rather than any one card.
+  Done when a checker fails a bullet marked done while one card in its `serves:` set is unlanded.
+  **Now:** Not started. No checker reads a bullet's backlink as a set.
+
 
 ### A3 · 🔗 MATCH runs before any dispatch, and PageX is reuse rather than a second bank
-- ⬜ A3.1 · Not started. The MATCH order shipped in 0.3.0 on 260817 and no receipt on this board carries a `match:` row.
-- ⬜ A3.2 · Not measurable until A3.1 produces a trace to read.
+- ⬜ A3.1 · Every dispatched card's receipt carries its match trace.
+  Done when every PROBE receipt under `_runs/page/` has one `match:` row per obligation.
+  **Now:** Not started. The MATCH order shipped in 0.3.0 on 260817 and no receipt on this board carries a `match:` row.
+- ⬜ A3.2 · No `reuse` verdict was recorded from a shortlist score alone.
+  Done when every `reuse` row names an opened candidate file rather than a match endpoint response.
+  **Now:** Not measurable until A3.1 produces a trace to read.
+
 
 ### A4 · 🧭 Only some marks are questions
-- 🧠 A4.1 · Waiting on the Decision Now row above, which decides one of the two card-opening conditions.
+- 🧠 A4.1 · No card on this board was opened for a 🖼, 🧮, 🎯, or ✅ mark.
+  Done when every card on this board traces to a 🔢 mark or to a 📚 mark whose key was unknown.
+  **Now:** Waiting on the Decision Now row above, which decides one of the two card-opening conditions.
+
 
 ### A5 · 🔀 Exit, routing, and the count that stops the phase
-- ⬜ A5.1 · Not measurable yet, because no PROBE run has been dispatched from this board.
+- ⬜ A5.1 · No PROBE run has reported a pass while its coverage was short.
+  Done when every PROBE receipt with `coverage` below full carries `next: HOLD`.
+  **Now:** Not measurable yet, because no PROBE run has been dispatched from this board.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -274,3 +269,5 @@ This is the same rule that made "1 display declared, 0 unit folders on disk" a s
 
 ## Log
 - 260818 · [DRAFT-CC] page created to complete the loop after `QPw1`, `QPw2` and `QPw4`, which had left this phase with no page while two of them linked to it. Written from `haipipe-page-probe` 0.3.0. Five divisions: who creates the card and why not earlier, the mark-to-card matching, the MATCH order with PageX as step 2, which of the six marks are questions, and the coverage count that stops the phase. The 260817 ruling that settled three contradicting contracts is carried as the first `## Law` row with its rejected option named. One real gap in the contract became the Decision Now row: it says a 📚 card opens when the bank must find the work, and never says which side of that line a known paper with an unknown bibtex key falls on, which is the commonest case here.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

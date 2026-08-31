@@ -125,6 +125,33 @@ The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route was sti
 In the end the `ast` slicer made the move free, chat and terminal moved with the rest, and M1 landed inside `live/chat.py` on 260731; the Aims record the inversion.
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [x] 🧩 Rule modules against servers (JL 260731: "server_excalidraw, server_xxx, and a server_main")
+      DECIDED 260731 by JL ("go ahead with the split"): A, one process, one port, modules.
+      A · one process, one port, several modules under `live/`, which keeps one HOLD table, one root, and one rebuild path together.
+      B · several servers on their own ports, fronted by serve.py, which breaks the single-forwarded-port constraint `QD3` was built around.
+      → CC's proposal: A; B breaks the single-forwarded-port constraint `QD3` was built around, and would split one HOLD table, one root, and one rebuild path across processes.
+- [x] 🔧 Rule the split mechanism
+      DECIDED 260731 by JL with the same go: A, mixins, the textual move the gate can prove.
+      A · mixins, a pure textual move the gate can prove, so the refactor moves code and nothing rides along.
+      B · plain modules taking an explicit context, which reads cleaner but changes every signature and becomes a redesign.
+      → CC's proposal: A now and B never as one step; `QC1b`'s Law says a refactor moves code and features never ride along, and B changes every signature.
+- [x] ⏱ Rule the order
+      DECIDED 260731 by JL with the same go: A, the settled four now; chat arrives via QD2 M1, terminal last.
+      A · move the four settled areas now and let `QD2` M1 land directly in `live/chat.py`, which avoids writing chat twice.
+      B · split all seven at once and do M1 afterwards, which means writing the chat half twice.
+      C · wait for M1 and `QD3m`, then split everything, which stalls the parts that are already still.
+      → CC's proposal: A; it avoids writing chat twice without stalling the parts that are already still.
+- [x] 🏷 Rule the naming, in JL's own words against the board's
+      DECIDED 260731 by JL: "use live/".
+      JL said "server_excalidraw, server_xxx, and a server_main"; §4 argued `live/` instead, and that translation should be ruled, not assumed.
+      A · a `live/` package (`live/chat.py`), which mirrors the shape `QC1b` shipped for the render half and keeps the skill root at its current 9 scripts.
+      B · flat `server_*.py` files beside serve.py, exactly as JL named them, which costs nothing if the flat names read better.
+      → CC's proposal: A; it is the same shape `QC1b` shipped for the render half, and the root stays scannable, but B costs nothing if the flat names read better to JL.
+
+
 ### The mechanical split
 - [x] 🧪 Build the gate before moving anything
       BUILT as `gate_live.py`: it starts a real server against a frozen throwaway copy of this board, runs 18 requests covering every route including the error paths, and hashes all 54 written files afterwards.
@@ -153,10 +180,11 @@ In the end the `ast` slicer made the move free, chat and terminal moved with the
 - [ ] 📥 Promote SDK-Talk's `navtest.mjs` (💬 follows the router) into `checks/` once its harness settles
       It was mid-iteration when the battery shipped; copying an in-flight file would freeze a flaky version.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The split is shipped: the mixin modules under `live/`, a thin serve.py, and the `checks/` battery standing guard; `QD2` M1 landed inside `live/chat.py` the same day, so only the shim retirement and the navtest.mjs promotion remain.
 The question was opened by JL on 260731 ("could we separate them? I don't think it is good to put all the things in one"), and the inventory that motivated it was gathered the same day on `QD2` §5.
-
 - 260731 CC · 📋 The one-off batteries became a standing checklist (`checks/`, 0.89.0)
   JL's ruling made it explicit: a ticked hard item must stay CHECKED, not remembered; today one did not (`follow()` on the tree silently stopped enforcing `QD1`'s one-window law and no tick moved).
   The scattered scratchpad suites (pty_e2e, termnav) are now checked in under `checks/` with a two-tier runner; the full tier runs on a throwaway fixture so a standing check never rewrites a real page's `session:` header or leaves rows in a real registry (gate_live's shape, extended to real turns).
@@ -178,32 +206,6 @@ The question was opened by JL on 260731 ("could we separate them? I don't think 
   `QC1b` shipped the render split on 260724 and recorded that it left the live layer alone on purpose, because that layer was still forming.
   So this page inherits rather than invents: the mechanical-move rule, the gate-before-features rule, and the "common.py is the one shared floor, never duplicated" rule all apply verbatim.
   What this page adds is the part `QC1b` could not answer at the time: which areas have since stopped forming, and how a handler class splits when its methods share `self`.
-
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [x] 🧩 Rule modules against servers (JL 260731: "server_excalidraw, server_xxx, and a server_main")
-      DECIDED 260731 by JL ("go ahead with the split"): A, one process, one port, modules.
-      A · one process, one port, several modules under `live/`, which keeps one HOLD table, one root, and one rebuild path together.
-      B · several servers on their own ports, fronted by serve.py, which breaks the single-forwarded-port constraint `QD3` was built around.
-      → CC's proposal: A; B breaks the single-forwarded-port constraint `QD3` was built around, and would split one HOLD table, one root, and one rebuild path across processes.
-- [x] 🔧 Rule the split mechanism
-      DECIDED 260731 by JL with the same go: A, mixins, the textual move the gate can prove.
-      A · mixins, a pure textual move the gate can prove, so the refactor moves code and nothing rides along.
-      B · plain modules taking an explicit context, which reads cleaner but changes every signature and becomes a redesign.
-      → CC's proposal: A now and B never as one step; `QC1b`'s Law says a refactor moves code and features never ride along, and B changes every signature.
-- [x] ⏱ Rule the order
-      DECIDED 260731 by JL with the same go: A, the settled four now; chat arrives via QD2 M1, terminal last.
-      A · move the four settled areas now and let `QD2` M1 land directly in `live/chat.py`, which avoids writing chat twice.
-      B · split all seven at once and do M1 afterwards, which means writing the chat half twice.
-      C · wait for M1 and `QD3m`, then split everything, which stalls the parts that are already still.
-      → CC's proposal: A; it avoids writing chat twice without stalling the parts that are already still.
-- [x] 🏷 Rule the naming, in JL's own words against the board's
-      DECIDED 260731 by JL: "use live/".
-      JL said "server_excalidraw, server_xxx, and a server_main"; §4 argued `live/` instead, and that translation should be ruled, not assumed.
-      A · a `live/` package (`live/chat.py`), which mirrors the shape `QC1b` shipped for the render half and keeps the skill root at its current 9 scripts.
-      B · flat `server_*.py` files beside serve.py, exactly as JL named them, which costs nothing if the flat names read better.
-      → CC's proposal: A; it is the same shape `QC1b` shipped for the render half, and the root stays scannable, but B costs nothing if the flat names read better to JL.
 
 ## Files
 ### Engines
@@ -231,3 +233,5 @@ These are the calls only JL can make; CC ticks nothing here.
 260731 · Battery passed end to end on the split (term e2e ×3, chat turn, picker, xcal, writes on a fixture); DYING grace-wait added for rapid respawn; 5599 restarted on the repo venv
 260731 · Naming row added (JL's `server_*.py` against `live/`, ruled not assumed) and the same-day PTY race fix recorded as evidence for terminal-last
 260731 · Opened from JL's ask ("could we separate them?"), inheriting QC1b's Law; modules-not-servers, mixins, and the settled-areas-first order proposed as three Decision Now rows
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

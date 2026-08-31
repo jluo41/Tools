@@ -140,6 +140,22 @@ On a pointer device, the compact `C1.P1.S1`, `＋`, and `💬` page list appears
 On touch devices, one muted `⋯` opens a menu containing the full address plus Comment, Chat, and Edit.
 
 ## Aims
+### Decision Now
+- [ ] 🧠 Flip this face to ✅ SETTLED
+      All 19 items are ticked and both halves are live, but the state line is JL's to move, so it still reads 🟡 PARTIAL.
+- [ ] 🧭 Rule the two ⧉ buttons
+      A `##` heading copies its section's text with `⧉` while its chip copies the address; a `###` heading now has both too.
+      A · keep both, as built: text and address are genuinely different things to want, and each says which it is on hover.
+      B · make `⧉` copy the address everywhere and drop text copying, which is what this face's `#### Heading actions` paragraph literally says today.
+      → CC recommends A, because the 260725 text copy is the one people actually use to paste a section into a chat, and B would delete it to satisfy a sentence written before it existed.
+
+- 260731 JL · 👁 The `Cn`/`Hn` chips left the front of the heading
+  A leading chip fused with authored numbering: `C1` before `1 · Content: establish the substance` read as "C11 · Content".
+  JL: "make the C1 to be the end of the sentence, and only shown when we hover it, just like the sentence".
+  Shipped the same round (haipipe-board 0.58.0): `board.js` appends `.caddr`/`.haddr` at the end of the summary or heading, and `board.css` holds them at opacity 0 until the heading is hovered, the sentence rail's contract.
+  On touch there is no hover, so chips stay hidden there exactly as the sentence chip does.
+
+
 ### The section and subsection breadcrumb half
 - [x] Generate paths for every rendered `##` section
       `QB8 / States`, built from the heading's own label with its emoji, its `1/7` count, and its `· 6 sections` suffix stripped, because an address is spoken and pasted.
@@ -174,15 +190,14 @@ On touch devices, one muted `⋯` opens a menu containing the full address plus 
 - [x] Show a clearable Sentence Focus card without spending a model turn
 - [x] Collapse Comment, Chat, and Edit into `⋯` on touch
 
-## States
-The existing client indexes Content successfully: each `.csec` receives `Cn`; each `.ph` receives terminal `Cn.Hn`; and each eligible prose line receives sibling `Cn.Pn.S1`.
+## Discussion
 
+### From the retired States section (merged 260831)
+The existing client indexes Content successfully: each `.csec` receives `Cn`; each `.ph` receives terminal `Cn.Hn`; and each eligible prose line receives sibling `Cn.Pn.S1`.
 Fresh-context Chrome acceptance proved that non-Content prose has no address, Heading refs terminate at `Hn`, sentence refs omit `H`, and Chat receives the Content/Heading display path.
 Across the 40-page Board, three rewires preserved 106 C refs, 73 H refs, and 978 sentence refs without duplicates or any `H.P.S` address.
-
 Reopened 260730 because the page design now requires coarser focus above Content: every section and subsection heading must expose a copyable breadcrumb and be able to focus the same page Chat.
 Heading focus was designed here on 260730 and built on 260731, so every item on this face is now ticked.
-
 - 260731 CC · 🧭 Heading focus is built, and it reuses every contract the sentence rail already had
   Every rendered `##` section and `###` subsection heading now carries a page list at its END, invisible until that heading is hovered: the generated breadcrumb, `⧉` for a subsection's text, and `🤖` for chat.
   `QB8` yields 17 of them, from `QB8 / Opening` down to `QB8 / States / Decision Now`.
@@ -193,21 +208,6 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
 
 ### The human gate
 - 🧠 JL accepts this face and moves its state line. All 19 build items are ticked and both halves run; this is the only thing left.
-
-### Decision Now
-- [ ] 🧠 Flip this face to ✅ SETTLED
-      All 19 items are ticked and both halves are live, but the state line is JL's to move, so it still reads 🟡 PARTIAL.
-- [ ] 🧭 Rule the two ⧉ buttons
-      A `##` heading copies its section's text with `⧉` while its chip copies the address; a `###` heading now has both too.
-      A · keep both, as built: text and address are genuinely different things to want, and each says which it is on hover.
-      B · make `⧉` copy the address everywhere and drop text copying, which is what this face's `#### Heading actions` paragraph literally says today.
-      → CC recommends A, because the 260725 text copy is the one people actually use to paste a section into a chat, and B would delete it to satisfy a sentence written before it existed.
-
-- 260731 JL · 👁 The `Cn`/`Hn` chips left the front of the heading
-  A leading chip fused with authored numbering: `C1` before `1 · Content: establish the substance` read as "C11 · Content".
-  JL: "make the C1 to be the end of the sentence, and only shown when we hover it, just like the sentence".
-  Shipped the same round (haipipe-board 0.58.0): `board.js` appends `.caddr`/`.haddr` at the end of the summary or heading, and `board.css` holds them at opacity 0 until the heading is hovered, the sentence rail's contract.
-  On touch there is no hover, so chips stay hidden there exactly as the sentence chip does.
 
 ## Files
 - `haipipe-board/assets/js/40-sentence/10-address.js`
@@ -236,3 +236,5 @@ All location Chat actions reuse the page's existing session. Fine structural add
 260729 · Refined the interaction: desktop action page list, inline Comment, clearable Chat focus, deferred model call, and touch overflow menu.
 260729 · Fresh-context acceptance passed: 2,463 sentence controls verified, with deterministic rewiring, page-session reuse, complete focus packets, and no regressions.
 260729 · Implemented sentence-specific chat: generated `Pn.Sn`, hover/focus controls, existing-Q-session reuse, and a focus packet containing the address, sentence, and direct apparatus.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

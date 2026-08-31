@@ -113,6 +113,15 @@ It grades each page clear, half, or unreadable, where half means the reader can 
 The prompt and the rules it enforces live in `ref/writing-rules.md`, so the check and its standard are one document rather than a habit.
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🧠 Rule whether a red result blocks a change or only reports it
+      The page already states the fork: a blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
+      The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
+      A tick here also closes the same row in Aims.
+
+
 ### The template fixture
 - [x] 🧪 The shared template exercises both Q and S renderer modes
       Copying `ref/page-template.md` twice and renaming the copies must be enough to exercise one Q render path and one S render path before the author replaces the guide prose.
@@ -198,13 +207,53 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
       This is a decision about how we work rather than about the code, so it is JL's, and until it is made both checks report.
 
-## States
+## Files
+### The two instruments
+- `cli/check.py`
+  The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
+- `../agents/haipipe-board-reviewer-agent.md`
+  The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
+
+### The standards and fixed inputs they read
+- `ref/writing-rules.md`
+  The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
+- `ref/page-template.md`
+  The structural check's fixed test input and subject: the file copied for every new page, and the one whose promises the check verifies.
+- `ref/board-form.md`
+  The syntax table the structural assertions should be derived from, section 5 for the body grammar and section 4 for the section mapping.
+- `SKILL.md`
+  Its writing section excerpts the three deadliest rules and points at `ref/writing-rules.md`.
+
+### The renderer under test
+- `src/page_question.py`
+  The page renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
+- `src/body.py`
+  The body grammar: paragraph headings, job lines, group titles, sentence apparatus, typed lanes, and code folds.
+- `assets/css/10-focus.css`
+  Where a construct's meaning can change without any Python changing, which is how ordinary drawer prose ended up styled like small metadata labels.
+- `cli/build.py`
+  The generator. Its built-in assertion checks that the body survives with every script stripped; `cli/check.py` and the fresh reviewer are separate checks.
+
+## Glossary
+zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.
+subagent: a separately started Claude that sees only the files it is handed, not the conversation that produced them.
+construct: one grammar element the documentation promises, such as a paragraph heading or a job line, together with the class it must render as.
+fixed test input: a small, maintained file whose expected output is known in advance; here it is `ref/page-template.md`.
+Opening: the always-visible opening section that states a page's question and scope before any collapsible detail.
+
+## Discussion
+> JL: I want a new Q about how to write a Q's body so people can actually understand it. We can have a subagent review every md so someone with limited knowledge can still follow.
+> JL: QA5 Writing it so people understand this one can be absorbed into QA9 Checking the template against its own page, right?
+>> CC0726: merged on JL's ruling. The two instruments stay distinct inside this page; what merged is the trigger, which was the item open on both.
+> JL: Board should be a first-class family, and it should have a reviewer agent.
+
+
+### From the retired States section (merged 260831)
 Both instruments now exist and have a registered runner.
 `check.py` is the mechanical instrument; `haipipe-board-reviewer-agent` is the read-only fresh-context runner that combines its report with the prose and staleness review.
 The checker now reads the same state contract as the renderer: the first emoji is the four-value machine status, optional text is human detail, and live `/_board/` plus `/_excalidraw` routes are not mistaken for missing files.
 The template fixture is complete as of 260806, and `check.py` reports 0 gap on this Board.
 Seven decisions or implementations remain open: a checker that can verify a 🧩 Skills landed row, joining `QF3`'s browser run to this trigger, a retired-id convention, Board-level rule opt-outs, a quantified policy for known cold-read gaps, a trigger for the changes that are not a page RUN, and whether a red result blocks the revision.
-
 - 260731 JL · 🌐 The trigger's scope is the SPACE, because the server's is
   JL settled that the live layer is SPACE-level: one server per repo root serving every board under it, with `--root` as the served tree, `.haipipe-board/` at the root, and terminal keys hashed from the absolute page path so two boards' `QD3` cannot collide.
   The consequence lands here rather than on `QA0`, which owns the scope itself: a change to anything shared changes every board at once, so "after every change" means across the root for a shared change and on one board for a local one.
@@ -269,54 +318,6 @@ Seven decisions or implementations remain open: a checker that can verify a 🧩
   Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
   The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
 
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [ ] 🧠 Rule whether a red result blocks a change or only reports it
-      The page already states the fork: a blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
-      The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
-      A tick here also closes the same row in Aims.
-
-## Files
-### The two instruments
-- `cli/check.py`
-  The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
-- `../agents/haipipe-board-reviewer-agent.md`
-  The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
-
-### The standards and fixed inputs they read
-- `ref/writing-rules.md`
-  The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
-- `ref/page-template.md`
-  The structural check's fixed test input and subject: the file copied for every new page, and the one whose promises the check verifies.
-- `ref/board-form.md`
-  The syntax table the structural assertions should be derived from, section 5 for the body grammar and section 4 for the section mapping.
-- `SKILL.md`
-  Its writing section excerpts the three deadliest rules and points at `ref/writing-rules.md`.
-
-### The renderer under test
-- `src/page_question.py`
-  The page renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
-- `src/body.py`
-  The body grammar: paragraph headings, job lines, group titles, sentence apparatus, typed lanes, and code folds.
-- `assets/css/10-focus.css`
-  Where a construct's meaning can change without any Python changing, which is how ordinary drawer prose ended up styled like small metadata labels.
-- `cli/build.py`
-  The generator. Its built-in assertion checks that the body survives with every script stripped; `cli/check.py` and the fresh reviewer are separate checks.
-
-## Glossary
-zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.
-subagent: a separately started Claude that sees only the files it is handed, not the conversation that produced them.
-construct: one grammar element the documentation promises, such as a paragraph heading or a job line, together with the class it must render as.
-fixed test input: a small, maintained file whose expected output is known in advance; here it is `ref/page-template.md`.
-Opening: the always-visible opening section that states a page's question and scope before any collapsible detail.
-
-## Discussion
-> JL: I want a new Q about how to write a Q's body so people can actually understand it. We can have a subagent review every md so someone with limited knowledge can still follow.
-> JL: QA5 Writing it so people understand this one can be absorbed into QA9 Checking the template against its own page, right?
->> CC0726: merged on JL's ruling. The two instruments stay distinct inside this page; what merged is the trigger, which was the item open on both.
-> JL: Board should be a first-class family, and it should have a reviewer agent.
-
 ## Log
 - 260806 2206 · [REVISE-CC] swept to the 260806 architecture; the two template fixture gaps are closed and ticked (`check.py` reports 0 gap), the checker's codes corrected to `open-with-met-aims` and `settled-with-open-aims`, the split `assets/css/` replaces `assets/board.css` in three places, the dead `frame=QA9` link repointed at `QF1`, the reviewer's Files path fixed, the browser instrument handed to `QF3` where it now runs, the page RUN loop recorded as the first automatic dispatcher of the reviewer, and the 🧩 Skills landed row merged from two identical items into one
 260802 2230 · First full deterministic sweep of the shipped family recorded: pytest 4 failed / 87 passed, and the 4 are one strip-format disagreement across code, spec and tests plus one permission default. `check.py`, `skillpage.py check` and the writing round-trip all pass. `agree.py` found one true version drift and 3 false dead paths
@@ -340,3 +341,5 @@ Opening: the always-visible opening section that states a page's question and sc
 260723 0915 · (from QA5) JL: "if it is not easy to read, writing that much is rubbish", opened as a question
 260722 1900 · (from QA5) Added `## Topic` and `## Pipeline` after the first cold read; terms moved into per-page `## Glossary`
 260722 1830 · (from QA5) First cold read, seven pages: one clear, five vague, one incomprehensible, roughly 35 unexplained terms
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

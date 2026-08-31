@@ -42,15 +42,18 @@ It succeeds when managed spans resync from the source and every authored line su
 Both mirror `stage.py`: the managed spans resync (three per generated page), everything a human wrote around them is left alone.
 
 ## Aims
+### Decision Now
+- [ ] 🧠 JL confirms the generator family reads as one topic now that QC2a and QC2b sit under QC2
+
+
 - [x] 🧪 skill folder → synced page ships (QC2a)
 - [x] 🧪 meeting note → board page kind ships (QC2b)
 - [ ] 🧠 routing a meeting's consequences into the owning Q pages (QC2b) still to build
 
-## States
-Both page kinds generate and are live; what remains is routing a meeting note's decisions into the Q pages they change, which is the one open item on QC2b.
+## Discussion
 
-### Decision Now
-- [ ] 🧠 JL confirms the generator family reads as one topic now that QC2a and QC2b sit under QC2
+### From the retired States section (merged 260831)
+Both page kinds generate and are live; what remains is routing a meeting note's decisions into the Q pages they change, which is the one open item on QC2b.
 
 ## Files
 - `cli/skillpage.py` · `cli/meetingpage.py` · `cli/stage.py`
@@ -63,3 +66,5 @@ Both page kinds generate and are live; what remains is routing a meeting note's 
 - 260806 2130 · [REVISE-CC] swept to the 260806 architecture; both generators sync three managed spans (not "one managed block"), and the live skill roster is 130 after the paper family's consolidation into `paper/_old/`
 260801 0140 · Full renumber QC5 -> QC3 (contiguous QC1-QC4, JL forced 260801); faces QC5a/QC5b -> QC2a/QC2b
 260801 0130 · Opened as the generator-family parent overview when QC5/QC10 were regrouped into QC5a/QC5b and QC4 (migrate old boards) was archived (JL 260801)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

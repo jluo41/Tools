@@ -7,8 +7,8 @@ description: >-
   material in display/. Never writes Content. Trigger: page evidence, EVIDENCE
   phase, bind an answer, probe value, display intake, /haipipe-page-evidence.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-08-20"
+  version: "0.13.0"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-page-evidence · land support before prose uses it
@@ -83,7 +83,11 @@ BIND          pull allowed aggregate proof and allocate PP<NN>.v<n> values
 ```
 
 One answer may yield many values. A sentence-level value is pointable only as
-`PP<NN>.v<n>`, whose row names the exact proof file and field. Never pull
+`PP<NN>.v<n>`, whose row names the exact proof file and field. When the page
+has a collection job (`task/haipipe-task-for-page`), `target:` binds to that
+job's QA file and the value rows copy from its `values.yaml`; a refresh run
+whose diff drifts a bound value is a stale binding re-landed here and absorbed
+at OUTLINE. Never pull
 row-level data, identifiers, or PHI into a Page.
 
 `answered` is machine completion; `read` is the human gate. EVIDENCE may write

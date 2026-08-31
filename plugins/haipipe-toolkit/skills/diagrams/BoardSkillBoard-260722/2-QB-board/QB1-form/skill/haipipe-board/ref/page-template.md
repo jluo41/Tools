@@ -1,4 +1,4 @@
-# Short title in sentence case: say what this page is FOR
+# Short purpose title
 <!-- On an S page the title carries the page's identity first: `S <Family> <unit> · <short title>`,
      for example `S Main 7 · §6 Results`. build.py derives the Content heading from it
      (`📚 Content · Main 7 §6 Results`), so a bare phrase there produces a heading that names nothing.
@@ -27,12 +27,15 @@ provides: one compact phrase naming the downstream handoff
        optional = delete the whole section, heading included, if unused.
      The top four lines follow the same rule: # title, state, owner are required; method is
      optional (delete the whole line).
-       - the title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801).
+       - the title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801),
+         targets three to five visible words, and never exceeds six (JL 260827).
+         Acronyms, identifiers, and hyphenated compounds count as one word; punctuation-only
+         separators do not count. A colon does not create a second allowance: the complete
+         visible title still stays within six words. The page id is not part of the title.
          Capitalize the first word and proper nouns and nothing else, so `Page Template design`
          is wrong twice over: it mixes two cases, and it names a topic instead of a purpose.
-         A colon may carry a short subtitle, and that is usually where the purpose lands:
-         `The page template: one grammar every page kind obeys`, `The code's shape: one Law,
-         three files`. A defined term keeps its capitals (`Mounting a SPACE`). On the Index the
+         Prefer compact titles such as `BCarrier header-line joins`, `AMI admission and CABG`,
+         or `CABG regression design`. A defined term keeps its capitals (`Mounting a SPACE`). On the Index the
          title is the only line a reader gets before choosing, so a title naming only its
          subject makes them open the page to learn what the page was for.
        - the first state token is exactly one of 🔴 (not started), 🟡 (in progress),
@@ -41,26 +44,31 @@ provides: one compact phrase naming the downstream handoff
          the suffix is not a fifth state and may not contradict the emoji. A new page of either
          kind starts `🔴 OPEN`. What ✅ means differs: on Q every Aim is met or explicitly held, on S that
          page's human gate passed (the index counts it under its named family).
+       - the state line is a row, not a paragraph (JL 260816): after the status word come at
+         most two ` · ` parts, what stands and then `open:` with a short list or a count, the
+         whole line under 110 characters. A part that could end in a period is prose: the
+         facts belong in the Aims' `Now:` lines and the reason in Log.
+         Good: `🟡 PARTIAL · ruled, card grammar adopted · open: landing address, citation hop, tab`
        - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
-     Section names (Opening / Content / Aims / States, etc.) must be kept verbatim.
+     Section names (Opening / Content / Aims, etc.) must be kept verbatim.
      `## Question` is still accepted as a legacy alias for `## Opening`, but the template
      keeps Opening because that is the canon; the lead sentence is still an actual question.
      build.py fetches content by these exact names, so any mark goes in the body, never in the
      heading line, and state: takes one status only.
      The visible hierarchy is fixed, and it is the SAME for both kinds:
-       Opening -> Diagram -> Content -> Aims -> States -> Files.
+       Opening -> Diagram -> Content -> Aims -> Files.
      Each section answers ONE reader question, and that is the test for every sentence you
      write into it (JL 260801; the five-row contract per section, conveys · holds · source ·
      rules · omit, lives in the design board's QB4 Content parts and in /haipipe-page):
        Opening: what is this page and why should I care? (never omit) · Diagram: can I see
        the whole subject at once? (delete when no figure helps) · Content: what does this
        page establish? (Q may omit, S never) · Aims: which durable target states should this
-       page establish? (never omit) · States: what is true now for each Aim, what waits on a human?
-       (never omit) · Files: which few files continue this work? (strongly advised) ·
+       page establish, and what is true now for each? (never omit) ·
+       Files: which few files continue this work? (strongly advised) ·
        folds: the durable memory (each optional).
      A sentence answering another section's question is misplaced: substance in Opening
      moves to Content, contract material in Content to Stage Contract, settled flags to
-     States; a durable intended result belongs in Aims, while a temporary next step belongs in an Aim's optional Plan.
+     the owning Aim's `Now:` line; a durable intended result belongs in Aims, while a temporary next step belongs in an Aim's optional Plan.
      There is NO Boundary section (JL 260731, said twice): what a page covers is the
      Opening's job, and a Boundary that restates it is noise. Point at a neighbouring
      page from the prose that needs it instead.
@@ -173,7 +181,7 @@ Replace the example with this page's real figure.
 ## Content
 S required · Q optional. The page's substantive material after orientation. Delete this explicit section in a Q that needs no additional material.
 
-On an S page, Content is the stage's real product and nothing else (JL 260725). For a manuscript page that means the section itself: its parts, its paragraphs, its prose. Three kinds of material accumulate around a stage and belong elsewhere: Required Inputs and Venue go to `## Stage Contract`, page prose rules go to `## Writing Style`, settled flags and corrections go to `## States` because they report what is now true, and intended outcomes go to `## Aims`. The page heading names the stage for this reason, reading `📚 Content · Main 7 §6 Results` rather than a subsection count, so if that name does not describe what a reader finds here, this section is holding something that belongs in one of the other three.
+On an S page, Content is the stage's real product and nothing else (JL 260725). For a manuscript page that means the section itself: its parts, its paragraphs, its prose. Three kinds of material accumulate around a stage and belong elsewhere: Required Inputs and Venue go to `## Stage Contract`, page prose rules go to `## Writing Style`, settled flags and corrections go to the owning Aim's `Now:` line because they report what is now true, and intended outcomes go to `## Aims`. The page heading names the stage for this reason, reading `📚 Content · Main 7 §6 Results` rather than a subsection count, so if that name does not describe what a reader finds here, this section is holding something that belongs in one of the other three.
 
 Content carries exactly two heading levels, and the number carries the depth (JL 260725). A direct `###` is a division: a part that holds content of its own and folds on its own. A `####` is one paragraph inside it, always, and there is no third level: the page folds one level, so a deeper tree would collapse a whole section into a single box. Read the depth off the numbering, `§6` against `§6.1`. Write a division only when it holds something, so a flat section carries one `### §1 Introduction` over its paragraphs while a subsectioned one starts at `### §6.1`, and no page opens a box onto nothing. This makes the shape checkable without reading the prose: the subsection count is the number of `###` headings whose number contains a dot.
 
@@ -242,58 +250,49 @@ The paragraph's prose starts on the line after the job line, still one sentence 
 Delete the `####` heading and the `(…)` line together in a division that is a single block of prose rather than a run of numbered paragraphs.
 
 ## Aims
-required · Durable target states, not a task list. Every Aim has a stable id and names the result this page is trying to make true.
+required · Durable target states, not a task list. Every Aim has a stable id, names the result this page is trying to make true, and carries its own current status: there is no `## States` section (merged into Aims, JL 260819; `check.py` reports a surviving one as `retired-section`).
 
-Group Aims under the Content division they serve: the group is `### A<n> · <emoji> <name>`, carrying that division's number and name, and an emoji that lives on the GROUP and never on the division heading (`check.py` strips an emoji from a group name and not from a division, so an emoji on the heading fires `group-name-drift`), and the States group is written exactly the same way
+Group Aims under the Content division they serve: the group is `### A<n> · <emoji> <name>`, carrying that division's number and name, and an emoji that lives on the GROUP and never on the division heading (`check.py` strips an emoji from a group name and not from a division, so an emoji on the heading fires `group-name-drift`)
 (JL 260801, the letter fixed to `A` on 260802; `C<n>` still resolves for older boards).
 One Content division may have zero, one, or several Aims. Use `P1`, `P2`, and so on only for a page-level Aim that genuinely crosses divisions.
-The section heading derives its `met/total` count from `## States`; Aims themselves never carry checkboxes.
+The section heading derives its `met/total` count from each row's tick; Aims never carry checkboxes.
 
-Each Aim starts `- A<division>.<n> · target`. Add a testable `Done when` line.
+One Aim is ONE row: `- <tick> A<division>.<n> · target`, then a testable `**Done when:**` line, then one `**Now:**` line with the current fact.
+The tick is `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or on something outside this page, `✅` met with the evidence named, or `❄️` on ice, held on purpose and thawable.
+Each says its meaning by SHAPE (JL 260802); the older `🟡` `🟠` `⏸️` still parse, because rows on other boards use them, but nothing new is written with them.
+`Now:` is a snapshot of right now: history belongs in `## Log`, and future work is either an Aim or its Plan.
 Add `Plan` only when the immediate route is worth preserving; Plan is temporary and may change without changing the Aim.
+A live ask for a person is that Aim's `Now:` line, marked `🧠`.
 
 ### A1 · First content subsection
-- A1.1 · The first division establishes its intended reader outcome.
+- 🔨 A1.1 · The first division establishes its intended reader outcome.
   **Done when:** A named reader can verify the outcome from the rendered division.
+  **Now:** Active; the first cold read is scheduled and the current wording is ready.
   **Plan:** Run one cold read and revise the division where the reader hesitates.
-- A1.2 · The division's evidence is traceable.
+- 🧠 A1.2 · The division's evidence is traceable.
   **Done when:** Every material claim points to its source or owning page.
+  **Now:** Waiting for the source owner to confirm the evidence route.
 
 ### P · Page-level
-- P1 · The whole page reads as one coherent decision surface.
-  **Done when:** Opening, Content, Aims, and States agree without duplicated or contradictory claims.
+- ⬜ P1 · The whole page reads as one coherent decision surface.
+  **Done when:** Opening, Content, and Aims agree without duplicated or contradictory claims.
+  **Now:** Not started; the divisions have not yet been read together.
 
 For an S page, a former Q-consumer becomes an Aim when answering it is a required stage outcome.
 Keep the Aim id, consumer id, stake, route, and acceptance condition together:
 
-- A2.1 · Q-Stage-1 · Resolve the concrete consumer question.
+- ⬜ A2.1 · Q-Stage-1 · Resolve the concrete consumer question.
   **Done when:** The answer has landed, been interpreted, and been woven into `## Content`.
+  **Now:** Not opened yet.
   **Description:** What must be learned?
   **Reason:** Which content or claim depends on it, and what breaks if it fails?
   **Probe:** Name the real route: a probe file, task folder, person, meeting, or `not opened yet`.
 
 A deferred consumer closes only after a forward pointer is recorded.
 
-## States
-required · The collection of factual present State records, one per Aim, plus the decisions a person still owes. It is a snapshot of right now: history belongs in `## Log`.
-
-Mirror the Aims groups and ids so a reader can compare intent with reality without guessing.
-Each Aim has exactly one current state row: `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or on something outside this page, `✅` met with the evidence named, or `❄️` on ice, held on purpose and thawable.
-Each says its meaning by SHAPE (JL 260802); the older `🟡` `🟠` `⏸️` still parse, because rows on other boards use them, but nothing new is written with them.
-Do not put future work here; that is either an Aim or its Plan. Record why a State changed in `## Log`.
-
 If the page holds decisions only a person can make, add one `### Decision Now` subsection
-(JL 260731), and put it FIRST, above the per-Aim groups below (JL 260802): everything else in
-States is a report, and this is the one part that asks the reader to do something. One `- [ ]` row per pending decision. The machine writes the rows and closes one once the human has answered it, recording which option, who ruled and when; a row nobody has answered waits for them (JL 260802). Its shape and the rule for what earns a row are stated under the example groups.
-
-### A1 · First content subsection
-- 🔨 A1.1 · Active; the first cold read is scheduled and the current wording is ready.
-- 🧠 A1.2 · Waiting for the source owner to confirm the evidence route.
-
-### P · Page-level
-- ⬜ P1 · Not started; the divisions have not yet been read together.
-
-On S pages, summarize the stage here; do not repeat every consumer answer from Aims.
+(JL 260731), and put it FIRST, above the per-Aim groups (JL 260802): everything else in
+Aims is a target and its report, and this is the one part that asks the reader to do something. One `- [ ]` row per pending decision. The machine writes the rows and closes one once the human has answered it, recording which option, who ruled and when; a row nobody has answered waits for them (JL 260802). Its shape and the rule for what earns a row are stated below.
 
 A `### Decision Now` row earns its place only when something STOPS until it is answered. A decision that matters is usually made in conversation within minutes, so decide it, do it, and record it in `## Log` instead of parking it here.
 
@@ -312,7 +311,7 @@ Each option takes ITS OWN LINE and says what choosing it commits you to (JL 2607
       🤖 `If nobody answers` the option that takes effect, required whenever nothing is blocked
 ```
 
-An answered decision LEAVES States entirely (JL 260802): the RULING goes to `## Law` with the date, the person, and the options that were not chosen with the reason; the CHANGE goes to `## Log` as one dated line; and the matching Aim's State row is updated in the same edit.
+An answered decision LEAVES Aims entirely (JL 260802): the RULING goes to `## Law` with the date, the person, and the options that were not chosen with the reason; the CHANGE goes to `## Log` as one dated line; and the matching Aim's tick and `Now:` line are updated in the same edit.
 
 ## Files
 optional (strongly recommended) · The action map for this page: if I change a rule here, what do
@@ -337,11 +336,11 @@ When this Page needs a precise fragment of another Page, use the one fixed excep
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)
   Why this phase needs that fragment.
 ```
 
-The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, PROBE, REVISE, CHECK, or ALL; the link target is Board-root-relative. The Page id must match the target, and scope is `page` or one direct Content division such as `§3.2`. `pagecontext.py` reads only phase-matching rows and follows one hop. For a division it returns the target Page identity, Opening, that division, and its matching Aims/States group; several scopes on one target share one identity and Opening. Never list a whole Page when one division is enough.
+The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, EVIDENCE, REVISE, CHECK, or ALL; the link target is Board-root-relative. The Page id must match the target, and scope is `page` or one direct Content division such as `§3.2`. `pagecontext.py` reads only phase-matching rows and follows one hop. For a division it returns the target Page identity, Opening, that division, and its matching Aims group; several scopes on one target share one identity and Opening. Never list a whole Page when one division is enough.
 
 ## Law
 optional · folded · Rules this question has settled and will follow from now on, one per line.

@@ -101,3 +101,25 @@ Fix what it reports, then it is done.
 For a batch, read the changed sections consecutively in Board order after the page-by-page pass. A page that is clear alone still fails readability when the batch reveals a reusable form-letter voice.
 
 **Convergence test:** no question is "unreadable", every "half" reason is either handled or written down as a known gap, and no changed paragraph remains interchangeable after noun substitution.
+
+## A heading is a lookup key
+
+Governs every skill's H1, a contract's `##` headings, and every page's `###`
+Content divisions. Five tests, each mechanical:
+
+```text
+① states the LAW, not the topic   `One key claims a page`, never `Page Types`
+② no count                        a number in a heading rots (`Seven Page Phases`)
+③ no date                         a heading carrying a date is a record, not a law
+④ no self-reference               the heading names the SUBJECT, never this document
+⑤ a clause after the comma        it earns its place only by ruling out a real
+                                   mistake the first half leaves open: `Write for
+                                   the render, not the source` keeps it; `A heading
+                                   is a lookup key, not a sentence` loses it
+```
+
+Test ⑤ catches machine prose: its tell is a comma followed by a qualifying
+phrase, commonest as the negative restatement. Grep it with
+`grep -n '^#\+ .*, '` and ask of each hit what mistake the clause prevents. A
+skill's H1 says what the skill DOES for its reader, as a verb phrase
+(`judge one version and name its next authority`).

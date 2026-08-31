@@ -1,5 +1,13 @@
 ## 0.12.0 — 2026-08-20
 
+## 0.13.0 · 2026-08-31
+
+Value lane: when the page has a collection job (`task/haipipe-task-for-page`),
+④ POINT binds `target:` to its QA file and value rows copy from its
+`values.yaml`; a refresh-run diff that drifts a bound value re-lands here and
+is absorbed at OUTLINE.
+
+
 - **0.12.0 shipped in SKILL.md with no entry here.** Reconstructed from the
   frontmatter: EVIDENCE lands the bibex and display lanes plus Probe's QA
   returns, and its PageX branch is NOT its own — that lane already ran in

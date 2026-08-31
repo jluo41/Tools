@@ -433,6 +433,31 @@ Uniform costs a small board one extra folder level and buys every board the same
 It also removes the question entirely from every future board, which is the real saving: nobody has to judge, so nobody has to be told what the judgment was.
 
 ## Aims
+### Decision Now
+- [ ] 🗣 Approve the two folders as the family's map
+      📍 `Part` §1, the two folders and the three crossings
+      🔔 `Why now` the map has been drafted and in use since 260729 and has never been ticked, so `SKILL.md`'s 🗂 Shape section still says nothing about it
+      ⭐ `A ·` approve, which lets §1 graduate into `SKILL.md` so a fresh agent places a new file without reading this board
+      `B ·` approve the folders and hold the three crossings, which leaves graduate, render and judge as convention
+      🛑 `Blocks` the `📐` Aim, the shape section rewrite
+      🤖 `If nobody answers` A takes effect, because it is the map already being followed
+- [ ] 🗣 Settle whether `fig/` is mandatory for every board
+      📍 `Part` §4, the board folder's own plugins
+      🔔 `Why now` the last open thing from 260722; every board carries one today, so the rule is a description with nobody's tick on it
+      ⭐ `A ·` mandatory, which lets `check.py` report a board without one and keeps every board the same shape
+      `B ·` optional, which means a board with no images carries no empty folder
+      🛑 `Blocks` nothing
+      🤖 `If nobody answers` B takes effect, because nothing today depends on the folder existing
+- [ ] 🗣 How hard does `check.py` enforce the one-origin rule?
+      📍 `Part` the 🌍 Law row, and `cli/check.py` `check_file_paths()`
+      🔔 `Why now` the rule cannot hold while the checker cannot see it broken: line 875's `cand.split("/")[0].startswith(".")` was written to excuse runtime state such as `.haipipe-board/activity.sqlite3`, but `".."` also starts with a `.`, so EVERY dead `../…` path is skipped in silence. On the two OpioidRx boards that hid 91 of 113 dead rows, and it is why `QC1-lbp` read 0 error while carrying seven dead six-level paths
+      ⭐ `A ·` narrow the skip to a real dotfile segment, so a dead `../…` reports as `dead-file-path` like any other; CC recommends A because it only stops the checker lying, and it changes no page
+      `B ·` A, plus a new WARN on any `../` in `## Files` at all, which converts the whole family to the one-origin form and will fire on every board until each is swept
+      `C ·` leave the checker alone and keep the rule as convention, which is the state that produced the four depths
+      🛑 `Blocks` sweeping the other boards, because nothing today can tell a swept board from an unswept one
+      🤖 `If nobody answers` A takes effect, since a checker that cannot see the defect is the defect
+
+
 ### The folder's contents and attachment, settled 260722
 - [x] List the files the folder must contain, one line each on what it owns
       board.md · Q*.md · board.html · fig/, written into SKILL.md's "shape" section and `ref/board-form.md`.
@@ -493,63 +518,6 @@ It also removes the question entirely from every future board, which is the real
       JL 260729: "I think we use the decision for it." This page is converted; counted on 260806, `SKILL.md` has 5, `ref/page-template.md` 3, the reviewer agent 1 and `ref/board-form.md` 0.
       Most of the remaining uses sit on boards this family renders and does not own, so under `QB1a` they need each owner told rather than a silent rewrite.
 (What a page looks like inside is `QPs1`'s business, and what may be written into somebody else's board is `QB1a`'s, so neither is handled here.)
-
-## States
-**The two-folder map is drafted and unapproved. The folder decisions underneath it stay settled and in use on every board.**
-
-- 🧩 Skills · what this page governs, and whether it has landed there yet
-  The unit itself sits in this page's `skill/haipipe-board/` plugin; this item only says what has landed.
-  `SKILL.md` 🗂 Shape · **NOT landed.** It describes one board folder's contents and says nothing about the `①`/`②` split or the three crossings. This is the open `📐` item below.
-  `ref/board-form.md` §1 folder · §2 numbering · **landed 260726.** The group-folder decision and the two reasons a page sits in a folder, both stated as one rule.
-  `src/common.py` `q_files()` · **landed 260722.** Membership by path is the rule this page settled first, and it has not changed since.
-  `cli/regroup.py` · **landed 260726.** The sweep that made the decision a command rather than a habit.
-  `agents/haipipe-board-reviewer-agent.md` · **reads, never writes.** It runs crossing ⒞ and this page defines what it checks placement against.
-- Two folders, drafted 260729
-  `①` `skills/board/` ships and binds at runtime; `②` this board argues and binds nothing until a decision graduates.
-  What separates them is what a write MEANS, not where the folder sits, because both are two directories apart inside the same plugin.
-- The board folder's own plugins, written 260816
-  `board.excalidraw`, `fig/`, `_archive/`, `_runs/` and the generated `board/` site are what a board holds besides its pages, and `### 4` says who may write each one.
-  The rule behind them is the parser's: `q_files()` skips any segment starting with `_` or `.`, and skips `fig/`.
-- Who is on the board, by path
-  Every `Q*.md` under the board folder, at any depth since `QPf1`, is one of the board's questions, except inside a page's plugin folder.
-  Opening a new question is dropping in one file, changing nothing else.
-- Order and grouping, by `board.md`'s `## Pages`
-  File names and group headings only; titles and body text are never copied, and no path is ever written.
-- Missed registration is only ugly, never lossy (both failure modes tested)
-  A file missing from the Pages still appears, under the ⚠️ group, plus a one-line CLI warning; a Pages line pointing at a non-existent file is also just a warning.
-  Measured again 260729 across every board then visible: one live instance of each, both on boards this family does not own.
-- Group folders are the default and `＋Q` follows them
-  Decided 260726, swept the same round: 154 pages across 7 boards, 0 left at any root.
-- 260729 CC · The map cost this page its ✅, and the reason is worth keeping
-  The question owned which files are in a board folder and how they are arranged, and never which of the two folders a thing belongs to at all.
-  Three edits into other projects' boards the same day are what made the gap concrete, and that half is now `QB1a`.
-- One small thing still open from 260722
-  Whether `fig/` is mandatory for every board; it holds 33 images here, `board.excalidraw` sits at the board root beside `board.md`, and every board carries a `fig/` today.
-  The other half of that item, whether filenames are English or Chinese, was settled by JL on 260724: English.
-
-### Decision Now
-- [ ] 🗣 Approve the two folders as the family's map
-      📍 `Part` §1, the two folders and the three crossings
-      🔔 `Why now` the map has been drafted and in use since 260729 and has never been ticked, so `SKILL.md`'s 🗂 Shape section still says nothing about it
-      ⭐ `A ·` approve, which lets §1 graduate into `SKILL.md` so a fresh agent places a new file without reading this board
-      `B ·` approve the folders and hold the three crossings, which leaves graduate, render and judge as convention
-      🛑 `Blocks` the `📐` Aim, the shape section rewrite
-      🤖 `If nobody answers` A takes effect, because it is the map already being followed
-- [ ] 🗣 Settle whether `fig/` is mandatory for every board
-      📍 `Part` §4, the board folder's own plugins
-      🔔 `Why now` the last open thing from 260722; every board carries one today, so the rule is a description with nobody's tick on it
-      ⭐ `A ·` mandatory, which lets `check.py` report a board without one and keeps every board the same shape
-      `B ·` optional, which means a board with no images carries no empty folder
-      🛑 `Blocks` nothing
-      🤖 `If nobody answers` B takes effect, because nothing today depends on the folder existing
-- [ ] 🗣 How hard does `check.py` enforce the one-origin rule?
-      📍 `Part` the 🌍 Law row, and `cli/check.py` `check_file_paths()`
-      🔔 `Why now` the rule cannot hold while the checker cannot see it broken: line 875's `cand.split("/")[0].startswith(".")` was written to excuse runtime state such as `.haipipe-board/activity.sqlite3`, but `".."` also starts with a `.`, so EVERY dead `../…` path is skipped in silence. On the two OpioidRx boards that hid 91 of 113 dead rows, and it is why `QC1-lbp` read 0 error while carrying seven dead six-level paths
-      ⭐ `A ·` narrow the skip to a real dotfile segment, so a dead `../…` reports as `dead-file-path` like any other; CC recommends A because it only stops the checker lying, and it changes no page
-      `B ·` A, plus a new WARN on any `../` in `## Files` at all, which converts the whole family to the one-origin form and will fire on every board until each is swept
-      `C ·` leave the checker alone and keep the rule as convention, which is the state that produced the four depths
-      🛑 `Blocks` sweeping the other boards, because nothing today can tell a swept board from an unswept one
-      🤖 `If nobody answers` A takes effect, since a checker that cannot see the defect is the defect
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -612,6 +580,39 @@ It also removes the question entirely from every future board, which is the real
 > JL: I think the 1 2 3 4 should be the folders, not the ideas. Don't need to mention the things outside. I think we just have two large folder, (1) the skill set and (2) the board folder. Just this two, and then the content will try to explain things here.
 >> CC0729: taken, and it is smaller than what it replaced. Two numbered folders, three crossings, one forbidden direction; everything else moved into Content, where the boards this family renders are described in §4 rather than numbered, because they are what `①` produces and not part of the map.
 
+
+### From the retired States section (merged 260831)
+**The two-folder map is drafted and unapproved. The folder decisions underneath it stay settled and in use on every board.**
+- 🧩 Skills · what this page governs, and whether it has landed there yet
+  The unit itself sits in this page's `skill/haipipe-board/` plugin; this item only says what has landed.
+  `SKILL.md` 🗂 Shape · **NOT landed.** It describes one board folder's contents and says nothing about the `①`/`②` split or the three crossings. This is the open `📐` item below.
+  `ref/board-form.md` §1 folder · §2 numbering · **landed 260726.** The group-folder decision and the two reasons a page sits in a folder, both stated as one rule.
+  `src/common.py` `q_files()` · **landed 260722.** Membership by path is the rule this page settled first, and it has not changed since.
+  `cli/regroup.py` · **landed 260726.** The sweep that made the decision a command rather than a habit.
+  `agents/haipipe-board-reviewer-agent.md` · **reads, never writes.** It runs crossing ⒞ and this page defines what it checks placement against.
+- Two folders, drafted 260729
+  `①` `skills/board/` ships and binds at runtime; `②` this board argues and binds nothing until a decision graduates.
+  What separates them is what a write MEANS, not where the folder sits, because both are two directories apart inside the same plugin.
+- The board folder's own plugins, written 260816
+  `board.excalidraw`, `fig/`, `_archive/`, `_runs/` and the generated `board/` site are what a board holds besides its pages, and `### 4` says who may write each one.
+  The rule behind them is the parser's: `q_files()` skips any segment starting with `_` or `.`, and skips `fig/`.
+- Who is on the board, by path
+  Every `Q*.md` under the board folder, at any depth since `QPf1`, is one of the board's questions, except inside a page's plugin folder.
+  Opening a new question is dropping in one file, changing nothing else.
+- Order and grouping, by `board.md`'s `## Pages`
+  File names and group headings only; titles and body text are never copied, and no path is ever written.
+- Missed registration is only ugly, never lossy (both failure modes tested)
+  A file missing from the Pages still appears, under the ⚠️ group, plus a one-line CLI warning; a Pages line pointing at a non-existent file is also just a warning.
+  Measured again 260729 across every board then visible: one live instance of each, both on boards this family does not own.
+- Group folders are the default and `＋Q` follows them
+  Decided 260726, swept the same round: 154 pages across 7 boards, 0 left at any root.
+- 260729 CC · The map cost this page its ✅, and the reason is worth keeping
+  The question owned which files are in a board folder and how they are arranged, and never which of the two folders a thing belongs to at all.
+  Three edits into other projects' boards the same day are what made the gap concrete, and that half is now `QB1a`.
+- One small thing still open from 260722
+  Whether `fig/` is mandatory for every board; it holds 33 images here, `board.excalidraw` sits at the board root beside `board.md`, and every board carries a `fig/` today.
+  The other half of that item, whether filenames are English or Chinese, was settled by JL on 260724: English.
+
 ## Log
 - 260816 2303 · JL ruled ONE ORIGIN: a page writes paths relative to the SPACE root, not counted in `../`. The server is already rooted there, so the path and the URL are one string. Landed as the 🌍 Law row; the enforcement half is a new Decision Now, because `check.py`'s dot-leading skip swallows every dead `../…` and hid 91 of 113 dead rows on the two OpioidRx boards.
 - 260816 · [REVISE-CC] Split and re-anchored so the QB group reads as four pages. `### 4`, the standing rule for writing into a board we render but do not own, left whole for the new `QB1a`, taking its two open items, the 260729 revert and JL's approval, with it: this page read as settled while the group's one open decision was buried inside it. The vacated slot became the board folder's own plugins, `board.excalidraw`, `fig/`, `_archive/`, `_runs/` and the generated `board/`, which had been three sentences in §1.3 and are now a division with the parser rule behind them stated. `Design-1` dissolved the way `QPs00` dissolved into `QPs1`: the `haipipe-board` unit now rides this page as its `skill/` plugin and the 260723 demo as its `meeting/` plugin, with the prose archived at `_archive/Design-1-haipipe-board/`. Diagram panel [3/3] was the standing rule and is now the plugins; panel [1/3]'s roster was remeasured against disk (v0.137.0, 5 skills, 4 Page Types, 11 page plugins, 5 page workflows, 3 agents; this board at 56 pages in 9 group folders). Stale ids repointed: `QA0` to `QA00`, `QB3` to `QPf1`, `QB4` to `QPs1`. Both open decisions rewritten to the `### Decision Now` option shape.
@@ -636,3 +637,5 @@ It also removes the question entirely from every future board, which is the real
 260722 2255 · Attachment settled as two layers (path for membership / Pages for order), both failure modes tested
 260722 2250 · Split: sections go to QA2, this question keeps only the folder
 260722 1706 · Opened. The original question mixed "which files in the folder" and "which sections in a file" into one
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

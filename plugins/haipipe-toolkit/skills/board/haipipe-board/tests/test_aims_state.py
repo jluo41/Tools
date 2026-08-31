@@ -88,19 +88,24 @@ class AimsStateTest(unittest.TestCase):
         door = (paper_root / "haipipe-paper" / "SKILL.md").read_text(
             encoding="utf-8"
         )
-        for page_type in ("seed", "venue", "narrative", "section", "round", "dash"):
+        for page_type in ("ideation", "seed", "roadmap", "narrative", "section", "round"):
             with self.subTest(page_type=page_type):
-                self.assertIn(f"haipipe-page-for-{page_type}", door)
+                self.assertIn(f"haipipe-paper-{page_type}", door)
                 self.assertTrue(
-                    (paper_root / "page-types" / f"haipipe-page-for-{page_type}" / "SKILL.md").is_file()
+                    (paper_root / "workflow-phases" / f"haipipe-paper-{page_type}" / "SKILL.md").is_file()
                 )
+        self.assertIn("haipipe-paper-venue", door)
+        self.assertTrue(
+            (paper_root / "haipipe-paper-venue" / "SKILL.md").is_file()
+        )
         self.assertIn("S01–S10 stage contracts", door)
         self.assertIn("retired", door)
 
     def test_active_paper_types_do_not_teach_legacy_checkbox_progress(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper = root.parents[1] / "paper"
-        for path in paper.glob("page-types/haipipe-page-for-*/SKILL.md"):
+        for path in (list(paper.glob("workflow-phases/haipipe-paper-*/SKILL.md"))
+                     + [paper / "haipipe-paper-venue" / "SKILL.md"]):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("## Items to Finish", text, path.as_posix())
             self.assertNotIn("## Where we are", text, path.as_posix())

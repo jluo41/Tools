@@ -135,7 +135,9 @@ It was dropped, and its example is kept whole at `_archive/QBt9-for-slide.md`, w
       A rebuild is one click, so a sign-off step would slow people down and help nobody.
       The ruling can be undone: the day a deck misleads someone, the sign-off comes back.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 - ✅ ✂️ Only the ✨ button writes a deck, so `live/deck.py` goes
       Met: `haipipe-board/live/` holds `autodeck.py` and no `deck.py`, and the `/_board/deck` route went with it.
 - ✅ 🗑 `haipipe-page-for-slide` leaves `page-types/`
@@ -204,3 +206,5 @@ It was dropped, and its example is kept whole at `_archive/QBt9-for-slide.md`, w
       JL's words were "We will just have the AI deck", which retired the browser reflow from both the client and the shell.
       Six decks were authored the same hour, which is the evidence that the authored tier could carry the board on its own.
       This is the ruling the `SELECTION` division now records.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

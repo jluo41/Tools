@@ -124,12 +124,12 @@ document.addEventListener('click', function (e) {
   var a = e.target.closest && e.target.closest('a');
   if (!a) return;
   var href = a.getAttribute('href') || '';
-  if (!href || href[0] === '#' || /^[a-z]+:/i.test(href) || !/\.html/.test(href)) return;
+  if (!href || href[0] === '#' || /^[a-z]+:/i.test(href) || !/\\.html/.test(href)) return;
   var go = null;
   try { go = parent.frames.page && parent.frames.page.__boardGo; } catch (err) { return; }
   if (typeof go !== 'function') return;          // fall through to target="page"
   e.preventDefault();
-  go(new URL(a.href, location.href).href.replace(/\?pane=page/, '') + '?pane=page', true);
+  go(new URL(a.href, location.href).href.replace(/\\?pane=page/, '') + '?pane=page', true);
 });
 """,
     "chat": """
@@ -631,8 +631,10 @@ def _shell_doc(page_url, index_url):
      mid-command is still running when you bring it back. */
   var hidden = true;                     // hidden until asked for
   try { hidden = localStorage.getItem('board-split-chat') !== '1'; } catch (e) {}
-  var wanted = 'tui';
-  try { wanted = localStorage.getItem('board-split-mode') || 'tui'; } catch (e) {}
+  /* GUI is the form a fresh reader gets (JL 260831: "if choose the Chat
+     Plugin, make the GUI the default"); a stored choice still wins. */
+  var wanted = 'gui';
+  try { wanted = localStorage.getItem('board-split-mode') || 'gui'; } catch (e) {}
   var btns = [document.getElementById('mtui'), document.getElementById('mgui')];
 
   /* The registry lives in the PAGE frame, which is same-origin, so the shell reads it
@@ -697,7 +699,15 @@ def _shell_doc(page_url, index_url):
       rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                   run: function () { showTab(e.id); } });
     });
-    return rows.concat(pageEntries('plugin'));
+    var all = rows.concat(pageEntries('plugin'));
+    /* THE DEFAULT LEADS THE MENU (JL 260831: "make the outline the first
+       plugin and the default plugin"). rankDefault() has put it first in the
+       STRIP since 260830, but this menu still opened on 💬 with 🧭 fifth. */
+    var def = defaultTab();
+    for (var i = 1; i < all.length; i++) {
+      if (all[i].id === def) { all.unshift(all.splice(i, 1)[0]); break; }
+    }
+    return all;
   }
   /* 🪜 WORKFLOW · steppers over THIS page, which open along the BOTTOM. The shell owns
      none of these: a workflow is gated on the page's declared type, so the page is the
@@ -1087,12 +1097,37 @@ def _shell_doc(page_url, index_url):
   /* THE OPEN SET, per page: a reader returns to the pane the way they left it. */
   var openSet = null;
   function tabsKey() { return 'board-split-tabs:' + (shownNow() || OPENED); }
+  /* 🧭 THE DEFAULT TAB IS THE REGISTRY'S, NOT CHAT (JL 260830: "the outline
+     will be shown as the default and be ranked to be the first, not the Chat.
+     This is very important"). The page frame has carried
+     `boardPlugins.setDefault('outline')` since 260818, but only the FAB read
+     it: this shell seeded `['chat']` and `tab = 'chat'` on its own, so every
+     split pane opened on 💬 with 🧭 second or absent. The shell now asks the
+     registry, and the default goes FIRST in the strip whenever the page can
+     offer it. A stored set keeps the reader's other choices; only the rank of
+     the default is corrected. */
+  function defaultTab() {
+    try {
+      var w = pageWin();
+      var d = w && w.boardPlugins && w.boardPlugins.getDefault(w.boardPlugins.livePage());
+      return (d && d.tab && d.id && offerable(d.id)) ? d.id : '';
+    } catch (e) { return ''; }
+  }
+  function rankDefault() {
+    var id = defaultTab();
+    if (!id || openSet === null) return id;
+    var i = openSet.indexOf(id);
+    if (i > 0) openSet.splice(i, 1);
+    if (i !== 0) openSet.unshift(id);
+    return id;
+  }
   function loadSet() {
     openSet = ['chat'];
     try {
       var v = JSON.parse(localStorage.getItem(tabsKey()) || 'null');
       if (Array.isArray(v) && v.length) openSet = v;
     } catch (e) {}
+    rankDefault();
   }
   function saveSet() {
     try { localStorage.setItem(tabsKey(), JSON.stringify(openSet)); } catch (e) {}
@@ -1140,8 +1175,22 @@ def _shell_doc(page_url, index_url):
       + '<div style="max-width:80%;white-space:pre-wrap">' + msg + '</div></body>');
   }
 
+  var firstPaint = true;
   function paintTabs() {
     if (openSet === null) loadSet();
+    /* The registry may not have existed when loadSet ran at boot; rank again
+       now, and if the pane has never shown anything but the seed, aim it at
+       the default so the first open lands on 🧭 rather than 💬. */
+    var def = rankDefault();
+    /* Boot lands on the default even when the pane comes up VISIBLE (JL
+       260831): the `hidden` guard alone left a pane restored open on 💬,
+       because nothing had chosen 'chat' but the seed. Once the registry has
+       answered, the first paint is the only one allowed to re-aim. */
+    if (def && tab === 'chat' && (hidden || firstPaint)) {
+      tab = def;
+      if (!hidden) { xframe(def); stage(def); aimTab(def); }
+    }
+    if (def) firstPaint = false;
     /* Prune what this page cannot offer, without persisting the prune: the
        stored set is the reader's choice and the next page may honour it. */
     var set = openSet.filter(offerable);

@@ -145,8 +145,8 @@ DRAFT may write any Page section needed to expose the promise, subject to the ba
 🧭 Opening      states the purpose now being promised
 🖼 Diagram      exposes the promised shape when a figure helps
 📚 Content      makes the proposed substance concrete enough to test
-🎯 Aims         creates, removes, or changes the durable targets
-📍 States       creates the factual initial row for each Aim
+🎯 Aims         creates, removes, or changes the durable targets, and writes
+                each row's tick and its factual initial `Now:` line
 📎 Files        records the few continuations the round depends on
 🗃 Log          records that the promise opened or changed
 ```
@@ -200,7 +200,7 @@ target prose and records which Aim goes unmet if it stays a hole.
 ```text
 target prose     "The effect is <HOLE>." [Q-<local-id>]
 ## Aims          the Aim that hole belongs to
-## States        that Aim's honest current row
+**Now:** line    that Aim's honest current fact, on the same row
 ```
 
 The stake is exactly that pairing: what the Page loses if the answer never

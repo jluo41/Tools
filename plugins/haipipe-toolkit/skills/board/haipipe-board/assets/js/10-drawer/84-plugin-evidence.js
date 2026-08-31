@@ -1,6 +1,12 @@
-/* 🖼🚪 Evidence · the page's EVIDENCE plugins: display/ and probe/.
+/* 🧾 Evidence · ONE tab presents the four evidence lanes (JL 260831).
  *
- * WHAT THIS FILE OWNS, and it is one thing: the two registry rows. The
+ * "We still have the subfolder for bibex, etc, but we just need one evidence
+ * plugin, to present bibex, display, etc." So this file registers ONE row;
+ * the live segmented surface is live/evidence.py (/_board/evidence), whose
+ * segments press the lanes' own pens (/_board/bibex·probe·display) on demand.
+ * Storage, writers and the three human gates stay with the lane contracts.
+ *
+ * WHAT THIS FILE OWNS, and it is one thing: the one registry row. The
  * surfaces are read-only views built by live/plugview.py (one /_board/<plugin>
  * route each), because both contracts forbid the pane a pen: a display is
  * accepted by a person (QPf5 §3) and a probe is moved by its three hands
@@ -59,30 +65,39 @@
     };
   }
 
-  var DEFS = [
-    { id: 'display', label: '🖼 Display', route: 'display',
-      hint: 'this page’s display units · previews and status, read-only' },
-    { id: 'probe', label: '🚪 Probe', route: 'probe',
-      hint: 'this page’s evidence questions · raised → working → bound' }
-  ];
+  function evidenceUrl(page) {
+    var f = pageFile(page);
+    if (!f) return '';
+    return '/_board/evidence?path=' + encodeURIComponent(board())
+         + '&file=' + encodeURIComponent(f);
+  }
+
+  function evidenceWrite(page, cb, err) {
+    fetch('/_board/evidence', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: board(), file: pageFile(page) })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { err && err(j.err || 'evidence failed'); return; }
+        cb(j);
+      })
+      .catch(function (e) { err && err(String(e)); });
+  }
 
   if (window.boardPlugins) {
-    DEFS.forEach(function (d) {
-      var write = writer(d.route);
-      window.boardPlugins.register({
-        id: d.id,
-        label: d.label,
-        hint: d.hint,
-        menu: 'plugin',
-        /* Any page with a source file: an empty plugin still opens, and the
-           ghost scaffold it shows is the contract teaching itself. */
-        applies: function (page) { return !!pageFile(page); },
-        open: opener(write),
-        tab: {
-          url: function (page) { return savedUrl(page, d.id); },
-          write: write
-        }
-      });
+    window.boardPlugins.register({
+      id: 'evidence',
+      label: '🧾 Evidence',
+      hint: 'citations, cards, values and displays · one surface, four lanes',
+      menu: 'plugin',
+      /* Any page with a source file: an empty lane still opens, and the
+         ghost scaffold it shows is the contract teaching itself. */
+      applies: function (page) { return !!pageFile(page); },
+      open: function (page) {
+        var u = evidenceUrl(page);
+        if (u) window.open(u, '_blank', 'noopener');
+      },
+      tab: { url: evidenceUrl, write: evidenceWrite }
     });
   }
 })();

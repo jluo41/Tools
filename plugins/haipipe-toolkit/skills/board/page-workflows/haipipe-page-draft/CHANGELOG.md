@@ -1,3 +1,24 @@
+## 0.10.0 — 2026-08-31
+
+Rewritten as ONE pass: 453 → 185 lines, present tense. ① the conversion by
+Page Type (Section: one slot → one sentence ending `<!-- realizes: C.P.B -->`;
+other: one point → one or more sentences) · ② five rules every sentence
+obeys (the number with its `> Value:` lane; no hole token in prose, three
+cases: `state=provisional`, `{VAL:? …} [Q-…]`, or a clean sentence + comment
+lane + probe card; evidence by id; the present tense; plain words) · ③ what
+the pass writes on the page (Opening, Diagram, Content, the Aims rows and
+their `Now:`; never Files, Log, States or Discussion) · ④ track the change
+(the `~~old~~ → new` diff folded under one log record; a `✎` lane for a single
+sentence) · 🔀 · 🧾 · ✅ exit sweep with `sentence-without-realizes` and
+`number-without-lane`.
+- Retired: `<HOLE: …>` in prose; `WRITES … Aims (transcribed from the plan) ·
+  Files · Log`; the three-layer, the outline-moved-out and the no-card
+  histories (this file states what the pass does now).
+
+## 0.9.2 — 2026-08-31
+
+- **No `## States`**: the section list, the Aims wall, the Log rule and the hole-address table now say the merged form (tick + `Done when:` + `Now:` on one Aim row; haipipe-page 0.41.0).
+
 ## 0.9.1 — 2026-08-21
 
 - **§📏 A Log row is one line, not a paragraph** (JL: "make sure to make the

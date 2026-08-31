@@ -29,7 +29,7 @@ through declared craft files rather than worker skills.
 
 **The unit-page shape hands off to the more specific types** (review fix). An
 `S-Main-<n>` or `S-Appendix-<letter>` section unit declares `page-type: section`
-and loads `haipipe-page-for-section` on top of this file; an `S-Display`
+and loads `haipipe-paper-section` on top of this file; an `S-Display`
 unit page declares `page-type: display` and loads `haipipe-page-for-display`.
 The stage filename still names family and unit; the `page-type:` key names the
 governing contract, and the key beats the filename (base type resolution ③).

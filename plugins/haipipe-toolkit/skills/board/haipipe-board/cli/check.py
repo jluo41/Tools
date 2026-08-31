@@ -53,6 +53,7 @@ from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
+from src.feedback import rounds as _rounds, parse_round, register_path, register_ids  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
@@ -400,6 +401,10 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                     f"title has {len(words)} visible words; target 3-5 and keep the whole "
                     f"title at or below {MAX_PAGE_TITLE_WORDS} (JL 260827)")
     for canon in REQUIRED:
+        # `Done when` is satisfied by the page's PLAN once the page migrated to
+        # haipipe-plugin-outline 0.16.0 and kept no copy.
+        if canon == "Done when" and page_aims_text(text, path)[1]:
+            continue
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
             rep.add(ERROR, "missing-section", name, f"no `## {shown}` section")
@@ -536,9 +541,14 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                     "a whole-line **bold** renders as a group title with 🔹, but prose follows it, "
                     "not a run of items (QA4 §3)")
 
-    aims_text, states_text = section_text(text, "Done when"), section_text(text, "Now")
+    aims_text, in_plan = page_aims_text(text, path)
+    states_text = section_text(text, "Now")
     check_state_mirrors_aims(aims_text, states_text, name, rep)
-    check_generated_block(text, name, rep)
+    check_generated_block(text, name, rep, path)
+    check_evidence_file(path, name, rep)
+    check_discussion_file(path, name, rep)
+    check_requirement_file(text, path, name, rep)
+    check_retired_blocks(text, name, rep)
 
     progress = aim_progress(aims_text, states_text)
     met, total, closed = progress["met"], progress["total"], progress["closed"]
@@ -574,12 +584,14 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
 
     check_opening(text, name, rep)
+    check_feedback_coverage(path, text, name, rep)
+    check_plan_arc(path, name, rep)
     check_page_type(path, text, name, rep)
     check_group_names(text, name, rep)
     check_one_canvas(text, name, rep)
     check_division_figures(text, name, rep)
     check_comment_form(text, name, rep)
-    check_file_paths(text, name, rep, path.parent)
+    check_file_paths(text, name, rep, path.parent, path=path)
     check_related_board_pages(path, name, text, rep)
     check_canvas_frames(text, name, rep, path.parent)
     check_duplicate_sections(text, name, rep)
@@ -588,6 +600,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_page_evidence(path, text, name, rep, ERROR, WARN)
     check_fence_balance(text, name, rep)
     check_content_attribution(text, name, rep)
+    check_section_sentences(text, path, name, rep)
 
 
 # QB4 §1 states seven rules for the Opening and NOT ONE of them was checked, so
@@ -702,6 +715,17 @@ RETIRED_SECTIONS = {
     "Question": "renamed to `## Opening` (260731)",
     "Items to Finish": "renamed to `## Aims` (260731)",
     "Where we are": "renamed to `## States` (260731), then merged into `## Aims` (260819)",
+    # The 260819 merge named only the OLD name above, so `RETIRED_SECTIONS.get`
+    # returned None for the CURRENT one and the comment at the head of this file
+    # ("`retired-section` reports it") described behaviour the table did not
+    # have. 1,026 lines of a retired section passed silently on the MISQ paper
+    # board for eleven days (JL 260830).
+    "Files": "moved to `outline/<stem>-files.md` (JL 260831, QPf12 row 3): one "
+             "`### F<n> · <what it is for>` record per file with `Path` and `Role`; a "
+             "Related Board Page is a record with `Role: related` and its row verbatim under it",
+    "States": "merged into `## Aims` (260819): one Aim row carries its tick, "
+              "its `Done when:` test and its `Now:` fact. Live asks "
+              "(`### Needs JL · tick these`) become that Aim's `Now:` line",
 }
 
 
@@ -845,6 +869,70 @@ def check_content_attribution(text, name, rep):
                         "present-tense rule).")
 
 
+_NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+|\b\d+\.\d+\b|\b\d+(?:\.\d+)?\s*(?:million|thousand|billion|percent|%)")
+
+
+def _latest_plan_approved(path):
+    """-> True when the page's newest outline-v<N>.md carries `approved: ✅`."""
+    o = path.parent / "outline"
+    if not o.is_dir():
+        return False
+    plans = sorted(o.glob(f"{path.stem}-outline-v*.md"),
+                   key=lambda q: int(re.search(r"-v(\d+)\.md$", q.name).group(1))
+                   if re.search(r"-v(\d+)\.md$", q.name) else 0)
+    if not plans:
+        return False
+    return bool(re.search(r"(?m)^approved:\s*✅", plans[-1].read_text(encoding="utf-8", errors="replace")))
+
+
+def check_section_sentences(text, path, name, rep):
+    """The DRAFT contract on a Section page drafted from an APPROVED plan
+    (haipipe-page-draft §① §②): every Content sentence ends `<!-- realizes:
+    C.P.B -->` (`sentence-without-realizes`), and every sentence that carries a
+    number (a comma-grouped count, a decimal, `8.69 million`, a percentage) has
+    a `> Value:` lane under it (`number-without-lane`). Gated on the approved
+    plan because a page with no agreed slot plan has nothing to realize; the
+    pages written before the rule stay silent until their next DRAFT."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if not _latest_plan_approved(path):
+        return
+    spans = re.findall(r"(?ms)^## Content\b[^\n]*\n(.*?)(?=^## |\Z)", text)
+    if not spans:
+        return
+    span = spans[0]
+    start = text.index(span)
+    base = text[:start].count("\n") + 1
+    lines = span.split("\n")
+    fenced = False
+    for i, line in enumerate(lines):
+        st = line.strip()
+        if st.startswith(FENCE):
+            fenced = not fenced
+            continue
+        if fenced or not st or st.startswith((">", "#", "<!--", "(", "**", "-", "|", "!", "["  )):
+            continue
+        core = re.sub(r"<!--.*?-->", "", st).strip()
+        if not re.search(r"[.?!][\"')\]]*(\s*\[[^\]]*\])?\s*$", core):
+            continue                      # a title line, a keyword list: not a sentence
+        if "realizes:" not in st:
+            rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
+                    "a Section sentence drafted from an approved plan names its slot: "
+                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-draft §①)")
+        probe = re.sub(r"\[[^\]]*\]|\\cite[pt]?\{[^}]*\}", "", core)
+        if _NUM_RE.search(probe):
+            j, has_lane = i + 1, False
+            while j < len(lines) and lines[j].strip().startswith(">"):
+                if re.match(r"^>\s*Value:", lines[j].strip()):
+                    has_lane = True
+                    break
+                j += 1
+            if not has_lane:
+                rep.add(WARN, "number-without-lane", "%s:%d" % (name, base + i),
+                        "this sentence states a number and no `> Value:` lane follows it; "
+                        "write the source page, bracket or card and its state (haipipe-page-draft §②)")
+
+
 def check_retired_sections(text, name, rep):
     """A section JL retired must not come back, and must not merely be ALIASED.
 
@@ -944,7 +1032,18 @@ def check_canvas_frames(text, name, rep, board_dir=None):
                         "so the link 404s (QB4 §2.7)")
 
 
-def check_file_paths(text, name, rep, board_dir=None):
+def _files_record_text(path):
+    """The page's outline/<stem>-files.md, with each `- **Path**: `x`` row
+    rewritten as a bare `- `x`` row so the Files path checks read it unchanged."""
+    if not path:
+        return ""
+    p = Path(path); f = p.parent / "outline" / f"{p.stem}-files.md"
+    if not f.is_file():
+        return ""
+    t = f.read_text(encoding="utf-8", errors="replace")
+    return re.sub(r"(?m)^(\s*[-*])\s+\*\*Path\*\*:\s*", r"\1 ", t)
+
+def check_file_paths(text, name, rep, board_dir=None, path=None):
     """Every backticked path in `## Files` must resolve (JL 260802).
 
     Files is the action map, and a stale path is worse than no path: the
@@ -957,6 +1056,9 @@ def check_file_paths(text, name, rep, board_dir=None):
     repo root, because a Files row may point at any of the three.
     """
     block = section_text(text, "Files") or ""
+    # Since 260831 the file map lives in outline/<stem>-files.md (JL, QPf12 row 3);
+    # its `- **Path**: `x`` rows are checked with the same teeth as a page's rows.
+    block = block + "\n" + _files_record_text(path)
     roots = [HERE, HERE.parent]
     if board_dir:
         d = Path(board_dir)
@@ -1065,7 +1167,7 @@ def _ymd(token):
     return t[2:] if len(t) == 8 else t
 
 
-def check_generated_block(text, name, rep):
+def check_generated_block(text, name, rep, path=None):
     """A measured block must say when it was measured, and not be older than
     the page it measures.
 
@@ -1091,7 +1193,16 @@ def check_generated_block(text, name, rep):
         blocks.append((tag, tail[0]))
     if not blocks:
         return
+    # The Log may live on the page OR, since haipipe-plugin-outline 0.16.0, in
+    # `outline/<stem>-log.md`. Reading only the page made this check lose its
+    # input the moment a page migrated: `latest` went "" for ever and a stale
+    # form block could never be reported again. A finding count dropping because
+    # a check lost its input is worse than the finding (field test, JL 260830).
     log = section_text(text, "Log")
+    if path is not None:
+        side = path.parent / "outline" / f"{path.stem}-log.md"
+        if side.exists():
+            log += "\n" + side.read_text(encoding="utf-8", errors="replace")
     latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
     for tag, block in blocks:
         _one_generated_block(tag, block, latest, name, rep)
@@ -1113,6 +1224,204 @@ def _one_generated_block(tag, block, latest, name, rep):
                 f"the block was measured {_ymd(stamp.group(1))} and this page has "
                 f"logged work through {latest}, so it measures a version that no "
                 "longer exists")
+
+
+
+def check_evidence_file(path, name, rep):
+    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.17.2):
+    one bullet, one line, in the Evidence Bundle's six status words, written
+    only by `cli/evidence-status.py`. Two things can go wrong with a derived
+    file and both are silent: it is older than the evidence it describes, or
+    someone typed into it. A stale status that reads as measured is worse than
+    no file (JL 260831)."""
+    if path is None:
+        return
+    ev = path.parent / "outline" / f"{path.stem}-evidence.md"
+    if not ev.exists():
+        return
+    text = ev.read_text(encoding="utf-8", errors="replace")
+    stamp = re.search(r"MEASURED\s+(2\d{5})(?:\s+(\d{4}))?", text)
+    if not stamp or "GENERATED; do not hand-edit" not in text:
+        rep.add(WARN, "evidence-hand-edited", name,
+                "`outline/%s` carries no `MEASURED <date>` + GENERATED line; a status "
+                "nobody generated is a status somebody typed" % ev.name)
+        return
+    import datetime as _dt
+    measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
+    newest, newest_name = 0.0, ""
+    lanes = [path.parent / "outline", path.parent / "probe", path.parent / "bibex",
+             path.parent / "display", path.parent / "pagex"]
+    for lane in lanes:
+        if not lane.is_dir():
+            continue
+        for f in lane.rglob("*"):
+            if f.is_file() and f != ev and f.stat().st_mtime > newest:
+                newest, newest_name = f.stat().st_mtime, f.relative_to(path.parent).as_posix()
+    if newest > measured + 60:
+        rep.add(WARN, "evidence-stale", name,
+                "`outline/%s` was measured %s %s but `%s` changed later; regenerate "
+                "with `cli/evidence-status.py`" % (ev.name, stamp.group(1), stamp.group(2) or "", newest_name))
+
+
+def check_discussion_file(path, name, rep):
+    """`outline/<stem>-discussion.md` holds OPEN questions only (haipipe-plugin-
+    outline 0.18.0, JL 260831: "the solved one go to logs, and only leave the
+    one we have not solved"). A thread that is settled, decided or dropped has
+    moved: its ruling is one `### YYMMDD · D<nn> …` record in `-log.md`. A
+    settled thread still sitting here is the old shape, and the file it makes
+    is the one nobody could read."""
+    if path is None:
+        return
+    f = path.parent / "outline" / f"{path.stem}-discussion.md"
+    if not f.exists():
+        return
+    text = f.read_text(encoding="utf-8", errors="replace")
+    for m in re.finditer(r"(?ms)^### (D\d+) · [^\n]*\n(.*?)(?=^### |\Z)", text):
+        body = m.group(2)
+        if re.search(r"(?m)^\s*(?:status:|- \*\*Status\*\*:)\s*(✅|🚫)", body) \
+                or re.search(r"(?m)^\s*(?:settled:|- \*\*Settled\*\*:)", body) \
+                or re.search(r"(?m)^\s*status:\s*✅", body):
+            rep.add(WARN, "discussion-settled-thread", name,
+                    f"thread `{m.group(1)}` is settled and still in `outline/{f.name}`; the discussion "
+                    f"holds open questions only, so its ruling belongs in `outline/{path.stem}-log.md` "
+                    f"as one dated record (haipipe-plugin-outline 0.18.0)")
+
+
+def check_requirement_file(text, path, name, rep):
+    """`outline/<stem>-requirement.md` is DERIVED by `cli/requirement.py` from
+    the VENUE division the page binds, and nothing else (JL 260831: "focus on
+    the venue is sufficient"; the first generator also copied the Narrative
+    row and the board rules in, and the tab was unreadable). A Section page
+    that binds a division and has no file shows no 📏 chip (JL 260831: "I
+    didn't see the requirement"); a file without its GENERATED line was typed."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if not re.search(r"(?m)^structure-source:\s*\S", text[:3000]):
+        return
+    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    if not f.exists():
+        rep.add(WARN, "requirement-missing", name,
+                f"this page binds a venue division and `outline/{f.name}` "
+                f"does not exist; run `cli/requirement.py {path.name}`")
+        return
+    if "GENERATED; do not hand-edit" not in f.read_text(encoding="utf-8", errors="replace"):
+        rep.add(WARN, "requirement-hand-edited", name,
+                f"`outline/{f.name}` carries no GENERATED line; a requirement nobody generated is one somebody typed")
+        return
+    # STALE: the venue desk (its one source) is newer than the stamp; a
+    # requirement that outlives a moved desk reads as binding.
+    ftxt = f.read_text(encoding="utf-8", errors="replace")
+    stamp = re.search(r"MEASURED\s+(2\d{5})(?:\s+(\d{4}))?", ftxt)
+    if not stamp:
+        return
+    import datetime as _dt
+    measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
+    skills = Path(__file__).resolve().parents[3]
+    srcs = []
+    m = re.search(r"(?m)^structure-source:\s*(\S+)", text[:3000])
+    if m:
+        srcs += [q for q in (skills / m.group(1), path.parents[2] / m.group(1)) if q.exists()]
+    for s in srcs:
+        if s.exists() and s.stat().st_mtime > measured + 60:
+            rep.add(WARN, "requirement-stale", name,
+                    f"`outline/{f.name}` was measured {stamp.group(1)} {stamp.group(2) or ''} but `{s.name}` changed "
+                    f"later; regenerate with `cli/requirement.py {path.name}`")
+            return
+
+
+def check_retired_blocks(text, name, rep):
+    """`### Stage Record` is a leftover of the retired Submission-0 stage
+    lifecycle ("Rollup: S Submission 0 Reconcile Unit: 1 of 9"). It renders
+    as a fold that says nothing true about the page (JL 260831: "why we have
+    this? we should not have this"). Delete it; nothing replaces it."""
+    for m in re.finditer(r"(?m)^###\s+Stage Record\b", text):
+        rep.add(WARN, "retired-block", name,
+                "`### Stage Record` is a leftover of the retired stage lifecycle; delete the block")
+
+
+def page_aims_text(text, path):
+    """The page's Aims, wherever they live.
+
+    Since `haipipe-plugin-outline` 0.16.0 the Aims live in the page's PLAN and
+    `page.md` keeps no copy, so sourcing them from the page alone made the law
+    and this checker contradict each other: obeying the law produced
+    `missing-section` + `no-aims` on every migrated page (field test, JL
+    260830). Page first, so an unmigrated board is untouched; plan second.
+    """
+    on_page = section_text(text, "Done when")
+    if on_page.strip() or path is None:
+        return on_page, False
+    d = path.parent / "outline"
+    plans = sorted(d.glob("*-outline-v*.md")) if d.is_dir() else []
+    if not plans:
+        return on_page, False
+    plan = plans[-1].read_text(encoding="utf-8", errors="replace")
+    m = re.search(r"(?m)^## Aims\b.*?$(.*)\Z", plan, re.S)
+    return (m.group(1) if m else ""), bool(m)
+
+
+_ROUND_CACHE = {}
+
+
+def check_plan_arc(path, name, rep):
+    """haipipe-page-outline §🚦 ⓪.1: `arc:` present is mechanical. It was
+    parsed by nothing until NA01's field desk grepped for it (260831)."""
+    if path is None:
+        return
+    for plan in sorted((path.parent / "outline").glob("*-outline-v*.md")):
+        head = plan.read_text(encoding="utf-8", errors="replace")[:1500]
+        if not re.search(r"(?m)^arc:\s*\S", head):
+            rep.add(WARN, "plan-no-arc", f"{name} · {plan.name}",
+                    "the plan carries no `arc:` line; a division list with no "
+                    "stated argument is a table of contents (§🚦 ⓪.1)")
+
+
+def check_feedback_coverage(path, text, name, rep):
+    """Both directions of the Round⇄page join (haipipe-page-outline ⓪ COLLECT).
+
+    Forward: every §2B row a Round routes to this page appears in the page's
+    outline/feedback/<RD>.md. Reverse: every register row names a real Round
+    row. A page that never ran OUTLINE never collected, so G7 must not close on
+    a Round whose targets carry no register (field test, JL 260831)."""
+    if path is None or re.search(r"(?m)^page-type:\s*round\b", text[:600]):
+        return
+    board = path.parents[2]
+    if board not in _ROUND_CACHE:
+        _ROUND_CACHE[board] = [(rd, parse_round(rd)) for rd in _rounds(board)]
+    pid = path.stem.split("-")[0]
+    for rd, data in _ROUND_CACHE[board]:
+        routed = {r["id"] for r in data["rows"].get(pid, [])}
+        if not routed:
+            continue
+        reg = register_path(path)
+        if not reg.exists():
+            rep.add(WARN, "feedback-uncollected", name,
+                    f"{rd.stem.split('-')[0]} routes {len(routed)} row(s) here and "
+                    f"`outline/{reg.name}` does not exist; run "
+                    f"`cli/feedback.py collect` (OUTLINE ⓪)")
+            continue
+        have = register_ids(reg)
+        # the OTHER direction the law promises (haipipe-page-outline ⓪): an
+        # OPEN register row is served by a plan bullet carrying `Routed:` or
+        # declined in the plan's header (`declined: <RD> <id> · <reason>`).
+        # NA01's field desk (260831) found this tooth missing while the plugin
+        # text claimed "both directions".
+        plans = sorted((path.parent / "outline").glob("*-outline-v*.md"))
+        plan = plans[-1].read_text(encoding="utf-8", errors="replace") if plans else ""
+        rdid = rd.stem.split("-")[0]
+        served = set(re.findall(rf"(?m)^\s+Routed:\s*{rdid}\s+(\S+)", plan))
+        declined = set(re.findall(rf"(?m)^declined:\s*{rdid}\s+(\S+)", plan))
+        open_rows = {r["id"] for r in data["rows"].get(pid, []) if r["state"] == "open"}
+        for rid in sorted((open_rows & have) - served - declined):
+            rep.add(WARN, "feedback-unserved", f"{name} · {reg.name}",
+                    f"open row `{rid}` is served by no plan bullet (`Routed: {rdid} {rid}`) "
+                    f"and not declined (`declined: {rdid} {rid} · <reason>`)")
+        for rid in sorted(routed - have):
+            rep.add(WARN, "feedback-coverage", f"{name} · {reg.name}",
+                    f"Round row `{rid}` is routed here and missing from the register")
+        for rid in sorted(have - routed):
+            rep.add(WARN, "feedback-coverage", f"{name} · {reg.name}",
+                    f"register row `{rid}` names no row the Round routes here")
 
 
 def check_state_mirrors_aims(aims_text, states_text, name, rep):
@@ -1137,14 +1446,18 @@ def check_state_mirrors_aims(aims_text, states_text, name, rep):
     declared = aim_ids(aims_text)
     if not declared:
         return
-    rows = [aim_id for _emoji, aim_id in AIM_STATE_RE.findall(states_text or "")]
+    # Since the 260819 merge the tick sits on the Aim row itself; a page that
+    # still carries `## States` is read the old way, so an unmigrated board
+    # keeps its findings and a migrated one stops reading as "all ⬜".
+    src = states_text if (states_text or "").strip() else aims_text
+    rows = [aim_id for _emoji, aim_id in AIM_STATE_RE.findall(src or "")]
     seen = collections.Counter(rows)
 
     missing = [a for a in declared if not seen[a]]
     if missing:
         shown = " · ".join(missing[:6]) + (" …" if len(missing) > 6 else "")
         rep.add(WARN, "aim-without-state", name,
-                f"{len(missing)} of {len(declared)} Aim(s) carry no row in States, "
+                f"{len(missing)} of {len(declared)} Aim(s) carry no tick, on the row or in States, "
                 f"so each renders as ⬜ and the page reads less done than it is: {shown}")
 
     twice = sorted(a for a, n in seen.items() if n > 1 and a in declared)
@@ -1286,7 +1599,21 @@ def check_group_names(text, name, rep):
         block = section_text(text, sec_name) or ""
         return dict(re.findall(pat, block, re.M))
 
-    divs = groups("Content", r"^### (\d+) · (.+)$")
+    # ORDINAL, not the printed number (JL 260831, QPf12 row 2: Aims "should map
+    # to the content"): `A<n>` is the n-th direct `###` division of Content,
+    # whatever its label, because a section page numbers `### §3.1 · …` and a
+    # paper page writes `### Title`, and the 🧭 tab's `C<n>` addresses count the
+    # same way. On a `### 1 · …` page ordinal and printed number coincide, so
+    # nothing an older board reports changes there.
+    content = section_text(text, "Content") or ""
+    divs, fence = {}, False
+    for ln in content.split("\n"):
+        if ln.lstrip().startswith("```"):
+            fence = not fence
+        if fence or not re.match(r"^### \S", ln):
+            continue
+        title = re.sub(r"^### (?:§?[\d.]+(?: · | ))?", "", ln).strip()
+        divs[str(len(divs) + 1)] = title
     if not divs:
         return
     for sec_name in ("Aims", "States"):
@@ -1304,11 +1631,11 @@ def check_group_names(text, name, rep):
             if want is not None:
                 want = re.sub(r"^\W+\s*", "", want)
             if want is None:
-                rep.add(WARN, "group-no-division", f"{name} · {sec_name} C{gid}",
-                        f"`C{gid}` names no Content division on this page")
+                rep.add(WARN, "group-no-division", f"{name} · {sec_name} A{gid}",
+                        f"there is no Content division #{gid} on this page (ordinal: the {gid}th `###` heading under Content)")
             elif want.strip() != gname.strip():
-                rep.add(WARN, "group-name-drift", f"{name} · {sec_name} C{gid}",
-                        f"reads {gname.strip()!r}; its division `### {gid}` is "
+                rep.add(WARN, "group-name-drift", f"{name} · {sec_name} A{gid}",
+                        f"reads {gname.strip()!r}; Content division #{gid} is "
                         f"{want.strip()!r} (QB4 §0.5: same id, same name)")
 
 
@@ -1827,6 +2154,13 @@ def check_plugin_roster(d, rep):
             continue
         page = md.parent
         if md.stem != page.name:
+            continue
+        # A unit INSIDE a plugin lane (`display/S-Display-1a/…`, `probe/PP01/…`)
+        # also keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`,
+        # `source/`, `versions/` are that plugin's own anatomy, not page
+        # folders. The roster governs the page's direct children only; walking
+        # into a lane reported 36 false rows on the MISQ board (JL 260831).
+        if any(part in names for part in parts[:-1]):
             continue
         for sub in sorted(p for p in page.iterdir() if p.is_dir()):
             if sub.name.startswith("_") or sub.name in names:

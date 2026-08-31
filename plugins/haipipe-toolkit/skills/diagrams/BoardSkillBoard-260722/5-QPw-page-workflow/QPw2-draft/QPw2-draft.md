@@ -171,31 +171,6 @@ If DRAFT was entered from a later phase, the controller already opened the new r
 
 ## Aims
 
-### A1 · 🧱 One Point becomes one or more sentence scaffolds
-- A1.1 · The conversion is shown on a worked Point rather than described.
-  Done when one Point and its three scaffolds appear with the `realizes:` comment in place.
-- A1.2 · A real run has produced scaffolds in this form on a live page.
-  Done when one page on any board carries `C<n>.P<n>.S<m>` scaffold lines written by a DRAFT run.
-
-### A2 · 🕳 The Aim attached to a hole IS the stake
-- A2.1 · The stake pairing is stated so PROBE can copy it without interpretation.
-  Done when the prose hole, its Aim, and its State row are named as one unit.
-- A2.2 · No page on this board carries a fabricated value in place of a hole.
-  Done when every unfilled claim on this board shows a visible marker.
-
-### A3 · 🧬 Three layers own a page's shape, and only the third is DRAFT's
-- A3.1 · The three outline modes are readable without opening a Page Type.
-  Done when `fixed`, `grammar`, and `resolved` each name what DRAFT may choose under them.
-
-### A4 · 🛠 The phase is identified by authority, and the diff cannot tell
-- A4.1 · The DRAFT versus REVISE boundary is testable on a concrete edit list.
-  Done when five edits are classified and each names its phase.
-
-### A5 · 🔀 Exit and routing, with no mandatory next phase
-- A5.1 · The four routes are stated with the condition that selects each.
-  Done when each route names the page condition that chooses it.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether the hole MARKER vocabulary is closed or free
       📍 `Part` §1.2, a hole marker is a promise about a phase
@@ -205,22 +180,42 @@ If DRAFT was entered from a later phase, the controller already opened the new r
       🛑 `Blocks` A1.2, and any `unroutable-hole` check
       🤖 `If nobody answers` A takes effect, because the three in the contract's own example already form a complete set over the phases that can fill a hole
 
+
 ### A1 · 🧱 One Point becomes one or more sentence scaffolds
-- ✅ A1.1 · Met. `C3.P1.B4` and its three scaffolds are worked in the Diagram and in `§1`.
-- ⬜ A1.2 · Not started. The scaffold form shipped in `haipipe-page-draft` 0.7.0 on 260817 and no run has produced one on a live page.
+- ✅ A1.1 · The conversion is shown on a worked Point rather than described.
+  Done when one Point and its three scaffolds appear with the `realizes:` comment in place.
+  **Now:** Met. `C3.P1.B4` and its three scaffolds are worked in the Diagram and in `§1`.
+- ⬜ A1.2 · A real run has produced scaffolds in this form on a live page.
+  Done when one page on any board carries `C<n>.P<n>.S<m>` scaffold lines written by a DRAFT run.
+  **Now:** Not started. The scaffold form shipped in `haipipe-page-draft` 0.7.0 on 260817 and no run has produced one on a live page.
+
 
 ### A2 · 🕳 The Aim attached to a hole IS the stake
-- ✅ A2.1 · Met. The three-line pairing is stated in `§2` and is what PROBE copies.
-- ⬜ A2.2 · Not measured. No sweep of this board's unfilled claims has been run.
+- ✅ A2.1 · The stake pairing is stated so PROBE can copy it without interpretation.
+  Done when the prose hole, its Aim, and its State row are named as one unit.
+  **Now:** Met. The three-line pairing is stated in `§2` and is what PROBE copies.
+- ⬜ A2.2 · No page on this board carries a fabricated value in place of a hole.
+  Done when every unfilled claim on this board shows a visible marker.
+  **Now:** Not measured. No sweep of this board's unfilled claims has been run.
+
 
 ### A3 · 🧬 Three layers own a page's shape, and only the third is DRAFT's
-- ✅ A3.1 · Met. `§3.1` states what DRAFT may choose under each of the three modes.
+- ✅ A3.1 · The three outline modes are readable without opening a Page Type.
+  Done when `fixed`, `grammar`, and `resolved` each name what DRAFT may choose under them.
+  **Now:** Met. `§3.1` states what DRAFT may choose under each of the three modes.
+
 
 ### A4 · 🛠 The phase is identified by authority, and the diff cannot tell
-- ✅ A4.1 · Met. Five edits are classified in `§4`.
+- ✅ A4.1 · The DRAFT versus REVISE boundary is testable on a concrete edit list.
+  Done when five edits are classified and each names its phase.
+  **Now:** Met. Five edits are classified in `§4`.
+
 
 ### A5 · 🔀 Exit and routing, with no mandatory next phase
-- ✅ A5.1 · Met. Four routes with their selecting conditions are in `§5`.
+- ✅ A5.1 · The four routes are stated with the condition that selects each.
+  Done when each route names the page condition that chooses it.
+  **Now:** Met. Four routes with their selecting conditions are in `§5`.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -259,3 +254,5 @@ If DRAFT was entered from a later phase, the controller already opened the new r
 
 ## Log
 - 260818 · [DRAFT-CC] page created on JL's ruling that each workflow step gets its own page. Written from `haipipe-page-draft` 0.7.0. JL's own summary opened it: "the draft is about convert the outline's bullet point into the sentences, right?", which is the phase's visible half and is now `§1`; its invisible half, that the Aim behind a hole IS the stake a card will carry, is `§2` and is the reason the 260817 no-card ruling had to go that way. Five divisions: the Point-to-scaffold conversion, the stake, the three shape layers, the authority test against REVISE, and routing. The hole-marker vocabulary turned out to be undecided in the contract, so it is the Decision Now row rather than a silently invented set.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

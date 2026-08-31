@@ -119,7 +119,9 @@ So asking chat to change a drawing writes to that drawing's own file.
 - [ ] 🗑 The unused Excalidraw+ route is switched off
       `/_board/excalidraw` writes a hosted scene link into `## Diagram` that no page draws, and it goes; `/_board/excalidraw-save` saves a page's own scene, and it stays.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The drawings themselves are in place: every page scene sits in its page's folder, the split opens and follows the page, and the group view builds.
 `## Diagram` holds ascii only on every live page, and the one Excalidraw link left sits in `_archive/QA0-board-map.md`.
 draw.py's verify still checks the old `board.excalidraw` at the board root instead of the new page layout.
@@ -149,3 +151,5 @@ The other route, `/_board/excalidraw-save`, saves a page's own scene, is in dail
 - 260815 1530 · [REVISE-CC, JL ruled] the renderer follows the ruling: `## Diagram` stages the ascii figure alone (no `✏️ Excalidraw` fold, no attach button: `render_diagram` flattened, `50-xcal.js` deleted); the drawing's one door in the viewer is the 🖌 Draw split, now also a row in the shell's Plugin menu. Excalidraw itself runs locally (docker, 127.0.0.1:5610) behind serve.py's `/_excalidraw` proxy.
 - 260815 1420 · [MERGE-CC] QPf2a folded in as Content §3-§7 (JL: one page for the draw plugin); its file is archived as `_archive/QPf2a-linked-drawings.md` and every old id resolves through Links.
 - 260815 1420 · [REVISE-CC] rewritten to the plugin contract after the 260815 ruling: Excalidraw leaves ## Diagram, scenes live in page draw/ folders, the attach mechanics retire to the archive.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

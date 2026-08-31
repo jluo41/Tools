@@ -548,184 +548,6 @@ Switching away and back returns the same messages in the same order.
 The strip's two buttons are how you do it, and the handover keeps the transcript.
 
 ## Aims
-### C4 · What it takes to match the plugin, in four steps
-- A4.1 · One `claude` process serves every turn of a session, instead of a new one per POST.
-  **Done when:** a follow-up message reaches its first token without loading the skill list again, and costs a small fraction of the first.
-- A4.2 · The streaming-mode verbs can be reached from a live session.
-  **Done when:** `interrupt()`, `set_model()`, `set_permission_mode()` and `get_context_usage()` all work mid-conversation with no reconnect.
-- A4.3 · A turn can be rolled back to an earlier save point.
-  **Done when:** `rewind_files(user_message_id)` puts back the files a turn changed.
-- A4.4 · Typing `@` pulls a repo file into the message.
-  **Done when:** a picker over the repo inserts a path, and the model then reads it without being told where to look.
-- A4.5 · A plan-mode switch runs a read-only planning turn before any edit.
-  **Done when:** the chat box enters `--permission-mode plan` mid-conversation and leaves it again.
-
-### C8 · Four things a terminal has for free, and the chat box did not
-- A8.1 · The chat box never moves the page behind it.
-  **Done when:** a wheel anywhere over the chat box scrolls the chat box or nothing, at every transcript length.
-- A8.2 · A reader can see the page and the chat at once, at any width.
-  **Done when:** a reader on a phone-width screen reads the page and the chat without closing either.
-- A8.3 · Reopening the chat box costs a repaint, not a rebuild.
-  **Done when:** closing and reopening the same scope makes no flash and no re-parse, however often it is done.
-- A8.4 · A replayed session looks exactly like the live turn it is a recording of.
-  **Done when:** a session picked from 🗂 carries the same markdown, tool cards, permission diffs and 💭 thinking a live turn carries.
-- A8.5 · Two named sessions on one page are live at the same time.
-  **Done when:** `QD2-type-1` and `QD2-type-2` both run, and neither takes the other's HOLD.
-- A8.6 · One turn in the history can be compared against another.
-  **Done when:** a reader picks two turns and sees them diffed with the same − / + drawing the permission check already uses.
-- A8.7 · Whatever a turn produced survives every way a reader can leave.
-  **Done when:** navigating away, reloading, switching a setting, locking a phone and waiting ten minutes each leave the answer readable afterwards.
-- A8.8 · The chat box has the controls a terminal gets for free.
-  **Done when:** a session list and a context meter can be reached from the composer without leaving the page.
-- A8.9 · A reader picks which chat they are opening, and sees what is already running before they commit.
-  **Done when:** the bottom-right button offers GUI-Chat and TUI-Chat as a list, each row saying whether a turn is live or a terminal is parked, with the last choice marked.
-- A8.10 · The session list a page offers is never smaller than what is on disk.
-  **Done when:** every landed `.jsonl` for a question appears in its picker, however many servers or windows have been writing.
-- A8.11 · A page's chat belongs to that page, and to no other.
-  **Done when:** moving the page pane moves the chat with it, and coming back finds that page's own sessions and its own terminal.
-
-### C9 · One build closes most of them, and the terminal already had it
-- A9.1 · A turn outlives the request that started it, and a returning reader rejoins it where it stopped.
-  **Done when:** hanging up mid-turn and re-attaching delivers the rest of that turn from the reader's own cursor.
-  **Plan:** R1, the ring ported from `term.py`. R2 and R3 are retired into `QD5`, which had already built both.
-
-### P · Page-level
-- P1 · The chat box runs, resumes, and pays its way.
-  **Done when:** a session starts, answers, resumes by id, and a follow-up message costs cents.
-- P2 · Each permission tier holds back exactly what it says it holds back.
-  **Done when:** the restricted tier's blocked tools are refused at the tool layer, and the ask tier prompts for everything else.
-- P3 · The chat box's own behaviour is covered by a check anyone can run again.
-  **Done when:** a browser-driven suite checks the scroll, dock, replay and session-list behaviours, and is run before any fix here is claimed.
-
-## States
-### C4 · What it takes to match the plugin, in four steps
-- ✅ A4.1 · Built 260731 as M1.
-      A daemon thread owns one asyncio loop for the life of the process, and `SESSIONS[question] -> {client, inbox, outbox}` holds the clients, so the browser side did not change at all.
-      The blocker it had to clear: the SDK forbids one client crossing async runtime contexts, while `serve.py` ran a fresh `anyio.run()` per request.
-- 🔨 A4.2 · One of four has landed.
-      `get_context_usage()` ships, and it is read once per turn on the `done` event we already have.
-      So it costs no extra call, and it goes missing rather than wrong.
-      It shows as `ctx 38% (62k/200k)`.
-      `interrupt`, `set_model` and `set_permission_mode` can be reached now that the client is held, and they are not wired up.
-- ⬜ A4.3 · Unparked 260731 when JL amended `QD1` to one question, many sessions, so rewind no longer forks a second history.
-      It needs `enable_file_checkpointing=True` plus `replay-user-messages`, and both are option flips.
-- ⬜ A4.4 · Ours to build rather than the SDK's: a picker over the repo, plus the chosen path put into the outgoing message.
-- ⬜ A4.5 · Free once A4.2 lands, since it is `--permission-mode plan` reached through `set_permission_mode()`.
-
-### C8 · Four things a terminal has for free, and the chat box did not
-- ✅ A8.1 · Fixed 260801, in two parts.
-      `overscroll-behavior` governs a scroller that has REACHED its edge, not one that never overflowed.
-      So the fix comes in two parts: `contain` on every inner scroller, plus a `wheel` handler.
-      That handler walks up from the pointer and keeps the event when nothing inside can take the movement.
-      A nearly empty transcript is the case with nothing to scroll, and that is why it seemed to heal after the first message (JL: "感觉还是背后的那个 page 页面在滑动").
-- 🔨 A8.2 · A labelled `⇤ Page` button ships and appears exactly at the width where the chat box stops docking.
-      ↪ Answered inside `QD5`'s shell, whose `@media(max-width:820px)` stacks page over chat and hides only the page list.
-      This row stays open only for a chat box on a page opened alone, which is the packaging `QB2` requires.
-- ✅ A8.3 · Fixed 260801.
-      When the same scope is already painted and no turn is running, the chat box is shown again rather than torn down and rebuilt from the saved list.
-      `chatOpen` had re-parsed markdown for every bubble and then sometimes rebuilt a second time when the server answered, and the flash between the two is what read as janky (JL: "打开、关了、又打开，它就没有那么丝滑了").
-- 🔨 A8.4 · Half done.
-      `session_log` now carries each message's `timestamp` and every `tool_use`, one `replayRow()` draws bubbles, tool cards and dated turn separators, and the tail cap rose from 120 to 300.
-      Still owed to match a live turn: the permission diffs, the 💭 thinking block, and a load-earlier control instead of a hard cap.
-      CORRECTED 260802, and the correction matters more than the claim.
-      I reported that taking the server's transcript DELETES what the server does not have, and it does not.
-      Measured on its own, leaving the page and coming back changes nothing at all: 171 rows, 171 rows, 171 rows, and the chat pane does not even re-point when the page pane moves.
-      The "loss" was my own assertion comparing two moments that were not comparable, taken while the chat box was still adopting on its heartbeat.
-      The test now settles before it measures.
-      What stays true is a safety rule rather than a fixed bug.
-      `syncFromServer` wiped `.bd`, repainted the server's rows only, then saved them over the local list.
-      So an answer this browser had, but the session's `.jsonl` did not carry, was lost from the screen AND from storage.
-      That is not made up: leaving the page and coming back dropped two answers of roughly 8k characters each, on three runs in a row.
-      FIXED in `syncFromServer`, which now keeps any local row the server lacks and appends it in order.
-      `replaySession` clears the pane the same way at `10-sessions.js:334`, and that is CORRECT rather than a second case of the bug.
-      It runs only when you PICK a different session, and there the earlier rows should go.
-- 🧠 A8.5 · Blocked on a `QD1` ruling, not on this page.
-      HOLD keys on the SCOPE path, while the Law's stated reason is that "two front ends on the same jsonl still fork histories".
-      Two named sessions are two different jsonls, so the key is stricter than the rule that justifies it.
-- ⬜ A8.6 · Not started.
-      The replay is one flat list of text with no turn boundary a reader can pick, so there is nothing to compare yet.
-- 🔨 A8.7 · Most ways closed, one open.
-      Closed 260801: `emit()` no longer calls `stop.set()` when a write to a departed browser fails, so leaving the page loses the view and not the work.
-      A cut-short turn now saves what streamed, marked `partial`, and the sync takes it whenever anything provisional is present.
-      `syncFromServer` retries at 1.5s, 4s, 9s and 20s, asks again when the tab or the window gets focus, and keeps a 25s heartbeat, after having had exactly one caller.
-      One `logKey()` helper now owns both halves of the group-chat list, which used to write under `<id>` and read under `G:<id>`.
-      Open: the live trace of a running turn, and the ten-minute turn against the HTTP timeout, and both of those are A9.1.
-- ✅ A8.9 · CLOSED 260803 after eight rounds, and the cause was a THIRD writer, exactly where the failed attempts pointed.
-      `80-restore.js` reattaches a parked terminal when the saved chat state says one was open, which is right after a plain reload and WRONG right after someone clicked `💬 GUI`.
-      Instrumented at the second: at +1.5s the state was correct, `gui`, no terminal, strip lit on GUI; at +2.5s a terminal opened by itself and the strip flipped back to TUI.
-      That is the whole of "I click GUI and get TUI".
-      It also explains why the three earlier fixes did nothing: they all corrected the mode BEFORE the thing that overrode it ran.
-      `__boardTermReopen` now stands down when the chosen mode is not the TUI, because a restore must never overrule the reader.
-      Four for four on the switch probe, three rounds in a row.
-- ✅ A8.10 · Fixed 260802, and it is the defect that made `＋ New session` look broken.
-      `record_session` did a plain read-modify-write on `.haipipe-board/sessions.json`, which several processes share.
-      One `serve.py` per board is the normal case.
-      But a checks run, a second window or a stray daemon write the same file, and the last writer wins with whatever it read minutes earlier.
-      Measured: QD2's list went from three sessions to ONE while every `.jsonl` was still on disk, so the picker had nothing to switch to and the switching test could only skip.
-      It now re-reads and MERGES under a lock, keeping any key and any row another writer added, and it writes through a temp file so a reader never sees a half-written list.
-      The lost rows were restored from disk.
-- ✅ A8.11 · Fixed 260803 on JL's report ("in different webpages, I open the TUI or GUI for each of them, things are mixed... TUI in Page 1 and Page 2 are the same").
-      He was right, and it was worse than mixed.
-      The chat pane bound to whatever page the SHELL WAS OPENED ON, and it never moved.
-      So browsing to a second page and opening its chat handed you the FIRST page's chat box, terminal key and transcript.
-      Measured before: page pane QD2 → QD6 → QB4 with the chat on QD2 throughout, one terminal key for all three.
-      `mirror()` already runs on every page-pane move to keep the address honest.
-      It now re-points the chat pane too, and it refuses while a turn is running.
-      A live conversation is not something to navigate out from under.
-      Measured after: the chat and its binding follow the page every time, and coming back finds that page's own parked terminal.
-- ✅ A8.8 · Both shipped 260801 on JL's ask, each after he named it.
-      `🗂 Sessions` became the middle composer tab between `✨ Quick actions` and `⚙ Settings`, with the picker element moved unchanged so its loader needed no edit.
-      The context meter rides the turn's own `done` event.
-
-### C9 · One build closes most of them, and the terminal already had it
-- ✅ A9.1 · Proven in a real browser 260802, which is the claim this row owed all day.
-      `live/turnring.py` holds one `Turn` per question key, and every event carries a counter `n` that only goes up.
-      A 1MB/20k cap trims from the front and reports a `gap` rather than a short stream, and a turn keeps a 600s grace.
-      `emit()` pushes into it, and the request became the turn's FIRST READER rather than its owner.
-      `POST /_board/attach {file, cursor}` is for the next reader, and `{probe:1}` is for asking without joining the queue.
-      Three defects were found on the way, and not one of them by reading.
-      `drain()` treated a notify that did not satisfy its condition as a reason to leave the wait.
-      So it wrote a keepalive per loop and spun to 13,149 threads at 292% CPU.
-      `tests/test_turnring.py` now pins that at 200 events producing exactly 200 writes.
-      A FINISHED ring was re-attached on every 25s heartbeat and repainted its answer.
-      And the cursor was keyed on `logKey()`, which folds in a session id that changes mid-turn.
-      The proof is `checks/guichat.mjs` T6.
-      It sends a turn long enough to still be running after a reload PLUS reopening the shell, then reloads mid-turn.
-      It asks whether the chat box REJOINED, not merely whether it ended up with an answer.
-      `REJOIN attached at cursor 137` against a pre-reload cursor of 99, 22,899 characters landed, zero apology bubbles.
-      The first version of that check passed on the transcript sync without touching the ring at all, and catching that soft pass is what makes the row worth anything.
-
-### P · Page-level
-- ✅ P1 · `claude-agent-sdk 0.2.126` starts a session, reads board files and answers.
-      Auth needs no work of its own, because the SDK drives the machine's `claude` CLI and inherits the login it already has.
-      `session:` sits in the page header beside `state:` and `owner:`.
-      Cost went from a $0.92 default to $0.24 by narrowing, and a follow-up message is $0.012.
-- ✅ P2 · Three tiers ship.
-      full·ask was the default from JL's 260723 ruling until 260802, when he ruled full·auto the default, so a browser that names no tier gets `bypass` (`live/chat.py`).
-      The restricted tier turns Bash, Task, Skill and Web hard off through `disallowed_tools`.
-      `can_use_tool` is not reliably called for Bash, so a blocklist is the solid way.
-      Checked by forcing Bash and getting "Bash exists but is not enabled in this context".
-      The permission check has genuinely fired.
-      A forced `Edit` against `board.md` was blocked at the tool layer with `denied: ['Edit -> …/board.md']`, and the file was untouched.
-      It compares full paths rather than name strings.
-- ✅ P3 · `checks/guichat.mjs`, 27 assertions at the 260802 tick and grown to the T1-T17 suite since, green.
-      It drives the REAL split shell rather than a page on its own.
-      It opens a board url, checks the header offers both chats, clicks `💬 GUI`, then reaches into the chat pane for everything else.
-      - T1 · the split
-      - T1b · what you CLICK is what OPENS, from cleared storage
-      - T2 · a usable composer
-      - T3 · an answer whose markdown is DRAWN, checked on `<strong>`/`<code>`/`<li>` rather than on text
-      - T4 · no apology bubbles and no JS exceptions
-      - T5 · a reader who scrolls up during a live turn is still there nine seconds later
-      - T6 · the ring, above
-      - T7 · close and reopen neither loses nor duplicates a transcript
-      - T8 · 🗂 Sessions fills up
-      - T9 · the meter reads `ctx N%`
-      Every turn is scoped, haiku and low effort, so a full run costs cents.
-      This is what nine unclicked fixes on 260801 should have had.
-      It exists because JL made the point a third time ("please go ahead to make sure the GUI Chat is good, no, very very good to use").
-      ↪ The pair this belongs to is `QF4`.
-
 ### Decision Now
 The calls only JL can make. CC ticks nothing here, and every row names the Aim it unblocks.
 
@@ -743,6 +565,180 @@ The calls only JL can make. CC ticks nothing here, and every row names the Aim i
       HOLD keys on the SCOPE path, while the Law's stated reason is that two front ends on one jsonl fork histories.
       Two named sessions are two different jsonls, so the key is stricter than its own reason.
       → CC's proposal: carry it to `QD1` rather than work around it here.
+
+
+### C4 · What it takes to match the plugin, in four steps
+- ✅ A4.1 · One `claude` process serves every turn of a session, instead of a new one per POST.
+  **Done when:** a follow-up message reaches its first token without loading the skill list again, and costs a small fraction of the first.
+  **Now:** Built 260731 as M1.
+      A daemon thread owns one asyncio loop for the life of the process, and `SESSIONS[question] -> {client, inbox, outbox}` holds the clients, so the browser side did not change at all.
+      The blocker it had to clear: the SDK forbids one client crossing async runtime contexts, while `serve.py` ran a fresh `anyio.run()` per request.
+- 🔨 A4.2 · The streaming-mode verbs can be reached from a live session.
+  **Done when:** `interrupt()`, `set_model()`, `set_permission_mode()` and `get_context_usage()` all work mid-conversation with no reconnect.
+  **Now:** One of four has landed.
+      `get_context_usage()` ships, and it is read once per turn on the `done` event we already have.
+      So it costs no extra call, and it goes missing rather than wrong.
+      It shows as `ctx 38% (62k/200k)`.
+      `interrupt`, `set_model` and `set_permission_mode` can be reached now that the client is held, and they are not wired up.
+- ⬜ A4.3 · A turn can be rolled back to an earlier save point.
+  **Done when:** `rewind_files(user_message_id)` puts back the files a turn changed.
+  **Now:** Unparked 260731 when JL amended `QD1` to one question, many sessions, so rewind no longer forks a second history.
+      It needs `enable_file_checkpointing=True` plus `replay-user-messages`, and both are option flips.
+- ⬜ A4.4 · Typing `@` pulls a repo file into the message.
+  **Done when:** a picker over the repo inserts a path, and the model then reads it without being told where to look.
+  **Now:** Ours to build rather than the SDK's: a picker over the repo, plus the chosen path put into the outgoing message.
+- ⬜ A4.5 · A plan-mode switch runs a read-only planning turn before any edit.
+  **Done when:** the chat box enters `--permission-mode plan` mid-conversation and leaves it again.
+  **Now:** Free once A4.2 lands, since it is `--permission-mode plan` reached through `set_permission_mode()`.
+
+
+### C8 · Four things a terminal has for free, and the chat box did not
+- ✅ A8.1 · The chat box never moves the page behind it.
+  **Done when:** a wheel anywhere over the chat box scrolls the chat box or nothing, at every transcript length.
+  **Now:** Fixed 260801, in two parts.
+      `overscroll-behavior` governs a scroller that has REACHED its edge, not one that never overflowed.
+      So the fix comes in two parts: `contain` on every inner scroller, plus a `wheel` handler.
+      That handler walks up from the pointer and keeps the event when nothing inside can take the movement.
+      A nearly empty transcript is the case with nothing to scroll, and that is why it seemed to heal after the first message (JL: "感觉还是背后的那个 page 页面在滑动").
+- 🔨 A8.2 · A reader can see the page and the chat at once, at any width.
+  **Done when:** a reader on a phone-width screen reads the page and the chat without closing either.
+  **Now:** A labelled `⇤ Page` button ships and appears exactly at the width where the chat box stops docking.
+      ↪ Answered inside `QD5`'s shell, whose `@media(max-width:820px)` stacks page over chat and hides only the page list.
+      This row stays open only for a chat box on a page opened alone, which is the packaging `QB2` requires.
+- ✅ A8.3 · Reopening the chat box costs a repaint, not a rebuild.
+  **Done when:** closing and reopening the same scope makes no flash and no re-parse, however often it is done.
+  **Now:** Fixed 260801.
+      When the same scope is already painted and no turn is running, the chat box is shown again rather than torn down and rebuilt from the saved list.
+      `chatOpen` had re-parsed markdown for every bubble and then sometimes rebuilt a second time when the server answered, and the flash between the two is what read as janky (JL: "打开、关了、又打开，它就没有那么丝滑了").
+- 🔨 A8.4 · A replayed session looks exactly like the live turn it is a recording of.
+  **Done when:** a session picked from 🗂 carries the same markdown, tool cards, permission diffs and 💭 thinking a live turn carries.
+  **Now:** Half done.
+      `session_log` now carries each message's `timestamp` and every `tool_use`, one `replayRow()` draws bubbles, tool cards and dated turn separators, and the tail cap rose from 120 to 300.
+      Still owed to match a live turn: the permission diffs, the 💭 thinking block, and a load-earlier control instead of a hard cap.
+      CORRECTED 260802, and the correction matters more than the claim.
+      I reported that taking the server's transcript DELETES what the server does not have, and it does not.
+      Measured on its own, leaving the page and coming back changes nothing at all: 171 rows, 171 rows, 171 rows, and the chat pane does not even re-point when the page pane moves.
+      The "loss" was my own assertion comparing two moments that were not comparable, taken while the chat box was still adopting on its heartbeat.
+      The test now settles before it measures.
+      What stays true is a safety rule rather than a fixed bug.
+      `syncFromServer` wiped `.bd`, repainted the server's rows only, then saved them over the local list.
+      So an answer this browser had, but the session's `.jsonl` did not carry, was lost from the screen AND from storage.
+      That is not made up: leaving the page and coming back dropped two answers of roughly 8k characters each, on three runs in a row.
+      FIXED in `syncFromServer`, which now keeps any local row the server lacks and appends it in order.
+      `replaySession` clears the pane the same way at `10-sessions.js:334`, and that is CORRECT rather than a second case of the bug.
+      It runs only when you PICK a different session, and there the earlier rows should go.
+- 🧠 A8.5 · Two named sessions on one page are live at the same time.
+  **Done when:** `QD2-type-1` and `QD2-type-2` both run, and neither takes the other's HOLD.
+  **Now:** Blocked on a `QD1` ruling, not on this page.
+      HOLD keys on the SCOPE path, while the Law's stated reason is that "two front ends on the same jsonl still fork histories".
+      Two named sessions are two different jsonls, so the key is stricter than the rule that justifies it.
+- ⬜ A8.6 · One turn in the history can be compared against another.
+  **Done when:** a reader picks two turns and sees them diffed with the same − / + drawing the permission check already uses.
+  **Now:** Not started.
+      The replay is one flat list of text with no turn boundary a reader can pick, so there is nothing to compare yet.
+- 🔨 A8.7 · Whatever a turn produced survives every way a reader can leave.
+  **Done when:** navigating away, reloading, switching a setting, locking a phone and waiting ten minutes each leave the answer readable afterwards.
+  **Now:** Most ways closed, one open.
+      Closed 260801: `emit()` no longer calls `stop.set()` when a write to a departed browser fails, so leaving the page loses the view and not the work.
+      A cut-short turn now saves what streamed, marked `partial`, and the sync takes it whenever anything provisional is present.
+      `syncFromServer` retries at 1.5s, 4s, 9s and 20s, asks again when the tab or the window gets focus, and keeps a 25s heartbeat, after having had exactly one caller.
+      One `logKey()` helper now owns both halves of the group-chat list, which used to write under `<id>` and read under `G:<id>`.
+      Open: the live trace of a running turn, and the ten-minute turn against the HTTP timeout, and both of those are A9.1.
+- ✅ A8.8 · The chat box has the controls a terminal gets for free.
+  **Done when:** a session list and a context meter can be reached from the composer without leaving the page.
+  **Now:** Both shipped 260801 on JL's ask, each after he named it.
+      `🗂 Sessions` became the middle composer tab between `✨ Quick actions` and `⚙ Settings`, with the picker element moved unchanged so its loader needed no edit.
+      The context meter rides the turn's own `done` event.
+
+- ✅ A8.9 · A reader picks which chat they are opening, and sees what is already running before they commit.
+  **Done when:** the bottom-right button offers GUI-Chat and TUI-Chat as a list, each row saying whether a turn is live or a terminal is parked, with the last choice marked.
+  **Now:** CLOSED 260803 after eight rounds, and the cause was a THIRD writer, exactly where the failed attempts pointed.
+      `80-restore.js` reattaches a parked terminal when the saved chat state says one was open, which is right after a plain reload and WRONG right after someone clicked `💬 GUI`.
+      Instrumented at the second: at +1.5s the state was correct, `gui`, no terminal, strip lit on GUI; at +2.5s a terminal opened by itself and the strip flipped back to TUI.
+      That is the whole of "I click GUI and get TUI".
+      It also explains why the three earlier fixes did nothing: they all corrected the mode BEFORE the thing that overrode it ran.
+      `__boardTermReopen` now stands down when the chosen mode is not the TUI, because a restore must never overrule the reader.
+      Four for four on the switch probe, three rounds in a row.
+- ✅ A8.10 · The session list a page offers is never smaller than what is on disk.
+  **Done when:** every landed `.jsonl` for a question appears in its picker, however many servers or windows have been writing.
+  **Now:** Fixed 260802, and it is the defect that made `＋ New session` look broken.
+      `record_session` did a plain read-modify-write on `.haipipe-board/sessions.json`, which several processes share.
+      One `serve.py` per board is the normal case.
+      But a checks run, a second window or a stray daemon write the same file, and the last writer wins with whatever it read minutes earlier.
+      Measured: QD2's list went from three sessions to ONE while every `.jsonl` was still on disk, so the picker had nothing to switch to and the switching test could only skip.
+      It now re-reads and MERGES under a lock, keeping any key and any row another writer added, and it writes through a temp file so a reader never sees a half-written list.
+      The lost rows were restored from disk.
+- ✅ A8.11 · A page's chat belongs to that page, and to no other.
+  **Done when:** moving the page pane moves the chat with it, and coming back finds that page's own sessions and its own terminal.
+  **Now:** Fixed 260803 on JL's report ("in different webpages, I open the TUI or GUI for each of them, things are mixed... TUI in Page 1 and Page 2 are the same").
+      He was right, and it was worse than mixed.
+      The chat pane bound to whatever page the SHELL WAS OPENED ON, and it never moved.
+      So browsing to a second page and opening its chat handed you the FIRST page's chat box, terminal key and transcript.
+      Measured before: page pane QD2 → QD6 → QB4 with the chat on QD2 throughout, one terminal key for all three.
+      `mirror()` already runs on every page-pane move to keep the address honest.
+      It now re-points the chat pane too, and it refuses while a turn is running.
+      A live conversation is not something to navigate out from under.
+      Measured after: the chat and its binding follow the page every time, and coming back finds that page's own parked terminal.
+
+### C9 · One build closes most of them, and the terminal already had it
+- ✅ A9.1 · A turn outlives the request that started it, and a returning reader rejoins it where it stopped.
+  **Done when:** hanging up mid-turn and re-attaching delivers the rest of that turn from the reader's own cursor.
+  **Now:** Proven in a real browser 260802, which is the claim this row owed all day.
+      `live/turnring.py` holds one `Turn` per question key, and every event carries a counter `n` that only goes up.
+      A 1MB/20k cap trims from the front and reports a `gap` rather than a short stream, and a turn keeps a 600s grace.
+      `emit()` pushes into it, and the request became the turn's FIRST READER rather than its owner.
+      `POST /_board/attach {file, cursor}` is for the next reader, and `{probe:1}` is for asking without joining the queue.
+      Three defects were found on the way, and not one of them by reading.
+      `drain()` treated a notify that did not satisfy its condition as a reason to leave the wait.
+      So it wrote a keepalive per loop and spun to 13,149 threads at 292% CPU.
+      `tests/test_turnring.py` now pins that at 200 events producing exactly 200 writes.
+      A FINISHED ring was re-attached on every 25s heartbeat and repainted its answer.
+      And the cursor was keyed on `logKey()`, which folds in a session id that changes mid-turn.
+      The proof is `checks/guichat.mjs` T6.
+      It sends a turn long enough to still be running after a reload PLUS reopening the shell, then reloads mid-turn.
+      It asks whether the chat box REJOINED, not merely whether it ended up with an answer.
+      `REJOIN attached at cursor 137` against a pre-reload cursor of 99, 22,899 characters landed, zero apology bubbles.
+      The first version of that check passed on the transcript sync without touching the ring at all, and catching that soft pass is what makes the row worth anything.
+
+  **Plan:** R1, the ring ported from `term.py`. R2 and R3 are retired into `QD5`, which had already built both.
+
+### P · Page-level
+- ✅ P1 · The chat box runs, resumes, and pays its way.
+  **Done when:** a session starts, answers, resumes by id, and a follow-up message costs cents.
+  **Now:** `claude-agent-sdk 0.2.126` starts a session, reads board files and answers.
+      Auth needs no work of its own, because the SDK drives the machine's `claude` CLI and inherits the login it already has.
+      `session:` sits in the page header beside `state:` and `owner:`.
+      Cost went from a $0.92 default to $0.24 by narrowing, and a follow-up message is $0.012.
+- ✅ P2 · Each permission tier holds back exactly what it says it holds back.
+  **Done when:** the restricted tier's blocked tools are refused at the tool layer, and the ask tier prompts for everything else.
+  **Now:** Three tiers ship.
+      full·ask was the default from JL's 260723 ruling until 260802, when he ruled full·auto the default, so a browser that names no tier gets `bypass` (`live/chat.py`).
+      The restricted tier turns Bash, Task, Skill and Web hard off through `disallowed_tools`.
+      `can_use_tool` is not reliably called for Bash, so a blocklist is the solid way.
+      Checked by forcing Bash and getting "Bash exists but is not enabled in this context".
+      The permission check has genuinely fired.
+      A forced `Edit` against `board.md` was blocked at the tool layer with `denied: ['Edit -> …/board.md']`, and the file was untouched.
+      It compares full paths rather than name strings.
+- ✅ P3 · The chat box's own behaviour is covered by a check anyone can run again.
+  **Done when:** a browser-driven suite checks the scroll, dock, replay and session-list behaviours, and is run before any fix here is claimed.
+  **Now:** `checks/guichat.mjs`, 27 assertions at the 260802 tick and grown to the T1-T17 suite since, green.
+      It drives the REAL split shell rather than a page on its own.
+      It opens a board url, checks the header offers both chats, clicks `💬 GUI`, then reaches into the chat pane for everything else.
+      - T1 · the split
+      - T1b · what you CLICK is what OPENS, from cleared storage
+      - T2 · a usable composer
+      - T3 · an answer whose markdown is DRAWN, checked on `<strong>`/`<code>`/`<li>` rather than on text
+      - T4 · no apology bubbles and no JS exceptions
+      - T5 · a reader who scrolls up during a live turn is still there nine seconds later
+      - T6 · the ring, above
+      - T7 · close and reopen neither loses nor duplicates a transcript
+      - T8 · 🗂 Sessions fills up
+      - T9 · the meter reads `ctx N%`
+      Every turn is scoped, haiku and low effort, so a full run costs cents.
+      This is what nine unclicked fixes on 260801 should have had.
+      It exists because JL made the point a third time ("please go ahead to make sure the GUI Chat is good, no, very very good to use").
+      ↪ The pair this belongs to is `QF4`.
+
 
 ## Files
 ### The host
@@ -896,3 +892,5 @@ drawer: the older name for the chat box on the right of the page, still used in 
 260723 1305 · Switched to the can_use_tool hard gate, after haichat-inlab
 260723 1250 · /_board/chat through; cost $0.92 → $0.24
 260723 1445 · Split out of QD1 as its own question (JL: chat / terminal / sdk, one question each)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

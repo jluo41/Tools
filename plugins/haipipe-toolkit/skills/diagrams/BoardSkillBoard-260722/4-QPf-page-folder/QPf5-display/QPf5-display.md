@@ -181,45 +181,6 @@ Aim A1 asks for the other half.
 The build adapter should accept a page's `display/` as a unit root, so `--check` can report an out-of-date page unit instead of hiding it.
 
 ## Aims
-### A1 · 🧾 The same folder shape as a paper, at a new address
-- A1.1 · `build-displays.py` accepts a page's `display/` as a unit root.
-  **Done when:** a unit under a QPf page builds, `--check` passes, and the paper stage still builds as before.
-
-### A2 · 🖼 Every unit shows as a card, and a sentence can point at it
-- A2.1 · The tab ships the way the Slides tab did: one toolbar button, plus a view the server writes.
-  **Done when:** a page with one unit shows 🖼 Display in the right pane and frames its `preview.pdf`, seen in a real browser at the address JL uses.
-
-### A3 · 🧠 Three hands touch a unit, and only one may say yes
-- A3.1 · The pane shows the yes and cannot write it.
-  **Done when:** the tab draws `accepted:` rows as read-only, and `serve.py` offers no route that edits one.
-
-### A4 · 🏭 The order of the work, and which steps need a person
-- A4.1 · One real unit is built end to end on this page.
-  **Done when:** a unit under this page's own `display/` has walked ① to ④, its `preview.pdf` opens, and only ⑤ waits on a person.
-
-### P · 🚧 The boundary
-- P1 · `display/` joins the list of folders discovery skips.
-  **Done when:** discovery never lists a file under any page's `display/`, and `check.py` knows `display/` by name as a plugin folder.
-
-## States
-The folder shape, both demo units, and the two ways to point at a unit are real and working.
-Four things stay open: the `--check` join, the live-browser look that waits on a server restart, the boundary row, and the git question below.
-
-### A1 · 🧾 The same folder shape as a paper, at a new address
-- 🔨 A1.1 · `build-displays.py` still starts from a paper stage folder. It takes the stage as its one argument and works out the paper root as that stage's `parents[1]`, so it does not yet accept a page's `display/` as a unit root, and `--check` for a page unit is still owed. What did land is the id lookup those units need before anything can point at them: `dialect_paper.py` globs `display/*/float.tex` under the board folder, and both exports find `<page>/display/` units (260815-16).
-
-### A2 · 🖼 Every unit shows as a card, and a sentence can point at it
-- 🧠 A2.1 · The view and the `/_board/display` route are written in `live/plugview.py`, and the browser half in `assets/js/10-drawer/84-plugin-evidence.js`, which registers the 🖼 Display tab (260815-16). The real-browser look the Done-when asks for waits on the server restart that loads them.
-
-### A3 · 🧠 Three hands touch a unit, and only one may say yes
-- 🧠 A3.1 · Waiting on A2.1's live check, and on nothing else. The pane is read-only by build: `plug_display` prints each unit's README rows and frames its `preview.pdf`, its 🔄 rebuilds only the preview, and no route anywhere edits an `accepted:` row.
-
-### A4 · 🏭 The order of the work, and which steps need a person
-- ✅ A4.1 · Met 260815 by `display/QPf5-Display2-small-paper-tikz/`, written straight in TeX. It walked ① a concept intake, ② the TikZ recipe written and built, ③ the v2 picture picked after v1 cut off the bank box, and ④ `preview.pdf` plus `assets/figure.pdf` built; only ⑤ waits, and its ⬜ sits in the unit's README where no machine may tick it. The engine is xelatex: each unit's `preview.log` names XeTeX as what made the picture on disk, and xelatex is what the tab's 🔄 runs, while both unit READMEs still write the rebuild as `pdflatex preview.tex`, a wording fix owed to those units. The sibling `Display1` changed kind to TikZ and drew the same day (`Display1-pipeline-tikz`); its picture-generation plan waits in the unit's `versions/`.
-
-### P · 🚧 The boundary
-- 🔨 P1 · Discovery already stays out, and not by a list: `src/common.py`'s `_in_plugin` skips every subfolder of a folded page, so nothing under any `display/` can show up as a page. What is owed is the by-name half of the Done-when: `check.py` checks `draw/` by name in `check_draw_folders`, and has nothing like it for `display/`.
-
 ### Decision Now
 - [ ] 🗣 What should git keep of a unit?
       The paper commits its built `displays/`, but a page unit's `candidates/` and `versions/` can get heavy.
@@ -227,6 +188,43 @@ Four things stay open: the `--check` join, the live-browser look that waits on a
       ⭐B · commit what a person wrote plus the winning `assets/` and `float.tex`, and gitignore `preview.pdf`, `candidates/`, `versions/`.
       🛑 Blocks: live now, both units landed 260815 with a `preview.pdf` and an `assets/figure.pdf` each, and one keeps a `versions/`.
       🤖 If nobody answers: B, matching the paper's rule that a built file can be deleted and made again.
+
+
+### A1 · 🧾 The same folder shape as a paper, at a new address
+- 🔨 A1.1 · `build-displays.py` accepts a page's `display/` as a unit root.
+  **Done when:** a unit under a QPf page builds, `--check` passes, and the paper stage still builds as before.
+  **Now:** `build-displays.py` still starts from a paper stage folder. It takes the stage as its one argument and works out the paper root as that stage's `parents[1]`, so it does not yet accept a page's `display/` as a unit root, and `--check` for a page unit is still owed. What did land is the id lookup those units need before anything can point at them: `dialect_paper.py` globs `display/*/float.tex` under the board folder, and both exports find `<page>/display/` units (260815-16).
+
+
+### A2 · 🖼 Every unit shows as a card, and a sentence can point at it
+- 🧠 A2.1 · The tab ships the way the Slides tab did: one toolbar button, plus a view the server writes.
+  **Done when:** a page with one unit shows 🖼 Display in the right pane and frames its `preview.pdf`, seen in a real browser at the address JL uses.
+  **Now:** The view and the `/_board/display` route are written in `live/plugview.py`, and the browser half in `assets/js/10-drawer/84-plugin-evidence.js`, which registers the 🖼 Display tab (260815-16). The real-browser look the Done-when asks for waits on the server restart that loads them.
+
+
+### A3 · 🧠 Three hands touch a unit, and only one may say yes
+- 🧠 A3.1 · The pane shows the yes and cannot write it.
+  **Done when:** the tab draws `accepted:` rows as read-only, and `serve.py` offers no route that edits one.
+  **Now:** Waiting on A2.1's live check, and on nothing else. The pane is read-only by build: `plug_display` prints each unit's README rows and frames its `preview.pdf`, its 🔄 rebuilds only the preview, and no route anywhere edits an `accepted:` row.
+
+
+### A4 · 🏭 The order of the work, and which steps need a person
+- ✅ A4.1 · One real unit is built end to end on this page.
+  **Done when:** a unit under this page's own `display/` has walked ① to ④, its `preview.pdf` opens, and only ⑤ waits on a person.
+  **Now:** Met 260815 by `display/QPf5-Display2-small-paper-tikz/`, written straight in TeX. It walked ① a concept intake, ② the TikZ recipe written and built, ③ the v2 picture picked after v1 cut off the bank box, and ④ `preview.pdf` plus `assets/figure.pdf` built; only ⑤ waits, and its ⬜ sits in the unit's README where no machine may tick it. The engine is xelatex: each unit's `preview.log` names XeTeX as what made the picture on disk, and xelatex is what the tab's 🔄 runs, while both unit READMEs still write the rebuild as `pdflatex preview.tex`, a wording fix owed to those units. The sibling `Display1` changed kind to TikZ and drew the same day (`Display1-pipeline-tikz`); its picture-generation plan waits in the unit's `versions/`.
+
+
+### P · 🚧 The boundary
+- 🔨 P1 · `display/` joins the list of folders discovery skips.
+  **Done when:** discovery never lists a file under any page's `display/`, and `check.py` knows `display/` by name as a plugin folder.
+  **Now:** Discovery already stays out, and not by a list: `src/common.py`'s `_in_plugin` skips every subfolder of a folded page, so nothing under any `display/` can show up as a page. What is owed is the by-name half of the Done-when: `check.py` checks `draw/` by name in `check_draw_folders`, and has nothing like it for `display/`.
+
+
+## Discussion
+
+### From the retired States section (merged 260831)
+The folder shape, both demo units, and the two ways to point at a unit are real and working.
+Four things stay open: the `--check` join, the live-browser look that waits on a server restart, the boundary row, and the git question below.
 
 ## Files
 ### ⚙️ Engines
@@ -270,6 +268,7 @@ Four things stay open: the `--check` join, the live-browser look that waits on a
       A page kind would give one word two meanings.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] the 🖼 strip row folded into the 🧾 Evidence tab as the Displays segment (QPf15); unit contract, renderers and the accepted: gate unchanged; the saved view is built on click through this lane's own POST route.
 - 260819 1934 · [RULE-JL] the render leads the card (JL: "display the pdf at the very top, and then show information" — clicking a unit met its README description rows first, the drawn thing below the fold): `plug_display` in `live/plugview.py` now orders each card unit-name ▶ `preview.pdf` (or the 🕳 no-render notice) ▶ state line ▶ README rows ▶ folder tree; `haipipe-plugin-display` SKILL.md's card-order sentence updated to match. Verified by regenerating QPw00's view through the live route: the `<object class='pdf'>` sits before the first README row. Both viewers (5599, 5601) restarted on the new module.
 - 260817 1425 · [REVISE-CC] §3's ✒️ paragraph rewritten in plainer words (JL asked for very simple English): "the one whose writer is a person" became "a person draws by hand: they type the picture as `.tex` code", "picks up" became "uses", "named after that MECHANISM" became "named after that way of drawing", "display equation" became "math display", and "the author's own preamble" became "the same setup lines at the top of the file". Same four sentences, same facts, same ids.
 - 260816 · [RULE-JL] the ✒️ row got its skill (JL: "should we have a new skill for the tikz? or make -diagram include tikz?"): `haipipe-display-tex` born rather than folded into `-diagram`, because that skill compiles a JSON spec through SVG machinery while this way has no script at all, and FigureSpec has no vocabulary for named tikz styles, TeX macros, or math. Named after the MECHANISM, so one skill covers tikz, algorithm blocks, and display equations; its craft is this page's own two units, including the rule they proved, that such a unit still owes `assets/figure.pdf`.
@@ -290,3 +289,5 @@ Four things stay open: the `--check` join, the live-browser look that waits on a
 - 260815 · [REVISE-CC] §1's figure widened to the plugin's full tree (JL: record the folder structure), and §4 born: the five-step generation pipeline, with A4.1 asking for the first walked unit.
 - 260815 · [RULE-JL] the plugin-or-page-kind row closed as A, plugin only; the ruling and the rejected kind are in Law.
 - 260815 · [DRAFT-CC] page born in the plugin round: the display family's unit contract adopted at `<page>/display/<unit>/`, the page adapter, the tab, and the boundary opened as aims, and the plugin-or-page-kind choice put to JL.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

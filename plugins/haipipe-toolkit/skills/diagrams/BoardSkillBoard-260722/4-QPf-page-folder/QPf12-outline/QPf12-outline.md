@@ -205,47 +205,6 @@ The reverse direction is drawn too: a card on disk that no bullet cites shows as
 `📄 THE PAGE NOW` folds shut, because on a page whose aims carry no ids it was nine empty cards in the way.
 
 ## Aims
-### A1 · How a line says which part it belongs to
-- A1.1 · The rule for the mark is written down in one place.
-  **Done when:** §1 says what the mark is, where it may sit, what an unmarked line means, and it changes nothing `/haipipe-page` already owns.
-- A1.2 · A mark pointing at a part that does not exist is caught and named.
-  **Done when:** Such a mark shows as a red ❌ naming the number, on any page.
-
-### A2 · The tab, read fresh every time you open it
-- A2.1 · One file reads the page and draws the tab.
-  **Done when:** `live/outline.py` answers `GET /_board/outline`, saving nothing.
-- A2.2 · The tab appears in the plugin menu.
-  **Done when:** 🧭 Outline sits right after 📂 Folder, and opening it lands the view beside the page.
-- A2.3 · Switching views fetches nothing.
-  **Done when:** Both views are drawn in one response and the chips only re-sort them.
-- A2.4 · Each part says in one line what it is about.
-  **Done when:** The line comes from the part's own `📌` line, its caption, or its first sentence, and a part with none of those shows nothing.
-- A2.5 · A goal, its progress, and an open question never look alike.
-  **Done when:** The id prints once, progress sits under its goal behind a `now` label, and an open question is counted in the header instead of read as progress.
-- A2.6 · One screen tells you where the page stands.
-  **Done when:** The tab opens with the page's own question and a count of done, left, and waiting, and unfinished goals are visible while finished ones fold.
-
-### A3 · Getting older pages ready
-- A3.1 · The other pages on this board carry their marks.
-  **Done when:** Each one shows its goals under the right parts instead of one 🌐 card.
-
-### A4 · The plan is a FILE now, and OUTLINE is a phase
-- A4.1 · Every page that needs a plan has one, and no machine approved any of them.
-  **Done when:** each such page carries `outline/<stem>-outline-v1.md` with `approved: ⬜` until a person ticks it.
-
-### A5 · What the tab shows now, and the two halves it had never labelled
-- A5.1 · A reader can tell the plan from the page, and see what each bullet owes.
-  **Done when:** the two halves are labelled, each ref opens as a card, and owed/landed/accepted are three separate numbers.
-- A5.2 · Every kind of evidence is read from disk, not asserted.
-  **Done when:** probe, display AND bibex all resolve; a 📚 that names a board page is caught.
-
-### P · Page-level
-- P1 · It works on a real page.
-  **Done when:** QPf1 shows its two parts correctly, checked by hand against the file.
-- P2 · No page anywhere breaks it, and no line ever goes missing.
-  **Done when:** Every page on every board is read and drawn, every goal and progress line lands on exactly one card, and no mark is reported that nobody wrote.
-
-## States
 ### Decision Now
 - [ ] 🗣 Should the `§N` mark become a rule for all pages, or stay something only this tab reads?
       📍 `Part` §1
@@ -254,32 +213,84 @@ The reverse direction is drawn too: a card on disk that no bullet cites shows as
       `B ·` write it into `ref/page-template.md` and `/haipipe-page` now; every new page marks from birth, but a later change means editing the rule twice
       🛑 `Blocks` nothing
       🤖 `If nobody answers` A
+- [x] 🗣 Do the Aims live on the page again, or stay in the plan?
+      ✅ RULED A, JL 260831: "In the Page as well, and should map to the content." Aims live on the page, one row per Aim with tick, `Done when:` and `Now:`, grouped `### A<n>` so that group `A<n>` maps to Content division `<n>`; the plan keeps no Aim rows, only the shape and its 🎯 marks. Content side (both boards) physician-space-21; engine and contract text MISQ-Board.
+      📍 `Part` §4
+      🔔 `Why now` JL 260831: "I think we can put the Aims back in the pages". Since 0.16.0 the page keeps no Aims; on 260831 the 16 MISQ pages moved theirs into the plan, and the plan now carries ticks and `Now:` lines, so the file meant to freeze at approval changes every day.
+      ⭐ `A ·` Aims go back on the page as their ONLY home: one row per Aim with tick, target, `Done when:`, `Now:`; the plan keeps no Aims, only the shape (C·P·B lines and marks); the 🧭 tab and check.py read Aims from the page; a new tooth `aim-group-without-division` catches an `### A<n>` group whose `C<n>` left the plan, which is the drift 0.16.0 was curing. A reader opens the page and sees its promise and status; the plan stays frozen. The asks carried off the pages on 260831 as `A<g>.<n>` plan rows do not come back as Aims (0.16.1: no Aim is minted to receive an ask); they land in the log as dated records.
+      `B ·` keep 0.16.0: Aims and their status stay in the plan, the page shows none; accept that the plan is no longer frozen and that a reader must open the 🧭 tab to learn what the page promises.
+      `C ·` plan keeps target + `Done when:` (frozen), page keeps tick + `Now:` per id; that is `## States` under another name, merged away on 260819.
+      🛑 `Blocks` the outline migration of the other boards (169 pages still carry Aims on the page) and the page render, which shows no 🎯 Aims fold on a migrated page
+      🤖 `If nobody answers` A
+- [x] 🗣 Does `## Files` leave the page for a `<stem>-files.md` record file in outline/?
+      ✅ RULED A, JL 260831: "A". outline/ gains `<stem>-files.md`, one `### F<n> · <what it is for>` per file with `Path` and `Role`; the page keeps no `## Files`. Content side physician-space-21; 📎 chip in `live/outline.py` physician-space-21; pagecontext.py and teeth MISQ-Board.
+      📍 `Part` §4
+      🔔 `Why now` JL 260831: "maybe we don't need the files, we can put the files into the outline to be related files". After the 260831 migration the page's `## Files` is a pointer to outline/ plus the action map and `### 🔗 Related Board Pages`.
+      ⭐ `A ·` yes: outline/ gains a seventh record kind, `<stem>-files.md`, one `### F<n> · <what it is for>` per file with `- **Path**:` and `- **Role**:` (reads · writes · checks · contract), and a Related Board Page as `- **Reads**: EVIDENCE · [QB7 §3](path)`, the grammar `cli/pagecontext.py` parses today; the 🧭 tab shows a 📎 Files chip; the page keeps no `## Files`. Cost: pagecontext.py, check.py's Related-row rules and the page's Files fold read the new file, and one migration over every page with `## Files`.
+      `B ·` keep `## Files` on the page as the one hand-written pointer; the 🧭 tab already lists the folder. Cost: a reader meets a section that is mostly a pointer.
+      🛑 `Blocks` nothing
+      🤖 `If nobody answers` A
 
-### A4 · The plan is a FILE now, and OUTLINE is a phase
-- 🔨 A4.1 · 16 of this group's 17 pages have a generated `v1`, 426 bullets, every one read from that page's own sentences. All 16 are `approved: ⬜`. `QPf4a-chat-per-question` has none and says why: it has no `## Content` and no `### N ·` divisions, so there was nothing to read a plan out of.
-
-### A5 · What the tab shows now, and the two halves it had never labelled
-- ✅ A5.1 · Shipped. Both halves labelled, `📄 THE PAGE NOW` folds, refs open as chip-and-popover cards, and the header reads `14 owed · 7 landed · 0 accepted` on the specimen page.
-- 🔨 A5.2 · probe, display and bibex all resolve; a 📚 naming a board page is caught. ⬜ Open: bibex is read one way only in the sense that `verified` is not modelled, and the probe reader still expects `answer/` while `haipipe-plugin-probe` 0.4.0 renamed it `proof/`.
 
 ### A1 · How a line says which part it belongs to
-- ✅ A1.1 · Done. §1 holds the whole rule, and adds nothing to the page template.
-- ✅ A1.2 · Done. `§7` on a page with two parts shows as `❌ §7 points at a part that does not exist`.
+- ✅ A1.1 · The rule for the mark is written down in one place.
+  **Done when:** §1 says what the mark is, where it may sit, what an unmarked line means, and it changes nothing `/haipipe-page` already owns.
+  **Now:** Done. §1 holds the whole rule, and adds nothing to the page template.
+- ✅ A1.2 · A mark pointing at a part that does not exist is caught and named.
+  **Done when:** Such a mark shows as a red ❌ naming the number, on any page.
+  **Now:** Done. `§7` on a page with two parts shows as `❌ §7 points at a part that does not exist`.
+
 
 ### A2 · The tab, read fresh every time you open it
-- ✅ A2.1 · Done. `live/outline.py` answers the route and saves nothing.
-- ✅ A2.2 · Done. The tab sits second in the menu, after 📂 Folder.
-- ✅ A2.3 · Done. Both views come in one response; the chips only re-sort.
-- ✅ A2.4 · Done. 771 of 788 parts across six boards show a line. Of the 17 without one, 16 are cards drawn for parts the page never declared, and the last is written entirely as bold headings over bullets, with no sentence to take.
-- ✅ A2.5 · Done. The id prints once, progress reads `NOW …` under its goal, and `### 🗣 Decision Now` is recognized even with its emoji in front, which it was not before: QPf11's open question had been counted as progress.
-- ✅ A2.6 · Done. QPf11 now opens on its own question over `11 of 12 done`, and its four cards fit one screen with only the unfinished one open.
+- ✅ A2.1 · One file reads the page and draws the tab.
+  **Done when:** `live/outline.py` answers `GET /_board/outline`, saving nothing.
+  **Now:** Done. `live/outline.py` answers the route and saves nothing.
+- ✅ A2.2 · The tab appears in the plugin menu.
+  **Done when:** 🧭 Outline sits right after 📂 Folder, and opening it lands the view beside the page.
+  **Now:** Done. The tab sits second in the menu, after 📂 Folder.
+- ✅ A2.3 · Switching views fetches nothing.
+  **Done when:** Both views are drawn in one response and the chips only re-sort them.
+  **Now:** Done. Both views come in one response; the chips only re-sort.
+- ✅ A2.4 · Each part says in one line what it is about.
+  **Done when:** The line comes from the part's own `📌` line, its caption, or its first sentence, and a part with none of those shows nothing.
+  **Now:** Done. 771 of 788 parts across six boards show a line. Of the 17 without one, 16 are cards drawn for parts the page never declared, and the last is written entirely as bold headings over bullets, with no sentence to take.
+- ✅ A2.5 · A goal, its progress, and an open question never look alike.
+  **Done when:** The id prints once, progress sits under its goal behind a `now` label, and an open question is counted in the header instead of read as progress.
+  **Now:** Done. The id prints once, progress reads `NOW …` under its goal, and `### 🗣 Decision Now` is recognized even with its emoji in front, which it was not before: QPf11's open question had been counted as progress.
+- ✅ A2.6 · One screen tells you where the page stands.
+  **Done when:** The tab opens with the page's own question and a count of done, left, and waiting, and unfinished goals are visible while finished ones fold.
+  **Now:** Done. QPf11 now opens on its own question over `11 of 12 done`, and its four cards fit one screen with only the unfinished one open.
+
 
 ### A3 · Getting older pages ready
-- 🔨 A3.1 · Started. QPf1 has three marks; the other QPf pages have none and show as one 🌐 card each.
+- 🔨 A3.1 · The other pages on this board carry their marks.
+  **Done when:** Each one shows its goals under the right parts instead of one 🌐 card.
+  **Now:** Started. QPf1 has three marks; the other QPf pages have none and show as one 🌐 card each.
+
+
+### A4 · The plan is a FILE now, and OUTLINE is a phase
+- 🔨 A4.1 · Every page that needs a plan has one, and no machine approved any of them.
+  **Done when:** each such page carries `outline/<stem>-outline-v1.md` with `approved: ⬜` until a person ticks it.
+  **Now:** 16 of this group's 17 pages have a generated `v1`, 426 bullets, every one read from that page's own sentences. All 16 are `approved: ⬜`. `QPf4a-chat-per-question` has none and says why: it has no `## Content` and no `### N ·` divisions, so there was nothing to read a plan out of.
+
+
+### A5 · What the tab shows now, and the two halves it had never labelled
+- ✅ A5.1 · A reader can tell the plan from the page, and see what each bullet owes.
+  **Done when:** the two halves are labelled, each ref opens as a card, and owed/landed/accepted are three separate numbers.
+  **Now:** Shipped. Both halves labelled, `📄 THE PAGE NOW` folds, refs open as chip-and-popover cards, and the header reads `14 owed · 7 landed · 0 accepted` on the specimen page.
+- 🔨 A5.2 · Every kind of evidence is read from disk, not asserted.
+  **Done when:** probe, display AND bibex all resolve; a 📚 that names a board page is caught.
+  **Now:** probe, display and bibex all resolve; a 📚 naming a board page is caught. ⬜ Open: bibex is read one way only in the sense that `verified` is not modelled, and the probe reader still expects `answer/` while `haipipe-plugin-probe` 0.4.0 renamed it `proof/`.
+
 
 ### P · Page-level
-- ✅ P1 · Done. QPf1 shows part 1 and part 2 as their own cards, the rest under 🌐.
-- ✅ P2 · Done and guarded. `checks/outline.py` reads 302 pages across six boards plus 18 mark shapes and 6 page shapes, and runs first in `checks/run.py`.
+- ✅ P1 · It works on a real page.
+  **Done when:** QPf1 shows its two parts correctly, checked by hand against the file.
+  **Now:** Done. QPf1 shows part 1 and part 2 as their own cards, the rest under 🌐.
+- ✅ P2 · No page anywhere breaks it, and no line ever goes missing.
+  **Done when:** Every page on every board is read and drawn, every goal and progress line lands on exactly one card, and no mark is reported that nobody wrote.
+  **Now:** Done and guarded. `checks/outline.py` reads 302 pages across six boards plus 18 mark shapes and 6 page shapes, and runs first in `checks/run.py`.
+
 
 ## Files
 ### ⚙️ Engines
@@ -322,6 +333,7 @@ The reverse direction is drawn too: a card on disk that no bullet cites shows as
       Cutting `## Log` into parts loses its story. Not ruled by JL, but not opposed either.
 
 ## Log
+- 260831 0136 · Decision Now: Aims back on the page? `## Files` into outline/ as records? Raised by JL, CC recommends A on both.
 - 260817 · [JL ruled] the plan became a FILE and OUTLINE became a phase, overturning this page's own 260816 ruling that "there is no outline phase and no outline file". `page-workflows/haipipe-page-outline` 0.1.0 ships; `haipipe-page-draft` 0.5.0 lost its §🗂; `haipipe-plugin-outline` 0.4.0 keeps only the material and the surface. A bullet is a POINT addressed `C<n>.P<n>.B<n>`, and a bullet with no mark is the normal case.
 - 260817 · [CC shipped] the tab reads the plan file and joins it to disk: each 📚 🔢 🖼 opens as the board's own chip-and-popover evidence card, `owed · landed · accepted` are three separate counts, a card on disk that no bullet cites shows as 🎈, and `📄 THE PAGE NOW` folds. Driving it found four of its own defects: figure captions read as bullets, two bad Content slices that produced empty outlines on four pages, and a bullet with two bib keys registering only the first — that last one was caught BY the 🎈 row, minutes after it shipped.
 - 260817 · [CC shipped] 16 QPf pages got a generated `v1` plan, 426 bullets, each read from that page's own divisions, captions and sentences. Nothing was invented and nothing was approved.
@@ -332,3 +344,5 @@ The reverse direction is drawn too: a card on disk that no bullet cites shows as
 - 260816 · [JL asked, CC shipped] each part now shows one line saying what it is about, read from the part's own `📌` line, its caption, or its first sentence. Free, like the numbering was: 771 of 788 parts already carried one.
 - 260816 · Hardened after JL asked whether it actually works. Driven through the real board with a headless browser, then swept over 300 pages on 6 boards. The sweep found two real defects, neither of which would have crashed: a goal whose part the page never declared was invisible in both views, and marks matched by looks flagged four innocent pages. Fixed, then frozen as `checks/outline.py` inside `checks/run.py`.
 - 260816 · Shipped the same session it was opened: `live/outline.py`, the route on `serve.py`, and `07-plugin-outline.js` second in the menu. Opened as QPf12 because QPf11 was already taken by pagex, which JL caught.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

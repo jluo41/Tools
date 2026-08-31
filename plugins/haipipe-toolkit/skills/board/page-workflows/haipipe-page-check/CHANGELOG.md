@@ -1,3 +1,10 @@
+## 0.6.2 — 2026-08-31
+
+- **§📏 The rubric** moved here from `haipipe-page` §🔍 (four axes with their
+  judges, the review units, the four verdicts, the batch-voice readability
+  unit, the one-row report, the read-only rule). `haipipe-page` keeps the
+  requirement-resolution order and points here.
+
 ## 0.6.1 — 2026-08-18
 
 - Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §⑦, which

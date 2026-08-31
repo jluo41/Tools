@@ -1538,126 +1538,109 @@ A type loads this base and never restates it, which is why variants are doors ov
 A variant ships under the `page-types/` folder of the skill set that owns it (JL 260809).
 
 ## Aims
-### A0 · 📋 The page protocol
-- A0.1 · The fixed page sequence separates intent, substance, fact, and continuation.
-  **Done when:** The page, template, renderer, and skill all use Opening → Diagram → Content → Aims → States → Files.
-
-### A1 · 🧭 Opening
-- A1.1 · The opening paragraph contract is stated, obeyed by this page, and inherited by every new page.
-  **Done when:** `ref/page-template.md` and `haipipe-page` carry the blank-line split, the size ceiling, the plain-English rule, and the no-growing-roster rule, and `check.py` measures the on-stage paragraph rather than counting prose lines.
-
-### A2 · 🖼 Diagram
-- A2.1 · Every figure on every page carries a caption and reads as labels and values rather than prose.
-  **Done when:** `check.py` reports zero `division-no-figure` and zero `division-no-caption` findings on this board.
-
-### A3 · 📚 Content
-- A3.1 · Page-kind variants define Content and fill declared extension points without redefining the shared frame.
-  **Done when:** Stage Contract and Q-consumer behavior use fixed base sections rather than creating variant-specific sections.
-
-### A4 · 🎯 Aims
-- A4.1 · Aims are durable, Content-linked target states rather than generated tasks.
-  **Done when:** Stable Aim ids, Done when, optional Plan, and the P-level escape hatch are documented and rendered.
-
-### A5 · 📍 States
-- A5.1 · The States section is a factual one-row-per-Aim collection.
-  **Done when:** The five statuses render, counts derive from States, and transitions are recorded in Log.
-
-### A6 · 📎 Files
-- A6.1 · A Page can declare the exact fragment of another Board Page that one phase needs without recursively loading the Board.
-  **Done when:** The template and Page skill carry the row grammar, `pagecontext.py` returns a one-hop scope closure, and `check.py` fault tests reject dead paths, wrong Page ids, missing scopes, malformed rows, and path escape.
-
-### A8 · 📄 The source file
-- A8.1 · Every page-creation path emits the canonical Aims/States contract.
-  **Done when:** The template, new-page generators, checker, Board matrix, and JSON output agree while legacy headings still rebuild.
-- A8.2 · The title contract travels with the template rather than with whichever neighbouring page a writer happens to copy.
-  **Done when:** Sentence case and the states-its-purpose requirement are stated in `ref/page-template.md`, `### 8`, `## Writing Style`, `## Law`, and `haipipe-page`, and no page on this board carries a mixed-case title.
-- A8.3 · The state line is a row under 110 characters, and the rule travels with the template.
-  **Done when:** The row grammar is stated in `ref/page-template.md`, `### 8`, `## Writing Style`, and `haipipe-page`, `check.py` warns on a long line, and no page on this board carries one.
-
-### A9 · 🧪 Evaluation
-- A9.1 · Every page unit can be evaluated against one resolved requirement stack through the existing review path.
-  **Done when:** The page spec, Quality Check, and fresh reviewer agree on the review units, axes, verdicts, evidence, and report shape.
-
-- A9.2 · The files that carry these rules are audited against this page, not trusted.
-  **Done when:** A fresh-context audit of `ref/page-template.md`, `ref/writing-rules.md`, `ref/board-form.md`, the four board SKILL.md files and the two agents reports zero statements this page contradicts.
-
-### A11 · ⚙️ The unit that ships this grammar
-- A11.1 · The door test passes on evidence rather than on argument.
-  **Done when:** Fresh agents given one hint-free sentence each open `haipipe-page` unaided and drive real pages to zero findings.
-- A11.2 · The scope bound holds on a second measured run.
-  **Done when:** A re-run of the hint-free test produces a tighter file-write spread than the 15 · 1 · 2 the first run measured, with steps 7 and 8 in force.
-- A11.3 · `live/chat.py` loads this spec instead of restating it.
-  **Done when:** The four rule strings that teach the page and board contracts in Python prose are replaced by one function that loads the contract, and no restated rule remains to drift.
-- A11.4 · A page can name the unit that supports it.
-  **Done when:** A ruled syntax lets a page say `supported by haipipe-sentence` without duplicating the board-level roster, and at least one page carries it.
-- A11.5 · The nine remaining mirror pages convert to design pages.
-  **Done when:** Each of the nine carries its unit's snapshot in a `skill/` plugin with an authored rewrite, and the span machinery in `skillpage.py` retires with the last of them.
-
-### P · 🏁 Page-level validation
-- P1 · A fresh reader can distinguish Aim, Plan, State, and Content while recognizing the plural Aims/States section labels.
-  **Done when:** A cold-read agent explains the boundaries correctly and finds no blocking contradiction.
-- P2 · The remaining archived design history has an explicit home.
-  **Done when:** The Excalidraw and group-title history is routed, restored, or intentionally held by a recorded human ruling.
-- P3 · The five sections below the read carry a name that says what they are rather than how they render.
-  **Done when:** The name is ruled, and this page, `ref/page-template.md`, `ref/board-form.md`, and `haipipe-page` all use it.
-- P4 · The writing rules on this page are executable, not only readable.
-  **Done when:** A skill (`haipipe-writing`, ruled on QC1b) can take one authored division and return it rewritten to the weak-English axis in `### 9`, with a word-level `✎` record under every sentence it changed.
-
-## States
 ### Decision Now
 
 
 
 
 
+
 ### A0 · 📋 The page protocol
-- ✅ A0.1 · Implemented across the live renderer, skill contract, and canonical template.
+- ✅ A0.1 · The fixed page sequence separates intent, substance, fact, and continuation.
+  **Done when:** The page, template, renderer, and skill all use Opening → Diagram → Content → Aims → States → Files.
+  **Now:** Implemented across the live renderer, skill contract, and canonical template.
+
 
 ### A1 · 🧭 Opening
-- ✅ A1.1 · Met 260802. `ref/page-template.md` was carrying the blank-line split and nothing else of this Aim; the size ceiling, the plain-English rule and the no-growing-roster rule were in `haipipe-page` only. All four now sit in both files, which is what the Done when asked for.
+- ✅ A1.1 · The opening paragraph contract is stated, obeyed by this page, and inherited by every new page.
+  **Done when:** `ref/page-template.md` and `haipipe-page` carry the blank-line split, the size ceiling, the plain-English rule, and the no-growing-roster rule, and `check.py` measures the on-stage paragraph rather than counting prose lines.
+  **Now:** Met 260802. `ref/page-template.md` was carrying the blank-line split and nothing else of this Aim; the size ceiling, the plain-English rule and the no-growing-roster rule were in `haipipe-page` only. All four now sit in both files, which is what the Done when asked for.
+
 
 ### A2 · 🖼 Diagram
-- ❄️ A2.1 · HELD 260802 on JL's close. This page passes, and the board does not: `check.py` reports 78 `division-no-figure` and 32 `division-no-caption` across the other pages. The Done when is board-wide, so it closes when those pages are worked, not by anything QB4 can do to itself.
+- ❄️ A2.1 · Every figure on every page carries a caption and reads as labels and values rather than prose.
+  **Done when:** `check.py` reports zero `division-no-figure` and zero `division-no-caption` findings on this board.
+  **Now:** HELD 260802 on JL's close. This page passes, and the board does not: `check.py` reports 78 `division-no-figure` and 32 `division-no-caption` across the other pages. The Done when is board-wide, so it closes when those pages are worked, not by anything QB4 can do to itself.
+
 
 ### A3 · 📚 Content
-- ✅ A3.1 · The page spec now treats Stage Contract, Aims, and States as fixed base extension points that a kind may populate but never redefine.
+- ✅ A3.1 · Page-kind variants define Content and fill declared extension points without redefining the shared frame.
+  **Done when:** Stage Contract and Q-consumer behavior use fixed base sections rather than creating variant-specific sections.
+  **Now:** The page spec now treats Stage Contract, Aims, and States as fixed base extension points that a kind may populate but never redefine.
+
 
 ### A4 · 🎯 Aims
-- ✅ A4.1 · Implemented with stable A/P ids, Done when, optional Plan, counts derived from States, and legacy checklist compatibility.
+- ✅ A4.1 · Aims are durable, Content-linked target states rather than generated tasks.
+  **Done when:** Stable Aim ids, Done when, optional Plan, and the P-level escape hatch are documented and rendered.
+  **Now:** Implemented with stable A/P ids, Done when, optional Plan, counts derived from States, and legacy checklist compatibility.
+
 
 ### A5 · 📍 States
-- ✅ A5.1 · Implemented with the paired plural headings Aims/States and one current State row per Aim.
+- ✅ A5.1 · The States section is a factual one-row-per-Aim collection.
+  **Done when:** The five statuses render, counts derive from States, and transitions are recorded in Log.
+  **Now:** Implemented with the paired plural headings Aims/States and one current State row per Aim.
+
 
 ### A6 · 📎 Files
-- ✅ A6.1 · Implemented 260804 in the template, base Page skill, Page RUN packet, Board form, one-hop context reader, checker integration, and ten focused tests including recursion, fenced examples, checker wiring, and fault boundaries; the second fresh-context trial selected only QB5 §8/§10, emitted their shared frame once, and followed no second-hop link.
+- ✅ A6.1 · A Page can declare the exact fragment of another Board Page that one phase needs without recursively loading the Board.
+  **Done when:** The template and Page skill carry the row grammar, `pagecontext.py` returns a one-hop scope closure, and `check.py` fault tests reject dead paths, wrong Page ids, missing scopes, malformed rows, and path escape.
+  **Now:** Implemented 260804 in the template, base Page skill, Page RUN packet, Board form, one-hop context reader, checker integration, and ten focused tests including recursion, fenced examples, checker wiring, and fault boundaries; the second fresh-context trial selected only QB5 §8/§10, emitted their shared frame once, and followed no second-hop link.
+
 
 ### A8 · 📄 The source file
-- ✅ A8.1 · Implemented and verified across templates, every active generator, checker, Board matrix, JSON output, aliases, and the public paper-stage creation path.
-- ✅ A8.2 · Stated in `ref/page-template.md`'s first line and its How-to-use comment, in `### 8`, `## Writing Style`, `## Law`, and `haipipe-page`. This page and QB2 were the board's only two divergent titles and both were corrected in the same edit, so all 46 pages now read in sentence case. `QB1` remains a full question rather than a phrase, which is the template's separate phrase rule and not a casing divergence.
-- ✅ A8.3 · Ruled 260816 when JL read QPf9's four-clause state line. The rule is written in all four places, QPf9 and this page were rewritten as the specimens, and `check.py`'s `state-line-long` warn enforces it. The sweep finished the same day, reached by JL reading QPw00's four-clause line in the viewer: 20 pages rewritten to the row grammar, longest 109 characters, and `check.py` now reports zero `state-line-long` findings on this board.
+- ✅ A8.1 · Every page-creation path emits the canonical Aims/States contract.
+  **Done when:** The template, new-page generators, checker, Board matrix, and JSON output agree while legacy headings still rebuild.
+  **Now:** Implemented and verified across templates, every active generator, checker, Board matrix, JSON output, aliases, and the public paper-stage creation path.
+- ✅ A8.2 · The title contract travels with the template rather than with whichever neighbouring page a writer happens to copy.
+  **Done when:** Sentence case and the states-its-purpose requirement are stated in `ref/page-template.md`, `### 8`, `## Writing Style`, `## Law`, and `haipipe-page`, and no page on this board carries a mixed-case title.
+  **Now:** Stated in `ref/page-template.md`'s first line and its How-to-use comment, in `### 8`, `## Writing Style`, `## Law`, and `haipipe-page`. This page and QB2 were the board's only two divergent titles and both were corrected in the same edit, so all 46 pages now read in sentence case. `QB1` remains a full question rather than a phrase, which is the template's separate phrase rule and not a casing divergence.
+- ✅ A8.3 · The state line is a row under 110 characters, and the rule travels with the template.
+  **Done when:** The row grammar is stated in `ref/page-template.md`, `### 8`, `## Writing Style`, and `haipipe-page`, `check.py` warns on a long line, and no page on this board carries one.
+  **Now:** Ruled 260816 when JL read QPf9's four-clause state line. The rule is written in all four places, QPf9 and this page were rewritten as the specimens, and `check.py`'s `state-line-long` warn enforces it. The sweep finished the same day, reached by JL reading QPw00's four-clause line in the viewer: 20 pages rewritten to the row grammar, longest 109 characters, and `check.py` now reports zero `state-line-long` findings on this board.
+
 
 ### A9 · 🧪 Evaluation
-- ✅ A9.1 · Implemented in the canonical page spec, Quality Check prompt, and fresh reviewer contract; the final fresh-context acceptance returned PASS.
+- ✅ A9.1 · Every page unit can be evaluated against one resolved requirement stack through the existing review path.
+  **Done when:** The page spec, Quality Check, and fresh reviewer agree on the review units, axes, verdicts, evidence, and report shape.
+  **Now:** Implemented in the canonical page spec, Quality Check prompt, and fresh reviewer contract; the final fresh-context acceptance returned PASS.
 
-- ❄️ A9.2 · HELD 260802 on JL's close. The Done when asks for a FRESH-CONTEXT audit of the template, the writing rules, the board form, four `SKILL.md` files and the two agents. Three fresh agents ran against `haipipe-page` on 260802 and found the scope gap, but that tested one file and one verb, not the set this Aim names.
+
+- ❄️ A9.2 · The files that carry these rules are audited against this page, not trusted.
+  **Done when:** A fresh-context audit of `ref/page-template.md`, `ref/writing-rules.md`, `ref/board-form.md`, the four board SKILL.md files and the two agents reports zero statements this page contradicts.
+  **Now:** HELD 260802 on JL's close. The Done when asks for a FRESH-CONTEXT audit of the template, the writing rules, the board form, four `SKILL.md` files and the two agents. Three fresh agents ran against `haipipe-page` on 260802 and found the scope gap, but that tested one file and one verb, not the set this Aim names.
+
 
 ### A11 · ⚙️ The unit that ships this grammar
-- ✅ A11.1 · Met 260802. Three hint-free agents opened the skill at tool calls #5, #6 and #5, one from a prompt matching no trigger word, and drove three pages from 15, 13 and 10 findings to zero, taking the board from 210 findings to 171.
-- ⬜ A11.2 · `0.10.0` shipped the bound as steps 7 and 8, and no second run has measured it, so the fix is reasoning until a re-run produces a tighter spread than 15 · 1 · 2.
-- ⬜ A11.3 · The four rule strings still sit in `live/chat.py`, and `QB8d` already caught one describing a page shape that no longer existed; the fix costs one function and adds no version surface.
-- ⬜ A11.4 · The syntax is unruled and no page carries one.
-- 🔨 A11.5 · The specimen conversion is done and folded into this page (260816); the nine mirror pages remain, one plug and one authored rewrite each, and they follow only after JL rules each shape.
+- ✅ A11.1 · The door test passes on evidence rather than on argument.
+  **Done when:** Fresh agents given one hint-free sentence each open `haipipe-page` unaided and drive real pages to zero findings.
+  **Now:** Met 260802. Three hint-free agents opened the skill at tool calls #5, #6 and #5, one from a prompt matching no trigger word, and drove three pages from 15, 13 and 10 findings to zero, taking the board from 210 findings to 171.
+- ⬜ A11.2 · The scope bound holds on a second measured run.
+  **Done when:** A re-run of the hint-free test produces a tighter file-write spread than the 15 · 1 · 2 the first run measured, with steps 7 and 8 in force.
+  **Now:** `0.10.0` shipped the bound as steps 7 and 8, and no second run has measured it, so the fix is reasoning until a re-run produces a tighter spread than 15 · 1 · 2.
+- ⬜ A11.3 · `live/chat.py` loads this spec instead of restating it.
+  **Done when:** The four rule strings that teach the page and board contracts in Python prose are replaced by one function that loads the contract, and no restated rule remains to drift.
+  **Now:** The four rule strings still sit in `live/chat.py`, and `QB8d` already caught one describing a page shape that no longer existed; the fix costs one function and adds no version surface.
+- ⬜ A11.4 · A page can name the unit that supports it.
+  **Done when:** A ruled syntax lets a page say `supported by haipipe-sentence` without duplicating the board-level roster, and at least one page carries it.
+  **Now:** The syntax is unruled and no page carries one.
+- 🔨 A11.5 · The nine remaining mirror pages convert to design pages.
+  **Done when:** Each of the nine carries its unit's snapshot in a `skill/` plugin with an authored rewrite, and the span machinery in `skillpage.py` retires with the last of them.
+  **Now:** The specimen conversion is done and folded into this page (260816); the nine mirror pages remain, one plug and one authored rewrite each, and they follow only after JL rules each shape.
+
 
 ### P · 🏁 Page-level validation
-- ✅ P1 · The final fresh-context reviewer found the Opening, ownership boundaries, extension points, evaluation rubric, and Aims/States coherent after the conflict repairs.
-- ✅ P2 · Met 260802 by JL's ruling A. The Excalidraw history moved to `QB7 ### 4`; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places. Routed and recorded, which is exactly what the Done when allows.
-- ✅ P3 · `Folds` is the settled name. JL ruled it on 260801 in one sentence, "let's make this to be 'Folds', why 'fold', very bad", choosing the plural over the singular. CC read the second half as an objection to the word, recommended `Memory`, and left a Decision Now row open for a day; JL closed it on 260802 by asking whether that rename was seriously intended.
-- ❄️ P4 · HELD 260802 on JL's close. `haipipe-writing` now exists under `writing/haipipe-writing` and carries the ✎ record-per-sentence rewrite the Done when asks for, but the Done when has not been re-tested against it since the hold, so the hold stands until it runs on one authored division.
-The canonical Aims/States model is independently validated across the source contract, renderer, and public generation paths.
-The section-by-section evaluation path is implemented and independently validated.
-Nothing waits in Decision Now; the three ❄️ Aims are explicitly HELD on JL's 260802 close, each with its reason on the row.
-The `A11` lane is why the page reopened on 260816: it carries the unit's health rows, folded in from `QPs00`, and the grammar lanes above it stand as closed.
-The dated implementation history lives in Log, so this section stays a current snapshot.
+- ✅ P1 · A fresh reader can distinguish Aim, Plan, State, and Content while recognizing the plural Aims/States section labels.
+  **Done when:** A cold-read agent explains the boundaries correctly and finds no blocking contradiction.
+  **Now:** The final fresh-context reviewer found the Opening, ownership boundaries, extension points, evaluation rubric, and Aims/States coherent after the conflict repairs.
+- ✅ P2 · The remaining archived design history has an explicit home.
+  **Done when:** The Excalidraw and group-title history is routed, restored, or intentionally held by a recorded human ruling.
+  **Now:** Met 260802 by JL's ruling A. The Excalidraw history moved to `QB7 ### 4`; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places. Routed and recorded, which is exactly what the Done when allows.
+- ✅ P3 · The five sections below the read carry a name that says what they are rather than how they render.
+  **Done when:** The name is ruled, and this page, `ref/page-template.md`, `ref/board-form.md`, and `haipipe-page` all use it.
+  **Now:** `Folds` is the settled name. JL ruled it on 260801 in one sentence, "let's make this to be 'Folds', why 'fold', very bad", choosing the plural over the singular. CC read the second half as an objection to the word, recommended `Memory`, and left a Decision Now row open for a day; JL closed it on 260802 by asking whether that rename was seriously intended.
+- ❄️ P4 · The writing rules on this page are executable, not only readable.
+  **Done when:** A skill (`haipipe-writing`, ruled on QC1b) can take one authored division and return it rewritten to the weak-English axis in `### 9`, with a word-level `✎` record under every sentence it changed.
+  **Now:** HELD 260802 on JL's close. `haipipe-writing` now exists under `writing/haipipe-writing` and carries the ✎ record-per-sentence rewrite the Done when asks for, but the Done when has not been re-tested against it since the hold, so the hold stands until it runs on one authored division.
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -2018,6 +2001,15 @@ The dated implementation history lives in Log, so this section stays a current s
 > JL: when writing one Page, I may need the literature or values Page, but I want the exact useful fragment without losing context or filling the window; should Files carry Related Board Pages?
 >> CC0804: yes. The Page now declares relation, phase, target Page, and `page`/`§n` scope under one fixed group. A scoped division brings its target Opening and matching Aims/States, the reader follows one hop, and the checker rejects a dead Page or scope before an agent works without it.
 
+
+### From the retired States section (merged 260831)
+### P · 🏁 Page-level validation
+The canonical Aims/States model is independently validated across the source contract, renderer, and public generation paths.
+The section-by-section evaluation path is implemented and independently validated.
+Nothing waits in Decision Now; the three ❄️ Aims are explicitly HELD on JL's 260802 close, each with its reason on the row.
+The `A11` lane is why the page reopened on 260816: it carries the unit's health rows, folded in from `QPs00`, and the grammar lanes above it stand as closed.
+The dated implementation history lives in Log, so this section stays a current snapshot.
+
 ## Log
 - 260816 · [JL via CC] the state line ruled a row: JL read QPf9's four-clause line and asked for tight; the row grammar (status word, what stands, `open:` list or count, under 110 chars) landed in `## Writing Style`, `§8.1.1`, `ref/page-template.md`, `haipipe-page` 0.28.0, and a new `state-line-long` warn in `check.py`. QPf9 and this page rewritten as the specimens; the measurement found 25 of 54 pages over, and the sweep is `A8.3`'s open half. Same pass, an alignment audit against the live unit: three live "QB5 owns the loop" citations swept to QPw00 (QB5 retired into the alias map on 260815), with the 0.27.0 handoff to `haipipe-page-workflow` named where RUN is described.
 - 260816 · [PLUG-CC] the snapshot re-plugged fresh at `haipipe-page` 0.27.0: two files now, because 0.27.0 moved the RUN contract to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`, so the old snapshot's `ref/` copy left with it.
@@ -2151,3 +2143,5 @@ The dated implementation history lives in Log, so this section stays a current s
 260722 2315 · Border / corners / card background removed, title to 38px, header squeezed into the marquee bar
 260722 2305 · Focus mode landed: pure CSS `:target` + `:has()`
 260722 2300 · JL asked for "slides like /html-ppt, not boxed in"; question opened
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

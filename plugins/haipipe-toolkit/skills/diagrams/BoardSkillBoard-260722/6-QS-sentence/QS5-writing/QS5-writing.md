@@ -183,29 +183,6 @@ The reason the widening is sound is that this unit is not a stranger to the boar
 What is unstated is the general rule, and a scope with one member and no rule admits the second member by precedent rather than by decision.
 
 ## Aims
-### A1 · 🚪 A neighbour unit, on this board because its standard is load-bearing
-- A1.1 · The reason this unit is on the roster and not in the family is stated where a reader meets the unit.
-  **Done when:** A reader can say why the door test excluded it, and what excluding it bought, without opening `QC1b`.
-
-### A2 · 🔢 The judgment is one step, and code fences it on both sides
-- A2.1 · The paper family stopped keeping its own copies of the three migrated contracts.
-  **Done when:** The owner closes this on the 260805-06 evidence: `ref/ai-tells.md`, `ref/weaving.md` and `ref/holes.md` live only here, the paper tree keeps no copy, and the humanizer sits beside this unit in `skills/writing/`.
-- A2.2 · One `score` run picks what this board rewrites next.
-  **Done when:** The verb has been run over this board's pages and its ranking, rather than a person reading Openings by eye, chose the next rewrite.
-
-### A3 · ✎ Two units now write the same `✎` record
-- A3.1 · The two producers of a `✎` record are checked against each other.
-  **Done when:** `cli/agree.py` has been pointed at the pair and its result is recorded here.
-
-### A4 · 📋 The roster's scope beyond `skills/board/`, widened but not settled
-- A4.1 · The new scope line is stated, not just crossed.
-  **Done when:** A written rule says which units outside `skills/board/` belong on this board, and `QC3a`'s 260727 ruling is updated or superseded to match.
-
-### P · Page-level
-- P1 · The page describes the unit by what it produces, so it stays in the sentence chapter.
-  **Done when:** Every division traces to the `✎` record or to the unit's placement, and none of it reads as a changelog.
-
-## States
 ### Decision Now
 - [ ] 🗣 Say where the roster's scope line falls now that it has been widened
       📍 `Part` §4, the roster's scope
@@ -216,21 +193,39 @@ What is unstated is the general rule, and a scope with one member and no rule ad
       🛑 `Blocks` A4.1, and the matching Decision Now row on `QC3a`
       🤖 `If nobody answers` A takes effect, because it is what the roster shows today
 
+
 ### A1 · 🚪 A neighbour unit, on this board because its standard is load-bearing
-- ✅ A1.1 · Met. `### 1` carries the door test, its verdict, and what the exclusion bought.
+- ✅ A1.1 · The reason this unit is on the roster and not in the family is stated where a reader meets the unit.
+  **Done when:** A reader can say why the door test excluded it, and what excluding it bought, without opening `QC1b`.
+  **Now:** Met. `### 1` carries the door test, its verdict, and what the exclusion bought.
+
 
 ### A2 · 🔢 The judgment is one step, and code fences it on both sides
-- 🧠 A2.1 · Waiting on the owner. The evidence is in: the 260805-06 one-door rebuild left no copy of the three contracts in the paper tree, `haipipe-paper-revise-content` and the old DRAFT phase sit in `paper/_old/`, and the humanizer moved to `skills/writing/`. Only the tick is missing.
-- ⬜ A2.2 · Not started. No `score` run has been used to choose what this board rewrites.
+- 🧠 A2.1 · The paper family stopped keeping its own copies of the three migrated contracts.
+  **Done when:** The owner closes this on the 260805-06 evidence: `ref/ai-tells.md`, `ref/weaving.md` and `ref/holes.md` live only here, the paper tree keeps no copy, and the humanizer sits beside this unit in `skills/writing/`.
+  **Now:** Waiting on the owner. The evidence is in: the 260805-06 one-door rebuild left no copy of the three contracts in the paper tree, `haipipe-paper-revise-content` and the old DRAFT phase sit in `paper/_old/`, and the humanizer moved to `skills/writing/`. Only the tick is missing.
+- ⬜ A2.2 · One `score` run picks what this board rewrites next.
+  **Done when:** The verb has been run over this board's pages and its ranking, rather than a person reading Openings by eye, chose the next rewrite.
+  **Now:** Not started. No `score` run has been used to choose what this board rewrites.
+
 
 ### A3 · ✎ Two units now write the same `✎` record
-- ⬜ A3.1 · Not started. `cli/agree.py` shipped at 0.6.0 for exactly this shape and has never been pointed at the pair.
+- ⬜ A3.1 · The two producers of a `✎` record are checked against each other.
+  **Done when:** `cli/agree.py` has been pointed at the pair and its result is recorded here.
+  **Now:** Not started. `cli/agree.py` shipped at 0.6.0 for exactly this shape and has never been pointed at the pair.
+
 
 ### A4 · 📋 The roster's scope beyond `skills/board/`, widened but not settled
-- 🧠 A4.1 · Waiting on JL, in Decision Now above.
+- 🧠 A4.1 · The new scope line is stated, not just crossed.
+  **Done when:** A written rule says which units outside `skills/board/` belong on this board, and `QC3a`'s 260727 ruling is updated or superseded to match.
+  **Now:** Waiting on JL, in Decision Now above.
+
 
 ### P · Page-level
-- ✅ P1 · Met. The unit ships at 0.6.1 after 7 releases and is healthy in the ordinary sense: two deterministic code verbs, its contracts collected in one place, and tests. The `🟡` is about position, not quality.
+- ✅ P1 · The page describes the unit by what it produces, so it stays in the sentence chapter.
+  **Done when:** Every division traces to the `✎` record or to the unit's placement, and none of it reads as a changelog.
+  **Now:** Met. The unit ships at 0.6.1 after 7 releases and is healthy in the ordinary sense: two deterministic code verbs, its contracts collected in one place, and tests. The `🟡` is about position, not quality.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -273,3 +268,5 @@ What is unstated is the general rule, and a scope with one member and no rule ad
 260802 2100 · Corrected one claim after `haipipe-sentence` reached 0.3.0: this page said that skill owns what a `✎` line IS while this one owns when it gets written, and its new `edit` verb now writes one too. Two producers of one record is a new Aim, and `cli/agree.py` is the obvious instrument since it already compares two statements of one fact
 260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-page-for-skill` 0.1.0. It is the first skill page for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`
 260802 2000 · page generated from `writing/haipipe-writing/` by `skillpage.py new`
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

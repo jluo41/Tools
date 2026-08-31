@@ -48,15 +48,6 @@ Substantive work still follows `sync`: update the owning page in the same round,
 - [x] ✂️ Keep the visible attachment concise
       The complete direct-session block is exactly three Markdown lines; on a terminal the link is embedded in the board-page name on line 1, a piped or chat reply shows the short `/b/` deep link in parentheses after the label, and repeated labels, page title, source file, and separators are omitted.
 
-## States
-JL ruled that attachment must be visible in every reply, including when the session is working on a page, a page group, or sourcing for one of them.
-`status.py` now renders the strip from Board files, and both SKILL.md and the launcher prime require it.
-A fresh agent given only the skill, Board path, and QD6 attachment correctly derived the QD queue, QD6 focus, live mode, deep link, and owning file, then placed the strip last.
-JL then rejected the ten-line presentation as too long.
-The same information contract now renders in three lines; on a terminal the deep link hides behind the compact Board and queue/focus label as an OSC 8 hyperlink, and a piped or chat reply shows the deep link in parentheses after the label, kept short by `QE2`'s `/b/<board>/<page>` route (JL 260802, later the same day than this page's Law paragraph on the link form).
-A second fresh agent read only the skill, Board, and QD6, invoked `status.py` rather than composing the tail manually, and received exactly three lines.
-All five items are complete and the ruling is settled.
-
 ## Files
 ### Engines
 - `status.py`
@@ -92,6 +83,16 @@ No shared status file is written: durable decisions, comments, and logs continue
 > JL: Add a status strip so everyone can see which Board and queue the session is working on, whether the focus is a page, a page group, or sourcing.
 > JL: The first status strip is too long; make it concise, preferably only a few lines.
 
+
+### From the retired States section (merged 260831)
+JL ruled that attachment must be visible in every reply, including when the session is working on a page, a page group, or sourcing for one of them.
+`status.py` now renders the strip from Board files, and both SKILL.md and the launcher prime require it.
+A fresh agent given only the skill, Board path, and QD6 attachment correctly derived the QD queue, QD6 focus, live mode, deep link, and owning file, then placed the strip last.
+JL then rejected the ten-line presentation as too long.
+The same information contract now renders in three lines; on a terminal the deep link hides behind the compact Board and queue/focus label as an OSC 8 hyperlink, and a piped or chat reply shows the deep link in parentheses after the label, kept short by `QE2`'s `/b/<board>/<page>` route (JL 260802, later the same day than this page's Law paragraph on the link form).
+A second fresh agent read only the skill, Board, and QD6, invoked `status.py` rather than composing the tail manually, and received exactly three lines.
+All five items are complete and the ruling is settled.
+
 ## Log
 - 260806 2144 · [REVISE-CC] swept to the 260806 architecture; dead activity-dashboard pointer QC2 §8 corrected to QB2 §8, and the chat-surface link form updated from hidden-behind-label to the shown short `/b/` deep link in parentheses (status.py + SKILL.md are the ground truth; the Law paragraph froze earlier the same day)
 260802 · JL asked which Q owns the strip and whether it belongs in the QA series. Kept here: this page's substance is session state (attachment resolution, queue derivation, the mode and status vocabulary), which is QD's one responsibility, while QA holds what the Board system IS before any of it is built. What was actually missing is the boundary, so Covered elsewhere now points at `QA3 §5` for every part of the reply above these three lines.
@@ -103,3 +104,5 @@ No shared status file is written: durable decisions, comments, and logs continue
 260726 · Fresh-context agent derived QD/QD6 correctly, placed the strip last, and closed the final acceptance item
 260726 · Added the deterministic renderer and bound the same closing-block contract in SKILL.md and serve.py
 260726 · Opened from JL's request to make Board attachment visible rather than merely agent-aware
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

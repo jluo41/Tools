@@ -79,195 +79,6 @@ Two front ends writing one `.jsonl` file split the history in two.
 So the switch hands the question over instead of opening a second window, and the chat panel's own `>_` control underneath still does the work.
 
 ## Aims
-### 🔁 Coming back to a parked terminal
-- A4.1 · A reader who reloads the page gets the SAME terminal back, with what was on it.
-  **Done when:** after a full reload the pane shows the parked session with its saved text drawn again, not an empty terminal.
-- A4.2 · The terminal always fits the pane it sits in, at any width.
-  **Done when:** dragging the split handle changes how many columns the terminal has, and no width leaves a sideways scrollbar.
-
-### ⌨ The way in, and the session it opens
-- [x] A ⌨ button on every Q card
-      The ⌨ sits in the chat panel header, and clicking it turns the whole panel into this question's real terminal.
-- [x] Clicking it opens **this question's own** session
-      If the question already has a session, serve.py runs `--resume`. If it has none, serve.py makes a uuid, writes it into the header, and passes it to `--session-id`.
-      Never an empty terminal, and never a second stray session.
-
-### 🧭 The route, proven live
-- [x] Route chosen
-      **Not myrlin, and not a hand-built node-pty: ttyd plus a serve.py reverse proxy.** The reasons are further down this page.
-- [x] Tested end to end, and it works
-      The WebSocket connected through the 5599 proxy, and the screen showed this question's real session, a0c6698a, with its earlier history intact.
-      Sent "reply only BOARDLIVE" and the reply came back at once.
-      Not "should work", tested.
-
-### 🔌 Many terminals through one port
-- [x] Several questions open at the same time
-      Open more board tabs, one question per tab. No "pop out" button is needed.
-      Two ttyds were seen running side by side.
-- [x] Ports became unix sockets, so boards never collide
-      No more racing for a TCP port. Each question gets one unix socket, and its key is a hash of the path, so it is unique everywhere.
-      Checked: a QD3 on two different boards gets two different keys (cc6638… and 3d798…), with no interference.
-- [x] Processes clean themselves up, and leave no orphans
-      At startup serve.py sweeps TERM_DIR and kills what the last round left behind, which is safer than waiting for exit signals.
-      On exit it tries again, `/_board/killall` closes everything, and closing the board page sends a `pagehide` beacon that releases the terminal.
-      Checked: planted a stale ttyd → started serve.py → the stale one was killed and its socket removed.
-- [ ] 🔑 Finish the (page, session) re-key: four lookups still use the page-only key
-      On 260801 terminals were re-keyed by (page, session), so that opening one stops killing another.
-      `terminal()` now files a terminal under `term_key(f, sid)` at `live/term.py:581`.
-      Four lookups were never moved. They still ask for `term_key(f)`, and that can never match an entry whose key holds a session.
-      They are `hold()` at 398 and 408, `park()` at 503, and `kill_term()` at 789. The line numbers were re-checked against live/term.py on 260806, and all four are still page-only.
-      `term_probe()` is fine, because it looks up by FILE through `terms_for(f)`. That gap is the tell: the page can SEE the terminal but cannot ACT on it.
-      What goes wrong, worst first. `hold()` finds no terminal, treats the terminal's claim as void, and drops the HOLD.
-      The chat panel then opens an SDK session on the SAME `.jsonl` file a live PTY is writing, which breaks QD1's Law and loses the past messages.
-      `park()` returns `parked:false` and quietly does neither. `kill_term()` can never close a terminal.
-      The numbers prove it, so no argument is needed.
-      The live QB4 terminal is filed as `47d8ca068ee1`, while `sha1(path)[:12]` for that same page is `f891ba932470`, so the lookups miss every time.
-      Seen directly too: `/_board/release` returned `{"closed": false}` for a terminal that `/_board/terms` was listing as alive.
-      The fix is to look up by file (`terms_for(f)`) instead of by page key.
-      `park` and `kill_term` also need a ruling on WHICH terminal they mean, now that one page can hold several.
-- [x] The terminal works through the console too (260724)
-      `boards_api.py` passes on `POST /_board/term|release`, and the real pipe, `WS /_term/{key}/ws`, message by message with the 'tty' subprotocol kept.
-      It also passes on `GET /_board/asset/*` for the copy of xterm.js we ship.
-      Tested end to end through port 8093. The terminal started and reused QD3's own session id, ttyd's stream arrived, and release cleaned up.
-      The first frames carried the title op and the `claude --append-system-prompt` opening line.
-      The chain is: browser xterm ⇄ console ⇄ serve.py ⇄ ttyd ⇄ claude.
-
-### 🪄 The smooth pane (moved in from QD3m, 260801)
-- [ ] Draw the session as web chat next to the raw pane
-      The plan on record, taken from QD3m's Decision Now proposals under JL's 260731 no-decisions rule. Say the word and any of it can be reversed.
-      Route **D**: serve.py holds the stream-json process, which is `QD2` M1's session host, and this pane draws its events.
-      There is no file to tail, and no start-up cost per message.
-      The raw TTY stays one click away for good, which is standing choice **A**, because permission dialogs and pickers only appear on the PTY screen.
-      The two questions about where things live were settled by shipping them, as a sidecar list and a fig/ folder.
-      The picker's whole-repo expander waits until someone asks for it.
-      `QD2` M1 landed on 260731 as the session host in `live/chat.py`, so nothing blocks this now.
-      Drawing the pane is the work that is left, and the full study of the routes is in the archive.
-- [ ] The fallback seam
-      Spot the moment the session is waiting on the TUI, show the ⌨ toggle, and take the screen back after.
-      The seam is the real work, not the drawing.
-
-### 🚧 Smoothness and the security line
-- [ ] Make it smooth (JL 260724): ① to ⑤ built, ⑥ still open, and a live drop test still owed
-      ① reconnect on its own, waiting longer each time. BUILT: the WebSocket rebuilds after a drop, waiting 1s, 2s, and so on up to 15s, six tries.
-      The terminal object stays alive, so the scrollback stays too, and the resize after login makes claude paint the screen again.
-      It has not yet been tried against a real drop in the middle of a session.
-      ② keepalive. BUILT: a resize message of the same size every 30s stops idle relays and proxies from closing the pipe.
-      ③ fit when the chat panel is resized. BUILT: a size watcher on the terminal host waits 150ms, fits, then sends a resize message.
-      ④ warm up on hover. BUILT, for the files only: pointing at ⌨ pulls the 480KB xterm.js early, so the click feels instant.
-      The PTY is on purpose NOT started early, because `POST /_board/term` takes the HOLD, and a hover that never becomes a click would lock the question. See the HOLD lesson below.
-      ⑤ release after a grace period. BUILT in 0.71.0: closing the tab PARKS the PTY for 600s instead of killing it.
-      Reattaching to the same pid draws the saved text again, and this is re-proven on every `checks/run.py --full`.
-      ⑥ optional: ship the xterm WebGL addon, for drawing a big scrollback.
-      Open.
-- [ ] 📱 Moved to `QD4` on 260801: the phone is a FORM question, not an engine one
-      This item looked like one focus bug. JL's 260801 phone session showed four separate failures with the same shape.
-      Keystrokes doubled, frames came out shredded, the keyboard would not open, and the chat panel froze after switching away.
-      None of them is fixed by adjusting the grid.
-      `QD4` now owns it, along with the first focus finding: `focus()` runs only after the terminal has finished starting, and iPhone Safari need not count that as the user's tap.
-- [ ] The security line written down in plain words
-      "Written down" means: who may connect, what they may touch, and how login works, all stated and fixed, with nothing left vague in someone's head.
-      The guards did get stronger. ttyd listens only on unix socket files, with no TCP port at all, it is reachable only through the 5599 proxy, and keys must be registered 12-hex values.
-      One thing is still open: ttyd itself checks no login, so whoever reaches 5599 can use it.
-      Login must come first, before this is opened to the outside.
-      The console relay widens the audience the day inlab is opened up (`QE1`), so login lands there first.
-
-## States
-### 🔁 Coming back to a parked terminal
-- ✅ A4.1 · CLOSED 260802, and it was never broken.
-  The terminal comes back after a full browser reload with the SAME key and its saved text drawn again.
-  That held four runs out of four (`1c87f5ece80e` → `1c87f5ece80e`, about 1,240 characters).
-  Two false alarms had to be cleared first, and both were mine.
-  I said it came back EMPTY. It does not.
-  The `echo` typed before the reload is missing because the CLI paints its screen again when it reconnects.
-  That is what a full-screen app does.
-  Then I said it was random, about half the runs. It is not.
-  The coin flip was `checks/tuichat.mjs` clicking `>_ TUI` every time without looking first.
-  The strip's two buttons are one switch with an OFF position, so clicking the lit one PUTS THE CHAT AWAY.
-  Whether it was already lit depended on what the previous run left in `board-split-chat`, so the suite was closing the pane it meant to open.
-  Now it is checked, not just reported.
-
-Built, and it lives in the page.
-The ⌨ in the chat panel header opens the terminal, and clicking again (💬) hands the session back.
-
-- 260801 JL · 🩹 The mangled screen was the saved text, drawn at the last viewer's width
-  JL: "整个页面都是乱的，我不知道为什么会非常非常乱."
-  A new client is sent the whole saved buffer the moment it attaches, and only AFTER that does it say how wide it is.
-  So bytes drawn for the last viewer's size land in this viewer's grid, and every cursor move to a fixed spot is off.
-  Setting the right size does not repair it.
-  A full-screen app only paints again on a CHANGE, and the size it is handed is usually the size it already has, so the mess stays until something else forces a redraw.
-  On attach the width is now nudged by one column and back on the first size message, and that is a real change either way.
-  So the app paints its whole screen at the size this browser really has.
-  Checked the hard way: attach at 54 columns, shrink the window, reload so the replay is certainly at the wrong width, then read the screen back.
-  It came back an 87x29 grid against an 87x29 PTY, with no escape leftovers, no over-wide lines, and a clean screenshot.
-  Two earlier fixes belong to the same symptom and do not explain it on their own.
-  The tab strip took rows above the pane after the fit had run, and a size watcher now refits on any pane change.
-
-- 260801 JL · 🧭 One place to pick a session, not two
-  JL: "你为什么不把这个 session 放到那个 session 的选择那里去?"
-  The tab strip added a second place to pick a session when the picker already did that job, and it was also what took rows from the pane, so it is gone.
-  The session picker now owns the job.
-  A session with a live terminal is marked `⌨` and reads `terminal running` or `terminal parked`.
-  Clicking one attaches that terminal at once instead of promising to next time, and `＋ New session` starts another right away.
-  Since this round the server keys terminals by (page, session), so attaching one no longer kills the other.
-  The old key was per page, and that is why switching used to end the terminal you were in.
-
-- 260801 JL · 🎨 The TUI was black and white because it took `NO_COLOR` from its parent
-  JL: "why the TUI is black and white? not colored?"
-  The spawn already forced `TERM=xterm-256color` and `COLORTERM=truecolor`, so the terminal claimed full colour while drawing none.
-  That made it look like an xterm theme problem rather than an environment one.
-  `serve.py` is usually restarted from a tmux or agent shell that sets `NO_COLOR=1`.
-  `NO_COLOR` is the standard way to turn colour off, and every colour library obeys it, Claude Code included.
-  It beats `TERM`, and it was passed straight down into the PTY.
-  The spawn now drops `NO_COLOR` and sets `FORCE_COLOR=3`, in the same block that already strips the `CLAUDE_CODE_*` child-session marks, and for the same reason.
-  The parent's choice is about the parent's own output, and this PTY is a browser window.
-  Checked by tapping the terminal WebSocket and scanning the incoming bytes for colour SGR codes, with the server started under `NO_COLOR=1` on purpose so only the code fix was on trial.
-  It found 43 colour codes, including Claude's own `38;2;255;153;0` orange.
-
-- 260801 JL · ⌨⌨ One keystroke typed two letters, because input was tied to the SOCKET
-  JL: "why for the CLI, I enter the one letter, it will type two letters?" with `what happened?` arriving as `wwhhaatt hhaappppeenneedd??`.
-  `connectWS()` added `termT.onData(...)` every time it ran, and it runs again on every reconnect while the xterm object stays alive.
-  So one dropped connection left two live listeners on one terminal, and every keystroke was sent twice.
-  A second drop would have made it three, so the doubling showed up only after the terminal had been open a while.
-  The listeners can be thrown away, so the old pair is now dropped before the next pair is added.
-  They send through the CURRENT socket instead of the one they were born with, and closing the terminal drops them too.
-  Checked by tapping `WebSocket` before the page scripts ran, forcing one reconnect, and counting sends per keypress: sockets went from 1 to 2, and sends stayed at 1.
-
-- 260801 JL · ⌨ The same fix, done properly, after JL reported it still broken
-  The first try above was checked on ONE path and shipped as if it worked everywhere, which it did not.
-  Two faults survived it, and both were the browser guessing at something only the server knows.
-  The save hook watched the classes on `#chat`, but opening the terminal sets `termon` on `<body>` and touches nothing on `#chat`.
-  So opening the TUI never recorded itself, and the flag was only there when `pagehide` happened to run.
-  The alive check compared file names from `/_board/terms`, but a group or board terminal is filed under a FOLDER such as `QD-working`, while the chat panel's `cq.file` is `board.md`.
-  At those two levels it always decided no terminal existed.
-  The server now answers both. `POST /_board/term-probe` finds the target with the same `term_key` the list uses.
-  A parked terminal counts as present, because parking is exactly what a reload does.
-  Checked on all four paths this time: page, group, board, and a real browser refresh instead of a scripted `location.reload()`.
-
-- 260801 JL · ⌨ The view now survives a reload, because the process always did
-  JL: "when I use TUI and when I come back it became the GUI again, in truth the TUI is running, why it is not kept?"
-  The PTY was never the problem.
-  A reload sends `park:true`, which keeps the process and its pump alive and only drops the WebSocket, so the terminal was still there every time.
-  What was lost was the chat panel's VIEW.
-  It is rebuilt on every load, and it was always rebuilt as the chat box, so the page showed the SDK chat while the TUI chat was the one holding the session.
-  The panel now records which half it was showing, and on reload it reattaches to a terminal that `/_board/terms` still lists.
-  It never starts one, so a reload cannot start a process nobody asked for.
-  Reproduced first, then checked.
-  Before the fix a reload came back with `termOn:false` and no xterm while the PTY was alive, and after it the same reload comes back with the terminal in place.
-  One trap worth writing down: `/_board/terms` is a POST, and calling it as a GET returned 404 into a swallowed catch, which quietly made the reattach decide no terminal existed.
-
-- 260801 JL · 🏷 Renamed and re-cut around what is still open
-  JL: "We can call it SDK chat version, and TUI chat version" and "could you rethink about the Q in QD?"
-  The Opening used to ask whether a real terminal per page could exist at all. It can.
-  It now asks what the board owes a process that it wraps but does not draw, which is the join that failed on 260731.
-  Nothing in `QF4` tests this version yet, and that gap is why its state stays 🟡.
-
-- 260801 CC · 📱 Phone input looked at and written down, with nothing changed yet
-  Chat gets a real textarea and its own phone layout. The raw TUI gets neither.
-  `termOpen()` waits for `POST /_board/term` and for xterm to load before `termT.focus()` runs, so focus lands after the touch that started it.
-  That is a known iOS keyboard rule, not proof that the PTY or the WebSocket lost the typed bytes.
-  The next change should ask the reader for one clear tap on the live terminal to take focus, and should tie xterm's fit to the visible part of the screen.
-  It needs a check on a real phone before anyone calls it fixed.
-
 ### Decision Now
 Only JL can make these calls, and CC ticks nothing here.
 
@@ -360,6 +171,112 @@ Only JL can make these calls, and CC ticks nothing here.
 - Auto-release when a tab closes: the chat panel's own terminal is cleaned up, and the rest fall back
       Closing a whole board page cleans up the chat panel's open terminal, through the `pagehide` beacon.
       To sweep everything at once, call `/_board/killall`, or restart serve.py, since startup clears leftovers.
+
+
+### 🔁 Coming back to a parked terminal
+- ✅ A4.1 · A reader who reloads the page gets the SAME terminal back, with what was on it.
+  **Done when:** after a full reload the pane shows the parked session with its saved text drawn again, not an empty terminal.
+  **Now:** CLOSED 260802, and it was never broken.
+  The terminal comes back after a full browser reload with the SAME key and its saved text drawn again.
+  That held four runs out of four (`1c87f5ece80e` → `1c87f5ece80e`, about 1,240 characters).
+  Two false alarms had to be cleared first, and both were mine.
+  I said it came back EMPTY. It does not.
+  The `echo` typed before the reload is missing because the CLI paints its screen again when it reconnects.
+  That is what a full-screen app does.
+  Then I said it was random, about half the runs. It is not.
+  The coin flip was `checks/tuichat.mjs` clicking `>_ TUI` every time without looking first.
+  The strip's two buttons are one switch with an OFF position, so clicking the lit one PUTS THE CHAT AWAY.
+  Whether it was already lit depended on what the previous run left in `board-split-chat`, so the suite was closing the pane it meant to open.
+  Now it is checked, not just reported.
+
+- A4.2 · The terminal always fits the pane it sits in, at any width.
+  **Done when:** dragging the split handle changes how many columns the terminal has, and no width leaves a sideways scrollbar.
+
+### ⌨ The way in, and the session it opens
+- [x] A ⌨ button on every Q card
+      The ⌨ sits in the chat panel header, and clicking it turns the whole panel into this question's real terminal.
+- [x] Clicking it opens **this question's own** session
+      If the question already has a session, serve.py runs `--resume`. If it has none, serve.py makes a uuid, writes it into the header, and passes it to `--session-id`.
+      Never an empty terminal, and never a second stray session.
+
+### 🧭 The route, proven live
+- [x] Route chosen
+      **Not myrlin, and not a hand-built node-pty: ttyd plus a serve.py reverse proxy.** The reasons are further down this page.
+- [x] Tested end to end, and it works
+      The WebSocket connected through the 5599 proxy, and the screen showed this question's real session, a0c6698a, with its earlier history intact.
+      Sent "reply only BOARDLIVE" and the reply came back at once.
+      Not "should work", tested.
+
+### 🔌 Many terminals through one port
+- [x] Several questions open at the same time
+      Open more board tabs, one question per tab. No "pop out" button is needed.
+      Two ttyds were seen running side by side.
+- [x] Ports became unix sockets, so boards never collide
+      No more racing for a TCP port. Each question gets one unix socket, and its key is a hash of the path, so it is unique everywhere.
+      Checked: a QD3 on two different boards gets two different keys (cc6638… and 3d798…), with no interference.
+- [x] Processes clean themselves up, and leave no orphans
+      At startup serve.py sweeps TERM_DIR and kills what the last round left behind, which is safer than waiting for exit signals.
+      On exit it tries again, `/_board/killall` closes everything, and closing the board page sends a `pagehide` beacon that releases the terminal.
+      Checked: planted a stale ttyd → started serve.py → the stale one was killed and its socket removed.
+- [ ] 🔑 Finish the (page, session) re-key: four lookups still use the page-only key
+      On 260801 terminals were re-keyed by (page, session), so that opening one stops killing another.
+      `terminal()` now files a terminal under `term_key(f, sid)` at `live/term.py:581`.
+      Four lookups were never moved. They still ask for `term_key(f)`, and that can never match an entry whose key holds a session.
+      They are `hold()` at 398 and 408, `park()` at 503, and `kill_term()` at 789. The line numbers were re-checked against live/term.py on 260806, and all four are still page-only.
+      `term_probe()` is fine, because it looks up by FILE through `terms_for(f)`. That gap is the tell: the page can SEE the terminal but cannot ACT on it.
+      What goes wrong, worst first. `hold()` finds no terminal, treats the terminal's claim as void, and drops the HOLD.
+      The chat panel then opens an SDK session on the SAME `.jsonl` file a live PTY is writing, which breaks QD1's Law and loses the past messages.
+      `park()` returns `parked:false` and quietly does neither. `kill_term()` can never close a terminal.
+      The numbers prove it, so no argument is needed.
+      The live QB4 terminal is filed as `47d8ca068ee1`, while `sha1(path)[:12]` for that same page is `f891ba932470`, so the lookups miss every time.
+      Seen directly too: `/_board/release` returned `{"closed": false}` for a terminal that `/_board/terms` was listing as alive.
+      The fix is to look up by file (`terms_for(f)`) instead of by page key.
+      `park` and `kill_term` also need a ruling on WHICH terminal they mean, now that one page can hold several.
+- [x] The terminal works through the console too (260724)
+      `boards_api.py` passes on `POST /_board/term|release`, and the real pipe, `WS /_term/{key}/ws`, message by message with the 'tty' subprotocol kept.
+      It also passes on `GET /_board/asset/*` for the copy of xterm.js we ship.
+      Tested end to end through port 8093. The terminal started and reused QD3's own session id, ttyd's stream arrived, and release cleaned up.
+      The first frames carried the title op and the `claude --append-system-prompt` opening line.
+      The chain is: browser xterm ⇄ console ⇄ serve.py ⇄ ttyd ⇄ claude.
+
+### 🪄 The smooth pane (moved in from QD3m, 260801)
+- [ ] Draw the session as web chat next to the raw pane
+      The plan on record, taken from QD3m's Decision Now proposals under JL's 260731 no-decisions rule. Say the word and any of it can be reversed.
+      Route **D**: serve.py holds the stream-json process, which is `QD2` M1's session host, and this pane draws its events.
+      There is no file to tail, and no start-up cost per message.
+      The raw TTY stays one click away for good, which is standing choice **A**, because permission dialogs and pickers only appear on the PTY screen.
+      The two questions about where things live were settled by shipping them, as a sidecar list and a fig/ folder.
+      The picker's whole-repo expander waits until someone asks for it.
+      `QD2` M1 landed on 260731 as the session host in `live/chat.py`, so nothing blocks this now.
+      Drawing the pane is the work that is left, and the full study of the routes is in the archive.
+- [ ] The fallback seam
+      Spot the moment the session is waiting on the TUI, show the ⌨ toggle, and take the screen back after.
+      The seam is the real work, not the drawing.
+
+### 🚧 Smoothness and the security line
+- [ ] Make it smooth (JL 260724): ① to ⑤ built, ⑥ still open, and a live drop test still owed
+      ① reconnect on its own, waiting longer each time. BUILT: the WebSocket rebuilds after a drop, waiting 1s, 2s, and so on up to 15s, six tries.
+      The terminal object stays alive, so the scrollback stays too, and the resize after login makes claude paint the screen again.
+      It has not yet been tried against a real drop in the middle of a session.
+      ② keepalive. BUILT: a resize message of the same size every 30s stops idle relays and proxies from closing the pipe.
+      ③ fit when the chat panel is resized. BUILT: a size watcher on the terminal host waits 150ms, fits, then sends a resize message.
+      ④ warm up on hover. BUILT, for the files only: pointing at ⌨ pulls the 480KB xterm.js early, so the click feels instant.
+      The PTY is on purpose NOT started early, because `POST /_board/term` takes the HOLD, and a hover that never becomes a click would lock the question. See the HOLD lesson below.
+      ⑤ release after a grace period. BUILT in 0.71.0: closing the tab PARKS the PTY for 600s instead of killing it.
+      Reattaching to the same pid draws the saved text again, and this is re-proven on every `checks/run.py --full`.
+      ⑥ optional: ship the xterm WebGL addon, for drawing a big scrollback.
+      Open.
+- [ ] 📱 Moved to `QD4` on 260801: the phone is a FORM question, not an engine one
+      This item looked like one focus bug. JL's 260801 phone session showed four separate failures with the same shape.
+      Keystrokes doubled, frames came out shredded, the keyboard would not open, and the chat panel froze after switching away.
+      None of them is fixed by adjusting the grid.
+      `QD4` now owns it, along with the first focus finding: `focus()` runs only after the terminal has finished starting, and iPhone Safari need not count that as the user's tap.
+- [ ] The security line written down in plain words
+      "Written down" means: who may connect, what they may touch, and how login works, all stated and fixed, with nothing left vague in someone's head.
+      The guards did get stronger. ttyd listens only on unix socket files, with no TCP port at all, it is reachable only through the 5599 proxy, and keys must be registered 12-hex values.
+      One thing is still open: ttyd itself checks no login, so whoever reaches 5599 can use it.
+      Login must come first, before this is opened to the outside.
+      The console relay widens the audience the day inlab is opened up (`QE1`), so login lands there first.
 
 ## Files
 - `live/term.py`
@@ -461,6 +378,90 @@ It is fine to use as a tool on its own. The rules bite when you copy it into som
 > JL: I don't know whether the myrlin package could help you, github.com/therealarthur/myrlin-workbook
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
+
+### From the retired States section (merged 260831)
+### 🔁 Coming back to a parked terminal
+Built, and it lives in the page.
+The ⌨ in the chat panel header opens the terminal, and clicking again (💬) hands the session back.
+- 260801 JL · 🩹 The mangled screen was the saved text, drawn at the last viewer's width
+  JL: "整个页面都是乱的，我不知道为什么会非常非常乱."
+  A new client is sent the whole saved buffer the moment it attaches, and only AFTER that does it say how wide it is.
+  So bytes drawn for the last viewer's size land in this viewer's grid, and every cursor move to a fixed spot is off.
+  Setting the right size does not repair it.
+  A full-screen app only paints again on a CHANGE, and the size it is handed is usually the size it already has, so the mess stays until something else forces a redraw.
+  On attach the width is now nudged by one column and back on the first size message, and that is a real change either way.
+  So the app paints its whole screen at the size this browser really has.
+  Checked the hard way: attach at 54 columns, shrink the window, reload so the replay is certainly at the wrong width, then read the screen back.
+  It came back an 87x29 grid against an 87x29 PTY, with no escape leftovers, no over-wide lines, and a clean screenshot.
+  Two earlier fixes belong to the same symptom and do not explain it on their own.
+  The tab strip took rows above the pane after the fit had run, and a size watcher now refits on any pane change.
+
+- 260801 JL · 🧭 One place to pick a session, not two
+  JL: "你为什么不把这个 session 放到那个 session 的选择那里去?"
+  The tab strip added a second place to pick a session when the picker already did that job, and it was also what took rows from the pane, so it is gone.
+  The session picker now owns the job.
+  A session with a live terminal is marked `⌨` and reads `terminal running` or `terminal parked`.
+  Clicking one attaches that terminal at once instead of promising to next time, and `＋ New session` starts another right away.
+  Since this round the server keys terminals by (page, session), so attaching one no longer kills the other.
+  The old key was per page, and that is why switching used to end the terminal you were in.
+
+- 260801 JL · 🎨 The TUI was black and white because it took `NO_COLOR` from its parent
+  JL: "why the TUI is black and white? not colored?"
+  The spawn already forced `TERM=xterm-256color` and `COLORTERM=truecolor`, so the terminal claimed full colour while drawing none.
+  That made it look like an xterm theme problem rather than an environment one.
+  `serve.py` is usually restarted from a tmux or agent shell that sets `NO_COLOR=1`.
+  `NO_COLOR` is the standard way to turn colour off, and every colour library obeys it, Claude Code included.
+  It beats `TERM`, and it was passed straight down into the PTY.
+  The spawn now drops `NO_COLOR` and sets `FORCE_COLOR=3`, in the same block that already strips the `CLAUDE_CODE_*` child-session marks, and for the same reason.
+  The parent's choice is about the parent's own output, and this PTY is a browser window.
+  Checked by tapping the terminal WebSocket and scanning the incoming bytes for colour SGR codes, with the server started under `NO_COLOR=1` on purpose so only the code fix was on trial.
+  It found 43 colour codes, including Claude's own `38;2;255;153;0` orange.
+
+- 260801 JL · ⌨⌨ One keystroke typed two letters, because input was tied to the SOCKET
+  JL: "why for the CLI, I enter the one letter, it will type two letters?" with `what happened?` arriving as `wwhhaatt hhaappppeenneedd??`.
+  `connectWS()` added `termT.onData(...)` every time it ran, and it runs again on every reconnect while the xterm object stays alive.
+  So one dropped connection left two live listeners on one terminal, and every keystroke was sent twice.
+  A second drop would have made it three, so the doubling showed up only after the terminal had been open a while.
+  The listeners can be thrown away, so the old pair is now dropped before the next pair is added.
+  They send through the CURRENT socket instead of the one they were born with, and closing the terminal drops them too.
+  Checked by tapping `WebSocket` before the page scripts ran, forcing one reconnect, and counting sends per keypress: sockets went from 1 to 2, and sends stayed at 1.
+
+- 260801 JL · ⌨ The same fix, done properly, after JL reported it still broken
+  The first try above was checked on ONE path and shipped as if it worked everywhere, which it did not.
+  Two faults survived it, and both were the browser guessing at something only the server knows.
+  The save hook watched the classes on `#chat`, but opening the terminal sets `termon` on `<body>` and touches nothing on `#chat`.
+  So opening the TUI never recorded itself, and the flag was only there when `pagehide` happened to run.
+  The alive check compared file names from `/_board/terms`, but a group or board terminal is filed under a FOLDER such as `QD-working`, while the chat panel's `cq.file` is `board.md`.
+  At those two levels it always decided no terminal existed.
+  The server now answers both. `POST /_board/term-probe` finds the target with the same `term_key` the list uses.
+  A parked terminal counts as present, because parking is exactly what a reload does.
+  Checked on all four paths this time: page, group, board, and a real browser refresh instead of a scripted `location.reload()`.
+
+- 260801 JL · ⌨ The view now survives a reload, because the process always did
+  JL: "when I use TUI and when I come back it became the GUI again, in truth the TUI is running, why it is not kept?"
+  The PTY was never the problem.
+  A reload sends `park:true`, which keeps the process and its pump alive and only drops the WebSocket, so the terminal was still there every time.
+  What was lost was the chat panel's VIEW.
+  It is rebuilt on every load, and it was always rebuilt as the chat box, so the page showed the SDK chat while the TUI chat was the one holding the session.
+  The panel now records which half it was showing, and on reload it reattaches to a terminal that `/_board/terms` still lists.
+  It never starts one, so a reload cannot start a process nobody asked for.
+  Reproduced first, then checked.
+  Before the fix a reload came back with `termOn:false` and no xterm while the PTY was alive, and after it the same reload comes back with the terminal in place.
+  One trap worth writing down: `/_board/terms` is a POST, and calling it as a GET returned 404 into a swallowed catch, which quietly made the reattach decide no terminal existed.
+
+- 260801 JL · 🏷 Renamed and re-cut around what is still open
+  JL: "We can call it SDK chat version, and TUI chat version" and "could you rethink about the Q in QD?"
+  The Opening used to ask whether a real terminal per page could exist at all. It can.
+  It now asks what the board owes a process that it wraps but does not draw, which is the join that failed on 260731.
+  Nothing in `QF4` tests this version yet, and that gap is why its state stays 🟡.
+
+- 260801 CC · 📱 Phone input looked at and written down, with nothing changed yet
+  Chat gets a real textarea and its own phone layout. The raw TUI gets neither.
+  `termOpen()` waits for `POST /_board/term` and for xterm to load before `termT.focus()` runs, so focus lands after the touch that started it.
+  That is a known iOS keyboard rule, not proof that the PTY or the WebSocket lost the typed bytes.
+  The next change should ask the reader for one clear tap on the live terminal to take focus, and should tie xterm's fit to the visible part of the screen.
+  It needs a check on a real phone before anyone calls it fixed.
+
 ## Log
 - 📖 260816 · [REVISE-CC, JL ruled] the page was rewritten in plain words, for a reader with ADHD whose English is a second language (JL: "我真的读不下去"). The 🧭 Outline tab had been showing this page's own sentences back, and they were unreadable, so the tab was right and the prose was not. Every division title now names its consequence instead of a mechanism, each one gained a `📌` line saying in one sentence what the part settles, and every aim, `Done when:` and State row was replaced with a short plain-word version. House words went with them, `division` to part, `store` to list, `render` to read or draw, `seed` to suggest, `mint` to build. Measured with `haipipe-writing`'s `cli/score.py`: 81 sentences flagged before, 20 after, every one that remains inside this Log, which is history and was not touched. No fact, id, `§` mark or section changed; only the words.
 - 260806 2143 · [REVISE-CC] swept to the 260806 architecture; head method, Diagram, Files and Glossary now name serve.py's own-PTY engine (ttyd = --ttyd fallback), ⑤ grace release marked BUILT (0.71.0), the QD2-M1 blocker on the smooth pane cleared (M1 landed 260731), and the 🔑 re-key line numbers refreshed against live/term.py (581/503/789; all four lookups verified still page-only)
@@ -508,3 +509,5 @@ It is fine to use as a tool on its own. The rules bite when you copy it into som
 260723 1445 · Split out of QD1 as its own question (JL: chat / terminal / sdk, one each)
 260723 1440 · Read myrlin-workbook's source: the discovery path matches ours, but not used in the end, too heavy
 260723 1355 · Confirmed a question-level session is a real Claude Code session; terminal and drawer are two front ends of one session
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

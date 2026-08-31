@@ -1,3 +1,253 @@
+## 0.20.0 — 2026-08-31
+
+Rewritten to one lane, "the folder and the tab": 846 → 194 lines, present
+tense. The grammars a writer or parser needs are now FILES a phase loads
+instead of paragraphs inside this skill:
+- **`ref/plan-grammar.md`** (new): ONE plan grammar, with the Page Type as the
+  switch (a Section page's bullet is a sentence slot `S<n> · …`, any other
+  page's bullet is a point); heads 4 to 11 plain words; a Note ≤ 30 words (a
+  wrapped source line is still one Note; the specimen's longest is 28); the
+  marks; the freeze; the teeth. The "terse Capitalized LABEL, ≤ 10 words"
+  head rule is DELETED: it coexisted with the approved shape in one section,
+  and 19 of 20 MISQ plans were written to it (`Trait relevance`).
+- **`ref/record-shape.md`** (new): the seven record kinds in one table (id,
+  labels, writer, teeth) with the per-kind rules, the board-wide `D<nn>`
+  allocation grep, and the three laws every kind keeps.
+- **`ref/specimen-section-plan.md`** (new): SM00 v3, frozen as the approved
+  example.
+- **Retired from this file**: every "was / until / ruled" narration (the
+  `## States` merge, the proof mark, the `✅ have it` mark, the 0.16.x thread
+  and version arguments, the Aims-in-plan window), the count words in
+  headings (`Seven chips`), and the documentation of legacy parses (the
+  renderer's tolerance for pre-0.18 shapes is engine behaviour, not law).
+- **From the SM01 field test**: `ref/plan-grammar.md` states one `## C<n>` per
+  Content division, `🎯 P<n>` beside `🎯 A<n>.<m>`, a `Cut:` bullet only where
+  something leaves (zero is normal), provenance (`Gordon #41`, `D05 b`) is not
+  attribution, and the coverage wording for a bare mark;
+  `ref/record-shape.md` states the `D<nn>` race under concurrent sessions
+  (grep right before the write, again after; the later writer renumbers).
+
+## 0.19.0 — 2026-08-31
+
+- **Aims back on the page; the plan keeps no Aim rows** (JL 260831, QPf12
+  row 2: "In the Page as well, and should map to the content"). §🗂 and the
+  plan-shape section say so; `live/outline.py plan_card` reads the page's
+  `## Aims` first and lets a plan row fill only an id the page lacks.
+- **Seventh kind, `<stem>-files.md`** (QPf12 row 3): the page's retired
+  `## Files` as `### F<n>` records with `Path` and `Role`, a
+  Related Board Page as `Role: related` with its row verbatim; 📎 Files chip
+  (`_SIBLINGS`, physician-space-21).
+
+## 0.18.3 — 2026-08-31
+
+- **The plan never quotes the prose it plans** (JL, on SM00 plan v3: "too
+  long, more like the sentences", then "I love this outline style" once the
+  heads were 4 to 11 words and every Note one line): §✂️ gains the approved
+  shape for a Section page, one bullet per sentence slot `S<n> · <what it
+  does>`, groups by move, findings tagged `C1:`/`C2:`/`C3:` plus a word, a
+  `Cut:` bullet for what leaves, terms defined inline the first time. A head
+  that names nothing ("the question, with its two conditions named once") is
+  the named failure.
+
+## 0.18.2 — 2026-08-31
+
+- **Paper-Personality-Opioid-MedJournal board carried into the record shape**
+  (JL: "apply it for … MedJournal as well"): its 12 pages were in the original
+  three-section shape (`## Aims` groups, `## States` with one ✅/🔨/🧠/⬜ row
+  per Aim, `## Log`, no Discussion). Each Aim's state row became the plan
+  row's tick and `**Now:** <emoji> <sentence>` (52 rows: 21 met, 31 open;
+  three page Aims the plans lacked were appended); Log rows became records;
+  every page keeps a `## Files` pointer and a `.pre-outline` backup; each
+  outline/ folder gained an empty discussion (`(no open question)`), the
+  requirement (venue-only, 0.18.1) and the evidence file. No thread ids were
+  minted on that board.
+- **JL's QPf12-outline rulings applied on both boards** (260831, rows 2 and 3):
+  Aims are BACK ON THE PAGE as their only home (row 2: "In the Page as well,
+  and should map to the content"): each page's `## Aims` rebuilt from the plan's
+  rows as `- ✅/⬜ A<g>.<n> · head` + `Done when:` + `Now:` under `### A<g> · …`
+  groups (group `A<n>` maps to Content division `<n>`); the latest plans keep no
+  Aim rows (`.pre-revert` beside each); the 76 carried work items on SM03–SM07
+  are dated log records, never Aims (0.16.1). `## Files` left every page for
+  `outline/<stem>-files.md` (row 3: "A"), one `### F<n> · <label>` per file with
+  `Path` and `Role` (reads · writes · checks · contract · archive · related);
+  the 🧭 tab gains the 📎 Files chip (`live/outline.py _SIBLINGS`). Engine
+  teeth and contract text for both rulings: the MISQ-Board session.
+- **The seven MISQ plans with bare Aim rows were assessed** (AM01–AM06, SM00:
+  52 Aims, 20 met, 32 open, each with a `Now:` fact); `aim-without-state`
+  reads 0 on the MISQ board.
+
+## 0.18.1 — 2026-08-31
+
+- **Requirement is venue-only, four records** (JL, reading SM00's 📏 tab:
+  "requirement is very hard to read, make it concise and readable, and maybe
+  focus on the venue is sufficient"): V1 Shape (+ the desk's ARC chain),
+  V2 Size (Words · Citations · Displays, `measured …` folded), V3 Refused
+  (one line per anti-pattern), V4 Moves (first four slot names in the head,
+  exemplars folded). `N1`/`N2` (Narrative row and style) and `B1`/`B2` (board
+  rules) are gone from the file; the Narrative page and
+  `ref/writing-rules.md` keep them. A page with no `structure-source:` gets
+  no file. `check.py` `requirement-*` teeth follow: venue desk only.
+- **Feedback header is three lines and the Round is one text block** (JL:
+  "these are too detailed and hard to read"): the law paragraph, `source:`
+  and `received:` lines are gone; the Round's verdict, people, dates and a
+  link sit on one line, then Ask · Order · Gate; each row's parent R-row
+  concern is folded detail (`↳ R01 · …`) under the card, not a label row,
+  so the chip count equals the routed rows.
+
+## 0.18.0 — 2026-08-31
+
+- **One record shape for every file in the folder** (JL 260831, reading the
+  SM00 lenses: "really hard to read", "the discussion is not for human,
+  rubbish", "the logging is very bad", "the design of all of them are very
+  bad … we should unify the format"). New §🧾: `### <ID> · <HEADLINE>`, then
+  `- **Label**: value` rows, detail indented and folded, signed `>` lanes kept.
+  Ids and label sets per kind: discussion `D<nn>` Ask/Options/We lean/Decide;
+  log `YYMMDD` headline; feedback `S<x>-PP<n>` From/State/Landed (0.17.4's
+  Feedback/Work/Parent rows fit the same grammar); evidence `C.P.B` Has/Status;
+  requirement `V/N/B` Rule/Source. `live/outline.py _records` is the one
+  renderer (id badge, headline, label grid, status pill, "more" fold) and
+  still reads every pre-0.18.0 shape.
+- **Discussion = open questions only, in plain words** (§💬 rewritten): a
+  thread leaves the file when it settles and becomes one dated `-log.md`
+  record, `D<nn> settled by JL: <ruling>`, argument kept under the fold.
+  `check.py discussion-settled-thread` (proved 13 → 0 on the MISQ board).
+  Board-wide id allocation now greps the log files too.
+- **Log = a timeline of one-line records** (new §📜): `### YYMMDD · headline`
+  (15 to 25 words), detail folded under. Restructuring an old row gives it a
+  headline and moves its text under the fold verbatim; nothing is rewritten.
+- **The requirement generator exists**: `cli/requirement.py` writes V (venue
+  division: shape, moves, refusals, format values), N (Narrative row and
+  Writing Style) and B (board hard rules, plain-English floor) records; run
+  by `haipipe-page-outline` ⓪ REQUIRE. Teeth: `requirement-missing`,
+  `requirement-hand-edited`, `requirement-stale`. 15 MISQ section pages got
+  their file; the 📏 chip now draws.
+- **`### Stage Record` is a retired block** (`check.py retired-block`, JL:
+  "why we have this? we should not have this"); 13 MISQ pages cut.
+- Content: SM00, SM01, SM02, SM08 discussion and log rewritten (5/3/3/2 open
+  threads; 20/19/25/22 log records); `.pre-0.18` backups beside each.
+- Content, the other 16 MISQ pages (after the peer session's `## States` →
+  `## Aims` merge): `## Aims`, `## Discussion` and `## Log` moved off every page
+  into `outline/` records. Triage: a `Needs JL` or `Decision Now` row is a
+  thread only if it has options, a lean, a ruling verb or a question mark (55
+  threads, D43–D126); the other 76 rows are CC's own work and became
+  `- [ ] A<g>.<n>` rows under `### A<g> · 📋 Open items carried off the page`
+  in each plan; ticked rows and `### D<nn>` records with a decision became log
+  records; page Aim rows merged their tick and `Now:` into the plan by id.
+  `checks/outline.py` passes on every plan; `.pre-outline` backups beside each
+  page; next free id D127.
+
+## 0.17.4 — 2026-08-31
+
+- **A feedback row carries the Round's words** (JL, reading SM00's 🗣 tab:
+  "it lost a lot of informations"): `collect` now copies each §2B row's
+  `Feedback:` and `Work:` sentences, the full concern of every parent R-row
+  (`- **Parent R03**: … → routes SM00, SM03, SM06, SM08`) and the §2A
+  proposed reader order, all verbatim. 0.17.0's head-and-ids-only rule
+  confused "never AUTHOR here" with "never SHOW here"; a file regenerated
+  whole cannot drift from its source. `landed:` still preserved by row id.
+  Ledger-only rows (NA01) keep their closing quote in the head.
+
+## 0.17.3 — 2026-08-31
+
+- **One chip per sibling file on the 🧭 tab** (JL: "we should have more
+  buttons here to host the content in the outline folder"): 📏 Requirement ·
+  💬 Discussion · 🗣 Feedback · 🧾 Evidence · 📜 Log, each drawn only when its
+  file exists, each read-only, with a row count on the chip. Verified in Chrome
+  on SM01: `🧭 By part | 🚦 What is left | 💬 Discussion · 6 | 🗣 Feedback · 8 |
+  🧾 Evidence · 28 | 📜 Log · 12`.
+
+## 0.17.3 — 2026-08-31
+
+- **`Routed:` is a folded line** beside `Note:`/`Answered:`/`Drawn:` (NA01
+  field test: the phase named it in 0.11.0 and this file, both parsers, and
+  the renderer did not know it; 8 of 16 lines vanished from the fold).
+- The §📐 example reads `supersedes: none`, not the em-dash.
+- Roster row updated to the six kinds; 0.17.1 and 0.17.2 had not touched it.
+
+## 0.17.2 — 2026-08-31
+
+- **`<stem>-evidence.md`, the sixth kind** (JL: "an evidence-status.md in the
+  outline plugin, to check what is the current evidence status"): a dated
+  snapshot of the 🧭 join, one bullet per line in the Evidence Bundle's six
+  status words, written only by `cli/evidence-status.py` (imports
+  `live/outline.py`, so file and tab cannot disagree). Two `check.py` teeth,
+  `evidence-stale` and `evidence-hand-edited`, each proven 0 → 1 → 0 on SM08.
+  SM06 reports 37 owed / 0 landed, which is honest: its `probe/V01-…` and
+  `display/S-Display-…` are retired shapes the contract cannot read.
+
+## 0.17.1 — 2026-08-31
+
+- **`<stem>-requirement.md`, the fifth kind** (JL 260830: "put the writing
+  requirements as one subfolder as well"). FLAT, not a subfolder, because the
+  0.17.0 layout rule reserves folders for many-files kinds and a requirement is
+  one per page. GENERATED by the same `stage.py sync` that today pastes a
+  sha256-stamped `### Writing Style` block into 17 MISQ pages (149 lines), from
+  the venue row (`structure-source` + `structure-division`), the Narrative row
+  (`style-from`) and `ref/writing-rules.md`; that page block is retired. Never
+  authored (it would fork the consumer-neutral venue bank), never versioned
+  (its sources carry their own); a page-specific deviation is a `D<nn>` thread,
+  cited by id.
+
+## 0.16.1 — 2026-08-30
+
+Field test on SM08 (15 frictions, ledger 5 MATCH · 2 SKILL GAP · 0 EXPECTATION GAP):
+
+- **`D<nn>` ids are BOARD-WIDE**, allocated from the board's max with a grep;
+  the first run minted D01-D06 page-locally while SM06 owned D01/D05/D11, and
+  `D16` was already duplicated between AM02 and SM04. A thread id is a
+  cross-page address (cited from ten files), which is the same fact that keeps
+  this file unversioned.
+- **A live ask that owns no Aim becomes a 🔴 thread, never a minted Aim** (the
+  run invented `A1.10`, a target nobody agreed to).
+- The page keeps a `## Files` pointer at both moved files; header shape for
+  both files; rows newest-first; `round: —` legal before the first Round.
+
+## 0.16.0 — 2026-08-30
+
+- **Three kinds in one folder** (JL: "outline plugin is a folder!!!!"): the plan
+  `<stem>-outline-v<N>.md`, plus `<stem>-log.md` (what CHANGED, append-only) and
+  `<stem>-discussion.md` (what was ARGUED, `D<nn>` threads with status/serves/
+  round). `page.md` is the PRODUCT; this folder is the PROCESS. Neither new
+  name may contain `outline` (the plan globs are `*-outline-*.md`).
+- **`## States` is gone from the page**, finishing the 260819 merge: one Aim
+  row carries tick + `Done when:` + `Now:`; live asks become the Aim's `Now:`.
+- **The Aims stay with the plan and the page keeps no copy.**
+- **The discussion is never versioned**: threads settle independently (D01
+  closed while D05 stayed open), a thread id is a cross-page address, threads
+  move between pages; `> ✎` already records edits; a status change owes one
+  log row naming the id.
+
+## 0.17.0 — 2026-08-31
+
+- **Fourth kind: `<stem>-feedback.md`**, what OTHERS said, one file per Round
+  (JL 260831: "it will have its own file and folder"). Rows are PROJECTED from
+  the Round's §2A/§2B by `haipipe-board/cli/feedback.py collect`, never
+  paraphrased; the page writes exactly one field, `landed:`. PULL, not push:
+  the page collects during OUTLINE ⓪ and no Round writes into another page's
+  folder. First run: 15 pages, 104 rows, from RD01 on the MISQ board.
+- **The layout rule.** One-per-page kinds sit flat with the stem
+  (`-requirement`, `-discussion`, `-log`); many-per-page kinds get a folder
+  named by SOURCE (`<stem>-feedback.md`, `## RD01` inside). The plan is grandfathered flat.
+- **Feedback ≠ discussion**, stated: discussion is authored here, feedback is
+  received and may not be rewritten here.
+
+## 0.16.1 — 2026-08-30
+
+- Patched from the SM08 field test (15 frictions): `D<nn>` ids are BOARD-WIDE
+  with the grep that allocates them (the run minted D01-D06 against SM06's
+  D01/D05/D11; D16 was already doubled between AM02 and SM04); an ask owning
+  no Aim becomes a THREAD, never a minted Aim; the page keeps a `## Files`
+  pointer; header shape for both files; newest-first; `round: —` is legal.
+
+## 0.16.0 — 2026-08-30
+
+- **Three kinds in one folder** (JL: "outline plugin is a folder!!!!"): the
+  plan, `<stem>-log.md` (what CHANGED) and `<stem>-discussion.md` (what was
+  ARGUED). `## States` is gone from the page, finishing the 260819 merge; the
+  Aims stay with the plan and the page keeps no copy. The discussion is never
+  versioned: the unit that freezes is the THREAD, and a thread id is a
+  cross-page address. Neither new name may contain `outline`.
+
 ## 0.15.0 — 2026-08-20
 
 - **§✂️'s `Answered:` line gains the `· recount` tail** (JL: "看看哪里可以去

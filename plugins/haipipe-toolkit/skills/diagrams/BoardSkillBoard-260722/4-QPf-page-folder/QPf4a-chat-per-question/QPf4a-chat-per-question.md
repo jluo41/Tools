@@ -49,6 +49,26 @@ Both also open on the whole board, through the index page's chatbot (recorded on
 
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [x] ⚖️ Amend the Law's "One Q ⇄ one session" for the history picker (JL 260731, on `QD3m`)
+      DECIDED 260731 by JL: "somehow we want to update this law, that one Q, multiple session. the chat session with the predefined prompt related to this Q".
+      That is option A with the prime kept: one CURRENT session per question, older ones resumable through the picker, and EVERY session opens primed with this Q's context.
+      HOLD and one-window-at-a-time stay untouched. The Law section below carries the amendment.
+      BUILT the same day as haipipe-board 0.62.0: the 🗂 Session strip in the panel, `/_board/sessions`, and the `session:` parameter on chat and terminal.
+- [ ] 🗄 Rule whether the board folder keeps a copy of the session jsonls (JL 260731: "maybe still in the home, but we can make the copy of them in the board folder?")
+      The LIVE file cannot move.
+      Resume is bound to the cwd's project dir under `~/.claude/projects/`, and the 260723 move test showed that a moved jsonl refuses `--resume` (Lesson below).
+      So any copy in the board folder is a backup or a readable export, never the live session.
+      A · the LIVE file stays only in home, as it does today, and no backup copy is made in the board folder.
+      B · a jsonl mirror is written to the board folder on release and stays gitignored. Cheap insurance, and it is restored by copying it back into the project dir.
+      C · once the P2 mirror's jsonl reader exists, a readable markdown transcript is exported when a session retires, giving an archive a person can read.
+      D · B and C are staged together: B now for backup insurance, and C once the mirror is ready.
+      → CC's proposal: D, staged. B now, one copy at release time, cheap insurance. C once the P2 mirror's jsonl reader exists anyway.
+      Both stay gitignored, because a transcript can carry secrets and this repo is shared.
+
+
 ### ⚖️ The framework questions
 - [x] Say what board level and question level each own
       Board level is this "session for top" conversation. It opens and closes questions, edits build.py and serve.py, and makes the calls that cross questions.
@@ -77,97 +97,6 @@ Both also open on the whole board, through the index page's chatbot (recorded on
 - [x] Pick the routes to build
       Both: QD2 (web panel) for daily use, QD3 (real terminal) as the way out when the panel cannot do it.
       Both are built.
-
-## States
-All three framework questions are answered. The last one, two agents on one file, is still open.
-
-- The levels
-      Exactly one board-level conversation: this one, JL's "session for top".
-      It owns the global moves: opening and closing questions, editing the generator and the server, and the calls that cross questions.
-      One question-level session per Q, scoped to that Q.
-- What a session may read and write (JL ruled mid-way)
-      QD2 first hard-coded "question level may only edit its own Q file".
-      JL said "give normal permissions, like the CLI".
-      So now read-only tools pass on their own, and writes to this question's own file pass.
-      Writes anywhere else, or a Bash call, pop an "allow once / always allow / deny" prompt, the CLI dialog in spirit.
-      The terminal route was never limited.
-- Where conversations are kept
-      This was never a keep-or-not choice.
-      The conversation IS the session, already landing as jsonl under `~/.claude/projects/`, resumable from the panel or the terminal at any time.
-      The board's md records outcomes only.
-      That also settles the "board grows without end" worry at the question level.
-      The talk on one question never enters this top conversation, and each stays in its own jsonl.
-- The single open item
-      There is no rule yet for the board-level conversation and a question's panel editing the same file at the same time.
-      It is fine in practice, since clashes are rare, but it has to be written down to count.
-
-- 260731 JL+CC · ⚖️ The Law was rewritten, because all three of its terms had moved
-  JL read the old three-beat quoted on `QD3m`'s Diagram, "one question · one session · one jsonl", and ruled: "this law should be updated. It is actually very old."
-  He was right on all three terms.
-  **question** stopped being the unit the day group and board sessions shipped, **one session** was amended by JL's own picker ruling, and **one jsonl** followed from that amendment, since a scope now has a history of them.
-  What survived the check is the window rule, so the new three-beat keeps it: **one scope · one CURRENT session · one live window**.
-  Rewritten in place: the summary line and who said it, a new "three levels" bullet, and a new names bullet.
-  The stale "One Q ⇄ one session" bullet was retired into "Both front ends point at the same current id".
-  The ONE-id claim is gone; the no-unrecorded-session claim survives through the sidecar.
-  The other bullets were widened from question to scope, parking was written into the window rule, and the Diagram grew the two upper levels.
-  Nothing was built this round.
-  This is the written law catching up with what shipped between 0.62.0 and 0.77.0.
-
-- 260731 JL · 🪜 The levels became three, and the split site made them reachable
-  JL: "我觉得我们的 chat 也分几类：board chat / group chat / page".
-  The answer is that all three already existed, and only the split site could not reach them.
-  Board and page were live.
-  The group level was already built on the server (`group_folder`, `group_prime_context`, the session keyed to the group's own folder), and it simply had no door.
-  In the one-file board the panel learned which page it was on from `location.hash`.
-  That means nothing once QC9 gives every page its own file, so every page opened the BOARD session.
-  The document now answers instead: exactly one `section.q` means that page, an `h1` in the `QA · Design` grammar means that group, and neither means the board.
-  Checked across all five views: index → BOARD, QA.html → QA group, QA0/QD2 page files → their own page, and the old monolith unchanged.
-  A second bug sat behind it, and it would have blocked every write the moment binding was fixed.
-  `target()` read the board folder as the URL's parent, so a POST from `board/QD/QD2-….html` was refused with "no board.md here".
-  It now walks up to the board folder, bounded by `--root`.
-
-- 260731 JL · 🏷 Sessions gained names: <page-id>-<what-it-is-for>
-  JL: "for each session, we can give them the name? like Qxxx-what-is-this-for? ... and this should be shown as well."
-  Built the same round, as 0.74.0. It was cut as 0.72.0 and renumbered when two sessions collided on the ledger.
-  The sidecar registry's entries became {id, name}.
-  A name can be given at birth, since the picker's ＋ New session asks "what is this session for?", or later, with ✎ on any row, which POSTs to /_board/session-name.
-  The page-id prefix is worked out on the server, so the stored purpose is bare and the display reads QD3m-fix-black-screen.
-  The name shows wherever the session appears: the picker rows, in bold monospace, and the strip summary. A session with no name keeps the first-message-title fallback.
-  The name lives in .haipipe-board/sessions.json, not in the page header, which honours this page's "the board's md records outcomes only".
-
-- 260731 JL · 🗂 The levels gained a third one: the page GROUP
-  JL: "for each Question group, we can also add the chat icon for them, and then we can add the sdk or cli to discuss about this Question group."
-  Built as 0.77.0, cut as 0.73.0 and renumbered on the same ledger collision.
-  Every group heading on the index carries 💬.
-  It opens the same panel attached to the GROUP, whose identity is the group FOLDER (7-QC-engine/).
-  So sessions, names, HOLD, parking and the picker all reuse the page machinery unchanged.
-  The scope sits between the two levels that already existed.
-  A group session may edit any .md inside its folder.
-  The board session has the whole board, and a page session has its one file.
-  Its prime lists the group's pages with their states.
-  Group sessions have no header line to live in, so the current one is the registry's newest entry.
-  That keeps this page's "the board's md records outcomes only" intact.
-  Names take the group letter as their prefix (QC-group-chat-smoke).
-  Checked live: a scoped SDK turn on QC, the picker listing it by name, and the ⌨ terminal resuming the panel's own session.
-
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [x] ⚖️ Amend the Law's "One Q ⇄ one session" for the history picker (JL 260731, on `QD3m`)
-      DECIDED 260731 by JL: "somehow we want to update this law, that one Q, multiple session. the chat session with the predefined prompt related to this Q".
-      That is option A with the prime kept: one CURRENT session per question, older ones resumable through the picker, and EVERY session opens primed with this Q's context.
-      HOLD and one-window-at-a-time stay untouched. The Law section below carries the amendment.
-      BUILT the same day as haipipe-board 0.62.0: the 🗂 Session strip in the panel, `/_board/sessions`, and the `session:` parameter on chat and terminal.
-- [ ] 🗄 Rule whether the board folder keeps a copy of the session jsonls (JL 260731: "maybe still in the home, but we can make the copy of them in the board folder?")
-      The LIVE file cannot move.
-      Resume is bound to the cwd's project dir under `~/.claude/projects/`, and the 260723 move test showed that a moved jsonl refuses `--resume` (Lesson below).
-      So any copy in the board folder is a backup or a readable export, never the live session.
-      A · the LIVE file stays only in home, as it does today, and no backup copy is made in the board folder.
-      B · a jsonl mirror is written to the board folder on release and stays gitignored. Cheap insurance, and it is restored by copying it back into the project dir.
-      C · once the P2 mirror's jsonl reader exists, a readable markdown transcript is exported when a session retires, giving an archive a person can read.
-      D · B and C are staged together: B now for backup insurance, and C once the mirror is ready.
-      → CC's proposal: D, staged. B now, one copy at release time, cheap insurance. C once the P2 mirror's jsonl reader exists anyway.
-      Both stay gitignored, because a transcript can carry secrets and this repo is shared.
 
 ## Files
 - `cli/serve.py` + `live/base.py`
@@ -259,6 +188,78 @@ headless session: a Claude session started by a program, with no terminal window
 > JL: could we make a new Q for chat, one for terminal version, and then other one for the claude_agent_sdk version.
 >> CC0723: split. This question keeps only the three unanswered framework items (levels and boundaries); the SDK chat version goes to QD2, the TUI chat version to QD3.
 
+
+### From the retired States section (merged 260831)
+All three framework questions are answered. The last one, two agents on one file, is still open.
+- The levels
+      Exactly one board-level conversation: this one, JL's "session for top".
+      It owns the global moves: opening and closing questions, editing the generator and the server, and the calls that cross questions.
+      One question-level session per Q, scoped to that Q.
+- What a session may read and write (JL ruled mid-way)
+      QD2 first hard-coded "question level may only edit its own Q file".
+      JL said "give normal permissions, like the CLI".
+      So now read-only tools pass on their own, and writes to this question's own file pass.
+      Writes anywhere else, or a Bash call, pop an "allow once / always allow / deny" prompt, the CLI dialog in spirit.
+      The terminal route was never limited.
+- Where conversations are kept
+      This was never a keep-or-not choice.
+      The conversation IS the session, already landing as jsonl under `~/.claude/projects/`, resumable from the panel or the terminal at any time.
+      The board's md records outcomes only.
+      That also settles the "board grows without end" worry at the question level.
+      The talk on one question never enters this top conversation, and each stays in its own jsonl.
+- The single open item
+      There is no rule yet for the board-level conversation and a question's panel editing the same file at the same time.
+      It is fine in practice, since clashes are rare, but it has to be written down to count.
+
+- 260731 JL+CC · ⚖️ The Law was rewritten, because all three of its terms had moved
+  JL read the old three-beat quoted on `QD3m`'s Diagram, "one question · one session · one jsonl", and ruled: "this law should be updated. It is actually very old."
+  He was right on all three terms.
+  **question** stopped being the unit the day group and board sessions shipped, **one session** was amended by JL's own picker ruling, and **one jsonl** followed from that amendment, since a scope now has a history of them.
+  What survived the check is the window rule, so the new three-beat keeps it: **one scope · one CURRENT session · one live window**.
+  Rewritten in place: the summary line and who said it, a new "three levels" bullet, and a new names bullet.
+  The stale "One Q ⇄ one session" bullet was retired into "Both front ends point at the same current id".
+  The ONE-id claim is gone; the no-unrecorded-session claim survives through the sidecar.
+  The other bullets were widened from question to scope, parking was written into the window rule, and the Diagram grew the two upper levels.
+  Nothing was built this round.
+  This is the written law catching up with what shipped between 0.62.0 and 0.77.0.
+
+- 260731 JL · 🪜 The levels became three, and the split site made them reachable
+  JL: "我觉得我们的 chat 也分几类：board chat / group chat / page".
+  The answer is that all three already existed, and only the split site could not reach them.
+  Board and page were live.
+  The group level was already built on the server (`group_folder`, `group_prime_context`, the session keyed to the group's own folder), and it simply had no door.
+  In the one-file board the panel learned which page it was on from `location.hash`.
+  That means nothing once QC9 gives every page its own file, so every page opened the BOARD session.
+  The document now answers instead: exactly one `section.q` means that page, an `h1` in the `QA · Design` grammar means that group, and neither means the board.
+  Checked across all five views: index → BOARD, QA.html → QA group, QA0/QD2 page files → their own page, and the old monolith unchanged.
+  A second bug sat behind it, and it would have blocked every write the moment binding was fixed.
+  `target()` read the board folder as the URL's parent, so a POST from `board/QD/QD2-….html` was refused with "no board.md here".
+  It now walks up to the board folder, bounded by `--root`.
+
+- 260731 JL · 🏷 Sessions gained names: <page-id>-<what-it-is-for>
+  JL: "for each session, we can give them the name? like Qxxx-what-is-this-for? ... and this should be shown as well."
+  Built the same round, as 0.74.0. It was cut as 0.72.0 and renumbered when two sessions collided on the ledger.
+  The sidecar registry's entries became {id, name}.
+  A name can be given at birth, since the picker's ＋ New session asks "what is this session for?", or later, with ✎ on any row, which POSTs to /_board/session-name.
+  The page-id prefix is worked out on the server, so the stored purpose is bare and the display reads QD3m-fix-black-screen.
+  The name shows wherever the session appears: the picker rows, in bold monospace, and the strip summary. A session with no name keeps the first-message-title fallback.
+  The name lives in .haipipe-board/sessions.json, not in the page header, which honours this page's "the board's md records outcomes only".
+
+- 260731 JL · 🗂 The levels gained a third one: the page GROUP
+  JL: "for each Question group, we can also add the chat icon for them, and then we can add the sdk or cli to discuss about this Question group."
+  Built as 0.77.0, cut as 0.73.0 and renumbered on the same ledger collision.
+  Every group heading on the index carries 💬.
+  It opens the same panel attached to the GROUP, whose identity is the group FOLDER (7-QC-engine/).
+  So sessions, names, HOLD, parking and the picker all reuse the page machinery unchanged.
+  The scope sits between the two levels that already existed.
+  A group session may edit any .md inside its folder.
+  The board session has the whole board, and a page session has its one file.
+  Its prime lists the group's pages with their states.
+  Group sessions have no header line to live in, so the current one is the registry's newest entry.
+  That keeps this page's "the board's md records outcomes only" intact.
+  Names take the group letter as their prefix (QC-group-chat-smoke).
+  Checked live: a scoped SDK turn on QC, the picker listing it by name, and the ⌨ terminal resuming the panel's own session.
+
 ## Log
 - 260806 2141 · [REVISE-CC] swept to the 260806 architecture; Files record repointed HOLD/RUNS/TERMS to `live/base.py` (QC8 split), dead "## Where we are" pointer in Aims fixed to ## States, Glossary caught up from two levels to the three altitudes
 260731 1905 · The one-live-window rule held only for chat on the tree: navigating with ⌨ on left the old scope's PTY live AND unparked while a new one opened (two windows, one of them invisible), and a group release parked the wrong scope. Fixed in `follow()` (0.86.0, recorded on `QD3`); the law itself needed no change; the code had simply stopped enforcing it on the split site
@@ -273,3 +274,5 @@ headless session: a Claude session started by a program, with no terminal window
               only "two agents, one file" open; Diagram and Now rewritten; the voided ↗ removed from Law
 260723 1445 · JL ruled: split into three. This question keeps the framework; implementations go to QD2 (SDK) and QD3 (terminal)
 260723 1215 · JL raised "hang a chat on every Q", the QD group and this question opened
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -99,40 +99,43 @@ Clicking a tab that is already open rebuilds what that tab shows, so the second 
 
 ## Aims
 ### A1 · 🗃 One file is yours, the rest is rebuilt
-- A1.1 · The page owns its file, copying fills it, and a refresh is safe.
+- ✅ A1.1 · The page owns its file, copying fills it, and a refresh is safe.
   **Done when:** a page has its own `bibex/<stem>.bib`, a cited key the paper's `0-*.bib` can find arrives in it by copy, and a repeat refresh changes no entry already there.
-- A1.2 · One page inside a real paper lives on its filled bib.
+  **Now:** Shipped as haipipe-board 0.129.0 and tested end to end 260815 on a made-up paper: the copy brought an upstream entry in whole, a second refresh brought in nothing, and a person's added entry came through untouched.
+- ⬜ A1.2 · One page inside a real paper lives on its filled bib.
   **Done when:** a page that cites sources has copied entries beside at least one a person pasted, and the upstream `0-*.bib` comes out of the whole round byte for byte the same.
+  **Now:** No page in a real paper has lived on its filled bib yet.
 
 ### A2 · 🧑 What a person can do to an entry, and what the machine may not
-- A2.1 · A card shows the entry, and the routes carry a person's four actions to the file.
+- ✅ A2.1 · A card shows the entry, and the routes carry a person's four actions to the file.
   **Done when:** a card shows its read-out fields beside its links and its status, and the routes carry four actions through to the file: a tick, an undo, a word-for-word paste, and a refused repeat key.
-- A2.2 · The first REAL checked entry is JL's.
+  **Now:** Shipped 260815 and run through the routes: read-out fields, Scholar/DOI/URL links, the verified field written and undone, word-for-word landing, and replace-only overwrite.
+- 🧠 A2.2 · The first REAL checked entry is JL's.
   **Done when:** an entry carries `verified = {JL …}` because JL opened its link and clicked ✓, and not because a machine or a demo wrote it.
-- A2.3 · The ＋ box turns links into bibtex, and the raw file is one fold away.
+  **Now:** Held until the record can be traced: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, but a field cannot show whose click wrote it, and this page's Log records a machine writing that same field once, so only JL's own dated note of the tick closes this.
+- ✅ A2.3 · The ＋ box turns links into bibtex, and the raw file is one fold away.
   **Done when:** each of the four accepted link shapes returns bibtex into the box for review, a link outside them is refused with those four shapes named rather than guessed at, and the whole `.bib` can be read from the view with its path on disk.
+  **Now:** Shipped 260815 and tested over the network against all four shapes, each fetch landing in the box and not in the file: `_resolve_bib_link` refuses anything else by naming them, and the view's last fold prints the whole `.bib` with its path.
 
 ### A3 · 🖼 How the tab gets on screen
-- A3.1 · The 📚 tab frames the view, and the view draws everything a person needs.
+- ✅ A3.1 · The 📚 tab frames the view, and the view draws everything a person needs.
   **Done when:** the 📚 tab frames `bibex/<stem>-bib.html`, and that page shows a card, its status chip, its links, its edit fold, the add box, and the refresh button.
-- A3.2 · One workbench action is clicked in a real browser.
+  **Now:** Shipped 260815 and checked against a screenshot: a real entry's card, its status chip, its links, its edit fold, the add box, and the refresh button.
+- 🧠 A3.2 · One workbench action is clicked in a real browser.
   **Done when:** a person clicks add and ✓ on the view's own buttons in a live browser, and the POSTs and the reload carry the change through to the file.
+  **Now:** Held on the same write A2.2 is held on: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, and a field cannot show that a person's browser click wrote it, so a browser-side artifact closes this, a screenshot of the click or a server access log for the two POSTs, the way a screenshot closed A3.1.
 
 ### P · 🚧 The boundary
-- P1 · `bibex/` joins the checker's list of known plugin folders.
+- ⬜ P1 · `bibex/` joins the checker's list of known plugin folders.
   **Done when:** `check.py` knows `bibex/` as a plugin folder by name and warns on nothing inside it.
+  **Now:** `check.py` does not yet know `bibex/` by name.
 
-## States
+
+## Discussion
+
+### From the retired States section (merged 260831)
 The file and the workbench are built, and every route is tested.
 What is left is a ✓ that can be traced to a person, a click that can be traced to a real browser, a real paper page living on its filled bib, and the checker boundary.
-- ✅ A1.1 · Shipped as haipipe-board 0.129.0 and tested end to end 260815 on a made-up paper: the copy brought an upstream entry in whole, a second refresh brought in nothing, and a person's added entry came through untouched.
-- ⬜ A1.2 · No page in a real paper has lived on its filled bib yet.
-- ✅ A2.1 · Shipped 260815 and run through the routes: read-out fields, Scholar/DOI/URL links, the verified field written and undone, word-for-word landing, and replace-only overwrite.
-- 🧠 A2.2 · Held until the record can be traced: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, but a field cannot show whose click wrote it, and this page's Log records a machine writing that same field once, so only JL's own dated note of the tick closes this.
-- ✅ A2.3 · Shipped 260815 and tested over the network against all four shapes, each fetch landing in the box and not in the file: `_resolve_bib_link` refuses anything else by naming them, and the view's last fold prints the whole `.bib` with its path.
-- ✅ A3.1 · Shipped 260815 and checked against a screenshot: a real entry's card, its status chip, its links, its edit fold, the add box, and the refresh button.
-- 🧠 A3.2 · Held on the same write A2.2 is held on: `../QPf4-chat/bibex/QPf4-chat.bib:12` carries `verified = {JL 260815}`, and a field cannot show that a person's browser click wrote it, so a browser-side artifact closes this, a screenshot of the click or a server access log for the two POSTs, the way a screenshot closed A3.1.
-- ⬜ P1 · `check.py` does not yet know `bibex/` by name.
 
 ## Law
 - 🗃 The page owns its bib; the paper's is read-only here (JL 260815: "the bib for this page only")
@@ -164,6 +167,7 @@ What is left is a ✓ that can be traced to a person, a click that can be traced
   This page's own file, holding the one entry §2 cites, `luo2026eventglucose`; it carries no `verified` field, so the ✓ here is still JL's to click.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] the 📚 strip row folded into the 🧾 Evidence tab as the Citations segment (QPf15); the workbench, its pens and the verified: gate unchanged. Also agreed direction: bibex may carry its own SIMPLE code (dedup/format) under the coming code-lane law.
 - 260816 · [REVISE-CC] JL's second hold lands, and four factual findings are worked; the plain wording stays as it was rewritten.
       A3.2 goes to 🧠, held, because it and A2.2 close on the SAME write, `../QPf4-chat/bibex/QPf4-chat.bib:12`'s `verified = {JL 260815}`.
       This page already rules that write inadmissible for A2.2, a field cannot show whose click wrote it and the Log records a machine writing that field once, so reading it as conclusive for A3.2 made one write mean two things.
@@ -203,3 +207,5 @@ What is left is a ✓ that can be traced to a person, a click that can be traced
 - 260815 · [REVISE-CC] the ＋ box learned links on JL's ask ("could we paste the paper link"): four resolvers fetch bibtex whole from the source into the box for review, an unusable fetched key is renamed surname+year, the un-cited chip gained 📋 copy-`\citep{key}` after "not synced" confusion, and the raw `.bib` gained its own fold with the on-disk path ("how could I see the raw files").
 - 260815 · [RULE-JL] the write target is the PAGE's own bib, not the paper's and not a board-level one; the workbench built the same hour: status cards with Scholar/DOI/URL links, the ✓ as a `verified` field inside the entry (JL picked the field over a sidecar), the pen for pasted entries, and the code-fence strip that keeps figure syntax out of the key scan. The demo entry and its machine-written tick were reverted so A2.2 stays a person's.
 - 260815 · [DRAFT-CC] page born in the plugin round as the extract-only subset; superseded the same day by the page-owned-bib ruling above, which keeps extraction as the SEEDING half.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

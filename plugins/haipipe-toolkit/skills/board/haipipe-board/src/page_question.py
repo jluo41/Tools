@@ -962,10 +962,13 @@ def _render_question(q, prv, nxt):
         # A plugin surface gates on the page's declared type (JL 260807), so the type
         # has to survive into the DOM; before this it lived only in the source head.
         f' data-page-type="{esc(q.get("page_type",""))}">'
-        f'<div class="qh"><span class="qid">{q["id"]}</span>'
+        # No id on the status row: the h2's `.hid` right below and the
+        # breadcrumb already carry it (JL 260831). The `·` before method only
+        # exists when there is a method to separate.
+        f'<div class="qh">'
         f'<span class="pill {cls}">{tok} {esc(lab)}</span>'
         f'<span class="mut">{esc(who)}</span>'
-        f'<span class="mut">· {inline(q["method"])}</span>'
+        + (f'<span class="mut">· {inline(q["method"])}</span>' if q["method"] else "")
         + (
             f'<span class="kind">'
             f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'

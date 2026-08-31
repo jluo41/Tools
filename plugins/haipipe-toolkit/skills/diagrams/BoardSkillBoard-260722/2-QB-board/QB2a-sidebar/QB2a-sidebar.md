@@ -207,29 +207,6 @@ It stopped holding once the page list carried the page's parts, because the part
 The one case where this costs a click is a narrow screen, where the page list hides itself and has to be opened first.
 
 ## Aims
-### A1 · 🗂 Three altitudes, one page list
-- A1.1 · The page list lists exactly the pages the Index lists, and it is there with JavaScript switched off.
-  **Done when:** `page_board.py` renders the page list from the same listing as the Index rows, and a page absent from `## Pages` is absent from both.
-- A1.2 · The `🗂 Index` row unfolds into the components the Index really renders.
-  **Done when:** the Index row carries the chevron and lists only components present on the Index, each scrolling to it.
-
-### A2 · 🧭 The section outline, for the open page only
-- A2.1 · The open page shows its own sections in the page list, and no other page shows any.
-  **Done when:** exactly one `.sb-out` is visible at a time, and clicking a row opens the target section and brings it to the top of the viewport.
-- A2.2 · The outline reaches every part of a page a reader would want to jump to.
-  **Done when:** Content parts and every `###` subsection of States are rows, and a `Decision Now` row states how many ticks it owes.
-
-### A3 · 🌱 Derived, never registered
-- A3.1 · No row in the page list is authored anywhere.
-  **Done when:** pages come from `## Pages`, sections from the parsed page, counts from `structure_rows()`, and no file on the board lists a page list row.
-- A3.2 · Every page kind on this board gets its map in the page list, which is what lets a section start shut.
-  **Done when:** a decision page, a meeting page and an agent page each render their Content parts as page list rows.
-
-### P · 🏁 The page list on a small screen
-- P1 · The page list and its outline are usable with a finger.
-  **Done when:** the outline can be opened and an outline row hit on an iPad, with no hover available.
-
-## States
 ### Decision Now
 - [ ] 🗣 Does the outline reach the `###` subsections of States?
       📍 `Part` `### 2 · The section outline, for the open page only`
@@ -255,20 +232,39 @@ The one case where this costs a click is a narrow screen, where the page list hi
       🛑 `Blocks` nothing; both pages render either way.
       🤖 `If nobody answers` A stays, and this page goes on being the page list's home.
 
+
 ### A1 · 🗂 Three altitudes, one page list
-- ✅ A1.1 · Shipped in haipipe-board 0.61.0: fixed left page list, ☰ toggle, per-board persistence, active row highlight, hidden in print. It became drag-resizable in 0.85.0.
-- 🧠 A1.2 · Shipped in 0.78.0 with four present-only component rows. Waiting on the confirming tick in the Decision Now row above.
+- ✅ A1.1 · The page list lists exactly the pages the Index lists, and it is there with JavaScript switched off.
+  **Done when:** `page_board.py` renders the page list from the same listing as the Index rows, and a page absent from `## Pages` is absent from both.
+  **Now:** Shipped in haipipe-board 0.61.0: fixed left page list, ☰ toggle, per-board persistence, active row highlight, hidden in print. It became drag-resizable in 0.85.0.
+- 🧠 A1.2 · The `🗂 Index` row unfolds into the components the Index really renders.
+  **Done when:** the Index row carries the chevron and lists only components present on the Index, each scrolling to it.
+  **Now:** Shipped in 0.78.0 with four present-only component rows. Waiting on the confirming tick in the Decision Now row above.
+
 
 ### A2 · 🧭 The section outline, for the open page only
-- ✅ A2.1 · Shipped in haipipe-board 0.66.0: Structure rows plus Content parts under the open page only, accordion enforced. The click path was repaired on 260801 and verified from four starting points.
-- 🧠 A2.2 · Shipped in 0.67.0. Waiting on the confirming tick in the Decision Now row above.
+- ✅ A2.1 · The open page shows its own sections in the page list, and no other page shows any.
+  **Done when:** exactly one `.sb-out` is visible at a time, and clicking a row opens the target section and brings it to the top of the viewport.
+  **Now:** Shipped in haipipe-board 0.66.0: Structure rows plus Content parts under the open page only, accordion enforced. The click path was repaired on 260801 and verified from four starting points.
+- 🧠 A2.2 · The outline reaches every part of a page a reader would want to jump to.
+  **Done when:** Content parts and every `###` subsection of States are rows, and a `Decision Now` row states how many ticks it owes.
+  **Now:** Shipped in 0.67.0. Waiting on the confirming tick in the Decision Now row above.
+
 
 ### A3 · 🌱 Derived, never registered
-- ✅ A3.1 · No board file lists a page list row. Pages are read from `## Pages`, sections from the parsed page, and every count from `structure_rows()`.
-- ✅ A3.2 · Checked on the built board: `Meeting-1` renders its 17 Content parts as page list rows and `Agent-1` renders its own, beside every decision page, all from the one function.
+- ✅ A3.1 · No row in the page list is authored anywhere.
+  **Done when:** pages come from `## Pages`, sections from the parsed page, counts from `structure_rows()`, and no file on the board lists a page list row.
+  **Now:** No board file lists a page list row. Pages are read from `## Pages`, sections from the parsed page, and every count from `structure_rows()`.
+- ✅ A3.2 · Every page kind on this board gets its map in the page list, which is what lets a section start shut.
+  **Done when:** a decision page, a meeting page and an agent page each render their Content parts as page list rows.
+  **Now:** Checked on the built board: `Meeting-1` renders its 17 Content parts as page list rows and `Agent-1` renders its own, beside every decision page, all from the one function.
+
 
 ### P · 🏁 The page list on a small screen
-- ⬜ P1 · Not started. The page list overlays and self-closes on a narrow screen, and nobody has opened the outline on a real touch device.
+- ⬜ P1 · The page list and its outline are usable with a finger.
+  **Done when:** the outline can be opened and an outline row hit on an iPad, with no hover available.
+  **Now:** Not started. The page list overlays and self-closes on a narrow screen, and nobody has opened the outline on a real touch device.
+
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -349,3 +345,5 @@ The one case where this costs a click is a narrow screen, where the page list hi
 260731 · Items and Files subsections joined the outline: 🎯 rows show per-group done/total, 📎 rows list the file groups (0.70.0)
 260731 · Decision Now joined the outline (JL: "also unfold the Decision Now in the page list, go ahead"): Where we are subsections are jump rows with owed-tick counts, and `###` now renders as a real `.sh` heading in every non-Content section (0.67.0)
 260731 · Opened on JL's ask, absorbing the page list shipped under QB2 (0.61.0) and shipping the per-page section outline with the accordion rule (0.66.0)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

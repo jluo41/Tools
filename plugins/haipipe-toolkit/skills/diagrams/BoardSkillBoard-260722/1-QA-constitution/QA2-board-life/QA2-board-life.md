@@ -224,6 +224,34 @@ What a reopen never does is edit the old argument in place.
 It adds a round, exactly as `QPw00` describes, for the same reason a sentence is archived rather than deleted: the record has to keep saying what was decided then, or the history stops being evidence.
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+The three close rows below are the exception and say so on their face: JL handed those three to CC on 260816 ("make the decision yourself"), and the last of them he then corrected.
+
+- [ ] 📋 Approve the proposal table in Content §2 as the deliverable
+      Both `open` and `add` would show this seven-column table before writing any file.
+      → CC's proposal: yes as drawn; its columns already carry every acceptance dimension listed in §4.
+- [ ] 🗂 Ratify the group default for a Skill-Board
+      The ladder as the core (Board → Page-Structure · Page-Folder · Page-Workflow → Sentence), with Engine · Operating · Execute as the standing tail.
+      → CC's proposal: yes; the three-layer version was field-tested twice, and the 260815 restructure is the same idea with the middle layer split by what it argues.
+- [ ] ✍️ Decide when `ref/proposal-rules.md` gets drafted
+      A · draft it now from §3 and §4, which gives a fresh agent something to be handed and exposes what §3 still leaves undefined.
+      B · keep designing on this page until the tests above are settled, which delays the fixture test that needs the file.
+      → CC's proposal: A; the fixture test needs a rules file a fresh agent can be handed, and drafting it will expose exactly what §3 still leaves undefined.
+- [x] 📦 Rule what a closed board folder becomes
+      ✅ `A` · CC ruled it under JL's delegation, 260816: "make the decision yourself".
+      The folder stays where it is with its site, and `board.md` gains `closed: YYMMDD · who accepted it`; `§6.1` carries the reasoning.
+      `B`, an archive root, was refused because it breaks every citation from a shipped unit to its own design record at once; `C`, deletion, misreads `QA00` §5, whose test is that nothing shipped may READ a board.
+- [x] 🎓 Rule whether `close` requires the graduation audit
+      ✅ `A as a report` · CC ruled it under the same delegation, 260816.
+      `close` lists every ✅ page whose `## Law` names no landing site, and a person clears the list; it never refuses, because a Law graduates as rewritten prose and no script can judge whether the rule arrived.
+      The mechanism that makes it cheap is new and small: a graduated Law row gains `→ landed in <file> §<n>`, so the audit is a lookup. `§6.2` carries it.
+- [x] 🔓 Rule what reopens a closed board
+      ✅ CC ruled, corrected by JL the same round.
+      CC's first answer was that a closed board is never reopened; JL asked "who said so???" and nobody had: `QPw00` and both shipped agents carry `reopens_promise: true`, and `QA00`'s own state line reads `reopened 260816`.
+      The ruling that stands is `§6.3`: a doubted decision reopens a closed board exactly as it reopens any page, `board.md` keeps `closed:` and gains `reopened: YYMMDD · why`, and a shipped rule the code drifted from is a defect in that unit rather than a reopen.
+
+
 ### The proposal method's tests
 - [ ] 🧭 Settle how candidate pages are derived
       Define how the approved requirements inventory becomes candidate decision pages or ordered lifecycle-stage pages.
@@ -254,59 +282,6 @@ It adds a round, exactly as `QPw00` describes, for the same reason a sentence is
       Done when: `close --check` reports the pages still open, the pages whose Law names no landing site, and the `close:` sentence left for a person, so human judgement is the only thing the command does not do.
 - [ ] 🎓 The three rulings graduate into the door
       Done when: `SKILL.md`'s `close` section and `ref/board-form.md` carry §6.1-§6.3 as written, including the `closed:` head key.
-
-## States
-Only fragments exist for birth: titles must be short phrases, questions must be self-contained, ids and slugs have a grammar, and groups have an index representation. No rule currently tells an agent how to propose the pages or groups themselves.
-For the close, the two shipped conditions are stated in `SKILL.md` and enforced only as far as `check.py` reads a `state:` line; the second half is ruled here as of 260816 and has not yet graduated into the door.
-
-- 260816 · 🏁 The close's second half was ruled, on JL's delegation
-  JL answered "make the decision yourself", so CC ruled all three holes in `§6`: the folder stays, the graduation audit is a report rather than a refusal, and a closed board reopens like any page.
-  The reopen ruling was wrong on its first pass and JL caught it in one line, "who said so???": CC had banned reopening while `QPw00`, both shipped agents and `QA00`'s own state line all reopen things, so the ban was struck and the ruling now only adds the `reopened:` record.
-  The graduation one was the load-bearing hole, because `QA6` §6.1 makes copying a settled Law the whole point of the loop and nothing checked that it happened; the fix is small and is a note on the Law row, `→ landed in <file>`, which turns the audit into a lookup.
-  Nothing is enforced yet: three Aims stay open for the note, the command, and the graduation into `SKILL.md`.
-- 260816 · 🏁 The close joined this page
-  The `close` verb has shipped since the family's early releases and no page had ever argued it: `§5` records what it does today, and `§6` now rules everything after it.
-- 260731 JL · 🗂 The groups settled at six
-  The QD split and flatten produced Working · Sharing · Execute behind the unchanged three-layer core, so this board demonstrated the full shape twice over.
-  Those three merged again on 260815 (`QO · Operating` plus `QF · Execute`), so a proposal method should treat Operating and Execute as the standing tail groups of a Skill-Board rather than three.
-- 260730 JL · 🧭 This board's own groups were restructured to the three-layer model
-  Seven groups became five: Design (what the system is) → Delivery (Board → Group → Page → Section → Sentence) → Engine (how it is made and shipped), plus Execute and Working.
-  The same Delivery → Engine → Execute split had just been field-tested on the paper family's Skill-Board.
-  Every page kept its id, because a page's letter is the group it was OPENED under, and the lane cells travelled with their pages (`lanes.py collect_kept`).
-  The 260815 restructure replaced the Delivery layer with the ladder (Board → Page-Structure · Page-Folder · Page-Workflow → Sentence), which is the shape a proposal method should now propose in.
-- 260726 JL · 🧩 The missing design layer was named
-  JL observed that current question names, page names, and especially proposed page groups are not consistently good, and asked for a dedicated place to design a better proposal method.
-- 260726 Cold read · 🧱 Inputs and acceptance tests were missing
-  A fresh reader rated the first draft half-clear because its action names, board types, page types, inputs, deliverable, and pass criteria were undefined. This revision defines those premises without deciding the still-open proposal algorithm.
-- 260726 Cold read 2 · 🧪 The design brief is clear; the test needed separation
-  A second fresh reader rated the page clear as an open design brief. It found that generation and index-reading tests were conflated and that `board.md` could not expose finish conditions. The tests now have separate agents, artifacts, answer keys, and judging sources.
-
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-The three close rows below are the exception and say so on their face: JL handed those three to CC on 260816 ("make the decision yourself"), and the last of them he then corrected.
-
-- [ ] 📋 Approve the proposal table in Content §2 as the deliverable
-      Both `open` and `add` would show this seven-column table before writing any file.
-      → CC's proposal: yes as drawn; its columns already carry every acceptance dimension listed in §4.
-- [ ] 🗂 Ratify the group default for a Skill-Board
-      The ladder as the core (Board → Page-Structure · Page-Folder · Page-Workflow → Sentence), with Engine · Operating · Execute as the standing tail.
-      → CC's proposal: yes; the three-layer version was field-tested twice, and the 260815 restructure is the same idea with the middle layer split by what it argues.
-- [ ] ✍️ Decide when `ref/proposal-rules.md` gets drafted
-      A · draft it now from §3 and §4, which gives a fresh agent something to be handed and exposes what §3 still leaves undefined.
-      B · keep designing on this page until the tests above are settled, which delays the fixture test that needs the file.
-      → CC's proposal: A; the fixture test needs a rules file a fresh agent can be handed, and drafting it will expose exactly what §3 still leaves undefined.
-- [x] 📦 Rule what a closed board folder becomes
-      ✅ `A` · CC ruled it under JL's delegation, 260816: "make the decision yourself".
-      The folder stays where it is with its site, and `board.md` gains `closed: YYMMDD · who accepted it`; `§6.1` carries the reasoning.
-      `B`, an archive root, was refused because it breaks every citation from a shipped unit to its own design record at once; `C`, deletion, misreads `QA00` §5, whose test is that nothing shipped may READ a board.
-- [x] 🎓 Rule whether `close` requires the graduation audit
-      ✅ `A as a report` · CC ruled it under the same delegation, 260816.
-      `close` lists every ✅ page whose `## Law` names no landing site, and a person clears the list; it never refuses, because a Law graduates as rewritten prose and no script can judge whether the rule arrived.
-      The mechanism that makes it cheap is new and small: a graduated Law row gains `→ landed in <file> §<n>`, so the audit is a lookup. `§6.2` carries it.
-- [x] 🔓 Rule what reopens a closed board
-      ✅ CC ruled, corrected by JL the same round.
-      CC's first answer was that a closed board is never reopened; JL asked "who said so???" and nobody had: `QPw00` and both shipped agents carry `reopens_promise: true`, and `QA00`'s own state line reads `reopened 260816`.
-      The ruling that stands is `§6.3`: a doubted decision reopens a closed board exactly as it reopens any page, `board.md` keeps `closed:` and gains `reopened: YYMMDD · why`, and a shipped rule the code drifted from is a defect in that unit rather than a reopen.
 
 ## Files
 ### Engines
@@ -343,6 +318,32 @@ The three close rows below are the exception and say so on their face: JL handed
 ## Discussion
 > JL: The current question names, page names, and especially proposed page groups are not consistently good. We need a dedicated question for how the Board should propose reasonable pages and groups.
 
+
+### From the retired States section (merged 260831)
+Only fragments exist for birth: titles must be short phrases, questions must be self-contained, ids and slugs have a grammar, and groups have an index representation. No rule currently tells an agent how to propose the pages or groups themselves.
+For the close, the two shipped conditions are stated in `SKILL.md` and enforced only as far as `check.py` reads a `state:` line; the second half is ruled here as of 260816 and has not yet graduated into the door.
+- 260816 · 🏁 The close's second half was ruled, on JL's delegation
+  JL answered "make the decision yourself", so CC ruled all three holes in `§6`: the folder stays, the graduation audit is a report rather than a refusal, and a closed board reopens like any page.
+  The reopen ruling was wrong on its first pass and JL caught it in one line, "who said so???": CC had banned reopening while `QPw00`, both shipped agents and `QA00`'s own state line all reopen things, so the ban was struck and the ruling now only adds the `reopened:` record.
+  The graduation one was the load-bearing hole, because `QA6` §6.1 makes copying a settled Law the whole point of the loop and nothing checked that it happened; the fix is small and is a note on the Law row, `→ landed in <file>`, which turns the audit into a lookup.
+  Nothing is enforced yet: three Aims stay open for the note, the command, and the graduation into `SKILL.md`.
+- 260816 · 🏁 The close joined this page
+  The `close` verb has shipped since the family's early releases and no page had ever argued it: `§5` records what it does today, and `§6` now rules everything after it.
+- 260731 JL · 🗂 The groups settled at six
+  The QD split and flatten produced Working · Sharing · Execute behind the unchanged three-layer core, so this board demonstrated the full shape twice over.
+  Those three merged again on 260815 (`QO · Operating` plus `QF · Execute`), so a proposal method should treat Operating and Execute as the standing tail groups of a Skill-Board rather than three.
+- 260730 JL · 🧭 This board's own groups were restructured to the three-layer model
+  Seven groups became five: Design (what the system is) → Delivery (Board → Group → Page → Section → Sentence) → Engine (how it is made and shipped), plus Execute and Working.
+  The same Delivery → Engine → Execute split had just been field-tested on the paper family's Skill-Board.
+  Every page kept its id, because a page's letter is the group it was OPENED under, and the lane cells travelled with their pages (`lanes.py collect_kept`).
+  The 260815 restructure replaced the Delivery layer with the ladder (Board → Page-Structure · Page-Folder · Page-Workflow → Sentence), which is the shape a proposal method should now propose in.
+- 260726 JL · 🧩 The missing design layer was named
+  JL observed that current question names, page names, and especially proposed page groups are not consistently good, and asked for a dedicated place to design a better proposal method.
+- 260726 Cold read · 🧱 Inputs and acceptance tests were missing
+  A fresh reader rated the first draft half-clear because its action names, board types, page types, inputs, deliverable, and pass criteria were undefined. This revision defines those premises without deciding the still-open proposal algorithm.
+- 260726 Cold read 2 · 🧪 The design brief is clear; the test needed separation
+  A second fresh reader rated the page clear as an open design brief. It found that generation and index-reading tests were conflated and that `board.md` could not expose finish conditions. The tests now have separate agents, artifacts, answer keys, and judging sources.
+
 ## Log
 - 260816 · [REVISE-CC, JL delegated then corrected] `§7` went from three open holes to three rulings, on JL's "make the decision yourself".
   The folder stays, the graduation audit is a report with a `→ landed in` note behind it, and the reopen was ruled twice: CC banned it, JL replied "who said so???", and the ban was struck the same round because `QPw00`, both shipped agents and `QA00`'s own state line already reopen things.
@@ -360,3 +361,5 @@ The three close rows below are the exception and say so on their face: JL handed
 260726 · Opened from JL's request to design a better question, page-name, and page-group proposal method
 260726 · Revised after cold read to define inputs, terms, deliverable, fallback, fixtures, and acceptance tests
 260726 · Revised after second cold read to clarify `add`, group fallback, and two-stage validation
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

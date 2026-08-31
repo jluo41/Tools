@@ -56,6 +56,21 @@ how boards are discovered: TWO walks, and they do not agree
 
 
 ## Aims
+### Decision Now
+- [x] 🗣 How does a board's URL get short enough to sit in a reply?
+      ✅ `A`, ruled by JL 260802 ("go head, I want you to update" and then "It works Good"), built and live on 5599 the same day. Ticked by CC under the 260802 rule that a machine closes a row the human has already answered.
+      📍 `Part` the mount layer this page owns; `/Tools/plugins/haipipe-toolkit/skills/diagrams/…` is the long half
+      🔔 `Why now` JL 260802, of the strip's link: "I feel the URL here is too long". Today's page URL is 131 characters and 78 of them are the path from the repo root down to the board folder. `QD6`'s Law already hides the address behind the label, but a chat renderer expands `[label](url)` back into `label (url)`, so on that surface the length shows no matter what the strip does. This page's own Opening says people should not need to know a board's full path.
+      ⭐ `A ·` a short redirect route, `/b/<board-slug>/<page-id>`, answering 302 with the real file. 42 characters, a 68% cut. `live/home.py` already discovers every board folder and `status.py` already computes a short board name, so this is a lookup against a list that exists rather than a new registry.
+      `B ·` a shorter host: the tailnet MagicDNS name in place of the raw IP. 123 characters, a 6% cut. Nearly free, and on its own it fixes nothing.
+      `C ·` mount the diagrams tree at a short prefix, `/boards/<board-folder>/board/…`. 92 characters, a 30% cut. No redirect indirection to keep honest, but it needs a mount table maintained and still carries the whole `board/QO/QO2-session-status-strip.html` tail.
+      🛑 `Blocks` nothing; the strip works at any length.
+      🤖 `If nobody answers` A takes effect, with B applied alongside it when MagicDNS is available, which together give 34 characters.
+- [ ] 🗺 Choose the mount shape for the Docker service
+      A single board-folder mount reverses the 260724 page-serving widening and 404s a question's `## Files` drill-through links; a SKELETON mount (the board folder `rw`, the drill-through subtrees `ro` at their true relative depths) keeps every allowed `../` link resolving.
+      The reconciliation this page records is the skeleton mount; a tick here also closes the 🗺 row in Items to Finish.
+
+
 ### The mount: how many SPACEs, and how narrow
 - [x] Decide how many SPACEs one service mounts
       One service mounts N (the `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/console_api.py` registry pattern, as planned): `INLAB_SPACES` (json) > `INLAB_SPACE_STORE` (parent dir) > `INLAB_SPACE_ROOT` (single) > walking up from the service collecting `*-SPACE` dirs.
@@ -107,9 +122,10 @@ how boards are discovered: TWO walks, and they do not agree
       Not built.
       Today `open` remains a skill action from the CLI.
 
-## States
-**v1 shipped in `haichat-inlab` (`../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` + the Boards view), verified end to end on 260724.**
+## Discussion
 
+### From the retired States section (merged 260831)
+**v1 shipped in `haichat-inlab` (`../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` + the Boards view), verified end to end on 260724.**
 - The short route is BUILT, and option A of the URL-length row is what was built
   JL ruled it in chat on 260802 and the row below is closed with that answer recorded, under the same-day rule that a machine closes a row the person has already answered. `/b/<slug>[/<page-id>]` answers 302 with the real generated file, and the strip's link went from 131 characters to 42.
   `live/home.py` owns it: `board_slug()` strips the `NN-` ordinal and the `-YYMMDD` date, and `resolve_short()` walks the same `_manifests()` discovery the Home page already uses, so there is no second registry.
@@ -151,20 +167,6 @@ how boards are discovered: TWO walks, and they do not agree
   So "only things inside that board folder change" is already true; a narrow mount makes the same
   guarantee a second time at the kernel, which is the reason to want it rather than a reason to
   trust the code less.
-
-### Decision Now
-- [x] 🗣 How does a board's URL get short enough to sit in a reply?
-      ✅ `A`, ruled by JL 260802 ("go head, I want you to update" and then "It works Good"), built and live on 5599 the same day. Ticked by CC under the 260802 rule that a machine closes a row the human has already answered.
-      📍 `Part` the mount layer this page owns; `/Tools/plugins/haipipe-toolkit/skills/diagrams/…` is the long half
-      🔔 `Why now` JL 260802, of the strip's link: "I feel the URL here is too long". Today's page URL is 131 characters and 78 of them are the path from the repo root down to the board folder. `QD6`'s Law already hides the address behind the label, but a chat renderer expands `[label](url)` back into `label (url)`, so on that surface the length shows no matter what the strip does. This page's own Opening says people should not need to know a board's full path.
-      ⭐ `A ·` a short redirect route, `/b/<board-slug>/<page-id>`, answering 302 with the real file. 42 characters, a 68% cut. `live/home.py` already discovers every board folder and `status.py` already computes a short board name, so this is a lookup against a list that exists rather than a new registry.
-      `B ·` a shorter host: the tailnet MagicDNS name in place of the raw IP. 123 characters, a 6% cut. Nearly free, and on its own it fixes nothing.
-      `C ·` mount the diagrams tree at a short prefix, `/boards/<board-folder>/board/…`. 92 characters, a 30% cut. No redirect indirection to keep honest, but it needs a mount table maintained and still carries the whole `board/QO/QO2-session-status-strip.html` tail.
-      🛑 `Blocks` nothing; the strip works at any length.
-      🤖 `If nobody answers` A takes effect, with B applied alongside it when MagicDNS is available, which together give 34 characters.
-- [ ] 🗺 Choose the mount shape for the Docker service
-      A single board-folder mount reverses the 260724 page-serving widening and 404s a question's `## Files` drill-through links; a SKELETON mount (the board folder `rw`, the drill-through subtrees `ro` at their true relative depths) keeps every allowed `../` link resolving.
-      The reconciliation this page records is the skeleton mount; a tick here also closes the 🗺 row in Items to Finish.
 
 ## Files
 ### The short route, shipped 260802
@@ -221,3 +223,5 @@ One SPACE holds several boards.
 260724 1440 · Page serving widened to ANY existing file under the space root, read-only (JL: "how could I open cms_production.do?"): `## Files` links now open through the console; source-ish suffixes (.do/.R/.sql/…) display as text instead of downloading (both here and serve.py); the third discovered board (Project-Personality-OpioidRx/01-cmsdata) verified the click end to end. `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` rehomed to the sibling `haichat-board/` service (8094), inlab imports it; see QE3
 260724 1324 · v1 shipped and verified (JL's "go ahead… as we discussed"): `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` + Boards view in `haichat-inlab` (branch `feat/haichat-board`, commit 27e3ed6): SPACE registry, discovery, board list, embedded page, comment/discuss/resolve write-backs relayed to the skill's own writers. 🔴 → 🟡; still open: create-from-web, row-design judgment, a real second SPACE
 260724 1242 · Opened: JL asked for "haichat-board mounts a SPACE, and inside it you create a new board or open an existing one". Split out as the layer above a board; where the code runs belongs to QE3
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

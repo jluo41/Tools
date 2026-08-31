@@ -7,8 +7,8 @@ description: >-
   only CHECK may CLOSE. Trigger: run a page, run page lifecycle, automatic
   page loop, page run receipt, /haipipe-page-workflow.
 metadata:
-  version: "0.22.0"
-  last_updated: "2026-08-21"
+  version: "0.22.1"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -138,10 +138,12 @@ What this section adds is WHEN it is sent back in:
 
 Why the two lanes differ in shape: display units are independent of one another,
 so ③ fans out; the plan is ONE file that every return converges on, so ① cannot
-fan out and runs exactly once per round. An outline edit made in the dispatching
-session's own thread violates this section twice: it leaves no receipt, and an
-in-thread edit is contaminated by the discussion that caused it, which is the
-repo's own fresh-subagent rule applied to the plan.
+fan out and runs exactly once per round. A pass performed in a person's own
+session (the page chat, `haipipe-plugin-chat` §🔁) is a pass when it leaves the
+same trace an agent leaves: the plan, one log record with the receipt folded
+under it, and the strip in the reply. What this section forbids is the edit
+that leaves none of those, and the judgment of a version by the session that
+produced it: ⑦ CHECK is always a fresh context.
 
 ## 🧑 Where a RUN stops for a person (260819)
 

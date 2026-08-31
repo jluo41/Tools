@@ -309,44 +309,6 @@ Today's sweep turns B5 green, because four duplicate sentences were refused rath
 B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now carry a measured count each rather than a single example.
 
 ## Aims
-### A3 · 🔤 The shapes, which are the rows
-- A3.1 · The shape list matches what a board actually contains, rather than what the writer remembered.
-  **Done when:** Every shape the board sweep meets is a numbered row in `### 3`, and every row is either covered by a tier or recorded as out of scope.
-- A3.2 · The page stops offering a write control on a sentence that cannot take one.
-  **Done when:** The renderer marks a sentence with no single source line, and no ＋, 💬 or edit control is drawn on it.
-  **Plan:** Start with `#9`, the indented item explanation, which is 2724 of the 3067.
-
-### A5 · ✅ What "it works" has to mean, per cell
-- A5.1 · A correct refusal is reported as a result, not as a failure.
-  **Done when:** The run splits refusal from mismatch in its own output, and exits red only on a mismatch.
-- A5.2 · Every refusal a reader can meet is written in English.
-  **Done when:** Every refusal string in `live/write.py` reads in English, which is the rule the rest of the board already follows.
-
-### A6 · 🪜 Four tiers, cheapest first
-- A6.1 · Tier 1 reads every page of a board in one pass.
-  **Done when:** A full-board sweep reports zero unreadable pages and zero timeouts.
-- A6.2 · Tier 1 is proven to catch the regression it was built for.
-  **Done when:** Putting the ⚑ badge back into the payload turns the run red, and taking it out turns it green again.
-- A6.3 · Tier 2 reaches the endpoint contract without writing anything.
-  **Done when:** Each of the five write endpoints answers the "unchanged" refusal from a tree page and from the Index, over `127.0.0.1` and over the tailnet address.
-- A6.4 · Tier 4 proves each control opens and targets the sentence under the cursor.
-  **Done when:** `QF3`'s harness opens the double-click, ＋, 💬 and ⋯ paths on a plain and an apparatus sentence, and asserts the edit form's measured width.
-
-### A7 · 🧱 The fixture, and why it cannot be a real board
-- A7.1 · The fixture carries every shape in `### 3`.
-  **Done when:** All seventeen shapes appear in the fixture pages, including the joined paragraph, the managed span and the table row.
-- A7.2 · Tier 3 asserts the markdown diff rather than the status code.
-  **Done when:** Every cell asserts one record in the right slot with the rest of the file byte-identical, and a deliberate refusal counts as a pass.
-
-### A9 · 📋 The run sheet: every test, named
-- A9.1 · Every named check has a result.
-  **Done when:** All thirty-seven checks in `### 9` report pass or fail, and none is listed as not built.
-
-### P · 🏁 Page-level
-- P1 · A red sentence run has one ruled consequence, and it is the same one `QF1` gives its checker.
-  **Done when:** The rule is written on both pages, in the same words.
-
-## States
 ### Decision Now
 
 - [ ] 🚧 What does the page owe a sentence it can never write to?
@@ -374,29 +336,61 @@ B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now car
       🛑 `Blocks` A7.1.
       🤖 `If nobody answers` A.
 
+
 ### A3 · 🔤 The shapes, which are the rows
-- 🔨 A3.1 · Seventeen rows. The 260802 sweep added `#17`, the table row, and corrected `#15` from a `## Boundary` curiosity to the joined paragraph that every Opening and every `More details` part is. Nothing yet says which tier owns each row.
-- 🧠 A3.2 · Waiting on the first Decision Now row. The size is measured and the repair is not chosen.
+- 🔨 A3.1 · The shape list matches what a board actually contains, rather than what the writer remembered.
+  **Done when:** Every shape the board sweep meets is a numbered row in `### 3`, and every row is either covered by a tier or recorded as out of scope.
+  **Now:** Seventeen rows. The 260802 sweep added `#17`, the table row, and corrected `#15` from a `## Boundary` curiosity to the joined paragraph that every Opening and every `More details` part is. Nothing yet says which tier owns each row.
+- 🧠 A3.2 · The page stops offering a write control on a sentence that cannot take one.
+  **Done when:** The renderer marks a sentence with no single source line, and no ＋, 💬 or edit control is drawn on it.
+  **Now:** Waiting on the first Decision Now row. The size is measured and the repair is not chosen.
+
+  **Plan:** Start with `#9`, the indented item explanation, which is 2724 of the 3067.
 
 ### A5 · ✅ What "it works" has to mean, per cell
-- ⬜ A5.1 · Not started. The run prints every refusal as `FAIL` and exits 1, so a correct refusal and a real drift are indistinguishable in its output.
-- ⬜ A5.2 · Not started. Twenty of the twenty-four refusal strings in `live/write.py` are Chinese, on a board whose own checker reports CJK as a finding.
+- ⬜ A5.1 · A correct refusal is reported as a result, not as a failure.
+  **Done when:** The run splits refusal from mismatch in its own output, and exits red only on a mismatch.
+  **Now:** Not started. The run prints every refusal as `FAIL` and exits 1, so a correct refusal and a real drift are indistinguishable in its output.
+- ⬜ A5.2 · Every refusal a reader can meet is written in English.
+  **Done when:** Every refusal string in `live/write.py` reads in English, which is the rule the rest of the board already follows.
+  **Now:** Not started. Twenty of the twenty-four refusal strings in `live/write.py` are Chinese, on a board whose own checker reports CJK as a finding.
+
 
 ### A6 · 🪜 Four tiers, cheapest first
-- ✅ A6.1 · 55 pages, 0 unreadable, 0 timeouts on 260802. The per-page reconnect and the settle wait were already in `cli/sentencerun.py`; what stopped it was the live shell moving the document into an iframe, fixed by asking the server for `?pane=page`.
-- ⬜ A6.2 · Not started. The run has gone red on real defects, but never on a defect put back deliberately, which is the only proof that it would catch that class again.
-- ⬜ A6.3 · Not started. Nothing new is needed but a caller.
-- ⬜ A6.4 · Not started. It belongs in `QF3`'s harness rather than in a second browser runner.
+- ✅ A6.1 · Tier 1 reads every page of a board in one pass.
+  **Done when:** A full-board sweep reports zero unreadable pages and zero timeouts.
+  **Now:** 55 pages, 0 unreadable, 0 timeouts on 260802. The per-page reconnect and the settle wait were already in `cli/sentencerun.py`; what stopped it was the live shell moving the document into an iframe, fixed by asking the server for `?pane=page`.
+- ⬜ A6.2 · Tier 1 is proven to catch the regression it was built for.
+  **Done when:** Putting the ⚑ badge back into the payload turns the run red, and taking it out turns it green again.
+  **Now:** Not started. The run has gone red on real defects, but never on a defect put back deliberately, which is the only proof that it would catch that class again.
+- ⬜ A6.3 · Tier 2 reaches the endpoint contract without writing anything.
+  **Done when:** Each of the five write endpoints answers the "unchanged" refusal from a tree page and from the Index, over `127.0.0.1` and over the tailnet address.
+  **Now:** Not started. Nothing new is needed but a caller.
+- ⬜ A6.4 · Tier 4 proves each control opens and targets the sentence under the cursor.
+  **Done when:** `QF3`'s harness opens the double-click, ＋, 💬 and ⋯ paths on a plain and an apparatus sentence, and asserts the edit form's measured width.
+  **Now:** Not started. It belongs in `QF3`'s harness rather than in a second browser runner.
+
 
 ### A7 · 🧱 The fixture, and why it cannot be a real board
-- 🔨 A7.1 · 8 of 17 shapes: plain, apparatus, code span, bold, link, CJK, escaped punctuation, and the duplicate line. The missing nine include the managed span, the joined paragraph and the table row, which are the three the board sweep says matter most.
-- ✅ A7.2 · 40 cells on 260801: 33 wrote correctly and 7 refused where they had to, each asserted on the markdown rather than the status code, with the file byte-identical elsewhere.
+- 🔨 A7.1 · The fixture carries every shape in `### 3`.
+  **Done when:** All seventeen shapes appear in the fixture pages, including the joined paragraph, the managed span and the table row.
+  **Now:** 8 of 17 shapes: plain, apparatus, code span, bold, link, CJK, escaped punctuation, and the duplicate line. The missing nine include the managed span, the joined paragraph and the table row, which are the three the board sweep says matter most.
+- ✅ A7.2 · Tier 3 asserts the markdown diff rather than the status code.
+  **Done when:** Every cell asserts one record in the right slot with the rest of the file byte-identical, and a deliberate refusal counts as a pass.
+  **Now:** 40 cells on 260801: 33 wrote correctly and 7 refused where they had to, each asserted on the markdown rather than the status code, with the file byte-identical elsewhere.
+
 
 ### A9 · 📋 The run sheet: every test, named
-- 🔨 A9.1 · Fifteen green, three red, nineteen not built. B5 turned green on the sweep's four correctly refused duplicates; B1 now carries a board-wide number instead of one family's, and B6 and B7 became measured counts rather than examples.
+- 🔨 A9.1 · Every named check has a result.
+  **Done when:** All thirty-seven checks in `### 9` report pass or fail, and none is listed as not built.
+  **Now:** Fifteen green, three red, nineteen not built. B5 turned green on the sweep's four correctly refused duplicates; B1 now carries a board-wide number instead of one family's, and B6 and B7 became measured counts rather than examples.
+
 
 ### P · 🏁 Page-level
-- 🧠 P1 · Waiting on the second Decision Now row, which `QF1` must answer in the same words.
+- 🧠 P1 · A red sentence run has one ruled consequence, and it is the same one `QF1` gives its checker.
+  **Done when:** The rule is written on both pages, in the same words.
+  **Now:** Waiting on the second Decision Now row, which `QF1` must answer in the same words.
+
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -430,3 +424,5 @@ B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now car
 260801 · `sentencewrite.py` added (tier 3, fixture-based): 40 cells, 33 wrote correctly, 7 refused correctly, 0 failures. Seven defects found and fixed on the way: multi-line records, replay on four writers, resolve ambiguity, strike/image normalization, paper chips, the injected 💬 marker, and the indented-line corruption
 260801 · §9 run sheet written: 37 named checks in six groups. First results: 14 pass (all of selection, one full edit round trip, the form), 3 fail (all of them sentences with no source line), 20 not yet built
 260801 · Opened on JL's ask for a thorough sentence test series. Tier 1 (`sentencerun.py`) written and run: 70 writable sentences across the QB8 family, 3 unanchored (2 joined Boundary rows, 1 generated placeholder), 2 harness defects found. The server's duplicate matcher in `add_sentence` collapsed into `_sentence_line`, which also gave that path the ambiguity refusal it never had
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

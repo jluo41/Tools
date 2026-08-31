@@ -171,29 +171,6 @@ A question is asked once, and the card id exists precisely to prevent the duplic
 
 ## Aims
 
-### A1 · 🧭 OUTLINE owns the shape and nothing that fills it
-- A1.1 · The authority test is written so a reader can classify any edit without reading the diff.
-  Done when five decisions are classified in the division and each names the phase that owns it.
-- A1.2 · The Page Type's `outline:` block is honoured by every plan on this board.
-  Done when a checker rejects a plan naming a division its Page Type does not declare.
-
-### A2 · 💸 The gate is cheap on purpose, and that is the whole argument
-- A2.1 · The cost asymmetry is stated as a comparison a reader can check, not as an assertion.
-  Done when the before-and-after costs are shown side by side for three kinds of change.
-
-### A3 · 🚧 One file, one tick, and no machine may write it
-- A3.1 · The tick has been exercised by a person on a real page at least once.
-  Done when one `<page>/outline/<stem>-outline-v<N>.md` on any board carries `approved: ✅` with a name and a date.
-
-### A4 · 🔒 Before the tick it is a working document, after it is frozen
-- A4.1 · A superseded plan is kept rather than corrected, on every board.
-  Done when a `v2` exists somewhere with `supersedes: v1` and `v1` still on disk.
-
-### A5 · 🕳 A hole is the phase working, not the phase failing
-- A5.1 · No approved plan on this board asserts a value it does not have.
-  Done when every 🔢 bullet in every approved plan names a mark rather than a number.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether an UNAPPROVED plan may be deleted with no record at all
       📍 `Part` §4, the two regimes
@@ -203,21 +180,39 @@ A question is asked once, and the card id exists precisely to prevent the duplic
       🛑 `Blocks` A4.1, and the plugin's version rules
       🤖 `If nobody answers` A takes effect, because it is what the shipped contract says today
 
+
 ### A1 · 🧭 OUTLINE owns the shape and nothing that fills it
-- ✅ A1.1 · Met. Five decisions are classified in `§1` and each names its owning phase.
-- ⬜ A1.2 · Not started. No checker reads a Page Type's `outline:` block against a plan yet.
+- ✅ A1.1 · The authority test is written so a reader can classify any edit without reading the diff.
+  Done when five decisions are classified in the division and each names the phase that owns it.
+  **Now:** Met. Five decisions are classified in `§1` and each names its owning phase.
+- ⬜ A1.2 · The Page Type's `outline:` block is honoured by every plan on this board.
+  Done when a checker rejects a plan naming a division its Page Type does not declare.
+  **Now:** Not started. No checker reads a Page Type's `outline:` block against a plan yet.
+
 
 ### A2 · 💸 The gate is cheap on purpose, and that is the whole argument
-- ✅ A2.1 · Met. Three kinds of change are costed before and after the prose in `§2`.
+- ✅ A2.1 · The cost asymmetry is stated as a comparison a reader can check, not as an assertion.
+  Done when the before-and-after costs are shown side by side for three kinds of change.
+  **Now:** Met. Three kinds of change are costed before and after the prose in `§2`.
+
 
 ### A3 · 🚧 One file, one tick, and no machine may write it
-- ⬜ A3.1 · Not started. The phase ships at `haipipe-page-outline` 0.1.1 and no page on any board carries an `approved: ✅` outline file.
+- ⬜ A3.1 · The tick has been exercised by a person on a real page at least once.
+  Done when one `<page>/outline/<stem>-outline-v<N>.md` on any board carries `approved: ✅` with a name and a date.
+  **Now:** Not started. The phase ships at `haipipe-page-outline` 0.1.1 and no page on any board carries an `approved: ✅` outline file.
+
 
 ### A4 · 🔒 Before the tick it is a working document, after it is frozen
-- 🧠 A4.1 · Waiting on the Decision Now row above, which decides what happens to an unapproved version.
+- 🧠 A4.1 · A superseded plan is kept rather than corrected, on every board.
+  Done when a `v2` exists somewhere with `supersedes: v1` and `v1` still on disk.
+  **Now:** Waiting on the Decision Now row above, which decides what happens to an unapproved version.
+
 
 ### A5 · 🕳 A hole is the phase working, not the phase failing
-- ⬜ A5.1 · Not measurable yet, because no approved plan exists to measure.
+- ⬜ A5.1 · No approved plan on this board asserts a value it does not have.
+  Done when every 🔢 bullet in every approved plan names a mark rather than a number.
+  **Now:** Not measurable yet, because no approved plan exists to measure.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -259,3 +254,5 @@ A question is asked once, and the card id exists precisely to prevent the duplic
 
 ## Log
 - 260818 · [DRAFT-CC] page created on JL's ruling that each workflow step gets its own page, one of `QPw1` to `QPw6`. Written from `haipipe-page-outline` 0.1.0, which shipped 260817 when JL ruled OUTLINE out of DRAFT. Five divisions: the authority test, the cost asymmetry that argues the gate, the file and its single human tick, the unapproved-versus-frozen regimes, and the hole rule. The `v2 does not mean v1 was wrong` ruling and the no-machine-writes-the-tick law were carried in as `## Law` rows rather than restated in prose. One thing the contract leaves open became the Decision Now row: it says an unapproved plan needs no record, while this board's own habit is that nothing is deleted, only archived.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

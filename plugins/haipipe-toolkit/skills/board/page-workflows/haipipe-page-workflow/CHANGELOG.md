@@ -1,3 +1,16 @@
+## 0.22.1 — 2026-08-31
+
+- `ref/phase-cards.md` ① and ④ aligned with `haipipe-page-outline` 0.12.0 and
+  `haipipe-page-draft` 0.10.0: ① writes the plan, the open `D<nn>` records and
+  one log record and exits on FIVE checks (⓪ ARC added; ④ SHAPE carries the
+  head and Note law); ④ writes sentences ending `<!-- realizes: … -->` with a
+  `> Value:` lane per number and no hole token, and one log record with the
+  diff folded (the `States section` and `<HOLE>` are gone).
+- §🧭 no longer forbids the in-session outline pass: a pass in the page chat
+  that leaves the plan, one log record with the receipt folded under it and
+  the strip is a pass; the section forbids a traceless edit and a
+  self-judged version.
+
 ## 0.22.0 — 2026-08-28
 
 - Two pre-dispatch duties before CHECK, priced on the SD02-roadmap live run

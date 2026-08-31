@@ -383,6 +383,48 @@ def _gt_link(group, group_href):
     return f'<a href="{h}">{inline(group)}</a>' if h else inline(group)
 
 
+# ── desk sub-blocks (PaperSkillBoard QA1 Decision Now, JL 260831) ──────────
+# A paper board keeps ONE group per desk (`B<x>-<desk>`) holding its section
+# pages (S<D> token = main, A<D> token = appendix) and its rounds (RD token)
+# together; that is the layout law of haipipe-paper-workflow §Group mapping.
+# Sixteen rows under one heading hid the paper's shape (JL 260831, reading the
+# MISQ index), so the index and the Pages sidebar cut a desk group into
+# sub-blocks by the page-id TOKEN instead of renaming folders. Only a
+# `dialect: paper` board, only a group whose pages span two or more token
+# families; every other board renders exactly as before.
+def _id_token(qid):
+    m = re.match(r"[A-Za-z]+", qid or "")
+    return m.group(0) if m else (qid or "")
+
+
+def _token_label(tok):
+    u = tok.upper()
+    if u == "RD":
+        return "rounds"
+    if u == "SA":                      # Section-Appendix (JL 260831)
+        return "appendix"
+    if u.startswith("S"):
+        return "main sections"
+    if u.startswith("A"):              # grandfathered A<D> boards
+        return "appendix"
+    return tok
+
+
+def desk_subblocks(meta, qs):
+    """{group: True} for every group of a paper board whose pages span two
+    or more id-token families; the caller emits a sub-heading where the
+    token changes. Empty for any other board, so nothing else moves."""
+    dialect = ((meta or {}).get("dialect") or "").split("#", 1)[0].strip()
+    if dialect != "paper":
+        return {}
+    fam = {}
+    for q in qs:
+        if q.get("kind") == "doc" or not q.get("group"):
+            continue
+        fam.setdefault(q["group"], set()).add(_id_token(q["id"]))
+    return {g: True for g, s in fam.items() if len(s) >= 2}
+
+
 def _gi_body(gi):
     """The group intro's expandable body, shared by the index listing and the
     group's own page: prose lines join with <br> (keeping the author's line
@@ -435,10 +477,12 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 if progress["total"] else 0.0)
 
     ginfo = meta.get("groups") or {}
-    rows, cur = [], None
+    dsubs = desk_subblocks(meta, qs)
+    rows, cur, cur_tok = [], None, None
     for q in qs:
         if q.get("group") and q["group"] != cur:
             cur = q["group"]
+            cur_tok = None
             # A group is a place you can travel to (JL 260730): the canvas draws
             # groups, so a group heading needs an anchor of its own. It is NOT a
             # page — `#group-QA` scrolls the index, it does not open a card — so
@@ -466,6 +510,13 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 f'<span class="t">{nav_inline(q["title"])}</span>'
                 f'<span class="w"></span></a>')
             continue
+        if dsubs.get(cur):
+            tok = _id_token(q["id"])
+            if tok != cur_tok:
+                cur_tok = tok
+                rows.append(f'<div class="dsub" data-sub="{esc(tok)}">'
+                            f'<span class="st">{esc(tok)}</span>'
+                            f'<span class="sl">{esc(_token_label(tok))}</span></div>')
         # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
         fr = frac_done(q)
         pct = round(fr * 100)
@@ -479,21 +530,32 @@ def index_rows(meta, qs, href_for=None, group_href=None):
     return rows
 
 
-def sidebar_rows(qs, href_for=None, group_href=None):
+def sidebar_rows(qs, href_for=None, group_href=None, meta=None):
     """The sidebar's rows: group links, page links, and each page's section
-    outline. ONE implementation for the canonical site and legacy renderer."""
+    outline. ONE implementation for the canonical site and legacy renderer.
+    `meta` carries the board dialect for the desk sub-blocks; without it the
+    sidebar renders flat groups, as every non-paper board does anyway."""
     href_for = href_for or (lambda q: "#" + q["id"])
     group_href = group_href or (lambda tok: "#group-" + tok)
+    dsubs = desk_subblocks(meta, qs)
 
     def st(q):
         return stinfo(q["state"])
 
-    sb, sbcur = [], None
+    sb, sbcur, sbtok = [], None, None
     for q in qs:
         if q.get("group") and q["group"] != sbcur:
             sbcur = q["group"]
+            sbtok = None
             sb.append(f'<a class="sb-g" href="{group_href(bd.group_token(sbcur))}">'
                       f'{nav_inline(sbcur)}</a>')
+        if dsubs.get(sbcur) and q.get("kind") != "doc":
+            tok = _id_token(q["id"])
+            if tok != sbtok:
+                sbtok = tok
+                sb.append(f'<div class="sb-sub" data-sub="{esc(tok)}">'
+                          f'<span class="st">{esc(tok)}</span> '
+                          f'<span class="sl">{esc(_token_label(tok))}</span></div>')
         chev = ('' if q.get("kind") == "doc"
                 else '<span class="sb-x" title="sections">▸</span>')
         # `data-page` is what the sidebar matches the open page against. The href
@@ -588,7 +650,7 @@ def render(meta, qs):
     # Index → group → page, so a reader can jump from anywhere. It lives
     # OUTSIDE .wrap, so the :target show/hide rules never touch it; a group
     # link re-targets #group-… which also brings the index back on stage.
-    sb = sidebar_rows(qs)
+    sb = sidebar_rows(qs, meta=meta)
     # The Index row unfolds too (QB2a, JL 260731: "what should be the index's
     # section content? Please add them as well"): its rows are the Index's own
     # components in on-page order, each present only when the board has it.
@@ -893,7 +955,8 @@ def tree_sidebar(meta, qs, root):
             '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
             f'<a class="sb-top" data-page="top" href="{root}index.html">🗂 Index</a>'
             + "".join(sidebar_rows(qs, href_for=_href,
-                                   group_href=lambda tok: f"{root}{tok}.html"))
+                                   group_href=lambda tok: f"{root}{tok}.html",
+                                   meta=meta))
             + '</nav>')
 
 

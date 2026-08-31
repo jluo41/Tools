@@ -17,12 +17,13 @@ reviewable set of question pages or lifecycle stages.
   Page's `Files › Related Board Pages` rows add checked, phase-scoped context;
   the engine reads them once through `cli/pagecontext.py`, never recursively.
 - `page-types/` holds the ONE variant this skill set still owns. A variant
-  ships under the `page-types/` folder of the skill set that owns it (JL
-  260809), so the paper, application, task and labeling variants live with
-  their own families: `paper/page-types/` (section · narrative · seed · venue ·
-  round), `application/page-types/` (brief · insight · intervention ·
-  artifact), `task/page-types/` (task) and
-  `subjective-label/skills/page-types/` (labeling). Twelve ship in total.
+  ships in the folder of the skill set that owns it (JL 260809; paper amended
+  JL 260831), so the paper, application, task and labeling variants live with
+  their own families: `paper/workflow-phases/` (six haipipe-paper-<phase>
+  skills) plus `paper/haipipe-paper-venue/`, `application/page-types/`
+  (brief · insight · intervention · artifact), `task/page-types/` (task) and
+  `subjective-label/skills/page-types/` (labeling). The live inventory is
+  `haipipe-board/cli/pagetypes.py` output.
   - `haipipe-page-for-stage/` is the VARIANT for `S-<Family>-<unit>` lifecycle
     pages. It owns the persistent chain and gate shape, not the active phase. It
     stays here because a stage page is a BOARD mechanism that both the paper and

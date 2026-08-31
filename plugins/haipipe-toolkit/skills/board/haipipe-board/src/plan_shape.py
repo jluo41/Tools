@@ -30,7 +30,10 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     finds nothing and reported all eleven types as having none (260819)."""
     if not kind:
         return {}
-    hits = list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
+    hits = (list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
+            # paper ships its types as journey-phase skills since 260831
+            or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
+            or list(skills_root.glob("paper/haipipe-paper-%s/SKILL.md" % kind)))
     if not hits:
         return {"missing": kind}
     t = hits[0].read_text(encoding="utf-8", errors="replace")
@@ -80,6 +83,19 @@ def _resolve_source(
         if candidate.is_file():
             return candidate.resolve()
     return None
+
+
+def _is_venue_page(path: pathlib.Path) -> bool:
+    """True when the chosen structure source is itself a venue Page: filename
+    QBv<n>- (the engine's own venue resolution rule) or a `page-type: venue`
+    line in its head."""
+    if re.match(r"QBv\d+-", path.name):
+        return True
+    try:
+        head = path.read_text(encoding="utf-8", errors="ignore")[:2000]
+    except OSError:
+        return False
+    return bool(re.search(r"^page-type:\s*venue\s*$", head, re.M))
 
 
 def _has_marker(path: pathlib.Path, marker: str) -> bool:
@@ -150,6 +166,11 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
             elif chosen is None:
                 out.append("`structure-source:` %r resolves to nothing" % chosen_raw)
             elif fallback_path is not None and chosen == fallback_path:
+                pass
+            elif _is_venue_page(chosen):
+                # a QBv venue Page is the CURRENT desk authority by
+                # construction (the bank is maintained); the marker gate is
+                # for loose template files, whose era nothing else dates
                 pass
             elif marker and not _has_marker(chosen, marker):
                 out.append(
@@ -249,7 +270,7 @@ def check_bullet_grammar(plan_text: str):
         j, folded = i + 1, False
         while (j < len(lines) and lines[j].startswith("  ")
                and not lines[j].lstrip().startswith("- ")):
-            if re.match(r"^\s+(Note|More|Answered|Drawn):", lines[j]):
+            if re.match(r"^\s+(Note|More|Answered|Drawn|Routed):", lines[j]):
                 folded = True
                 break
             j += 1
@@ -318,7 +339,9 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
                                    bib.read_text(encoding="utf-8",
                                                  errors="replace")))
 
-    _PATS = {"probe": r"PP\d+", "value": r"PP\d+(?:\.v\d+)?",
+    # `PP<NN>` standing alone: `Routed: RD01 S1-PP5` is a Round row id, not a card
+
+    _PATS = {"probe": r"(?<![A-Za-z0-9-])PP\d+", "value": r"(?<![A-Za-z0-9-])PP\d+(?:\.v\d+)?",
              "display": r"Display\d+",
              "citation": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*"}
     out, cited = [], set()
@@ -379,4 +402,116 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
         m = re.search(r"Display\d+", name)
         if (m.group(0) if m else name) not in cited:
             out.append("%s is on disk and no bullet cites it" % name)
+    return out
+
+
+# ── the head and Note law (haipipe-plugin-outline ref/plan-grammar.md §3, §4) ──
+_MARK_EMOJI = "🎯📚📮🧮🔢🖼"
+NOTE_MAX = 30          # the specimen's longest Note is 27 words
+_LABEL_RE = re.compile(r"^\s+(Note|More|Answered|Drawn|Routed):")
+
+
+def _head_words(head: str) -> list:
+    """The words of a bullet head: the `S<n> ·` slot tag, a `Cut:`/`C<n>:` tag,
+    the marks and their ids are not counted; a head is judged on what it SAYS."""
+    h = re.sub(r"^(?:S\d+\s*·\s*)", "", head.strip())
+    h = re.sub(r"^(?:Cut:|C\d+:)\s*", "", h)
+    h = re.split(r"[%s]" % _MARK_EMOJI, h)[0]
+    h = h.replace("·", " ")
+    return [w for w in re.split(r"\s+", h.strip()) if w and not re.fullmatch(r"[\W_]+", w)]
+
+
+def _bullets_with_notes(plan_text: str):
+    """-> [(address, head, note_lines, extra_lines)] for every bullet: the head,
+    the labelled continuation lines, and the indented lines that follow a Note
+    WITHOUT a label (a Note that wrapped onto a second source line)."""
+    out, cn, pn, sn = [], 0, 0, 0
+    lines = plan_text.splitlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
+            break
+        mc = re.match(r"^## C(\d+)\b", line)
+        if mc:
+            cn = int(mc.group(1)); pn = 0; i += 1; continue
+        if line.startswith("### "):
+            mp = re.match(r"^### C\d+\.P(\d+)\b", line)
+            pn = int(mp.group(1)) if mp else pn + 1; sn = 0; i += 1; continue
+        m = re.match(r"^- (?:\[[ xX]\] )?B(\d+)\s*·\s*(.*)$", line)
+        if not m:
+            i += 1; continue
+        sn = int(m.group(1))
+        head = m.group(2)
+        notes, extra, j, in_note = [], [], i + 1, False
+        while j < len(lines) and lines[j].startswith("  ") and not lines[j].lstrip().startswith("- "):
+            if _LABEL_RE.match(lines[j]):
+                in_note = lines[j].lstrip().startswith("Note:")
+                notes.append(lines[j].strip())
+            elif in_note and lines[j].strip():
+                extra.append(lines[j].strip())
+            j += 1
+        out.append(("C%d.P%d.B%d" % (cn, max(pn, 1), sn), head, notes, extra))
+        i = j
+    return out
+
+
+def check_head_style(plan_text: str):
+    """-> (fails, gaps) · the head and Note teeth of ref/plan-grammar.md.
+
+    fails  `head-too-long`     a head over 11 words
+           `note-too-long`     a Note over NOTE_MAX words, its wrapped source
+                               lines joined (a hard wrap is still one Note)
+    gaps   `head-too-short`    a head under 4 words (`Trait relevance`): the
+                               code-word style, reported so the migration debt
+                               is visible without failing every old plan"""
+    fails, gaps = [], []
+    for addr, head, notes, extra in _bullets_with_notes(plan_text):
+        n = len(_head_words(head))
+        if n > 11:
+            fails.append("%s head-too-long: %d words (max 11): %r" % (addr, n, head[:60]))
+        elif 0 < n < 4:
+            gaps.append("%s head-too-short: %d word(s), a code-word head: %r" % (addr, n, head[:60]))
+        note = " ".join([x[5:] for x in notes if x.startswith("Note:")] + extra)
+        note = re.split(r"[%s]" % _MARK_EMOJI, note)[0]
+        nw = len([w for w in re.split(r"\s+", note.strip()) if w])
+        if nw > NOTE_MAX:
+            fails.append("%s note-too-long: %d words (max %d)" % (addr, nw, NOTE_MAX))
+    return fails, gaps
+
+
+def _content_text(page_src: pathlib.Path) -> str:
+    try:
+        text = page_src.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    m = re.search(r"(?ms)^## Content\b[^\n]*\n(.*?)(?=^## |\Z)", text)
+    body = m.group(1) if m else ""
+    body = "\n".join(ln for ln in body.splitlines() if not ln.lstrip().startswith(">"))
+    return re.sub(r"\s+", " ", body).lower()
+
+
+def check_note_quotes_page(page_src: pathlib.Path, plan_text: str, window: int = 8):
+    """-> [finding] · `note-quotes-page`: a head or Note that carries the page's
+    own sentence (any run of `window` consecutive words found verbatim in the
+    page's Content). The plan says what a sentence must DO; the sentence lives
+    on the page."""
+    content = _content_text(page_src)
+    if not content:
+        return []
+    out = []
+    for addr, head, notes, _extra in _bullets_with_notes(plan_text):
+        texts = [head] + [re.sub(r"^(Note|More):\s*", "", n) for n in notes
+                          if n.startswith(("Note:", "More:"))]
+        for t in texts:
+            t = re.split(r"[%s]" % _MARK_EMOJI, t)[0]
+            words = [w for w in re.split(r"\s+", re.sub(r"\s+", " ", t).lower().strip()) if w]
+            hit = None
+            for k in range(0, max(0, len(words) - window + 1)):
+                run = " ".join(words[k:k + window])
+                if len(run) >= 40 and run in content:
+                    hit = run; break
+            if hit:
+                out.append("%s note-quotes-page: %r appears verbatim in the page" % (addr, hit[:70]))
+                break
     return out

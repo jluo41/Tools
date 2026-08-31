@@ -5,6 +5,8 @@
 
 When --host, --port, --space-name, --public-url, or --auth-file is omitted,
 the matching non-secret setting in <root>/.server_config/settings.env is used.
+The explicit --no-auth flag disables HTTP Basic Auth for a trusted private
+network such as a Tailscale tailnet.
 
 Why this exists (JL, 260723): the first design had the browser write the .md
 itself via the File System Access API. That cannot work here — the browser runs
@@ -46,10 +48,10 @@ That venv is uv-managed and has no pip — install into it with:
 it isn't already looking at.
 
 Deliberately narrow, because this is a write endpoint:
-  · binds 127.0.0.1 unless --host says otherwise. There is no auth of any kind
-    and /_term/ is a real shell, so every address you bind to is an address that
-    can run commands as you. A tailnet address (100.x) keeps that inside your own
-    devices; 0.0.0.0 hands it to the whole local network.
+  · binds 127.0.0.1 unless --host says otherwise. With --no-auth, /_term/ is a
+    real shell available to every device that can reach the selected address.
+    A tailnet address (100.x) keeps that inside the tailnet; 0.0.0.0 hands it
+    to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
     · the filename must match Q*.md or S*.md
   · writes are limited to sentence-adjacent comments, one-sentence edits, and
@@ -98,6 +100,7 @@ from live import chat as live_chat
 from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
                        spawn_pty, pty_pump, pty_resize, ws_send)
 from live.xcal import XcalMixin
+from live.evidence import EvidenceTabMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
@@ -133,7 +136,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -244,6 +247,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/value":
             # 🔢 every number the page owes or uses, joined both ways (QPw4v)
             return self.value_view()
+        if self.path.split("?", 1)[0] == "/_board/evidence":
+            # 🧾 ONE surface over the four evidence lanes (JL 260831)
+            return self.evidence_tab_view()
         if self.path.split("?", 1)[0] == "/_board/pageruns":
             # 🪜 one page's lifecycle receipts, for the Page phases stepper
             return self.pageruns_view()
@@ -320,6 +326,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.outline_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/value":
             return self.value_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/evidence":
+            return self.evidence_tab_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -533,6 +541,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.plug_value(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/evidence":    # 🧾 the same live twin (JL 260831)
+            res, err = self.plug_evidence(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/display":    # list display/ units + previews
             res, err = self.plug_display(p)
             return self.reply(200 if not err else 400,
@@ -651,6 +663,8 @@ if __name__ == "__main__":
                          "instead of holding one per question")
     ap.add_argument("--auth-file", metavar="PATH",
                     help="optional username:password file; required for a non-loopback host")
+    ap.add_argument("--no-auth", action="store_true",
+                    help="disable HTTP Basic Auth; only use on a trusted private network")
     ap.add_argument("--space-name", default="",
                     help="display name for the SPACE Home, e.g. Physician-SPACE")
     ap.add_argument("--public-url", default="",
@@ -667,18 +681,21 @@ if __name__ == "__main__":
             port = int(raw_port) if raw_port else 5599
         except ValueError:
             ap.error(f"invalid port in {config_dir / 'settings.env'}: {raw_port!r}")
-    auth_arg = a.auth_file or config.get("JJLUO_AUTH_FILE")
-    if auth_arg:
-        auth_path = Path(auth_arg).expanduser()
-        if not auth_path.is_absolute() and not a.auth_file:
-            auth_path = Path(a.root).resolve() / auth_path
-        auth_file = auth_path.resolve()
-    else:
+    if a.no_auth:
         auth_file = None
+    else:
+        auth_arg = a.auth_file or config.get("JJLUO_AUTH_FILE")
+        if auth_arg:
+            auth_path = Path(auth_arg).expanduser()
+            if not auth_path.is_absolute() and not a.auth_file:
+                auth_path = Path(a.root).resolve() / auth_path
+            auth_file = auth_path.resolve()
+        else:
+            auth_file = None
     space_name = (a.space_name or config.get("JJLUO_SPACE_NAME") or "").strip()
     public_url = (a.public_url or config.get("JJLUO_PUBLIC_URL") or
                   config.get("JJLUO_TAILSCALE_URL") or "").strip()
-    if not host_is_loopback(host) and auth_file is None:
+    if not host_is_loopback(host) and auth_file is None and not a.no_auth:
         ap.error("--auth-file is required when --host is not loopback")
     try:
         Handler.configure_auth(auth_file)
@@ -733,7 +750,7 @@ if __name__ == "__main__":
           + ("" if host_is_loopback(host) else
              f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n")
           + f"   评论 / 状态：直接写在这台机器上\n"
-          f"   认证：{'on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'}\n"
+          f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'))}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
           f"   OAuth 来源：{src}"
           + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")

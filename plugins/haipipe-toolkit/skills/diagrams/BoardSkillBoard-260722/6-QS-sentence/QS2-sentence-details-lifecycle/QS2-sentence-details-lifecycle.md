@@ -134,35 +134,6 @@ Archive and restore therefore cannot use `QB8e.C1.P1.S1` as durable identity.
 The remaining identity decision is whether an attached sentence receives a hidden stable key or whether archive is intentionally page-level and cannot restore to a sentence after its wording changes.
 
 ## Aims
-### A1 · 🪟 The surface
-- A1.1 · The surface is named: Sentence details for the reader, apparatus for the technical record layer.
-  **Done when:** The page and the rendered panel use Sentence details as the user-facing name and apparatus only for the attached records.
-- A1.2 · JL accepts the default Overview and sticky filter behavior.
-  **Done when:** JL has answered the matching Decision Now row on Overview counts, the one representative record per family, and the sticky selected type.
-- A1.3 · Filters, counts, and bounded panel height are implemented.
-  **Done when:** The reader can isolate one family without expanding every record beneath the sentence, and the panel scrolls internally at its maximum height.
-
-### A2 · 🧱 Three record families
-- A2.1 · The three lifecycle families stay separate.
-  **Done when:** §2 records distinct membership for Comments, Evidence, and Changes, and no retention rule treats the three families as one.
-- A2.2 · Explicit record states are defined and rendered.
-  **Done when:** Comments render open and resolved; Evidence renders current, superseded, rejected, and broken.
-
-### A3 · 🧹 Cleanup lifecycle
-- A3.1 · Previewed archive-first cleanup is implemented.
-  **Done when:** Cleanup keeps active records, retains the configured recent history, previews every move, and supports restore.
-
-### A4 · 🔑 Identity
-- A4.1 · Durable sentence identity is decided.
-  **Done when:** JL has chosen a hidden stable sentence key or page-level archive with limited restoration, and the ruling is recorded on this page.
-
-### P · 🏁 Page-level
-- P1 · QB8e stands as the one independent lifecycle Q.
-  **Done when:** `QB8e` owns filtering, record state, cleanup, archive, restore, and purge, and no other page claims that lifecycle.
-- P2 · Fresh-context lifecycle acceptance passes.
-  **Done when:** A new agent discovers the rules, preserves active records, archives only eligible records, and stops before purge.
-
-## States
 ### Decision Now
 - [ ] 🧠 JL accepts the default Overview and sticky filter behavior
       Overview shows counts plus at most one representative record from each family, and the selected type stays sticky while the reader moves between sentences.
@@ -175,25 +146,53 @@ The remaining identity decision is whether an attached sentence receives a hidde
       B · keep archive page-level, which commits the reader to losing per-sentence restore after a sentence's wording changes.
       → CC recommends A, because restore that finds its sentence again is what makes the archive recoverable rather than a dump.
 
+
 ### A1 · 🪟 The surface
-- 🔨 A1.1 · Partly met; §1 and the Glossary record Sentence details as the user-facing name and apparatus as the technical record layer, but the rendered panel in `haipipe-board/src/body.py` does not yet carry the Sentence details name, so the render half of Done when still waits on implementation.
-- 🧠 A1.2 · Waiting on JL; the Overview and sticky filter default is the first Decision Now row above.
-- ⬜ A1.3 · Not started; no filter, count, or bounded-height code exists.
+- 🔨 A1.1 · The surface is named: Sentence details for the reader, apparatus for the technical record layer.
+  **Done when:** The page and the rendered panel use Sentence details as the user-facing name and apparatus only for the attached records.
+  **Now:** Partly met; §1 and the Glossary record Sentence details as the user-facing name and apparatus as the technical record layer, but the rendered panel in `haipipe-board/src/body.py` does not yet carry the Sentence details name, so the render half of Done when still waits on implementation.
+- 🧠 A1.2 · JL accepts the default Overview and sticky filter behavior.
+  **Done when:** JL has answered the matching Decision Now row on Overview counts, the one representative record per family, and the sticky selected type.
+  **Now:** Waiting on JL; the Overview and sticky filter default is the first Decision Now row above.
+- ⬜ A1.3 · Filters, counts, and bounded panel height are implemented.
+  **Done when:** The reader can isolate one family without expanding every record beneath the sentence, and the panel scrolls internally at its maximum height.
+  **Now:** Not started; no filter, count, or bounded-height code exists.
+
 
 ### A2 · 🧱 Three record families
-- ✅ A2.1 · Met: §2 records distinct membership and a separate retention rule for Comments, Evidence, and Changes.
-- ⬜ A2.2 · Not started; no record state is rendered anywhere.
+- ✅ A2.1 · The three lifecycle families stay separate.
+  **Done when:** §2 records distinct membership for Comments, Evidence, and Changes, and no retention rule treats the three families as one.
+  **Now:** Met: §2 records distinct membership and a separate retention rule for Comments, Evidence, and Changes.
+- ⬜ A2.2 · Explicit record states are defined and rendered.
+  **Done when:** Comments render open and resolved; Evidence renders current, superseded, rejected, and broken.
+  **Now:** Not started; no record state is rendered anywhere.
+
 
 ### A3 · 🧹 Cleanup lifecycle
-- ⬜ A3.1 · Not started; §3 records the archive-first rule, but no preview, archive store, restore, or purge path exists.
+- ⬜ A3.1 · Previewed archive-first cleanup is implemented.
+  **Done when:** Cleanup keeps active records, retains the configured recent history, previews every move, and supports restore.
+  **Now:** Not started; §3 records the archive-first rule, but no preview, archive store, restore, or purge path exists.
+
 
 ### A4 · 🔑 Identity
-- 🧠 A4.1 · Waiting on JL; the identity choice is the second Decision Now row above.
+- 🧠 A4.1 · Durable sentence identity is decided.
+  **Done when:** JL has chosen a hidden stable sentence key or page-level archive with limited restoration, and the ruling is recorded on this page.
+  **Now:** Waiting on JL; the identity choice is the second Decision Now row above.
+
 
 ### P · 🏁 Page-level
-- ✅ P1 · Met: this page exists as the independent lifecycle Q and owns filtering, record state, cleanup, archive, restore, and purge.
-- ⬜ P2 · Not started; acceptance can only run after A1.3, A2.2, and A3.1 land.
+- ✅ P1 · QB8e stands as the one independent lifecycle Q.
+  **Done when:** `QB8e` owns filtering, record state, cleanup, archive, restore, and purge, and no other page claims that lifecycle.
+  **Now:** Met: this page exists as the independent lifecycle Q and owns filtering, record state, cleanup, archive, restore, and purge.
+- ⬜ P2 · Fresh-context lifecycle acceptance passes.
+  **Done when:** A new agent discovers the rules, preserves active records, archives only eligible records, and stops before purge.
+  **Now:** Not started; acceptance can only run after A1.3, A2.2, and A3.1 land.
 
+
+## Discussion
+
+### From the retired States section (merged 260831)
+### P · 🏁 Page-level
 `QB8e` now exists as the independent Sentence details lifecycle decision.
 The name, three record families, and archive-first safety boundary are recorded, but no filter, state marker, archive store, restore path, stable key, or purge action has been implemented.
 
@@ -222,3 +221,5 @@ The name, three record families, and archive-first safety boundary are recorded,
 260805 · REVISE r1s2 (run 260805-0216-QB8e): face figures with captions added to §1-§4 and the Diagram, the Opening restaged as question plus rationale with labelled drawer parts, Aims converted to A/P ids with Done when, States mirrored per Aim, Decision Now options split one per line, and Glossary rows bulleted.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Opened by JL as an independent Q for the sentence panel's filters, statuses, cleanup, archive, restore, and retention lifecycle.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

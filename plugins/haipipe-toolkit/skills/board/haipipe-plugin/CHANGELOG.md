@@ -1,5 +1,12 @@
 ## 0.1.3 — 2026-08-21
 
+## 2026-08-31 · roster: the task/ row names the collection job
+
+The `task/` row's ranked list now states that the page's collection job
+(task-type `page`, `haipipe-task-for-page`) ranks first when one exists; the
+lane's storage, surface and writer are unchanged.
+
+
 - **`ref/roster.md` gains the `outline/` row it had been missing since 260817.**
   The file's own opening law is that a subfolder of a page's home folder is board
   material only if its name is in this table; `<page>/outline/` had been real

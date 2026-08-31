@@ -8,8 +8,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-18"
+  version: "0.6.2"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -257,6 +257,42 @@ The actor that produced a version may not be its CHECK actor. A changed version
 after REVISE or DRAFT receives another CHECK; an earlier pass never transfers.
 Only `verdict: pass` may route to CLOSE, and a required human gate without
 durable passed evidence routes to HOLD.
+
+## 📏 The rubric · four axes, four verdicts, one row per unit
+
+Requirements resolve in the order `haipipe-page` §🔍 states (base and
+template → Page Type → Phase → the page's `### Writing Style` and Stage
+Contract → the division purpose and each paragraph's job line); a conflict
+between two sources is reported and that criterion is not judged.
+
+```text
+axis          question                                                            judge
+─────────────────────────────────────────────────────────────────────────────────────────────
+Mechanics     is the required structure present, ordered, addressable, consistent?  check.py
+Function      does this section answer the reader question the contract assigns?    semantic reviewer
+Evidence      can every factual compliance claim point to visible text, an Aim's
+              Now:, or a linked artifact?                                            semantic reviewer
+Readability   can a zero-background reader understand the section without
+              supplying a missing premise?                                           fresh-context reviewer
+```
+
+The review units are every present `##` section, every direct `###` Content
+division, and every `####` paragraph whose job must be tested. Four verdicts
+only: `MEETS`, `NEEDS WORK`, `N/A` (the rule genuinely does not apply),
+`NOT VERIFIABLE` (the evidence is unavailable; never a pass). When the same
+section changed on several pages, the batch is one more readability unit: read
+those sections consecutively in board order, and the batch NEEDS WORK when the
+prose is interchangeable after noun substitution or a repeated scaffold makes
+distinct pages sound like one form letter; the smallest fix restates each
+page's own stake in its own order, never cosmetic synonyms.
+
+```text
+unit | applicable requirements + source | verdict | evidence | smallest fix
+```
+
+Then the requirement conflicts, the mechanical findings, and one page-level
+verdict. The review is read-only: it never edits prose, ticks an Aim, closes a
+Decision Now row, or closes a page.
 
 ## 📂 Files
 

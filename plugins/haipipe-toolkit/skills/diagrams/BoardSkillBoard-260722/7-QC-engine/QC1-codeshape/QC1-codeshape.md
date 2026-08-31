@@ -60,6 +60,13 @@ One file is exempt and the exemption is external: `status.py` is invoked by the 
 What no test could have caught, and `check.py` did: the board's own `## Links` still named the old paths, so 96 rendered hrefs went dead the moment the files moved. That is the argument for running the checker after a move, not just the suite.
 
 ## Aims
+### Decision Now
+- [ ] 🧠 JL confirms the split family reads as one topic now that the three pages sit under QC2
+- [x] 🗂 Rule the top level: JL ruled all of them into folders (260801)
+      JL: "你为啥不放在 src 里面,反而把它放在外面? ... 因为它本身是一个 skill folder,你这么多 Python 的文件放外面,感觉不对吧?"
+      Done as `cli/` rather than `src/`, because `src/` is the render LIBRARY and these 13 are all executable entries (every one has `__main__`); mixing them would lose the distinction the QC1b split was for.
+
+
 - [x] 🧪 build.py's template split out under a byte-identical gate (QC1a)
 - [x] 🧪 the src/ render split, modules named by what they render (QC1b)
 - [ ] 🧠 the live layer's last sequencing item (QC1c) closes before this topic is done
@@ -69,21 +76,16 @@ What no test could have caught, and `check.py` did: the board's own `## Links` s
       The top level is now `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders. `status.py` stays because the reply-footer automation invokes it by absolute path.
       The first costing was wrong and is worth keeping as the lesson: 73/64/51/50 counted PROSE mentions on board pages. What decides a migration is how many places EXECUTE a path, and that was 15, in 6 `SKILL.md` files.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Two of three files are split and settled; the live layer split is built and serving, with one sequencing item left because QD2's chat is about to be rewritten as a session host.
 The folder's own shape is settled: 25 top-level `.py` → 1. The engine now presents `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders (`cli/ src/ live/ tests/ checks/ assets/ ref/ vendor/`).
-
 - 260801 JL · 🗂 The top level was called out, and the tests moved
       JL, reading the RELATED FOLDERS browser: "为什么有那么多 .py 文件是在最外面的?它不应该放到哪一个文件夹内部吗?我感觉这样不行,这个结构很差."
       He is right, and the browser earning its keep on its first day is the incidental result: it made a slow accumulation visible in one screen.
       The free half shipped immediately: 11 `test_*.py` into `tests/`, guarded by a before-and-after suite run (50 passed → 50 passed) rather than by inspection, since `HERE` silently meant "the engine dir" in seven files and `root.parents[1]` in one more.
       The second half was first deferred behind a reference count, and JL pushed back: "你为啥不放在 src 里面 ... 它本身是一个 skill folder." He was right and the count was measuring the wrong thing: only 15 of those mentions execute a path. All 13 runnable scripts then moved into `cli/`, and `check.py` caught what the suite could not, 96 dead hrefs from `## Links` still naming the old paths, now back to 0.
-
-### Decision Now
-- [ ] 🧠 JL confirms the split family reads as one topic now that the three pages sit under QC2
-- [x] 🗂 Rule the top level: JL ruled all of them into folders (260801)
-      JL: "你为啥不放在 src 里面,反而把它放在外面? ... 因为它本身是一个 skill folder,你这么多 Python 的文件放外面,感觉不对吧?"
-      Done as `cli/` rather than `src/`, because `src/` is the render LIBRARY and these 13 are all executable entries (every one has `__main__`); mixing them would lose the distinction the QC1b split was for.
 
 ## Files
 - `cli/build.py` · `src/` · `cli/serve.py`
@@ -98,3 +100,5 @@ The folder's own shape is settled: 25 top-level `.py` → 1. The engine now pres
 260801 1200 · The 11 test_*.py moved to tests/ on JL's "这个结构很差" (25 top-level .py -> 14): baseline 50 passed, conftest.py added, HERE/root re-pointed one level up, 50 passed again, SKILL.md file table updated; the remaining 14 are costed in Decision Now by external reference count
 260801 0140 · Repointed sibling ref QC7 -> QC4 after the full renumber (JL 260801)
 260801 0130 · Opened as the split family's parent overview when QC2/QC3/QC8 were regrouped into QC1a/QC1b/QC1c (JL 260801)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

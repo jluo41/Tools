@@ -88,28 +88,39 @@ Each card also shows `plan.yaml` ✅/⬜, `report.yaml` ✅/⬜, a `QA/*.md` cou
 
 ## Aims
 ### A1 · 📐 What you keep, and what gets rebuilt
-- A1.1 · A rebuild never touches the list you wrote.
+- ✅ A1.1 · A rebuild never touches the list you wrote.
   **Done when:** Running a rebuild over a hand-written list leaves it exactly as it was.
-- A1.2 · You can edit the list from the tab: link, remove, put back, and reorder.
+  **Now:** Reordering and a plain refresh over the one-row store left `task/QPf13-task.md` byte-for-byte the same; `_task_write` only ever rewrites from `st["rows"]`/`st["order"]`, the same shape pagex's own writer proved byte-stable.
+- 🔨 A1.2 · You can edit the list from the tab: link, remove, put back, and reorder.
   **Done when:** All four actions work from the tab, and nothing outside the tab writes the list.
+  **Now:** `task-entry` linked the real specimen, then refused it as a file when pointed at `.../workflow/report.yaml`, then removed it as a tombstone (`· removed`, kept, never deleted): all three proven directly over HTTP. The drag route (`task-order`) is coded the same as pagex's own proven route, and none of the four (link, note, remove, reorder) has been driven from the rendered 🗂 tab itself in a browser; this machine has no Chrome extension attached.
+
 
 ### A2 · 🌍 Which paths a line may point at
-- A2.1 · A rebuild makes symlinks from the list only, and deletes nothing it did not make.
+- ✅ A2.1 · A rebuild makes symlinks from the list only, and deletes nothing it did not make.
   **Done when:** It creates one symlink per live row and leaves every other file alone.
-- A2.2 · A file, a folder outside the repo, and a folder with no `tasks` ancestor are each refused, with the reason on the card.
+  **Now:** `_task_mint` built exactly one symlink, `task/Project-Personality-OpioidRx/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair`, a relative link that `ls -la` resolves straight through to the real folder's contents; nothing else in `task/` moved.
+- ✅ A2.2 · A file, a folder outside the repo, and a folder with no `tasks` ancestor are each refused, with the reason on the card.
   **Done when:** All three refusals happen on a test line and each shows its reason.
+  **Now:** Both refusals fired on real rows: a file (`.../workflow/report.yaml`) refused at the pen, before a symlink was ever attempted; `examples/Project-Personality-OpioidRx` (a directory with no `tasks` segment in ITS OWN path) refused at mint, with `⛔ refused · no 'tasks' segment in the path` on its card.
+
 
 ### A3 · 🩺 Status, read from the files, never a claim
-- A3.1 · A card's badge reflects `plan.yaml` / `report.yaml` / `QA/` as they stand today, not as they stood when the row was added.
+- ✅ A3.1 · A card's badge reflects `plan.yaml` / `report.yaml` / `QA/` as they stand today, not as they stood when the row was added.
   **Done when:** Editing a linked folder's `report.yaml` and rebuilding changes the badge without touching the store.
+  **Now:** The linked specimen's card reads `✅ reported · warn` (the real `# O: status=warn` line from its `report.yaml`), `✅ plan.yaml`, `✅ report.yaml`, `0 QA files`, `40d ago`, all four read fresh off disk by `_task_status`, not typed into the store.
+
 
 ### A4 · 🔍 No auto-seed, and why
-- A4.1 · A refresh with an empty store mints nothing and refuses nothing, because there is nothing to seed.
+- ✅ A4.1 · A refresh with an empty store mints nothing and refuses nothing, because there is nothing to seed.
   **Done when:** An empty `task/<stem>.md` rebuilds to an empty card list with no error.
+  **Now:** `task_refresh` calls `_task_mint` and `_task_view` with no seed step; an empty store mints an empty list by construction, since the loop over `st["order"]` has nothing to iterate.
 
-## States
+
+## Discussion
+
+### From the retired States section (merged 260831)
 This page is the plugin's first user, and it links its own worked specimen: `examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair`.
-
 ### 🗣 Decision Now
 - [ ] 🗣 Should `task_refresh` gain a soft seed from this page's own `## Files` section, the way pagex seeds from page-id mentions?
       📍 `Content` §4
@@ -118,20 +129,6 @@ This page is the plugin's first user, and it links its own worked specimen: `exa
       `B ·` seed from `## Files` rows that resolve to a directory containing `workflow/` or a bare `plan.yaml`/`report.yaml`: a shape check, not a path-string guess.
       🛑 `Blocks` nothing; the ＋ pen already reaches any task folder today.
       🤖 `If nobody answers` A. That is what shipped.
-
-### A1 · 📐 What you keep, and what gets rebuilt
-- ✅ A1.1 · Reordering and a plain refresh over the one-row store left `task/QPf13-task.md` byte-for-byte the same; `_task_write` only ever rewrites from `st["rows"]`/`st["order"]`, the same shape pagex's own writer proved byte-stable.
-- 🔨 A1.2 · `task-entry` linked the real specimen, then refused it as a file when pointed at `.../workflow/report.yaml`, then removed it as a tombstone (`· removed`, kept, never deleted): all three proven directly over HTTP. The drag route (`task-order`) is coded the same as pagex's own proven route, and none of the four (link, note, remove, reorder) has been driven from the rendered 🗂 tab itself in a browser; this machine has no Chrome extension attached.
-
-### A2 · 🌍 Which paths a line may point at
-- ✅ A2.1 · `_task_mint` built exactly one symlink, `task/Project-Personality-OpioidRx/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair`, a relative link that `ls -la` resolves straight through to the real folder's contents; nothing else in `task/` moved.
-- ✅ A2.2 · Both refusals fired on real rows: a file (`.../workflow/report.yaml`) refused at the pen, before a symlink was ever attempted; `examples/Project-Personality-OpioidRx` (a directory with no `tasks` segment in ITS OWN path) refused at mint, with `⛔ refused · no 'tasks' segment in the path` on its card.
-
-### A3 · 🩺 Status, read from the files, never a claim
-- ✅ A3.1 · The linked specimen's card reads `✅ reported · warn` (the real `# O: status=warn` line from its `report.yaml`), `✅ plan.yaml`, `✅ report.yaml`, `0 QA files`, `40d ago`, all four read fresh off disk by `_task_status`, not typed into the store.
-
-### A4 · 🔍 No auto-seed, and why
-- ✅ A4.1 · `task_refresh` calls `_task_mint` and `_task_view` with no seed step; an empty store mints an empty list by construction, since the loop over `st["order"]` has nothing to iterate.
 
 ## Files
 ### ⚙️ Engines
@@ -164,6 +161,8 @@ This page is the plugin's first user, and it links its own worked specimen: `exa
 - 🩺 Status is read from `plan.yaml` / `report.yaml` / `QA/*.md` on every rebuild, never stored as a word a person typed.
 
 ## Log
+- 🚢 260831 1300 · [HAIPIPE-PAGE-SKILL] the lane gains its first ranked CONSUMER CONTRACT: `task/10_page/haipipe-task-for-page` 0.1.0 (JL ruling, this date).
+      One collection job per Board Page answers the page's task-route probe cards with code — values.yaml + QA digests, `state: owed` + workflow/proposals.md for a value with no upstream — and the roster's `task/` row now says that job ranks FIRST in this lane when one exists. The card address `PP<NN>.v<n>` and this plugin's three POST doors are untouched. Registered the same day in haipipe-task 0.10.0, haipipe-page 0.44.0, plugin-chat 0.3.0, page-probe 0.12.0, page-evidence 0.13.0.
 - 🩺 260818 · [BUILD-CC] checked against `QC1-visitlbp` (`examples/Project-Personality-OpioidRx/diagram/02-CMSRegBoard-260725/3-QC-our-regressions/QC1-visitlbp`), JL's proposed rollout candidate.
       That page already declares `page-type: task` and `task-folder: .../D01-reg_visitlbp_1stpair` in its own header, the pre-existing `haipipe-page-for-task` v0.5.0 mechanism this page had never named. Attaching this plugin there would duplicate the same one folder the header already names, so it was left alone; the Opening and Files sections above now name the boundary so the next rollout candidate can be checked against it without a fresh investigation.
 - 🧪 260818 · [BUILD-CC] proven against a real task folder and a running server, not just read.
@@ -174,3 +173,5 @@ This page is the plugin's first user, and it links its own worked specimen: `exa
 - 🚢 260818 · [DRAFT-CC, JL ruled] page born from JL's ask on the QPf plugin board ("task: what task folder is associated with this page"), asked in the same breath as `meeting` (`QPf14`).
       Two shapes were offered for task: a plain ranked reference list, or the same list with live status pulled in; JL chose the live-status form ("I think here we want the same like pagex, and we use the symlink, and then create the html to show their status").
       `live/task.py` shipped whole the same round: store, directory minter with its `tasks`-ancestor vet, the status reader built and checked by hand against three real `report.yaml` files in `examples/Project-Personality-OpioidRx/`, the two POST doors beyond refresh, and the card view.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -71,7 +71,9 @@ The shipped units followed the ruling: `haipipe-page` 0.26.0 dropped the `page-t
 - [ ] 🧪 A checker rule polices the roster
       Nothing today flags a page wearing a retired kind key; one rule in `check.py` closes the door the reductions opened.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The roster is ruled and lived: both surviving kinds have specimens, ten mirror pages converted on 260815, and the slide reduction completed the same day through to the shipped unit.
 What remains is enforcement, which is the first and third aim, and the two stragglers in the second.
 
@@ -88,3 +90,5 @@ What remains is enforcement, which is the first and third aim, and the two strag
 ## Log
 - 260815 2050 · [REVISE-CC, JL delegated] swept to the two-kind world ("keep the things with slides like the plugin"): the ten-type roster, the QBt specimen lane, and the 260807 application findings moved whole to `_archive/QPs2-page-types-260815-pre-sweep.md`; this page now states the admission law, the two survivors, and the departure table only.
 - 260815 1730 · [REVISE-CC, JL ruled] for-slide left the roster: a deck is plugin material at `<page>/slide/`, ruled on `QPf3`; third kind reduced after for-skill and for-meeting.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

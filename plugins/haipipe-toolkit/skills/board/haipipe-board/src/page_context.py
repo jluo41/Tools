@@ -110,11 +110,31 @@ def _aim_group_source(text, canon, group_id):
     return found.group(0).rstrip() if found else ""
 
 
-def scan_related_rows(text):
-    """Return canonical rows plus malformed bullet rows and near-miss headings."""
+def files_record_path(source_path):
+    """outline/<stem>-files.md beside the page, where `## Files` lives since 260831."""
+    p = Path(source_path)
+    return p.parent / "outline" / f"{p.stem}-files.md"
+
+
+def related_source(source_path, text):
+    """(text to scan, whole) · the page while it still carries `## Files`, else the
+    files record, scanned whole because it has no `## Files` boundary (JL 260831)."""
+    if any(line.strip() in {f"## {n}" for n in _section_names("Files")} for line in text.splitlines()):
+        return text, False
+    f = files_record_path(source_path)
+    if f.is_file():
+        return f.read_text(encoding="utf-8"), True
+    return text, False
+
+
+def scan_related_rows(text, whole=False):
+    """Return canonical rows plus malformed bullet rows and near-miss headings.
+
+    ``whole`` scans a files record: no `## Files` gate; a Related row is read by
+    its grammar wherever it sits (detail under `- **Role**: related`, physician-space-21 shape)."""
     refs, findings = [], []
-    in_files = False
-    in_related = False
+    in_files = whole
+    in_related = whole
     in_fence = False
     for line_no, line in enumerate(text.splitlines(), 1):
         if line.lstrip().startswith("```"):
@@ -122,7 +142,7 @@ def scan_related_rows(text):
             continue
         if in_fence:
             continue
-        if line.startswith("## "):
+        if line.startswith("## ") and not whole:
             in_files = line.strip() in {
                 f"## {name}" for name in _section_names("Files")
             }
@@ -131,7 +151,7 @@ def scan_related_rows(text):
         if not in_files:
             continue
         if line.startswith("### "):
-            in_related = bool(RELATED_HEADING_RE.match(line))
+            in_related = whole or bool(RELATED_HEADING_RE.match(line))
             if "Related Board Pages" in line:
                 if not in_related:
                     findings.append(RelatedFinding(
@@ -139,7 +159,14 @@ def scan_related_rows(text):
                         "use `### 🔗 Related Board Pages`; the exact group name is the parser boundary",
                     ))
             continue
-        if not in_related or not re.match(r"^\s*[-*]\s+", line):
+        if whole:
+            # a files record: a Related row sits as detail under `- **Role**: related`,
+            # with or without its old bullet; every other bullet is a Path/Role row.
+            probe = re.sub(r"^\s*(?:[-*]\s+)?", "- ", line)
+            if not re.match(r"^- `(?:reads|constrained by|continues|contrasts)\s", probe):
+                continue
+            line = probe
+        elif not in_related or not re.match(r"^\s*[-*]\s+", line):
             continue
         match = RELATED_ROW_RE.match(line)
         if not match:
@@ -195,7 +222,8 @@ def audit_related_rows(source_path, text=None):
     """Mechanically validate every declared related-Page row."""
     source = Path(source_path).resolve()
     text = source.read_text(encoding="utf-8") if text is None else text
-    refs, findings = scan_related_rows(text)
+    text, whole = related_source(source, text)
+    refs, findings = scan_related_rows(text, whole)
     if not refs:
         return findings
 
@@ -307,7 +335,8 @@ def related_context_packet(source_path, phase):
             for finding in errors
         ))
 
-    refs, _ = scan_related_rows(text)
+    text, whole = related_source(source, text)
+    refs, _ = scan_related_rows(text, whole)
     selected = [ref for ref in refs if ref.phase in (phase, "ALL")]
     board_root = find_board_root(source)
     out = [

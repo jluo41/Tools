@@ -5,10 +5,12 @@ body:has(.q:target) .wrap,
 body.split .wrap{max-width:1000px;padding:20px 26px 40px}
 body:has(.q:target) .board-heading,
 body.split .board-heading{gap:8px;margin:0 0 7px}
-body:has(.q:target) .board-mark,
-body.split .board-mark{flex-basis:24px;width:24px;height:24px}
-body:has(.q:target) .h1,
-body.split .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0}
+body:has(.q:target) .board-mark{flex-basis:24px;width:24px;height:24px}
+body:has(.q:target) .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0}
+/* In the viewer (body.split) the Index IS the content, so the board name stays
+   a real title; only single-file focus mode above shrinks it (JL 260831). */
+body.split .board-mark{flex-basis:32px;width:32px;height:32px}
+body.split .h1{font-size:24px;color:var(--fg);font-weight:700;margin:0}
 body:has(.q:target) .spine,
 body.split .spine{border:none;background:none;border-radius:0;
  border-left:2px solid var(--accent);padding:0 0 0 11px;margin:0 0 9px}
@@ -27,8 +29,11 @@ body.split .q{border:none;border-radius:0;background:none;
 body.split .q .src,
 .q:target .top,
 body.split .q .top{display:none}
-.q:target .qh,
-body.split .q .qh{margin-bottom:10px}
+.q:target .qh{margin-bottom:10px}
+/* The viewer's index row and Pages sidebar already show the state glyph and
+   the owner, so the status strip above the title only repeated them; the DOM
+   stays for follow.js / content.js, only the paint goes (JL 260831). */
+body.split .q .qh{display:none}
 .q:target .h2,
 body.split .q .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
 .q:target .ask,

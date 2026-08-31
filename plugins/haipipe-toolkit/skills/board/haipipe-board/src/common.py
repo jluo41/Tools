@@ -79,7 +79,9 @@ def sec(d, key):
 # What this unblocks is the migration off checkboxes: 94 Q- ids across those 19
 # pages would have gone invisible the moment they became canonical rows.
 AIM_ID = r"(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*|Q-[A-Za-z][A-Za-z0-9]*-\d+(?:\.\d+)*)"
-AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+({AIM_ID})\s+·\s+\S")
+# Since the 260819 merge an Aim row may open with its own tick (`- ✅ A1.1 · …`);
+# without the optional glyph here every migrated page reported "no aims".
+AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+(?:(?:⬜|🔨|🧠|✅|❄️?|🟡|🟠|⏸️?)\s+)?({AIM_ID})\s+·\s+\S")
 # An Aim row's status glyph. 🔨 / 🧠 / ❄️ replaced 🟡 / 🟠 / ⏸️ on 260802,
 # because the old set carried two of its five meanings in HUE ALONE: 🟡 and 🟠
 # are one shape in two colours, indistinguishable in greyscale and to a
@@ -111,18 +113,25 @@ def aim_progress(aims, state=""):
     checkbox semantics so changing the reader vocabulary never falsifies an
     old Board's progress bar.
     """
-    boxes = re.findall(r"(?m)^\s*[-*]\s*\[([ xX])\]", aims or "")
+    # A `### Decision Now` group moved into Aims with the 260819 merge; its
+    # `- [ ]` rows are a person's asks, not Aims, and must not flip the page
+    # into legacy-checklist counting.
+    aims_only = re.sub(r"(?ms)^###\s+Decision Now\b.*?(?=^###\s|\Z)", "", aims or "")
+    boxes = re.findall(r"(?m)^\s*[-*]\s*\[([ xX])\]", aims_only)
     if boxes:
         met = sum(1 for value in boxes if value.lower() == "x")
         return dict(mode="legacy", total=len(boxes), met=met, hold=0,
                     active=0, waiting=0, open=len(boxes) - met,
                     closed=met, ids=[])
 
-    ids = aim_ids(aims)
+    ids = aim_ids(aims_only)
     states = {}
-    for emoji, aim_id in AIM_STATE_RE.findall(state or ""):
-        e = emoji.replace("️", "")
-        states[aim_id] = AIM_STATUS_ALIAS.get(e, e)
+    # Since 260819 one Aim row carries its own tick; a page still holding
+    # `## States` is read from there first, exactly as before.
+    for src in (state or "", aims_only):
+        for emoji, aim_id in AIM_STATE_RE.findall(src):
+            e = emoji.replace("\ufe0f", "")
+            states.setdefault(aim_id, AIM_STATUS_ALIAS.get(e, e))
     values = [states.get(aim_id, "⬜") for aim_id in ids]
     met = values.count("✅")
     hold = values.count("❄")

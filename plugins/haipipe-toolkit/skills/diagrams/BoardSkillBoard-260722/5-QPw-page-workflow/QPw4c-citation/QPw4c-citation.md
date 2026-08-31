@@ -93,22 +93,18 @@ the paper itself must be found               🟢 yes · dispatch it
 
 ## Aims
 ### A1 · 📚 A person lands it, and a machine may never compose it
-- A1.1 · No entry on this board was composed by a machine.
+- ⬜ A1.1 · No entry on this board was composed by a machine.
   Done when every `.bib` entry traces to a person-supplied source or a subset of an existing entry.
+  **Now:** Not measured. Two bib entries exist board-wide and neither has been traced to its supplier.
 ### A2 · 📮 PROBE raises a card only when the key is unknown
-- A2.1 · The known-paper-unknown-bibtex case is ruled.
+- 🧠 A2.1 · The known-paper-unknown-bibtex case is ruled.
   Done when `QPw3`'s Decision Now row is answered and this page carries the answer.
+  **Now:** Waiting on JL, in `QPw3-probe`'s Decision Now row.
 ### A3 · ⚖️ The lane does not wait, and nothing waits on it
-- A3.1 · No page on this board serialized the three lanes.
+- 🔨 A3.1 · No page on this board serialized the three lanes.
   Done when no figure or prose on this board orders citation before value or display.
+  **Now:** Being worked on now. This page and `QPw4` draw them parallel; the other 64 pages have not been swept.
 
-## States
-### A1 · 📚 A person lands it, and a machine may never compose it
-- ⬜ A1.1 · Not measured. Two bib entries exist board-wide and neither has been traced to its supplier.
-### A2 · 📮 PROBE raises a card only when the key is unknown
-- 🧠 A2.1 · Waiting on JL, in `QPw3-probe`'s Decision Now row.
-### A3 · ⚖️ The lane does not wait, and nothing waits on it
-- 🔨 A3.1 · Being worked on now. This page and `QPw4` draw them parallel; the other 64 pages have not been swept.
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -142,3 +138,5 @@ the paper itself must be found               🟢 yes · dispatch it
 
 ## Log
 - 260818 · [DRAFT-CC] created as a lane face of `QPw4` on JL's ruling, which he gave three times before it was executed: each evidence kind gets its own page, `QPw4c` citation, `QPw4d` display, `QPw4v` value. The earlier argument against the split (that `QPf8`, `QPf9` and `QPf5` already carry these subjects) was overruled: those pages own the FOLDER on disk, and these faces own the LANE inside the EVIDENCE phase, which is a different question. `QPw4` keeps the shared exit test and the Evidence Bundle join.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

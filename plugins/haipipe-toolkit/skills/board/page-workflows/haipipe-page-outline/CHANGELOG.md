@@ -1,3 +1,77 @@
+## 0.12.0 — 2026-08-31
+
+Rewritten as ONE pass: 535 → 199 lines, present tense. ⓪ Boot (load this
+brief, the type's `outline:` block, `ref/plan-grammar.md`, the page, `outline/`;
+nothing else) · ① Prepare, one command: `haipipe-board/cli/outline-pass.py
+<page>.md` regenerates the three derived files, runs the plan checks for this
+page (hard), the page-scoped checker and the build, and prints the receipt-lite
+· ② Plan (the type gives the words, the pass gives the arc; a Section page
+plans sentence slots) · ③ Threads and the log record · ④ Five checks, with
+④ SHAPE now judging heads (4 to 11 words), Notes (≤ 30 words) and a Note that
+quotes the page · 🧑 the tick, with the chat-transcription rule · 🔀 · 🧾.
+- Fixed: the authority test said the Aims live "in the plan file" while
+  `haipipe-page` 0.42.0 put them on the page; the exit and the routing said
+  "four checks" while the brief said five.
+- Stated: a pass in a person's own session is a pass (same trace as the
+  agent's); the ten-box checklist is now the six mechanical boxes inside
+  `outline-pass.py` plus the four the pass writes.
+- **Field-tested the same day** (cold desk, SM01 OUTLINE pass: plan v3 at 0 ❌,
+  10 min, 229k tokens, 15 frictions, 1 of 7 pre-registered gaps hit). Patched
+  from it: the type's `outline:` block is frontmatter the Skill tool strips
+  (read the first 20 lines); read the page once with the Read tool; run
+  `outline-pass.py` twice (before to read, after to measure) and write the log
+  record after the second run, `--no-build` named; the by-hand list now matches
+  the script; one `## C<n>` per Content division (a flat Section is `C1`); the
+  swap test and the heaviest-finding rule at paragraph level on a one-division
+  page; the Narrative row's order binds over a Round's proposed order; ①
+  COVERAGE counts a bare mark as owed before ② PROBE instead of failing.
+
+## 0.11.3 — 2026-08-31
+
+- **Head style rule in the checklist** (JL 260831): heads of 4 to 11 plain
+  words, one-line Notes, no drafted sentence in the plan; points at
+  `haipipe-plugin-outline` §✂️ for the approved SM00 v3 shape.
+
+## 0.11.2 — 2026-08-31
+
+- **⓪ REQUIRE** (JL: "add the fn for the haipipe-page-outline as well … so it
+  can check what is the requirement of writing this page"): every pass opens
+  by running `cli/requirement.py <page>.md` and READING the V (venue division),
+  N (Narrative row, Writing Style) and B (board rules) records before a bullet
+  is written; ④ SHAPE is judged against V and N. Receipt line `requirement:`.
+- **§✅ Checklist** (JL: "it should have a checklist to check the items
+  needed"): ten boxes, REQUIRE → COLLECT → TYPE → PLAN → CHECKS → EVIDENCE →
+  THREADS → LOG → TAB → RECEIPT; receipt line `checklist: n/10`.
+- The THREADS and LOG boxes carry haipipe-plugin-outline 0.18.0's record
+  shape: open threads only, Ask/Options/We lean/Decide; settled threads are
+  log records.
+- `version:` in the frontmatter had stayed at 0.11.0 through 0.11.1; fixed.
+
+## 0.11.1 — 2026-08-31
+
+Patched from the NA01 field test (20 frictions on a 0.11.0 law one run old):
+- **Five checks, not four**, everywhere the brief and the routing said four;
+  the receipt gains an `arc:` line. ⓪ was added on 260822 and three sentences
+  never followed.
+- **`Routed:` keeps the mark on the last line**, stated where the fold is
+  taught, with the measured loss (8 of 16 lines vanished from the render).
+- **A declined row has a shape**: `declined: <RD> <id> · <reason>` in the
+  plan's header, because no division but `## C<n>`/`## Aims` is legal.
+- **A routed concern may mint an Aim** in an unapproved plan; 0.16.1's
+  thread rule covers an ASK from the retired States fold, not a Round's row.
+- `cli/feedback.py reopen` named; the collector's role stated as PULL.
+
+## 0.11.0 — 2026-08-31
+
+- **⓪ COLLECT**: the fold gains a second source. Every OUTLINE pass opens by
+  projecting the Round rows routed to this page into `outline/<stem>-feedback.md` (one file, a section per Round; the per-Round folder lasted one hour)
+  (JL 260831: a function of this phase, not a new plugin). ① COVERAGE gains
+  one direction: an open register row is served by a bullet or declined with a
+  reason. The bullet gains `Routed:` beside `Answered:`/`Drawn:`; the receipt
+  gains `feedback: n routed · n served · n declined`. G7 runs
+  `feedback-coverage` board-wide so a Round cannot close on a page nobody
+  opened.
+
 ## 0.10.0 — 2026-08-22 — this phase takes the ARC, and self-consistency becomes FIVE checks
 
 Ruled by JL while deciding where a story arc belongs when there are ten Page

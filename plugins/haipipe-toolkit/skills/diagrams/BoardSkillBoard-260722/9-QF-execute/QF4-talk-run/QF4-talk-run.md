@@ -104,6 +104,16 @@ Worse, the harness can be steered: a sibling session running `open <board url>` 
 So the run pins its own tab and re-navigates if it drifts, it waits on conditions rather than clocks, and any assertion about a model's answer allows minutes rather than seconds.
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🎛 Rule which tier the talk run uses
+      → CC's proposal: cheap by default for BINDING and INTERRUPTION, which never read the answer's content, and JL's own tier for one TURN per kind.
+      The reason is 260731: every suite that session ran used `haiku` and `low` while JL was on `Opus 4.8` and `high`, and that is why the runs stayed green through a bug JL could see.
+- [ ] 🚦 Rule whether a red talk run BLOCKS a round or only reports
+      → CC's proposal: reports only, matching `check.py`'s default, because a model turn can fail for reasons that are not the board's fault.
+
+
 ### Making the run exist as a thing
 - [ ] 🧰 Make it one command
       `checks/run.py` is that command for the smoke tier and for the three checks inside `--full`, and it exits non-zero; the five browser suites in §4 are still typed one node file at a time, and nothing takes a board folder as an argument.
@@ -119,24 +129,16 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
 - [ ] 🧪 Prove it catches a real regression
       Break the router listener on purpose and watch `navtest.mjs` go red, the same way `assets.py`'s `verify()` was proven.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Both chat versions now have suites checked into `checks/`, and `checks/run.py` gives two tiers of it a command that exits non-zero.
 The five browser suites are still typed one file at a time, and no round dispatches any of it, so it still protects only the rounds where someone remembers.
-
 - 260801 CC · 🔬 Opened from a session that fixed four talk failures and built the suites while doing it
   JL: "I think I want to add something in QF about testing out code for the SDK-Talk and CLI-Talk."
   JL named the two versions the same round: the SDK chat version (`QD2`) and the TUI chat version (`QD3`), which is the vocabulary this face uses throughout.
   Written from the runs rather than from a plan: every failure in §1 is one JL hit in the browser, and every suite in §4 was built to catch it afterwards.
   What justifies a fourth face rather than an item on `QF3` is that the instrument spends a model turn: `QF3` is free and fast and can run on every change, and this one costs money and minutes, so it cannot inherit the same trigger.
-
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [ ] 🎛 Rule which tier the talk run uses
-      → CC's proposal: cheap by default for BINDING and INTERRUPTION, which never read the answer's content, and JL's own tier for one TURN per kind.
-      The reason is 260731: every suite that session ran used `haiku` and `low` while JL was on `Opus 4.8` and `high`, and that is why the runs stayed green through a bug JL could see.
-- [ ] 🚦 Rule whether a red talk run BLOCKS a round or only reports
-      → CC's proposal: reports only, matching `check.py`'s default, because a model turn can fail for reasons that are not the board's fault.
 
 ## Files
 - `../../board/haipipe-board/assets/js/10-drawer/20-chat/`
@@ -163,3 +165,5 @@ These are the calls only JL can make; CC ticks nothing here.
 ## Log
 - 260806 2201 · [REVISE-CC] swept to the 260806 architecture; `### 4` repointed from the three scratchpad `.mjs` suites to the checked-in `checks/` folder (`run.py`'s two tiers plus binding/guichat/tuichat/switchback/scopechat), the TUI-coverage Aim ticked on that evidence, `test_hold.py` corrected to `tests/test_hold.py`, and HANDOVER restated in `QD1`'s current per-scope Law
 260801 · Opened on JL's ask for a QF face covering the SDK chat version and the TUI chat version, written from the five talk failures found in the browser on 260731 and the three suites built to catch them
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

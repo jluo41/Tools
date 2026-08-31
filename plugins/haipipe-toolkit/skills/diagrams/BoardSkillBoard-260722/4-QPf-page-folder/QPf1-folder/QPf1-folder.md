@@ -110,7 +110,9 @@ The same walk that counts the folder also lists it, so what you click is exactly
 - [x] 🚪 §2 A status row opens into real files
       Clicking a row in the 📂 tab opens that folder's files right there, each one a link to the real file.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 §1 The 📂 Folder tab sits first on the rail and reads this page's folder on every open, one row per folder beside the `.md`: `bibex/`, `draw/`, `skill/`, `slide/`.
 §1 A folder rebuilt for you reads ⚠️ STALE when its files are older than the `.md`, and it carries ♻ rebuild when a machine can redo it.
 §1 latex, word, chat, display, and meeting have no folder here, so the tab lists them as not present.
@@ -169,6 +171,7 @@ It falls back to the board root only when the group's pages disagree, and an emp
       The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] a plugin IS a lane and a SKILL.md is EARNED BY LAW: the roster row is the record; retire/merge candidates tiered (value+folder now, latex+word+slide → one export later). A `code/` lane is agreed: the unit's own SIMPLE scripts with their run records INSIDE the code lane (runs folded into code, JL's call), `logging/` row retires into it; not yet minted.
 - 🔎 260816 · [REVISE-CC] third reviewer pass: §2 numbering, the MISQ path, and the bibex proof
       Six findings arrived, three of them already cured by the tree rewrite that landed in between, and the three live ones were all about evidence a second person cannot check.
       Named so nobody reopens them: the §2 figure gives both folder rows 📁 and keeps 🔗 on the file line, it carries no size column at all so the wrong 10KB for `QPf11-pagex-view.html` is gone with it, and the §1 slide row already shows a state instead of the condition behind it.
@@ -245,3 +248,5 @@ It falls back to the board root only when the group's pages disagree, and an emp
       JL: the openings are too short; say the question, how it is answered, and what turns on it.
 - 🚢 260724 · settled and shipped
       First consumer is the MISQ paper's 0-lifecycle board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

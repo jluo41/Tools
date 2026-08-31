@@ -1,3 +1,11 @@
+## haipipe-page-outline-agent · haipipe-page-draft-agent — 2026-08-31
+
+- Descriptions aligned with the rewritten phase contracts: the outline agent
+  runs FIVE checks and writes the plan, the open `D<nn>` threads and one log
+  record (not "ONE file"); the draft agent turns a Section slot into one
+  sentence ending `<!-- realizes: … -->` with a `> Value:` lane per number, no
+  hole token, and folds the diff under one log record.
+
 ## haipipe-page-probe-agent 0.3.0 — 2026-08-20
 
 - **REVERSES 0.2.0's no-Agent-tool design, hours later, on JL's refinement**

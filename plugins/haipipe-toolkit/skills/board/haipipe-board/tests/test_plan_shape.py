@@ -44,7 +44,7 @@ class ResolvedSectionShapeTest(unittest.TestCase):
         self.assertEqual(
             [],
             self.findings(
-                "page-types/haipipe-page-for-section/ref/generic-template.md"
+                "workflow-phases/haipipe-paper-section/ref/generic-template.md"
             ),
         )
 

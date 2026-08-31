@@ -165,9 +165,29 @@ class WriteMixin:
             blank = False
         return out
 
+    # An HTML comment on a sentence line is an INVISIBLE mark, not prose: the
+    # plan binding `<!-- realizes: C2.P1.B1 -->` that the DRAFT phase writes
+    # after each sentence (haipipe-page-draft 0.9.x). The browser never sees
+    # it, so the visible text can only match the source once it is stripped
+    # (JL 260831, "这句话在源文件里没找到" on SM00 P1.S1).
+    _MARK = re.compile(r"\s*<!--.*?-->")
+
+    @classmethod
+    def _split_marks(cls, line):
+        """A source line -> (its prose, the trailing invisible marks verbatim)."""
+        s = line.strip()
+        marks = ""
+        while True:
+            m = re.search(r"\s*<!--.*?-->\s*$", s)
+            if not m:
+                return s, marks
+            marks = s[m.start():].strip() + (" " + marks if marks else "")
+            s = s[:m.start()].rstrip()
+
     @staticmethod
     def _plain_sentence(s):
         """The browser sends visible sentence text; source may have light md."""
+        s = WriteMixin._MARK.sub("", s)
         s = re.sub(r"`([^`]+)`", r"\1", s)
         s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
         s = re.sub(r"~~((?:(?!~~).)+)~~", r"\1", s)          # <del>: text kept
@@ -346,12 +366,14 @@ class WriteMixin:
         hit, err = self._sentence_line(lines, before)
         if err:
             return None, err
-        source_before = lines[hit].strip()
+        source_before, marks = self._split_marks(lines[hit])
         # Replacing a markdown-decorated sentence from a browser's textContent
         # would silently erase its links/code/bold.  v1 is intentionally exact.
+        # The invisible marks are not decoration: they are split off above and
+        # written back after the new sentence, so a plan binding survives.
         if source_before != before:
             return None, "这句话带有 Markdown 格式；为避免丢格式，请先在源文件编辑"
-        lines[hit] = after
+        lines[hit] = after + (" " + marks if marks else "")
         diff = self._change_diff(before, after)
         entry = f"> ✎ {diff} · {who}" + (f" · {when}" if when else "")
         lines.insert(self._apparatus_end(lines, hit), entry)

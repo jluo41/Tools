@@ -59,9 +59,10 @@ class StatusStripTest(unittest.TestCase):
             next_action="finish the renderer", root=root,
         )
         lines = strip.splitlines()
-        self.assertEqual(len(lines), 3)
-        self.assertTrue(lines[0].endswith("  "))
-        self.assertTrue(lines[1].endswith("  "))
+        self.assertEqual(len(lines), 4)   # 🧭 · state · ⏱️ phase · → next
+        for row in lines[:-1]:
+            self.assertTrue(row.endswith("  "))
+        self.assertIn("⏱️", lines[2])
         self.assertIn(
             "🧭 test · QB1 "
             "(http://127.0.0.1:5599/diagram/01-test-260726/board.html#QB1)",

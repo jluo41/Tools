@@ -1,3 +1,339 @@
+## 0.151.2 — 2026-08-31
+
+## 0.152.1 · 2026-08-31
+
+Settling the two red tests the paper restructure surfaced (JAMAOpioidBoard's
+handoff): plan_shape's resolved-section marker guard is live again —
+haipipe-paper-section declares `marker: "section-page-template: 1"`, and a
+chosen `structure-source:` that is itself a venue Page (filename QBv<n>- or
+`page-type: venue` head) passes as current by construction, so the 12+ live
+pages bound to QBv bank pages stay green while `<tpl:`-era template files are
+rejected. test_status now states the strip's real contract: FOUR rows (🧭 ·
+state · ⏱️ phase · → next). test_aims_state repointed to the shipped
+`paper/haipipe-paper-venue` name (the dangling haipipe-page-for-venue symlink
+replaced). Engine suite 291 passed, 0 failed.
+
+
+- **Paper's variant home moved** (JL 260831, JAMAOpioidBoard session):
+  `paper/page-types/` is replaced by `paper/workflow-phases/haipipe-paper-<phase>`
+  (six skills) plus `paper/haipipe-paper-venue/`. `src/plan_shape.py`
+  type_outline and `cli/pagetypes.py` contract discovery learned the new
+  locations; ownership prose here updated; tests repointed. Keys and page
+  resolution unchanged.
+
+## 0.151.1 — 2026-08-31
+
+## 0.152.0 · 2026-08-31
+
+The 🧾 Evidence tab (JL: "one evidence plugin, to present bibex, display,
+etc"): new `live/evidence.py` — GET `/_board/evidence` composes five segments
+(⧉ By bullet = the `outline/<stem>-evidence.md` snapshot · 📚 Citations ·
+🚪 Cards · 🧮 Values · 🖼 Displays; a missing saved view is built on click
+through the lane's own POST route) — plus its POST twin, wired in serve.py
+(GET/HEAD/POST + EvidenceTabMixin). JS fold: `84-plugin-evidence.js` now
+registers the ONE row; bibex left `82-plugin-exports.js`;
+`08-plugin-value.js` deleted (its live `/_board/value` route stays, as a
+segment). Storage, writers, walls and the three human gates unchanged.
+Driven in real Chrome on SM05-results: menu → tab → segments → live Values.
+
+
+- **`SA` labels as appendix in the desk sub-blocks** (JL 260831, AM → SA,
+  Section-Appendix): `src/page_board.py _token_label` matches `SA` exactly
+  before the `S` prefix rule, which would have read it as a main section;
+  `A<D>` boards keep their label until their own rename.
+
+## 0.151.0 — 2026-08-31
+
+- **A probe id is `PP<NN>` standing alone**: `cli/evidence-status.py` and
+  `live/outline.py` (four sites) read `PP\d+` with a `(?<![A-Za-z0-9-])`
+  guard, so a Round row id in a `Routed: RD01 S0-PP2` line is no longer a
+  card; SM00's evidence file printed `📮 PP2 · no card` three times for bare
+  marks (now `📮 —`, same counts).
+- **The page chat** (`live/chat.py`, `haipipe-plugin-chat` 0.2.0): the four
+  rule strings became `PAGE_RULES_BODY` and `BOARD_RULES_BODY` carrying the
+  compact where-a-message-lands table and pointing at the plugin; new
+  `page_folder_context()` in `prime_context` (page type, the plan and its
+  tick, open `D<nn>` threads, open feedback rows, evidence counts, the `skill/`
+  and `task/` lists); `Skill` left `SCOPED_OFF` and `scoped` loads
+  `setting_sources`, so a scoped session can load a rule.
+- **The head and Note law as teeth** (`src/plan_shape.py`
+  `check_head_style`, `check_note_quotes_page`): `head-too-long` (> 11 words),
+  `head-too-short` (< 4, the code-word head), `note-too-long` (> 30 words,
+  wrapped lines joined), `note-quotes-page` (an 8-word run of a head or Note
+  found verbatim in the page's Content). REPORTED as gaps by
+  `checks/outline.py` (803 of 3,258 bullets were over 11 words and 1,008
+  under 4 on the day the rule shipped, all in older plans) and HARD inside
+  `cli/outline-pass.py`, the page's own OUTLINE gate. The board-wide sweep's
+  887 `bullet-missing-note` failures on the Tools boards' generated v1 plans
+  pre-exist this release, unchanged.
+- **`cli/check.py check_section_sentences`**: `sentence-without-realizes` and
+  `number-without-lane` on a `page-type: section` page whose newest plan is
+  `approved: ✅` (a page with no agreed slot plan has nothing to realize);
+  proven on a fixture, silent on every current board page.
+- **`cli/outline-pass.py`** (new): the mechanical half of one OUTLINE pass in
+  one command (requirement, feedback collect, evidence-status, the plan
+  checks hard for this page, the page-scoped checker, the build, a
+  receipt-lite).
+- **`ref/writing-rules.md` §A heading is a lookup key**: the five tests and
+  the H1 verb-phrase rule, moved from `haipipe-page`.
+- **`haipipe-plugin/ref/roster.md`**: the `outline/` row rewritten to seven
+  kinds with a pointer at `ref/record-shape.md`; the `chat/` row goes 🟢 with
+  the keep step's log record.
+- **`live/outline.py _aim_rows`** reads the merged-States row `- ⬜ A1.1 · …`
+  (optional tick before the id, the `AIM_RE` set) and uses that tick as the
+  state when no `**Now:**` follows; every 🎯 mark had read "not on the page yet"
+  on a page whose Aims carry ticks (found by MISQ-Board on SM03).
+- **`src/plan_shape.py check_coverage`** carries the same `PP<NN>` guard as
+  the other two sites; `Routed: RD01 S1-PP5` had produced a false "names PP5
+  and no such probe exists" gap on every plan following the specimen (field
+  test F10, and MISQ-Board independently).
+- **The aim id pattern has the same guard** (`live/outline.py` plan chips,
+  `cli/evidence-status.py`): `P\d+` had matched the `P5` inside
+  `Routed: RD01 S3-PP5`, so SM03's tab drew ghost `🎯 P5 · not on the page
+  yet` chips beside real Aims (found with MISQ-Board, 260831). `_aim_rows`'
+  anchored row regexes are untouched.
+- **The page chat runs the workflow** (`haipipe-plugin-chat` §🔁): the rules
+  text carries the seven phases with their verbs and skills, and
+  `prime_context` injects the phase strip from `src/page_phase.py compact()`.
+
+## 0.150.0 — 2026-08-31
+
+- **Desk sub-blocks in the index and the Pages sidebar** (PaperSkillBoard
+  QA1 Decision Now, ruling A by its own default clause, JL 260831): on a
+  `dialect: paper` board a group whose page ids span two or more token
+  families (`SM`, `AM`, `RD`) is cut by that token in `src/page_board.py
+  index_rows` and `sidebar_rows` (`.dsub` / `.sb-sub`, labels `main
+  sections` · `appendix` · `rounds`), so the paper's shape shows without a
+  folder rename. `sidebar_rows` takes `meta=` for the dialect; a board with
+  one token per group, and every non-paper board, renders exactly as before.
+- **`check.py check_plugin_roster` stays at the page's direct children**: a
+  unit inside a plugin lane (`display/S-Display-1a/`, `probe/PP01/`) also
+  keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`, `source/`,
+  `versions/` are that plugin's anatomy; walking into the lane reported 36
+  false `plugin-not-rostered` rows on the MISQ board.
+- **Sentence edit sees through an invisible mark** (JL 260831, SM00 P1.S1
+  refused with "这句话在源文件里没找到"): `live/write.py _plain_sentence`
+  strips `<!-- … -->` comments, so the visible text matches a source line
+  carrying the DRAFT phase's `<!-- realizes: C2.P1.B1 -->` binding, and
+  `edit_sentence` splits the trailing marks off and writes them back
+  after the new sentence instead of dropping them.
+
+## 0.149.0 — 2026-08-31
+
+- **`## Files` retired from the page** (JL 260831, QPf12 row 3): `check.py`
+  `RETIRED_SECTIONS` gains `Files`; `dead-file-path` also reads
+  `outline/<stem>-files.md` (`- **Path**: `x`` rows checked like a page's);
+  `src/page_context.py` reads Related Board Pages from the page while it
+  still has `## Files`, else from the files record scanned whole, so
+  `cli/pagecontext.py` works on both (a Related row is read by its grammar
+  under `- **Role**: related`). `ref/page-template.md` and
+  `ref/board-form.md` say where the file map lives.
+- **Aims back on the page** (QPf12 row 2): `live/outline.py plan_card` reads
+  the page's `## Aims` first; a plan row fills only an id the page lacks.
+
+## 0.148.3 — 2026-08-31
+
+- **`cli/requirement.py` writes four venue-only records** (haipipe-plugin-outline
+  0.18.1): `venue_records` parses the desk division into V1 Shape (+Arc),
+  V2 Size (the format fence's ALL-CAPS rows, `measured …` split off into the
+  fold), V3 Refused, V4 Moves (first four slot names); `narrative_records`
+  and `board_records` removed; a page with no `structure-source:` gets no
+  file. `check.py check_requirement_file` watches the desk only.
+- **`cli/feedback.py collect` header is three lines** and the Round block is
+  text, not a record: verdict · people · dates · link, then Ask / Order /
+  Gate; parent concerns fold as `↳ R<nn> ·` detail lines under each row.
+
+## 0.148.2 — 2026-08-31
+
+- **`live/outline.py` renders every sibling file as RECORDS** (haipipe-plugin-
+  outline 0.18.0 §🧾): `_records` parses `### <ID> · <headline>` + `- **Label**:`
+  rows + folded detail + `>` lanes, and the old shapes too (bare `YYMMDD ·` log
+  rows get a headline cut at the first sentence; `- id · head` feedback rows;
+  `status:` lines; the evidence table). `_rec_html` draws id badge, headline,
+  label grid, status pill, and a `more` fold. `_md_lite` is gone.
+- **`cli/requirement.py`** (new) writes `outline/<stem>-requirement.md` from the
+  venue division, the Narrative row and `ref/writing-rules.md`; `--all` for a
+  board. `cli/evidence-status.py` writes one record per bullet.
+- **Four teeth**: `discussion-settled-thread`, `requirement-missing`,
+  `requirement-hand-edited`, `requirement-stale`, `retired-block` (`### Stage
+  Record`). Each proved to fire first (13 · 15 · 0 · 0 · 13 on the MISQ board)
+  and then 0 after the sweep.
+
+## 0.148.1 — 2026-08-31
+
+- **`cli/feedback.py collect` projects the Round's words** (haipipe-plugin-outline
+  0.17.4): `src/feedback.py parse_round` now returns `feedback`, `work` and
+  `parents` per row and the §2A `order` as `verdicts[pid][3]`; the register
+  record gains `- **Feedback**:`, `- **Work**:`, one `- **Parent R<nn>**:` per
+  parent, and each Round section a `**Reader order:**` line. `REG_ROW`,
+  `register_ids` and every `check.py` feedback tooth are unchanged, so counts
+  hold (SM00: 8 of 8 open, 0 landed).
+
+## 0.147.4 — 2026-08-31
+
+- **`live/outline.py` renders the sibling files as lenses** (`_lenses`,
+  `_md_lite`; haipipe-plugin-outline 0.17.3): the 🧭 tab gains one chip per
+  existing `outline/<stem>-{requirement,discussion,feedback,evidence,log}.md`,
+  rendered read-only through `src/body.py inline`. Served on the next server
+  start; `serve.py` imports `live.outline` at load.
+
+## 0.148.0 — 2026-08-31
+
+- **The engine and its two reference docs now carry the 260819 `## States`
+  merge** (JL 260831: "I think we removed the state from the page as well",
+  seeing a 📍 States fold on the MISQ paper board). `ref/page-template.md`
+  and `ref/board-form.md` §4 still listed `## States` as required and the
+  on-stage order as five; both now say one Aim row carries its tick,
+  `Done when:` and `Now:`, with `### Decision Now` reserved inside Aims.
+  `haipipe-page` 0.41.0 is the contract half of the same change.
+- **`AIM_RE` accepts the merged row's tick**: `- ✅ A1.1 · …` was invisible
+  to `aim_ids()`, so a page written to the merged grammar (the venue
+  template already is) rendered as "no aims". `aim_progress()` now reads a
+  tick from the Aim row when the page has no `## States`, ignores a
+  `### Decision Now` group's `- [ ]` boxes instead of flipping the page to
+  legacy counting, and `check.py`'s `aim-without-state` reads the same
+  source. A page still carrying `## States` is read exactly as before.
+- **Outline is the first Plugin row and the pane's boot tab** (JL 260831:
+  "make the outline the first plugin and the default plugin"). `shell.py`'s
+  menu now leads with the registry default (it was ranked first only in the
+  strip since 260830, so the menu still opened 💬 Chat, 🖌 Draw, 🎞 Slides,
+  📂 Folder, then 🧭), and `paintTabs()` re-aims a pane that boots VISIBLE at
+  the default once, instead of only when the pane was hidden.
+- **GUI is the Chat form a fresh reader gets** (JL 260831: "if choose the
+  Chat Plugin, make the GUI the default"). `shell.py`'s `wanted` fell back to
+  `'tui'`, and the drawer's two `board-tui-default` readers treated a missing
+  key as TUI; all three now default to GUI, and a stored choice still wins.
+
+
+- **The ✎/💬/⚑ badge hangs inside `<p class="pnew">` too** (JL 260831: "why is
+  the last emoji on a new line"). `_hang_badge` only recognised a bare `<p>`,
+  so every paragraph-opening sentence (140 on the MISQ board) got its badge
+  appended after `</p>` and the block break dropped it to its own line.
+- **`ref/board-example.md` shows the merged Aims** (its two example pages
+  still carried `## States`), and `live/shell.py` no longer prints
+  `SyntaxWarning: invalid escape` on every start (`/\.html/`, `/\?pane=/`).
+- **`cli/states-merge.py`**: the migration for a page still carrying
+  `## States`: tick and `Now:` onto each Aim row, `### Decision Now` to the top
+  of Aims, `### Needs JL` asks to the owning Aim's `Now:` (or kept verbatim),
+  everything else verbatim under `## Discussion`, one Log row; a page is
+  written only when every old line reappears verbatim (`--write`, optional
+  `--backup DIR`). Ran on the MISQ paper board (16 pages, 0 lost).
+
+## 0.147.3 — 2026-08-31
+
+- **`Routed:` is a folded line** in `src/plan_shape.py:252` and
+  `live/outline.py:1279`; the 0.11.0 law named it and neither parser knew
+  it, so the renderer cut the body at the mark and dropped 8 of NA01's 16.
+- **`feedback-unserved`**: the direction the plugin text promised and
+  `feedback-coverage` did not test. An OPEN register row with no `Routed:`
+  bullet and no `declined:` line. Failing-first on real pages: 104 findings
+  across 15 unfolded Section pages, 0 on the folded NA01.
+- **`plan-no-arc`**: `arc:` was parsed by nothing since 260822. Proven on a
+  stripped fixture (no live plan lacks it).
+- `src/feedback.py`: register ids accept ledger `R<nn>` (the Narrative has
+  no §2B block); the block-less set is computed once (NA01 got 1 of 5 rows).
+
+## 0.147.3 — 2026-08-31
+
+- **`cli/evidence-status.py`** writes `outline/<stem>-evidence.md`
+  (haipipe-plugin-outline 0.17.2): the 🧭 join as a dated file, reusing
+  `live/outline.py`'s `_latest_plan`, `_disk_state`, `_aim_rows` and `_live`,
+  plus the ↩ backlink so a bare mark a card serves counts as raised.
+- **Two teeth in `check.py`**: `evidence-stale` (any file under the five lanes
+  newer than the MEASURED stamp; proven by backdating SM08 → 1, regenerate →
+  0) and `evidence-hand-edited` (GENERATED line removed → 1).
+- ⚠️ Lesson recorded: a patch script that WRITES before it PARSES left
+  `check.py` unparseable for two turns (a heredoc doubled `\n`). The repair
+  parses first and writes second; do the same.
+
+## 0.147.3 — 2026-08-31
+
+- **Page id printed once per header** (JL: "make this cleaner"): `parse.py`
+  strips a leading `<id> ·` from a page's `# ` title, since the h2 `.hid`, the
+  index row `.i` and the tab title all print the id beside it; a paper page
+  titled `SD00 · Ideation · …` showed `SD00` three times. `page_question.py`
+  drops the `.qid` span from the status row and emits the `· method` separator
+  only when there is a method, which removes the dangling `·` after the owner.
+- **Board name is a title in the viewer**: `30-slide.css` no longer shrinks
+  `.h1` to 14px grey under `body.split`; that rule now applies only to
+  single-file focus mode (`body:has(.q:target)`). In the 5599 viewer the Index
+  is the content, so its name is 24px `--fg` bold with a 32px mark.
+- **No status strip above a page title in the viewer** (JL: "maybe no need
+  to have this"): `body.split .q .qh{display:none}`. The state glyph and the
+  owner already sit on the index row and in the Pages sidebar; the DOM stays
+  so `40-follow.js` and `65-content.js` keep reading it.
+
+## 0.147.2 — 2026-08-30
+
+- **🧭 Outline is the split pane's FIRST tab and its default** (JL 260830: "the
+  outline will be shown as the default and be ranked to be the first, not the
+  Chat. This is very important"). `live/shell.py` seeded `openSet = ['chat']`
+  and `var tab = 'chat'` on its own and never read the page registry, so the
+  260818 `boardPlugins.setDefault('outline')` reached only the FAB. The shell
+  now asks `getDefault()`, ranks that id first in the strip (a stored set keeps
+  the reader's other tabs; only the rank is corrected), and lands the first
+  open on it. Verified in Chrome via CDP on a private server: fresh storage →
+  `🧭 Outline | 💬 Chat`, outline on stage; a returning reader's stored
+  `[chat, folder]` → `🧭 Outline | 💬 Chat | 📂 Folder`. On a GROUP page
+  (`MISQ.html`) there is no live page, so `applies` fails and chat stays the
+  fallback, which is the documented rule. ⚠️ `serve.py:103` imports the shell
+  at load: a running server keeps the old shell until restarted.
+- **`retired-section` now fires on `## States`.** The 260819 merge listed only
+  the pre-260731 name ("Where we are"), so the lookup returned None and the
+  head comment ("`retired-section` reports it") described behaviour the table
+  did not have: 1,026 lines on 20 MISQ pages passed silently. Proven 0 → 20.
+- **Aims may live in the plan** (`page_aims_text`, haipipe-plugin-outline
+  0.16.0): `REQUIRED` accepts `Done when` from `outline/<stem>-outline-v<N>.md`
+  when the page keeps no copy, so obeying the law no longer earns
+  `missing-section` + `no-aims` (field test, SM08).
+- **`generated-block-stale` reads `outline/<stem>-log.md`** beside the page's
+  `## Log`; moving the Log had silently disabled the check (`latest` went ""
+  for ever). Proven 0 → 1 on SM08.
+- **The 🧭 view reads a migrated page**: falls back to the latest plan's Aims,
+  parses `- [ ] A1.1 ·` rows and their `**Now:**` state, keys `## Aims · what
+  must become true…` on the word before ` · `, and accepts `### §6.1 Title`
+  divisions (check.py:1176's grammar), which cleared 5 of 7 "invented an
+  anchor" plan-checker failures on MISQ. SM08's tab went from "lists no aims
+  yet" to "0 of 10 done".
+
+## 0.147.2 — 2026-08-31
+
+- **`cli/feedback.py collect`** and **`src/feedback.py`**: ONE grammar for
+  the Round⇄page join, read by the projector and by `check.py`, so the two
+  cannot drift (the 0.147.1 lesson). `check.py` gains `feedback-uncollected`
+  and `feedback-coverage`, both directions, proven failing-first: 13 + 16
+  findings before the first collect, 0 after.
+- **`page_aims_text`**: Aims may live in the plan (`haipipe-plugin-outline`
+  0.16.0); `REQUIRED` no longer demands a page section the law moved. Found
+  by the SM08 field test as ERROR `missing-section` on a page obeying the law.
+- **`check_generated_block` reads `outline/<stem>-log.md`**: moving the Log
+  off the page had silently disabled `generated-block-stale` (`latest` went
+  "" for ever). A finding count dropping because a check lost its input.
+- **`"States"` in `RETIRED_SECTIONS`**: the 260819 merge named only the old
+  name, so 1,026 lines of a retired section passed silently for eleven days.
+
+## 0.147.1 — 2026-08-30
+
+- **`pagestatus.py` read a narrower grammar than the engine, so it hid the
+  Section half of every paper board** (JL 260830, on the MISQ paper board).
+  Divisions were counted with `^### \d+ · `, while `check.py:1176` splits on
+  `^### §?([\d.]+)(?: · | )` and therefore accepts a Section Page numbering its
+  divisions by the MANUSCRIPT (`### §6.1 Main Results`). All 15 Section Pages
+  reported `§ 0`, which read as "these pages have no structure" when the real
+  answer was "this column cannot see them".
+- Same shape in the Aims column: only the canonical `A<n>.<m>` form was
+  counted, though `src/common.py aim_progress` supports the LEGACY checkbox
+  form ON PURPOSE (`mode="legacy"`) and every Section Page uses it. `- [ ] 🗣`
+  stays excluded, since a Decision row is counted in `dec`.
+- On the 20-page MISQ board the two fixes surfaced 45 divisions and 276 Aims
+  that were on disk the whole time (30 → 306 aims, 15 → 82 met). Verified with
+  no change in behaviour on the venue bank (17 pages) and the LLMRec board
+  (23 pages).
+- The lesson is the file's own: one grammar belongs in one place. `check.py`
+  and `pagestatus.py` both parse a Page and had drifted apart with nothing
+  comparing them.
+
+
 ## 0.147.0 — 2026-08-29
 
 - **Page titles have a length.** `check.py` reports `title-too-long` past six
@@ -747,8 +1083,8 @@ the content division"; proven on the boardform board's QA4).
 
 - **The door was telling everyone to create a page the wrong way.** Three places said every page copies `ref/page-template.md`, "whatever its kind". For `Skill-`, `Agent-` and `Meeting-` pages that produces a page with no managed spans, which the checker then reports as broken forever. A new step 4b names the generated kinds and their generators, and `add` and the `ref/` table say the same.
 - **A whole page kind had an engine and no contract.** `Meeting-<n>` is globbed by `src/common.py`, generated by `cli/meetingpage.py`, and exempted by `check.py`, and appeared in no SKILL.md in the family. The page-kind table now lists all six kinds with how each is created; a contract for Meeting is still owed.
-- **The variant rule is rewritten from CONSUMER to MAINTAINER** (JL 260803 ruling). "A variant ships under its consumer, never here" broke the day `haipipe-page-for-venue` landed: its consumer is the paper family and its maintainer is this one, so it satisfied neither the rule nor the Skill-and-Agent exception. Who maintains it held twice; who consumes it never did.
-- The family block names `haipipe-page-for-venue`, which had shipped with no door pointing at it.
+- **The variant rule is rewritten from CONSUMER to MAINTAINER** (JL 260803 ruling). "A variant ships under its consumer, never here" broke the day `haipipe-paper-venue` landed: its consumer is the paper family and its maintainer is this one, so it satisfied neither the rule nor the Skill-and-Agent exception. Who maintains it held twice; who consumes it never did.
+- The family block names `haipipe-paper-venue`, which had shipped with no door pointing at it.
 - Seven of eight line counts in the `ref/` table were wrong, several by ~2x, and are now measured: `serve.py` 398→496, `chat.py` 1064→1332, `term.py` 670→857, `write.py` 259→426, `activity.py` 408→446, `base.py` 154→260, `structure.py` 274→270.
 - "all 11 tests" → 14. The whole-tree membership sentence named two prefixes where the code globs four.
 - `## Question` is no longer called "permanently recognized": it still parses, and `check.py` reports it as `retired-section`.

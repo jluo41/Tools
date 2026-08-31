@@ -107,16 +107,20 @@ may run those end to end without stopping.
             bullet still owe?
 📥 READS    the Page Type's `outline:` block (fixed | grammar | resolved)
             and the page's current sections
-📤 WRITES   <page>/outline/<stem>-outline-v<N>.md
+📤 WRITES   <page>/outline/<stem>-outline-v<N>.md · the open D<nn> records in
+            <stem>-discussion.md · one record in <stem>-log.md
             🚫 nothing in the page itself. The plan and the page are two files.
-🚪 EXITS    FOUR machine checks, then a person ticks `approved:`
+🚪 EXITS    FIVE machine checks, then a person ticks `approved:`
+              ⓪ ARC: `arc:` argues, adjacent divisions pass the swap test, the
+                heaviest finding has a division
               ① COVERAGE, both directions: every mark is served by at least
-                one card, AND every display unit on disk is cited by some
-                bullet's mark or carries `retired:`
+                one card, every display unit on disk is cited or carries
+                `retired:`, every open feedback row is served or declined
               ② every card's `serves:` names a real address in this plan
               ③ every recomputable value matches the repo  (checks/values.py)
-              ④ the plan's shape matches its Page Type      (plan-shape-off-type)
-✋ TICK     `approved:`  ← a person, and only after the four pass. What the
+              ④ the plan's shape matches its Page Type      (plan-shape-off-type);
+                heads 4 to 11 words, Notes ≤ 30 words, no Note quotes the page
+✋ TICK     `approved:`  ← a person, and only after the five pass. What the
             person judges is the plan's DIRECTION, never its arithmetic.
 🔀 ROUTES   the 🧑 LOOK first, after EVERY pass: a person reads the plan
             before ② or ③ dispatch (haipipe-page-workflow §🧭) · then ② PROBE
@@ -198,12 +202,15 @@ bound number: one lane of three landed nothing a page could use.
 
 ```text
 ❓ ASKS     what does this page promise, and which Aim dies if a hole stays?
-📥 READS    the approved outline-v<N>.md
+📥 READS    the approved outline-v<N>.md, with its Answered:/Drawn: lines
 📤 WRITES   <page>/<stem>.md
-              the Opening · Content as sentence scaffolds carrying <HOLE>
-              the Aims section · the States section · the Log row
-🚪 EXITS    every approved Point has a scaffold, and every hole names the Aim
-            it would cost
+              the Opening · Content as sentences ending `<!-- realizes: C.P.B -->`,
+              each number under a `> Value:` lane, no hole token · the Aims rows
+              and their Now: · one record in outline/<stem>-log.md with the
+              old-to-new diff folded
+🚪 EXITS    every plan slot or point has its sentence(s), every number has its
+            lane, and every missing input names its blocker as a comment lane
+            plus a probe card
 ✋ TICK     none
 🔀 ROUTES   ② PROBE · ⑤ REVISE · ⑦ CHECK · ④ again
 🚫 MAY NOT  open a card. The mark is the proposal; PROBE makes the folder.

@@ -146,26 +146,6 @@ Fixing one and stopping would have left the reported symptom exactly as reported
 
 ## Aims
 
-### A1 · 🔍 The four reports were one defect
-- A1.1 · Every "points at nothing" report is triaged against this class before it is patched.
-  **Done when:** each new instance is logged in `§1`'s table with its cause named, or is shown to belong to a different class.
-
-### A2 · ⚙️ Half one: the engine names things instead of reading their declaration
-- A2.1 · No engine site decides what a thing IS from what it is CALLED.
-  **Done when:** the grep in `§2` returns 0 sites, each replaced by the declaration the page already carries (`page-type:`, `route:`, `float.tex`).
-- A2.2 · The five sites already converted stay converted, and the MISQ paper is the regression.
-  **Done when:** `dialect_paper` indexes 11 units, `build-displays.py --check` and `display-report.py --check` both exit 0, on every later change.
-
-### A3 · 🧾 Half two: 88% of lookups cannot fail loudly
-- A3.1 · An IDENTITY lookup that finds nothing says so, instead of returning empty.
-  **Done when:** every lookup that resolves a page, a unit, or a record to its identity either raises or reports, and the 11% in `§3` is measured again.
-
-### A4 · ✅ What shipped on 260807, and what it cost to trust it
-- A4.1 · Every guard in this class has been observed to fire on a real failing case.
-  **Done when:** each guard's Log row names the case it was watched to catch and how that case was produced.
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 Do the 20 name-pattern sites get converted in one pass, or one file at a time with a regression between each?
@@ -176,18 +156,33 @@ Fixing one and stopping would have left the reported symptom exactly as reported
       🛑 `Blocks` starting the conversion at all.
       🤖 `If nobody answers` the five converted sites stand and the other 15 stay, so the class stays open and the next rename repeats it.
 
+
 ### A1 · 🔍 The four reports were one defect
-- ✅ A1.1 · Met 260807: four reports triaged, each cause named and measured, in `§1`.
+- ✅ A1.1 · Every "points at nothing" report is triaged against this class before it is patched.
+  **Done when:** each new instance is logged in `§1`'s table with its cause named, or is shown to belong to a different class.
+  **Now:** Met 260807: four reports triaged, each cause named and measured, in `§1`.
+
 
 ### A2 · ⚙️ Half one: the engine names things instead of reading their declaration
-- 🔨 A2.1 · 5 of 20 converted 260807: `display_unit.units()` selects by `float.tex`, `dialect_paper` accepts both authoring folder names and the specimen layout, `MARKER`'s unit branch is built from the index, `section_pages()` and `literature_pages()` read the head key. 15 remain, listed in `§2`.
-- ✅ A2.2 · Held on every change 260807: `dialect_paper` indexes 11 units and 11 labels on the MISQ paper, and both `--check` commands exit 0.
+- 🔨 A2.1 · No engine site decides what a thing IS from what it is CALLED.
+  **Done when:** the grep in `§2` returns 0 sites, each replaced by the declaration the page already carries (`page-type:`, `route:`, `float.tex`).
+  **Now:** 5 of 20 converted 260807: `display_unit.units()` selects by `float.tex`, `dialect_paper` accepts both authoring folder names and the specimen layout, `MARKER`'s unit branch is built from the index, `section_pages()` and `literature_pages()` read the head key. 15 remain, listed in `§2`.
+- ✅ A2.2 · The five sites already converted stay converted, and the MISQ paper is the regression.
+  **Done when:** `dialect_paper` indexes 11 units, `build-displays.py --check` and `display-report.py --check` both exit 0, on every later change.
+  **Now:** Held on every change 260807: `dialect_paper` indexes 11 units and 11 labels on the MISQ paper, and both `--check` commands exit 0.
+
 
 ### A3 · 🧾 Half two: 88% of lookups cannot fail loudly
-- ⬜ A3.1 · Measured 260807 and not started: 573 lookup points, 65 guarded. The one guard in the display path was written only after a rename nearly deleted 25 shipped files.
+- ⬜ A3.1 · An IDENTITY lookup that finds nothing says so, instead of returning empty.
+  **Done when:** every lookup that resolves a page, a unit, or a record to its identity either raises or reports, and the 11% in `§3` is measured again.
+  **Now:** Measured 260807 and not started: 573 lookup points, 65 guarded. The one guard in the display path was written only after a rename nearly deleted 25 shipped files.
+
 
 ### A4 · ✅ What shipped on 260807, and what it cost to trust it
-- ✅ A4.1 · Met for both 260807 guards. `check_evidence_pointer` was watched to fire at `QBt4-for-literature.md:73` on a scratch copy with the defect reinstated; the `#popcards` swap was proven by simulating the navigation on the built files and reading which card `#pc1` resolved to.
+- ✅ A4.1 · Every guard in this class has been observed to fire on a real failing case.
+  **Done when:** each guard's Log row names the case it was watched to catch and how that case was produced.
+  **Now:** Met for both 260807 guards. `check_evidence_pointer` was watched to fire at `QBt4-for-literature.md:73` on a scratch copy with the defect reinstated; the `#popcards` swap was proven by simulating the navigation on the built files and reading which card `#pc1` resolved to.
+
 
 ## Files
 
@@ -218,3 +213,5 @@ Fixing one and stopping would have left the reported symptom exactly as reported
   QA is the group that argues what must be true before any artifact exists, and this page argues how the shipped code models identity, which is `QC`'s subject.
   `QC4` was last used for the round-trip page in the 260815 renumber, so the number is reused under the 260801 precedent and the old row leaves `## Links`; the round trip is `QC3`.
 - 260807 1600 · [DRAFT-CC] Opened on JL's instruction after the fourth report of the same symptom in two days, and after he said plainly that patching instances was no longer acceptable. The page exists because the four reports were being treated as four bugs: a display page with no preview, a paper board with no chips, an evidence card that opens nothing, and a card that opens the previous page's evidence. They are one class with two halves, and both halves are measured here rather than argued: 20 sites that decide what a thing IS from what it is CALLED, and 573 lookup points of which 508 return an empty result instead of raising, so a rename and a genuinely empty page render identically. Two guards shipped the same day and both were verified against a FAILING case, which is now this page's Law. The fourth instance also produced the pattern's own best illustration: the first patch went to `20-live-refresh.js`, the auto-rebuild path, while the path a reader actually clicks is `70-router.js`; a grep for every body-replacing site found two, and stopping at one would have left the reported symptom exactly as reported.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

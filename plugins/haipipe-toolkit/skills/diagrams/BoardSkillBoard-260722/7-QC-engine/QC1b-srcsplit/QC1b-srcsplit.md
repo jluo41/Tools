@@ -25,9 +25,10 @@ It succeeds when the split is byte-identical and consumers stop carrying private
       Found BY the byte-identical gate: old render() reused `lab`, so any question with comments wore the comments count in its state pill instead of SETTLED/PARTIAL.
       Reproduced first to prove the move pure, then fixed deliberately.
 
-## States
-Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py imports the shared helpers. The live layer's split, deferred here while the QD group was still forming, has since shipped as the `live/` package under its own page, `QC2c` (260731). The six src/ modules have since grown to twelve under the same naming rule (`assets` · `page_context` · `page_lifecycle` · `dialect_paper` · `stage_contract` · `topic_entry_contract` joined).
+## Discussion
 
+### From the retired States section (merged 260831)
+Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py imports the shared helpers. The live layer's split, deferred here while the QD group was still forming, has since shipped as the `live/` package under its own page, `QC2c` (260731). The six src/ modules have since grown to twelve under the same naming rule (`assets` · `page_context` · `page_lifecycle` · `dialect_paper` · `stage_contract` · `topic_entry_contract` joined).
 - 260731 JL · 🧩 The browser assets split by topic, then split again
   JL: "do we write everything into one board.js? can we split it like live, by topic, otherwise it is too long and touching one thing shakes everything."
   A first pass by a concurrent session took `board.js` from 3509 lines to 15 topic files and `board.css` from 1565 to 9, assembled by `src/assets.py` in sorted path order.
@@ -62,3 +63,5 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260725 1615 · dropped the retired "QF1" page id from the src/ rationale; the embed feature it named is unchanged
 260724 · settled and shipped in the same body of work as QB3 and QF1
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -7,8 +7,8 @@ description: >-
   sibling lane and runs in OUTLINE. Trigger: page probe, PROBE phase, raise a
   probe card, Task evidence, match before dispatch, /haipipe-page-probe.
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-08-21"
+  version: "0.12.0"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-page-probe · run Probe's Task/Discovery QA branch
@@ -109,8 +109,9 @@ Board Page there is a step in front of it:
 
 ```text
 1. existing probe/PP<NN>-<slug>/ cards ON THIS PAGE      ← page-local, step 0
-2. the selected Task or Discovery bank, --check-only     ← haipipe-probe §②
-3. only then dispatch new work                           ← haipipe-probe §③
+2. the page's collection job's QA/ and values.yaml       ← haipipe-task-for-page
+3. the selected Task or Discovery bank, --check-only     ← haipipe-probe §②
+4. only then dispatch new work                           ← haipipe-probe §③
 ```
 
 Do not insert PageX into that list. Existing Page evidence should already be a
@@ -122,7 +123,11 @@ nothing else — by handing the batch to `haipipe-probe-q-executor-agent`. A pha
 producer never calls `haipipe-task-orchestrator-agent` or
 `haipipe-discovery-orchestrator-agent` itself (JL 260820: 永远只有
 haipipe-probe-q-executor-agent 才能够做这件事). The payload may name card id,
-route, bank verdict and return address; it may never name the consumer stake.
+route, bank verdict and return address; it may never name the consumer stake. Since 260831 a page's TASK-route batch has a home: the page's
+collection job (task-type `page`, `task/haipipe-task-for-page`, linked first in
+the `task/` lane). The executor agent runs each stripped question as
+`/haipipe-task qa "<question>" <collection-job>`; the job computes, digests or
+proposes, and the door stays the one above.
 
 **③ the three states this phase may leave behind.** The full ladder is
 `haipipe-plugin-probe` §✍️; these are the only ones PROBE writes:

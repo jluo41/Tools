@@ -112,30 +112,25 @@ is not an answered bullet
 
 ## Aims
 ### A1 · 🔢 The bank answers, and the binding is a PATH
-- A1.1 · No card on this board copies its answer's content instead of pointing at it.
+- ⬜ A1.1 · No card on this board copies its answer's content instead of pointing at it.
   Done when every card's `target:` resolves to a real QA file and no `card.md` holds the answer text.
-- A1.2 · No card is `answered` with an empty `proof/`.
+  **Now:** Not measured. Three cards exist board-wide, in `QPf9`, and none has been checked for a copied answer.
+- ⬜ A1.2 · No card is `answered` with an empty `proof/`.
   Done when a sweep of every `answered` card finds a non-empty `proof/`.
+  **Now:** Not measured. No sweep of `answered` cards against their `proof/` has run.
 ### A2 · ✋ `read:` is the page's finish, and it reverts
-- A2.1 · No page quotes a number from a card that is not `read`.
+- ⬜ A2.1 · No page quotes a number from a card that is not `read`.
   Done when every printed value on this board traces to a card whose `read:` is ticked.
+  **Now:** Not met, and knowably so: zero cards on this board are `read`, while the QPw pages print numbers throughout.
 ### A3 · ↩ One card may serve many bullets, and the link runs backward
-- A3.1 · Every card carries a `serves:` line that resolves.
+- ⬜ A3.1 · Every card carries a `serves:` line that resolves.
   Done when the three cards on this board each name at least one real plan address.
+  **Now:** Not met. The three cards on this board carry no `serves:` line at all.
 ### A4 · ⚖️ The lane does not wait, and nothing waits on it
-- A4.1 · No figure on this board orders the three lanes.
+- 🔨 A4.1 · No figure on this board orders the three lanes.
   Done when no prose or figure serializes citation, value and display.
+  **Now:** Being worked on now. This page and `QPw4` draw them parallel; the rest of the board is unswept.
 
-## States
-### A1 · 🔢 The bank answers, and the binding is a PATH
-- ⬜ A1.1 · Not measured. Three cards exist board-wide, in `QPf9`, and none has been checked for a copied answer.
-- ⬜ A1.2 · Not measured. No sweep of `answered` cards against their `proof/` has run.
-### A2 · ✋ `read:` is the page's finish, and it reverts
-- ⬜ A2.1 · Not met, and knowably so: zero cards on this board are `read`, while the QPw pages print numbers throughout.
-### A3 · ↩ One card may serve many bullets, and the link runs backward
-- ⬜ A3.1 · Not met. The three cards on this board carry no `serves:` line at all.
-### A4 · ⚖️ The lane does not wait, and nothing waits on it
-- 🔨 A4.1 · Being worked on now. This page and `QPw4` draw them parallel; the rest of the board is unswept.
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -176,3 +171,5 @@ is not an answered bullet
 
 ## Log
 - 260818 · [DRAFT-CC] created as a lane face of `QPw4` on JL's ruling, given three times before it was executed. The page follows one number from the card that asks for it to the tick that permits quoting it, which is the thing `QPw4`'s single lane row could only summarize. Two facts written from disk rather than asserted: three cards exist board-wide, all in `QPf9`, and none carries a `serves:` line or a `read:` tick, so `A2.1` and `A3.1` are knowably unmet rather than merely unmeasured.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

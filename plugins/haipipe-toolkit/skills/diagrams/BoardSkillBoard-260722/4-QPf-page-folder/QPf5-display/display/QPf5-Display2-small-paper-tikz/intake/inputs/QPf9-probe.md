@@ -138,50 +138,48 @@ It writes nothing, because §3 already gives every state change an owner.
 
 ## Aims
 ### A1 · 🧾 One question, one folder, on the page that needs it
-- A1.1 · A card raised in a page's own `probe/` reaches the bank and comes back with a link to the answer.
+- ✅ A1.1 · A card raised in a page's own `probe/` reaches the bank and comes back with a link to the answer.
   **Done when:** a question raised on this page's own card comes back answered, with the QA path written by the collector and not by hand.
-- A1.2 · The shared probe skill and the application family stop using `1-probes/`.
-  **Done when:** no probe skill or runner names `1-probes/` as a place to land, and a paper's stage pages ask through their own `probe/` folders.
-
-### A2 · 🔗 The answer is written once, and everyone points at it
-- A2.1 · An intake file finds a card by its id alone.
-  **Done when:** a `QPf5` figure's `manifest.yaml` says `probe: PP<NN>`, and the build finds the card and the answer with no path written anywhere.
-
-### A4 · 🚪 A tab that shows every card, and changes nothing
-- A4.1 · The tab ships on the same wiring the Slides tab uses.
-  **Done when:** a page with one card shows 🚪 Probe in the right pane with the card's real state, seen in a real browser.
-
-### P · 🚧 What page discovery must skip
-- P1 · `probe/` is skipped when pages are found.
-  **Done when:** no file under any page's `probe/` is ever listed as a page, and `check.py` knows `probe/` as a plugin folder.
-
-## States
-Settled: the ruling, the card shape, and the crossing to the bank.
-Still open: the `1-probes/` clean-up, the citation hop, the tab's browser check, and the by-name half of the skip rule for `probe/`.
-
-### A1 · 🧾 One question, one folder, on the page that needs it
-- ✅ A1.1 · Met 260816: three questions raised on this page's own cards went out through the collector agent with the page's own reasons stripped off.
+  **Now:** Met 260816: three questions raised on this page's own cards went out through the collector agent with the page's own reasons stripped off.
   The task bank claimed and answered each one, and the links in the cards are the paths the collector returned, not paths typed by hand.
   Where the probe tools themselves write is A1.2's job, and PP02 says that address is still fixed in the code.
-- ⬜ A1.2 · The clean-up has not started, and PP01 and PP02 have measured what it covers.
+- ⬜ A1.2 · The shared probe skill and the application family stop using `1-probes/`.
+  **Done when:** no probe skill or runner names `1-probes/` as a place to land, and a paper's stage pages ask through their own `probe/` folders.
+  **Now:** The clean-up has not started, and PP01 and PP02 have measured what it covers.
   No live paper or application carries a `1-probes/` pool, because all three surviving folders are fixtures.
   `1-probes/` is a fixed path in about 300 live places: the shared `haipipe-probe` skill, its agent definitions, and the application family, where a shell glob reads the folder directly.
   No agent there takes a landing folder from its caller.
   The paper family already dropped `1-probes/` and now lands in `0-lifecycle/<stage>/probes/`, so the shared skill's text and the paper checker disagree today.
 
+
 ### A2 · 🔗 The answer is written once, and everyone points at it
-- ⬜ A2.1 · `manifest.yaml` has no `probe:` line yet.
+- ⬜ A2.1 · An intake file finds a card by its id alone.
+  **Done when:** a `QPf5` figure's `manifest.yaml` says `probe: PP<NN>`, and the build finds the card and the answer with no path written anywhere.
+  **Now:** `manifest.yaml` has no `probe:` line yet.
   `QPf5` §4 draws the chain the line would close, from the card to the task answer to the manifest, but no `QPf5` Aim owns the line: its A1.1 asks for `build-displays.py` to accept a page's `display/` as a unit root, which is a different join.
   So nothing on `QPf5` is waiting to write it.
 
+
 ### A4 · 🚪 A tab that shows every card, and changes nothing
-- 🧠 A4.1 · `plugview.py` and the tab row exist, the strip layout landed, and the page's three cards show in it: ✅ PP01 ✅ PP02 ✅ PP03, each with its link.
+- 🧠 A4.1 · The tab ships on the same wiring the Slides tab uses.
+  **Done when:** a page with one card shows 🚪 Probe in the right pane with the card's real state, seen in a real browser.
+  **Now:** `plugview.py` and the tab row exist, the strip layout landed, and the page's three cards show in it: ✅ PP01 ✅ PP02 ✅ PP03, each with its link.
   The real-browser check waits on a server restart, which is outside this page.
 
+
 ### P · 🚧 What page discovery must skip
-- 🔨 P1 · Half of it already holds, and not by a list.
+- 🔨 P1 · `probe/` is skipped when pages are found.
+  **Done when:** no file under any page's `probe/` is ever listed as a page, and `check.py` knows `probe/` as a plugin folder.
+  **Now:** Half of it already holds, and not by a list.
   `src/common.py`'s `_in_plugin` skips every subfolder of a folded page, so no file under any `probe/` can be listed as a page.
   The owed half is the by-name one: `check.py` knows `draw/` by name in `check_draw_folders`, and has nothing like it for `probe/`.
+
+
+## Discussion
+
+### From the retired States section (merged 260831)
+Settled: the ruling, the card shape, and the crossing to the bank.
+Still open: the `1-probes/` clean-up, the citation hop, the tab's browser check, and the by-name half of the skip rule for `probe/`.
 
 ## Files
 ### ⚙️ Engines
@@ -268,3 +266,5 @@ Still open: the `1-probes/` clean-up, the citation hop, the tab's browser check,
       A page is a small paper, so `probe/` sat beside `display/` as a mirror of `1-probes/`; the next day's ruling replaced that framing.
       The card grammar was adopted whole and the one-home citation rule written.
       The landing address, the citation hop, and the tab opened as aims.
+
+- 260831 0116 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0
