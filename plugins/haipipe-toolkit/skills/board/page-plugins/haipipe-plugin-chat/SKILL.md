@@ -8,7 +8,7 @@ description: >-
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -144,7 +144,8 @@ page's question and open Aims, `page-type:` and the phase strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
 evidence owed and landed), the page's own skill list (`<page>/skill/<stem>.md`,
 one ranked `- <name> · note:` row per skill) and task list
-(`<page>/task/<stem>.md`), the SPACE context and the status-strip duty.
+(`<page>/evidence/pagex/…`, where the task lane merged 260831; a flat
+`task/` stub reads the same), the SPACE context and the status-strip duty.
 
 Per message the session loads ONE skill's ⚡ Brief, the one §🗺's row names,
 and announces it (`loading haipipe-page-outline · plan change`); it never

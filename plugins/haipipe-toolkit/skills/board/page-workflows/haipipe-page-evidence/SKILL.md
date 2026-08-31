@@ -7,7 +7,7 @@ description: >-
   material in display/. Never writes Content. Trigger: page evidence, EVIDENCE
   phase, bind an answer, probe value, display intake, /haipipe-page-evidence.
 metadata:
-  version: "0.13.0"
+  version: "0.13.1"
   last_updated: "2026-08-31"
 ---
 
@@ -30,7 +30,7 @@ haipipe-page
 
 ```text
 READS    target Page · approved outline version · raised local cards
-WRITES   <page>/bibex/ · <page>/probe/ · <page>/display/
+WRITES   <page>/evidence/bibex/ · <page>/evidence/probe/ · <page>/evidence/display/
 NEVER    target prose · purpose · Aims · bank-owned QA files by hand
 EXITS    OUTLINE when all promised support is pointable; otherwise EVIDENCE/HOLD
 HUMAN    verifies citation · reads probe answer · accepts display at CHECK
@@ -45,11 +45,11 @@ support that still must be made or bound.
 ```text
 outline mark   local owner                         bindable when
 ──────────────────────────────────────────────────────────────────────────
-📚 citation    <page>/bibex/                       key resolves; source is
+📚 citation    <page>/evidence/bibex/                       key resolves; source is
                                                    transcribed, not invented
-🧮 value       <page>/probe/PP<NN>-<slug>/         exact QA target + A-executor +
+🧮 value       <page>/evidence/probe/PP<NN>-<slug>/         exact QA target + A-executor +
                                                    proof/value address resolve
-🖼 display     <page>/display/<unit>/               frozen intake + recipe/assets +
+🖼 display     <page>/evidence/display/<unit>/               frozen intake + recipe/assets +
                                                    preview.pdf are present
 ```
 
@@ -179,3 +179,6 @@ reopens:      true when the returned support changes purpose, Aim, or shape
 
 The Page source hash may remain unchanged because EVIDENCE normally writes only
 plugin surfaces. The receipt must still name every artifact it landed.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.

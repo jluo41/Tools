@@ -8,7 +8,7 @@ description: >-
   evidence plugin, evidence tab, show the evidence, citations cards values
   displays together, evidence bundle tab, /haipipe-plugin-evidence.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -31,6 +31,14 @@ the phase     ③ EVIDENCE (haipipe-page-evidence) lands what this tab shows
 the fields    the page type's evidence: record names what is OWED
               (haipipe-page/ref/type-registry.md)
 ```
+
+## 🗂 Since the v3 folder, the tab has a disk twin
+
+JL 260831 ("the evidence should include the display, the bibex, the pagex"):
+the lanes this tab presents now LIVE under `<page>/evidence/` (bibex · probe ·
+display · pagex · code · materials), one category folder a stranger opens for
+"what backs this page". Flat lane names are migration stubs for the unpatched
+engine paths. The tab is the category folder's surface; nothing else changed.
 
 ## 📡 Surface · one tab, four segments, one join
 

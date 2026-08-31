@@ -2,12 +2,12 @@
 name: haipipe-plugin-probe
 description: >-
   The Task/Discovery QA lane of a Board Page's Probe family: one evidence
-  question per folder at <page>/probe/PP<NN>-<slug>/ — consumer/ holds the
+  question per folder at <page>/evidence/probe/PP<NN>-<slug>/ — consumer/ holds the
   stake-bearing question, executor/ the stripped one, proof/ the evidence,
   card.md the reader-facing head. Trigger: probe plugin, QA probe, probe card,
   Task evidence, Q-consumer, Q-executor, /haipipe-plugin-probe.
 metadata:
-  version: "0.9.2"
+  version: "0.9.3"
   last_updated: "2026-08-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -22,7 +22,7 @@ OUTLINE; this plugin creates QA cards only for `source: task|discovery`.
 ## 🗂 Storage · one question per folder, and the stake wall is a PATH
 
 ```text
-<page>/probe/
+<page>/evidence/probe/
 └── PP<NN>-<slug>/          one evidence question, numbered per page (QPf9 §1)
     ├── card.md             🧑 the head, one screen, all fields (§🪪)
     ├── consumer/           🧱 STAKE ALLOWED · never crosses
@@ -394,6 +394,9 @@ A page's prose CITES a card by id and never restates what the card holds; a sent
 ```
 
 On a `dialect: paper` board the join key from a sentence to the question that owes it is the bracket `[Q-<Sec>-<n>]`, resolved at BUILD time by `src/dialect_paper.py`, which reports `unowned` when no probe entry declares that id. ⬜ **A board page has no equivalent chip yet**: `PP03` in a board sentence renders as plain text, and a backticked `` `PP03` `` is a code span, which QUOTES instead of chipping. Until that index exists, cite the bare id and let the 🚪 anchor carry the reader.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 

@@ -7,7 +7,7 @@ description: >-
   sibling lane and runs in OUTLINE. Trigger: page probe, PROBE phase, raise a
   probe card, Task evidence, match before dispatch, /haipipe-page-probe.
 metadata:
-  version: "0.12.0"
+  version: "0.12.1"
   last_updated: "2026-08-31"
 ---
 
@@ -31,7 +31,7 @@ the source, return to OUTLINE and correct the obligation before creating a card.
 
 ```text
 READS    target Page · person-LOOKED outline · existing local probe cards
-WRITES   <page>/probe/PP<NN>-<slug>/ card, consumer, executor, empty proof manifest
+WRITES   <page>/evidence/probe/PP<NN>-<slug>/ card, consumer, executor, empty proof manifest
 NEVER    Page prose · accepted outline · PageX ranking · returned answer · display intake
 EXITS    EVIDENCE when every Task/Discovery mark is served and dispatched or matched
 HUMAN    a person's LOOK releases this phase; no human read/accept gate is ticked here
@@ -196,3 +196,6 @@ next:        EVIDENCE | PROBE | OUTLINE | HOLD
 
 A coverage gap is a HOLD, not a successful receipt. The next phase is
 `haipipe-page-evidence`, which binds what this phase matched or dispatched.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.

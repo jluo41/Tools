@@ -7,10 +7,16 @@ description: >-
   routes a decision elsewhere. Trigger: meeting plugin, keep a meeting,
   meeting record, meeting digest, /haipipe-plugin-meeting.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-18"
 ---
 # /haipipe-plugin-meeting · a page's own kept meeting notes
+
+> ⚰️ **LEAVING THE PAGE (JL 260831)**: meetings live at project or SPACE
+> level; a parser later routes a meeting's decisions into each affected
+> page's `outline/` as `D<nn>` threads or log records. The lane stops
+> minting on pages; kept folders stay until the project home exists.
+
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only meeting's delta: the dated-folder shape, why it is standalone rather than routed, and the one writer.

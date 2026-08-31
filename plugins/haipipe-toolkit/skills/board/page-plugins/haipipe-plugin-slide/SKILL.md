@@ -2,11 +2,11 @@
 name: haipipe-plugin-slide
 description: >-
   The slide/ plugin of a Board page: the page's deck at
-  <page>/slide/<stem>-deck.html, derived and regenerable, authored from the
+  <page>/delivery/slide/<stem>-deck.html, derived and regenerable, authored from the
   page's own .md by /_board/autodeck. Trigger: slide plugin, page deck,
   regenerate the deck, slides tab, autodeck, /haipipe-plugin-slide.
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-08-15"
 ---
 # /haipipe-plugin-slide · the page's deck, authored from the page's own words
@@ -17,7 +17,7 @@ This file owns only slide's delta: how a deck is authored from a page, and what 
 ## 🗂 Storage · one deck per page, derived
 
 ```text
-<page>/slide/
+<page>/delivery/slide/
 └── <stem>-deck.html     the deck, one self-navigating file
 ```
 
@@ -36,6 +36,9 @@ Authoring is the only path: the reflow projection (`live/deck.py`) was retired t
 The 🎞 tab frames the deck `?plain`; ✨ Regenerate sits on both doors, the tab and the menu row.
 The deck links straight at `display/html-ppt`'s own assets by relative path: 36 themes, T to cycle them, F fullscreen, O overview, S presenter mode.
 Nothing is vendored, so the deck improves when that skill improves; reimplementing any of it in the board would be the second worst thing here, and copying it the worst.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 

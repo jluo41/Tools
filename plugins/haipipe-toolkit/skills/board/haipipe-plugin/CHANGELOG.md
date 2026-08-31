@@ -1,5 +1,11 @@
 ## 0.1.3 — 2026-08-21
 
+## 0.1.5 · 2026-08-31
+
+Category folders (evidence/, delivery/), the runs/ execution door and the
+simple-code law stated at the base; rows in ref/roster.md.
+
+
 ## 2026-08-31 · roster: the task/ row names the collection job
 
 The `task/` row's ranked list now states that the page's collection job

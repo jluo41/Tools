@@ -7,7 +7,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.1.4"
+  version: "0.1.5"
   last_updated: "2026-08-21"
 ---
 
@@ -63,3 +63,15 @@ Plugin-vs-workflow is the registry's own test: a plugin is a surface you open be
 A plugin's OPERATING knowledge lives in its own skill under `page-plugins/haipipe-plugin-<name>/` (JL 260815: one skill per plugin, keep haipipe-board small), the same third leg `page-types/` and `page-workflows/` give the page family.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
+
+## 🗂 Category folders and the execution door (260831)
+
+Two CATEGORY folders group the lanes on disk without changing any lane's
+grammar, writer or gate: `evidence/` (bibex · probe · display · pagex · code ·
+materials) and `delivery/` (latex · word · slide · render). A flat lane name is
+the same lane: on an unmigrated page it is the lane itself, on a migrated page
+a symlink stub kept for unpatched engine paths. `runs/` is the ONE execution
+door: unit code may live anywhere in the folder, in any format, but only a
+`runs/` ticket calls it, under the simple-code law (reads only this folder or
+a pagex-linked unit's declared outputs; writes only its own lane; no raw data,
+no PHI). The rows and retirements live in `ref/roster.md`.

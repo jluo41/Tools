@@ -1,5 +1,11 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.1.1 · 2026-08-31
+
+The v3 category folder <page>/evidence/ is this tab's disk twin; lanes
+live inside it, flat names are migration stubs.
+
+
 ## 0.1.0 · 2026-08-31
 
 Born from JL's ruling ("not the evidence folder, the evidence PLUGIN — we

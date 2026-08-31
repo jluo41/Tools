@@ -2,12 +2,12 @@
 name: haipipe-plugin-display
 description: >-
   The display/ plugin of a Board page: figure and table UNITS at
-  <page>/display/<stem>-DisplayN-<slug>/, routed to a renderer by kind, with a
+  <page>/evidence/display/<stem>-DisplayN-<slug>/, routed to a renderer by kind, with a
   human-only accepted: tick. A unit's id named in prose chips as an evidence
   card. Trigger: display plugin, page display, display unit, make a figure for
   this page, cite a display, /haipipe-plugin-display.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-17"
 ---
 # /haipipe-plugin-display · the page as a small paper, its figures as accepted units
@@ -19,7 +19,7 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 ## 🗂 Storage · one unit per folder, the paper contract at a page address
 
 ```text
-<page>/display/
+<page>/evidence/display/
 └── <stem>-Display<N>-<slug>/     the unit, named by the page's stem
     ├── README.md                 claim · kind · accepted: — the human gate lives here
     ├── intake/                   🧑 manifest.yaml + small approved extracts
@@ -32,7 +32,7 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 
 The kind is MIXED, and the split runs through the unit: `intake/`, `recipe/`, `float.tex`, `README.md` are PRIMARY originals; `preview.pdf`, `assets/`, `candidates/`, `versions/` are regenerable from them.
 What of the derived half is committed is QPf5's open Decision Now row (default ⭐B: sources + `assets/` + `float.tex` in, previews and candidates ignored) — read the row there, this file does not rule it.
-The address delta a fresh agent must know: the renderer skills speak PAPER addresses (`displays/displayNN-slug/`, a paper root, the lifecycle gallery); on a page the unit lives at `<page>/display/`, `preview.tex` compiles standalone from the unit folder, and no paper root exists or is walked for.
+The address delta a fresh agent must know: the renderer skills speak PAPER addresses (`displays/displayNN-slug/`, a paper root, the lifecycle gallery); on a page the unit lives at `<page>/evidence/display/`, `preview.tex` compiles standalone from the unit folder, and no paper root exists or is walked for.
 
 ## ✍️ Writer · a family routed by kind, and a gate no machine may tick
 
@@ -114,11 +114,14 @@ Steps ① ③ ⑤ are a person's and steps ② ④ are machinery
 ```
 
 The `> Display:` lane under a sentence is the FILING surface, kept for two cases: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there rather than clotting the line.
-`dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
+`dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/evidence/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
 Inside its own Page, write the bare Page-local id (`Display1`, `Display2`, …); cross-page prose may use the fully qualified `<stem>-DisplayN` id. Both aliases resolve to the same unit and both exporters place that unit once. A backticked id is a code span, and a code span QUOTES instead of chipping.
 Naming a ⬜ unit is legal and useful — it binds a pending render, and the chip says what is owed.
 Candidate rendering does not wait for release approval: PHI-safe aggregate intake may be rendered for review while a method or provenance Probe remains open. Release and interpretation still require the Probe gates and the separate human `accepted:` decision.
 THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph (the winning asset, the unit's own caption and label), and the word export embeds the rasterized figure with the inline `(Figure n)` and a 🖼 Display comment on the sentence — the per-projection mechanics are `haipipe-plugin-latex`'s and `haipipe-plugin-word`'s rows, not this file's.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 
@@ -127,7 +130,7 @@ THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cite
 - `../../haipipe-board/live/plugview.py`
   The 🖼 surface: strip, chips, trees, ghost scaffold; read-only.
 - `../../haipipe-board/src/dialect_paper.py`
-  The citation index: `<page>/display/*/float.tex` → evidence chips.
+  The citation index: `<page>/evidence/display/*/float.tex` → evidence chips.
 - `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
   The drawer registration: the Plugin ▾ rows for 🖼 Display and 🚪 Probe.
 - `../../haipipe-plugin/ref/roster.md`

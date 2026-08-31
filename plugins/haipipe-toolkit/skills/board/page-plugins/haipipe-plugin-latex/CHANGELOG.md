@@ -1,5 +1,12 @@
 ## 0.2.1 · 2026-08-21
 
+## 0.2.2 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 - **A PNG/JPG-rendered figure unit now embeds too.** `live/export.py`'s
   figure branch checked only for `assets/figure.pdf`; a `figure`-kind
   display unit whose winning render is `assets/figure.png` (the common

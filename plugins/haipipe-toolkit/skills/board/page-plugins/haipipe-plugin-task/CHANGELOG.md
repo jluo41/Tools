@@ -1,3 +1,9 @@
+
+## 0.1.1 · 2026-08-31
+
+MERGING banner: the lane's job moves to evidence/pagex/ (unit symmetry);
+contract stands until the pagex card reads task-unit status.
+
 haipipe-plugin-task — Changelog
 ===============================
 

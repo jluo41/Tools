@@ -2,12 +2,12 @@
 name: haipipe-plugin-render
 description: >-
   The render/ plugin of a Board page: the page's units as the RECIPIENT sees
-  them, at <page>/render/<stem>-<unit>-v<N>.<ext>, derived, so a person can
+  them, at <page>/delivery/render/<stem>-<unit>-v<N>.<ext>, derived, so a person can
   accept a message they have actually seen. Trigger: render plugin, message
   preview, as the recipient sees it, render version, sms preview,
   /haipipe-plugin-render.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-20"
 ---
 
@@ -31,7 +31,7 @@ This is the correction to the retired `fn/artifact.md`, which refused to render 
 ## 🗂 Storage · DERIVED, one file per unit per version
 
 ```text
-<page>/render/
+<page>/delivery/render/
 ├── <stem>-<unit>-v<N>.<ext>     DERIVED · the unit as it will appear
 └── manifest.json                three stamps per file
 ```
@@ -60,6 +60,9 @@ POST /_board/render     one division or all · stamps all three versions ·
 ## 📡 Surface · the 📱 tab
 
 One card per unit showing the render as the recipient sees it, its character count against the venue cap in red when over, its three stamps, and whether the owning division carries an `accepted:` row. A unit whose division changed after its last render shows ⚠️ STALE, which `haipipe-plugin-folder` already computes for any derived plugin.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 

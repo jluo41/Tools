@@ -1,5 +1,12 @@
 # haipipe-plugin-display · Changelog
 
+## 0.3.1 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 ## 0.3.0 — 2026-08-17
 
 **Where a data-driven unit's numbers come from is now written down** (JL 260817

@@ -7,7 +7,7 @@ description: >-
   plugin, word export, docx export, page to word, coauthor docx,
   /haipipe-plugin-word.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-16"
 ---
 
@@ -17,7 +17,7 @@ metadata:
 The export exists for one reader: a coauthor who marks up in Word and does not use LaTeX.
 The design record is the board's `QPf7-word` page; the writer's own truth is `md2docx.py`'s docstring; this skill is the operating knowledge between them.
 
-## 📦 What lands in `<page>/word/`
+## 📦 What lands in `<page>/delivery/word/`
 
 ```
 <stem>.docx        the ARTIFACT · what the coauthor opens
@@ -42,7 +42,7 @@ With no page store, a paper's `0-*.bib` found upward rides along; outside any pa
 
 **Evidence rides as comments**: `--lanes` defaults to Citation alone (the paper family's ruling); whether a BOARD page's export wants lanes at all is QPf7's open A2.1, answered by a real coauthor's markup.
 
-**The page's display evidence embeds (JL 260816)**: when `<page>/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
+**The page's display evidence embeds (JL 260816)**: when `<page>/evidence/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/evidence/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
 The docx then carries the figure (rasterized from the unit's winning `figure.pdf`) with the unit's own caption, the inline `(Figure n)`, and a 🖼 Display comment on the citing sentence; the page source is never edited and the temp is deleted after the run.
 
 **Tables remain native and editable**: booktabs `tabular` and `tabularx` assets, including balanced column specifications such as `@{}X r@{}` and `\multicolumn`, are parsed into Word table rows. TeX wrappers and note minipages do not leak into cell text.
@@ -63,3 +63,6 @@ python3 skills/board/page-plugins/_shared-export/md2docx.py <page.md> \
 
 The Board's `**Name**:` caption markers are Page scaffolding; the shared reader strips them before Word output.
 The twin needs Chrome on the machine; without it the view keeps the ⬇ download and names the failure.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.

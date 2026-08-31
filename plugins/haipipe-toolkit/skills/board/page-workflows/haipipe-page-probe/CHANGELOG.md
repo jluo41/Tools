@@ -1,5 +1,12 @@
 ## 0.11.0 — 2026-08-21
 
+## 0.12.1 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 ## 0.12.0 · 2026-08-31
 
 The TASK-route batch gets a home: the page's collection job

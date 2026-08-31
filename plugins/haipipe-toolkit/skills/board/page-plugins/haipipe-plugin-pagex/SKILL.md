@@ -7,7 +7,7 @@ description: >-
   folders. Trigger: pagex plugin, borrow a file from another page, reference
   other pages, symlink plugin, /haipipe-plugin-pagex.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-20"
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages
@@ -50,7 +50,7 @@ link an entire page home folder.
 ## 🗂 Storage · MIXED, one ranked list and the links minted from it
 
 ```text
-<page>/pagex/
+<page>/evidence/pagex/
 ├── <stem>.md                    PRIMARY · the borrow list, ORDER = rank
 ├── <src-page>/<inner path>      DERIVED · relative symlinks, re-minted
 └── <stem>-view.html             DERIVED · the 🔗 card view
@@ -119,6 +119,9 @@ Under the cards sits one folded ＋, the by-path pen; nothing on stage asks a pe
 
 The 📂 folder tab marks a symlink row with a bare 🔗, full target on hover, because it reports the RESOLVED file and a borrowed page md would otherwise read as duplicated bytes (JL 260816: "are they copied or are they the symlink?").
 The mark stays bare: pagex mints links whose place mirrors the source, so spelling the target out repeats the row's own name and was the first fix's own defect.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 

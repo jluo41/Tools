@@ -2,13 +2,13 @@
 name: haipipe-plugin-bibex
 description: >-
   The bibex/ plugin of a Board page: the page's own bib at
-  <page>/bibex/<stem>.bib, worked through a citation workbench with status
+  <page>/evidence/bibex/<stem>.bib, worked through a citation workbench with status
   chips, DOI links, and a human ✓ verified tick. Law: bibtex is never
   generated, only subset or landed verbatim. Trigger: bibex plugin, page bib,
   citation workbench, verify a citation, add a bib entry,
   /haipipe-plugin-bibex.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-15"
 ---
 # /haipipe-plugin-bibex · the page's own bib, never composed by a machine
@@ -19,7 +19,7 @@ This file owns only bibex's delta: a MIXED plugin, one primary file worked throu
 ## 🗂 Storage · MIXED, and the split is the contract
 
 ```text
-<page>/bibex/
+<page>/evidence/bibex/
 ├── <stem>.bib           PRIMARY · the page's own bib (JL 260815)
 └── <stem>-bib.html      DERIVED · the workbench, regenerated
 ```
@@ -50,6 +50,9 @@ Outside any paper the page's bib simply starts empty; the refresh has nothing to
 
 The 📚 tab renders one row per entry: status chip, Scholar/DOI/URL links for checking, ✓ to verify, ✎ to edit, ＋ to add.
 The ✓ ticks are all a person's: a seeded entry arrives unverified, and stays so until an eye has been on it.
+
+
+> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files
 

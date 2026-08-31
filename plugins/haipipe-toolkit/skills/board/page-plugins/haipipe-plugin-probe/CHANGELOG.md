@@ -1,5 +1,12 @@
 ## 0.9.2 — 2026-08-21
 
+## 0.9.3 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 - §🪪's `bank:` row now names what its four words ARE: the cost tier under
   another name (`haipipe-probe` §💰, R13 restored 260821) — reuse is T2, run and
   code are T3, new is T4, and a card that closed at T0/T1 carries no `bank:`.

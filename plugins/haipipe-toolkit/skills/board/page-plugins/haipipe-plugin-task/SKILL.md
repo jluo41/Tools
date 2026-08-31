@@ -7,10 +7,16 @@ description: >-
   files. Trigger: task plugin, link a task folder, task status, which task
   folder, /haipipe-plugin-task.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-18"
 ---
 # /haipipe-plugin-task · a page's own task folders, linked whole, status read live
+
+> ⚰️ **MERGING (JL 260831)**: a task folder is a page folder now, so this
+> lane's job moves to `evidence/pagex/` — a pagex card pointing at a task
+> unit shows its live plan/report/QA status. This contract stands until the
+> pagex card learns that read; new links go to pagex.
+
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only task's delta: linking whole DIRECTORIES instead of files, the `tasks/`-ancestor vet, and reading status off disk.

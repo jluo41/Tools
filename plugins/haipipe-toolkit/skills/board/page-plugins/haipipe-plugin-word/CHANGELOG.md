@@ -1,5 +1,12 @@
 ## 0.2.0 · 2026-08-16
 
+## 0.2.1 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 - **The docx opens with the Page's complete H1 title** via `--document-title`,
   emitted once in Word's editable Title style, independent of paper-section H1
   inference.

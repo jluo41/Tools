@@ -1,5 +1,12 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.6.1 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 ## 0.6.0 — 2026-08-20
 
 - **0.5.0 and 0.6.0 shipped in SKILL.md with no entry here**, both in the 260819

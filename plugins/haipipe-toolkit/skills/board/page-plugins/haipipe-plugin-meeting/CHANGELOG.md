@@ -1,3 +1,9 @@
+
+## 0.1.1 · 2026-08-31
+
+LEAVING banner: meetings move to project/SPACE level, parsed into
+affected pages' outline/; lane stops minting on pages.
+
 haipipe-plugin-meeting — Changelog
 ===============================
 

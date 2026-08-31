@@ -1,5 +1,11 @@
 # haipipe-plugin-chat · Changelog
 
+## 0.3.1 · 2026-08-31
+
+The boot's task-list pointer follows the task→pagex merge under evidence/
+(category folders, haipipe-page 0.47.0).
+
+
 ## 0.3.0 · 2026-08-31
 
 §🗺 gains the collection-job row: "collect this page's values" lands in the
