@@ -28,7 +28,7 @@ BEGIN, END = "# --- evidence-status:begin (generated) ---", "# --- evidence-stat
 # A probe id is `PP<NN>` standing alone: `S0-PP2` in a `Routed:` line is a Round row id,
 # not a card (found 260831: SM00 printed "📮 PP2 · no card" for a bare mark).
 REFPAT = {"probe": r"(?<![A-Za-z0-9-])(PP\d+)", "value": r"(?<![A-Za-z0-9-])(PP\d+(?:\.v\d+)?)", "display": r"(Display\d+)",
-          "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*)", "aim": r"(?<![A-Za-z0-9.\-])(A\d+\.\d+|P\d+)"}
+          "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*|[A-Za-z][\w-]*[_:][\w:-]+|[A-Z][A-Z0-9-]{3,})", "aim": r"(?<![A-Za-z0-9.\-])(A\d+\.\d+|P\d+)"}
 # ref/evidence-bundle.md §Status rule: six words, no seventh.
 def status(kind, cls, note):
     if kind == "aim":
@@ -48,7 +48,7 @@ def status(kind, cls, note):
 def bullets(plan_text):
     """Walk the plan: (address, head, kind, refs) for every marked bullet.
 
-    A bullet is its `- B<n> · head` line PLUS its folded continuation lines
+    A bullet is its `- B<n> ·` or `- S<n> ·` head line PLUS its folded continuation lines
     (`  Note: … 🎯 A1.1`), exactly as `plan_card` assembles it: the end mark
     normally sits on the Note line, so a walker that reads heads alone finds
     no marks at all (found on SM08's first run: "no marked bullet").
@@ -63,7 +63,11 @@ def bullets(plan_text):
         m = re.match(r"^### C(\d+)\.P(\d+)\b", line)
         if m: c, p = int(m.group(1)), int(m.group(2)); i += 1; continue
         if re.match(r"^## Aims\b", line): break
-        m = re.match(r"^- (?:\[[ xX]\] )?B(\d+)\s*·\s*(.*)$", line)
+        m = re.match(r"^- (?:\[[ xX]\] )?[BS](\d+)\s*·\s*(.*)$", line)
+        # [BS]: a Section plan's sentence slots are `- S<n> ·` (the 0.5.x
+        # slot grammar); slot number == position, so S<n> and B<n> are ONE
+        # address and the wall keys them canonically as B (JAMA repro 260831:
+        # SA01-SA04 reported "no marked bullet" with marks bound).
         if not m: i += 1; continue
         b, head = int(m.group(1)), m.group(2).strip()
         body, j = m.group(2), i + 1

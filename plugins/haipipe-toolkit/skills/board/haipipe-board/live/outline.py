@@ -731,7 +731,7 @@ def _disk_state(page_src):
             why_empty = bool(re.search(r"^why_empty:\s*\S+", t, re.M))
             sv = (re.search(r"^serves:\s*(.+)$", t, re.M) or [None, ""])[1]
             serves.setdefault(d.name.split("-")[0], []).extend(
-                re.findall(r"C\d+\.P\d+\.B\d+", sv))
+                [re.sub(r"\.S(\d+)$", r".B\1", a) for a in re.findall(r"C\d+\.P\d+\.[BS]\d+", sv)])
             q = (re.search(r"^question:\s*(.+)$", t, re.M) or [None, ""])[1]
             if not q:
                 q = (re.search(r"^#\s*\S+\s*\n+(.+)$", t, re.M) or [None, ""])[1]
@@ -795,7 +795,7 @@ def _disk_state(page_src):
                                  intake_ready and renderer, renderer, asset)
             sv = (re.search(r"^serves:\s*(.+)$", txt, re.M) or [None, ""])[1]
             display_serves[m.group(1)] = re.findall(
-                r"C\d+\.P\d+\.B\d+", sv
+                r"C\d+\.P\d+\.[BS]\d+", sv
             )
     # The KEY alone says the citation resolves; the reader also wants to see
     # WHAT it is without leaving the tab (JL 260817: "我点它之后，它把这个内容
@@ -1177,10 +1177,14 @@ def plan_card(page_src, root=None):
     aims.update(_aim_rows(page_text))
     scaffolds = {}
     for m in re.finditer(r"(?m)^([^\n]*?)<!--\s*realizes:\s*"
-                         r"(C\d+\.P\d+\.B\d+)\s*-->\s*$", page_text):
+                         r"(C\d+\.P\d+\.[BS]\d+)\s*-->\s*$", page_text):
         sm = re.search(r"\b(C\d+\.P\d+\.S\d+)\b", m.group(1))
         if sm:
-            scaffolds.setdefault(m.group(2), []).append(sm.group(1))
+            # canonical B key: a slot plan's realizes may say .S<n>; slot
+            # number == position, so it is the same bullet (JAMA repro 260831)
+            scaffolds.setdefault(
+                re.sub(r"\.S(\d+)$", r".B\1", m.group(2)), []
+            ).append(sm.group(1))
 
     # A card names the bullets it SERVES, so the plan never has to be edited
     # to carry an id that did not exist when it was frozen. Many-to-many: PP04
@@ -1348,7 +1352,7 @@ def plan_card(page_src, root=None):
                # [A-Za-z]* after the year, not [a-z]?: author-year-WORD keys
                # (`luo2026eventglucose`) were truncated to `luo2026e`, and the
                # chip then reported not-in-bibex for a key nobody wrote.
-               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*)",
+               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*|[A-Za-z][\w-]*[_:][\w:-]+|[A-Z][A-Z0-9-]{3,})",
                "aim": r"(?<![A-Za-z0-9.\-])(A\d+\.\d+|P\d+)"}.get(kind)
         # ALL of them, not the first. "📚 Dowell2016 · Dowell2022" registered
         # only Dowell2016, so the second key appeared as an orphan on the very
@@ -1363,7 +1367,7 @@ def plan_card(page_src, root=None):
             _at = _tail.rfind(_emo)
             _p = {"probe": r"(?<![A-Za-z0-9-])PP\d+", "value": r"(?<![A-Za-z0-9-])PP\d+(?:\.v\d+)?",
                   "display": r"Display\d+",
-                  "cite": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*"}.get(_kind)
+                  "cite": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*|[A-Za-z][\w-]*[_:][\w:-]+|[A-Z][A-Z0-9-]{3,}"}.get(_kind)
             if _at >= 0 and _p:
                 cited.update(re.findall(_p, _tail[_at:]))
         # A BARE mark whose bullet already has a card is RAISED, and saying

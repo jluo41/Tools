@@ -1,5 +1,18 @@
 ## 0.151.2 — 2026-08-31
 
+## 0.152.2 · 2026-08-31
+
+Two evidence-wall bugs (JAMAOpioidBoard's repro): ① the bullet walkers read
+only `- B<n> ·` heads, so a Section plan in the sentence-slot grammar
+(`- S<n> ·`) reported "no marked bullet · owed 0" with marks bound — the
+walkers now accept `[BS]` and key S as canonical B (slot number == position),
+at evidence-status.bullets(), outline's serves/display-serves/realizes parses
+and the scaffold map; SA01 flipped 0·0 → owed 4 · landed 4 on regeneration.
+② the cite REFPAT required a 4-digit year, so a yearless key (CMS_NPPES)
+parsed as no ref — both files now also accept underscore/colon keys and
+ALL-CAPS ids. JAMA board walls regenerated; suite 291 green.
+
+
 ## 0.152.1 · 2026-08-31
 
 Settling the two red tests the paper restructure surfaced (JAMAOpioidBoard's
