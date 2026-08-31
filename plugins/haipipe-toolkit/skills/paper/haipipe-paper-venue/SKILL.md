@@ -1,5 +1,5 @@
 ---
-name: haipipe-page-for-venue
+name: haipipe-paper-venue
 description: >-
   Paper Page Type for one external submission target: a journal, funder, or
   patent office. Separates binding desk rules from observed venue patterns,
@@ -7,15 +7,15 @@ description: >-
   Section Pages. Use when researching, creating, refreshing, or comparing a
   venue Page.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-23"
+  version: "0.5.0"
+  last_updated: "2026-08-31"
   outline:
     mode: fixed
     source: "this SKILL.md"
     shape: "Target Identity and Scope → Fit and Desk Reject → Venue Structure → Unit Guidance → Submission Rules → Cost Clock and Odds → Gaps and Handoff"
 ---
 
-# /haipipe-page-for-venue · make one external desk inspectable
+# /haipipe-paper-venue · make one external desk inspectable
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Name the Page `QBv<n>-<slug>.md`; that filename is its sole type key under the

@@ -1,4 +1,12 @@
-haipipe-page-for-roadmap · Changelog
+## 0.6.0 — 2026-08-31
+
+- **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
+  `paper/page-types/haipipe-page-for-roadmap/` is now `paper/workflow-phases/haipipe-paper-roadmap/`.
+  The skill is one paper JOURNEY PHASE and still owns its `page-type:` key;
+  a new `## 🧭 Journey phase` block places the phase and its gates, and the
+  description carries the P-number. Contract body unchanged.
+
+haipipe-paper-roadmap · Changelog
 ====================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions

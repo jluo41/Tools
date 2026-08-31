@@ -1,5 +1,3 @@
-section-page-template: 1
-
 # Generic Section Page outline
 
 Use this explicit fallback when the selected venue has no current template for
@@ -10,14 +8,14 @@ generic outline into an invented venue rule.
 
 ```yaml
 page-type: section
-section-kind: <kind>
+section_kind: <kind>
 narrative-row: <row id and version>
 reader-question: <one question>
 entry-state: <reader state on entry>
 exit-state: <reader state on exit>
 claim-ids: [<exact Narrative ids>]
 venue-allocation: <binding rules; pack observations labeled separately>
-structure-source: paper/page-types/haipipe-page-for-section/ref/generic-template.md
+structure-source: ref/generic-template.md · <why: ABSENT BY DESIGN or MISSING>
 evidence-allowlist:
   pagex: [<accepted Page and scope>]
   probe: [<PP ids and values>]

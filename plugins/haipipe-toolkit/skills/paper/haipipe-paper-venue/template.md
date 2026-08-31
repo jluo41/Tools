@@ -96,7 +96,7 @@ group for page-wide targets that belong to no single unit.>
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `paper/page-types/haipipe-page-for-venue/SKILL.md` · this page's contract
+- `paper/haipipe-paper-venue/SKILL.md` · this page's contract
 
 ### 📥 Input files · what this page READS
 

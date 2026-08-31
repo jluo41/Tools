@@ -1,15 +1,15 @@
 ---
-name: haipipe-page-for-narrative
+name: haipipe-paper-narrative
 description: >-
-  Paper Page Type for one venue-aligned narrative: how one paper is told to
-  one desk. Turns the Seed's handoff plus a Venue Page into claims, argument
-  order, display allocation, and a one-row-per-section outline. Use when
-  designing or retargeting a paper story, or repairing its section map.
-  Trigger: narrative page, paper story, claim roles, section map, page-type
-  narrative.
+  Paper journey phase P3 (Narrative) and the Page Type contract for one
+  venue-aligned narrative: how one paper is told to one desk. Turns the Seed's
+  handoff plus a Venue Page into claims, argument order, display allocation,
+  and a one-row-per-section outline. Use when designing or retargeting a paper
+  story, or repairing its section map. Trigger: narrative page, paper story,
+  claim roles, section map, page-type narrative.
 metadata:
-  version: "0.5.2"
-  last_updated: "2026-08-28"
+  version: "0.6.0"
+  last_updated: "2026-08-31"
   group-token: "NA"
   outline:
     mode: grammar
@@ -17,28 +17,30 @@ metadata:
     shape: "first word from {Venue, Claim, Argument, Reader, Section, Evidence, Handoff}; Handoff is one page-level division, always last"
 ---
 
-# /haipipe-page-for-narrative · claims in reader order
+# /haipipe-paper-narrative · claims in reader order
 
 Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
 Declare `page-type: narrative` and record the shared Venue Page it binds.
 
-In a runtime paper board Narratives are the P3 group of their own — one page
-per desk, in arrival order, reading the story group's Seed from next door
-(journey 0.6.0, JL 260828; SD-numbered narratives inside the story group are
-grandfathered):
+## 🧭 Journey phase
 
-```text
-0-paperboard/
-├── A1-SD-story/                  P0-P2 · ideation · seed · roadmap
-│                                 the venue-free head this group never joins
-└── A2-NA-narrative/
-    ├── NA01-narrative-<desk>/    how the paper is told to desk 1
-    └── NA02-narrative-<desk>/    how it is told to desk 2
-```
-
-The group law: the narrative group decides the telling, one desk one page; no
-manuscript prose lives here, and every NA<NN> names its desk in its slug. The
-story group stays wholly venue-free — a venue word inside A1 is a leak.
+This skill is journey phase P3 Narrative (tell) of the paper journey and owns
+the `page-type: narrative` contract below. Enter through gate G4, reading the
+Seed's handoff (never the Roadmap directly). Exit through gate G5: one bank
+page bound, every claim parented to an E-row, every section-map row budgeted.
+`haipipe-paper-workflow` holds the full gate assertions; this block only places
+the phase. The page itself always runs through `/haipipe-page` and
+`haipipe-page-workflow` (OUTLINE → … → CHECK), never a private lifecycle. In a
+runtime paper board Narratives are the P3 group of their own — one page per
+desk, in arrival order, reading the story group's Seed from next door (journey
+0.6.0, JL 260828; SD-numbered narratives inside the story group are
+grandfathered): ```text 0-paperboard/ ├── A1-SD-story/ P0-P2 · ideation · seed
+· roadmap │ the venue-free head this group never joins └── A2-NA-narrative/ ├──
+NA01-narrative-<desk>/ how the paper is told to desk 1 └──
+NA02-narrative-<desk>/ how it is told to desk 2 ``` The group law: the
+narrative group decides the telling, one desk one page; no manuscript prose
+lives here, and every NA<NN> names its desk in its slug. The story group stays
+wholly venue-free — a venue word inside A1 is a leak.
 
 ## 📐 Grain and boundary
 

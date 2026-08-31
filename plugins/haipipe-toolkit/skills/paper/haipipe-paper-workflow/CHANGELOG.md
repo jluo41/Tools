@@ -1,3 +1,19 @@
+## 0.6.2 — 2026-08-31
+
+- **Phase law location named** (workflow-phases restructure, JL 260831): each
+  journey phase's own law now ships as `workflow-phases/haipipe-paper-<phase>`;
+  one pointer line added above the six-phase table. Gates, names, groups
+  unchanged.
+
+## 0.6.1 — 2026-08-31
+
+- **The appendix token is `SA`, Section-Appendix** (JL 260831: "The AM is not
+  correct, it should be SA"): a desk group's pages are `S<D><NN>` main
+  sections, `SA<NN>` appendix sections, `RD<NN>` rounds. The Round ledger
+  grammar (`SA-PP<n>` rows) already said so; the page ids now agree. MISQ
+  renamed AM01-AM06 → SA01-SA06 the same day; boards still on `A<D>` are
+  grandfathered until their own rename.
+
 ## 0.6.0 — 2026-08-28
 
 - **Six phases: the Collection page folded into the Roadmap** (JL 260828: the

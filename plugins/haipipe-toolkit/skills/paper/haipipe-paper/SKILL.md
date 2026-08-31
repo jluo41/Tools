@@ -7,9 +7,9 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-28"
-  summary: "Adds the paper-level source-driven assembly contract; page-level Word export remains a separate plugin."
+  version: "0.2.0"
+  last_updated: "2026-08-31"
+  summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -23,7 +23,8 @@ Load in this order:
 haipipe-paper
   → haipipe-paper-workflow, when the question is the journey or a gate
   → haipipe-page
-  → one Paper Page Type, when applicable
+  → the journey-phase skill under workflow-phases/ (haipipe-paper-<phase>),
+    or haipipe-paper-venue for a bank page
   → haipipe-page-workflow for RUN
   → the Page-local plugins actually required
   → haipipe-paper-assemble, for complete-paper DOCX/PDF/supplement assembly
@@ -169,14 +170,14 @@ Resolve the paper root and target Page before changing anything.
 
 | User intent | Route |
 |---|---|
-| brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-page-for-ideation` |
+| brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-paper-ideation` |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
-| create or repair paper identity | `haipipe-page-for-seed` |
-| plan the campaign, release a block, register receipts, close a lap | `haipipe-page-for-roadmap` |
-| inspect or record a target venue | `haipipe-page-for-venue` |
-| design claims, arc, or per-section outline | `haipipe-page-for-narrative` |
-| write or revise one manuscript/appendix unit | `haipipe-page-for-section` |
-| triage or answer one feedback/review cycle | `haipipe-page-for-round` |
+| create or repair paper identity | `haipipe-paper-seed` |
+| plan the campaign, release a block, register receipts, close a lap | `haipipe-paper-roadmap` |
+| inspect or record a target venue | `haipipe-paper-venue` (library lane, not a phase) |
+| design claims, arc, or per-section outline | `haipipe-paper-narrative` |
+| write or revise one manuscript/appendix unit | `haipipe-paper-section` |
+| triage or answer one feedback/review cycle | `haipipe-paper-round` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-page-workflow` |
 | compile or export one Page | Page-local `latex/` or `word/` plugin |
@@ -262,7 +263,7 @@ TASK LAYER's own home, `examples/<Project>/tasks/{G}{NN}_<name>/`, never inside
 the paper repo. The symmetry is with discoveries — evidence layers are
 consumer-neutral and a page binds them by path, so a task inside the paper
 would make the paper both the consumer of its evidence and the executor of it.
-`haipipe-page-for-roadmap` carries the law and the which-project test.
+`haipipe-paper-roadmap` carries the law and the which-project test.
 
 **The room law (JL 260824)**: a desk room is self-contained — its tex reads
 only its own `sections/`, includes only from its own `displays/`, cites only
@@ -410,7 +411,9 @@ paper/
 ├── haipipe-paper/          public door; one routing contract
 ├── haipipe-paper-workflow/ the seven-phase gate machine; owns transitions only
 ├── haipipe-paper-assemble/  complete-paper DOCX/PDF/supplement build contract
-├── page-types/             eight active Paper Page Type contracts
+├── workflow-phases/        six journey-phase skills, haipipe-paper-ideation
+│                           … haipipe-paper-round; each owns its page-type key
+├── haipipe-paper-venue/ the one non-phase Page Type: a QBv bank record
 ├── venue/                  the shared QBv desk bank (bank/), prose playbooks,
 │                           and the literature bank
 ├── TODO.md                 deferred design work, one entry per item

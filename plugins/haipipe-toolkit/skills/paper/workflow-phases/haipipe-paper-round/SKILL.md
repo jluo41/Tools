@@ -1,14 +1,14 @@
 ---
-name: haipipe-page-for-round
+name: haipipe-paper-round
 description: >-
-  Paper Page Type for one bounded feedback-and-response cycle: an editor
-  decision, reviewer round, or coauthor pass. Atomizes every concern into a
-  coverage ledger, records dispositions, routes changes to the owning Pages,
-  and closes with an approved response. Use when opening, triaging, answering,
-  or closing a revision round.
+  Paper journey phase P5 (Round) and the Page Type contract for one bounded
+  feedback-and-response cycle: an editor decision, reviewer round, or coauthor
+  pass. Atomizes every concern into a coverage ledger, records dispositions,
+  routes changes to the owning Pages, and closes with an approved response. Use
+  when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-08-27"
+  version: "0.4.0"
+  last_updated: "2026-08-31"
   group-token: "RD"
   outline:
     mode: fixed
@@ -16,10 +16,21 @@ metadata:
     shape: "Round Identity and Intake → Feedback Coverage Ledger → Decisions and Response Strategy → Change Routing → Applied and Checked Changes → Response Package → Close Receipt and Handoff"
 ---
 
-# /haipipe-page-for-round · close one feedback cycle without losing an item
+# /haipipe-paper-round · close one feedback cycle without losing an item
 
 Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
 Declare `page-type: round`.
+
+## 🧭 Journey phase
+
+This skill is journey phase P5 Round (respond) of the paper journey and owns
+the `page-type: round` contract below. Opens on a feedback batch any time after
+a telling exists. Closes through gate G7: every concern ledgered and routed
+exactly once (Seed for new evidence, Narrative for retelling, Section for
+rework) and a person approves the response receipt. `haipipe-paper-workflow`
+holds the full gate assertions; this block only places the phase. The page
+itself always runs through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE
+→ … → CHECK), never a private lifecycle.
 
 ## 🔄 Grain and boundary
 
@@ -144,6 +155,22 @@ Keep authority with the artifact being changed:
 | number correction | consuming Page's probe-card `## Values` binding |
 | table or figure change | owning Page's `display/<unit>/` |
 | response wording and coverage | this Round Page |
+
+**Where a routed concern LANDS on its owner** (260831): the owning page's
+`outline/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
+during its own OUTLINE pass (`haipipe-page-outline` ⓪ COLLECT). This page never
+writes into another page's folder, and it never dispatches an agent at its
+targets: it DECLARES reopenings. `cli/feedback.py collect --all <board>` lands
+every register in one process with no agent at all, and `cli/feedback.py reopen
+<board>` lists which pages hold an open row, in the order this ledger's own
+gates impose (a Section whose concern also routes to a Narrative waits on that
+Narrative; two Sections sharing one §2B block are one reopening). The fold on
+each reopened page is the existing per-page RUN, `haipipe-page-workflow` at
+OUTLINE, one page at a time or under a signed charter, each ending at a
+person's `approved:`. A blind N-way fan-out buys N unapproved plans and N
+ticks; the order above is what makes the ticks worth buying. `applied` here needs that register's
+`landed:` version first, and G7 runs `feedback-coverage` board-wide before
+this page may close.
 
 The Round records routes and checked returns. It does not become a second home
 for revised section prose, research values, citations, or paper displays. A

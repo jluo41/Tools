@@ -1,14 +1,15 @@
 ---
-name: haipipe-page-for-ideation
+name: haipipe-paper-ideation
 description: >-
-  Paper Page Type for one research direction's ideas, before any paper's Seed
-  exists: generate and rank ideas, novelty-check them, record pilots, then
-  eliminate or send one to a Seed. Use when brainstorming a direction or
-  checking whether an idea has been done. Trigger: ideation page, find ideas,
-  brainstorm, novelty check, page-type ideation.
+  Paper journey phase P0 (Ideation) and the Page Type contract for one research
+  direction's ideas, before any paper's Seed exists: generate and rank ideas,
+  novelty-check them, record pilots, then eliminate or send one to a Seed. Use
+  when brainstorming a direction or checking whether an idea has been done.
+  Trigger: ideation page, find ideas, brainstorm, novelty check, page-type
+  ideation.
 metadata:
-  version: "0.5.4"
-  last_updated: "2026-08-28"
+  version: "0.6.0"
+  last_updated: "2026-08-31"
   group-token: "SD"
   outline:
     mode: grammar
@@ -16,10 +17,21 @@ metadata:
     shape: "division 1 is Direction, division 2 is Ideas (ranked) with a source bullet naming each IDEA_REPORT it drew from; every later idea division is titled Idea <n>: <title>, in rank order, carrying the report's own fields (Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims · Pilot result · Risk · Reviewer's likely objection · Recommendation); Eliminated Ideas and then Suggested Execution Order close the page (a retrofit page may nest its single idea under division 2)"
 ---
 
-# /haipipe-page-for-ideation · one direction's ideas, in the reports' own words
+# /haipipe-paper-ideation · one direction's ideas, in the reports' own words
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: ideation`.
+
+## 🧭 Journey phase
+
+This skill is journey phase P0 Ideation (ideate) of the paper journey and owns
+the `page-type: ideation` contract below. The repo is minted WITH this page, so
+there is no entry gate. Exit through gate G0: per-claim novelty bound to QA
+files, a pilot result or explicit waiver, and a person's PROCEED tick sending
+the winning idea to its Seed. `haipipe-paper-workflow` holds the full gate
+assertions; this block only places the phase. The page itself always runs
+through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK),
+never a private lifecycle.
 
 ## 🌱 Grain and home
 

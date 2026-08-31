@@ -7,8 +7,8 @@ description: >-
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-08-28"
+  version: "0.6.2"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -43,6 +43,10 @@ phase and WHEN the next one may be minted. Deleting this file would lose no
 content rule — that is the test it must keep passing.
 
 ## 🗺 The six phases
+
+Each phase's own law ships as one skill under `workflow-phases/`
+(`haipipe-paper-ideation` … `haipipe-paper-round`); this file keeps only the
+cross-phase journey: names, gates, groups, receipts.
 
 ```text
 phase                     authority page                 what the phase produces
@@ -163,8 +167,8 @@ P0–P2   A1-SD-story/         SD00-ideation · SD01-seed · SD02-roadmap —
                              the venue-free head, one each
 P3      A2-NA-narrative/     NA<NN>-narrative-<desk>, one page per desk,
                              numbered in arrival order
-P4–P5   B<x>-<desk>/         one group per desk: its section pages (S<D>/A<D>
-                             tokens) AND its rounds (RD token) live together
+P4–P5   B<x>-<desk>/         one group per desk: its section pages (S<D> main,
+                             SA appendix) AND its rounds (RD token) live together
 ```
 
 A foreign-desk round (feedback from a desk this board never told) mints that

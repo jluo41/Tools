@@ -1,3 +1,11 @@
+## 0.4.0 — 2026-08-31
+
+- **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
+  `paper/page-types/haipipe-page-for-round/` is now `paper/workflow-phases/haipipe-paper-round/`.
+  The skill is one paper JOURNEY PHASE and still owns its `page-type:` key;
+  a new `## 🧭 Journey phase` block places the phase and its gates, and the
+  description carries the P-number. Contract body unchanged.
+
 ## 0.3.0 — 2026-08-24
 
 - **Rounds live in their desk's B group** (JL 260824, journey 0.5.0 P5-P6

@@ -1,3 +1,20 @@
+## 0.5.0 — 2026-08-31
+
+- **Renamed** (JL 260831: "you should have it for the haipipe-paper-venue"):
+  the skill `haipipe-page-for-venue` is now `haipipe-paper-venue`, at
+  `paper/haipipe-paper-venue/`. Every skill in the paper family now carries
+  the `haipipe-paper-*` name. The venue PAGE TYPE is unchanged: the key
+  `venue` stays in the engine and registry, and QBv pages still resolve by
+  filename. Lineage today: `paper/page-types/haipipe-page-for-venue/` →
+  `paper/haipipe-page-for-venue/` (0.4.1, same day) → here.
+
+## 0.4.1 — 2026-08-31
+
+- **Moved** (JL 260831 workflow-phases restructure): `paper/page-types/` is
+  retired; venue is a library lane, not a journey phase, so this contract
+  now sits at `paper/haipipe-page-for-venue/` beside the `venue/` bank
+  submodule. Name and contract body unchanged. (Renamed hours later; see 0.5.0.)
+
 ## 0.4.0 — 2026-08-23
 
 - **Two profiles, declared per page.** A venue page is PACK-BACKED (exemplar
@@ -113,7 +130,7 @@ jurisdictions rather than sections. Two declared parts of the shape did not.
   `Done when:` and `Now:`, a Log, and a tickable `Decision Now` row, which a
   reference file cannot hold.
 
-haipipe-page-for-venue · Changelog
+haipipe-paper-venue · Changelog
 ==================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match

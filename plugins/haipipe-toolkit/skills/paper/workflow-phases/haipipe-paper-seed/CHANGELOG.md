@@ -1,3 +1,11 @@
+## 0.6.0 — 2026-08-31
+
+- **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
+  `paper/page-types/haipipe-page-for-seed/` is now `paper/workflow-phases/haipipe-paper-seed/`.
+  The skill is one paper JOURNEY PHASE and still owns its `page-type:` key;
+  a new `## 🧭 Journey phase` block places the phase and its gates, and the
+  description carries the P-number. Contract body unchanged.
+
 ## 0.5.0 — 2026-08-24
 
 - **The story group becomes the venue-free P0-P3 head** (JL 260824, journey
@@ -76,7 +84,7 @@
   "maybe we can change it to Seed (which is venue free). And narrative, it is
   venue embedded, each of them should have it."
 - The venue-aligned layer this contract already named (selected venue, audience,
-  editor question, pitch, framing) moves to `haipipe-page-for-narrative`, one per
+  editor question, pitch, framing) moves to `haipipe-paper-narrative`, one per
   venue.
 - The layers were already separated here, with retargeting told to "reread the
   first layer and rewrite the second". Making them two PAGES is what makes the
@@ -84,7 +92,7 @@
   cannot also be the readable record of what the paper is about.
 - A seed that names a venue is now a defect.
 
-haipipe-page-for-seed · Changelog
+haipipe-paper-seed · Changelog
 ====================================
 
 Historical notes retained from the former Opening contract. New development is

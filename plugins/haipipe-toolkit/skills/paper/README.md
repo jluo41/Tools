@@ -64,15 +64,15 @@ paper/
 ├── haipipe-paper-assemble/
 │   ├── SKILL.md              complete-paper source-driven DOCX/PDF contract
 │   └── ref/                   config example and assembly references
-├── page-types/
-│   ├── haipipe-page-for-ideation/
-│   ├── haipipe-page-for-seed/
-│   ├── haipipe-page-for-roadmap/
-│   ├── haipipe-page-for-venue/
-│   ├── haipipe-page-for-narrative/
-│   ├── haipipe-page-for-section/
-│   ├── haipipe-page-for-round/
+├── workflow-phases/          six journey-phase skills, each owning its
+│   ├── haipipe-paper-ideation/     page-type key (JL 260831: replaces page-types/)
+│   ├── haipipe-paper-seed/
+│   ├── haipipe-paper-roadmap/
+│   ├── haipipe-paper-narrative/
+│   ├── haipipe-paper-section/
+│   └── haipipe-paper-round/
 │                             (retired literature/value/display/dash Page Types deleted 260822)
+├── haipipe-paper-venue/   the one non-phase Page Type: a QBv bank record
 ├── venue/                    the shared QBv desk bank (bank/), prose playbooks,
 │                             and the literature bank
 └── TODO.md                   open issues future sessions pick up (task-family format)

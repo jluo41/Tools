@@ -1,3 +1,11 @@
+## 0.6.0 — 2026-08-31
+
+- **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
+  `paper/page-types/haipipe-page-for-ideation/` is now `paper/workflow-phases/haipipe-paper-ideation/`.
+  The skill is one paper JOURNEY PHASE and still owns its `page-type:` key;
+  a new `## 🧭 Journey phase` block places the phase and its gates, and the
+  description carries the P-number. Contract body unchanged.
+
 ## 0.5.2 — 2026-08-24
 
 - **Fork clause repaired** (pre-commit audit, JL 260824): the grain-and-home
@@ -58,7 +66,7 @@
 - **Renamed: explore → IDEATION** (JL 260824: "我们不叫 exploration 了,我们改叫
   ideation 吧(想 idea 的过程),然后才是 seed"): the P0 act is thinking up
   ideas, and the name now says so. Page type `ideation`, group token `ID`,
-  home `A0-ID-ideation/`, skill `haipipe-page-for-ideation`, door verb
+  home `A0-ID-ideation/`, skill `haipipe-paper-ideation`, door verb
   `/haipipe-paper ideate`. Contract content unchanged; the engine whitelist
   swaps `explore` for `ideation` with no shipped page on the old key.
 

@@ -1,3 +1,11 @@
+## 0.6.0 — 2026-08-31
+
+- **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
+  `paper/page-types/haipipe-page-for-narrative/` is now `paper/workflow-phases/haipipe-paper-narrative/`.
+  The skill is one paper JOURNEY PHASE and still owns its `page-type:` key;
+  a new `## 🧭 Journey phase` block places the phase and its gates, and the
+  description carries the P-number. Contract body unchanged.
+
 ## 0.5.0 — 2026-08-24
 
 - **Narratives move out of the story group** (JL 260824, journey 0.5.0):
@@ -60,7 +68,7 @@
 - Retargeting CREATES a narrative page rather than rewriting one. A narrative page
   that does not name its venue is a defect.
 
-haipipe-page-for-narrative · Changelog
+haipipe-paper-narrative · Changelog
 ======================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match

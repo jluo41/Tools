@@ -1,19 +1,19 @@
 ---
-name: haipipe-page-for-roadmap
+name: haipipe-paper-roadmap
 description: >-
-  Paper Page Type for a paper's campaign, PLAN AND INTAKE ON ONE PAGE: cut
-  into BLOCKS (one ledger row per block, each block a task group serving a
-  named Seed E-row, holding its jobs and their runs, with a done-when, a
-  budget, and a person's release before anything runs), then registered lap
-  by lap as the receipts come home, closing with settle proposals only the
-  Seed may write. Use when planning where to dispatch, releasing a block,
-  addressing work as B<n>T<n>r<n>, registering receipts, closing a lap, or
-  reading what the campaign still owes. Trigger: roadmap page, block board,
-  campaign plan, task group, block job run, lap, register QA, intake,
-  page-type roadmap.
+  Paper journey phase P2 (Roadmap) and the Page Type contract for a paper's
+  campaign, PLAN AND INTAKE ON ONE PAGE: cut into BLOCKS (one ledger row per
+  block, each block a task group serving a named Seed E-row, holding its jobs
+  and their runs, with a done-when, a budget, and a person's release before
+  anything runs), then registered lap by lap as the receipts come home, closing
+  with settle proposals only the Seed may write. Use when planning where to
+  dispatch, releasing a block, addressing work as B<n>T<n>r<n>, registering
+  receipts, closing a lap, or reading what the campaign still owes. Trigger:
+  roadmap page, block board, campaign plan, task group, block job run, lap,
+  register QA, intake, page-type roadmap.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-28"
+  version: "0.6.0"
+  last_updated: "2026-08-31"
   group-token: "SD"
   outline:
     mode: grammar
@@ -21,10 +21,21 @@ metadata:
     shape: "division 1 is Mission, division 2 is Block Board; then one division per block B<n> in id order, then one division per lap L<n> in id order; Open is last (R<n> direction ids are grandfathered)"
 ---
 
-# /haipipe-page-for-roadmap · plan the campaign, register what comes home
+# /haipipe-paper-roadmap · plan the campaign, register what comes home
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: roadmap`.
+
+## 🧭 Journey phase
+
+This skill is journey phase P2 Roadmap (route) of the paper journey and owns
+the `page-type: roadmap` contract below. Enter through gate G1. Gate G2 gates
+each block's release (a person's act, block by block); gate G3 gates each lap's
+settle back onto the Seed. The establish loop P1↔P2 exits only through the Seed
+at G4, never from here. `haipipe-paper-workflow` holds the full gate
+assertions; this block only places the phase. The page itself always runs
+through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK),
+never a private lifecycle.
 
 ## 🧭 Grain and home
 

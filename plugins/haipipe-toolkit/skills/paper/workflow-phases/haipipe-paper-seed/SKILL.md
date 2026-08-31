@@ -1,14 +1,15 @@
 ---
-name: haipipe-page-for-seed
+name: haipipe-paper-seed
 description: >-
-  Paper Page Type for a paper's venue-free identity: research question, pitch,
-  stakes, and the Establishment Board of what the evidence licenses. Use when
-  starting a paper, telling its one-minute story, or retargeting to a new
-  venue without rewriting the study. Trigger: seed page, paper identity,
-  pitch, establishment board, page-type seed.
+  Paper journey phase P1 (Seed) and the Page Type contract for a paper's
+  venue-free identity: research question, pitch, stakes, and the Establishment
+  Board of what the evidence licenses. Use when starting a paper, telling its
+  one-minute story, or retargeting to a new venue without rewriting the study.
+  Trigger: seed page, paper identity, pitch, establishment board, page-type
+  seed.
 metadata:
-  version: "0.5.3"
-  last_updated: "2026-08-28"
+  version: "0.6.0"
+  last_updated: "2026-08-31"
   group-token: "SD"
   outline:
     mode: fixed
@@ -16,7 +17,7 @@ metadata:
     shape: "Identity → Pitch → Research Question → Stakes → Source Pages → Establishment Board → Boundaries → Narrative Handoff"
 ---
 
-# /haipipe-page-for-seed · establish what the paper is
+# /haipipe-paper-seed · establish what the paper is
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: seed`. In a runtime paper board this page lives at
@@ -25,19 +26,24 @@ group it shares with its Ideation origin and the establish loop's two working
 pages (journey 0.5.0, JL 260824; older boards with narratives inside this
 group are grandfathered):
 
-```text
-0-paperboard/A1-SD-story/
-├── SD00-ideation/                the ideas this paper came from
-├── SD01-seed/                    what the paper IS · venue-free · exactly one
-└── SD02-roadmap/                 where to go next AND what came back ·
-                                  plans against §6's gaps, proposes the settles
-```
+## 🧭 Journey phase
 
-The group law: the story group is the paper's venue-free head (P0–P2); no
-manuscript prose and no venue word lives here — the tellings start next door
-in `A2-NA-narrative/`. In the establish loop this page is the SCOREBOARD:
-the Roadmap plans and registers, and the Seed ALONE writes E-row
-flips, each flip citing the landed QA path the Roadmap's lap carries.
+This skill is journey phase P1 Seed (establish) of the paper journey and owns
+the `page-type: seed` contract below. Enter through gate G0. Two exits: G1
+opens the Roadmap (the establish loop P1↔P2), and G4 (the loop's ONLY exit)
+opens the first Narrative. The Seed alone writes E-row flips; the Roadmap only
+proposes settles. `haipipe-paper-workflow` holds the full gate assertions; this
+block only places the phase. The page itself always runs through
+`/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK), never a
+private lifecycle. ```text 0-paperboard/A1-SD-story/ ├── SD00-ideation/ the
+ideas this paper came from ├── SD01-seed/ what the paper IS · venue-free ·
+exactly one └── SD02-roadmap/ where to go next AND what came back · plans
+against §6's gaps, proposes the settles ``` The group law: the story group is
+the paper's venue-free head (P0–P2); no manuscript prose and no venue word
+lives here — the tellings start next door in `A2-NA-narrative/`. In the
+establish loop this page is the SCOREBOARD: the Roadmap plans and registers,
+and the Seed ALONE writes E-row flips, each flip citing the landed QA path the
+Roadmap's lap carries.
 
 ## 🌱 Grain and boundary
 
