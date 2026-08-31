@@ -1,3 +1,10 @@
+## 0.49.1 · 2026-08-31
+
+A unit may carry README.md, DERIVED only (JL): a generated projection of the
+two-part tree as it stands, for strangers reading the raw folder (GitHub);
+never hand-written — the law stays in this file and the roster. Generator =
+folderstat's walk with a --write flag (declared, not yet shipped).
+
 ## 0.49.0 · 2026-08-31
 
 v5 (JL: "we don't need a specific code folder — treat the page/task folder AS

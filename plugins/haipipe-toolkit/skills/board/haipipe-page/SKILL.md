@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.49.0"
+  version: "0.49.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -76,6 +76,15 @@ threads, the log) and `workflow/` is the MACHINE half (on a page, one
 receipt per pass under `workflow/receipts/`; on a task, `plan.yaml` and
 `report.yaml`). A receipt was formerly folded under a log record; the log
 record stays, the receipt body lands in `workflow/`.
+
+A unit MAY carry a `README.md`, and it is DERIVED (JL 260831): a generated
+projection of the two-part tree as it actually stands (which lanes exist,
+their counts, where the product and the rendered page live), regenerated
+whole and never hand-edited — the structure's law lives HERE and in the
+roster, so a hand-written copy per folder would be a second authority that
+drifts. GitHub renders it where the board cannot reach; the 📂 tab computes
+the same walk live (`live/folderstat.py`, whose `--write` becomes the
+generator).
 
 A folder is created only when it is used. Values have a surface but no folder:
 each lives inside one probe card's `## Values` block and is cited as
