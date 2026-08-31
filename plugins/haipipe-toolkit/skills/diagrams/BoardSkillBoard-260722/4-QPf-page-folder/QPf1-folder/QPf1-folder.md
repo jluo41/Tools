@@ -19,6 +19,30 @@ Boards with no folders work just as before.
 **Loose files need no page of their own**: pull a folder's files into a real page with `![[path]]` (`ref/board-form.md` §5).
 Log tracks the old ids these rules came from.
 
+## Diagram
+**The unit folder, two parts (final, JL 260831)**: one grammar for page and task; the root is the code home.
+```text
+<page or task folder>/
+│  ── UPPER · the page part ──
+├── <stem>.md         the PRODUCT · Opening · Diagram · Content · Aims
+├── outline/          HUMAN process · plan (ticked) · D<nn> · log
+├── workflow/         MACHINE process · receipts (task: plan/report.yaml)
+├── evidence/         what the page CITES, each lane behind its gate:
+│                     bibex verified: · probe read: · display accepted: ·
+│                     pagex (links out, task units included) · materials
+├── delivery/         what LEAVES the page: latex · word · slide · render
+├── studio/           the HUMAN's room: chat/ (talk, sessions kept) ·
+│                     draw/ (sketch; the chat may redraw on your ask)
+│  ── LOWER · the code part (the root IS the code folder) ──
+├── scripts/          any language (.py · .do · …) · config/ inside;
+│                     a lane-local script is equally legal
+├── runs/             REQUIRED where code exists · THE ONE DOOR
+└── results/          REQUIRED where code exists · regenerable · never
+                      PHI · never inside evidence/ · becomes evidence
+                      only when a probe card binds it (PP<NN>.v<n>)
+```
+📌 Retired from the page: `meeting/` (→ project/SPACE, parsed into outline/) · `task/` (→ evidence/pagex/) · `logging/` (changes = outline log, executions = runs/) · flat lane names survive only as migration stubs.
+
 ## Content
 ### 1 · You see what your folder holds, and what has gone out of date
 **The 📂 tab**: the first tab on the rail shows what this page's own folder holds, read fresh every time you open it.
@@ -171,6 +195,7 @@ It falls back to the board root only when the group's pages disagree, and an emp
       The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
+- 🗺 260831 · [HAIPIPE-PAGE-SKILL, JL: "this is great, please map it down"] the FINAL two-part unit grammar mapped into this page's Diagram: three upper categories (evidence · delivery · studio) + the root-as-code lower part (scripts · runs · results), the gate line, the stub rule, the retirements. Law home: haipipe-page 0.50.0 §📁 + the roster; pilot QPf1 itself.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] THIS page became the first CATEGORY folder pilot: bibex/probe/display moved under evidence/, latex/word/slide under delivery/, flat names kept as symlink stubs so every unpatched engine path still resolves (bibex saved view 200 via stub, 🧾 tab 200, roster scan silent). Roster gained evidence/ · delivery/ · runs/ rows; meeting leaves the page, task merges into pagex, logging retired. De-symlink debt: ~60 engine sites move to a lane resolver file by file, then the stubs go.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] a plugin IS a lane and a SKILL.md is EARNED BY LAW: the roster row is the record; retire/merge candidates tiered (value+folder now, latex+word+slide → one export later). A `code/` lane is agreed: the unit's own SIMPLE scripts with their run records INSIDE the code lane (runs folded into code, JL's call), `logging/` row retires into it; not yet minted.
 - 🔎 260816 · [REVISE-CC] third reviewer pass: §2 numbering, the MISQ path, and the bibex proof
