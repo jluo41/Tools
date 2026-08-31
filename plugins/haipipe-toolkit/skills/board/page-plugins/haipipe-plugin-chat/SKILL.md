@@ -8,7 +8,7 @@ description: >-
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.3.2"
+  version: "0.3.3"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -19,6 +19,8 @@ metadata:
 surface, writer, boundary. This file owns chat's delta: the tab, the session's
 rules (`live/chat.py` primes every session with the compact form of §🗺 and
 §🔒 and points here), and the kept record.
+
+> 🎨 Since 260831 evening this pane is the LOWER half of the one 🎨 Studio tab (`haipipe-plugin-studio`), staged under the live drawing; the GUI/TUI segment, session keep, walls and log record are unchanged — only where the pane hangs moved.
 
 ## 📡 Surface · one tab, the form inside it
 

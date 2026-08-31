@@ -11,7 +11,7 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.11.0"
+  version: "0.12.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -29,19 +29,24 @@ project        examples/Proj{...}/
         └── job    jNN_{name}/              self-contained, submittable (= Databricks Job)
               ├── tNN_<task>/              TASK = PAGE, self-contained (260830):
               │     ├── tNN_<task>.md          the page a reader opens
-              │     ├── <stem>.py              the pipeline
-              │     ├── config/                SHARED (cohort.do) + PER-RUN rNN_<stem>, 1:1 with a ticket
+              │     ├── scripts/               THE CODE HOME (260831), the same word at every level
+              │     │     ├── <stem>.py        the pipeline
+              │     │     └── config/          INSIDE scripts/: a config sits beside the code that
+              │     │                          reads it. SHARED (cohort.do) + PER-RUN rNN_<stem>, 1:1 with a ticket
               │     └── runs/rNN_<stem>.sh     TICKET: names its config; may carry SLICE settings
               │                                (year, source, fold), never a setting the config
               │                                already holds. Wherever a setting lives, the run
               │                                records it in results/<task>/<run>/runtime.yaml
-              ├── src/                     shared by more than one task in this job
+              ├── scripts/                 shared by more than one task in this job; the unit that
+              │                            OWNS the folder says what it shares, and that is the only
+              │                            difference between this one and the task's own
               ├── sbatch/                  batcher that SPANS tasks (one for a single
               │                            task goes in tNN_<task>/sbatch/ instead)
               └── results/<task>/<run>/    a RUN is an execution, never a folder of its own
               ONE GRAMMAR at every level: <level letter b·j·t·r><NN>_<noun>_<qualifier>;
               the address is the prefixes joined, read off the path: b02j01t01r03
-              (legacy FLAT job: .py at root + flat configs/ runs/ — one implicit task)
+              (legacy: code at the task ROOT and `src/` for the job's shared code, both pre-260831;
+              FLAT job: .py at root + flat configs/ runs/ — one implicit task)
               TWO MODES:
               ① self-serving      output stays in the job     results/ notebooks/ QA/
               ② consumer-serving  output goes to a store      <store>/<job path>/
@@ -359,7 +364,7 @@ Step 2: Resolve scope. Cascade:
   (7) still missing: AUTO → status: blocked. Interactive → ASK.
 
   Block vs job — detect by STRUCTURE, never by NAME. A path is a JOB if it
-  holds a `.py` at its root (or `scripts/`, `workflow/`, `results/`, `configs/`, `runs/`). It is a
+  holds a `.py` at its root (or `scripts/`, `src/`, `workflow/`, `results/`, `configs/`, `runs/`). It is a
   BLOCK if it holds jobs and has none of those of its own.
 
   ⛔ NEVER key this on a name pattern. `{NN}_<name>` is the majority convention (235 of 342 real

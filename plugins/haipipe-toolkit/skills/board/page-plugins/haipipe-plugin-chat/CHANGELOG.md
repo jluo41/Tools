@@ -1,3 +1,7 @@
+## 0.3.3 — 2026-08-31
+- Surface rehomed: the pane is the lower half of the one 🎨 Studio tab
+  (haipipe-plugin-studio); GUI/TUI segment, keep step, walls unchanged.
+
 ## 0.3.2 · 2026-08-31
 
 §🗺 row: the chat edits the page's excalidraw scene mid-discussion on the

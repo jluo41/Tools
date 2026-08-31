@@ -1,4 +1,27 @@
 
+## 0.12.0 · 2026-08-31
+
+**`scripts/` is the code home, at every unit level (JL 260831).** A unit's code
+lived in three different places depending on which level and which engine you
+were looking at: `src/` for a job's shared code, `0-libs/` for one project's,
+and the task ROOT for a task's own. A reader had to know the level and the
+engine before knowing the folder.
+
+- **One word, both levels.** `<job>/scripts/` is shared by that job's tasks;
+  `<task>/scripts/` is that task's own. Which unit OWNS the folder is the only
+  thing that distinguishes them, and it is already visible in the path.
+- **`config/` moves INSIDE `scripts/`.** A config is read by the code beside it,
+  so it sits beside that code. `haipipe-page` already shipped this shape; the
+  task contract disagreed, and the task contract was the one that was wrong.
+  Ruled by JL, 260831.
+- **This is the unit symmetry finishing its own sentence.** A task folder is a
+  page folder with the execution family added (JL 260831), and a page's code
+  home has been `scripts/` all along. The task tree simply had not caught up.
+- **`0-libs/` stops being an exemption.** It was a project-specific name with a
+  paragraph of law explaining why it survived; under `scripts/0-libs/` it is an
+  ordinary subfolder and the paragraph is gone.
+- `src/` and `0-libs/` stay READABLE by every tool; nothing WRITES either.
+
 ## 0.11.0 · 2026-08-31
 
 The unit symmetry (JL): outline/ (human half: ticked prose plan, D<nn>

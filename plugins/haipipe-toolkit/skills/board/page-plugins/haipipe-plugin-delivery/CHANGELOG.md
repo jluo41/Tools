@@ -1,5 +1,10 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.2.0 — 2026-08-31
+- The Slides segment gained the ✨ authoring bar (explicit press →
+  /_board/autodeck) as the shell's native 🎞 row folded with the studio
+  fold; the tab is now the delivery category's one surface entire.
+
 ## 0.1.0 — 2026-08-31
 - Born as the 📤 presenter over the delivery/ category (JL 260831, the 🧾
   Evidence fold's twin): live/delivery.py + one registry row replacing the

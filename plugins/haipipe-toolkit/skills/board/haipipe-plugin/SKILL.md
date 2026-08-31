@@ -7,7 +7,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-08-31"
 ---
 
@@ -88,17 +88,30 @@ Rows and retirements: `ref/roster.md`.
 A LANE plugin owns one rostered folder's LAW — storage grammar, the one
 writer, the gate (`haipipe-plugin-bibex`, `-probe`, `-display`, …). A
 PRESENTER plugin owns one SURFACE over a whole category and stores nothing —
-no roster row, no folder, every pen it shows is a lane's own route pressed
-through the saved view or on click. The category folders and the presenters
-are the same cut twice: `evidence/` is presented by the 🧾 tab
-(`haipipe-plugin-evidence`), `delivery/` by the 📤 tab
-(`haipipe-plugin-delivery`), and the LOWER code part by the ⚙️ surface
-(`haipipe-plugin-code`, tab pending until the first real page `runs/`
-exists). Two categories are NOT presenters, on purpose: `outline/` +
-`workflow/` are the 🧭 tab, first and default, because the plan and its
-receipts are the page's own process rather than material beside it; and
-`studio/` keeps its two TOOLS on the strip (💬 Chat, 🖌 Draw, and 🎞 Slides'
-authoring bar with them) — a tool the human holds keeps its surface, a view
-the human reads folds into its category's tab. So the strip a reader sees
-is short and stable: 🧭 outline · 🧾 evidence · 📤 delivery · (⚙️ code) ·
-💬 🖌 🎞 · 📂 folder — one tab per category, one tool per hand.
+no roster row, no folder of its own, every pen it shows is a lane's own
+route pressed explicitly. ONE TAB PER CATEGORY (JL 260831: "one plugin for
+evidence, one plugin for the delivery, only one plugin for the studio"),
+outline included:
+
+```text
+🧭 Outline   haipipe-plugin-outline    outline/ + workflow/ — the page's own
+                                       process; FIRST and the default tab
+🧾 Evidence  haipipe-plugin-evidence   bibex · probe · value · display · pagex,
+                                       one segment each
+📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
+                                       🎞 segment carries the deck's ✨ pen
+🎨 Studio    haipipe-plugin-studio     chat + draw AS ONE PAGE: the drawing
+                                       above, the chat below, both live — the
+                                       scene the chat redraws changes in front
+                                       of the person talking. Both tools keep
+                                       every rule and pen they had
+⚙️ Code      haipipe-plugin-code       scripts/ · runs/ · results/ — contract
+                                       only until the first real page runs/
+📂 Folder    haipipe-plugin-folder     the roster itself, the meta-surface
+```
+
+So the strip a reader sees is five categories and a mirror:
+🧭 · 🧾 · 📤 · 🎨 · (⚙️) · 📂. No lane sells its own strip row; the shell's
+old 💬, 🖌 and 🎞 rows folded 260831 (stored tab sets migrate on load). The
+260815 refusal of "full chat under the canvas" bound the DRAW tab; the
+studio room is both tools', by JL's 260831 ask.

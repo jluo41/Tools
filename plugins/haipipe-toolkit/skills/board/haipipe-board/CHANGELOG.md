@@ -1,3 +1,15 @@
+## 0.154.0 · 2026-08-31
+
+The 🎨 Studio tab (JL: "put both of them into the studio, as one page"):
+shell tab id `studio` stages the draw frame above the chat pane, both live
+(flex splits them; sceneless pages keep chat full height); the 💬 🖌 🎞
+strip and menu rows folded, stored tab sets migrate on load (chat/draw →
+studio, slides → delivery); want() lands away-asks in the room; the draw
+watcher and GUI/TUI segment follow. The deck's ✨ authoring bar moved into
+the 📤 Delivery Slides segment (live/delivery.py #sbar, explicit press →
+/_board/autodeck). The 260815 "no chat under the canvas" refusal stays
+true of the draw LANE; the room is JL's 260831 ask.
+
 ## 0.153.0 · 2026-08-31
 
 The 📤 Delivery tab (live/delivery.py + /_board/delivery), the evidence

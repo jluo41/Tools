@@ -9,8 +9,10 @@ Segments: 🏠 What's built (a server-side stat of the four lanes) · 📜 LaTeX
 📝 Word · 🎞 Slides · 📱 Render. LaTeX and Word are BUILT ON CLICK through
 their own deterministic routes (/_board/latex, /_board/word) when the saved
 view is missing — the same pens the old separate tabs pressed. Slides is
-NEVER auto-built here: its pen is `claude -p` authoring (/_board/autodeck),
-so a missing deck shows a ghost pointing at the 🎞 tab's ✨ bar instead.
+NEVER auto-built: its pen is `claude -p` authoring (/_board/autodeck), so
+the segment carries the ✨ bar the shell's native 🎞 tab used to hold (that
+tab folded 260831 with the studio fold) — one explicit press authors, a
+missing deck is a ghost until then.
 Render has no route yet (roster: 🟡 pending), so its segment lists what the
 lane holds and stops.
 
@@ -45,6 +47,13 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
 #home .row b{min-width:110px}
 #home .row code{font:12.5px ui-monospace,Menlo,monospace}
 #seg{display:none;border:0;width:100%;height:calc(100vh - 92px)}
+#sbar{display:none;gap:6px;padding:6px 16px;border-bottom:1px solid var(--line);
+ align-items:center}
+#sbar input{flex:1;border:1px solid var(--line);background:var(--bg);
+ color:var(--fg);border-radius:6px;padding:3px 8px;font-size:13px}
+#sbar button{border:1px solid var(--line);background:var(--card);color:var(--fg);
+ border-radius:6px;padding:3px 10px;font-size:13px;cursor:pointer}
+#sbar .st{color:var(--mut);font-size:12px;max-width:40%}
 .ghost{color:var(--mut);padding:24px 16px;font-size:13.5px}
 """
 
@@ -95,6 +104,8 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
 <button data-seg=render>📱 Render</button>
 </nav>
 <div id=home>{home}</div>
+<div id=sbar><input id=sask placeholder="the ask, optional — ✨ authors the deck from this page's .md">
+<button id=sgo>✨ Author</button><span class=st id=sst></span></div>
 <iframe id=seg></iframe>
 <script>
 (function () {{
@@ -116,13 +127,14 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
     latex:  {{url: savedUrl('latex', CTX.stem + '-view.html'), route: 'latex'}},
     word:   {{url: savedUrl('word',  CTX.stem + '-view.html'), route: 'word'}},
     slides: {{url: savedUrl('slide', CTX.stem + '-deck.html'),
-              ghost: 'No deck yet. The 🎞 Slides tab\\u2019s \\u2728 bar authors one ' +
-                     '(claude -p via /_board/autodeck); this tab only shows what exists.'}},
+              ghost: 'No deck yet \\u2014 the \\u2728 bar above authors one from ' +
+                     'this page\\u2019s .md (claude -p, a minute or two).'}},
     render: {{ghost: 'The render/ lane\\u2019s route and card view are pending ' +
                      '(roster \\ud83d\\udfe1); its files, when any, are listed on \\ud83c\\udfe0.'}}
   }};
   var frame = document.getElementById('seg'),
-      home = document.getElementById('home');
+      home = document.getElementById('home'),
+      sbar = document.getElementById('sbar');
   function ghost(msg) {{
     frame.srcdoc = '<p style="font:13.5px sans-serif;color:#888;padding:24px">' +
                    msg + '</p>';
@@ -131,6 +143,7 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
     var all = document.querySelectorAll('nav button');
     for (var i = 0; i < all.length; i++) all[i].className = '';
     btn.className = 'on';
+    sbar.style.display = id === 'slides' ? 'flex' : 'none';
     if (id === 'home') {{
       frame.style.display = 'none'; home.style.display = 'block'; return;
     }}
@@ -156,6 +169,32 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
       b.addEventListener('click', function () {{ show(b.getAttribute('data-seg'), b); }});
     }})(btns[i]);
   }}
+  /* ✨ the deck's AUTHORING pen, moved here from the shell's native 🎞 tab
+     (260831): one explicit press, claude -p server-side, then frame what
+     landed. Never pressed by a mere view. */
+  (function () {{
+    var go = document.getElementById('sgo'), ask = document.getElementById('sask'),
+        st = document.getElementById('sst');
+    function run() {{
+      go.disabled = true;
+      st.textContent = '🎞 Claude is authoring… (a minute or two)';
+      fetch('/_board/autodeck', {{
+        method: 'POST', headers: {{'Content-Type': 'application/json'}},
+        body: JSON.stringify({{path: CTX.path, file: CTX.file,
+                               prompt: ask.value.trim()}})
+      }}).then(function (r) {{ return r.json(); }})
+        .then(function (j) {{
+          go.disabled = false;
+          if (!j.ok) {{ st.textContent = '✋ ' + (j.err || 'refused'); return; }}
+          st.textContent = '✅ ' + (j.slides || '') + ' slides — loading';
+          var u = LANES.slides.url;
+          if (u) {{ frame.src = ''; setTimeout(function () {{ frame.src = u + '?plain'; }}, 300); }}
+        }})
+        .catch(function () {{ go.disabled = false; st.textContent = '✋ server unreachable'; }});
+    }}
+    go.addEventListener('click', run);
+    ask.addEventListener('keydown', function (e) {{ if (e.key === 'Enter') run(); }});
+  }})();
 }})();
 </script>"""
 

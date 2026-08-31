@@ -1,5 +1,9 @@
 # haipipe-plugin-slide · Changelog
 
+## 0.1.4 — 2026-08-31
+- The 📤 Delivery 🎞 segment is now the ONE surface and carries the ✨
+  authoring bar; the shell's native 🎞 row folded (studio fold).
+
 ## 0.1.3 — 2026-08-31
 - The saved deck also shows read-only as the 🎞 segment inside the 📤
   Delivery tab; the native 🎞 tab and its ✨ authoring bar stay.

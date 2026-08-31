@@ -132,23 +132,31 @@ jNN_{job_name}/
 ├── sbatch/                     batch-submit tickets ACROSS tasks (the job's DAG); never another
 │                               job's, and never a sweep over ONE task — that one lives in the
 │                               task, as tNN_{task_name}/sbatch/ (see "sbatch", below)
-├── src/                        SHARED inside this job — code, defaults, prompts, anything more
+├── scripts/                    SHARED inside this job -- code, defaults, prompts, anything more
 │                               than one task uses; job-wide defaults + `store:` live here.
-│                               ONE name for EVERY engine, Stata included (JL 260830):
-│                               a reader, a checker or an agent must not have to know
-│                               the engine before it can find the shared code. Not
-│                               `code/`, which the SPACE's own package owns. `0-libs/`
-│                               stays READABLE for the one tree that still uses it
-│                               (see "The 0-libs exemption"), and is never scaffolded.
+│                               ONE name for EVERY engine and EVERY LEVEL (JL 260831):
+│                               a unit's code home is always `scripts/`, so a reader, a
+│                               checker or an agent never has to know the engine, or the
+│                               level, before it can find the code. Which unit OWNS the
+│                               folder says what it shares: `<job>/scripts/` is shared by
+│                               that job's tasks, `<task>/scripts/` is that task's own.
+│                               Not `code/`, which the SPACE's own package owns. `src/`
+│                               is the pre-260831 name and `0-libs/` the pre-260830 one;
+│                               both stay READABLE, neither is scaffolded.
 ├── tNN_{task_name}/            ← TASKS (Level 4), directly under the job. AUTHORED side.
 │   ├── tNN_{task_name}.md      the PAGE: Opening · Diagram · Content · Aims · States · Files
-│   ├── <stem>.py               the pipeline (or run-pipeline.do + step-*.do in the Stata dialect)
-│   ├── config/                 ALWAYS a folder. TWO KINDS live here (JL 260831):
-│   │                           SHARED   loaded by several runs of this task — cohort.do,
-│   │                                    _defaults.yaml. NO rNN prefix: it is not a run.
-│   │                           PER-RUN  rNN_{stem} — the NUMBER is the run's identity, the
-│   │                                    stem its description; pairs 1:1 with runs/rNN_{stem}
-│   │   └── prompts/            PROMPTS ARE CONFIG (JL 260830): a prompt file sits beside the config that names it,
+│   ├── scripts/                THE TASK'S OWN CODE HOME (JL 260831). The same word the job
+│   │                           uses one level up, and the same word a Board Page uses, because
+│   │                           a task folder IS a page folder with the execution family added.
+│   │                           Code at the task ROOT was the pre-260831 shape.
+│   │   ├── <stem>.py           the pipeline (or run-pipeline.do + step-*.do in the Stata dialect)
+│   │   └── config/             ALWAYS a folder, INSIDE scripts/ (JL 260831): a config is read by
+│   │                           the code beside it, so it sits beside that code. TWO KINDS:
+│   │       │                   SHARED   loaded by several runs of this task — cohort.do,
+│   │       │                            _defaults.yaml. NO rNN prefix: it is not a run.
+│   │       │                   PER-RUN  rNN_{stem} — the NUMBER is the run's identity, the
+│   │       │                            stem its description; pairs 1:1 with runs/rNN_{stem}
+│   │       └── prompts/        PROMPTS ARE CONFIG (JL 260830): a prompt file sits beside the config that names it,
 │   │                           and code resolves `prompts/x.md` relative to the CONFIG file, never to the code
 │   └── runs/                   TICKETS. A ticket names its config, and MAY carry settings that
 │       ├── rNN_{stem}.sh       SELECT A SLICE (year, source, fold). It must never restate a
@@ -663,18 +671,22 @@ Physician-SPACE jobs), `ref/batch-psd1-template.psd1` (a filled declaration with
 reasoning in comments), `ref/write_pages.py` (regenerates entry points, task pages
 and sbatch READMEs from the tree), `ref/check_task_tree.py` (codes N* and S*).
 
-### The `0-libs` exemption
+### `0-libs/` and `src/`: the two older names
 
-`0-libs/` was the pre-260830 name for the shared folder, and it survives in exactly
-one tree: `Project-Personality-OpioidRx` (Physician-SPACE), 12 job folders whose
-`.do` and `.ps1` files carry **868 references** to it. That project ships to the CMS
-secure server, so a rename there costs a full re-upload through the slow remote loop
-(`/remote-error`) and buys nothing that runs.
+Both are older names for the same thing, and `scripts/` replaced them on 260831.
 
-So it is an EXEMPTION WITH A NUMBER, not a naming rule. It is specifically NOT
-"`0-libs/` is the Stata name": Stata scaffolds `src/` like every other engine, and
-that project keeps `0-libs/` because of what a rename would cost it, not because of
-what language it is written in. Tooling READS both; nothing WRITES `0-libs/`.
+`0-libs/` was the pre-260830 name for the shared folder, and it survives in one
+tree, `Project-Personality-OpioidRx` (Physician-SPACE). It is no longer an
+exemption with its own rule: under `scripts/` it is an ORDINARY SUBFOLDER,
+`scripts/0-libs/`, and needs no law of its own. That is what the exemption cost
+and what retiring it bought.
+
+`src/` was the 260830-to-260831 name for a job's shared code. It stopped being
+right the day the task got a code home too: two words for one idea meant a reader
+had to know the LEVEL before knowing the folder, which is the same failure
+`0-libs/` caused with the engine.
+
+Tooling READS all three; nothing WRITES anything but `scripts/`.
 
 **MANY .sh in one sbatch/ (JL 260830).** A batcher folder usually grows past one
 file, and the files are ALTERNATIVE ENTRY POINTS, not a sequence — a person picks

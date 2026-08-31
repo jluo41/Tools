@@ -7,13 +7,15 @@ description: >-
   attach a drawing, page scene, group scene, excalidraw, autodraw, draw it,
   /haipipe-plugin-draw.
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-08-16"
+  version: "0.2.3"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-draw · one scene per owner, saved to exactly one owner
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only draw's delta: who owns which scene, and which gesture writes which file.
+
+> 🎨 Since 260831 evening this editor is the UPPER half of the one 🎨 Studio tab (`haipipe-plugin-studio`), staged above the live chat with its ✨ bar; ownership, the autodraw hand-drawn refusal and the chat pen are unchanged — only where the canvas hangs moved.
 
 ## 🗂 Storage · the page owns its scene, the group owns the relations
 

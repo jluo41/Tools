@@ -48,9 +48,13 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │                  files · log — parsed MEETINGS land here (JL 260831)
 ├── workflow/      MACHINE process: one receipt per phase pass
 │              ─── the LOWER, CODE part: the unit root IS the code home ───
-├── scripts/       the script home, any language (.py · .do · …), with
-│   └── config/    run identities beside them; a lane-local script (a
-│                  display recipe, a bibex helper) is equally legal
+├── scripts/       the script home, any language (.py · .do · …), and the
+│   └── config/    ONE code home a unit has at any level: a task folder's own
+│                  scripts/ and the job's shared scripts/ are the same word,
+│                  told apart by which unit owns the folder (JL 260831).
+│                  config/ is INSIDE it, because a config is read by the code
+│                  beside it; a lane-local script (a display recipe, a bibex
+│                  helper) is equally legal
 ├── runs/          REQUIRED where code exists · tickets + one dated
 │                  record per run · THE ONE DOOR that calls any script
 ├── results/       REQUIRED where code exists · regenerable, never PHI,

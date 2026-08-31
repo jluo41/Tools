@@ -325,6 +325,12 @@ def _shell_doc(page_url, index_url):
 .rpm:hover{background:var(--bg,#f1f3f5)}
 .rpm[aria-checked="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #rp iframe{flex:1 1 auto;min-height:0}
+/* 🎨 Studio (JL 260831): the drawing above, the chat below — zero-basis flex
+   so the ratio, not the content, sets the split; the ✨ bar leads. */
+#rp.studio #rptabs{order:-3}
+#rp.studio #drawbar{order:-2}
+#rp.studio #fd{order:-1;flex:1.15 1 0;min-height:0}
+#rp.studio #fc{flex:1 1 0;min-height:0}
 #rp iframe[hidden]{display:none}
 /* ✨ the Draw and Slides tabs' control bars: one ask, one button, one status word */
 #drawbar,#slidebar{flex:0 0 auto;display:flex;gap:6px;align-items:center;padding:6px 8px;
@@ -659,7 +665,8 @@ def _shell_doc(page_url, index_url):
              page column. On a BARE page there is no shell and no tab strip, so the
              menu entry is still the only door and still works. */
           if (e.id === 'gui' || e.id === 'tui' || e.id === 'chat'
-              || e.id === 'draw' || e.id === 'slides' || e.tab) return;
+              || e.id === 'draw' || e.id === 'slides' || e.id === 'studio'
+              || e.tab) return;
           rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                       run: function () { e.open(w.boardPlugins.livePage()); } });
         });
@@ -676,23 +683,16 @@ def _shell_doc(page_url, index_url):
     /* ONE row for the one Chat (JL 260815): it opens in the last-used form and
        the strip's segment is where the form is chosen, so the menu stops
        selling GUI and TUI as two surfaces. */
+    /* ONE ROOM (JL 260831: "put both of them into the studio, as one page"):
+       the 💬 Chat and 🖌 Draw rows folded into 🎨 Studio — drawing above,
+       chat below, both live at once, so the scene the chat redraws changes in
+       front of the person talking. The 260815 refusal ("full chat under the
+       canvas") was about the DRAW tab carrying a chat; the studio/ category
+       is the room both tools share. 🎞 Slides lives in the 📤 Delivery tab. */
     var rows = [
-      { id: 'chat', label: '💬 Chat', hint: 'this page’s conversation · pick GUI or TUI inside',
-        run: function () { showTab('chat'); } }
+      { id: 'studio', label: '🎨 Studio', hint: 'the human’s room · drawing above, chat below',
+        run: function () { showTab('studio'); } }
     ];
-    /* Draw is the shell's third surface (JL 260815): the tab strip only shows once
-       the right pane is open, so with the pane collapsed the menu is the one door a
-       reader can see. The row clicks the same showTab the strip uses — one opener,
-       one owner for which file the view saves to — and follows the strip's own
-       applies rule: no drawing on this page, no row. */
-    if (drawURL()) {
-      rows.push({ id: 'draw', label: '🖌 Draw', hint: 'this page’s drawing, in the right pane',
-                  run: function () { showTab('draw'); } });
-    }
-    if (slidesURL()) {
-      rows.push({ id: 'slides', label: '🎞 Slides', hint: 'this page as a deck, in the right pane',
-                  run: function () { showTab('slides'); } });
-    }
     /* Registry tabs (haipipe-plugin): each row opens its right-pane tab
        through the same showTab the strip uses — one opener, one owner. */
     xdefs().forEach(function (e) {
@@ -798,8 +798,13 @@ def _shell_doc(page_url, index_url):
   function want(mode) {
     /* Another tab may be on stage; a chat ask means "switch to chat", never a
        toggle-away of a pane that is showing something else. */
-    var away = tab !== 'chat';
-    if (away) { tab = 'chat'; ensureOpen('chat'); stage('chat'); }
+    var away = tab !== 'chat' && tab !== 'studio';
+    if (away) {
+      tab = 'studio'; ensureOpen('studio');
+      var du = drawURL();
+      if (du && fd.getAttribute('src') !== du) fd.setAttribute('src', du);
+      stage('studio');
+    }
     if (!hidden && !away && liveMode() === mode) { hidden = true; }   // the lit one = put it away
     else { hidden = false; wanted = mode;
            try { if (frames.chat.__paneMode) frames.chat.__paneMode(mode); } catch (e) {} }
@@ -872,7 +877,7 @@ def _shell_doc(page_url, index_url):
      registering and this shell is not edited for it. */
   var rp = document.getElementById('rp'), fd = document.getElementById('fd');
   var fs = document.getElementById('fs');
-  var tab = 'chat';                 // 'chat' (gui|tui live inside it) · any open tab id
+  var tab = 'studio';               // 🎨 studio (chat gui|tui + draw) · any open tab id
 
   function drawURL() {
     try {
@@ -936,7 +941,7 @@ def _shell_doc(page_url, index_url):
     requestAnimationFrame(function () { fd.setAttribute('src', src); });
   }
   setInterval(function () {
-    if (hidden || tab !== 'draw' || fd.hidden) return;
+    if (hidden || (tab !== 'draw' && tab !== 'studio') || fd.hidden) return;
     /* ATTACHMENT IS RE-CHECKED EVERY TICK, not only at open and at mirror():
        every stale path found so far (router swap with the tab hidden, a shell
        loaded before a fix, a restored tab strip) ends the same way — the
@@ -1063,7 +1068,7 @@ def _shell_doc(page_url, index_url):
       var w = pageWin();
       if (w && w.boardPlugins) {
         w.boardPlugins.all().forEach(function (e) {
-          if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides'].indexOf(e.id) < 0)
+          if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides', 'studio'].indexOf(e.id) < 0)
             out.push(e);
         });
       }
@@ -1076,6 +1081,7 @@ def _shell_doc(page_url, index_url):
     return null;
   }
   function tabLabel(id) {
+    if (id === 'studio') return '🎨 Studio';
     if (id === 'chat') return '💬 Chat';
     if (id === 'draw') return '🖌 Draw';
     if (id === 'slides') return '🎞 Slides';
@@ -1088,9 +1094,11 @@ def _shell_doc(page_url, index_url):
      the 🛠 tab opens on the skill INDEX, a name opens the skill in the same
      frame, and the viewer's ☰ walks back to the index.) */
   function offerable(id) {
-    if (id === 'chat') return true;
-    if (id === 'draw') return !!drawURL();
-    if (id === 'slides') return !!slidesURL();
+    /* 260831: chat + draw live inside 🎨 Studio (a sceneless page still
+       offers it — the chat half is always there); the strip no longer sells
+       their old ids, and 🎞 rides in 📤 Delivery. */
+    if (id === 'studio') return true;
+    if (id === 'chat' || id === 'draw' || id === 'slides') return false;
     return !!defOf(id);
   }
 
@@ -1122,11 +1130,21 @@ def _shell_doc(page_url, index_url):
     return id;
   }
   function loadSet() {
-    openSet = ['chat'];
+    openSet = ['studio'];
     try {
       var v = JSON.parse(localStorage.getItem(tabsKey()) || 'null');
       if (Array.isArray(v) && v.length) openSet = v;
     } catch (e) {}
+    /* Stored sets predating the 260831 fold speak the old ids: chat and
+       draw became the one 🎨 Studio room, slides moved into 📤 Delivery. */
+    var seen = {};
+    openSet = openSet.map(function (id) {
+      if (id === 'chat' || id === 'draw') return 'studio';
+      if (id === 'slides') return 'delivery';
+      return id;
+    }).filter(function (id) {
+      if (seen[id]) return false; seen[id] = 1; return true;
+    });
     rankDefault();
   }
   function saveSet() {
@@ -1155,15 +1173,21 @@ def _shell_doc(page_url, index_url):
   function extraFrames() {
     return [].slice.call(rp.querySelectorAll('iframe[id^="fx-"]'));
   }
-  function stage(id) {                       // exactly one frame on stage
-    document.getElementById('fc').hidden = id !== 'chat';
-    fd.hidden = id !== 'draw';
+  function stage(id) {                       // one frame on stage — or the 🎨 pair
+    /* 🎨 Studio (JL 260831) shows BOTH: the drawing above, the chat below —
+       #rp is a flex column and every visible frame flexes, so the split is
+       the layout's own. A page with no scene staged yet keeps the chat full
+       height. (The 260815 refusal of "full chat under the canvas" was about
+       the DRAW tab; the studio room is both tools', by JL's ask.) */
+    var duo = id === 'studio';
+    var hasScene = !!(fd.getAttribute('src') || '');
+    document.getElementById('fc').hidden = id !== 'chat' && !duo;
+    fd.hidden = id !== 'draw' && !(duo && hasScene);
     fs.hidden = id !== 'slides';
-    /* ✨ Draw's control bar rides above the canvas, only there (JL 260815: a
-       BUTTON generates the drawing — the full chat under the canvas was tried
-       and refused the same day). */
+    /* ✨ Draw's control bar rides above the canvas, wherever the canvas is. */
     var bar = document.getElementById('drawbar');
-    if (bar) bar.hidden = id !== 'draw';
+    if (bar) bar.hidden = !(id === 'draw' || (duo && hasScene));
+    rp.classList.toggle('studio', duo && hasScene);
     var sbar = document.getElementById('slidebar');
     if (sbar) sbar.hidden = id !== 'slides';
     extraFrames().forEach(function (f) { f.hidden = ('fx-' + id) !== f.id; });
@@ -1186,7 +1210,7 @@ def _shell_doc(page_url, index_url):
        260831): the `hidden` guard alone left a pane restored open on 💬,
        because nothing had chosen 'chat' but the seed. Once the registry has
        answered, the first paint is the only one allowed to re-aim. */
-    if (def && tab === 'chat' && (hidden || firstPaint)) {
+    if (def && tab === 'studio' && (hidden || firstPaint)) {
       tab = def;
       if (!hidden) { xframe(def); stage(def); aimTab(def); }
     }
@@ -1223,7 +1247,7 @@ def _shell_doc(page_url, index_url):
        whatever mode is actually live, which want() alone decides. */
     var seg = document.getElementById('rpmode');
     if (seg) {
-      seg.hidden = hidden || tab !== 'chat';
+      seg.hidden = hidden || (tab !== 'chat' && tab !== 'studio');
       [].forEach.call(seg.querySelectorAll('.rpm'), function (m) {
         m.setAttribute('aria-checked', String(m.dataset.mode === liveMode()));
       });
@@ -1280,11 +1304,22 @@ def _shell_doc(page_url, index_url):
     var prev = tab;
     paintTabs();                 // may switch via showTab, which aims itself
     if (!hidden && tab === prev && tab !== 'chat' && tab !== 'draw'
-        && offerable(tab)) aimTab(tab);
+        && tab !== 'studio' && offerable(tab)) aimTab(tab);
   }
 
   function showTab(which) {
     ensureOpen(which);
+    if (which === 'studio') {
+      var duurl = drawURL();
+      tab = 'studio';
+      hidden = false;
+      split.classList.remove('hc');
+      if (duurl && fd.getAttribute('src') !== duurl) fd.setAttribute('src', duurl);
+      stage('studio');
+      try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
+      paint(); paintTabs();
+      return;
+    }
     if (which === 'draw') {
       var url = drawURL();
       if (!url) return;

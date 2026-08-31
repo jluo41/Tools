@@ -8,7 +8,7 @@ description: >-
   delivery tab, exports tab, show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -38,18 +38,18 @@ the category  <page>/delivery/ (flat names are migration stubs, QPf1)
 ├── 📜 LaTeX          the saved <stem>-view.html; BUILT ON CLICK via
 │                     /_board/latex when missing (deterministic, safe)
 ├── 📝 Word           same, via /_board/word
-├── 🎞 Slides         the saved <stem>-deck.html, READ-ONLY: a missing deck is
-│                     a ghost pointing at the native 🎞 tab's ✨ bar, because
-│                     that pen is claude -p authoring, never pressed by a view
+├── 🎞 Slides         the saved <stem>-deck.html + the ✨ AUTHORING bar (one
+│                     explicit press → /_board/autodeck, claude -p); a missing
+│                     deck is a ghost until a person presses — never a view
 └── 📱 Render         ghost until the lane's route ships (roster 🟡)
 ```
 
-- **The native 🎞 Slides tab STAYS on the strip** (like 💬 and 🖌): a tool
-  with an authoring pen keeps its surface; this tab only shows the projection.
+- **The shell's native 🎞 row folded 260831 evening** (with the studio fold);
+  its ✨ bar moved into the Slides segment here, still one explicit press.
 - **The separate 📜 and 📝 strip rows are folded** (82-plugin-delivery.js,
   replacing 82-plugin-exports.js), the way 📚 bibex folded into 🧾 Evidence.
-- **The tab writes nothing and calls no model.** LaTeX/Word builds it presses
-  are the lanes' own deterministic pens; everything else it only frames.
+- **The tab auto-calls no model.** LaTeX/Word build on click through their
+  own deterministic pens; the deck authors only on the ✨ press.
 
 ## 🗺 Status · 🟢 built 260831
 

@@ -1,3 +1,13 @@
+## 0.3.0 · 2026-08-31
+
+§🔌 finalized as JL ruled it ("one plugin for evidence, one for the
+delivery, only one for the studio" + outline included): FIVE category
+presenters + the 📂 mirror — 🧭 outline (outline/+workflow/, first and
+default) · 🧾 evidence · 📤 delivery (🎞 segment carries the ✨ pen) ·
+🎨 studio (haipipe-plugin-studio: drawing above, chat below, one page) ·
+⚙️ code (pending). No lane sells its own strip row; roster cells for
+studio/chat/draw/slide repointed.
+
 ## 0.2.0 · 2026-08-31
 
 §🔌 the two plugin kinds: LANE plugins own one rostered folder's law;
