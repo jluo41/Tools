@@ -8,7 +8,7 @@ description: >-
   page, update a page, preview a page, what does this page say, run page
   lifecycle, Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.48.0"
+  version: "0.49.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,12 +47,16 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │                  files: requirement · discussion · feedback · evidence ·
 │                  files · log — parsed MEETINGS land here (JL 260831)
 ├── workflow/      MACHINE process: one receipt per phase pass
-├── code/          the EXECUTION family, any language (JL 260831 v4):
-│   ├── <scripts>  .py · .do · … at its root
-│   ├── config/    run identities
-│   ├── runs/      tickets + one dated record per run · THE ONE DOOR
-│   └── results/   regenerable outputs, never PHI; a result becomes
-│                  evidence only when a probe card binds it
+│              ─── the LOWER, CODE part: the unit root IS the code home ───
+├── scripts/       the script home, any language (.py · .do · …), with
+│   └── config/    run identities beside them; a lane-local script (a
+│                  display recipe, a bibex helper) is equally legal
+├── runs/          REQUIRED where code exists · tickets + one dated
+│                  record per run · THE ONE DOOR that calls any script
+├── results/       REQUIRED where code exists · regenerable, never PHI,
+│                  NEVER inside evidence/; a result becomes evidence only
+│                  when a probe card binds it (PP<NN>.v<n> → the file)
+│              ─── the UPPER, PAGE part ───
 ├── evidence/      what the page CITES, each lane behind its gate:
 │   ├── bibex/     citations · verified:
 │   ├── probe/     cards + values (PP<NN>.v<n>) · read:

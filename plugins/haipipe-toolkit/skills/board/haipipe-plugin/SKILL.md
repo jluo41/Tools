@@ -7,7 +7,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.1.6"
+  version: "0.1.7"
   last_updated: "2026-08-21"
 ---
 
@@ -66,16 +66,18 @@ This contract stays the base every one of them loads on top of; the board pages 
 
 ## 🗂 Category folders and the execution door (260831)
 
-Three CATEGORY folders group the lanes on disk without changing any lane's
-grammar, writer or gate: `evidence/` (bibex · probe · display · pagex ·
-materials — what the page CITES, each behind its human gate), `delivery/`
-(latex · word · slide · render — what leaves the page), and `code/` (the
-EXECUTION family, any language: scripts · config/ · runs/ · results/; on a
-task unit this family is the folder root itself). A flat lane name is the
-same lane: on an unmigrated page the lane itself, on a migrated page a
-symlink stub kept for unpatched engine paths. `code/runs/` is the ONE
-execution door: only a ticket there calls a script, under the simple-code law
-(reads only this folder or a pagex-linked unit's declared outputs; writes
-only its own lane; no raw data, no PHI); `code/results/` is regenerable and
-becomes EVIDENCE only when a probe card binds it. Rows and retirements:
-`ref/roster.md`.
+A unit folder has TWO PARTS (JL 260831 v5). The UPPER, page part: two
+CATEGORY folders that group lanes without changing any lane's grammar,
+writer or gate — `evidence/` (bibex · probe · display · pagex · materials —
+what the page CITES, each behind its human gate) and `delivery/` (latex ·
+word · slide · render — what leaves the page) — plus outline/, workflow/,
+chat/, draw/. The LOWER, code part: the unit root IS the code home, as a
+task folder already is — `scripts/` (any language, `config/` inside; a
+script may equally live inside an evidence lane) with `runs/` and
+`results/` REQUIRED wherever code exists. `runs/` is the ONE door: only a
+ticket there calls a script, under the simple-code law (reads only this
+folder or a pagex-linked unit's declared outputs; writes only its own lane;
+no raw data, no PHI). `results/` is regenerable, never sits inside
+evidence/, and becomes EVIDENCE only when a probe card binds it. A flat
+lane name is the same lane during migration (a stub on a migrated page).
+Rows and retirements: `ref/roster.md`.

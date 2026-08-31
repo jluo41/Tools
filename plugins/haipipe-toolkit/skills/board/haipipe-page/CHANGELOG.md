@@ -1,3 +1,14 @@
+## 0.49.0 · 2026-08-31
+
+v5 (JL: "we don't need a specific code folder — treat the page/task folder AS
+the code folder; two parts, the upper page part and the lower code part"):
+the code/ wrapper of 0.48.0 is gone. The unit root is the code home, exactly
+as a task folder already is: scripts/ (script files, any language, config/
+inside) is the tidy home while a script may equally live in an evidence lane;
+runs/ and results/ are REQUIRED members wherever code exists, at root; a
+result never sits inside evidence/ and becomes evidence only through a probe
+card's binding. Page and task now share one root grammar with zero wrappers.
+
 ## 0.48.0 · 2026-08-31
 
 v4 of the category folder (JL: "code results and config should be separated
