@@ -1,3 +1,15 @@
+## 0.153.0 · 2026-08-31
+
+The 📤 Delivery tab (live/delivery.py + /_board/delivery), the evidence
+fold's twin: 🏠 What's built · 📜 LaTeX · 📝 Word (both built on click via
+their own routes) · 🎞 Slides (read-only, never auto-authored) · 📱 Render
+(ghost until its route). 82-plugin-exports.js → 82-plugin-delivery.js, one
+registry row replacing the 📜 and 📝 rows; the native 🎞 tab stays (a tool
+keeps its surface). 🧾 Evidence gained the 🔗 Pagex segment and
+85-plugin-pagex.js folded away (the saved view's pens ride inline). Also
+repaired: SKILL.md frontmatter had drifted to 0.151.2 while the changelog
+stood at 0.152.3.
+
 ## 0.152.3 · 2026-08-31
 
 Third wall bug, same family (JAMA repro): a bullet carrying an evidence mark

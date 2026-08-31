@@ -7,14 +7,16 @@ description: >-
   preview, as the recipient sees it, render version, sms preview,
   /haipipe-plugin-render.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-20"
+  version: "0.1.2"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-plugin-render · the unit, as the recipient sees it
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only render's delta: why it exists before acceptance, and the three stamps.
+
+> 📤 Since 260831 this lane's surface home is the 📱 segment inside the 📤 Delivery tab (`haipipe-plugin-delivery`), a ghost until the route ships.
 
 ## 🎯 Why this exists
 

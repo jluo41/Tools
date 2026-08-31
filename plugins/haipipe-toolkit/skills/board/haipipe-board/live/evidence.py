@@ -2,16 +2,19 @@
 
 "We still have the subfolder for bibex, etc, but we just need one evidence
 plugin, to present bibex, display, etc." So this mixin owns PRESENTATION
-ONLY: a live GET composing five segments — ⧉ By bullet (the generated
+ONLY: a live GET composing six segments — ⧉ By bullet (the generated
 outline/<stem>-evidence.md snapshot, the join), 📚 Citations (the bibex
 saved workbench), 🚪 Cards (the probe saved view), 🧮 Values (the live
-/_board/value route), 🖼 Displays (the display saved view). Storage, writers,
+/_board/value route), 🖼 Displays (the display saved view), 🔗 Pagex (the
+borrow view, pens inline — its standalone 🔗 registry row folded in here
+260831, the task lane's read follows when a pagex card learns a task
+unit's status). Storage, writers,
 walls and the three human gates (verified: / read: / accepted:) stay with the
 lane contracts (`haipipe-plugin-evidence` is the paper contract for this
 file). Like the 🧮 tab: no storage, no writer, nothing stored, never stale.
 
 A segment whose saved view does not exist yet is BUILT ON CLICK through the
-lane's own POST route (/_board/bibex, /_board/probe, /_board/display), which
+lane's own POST route (/_board/bibex, /_board/probe, /_board/display, /_board/pagex), which
 is the same pen the old separate tabs pressed.
 """
 from __future__ import annotations
@@ -103,14 +106,15 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
 <title>🧾 Evidence · {html.escape(stem)}</title>
 <style>{_CSS}</style>
 <header><h1>🧾 Evidence · {html.escape(stem)}</h1>
-<div class=mut>one surface, four lanes · storage and gates stay with
-bibex/ · probe/ · display/ · the cards' value rows ({html.escape(note)})</div></header>
+<div class=mut>one surface, five lanes · storage and gates stay with
+bibex/ · probe/ · display/ · pagex/ · the cards' value rows ({html.escape(note)})</div></header>
 <nav>
 <button class=on data-seg=bybullet>⧉ By bullet</button>
 <button data-seg=bibex>📚 Citations</button>
 <button data-seg=probe>🚪 Cards</button>
 <button data-seg=value>🧮 Values</button>
 <button data-seg=display>🖼 Displays</button>
+<button data-seg=pagex>🔗 Pagex</button>
 </nav>
 <div id=bybullet>{body}</div>
 <iframe id=seg></iframe>
@@ -121,8 +125,9 @@ bibex/ · probe/ · display/ · the cards' value rows ({html.escape(note)})</div
   function savedUrl(plugin, ext) {{
     var p = decodeURIComponent(CTX.path || '');
     var cut = p.lastIndexOf('/board/');
-    if (cut < 0) return '';
-    var base = p.slice(0, cut);
+    var base = cut >= 0 ? p.slice(0, cut)
+             : (/\\.md$/.test(p) ? p.slice(0, p.lastIndexOf('/')) : '');
+    if (!base) return '';
     var m = (CTX.file || '').match(/^(.*)\\/([^\\/]+)\\/\\2\\.md$/);
     if (m) return base + '/' + m[1] + '/' + m[2] + '/' + plugin + '/' + m[2] + (ext || '-view.html');
     return base + '/' + plugin + '/' + CTX.stem + (ext || '-view.html');
@@ -131,6 +136,7 @@ bibex/ · probe/ · display/ · the cards' value rows ({html.escape(note)})</div
     bibex:   {{ext: '-bib.html',  route: 'bibex'}},
     probe:   {{ext: '-view.html', route: 'probe'}},
     display: {{ext: '-view.html', route: 'display'}},
+    pagex:   {{ext: '-view.html', route: 'pagex'}},
     value:   {{live: '/_board/value?path=' + encodeURIComponent(CTX.path)
                     + '&file=' + encodeURIComponent(CTX.file)}}
   }};

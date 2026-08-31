@@ -2,21 +2,21 @@
 name: haipipe-plugin-evidence
 description: >-
   The ONE presentation plugin for a page's evidence: a single 🧾 Evidence tab
-  that shows the bibex, probe, value and display lanes together, joined per
-  plan bullet. Presentation only — the four storage folders, their writers,
+  that shows the bibex, probe, value, display and pagex lanes together,
+  joined per plan bullet. Presentation only — the storage folders, their writers,
   their walls and their human gates stay with their own contracts. Trigger:
   evidence plugin, evidence tab, show the evidence, citations cards values
   displays together, evidence bundle tab, /haipipe-plugin-evidence.
 metadata:
-  version: "0.1.1"
+  version: "0.2.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-evidence · one tab presents what four lanes hold
+# /haipipe-plugin-evidence · one tab presents what five lanes hold
 
 **LOAD `haipipe-plugin` FIRST.** This plugin owns no storage and no writer:
-it is the SURFACE over four lanes that keep their own contracts (JL 260831:
+it is the SURFACE over five lanes that keep their own contracts (JL 260831:
 "we still have the subfolder for bibex, etc, but we just need one evidence
 plugin, to present bibex, display, etc"). The precedent is Probe, "a logical
 family over two rows", and value, "a surface with no folder" — this file
@@ -40,7 +40,7 @@ display · pagex · code · materials), one category folder a stranger opens for
 "what backs this page". Flat lane names are migration stubs for the unpatched
 engine paths. The tab is the category folder's surface; nothing else changed.
 
-## 📡 Surface · one tab, four segments, one join
+## 📡 Surface · one tab, six segments, one join
 
 One 🧾 Evidence tab on the page, replacing the separate 📚, 🚪 and 🖼 tabs in
 the strip (each remains reachable as a SEGMENT inside it, the way GUI and TUI
@@ -55,7 +55,11 @@ are form segments inside one 💬 Chat tab). It ranks after 🧭 Outline and
 ├── 📚 Citations     the bibex workbench, as haipipe-plugin-bibex §surface
 ├── 🚪 Cards         the probe card list, as haipipe-plugin-probe §surface
 ├── 🧮 Values        every PP<NN>.v<n> row with its source path
-└── 🖼 Displays      the unit strip, as haipipe-plugin-display §surface
+├── 🖼 Displays      the unit strip, as haipipe-plugin-display §surface
+└── 🔗 Pagex         the borrow view, as haipipe-plugin-pagex §surface — its
+                     pens ride inside the saved view, so the standalone 🔗
+                     strip row folded in here (260831); the task lane's read
+                     arrives here when a pagex card learns a task unit's status
 ```
 
 - **By bullet is the default** because the reader's question is "what does
@@ -89,14 +93,16 @@ into one tick; this tab shows each gate beside its own thing and offers none.
 `live/evidence.py` serves GET `/_board/evidence` (the segmented surface) and
 its POST twin; `84-plugin-evidence.js` registers the ONE row; the 📚 BibEx,
 🧮 Values, 🖼 Display and 🚪 Probe strip rows are folded (their builder routes
-stay, pressed by the segments on demand). Verified end to end on SM05-results:
-menu entry → tab → five segments → the Values segment loading the live view.
+stay, pressed by the segments on demand); 260831 evening the 🔗 Pagex strip
+row folded in too (85-plugin-pagex.js removed, the saved view's inline pens
+ride along). Verified end to end on SM05-results:
+menu entry → tab → segments → the Values segment loading the live view.
 
 ## 📂 Files
 
 - `../haipipe-plugin-bibex/SKILL.md` · `../haipipe-plugin-probe/SKILL.md` ·
   `../haipipe-plugin-value/SKILL.md` · `../haipipe-plugin-display/SKILL.md` ·
-  the four lane contracts this surface presents
+  `../haipipe-plugin-pagex/SKILL.md` · the lane contracts this surface presents
 - `../haipipe-plugin-outline/ref/evidence-bundle.md` · the per-bullet join
   and its six status words, reused verbatim by ⧉ By bullet
 - `../../haipipe-board/cli/evidence-status.py` · the counts and the

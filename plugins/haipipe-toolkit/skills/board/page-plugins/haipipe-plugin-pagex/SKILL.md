@@ -7,8 +7,8 @@ description: >-
   folders. Trigger: pagex plugin, borrow a file from another page, reference
   other pages, symlink plugin, /haipipe-plugin-pagex.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-20"
+  version: "0.6.2"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages
 
@@ -17,6 +17,8 @@ This file owns only pagex's delta: the borrow row, the minted link, the vet, and
 
 The family is three now: bibex holds a page's references into the literature, skill into the skill tree, and pagex into the repo's own page tree.
 The design page is `QPf11` on the board skill's board.
+
+> 🧾 Since 260831 this view is the 🔗 Pagex SEGMENT inside the one 🧾 Evidence tab (`haipipe-plugin-evidence`); the standalone strip row folded away, and every pen below rides inside the saved view unchanged.
 
 ## 🔎 Probe family · the existing-Page lane
 

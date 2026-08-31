@@ -79,4 +79,5 @@ The strip shrinks by two more rows when the segments land; the retirement needs 
   **Now:** held until the first real collection job binds a page end to end.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL] sixth segment 🔗 Pagex landed (plugin-evidence 0.2.0): the borrow view frames inside the 🧾 tab with its pens inline, the standalone 🔗 strip row folded away (85-plugin-pagex.js removed); verified by clicking the segment in real Chrome on SM05-results. Same pass fixed savedUrl for the shell's board.md path (all saved-view segments were silently ghosting inside the shell). Task's read still owed to a pagex card (A3 work).
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL] page born the day the tab shipped (JL: "not the evidence folder, the evidence PLUGIN"); design, browser proof and the open segment work recorded in one pass.

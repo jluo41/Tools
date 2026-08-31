@@ -1,5 +1,10 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.6.2 — 2026-08-31
+- Surface rehomed: the borrow view is the 🔗 Pagex segment inside the one 🧾
+  Evidence tab; the standalone strip row folded away, every pen rides inside
+  the saved view unchanged.
+
 ## 0.6.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

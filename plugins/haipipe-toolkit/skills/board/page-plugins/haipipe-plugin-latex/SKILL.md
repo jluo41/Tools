@@ -6,13 +6,15 @@ description: >-
   Trigger: latex plugin, compile the page, page pdf, tex export, latex tab,
   rebuild the tex, /haipipe-plugin-latex.
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-08-21"
+  version: "0.2.3"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-latex · the page compiled, by the paper family's own writer
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only latex's delta: how the board calls a writer it does not own, and what the result promises.
+
+> 📤 Since 260831 this tab is the 📜 LaTeX SEGMENT inside the one 📤 Delivery tab (`haipipe-plugin-delivery`); the surface below is unchanged, only where it hangs moved.
 
 ## 🗂 Storage · derived, regenerable, never hand-edited
 

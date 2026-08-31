@@ -1,5 +1,11 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.2.0 — 2026-08-31
+- Sixth segment 🔗 Pagex (the borrow view, pens inline); the standalone 🔗
+  strip row folded in (85-plugin-pagex.js removed); five-lane wording
+  throughout; the task lane's read lands here when a pagex card learns a
+  task unit's status.
+
 ## 0.1.1 · 2026-08-31
 
 The v3 category folder <page>/evidence/ is this tab's disk twin; lanes

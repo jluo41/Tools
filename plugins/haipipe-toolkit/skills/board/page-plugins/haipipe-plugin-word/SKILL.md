@@ -7,8 +7,8 @@ description: >-
   plugin, word export, docx export, page to word, coauthor docx,
   /haipipe-plugin-word.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-08-16"
+  version: "0.2.2"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-plugin-word · one page, as a document a coauthor can mark up
@@ -16,6 +16,8 @@ metadata:
 `haipipe-plugin` defines what any plugin is; this skill is the word/ row, loadable on its own.
 The export exists for one reader: a coauthor who marks up in Word and does not use LaTeX.
 The design record is the board's `QPf7-word` page; the writer's own truth is `md2docx.py`'s docstring; this skill is the operating knowledge between them.
+
+> 📤 Since 260831 this tab is the 📝 Word SEGMENT inside the one 📤 Delivery tab (`haipipe-plugin-delivery`); the surface below is unchanged, only where it hangs moved.
 
 ## 📦 What lands in `<page>/delivery/word/`
 

@@ -7,8 +7,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.1.8"
-  last_updated: "2026-08-21"
+  version: "0.2.0"
+  last_updated: "2026-08-31"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
@@ -82,3 +82,23 @@ no raw data, no PHI). `results/` is regenerable, never sits inside
 evidence/, and becomes EVIDENCE only when a probe card binds it. A flat
 lane name is the same lane during migration (a stub on a migrated page).
 Rows and retirements: `ref/roster.md`.
+
+## 🔌 The two plugin kinds, and the tab bar they make (260831)
+
+A LANE plugin owns one rostered folder's LAW — storage grammar, the one
+writer, the gate (`haipipe-plugin-bibex`, `-probe`, `-display`, …). A
+PRESENTER plugin owns one SURFACE over a whole category and stores nothing —
+no roster row, no folder, every pen it shows is a lane's own route pressed
+through the saved view or on click. The category folders and the presenters
+are the same cut twice: `evidence/` is presented by the 🧾 tab
+(`haipipe-plugin-evidence`), `delivery/` by the 📤 tab
+(`haipipe-plugin-delivery`), and the LOWER code part by the ⚙️ surface
+(`haipipe-plugin-code`, tab pending until the first real page `runs/`
+exists). Two categories are NOT presenters, on purpose: `outline/` +
+`workflow/` are the 🧭 tab, first and default, because the plan and its
+receipts are the page's own process rather than material beside it; and
+`studio/` keeps its two TOOLS on the strip (💬 Chat, 🖌 Draw, and 🎞 Slides'
+authoring bar with them) — a tool the human holds keeps its surface, a view
+the human reads folds into its category's tab. So the strip a reader sees
+is short and stable: 🧭 outline · 🧾 evidence · 📤 delivery · (⚙️ code) ·
+💬 🖌 🎞 · 📂 folder — one tab per category, one tool per hand.

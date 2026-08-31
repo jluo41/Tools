@@ -1,3 +1,13 @@
+## 0.2.0 · 2026-08-31
+
+§🔌 the two plugin kinds: LANE plugins own one rostered folder's law;
+PRESENTER plugins own one surface over a category and store nothing (no
+roster row) — folder · value · evidence · delivery · code. The strip law:
+one tab per category (🧭 🧾 📤 ⚙️-pending), one tool per hand (💬 🖌 🎞).
+Roster surface cells repointed: latex/word → 📤 segments, slide → native
+tab + read segment, render → 📤 ghost segment, pagex → 🧾 segment
+(standalone row folded), workflow 🪜 → a 🧭 segment when built.
+
 ## 0.1.5 · 2026-08-31
 
 Category folders (evidence/, delivery/), the runs/ execution door and the

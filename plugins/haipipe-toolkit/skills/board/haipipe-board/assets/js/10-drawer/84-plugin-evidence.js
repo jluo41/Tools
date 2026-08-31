@@ -1,4 +1,4 @@
-/* 🧾 Evidence · ONE tab presents the four evidence lanes (JL 260831).
+/* 🧾 Evidence · ONE tab presents the five evidence lanes (JL 260831).
  *
  * "We still have the subfolder for bibex, etc, but we just need one evidence
  * plugin, to present bibex, display, etc." So this file registers ONE row;
@@ -13,7 +13,7 @@
  * (QPf9 §3). The view shows units with previews, or cards with states, and an
  * EMPTY plugin shows the contract's ghost scaffold instead of a blank.
  *
- * Same `tab` spec as 82-plugin-exports.js: register with {tab: {url, write}}
+ * Same `tab` spec as 82-plugin-delivery.js: register with {tab: {url, write}}
  * and the shell builds the right-pane tab — plugin N+1 ships by registering.
  */
 (function () {
@@ -88,7 +88,7 @@
     window.boardPlugins.register({
       id: 'evidence',
       label: '🧾 Evidence',
-      hint: 'citations, cards, values and displays · one surface, four lanes',
+      hint: 'citations, cards, values, displays and borrows · one surface, five lanes',
       menu: 'plugin',
       /* Any page with a source file: an empty lane still opens, and the
          ghost scaffold it shows is the contract teaching itself. */

@@ -6,13 +6,15 @@ description: >-
   page's own .md by /_board/autodeck. Trigger: slide plugin, page deck,
   regenerate the deck, slides tab, autodeck, /haipipe-plugin-slide.
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-08-15"
+  version: "0.1.3"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-slide · the page's deck, authored from the page's own words
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only slide's delta: how a deck is authored from a page, and what regeneration promises.
+
+> 📤 Since 260831 the saved deck ALSO shows read-only as the 🎞 segment inside the 📤 Delivery tab (`haipipe-plugin-delivery`); the native 🎞 tab and its ✨ authoring bar stay — the tool keeps its surface.
 
 ## 🗂 Storage · one deck per page, derived
 

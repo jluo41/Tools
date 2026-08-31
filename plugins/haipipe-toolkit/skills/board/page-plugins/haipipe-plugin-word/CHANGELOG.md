@@ -1,3 +1,7 @@
+## 0.2.2 — 2026-08-31
+- Surface rehomed: the 📝 tab is now the Word segment inside the one 📤
+  Delivery tab (haipipe-plugin-delivery); builder, storage, route unchanged.
+
 ## 0.2.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

@@ -101,6 +101,7 @@ from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
                        spawn_pty, pty_pump, pty_resize, ws_send)
 from live.xcal import XcalMixin
 from live.evidence import EvidenceTabMixin
+from live.delivery import DeliveryTabMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
@@ -136,7 +137,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -250,6 +251,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/evidence":
             # 🧾 ONE surface over the four evidence lanes (JL 260831)
             return self.evidence_tab_view()
+        if self.path.split("?", 1)[0] == "/_board/delivery":
+            # 📤 ONE surface over the four delivery lanes (JL 260831)
+            return self.delivery_tab_view()
         if self.path.split("?", 1)[0] == "/_board/pageruns":
             # 🪜 one page's lifecycle receipts, for the Page phases stepper
             return self.pageruns_view()
@@ -328,6 +332,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.value_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/evidence":
             return self.evidence_tab_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/delivery":
+            return self.delivery_tab_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -539,6 +545,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)
             res, err = self.plug_value(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/delivery":    # 📤 the same live twin (JL 260831)
+            res, err = self.plug_delivery(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/evidence":    # 🧾 the same live twin (JL 260831)
