@@ -7,7 +7,7 @@ description: >-
   attach a drawing, page scene, group scene, excalidraw, autodraw, draw it,
   /haipipe-plugin-draw.
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-08-16"
 ---
 # /haipipe-plugin-draw · one scene per owner, saved to exactly one owner
@@ -47,6 +47,15 @@ group own layer      group.excalidraw
 page instance move   group.excalidraw placement only
 page source edit     <stem>.excalidraw, every group recomposes
 ```
+
+**The chat holds this pen too (JL 260831: "I want the chat can change the
+excalidraw as well during the discussion")**: a page chat may edit that page's
+`<stem>.excalidraw` when the person asks in the session — the ask is the
+grant, quoted in the one log record the write leaves. The ownership rule
+binds unchanged (the chat writes only the open page's scene, never
+`group.excalidraw`); ✨ autodraw's whole-scene authoring still refuses a
+hand-drawn scene, while a chat edit is a scoped MODIFICATION of it — the
+element(s) the ask names, nothing else redrawn.
 
 The group editor has two explicit modes, and the UI always shows which owner will receive the save.
 `Arrange Instance` changes only the imported page's placement, scale, visibility, and crop in the manifest.

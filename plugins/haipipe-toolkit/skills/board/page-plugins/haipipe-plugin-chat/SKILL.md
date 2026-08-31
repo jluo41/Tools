@@ -8,7 +8,7 @@ description: >-
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -76,6 +76,8 @@ what you type                         lands in                                gr
   a promise change
 "rerun the LBP regression"            <task folder>/…                         plan.yaml · code · report.yaml · QA/     the task family · haipipe-task
   task work                                                                                                             + the for-<kind> its plan names
+"move that box" · "redraw the arrow"  draw/<stem>.excalidraw                  scoped element edit · your ask quoted   the ownership rule ·
+  the diagram, mid-discussion                                                    in the log record                       haipipe-plugin-draw
 "collect this page's values"          the page's collection job               config/r<NN>_<batch>.yaml · values.yaml  the task family ·
   the numbers, as code                  (task/ lane, ranked first)              · QA digests · proposals.md              haipipe-task-for-page
 feedback · requirement · evidence     never by hand                           regenerated                              cli/feedback.py collect ·

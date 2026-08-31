@@ -1,3 +1,8 @@
+## 0.3.2 · 2026-08-31
+
+§🗺 row: the chat edits the page's excalidraw scene mid-discussion on the
+person's ask (haipipe-plugin-draw 0.2.2 holds the pen law).
+
 # haipipe-plugin-chat · Changelog
 
 ## 0.3.1 · 2026-08-31

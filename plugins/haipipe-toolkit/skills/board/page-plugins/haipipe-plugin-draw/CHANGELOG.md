@@ -1,3 +1,9 @@
+## 0.2.2 · 2026-08-31
+
+The chat pen: a page chat may edit the page's own scene on the person's ask
+(quoted in the log record); ownership rule unchanged, autodraw's hand-drawn
+refusal still binds for whole-scene authoring.
+
 # haipipe-plugin-draw · Changelog
 
 ## 0.2.1 · 2026-08-16
