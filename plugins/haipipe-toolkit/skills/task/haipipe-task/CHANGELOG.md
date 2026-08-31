@@ -3,6 +3,87 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.11.0 · 2026-08-31
+
+**Config and ticket: recoverability replaces "no params" (JL 260831).** The old
+rule said a ticket carries no params. That was a means, not the end; the end is
+that a person can open a results folder months later and know what produced it.
+
+- `config/` now holds TWO kinds: SHARED (loaded by several runs of the task —
+  `cohort.do`, `_defaults.yaml`, no `rNN` prefix) and PER-RUN (`rNN_{stem}`,
+  1:1 with `runs/rNN_{stem}`).
+- A ticket MAY carry settings that SELECT A SLICE (year, source, fold). It must
+  never restate a setting its config already holds — two sources of truth drift,
+  and the drift is silent. Settings that change WHAT is computed (cohort, trait,
+  spec family, outcome) stay in a config, where they are reviewed and diffed.
+- Wherever a setting lives, the RUN records it: `results/<task>/<run>/runtime.yaml`
+  carries run, started, host, user, `git_sha`, `git_dirty`, ticket, `config_file`,
+  `config_sha256`, and every varying setting. Written BEFORE the work starts, so a
+  crashed run still has an identity.
+- `config_sha256` is the load-bearing field: two runs of the same name, from a
+  config edited in between, are otherwise indistinguishable on disk.
+- **Naming law for block/job/task/run, and a checklist that enforces it.**
+  `ref/naming-bjtr.md` states eight rules, each traced to a real break: a name must
+  stand alone at EVERY level (it travels into queues, results paths and logs), carry
+  its stage letter, use the project's own vocabulary, be ordered numerically not
+  alphabetically, never be shape words alone, never collide with a sibling across
+  jobs, share one stem between ticket and config, and never be re-spelled by a script
+  that could look it up.
+- N9: never restate the tree in a file. A `sbatch/all.ps1` listing every ticket
+  duplicates `t*/runs/` and needs a drift guard to stay honest — and that guard is
+  the proof the file should not exist. `run_slice.ps1` with no filter runs
+  everything; `-WhatIf` prints the plan computed from disk, so it cannot go stale.
+  Checker code S6 replaces S4.
+- Step 4 of SKILL.md is now RUN THE CHECKLIST: any verb that created or renamed
+  structure ends by running `_tools/check_task_tree.py <block>` (codes N1 N2 N4 N5
+  N6 N7 N8 S1 S2 S3 S5 S6 S7 S8 S9) and fixing findings before it reports.
+  `--expect-fail` proves the checker can still fail.
+- Audit codes R01 unidentifiable run · R02 same name different config_sha256 ·
+  R03 git_dirty · R04 incomplete record. Reference checker `_tools/check_runs.py`,
+  proven against a known-broken fixture before use (GATE-1).
+
+**A batch DECLARES whether it runs one by one or all at once (JL 260831).** An
+sbatch that does not say is telling the reader nothing, and "sequential" is not a
+safe guess: a job whose runs overwrite each other and a job whose runs are
+independent look identical from outside.
+
+- `sbatch/batch.psd1`, beside the engine, states `Mode` ('sequential' | 'parallel'),
+  `Ceiling` (the most that may run at once), `CollisionKey` and a one-line `Why`.
+  `run_slice.ps1` REFUSES TO START without it.
+- `Ceiling` is CAPACITY, `CollisionKey` is CORRECTNESS, and they are different
+  questions. The engine builds WAVES: two runs that agree on every CollisionKey
+  field land in different waves however wide the job runs. Real case, not
+  hypothetical — in Physician-SPACE stage B a `full` and a `synth` run of one
+  task-year write the same `BENE-*` and `BFAF-*` files, because only `CASES-*`
+  carries the source in its filename.
+- The banner states the mode on EVERY invocation and names the source of it
+  (the file, or the `-Sequential` / `-Parallel <N>` override). `-Parallel` above
+  the ceiling is refused; raising the ceiling is an edit with a reason.
+- A named entry point forwards `@PSBoundParameters` (a hashtable, binds by name),
+  never `@Rest` / `@args` (an array, binds POSITIONALLY). The array form bound
+  `-WhatIf` to the next axis parameter and made all 24 of Physician-SPACE's entry
+  points fail on every call. Checker code S9.
+- New checker codes: **S7** an sbatch that never declares its mode, or declares it
+  inconsistently (sequential with a ceiling above 1, a CollisionKey naming a field
+  that is not a ticket coordinate); **S8** a doc naming a folder, ticket or script
+  that does not exist; **S9** the array-splat entry point. All three proven to fire
+  on deliberately broken copies before use (GATE-1).
+- S8's companion is generation: a page that LISTS what the tree already holds
+  drifts on the next rename, so the listing half of every task page and sbatch
+  README is generated from the tree, and only the hand-written head is preserved.
+  Reference generator: `_tools/write_pages.py`.
+
+## 0.10.0 · 2026-08-31
+
+New task-type `page` → specialist `10_page/haipipe-task-for-page` (one collection
+job per Board Page: answers its task-route probe cards with code, values.yaml +
+QA digests, proposes missing upstream tasks). Type table row, keyword map row
+(collect·values·page-serving·probe-batch), Step 2/3a type lists now 10.
+ref/run-sh-template.sh §4: the exec line hardcoded the pre-260830 `scripts/`
+path for nested jobs while §1's CONFIG branch already handled both shapes;
+`PY_PREFIX` now mirrors that branch (found by the 260831 task-for-page field
+test).
+
 ## [0.9.0] — 2026-08-30
 
 - **THE TASK IS THE PAGE, and it is self-contained** (JL: "I think under the job,

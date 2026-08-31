@@ -65,6 +65,15 @@ elif [ -n "$TASK_SEG" ]; then
 else
   CONFIG="configs/${RUN_NAME}.yaml"                        # flat legacy
 fi
+# PY_PREFIX mirrors the CONFIG branch: where the task's .py lives relative to
+# the job (260830 nested: in the task folder; pre-260830: under scripts/).
+if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
+  PY_PREFIX="${TASK_SEG}/"
+elif [ -n "$TASK_SEG" ]; then
+  PY_PREFIX="scripts/${TASK_SEG}/"
+else
+  PY_PREFIX=""
+fi
 
 # ─── 1a. Resolve the OUTPUT ROOT: am I serving a consumer, or myself? ───────
 # A job is SHARED CODE; a run of it is one CALL (JL 260821). When the
@@ -240,7 +249,7 @@ fi
 EXIT_CODE=0
 {
   python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" \
-         "$TASK_DIR/${TASK_SEG:+scripts/$TASK_SEG/}${TASK_NAME}.py" \
+         "$TASK_DIR/${PY_PREFIX}${TASK_NAME}.py" \
          -o "$NOTEBOOK_TEMPLATE"
 
   papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" \

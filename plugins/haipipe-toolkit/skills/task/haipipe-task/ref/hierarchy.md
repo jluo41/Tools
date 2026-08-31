@@ -143,11 +143,19 @@ jNN_{job_name}/
 ├── tNN_{task_name}/            ← TASKS (Level 4), directly under the job. AUTHORED side.
 │   ├── tNN_{task_name}.md      the PAGE: Opening · Diagram · Content · Aims · States · Files
 │   ├── <stem>.py               the pipeline (or run-pipeline.do + step-*.do in the Stata dialect)
-│   ├── config/                 ALWAYS a folder; rNN_{stem}.yaml — the NUMBER is the run's identity, the stem its description
+│   ├── config/                 ALWAYS a folder. TWO KINDS live here (JL 260831):
+│   │                           SHARED   loaded by several runs of this task — cohort.do,
+│   │                                    _defaults.yaml. NO rNN prefix: it is not a run.
+│   │                           PER-RUN  rNN_{stem} — the NUMBER is the run's identity, the
+│   │                                    stem its description; pairs 1:1 with runs/rNN_{stem}
 │   │   └── prompts/            PROMPTS ARE CONFIG (JL 260830): a prompt file sits beside the config that names it,
 │   │                           and code resolves `prompts/x.md` relative to the CONFIG file, never to the code
-│   └── runs/                   TICKETS, carry NO params
-│       ├── rNN_{stem}.sh       names the config beside it, submits — nothing else
+│   └── runs/                   TICKETS. A ticket names its config, and MAY carry settings that
+│       ├── rNN_{stem}.sh       SELECT A SLICE (year, source, fold). It must never restate a
+│       │                       setting its config already holds: two sources of truth drift,
+│       │                       and the drift is silent. Settings that change WHAT is computed
+│       │                       (cohort, trait, spec family, outcome) belong in a config, where
+│       │                       they can be reviewed and diffed.
 │       └── (a task-scoped batcher, if any, sits in tNN_{task_name}/sbatch/)
 │                               └─ GENERATED: what a machine produced ───────────
 ├── results/                    JOB level, two levels deep: results/<task>/<run>/
@@ -158,6 +166,33 @@ jNN_{job_name}/
 ├── workflow/                   plan/report artifacts (haipipe-workflow)
 └── diagram/                    optional, only if the job diverges from the block narrative
 ```
+
+**Where a setting lives is free; RECORDING it is not (JL 260831).** The rule used
+to be "a ticket carries no params", which was a means, not the end. The end is
+that a person can open a results folder months later and know what produced it.
+So a setting may sit in the config, in the ticket, or split across both — and
+whichever it is, the RUN writes it down:
+
+```
+results/<task>/<run>/runtime.yaml
+  run · started · host · user
+  git_sha · git_dirty          was it built from committed code?
+  ticket · config_file · config_sha256
+  settings:                    every value that varied for this run
+```
+
+`config_sha256` is the load-bearing field: two runs named the same thing, produced
+from a config that changed in between, are otherwise indistinguishable on disk.
+Write it BEFORE the work starts, never after — a crashed run is exactly the one
+whose identity you need. Audit a block with `_tools/check_runs.py <block>`:
+
+```
+R01  a results folder with no runtime.yaml       the run is unidentifiable
+R02  same run name, different config_sha256      two different things share one name
+R03  git_dirty: True                             produced from uncommitted code
+R04  runtime.yaml missing a required field       the record is incomplete
+```
+
 
 **FLAT (legacy — a job with ONE implicit task; the pre-260829 shape):**
 
@@ -588,6 +623,45 @@ Test: if you deleted every other task in the job, would this batcher still make
 sense? Yes means it belongs in the task. A `sbatch/<task>/` folder at job level
 is the older mirrored spelling and stays readable, but a new task-scoped batcher
 scaffolds inside the task.
+
+**ONE BY ONE OR ALL AT ONCE IS DECLARED, NOT ASSUMED (JL 260831).** A batcher
+that does not say how it runs its runs is telling the reader nothing: a job whose
+runs overwrite each other and a job whose runs are independent look identical from
+outside, and "sequential" is not a safe guess for either. So every `sbatch/` carries
+a declaration beside its engine, and the engine REFUSES TO START without one.
+
+```
+jNN_{job}/sbatch/batch.psd1     Mode          'sequential' or 'parallel'
+                                Ceiling       the most that may run at once
+                                CollisionKey  the fields that, if two runs AGREE
+                                              on all of them, mean those two write
+                                              the same files
+                                Why           one line, printed before every batch
+```
+
+Two halves, and they are not the same question:
+
+- **Ceiling is CAPACITY.** How many Stata/python processes the host will take.
+  `-Parallel <N>` may lower it and may never exceed it; raising it is an edit to
+  the file, with the reason, not a longer command line.
+- **CollisionKey is CORRECTNESS.** The engine builds WAVES: two runs that agree on
+  every key field land in different waves however wide the job runs. In
+  Physician-SPACE's stage B this is real, not theoretical — a `full` run and a
+  `synth` run of one task-year write the same `BENE-*` and `BFAF-*` files, because
+  only `CASES-*` carries the source in its name.
+
+The banner states the mode on EVERY invocation, and `-WhatIf` prints the waves off
+disk, so what a reader is told can never drift from what will happen.
+
+**A named entry point forwards BY NAME.** `@Rest` / `@args` splat an ARRAY, which
+PowerShell binds positionally: an entry point written that way bound `-WhatIf` to
+the next axis parameter and failed on every call. Forward `@PSBoundParameters`,
+which is a hashtable. Checker code S9.
+
+Reference copies: `ref/run_slice-template.ps1` (the engine, identical in all nine
+Physician-SPACE jobs), `ref/batch-psd1-template.psd1` (a filled declaration with its
+reasoning in comments), `ref/write_pages.py` (regenerates entry points, task pages
+and sbatch READMEs from the tree), `ref/check_task_tree.py` (codes N* and S*).
 
 ### The `0-libs` exemption
 

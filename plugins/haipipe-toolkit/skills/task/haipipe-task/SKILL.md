@@ -11,8 +11,8 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-30"
+  version: "0.11.0"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,8 +30,11 @@ project        examples/Proj{...}/
               ├── tNN_<task>/              TASK = PAGE, self-contained (260830):
               │     ├── tNN_<task>.md          the page a reader opens
               │     ├── <stem>.py              the pipeline
-              │     ├── config/rNN_<stem>.yaml the run's identity
-              │     └── runs/rNN_<stem>.sh     TICKET: names the config beside it, no params
+              │     ├── config/                SHARED (cohort.do) + PER-RUN rNN_<stem>, 1:1 with a ticket
+              │     └── runs/rNN_<stem>.sh     TICKET: names its config; may carry SLICE settings
+              │                                (year, source, fold), never a setting the config
+              │                                already holds. Wherever a setting lives, the run
+              │                                records it in results/<task>/<run>/runtime.yaml
               ├── src/                     shared by more than one task in this job
               ├── sbatch/                  batcher that SPANS tasks (one for a single
               │                            task goes in tNN_<task>/sbatch/ instead)
@@ -66,6 +69,7 @@ display       /haipipe-task-for-display           (independent)
 individual    /haipipe-task-for-individual        /haipipe-individual
 agent         /haipipe-task-for-agent             /haipipe-task-llm-engine (LLM call runtime)
 endpoint      /haipipe-task-for-endpoint          /haipipe-end (package + deploy)
+page          /haipipe-task-for-page              (serves ONE Board Page's task-route probe cards: values.yaml + QA + proposals)
 ```
 
 NOTE: a block prefix (bNN_) carries no type information — detect type from script content, never from a name. Per-type default letters + the "project scheme wins" rule: `ref/hierarchy.md`.
@@ -343,7 +347,7 @@ Step 2: Resolve scope. Cascade:
       - path is an existing job → scope=single-phase on that job (Step 3c).
       - path is an existing block → scope=block-iterate with stages=[that stage] (Step 3d).
   (2) `job` (alias `task-folder`) as first positional → scope=new job (scaffold). `block` (alias `task-group`) as first positional → scope=new block: read `fn/task-group.md` and run it inline. Stop.
-  (3) first positional is a known task-type (`data` / `raw` / `algo` / `fit` / `eval` / `display` / `individual` / `agent` / `endpoint`) → scope=job, task-type=that positional.
+  (3) first positional is a known task-type (`data` / `raw` / `algo` / `fit` / `eval` / `display` / `individual` / `agent` / `endpoint` / `page`) → scope=job, task-type=that positional.
   (4) first positional is a path to an existing block → scope=block-iterate (Step 3d).
   (5) first positional is a path to an existing job → scope=full lifecycle (all 4 phases via Step 3c).
   (6) no args at all → default:
@@ -396,11 +400,12 @@ Step 3a (scope=job only): Task-type inference cascade.
         eval·score·metrics·mae·rmse → eval      · figure·table·plot·panel → display
         subject·patient·cgm-trace → individual  · agent·llm·prompt·claude → agent
         endpoint·deploy·package·serve → endpoint
+        collect·values·page-serving·probe-batch → page
       STATA (stata·.do·cms·case·reg·ols·iv) → DELEGATE to `/haipipe-task-for-stata`
         (it owns stage disambiguation): `Skill("haipipe-task-for-stata", args="… [--auto]")`.
   Confidence: medium. AUTO → accept. Interactive → propose; one-line ASK to confirm.
 
-  (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 9 type options (plus Stata engine).
+  (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 10 type options (plus Stata engine).
 
 
 Step 3b (scope=job only): Parent existence cascade.
@@ -469,7 +474,45 @@ Step 3d: Block iteration (scope=block-iterate).
       ok|failed (<per-phase verdicts>)` line per child, then an `Overall: N ok, M failed` tally.
 
 
-Step 4: Emit the structured tail:
+Step 4: RUN THE CHECKLIST before reporting anything.
+
+  Any verb that CREATED or RENAMED a block, job, task, config or ticket ends by
+  checking the tree it just touched. A structural claim made without running this
+  is an unverified claim that happens to print a tick (GATE-1).
+
+  ```
+  python3 <project>/tasks/_tools/check_task_tree.py <block>
+  ```
+
+  Thirteen codes, each one a break this repo actually hit:
+
+  ```
+  N1  a name that does not stand alone     a job/task name read in a queue or a log
+  N2  a run name with no stage or kind     rNN_<A|B|C|D>_<cms|case|data|reg>_...
+  N4  unordered alternatives                the folders a config picks between
+  N5  shape words only                      data, table, pipeline, pool, rank
+  N6  two tasks in one block sharing a name one rename map hits both
+  N7  a ticket and its config disagree      the pair can no longer be checked
+  N8  not exactly one shared config         a script cannot find what it must not spell
+  S1  a do-path that does not resolve       from the JOB root, which is Stata's cwd
+  S2  a ticket naming a config that is gone
+  S3  a config naming a missing spine/steps
+  S5  a task with no page
+  S6  a file that RESTATES the tree         its drift guard is the proof it should not exist
+  S7  an sbatch that never says one-by-one   or parallel, or says it inconsistently
+  S8  a doc naming something that is gone    every rename so far left one behind
+  S9  an entry point splatting @Rest         -WhatIf binds positionally and it fails
+  ```
+
+  S8 is the one that pays for itself: a page listing what the tree already holds
+  drifts on the next rename. Generate those pages instead of typing them, and let
+  S8 catch the ones nobody regenerated.
+
+  Naming rules in prose, with the break behind each: `tasks/_tools/NAMING.md`.
+  Non-zero exit means findings; fix them BEFORE emitting the tail below. To prove
+  the checker can still fail, run it with `--expect-fail` against a broken copy.
+
+Step 5: Emit the structured tail:
 
 ```
 status:    ok | blocked | failed

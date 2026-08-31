@@ -88,10 +88,8 @@ not answered   <what these runs did NOT settle>
 next run       <the run that would settle it, or "none: the question is dead">
 
 ## Aims
-<!-- RULE · one Aim per question this task must answer. -->
-
-## States
-<!-- RULE · per question: answered · needs another run · dropped. -->
+<!-- RULE · one Aim per question this task must answer; its row carries the tick and a
+     **Now:** line saying answered · needs another run · dropped (no `## States`). -->
 
 ## Files
 <!-- RULE · ALL machinery lives here, including every QA/<n>-<slug>.md by path.
