@@ -218,11 +218,15 @@ body.split .chatbtn{display:none}
    so each button centers its content in a fixed 28px box instead */
 #chat .crow button{display:inline-flex;align-items:center;justify-content:center;
  height:28px;min-width:28px;border:none;background:none;color:var(--mut);
- cursor:pointer;font-size:14px;line-height:1;padding:0 7px;border-radius:8px}
+ cursor:pointer;font-size:15px;line-height:1;padding:0 6px;border-radius:8px}
 #chat .crow button:hover{background:var(--card);color:var(--fg)}
 #chat .crow button.active{background:var(--card);color:var(--accent)}
-#chat .crow .gnew{font-size:17px}
-#chat .crow .mtoggle{font-size:12px;font-weight:600;gap:3px}
+/* one optical size across text and emoji glyphs: ＋ is a small text glyph
+   (bumped), ⚙️/🗂️ carry VS16 in the markup so they render as emoji, and
+   the ⌨ button's label rides a fixed 12px beside its 15px glyph */
+#chat .crow .cnew{font-size:19px;padding-bottom:2px}
+#chat .crow .mtoggle{font-size:15px;gap:3px}
+#chat .crow .mtoggle .lbl{font-size:11.5px;font-weight:600}
 #chat .crow .send{margin-left:auto;background:var(--accent);color:#fff;border:none;
  border-radius:9px;width:32px;height:28px;cursor:pointer;font-size:13px;padding:0}
 #chat .crow .send:hover{background:var(--accent);color:#fff}

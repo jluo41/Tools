@@ -64,12 +64,12 @@
     '<div class="ft"><div class="composer">' +
     '<textarea rows="1" placeholder="Ask about this question…"></textarea>' +
     '<div class="crow">' +
-    '<button class="gnew" type="button" title="new chat — starts fresh, primed with this page">＋</button>' +
-    '<button class="gtoggle" type="button" aria-expanded="false" title="sessions">🗂</button>' +
+    '<button class="cnew" type="button" title="new chat — starts fresh, primed with this page">＋</button>' +
+    '<button class="gtoggle" type="button" aria-expanded="false" title="sessions">🗂\ufe0f</button>' +
     '<button class="utoggle" type="button" aria-expanded="false" title="quick actions">✨</button>' +
-    '<button class="stoggle" type="button" aria-expanded="false" title="settings">⚙</button>' +
+    '<button class="stoggle" type="button" aria-expanded="false" title="settings">⚙\ufe0f</button>' +
     '<button class="dtoggle" type="button" title="show / hide the drawing above">🖌</button>' +
-    '<button class="mtoggle" type="button" title="open this chat in the real terminal (same session) — the ← in the header returns">⌨ TUI</button>' +
+    '<button class="mtoggle" type="button" title="open this chat in the real terminal (same session) — the ← in the header returns">⌨\ufe0f<span class="lbl">TUI</span></button>' +
     '<button class="send" title="send">➤</button>' +
     '</div></div></div>';
   document.body.appendChild(chat);
@@ -147,7 +147,7 @@
     setUtility('');
   });
   /* ＋ new chat: one press, no menu — the session registry names it later */
-  chat.querySelector('.gnew').onclick = function () {
+  chat.querySelector('.cnew').onclick = function () {
     setUtility('');
     if (window.__chatNewSession) window.__chatNewSession('');
   };

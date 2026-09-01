@@ -1,3 +1,11 @@
+## 0.158.4 · 2026-08-31
+
+Composer row truly aligned (JL, twice): the ＋ button's class collided
+with the structure editor's .gnew (16px top margin leaked in) — renamed
+.cnew; ⚙/🗂/⌨ carry VS16 so they render as emoji instead of small text
+symbols; one 15px optical size across the row. Measured in Chrome: six
+buttons at the same top and height, send centered.
+
 ## 0.158.3 · 2026-08-31
 
 The xcal ownership pill collapses to its emoji 5s after boot (hover
