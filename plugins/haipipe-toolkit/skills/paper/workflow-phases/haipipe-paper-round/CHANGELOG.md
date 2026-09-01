@@ -1,3 +1,6 @@
+## 0.4.1 · 260831
+- Runtime home is the desk's -Round group (JL 260831); combined B<x>-<desk> and lone C1-RD-round grandfathered.
+
 ## 0.4.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):

@@ -9,7 +9,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-25"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -31,7 +31,7 @@ The layers have different jobs:
 
 ```text
 0-paperboard/                         boundary, claims, evidence, acceptance
-  └── Ba-<desk>/S<D>...               Section Page tracking and CHECK state
+  └── Ba-<desk>-Main/S<D>...          Section Page tracking and CHECK state
               ↓
 <N>-<desk><year>/                      self-contained desk room
   ├── master.tex                       composition and reader order

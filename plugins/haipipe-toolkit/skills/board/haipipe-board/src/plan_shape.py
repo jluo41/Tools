@@ -1,8 +1,8 @@
-"""`plan-shape-off-type` · does a plan obey the shape its Page Type declares?
+"""`plan-shape-off-type` · does a plan obey its Folder Page Face?
 
-Every surviving Page Type declares a mode in an `outline:` block under
-`metadata:`, and until 260819 nothing read it, so a plan's division shape was
-whatever its author felt like (`haipipe-page-outline` 0.2.0 made it an exit).
+Phase-owned Folder contracts and legacy Page Types declare a mode in an
+`outline:` block under `metadata:`. Workflow phases resolve first; Page-Type
+folders remain the compatibility fallback for families not yet migrated.
 
 NO `page-type:` KEY IS THE FLEXIBLE DEFAULT, which is 247 of this repo's 274
 pages: those owe the base section order and nothing more, so this check returns
@@ -13,7 +13,20 @@ from __future__ import annotations
 import pathlib
 import re
 
+from .common import evidence_lane_dirs
+from .folder_contract import resolve as resolve_folder_contract
+
 _DIV = re.compile(r"(?m)^##\s+C\d+\s*·\s*(.+?)\s*$")
+
+
+def _probe_cards(page_src: pathlib.Path):
+    seen = set()
+    for lane in evidence_lane_dirs(page_src.parent, "probe"):
+        for card in sorted(lane.glob("PP*/card.md")):
+            key = card.parent.name
+            if key not in seen:
+                seen.add(key)
+                yield card
 
 
 def page_type(page_src: pathlib.Path) -> str:
@@ -23,14 +36,25 @@ def page_type(page_src: pathlib.Path) -> str:
     return m.group(1) if m else ""
 
 
+def folder_kind(page_src: pathlib.Path) -> str:
+    """Return the current `folder-kind:` identity from a Folder head."""
+    head = page_src.read_text(encoding="utf-8", errors="replace")[:1200]
+    m = re.search(r"(?m)^folder-kind:\s*(\S+)\s*$", head)
+    return m.group(1) if m else ""
+
+
 def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
-    """-> {mode, source, shape, words} read from the Page Type's own frontmatter.
+    """Read Page-Face outline metadata from its semantic owner.
 
     The block is INDENTED under `metadata:`, which is why a `^outline:` grep
     finds nothing and reported all eleven types as having none (260819)."""
     if not kind:
         return {}
-    hits = (list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
+    phase = resolve_folder_contract(
+        skills_root, folder_kind=kind, legacy_page_type=kind
+    )
+    hits = ([phase.path] if phase else
+            list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
             # paper ships its types as journey-phase skills since 260831
             or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
             or list(skills_root.glob("paper/haipipe-paper-%s/SKILL.md" % kind)))
@@ -114,15 +138,32 @@ def _has_marker(path: pathlib.Path, marker: str) -> bool:
 
 
 def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
-    """-> [finding] · empty means the plan's shape is consistent with its type."""
-    kind = page_type(page_src)
+    """Return findings when a plan violates its Folder's Page Face shape."""
+    current = folder_kind(page_src)
+    legacy = page_type(page_src)
+    current_contract = (
+        resolve_folder_contract(skills_root, folder_kind=current)
+        if current else None
+    )
+    kind = current if current_contract else legacy
     if not kind:
         return []                      # the flexible default: nothing to check
     decl = type_outline(kind, skills_root)
+    key_name = "folder-kind" if current_contract else "page-type"
     if decl.get("missing"):
-        return ["page-type `%s` names no Page Type on disk" % kind]
+        return ["%s `%s` names no Page Face contract on disk" % (key_name, kind)]
     if decl.get("no_block"):
-        return ["page-type `%s` declares no `outline:` block" % kind]
+        return ["%s `%s` declares no `outline:` block" % (key_name, kind)]
+
+    if current_contract and legacy:
+        legacy_contract = resolve_folder_contract(
+            skills_root, legacy_page_type=legacy
+        )
+        if legacy_contract and legacy_contract.path != current_contract.path:
+            return [
+                "folder-kind `%s` and legacy page-type `%s` resolve to different phases"
+                % (current, legacy)
+            ]
 
     titles = _DIV.findall(plan_text)
     mode, out = decl.get("mode", ""), []
@@ -225,7 +266,7 @@ def check_serves(page_src: pathlib.Path, plan_text: str):
     if not have:
         return []
     out = []
-    for card in sorted(page_src.parent.glob("probe/PP*/card.md")):
+    for card in _probe_cards(page_src):
         m = re.search(r"(?m)^serves:\s*(.+?)\s*$", card.read_text(
             encoding="utf-8", errors="replace"))
         for a in (_ADDR.findall(m.group(1)) if m else []):
@@ -287,15 +328,15 @@ _MARKS = {"📮": "probe", "🧮": "value", "🔢": "value", "🖼": "display", 
 def check_coverage(page_src: pathlib.Path, plan_text: str):
     """-> [finding] · every OWING mark is served by at least one card or unit.
 
-    Self-consistency test ① of `haipipe-page-outline` §🚦. The PROBE receipt
-    reports `coverage: n of n`, and nothing recomputed it, so a receipt could
+    Self-consistency test ① of `haipipe-page-outline` §④. A SURVEY receipt
+    reports `items: n of n`, and nothing recomputed it, so a receipt could
     claim a coverage its own disk did not have.
 
     🎯 aim and ✅ have it are NOT owing marks and are skipped. A 📚 whose key is
     already known needs no card either, so an unserved 📚 is reported as a note
     rather than a gap: a person lands a bib entry by hand."""
     served = set()
-    for card in sorted(page_src.parent.glob("probe/PP*/card.md")):
+    for card in _probe_cards(page_src):
         m = re.search(r"(?m)^serves:\s*(.+?)\s*$", card.read_text(
             encoding="utf-8", errors="replace"))
         served |= {"C%s.P%s.B%s" % a for a in (_ADDR.findall(m.group(1)) if m else [])}
@@ -379,7 +420,8 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
                     hit = any(page_src.parent.glob("display/*%s-*" % base)) \
                         or any(page_src.parent.glob("display/*%s" % base))
                 else:
-                    hit = any(page_src.parent.glob("probe/%s-*" % base))
+                    hit = any(any(lane.glob("%s-*" % base))
+                              for lane in evidence_lane_dirs(page_src.parent, "probe"))
                 if not hit:
                     out.append("%s names %s and no such %s exists on disk"
                                % (addr, ref, win))

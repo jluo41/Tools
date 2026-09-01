@@ -1,4 +1,4 @@
-# The phase job cards · six fields, every phase, the same order
+# The cycle job cards · six fields, every cycle, the same order
 
 **What this file is for.** Each phase contract states its own authority in its
 own words, and no two used the same fields: `haipipe-page-outline` writes
@@ -8,42 +8,51 @@ All three are correct and none of them can be read next to the others.
 
 JL asked the question that exposes it (260818 1402): "if I want to work with the
 page workflow's each phase, what should each phase do". This file answers it
-once, in six fields, identical for every phase.
+once, in six fields, identical for every cycle.
 
 ```text
-❓ ASKS     the ONE question the phase answers
-📥 READS    what must already exist, or the phase cannot start
+❓ ASKS     the ONE question the cycle answers
+📥 READS    what must already exist, or the cycle cannot start
 📤 WRITES   the exact path it creates or changes
 🚪 EXITS    a testable condition
 ✋ TICK     the person-reserved tick, or none
 🔀 ROUTES   where it may go next
 ```
 
-**The operational rule: you work a phase by satisfying its 🚪 EXITS row.**
-## 🔁 The loop has TWO parts, and the first one CONVERGES (260819)
+**The operational rule: you work a cycle by satisfying its 🚪 EXITS row.**
 
-Ruled by JL: "outline 之后就直接 probe 准备证据，基于证据我们再改 outline，直到
-outline 自己是自洽的 … until outline is self-consistent and together with all the
-evidence cards, then we are good to go ahead to draft."
+## 🔁 The loop has TWO PARTS, and the first one CONVERGES (260901)
+
+Ruled by JL, 260901, replacing the 260819 PREPARE/①-⑦ shape: "definitely, we
+should separate them into the Outline part and Draft part … C1 Agree, C2
+Survey, C3 Creating, C4 Embed, and back to C1" (then the words, never the
+letters: `C<n>` is a Content division in every plan address).
 
 ```text
-  ┌── PREPARE · repeat until self-consistent ──────────────────┐
-  │                                                            │
-  │   🧭 OUTLINE ─▶ 🧑 LOOK ─▶ 📮 PROBE ──▶ 🃏 EVIDENCE        │
-  │       ▲      (a person reads the plan       │              │
-  │       │       after every ① pass,           │              │
-  │       │       before ②③ dispatch)           │              │
-  │       └──── the answer changes the plan ────┘              │
-  │                                                            │
-  └────────────────────────┬───────────────────────────────────┘
-                           │ 🚧 ONE gate: the plan AND its evidence
+  ┌── OUTLINE part · repeat until the plan and its runs agree ─────────┐
+  │                                                                     │
+  │   SHAPE ─▶ SURVEY ─▶ LAND ─▶ EMBED ─┐                               │
+  │     ▲    👤 approved: 👤 Decide       │ plan v<N+1>                  │
+  │     └────────────────────────────────┘                               │
+  │     the tick at SHAPE carries the fork: fresh marks → SURVEY again;   │
+  │     every ☑ make row folded → the DRAFT part                          │
+  └────────────────────────┬────────────────────────────────────────────┘
+                           │ 🚧 ONE boundary: approved: AND every make-row folded
                            ▼
-                       ✏️ DRAFT      writes REAL numbers, not holes
-                           ▼
-                       🖊 REVISE     prose · captions · the rebuild
-                           ▼
-                       ✅ CHECK      may return to ANY phase above
+  ┌── DRAFT part ──────────────────────────────────────────────────────┐
+  │   WRITE   draft → revise → compile, chained; inner loop teeth →     │
+  │           AI cold pre-check → revise, budget 3           ⚙ ready    │
+  │   CHECK   a cold judge on the BUILT page, then a person 👤 accepted:│
+  │           prose → WRITE · number/citation/figure → SURVEY ·         │
+  │           argument → SHAPE · pass → CLOSE                           │
+  └────────────────────────────────────────────────────────────────────┘
 ```
+
+**The law under the first part.** Every evidence number is answered by a RUN at
+a real address in `tasks/`; the run computes, the page interprets (EMBED). The
+item table `outline/<stem>-items.md` is the one ledger: one row per mark, and a
+derived status per row (`owed → bound → landed → folded → accepted`, plus
+`stale · deferred · dropped · blocked`, `haipipe-plugin-outline/ref/item-table.md`).
 
 **Why the first part loops.** Evidence does not confirm a plan; it changes it.
 Two worked cases from 260819, both on `QPw00-page-loop`:
@@ -61,224 +70,205 @@ Two worked cases from 260819, both on `QPw00-page-loop`:
 Neither was a defect in the plan. Both are the loop working: a plan written
 before its evidence is a guess, and a plan rewritten after it is a plan.
 
-**Why DRAFT moved after it.** DRAFT used to write `<VALUE HOLE>` and wait. With
-the evidence already landed it writes the number, so a hole becomes the EXCEPTION
-rather than the normal case: it is what a genuinely BLOCKED question leaves
-behind, named, with the input that is missing.
+## 🧑 A person's attention belongs to the OUTLINE part
 
-## 🧑 A person's attention belongs to the PREPARE loop (260819)
+Ruled by JL (260819): "for the user, we will mainly check the outline and the
+evidences if we want. But if not, you can just go ahead for the draft and
+revise and the compile." The OUTLINE part is where the page decides WHAT IS
+TRUE; everything after is execution against a plan already agreed. So the
+person's gates sit at the front (`approved:`, `Decide`) and at the exit
+(`accepted:`); WRITE asks for nothing, and a run that stops inside it for a
+person is stopping in the wrong place.
 
-Ruled by JL: "for the user, we will mainly check the outline and the evidences if
-we want. But if not, you can just go ahead for the draft and revise and the
-compile."
+**Every cycle says which cycle it is, out loud.** A receipt carries `phase:`
+and `cycle:`; the same words belong in whatever a person is shown.
 
-```text
-  ┌ ① OUTLINE ⇄ ② PROBE ⇄ ③ EVIDENCE ┐   🧑 ATTENDED · stop here for a person
-  └──────────────┬────────────────────┘
-                 ▼
-     ④ DRAFT → ⑤ REVISE (⑥ COMPILE)      🤖 UNATTENDED · run end to end
-                 ▼
-     ⑦ CHECK                              🧑 judges, and may return to any above
-```
-
-**Why the attention sits there and not later.** The PREPARE loop is where the
-page decides WHAT IS TRUE and what it will therefore say. Everything from ④ on is
-execution against a plan already agreed: a wrong sentence is cheap to fix, and a
-wrong plan has already been paid for in evidence.
-
-**So ④⑤⑥ ask for nothing.** A run that stops between DRAFT and CHECK for a person
-is stopping in the wrong place. The ticks that remain are ① `approved:`, the two
-③ lane ticks (③c `verified` · ③v `read:`), and ⑦'s two, `accepted:` and the
-RULING. ③d leaves no tick behind: its `accepted:` is ⑦'s, per the gathered
-table below.
-
-**Every phase says which phase it is, out loud.** JL 260819: "could you then tell
-me which phase you are in every time you do it?" A receipt already carries
-`phase:`; the same word belongs in whatever a person is shown, because work that
-does not name its phase cannot be routed or audited.
-
-Five of the exits below are a person's tick. The others have none, so a machine
-may run those end to end without stopping.
-
-## ① 🧭 OUTLINE · `haipipe-page-outline`
+## 🧭 SHAPE · `haipipe-page-outline` · phase OUTLINE
 
 ```text
 ❓ ASKS     what will this page say, section by section, and what does each
             bullet still owe?
-📥 READS    the Page Type's `outline:` block (fixed | grammar | resolved)
-            and the page's current sections
+📥 READS    the person's brief · the Page Type's `outline:` block (fixed |
+            grammar | resolved) · the venue requirement · the page's sections
 📤 WRITES   <page>/outline/<stem>-outline-v<N>.md · the open D<nn> records in
             <stem>-discussion.md · one record in <stem>-log.md
             🚫 nothing in the page itself. The plan and the page are two files.
 🚪 EXITS    FIVE machine checks, then a person ticks `approved:`
               ⓪ ARC: `arc:` argues, adjacent divisions pass the swap test, the
                 heaviest finding has a division
-              ① COVERAGE, both directions: every mark is served by at least
-                one card, every display unit on disk is cited or carries
-                `retired:`, every open feedback row is served or declined
-              ② every card's `serves:` names a real address in this plan
+              ① COVERAGE, both directions: every mark is served by a row, a
+                card or a unit, or counted as owed; every unit on disk is
+                cited or carries `retired:`; every open feedback row is served
+                or declined
+              ② every row's and card's address names a real bullet in this plan
               ③ every recomputable value matches the repo  (checks/values.py)
-              ④ the plan's shape matches its Page Type      (plan-shape-off-type);
+              ④ the plan's shape matches its Page Type (plan-shape-off-type);
                 heads 4 to 11 words, Notes ≤ 30 words, no Note quotes the page
 ✋ TICK     `approved:`  ← a person, and only after the five pass. What the
-            person judges is the plan's DIRECTION, never its arithmetic.
-🔀 ROUTES   the 🧑 LOOK first, after EVERY pass: a person reads the plan
-            before ② or ③ dispatch (haipipe-page-workflow §🧭) · then ② PROBE
-            and ③ EVIDENCE, in parallel where their inputs allow (the
-            OUTLINE→EVIDENCE edge is legal since 260819) · or a v<N+1> here
-            when the evidence that came back changed the plan
+            person judges is the plan's DIRECTION, never its arithmetic. The
+            tick carries the FORK: fresh marks → SURVEY; every make-row folded
+            → the DRAFT part.
+🔀 ROUTES   SURVEY · the DRAFT part (haipipe-page-draft) · SHAPE again (a
+            v<N+1> when EMBED returned a changed plan) · HOLD
 ```
 
-## ② 📮 PROBE · `haipipe-page-probe`
+## 🔍 SURVEY · `haipipe-page-outline` · phase OUTLINE
 
 ```text
-❓ ASKS     was this already answered, and if not, who answers it?
-📥 READS    the plan's marks, once its ① pass has had its 🧑 LOOK
-            (`approved:` closes the round, later) · this page's existing
-            probe/ cards · the selected task or discovery QA bank
-📤 WRITES   <page>/probe/PP<NN>-<slug>/
-              card.md · consumer/ · executor/ · proof/ (manifest only)
-            state: planned → commissioned
-🚪 EXITS    every marked bullet is served by at least one card, and the receipt
-            reports `coverage: <n> of <n>`
-✋ TICK     none
-🔀 ROUTES   ③ EVIDENCE · HOLD (named) · ① OUTLINE for a v2
-🚫 MAY NOT  route to REVISE. A card opened and never landed supports no sentence.
+❓ ASKS     for each thing the plan owes: where in tasks/ does it come from,
+            how far up the tree is the gap, and does a person want it made?
+📥 READS    the approved plan's marks · this page's earlier rows · the
+            project's tasks/ tree (QA/ digests, results/ listings, run configs)
+📤 WRITES   <page>/outline/<stem>-items.md — one record per mark:
+              Need · Route (task · discovery · bibex · display · pagex) ·
+              Run (found | rerun | new-run | new-task | new-job | new-block |
+              person | none · <address>) · Decide (☐ make, for the person)
+            🚫 no card, no run, no Status word: the table is the whole write
+🚪 EXITS    every mark has a row, every row has its outcome and its address
+            where one exists, and a signed Decide
+✋ TICK     `Decide` on every row  ← a person (☑ make · ☑ defer · ☑ drop)
+🔀 ROUTES   LAND (every row decided) · SHAPE (a row's outcome is `none`: the
+            bullet is wrong) · SURVEY again (waiting on Decide) · HOLD
 ```
 
-## ③ 🃏 EVIDENCE · `haipipe-page-evidence` · THREE LANES, IN PARALLEL
-
-The three lanes are not three steps. Each has its own input, its own tick and
-its own finish, and none waits on the others. A page may have a verified
-citation, no answered value, and no frozen intake all at the same time, and that
-is a normal mid-phase state rather than a defect.
-
-### ③c 📚 the citation lane · board page `QPw4c-citation`
+## 🟢 LAND · `haipipe-page-evidence` · phase EVIDENCE · rows in parallel
 
 ```text
-❓ ASKS     which published work says this?
-📥 READS    the 📚 mark; plus the bank's answer, only when the key was unknown
-📤 WRITES   <page>/bibex/<stem>.bib — one entry
-🚪 EXITS    the entry carries `verified = {WHO YYMMDD}`
-✋ TICK     `verified`  ← a person
-🚫 MAY NOT  a machine may SUBSET or TRANSCRIBE a real record. It may never
-            COMPOSE one.
+❓ ASKS     is every run the table decided on made, and its result on disk?
+📥 READS    the item table, every row decided · the runs the rows name
+📤 WRITES   the project's tasks/ tree: an r<NN>_ config, a scaffolded task,
+            executed results (/haipipe-task's door) · the ` → <result file>`
+            append on each landed row's Run line · <page>/evidence/bibex/ (a
+            transcribed entry) · <page>/evidence/display/<unit>/ (intake ·
+            recipe · pick · build) · <page>/evidence/probe/PP<NN>-<slug>/ ONLY
+            for a question that leaves the page (stripped executor, one door:
+            haipipe-probe-q-executor-agent)
+🚪 EXITS    every ☑ make row's result file exists (`landed`); a ☐ row is
+            refused, a deferred or dropped row skipped
+✋ TICK     `verified` on a citation ← a person; nothing else
+🔀 ROUTES   EMBED · LAND again (an outbound card still unanswered) · HOLD
+            (a run cannot be made: data absent, server unreachable, PHI would
+            move) · SHAPE (the bullet is wrong)
 ```
 
-### ③v 🧮 the value lane · board page `QPw4v-value`
+### the three lanes inside LAND, each with its own hand
 
 ```text
-❓ ASKS     what is the number, and which file proves it?
-📥 READS    the QA path the dispatched card came back with
-📤 WRITES   card.md `state: answered` · its `target:` path · the files pulled
-            into proof/
-🚪 EXITS    a person ticks `read:`
-✋ TICK     `read:`  ← a person, and it REVERTS when target or proof changes
+📚 citation   a person    the bib entry is landed verbatim AND a person marked
+                          it verified; `person` rows until discoveries/ joins
+🧮 value      the run     the row's ` → <file>` exists; an outbound card's
+                          proof/ holds the aggregate extract and PP<NN>.v<n>
+🖼 display    a machine   intake/ frozen from the landed result AND the unit
+                          drawn and previewable (intake, render, pick, build);
+                          only CHECK's accept stays out
 ```
 
-### ③d 🖼 the display lane · board page `QPw4d-display`
+## 📌 EMBED · `haipipe-page-evidence` · phase EVIDENCE · the merge point
 
 ```text
-❓ ASKS     what will a reader SEE, and is it drawn?
-📥 READS    a data unit's answered probe card and its proof/, or a concept
-            unit's source files, which need not wait for anything
-📤 WRITES   <page>/display/<stem>-Display<N>-<slug>/
-              intake/manifest.yaml + inputs   ① INTAKE
-              recipe/                          ② RENDER
-              candidates/ when there are any   ③ PICK
-              assets/ · float.tex · preview.pdf ④ BUILD
-              README.md with `claim:` `kind:` `accepted: ⬜`
-🚪 EXITS    the unit is DRAWN and previewable, and its intake is frozen
-✋ TICK     `accepted: ✅` ← a person, and it is CHECK's, not this phase's
-🔀 ROUTES   ① OUTLINE, always: the answer either confirms the plan or changes
-            it, and only the plan's own gate ends the PREPARE loop
+❓ ASKS     does the plan now carry every landed number, and what does each
+            one mean for its bullet?
+📥 READS    every `landed` row's result file · the approved plan
+📤 WRITES   <page>/outline/<stem>-outline-v<N+1>.md: `Answered:` (the number,
+            its source address, one clause of interpretation), `Drawn:`,
+            `Routed:` appended under the bullets that asked; `approved: ⬜`,
+            `supersedes: v<N>`
+            🚫 no head, bullet, paragraph or division added, removed, reordered
+            or reworded: EMBED fills, never restructures
+🚪 EXITS    every landed row is `folded`; a landed answer that breaks a
+            bullet's claim is written as a D<nn> and routed, not edited
+✋ TICK     none — the plan it produces is ticked at SHAPE
+🔀 ROUTES   SHAPE, always: the person re-agrees the embedded plan
 ```
 
-⚠️ Steps ② to ④ were REVISE's until 260819. They moved because this lane
-returned an intake folder while its two sibling lanes returned a bib key and a
-bound number: one lane of three landed nothing a page could use.
-
-## ④ ✏️ DRAFT · `haipipe-page-draft`
+## ✏️ WRITE · `haipipe-page-draft` then `haipipe-page-revise` · phases DRAFT, REVISE
 
 ```text
-❓ ASKS     what does this page promise, and which Aim dies if a hole stays?
-📥 READS    the approved outline-v<N>.md, with its Answered:/Drawn: lines
+❓ ASKS     does the page now say, in real sentences with real numbers, only
+            what the agreed plan and its landed runs support?
+📥 READS    the approved plan with its Answered:/Drawn: lines · the landed
+            rows · verified bibex entries · drawn display units
 📤 WRITES   <page>/<stem>.md
-              the Opening · Content as sentences ending `<!-- realizes: C.P.B -->`,
-              each number under a `> Value:` lane, no hole token · the Aims rows
-              and their Now: · one record in outline/<stem>-log.md with the
-              old-to-new diff folded
-🚪 EXITS    every plan slot or point has its sentence(s), every number has its
-            lane, and every missing input names its blocker as a comment lane
-            plus a probe card
+              step 1 DRAFT: Content as sentences ending `<!-- realizes: C.P.B -->`,
+              each number under a `> Value:` lane citing its row or PP<NN>.v<n>,
+              no hole token · the Aims rows and their Now:
+              step 2 REVISE (COMPILE folded): the sentence citing each drawn
+              unit by id and its caption · a `> ✎` record under each rewritten
+              sentence · the States rows · delivery/latex/ and delivery/word/
+              rebuilt from the current source
+            one record in outline/<stem>-log.md per pass, the diff folded
+🚪 EXITS    the inner loop's cold pre-check returns zero blocking findings:
+              1 write pass · 2 TEETH (realizes coverage · every number
+              sourced · citations resolve · latex compiles · writing-score
+              floor) · 3 a FRESH check-agent context in pre-check mode ·
+              4 findings → the next pass; budget 3 rounds; a finding
+              surviving two consecutive rounds is a HOLD with the trail
 ✋ TICK     none
-🔀 ROUTES   ② PROBE · ⑤ REVISE · ⑦ CHECK · ④ again
-🚫 MAY NOT  open a card. The mark is the proposal; PROBE makes the folder.
+🔀 ROUTES   CHECK · WRITE again · SURVEY (a claim lacks a landed run) · SHAPE
+            (the promise itself must move) · HOLD
+🚫 MAY NOT  open a card, make a run, or invent a number. The plan carries
+            every number WRITE may use.
 ```
 
-## ⑤ 🖊 REVISE · `haipipe-page-revise` · with ⑥ COMPILE folded in
+## ✅ CHECK · `haipipe-page-check` · phase CHECK
 
 ```text
-❓ ASKS     does the prose now say only what the landed evidence supports?
-📥 READS    answered cards · verified bibex entries · frozen display intake
-📤 WRITES   the page prose with each landed hole replaced
-            the sentence citing each drawn unit, and its caption
-            the States rows, updated from visible evidence
-            a `> ✎` change record under each rewritten sentence
-🚪 EXITS    no hole remains for an answer that landed, and the artifact is
-            rebuilt from the current source
-✋ TICK     none
-🔀 ROUTES   ⑦ CHECK · ③ EVIDENCE when a claim is unsupported · ④ DRAFT when the
-            promise itself must move
-```
-
-⚠️ ⑥ COMPILE has no contract of its own and is folded in here. Whether that
-fold is permanent is `QPw5-revise`'s open ruling.
-
-## ⑦ ✅ CHECK · `haipipe-page-check`
-
-```text
-❓ ASKS     is this exact version closable, and who must act next?
-📥 READS    the RENDERED page and the built artifact, not only the markdown
+❓ ASKS     is this exact BUILT version closable, and who must act next?
+📥 READS    the RENDERED page and the built artifact, not only the markdown ·
+            WRITE's last findings trail
 📤 WRITES   one finding placed at the sentence, section or artifact it concerns
             the check record · the route
-🚪 EXITS    CLOSE, or a named route back to any earlier phase
-✋ TICK     `accepted: ✅` on each display/<unit>/README.md, and the Page Type's
-            declared RULING  ← both a person's
-🔀 ROUTES   CLOSE · ⑤ REVISE · ④ DRAFT · ③ EVIDENCE · ② PROBE · ① OUTLINE · HOLD
+🚪 EXITS    CLOSE, or a named route back to any earlier cycle
+✋ TICK     `accepted: ✅` on the page and on each selected display unit, plus
+            the Folder owner's declared RULING when one exists; a person's
+            "no" is one feedback record, routed like a finding, and a
+            checkable "no" is PROMOTED into a tooth or a pre-check rule
+🔀 ROUTES   CLOSE · WRITE (wording) · SURVEY (a number, citation or figure) ·
+            SHAPE (the argument) · HOLD
 🚫 MAY NOT  repair a substantive finding inside the same pass, and may not
-            judge a version the same actor produced.
+            judge a version the same actor produced. In pre-check mode (inside
+            WRITE) it may only say "another pass" or "ready", never CLOSE.
 ```
 
-## 🧾 The five person-reserved ticks, gathered
+## 🧾 Person-reserved ticks, gathered
 
 ```text
-tick             lives on                          reserved by            phase
+tick             lives on                          reserved by            cycle
 ────────────────────────────────────────────────────────────────────────────────
-`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     ①
-`verified`       each bibex/<stem>.bib entry       haipipe-plugin-bibex     ③c
-`read:`          each probe/PP<NN>-<slug>/card.md  haipipe-plugin-probe     ③v
-`accepted: ✅`   each display/<unit>/README.md      haipipe-page-check       ⑦
-the RULING       the Page Type's declared gate     haipipe-page-check       ⑦
+`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
+`Decide`         outline/<stem>-items.md, per row  haipipe-page-outline     SURVEY
+`verified`       each evidence/bibex entry         haipipe-plugin-bibex     LAND
+`read:`          each evidence/probe/PP*/card.md   haipipe-plugin-probe     LAND (outbound only)
+`accepted: ✅`   the page · each display README    haipipe-page-check       CHECK
+the RULING       phase Gate/Closure or legacy Type Folder owner             CHECK
 ```
 
-Two of them REVERT when their inputs change: `read:` and `accepted:`. The other
-three stand until a person moves them.
+For a phase-owned Folder, `## Gate and Closure` declares the Page owner
+RULING. A mechanical gate declares no additional person tick. When that gate
+already names a person, the same domain-gate receipt satisfies CHECK; never ask
+for a duplicate approval. Legacy Page Types retain their declared RULING.
+Plugin ticks remain nested controls and do not mint GI/GD transitions.
 
-**Which of the five this page still owes, right now**, one row each with the
+`read:` and display `accepted:` REVERT when their inputs change; a folded row
+REVERTS to `stale` when its run's result is newer than the plan. Persistence
+of an owner RULING follows that owner's reopening law. A Page owes only the
+plugin ticks selected by its phase plus its owner RULING, if any.
+
+**Which selected person ticks this page still owes, right now**, one row each with the
 approver's machine half beside it:
 
 ```bash
 python3 <haipipe-board>/cli/pagephase.py <page-dir> --owed
 ```
 
-Four of the five have a rules file under `agents/approve-rules/`, so an approver
-can establish everything AROUND the judgment and write `checked:` (R10). The
-RULING has none, on purpose — deciding a page's own question is the point of the
-page — and the ledger says so on its row rather than inventing a check.
+The plugin tick kinds have rules files under `agents/approve-rules/`, so an
+approver can establish everything AROUND the judgment and write `checked:`
+(R10). An owner RULING has none: deciding the phase-owned question is the point,
+and the ledger says which owner supplies it instead of inventing a check.
 
 **The board page that argues this file** is `QPw00-page-loop` on
-`BoardSkillBoard-260722`. Each phase's own page (`QPw1` … `QPw6`, plus the three lane faces `QPw4c` ·
-`QPw4v` · `QPw4d`) carries what its contract leaves open. The run's three
-cross-cutting axes are NOT phases and no longer carry phase numbers:
-`QPw00a` who acts · `QPw00r` what proves it ran · `QPw00g` who says yes.
+`BoardSkillBoard-260722`. Each phase's own page (`QPw1` … `QPw6`, plus the three
+lane faces `QPw4c` · `QPw4v` · `QPw4d`) carries what its contract leaves open;
+`QPw3-probe` is the retired cycle's history. The run's three cross-cutting
+axes are NOT cycles and carry no cycle names: `QPw00a` who acts · `QPw00r` what
+proves it ran · `QPw00g` who says yes.

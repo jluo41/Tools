@@ -1,3 +1,52 @@
+## 0.53.0 · 2026-09-01
+
+- Rename the optional presenter from Execution to Runs: Execute stays a
+  workflow action and the surface lists durable Run identities.
+- Let a Page resolve either Folder-local Results or a canonical Task Page's
+  Job-backed `results/<task>/<run>/` without copying generated output.
+- Retire the stale "LOWER, CODE part" wording; Task-side Runs are primary and
+  scripts/config/notebooks are conditional projections.
+
+## 0.52.1 · 2026-09-01
+
+- Rename the optional lower capability from Code to Execution: Run/Result
+  pairs are stable, while scripts are optional implementation material.
+- Keep Execution beneath the Task Face and outside lifecycle authority.
+
+## 0.52.0 · 2026-09-01
+
+- §🎭 states the workflow as two parts of named cycles (SHAPE · SURVEY · LAND
+  · EMBED · WRITE · CHECK) with the run-anchored evidence law; the authority
+  test routes by cycle; the type registry's four fields map to cycles; the
+  glossary gains item row and cycle, and PROBE leaves it.
+
+## 0.51.3 · 2026-08-31
+
+- Route an in-place Folder's Page Face from
+  `workflow/phase.yaml current.folder-kind` before Markdown frontmatter;
+  legacy Page Type and filename routing remain compatibility fallbacks.
+
+## 0.51.2 · 2026-08-31
+
+- Align the glossary with Folder-native evidence storage:
+  `evidence/probe/`, `evidence/display/`, and `evidence/bibex/` are canonical;
+  flat lanes remain migration aliases only.
+
+## 0.51.1 · 2026-08-31
+
+- Clarify the Code seam: every displayed number produced by code crosses one
+  page-serving collection job and QA binding; local Code may only validate or
+  reshape non-authoritative intermediates.
+
+## 0.51.0 · 2026-08-31
+
+- Page is now explicitly the Page Face of a Folder. A migrated Folder resolves
+  `folder-kind:` to its workflow-phase skill before consulting legacy
+  `page-type:` compatibility.
+- Application Page semantics moved into twelve I0-I5/D0-D5 phase contracts;
+  `principle` left the compatibility inventory and remains a subordinate D4
+  role.
+
 ## 0.50.0 · 2026-08-31
 
 studio/ (JL: "this one is closer to the human"): the third category folder,

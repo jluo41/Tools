@@ -1,4 +1,4 @@
-"""🖼🚪 Plugview · the EVIDENCE plugins' read-only surfaces: display/ and probe/.
+"""🖼🚪 Plugview · read-only evidence/display/ and evidence/probe/ surfaces.
 
 THE DIVISION OF LABOUR, the same one export.py drew for latex/word/bibex:
 

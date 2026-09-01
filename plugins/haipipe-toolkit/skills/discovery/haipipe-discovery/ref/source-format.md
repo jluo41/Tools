@@ -1,86 +1,92 @@
-# Source / Paper Presentation Format (canonical)
+# Discovery Source Presentation Format (canonical)
 
-THE one home for how papers and sources are presented anywhere in the discovery layer — sources.md files, landscape references, prior-art listings, and inline chat results. Every skill that lists sources points here.
+This file owns how sources are presented. `paper-run-contract.md` owns where
+durable source analysis lives.
 
-## The rule
+## One source = one readable unit
 
-ONE SOURCE = ONE SUBSECTION, full title in the heading. NEVER a table — tables of papers are not for humans to read (long titles wrap badly in cells; you cannot scan one source at a glance). Tables stay allowed only for short-field analytical matrices (score grids, confound rankings), never for citation/source metadata.
+Never put papers in a wide metadata table. Use one subsection/card per source,
+with the full title visible. Tables remain legal for short-field analytical
+matrices, not citation listings.
 
-## Coverage declaration (sources.md preamble, mandatory)
+## Durable Paper/Source Result
 
-The preamble under `# Sources` states the search's BOUNDARY, not just its method — channels searched, channels NOT searched, and date. A reader must be able to tell what this sweep could not have found (JL, test-2-2222: an arXiv-only sweep read as complete while systematically missing no-preprint journal literature).
+The canonical durable presentation is:
 
-```md
-# Sources
-
-Coverage: arXiv API (search + id verification) + OpenAlex (journal index),
-2026-07-05. NOT searched: PubMed, Scholar, top-venue-filtered pass
-(deferred to full-mode 查新). S-ids folder-local.
+```text
+results/<RUNNAME>/<RUNNAME>.md
 ```
 
-## sources.md — papers
+Required identity header:
 
 ```md
-# Sources
+# Large Language Models are Zero-Shot Rankers for Recommender Systems
 
-### S001 — Hou et al. (2024). Large Language Models are Zero-Shot Rankers for Recommender Systems.
-- ECIR 2024 · doi:10.1007/978-3-031-56060-6_24 · arXiv:2305.08845
-- Scholar: https://scholar.google.com/scholar?q=Large+Language+Models+are+Zero-Shot+Rankers
-- role: adjacent method · verification: VERIFIED
-- summary: Frames recommendation as a conditional ranking task and tests whether
-  off-the-shelf LLMs can rank candidate items zero-shot from a user's interaction
-  history. On two public benchmarks, LLMs beat non-tuned baselines but trail
-  fully tuned models, and the rankings shift with candidate order and item
-  popularity; the authors add prompting strategies to partially correct both.
-- finding: LLMs rank zero-shot but are sensitive to candidate position and popularity.
-```
-
-Fields per entry:
-- FIRST LINE = the journal/venue line: venue + year, then locators (DOI / arXiv id / URL).
-- Scholar search URL — so the human can verify and grab BibTeX without switching files.
-- role · verification flag (`VERIFIED` = exact title + authors + venue/id confirmed via independent lookup; anything less = `NEEDS-VERIFICATION`).
-- `summary:` — 2-4 sentences on what the paper itself is about (question, method, result). May run longer when the paper is load-bearing.
-- `finding:` — ONE plain-language line: why this paper matters for OUR question.
-
-S-ids are FOLDER-LOCAL by default (S001 restarts per discovery-folder). A group may declare group-global S-ids (one numbering shared across its folders, so a source cited twice keeps one id) — state that choice at the top of each sources.md it applies to.
-
-## sources.md — non-paper sources (news / surveys / reports)
-
-Same shape; the heading carries outlet + year + title, the bullets carry what fits:
-
-```md
-### 7 — rater8 (2025). Patient Choice Report.
-- vendor survey · <URL>
+- run: r01_hou2024_zero_shot_rankers
+- cite: @Hou2024ZeroShotRankers
+- subject: doi:10.1007/978-3-031-56060-6_24
+- venue: ECIR 2024
 - verification: VERIFIED
-- summary: (optional, when the source needs context) annual vendor consumer survey
-  on how patients research and pick providers.
-- supports: 31% use genAI to research providers; 26% AI-influenced choice.
 ```
 
-## notes.md — per-source readings
+Then follow the Result Card sections in `paper-run-contract.md`: Question,
+Readout, Facts, optional Trigger claim audit, Limits, and Reuse. `VERIFIED`
+means exact title, authors, venue, and locator were confirmed against a trusted
+publisher/index. Anything less remains `NEEDS-VERIFICATION` and cannot produce
+a `status: complete` Result.
+
+## Coverage declaration
+
+Coverage belongs to the Topic Page's source-map section, not to every Result.
+It states channels searched, channels not searched, date, and candidate
+selection rule:
 
 ```md
-# Notes
+## Source map
 
-## S001 — Hou et al. (2024)
-- claim/method/result actually found in the source, in plain language
-- limits or caveats relevant to our question
+Coverage: arXiv API + OpenAlex journal index, 2026-09-01.
+Not searched: PubMed and top-venue pass.
+Admission: canonical identity resolved and directly relevant to the Topic.
 ```
 
-## Inline chat results (one-off searches, no folder)
+A silent cap reads as complete coverage when it was not; always name the
+boundary.
 
-Numbered list, one paper per entry — never a table:
+## Topic source index
+
+The Page may list completed Results as one subsection each:
+
+```md
+### r01_hou2024_zero_shot_rankers — Large Language Models are Zero-Shot Rankers for Recommender Systems
+
+- [Readout](results/r01_hou2024_zero_shot_rankers/r01_hou2024_zero_shot_rankers.md)
+- ECIR 2024 · doi:10.1007/978-3-031-56060-6_24
+- role: adjacent method · cite: @Hou2024ZeroShotRankers
+- finding: LLM rankings are sensitive to candidate position and popularity.
+```
+
+`sources.md`, when retained for an old folder or generated for an external
+consumer, uses this same format and is a derived index. It is never the store
+for the full reading or Bib authority. New per-source notes live in the paired
+Result, not a monolithic `notes.md`.
+
+## Non-paper source
+
+A webpage, report, dataset, social post, or other source may be the Run Subject
+when it is itself evidence. Use the same Result contract, an authoritative
+one-entry `@online`/appropriate Bib entry, and `subject.kind` in runtime. When a
+social post merely points to a paper, it stays Trigger provenance and the paper
+is the Subject.
+
+## One-off inline results
+
+One-off calls create no folder and return a numbered list:
 
 ```text
 1. Hou et al. (2024). Large Language Models are Zero-Shot Rankers for Recommender Systems.
-   ECIR 2024 · arXiv:2305.08845 · 1,364 citations
-2. ...
+   ECIR 2024 · arXiv:2305.08845 · verification: VERIFIED
 ```
 
-## Reference lists inside landscape.md / analyses
-
-Numbered "References (full, verified)" list, one self-contained line per paper, is fine (it is a list, not a table). Full citation discipline (full names, collision disambiguation, verification flags) is the Review Output Contract in `2_review/haipipe-discovery-review/SKILL.md`.
-
-## Filled example on disk
-
-`examples/ProjC-LLMRecPhysicain/discoveries/L01_rank-divergence-landscape/01_llm-healthcare-search-rank-divergence/sources.md` — seven real papers plus four local sources in this exact format.
+If the user chooses to keep one, route it through `add`: resolve the canonical
+Subject and scaffold a numbered Paper Run. Never turn an inline worker call
+itself into a Run.

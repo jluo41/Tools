@@ -5,7 +5,7 @@ Probe is the shared evidence-acquisition family for a consumer Page.
 ```text
 Probe
 ├─ PageX      accepted Board Page → exact file/scope binding in OUTLINE
-└─ QA Probe   Task/Discovery → QA-bank crossing in PROBE/EVIDENCE
+└─ QA Probe   Task/Discovery → QA-bank crossing at LAND (outbound rows only; `haipipe-probe` retired 260901 into `_old/`)
 ```
 
 The family has one router, `haipipe-probe`, and two Page-local surfaces:
@@ -17,7 +17,7 @@ The family has one router, `haipipe-probe`, and two Page-local surfaces:
 
 A THIRD file completes the QA lane and is not listed above because it is not a
 surface: `../board/page-workflows/haipipe-page-probe/SKILL.md` is the Board
-Page's PROBE **phase** — when a card may be created, how `PP<NN>` is allocated,
+Page's LAND **cycle** (`haipipe-page-evidence` §🚪) — when a card may be created, how `PP<NN>` is allocated,
 and the run receipt. Three files, three altitudes, and each owns exactly one:
 
 ```text

@@ -1,3 +1,33 @@
+## 0.3.7 · 2026-09-01
+- Make the Runs presenter overview-first: Execution, Discovery, and Page rows
+  each join their authored Ticket to the paired Result; Page divides into
+  Division Writing and Display.
+- Put freestyle Scripts in a separate collapsible region below the overview;
+  Results no longer appear as an independent surface.
+
+## 0.3.6 · 2026-09-01
+- Rename the presenter from Execution to Runs: Execute remains a workflow
+  action, while the plugin presents plural addressable Run attempts.
+- Resolve both Folder-local and Job-backed Task Run/Result dialects without
+  copying generated Job output into the Task Page.
+
+## 0.3.5 · 2026-09-01
+- Rename the optional Code presenter to Execution. `runs/` and `results/`
+  define the capability as exact pairs; scripts/config are optional support.
+- Preserve phase ownership of lifecycle and closure, so Execution remains a
+  presenter rather than a second workflow door.
+
+## 0.3.4 · 2026-09-01
+- roster: the item table (SURVEY) is where every evidence mark is surveyed
+  first; `evidence/probe/` is the outbound-question lane minted at LAND only;
+  `probe/haipipe-probe` retired.
+
+## 0.3.3 · 2026-08-31
+
+The roster now treats `haipipe-application/fn/render.md` as Render's live
+Folder-native writer, with `POST /_board/render` optional, and removes retired
+Task/Direction skills from the active plugin list.
+
 ## 0.3.2 · 2026-08-31
 
 task/ row ⚰️ RETIRED outright (JL: "we will not have the task/ folder

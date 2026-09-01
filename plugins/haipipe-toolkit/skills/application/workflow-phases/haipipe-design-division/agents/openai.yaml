@@ -1,4 +1,4 @@
 interface:
-  display_name: "Application Design Page"
-  short_description: "Design messages for one audience, job, and venue"
-  default_prompt: "Use $haipipe-page-for-intervention to create or repair one Design Page from settled Insight Design Handoffs."
+  display_name: "Design Division Folder"
+  short_description: "Render, accept, or emit one judged Design unit"
+  default_prompt: "Use $haipipe-design-division at D4 to create or repair the Design Folder's Page and Task faces from signed Insight handoffs."

@@ -73,7 +73,7 @@ def _items(txt: str):
 def _project_roots(unit: Path):
     """-> the dirs a manifest's relative `path:` may be written against.
 
-    A page's manifest writes `probe/PP01-.../proof/x.csv` (page-relative) and
+    A Page manifest writes `evidence/probe/PP01-.../proof/x.csv` (Page-relative) and
     `tasks/R01_.../scripts/y.do` (project-relative), so resolution walks out
     from the unit and stops at the repo root.
     """

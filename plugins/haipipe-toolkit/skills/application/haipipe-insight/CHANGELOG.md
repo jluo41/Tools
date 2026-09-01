@@ -2,6 +2,27 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
+- 1.0.5 (260831): replace the last direct Task-Insight-to-Design route with
+  the I1-registered, I5-contextualized and signed pre-climbed external-parent
+  bridge. RF remains consumer-neutral evidence.
+
+- 1.0.4 (260831): show the unprefixed subject-first board name as canonical;
+  `A<NN>_` is visibly an optional project-local ordering prefix.
+
+- 1.0.3 (260831): align the optional ordered prefix with the canonical
+  subject-first suffix: `A<NN>_<DataSubject>-InsightBoard`.
+
+- 1.0.2 (260831): new work writes the canonical `evidence/probe/` lane;
+  flat `probe/` is compatibility-only.
+
+- 1.0.1 (260831): names the two lane gates as cross-phase authority transfers,
+  distinguishes nested Page-local copilot ticks, and makes GI6 settlement
+  mandatory after the GI5 export boundary.
+
+- 1.0.0 (260831): I0-I5 each own a Folder contract with Page Face, Task Face,
+  plugin profile, gate and handoff. The door retains lane-wide climb,
+  register, partition and signing laws.
+
 - 0.6.0 (260828, page-type normalization): the door NAMES its six page types. Nine contracts share `application/page-types/`, so the folder cannot say which door owns which, and neither door named its own roster — this one named three of six, the design door two of three and not its namesake. The roster is names only: versions are read from disk by `/haipipe-skillset-status` and the dated family table lives in `application/README.md` §Family status, so nothing here can go stale. §The Climb Law also becomes the family's single statement of the chain: the four rung contracts now CITE it where they carried four byte-identical copies.
 
 - 0.1.0 (JL 260827): the insight door, symmetric to haipipe-design

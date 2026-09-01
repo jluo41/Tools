@@ -1,18 +1,19 @@
-"""🔗 Pagex · the page's citations into the repo's OTHER PAGES (QPf11).
+"""🔗 Pagex · one Folder's links into other repository Folders (QPf11).
 
 THE THIRD CITATION TWIN (JL 260816: "我们在生成一个新 pages 的时候，可能需要
 引用其他几个 pages 的内容来 build … 不是 all-in-one，按需引用 … 可以用软链接
 的方法把那些内容给弄出来"). BibEx holds a page's references into the
 literature, skill into the skill tree, and pagex into the repo's page tree.
 
-  BORROWED BY THE FILE      one deck, one float, one skill list — never a
-                            whole page folder, and never a page's HOME dir,
-                            which would satisfy `_page_home` and hand
-                            discovery a ghost page
+  BORROWED BY SCOPE         one exact file when only that evidence is needed;
+                            one whole Folder when the relationship is to the
+                            work object itself. Folder links expose both its
+                            Page Face and its Task Face status
   MATERIALIZED AS SYMLINKS  a copy ages the moment the source moves; a link
                             stays current, and when the source is renamed the
                             link breaks VISIBLY as ⚠ dangling
-  THE STORE IS THE TRUTH    pagex/<stem>.md is PRIMARY and ranked; the links
+  THE STORE IS THE TRUTH    evidence/pagex/<stem>.md is PRIMARY and ranked;
+                            the links
                             and the card view are re-minted from it, and a
                             refresh never edits a row a person wrote
   THE SCAN SEEDS            a refresh reads the page ids this page's prose
@@ -32,6 +33,7 @@ from live.export import _VIEW, _esc
 
 # One row of the store, diff-friendly like the skill map's:
 #   - <repo-relative path> · note: free text     (order in the file IS the rank)
+#   - <repo-relative folder/> · note: free text  (trailing slash keeps kind)
 #   - <repo-relative path> · removed             (the ✕ tombstone)
 _ROW = re.compile(r"^- (?P<path>\S+)"
                   r"(?P<removed> · removed)?"
@@ -42,21 +44,93 @@ _PID = re.compile(r"(?<![\w-])(Q[A-Za-z]{0,3}\d{1,3}[a-z]?|S-[A-Z][a-z]+-\w+)"
                   r"(?![\w-])")
 
 _STORE_HEAD = """# pagex · %s
-<!-- PRIMARY: the files this page borrows from other pages (haipipe-plugin).
+<!-- PRIMARY: the files or whole Folders this Folder borrows (haipipe-plugin).
      The ORDER is the person's rank: top = most wanted. Edit here or drag in
-     the 🔗 tab. Paths are repo-relative and name a FILE, never a page's home
-     folder. A refresh re-mints the symlinks beside this file and never edits
-     a row; a `removed` row is a person's ✕. -->
+     the 🔗 tab. Paths are repo-relative; a whole Folder ends in `/`. A refresh
+     re-mints the symlinks beside this file and never edits a row; a `removed`
+     row is a person's ✕. -->
 
 """
 
 _MATCH_TOKEN = re.compile(r"[a-z0-9][a-z0-9_-]{2,}")
 
+# report.yaml's optional Preview comment. Presence of the report is authority;
+# this hint is display-only and never changes the status decision.
+_O_STATUS = re.compile(r"^#\s*O:.*?\bstatus=(\S+)", re.M)
+
+
+def _folder_markers(folder):
+    """Return the two visible faces and live Task evidence of one Folder.
+
+    PageX does not ask a linked Folder to copy status into its borrow row. It
+    reads the source on every refresh. A named `<folder>/<folder>.md` is the
+    Page Face. Task evidence uses the established root-or-workflow plan/report
+    shape plus QA receipts.
+    """
+    page = folder / (folder.name + ".md")
+    wf = folder / "workflow"
+    task_base = wf if wf.is_dir() else folder
+    plan = task_base / "plan.yaml"
+    report = task_base / "report.yaml"
+    qa_dir = folder / "QA"
+    qa_n = len(list(qa_dir.glob("*.md"))) if qa_dir.is_dir() else 0
+    hint = ""
+    if report.is_file():
+        try:
+            match = _O_STATUS.search(
+                report.read_text(encoding="utf-8", errors="replace"))
+            hint = match.group(1) if match else ""
+        except OSError:
+            pass
+        badge = "✅"
+        label = "reported" + ((" · %s" % hint) if hint else "")
+    elif plan.is_file():
+        badge, label = "📝", "planned · not yet reported"
+    elif page.is_file():
+        badge, label = "📄", "Page Face · no Task plan/report"
+    else:
+        badge, label = "❔", "no Page Face or Task plan/report found"
+
+    age = ""
+    try:
+        import time
+        files = [f for f in folder.rglob("*")
+                 if f.is_file() and not f.name.startswith(".")]
+        if files:
+            newest = max(f.stat().st_mtime for f in files)
+            days = int((time.time() - newest) // 86400)
+            age = "today" if days <= 0 else "%dd ago" % days
+    except OSError:
+        pass
+    return {"badge": badge, "label": label, "page": page.is_file(),
+            "page_path": page if page.is_file() else None,
+            "plan": plan.is_file(), "report": report.is_file(),
+            "qa_n": qa_n, "age": age, "hint": hint}
+
+
+def _is_addressable_folder(folder):
+    """A whole-directory link must name a work Folder, not an arbitrary tree.
+
+    Current Folders prove that identity through either face. The literal
+    `tasks/` ancestor is retained as a compatibility bridge for older task
+    folders that predate plan/report files.
+    """
+    wf = folder / "workflow"
+    task_base = wf if wf.is_dir() else folder
+    qa = folder / "QA"
+    return ((folder / (folder.name + ".md")).is_file()
+            or (task_base / "plan.yaml").is_file()
+            or (task_base / "report.yaml").is_file()
+            or (qa.is_dir() and any(qa.glob("*.md")))
+            or "tasks" in folder.parts
+            or (folder / "folder.yaml").is_file()
+            or (folder / "folder.yml").is_file())
+
 
 def _pagex_match_score(question, text):
     """Return a transparent candidate score; never declare reuse.
 
-    PageX MATCH is a read-only shortlist for PROBE. Token overlap helps a
+    PageX MATCH is a read-only shortlist for SURVEY. Token overlap helps a
     person/agent find the right borrowed file, but an answer is reusable only
     after the candidate is opened and read as an exact QA answer. Keeping this
     helper pure makes that safety boundary testable and prevents the route from
@@ -189,7 +263,8 @@ class PagexMixin:
     def _pagex_mint(self, st):
         """Re-mint every live row as a relative symlink, and report each row.
 
-        THE ONE SAFETY RULE: this only ever unlinks a SYMLINK inside pagex/.
+        THE ONE SAFETY RULE: this only ever unlinks a SYMLINK inside the
+        resolved evidence/pagex/ lane (a flat stub resolves there).
         A real file that lands there (a person's own note, a stray copy) is
         never touched, so the minter can be run at any time without eating
         anything it did not make."""
@@ -204,8 +279,11 @@ class PagexMixin:
         out = []
         for path in st["order"]:
             r = st["rows"][path]
+            declared_folder = path.endswith("/")
             rec = {"path": path, "note": r["note"], "removed": r["removed"],
-                   "src": "", "inner": path.split("/")[-1], "srcstate": "",
+                   "kind": "folder" if declared_folder else "file",
+                   "src": "", "inner": path.rstrip("/").split("/")[-1],
+                   "srcstate": "", "folder_status": None,
                    "link": "", "url": "", "page_url": "", "state": "ok",
                    "why": ""}
             if r["removed"]:
@@ -222,23 +300,63 @@ class PagexMixin:
                 continue
 
             # THE VET, in the order a reader would ask it
+            page_home = st["page"].resolve().parent
             if root not in resolved.parents and resolved != root:
                 rec.update(state="refused",
                            why="resolves outside the repo root")
+            elif resolved == root:
+                rec.update(state="refused",
+                           why="the repository root is not one bounded Folder")
             elif base == resolved or base in resolved.parents:
                 rec.update(state="refused",
-                           why="inside this page's own pagex/ — a borrow "
+                           why="inside this Page's own evidence/pagex/ — a borrow "
                                "cannot point at the borrow")
-            elif resolved.is_dir():
+            elif resolved == page_home:
                 rec.update(state="refused",
-                           why="a folder, not a file; pagex links files only, "
-                               "because a page's home folder would become a "
-                               "ghost page")
+                           why="a Folder cannot link its own home through "
+                               "PageX")
+            elif resolved.is_dir():
+                rec.update(kind="folder", src=resolved.name)
+                if not _is_addressable_folder(resolved):
+                    rec.update(
+                        state="refused",
+                        why="directory has neither a Page Face nor a Task "
+                            "Face marker and is not under a tasks/ tree")
+                else:
+                    rel = resolved.relative_to(root)
+                    rec["inner"] = rel.as_posix()
+                    link = base / "_folders" / rel
+                    if link.exists() and not link.is_symlink():
+                        rec.update(
+                            state="refused",
+                            why="a real file already sits at _folders/%s; "
+                                "the minter never overwrites what it did not "
+                                "mint" % rel.as_posix())
+                    else:
+                        link.parent.mkdir(parents=True, exist_ok=True)
+                        link.symlink_to(os.path.relpath(
+                            resolved, link.parent.resolve()))
+                        rec["link"] = "_folders/%s" % rel.as_posix()
+                        rec["url"] = self._url_of(link) or ""
+                        rec["folder_status"] = _folder_markers(resolved)
+                        page_md = rec["folder_status"]["page_path"]
+                        if page_md:
+                            rec["srcstate"] = self._head_state(page_md)
+                            rec["page_url"] = self._rendered_url(page_md) or ""
             elif not resolved.exists():
-                home, inner = self._page_home_of(target, root)
-                rec.update(state="dangling", inner=inner,
-                           src=home.name if home else target.parent.name,
-                           why="the target no longer exists")
+                if declared_folder:
+                    rec.update(state="dangling",
+                               src=target.name or target.parent.name,
+                               inner=path.rstrip("/"),
+                               why="the Folder no longer exists")
+                else:
+                    home, inner = self._page_home_of(target, root)
+                    rec.update(state="dangling", inner=inner,
+                               src=home.name if home else target.parent.name,
+                               why="the target no longer exists")
+            elif not resolved.is_file():
+                rec.update(state="refused",
+                           why="target is neither a regular file nor a Folder")
             else:
                 home, inner = self._page_home_of(resolved, root)
                 src = home.name if home else resolved.parent.name
@@ -328,14 +446,14 @@ class PagexMixin:
         is silently overwritten by the board's own path and the pen writes the
         wrong row (caught the hour this shipped).
 
-        A hand-added row lands at the TOP, because reaching for a file by hand
+        A hand-added row lands at the TOP, because reaching for a scope by hand
         says it matters. The note is OPTIONAL: requiring one was a gate CC
         invented and JL removed the same day (260816), and the seeder writes
         its own note anyway.
 
         This pen is the DEPTH door, not the main one. The scan seeds the pages
-        this page names; typing a path is how you reach a file the prose never
-        mentions, most often on another board."""
+        this page names; typing a path is how you reach an exact file or whole
+        Folder the prose cannot seed."""
         st, err = self._pagex_state(p)
         if err:
             return None, err
@@ -354,6 +472,9 @@ class PagexMixin:
                     return None, err
             return {"ok": True, "n": len(many)}, None
         path = many[0]
+        folder_key = path.rstrip("/") + "/"
+        if path not in st["rows"] and folder_key in st["rows"]:
+            path = folder_key
         if path in st["rows"]:
             if p.get("remove"):
                 st["rows"][path]["removed"] = True
@@ -366,11 +487,31 @@ class PagexMixin:
             root = Path(self.root).resolve()
             target = root / path
             if not target.exists():
-                return None, "%r is not a file under the repo root" % path
-            if target.is_dir():
-                return None, ("%r is a folder; pagex borrows FILES, because a "
-                              "linked page home would become a ghost page"
-                              % path)
+                return None, "%r is not a file or Folder under the repo root" % path
+            try:
+                resolved = target.resolve()
+            except OSError as exc:
+                return None, "%r cannot be resolved: %s" % (path, exc)
+            if resolved == root or root not in resolved.parents:
+                return None, "%r is outside one bounded repo Folder" % path
+            if resolved == st["page"].resolve().parent:
+                return None, "a Folder cannot link its own home through PageX"
+            if resolved.is_dir():
+                if not _is_addressable_folder(resolved):
+                    return None, (
+                        "%r has neither a Page Face nor a Task Face marker "
+                        "and is not under a tasks/ tree" % path)
+                path = resolved.relative_to(root).as_posix().rstrip("/") + "/"
+            else:
+                path = resolved.relative_to(root).as_posix()
+            if path in st["rows"]:
+                if p.get("restore"):
+                    st["rows"][path]["removed"] = False
+                if note:
+                    st["rows"][path]["note"] = note
+                self._pagex_write(st)
+                self._pagex_view(st, self._pagex_mint(st))
+                return {"ok": True, "path": path}, None
             st["rows"][path] = {"removed": False, "note": note}
             st["order"].insert(0, path)
         self._pagex_write(st)
@@ -379,11 +520,11 @@ class PagexMixin:
 
     # ---- POST /_board/pagex-match · the read-only MATCH shortlist --------
     def pagex_match(self, p):
-        """Rank borrowed files for a PROBE question without closing it.
+        """Rank borrowed files for a SURVEY question without closing it.
 
         This is deliberately a candidate finder, not an answer matcher. The
         caller must open the returned file, verify that it literally answers
-        the neutral Q-executor, and write `reuse`/`no exact match` to the PROBE
+        the neutral question, and write `found`/`no exact match` to the SURVEY
         receipt. No store row, symlink, QA bank, or card is changed here.
         """
         st, err = self._pagex_state(p)
@@ -431,7 +572,7 @@ class PagexMixin:
             })
         matches.sort(key=lambda x: (-x["score"], x["path"]))
         return {"ok": True, "question": question, "matches": matches[:12],
-                "audit": "candidate-only; PROBE must read and record reuse or no exact match"}, None
+                "audit": "candidate-only; SURVEY must read and record found or no exact match"}, None
 
     # ---- GET /_board/pagexview?p=<rendered page>&from=<store> -----------
     def serve_pagexview(self):
@@ -526,6 +667,66 @@ class PagexMixin:
                         "state": self._head_state(f)})
         return out
 
+    def _folder_card(self, st, row):
+        """Render one whole-Folder PageX row with both faces visible."""
+        path = row["path"]
+        state = row["state"]
+        badge = {
+            "ok": "<span class='ok'>🔗 Folder linked</span>",
+            "dangling": "<span class='bad'>⚠ Folder dangling</span>",
+            "refused": "<span class='bad'>⛔ Folder refused</span>",
+        }.get(state, "<span class='bad'>⛔ Folder refused</span>")
+        title_text = _esc(row["src"] or path.rstrip("/").split("/")[-1])
+        if row["page_url"]:
+            title = (
+                "<a class='snm' href='/_board/pagexview?p=%s&from=%s'>%s</a>"
+                % (_q(row["page_url"].lstrip("/")),
+                   _q((self._url_of(st["store"]) or "").lstrip("/")),
+                   title_text))
+        elif row["url"]:
+            title = "<a class='snm' href='%s' target='_blank'>%s</a>" % (
+                _esc(row["url"]), title_text)
+        else:
+            title = "<span class='snm'>%s</span>" % title_text
+
+        status = row.get("folder_status")
+        faces = ""
+        lifecycle = ""
+        if status:
+            faces = (
+                "<div class='faces'>"
+                "<span>%s Page Face</span>"
+                "<span>%s Task plan</span>"
+                "<span>%s Task report</span>"
+                "<span>🧪 QA %d</span>"
+                "</div>"
+                % ("✅" if status["page"] else "⬜",
+                   "✅" if status["plan"] else "⬜",
+                   "✅" if status["report"] else "⬜",
+                   status["qa_n"]))
+            lifecycle = "<span class='st'>%s %s%s</span>" % (
+                status["badge"], _esc(status["label"]),
+                (" · " + _esc(status["age"])) if status["age"] else "")
+        source_state = (
+            "<span class='st'>%s</span>" % _esc(row["srcstate"][:52])
+            if row["srcstate"] else "")
+        note = (
+            "<div class='dsc'>%s</div>" % _esc(row["note"])
+            if row["note"] else "")
+        why = (
+            "<div class='dsc bad'>%s</div>" % _esc(row["why"])
+            if row["why"] else "")
+        return (
+            "<div class='row folderrow' draggable='true' data-n='%s' "
+            "data-all='%s'>"
+            "<div class='rl'><span class='grip' title='drag to rank'>⠿</span>"
+            "%s %s %s %s</div>"
+            "<div class='rr'><button class='rmall' data-all='%s' "
+            "title='drop this Folder'>✕</button></div>"
+            "<div class='dsc'><code>%s</code></div>%s%s%s</div>"
+            % (_esc(path), _esc(path), title, badge, lifecycle, source_state,
+               _esc(path), _esc(path), faces, note, why))
+
     # ---- the card view ---------------------------------------------------
     def _pagex_view(self, st, minted):
         rel_store = self._url_of(st["store"])
@@ -540,15 +741,18 @@ class PagexMixin:
         # card now carries the source page's whole inventory with the part in
         # use marked, which is the question a person actually has.
         root = Path(self.root).resolve()
-        used = {m["path"] for m in shown}
-        groups, order = {}, []
+        used = {m["path"] for m in shown if m.get("kind") == "file"}
+        groups, entities = {}, []
         for m in shown:
+            if m.get("kind") == "folder":
+                entities.append(("folder", m))
+                continue
             g = groups.get(m["src"])
             if g is None:
                 g = groups[m["src"]] = {"src": m["src"], "rows": [],
                                         "state": m["srcstate"],
                                         "page_url": "", "home": None}
-                order.append(m["src"])
+                entities.append(("page", g))
             g["rows"].append(m)
             g["page_url"] = g["page_url"] or m["page_url"]
             g["state"] = g["state"] or m["srcstate"]
@@ -558,8 +762,11 @@ class PagexMixin:
                 g["home"] = home
 
         rows_html = []
-        for src in order:
-            g = groups[src]
+        for entity_kind, g in entities:
+            if entity_kind == "folder":
+                rows_html.append(self._folder_card(st, g))
+                continue
+            src = g["src"]
             paths = [r["path"] for r in g["rows"]]
             title = _esc(src or "?")
             if g["page_url"]:
@@ -639,15 +846,15 @@ class PagexMixin:
         # this page names, so the only thing left to type is a file the prose
         # never mentions. It is the skill map's ＋ fold, not a picker on stage
         # (JL 260816: "it should not be manually added").
-        finder = ("<details><summary class='mut'>＋ borrow a file by path"
+        finder = ("<details><summary class='mut'>＋ link a file or Folder by path"
                   "</summary><div class='pick'>"
                   "<input id='newpath' placeholder='repo-relative path to a "
-                  "file' style='min-width:52%'>"
+                  "file or Folder' style='min-width:52%'>"
                   "<input id='newnote' placeholder='note (optional)'>"
                   "<button id='addborrow'>borrow</button></div>"
                   "<p class='mut'>The refresh seeds the pages this page names. "
-                  "Type a path only for a file it never mentions, most often "
-                  "on another board.</p></details>")
+                  "Type a path for an exact file or a whole work Folder that "
+                  "the prose scan cannot infer.</p></details>")
 
         matcher = ("<details><summary class='mut'>🔎 MATCH a Probe question"
                     "</summary><div class='pick'>"
@@ -774,6 +981,11 @@ document.addEventListener('dragend', function () {
                ".snm{font:600 14px ui-monospace,Menlo,monospace;"
                "text-decoration:none;color:#1f5aa8}"
                ".st{font-size:12px;color:var(--mut)}"
+               ".faces{display:flex;gap:8px 14px;flex-wrap:wrap;"
+               "flex-basis:100%;padding:7px 9px;border-radius:7px;"
+               "background:color-mix(in srgb,var(--line) 28%,transparent);"
+               "font:12px/1.5 ui-monospace,Menlo,monospace}"
+               ".folderrow>.dsc code{font-size:11.5px;word-break:break-all}"
                ".inv{flex-basis:100%;margin:4px 0 0}"
                ".inv summary{font-size:12.5px;color:var(--mut);margin:0 0 4px}"
                ".iv{display:flex;gap:8px;align-items:baseline;padding:2px 0 2px 6px;"

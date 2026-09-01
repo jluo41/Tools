@@ -7,12 +7,12 @@ description: >-
   and their runs, with a done-when, a budget, and a person's release before
   anything runs), then registered lap by lap as the receipts come home, closing
   with settle proposals only the Seed may write. Use when planning where to
-  dispatch, releasing a block, addressing work as B<n>T<n>r<n>, registering
+  dispatch, releasing a block, resolving a block/job/run address, registering
   receipts, closing a lap, or reading what the campaign still owes. Trigger:
   roadmap page, block board, campaign plan, task group, block job run, lap,
   register QA, intake, page-type roadmap.
 metadata:
-  version: "0.6.0"
+  version: "0.6.2"
   last_updated: "2026-08-31"
   group-token: "SD"
   outline:
@@ -45,14 +45,16 @@ is the story group's third and last page — the plan and the intake desk are
 ONE page, because every released block comes home to the row that sent it:
 
 ```text
-Paper-<Slug>/0-paperboard/A1-SD-story/
-├── SD00-ideation/               where the idea came from
-├── SD01-seed/                   what the paper IS · the scoreboard
-└── SD02-roadmap/                where to go next AND what came back · THIS PAGE
+Paper-<Slug>/0-paperboard/A1-Story/
+├── Story00-ideation/               where the idea came from
+├── Story01-seed/                   what the paper IS · the scoreboard
+├── Story02-roadmap/                where to go next AND what came back · THIS PAGE
+└── Story<NN>-narrative-<desk>/     the tellings, one per desk (Story03 first)
 ```
 
-The story group is wholly venue-free; the desk layer starts at the
-`A2-NA-narrative/` group. In the journey (haipipe-paper-workflow 0.6.0) this
+The head of the story group (Story00 to Story02) is wholly venue-free; the
+desk layer starts at the `Story<NN>-narrative-<desk>` pages that close the
+group (JL 260831). In the journey (haipipe-paper-workflow 0.6.0) this
 page is P2 Roadmap (route), the planning-and-intake beat of the P1↔P2
 establish loop. Boards with a separate `SD03-collection` page are
 grandfathered and fold it into this page only on explicit request.
@@ -240,7 +242,7 @@ own manuscript unless the Seed rules otherwise.
 
 This page's `probe/` lane IS the campaign's dispatch surface: one card per
 released block, stripped to a neutral Q-executor and handed to the
-task/discovery orchestrators exactly as any page's PROBE phase does. Nothing
+task/discovery orchestrators exactly as any page's LAND cycle does for an outbound row. Nothing
 new is invented — the orchestrators, QA banks, claim rules, and `working`
 state discipline all apply unchanged. `/haipipe-task` is what actually runs a
 released block: the block's executor path IS the task group it scaffolds, its
@@ -255,7 +257,7 @@ gathered nothing and rejected nothing, and conflating the two mis-decides
 the claim the card serves.
 
 ```text
-pagex/     binds SD01-seed (the §6 gap list the plan serves and the E-rows
+pagex/     binds Story01-seed (the §6 gap list the plan serves and the E-rows
            the settle proposals point at)
 probe/     the dispatch cards · one per released block · receipts land here
            first, then are registered on the lap
@@ -270,7 +272,7 @@ writes E-row flips.
   and scope; none is silently missing.
 - Every Block Board row has no blank cell; every status is from the fixed
   vocabulary; every ▶️/🔵/✅ row carries a person's release with date.
-- Every row's serves column resolves to a real E-row id on SD01-seed §6.
+- Every row's serves column resolves to a real E-row id on Story01-seed §6.
 - Every block states its job count and its run count; no row is unbudgeted.
 - Every block has a division listing its jobs with run ranges, and every job
   sweeping more than one axis states the axis order.

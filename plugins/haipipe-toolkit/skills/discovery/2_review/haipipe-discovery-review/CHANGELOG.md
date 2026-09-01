@@ -3,6 +3,12 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.2.0] — 2026-09-01
+
+- Review now synthesizes completed Paper Results. Missing evidence is added as
+  new one-Subject Runs, and every terminal claim links to a Result Card plus
+  exact cite key.
+
 
 ## [0.1.0] — 2026-07-24
 

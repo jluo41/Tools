@@ -1,22 +1,46 @@
 ---
 name: haipipe-design-workflow
 description: >-
-  The DesignBoard-level phase machine: six phases named after the artifact classes the lane owns — D0 Brief (frame) → D1 Card (bet) → D2 Unit (realize) → D3 Verdict (evaluate) → D4 Division (decide) → D5 PageDown — with gates GD0-GD6, each a checkable assertion over artifacts on disk. The frontier's atomic unit is the THREAD: a card until it lands, the division row after; a round is one full D0→D5 pass, and ROUND ONE ALWAYS COMPLETES — insufficiency never stalls a round, it exits as an EMIT that lands on the Brief's needs block and becomes a register question by the ordinary need-first birth, which is the problem-solution co-evolution edge. Evaluation has two mandated faces: reflect (ex-post, the judge's conformance verdict, on-disk word judged) and prospect (ex-ante, a scorable forecast of the artifact in use, written at realize and checked here). It refines the application machine's design lane (P3 = D0, P4 = D1-D5) and accepts a one-sentence COMMISSION; interior law stays with the door /haipipe-design, page lifecycle with haipipe-page-workflow, every verdict with an independent CHECK plus a human tick. Use when asking where a design round stands, whether a thread may advance, what the next runnable step is, how to commission a design end-to-end, or where a run must stop. Trigger: design workflow, run the design board, design round, commission a design, design me a message, next division, frontier thread, reflect, prospect, ex-ante, ex-post, forecast, emit a question, /haipipe-design-workflow.
+  The DesignBoard phase machine over six phase-owned Folder kinds: D0 Brief →
+  D1 Card → D2 Unit → D3 Verdict → D4 Division → D5 PageDown. Owns GD0-GD6,
+  thread/round frontier, dispatch, receipts, and stops; each phase skill owns
+  both Folder faces and its plugins. Accepts a one-sentence commission and
+  always closes a round through accept, emit, kill, or carry. Trigger: design
+  workflow, design round, commission a design, frontier thread,
+  /haipipe-design-workflow.
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-08-28"
+  version: "1.0.3"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-design-workflow · know the thread, test the gate, close the round
 
-Load `haipipe-design` first; it says what a DesignBoard IS and, since its 0.3.0, names this file as the lane's phase authority. This machine refines `haipipe-application-workflow`'s design lane and never contradicts it: that machine keeps the two-lane view and gates G0-G5, this one names the stations inside. It never edits a page, never runs a page's lifecycle (that is `haipipe-page-workflow`), never states board law (that is the door), and never judges content (that is the judge plus the human ticks).
+Load `haipipe-design` and `haipipe-folder` first. This is the only authority
+for D0-D5 ordering and GD0-GD6. `haipipe-application-workflow` may delegate
+here and record a crossing, but owns no aliases or duplicate gates. The
+selected phase skill owns the Folder; Page-Face work delegates to
+`haipipe-page-workflow`.
 
 ## 🔤 Terminology law
 
-A **design phase** is one digit, `D0`-`D5`. A Design PAGE id always carries two digits (`DS01`), so a one-digit `D<n>` in a design-lane document is a phase, never a page — the same digit-count rule the other machines use. Against the application machine: `🎨P3 = D0`, `🎨P4 = D1-D5`, card proposal included; the aliases frame, bet, realize, evaluate, decide, page down are legal in prose, never in a folder or file id. D5's NAME is PageDown, one word (JL 260828, "what I mean is: D5 PageDown"): the one phase whose name fuses its authority artifact (the Page) with its act (setting the round down onto it); the artifact-class test still holds, because the page is what D5 owns.
+A **design phase** is one digit, `D0`-`D5`. A Design Page id carries two
+digits (`DS01`), so it cannot be confused with the phase. Frame, bet, realize,
+evaluate, decide, and page down are prose aliases only. PageDown is one word
+and names the phase-owned cross-Folder truth pass.
 
-**One extension, stated openly.** The insight machine names phases by authority PAGE because its lane owns six page types; this lane's grain is finer — one DS page hosts many threads — so a design phase is named by its authority ARTIFACT class: a page, a card, a unit folder, a verdict surface, a division row, each an on-disk class with its own state words. The application machine's naming law admits this tier explicitly since its 0.8.0. The test is unchanged: a position that cannot name an artifact class of its own is a gate, which is what keeps accept at GD5 and makes the settle-back-to-frame an EDGE (emit), not a phase.
+Each phase is named by its owned Folder/artifact kind: Brief, Card, Unit,
+Verdict, Division, or PageDown. One DS Folder hosts many threads, but each
+thread artifact still has a phase contract with Page and Task faces. A position
+without its own kind is a gate or Task-Face act, which keeps acceptance at GD5
+and EMIT as an edge rather than another phase.
+
+D1-D3 are three sequential identities of one physical DU Folder, not three
+directories. Its address stays fixed; its one current `folder-kind` advances
+`design-card → design-unit → design-verdict`, and `workflow/phase.yaml` keeps
+append-only transitions, including any D3 → D2 repair edge. D4 belongs to the
+parent DS Folder. D5 owns a minimal round-receipt Folder because a cross-Folder
+truth pass still needs an address, two faces, and a testable seal.
 
 **Two evaluation words, one alias law, one on-disk word.** The working words are plain — `reflect` and `prospect` — and each carries its literature name as a parenthesized alias: **reflect (ex-post)** appraises the artifact against evidence that exists; **prospect (ex-ante)** reasons forward to what will happen in use. Reflect is PERFORMED by the door's `judge` verb, and its on-disk state word is `judged` — one act, three views of it. Prospect's on-disk surface is the unit's `prospect.md`.
 
@@ -43,15 +67,21 @@ D3 Verdict (evaluate)    the unit's verdict surface:   🪞 reflect: the judge w
 D4 Division (decide)     the DS page's division row    ✋ accepted: per the Design page
                                                        contract's row grammar · or
                                                        emitted: naming the need raised
-D5 PageDown              the pages the round grew:     the record made TRUE again: the
-                         DS page · BR00 · board.md     era-sensitive surfaces reread
-                         head                          against the round's outcome ·
+D5 PageDown              workflow/rounds/              the record made TRUE again: the
+                         R<NN>-pagedown/ receipt +      era-sensitive surfaces reread
+                         pages the round grew           against the round's outcome ·
                                                        at milestones, a cold read
    ↺ D1→D4 runs per THREAD · D5 runs ONCE per round, after every thread is
-     terminal · D5→D0 turns the ROUND · exits at GD6, the round seal
+     terminal · D5→GD6 seals and STOPS · a later commissioned round re-enters D0
 ```
 
-**The thread, precisely, and since 260828 it is ONE FOLDER.** The frontier's atomic unit is a THREAD: the folder `design/DU<NN>-<slug>/`, born at proposal holding only its card.md (state words proposed · released · landed · killed), grown into the realization after release, and represented by a DIVISION ROW on the page after landing (the door's law — one division per landed unit — is untouched). Release-before-realize is folder purity now: a proposed card with sibling files is a checker ERROR, not a habit. A card at `proposed` blocks its own fan-out and nothing else: it never blocks a round from closing, it simply carries to the next round unreleased.
+**The thread, precisely, is ONE EVOLVING FOLDER.** The frontier's atomic unit
+is `design/DU<NN>-<slug>/`, born at D1 holding only card.md, grown at D2, and
+judged at D3 without moving. The current phase identity changes in place and
+the transition history remains readable. After landing it is represented by a
+DIVISION ROW on the parent D4 Page (one division per landed unit). A proposed
+card with sibling realization files is a checker ERROR. A card at `proposed`
+blocks its own fan-out and nothing else; it carries to the next round unreleased.
 
 ## 🎨 The full picture, one round
 
@@ -62,9 +92,9 @@ D5 PageDown              the pages the round grew:     the record made TRUE agai
                      └──────────────────────────┬────────────────────────────────┘
 ════ ROUND r ═══════════════════════════════════▼═══════════════════════════════
 D0 frame     📌 BR00 + reads: + roster          GD0: framed is ENOUGH, not everything
-D1 bet       📇 cards, one per direction        ✋ GD1 release · kill is equal-rank
+D1 bet       📇 cards, one per wager            ✋ GD1 release · kill is equal-rank
 D2 realize   🎨 one designer per released card, in parallel, packet = the grant ·
-             the unit lands COMPLETE, prospect.md included (the arm writes it)
+             the unit lands COMPLETE, prospect.md included (the designer writes it)
 D3 evaluate  🪞 reflect: the judge (fresh context, never the arm) checks grant ⊆ ·
                 spec · rails mechanically, stance fidelity by cold read, then
                 writes the unit's judged: line — GD3
@@ -149,7 +179,6 @@ Each gate is an assertion over artifacts that already exist; a gate that cannot 
 GD0  frame → bet       BR00 past 🔴 · born-of: resolves, or the mandate is named and
                        every unmet need is a register row OUT · board reads: set ·
                        the roster names this DS page
-                       [refines the app machine's G4, adding the roster clause]
 GD1  bet → realize     ✋ per card: proposed → released, a person's act — card by
                        card, or by a person's recorded blanket over NAMED cards
                        (haipipe-plugin-design §card law 1) · a release binds only
@@ -184,12 +213,11 @@ GD4  prospect passes   DOES NOT REACH a pool unit (brainstorm posture: a pool is
                        retroactive: units accepted before 260827 and record-mode
                        units are exempt (haipipe-plugin-design §prospect)
 GD5  decide            per division: ✋ an accepted: row satisfying the Design page
-                       contract's grammar (haipipe-page-for-design), its render
+                       contract's grammar (haipipe-design-division), its render
                        EXISTING and current — or an emitted: row naming the BR00
                        need raised · acceptance may also be a person's recorded
                        blanket over named divisions · every thread terminal sends
                        the round to D5 · all landed threads accepted = ACCEPTED
-                       [= the app machine's G5's all-accepted close]
 GD6  page down → seal  the round CLOSES only when the grown pages read true as
                        documents: no era-frozen claim survives (title, Opening,
                        Diagram, scope sections, Law, state lines, and board.md's
@@ -202,12 +230,26 @@ GD6  page down → seal  the round CLOSES only when the grown pages read true as
                        produced, and what is open · D5 touches PROSE only — a
                        decision-level defect found here is reported and routes to
                        the next round, never repaired in place · judge-class, not
-                       a fifth human gate
+                       a third Design cross-phase gate
                        [new 260828 · six rounds ran without it and the pages froze
                        at round 1, found by JL's own cold read: "别人都不知道在干嘛"]
 ```
 
-**The two human gates never have an auto mode**: card release is GD1, acceptance is GD5, and with the insight lane's two (probe release, handoff signing) they are the application's four, two per door. A recorded blanket is a person's act over a NAMED set, transcribed clerically with the person's words cited in the DS page's Log; a machine's inference is never one. Every dispatch pins `mode: copilot`. A blocked gate is a clean stop: report the thread, the waiting artifact, and the person's owed decision.
+**The two Design cross-phase authority gates never have an auto mode**: card
+release is GD1 and acceptance is GD5. Together with Insight's two, they are the
+Application's four domain authority transfers. Page Workflow may still require
+local outline, read, or verified ticks while authoring a Folder; those are
+nested Page-Face controls and can pause a copilot run, but they do not create
+new GD transitions. A recorded blanket is a person's act over a NAMED set,
+transcribed clerically with the person's words cited in the DS Folder's
+`outline/<DS-stem>-log.md`; a machine's inference is never one. Every dispatch
+pins `mode: copilot`. A
+blocked gate is a clean stop: report the thread, waiting artifact, and decision.
+
+The shared Page owner RULING map is explicit: D0 none, D1 reuses GD1, D2 none,
+D3 none, D4 reuses GD5, D5 none. The reused receipt is one decision seen at two
+altitudes, never a second tick. Other Page-local plugin ticks can hold the Page
+run but cannot release a Card or accept a Division.
 
 ## 🚪 The commission entry
 
@@ -234,16 +276,16 @@ The literature lives on the skill board, never in this file (JL 260827): `diagra
 
 ```text
 D0        0-BR-brief/BR00-brief/
-D1        2-DS-design/DS<NN>-<slug>/design/DU<NN>-<slug>/card.md
+D1        2-DS-design/DS<NN>-<audience>-<job>-<venue>/design/DU<NN>-<slug>/card.md
 D2        the same folder, grown: README · spec · evidence · ideation (generate/
           brainstorm) · prospect · content/
 D3        the unit's judged: line (haipipe-plugin-design §verdict) ·
           design/DU<NN>-<slug>/prospect.md (anatomy: the plugin's 0.3.0;
           a unit-no-prospect checker rule is still owed)
-D4        the DS page's division rows · render/ for the visible version
-          1-P-principle/ stays VACANT unless promoted (haipipe-page-for-principle)
-D5        the grown pages themselves, PROSE only: the DS page's head, Opening and
-          Diagram · BR00 · board.md — decisions, rows and units untouched
+D4        the DS page's division rows · delivery/render/ for the visible version
+          1-P-principle/ stays VACANT unless promoted (haipipe-design-division)
+D5        workflow/rounds/R<NN>-pagedown/ records the pass; the grown DS page,
+          BR00 and board.md remain authoritative — decisions and units untouched
 ```
 
 ## 🚚 Dispatch: one thread at a time
@@ -251,7 +293,8 @@ D5        the grown pages themselves, PROSE only: the DS page's head, Opening an
 ```text
 select   the frontier thread whose gate is open and whose inputs exist; released,
          unlanded cards first
-load     haipipe-design (the door) + the plugin contracts its verbs name; the
+load     the matching haipipe-design-<phase> Folder skill + haipipe-design
+         (the door) + the plugin contracts its Task Face names; the
          venue pack for the unit's kind: resolves from application/venue/
 run      realize through agents/haipipe-designer-agent, one per card, packet =
          the grant · pages through haipipe-page-workflow, mode: copilot always
@@ -262,7 +305,13 @@ repeat   until every thread is terminal or a gate blocks
 
 ## 🧾 Phase receipts
 
-A transition leaves exactly one receipt, and every receipt lands on a surface that HAS a Log: BR00's Log for GD0, the DS page's Log for GD1-GD5, each row dated and naming the artifact id it covers (the card for a release or kill, the unit for a landing or verdict, the division for an acceptance or emit) plus the person's words when a gate was a person's. Cards and units carry state fields, not Logs; the page that hosts them is their record. No separate receipt store is authoritative.
+A transition leaves exactly one record in the granting Folder's canonical
+`outline/<stem>-log.md`: BR00 records GD0 and the parent DS Folder records
+GD1-GD5. Each record is dated and names the artifact id it covers (the card for
+a release or kill, the unit for a landing or verdict, the division for an
+acceptance or emit), plus the person's words when the gate was a person's.
+Cards and units carry state fields, not private Logs; no embedded Page log
+section or separate receipt store is authoritative.
 
 ## ⏱ Advancement is never scheduled
 
@@ -270,11 +319,16 @@ A gate test may be run any time; a gate may only be DECLARED passed by the human
 
 ## 🔀 Resolving "what phase are we in"
 
-Per thread: the highest gate whose assertion currently holds. Per page: the division rows and open cards read whole — a page-level scalar is a lie this file refuses to mint. The application machine's `🎨P<n>` reading derives from the same artifacts (P3 = BR00 owed, P4 = any thread from proposal to GD5, plus the unsealed round's D5).
+Per thread: the highest gate whose assertion currently holds. Per Design
+Folder: read division rows and open cards together. A board-level scalar is a
+lie this workflow refuses to mint; the crossing workflow reports this native
+frontier unchanged.
 
 ## 🛑 Stop rules
 
-- STOP at GD5: ACCEPTED ends the lane; building, shipping and measuring are task-layer work, and the effect read back is the InsightBoard's.
+- GD5 is the outward-acceptance boundary: never build, ship, or measure here.
+  The dispatcher must still run D5, record the PageDown receipt, pass GD6, and
+  only then stop the round.
 - STOP at any gate: report and end, never wait in a loop.
 - STOP on contradiction: a thread that derives to two phases at once is reported as a defect, never repaired silently.
 - **Emit and kill are convergence.** An emitted division and a killed card are terminal states equal in rank to accepted: a round rich in emitted questions is co-evolving, not failing. The defect is the thread that can neither be accepted nor say what it lacks.

@@ -32,7 +32,7 @@ X carries NO index: letters sort after digits, so `X-cross/` seats itself last i
 3. **X is the only group allowed to compare.** A per-partition page may not carry a cross-partition sentence; the contrast is a new derivation and belongs to an X Information page, the heterogeneity claim to an X Knowledge page. X holds no data of its own and mirrors nothing.
 4. **MT00 is the partition register.** One division lists every partition: letter, name, filter, group folder; the X group is listed beside them with no filter, so the register doubles as the complete group map. One division states the shared-threshold rule: thresholds live in ONE file per task GROUP that the task layer owns (`tasks/<group>/_thresholds.yaml`), every partition config in that group references it, and no page or config may restate a value from it. Until the file exists, every page citing it marks it PENDING. No other page may define a partition or a threshold.
 5. **A partition is a CONFIG, never a code change.** The task layer is untouched: one task folder is one function, one partition is one `configs/<partition>.yaml`, and the board's `store:` routes results exactly as `haipipe-task` already rules. Adding a partition is one group folder inserted before X, one MT00 register row, and one config per task folder consulted. The template partition F needs a config too (`full.yaml`, no filter). When a cut already has a config on disk, ADOPT that name rather than minting a second name for the same cut; and check the adopted yaml's `store:` key, because a manual re-run follows the yaml while a dispatching probe's `RESULT_STORE` overrides it, so a stale key sends a manual run into another board's bank.
-6. **Question ids are partition-free.** A question is written once on its register and asked per partition; the register's Queue carries one COLUMN per partition, plus an X column whenever the register holds an X-routed question, and X is the cross group, not a partition (see `haipipe-page-for-question` 0.2.1). `QK1` spans all partitions; there is no `QK1-B`.
+6. **Question ids are partition-free.** A question is written once on its register and asked per partition; the register's Queue carries one COLUMN per partition, plus an X column whenever the register holds an X-routed question, and X is the cross group, not a partition (see `haipipe-insight-question` 0.2.1). `QK1` spans all partitions; there is no `QK1-B`.
 
 ## The pooling verdict conditions every W page
 
@@ -48,15 +48,16 @@ SPLIT          the differing partition's W page may counsel its own action,
                and XK02 becomes the birth certificate a child board must cite
 ```
 
-Execution order across groups is the application workflow's rule (`haipipe-application-workflow`), not this file's: this file rules the grammar only.
+Execution order across groups is the Insight workflow's rule
+(`haipipe-insight-workflow`), not this file's: this file rules the grammar only.
 
 A child InsightBoard for one partition may be opened ONLY by citing a SPLIT verdict page in its own MT00. A subgroup earns a board by having its own consumer, never by having its own numbers.
 
 ## What this layout does NOT change
 
 ```text
-page types      FD01 declares page-type: data, XK01 declares page-type: knowledge;
-                no page-type: partition exists and none may be invented
+Folder phases   FD01 is I2 Data, XK01 is I4 Knowledge; legacy runtime pages
+                may retain page-type: data/knowledge, but no partition kind exists
 board.md        no new key; store:, spine:, close: as everywhere else
 probe / qa      the rung's rules apply unchanged inside every partition group
 engine          no regex, renderer or checker change; the id grammar already fits
@@ -64,4 +65,12 @@ engine          no regex, renderer or checker change; the id grammar already fit
 
 ## Worked example
 
-`designs/Project-Application-SMSDesign/applications/A00_InsightBoard-SMSR2v1-260821/`: the template partition F in `1-F-full/` (config `full.yaml`) plus registered subgroup partitions from `2-B-youngmale/` on, X group `9-X-cross/` holding `XI01-partition-contrast → XK01-heterogeneity → XK02-pooling-verdict` (a POOL verdict as of 260827, so every non-template W defers), registers MT01-MT04 carrying one column per partition plus X where routed, tasks reused from `tasks/D01_cohort_profile/`.
+Historical frozen instance (its kind-first board name is a compatibility
+address, never a scaffold pattern):
+`designs/Project-Application-SMSDesign/applications/A00_InsightBoard-SMSR2v1-260821/`.
+It holds the template partition F in `1-F-full/` (config `full.yaml`) plus
+registered subgroup partitions from `2-B-youngmale/` on, X group
+`9-X-cross/` holding `XI01-partition-contrast → XK01-heterogeneity →
+XK02-pooling-verdict` (a POOL verdict as of 260827, so every non-template W
+defers), registers MT01-MT04 carrying one column per partition plus X where
+routed, and tasks reused from `tasks/D01_cohort_profile/`.

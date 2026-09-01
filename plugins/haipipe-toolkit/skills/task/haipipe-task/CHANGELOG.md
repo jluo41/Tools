@@ -3,6 +3,36 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.12.5 · 2026-09-01
+
+- Name the optional Task Page presenter Runs, reserving Execute for phase 3.
+- Bind Task-local tickets to Job-owned `results/<task>/<run>/` and optional
+  runtime notebooks without copying generated output into the Task Folder.
+
+## 0.12.4 · 2026-08-31
+
+- Name the Task Insight output precisely as an unsigned, consumer-neutral
+  Reusable Finding. It can feed an Application's I1→I5 bridge but can never
+  serve as a signed Design Handoff or direct Design authority.
+
+## 0.12.3 · 2026-08-31
+
+- Make `insight` mint the specialized `I<NN>-<slug>/` Folder directly instead
+  of routing through the generic folded Q/S identity.
+
+## 0.12.2 · 2026-08-31
+
+- Route `insight` through the fixed task-only Insight Page outline; Application
+  consumers borrow settled Reusable Findings instead of selecting a second
+  Page scope.
+
+## 0.12.1 · 2026-08-31
+
+- Clarify the Application boundary: an Insight Task Face may resolve a Task
+  relationship with PageX and accepted QA with Probe, while Design/Paper read
+  only the settled handoff. Define X2 candidate packets as immutable proposed
+  inputs under `workflow/inbox/application/`, never direct Task execution.
+
 ## 0.12.0 · 2026-08-31
 
 **Every unit's code gets a named folder, and the NAME says the level (JL 260831).**
@@ -424,4 +454,3 @@ Skill-set review fixes (see task/SKILLSET_REVIEW.md for the full diagnosis):
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
-

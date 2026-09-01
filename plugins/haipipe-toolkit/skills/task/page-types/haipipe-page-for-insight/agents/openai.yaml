@@ -1,4 +1,4 @@
 interface:
-  display_name: "Application Insight Page"
-  short_description: "Turn Task-backed evidence into one design handoff"
-  default_prompt: "Use $haipipe-page-for-insight to create or repair one Application-local DIKW Insight Page and its Design Handoff."
+  display_name: "Task Insight Page"
+  short_description: "Turn evidence into reusable DIKW findings"
+  default_prompt: "Use $haipipe-page-for-insight to create or repair one task-only, consumer-neutral DIKW Insight Page ending in Reusable Findings."

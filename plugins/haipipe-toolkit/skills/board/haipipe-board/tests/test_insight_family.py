@@ -14,6 +14,8 @@ W_PAGE = "1-F-full/FW01-send-salience/FW01-send-salience.md"
 Q_PAGE = "0-MT-meta/MT02-question-information/MT02-question-information.md"
 I_PAGE = "1-F-full/BI03-audience/BI03-audience.md"
 M_PAGE = "0-MT-meta/MT00-meta/MT00-meta.md"
+Q_LOG = "0-MT-meta/MT02-question-information/outline/MT02-question-information-log.md"
+I_LOG = "1-F-full/BI03-audience/outline/BI03-audience-log.md"
 
 M_OK = """# MT00
 page-type: meta
@@ -56,8 +58,6 @@ FINDING     the arm separates
 SERVES      QW1 · BR00 A6.1
 
 signed: ✅ JL 260828
-
-## Log
 """
 
 Q_OK = """# MT02
@@ -69,16 +69,26 @@ QI5   drug class     🚫 F-only
 
 I_OK = """# BI03
 page-type: information
+"""
 
-## Log
+I_LOG_OK = """# BI03-audience · log
+page: BI03-audience
+kind: log · authored · newest first
 
-260828 · QI3's register cell reads 🟡 final on this page's filter sentence.
+### 260828 1200 · QI3 final receipt records this Page's licensing sentence
 """
 
 
-def build(tmp, w=W_OK, q=Q_OK, i=I_OK, m=M_OK):
-    d = Path(tmp) / "A00_InsightBoard-Test"
+def build(tmp, w=W_OK, q=Q_OK, i=I_OK, m=M_OK, i_log=I_LOG_OK,
+          q_log=""):
+    d = Path(tmp) / "A00_Test-InsightBoard"
     for rel, text in ((W_PAGE, w), (Q_PAGE, q), (I_PAGE, i), (M_PAGE, m)):
+        f = d / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text, encoding="utf-8")
+    for rel, text in ((I_LOG, i_log), (Q_LOG, q_log)):
+        if not text:
+            continue
         f = d / rel
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(text, encoding="utf-8")
@@ -124,7 +134,7 @@ class TestInsightFamily(unittest.TestCase):
 
     def test_final_without_page_receipt_warns(self):
         with TemporaryDirectory() as tmp:
-            d = build(tmp, i=I_OK.replace("260828 · QI3's register cell reads 🟡 final on this page's filter sentence.\n", ""))
+            d = build(tmp, i_log="")
             self.assertIn("partial-final-no-page-receipt", codes(d))
 
     def test_second_final_on_same_line_is_checked(self):
@@ -140,14 +150,26 @@ class TestInsightFamily(unittest.TestCase):
 
     def test_mark_mention_in_log_is_not_flagged(self):
         with TemporaryDirectory() as tmp:
-            q = Q_OK + "\n## Log\n\n260828 · sweep retired the legacy token 🚫Fonly from this Queue.\n"
-            d = build(tmp, q=q)
+            q_log = """# MT02-question-information · log
+page: MT02-question-information
+kind: log · authored · newest first
+
+### 260828 1300 · sweep retired the legacy token 🚫Fonly from this Queue
+"""
+            d = build(tmp, q_log=q_log)
             self.assertNotIn("mark-spacing-legacy", codes(d))
 
     def test_receipt_outside_log_section_still_warns(self):
         with TemporaryDirectory() as tmp:
-            i = "# BI03\npage-type: information\n\n260828 · QI3 final receipt in prose, not Log.\n\n## Log\n"
-            d = build(tmp, i=i)
+            i = "# BI03\npage-type: information\n\nQI3 final receipt in Page prose.\n"
+            d = build(tmp, i=i, i_log="")
+            self.assertIn("partial-final-no-page-receipt", codes(d))
+
+    def test_retired_page_log_does_not_satisfy_receipt(self):
+        with TemporaryDirectory() as tmp:
+            i = (I_OK + "\n## Log\n\n"
+                 "260828 · QI3 final receipt in the retired Page section.\n")
+            d = build(tmp, i=i, i_log="")
             self.assertIn("partial-final-no-page-receipt", codes(d))
 
     def test_final_citing_ghost_page_fails(self):

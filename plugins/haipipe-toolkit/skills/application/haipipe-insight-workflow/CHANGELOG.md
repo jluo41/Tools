@@ -1,5 +1,32 @@
 # haipipe-insight-workflow · version history
 
+1.0.4 · 260831
+- Add the pre-climbed external-parent bridge: a CHECK-current, Wisdom-targeted
+  Task RF may supply the already-complete DIKW authority to local I5 only after
+  I1 registration and exact PageX binding. Local counsel, signature, GI6, and
+  X1 remain mandatory.
+
+1.0.3 · 260831
+- Move every phase and partial-final receipt to the granting Folder's canonical
+  `outline/<stem>-log.md`; Page `## Log` is no longer an authority.
+
+1.0.2 · 260831
+- Strengthen GI2 to the I2 owner contract: accepted QA answer, path, and named
+  run are all required.
+- Map the Page owner RULING explicitly: none for I0-I4, GI5 receipt for I5;
+  Probe read remains a nested plugin tick.
+
+1.0.1 · 260831
+- Clarify that the two named gates are Insight cross-phase authority transfers;
+  Page-local copilot ticks remain nested authoring controls.
+- Make GI5 the outward-export boundary and GI6 the mandatory I1 settlement
+  before a cell stops; align the Wisdom phase with that ordering.
+
+1.0.0 · 260831
+- I0-I5 are now phase-owned Folder kinds. Dispatch loads the matching phase
+  contract and the workflow owns only their order, GI0-GI6, cell frontier and
+  receipts; Application crossing reports that frontier unchanged.
+
 0.5.0 · 260828 · the covariate row, and clause ① made mechanical
 - The partition test's failure routing gains its SECOND named case. Time wore three guises and had three homes; a COVARIATE had none, so a session wanting a socioeconomic cut could either break clause ① or abandon a good idea. It now routes where `ref/partition.md` already said it belongs, to an I COLUMN, with the reason stated: a covariate cuts ACROSS audiences rather than partitioning them, so its rows are already counted in the groups it overlaps.
 - Clause ① stops being prose. The file called all three admission clauses "each mechanically checkable" and none of the three was checked by anything until today. Two rules now exist in `haipipe-board`'s `check.py`: `partition-sum-over-100` (ERROR — disjoint subgroups of one extract cannot cover more than the extract, so percentages summing past 100% is a breach on arithmetic alone) and `partition-cross-cutting` (WARN — a partition filtering on a column no sibling filters on shares no axis with them). A third, `partition-column-unregistered`, catches a filter column MT00 names nowhere outside its own register.

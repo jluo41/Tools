@@ -1,5 +1,9 @@
 # What each phase actually costs, measured
 
+> Measured on the 260819-20 phase names; PROBE retired 260901 into SURVEY (the
+> item table, cheap) and LAND (the runs), so its rows are the upper bound of
+> what SURVEY+LAND cost today.
+
 Born 260820 when JL asked "could you document for each of them, how long it
 takes for us?", after asking earlier the same day "why the evidence takes such
 a long time?". Every row below is a real agent return from that day's two runs,
@@ -15,10 +19,10 @@ phases are expensive, and why.
 ```text
 phase                      what it did                       min    ktok  tools  s/tool
 ────────────────────────────────────────────────────────────────────────────────────────
-② PROBE                    raise 10 cards, MATCH, dispatch   32.1   143.4     35    55.1
-② PROBE repair 1           2 bank QA files                   10.2    12.9      1   610.5
-② PROBE repair 2+3         3 bank QA files + cross-refs      14.1    15.5      2   422.9
-③ EVIDENCE                 harvest 10 + bibex + 3 tables     36.5   390.6    152    14.4
+PROBE (now SURVEY+LAND)    raise 10 cards, MATCH, dispatch   32.1   143.4     35    55.1
+PROBE repair 1             2 bank QA files                   10.2    12.9      1   610.5
+PROBE repair 2+3           3 bank QA files + cross-refs      14.1    15.5      2   422.9
+EVIDENCE (LAND)            harvest 10 + bibex + 3 tables     36.5   390.6    152    14.4
 ④+⑤ DRAFT+REVISE fused     45 points, 6 divisions, the pdf   18.3   207.8     93    11.8
 🖼 one display unit         rebuild an existing table          5.0    54.5     21    14.2
 🖼 one display unit         3 equations, hand-authored tex     8.0    76.7     31    15.6
@@ -28,7 +32,7 @@ phase                      what it did                       min    ktok  tools 
 TOTAL of the rows above                                     154.5  1172.6
 ```
 
-① OUTLINE is missing on purpose: both v2 and v3 were written on the FAST PATH,
+OUTLINE (SHAPE) is missing on purpose: both v2 and v3 were written on the FAST PATH,
 in the main session, in a few minutes each. The one time it ran as a dispatched
 agent (`260819-2317-QC1`) it cost roughly a full agent boot to produce a file a
 person then rewrote, which is what taught the fast-path rule.

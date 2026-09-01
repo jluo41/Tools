@@ -10,8 +10,8 @@ Drafting guide for formal stakeholder report artifacts.
 Bottom line: Timing-aware refill SMS increases 7-day
 adherence by 8.2pp (95% CI: 4.1–12.3pp) among high-risk
 patients. Projected annual savings: $2.4M across the
-current panel. Recommended: expand to all eligible patients
-in Q3. (See C3, A2.)
+current panel. Recommended: evaluate expansion to eligible patients
+in Q3. (See Source 1.)
 ```
 
 **Regulatory finding (regulator audience):**
@@ -24,8 +24,8 @@ improvement in 7-day refill adherence (OR = 1.42, 95% CI:
 age and gender subgroups (Table 2). No adverse events were
 reported during the pilot period.
 
-¹ C3: Timing sensitivity in prescription refill behavior.
-  Based on probe P.A12, N = 4,230 patients, 2025-Q4 cohort.
+¹ Source 1: accepted signed handoff and its bound QA source,
+  recorded by path in the owning Design Folder.
 ```
 
 
@@ -37,8 +37,8 @@ reported during the pilot period.
    - Executive: bottom line → evidence → ask
    - Partner: context → joint findings → next steps
 
-2. Every factual statement must cite a K/W entry.
-   - Regulator: footnote (¹ C3: ...)
+2. Every factual statement maps through the released card grant.
+   - Regulator: footnote (¹ Source 1: ...)
    - Executive: endnote
    - Partner: inline parenthetical
 
@@ -65,10 +65,10 @@ audience=partner     → professional, collaborative tone
 
 ```
 [ ] Structure matches audience template
-[ ] Every factual claim has citation (format per audience)
-[ ] No contested/superseded K/W cited as settled evidence
+[ ] Every factual claim maps through the card grant (format per audience)
+[ ] No stale or superseded handoff/source is presented as settled evidence
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)
 [ ] Data tables/figures have captions
-[ ] adopted_A / declined_A in frontmatter
+[ ] Card id, grant, and exact render version resolve in the Design Folder
 ```

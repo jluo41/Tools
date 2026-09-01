@@ -81,7 +81,7 @@ def main():
         print("feedback     none routed")
     ev = o / f"{stem}-evidence.md"
     if ev.is_file():
-        m = re.search(r"(?m)^plan:.*?(owed \d+ · landed \d+ · accepted \d+)", ev.read_text(encoding="utf-8", errors="replace"))
+        m = re.search(r"(?m)^plan:.*?· (cycle: .+)$", ev.read_text(encoding="utf-8", errors="replace"))
         print("evidence     " + (m.group(1) if m else "(no plan line)"))
 
     # ③ the plan checks, HARD for this page

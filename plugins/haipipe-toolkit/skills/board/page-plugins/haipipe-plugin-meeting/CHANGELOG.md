@@ -1,4 +1,9 @@
 
+## 0.1.2 · 2026-08-31
+
+Remove the retired Task-plugin name from the live comparison vocabulary;
+meetings now compare only with PageX and Skill attachments.
+
 ## 0.1.1 · 2026-08-31
 
 LEAVING banner: meetings move to project/SPACE level, parsed into

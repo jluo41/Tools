@@ -1,15 +1,15 @@
 ---
 name: haipipe-plugin-outline
 description: >-
-  The outline/ plugin of a Board page: the page's PROCESS folder (seven record
-  kinds: the versioned plan, requirement, discussion, feedback, evidence,
+  The outline/ plugin of a Board page: the page's PROCESS folder (eight record
+  kinds: the versioned plan, requirement, discussion, feedback, items, evidence,
   files, log) and the 🧭 tab that reads them, first and default on every page.
   Read-only surface; the deliverable of the OUTLINE phase. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
-  evidence bundle, D<nn> thread, /haipipe-plugin-outline.
+  evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.20.2"
-  last_updated: "2026-08-31"
+  version: "0.21.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -22,9 +22,10 @@ the tab shows, and who writes each file. The phase that produces the folder is
 this file.
 
 ```text
-  this file      the FOLDER (seven kinds) and the TAB (chips, lenses, the join)
-  ref/           plan-grammar.md · record-shape.md · specimen-section-plan.md ·
-                 evidence-bundle.md: the exact grammars a writer or parser needs
+  this file      the FOLDER (eight kinds) and the TAB (chips, lenses, the join)
+  ref/           plan-grammar.md · item-table.md · record-shape.md ·
+                 specimen-section-plan.md · evidence-bundle.md: the exact
+                 grammars a writer or parser needs
   the phase      page-workflows/haipipe-page-outline: one pass, its checks, its tick
 ```
 
@@ -34,7 +35,7 @@ this file.
 PROCESS: how it came to assert it. Since 260831 the folder is legal on any
 UNIT, task folders included (the unit symmetry, `haipipe-page` §📁): same
 kinds, same grammar; a task folder simply never owes the venue-only
-requirement file. Seven kinds, one flat file each with the
+requirement file. Eight kinds, one flat file each with the
 stem; only the plan is many-per-page, by version.
 
 ```text
@@ -43,7 +44,9 @@ stem; only the plan is many-per-page, by version.
 ├── <stem>-requirement.md     what we MUST obey   generated · cli/requirement.py · venue only
 ├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
 ├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
-├── <stem>-evidence.md        what has LANDED     generated · cli/evidence-status.py
+├── <stem>-items.md           what each mark OWES authored · SURVEY writes Need·Route·Run, a person writes Decide
+│                             and which RUN answers it        (ref/item-table.md)
+├── <stem>-evidence.md        what has LANDED     generated · cli/evidence-status.py · the table joined to the disk
 ├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
 └── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
 ```
@@ -171,10 +174,12 @@ written to disk with a date.
 ```text
 file            written by                                    regenerate with
 ────────────────────────────────────────────────────────────────────────────────────────────────
-plan            ① OUTLINE (in session or haipipe-page-outline-agent); the fold appends   never
+plan            SHAPE (in session or haipipe-page-outline-agent); EMBED's fold appends   never
 requirement     the generator                                 cli/requirement.py <page>.md
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
+items           SURVEY (in session or haipipe-page-outline-agent): Need · Route · Run;   never
+                a person: Decide; LAND appends ` → <result file>` only
 evidence        the generator                                 cli/evidence-status.py <page>.md
 files           any phase or the page chat                    never (authored)
 log             every phase and the page chat, append only    never (authored)
@@ -186,9 +191,10 @@ holds; it writes nothing.
 ## 📂 Files
 
 - `ref/plan-grammar.md` · the plan file's grammar, type switch, marks, versions, teeth
+- `ref/item-table.md` · the item table: one row per mark, the outcome words, the derived status ladder
 - `ref/record-shape.md` · the seven record kinds: ids, labels, writers, per-kind rules
 - `ref/specimen-section-plan.md` · the approved Section plan, frozen (SM00 v3)
-- `ref/evidence-bundle.md` · the derived per-bullet join and its six status words
+- `ref/evidence-bundle.md` · the derived per-bullet join (its six status words superseded by the item ladder, 260901)
 - `../../haipipe-board/live/outline.py` · the parse, the lenses, `plan_card`, `_records`, the chips
 - `../../haipipe-board/live/shell.py` · the tab strip; 🧭 ranked first and opened by default
 - `../../haipipe-board/checks/outline.py` · the standing check over every board's plans

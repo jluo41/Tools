@@ -4,7 +4,7 @@ Shared by every phase producer (`page-workflows/agents/haipipe-page-*-agent`)
 and by `haipipe-page-creator-agent` when it stands in as the dispatch fallback.
 Moved here 260819 from the creator agent's body, because a PRODUCER reading
 another agent's file was the one relationship in the roster nobody could hold
-in their head (⑦'s judge still reads its reviewer base until the judge ref is
+in their head (CHECK's judge still reads its reviewer base until the judge ref is
 carved out — the one standing exception, recorded, not hidden) (JL: "is this for the board or for the page? I am confused"),
 and because shared law belongs in a contract, not in a worker. One copy, here,
 loaded like any other ref.
@@ -37,13 +37,15 @@ optional:
   sources:     files this page must read and cite
   constraints: anything the human already ruled that the page must respect
   run_id:      required for draft | probe | revise
-  round:       required for draft | probe | revise
-  version:     required source:render identity for draft | probe | revise
-  intent:      required run-level purpose for draft | probe | revise
-  probe_path:  required for evidence when it needs a separate persisted surface
+  round:       required for draft | revise
+  version:     required source:render identity for draft | revise
+  intent:      required run-level purpose for draft | revise
+  cycle:       required: SHAPE | SURVEY for outline · LAND | EMBED for evidence ·
+               WRITE for draft and revise
+  probe_path:  required for evidence when an outbound card needs a separate persisted surface
   evidence_units: optional for evidence — the display units whose intake this
                phase must freeze, each `{unit, kind, source}`; the receipt
-               returns the renderer that then owes step ② RENDER
+               returns the renderer that then owes the RENDER step
 ```
 
 For `create-page`, `opening` and `siblings` are required. `siblings` is the
@@ -85,10 +87,12 @@ being guessed.
    ```text
    outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
                 itself. Leave `approved:` UNTICKED: it is a person's.
-   probe     ─▶ <page>/probe/PP<NN>-<slug>/ with card.md, consumer/, executor/
+   probe     ─▶ <page>/evidence/probe/PP<NN>-<slug>/ with card.md,
+                consumer/, executor/
                 and a proof/ holding only its manifest. Never an answer.
-   evidence  ─▶ bibex/ entries, a card's `state: answered` + `target:`, and a
-                frozen display intake/. Leave `verified` and `read:` UNTICKED.
+   evidence  ─▶ evidence/bibex/ entries, a card's `state: answered` +
+                `target:`, and a frozen evidence/display/ intake/. Leave
+                `verified` and `read:` UNTICKED.
    ```
 
    Stop before the returned route begins. Record a
@@ -103,7 +107,7 @@ being guessed.
    create the declared `probe_path`, a `bibex/` entry landed verbatim from a
    person, and per unit in `evidence_units` its `README.md`, `intake/`,
    `recipe/`, `assets/` and `preview.pdf`: render, pick and build are
-   EVIDENCE's since 260819. Never tick `accepted:`, which stays ⑦ CHECK's.
+   EVIDENCE's since 260819 (the LAND cycle). Never tick `accepted:`, which stays CHECK's.
 9. Return the contract below. Do not rebuild, do not run the independent check,
    and do not announce
    that the board is updated: you cannot see the board.
@@ -125,8 +129,9 @@ being guessed.
 ```text
 actor:    <your own agent name, exactly as dispatched>
 status:   ok | blocked | failed
-operation: create-page | revise-opening | outline | draft | probe | evidence | revise | compile
-phase:    OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE
+operation: create-page | revise-opening | outline | draft | evidence | revise | compile
+phase:    OUTLINE | DRAFT | EVIDENCE | REVISE | COMPILE
+cycle:    SHAPE | SURVEY | LAND | EMBED | WRITE   (the pass inside the phase)
 path:     <the file written, or none>
 id:       <page id>
 title:    <title as written>
@@ -138,7 +143,7 @@ sources:
   read:   <files read and cited>
   unread: <files named in the packet that could not be read, or none>
 open:     <what this page leaves for the human to decide, or none>
-route:    OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE | COMPILE | CHECK | HOLD
+route:    OUTLINE | DRAFT | EVIDENCE | REVISE | COMPILE | CHECK | HOLD
 reason:   <which phase authority was exercised and why this route follows>
 reopens_promise: true | false
 artifacts: JSON LIST of repo-relative paths, every file written, target

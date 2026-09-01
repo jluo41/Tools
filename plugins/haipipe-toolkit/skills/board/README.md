@@ -8,21 +8,21 @@ reviewable set of question pages or lifecycle stages.
 - `haipipe-board/` is the callable skill and owns the Board format, actions,
   renderer, local service, write-back, checks, and the reply-ending session
   status strip. It is the family's one DOOR.
-- `haipipe-page/` is a loadable SPEC: what a Page is, its Page Types over one
-  base (§🗂 in that file is the live list; no `page-type:` key is the flexible
-  DEFAULT and covers most pages), its sections in their fixed order, and how it
-  resolves a stable Page Type plus a current Page Phase. Its `RUN` verb uses a
+- `haipipe-folder/` is the neutral work-object SPEC: every Folder has a Page
+  Face and Task Face; the owning domain workflow phase selects kind, primary
+  face, plugins, gate, closure, and handoff.
+- `haipipe-page/` is the Page-Face SPEC: fixed readable frame and resolution
+  from a phase-owned `folder-kind:` (or legacy `page-type:` compatibility)
+  plus the current Page Phase. Its `RUN` verb uses a
   shared raw-material
   packet and auditable phase receipt rather than a fixed phase sequence. A
   Page's `Files › Related Board Pages` rows add checked, phase-scoped context;
   the engine reads them once through `cli/pagecontext.py`, never recursively.
-- `page-types/` holds the ONE variant this skill set still owns. A variant
-  ships in the folder of the skill set that owns it (JL 260809; paper amended
-  JL 260831), so the paper, application, task and labeling variants live with
-  their own families: `paper/workflow-phases/` (six haipipe-paper-<phase>
-  skills) plus `paper/haipipe-paper-venue/`, `application/page-types/`
-  (brief · insight · intervention · artifact), `task/page-types/` (task) and
-  `subjective-label/skills/page-types/` (labeling). The live inventory is
+- `page-types/` holds the legacy variant this board family still owns.
+  Migrated kinds live with their workflow phase: Paper under
+  `paper/workflow-phases/`, and Application I0-I5/D0-D5 under
+  `application/workflow-phases/`. Task and labeling remain unmigrated under
+  their current type folders. The legacy compatibility inventory is
   `haipipe-board/cli/pagetypes.py` output.
   - `haipipe-page-for-stage/` is the VARIANT for `S-<Family>-<unit>` lifecycle
     pages. It owns the persistent chain and gate shape, not the active phase. It
@@ -41,7 +41,7 @@ reviewable set of question pages or lifecycle stages.
 - `page-workflows/` holds the page WORKFLOW: `haipipe-page-workflow` is its
   HEAD (the RUN router, the packet + receipt contract), and beside it sit the
   SIX host-agnostic phase contracts, in loop order: `haipipe-page-outline`,
-  `haipipe-page-probe`, `haipipe-page-evidence`, `haipipe-page-draft`,
+  `haipipe-page-evidence`, `haipipe-page-draft`,
   `haipipe-page-revise` (⑥ COMPILE folded in), and `haipipe-page-check`.
   `agents/` beside them holds one thin producer agent per phase.
   Phases are selected by authority rather than by edit operation or a rigid
@@ -85,6 +85,7 @@ reviewable set of question pages or lifecycle stages.
 board/
 ├── README.md
 ├── CHANGELOG.md
+├── haipipe-folder/      neutral two-face Folder contract
 ├── agents/
 │   ├── README.md
 │   ├── CHANGELOG.md
@@ -108,7 +109,7 @@ board/
 │   │   └── ref/  page-run-contract.md · producer-contract.md ·
 │   │             phase-cards.md · measured-cost.md
 │   ├── haipipe-page-outline/        ①
-│   ├── haipipe-page-probe/          ②
+│   ├── _old/haipipe-page-probe/     retired 260901 (SURVEY + LAND took its halves)
 │   ├── haipipe-page-evidence/       ③
 │   ├── haipipe-page-draft/          ④
 │   ├── haipipe-page-revise/         ⑤ (⑥ COMPILE folded in)

@@ -12,18 +12,15 @@ toward a goal.
 - **Order:** logical sequence (prep → action → verify)
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  optional
-  display:    skip
-  section-edit:    skip
-
-claims_settlement: medium
+design_profile:
+  evidence_bar: medium
+  narrative: optional
+  display: none
+  section_edit: none
+  terminal: accepted
 ```
 
 
@@ -33,28 +30,29 @@ claims_settlement: medium
 template:
   - slot: title
     job: name the goal
-    claim_source: pitch
+    claim_source: GD0-closed Brief
   - slot: items
-    job: each item = one action backed by one claim
-    claim_source: one K/W per item
+    job: each item = one action backed by the card grant
+    claim_source: released card grant
   - slot: completion
     job: what success looks like
-    claim_source: primary claim
+    claim_source: GD0-closed Brief + signed Wisdom handoff
 ```
 
 
-## Lifecycle mappings
+## Phase use
 
-### → Claims (medium)
-Each checklist item should trace to a K/W entry. Gap check:
-if an item has no evidence backing, flag it. Optional probe
-if the gap is load-bearing.
+### D1/D2 · bet and realize
 
-### → Narrative (optional)
+Each checklist item maps through the released card grant. If an item lacks a
+load-bearing premise, preserve the gap for D4 EMIT; do not Probe from Design.
+
+### D2 · optional ordering narrative
 If the checklist has a natural progression (prep → action →
 verify → confirm), writing the narrative makes the order explicit.
 Skip if items are independent / unordered.
 
-### → Draft
+### D3/D4 · judge and decide
 Each item: action verb + specific object + measurable completion.
-"Check blood glucose before breakfast" not "Monitor glucose."
+"Check blood glucose before breakfast" not "Monitor glucose." Render the
+exact ordered list to `delivery/render/`, then accept or emit.

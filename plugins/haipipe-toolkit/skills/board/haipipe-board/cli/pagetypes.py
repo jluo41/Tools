@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The Page Type inventory, DERIVED from the three places it actually lives.
+"""The legacy Page-Type compatibility inventory.
 
 `haipipe-page` states the LAW that resolves a page's type. It used to state the
 INVENTORY too, by hand, and a hand-written table cannot stay equal to a Python
@@ -11,7 +11,8 @@ became this script's output and the drift became a finding.
 
 Three sources, and each answers a different question:
 
-    the FOLDERS   skills/*/page-types/haipipe-page-for-<key>/   who maintains it
+    the OWNERS    workflow phase `legacy_page_type` metadata    who maintains it
+                  + skills/*/page-types/haipipe-page-for-<key>/ (unmigrated)
                   + paper/workflow-phases/haipipe-paper-<key>/  (paper, 260831)
                   + paper/haipipe-paper-venue/
     the ENGINE    cli/check.py PAGE_TYPE_VALUES                 what resolves
@@ -32,6 +33,9 @@ HERE = pathlib.Path(__file__).resolve()
 BOARD_SKILL = HERE.parent.parent            # …/skills/board/haipipe-board
 SKILLS = BOARD_SKILL.parent.parent          # …/skills
 PAGE_CONTRACT = SKILLS / "board" / "haipipe-page" / "SKILL.md"
+sys.path.insert(0, str(BOARD_SKILL))
+
+from src.folder_contract import discover as folder_contracts  # noqa: E402
 
 BEGIN = "<!-- BEGIN GENERATED page-type-inventory -->"
 END = "<!-- END GENERATED page-type-inventory -->"
@@ -50,13 +54,16 @@ def engine_keys() -> set[str]:
 
 
 def contract_keys() -> dict[str, str]:
-    """key -> owning skill set, from the shipped contract folders.
+    """key -> owning skill set, from phase owners and compatibility folders.
 
-    Most families ship variants under page-types/. Paper's types are 1:1 with
-    journey phases, so since 260831 they ship as workflow-phases/haipipe-paper-
-    <key>/ plus the non-phase paper/haipipe-paper-venue/.
+    A migrated family declares the old key on the phase that owns its Page
+    Face. Unmigrated families still ship variants under page-types/. Paper's
+    phase skills predate the Folder metadata and keep their filename bridge.
     """
     found = {}
+    for contract in folder_contracts(SKILLS):
+        if contract.legacy_page_type:
+            found[contract.legacy_page_type] = contract.path.parents[2].name
     for d in sorted(SKILLS.glob("*/page-types/haipipe-page-for-*")):
         if not d.is_dir() or not (d / "SKILL.md").exists():
             continue

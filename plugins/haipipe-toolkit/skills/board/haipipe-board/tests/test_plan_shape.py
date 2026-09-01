@@ -48,7 +48,31 @@ class ResolvedSectionShapeTest(unittest.TestCase):
             ),
         )
 
+    def test_phase_owned_folder_kind_resolves_its_page_face(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "K01-claim.md"
+            page.write_text(
+                "# Fixture\nfolder-kind: knowledge\n",
+                encoding="utf-8",
+            )
+            complete = "\n".join(
+                f"## C{i} · {title}" for i, title in enumerate(
+                    ("Claim", "Information Cited", "Strength", "Rivals", "Boundary"), 1
+                )
+            )
+            self.assertEqual([], check(page, complete, SKILLS_ROOT))
+
+    def test_legacy_application_page_type_resolves_the_same_phase(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "K01-claim.md"
+            page.write_text(
+                "# Fixture\npage-type: knowledge\n",
+                encoding="utf-8",
+            )
+            broken = "## C1 · Claim\n## C2 · Strength\n"
+            findings = check(page, broken, SKILLS_ROOT)
+            self.assertTrue(any("5 declared divisions" in item for item in findings))
+
 
 if __name__ == "__main__":
     unittest.main()
-

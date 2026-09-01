@@ -1,4 +1,4 @@
 interface:
-  display_name: "Application Brief Page"
-  short_description: "Define an intervention’s audience, outcome, venue, and promise"
-  default_prompt: "Use $haipipe-page-for-brief to create or repair the Brief page for this intervention."
+  display_name: "Design Brief Folder"
+  short_description: "Frame an Application and release its Design roster"
+  default_prompt: "Use $haipipe-design-brief to create or repair the Brief Folder at Design workflow phase D0."

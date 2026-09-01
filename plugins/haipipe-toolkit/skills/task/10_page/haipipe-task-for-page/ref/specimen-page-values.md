@@ -65,7 +65,7 @@ when t04 exists and reports.
 
 ## The page side, unchanged
 
-`probe/PP03-agreeableness-effect/card.md` gets `target:` bound to
+`evidence/probe/PP03-agreeableness-effect/card.md` gets `target:` bound to
 `.../j01_values_sm05_results/QA/1-agreeableness-effect.md` at EVIDENCE ④, and
 its `## Values` block gains the `PP03.v1` row copied from values.yaml with its
 source path. The sentence cites `PP03.v1`; the plan bullet's `Answered:` fold

@@ -10,8 +10,11 @@ from __future__ import annotations
 import html
 import json
 import re
-from pathlib import Path
-from urllib.parse import parse_qs, quote, urlparse
+from pathlib import Path, PurePosixPath
+from urllib.parse import parse_qs, quote, unquote, urlparse
+
+from src.body import group_token
+from src.parse import parse_dir
 
 
 PHASES = (
@@ -43,19 +46,70 @@ def _yaml_scalar(path: Path, key: str) -> str:
     return hit.group(1).strip().strip("'\"") if hit else ""
 
 
+def _yaml_child_scalar(path: Path, parent: str, key: str) -> str:
+    """Read one scalar from a direct child mapping in simple emitted YAML."""
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return ""
+    parent_indent = None
+    for line in lines:
+        hit = re.match(r"^(\s*)%s:\s*(?:#.*)?$" % re.escape(parent), line)
+        if hit:
+            parent_indent = len(hit.group(1))
+            continue
+        if parent_indent is None or not line.strip() or line.lstrip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip())
+        if indent <= parent_indent:
+            break
+        hit = re.match(r"^\s*%s:\s*([^#\n]+)" % re.escape(key), line)
+        if hit:
+            return hit.group(1).strip().strip("'\"")
+    return ""
+
+
 def _truth(value) -> bool:
-    return value is True or str(value).strip().lower() in {"true", "yes", "pass", "passed", "valid"}
+    return value is True or str(value).strip().lower() in {
+        "true", "yes", "pass", "passed", "valid", "confirmed",
+    }
+
+
+def _labeling_lane(page_src: Path) -> tuple[Path, str]:
+    """Resolve the page-folder lane even when Board renders a flat source.
+
+    Some older Boards render ``<group>/<page>.md`` while keeping the page's
+    task-side folder at ``pages/<page>/``.  The browser must follow that exact
+    sidecar instead of silently reporting an empty lane beside the flat copy.
+    """
+    direct = page_src.parent / "labeling"
+    if direct.is_dir():
+        return direct, "canonical page-local lane"
+    for ancestor in page_src.parents:
+        if not (ancestor / "board.md").is_file():
+            continue
+        folded_page = ancestor / "pages" / page_src.stem / page_src.name
+        folded_lane = folded_page.parent / "labeling"
+        if folded_page.is_file() and folded_lane.is_dir():
+            return folded_lane, (
+                "page-folder bridge from flat Board source · "
+                f"pages/{page_src.stem}/labeling/"
+            )
+        break
+    return direct, "canonical page-local lane"
 
 
 def _job_root(page_src: Path) -> tuple[Path, str]:
-    """Return the canonical root, with a read-only bridge for the old FT layout."""
-    lane = page_src.parent / "labeling"
+    """Return the canonical root, with explicit read-only compatibility bridges."""
+    lane, location_note = _labeling_lane(page_src)
     if (lane / "config.yaml").is_file() or not lane.is_dir():
-        return lane, "canonical page-local lane"
+        return lane, location_note
     legacy = sorted(lane.glob("field-tests/*/run/config.yaml"))
     if legacy:
-        return legacy[-1].parent, "legacy nested field-test · migrate to labeling/"
-    return lane, "canonical page-local lane"
+        return legacy[-1].parent, (
+            location_note + " · legacy nested field-test · migrate receipts to labeling/"
+        )
+    return lane, location_note
 
 
 def inspect(page_src: Path) -> dict:
@@ -102,6 +156,14 @@ def inspect(page_src: Path) -> dict:
     human_id = _yaml_scalar(config, "human_id")
     authority_mode = _yaml_scalar(config, "mode")
     creates_gold = _yaml_scalar(config, "creates_human_gold")
+    meaning_value = _yaml_scalar(config, "meaning_confirmed")
+    meaning_confirmed = _truth(meaning_value)
+    meaning_receipt_valid = bool(
+        meaning_confirmed
+        and _truth(_yaml_child_scalar(config, "meaning_receipt", "status"))
+        and _yaml_child_scalar(config, "meaning_receipt", "human_id") == human_id
+        and _yaml_child_scalar(config, "meaning_receipt", "confirmed_at")
+    )
     missing_human = all(p0.values()) and not human_id
     authority_hold = missing_human or simulation or "simulation" in authority_mode.lower() \
         or (creates_gold and not _truth(creates_gold))
@@ -122,6 +184,10 @@ def inspect(page_src: Path) -> dict:
                       if latest_round else "P0 Contract artifacts")
 
     missing = [rel for rel, present in p0.items() if not present]
+    meaning_open = (all(p0.values()) and not authority_hold and bool(meaning_value)
+                    and not meaning_receipt_valid)
+    if meaning_open and not checkpoints and not round_dirs:
+        phase_i = 0
     if not root.exists():
         next_action = "P0 Contract · create the page-local labeling/ job through /subjective-label"
     elif missing:
@@ -131,6 +197,9 @@ def inspect(page_src: Path) -> dict:
         next_action = ("HOLD · owner: one identified real human semantic authority + "
                        "Checkpoint Keeper · preserve: %s · next: start a new "
                        "real-authority Building lineage%s" % (checkpoint_rel, target))
+    elif meaning_open:
+        next_action = ("P0 Contract · the identified human must confirm the target, "
+                       "class meanings, regions, uncertainty, and unresolved disposition")
     elif open_rounds:
         next_action = "P1 Round · resume " + open_rounds[0] + " at its first missing canonical event"
     elif not checkpoints:
@@ -156,6 +225,8 @@ def inspect(page_src: Path) -> dict:
         first_failed = "G0 Contract → Round · missing " + ", ".join(missing)
     elif missing_human:
         first_failed = "G0 Contract → Round · " + authority_reason
+    elif meaning_open:
+        first_failed = "P0 Contract · human meaning confirmation remains open"
     elif not checkpoints:
         first_failed = "G1 Round close · no Keeper-closed checkpoint exists"
     elif not (all(gate_pass.values()) and stop_signoff) or authority_hold:
@@ -187,7 +258,9 @@ def inspect(page_src: Path) -> dict:
     g2_reported = bool(checkpoints and all(gate_pass.values()) and stop_signoff)
     gate_rows = [
         ("G0", "Contract → Round", sum(p0.values()), len(p0), False,
-         "required files observed; hashes are not revalidated by this surface"),
+         ("required files observed; P0 meaning confirmation remains open before G0 may be tested"
+          if meaning_open else
+          "required files observed; hashes are not revalidated by this surface")),
         ("G1", "Round close", len(checkpoints), len(round_dirs), False,
          (latest.get("state") or latest.get("closed") or "no checkpoint") if checkpoints else "no checkpoint"),
         ("G2", "Round → Freeze", 1 if g2_reported else 0, 1, g2_reported,
@@ -209,6 +282,8 @@ def inspect(page_src: Path) -> dict:
         "open_rounds": open_rounds, "latest_round": latest_round,
         "latest": latest, "handoff": handoff, "handoff_status": handoff_status,
         "prod_runs": prod_runs, "audits": audits, "dstar": dstar,
+        "meaning_confirmed": meaning_confirmed,
+        "meaning_receipt_valid": meaning_receipt_valid,
         "dstar_manifest": dstar_manifest, "human_id": human_id,
         "authority_mode": authority_mode, "authority_hold": authority_hold,
         "authority_reason": authority_reason,
@@ -218,23 +293,143 @@ def inspect(page_src: Path) -> dict:
     }
 
 
-def labeling_chat_hold(page_src: Path) -> tuple[bool, str]:
-    """Server-side Chat guard; no browser flag can turn a labeling HOLD off."""
-    if not page_src.is_file():
-        return False, ""
+def is_labeling_run_page(page_src: Path) -> bool:
+    """True only for a labeling run Page; the dashboard owns no job lane."""
+    if not page_src.is_file() or page_src.name == "S-Label-Dash.md":
+        return False
     try:
         head = page_src.read_text(encoding="utf-8", errors="ignore")[:4096]
     except OSError:
-        return False, ""
-    if not re.search(r"(?m)^page-type:\s*labeling\s*$", head):
+        return False
+    return bool(re.search(r"(?m)^page-type:\s*labeling\s*$", head))
+
+
+def is_labeling_surface_page(page_src: Path) -> bool:
+    """True for every real Page that can own an optional labeling/ lane.
+
+    A specialized ``page-type: labeling`` changes the Page's prose grammar;
+    it is not a prerequisite for opening a Page-local plugin.  The one control
+    dashboard is excluded because it inventories jobs and owns no job itself.
+    """
+    return page_src.is_file() and page_src.name != "S-Label-Dash.md"
+
+
+def labeling_chat_hold(page_src: Path) -> tuple[bool, str]:
+    """Server-side Chat guard; no browser flag can turn a labeling HOLD off."""
+    if not is_labeling_surface_page(page_src):
         return False, ""
     state = inspect(page_src)
     action = state["next_action"]
-    return action.startswith("HOLD"), action
+    held = action.startswith("HOLD")
+    return held, action if held else ""
+
+
+def labeling_hold_for_scene(root: Path, scene_q: str) -> tuple[bool, str]:
+    """Bind one Draw scene to its Board Page, then derive Labeling HOLD.
+
+    Draw addresses a scene rather than a Page source, so it cannot use the
+    ordinary ``path`` + ``file`` resolver.  The builder's ownership law gives
+    us the exact inverse: ``<source-dir>/draw/<page-id>.excalidraw``.  Reparse
+    the closest Board and accept only that mapping; a caller-supplied browser
+    flag can neither invent nor disable the hold.
+    """
+    root = Path(root).resolve()
+    scene = (root / (scene_q or "").strip().lstrip("/")).resolve()
+    try:
+        scene.relative_to(root)
+    except ValueError:
+        return False, ""
+    board_dir = None
+    for parent in scene.parents:
+        if (parent / "board.md").is_file():
+            board_dir = parent
+            break
+        if parent == root:
+            break
+    if board_dir is None:
+        return False, ""
+    try:
+        _, pages, _ = parse_dir(board_dir)
+    except (OSError, ValueError, TypeError):
+        return False, ""
+    for page in pages:
+        file_q = page.get("file") or ""
+        expected = (
+            board_dir / Path(file_q).parent / "draw" /
+            (str(page.get("id") or "") + ".excalidraw")
+        ).resolve()
+        if expected != scene:
+            continue
+        page_src = board_dir / file_q
+        if not is_labeling_surface_page(page_src):
+            return False, ""
+        try:
+            return labeling_chat_hold(page_src)
+        except Exception:
+            return True, "HOLD · labeling receipts could not be safely inspected"
+    return False, ""
+
+
+def studio_chat_page_url(
+        path_q: str, file_q: str, page_q: str, board_dir: Path | None) -> str:
+    """Validate and return the generated Page URL Studio binds Chat to.
+
+    ``path_q`` is intentionally ``board.md`` because it resolves the source
+    file.  It is not a browser Page and must never receive ``?pane=chat``.
+    ``page_q`` comes from the current page frame's ``location.pathname`` and
+    must name the matching generated HTML beneath that same Board.  The Board
+    source is parsed with the same group-token law as the builder, then the
+    generated file must still identify ``file_q`` in its Page section.  A
+    same-basename file under a forged subgroup is therefore not sufficient.
+    """
+    parsed = urlparse(page_q or "")
+    if parsed.scheme or parsed.netloc or parsed.query or parsed.fragment:
+        return ""
+    page_path = parsed.path
+    board_path = urlparse(path_q or "").path
+    decoded_page = unquote(page_path)
+    decoded_board = unquote(board_path)
+    if not decoded_board.endswith("/board.md"):
+        return ""
+    if ".." in PurePosixPath(decoded_page).parts:
+        return ""
+    board_root = decoded_board.rsplit("/", 1)[0]
+    generated_root = board_root.rstrip("/") + "/board/"
+    if board_dir is None or not decoded_page.startswith(generated_root):
+        return ""
+    relative_page = PurePosixPath(decoded_page[len(generated_root):])
+    if relative_page.is_absolute() or len(relative_page.parts) != 2:
+        return ""
+    try:
+        _, pages, _ = parse_dir(Path(board_dir))
+    except (OSError, ValueError, TypeError):
+        return ""
+    matches = [q for q in pages if q.get("file") == file_q]
+    if len(matches) != 1:
+        return ""
+    source = matches[0]
+    expected_relative = PurePosixPath(
+        group_token(source.get("group") or "") or "_ungrouped",
+        Path(source.get("file") or source["id"]).stem + ".html",
+    )
+    if relative_page != expected_relative:
+        return ""
+    generated_file = Path(board_dir) / "board" / Path(*relative_page.parts)
+    if not generated_file.is_file():
+        return ""
+    try:
+        generated_head = generated_file.read_text(
+            encoding="utf-8", errors="ignore")[:262144]
+    except OSError:
+        return ""
+    marker = re.search(r'<section\b[^>]*\bdata-file="([^"]*)"', generated_head, re.I)
+    if not marker or html.unescape(marker.group(1)) != file_q:
+        return ""
+    return page_path
 
 
 _CSS = """
-:root{--bg:#fbfbfa;--fg:#202124;--mut:#72747b;--line:#dddeda;--card:#f2f2ee;
+:root{--bg:#ffffff;--fg:#202124;--mut:#72747b;--line:#dddeda;--card:#f7f7f8;
  --accent:#8055a5;--ok:#26734d;--hold:#a34b24}
 @media(prefers-color-scheme:dark){:root{--bg:#17181a;--fg:#ececea;--mut:#a1a19c;
  --line:#303238;--card:#202226;--accent:#c59be8;--ok:#72c796;--hold:#ee956f}}
@@ -255,14 +450,14 @@ h1{font-size:17px;margin:0}.mut{color:var(--mut);font-size:12px}.path{font:12px 
 .box h2{font-size:13px;margin:0 0 6px}.gate{display:grid;grid-template-columns:34px minmax(120px,1fr) auto;gap:7px;
  padding:5px 0;border-top:1px solid var(--line);align-items:baseline}.gate:first-of-type{border-top:0}
 .obs{color:var(--mut);font-size:11px}.hold{color:var(--hold)}.ok{color:var(--ok)}
-.talk{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--card);border-bottom:1px solid var(--line)}
-.talk b{font-size:13px}.talk button{border:1px solid var(--accent);color:var(--accent);background:transparent;
- border-radius:6px;padding:4px 9px;cursor:pointer}#chat{border:0;width:100%;height:calc(100% - 37px);display:block}
+#studio-chat{min-height:0;overflow:hidden}#chat{border:0;width:100%;height:100%;display:block}
 @media(max-width:700px){body{grid-template-rows:minmax(360px,60%) minmax(220px,40%)}.grid,.decision{grid-template-columns:1fr}.phase{overflow:auto;grid-template-columns:repeat(6,96px)}}
 """
 
 
-def render(page_src: Path, path_q: str, file_q: str) -> str:
+def render(
+        page_src: Path, path_q: str, file_q: str, page_q: str,
+        board_dir: Path) -> str:
     state = inspect(page_src)
     phase = "".join(
         '<div class="ph %s"><b>%s</b><br>%s</div>' %
@@ -290,18 +485,12 @@ def render(page_src: Path, path_q: str, file_q: str) -> str:
         f"production {len(state['prod_runs'])} · audits {len(state['audits'])}"
     )
     hard_hold = state["next_action"].startswith("HOLD")
-    chat_url = path_q + ("&" if "?" in path_q else "?") + "pane=chat"
+    chat_page = studio_chat_page_url(path_q, file_q, page_q, board_dir)
+    if not chat_page:
+        raise ValueError("Labeling Studio Chat requires the matching generated Page URL")
+    chat_url = chat_page + "?pane=chat"
     if hard_hold:
         chat_url += "&labeling_hold=1"
-    chat_mode = ("read-only consultation · server-enforced HOLD"
-                 if hard_hold else "discuss or run the routed action")
-    prompt = (
-        "Use /subjective-label for this labeling page. Derive both frontiers from "
-        "canonical artifacts under labeling/, name the first failed G0-G6 assertion, "
-        "and take at most one bounded next action. Stop at any human gate or HOLD. "
-        "Never treat this chat transcript or model consensus as human gold."
-    )
-    ctx = json.dumps({"prompt": prompt}, ensure_ascii=False)
     return f"""<!doctype html><meta charset=utf-8>
 <title>🏷 Labeling · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <section id=work>
@@ -321,13 +510,20 @@ def render(page_src: Path, path_q: str, file_q: str) -> str:
   <p class=mut>Protected item text, sealed ids, and per-item judgments are intentionally not rendered here.</p>
  </div>
 </div></section>
-<section><div class=talk><b>💬 Studio Chat · {html.escape(chat_mode)}</b>
-<button id=prefill type=button>Prefill safe status ask</button></div>
-<iframe id=chat src="{html.escape(chat_url, quote=True)}" title="labeling chat"></iframe></section>
-<script>(function(){{'use strict';var C={ctx};document.getElementById('prefill').onclick=function(){{
- var f=document.getElementById('chat'),t=null;try{{t=f.contentDocument.querySelector('#chat textarea');}}catch(e){{}}
- if(!t)return;t.focus();t.value=C.prompt;t.dispatchEvent(new f.contentWindow.Event('input',{{bubbles:true}}));
- this.textContent='Prefilled · review, then send';}};}})();</script>"""
+<section id=studio-chat><iframe id=chat src="{html.escape(chat_url, quote=True)}"
+ title="Studio Page Chat"></iframe></section>
+<script>(function(){{'use strict';
+ /* The framed document is Studio's exact Page Chat.  Its composer asks its
+    parent for the optional Draw controls, so relay those calls to the outer
+    split shell when Labeling itself is the registry frame. */
+ ['__studioDrawIt','__studioToggleDraw','__studioDrawShown'].forEach(function(n){{
+   window[n]=function(){{
+     try{{if(parent!==window&&typeof parent[n]==='function')
+       return parent[n].apply(parent,arguments);}}catch(e){{}}
+     return false;
+   }};
+ }});
+}})();</script>"""
 
 
 class LabelingMixin:
@@ -337,10 +533,16 @@ class LabelingMixin:
         q = parse_qs(urlparse(self.path).query)
         path_q = (q.get("path") or [""])[0]
         file_q = (q.get("file") or [""])[0]
+        page_q = (q.get("page") or [""])[0]
         got = self.target({"path": path_q, "file": file_q})
         if got[0] is None:
             return self.reply(400, {"ok": False, "err": got[1]})
-        body = render(got[0], path_q, file_q).encode("utf-8")
+        if not is_labeling_surface_page(got[0]):
+            return self.reply(404, {"ok": False, "err": "Page has no labeling lane"})
+        if not studio_chat_page_url(path_q, file_q, page_q, got[1]):
+            return self.reply(400, {"ok": False,
+                                    "err": "missing or mismatched generated Page URL"})
+        body = render(got[0], path_q, file_q, page_q, got[1]).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -353,5 +555,12 @@ class LabelingMixin:
         got = self.target(p)
         if got[0] is None:
             return None, got[1]
-        return {"url": "/_board/labeling?path=%s&file=%s" %
-                (quote(p.get("path") or ""), quote(p.get("file") or ""))}, None
+        if not is_labeling_surface_page(got[0]):
+            return None, "Page has no labeling lane"
+        path_q = p.get("path") or ""
+        file_q = p.get("file") or ""
+        page_q = p.get("page") or ""
+        if not studio_chat_page_url(path_q, file_q, page_q, got[1]):
+            return None, "missing or mismatched generated Page URL"
+        return {"url": "/_board/labeling?path=%s&file=%s&page=%s" %
+                (quote(path_q), quote(file_q), quote(page_q))}, None

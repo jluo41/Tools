@@ -1,5 +1,21 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 1.0.1 — 2026-08-31
+
+- State the minter safety boundary at canonical `evidence/pagex/`; a flat
+  location is compatibility-only.
+
+## 1.0.0 — 2026-08-31
+
+- PageX now links either an exact file or a whole work Folder. Folder rows end
+  in `/` and mint below `_folders/<repo-relative path>/`.
+- Whole-Folder cards read Page Face, source state, Task plan/report, and QA
+  receipts live from disk. This absorbs the only remaining responsibility of
+  the retired `haipipe-plugin-task`.
+- The vet refuses the repo root, the consumer's own home, PageX recursion,
+  outside-root resolution, and directories with no Folder marker. File-scope
+  evidence behavior and prose seeding remain unchanged.
+
 ## 0.6.3 — 2026-08-31
 - Lives nested at evidence/pagex (JL); minter computes relpath from the
   REAL dir so stub-era re-mints keep the right depth.

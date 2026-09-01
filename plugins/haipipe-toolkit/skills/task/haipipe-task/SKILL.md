@@ -5,14 +5,14 @@ description: >-
   Execute → Report on jobs, iterates blocks, answers source
   questions through `qa`, and creates DIKW Insight Pages through `insight`.
   Use for task execution, Task Board status, QA files, or result
-  interpretation. Hierarchy: block > job > task > run (task-group and
+  interpretation. Hierarchy: block to job to task to run (task-group and
   task-folder are the pre-260829 names for block and job). Trigger: task,
   job, block, task folder, task group, Task Board, plan, build, execute,
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-08-31"
+  version: "0.12.5"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -211,11 +211,30 @@ The `workflow/` folder is the task's observability surface: Plan = intent, Repor
 
 **The unit symmetry (JL 260831)**: a task folder is a special page folder, and both carry the same two process lanes. `workflow/` is the MACHINE half (this folder, unchanged). `outline/` is the HUMAN half and is now legal in a task folder too: the prose plan a person ticks, the open `D<nn>` threads, and the log, in the page family's record shape (`haipipe-plugin-outline/ref/record-shape.md`). The board renders a task's `tNN_<task>.md` as a page already; `outline/` gives its human decisions the same home a page's have. First real instance: the page-serving collection job (`haipipe-task-for-page`).
 
+The optional Task-side presenter is `haipipe-plugin-runs`, not Execution.
+Execute remains phase 3 of P-B-E-R; **Runs** lists the durable attempts. For a
+canonical nested Task Page it resolves the authored
+`<task>/runs/<run>.sh` ticket against the Job-owned generated
+`results/<task>/<run>/` and optional `notebooks/<task>/<run>.ipynb`. It never
+copies those outputs into the Task Folder. A standalone/Discovery Folder uses
+the Folder-local `runs/<run>.sh ↔ results/<run>/` dialect instead.
+
 A task ends at Report: it produces `results/` and stops. 
 
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
 
-**Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task Page reads one run against one task question; an Insight Page may synthesize several Task Pages, QA answers, Discovery Pages, or prior Insight Pages around one consumer-neutral question. It carries the trace `D → I → K → W` and closes under `haipipe-page-for-insight`. Paper and Application read its settled handoff through PageX and never enter a Task Folder directly.
+**Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task Page reads one run against one task question; an Insight Folder may synthesize several Task Pages, QA answers, Discovery Pages, or prior Insight Folders around one consumer-neutral question. It carries the trace `D → I → K → W → RF`. Its Task Face may PageX-link the producing Folder and acquire an accepted QA answer through Probe, but it never executes that Folder or reads raw `results/` when QA/report is owed. Paper and Application read only settled **Reusable Findings** through PageX; they never cross into the producing Task Folder. An RF is unsigned, consumer-neutral evidence—not an Application Design Handoff, not a `serves:` decision, and never direct Design authority. An Application that uses it must own the downstream I1 registration and contextual, signed I5 Wisdom bridge.
+
+### Incoming Application candidates
+
+An accepted Design candidate may cross into an explicitly named executable
+Folder at `workflow/inbox/application/<packet-id>.yaml`. The Application
+crossing writer may add this immutable raw-material packet plus a reciprocal
+PageX binding; it may not edit the target's plan, code, runs, results, QA, or
+terminal state. The packet remains `state: proposed` until the target Task
+owner validates it and enters its own Plan. Its grammar is owned by
+`haipipe-application-workflow` X2. There is no Task plugin and no invisible
+direct dispatch behind this inbox.
 
 ---
 

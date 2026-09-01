@@ -1,3 +1,9 @@
+## haipipe-page-outline-agent 0.2.0 · haipipe-page-evidence-agent 0.2.0 — 2026-09-01
+
+- Each phase agent owns its phase's two cycles (outline: SHAPE, SURVEY;
+  evidence: LAND, EMBED) and returns `cycle:` beside `phase:`.
+  haipipe-page-probe-agent retired to `_old/` (its installed link removed).
+
 ## haipipe-page-outline-agent · haipipe-page-draft-agent — 2026-08-31
 
 - Descriptions aligned with the rewritten phase contracts: the outline agent

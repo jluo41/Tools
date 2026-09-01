@@ -5,6 +5,15 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.4] — 2026-08-31
+
+- Move new endpoint scaffolds to the canonical nested Task Folder: Task Page,
+  `scripts/config/`, `runs/`, `workflow/`, and reciprocal PageX surface.
+- Accept X2 candidates only as immutable proposed inbox material; endpoint
+  Plan/Build/Execute/Report remains Task-owned. Legacy flat jobs stay readable.
+- Remove the unsupported `argument-hint` frontmatter key so the package passes
+  current skill metadata validation.
+
 
 ## [0.2.3] — 2026-07-24
 
@@ -33,4 +42,3 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [1.0.0] — 2026-06-01
 
 - created as haipipe-task-for-inference (latency profiling).
-

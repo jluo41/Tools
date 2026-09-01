@@ -1,4 +1,4 @@
-# The record files · one shape, seven kinds
+# The record files · one shape, eight kinds
 
 Every file in `<page>/outline/` except the plan is a LIST OF RECORDS, and a
 record has one grammar:
@@ -22,7 +22,10 @@ file                     answers                  id            labels          
 <stem>-discussion.md     what is still ASKED      D<nn>         Ask · Options · We lean · Decide    this page, any phase, the chat  discussion-settled-thread
 <stem>-feedback.md       what OTHERS said         S<x>-PP<n>    From · Feedback · Work · State ·    cli/feedback.py collect;        feedback-uncollected ·
                                                   R<nn>         Landed                              the page writes Landed only     -coverage · -unserved
-<stem>-evidence.md       what has LANDED          C.P.B         Has · Status                        cli/evidence-status.py          evidence-stale · -hand-edited
+<stem>-items.md          what each mark OWES and  C.P.B         Need · Route · Run · Decide         SURVEY; a person writes Decide; (ref/item-table.md)
+                         which RUN answers it                                                        LAND appends → <result>
+<stem>-evidence.md       what has LANDED          C.P.B         Status · Need · Route · Run ·       cli/evidence-status.py          evidence-stale · -hand-edited
+                                                                Decide · Has
 <stem>-files.md          what it READS and WRITES F<n>          Path · Role                         this page                       dead-file-path
 <stem>-log.md            what CHANGED             YYMMDD [HHMM] headline only; detail folded        this page; append, newest first generated-block-stale reads it
 ```
@@ -76,13 +79,23 @@ record prints its address, `` `<desk>.md` §<n> <Sec-token>.<sub> ``. A
 page-specific deviation is a `D<nn>` thread, never a requirement line. A page
 with no `structure-source:` gets no file.
 
-**Evidence** is a dated snapshot of the 🧭 join: one record per marked bullet,
-its head carrying THE PLAN'S OWN WORDS after the mark (0.18.1, JL 260831: a
-bare ref in the head "lost a lot of informations"), `Has` what the disk says,
-`Ref` the serving card/unit id only when one exists, `Status` one of the six
-words `evidence-ready · needs-probe · needs-intake · needs-citation ·
-needs-revision · accepted`; the page line reads `owed · landed · accepted`. A bare mark a card serves counts as
-raised. It imports the tab's own parse, so file and tab cannot disagree.
+**Items** is the item table (`ref/item-table.md`, 260901): one record per
+marked bullet, head byte-identical to the evidence file's, four authored
+labels: `Need` (what exactly is owed) · `Route` · `Run` (`<outcome> ·
+<address>`, the outcome one of `found · rerun · new-run · new-task · new-job ·
+new-block · person · none`; LAND appends ` → <result file>`) · `Decide` (a
+person's: `☐ make` until signed `☑ make · JL 260901`, `☑ defer · why`, `☑ drop
+· why`). No Status word is ever typed here.
+
+**Evidence** is a dated snapshot of the item table joined to the disk: one
+record per marked bullet, its head carrying THE PLAN'S OWN WORDS after the
+mark (0.18.1, JL 260831: a bare ref in the head "lost a lot of informations"),
+`Status` first, one word of the item ladder `owed · bound · landed · folded ·
+accepted · stale · deferred · dropped · blocked` (the pre-260901 six words
+retired), then the row's Need · Route · Run · Decide copied verbatim, then
+`Has`, what the lane on disk says; the page line reads `cycle: … · items n ·
+decided n/n · <ladder tally>`. It imports the tab's own parse and
+`src/item_table.py`, so file, strip and tab cannot disagree.
 
 **Files** is one record per file the page reads, writes, checks or keeps:
 `Path` and `Role` ∈ reads · writes · checks · contract · archive · related. A

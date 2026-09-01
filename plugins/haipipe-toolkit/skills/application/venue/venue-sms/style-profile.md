@@ -23,7 +23,7 @@ tap here to refill: [ShortURL]. STOP to opt out.
 **Clinician, concise:**
 ```
 [ProviderName]: 12 patients in your panel have refills
-due within 72h. 4 are high-risk for lapse (C3). Review
+due within 72h. 4 may need follow-up. Review
 list: [DashboardURL].
 ```
 
@@ -43,8 +43,9 @@ list: [DashboardURL].
    `[Name]`, `[Medication]`, `[PharmacyPhone]`, `[ShortURL]`,
    `[ProviderName]`, `[DashboardURL]`
 
-4. Every factual claim maps to a K/W entry in the claims stage.
-   Patient body: no C-id visible. Clinician body: inline C-id.
+4. Every factual statement maps through the card grant to the signed Wisdom
+   handoff or another source allowed by board `reads:`. Recipient copy contains
+   no internal D/I/K/W ids; the Design Folder carries the evidence map.
 
 5. Always include opt-out mechanism (STOP keyword or equivalent).
 
@@ -56,8 +57,8 @@ list: [DashboardURL].
 ## Audience pairing
 
 ```
-audience=patient     → warm, plain, 6th grade, no C-id in body
-audience=clinician   → precise, clinical, inline C-id
+audience=patient     → warm, plain, 6th grade, no internal ids in body
+audience=clinician   → precise, clinical, no internal ids in body
 ```
 
 The tone-by-audience rows above are the full tone rules for this venue.
@@ -71,21 +72,22 @@ The tone-by-audience rows above are the full tone rules for this venue.
 [ ] Opt-out present
 [ ] No jargon (if patient)
 [ ] Personalization variables are available in the data pipeline
-[ ] adopted_A / declined_A in artifact frontmatter
+[ ] Card id, grant, and exact render version resolve in the Design Folder
 [ ] Tone matches audience profile
 ```
 
 
-## Artifact frontmatter
+## Unit identity
 
 ```yaml
----
-kind: intervention
+unit: DU<NN>-<slug>
+kind: sms
 venue: sms
 audience: patient | clinician
-intent: "<one-line>"
-created: YYYY-MM-DD
-adopted_A: [A1, A2]
-status: draft | reviewed | deployed
----
+serves: <division-id>
+state: draft | judged
 ```
+
+The colocated `card.md` owns stance, grant, expected effect, and release state.
+The division owns `accepted:`. No SMS artifact on a DesignBoard may carry a
+`deployed` terminal; distribution belongs to a downstream Task Folder.

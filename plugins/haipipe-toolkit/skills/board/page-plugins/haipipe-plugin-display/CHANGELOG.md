@@ -1,5 +1,9 @@
 # haipipe-plugin-display · Changelog
 
+## 0.3.2 · 2026-08-31
+
+- Point frozen-intake provenance at canonical `evidence/probe/`.
+
 ## 0.3.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

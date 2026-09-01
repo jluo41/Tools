@@ -1076,7 +1076,11 @@ def _shell_doc(page_url, index_url):
     try {
       var w = pageWin();
       if (w && w.boardPlugins) {
-        w.boardPlugins.all().forEach(function (e) {
+        /* The strip, top Plugin menu, and ＋ picker are all doors for THIS
+           Page. Reading the registry's global list let a type-specific tab
+           (notably 🏷 Labeling) remain offerable on an ordinary paper Page,
+           even though the registry's own applies() gate would refuse it. */
+        w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach(function (e) {
           if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides', 'studio'].indexOf(e.id) < 0)
             out.push(e);
         });
@@ -1298,7 +1302,20 @@ def _shell_doc(page_url, index_url):
      server already says no-store; the frame was the stale half. Same src now
      means RELOAD; a changed src navigates as before. */
   function landFrame(f, u) {
-    var src = u + (/\.html$/.test(u) ? '?plain' : '');
+    /* Inspect the URL PATH, not the raw string. A live plugin endpoint can end
+       in `.html` only because its final query value is the generated Page URL
+       (`.../_board/labeling?...&page=/board/SL/S-Label-1.html`). Testing the
+       raw string treated that endpoint as a static Page and appended `?plain`
+       inside its query, corrupting the page binding and leaving the plugin
+       frame blank. */
+    var src = u;
+    try {
+      if (/\.html$/.test(new URL(u, location.href).pathname)) {
+        var hashAt = u.indexOf('#'), hash = hashAt < 0 ? '' : u.slice(hashAt);
+        var base = hashAt < 0 ? u : u.slice(0, hashAt);
+        src = base + (base.indexOf('?') < 0 ? '?plain' : '&plain') + hash;
+      }
+    } catch (e) {}
     if (f.getAttribute('src') !== src) { f.setAttribute('src', src); return; }
     try { f.contentWindow.location.reload(); }
     catch (e) { f.setAttribute('src', src); }

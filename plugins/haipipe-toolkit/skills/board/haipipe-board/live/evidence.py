@@ -6,9 +6,8 @@ ONLY: a live GET composing six segments — ⧉ By bullet (the generated
 outline/<stem>-evidence.md snapshot, the join), 📚 Citations (the bibex
 saved workbench), 🚪 Cards (the probe saved view), 🧮 Values (the live
 /_board/value route), 🖼 Displays (the display saved view), 🔗 Pagex (the
-borrow view, pens inline — its standalone 🔗 registry row folded in here
-260831, the task lane's read follows when a pagex card learns a task
-unit's status). Storage, writers,
+borrow view, pens inline; exact-file cards expose Page evidence and
+whole-Folder cards expose Page/Task Face status). Storage, writers,
 walls and the three human gates (verified: / read: / accepted:) stay with the
 lane contracts (`haipipe-plugin-evidence` is the paper contract for this
 file). Like the 🧮 tab: no storage, no writer, nothing stored, never stale.
@@ -106,7 +105,7 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
 <title>🧾 Evidence · {html.escape(stem)}</title>
 <style>{_CSS}</style>
 <header><h1>🧾 Evidence · {html.escape(stem)}</h1>
-<div class=mut>one surface, five lanes · storage and gates stay with
+<div class=mut>one surface, five lanes · storage and gates stay under evidence/:
 bibex/ · probe/ · display/ · pagex/ · the cards' value rows ({html.escape(note)})</div></header>
 <nav>
 <button class=on data-seg=bybullet>⧉ By bullet</button>

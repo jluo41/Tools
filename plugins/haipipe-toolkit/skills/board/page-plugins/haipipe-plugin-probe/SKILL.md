@@ -2,13 +2,13 @@
 name: haipipe-plugin-probe
 description: >-
   The Task/Discovery QA lane of a Board Page's Probe family: one evidence
-  question per folder at <page>/evidence/probe/PP<NN>-<slug>/ — consumer/ holds the
+  question per folder at PAGE/evidence/probe/PPNN-SLUG/ — consumer/ holds the
   stake-bearing question, executor/ the stripped one, proof/ the evidence,
   card.md the reader-facing head. Trigger: probe plugin, QA probe, probe card,
   Task evidence, Q-consumer, Q-executor, /haipipe-plugin-probe.
 metadata:
-  version: "0.9.3"
-  last_updated: "2026-08-21"
+  version: "0.9.4"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 # /haipipe-plugin-probe · Probe's Task/Discovery QA lane
@@ -81,7 +81,7 @@ Everything else in `card.md` is a pointer, not content: the body is the four-lin
 
 ## ↩ `serves:` · the card names the bullet, never the reverse
 
-**Ruled 260817.** A card is created at PROBE, long after OUTLINE froze the page's plan. So the plan cannot name the card: at the moment it was written, the id did not exist. The link runs BACKWARD, and `card.md` carries it, right under `state:`:
+**Ruled 260817, re-cut 260901.** A card is created at LAND, and only for a question that leaves the page (a `found` item row never mints one), long after SHAPE froze the page's plan. So the plan cannot name the card: at the moment it was written, the id did not exist. The link runs BACKWARD, and `card.md` carries it, right under `state:`:
 
 ```text
   serves: C4.P1.B4                        one bullet
@@ -108,7 +108,7 @@ A card whose `serves:` is empty is not an error while the plan is still being wr
 
 ## ✍️ Writer · the loop lands each piece, and the state is checkable by FILE
 
-The lifecycle is `haipipe-probe`'s five-step loop, split across TWO phases since 260819: PROBE runs ① ORGANIZE ② MATCH ③ DISPATCH, and EVIDENCE runs ④ POINT ⑤ INTERPRET, landing and binding what came back. No board route writes a card; this plugin only says where each step lands.
+The lifecycle is five steps across the OUTLINE part since 260901 (`haipipe-probe` retired): SURVEY does ② MATCH as the item table's Run column, LAND does ① ORGANIZE ③ DISPATCH for an outbound row and ④ POINT when the answer returns, EMBED does ⑤ INTERPRET into the plan. No board route writes a card; this plugin only says where each step lands.
 
 ```text
 step                                  where it lands
@@ -158,7 +158,7 @@ nothing caught it until JL asked on 260819: "probe 是一个大 folder，里面�
 的 value，而有的时候我们在正文里面只会用到一个具体的 value".
 
 ```text
-  probe/PP01-phase-contract-count/
+  evidence/probe/PP01-phase-contract-count/
     the question   how many phases, contracts, ticks, runs?
     the answer     7 · 6 · 5 · 2          ← four values, one card
 
@@ -287,7 +287,8 @@ files:
 ```
 
 ```text
-  task folder results/  ──pull──▶  probe/PP<NN>/proof/  ──freeze──▶  display/<unit>/intake/
+  task results/ ──pull─▶ evidence/probe/PP<NN>/proof/
+                   ──freeze─▶ evidence/display/<unit>/intake/
   the AUTHORITY                    the page's frozen copy            the approved extract
 ```
 

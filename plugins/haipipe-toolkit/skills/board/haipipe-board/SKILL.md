@@ -8,7 +8,7 @@ description: >-
   board/index.html to VS Code, not create one. Trigger: board, open a board,
   add a question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.158.5"
+  version: "0.159.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -29,7 +29,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 - You know when you can stop.
   That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
-## 👪 The family: one door, one Page base, four contract catalogs
+## 👪 The family: one door, one Folder base, orthogonal contracts
 
 This skill is the DOOR: you invoke it to run a board.
 The rest of this board family (`../`) is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
@@ -37,10 +37,11 @@ The rest of this board family (`../`) is what other agents LOAD or CALL without 
 **The board's sub-skills**: which altitude each one works at.
 
 ```
-haipipe-page       SPEC + ROUTER · the shared Page frame and the
-                         Page Type × Page Phase composition
-page-types/              the ONE variant this skill set owns; the others
-                         live in the skill set that owns them (see below)
+haipipe-folder     SPEC · one work object with a Page Face and Task Face;
+                         its domain workflow phase owns kind, plugins and gate
+haipipe-page       PAGE-FACE SPEC + ROUTER · the shared readable frame,
+                         phase-owned kind/legacy compatibility × Page Phase
+page-types/              compatibility variants this board family still owns
   haipipe-page-for-stage
                          TYPE · S-<Family>-<unit> lifecycle pages
 page-workflows/
@@ -54,15 +55,15 @@ page-workflows/
 haipipe-plugin     SPEC · every subfolder of a page's folder is a plugin:
                          storage · surface · writer · boundary; the roster in
                          its ref/roster.md is the single list of names
-page-plugins/            the NINE per-plugin skills, each delta-only over that
-                         contract: draw · slide · chat · latex · word · bibex ·
-                         display · probe · skill (meeting · logging · _fixture
-                         join when their rows go live)
+page-plugins/            reusable capability deltas over that contract:
+                         draw · slide · chat · latex · word · bibex · display ·
+                         probe · pagex · skill and the live roster's peers
 ref/topic-entry-contract.md
                          LEGACY CHECKER COMPATIBILITY ONLY · validates archived
-                         route/E-division Pages; current Page work uses pagex/
-                         for existing Pages and Page-local probe/ for Task or
-                         Discovery evidence. Never load it as a current contract.
+                         route/E-division Pages; current Page work uses
+                         evidence/pagex/ for existing Folders and
+                         evidence/probe/ for Task or Discovery evidence. Never
+                         load it as a current contract.
 haipipe-sentence   DOOR + SPEC · one sentence: comment, edit, card;
                          lanes, addresses, the archive-never-delete lifecycle
 haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
@@ -101,10 +102,14 @@ which calls the same creator for exactly one DRAFT, EVIDENCE, or REVISE authorit
 then a mechanical builder/version snapshot, then the reviewer for CHECK. The
 orchestrator stores the exact result under `_runs/page/` and audits it; it never
 writes Page prose, and the reviewer never cures its own finding.
-**A Page Type variant ships in the folder of the SKILL SET THAT OWNS IT (JL 260809; paper amended JL 260831).**
-Most skill sets carry a `page-types/` folder, so the folder a variant sits in is what names its owner.
-Paper is the exception: its types are 1:1 with journey phases, so they ship as six phase skills under `paper/workflow-phases/` (each still owning its `page-type:` key) plus the non-phase `paper/haipipe-paper-venue/`.
-The live inventory with owners and counts is `cli/pagetypes.py` output, never a prose count.
+**A migrated Folder kind ships with the workflow phase that owns it.**
+The phase owns both faces, plugin profile, gate and handoff. Paper already uses
+that shape under `paper/workflow-phases/`; Application now uses twelve phase
+skills under `application/workflow-phases/`. A legacy `page-type:` key may
+resolve to that phase through its `legacy_page_type` metadata, but does not
+own Application semantics. Unmigrated families may still carry `page-types/`.
+The compatibility inventory with owners and live counts is
+`cli/pagetypes.py` output, never a prose count.
 (`for-slide` retired 260815: a deck is `slide/` plugin material, written by `/_board/autodeck` under the `haipipe-plugin` contract.)
 
 ```
@@ -113,17 +118,17 @@ paper/workflow-phases/    haipipe-paper-ideation · -seed · -roadmap ·
                           -narrative · -section · -round
 paper/                    haipipe-paper-venue (library lane, not a phase)
 task/page-types/          for-task
-application/page-types/   for-brief · for-insight · for-intervention · for-artifact
+application/workflow-phases/
+                          insight I0-I5 · design D0-D5
 subjective-label/…/       for-labeling
 ```
 
-Application's names are intentionally unique across the global resolver: Brief does not reuse Paper Seed, and the user-facing Design Page retains the machine key `intervention` rather than colliding with another family's vocabulary.
 `for-stage` stays here although only paper and legacy application runtimes have lifecycles, because a stage page is a BOARD mechanism (the chain, the managed contract span, the human gate) that more than one family can instantiate.
 The five that left describe a paper's own artifacts, so they belong to the paper.
 Two earlier rules failed here and are recorded so neither returns: "ships under its CONSUMER, never here" broke when venue pages turned out to be consumed by the paper family and maintained by this one, and "ships WHERE THE BOARD FAMILY MAINTAINS IT" (JL 260803) held only while one family owned every variant.
 ⚠️ Moving a variant does not move its installed symlink: re-run `install.sh --global` (repo root) afterwards, or the skill silently stops resolving.
 
-**The Page Types, and how each one is CREATED**: six filename shapes, two procedures.
+**Page filename shapes and how each is created**: kind resolution is separate.
 
 ```
 type      filename                     created by
@@ -301,7 +306,7 @@ Its complete shape is deliberately three lines, FOUR when the focus is one page:
 ```markdown
 🧭 BOARD · QUEUE/FOCUS (deep-link)
 ✅ done · implementation
-⏱️ 📮 PROBE · 🧭✅ 📮⏳ 🃏⬜ ✏️⬜ 🖊⬜ 🔍⬜ · ✋4   ← page focus only
+⏱️ LAND · 🧭✅ 🃏⏳ ✏️⬜ 🖊⬜ 🔍⬜ · ✋4   ← page focus only
 → one concrete next action
 ```
 
@@ -337,7 +342,10 @@ A decision left in a session cannot be seen by anyone else, carries no `Blocks:`
 
 The row's shape is QB4 §5.2: 🗣 the question as the row's title · 📍 `Part` · 🔔 `Why now` · the options with ⭐ on the recommended one · 🛑 `Blocks` · 🤖 `If nobody answers`. A row that blocks nothing MUST carry a default, so it resolves itself and the list stays short.
 
-And the prior question: most proposed decisions do not belong there at all. The test is whether anything STOPS until it is answered. If you could decide it yourself, decide it and write it in `## Log`.
+And the prior question: most proposed decisions do not belong there at all.
+The test is whether anything STOPS until it is answered. If you could decide
+it yourself, decide it and write one dated record in
+`outline/<stem>-log.md`.
 
 ## 🔨 Actions
 
@@ -380,7 +388,9 @@ index, serving, the round trip
 
 Route by SCOPE at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board and its structure are this skill's.
 
-Inside the one-Page route, `haipipe-page` resolves the stable Page Type and the current DRAFT, EVIDENCE, REVISE, or CHECK authority.
+Inside the one-Page route, `haipipe-page` resolves the owning Folder kind's
+Page Face (or a legacy compatibility type) and the current DRAFT, EVIDENCE,
+REVISE, or CHECK authority.
 The one-Page contract now owns `RUN`, backed by `ref/page-lifecycle.workflow.js`.
 It is not `ADVANCE`: the router may repeat, branch, HOLD, or begin a new DRAFT round.
 The non-interactive dispatch target is `haipipe-page-auditor-agent`; the Board door still owns no separate phase verb.
@@ -613,7 +623,7 @@ After finishing any substantive work under a page (a file written, an experiment
 |---|---|
 | `## Aims` | Durable target states, grouped under their owning Content division. Change these only when intent changes. |
 | `## States` | ⛔ RETIRED 260819, merged into `## Aims`; a page that still carries one is reported `retired-section`. One Aim row now carries its tick, its `Done when:` test AND its `Now:` fact. |
-| `## Log` | ⛔ Moved 260830 to `outline/<stem>-log.md` (`haipipe-plugin-outline` 0.16.1). Still `YYMMDD HHMM · what changed`, still 15-35 words, newest-first; only its home changed. The page's `## Files` keeps one row pointing at it. |
+| `## Log` | ⛔ Moved 260830 to `outline/<stem>-log.md` (`haipipe-plugin-outline` 0.16.1). Still `YYMMDD HHMM · what changed`, still 15-35 words, newest-first; only its home changed. `outline/<stem>-files.md` keeps the related action-map record. |
 | `state:` | On a Q page, every Aim met or explicitly held → starts with ✅; on an S page, only its human gate may produce ✅. Progress made → starts with 🟡; deliberately parked → starts with ⏸️. The standard labels are SETTLED / PARTIAL / ON HOLD, and a human-readable note may be appended after them. |
 | the `> Comment WHO` / `> ✎` lines under a sentence | The sentence comments and edit records added, replied to, or confirmed this round |
 
@@ -651,7 +661,10 @@ The sentence in `close:` IS the closing condition, so write it so that it can be
 
 ## 📐 One page (routed)
 
-A page's whole anatomy — the metadata head, the fixed on-stage order Opening → Diagram → Content → Aims → States, Files, and the folded tail — is `haipipe-page`'s to state, with the kinds in each owner's variant folder (`page-types/`, or paper's `workflow-phases/`) and the workflow under `page-workflows/`.
+A Folder's readable anatomy — metadata plus the fixed Page-Face order — is
+`haipipe-page`'s to state. Its domain kind belongs to the owning
+`workflow-phases/` skill; unmigrated compatibility variants remain under
+`page-types/`; Page-work authority remains under `page-workflows/`.
 The door keeps only the two facts its own verbs depend on:
 
 - A NEW page is always `state: 🔴 OPEN`, and the first emoji of `state:` is the machine state (✅ · 🟡 · 🔴 · ⏸️ · 🗂 FOLDED); a readable note may follow, never replacing it.

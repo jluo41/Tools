@@ -7,8 +7,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-08-31"
+  version: "0.3.7"
+  last_updated: "2026-09-01"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
@@ -64,7 +64,7 @@ A plugin's OPERATING knowledge lives in its own skill under `page-plugins/haipip
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
-## 🗂 Category folders and the execution door (260831)
+## 🗂 Category folders and the Runs door (260901)
 
 A unit folder has TWO PARTS (JL 260831 v5). The UPPER, page part: three
 CATEGORY folders that group lanes without changing any lane's grammar,
@@ -72,16 +72,17 @@ writer or gate — `evidence/` (bibex · probe · display · pagex · materials 
 what the page CITES, each behind its human gate), `delivery/` (latex · word ·
 slide · render — what leaves the page) and `studio/` (chat · draw — the
 HUMAN's room: the person talks and sketches, and the chat may redraw on
-their ask) — plus outline/ and workflow/. The LOWER, code part: the unit root IS the code home, as a
-task folder already is — `scripts/` (any language, `config/` inside; a
-script may equally live inside an evidence lane) with `runs/` and
-`results/` REQUIRED wherever code exists. `runs/` is the ONE door: only a
-ticket there calls a script, under the simple-code law (reads only this
-folder or a pagex-linked unit's declared outputs; writes only its own lane;
-no raw data, no PHI). `results/` is regenerable, never sits inside
-evidence/, and becomes EVIDENCE only when a probe card binds it. A flat
-lane name is the same lane during migration (a stub on a migrated page).
-Rows and retirements: `ref/roster.md`.
+their ask) — plus outline/ and workflow/. The LOWER, Task-side material is
+presented as **Runs**: each authored ticket pairs with one generated Result by
+logical Run address. A standalone/Discovery Folder stores both projections at
+its root; a canonical Task Page stores the ticket inside the Task and its
+generated Result at the containing Job's `results/<task>/<run>/`. `scripts/`
+(any language, with optional `config/` inside) is supporting material only when
+reusable local code exists; many Runs call a skill, CLI, API, or worker with no
+scripts lane. The ticket is the ONE execution door under the simple-code law.
+Results are regenerable, never evidence merely by existing, and become Page
+evidence only when an evidence lane binds or aggregates them. Rows and physical
+dialects: `ref/roster.md` and `haipipe-plugin-runs`.
 
 ## 🔌 The two plugin kinds, and the tab bar they make (260831)
 
@@ -105,8 +106,9 @@ outline included:
                                        scene the chat redraws changes in front
                                        of the person talking. Both tools keep
                                        every rule and pen they had
-⚙️ Code      haipipe-plugin-code       scripts/ · runs/ · results/ — contract
-                                       only until the first real page runs/
+⚙️ Runs      haipipe-plugin-runs       one overview table: Execution ·
+                                       Discovery · Page, each row pairing its
+                                       ticket + Result; Scripts below, optional
 📂 Folder    haipipe-plugin-folder     the roster itself, the meta-surface
 ```
 

@@ -1,3 +1,8 @@
+## 0.12.2 · 2026-08-31
+
+- Make the phase card and local MATCH ladder name canonical
+  `evidence/probe/`; flat `probe/` remains readable only as migration support.
+
 ## 0.12.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

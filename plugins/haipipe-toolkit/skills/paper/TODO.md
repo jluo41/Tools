@@ -23,7 +23,7 @@ JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一�
       into the Seed's E-rows):
 
       ```text
-      SD01 §6      R1 claim novelty   ⬜ proposed   6 claim QAs
+      Story01 §6      R1 claim novelty   ⬜ proposed   6 claim QAs
         E1 ◀────────────┤
         E2 ◀────────────┤
         E3 ◀────────────┘
@@ -52,5 +52,5 @@ Receipt teeth for the establish loop (260827, from the lap-L1 field test)
       paper-family rules — decide between a page-type-aware rule pack the checker loads
       from the contract, or a small board-local script the paper board declares.
 - [ ] Each tooth must be proven to FAIL first on a known-broken sample; the 260827
-      pre-repair SD02 (released rows + "Nothing released" Log) is the stored specimen
+      pre-repair Story02 (released rows + "Nothing released" Log) is the stored specimen
       for tooth ①.

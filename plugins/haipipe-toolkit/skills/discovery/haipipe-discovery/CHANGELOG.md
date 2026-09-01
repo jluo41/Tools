@@ -8,6 +8,36 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.4.2] — 2026-09-01
+
+- Rename the optional presenter from Execution to Runs. Discovery explicitly
+  selects the Folder-local Run/Result dialect; scripts remain optional.
+- Keep Execute in the Discovery lifecycle and leave closure with Discovery.
+
+## [0.4.1] — 2026-09-01
+
+- Bind every materialized Paper Run to the optional
+  `haipipe-plugin-execution` surface: exact Run/Result pairs define it, while
+  Topic `scripts/` remains optional supporting material.
+- Keep Discovery lifecycle ownership in the Discovery workflow; the presenter
+  adds no execution or closure authority.
+
+## [0.4.0] — 2026-09-01
+
+- Replaced the flat one-topic/one-execution model with a Discovery Task Page
+  Folder that owns many Level-4 Paper Runs.
+- Added the exact same-stem spine
+  `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`; one Run resolves one canonical
+  Subject, while Trigger provenance stays distinct.
+- Added `ref/paper-run-contract.md`, Page/Task Face schema v4, per-Result
+  Card/facts/runtime/one-entry Bib gates, and derived Topic Evidence Bib.
+- Added deterministic `scripts/paper_runs.py` check/build-bib commands and
+  positive/negative unit tests.
+- Forward testing closed a provenance hole: complete Results now require
+  `bib.source` + `bib.mode: verbatim_copy`; supplying metadata fields is not
+  equivalent to supplying a complete BibTeX entry.
+- Reclassified `sources.md` and `notes.md` as legacy/derived indexes.
+
 
 ## [0.3.5] — 2026-08-27
 

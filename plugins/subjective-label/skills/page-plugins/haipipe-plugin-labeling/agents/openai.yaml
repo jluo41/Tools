@@ -1,0 +1,4 @@
+interface:
+  display_name: "HAI Pipe · Labeling"
+  short_description: "Operate a human-grounded labeling page from one tab"
+  default_prompt: "Use $haipipe-plugin-labeling to inspect this labeling page and identify its one honest next action."

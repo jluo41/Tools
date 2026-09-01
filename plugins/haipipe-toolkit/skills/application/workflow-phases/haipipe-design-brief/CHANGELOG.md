@@ -1,3 +1,15 @@
+# haipipe-design-brief · version history
+
+## 1.0.1 — 2026-08-31
+
+- Name the outgoing authority `GD0-closed Brief`; D0 has no undefined
+  `accepted Brief` token and declares no Page-local owner ruling.
+
+## 1.0.0 — 2026-08-31
+
+- Migrated from `haipipe-page-for-brief` to Design workflow phase D0.
+- The Brief skill now owns both faces, plugin profile, GD0, and its Card handoff.
+
 ## 0.4.0 — 2026-08-24
 
 - `born-of:` required — a Brief is born mandate-first (a person names the program, needs raised open) or evidence-first (signed W handoffs propose it; opportunity/audience/outcome/kill drafted from the handoff fields, settled needs born answered).

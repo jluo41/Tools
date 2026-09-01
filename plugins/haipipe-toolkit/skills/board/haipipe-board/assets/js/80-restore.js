@@ -86,17 +86,32 @@
      browsers also drop `beforeunload` entirely. So record the drawer the moment
      it opens or closes: one class flip on #chat, watched directly, no coupling
      to the chat code. */
-  var chatEl = document.getElementById('chat');
-  if (window.MutationObserver) {
+  function watchState() {
+    /* Assets are injected into <head>. On a cold load the script can therefore
+       execute before BODY exists; observing null throws and aborts everything
+       below this block, including restoreSections/restoreDrawer (JL 260901).
+       Install once the DOM target exists instead. */
+    if (!window.MutationObserver || !document.body) return;
     var watch = new MutationObserver(save);
-    if (chatEl) watch.observe(chatEl, { attributes: true, attributeFilter: ['class'] });
+    var chatEl = document.getElementById('chat');
+    function observe(target) {
+      /* A routed pane can be replaced while its assets are still settling.
+         Do not let a stale/non-Node target abort the rest of the Board wire. */
+      if (!target || typeof target.nodeType !== 'number') return;
+      try {
+        watch.observe(target, { attributes: true, attributeFilter: ['class'] });
+      } catch (e) {}
+    }
+    observe(chatEl);
     /* <body> too, and not as belt-and-braces: opening the terminal toggles
        `termon` on BODY and touches nothing on #chat, so watching only the
        drawer meant the terminal view was never recorded when it opened, and
        the flag existed only if `pagehide` happened to run (JL 260801: "still
        the same problem, when I refresh it switches from terminal to GUI"). */
-    watch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    observe(document.body);
   }
+  if (document.body) watchState();
+  else window.addEventListener('DOMContentLoaded', watchState, { once: true });
   window.addEventListener('board:updated', restoreSections);
   restoreSections();
   restoreDrawer();

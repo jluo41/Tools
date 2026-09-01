@@ -31,6 +31,8 @@ import re
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
+from src.common import evidence_lane_dirs
+
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
 DONE = {"✅"}
 STATE_EMOJI = ("✅", "⬜", "🔨", "🧠", "❄️", "🟡", "🟠", "⏸️")
@@ -714,9 +716,12 @@ def _disk_state(page_src):
     """
     base = page_src.parent
     cards, units, serves, display_serves = {}, {}, {}, {}
-    pd = base / "probe"
-    if pd.is_dir():
+    seen_cards = set()
+    for pd in evidence_lane_dirs(base, "probe"):
         for d in sorted(pd.iterdir()):
+            if d.name in seen_cards:
+                continue
+            seen_cards.add(d.name)
             c = d / "card.md"
             if not c.is_file():
                 continue
@@ -749,9 +754,12 @@ def _disk_state(page_src):
                                         vb.group(1)):
                     vals[row.group(1)] = row.group(2)
             cards[d.name.split("-")[0]] = (st, n, q.strip(), why_empty, vals)
-    dd = base / "display"
-    if dd.is_dir():
+    seen_units = set()
+    for dd in evidence_lane_dirs(base, "display"):
         for d in sorted(dd.iterdir()):
+            if d.name in seen_units:
+                continue
+            seen_units.add(d.name)
             m = re.search(r"-(Display\d+)-", d.name)
             if not d.is_dir() or not m:
                 continue
@@ -804,9 +812,12 @@ def _disk_state(page_src):
     # WHAT it is without leaving the tab (JL 260817: "我点它之后，它把这个内容
     # 就直接出现了"). So the entry's own fields come back with it.
     keys = {}
-    bx = base / "bibex"
-    if bx.is_dir():
+    seen_bibs = set()
+    for bx in evidence_lane_dirs(base, "bibex"):
         for f in bx.glob("*.bib"):
+            if f.name in seen_bibs:
+                continue
+            seen_bibs.add(f.name)
             for ent in re.split(r"\n(?=@)", f.read_text(errors="replace")):
                 m = re.match(r"@\w+\{\s*([^,\s]+)", ent.strip())
                 if not m:
@@ -1664,10 +1675,14 @@ def _pill(rec):
             return (None, "acc", v.split(" · ")[0].strip() or "open")
         if L == "landed":
             return (lab, "warn", "not landed") if v in ("", "—", "-") else (lab, "ok", v)
-        if any(k in low for k in ("✅", "settled", "landed", "accepted", "evidence-ready", "decided", "gated")) \
+        # the item ladder (haipipe-plugin-outline ref/item-table.md): landed ·
+        # folded · accepted read green; owed · bound · stale · blocked amber;
+        # deferred · dropped grey (the default below)
+        if any(k in low for k in ("✅", "settled", "landed", "folded", "accepted", "evidence-ready", "decided", "gated")) \
                 or low in ("met", "yes"):
             return (lab, "ok", v)
-        if any(k in low for k in ("open", "needs", "🔴", "🟡", "hold", "unmet", "⬜")) or v in ("", "—", "-"):
+        if any(k in low for k in ("open", "needs", "🔴", "🟡", "hold", "unmet", "⬜", "bound", "stale", "blocked")) \
+                or v in ("", "—", "-"):
             return (lab, "warn", v or "open")
         return (lab, "mut", v)
     return None

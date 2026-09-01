@@ -148,6 +148,24 @@ class ShellDocTest(unittest.TestCase):
         """A bare url is the split now, so `↗ plain` has to say `?plain`."""
         self.assertIn("?plain", self.doc)
 
+    def test_plugin_frame_detects_html_from_the_url_path_only(self):
+        """A plugin query may end in an encoded Page URL whose value is .html.
+
+        That does not make the plugin endpoint itself an HTML Page. The old
+        raw-string suffix test appended ``?plain`` to Labeling's ``page=``
+        value and the right pane landed on a 400 response.
+        """
+        self.assertIn("new URL(u, location.href).pathname", self.doc)
+        self.assertNotIn("u + (/\\.html$/.test(u) ? '?plain' : '')", self.doc)
+
+    def test_registry_tabs_are_filtered_by_the_live_pages_applies_gate(self):
+        """A type-specific tab must not remain in another Page's menus."""
+        self.assertIn(
+            "w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach",
+            self.doc,
+        )
+        self.assertNotIn("w.boardPlugins.all().forEach(function (e)", self.doc)
+
     def test_the_page_it_was_opened_on_is_baked_in(self):
         self.assertIn("OPENED = '/b/board/QD/QD5-x.html'", self.doc)
         self.assertIn("INDEX = '/b/board/index.html'", self.doc)

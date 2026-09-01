@@ -2,13 +2,13 @@
 name: haipipe-plugin-display
 description: >-
   The display/ plugin of a Board page: figure and table UNITS at
-  <page>/evidence/display/<stem>-DisplayN-<slug>/, routed to a renderer by kind, with a
+  PAGE/evidence/display/STEM-DisplayN-SLUG/, routed to a renderer by kind, with a
   human-only accepted: tick. A unit's id named in prose chips as an evidence
   card. Trigger: display plugin, page display, display unit, make a figure for
   this page, cite a display, /haipipe-plugin-display.
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-08-17"
+  version: "0.3.2"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-display · the page as a small paper, its figures as accepted units
 
@@ -73,9 +73,9 @@ The commonest question about a data-driven unit is where its numbers come from (
 
 ```text
   task folder / shipped run
-        │  PROBE pulls, with source · run · sha256 · aggregate: true
+        │  LAND pulls, with source · run · sha256 · aggregate: true
         ▼
-  probe/PP<NN>-<slug>/proof/<file>          ← the card's own evidence
+  evidence/probe/PP<NN>-<slug>/proof/<file> ← the card's own evidence
         │  ① INTAKE copies it, verbatim, and records the SAME sha256
         ▼
   display/<stem>-Display<N>-<slug>/intake/inputs/<file>
@@ -86,7 +86,7 @@ The commonest question about a data-driven unit is where its numbers come from (
 
 **The unit never reaches into the workspace a second time.** The card already crossed the wall and recorded the provenance; a unit that re-pulls the same file is a second, unwitnessed pull that can silently disagree with the card. `intake/manifest.yaml` names the card, the card's state, and the card's own `sha256`, which is what makes staleness COMPUTABLE: if the card re-pulls and the hash moves, the intake is stale and `accepted:` drops back to ⬜.
 
-**A DATA-driven unit may only be created once a card serving it has ANSWERED.** Its `intake/` freezes from a `proof/` that does not exist until an answer does, which is why such a unit is created at EVIDENCE and not at OUTLINE or PROBE (`haipipe-page-workflow` §🃏). Until then the plan carries a bare `🖼 owed` mark and no folder: on `QC1-visitlbp` that is 1 of 4 proposed units buildable, because the other three wait on two `planned` cards. A CONCEPT unit (diagram · tex · illustration) waits for no card: its intake freezes a LISTING of the source files it reads, and it may be created as soon as that listing exists.
+**A DATA-driven unit may only be created once a card serving it has ANSWERED.** Its `intake/` freezes from a `proof/` that does not exist until an answer does, which is why such a unit is created at LAND and not at SHAPE or SURVEY (`haipipe-page-workflow` §🃏). Until then the plan carries a bare `🖼 owed` mark and no folder: on `QC1-visitlbp` that is 1 of 4 proposed units buildable, because the other three wait on two rows not yet landed. A CONCEPT unit (diagram · tex · illustration) waits for no card: its intake freezes a LISTING of the source files it reads, and it may be created as soon as that listing exists.
 
 **The recipe TYPES no cell.** `recipe/` reads the frozen intake at run time, so re-running it against the same intake yields the same bytes and a reader can check any printed number against the card's `proof/`. It also fails loudly on a ragged read: `QC1-visitlbp-Display1-control-ladder` caught Stata writing `="771,449"`, where the `=` outside the quote makes a CSV parser split inside the number and deliver 11 cells where 5 were expected.
 

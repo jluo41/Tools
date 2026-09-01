@@ -1,5 +1,28 @@
 # haipipe-design-workflow · version history
 
+1.0.3 · 260831
+- Canonicalize every GD receipt under the granting Brief/Design Folder's
+  `outline/<stem>-log.md`; Cards and Units keep state fields, not private Logs.
+
+1.0.2 · 260831
+- Make GD6 the unconditional round stop; a later round re-enters D0 only by a
+  new commission.
+- Map the Page owner RULING: D1/GD1 and D4/GD5 reuse their domain receipts;
+  D0/D2/D3/D5 add no Page-local ruling.
+
+1.0.1 · 260831
+- Define Card → Unit → Verdict as in-place identities of one stable DU Folder
+  with append-only phase history; give PageDown a minimal round-receipt Folder.
+- Canonicalize DS identity as audience × job × venue and render storage as
+  `delivery/render/`.
+- Distinguish Design cross-phase authority gates from nested Page-local ticks;
+  GD5 blocks outward work while D5/GD6 still seal the round.
+
+1.0.0 · 260831
+- D0-D5 are phase-owned Folder kinds. Dispatch loads the matching phase
+  contract; this workflow keeps only D/GD order, thread/round frontier and
+  receipts. The Application workflow adds no interior Design phase.
+
 0.6.0 · 260828 · JL (the one-thread-one-folder merge)
 - The THREAD becomes literal: one folder under design/, born at proposal holding only card.md, grown after release. D1's authority artifact is design/DU<NN>/card.md; GD2's back-pointer clause replaced by the card's state flip; release-before-realize is folder purity, a checker ERROR.
 

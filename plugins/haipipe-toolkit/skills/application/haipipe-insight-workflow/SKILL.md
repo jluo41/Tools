@@ -1,24 +1,37 @@
 ---
 name: haipipe-insight-workflow
 description: >-
-  The InsightBoard-level phase machine: six phases named after the six page types the lane owns — I0 Meta (scope) → I1 Question (ask) → I2 Data (observe) → I3 Information (derive) → I4 Knowledge (claim) → I5 Wisdom (hand off) — with gates GI0-GI6, each a checkable assertion over existing pages. The frontier's atomic unit is the register CELL (one question × one partition): phases climb the rows, partitions widen the columns, only the X group lets columns meet, and a partition is born at I0 and nowhere else. It refines the application machine's insight lane (P0 = I0+I1, P1 = I2-I4, P2 = I5) and owns the partition-major climb order; interior law stays with the door /haipipe-insight, page lifecycle with haipipe-page-workflow, every verdict with an independent CHECK plus a human tick. Use when asking which rung a question sits on, whether a cell may advance, what the next runnable page is, where a new subgroup enters, or where a run must stop. Trigger: insight workflow, run the insight board, climb the ladder, next rung, frontier cell, insight phase, add a partition, partition column, /haipipe-insight-workflow.
+  The InsightBoard phase machine over six phase-owned Folder kinds: I0 Meta →
+  I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom. Owns
+  gates GI0-GI6, the question-by-partition CELL frontier, climb order,
+  dispatch, receipts, and stops; each phase skill owns both Folder faces and
+  its plugins. Use to run or inspect an InsightBoard. Trigger: insight
+  workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-28"
+  version: "1.0.4"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-insight-workflow · know the cell, test the gate, mint the next rung
 
-Load `haipipe-insight` first; it says what an InsightBoard IS and this file is its phase authority. It refines `haipipe-application-workflow`'s insight lane and never contradicts it: that machine keeps the two-lane view and gates G0-G5, this one names the rungs inside. It never edits a page, never runs a page's lifecycle (that is `haipipe-page-workflow`), never states board law (that is the door), and never judges content (that is CHECK plus the human ticks).
+Load `haipipe-insight` and `haipipe-folder` first. This is the only authority
+for I0-I5 ordering and GI0-GI6. `haipipe-application-workflow` may delegate
+here and record a crossing, but it owns no alias phases or duplicate gates.
+This workflow never edits a Page Face itself; the selected phase delegates Page
+work to `haipipe-page-workflow`.
 
 ## 🔤 Terminology law
 
-An **insight phase** is one digit, `I0`-`I5`. A rung PAGE id always carries two digits and usually a partition letter (`I03`, `BI03`), so a one-digit `I<n>` in any Application document is a phase, never a page — the same digit-count rule that already separates phase `P0` from principle page `P01`. Against the application machine: `🔎P0 = I0+I1`, `🔎P1 = I2-I4`, `🔎P2 = I5`; the aliases scope, ask, observe, derive, claim, hand off are legal in prose, never in a folder or page id.
+An **insight phase** is one digit, `I0`-`I5`. A runtime Page id carries two
+digits and may carry a partition letter (`I03`, `BI03`), so it cannot be
+confused with the phase. Scope, ask, observe, derive, claim, and hand off are
+prose aliases only.
 
 ## 🗺 The six phases · the phases are the rungs
 
-A journey phase is NAMED BY ITS AUTHORITY PAGE (the application machine's naming law), and this lane owns exactly six page types, so the ladder itself is the phase spine:
+Each phase is named by the Folder kind it owns. The phase skill carries both
+faces, plugin profile, gate, and handoff; the ladder is the phase spine:
 
 ```text
 phase                     authority page              what the phase produces
@@ -40,7 +53,9 @@ I5 Wisdom (hand off)      the W page                  counsel + the SIGNED Desig
    ↺ I1→I2→I3→I4→I5→I1 is the CLIMB LOOP · exits through the register at GI6
 ```
 
-Two positions deliberately did not become phases, by the test that retired ACCEPT: the pooling VERDICT rides on an ordinary K page in X and is GI4's partition-major assertion, and SETTLE is a register act and is GI6. A position that cannot name a page type of its own is a gate.
+Two positions deliberately did not become phases: the pooling verdict is I4
+Knowledge work in X and part of GI4; SETTLE is I1 register work and GI6. A
+position with no independently owned Folder kind is a gate or Task-Face act.
 
 Each phase performs one EPISTEMIC OPERATION and each gate is an AUTHORITY TRANSFER: passing GI<n> is the moment the rung below becomes citable and nothing else does — the Climb Law read as a process instead of a structure. That is why the aliases are verbs of knowing (scope, ask, observe, derive, claim, hand off), not verbs of doing.
 
@@ -183,7 +198,38 @@ F's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ X group
                                                  included, all citing the verdict
 ```
 
-This order moved here from `haipipe-application-workflow` (0.6.0), which keeps a pointer.
+This is the only authoritative Insight order; the crossing workflow delegates here.
+
+### Pre-climbed external parent · Task RF bridge
+
+One narrow bridge preserves the Climb Law without duplicating a
+consumer-neutral chain. A settled Task Insight Page has already climbed
+`D → I → K → W → RF` under its own Task-only contract. An Application may use
+that completed chain as an **external parent** for a local I5 Folder:
+
+```text
+Task Insight Page       Application InsightBoard                 DesignBoard
+D→I→K→W→RF ── PageX ─▶ I1 QW register → I5 contextual W ─✋─▶ X1 signed handoff
+```
+
+This is not permission to skip a rung inside an Application chain. It is a
+cross-scope authority bridge with five mechanically readable assertions:
+
+1. the Task Page declares `page-type: insight`, `scope: task`, and
+   `insight-target: wisdom`;
+2. it is CHECK-closed against current source versions;
+3. the borrowed `RF<n>@<version>` traces through named D/I/K/W rows;
+4. the Application I1 QW row records that exact Task Page/RF and the local I5
+   W Folder that consumes it;
+5. the W Folder's PageX primary list binds that exact version.
+
+When all five hold, GI4 reads the external chain as the K/W parent and no
+local I2-I4 Folders are minted: their evidence authority remains in the Task
+Page. I5 still performs the Application operation—applicability, counsel,
+forbidden overreach, `serves:`, and human signature—and GI6 still settles the
+I1 row. The RF itself never satisfies X1 or any Design gate. A stale,
+below-Wisdom, incomplete, or untraceable Task Page fails the bridge assertion
+and routes through the ordinary local climb.
 
 ## 🚪 The gates
 
@@ -195,28 +241,42 @@ GI0  Meta → Question      MT00 is past 🔴 and its source resolves to a run �
                           and the shared-threshold pointer exist
 GI1  Question → Data      the cell's row carries target, raiser, what-would-answer,
                           and a state cell · its partition group exists on disk
-GI2  Data → Information   the D page is CHECK-closed, every value bound to a QA file
-                          by path
+GI2  Data → Information   the D page is CHECK-closed, every value bound by path to
+                          an accepted QA answer backed by a named run
 GI3  Information → Knowledge   the I page is CHECK-closed and derives only from named
                           D rows (X contrast: mirrored I rows, the one exception)
-GI4  Knowledge → Wisdom   the K page is CHECK-closed · on partition-major the X
-                          group's pooling verdict exists and is current against the
-                          partition register — a late partition voids this gate
+GI4  Knowledge → Wisdom   the local K page is CHECK-closed · OR the pre-climbed
+                          external-parent bridge passes all five assertions above ·
+                          on partition-major the X group's pooling verdict exists and
+                          is current against the partition register — a late
+                          partition voids this gate
 GI5  Wisdom → signed      ✋ the handoff's `signed:` row reads `✅ <initials> <YYMMDD>`
-                          (haipipe-page-for-wisdom) · `⬜` blocks · no machine
+                          (haipipe-insight-wisdom) · `⬜` blocks · no machine
                           writes it · under POOL a non-template W closes as a DEFERRAL
                           by id, exports no handoff, and owes no signature
 GI6  settle               the register cell flips ✅, or 🚫 with a reason, or 🟡 <page>
                           final when the page states why the remainder cannot close
-                          (for-question) — always citing the closing page ·
+                          (haipipe-insight-question) — always citing the closing page ·
                           gaps remain → the next lap
 ```
 
 A value produced by EXTENDING an already-digested task run binds to the run's new artifact paths; whether the task QA digest reopens is the task layer's law, not this file's — an extension annotates the digest's anchors and never rewrites its answer.
 
-The DERIVED-HEADER rule (for-question) covers every on-register restatement of the Queue — headers, Diagrams, Openings — and status WORDS as well as counts, by the fixed mapping: any lap-eligible cell → 🟡 PARTIAL, all cells terminal → ✅ SETTLED. Reconciling any of them is register-pen work citing the Queue, and authorizing a header fix authorizes the PAGE's derived surfaces, not one division of them.
+The DERIVED-HEADER rule (`haipipe-insight-question`) covers every on-register
+restatement of the Queue — headers, Diagrams, Openings, status words, and counts.
+Reconciling one is I1 Task-Face work citing the Queue.
 
-**The two human gates never have an auto mode**: probe release sits INSIDE any rung page's RUN at its PROBE phase, per page; handoff signing is GI5. Every dispatch pins `mode: copilot`. A blocked gate is a clean stop: report the cell, the waiting artifact, and the person's owed decision.
+**The two Insight cross-phase authority gates never have an auto mode**: probe
+release sits INSIDE any rung page's RUN at its PROBE phase, per page; handoff
+signing is GI5. Page Workflow may also require local outline, read, or verified
+ticks while authoring that Folder. Those are nested Page-Face controls and may
+pause a copilot run, but they do not create extra Insight transitions or GI
+numbers. Every dispatch pins `mode: copilot`. A blocked gate is a clean stop:
+report the cell, the waiting artifact, and the person's owed decision.
+
+For the shared Page Workflow's owner RULING, I0-I4 declare none beyond their
+mechanical GI closure; I5 reuses the GI5 signature receipt. This never creates
+a duplicate human tick. Probe `read:` remains its own nested plugin control.
 
 ## 🗃 Group mapping
 
@@ -234,9 +294,9 @@ I5        rung-major 4-W-wisdom/, or each partition group's W page
 
 ```text
 select   the frontier cell whose gate is open and whose inputs exist; prefer cells
-         the register marks `⬜ calc` (computed, unauthored — for-question)
+         the register marks `⬜ calc` (computed, unauthored — I1 Question)
          before cells needing new runs, because authoring is cheaper than running
-load     haipipe-page + the matching haipipe-page-for-<type> contract
+load     the matching haipipe-insight-<folder-kind> phase skill
 run      haipipe-page-workflow over that ONE page · mode: copilot always
 fold     move the register cell ONLY on CLOSE; every other terminal is a named
          non-settlement and the cell does not move
@@ -247,7 +307,11 @@ A cell whose inputs do not exist is not runnable, and naming WHY is this skill's
 
 ## 🧾 Phase receipts
 
-A transition leaves one receipt on the page that GRANTED it — except a 🟡-final settle, which leaves TWO (§Marks: the register's and the answering page's) — a dated Log row — MT00 for GI0 and every partition birth, the register for GI1 and GI6, the closing rung page for GI2-GI4, the W page for GI5. No separate receipt store is authoritative; the pages are the record.
+A transition leaves one dated record in the granting Folder's canonical
+`outline/<stem>-log.md` — except a 🟡-final settle, which leaves TWO (§Marks):
+MT00 records GI0 and every partition birth; the Question register records GI1
+and GI6; the closing rung Folder records GI2-GI4; and the W Folder records GI5.
+No embedded Page log section and no separate receipt store is authoritative.
 
 ## ⏱ Advancement is never scheduled
 
@@ -255,7 +319,9 @@ A gate test may be run any time; a gate may only be DECLARED passed by the human
 
 ## 🔀 Resolving "what phase are we in"
 
-Per cell: the highest gate whose assertion currently holds. Per board: the register matrix read whole — and a board-level scalar is a lie this file refuses to mint. The application machine's `🔎P<n>` reading is derived from the same cells (P0 = any register gap, P1 = any cell between GI1 and GI4, P2 = any W owed its tick).
+Per cell: the highest gate whose assertion currently holds. Per board: read the
+register matrix whole. A board-level scalar is a lie this workflow refuses to
+mint; the crossing workflow reports this native frontier unchanged.
 
 ## 🌐 The machine is content-free
 
@@ -308,16 +374,19 @@ a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the se
                    clears when that condition lands, and a 🧊 whose clearing
                    condition has already occurred is a finding, not a mark
 🟡-final receipts  the flip leaves TWO receipts, whoever flips — a person, a lap, or
-                   a charter: the register's Log row QUOTING the licensing sentence,
-                   and one dated row in the ANSWERING page's ## Log naming the
-                   QUESTION id and the word final (the shape the checker scans) —
-                   staleness travels by citation, and a citation invisible from the
-                   cited end cannot travel
+                   a charter: one record in the register's
+                   outline/<register-stem>-log.md QUOTING the licensing sentence,
+                   and one record in the ANSWERING Folder's
+                   outline/<answering-stem>-log.md naming the QUESTION id and the
+                   word final (the shape the checker scans) — staleness travels by
+                   citation, and a citation invisible from the cited end cannot travel
 ```
 
 ## 🛑 Stop rules
 
-- STOP at GI5 per question: a signed handoff is the lane's export; composing from it is the DesignBoard's.
+- GI5 is the outward-export boundary: after signature, never compose or design
+  in this lane. The dispatcher must still perform the I1-owned GI6 register
+  settlement, leave its receipt, and only then stop that cell.
 - STOP at any gate: report and end, never wait in a loop.
 - STOP on contradiction: a cell that derives to two phases at once (the register says answered, the page says 🔴) is reported as a defect, never repaired silently.
 - **Known-stale is marked, not repaired.** A line known stale but deliberately left (a frozen handoff, a fenced page) is marked `🧊 <staling event>` where it stands, so frozen debt is distinguishable from unnoticed drift; an unmarked stale line remains a finding.

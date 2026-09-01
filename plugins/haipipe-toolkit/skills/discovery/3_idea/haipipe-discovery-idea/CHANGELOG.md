@@ -3,6 +3,12 @@ haipipe-discovery-idea — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.2.0] — 2026-09-01
+
+- Idea generation remains Topic-level Page work and no longer masquerades as a
+  Run. Every prior-work paper used for novelty evidence receives its own
+  numbered Paper Run/Result.
+
 
 ## [0.1.0] — 2026-07-24
 

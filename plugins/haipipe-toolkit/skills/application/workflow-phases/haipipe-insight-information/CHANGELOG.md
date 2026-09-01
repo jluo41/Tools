@@ -1,4 +1,18 @@
-# haipipe-page-for-information · version history
+# haipipe-insight-information · version history
+
+## 1.0.2 · 2026-09-01
+
+- Rename optional Execution to Runs and reserve Execute for workflow action.
+
+## 1.0.1 · 2026-09-01
+
+- Rename optional Code to Execution: exact Run/Result pairs define local
+  computation; scripts/config are supporting material only when needed.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-information` and migrated into workflow phase I3.
+- Local derivation is now Task-Face work; the reader-facing pattern remains the Page Face.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

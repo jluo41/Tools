@@ -6,6 +6,39 @@ import re
 from pathlib import Path
 
 
+EVIDENCE_LANES = frozenset({"bibex", "probe", "display", "pagex", "materials"})
+
+
+def evidence_lane_dirs(page_dir, lane):
+    """Existing lane directories, canonical first, with symlink aliases deduped.
+
+    New work lives under ``evidence/<lane>/``. A flat ``<lane>/`` remains a
+    readable migration alias, and may be either a symlink stub or an older
+    independent directory. Readers use every distinct directory; new Pages
+    resolve to the canonical address while an unmigrated Page may continue to
+    use its one real legacy directory until it is refolded.
+    """
+    page_dir = Path(page_dir)
+    if lane not in EVIDENCE_LANES:
+        raise ValueError("not an evidence lane: %s" % lane)
+    out, seen = [], set()
+    for candidate in (page_dir / "evidence" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def evidence_lane_dir(page_dir, lane):
+    """Canonical lane when present/new, or the sole readable lane on old Pages."""
+    dirs = evidence_lane_dirs(page_dir, lane)
+    return dirs[0] if dirs else Path(page_dir) / "evidence" / lane
+
+
 def scene_text(scene) -> str:
     """The ONE way an Excalidraw scene is serialized (JL 260816).
 

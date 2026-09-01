@@ -7,9 +7,13 @@ description: >-
   sibling lane and runs in OUTLINE. Trigger: page probe, PROBE phase, raise a
   probe card, Task evidence, match before dispatch, /haipipe-page-probe.
 metadata:
-  version: "0.12.1"
+  version: "0.12.2"
   last_updated: "2026-08-31"
 ---
+# ⚰️ RETIRED 260901 · haipipe-page-probe
+
+JL 260901: the run is the atom of evidence, so the probe's two halves moved to the cycles that own the work: its MATCH half is the item table written at OUTLINE's SURVEY cycle (`haipipe-page-outline` §🔍, `haipipe-plugin-outline/ref/item-table.md`); its dispatch half, the stake wall and the one courier door are EVIDENCE's LAND cycle (`haipipe-page-evidence` §🚪); the cost ladder became the outcome words (found · rerun · new-run · new-task · new-job · new-block · person · none). This file is kept for history and is not installed.
+
 
 # /haipipe-page-probe · run Probe's Task/Discovery QA branch
 
@@ -74,7 +78,7 @@ releases PROBE.
 
 ```text
 OUTLINE   C4.P1.B4 · subgroup estimate · source: task · 📮
-PROBE     probe/PP03-subgroup-estimate/ · serves: C4.P1.B4
+PROBE     evidence/probe/PP03-subgroup-estimate/ · serves: C4.P1.B4
 ```
 
 Allocate the next unused two-digit `PP<NN>` on this Page. Follow the plugin's
@@ -108,7 +112,8 @@ never carried. What follows is only what the shared contract does NOT say.
 Board Page there is a step in front of it:
 
 ```text
-1. existing probe/PP<NN>-<slug>/ cards ON THIS PAGE      ← page-local, step 0
+1. existing evidence/probe/PP<NN>-<slug>/ cards ON THIS PAGE
+                                                          ← page-local, step 0
 2. the page's collection job's QA/ and values.yaml       ← haipipe-task-for-page
 3. the selected Task or Discovery bank, --check-only     ← haipipe-probe §②
 4. only then dispatch new work                           ← haipipe-probe §③

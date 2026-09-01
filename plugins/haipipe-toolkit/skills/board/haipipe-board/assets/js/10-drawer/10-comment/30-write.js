@@ -92,3 +92,19 @@
     }
     return 0;
   }
+
+  /* Manual fallback from the Pending comments panel. This function existed in
+     the monolithic asset but was dropped when the comment code was split into
+     ordered parts; `paint()` still wires its button to `sync`, so the missing
+     declaration aborted every Board wire on first paint (JL 260901). */
+  async function sync() {
+    if (!db.length) { say('Nothing pending'); return; }
+    if (!window.showDirectoryPicker) {
+      navigator.clipboard.writeText(patch());
+      say('This browser cannot write files — patch copied instead');
+      return;
+    }
+    var n = await drain(true);
+    say(n ? ('Wrote ' + n + ' comment(s) — rebuild to see them rendered')
+          : 'Could not write. Grant access to the board folder.');
+  }

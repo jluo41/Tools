@@ -1,3 +1,10 @@
+## 0.6.2 · 260831
+- Remove angle-bracket address notation from the discovery description so the
+  package passes skill metadata validation; the body keeps the full grammar.
+
+## 0.6.1 · 260831
+- Home renamed A1-Story/Story02-roadmap (SD/NA retired, JL 260831); the desk layer now starts at the Story<NN>-narrative pages.
+
 ## 0.6.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):

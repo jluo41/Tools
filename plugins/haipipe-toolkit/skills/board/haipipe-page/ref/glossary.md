@@ -30,18 +30,23 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 - **mark** — the one symbol at the end of a bullet saying what it still owes:
   🎯 an aim · 📮 a question to ask · 🧮 a number to pull · 📚 a citation to
   land · 🖼 a picture to draw.
-- **card**, also **probe card** — ONE question this page needs answered, as a
-  folder. Raised at ② PROBE, one per 📮 mark, never earlier.
-  `<page>/probe/PP<NN>-<slug>/` holding `card.md`, `consumer/`, `executor/`,
-  `proof/`.
+- **item row** — one record per mark in `outline/<stem>-items.md`, written at
+  SURVEY: what is owed, which run in tasks/ answers it (`found · rerun ·
+  new-run · new-task · new-job · new-block · person · none`), and a person's
+  Decide. Its Status is derived (`owed → bound → landed → folded → accepted`).
+- **card**, also **probe card** — ONE question this page needs answered by
+  someone else, as a folder. Raised at LAND only when the question LEAVES the
+  page; a `found` row never mints one.
+  `<page>/evidence/probe/PP<NN>-<slug>/` holding `card.md`, `consumer/`,
+  `executor/`, `proof/`.
 - **display unit**, often shortened to **unit** — ONE picture and everything
-  needed to rebuild it. Created at ③ EVIDENCE, one per 🖼 mark.
-  `<page>/display/<PageId>-Display<N>-<slug>/` holding `intake/`, `recipe/`,
-  `assets/`, `float.tex`, `preview.pdf`, `README.md`.
+  needed to rebuild it. Created at LAND, one per 🖼 mark.
+  `<page>/evidence/display/<PageId>-Display<N>-<slug>/` holding `intake/`,
+  `recipe/`, `assets/`, `float.tex`, `preview.pdf`, `README.md`.
 - **intake** — the unit's FROZEN inputs plus their sha256 hashes, so a moved
   source file is caught rather than silently redrawn. `<unit>/intake/`
 - **bibex entry** — one reference, landed by a person, never invented.
-  `<page>/bibex/<stem>.bib`
+  `<page>/evidence/bibex/<stem>.bib`
 - **receipt** — the machine-readable record of one phase pass: who acted, which
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
 - **the bank** — the task and discovery folders that ANSWER questions, and know
@@ -91,9 +96,13 @@ Defined once in `page-workflows/haipipe-page-workflow` §🔤; repeated here onl
 as pointers, because that section is the authority.
 
 - **workflow** — which LOOP this is. Never repeats.
-- **phase** — which AUTHORITY is acting: 🧭 OUTLINE · 📮 PROBE · 🃏 EVIDENCE ·
-  ✏️ DRAFT · 🖊 REVISE (📄 COMPILE folded) · ✅ CHECK. REPEATS, which is why it
-  is not called a step.
+- **phase** — which AUTHORITY is acting: 🧭 OUTLINE · 🃏 EVIDENCE · ✏️ DRAFT ·
+  🖊 REVISE (📄 COMPILE folded) · ✅ CHECK. REPEATS, which is why it is not
+  called a step.
+- **cycle** — the named pass inside a phase: SHAPE · SURVEY (OUTLINE) · LAND ·
+  EMBED (EVIDENCE) · WRITE (DRAFT + REVISE) · CHECK. The OUTLINE part is the
+  first four; the DRAFT part the last two. Never a letter code, never a
+  circled number.
 - **step** — WHERE in this run, a number that never repeats.
 - **round** — which PROMISE era; repeats when a page is reopened.
 - **RUN, not ADVANCE** — a page may repeat a phase, branch, HOLD, or go back;
@@ -103,7 +112,8 @@ as pointers, because that section is the authority.
 
 - **producer** — the hand that WRITES in one phase. One per phase.
   `board/page-workflows/agents/haipipe-page-<phase>-agent`
-- **judge** — the cold read of a BUILT version at ⑦ CHECK. May never be the
+- **judge** — the cold read of a BUILT version at CHECK (and, in pre-check
+  mode, inside WRITE's loop). May never be the
   same actor that produced it. `haipipe-page-check-agent`
 - **haipipe-probe-q-executor-agent** — the ONE agent allowed to hand stripped
   questions to the bank, shared by every consumer family (JL 260820). Called

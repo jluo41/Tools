@@ -1,3 +1,14 @@
+## 0.21.0 · 2026-09-01
+- Eighth record kind: `<stem>-items.md`, the item table (`ref/item-table.md`,
+  new): one authored row per evidence mark (Need · Route · Run · Decide), the
+  eight outcome words, the derived nine-word status ladder (owed → bound →
+  landed → folded → accepted · stale · deferred · dropped · blocked). The
+  evidence file becomes the table joined to the disk, Status first; the six
+  bundle words retire.
+
+## 0.20.3 · 260831
+- Specimen narrative-row reads Story03 (SD/NA retired, JL 260831).
+
 ## 0.20.2 — 2026-08-31
 - Evidence record heads carry the plan's words (record-shape 0.18.1);
   `Ref` its own row, only when one exists.

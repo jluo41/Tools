@@ -2,6 +2,22 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
+- 1.0.3 (260831): make the subject-first unprefixed DesignBoard canonical and
+  distinguish D4 acceptance from the required D5/GD6 round seal.
+
+- 1.0.2 (260831): align the door with the final seam repair: Page RULING
+  reuses GD1/GD5, Unit acceptance lives only on the D4 row, and PageDown always
+  reaches GD6 before a round stops.
+
+- 1.0.1 (260831): Card → Unit → Verdict are explicit in-place identities of
+  one DU Folder; PageDown owns a minimal round receipt. DS identity includes
+  venue, render lives at `delivery/render/`, and the two Design gates are named
+  as cross-phase transfers distinct from nested Page-local ticks.
+
+- 1.0.0 (260831): D0-D5 now each own one Folder contract and both faces.
+  Principle ceased to be a Page Type or phase; its rare promoted form is a
+  subordinate D4 role reread at D5.
+
 - 0.6.1 (260828, same-day sync riders): the workflow reference reads D0-D5 / GD0-GD6 with D5 PageDown; the Reads Law table's `DR card` / `DU unit` labels became `design card` / `design unit`, retiring the last DR word in the door.
 - 0.6.0 (260828, page-type normalization): the door NAMES its three page types (brief, design, principle). Nine contracts share `application/page-types/` with the insight door's six, so the folder cannot say which door owns which; this door had named `for-brief` and `for-principle` and never `for-design`, the one the whole lane is built around. Names only — versions come from disk via `/haipipe-skillset-status`.
 

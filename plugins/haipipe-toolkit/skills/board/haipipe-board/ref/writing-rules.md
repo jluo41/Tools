@@ -23,8 +23,11 @@ These are not style preferences. `build.py` renders each section a specific way,
   Everything a stage must honour goes in this section: what it requires, the venue's constraints, what it provides. JL 260801 collapsed the old `### Stage Record` into it, because two names for one obligation meant nobody could say which held what. A legacy `### Stage Record` under `## Content` still renders: build.py lifts it into the Stage Contract as its opening lines. Write nothing new under that heading.
 - `## Aims` = durable targets linked to Content
   Mirror the relevant Content division: `A3.1` is an Aim for division 3, and its group is `### A3 · <that division's name>`, carrying the division's number, name and emoji (JL 260801, the letter fixed to `A` on 260802; `C<n>` still resolves). Use `P1` only when a target crosses divisions. Write `Done when` as a testable result and add `Plan` only when a temporary next move is worth preserving. A checkbox Aim (`- [ ]` with an emoji lead) is the first-class form (JL 260815); write id Aims only when a page's progress must be machine-tracked, and then keep States mirroring the ids.
-- `## States` = one factual current State row per Aim
-  The paired section labels are plural because both contain multiple records: Aims contains Aim records; States contains their State records. Mirror the Aims groups and ids. Use `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or on something outside this page, `✅` met with the evidence named, or `❄️` on ice; each says its meaning by shape (JL 260802), and the older `🟡` `🟠` `⏸️` still parse but are not what to write. A State says what is true now; it never says what should happen next, and it never keeps an earlier now beside the current one. Put the reason for a transition in `## Log`.
+- Each Aim's `Now:` line = its one factual current state
+  Use `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or
+  on something outside this page, `✅` met with the evidence named, or `❄️`
+  on ice. A current fact never keeps an earlier now beside it. Put the reason
+  for a transition in `outline/<stem>-log.md`.
 - Other items (in `## Law`, `## Lesson`, and dated Log records) = `- ICON heading` then a folded explanation
   Only the heading shows on stage, with a caret; the explanation opens on click. Start every item heading with an author-chosen emoji icon (build.py never guesses one). The first indented line is a one-sentence summary; the lines after it are the long explanation. Write the explanation as a real paragraph (what it means, what happened, what we understand so far, why it ended up this way), not a clause. Length is free here because it is folded. A `## Glossary` entry takes the same `- ICON` row, with the TERM in bold and its definition after a colon (JL 260802), because the term is what the reader arrived looking for.
 
@@ -66,7 +69,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Sentence-local `> Comment WHO` and `> ✎` lines are the durable review trail; do not erase them. A person's remark is written `> Comment JL …` (JL 260802); the older `> JL:` still renders, and `check.py` warns on it inside Content.
 - **The page says what IS; the Log keeps the story** (JL 260815)
   Write the title, Opening, and Content for someone who arrived today: the current contract, in plain words, standing on its own.
-  Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `## Log` (and the board's Pipeline), where a reader goes when they want the story.
+  Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `outline/<stem>-log.md` (and the board's Pipeline), where a reader goes when they want the story.
   The test: if a sentence needs a date or a name to stay true, it is a Log line, not Content.
   The commonest leak is the attribution parenthetical: a prose sentence ending in `(JL 260816)` is jargon to a cold reader (JL 260816, on QPf9's render); state the rule plainly and let Law or Log carry who ruled it and when. `check.py` warns on the Opening form; in Content the writer catches it.
 - **Clear out stale text**

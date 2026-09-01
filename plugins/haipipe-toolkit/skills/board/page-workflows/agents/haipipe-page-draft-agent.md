@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-draft-agent
-description: "Write-scoped DRAFT producer for one Board Page, phase ④. In a fresh context it converts the approved plan into page prose (a Section plan's sentence slot becomes one sentence, any other plan's point becomes one or more sentences), each sentence ending `<!-- realizes: C.P.B -->`, each number under a `> Value:` lane, no hole token in prose, the old-to-new diff folded under one log record; it enters on landed evidence so it writes the NUMBER, and emits a phase receipt. A missing input names its blocker as a comment lane plus a probe card; a hole with no named blocker means the PREPARE loop exited early and the fix is a v<N+1> at OUTLINE. Trigger: page draft producer, DRAFT phase, point to sentence, write the number, draft agent."
+description: "Write-scoped DRAFT producer for one Board Page, step 1 of the WRITE cycle. In a fresh context it converts the approved plan into page prose (a Section plan's sentence slot becomes one sentence, any other plan's point becomes one or more sentences), each sentence ending `<!-- realizes: C.P.B -->`, each number under a `> Value:` lane, no hole token in prose, the old-to-new diff folded under one log record; it enters on landed evidence so it writes the NUMBER, and emits a phase receipt. A missing input names its blocker as a comment lane plus a probe card; a hole with no named blocker means the PREPARE loop exited early and the fix is a v<N+1> at OUTLINE. Trigger: page draft producer, DRAFT phase, point to sentence, write the number, draft agent."
 tools:
   - Read
   - Write
@@ -20,7 +20,7 @@ metadata:
   changelog: "./CHANGELOG.md"
 ---
 
-# ④ DRAFT producer
+# DRAFT producer · WRITE, step 1
 
 **A phase-locked producer.** Read
 `../haipipe-page-workflow/ref/producer-contract.md` first: the assignment

@@ -39,5 +39,5 @@ Body:  Refill lapse risk detected. Tap to review panel.
 [ ] Body ≤ 100 chars
 [ ] Deep link target specified
 [ ] Tone matches audience
-[ ] adopted_A / declined_A in frontmatter
+[ ] Card id, grant, and exact render version resolve in the Design Folder
 ```

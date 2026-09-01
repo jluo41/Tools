@@ -1,3 +1,15 @@
+## 0.10.2 · 2026-08-31
+
+- Remove the last authoritative Task template `## Files` and `## Log`
+  sections. Machinery is indexed as `F<n>` records in
+  `outline/<stem>-files.md`; dated receipts live in
+  `outline/<stem>-log.md`; state stays in Aim `Now:` rows.
+
+## 0.10.1 · 2026-08-31
+
+- Canonicalize Task Page evidence addresses under `evidence/`: Probe cards,
+  Bibex entries, and Display units no longer appear as new flat lanes.
+
 ## 0.10.0 · 2026-08-30 · the page rebinds from the JOB to the TASK
 
 JL settled the task-layer hierarchy the same day: a task is now SELF-CONTAINED and

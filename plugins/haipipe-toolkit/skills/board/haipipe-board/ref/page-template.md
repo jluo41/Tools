@@ -47,7 +47,8 @@ provides: one compact phrase naming the downstream handoff
        - the state line is a row, not a paragraph (JL 260816): after the status word come at
          most two ` · ` parts, what stands and then `open:` with a short list or a count, the
          whole line under 110 characters. A part that could end in a period is prose: the
-         facts belong in the Aims' `Now:` lines and the reason in Log.
+         facts belong in the Aims' `Now:` lines and the reason in
+         `outline/<stem>-log.md`.
          Good: `🟡 PARTIAL · ruled, card grammar adopted · open: landing address, citation hop, tab`
        - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
      Section names (Opening / Content / Aims, etc.) must be kept verbatim.
@@ -97,7 +98,7 @@ How does <the thing this page decides> work, and why does it need settling now?
 Those words are this board's own, so say what each one is in one clause with a real example.
 Name what makes it hard, in one sentence a reader can feel.
 Then say what this page decides about it.
-Write the title, this Opening, and Content for someone who arrived today: the current contract in plain words, with no decision dates, no people's names, and no retired mechanisms; that story lives in `## Log`.
+Write the title, this Opening, and Content for someone who arrived today: the current contract in plain words, with no decision dates, no people's names, and no retired mechanisms; that story lives in `outline/<stem>-log.md`.
 
 **Where this page sits**: the neighbouring page the reader most likely came from, and what it handles.
 
@@ -259,7 +260,8 @@ The section heading derives its `met/total` count from each row's tick; Aims nev
 One Aim is ONE row: `- <tick> A<division>.<n> · target`, then a testable `**Done when:**` line, then one `**Now:**` line with the current fact.
 The tick is `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or on something outside this page, `✅` met with the evidence named, or `❄️` on ice, held on purpose and thawable.
 Each says its meaning by SHAPE (JL 260802); the older `🟡` `🟠` `⏸️` still parse, because rows on other boards use them, but nothing new is written with them.
-`Now:` is a snapshot of right now: history belongs in `## Log`, and future work is either an Aim or its Plan.
+`Now:` is a snapshot of right now: history belongs in
+`outline/<stem>-log.md`, and future work is either an Aim or its Plan.
 Add `Plan` only when the immediate route is worth preserving; Plan is temporary and may change without changing the Aim.
 A live ask for a person is that Aim's `Now:` line, marked `🧠`.
 
@@ -293,7 +295,7 @@ If the page holds decisions only a person can make, add one `### Decision Now` s
 (JL 260731), and put it FIRST, above the per-Aim groups (JL 260802): everything else in
 Aims is a target and its report, and this is the one part that asks the reader to do something. One `- [ ]` row per pending decision. The machine writes the rows and closes one once the human has answered it, recording which option, who ruled and when; a row nobody has answered waits for them (JL 260802). Its shape and the rule for what earns a row are stated below.
 
-A `### Decision Now` row earns its place only when something STOPS until it is answered. A decision that matters is usually made in conversation within minutes, so decide it, do it, and record it in `## Log` instead of parking it here.
+A `### Decision Now` row earns its place only when something STOPS until it is answered. A decision that matters is usually made in conversation within minutes, so decide it, do it, and record one dated ruling in `outline/<stem>-log.md` instead of parking it here.
 
 Each option takes ITS OWN LINE and says what choosing it commits you to (JL 260731). Options crammed together on one line name the choices and explain none, so the reader has to work out the consequences before deciding. Give a decision as many options as it actually has, never three by habit: a filler option is worse than none.
 
@@ -310,10 +312,10 @@ Each option takes ITS OWN LINE and says what choosing it commits you to (JL 2607
       🤖 `If nobody answers` the option that takes effect, required whenever nothing is blocked
 ```
 
-An answered decision LEAVES Aims entirely (JL 260802): the RULING goes to `## Law` with the date, the person, and the options that were not chosen with the reason; the CHANGE goes to `## Log` as one dated line; and the matching Aim's tick and `Now:` line are updated in the same edit.
-
-## Files
-retired from the page (JL 260831) · The action map now lives in `outline/<stem>-files.md` as records: `### F<n> · <what it is for>` with `- **Path**:` and `- **Role**:` (reads · writes · checks · contract · archive · related), and a Related Board Page as a record with `- **Role**: related` and its row verbatim as the first detail line (`\`reads · EVIDENCE\` · [QB7 §3](QB-research/QB7-literature.md)`). The 🧭 tab shows it as 📎 Files; `cli/pagecontext.py` and `check.py` read it; `check.py` reports a surviving `## Files` as `retired-section`. Delete this heading from a new page.
+An answered decision LEAVES Aims entirely (JL 260802): the RULING goes to
+`## Law` with the date, the person, and the options that were not chosen with
+the reason; the CHANGE becomes one dated record in `outline/<stem>-log.md`;
+and the matching Aim's tick and `Now:` line are updated in the same edit.
 
 ## Law
 optional · folded · Rules this question has settled and will follow from now on, one per line.
@@ -331,12 +333,3 @@ optional · folded · Traps hit and lessons learned on this question, one per li
 ## Glossary
 optional · folded · Words on this page an outsider would stumble on, one `- ` row each, opening with an emoji: the TERM is bold and its definition follows a colon (JL 260802), because the term is what the reader arrived looking for. Any coined phrase must be defined here or not used.
 Delete the section if unused.
-
-## Discussion
-optional · folded · Loose discussion, one line each. The "➕ Add to discussion" box on the page writes here.
-> JL: discussion goes here.
->> CC0724: reply with two angle brackets and a date.
-
-## Log
-optional (most questions have one) · folded · What changed on this question, one line each, newest on top:
-260724 1030 · what changed (`YYMMDD HHMM · ...`, time optional)

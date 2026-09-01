@@ -96,7 +96,7 @@ Stage remains a Page Type, not a separate phase engine. Run the shared Page
 workflow:
 
 ```text
-OUTLINE ⇄ PROBE ⇄ EVIDENCE → DRAFT → REVISE/COMPILE → CHECK
+SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED (the OUTLINE part) → WRITE → CHECK (the DRAFT part)
 ```
 
 Probe retains its shared PageX and QA lanes. A Stage contract cannot override

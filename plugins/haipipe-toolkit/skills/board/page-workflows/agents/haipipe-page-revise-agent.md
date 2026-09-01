@@ -20,7 +20,7 @@ metadata:
   changelog: "./CHANGELOG.md"
 ---
 
-# ⑤ REVISE producer
+# REVISE producer · WRITE, step 2
 
 **A phase-locked producer.** Read
 `../haipipe-page-workflow/ref/producer-contract.md` first: the assignment

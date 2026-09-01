@@ -1,3 +1,12 @@
+## 0.13.0 — 2026-09-01
+
+- Owns the OUTLINE part's two human-gated cycles: SHAPE (brief → propose →
+  react → revise, `approved:`) and SURVEY (the item table: one row per mark,
+  Need · Route · Run = found | rerun | new-run | new-task | new-job |
+  new-block | person | none with its tasks/ address, a person's Decide).
+  The tick at SHAPE carries the fork (fresh marks → SURVEY, every row folded
+  → the DRAFT part). The circled phase numbers retire.
+
 ## 0.12.0 — 2026-08-31
 
 Rewritten as ONE pass: 535 → 199 lines, present tense. ⓪ Boot (load this

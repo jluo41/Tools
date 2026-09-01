@@ -9,9 +9,13 @@ description: >-
   bank, match before dispatch, cost ladder, /haipipe-probe.
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "0.18.0"
-  last_updated: "2026-08-21"
+  version: "0.18.1"
+  last_updated: "2026-08-31"
 ---
+# ⚰️ RETIRED 260901 · haipipe-probe
+
+JL 260901: the run is the atom of evidence, so the probe's two halves moved to the cycles that own the work: its MATCH half is the item table written at OUTLINE's SURVEY cycle (`haipipe-page-outline` §🔍, `haipipe-plugin-outline/ref/item-table.md`); its dispatch half, the stake wall and the one courier door are EVIDENCE's LAND cycle (`haipipe-page-evidence` §🚪); the cost ladder became the outcome words (found · rerun · new-run · new-task · new-job · new-block · person · none). This file is kept for history and is not installed.
+
 
 # /haipipe-probe · choose the PageX or QA evidence lane
 
@@ -36,9 +40,9 @@ Choose the lane from the source, not from convenience:
 
 | Source | Lane | Phase | Durable record |
 |---|---|---|---|
-| accepted Board Page | PageX | OUTLINE | `pagex/<stem>.md` + exact-file links |
-| Task folder | QA Probe | PROBE → EVIDENCE | `probe/PP<NN>-<slug>/` → Task `QA/` |
-| Discovery folder | QA Probe | PROBE → EVIDENCE | `probe/PP<NN>-<slug>/` → Discovery `QA/` |
+| accepted Board Page | PageX | OUTLINE | `evidence/pagex/<stem>.md` + exact-file links |
+| Task folder | QA Probe | PROBE → EVIDENCE | `evidence/probe/PP<NN>-<slug>/` → Task `QA/` |
+| Discovery folder | QA Probe | PROBE → EVIDENCE | `evidence/probe/PP<NN>-<slug>/` → Discovery `QA/` |
 
 PageX does not create a mirror QA card for evidence already accepted by its
 source Page. QA Probe does not search Pages or treat topic similarity as a bank
@@ -73,7 +77,7 @@ The consumer owns its local record. The PageX lane loads
 `board/page-plugins/haipipe-plugin-probe`; it stores one question at:
 
 ```text
-<page>/probe/PP<NN>-<slug>/
+<page>/evidence/probe/PP<NN>-<slug>/
 ├── card.md
 ├── consumer/q-consumer.md
 ├── consumer/a-consumer.md

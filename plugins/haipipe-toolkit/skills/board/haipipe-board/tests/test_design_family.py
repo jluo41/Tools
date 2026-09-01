@@ -10,7 +10,8 @@ is `card.md` INSIDE the unit folder it commissions, `direction/` is gone, and
 the two pointer fields (`landed:` on the card, `direction:` on the README)
 are retired because the shared folder is the binding. The release-before-
 realize law became checkable the same day: a folder whose card still says
-`proposed` may hold nothing but card.md.
+`proposed` may hold no realization material; `workflow/` phase history is
+control metadata and remains legal.
 
 The boards are built in a temp `applications/` directory holding BOTH the
 design board and the insight board it reads, because `reads:`, grants and
@@ -31,7 +32,7 @@ BOARD_MD = """# Test DesignBoard
 
 spine: one brief, one design page, one thread folder holding card and unit.
 close: the unit is judged and the division awaits a person.
-reads: A00_InsightBoard-Test
+reads: A00_Test-InsightBoard
 
 ## Topic
 A synthetic board for the design-family checks.
@@ -50,7 +51,7 @@ stance: follow A00·W01
 depth: copy+why
 thesis: Send the tested winner unchanged.
 expected effect: it keeps leading on click; falsified if any concurrent arm beats it.
-grant: ../../../../../A00_InsightBoard-Test/1-F-full/FW01-win/FW01-win.md
+grant: ../../../../../A00_Test-InsightBoard/1-F-full/FW01-win/FW01-win.md
 released: JL 260824
 """
 
@@ -67,31 +68,36 @@ The wager lives on the card beside this file, `./card.md`.
 
 EVIDENCE_MD = """# DU01 · evidence
 
-- path: `../../../../../A00_InsightBoard-Test/1-F-full/FW01-win/FW01-win.md`
+- path: `../../../../../A00_Test-InsightBoard/1-F-full/FW01-win/FW01-win.md`
 """
 
 
 def build(root):
     """An intact applications/ dir: one insight board, one design board."""
     apps = root / "applications"
-    ins = apps / "A00_InsightBoard-Test" / "1-F-full" / "FW01-win"
+    ins = apps / "A00_Test-InsightBoard" / "1-F-full" / "FW01-win"
     ins.mkdir(parents=True)
     (ins / "FW01-win.md").write_text("# FW01 · win\n", encoding="utf-8")
-    other = apps / "A00_InsightBoard-Test" / "1-F-full" / "FK01-other"
+    other = apps / "A00_Test-InsightBoard" / "1-F-full" / "FK01-other"
     other.mkdir(parents=True)
     (other / "FK01-other.md").write_text("# FK01 · other\n", encoding="utf-8")
     # A board that exists and is NOT named in `reads:`, so a grant reaching it
     # is outside the whitelist rather than merely dead.
-    unread = apps / "A99_InsightBoard-Unread"
+    unread = apps / "A99_Unread-InsightBoard"
     unread.mkdir(parents=True)
     (unread / "board.md").write_text("# Unread\n", encoding="utf-8")
 
-    d = apps / "B00_DesignBoard-Test"
+    d = apps / "B00_Test-DesignBoard"
     (d / UNIT / "content").mkdir(parents=True)
     (d / "board.md").write_text(BOARD_MD, encoding="utf-8")
     (d / PAGE / "DS01-slate.md").write_text("# Slate\n\nstate: 🟡 PARTIAL\n",
                                             encoding="utf-8")
     (d / CARD).write_text(CARD_MD, encoding="utf-8")
+    (d / UNIT / "workflow").mkdir()
+    (d / UNIT / "workflow" / "phase.yaml").write_text(
+        "current:\n  phase: D3\n  folder-kind: design-verdict\n",
+        encoding="utf-8",
+    )
     (d / UNIT / "README.md").write_text(README_MD, encoding="utf-8")
     (d / UNIT / "spec.md").write_text("# spec\n", encoding="utf-8")
     (d / UNIT / "evidence.md").write_text(EVIDENCE_MD, encoding="utf-8")
@@ -122,9 +128,10 @@ BREAKS = {
     "card-grant-path": sub(CARD, r"FW01-win\.md", "FW01-gone.md"),
     "card-grant-outside-reads": sub(
         CARD, r"^grant: .*$",
-        "grant: ../../../../../A99_InsightBoard-Unread/board.md"),
+        "grant: ../../../../../A99_Unread-InsightBoard/board.md"),
     # release-before-realize, the law the merge made checkable: a proposed
-    # card sitting in a folder that already holds realization files.
+    # card sitting in a folder that already holds realization files. The
+    # workflow/ control directory built above is deliberately ignored.
     "unit-realized-before-release": sub(CARD, r"^state: landed$",
                                         "state: proposed"),
     "unit-tombstone-extra": sub(CARD, r"^state: landed$", "state: killed"),
@@ -165,8 +172,8 @@ class DesignFamilyTest(unittest.TestCase):
                     silent.append(name)
         self.assertEqual(silent, [], f"rules that never fired: {silent}")
 
-    def test_proposed_folder_with_only_card_is_clean(self):
-        """A freshly proposed thread is card.md alone, and that is legal."""
+    def test_proposed_folder_with_card_and_phase_control_is_clean(self):
+        """workflow/ phase metadata is control, not premature realization."""
         with TemporaryDirectory() as td:
             d = build(Path(td))
             u = d / UNIT
@@ -204,12 +211,12 @@ class DesignFamilyTest(unittest.TestCase):
             d = build(root)
             (root / ".git").write_text("gitdir: elsewhere\n", encoding="utf-8")
             bank = (root / "_WorkSpace" / "InsightBoardResult"
-                    / "A00_InsightBoard-Test" / "T01")
+                    / "A00_Test-InsightBoard" / "T01")
             bank.mkdir(parents=True)
             (bank / "rates.csv").write_text("a,b\n", encoding="utf-8")
             sub(CARD, r"^grant: .*$",
                 "grant: ../../../../../../_WorkSpace/InsightBoardResult/"
-                "A00_InsightBoard-Test/T01/rates.csv")(d)
+                "A00_Test-InsightBoard/T01/rates.csv")(d)
             self.assertNotIn("card-grant-outside-reads", codes(d))
 
     def test_repo_relative_read_resolves_from_repo_root_not_cwd(self):
@@ -229,9 +236,9 @@ class DesignFamilyTest(unittest.TestCase):
             bank.mkdir(parents=True)
             (bank / "1-answer.md").write_text("# QA\n", encoding="utf-8")
             sub("board.md", r"^reads: .*$",
-                "reads: A00_InsightBoard-Test · discoveries")(d)
+                "reads: A00_Test-InsightBoard · discoveries")(d)
             sub(CARD, r"^grant: .*$",
-                "grant: ../../../../../A00_InsightBoard-Test/1-F-full/FW01-win/"
+                "grant: ../../../../../A00_Test-InsightBoard/1-F-full/FW01-win/"
                 "FW01-win.md · ../../../../../../discoveries/S01_topic/QA/"
                 "1-answer.md")(d)
             rep = Report()

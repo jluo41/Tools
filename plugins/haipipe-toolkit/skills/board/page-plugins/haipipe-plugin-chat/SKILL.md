@@ -4,11 +4,11 @@ description: >-
   The chat/ plugin of a Board page: the 💬 Chat tab (GUI or TUI form), what a
   page chat may read (everything in the SPACE), where each kind of message
   lands (a lane, a thread, a sentence, the plan, an Aim, a card), which skill
-  it loads for it, and the kept-session record under <page>/chat/. Trigger:
+  it loads for it, and the page-local kept-session record. Trigger:
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.4.2"
+  version: "0.4.4"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -74,7 +74,7 @@ what you type                         lands in                                gr
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
-"where is S6's number?"  a fact       probe/PP<NN>-<slug>/ + > Comment lane   card.md · serves: C2.P3.B1               PROBE · haipipe-page-probe
+"where is S6's number?"  a fact       outline/<stem>-items.md, one row + Comment  Run: found · <tasks/ address>          SURVEY · haipipe-page-outline
   the page lacks
 "the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         DRAFT · haipipe-page-draft
   a promise change
@@ -83,7 +83,7 @@ what you type                         lands in                                gr
 "move that box" · "redraw the arrow"  draw/<stem>.excalidraw                  scoped element edit · your ask quoted   the ownership rule ·
   the diagram, mid-discussion                                                    in the log record                       haipipe-plugin-draw
 "collect this page's values"          the page's collection job               config/r<NN>_<batch>.yaml · values.yaml  the task family ·
-  the numbers, as code                  (task/ lane, ranked first)              · QA digests · proposals.md              haipipe-task-for-page
+  the numbers, as code                  (PageX whole-Folder link, ranked first)  · QA digests · proposals.md              haipipe-task-for-page
 feedback · requirement · evidence     never by hand                           regenerated                              cli/feedback.py collect ·
                                                                                                                         cli/requirement.py · cli/evidence-status.py
 every row above                       outline/<stem>-log.md                   ### YYMMDD HHMM · chat: <headline>       append
@@ -114,13 +114,15 @@ word you type is the verb:
 ```text
 you type                 phase     the chat loads                       ends when                                   trace it leaves
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-"outline it" · "plan"    ① OUTLINE haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<N> · D<nn> · log record · receipt
-"probe" · "raise cards"  ② PROBE   haipipe-page-probe                   every mark has a card (MATCH before DISPATCH) probe/PP<NN>/ · log record · receipt
-"land it" · "evidence"   ③ EVIDENCE haipipe-page-evidence               keys, values, units landed; YOUR read:/verified: bibex/ · cards · display/ · log record
-"draft it"               ④ DRAFT   haipipe-page-draft                   every slot has its sentence, every number its lane  page.md · log record with the diff
-"revise" · "trim"        ⑤ REVISE  haipipe-page-revise                  promise fixed, prose works; latex/ word/ rebuilt   page.md · ✎ lanes · log record
+"outline it" · "plan"    SHAPE     haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<N> · D<nn> · log record · receipt
+"survey"                 SURVEY    haipipe-page-outline                 every mark has an item row with its run     outline/<stem>-items.md · log record · receipt
+"land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make row has its result on disk     tasks/ runs · row → pointer · receipt
+"embed" · "fold"         EMBED     haipipe-page-evidence                every landed row is in plan v<N+1>          outline/<stem>-outline-v<N+1>.md · receipt
+"land it" · "evidence"   LAND      haipipe-page-evidence               keys, values, units landed; YOUR read:/verified: evidence/ lanes · log record
+"draft it"               WRITE     haipipe-page-draft                   every slot has its sentence, every number its lane  page.md · log record with the diff
+"revise" · "trim"        WRITE     haipipe-page-revise                  promise fixed, prose works; latex/ word/ rebuilt   page.md · ✎ lanes · log record
 "compile" · "pdf"        ⑥ COMPILE haipipe-page-revise                  latex/ and word/ match the source           latex/ word/ · log record
-"check it"               ⑦ CHECK   haipipe-page-check (read-only here)  a fresh judge routes CLOSE or back            a receipt from haipipe-page-check-agent
+"check it"               CHECK     haipipe-page-check (read-only here)  a fresh judge routes CLOSE or back            a receipt from haipipe-page-check-agent
 "where are we"           none      the strip                            one line: ⏱️ 🧭 OUTLINE · 🧭⏳ 📮✅ 🃏⏳ ✏️⬜ 🖊⬜ 🔍⬜ · ✋2
 ```
 
@@ -132,13 +134,13 @@ you type                 phase     the chat loads                       ends whe
   phase agent leaves (the artifact, one log record with the receipt folded
   under it, the strip in the reply); the agent-per-phase RUN
   (`haipipe-page-workflow`) is the unattended path for the same work.
-- **The chat announces the phase on every reply** (`Phase ④ DRAFT · SM00`),
+- **The chat announces the cycle on every reply** (`WRITE · SM00`),
   because work that does not name its phase cannot be routed or audited.
 - **Two things the chat may not do**: write your four ticks (it transcribes
   your words), and judge its own version. `✅ Quality Check` in the chat is
-  read-only; a formal ⑦ CHECK dispatches `haipipe-page-check-agent` in a fresh
+  read-only; a formal CHECK dispatches `haipipe-page-check-agent` in a fresh
   context and the chat relays its route.
-- **The order is the PREPARE loop's**: ① ⇄ ② ⇄ ③ until the plan and its
+- **The order is the OUTLINE part's**: SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED until the plan and its
   evidence agree and you tick `approved:`; then ④ ⑤ ⑥ run unattended; ⑦ judges
   and may send the page back to any phase. The chat says which step is next
   and why, and does not skip ② for a new Task or Discovery question.
@@ -149,9 +151,9 @@ you type                 phase     the chat loads                       ends whe
 page's question and open Aims, `page-type:` and the phase strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
 evidence owed and landed), the page's own skill list (`<page>/skill/<stem>.md`,
-one ranked `- <name> · note:` row per skill) and task list
-(`<page>/evidence/pagex/…`, where the task lane merged 260831; a flat
-`task/` stub reads the same), the SPACE context and the status-strip duty.
+one ranked `- <name> · note:` row per skill) and its PageX relationships
+(`<page>/evidence/pagex/…`, including any whole executable Folder), the SPACE
+context and the status-strip duty.
 
 Per message the session loads ONE skill's ⚡ Brief, the one §🗺's row names,
 and announces it (`loading haipipe-page-outline · plan change`); it never

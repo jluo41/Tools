@@ -3,6 +3,15 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.2.0] — 2026-09-01
+
+- Search now finds candidates, resolves canonical Subjects, and materializes
+  one numbered paired Paper Run/Result per admitted source.
+- Topic Page source maps are derived from Results; new monolithic
+  `sources.md`/`notes.md` ledgers are forbidden.
+- Secondary links are Triggers; the resolved evidence Subject owns RUNNAME and
+  the one-entry Result Bib.
+
 
 ## [0.1.3] — 2026-07-24
 

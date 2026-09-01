@@ -287,7 +287,13 @@ def parse_dir(d):
         # zero pages: the roster was empty and every cross-board Related row
         # reported unregistered-related-page. The letter is the family and the
         # digits are the order, which is the same shape `qm` already uses.
-        app_m = re.match(r"([A-Z]{1,2})(\d+)-(.+)$", p.stem)
+        # 260831, Story family (JL: "I don't like the SD... make sure to be
+        # self explained"): the paper journey's ids are a capitalised WORD plus
+        # digits (Story00-ideation ... Story03-narrative-<desk>), so the family
+        # alternation gains `[A-Z][a-z]+` beside the 1-2 capital letters. A
+        # word-token page sorts by its word, exactly as a letter-token page
+        # sorts by its letters.
+        app_m = re.match(r"([A-Z]{1,2}|[A-Z][a-z]+)(\d+)-(.+)$", p.stem)
         if (qm or sm or named_qm or skill_m or agent_m
                 or meeting_m or design_m or app_m):
             if app_m:

@@ -12,13 +12,13 @@ view is missing — the same pens the old separate tabs pressed. Slides is
 NEVER auto-built: its pen is `claude -p` authoring (/_board/autodeck), so
 the segment carries the ✨ bar the shell's native 🎞 tab used to hold (that
 tab folded 260831 with the studio fold) — one explicit press authors, a
-missing deck is a ghost until then.
-Render has no route yet (roster: 🟡 pending), so its segment lists what the
-lane holds and stops.
+missing deck is a ghost until then. Render is built by the Folder-native
+Application render verb; this presenter lists and opens whatever that live
+lane holds. A served render POST remains optional.
 
-Lane paths are read by their FLAT names: on a category-migrated page the
-symlink stubs (`latex -> delivery/latex`, QPf1) keep those resolving, and the
-de-symlink debt owns moving this file to a lane resolver with the other sites.
+Render resolves canonical `delivery/render/` first and keeps flat `render/`
+readable. The older LaTeX/Word/Slide views still resolve through their flat
+symlink stubs (`latex -> delivery/latex`, QPf1) during category migration.
 """
 from __future__ import annotations
 
@@ -77,8 +77,11 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
                 "<span class=mut>%s</span></div>"
                 % (icon, name, html.escape(rel), html.escape(state)))
 
-    rn = base / "render"
-    n_render = len([f for f in rn.iterdir() if f.is_file()]) if rn.is_dir() else 0
+    rn = base / "delivery" / "render"
+    if not rn.is_dir() and (base / "render").is_dir():
+        rn = base / "render"
+    render_files = sorted(f.name for f in rn.iterdir() if f.is_file()) if rn.is_dir() else []
+    n_render = len(render_files)
     home = "\n".join([
         row("📜", "LaTeX", f"latex/{stem}.pdf", "the segment compiles it on first open"),
         row("📝", "Word", f"word/{stem}.docx", "the segment builds it on first open"),
@@ -86,10 +89,14 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
             "authored on the 🎞 tab's ✨ bar, never auto-built here"),
         "<div class=row><b>📱 Render</b><code>render/</code>"
         "<span class=mut>%s</span></div>"
-        % ("%d file(s) on disk · route pending" % n_render if n_render
-           else "empty · route pending (roster 🟡)"),
+        % ("%d file(s) on disk · Folder-native writer live" % n_render if n_render
+           else "empty · run the Folder-native render verb"),
     ])
-    ctx = json.dumps({"path": path_q, "file": file_q, "stem": stem})
+    ctx = json.dumps({
+        "path": path_q, "file": file_q, "stem": stem,
+        "render_files": render_files,
+        "render_legacy_flat": rn == base / "render",
+    })
     return f"""<!doctype html><meta charset=utf-8>
 <title>📤 Delivery · {html.escape(stem)}</title>
 <style>{_CSS}</style>
@@ -129,8 +136,7 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
     slides: {{url: savedUrl('slide', CTX.stem + '-deck.html'),
               ghost: 'No deck yet \\u2014 the \\u2728 bar above authors one from ' +
                      'this page\\u2019s .md (claude -p, a minute or two).'}},
-    render: {{ghost: 'The render/ lane\\u2019s route and card view are pending ' +
-                     '(roster \\ud83d\\udfe1); its files, when any, are listed on \\ud83c\\udfe0.'}}
+    render: {{files: CTX.render_files || []}}
   }};
   var frame = document.getElementById('seg'),
       home = document.getElementById('home'),
@@ -138,6 +144,24 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
   function ghost(msg) {{
     frame.srcdoc = '<p style="font:13.5px sans-serif;color:#888;padding:24px">' +
                    msg + '</p>';
+  }}
+  function esc(s) {{
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }}
+  function showRenders(files) {{
+    if (!files.length) {{
+      ghost('No recipient preview yet \\u2014 run the Folder-native Application render verb.');
+      return;
+    }}
+    var lane = CTX.render_legacy_flat ? 'render' : 'delivery/render';
+    var items = files.map(function (name) {{
+      var url = savedUrl(lane, name);
+      return '<li><a target="_blank" href="' + esc(url) + '">' + esc(name) + '</a></li>';
+    }}).join('');
+    frame.srcdoc = '<div style="font:13.5px sans-serif;padding:18px">' +
+      '<b>Recipient previews</b><ul>' + items + '</ul>' +
+      '<p style="color:#777">Derived files; edit the owning D4 division, then re-render.</p></div>';
   }}
   function show(id, btn) {{
     var all = document.querySelectorAll('nav button');
@@ -149,6 +173,7 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
     }}
     home.style.display = 'none'; frame.style.display = 'block';
     var lane = LANES[id];
+    if (id === 'render') {{ showRenders(lane.files); return; }}
     if (!lane.url) {{ ghost(lane.ghost || 'no saved view for ' + id); return; }}
     fetch(lane.url, {{method: 'HEAD'}}).then(function (r) {{
       if (r.ok) {{ frame.src = lane.url + '?plain'; return; }}

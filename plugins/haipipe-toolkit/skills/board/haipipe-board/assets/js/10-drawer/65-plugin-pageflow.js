@@ -2,8 +2,9 @@
  *
  * THE SECOND MEMBER. The registry's Workflow group was reserved for exactly this
  * (05-plugins.js: "Page's four phases arrive as the second member"). Labeling is a
- * LADDER — each door locked by the one before; this is a LOOP — OUTLINE/DRAFT/PROBE/
- * EVIDENCE/REVISE/COMPILE/CHECK selected by authority, CHECK routes backward, and
+ * LADDER — each door locked by the one before; this is a LOOP — OUTLINE/EVIDENCE
+ * (the OUTLINE part) then DRAFT/REVISE/COMPILE/CHECK (the DRAFT part), selected by
+ * authority, CHECK routes backward, and
  * only CHECK may CLOSE. So this surface lights the last acted phase and names where
  * it routed; it draws no locks, because the loop has none. SEVEN since 260817, four
  * before it: haipipe-page-workflow §"Why each split" carries the reason for each.
@@ -39,8 +40,6 @@
       job: 'agree the SHAPE: sections, paragraphs, bullets, and what each owes' },
     { id: 'DRAFT',  icon: '✏️',  name: 'DRAFT',  skill: 'haipipe-page-draft',
       job: 'plan it: purpose, Aims, and each division’s own promise' },
-    { id: 'PROBE',  icon: '📮', name: 'PROBE', skill: 'haipipe-page-probe',
-      job: 'turn each outline mark into a card, point it at its bullets, and ask' },
     { id: 'EVIDENCE', icon: '🔍', name: 'EVIDENCE', skill: 'haipipe-page-evidence',
       job: 'land every promised claim\u2019s card: citation, value, display intake' },
     { id: 'REVISE', icon: '🖊', name: 'REVISE', skill: 'haipipe-page-revise',
@@ -50,9 +49,11 @@
     { id: 'CHECK',  icon: '✅',       name: 'CHECK',  skill: 'haipipe-page-check',
       job: 'judge the BUILT version and route its authority; only CHECK may CLOSE' }
   ];
-  /* PROBE means two different phases depending on WHEN the receipt was written:
-     it was EVIDENCE's name from 260816 until 260817, when PROBE became a phase
-     of its own again (raise the card and ask; EVIDENCE lands what comes back).
+  /* PROBE retired 260901: the item table (OUTLINE's SURVEY cycle) took its
+     MATCH half and EVIDENCE's LAND cycle its outbound card. Every stored
+     receipt naming PROBE draws on the EVIDENCE step. Before that, PROBE meant
+     two different phases depending on WHEN the receipt was written: it was
+     EVIDENCE's name from 260816 until 260817, then a phase of its own until 260901.
      Receipts on disk are immutable, so the token resolves against the run's own
      date rather than through a global alias, which would relabel every future
      PROBE as EVIDENCE. An unparseable date reads as CURRENT. */
@@ -63,7 +64,7 @@
   }
   function phaseId(v, run) {
     v = String(v || '').toUpperCase();
-    if (v === 'PROBE' && runDate(run) < PROBE_SPLIT) return 'EVIDENCE';
+    if (v === 'PROBE') return 'EVIDENCE';
     return v;
   }
   var NUM = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];

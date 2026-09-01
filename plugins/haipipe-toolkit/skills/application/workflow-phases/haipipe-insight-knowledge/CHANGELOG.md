@@ -1,4 +1,18 @@
-# haipipe-page-for-knowledge · version history
+# haipipe-insight-knowledge · version history
+
+## 1.0.2 · 2026-09-01
+
+- Rename the optional robustness presenter from Execution to Runs.
+
+## 1.0.1 · 2026-09-01
+
+- Rename the optional robustness capability from Code to Execution; require a
+  declared Run/Result pair and treat scripts as optional support.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-knowledge` and migrated into workflow phase I4.
+- Claim adjudication is the Task Face; the bounded proposition is the Page Face.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

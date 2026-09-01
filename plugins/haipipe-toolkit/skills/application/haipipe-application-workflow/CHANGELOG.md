@@ -1,5 +1,33 @@
 # haipipe-application-workflow · version history
 
+1.0.5 · 260831
+- Make X1 explicit for the Task-RF bridge: I1 and the local W pin the exact RF,
+  but only the contextual, signed Application W may cross into Design.
+
+1.0.4 · 260831
+- Define X2's `v<N>` as an immutable per-target candidate-packet revision,
+  independent of pinned design/render versions; require the caller to name
+  `requested_action` and an addressable two-face Task Folder.
+
+1.0.3 · 260831
+- Point all X0-X3 receipts at canonical `outline/<stem>-log.md` files and make
+  X2's acceptance pointer an exact log path plus record heading.
+
+1.0.2 · 260831
+- Make X2 executable without absorbing Task work: the caller names the target
+  Folder/type, the crossing writes one versioned v1 packet under
+  `workflow/inbox/application/`, binds the DS Folder through PageX, records the
+  reciprocal DS outline-log record, and HOLDs on any missing stamp.
+
+1.0.1 · 260831
+- X1 now requires the I1 register cell's GI6 terminal mark and receipt, not
+  merely a signed I5 Folder, so cross-board dispatch cannot outrun settlement.
+
+1.0.0 · 260831
+- Retired the duplicate P0-P4 machine. This workflow now owns only X0-X3
+  cross-board assertions and delegates unchanged I/GI and D/GD frontiers to
+  the native Insight and Design workflows.
+
 0.1.0 · 260823 · JL
 - New skill, split out as the Application family's RUN head, mirroring the page family's "one folder, one head skill" pattern (haipipe-page-workflow).
 - Six phases in two lanes: InsightBoard SCOPE/CLIMB/HANDOFF, DesignBoard FRAME/COMPOSE/ACCEPT, joined only at the PageX crossing.

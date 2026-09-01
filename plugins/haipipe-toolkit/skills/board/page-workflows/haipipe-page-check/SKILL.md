@@ -3,12 +3,13 @@ name: haipipe-page-check
 description: >-
   The CHECK phase contract for any Board Page: judge one rendered version
   against its purpose, Aims, evidence, and Page Type, then route to CLOSE,
-  OUTLINE, PROBE, EVIDENCE, DRAFT, REVISE, or HOLD. It judges the BUILT
+  OUTLINE, EVIDENCE, DRAFT, REVISE, or HOLD. In pre-check mode it gates the
+  WRITE cycle's inner loop and may only say another pass or ready. It judges the BUILT
   deliverable, not only the Markdown, and never cures its own findings.
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.6.2"
+  version: "0.6.3"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -44,7 +45,7 @@ WALLS
   judges the BUILT deliverable (PDF · docx), not only the Markdown;
     declared, rendered, and accepted are three independent counts
   the actor that produced a version may not be its CHECK actor
-  never writes the five person-reserved ticks, and never claims a person
+  never writes any person-reserved tick, and never claims a person
     approved when no person did; silence is not consent
   only `verdict: pass` may route to CLOSE; a required human gate without
     durable passed evidence routes to HOLD
@@ -59,12 +60,12 @@ READ ECONOMY
   never paste board-wide output or compile logs into your context; the
     board doors return compact JSON, use them
 
-ROUTES (§🔀 · the seven, each finding names one)
+ROUTES (§🔀 · the six, each finding names one)
   ✅ CLOSE      the version meets the closing rule
-  🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens
-                the PREPARE loop
-  📮 PROBE      a marked bullet was never served by a card
-  🔎 EVIDENCE   a promised claim has no card behind it
+  🧭 OUTLINE    the plan itself is wrong (SHAPE) or a number, citation or
+                figure has no landed run (SURVEY): a v<N+1> reopens the
+                OUTLINE part
+  🔎 EVIDENCE   a landed row is stale or its run must be re-embedded
   ✍️ DRAFT      purpose or Aims must reopen, beginning a new round
   🧵 REVISE     purpose and Aims stand, but realization needs work
   ⏸ HOLD        accept a named defect or park the work with an explicit record
@@ -156,10 +157,9 @@ projection-stale                 latex/ or word/ is older than the        REVISE
 
 ```text
 ✅ CLOSE       the version meets the closing rule
-🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens the
-              PREPARE loop
-📮 PROBE      a marked bullet was never served by a card
-🔎 EVIDENCE   a promised claim has no card behind it
+🧭 OUTLINE    the plan itself is wrong (SHAPE), or a number, citation or
+              figure has no landed run (SURVEY): a v<N+1> reopens the OUTLINE part
+🔎 EVIDENCE   a landed row is stale, or its run must be re-embedded
 ✍️ DRAFT      purpose or Aims must reopen, beginning a new round
 🧵 REVISE     purpose and Aims stand, but realization needs work
 ⏸ HOLD        accept a named defect or park the work with an explicit record
@@ -203,39 +203,53 @@ makes yes the likely answer without touching the tick itself.
    otherwise the machine approves itself by timeout
 ```
 
-**FIVE ticks are reserved for a person**, and CHECK administers two of them:
+**Person ticks are selected by artifacts plus the Folder's owning phase.**
+CHECK administers display acceptance and any owner RULING that exists:
 
 ```text
 tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
-`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     ①
-`verified`       each bibex/<stem>.bib entry       haipipe-plugin-bibex     ③c
-`read:`          each probe/PP<NN>-<slug>/card.md  haipipe-plugin-probe     ③v
-`accepted: ✅`   each display/<unit>/README.md     this contract            ⑦
-the RULING       the Page Type's declared gate     this contract            ⑦
+`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
+`Decide`         outline/<stem>-items.md, per row  haipipe-page-outline     SURVEY
+`verified`       each evidence/bibex entry         haipipe-plugin-bibex     LAND
+`read:`          each outbound evidence/probe card haipipe-plugin-probe     LAND
+`accepted: ✅`   the page · each display README    this contract            CHECK
+the RULING       phase Gate/Closure, when declared  owning workflow phase    CHECK
 ```
 
-⚠️ **This said FOUR until 260818 and it was wrong.** The count omitted the probe
-card's `read:`, whose reserving rule is `haipipe-plugin-probe` §: "Only a person
-may tick it, and a changed `target` or a re-pulled `proof/` drops the tick back,
-the same rule as a display unit's `accepted:`, for the same reason." Two of the
-five therefore REVERT when their inputs change: `read:` and `accepted: ✅`.
+`read:` and `accepted: ✅` REVERT when their inputs change. For a phase-owned
+Folder, `page_ruling: none` adds no owner tick, `domain-gate` reuses the phase
+gate receipt, and `local` requires a distinct Page-Face RULING. Legacy Page
+Types retain their declared closing gate.
 
 A sixth human-reserved write exists and is deliberately NOT on this list, because
-it is an ORDER rather than a field: the row rank in `skill/` and `pagex/`, whose
+it is an ORDER rather than a field: the row rank in `skill/` and
+`evidence/pagex/`, whose
 law is "the scan seeds, the person ranks" and where "a refresh never edits,
 reorders, or removes a row".
 
 They live in three phases and N files. A read-only collecting surface exists at
 `haipipe-board/live/outline.py`, which shows `approved:`, `verified`, `read` and
 `accepted:` in one card and omits the RULING; it reports no `<n> of <n>` count
-and cannot write. The remaining hole is argued on `QPw00g-human-gate`.
+and cannot write. The joined owed ledger is `cli/pagephase.py --owed`.
 
 ## 🔀 CHECK is not necessarily last
 
 CHECK may appear whenever a concrete version needs judgment.
 It may repeat after REVISE, open EVIDENCE, or send the Page into a new DRAFT round.
-The common `PREPARE(①②③) → DRAFT → REVISE → CHECK` path is a useful route, not a mandatory sequence.
+The common `OUTLINE part → WRITE → CHECK` path is a useful route, not a mandatory sequence.
+
+**Two things this phase gained on 260901.** (1) PRE-CHECK MODE: inside the
+WRITE cycle the same judge, in a fresh context, reads the built version after
+the mechanical teeth pass and answers only "another pass" or "ready"; it never
+CLOSEs, and the loop's budget (3 rounds, a finding surviving two consecutive
+rounds is a HOLD) is `haipipe-page-workflow` §The WRITE loop's. (2) A PERSON'S
+"NO" IS ROUTED, never a dead end: it lands as one feedback record in
+`outline/`, `accepted:` stays unticked, and it routes like a finding (wording →
+WRITE · a number, citation or figure → OUTLINE at SURVEY · the argument →
+OUTLINE at SHAPE). A checkable "no" is promoted into a tooth or a pre-check rule
+(`agents/approve-rules/`), so the machine catches it every time after. The
+machine's "ready" was always a floor, not a verdict.
 
 ## 🧾 RUN receipt and version gate
 
@@ -247,7 +261,7 @@ checked_version    source SHA-256 joined to rendered HTML SHA-256
 verdict            pass | revise | blocked
 findings           exact defects or none
 evidence           visible support for every pass claim
-route              CLOSE | OUTLINE | PROBE | EVIDENCE | DRAFT | REVISE | HOLD
+route              CLOSE | OUTLINE | EVIDENCE | DRAFT | REVISE | HOLD
 human_gate         required, status, and durable evidence
 ```
 
@@ -309,4 +323,4 @@ The Board engine owns execution and audit; this phase owns only its authority an
 **The Board page that argues this phase** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.
 
 **This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §⑦. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
+`../haipipe-page-workflow/ref/phase-cards.md` §CHECK. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.

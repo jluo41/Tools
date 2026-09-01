@@ -1,3 +1,10 @@
+## 0.6.3 — 2026-08-31
+
+- Replace the universal five-tick claim with artifact-selected plugin ticks
+  plus phase-owned `page_ruling`; CHECK reuses a domain gate and does not mint
+  a duplicate Page approval.
+- Canonicalize evidence paths in the gate table.
+
 ## 0.6.2 — 2026-08-31
 
 - **§📏 The rubric** moved here from `haipipe-page` §🔍 (four axes with their

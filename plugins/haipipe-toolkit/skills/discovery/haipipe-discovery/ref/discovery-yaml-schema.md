@@ -1,220 +1,209 @@
-# discovery.yaml — Discovery Folder Schema (v3.0)
+# discovery.yaml — Discovery Topic Task Manifest (v4.0)
 
-## The whole model
+One research Topic = one Discovery Task Page Folder. `discovery.yaml` is the
+Task Face manifest; `<topic>.md` and its lanes are the Page Face. Neither Face
+replaces the other. Level-4 Run inventory is derived from `runs/` and
+`results/`, never copied into YAML.
 
-One research topic = one folder. One file matters: `discovery.yaml` — Plan writes it, Report appends the outcome to it. Execute writes the evidence files next to it. That is the entire contract.
-
+```text
+<topic>/
+├── <topic>.md                       Page Face
+├── discovery.yaml                   Task Face manifest
+├── outline/                         optional
+├── evidence/bibex/<topic>.bib       derived Page Evidence Bib
+├── scripts/                         optional instrument
+├── runs/<RUNNAME>.sh
+├── results/<RUNNAME>/
+├── verdict.md | landscape.md | ideas.md   optional type terminal
+└── QA/                              optional readable digests
 ```
-examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/
-├── discovery.yaml    Plan spec + Report outcome (source of truth)
-├── build/            optional instrument (only if Build ran)
-├── sources.md        work product: what was found   (Search: terminal)
-├── notes.md          work product: what was read    (Search: terminal)
-├── verdict.md | landscape.md | ideas.md   TERMINAL (by type + role)
-└── QA/               OPTIONAL readable digests — QA/<n>-<slug>.md
-                      written at Report, by THIS layer. Contract: fn/qa.md.
-```
 
-`QA/` is optional; not every discovery-folder has one. `<n>` = creation order, and the numbering IS the index (`ls QA/` is the index). Slug only — no PP id, no claim id, no paper reference in a bank filename, ever. Write-once: a later question ADDS `QA/<n+1>-<slug>.md`.
+Full Level-4 contract: `paper-run-contract.md`.
 
-NOT part of the contract: `status.yaml`, `site.md`, per-folder logs, `_ASK/`, `_ANS/`. Lifecycle progress is discovery.yaml `status:`; the human summary is `report.summary`; events go to the project-level `_haipipe/project.log.jsonl`.
+## Types × roles → topic-level terminal
 
-## Types × roles → terminal
-
-```
+```text
 type    role                 question                          terminal
-------  -------------------  --------------------------------  ------------
-Search  source_gather        what sources exist?               sources.md
-Search  source_read          what do the key sources say?      notes.md
+------  -------------------  --------------------------------  ----------------
+Search  source_gather        what sources exist?               <topic>.md source map
+Search  source_read          what do the key sources say?      <topic>.md synthesis
 Review  prior_art_check      does the claim already exist?     verdict.md
 Review  counterevidence      what argues against the claim?    verdict.md
 Review  landscape_review     map approaches / baselines        landscape.md
-Review  benchmark_landscape  standard eval setups              landscape.md
+Review  benchmark_landscape  standard evaluation setups        landscape.md
 Idea    idea_generation      generate + rank candidate claims  ideas.md
 Idea    novelty_check        is this idea new enough?          verdict.md
 ```
 
-`type` is the folder kind (Axis 2); `role` picks the terminal within it. `novelty_check` sits under `Idea` — it is the evaluation half of the ideation loop (generate → check novelty), even though its terminal is a verdict.
+Paper/Source Cards are Level-4 Result readouts, not topic terminals. Search
+candidate discovery is topic-level work; only selected canonical Subjects
+become Runs. Idea generation is also topic-level work; papers used to ground or
+check novelty still become Runs.
 
 ## Fields
 
 | Field | Required | Notes |
 |---|---|---|
-| kind | yes | always `discovery` |
-| id | yes | `<GROUP-id>.<NN>`, mirrors the path: `discoveries/L01_x/03_y/` -> `L01.03` |
-| type | yes | `Search` / `Review` / `Idea` |
-| role | yes | see table above |
-| group | yes | `{id, slug, title}` of the discovery-group |
-| slug, title | yes | folder slug + human title |
-| status | yes | lifecycle progress, see below |
-| question | yes | the external-world question (Plan) |
-| sources | opt | search scope; `from_source_folder` reuses a Search folder |
-| build | opt | `{needed, artifact}` — only for a systematic instrument |
-| expected_outputs | yes | files Execute will write (work products + terminal) |
-| report | at Report | outcome block, APPENDED at Report — absent before |
-| created_at, updated_at | yes | quoted ISO8601 strings |
+| `kind` | yes | always `discovery` |
+| `id` | yes | `<GROUP-id>.<NN>`, mirrors the path |
+| `type` | yes | `Search` / `Review` / `Idea` |
+| `role` | yes | table above |
+| `group` | yes | `{id, slug, title}` |
+| `slug`, `title` | yes | folder slug and human title |
+| `page` | yes | root Page markdown filename |
+| `status` | yes | topic lifecycle status |
+| `question` | yes | external-world Topic question |
+| `sources` | optional | coverage and candidate-selection policy |
+| `instrument` | optional | `{needed, path}` under `scripts/` |
+| `terminal` | yes | topic-level terminal path |
+| `report` | at Report | appended outcome block; absent before Report |
+| `created_at`, `updated_at` | yes | quoted ISO8601 strings |
 
-**No parent field — a discovery is self-contained.** It knows nothing outside its own folder: whoever needs the terminal records the link in THEIR OWN files; the discovery just answers its question and never tracks who commissioned or consumed it. Same principle for tasks.
+No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
+is authoritative for both. No `parent` or `consumed_by` field: the Discovery
+bank remains probe-unaware.
 
 ## Skeleton
 
 ```yaml
 kind: discovery
 id: P01.02
-type: Review              # Search | Review | Idea
-role: prior_art_check     # picks the terminal (see table)
+type: Review
+role: prior_art_check
 group:
   id: P01
   slug: rare-phenotype-lift
-  title: Rare phenotype lift (claim evidence)
+  title: Rare phenotype lift
 slug: prior-art-adaptive-sampling
 title: Does adaptive sampling for rare phenotypes already exist?
+page: prior-art-adaptive-sampling.md
 status: planned
-created_at: "2026-07-03T10:00:00-04:00"
-updated_at: "2026-07-03T10:00:00-04:00"
+created_at: "2026-09-01T10:00:00-04:00"
+updated_at: "2026-09-01T10:00:00-04:00"
 
 question: |
   Has adaptive sampling for rare-phenotype detection been published?
 sources:
   requested: [research-lit, semantic-scholar]
-  from_source_folder: ""    # optional: reuse a Search folder instead of searching inline
+  from_topic: ""
   local_first: true
   verification_required: true
-build:
+  candidate_rule: >-
+    Admit a source as a Paper Run only after canonical identity is resolved and
+    it is relevant enough to analyze.
+instrument:
   needed: false
-  artifact: ""
-expected_outputs:
-  - sources.md              # work product (inline search)
-  - notes.md                # work product (inline read)
-  - verdict.md              # terminal for this role
+  path: ""
+terminal: verdict.md
 
-# --- appended at Report ---
+# Appended at Report only:
 report:
-  outcome: supports         # per-type vocabulary below
-  summary: >
-    One line a human can act on.
+  outcome: supports
+  summary: One line a human can act on.
   confidence: medium
-  supports_claim: true      # judge roles only
-  contradicts_claim: false  # judge roles only
+  completed_runs: 7
+  unresolved_runs: 1
+  evidence_bib: evidence/bibex/prior-art-adaptive-sampling.bib
 ```
 
-## Lifecycle status (Axis 1)
+## Lifecycle status
 
+```text
+planned -> building (optional) -> executing -> reported -> ok | inconclusive | blocked
 ```
-planned -> building (opt) -> executing -> reported -> ok | inconclusive | blocked
-```
 
-`ok` = terminal complete and usable. Reuse by any number of consumers is recorded on THEIR side, never here; there is no `consumed` status.
+Topic status and Paper Run status are different axes. A Topic may report an
+`inconclusive` outcome while every admitted Paper Run is technically complete.
+Conversely, unresolved Runs prevent `status: ok` when they are material to the
+question.
 
-## Report block (appended at Report — absent before)
+## Report outcomes
 
-The block does not exist until Report writes it: a discovery.yaml WITH a `report:` block has been reported; one WITHOUT has not. `report.outcome` is the per-type result (never confuse with the top-level lifecycle `status:`):
-
-```
-Search             gathered      (N sources curated / read)
+```text
+Search             gathered
 Review-judge       supports | contradicts | inconclusive
 Review-synthesize  mapped
-Idea-generate      generated     (N candidates ranked)
+Idea-generate      generated
 Idea-novelty       novel | partial | preempted | inconclusive
 ```
 
-Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles (prior_art/counterevidence/novelty) add `supports_claim` / `contradicts_claim`.
+Common fields: `outcome`, `summary`, `confidence`, `completed_runs`,
+`unresolved_runs`, and `evidence_bib`. Judge roles may add `supports_claim` and
+`contradicts_claim`.
 
-## The bank is probe-unaware
+## Topic terminal templates
 
-**The bank is probe-unaware** (R2): a discovery carries no trace of who asked — no consumer ids anywhere under `discoveries/`, and none in a new discovery.yaml. How a question reaches us:
-
-```
-  the CONSUMER keeps the question + the stake in ITS OWN probe file
-     papers/<P>/1-probes/PPNN_<topic>/ — a `### q-executor` block per entry
-  it hands us that block, VERBATIM, and nothing else
-  we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
-     discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-  the consumer's entry points at that path. Nothing points back.
-```
-
-There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it.
-
-
-## Terminal templates
-
-### verdict.md (Review-judge; Idea-novelty)
+### verdict.md
 
 ```md
 # Verdict
-status: supports | contradicts | inconclusive    (novelty: novel | partial | preempted)
-confidence: high | medium | low
+- status: supports | contradicts | inconclusive
+- confidence: high | medium | low
 
 ## Answer
-One paragraph answering the question.
+One paragraph answering the Topic question.
 
 ## Evidence
-- Full citation / URL / id — one-line finding — VERIFIED | NEEDS-VERIFICATION
+- [r03_author2025_slug](results/r03_author2025_slug/r03_author2025_slug.md)
+  — what this Result establishes — cite: @Key
 
 ## Caveats
-- What this discovery did not check.
+- What this Topic did not establish.
 ```
 
-### landscape.md (Review-synthesize) — a map, not a yes/no
+### landscape.md
 
 ```md
 # Landscape: <topic>
-confidence: high | medium | low
+- confidence: high | medium | low
 
-## Approaches (taxonomy)
-- <cluster> — what it does — exemplar refs
+## Approaches
+- <cluster> — explanation — Result links + cite keys
 
-## Gaps / open questions
-- <gap> — why it is open
-
-## References (full, verified)
-1. <self-contained full citation>     (Review Output Contract rules 1-5)
+## Gaps
+- <gap> — why it remains open
 ```
 
-### ideas.md (Idea-generate) — ranked candidates, not a verdict
+### ideas.md
 
 ```md
 # Ideas: <prompt>
 
-## Candidates (ranked)
-1. <claim> — rationale — novelty: NOVEL | PARTIAL | SEEN (vs <ref>) — testability: <how it could be tested>
-
-## Grounding
-- which Search / Review folder this builds on
+## Candidates
+1. <claim> — rationale — novelty — testability — grounding Result links
 ```
 
-### sources.md + notes.md (Search terminals; work products elsewhere)
+Search writes its source map and synthesis into the Page Content rather than a
+second monolithic `notes.md`. A generated `sources.md` may be kept as a legacy
+index, but it is not authority.
 
-Format lives in ONE place: `ref/source-format.md` — one source = one `###` subsection with the full title in the heading; venue/locator first line, Scholar link, role, verification flag, a 2-4 sentence `summary:` of the paper itself, and a one-line `finding:` for our question; NEVER a table. Heavy artifacts (PDFs, snapshots) go in an optional `sources/` subfolder.
+## QA digests
 
-### `QA/<n>-<slug>.md` (optional readable digest — NOT a terminal)
-
-A QA file is not a terminal and never replaces one: it is the READABLE digest of one direction this discovery-folder has explored, anchored back into the artifacts. Exactly three sections, no markdown tables, general language only (LAW 2 — no `C\d`, no `H\d`, no "the paper"). List it in `expected_outputs` when a commission names it.
+`QA/` remains optional and is governed by `fn/qa.md`. A QA answer anchors to
+stable Result Cards or topic terminal sections:
 
 ```md
-# Q — <the question, self-contained, general language>
+# Q — <self-contained question>
+- state: answered
 
 ## Answer
-Plain words, actionable by a reader who has never opened this folder.
-Anchors: [→ sources.md#S02]  [→ verdict.md#Evidence]  [→ landscape.md#Gaps]
+Plain answer. Anchors: [→ results/r03_x/r03_x.md#Facts] [→ verdict.md#Evidence]
 
 ## Caveats
-- What this does NOT establish.
+- What this does not establish.
 
 ## Not-done
-- What was asked but not resolved, and why.
+- What remains unresolved and why.
 ```
 
-Full contract — the gate, the depth ladder, the three legal reasons a QA file may exist: `fn/qa.md`.
+## Project log events
 
-
-
-## Log events (project-level, `_haipipe/project.log.jsonl`)
-
-```
-discovery.opened     {"ts", "event", "discovery_group", "discovery_folder", "type", "role"}
-discovery.completed  {"ts", "event", "discovery_group", "discovery_folder", "status", "outcome"}
-discovery.consumed   {"ts", "event", "discovery_group", "discovery_folder", "consumed_by"}
+```text
+discovery.opened      {"ts", "event", "discovery_group", "discovery_folder", "type", "role"}
+discovery.run_opened  {"ts", "event", "discovery_folder", "run", "trigger_kind"}
+discovery.run_done    {"ts", "event", "discovery_folder", "run", "status", "subject"}
+discovery.completed   {"ts", "event", "discovery_folder", "status", "outcome"}
+discovery.consumed    {"ts", "event", "discovery_folder", "consumed_by"}
 ```
 
-One JSON object per line. `discovery.consumed` is appended by the CONSUMER when it links the terminal — consistent with one-way references; the discovery itself never writes it. Old lines (append-only history) may carry `discovery_file`/`verdict`/`parent` fields — readers tolerate them; never rewrite the log.
+`discovery.consumed` is written by the consumer, never by the Discovery Folder.

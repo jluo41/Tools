@@ -1,6 +1,6 @@
 {
   "name": "subjective-label",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Human-grounded subjective labeling in two sibling sides: Label Building calibrates and freezes one identified human's construct into a signed Label Handoff; Label Scanning qualifies executors on sealed human gold, labels the corpus under that frozen handoff, and closes with an independent probability audit.",
   "author": {
     "name": "Junjie Luo",

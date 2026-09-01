@@ -126,6 +126,13 @@ def autodraw(root, payload):
     if f.name == "group.excalidraw":
         return _fail("the group view is COMPOSED, never authored — "
                      "draw the pages and it assembles itself")
+    # Labeling HOLD owns every model run/write door, not only the GUI SDK
+    # composer. Bind the scene back to its exact Board Page and derive the
+    # guard from canonical receipts before Claude starts or a tmp file exists.
+    from .labeling import labeling_hold_for_scene
+    held, reason = labeling_hold_for_scene(root, rel)
+    if held:
+        return _fail(reason + " · Draw generation is read-only at this gate")
 
     scene = None
     if f.is_file():

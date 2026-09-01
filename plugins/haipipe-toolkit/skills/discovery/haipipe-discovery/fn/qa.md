@@ -40,7 +40,8 @@ Never act on it. Never launder it. Never refuse over it.
 
 **`<discovery-folder>`** — optional, e.g. `discoveries/L03_cycle/01_prior_art/`.
 Absent → scan every discovery-folder under the project's `discoveries/`.
-A discovery-folder is ANY directory holding work: a `discovery.yaml`, `sources.md`, `verdict.md` or `landscape.md`.
+A Discovery Topic Folder is ANY directory holding work: a `discovery.yaml`,
+a root Topic Page, `runs/` + `results/`, `verdict.md`, or `landscape.md`.
 ⛔ NEVER filter by name.
 Folder names vary across projects — detect by STRUCTURE, never by a pattern.
 A name filter goes silently blind.
@@ -67,8 +68,8 @@ The gate — ① ② ③, shallowest first
                   working, EXPIRED   → the run died. RESTART it (below).
                   superseded-by: X   → follow the chain. return the LIVE answer.
 
-  ② DIGEST      no QA file, but sources.md / verdict.md already hold the answer
-                → write the QA file from what is there. no code runs.             cheap
+  ② DIGEST      no QA file, but completed Result Cards / topic terminals already
+                hold the answer → write from them. no Run executes.               cheap
 
   ③ RUN IT      neither → run the lifecycle at the shallowest depth (below),
                 then complete the QA file at Report.                              agent
@@ -101,14 +102,15 @@ How deep (③) — the depth IS the entry point into Plan → Build → Execute 
 ---------------------------------------------------------------------------------
 
 ```
-  depth 0  READ         the terminal files already hold it → enter at REPORT. nothing runs.
-  depth 1  ENRICH       same topic, a delta                → the orchestrator's ENRICH mode
+  depth 0  READ         Results/terminals already hold it  → enter at REPORT. nothing runs.
+  depth 1  ENRICH       same topic, missing evidence       → add the minimum Paper Run(s)
   depth 2  NEW FOLDER   a different topic, same group      → full lifecycle, sibling folder
   depth 3  NEW GROUP    a different purpose entirely       → new group + folder
 ```
 
-**Depth 1** appends to an existing topic — a few sources, a verification flip.
-Never rewrite a landed verdict.
+**Depth 1** appends to an existing topic — one or more numbered Paper Runs, or
+a verification correction landed in the owning Result Bib/Card. Never rewrite
+a landed verdict in place; synthesize a new Report or superseding terminal.
 
 **Depth 2 and 3** mint a new folder — NAME IT TO MATCH ITS SIBLINGS.
 Read the existing discovery-folders and follow THEIR convention.
@@ -180,7 +182,7 @@ What is frozen, what moves
 ---------------------------
 
 ```
-  ACCRETES (add-only)   QA files · sources · discovery-folders
+  ACCRETES (add-only)   QA files · Paper Runs/Results · Discovery Topic Folders
   FROZEN                landed terminal files · a QA file's BODY, once written
   MUTABLE               a QA file's `state:` line — the ONE mutable field
                         discovery.yaml — this layer's own
@@ -229,7 +231,8 @@ You have never seen a paper, so you cannot honestly write one down.
 State each finding as a fact on its own terms — readable by anyone, with no reference to who asked or why.
 
 The checker lints this, and it exists because of a real incident.
-A discovery commissioned in a consumer's own vocabulary came back with its `sources.md` and `verdict.md` structured around that consumer's hypotheses.
+A discovery commissioned in a consumer's own vocabulary came back with its
+Result Cards and verdict structured around that consumer's hypotheses.
 Evidence meant to serve every future reader was effectively single-use.
 Contaminating the bank costs more than the discovery did.
 

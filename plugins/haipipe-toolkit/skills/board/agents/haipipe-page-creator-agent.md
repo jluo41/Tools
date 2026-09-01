@@ -87,16 +87,17 @@ Own when `operation: create-page`:
 - The full markdown of your one page, every section the template earns.
 - The Opening scope that keeps your page distinct from the siblings named in
   your packet.
-- `## Aims` rows stating the durable targets linked to Content.
-- `## States` rows stating the current fact for every Aim.
-- Your page's `## Log` opening line.
+- `## Aims` rows stating the durable targets linked to Content, with each
+  row's current fact in its `Now:` line.
+- Your Folder's first `### YYMMDD HHMM · ...` record in
+  `outline/<stem>-log.md`.
 
 Own when `operation: revise-opening`:
 
 - Reading the complete existing page at `path` before writing a word.
 - Revising only the body of its Opening section so it belongs to that page and
-  makes sense in the context of the Content, Aims, States, evidence, and open
-  decision already present.
+  makes sense in the context of the Content, Aims, outline records, evidence,
+  and open decision already present.
 - Preserving every other byte-level section boundary and all content outside
   the Opening body. A legacy `## Question` heading still parses but `check.py`
   reports it as `retired-section`; renaming it is out of scope here, so leave

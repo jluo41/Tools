@@ -152,16 +152,17 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertClean(value)
         self.assertEqual(["DRAFT->CHECK", "CHECK->CLOSE"], traversed_edges(value["receipts"]))
 
-    def test_full_optional_probe_route_closes(self):
-        """DRAFT may send back to PROBE; the detour returns through the plan.
+    def test_full_optional_survey_route_closes(self):
+        """DRAFT may send a claim without a run back to OUTLINE (SURVEY); the
+        detour lands at EVIDENCE and returns through the plan.
 
-        Pre-260819 this fixture walked PROBE->REVISE, an edge the PREPARE loop
-        removed: PROBE routes only sideways or back, and the loop's one door
-        out is OUTLINE's gate."""
+        Pre-260819 this fixture walked PROBE->REVISE, an edge the loop
+        removed; on 260901 PROBE retired and DRAFT's back-edge became OUTLINE.
+        The loop's one door out is still OUTLINE's gate."""
         value = run(
             [
-                producer(1, "DRAFT", "v0", "v1", "PROBE"),
-                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
+                producer(1, "DRAFT", "v0", "v1", "OUTLINE"),
+                producer(2, "OUTLINE", "v1", "v1", "EVIDENCE"),
                 producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
                 producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
                 producer(5, "DRAFT", "v1", "v2", "CHECK"),
@@ -171,23 +172,23 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertClean(value)
 
     def test_full_outline_to_compile_route_closes(self):
-        """The 260819 happy path: the PREPARE loop converges, then the linear
-        tail runs to CLOSE. The pre-260819 fixture walked EVIDENCE->REVISE,
-        which the loop removed."""
+        """The happy path: the OUTLINE part converges (OUTLINE -> EVIDENCE ->
+        OUTLINE), then the linear tail runs to CLOSE. The pre-260819 fixture
+        walked EVIDENCE->REVISE, which the loop removed."""
         value = run(
             [
-                producer(1, "OUTLINE", "v0", "v1", "PROBE"),
-                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
-                producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
-                producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
-                producer(5, "DRAFT", "v1", "v2", "REVISE"),
-                producer(6, "REVISE", "v2", "v3", "COMPILE"),
-                producer(7, "COMPILE", "v3", "v3", "CHECK"),
-                check(8, "v3"),
+                producer(1, "OUTLINE", "v0", "v1", "EVIDENCE"),
+                producer(2, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(3, "OUTLINE", "v1", "v1", "EVIDENCE"),
+                producer(4, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                producer(5, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(6, "DRAFT", "v1", "v2", "REVISE"),
+                producer(7, "REVISE", "v2", "v3", "COMPILE"),
+                producer(8, "COMPILE", "v3", "v3", "CHECK"),
+                check(9, "v3"),
             ]
         )
         self.assertClean(value)
-
     def test_check_can_route_to_outline(self):
         value = run(
             [
@@ -209,18 +210,20 @@ class PageLifecycleAuditTest(unittest.TestCase):
         )
         self.assertClean(value)
 
-    def test_check_can_route_to_probe(self):
+    def test_check_routing_to_retired_probe_reads_as_evidence(self):
+        """A pre-260901 receipt may still say PROBE; the alias keeps it auditable."""
         value = run(
             [
                 check(1, "v1", "PROBE"),
-                producer(2, "PROBE", "v1", "v1", "EVIDENCE"),
-                producer(3, "EVIDENCE", "v1", "v1", "OUTLINE"),
-                producer(4, "OUTLINE", "v1", "v1", "DRAFT"),
-                producer(5, "DRAFT", "v1", "v2", "CHECK"),
-                check(6, "v2"),
+                producer(2, "PROBE", "v1", "v1", "OUTLINE"),
+                producer(3, "OUTLINE", "v1", "v1", "DRAFT"),
+                producer(4, "DRAFT", "v1", "v2", "CHECK"),
+                check(5, "v2"),
             ]
         )
         self.assertClean(value)
+        self.assertIn("EVIDENCE", " ".join(traversed_edges(value["receipts"])))
+        self.assertNotIn("PROBE", " ".join(traversed_edges(value["receipts"])))
 
     def test_check_can_route_to_evidence(self):
         """The current phase token, under its current name."""
@@ -236,7 +239,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertClean(value)
 
     def test_probe_and_evidence_audit_identically(self):
-        """A receipt written before the 260816 rename still audits.
+        """A receipt written before 260901 (PROBE retired) still audits.
 
         `_runs/page/` receipts are immutable by contract, so the auditor
         normalizes the retired token instead of failing the run that used it.
@@ -334,7 +337,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertIn("round-sequence", codes)
 
     def test_blocked_worker_must_hold(self):
-        receipt = producer(1, "PROBE", "v1", "v1", "PROBE")
+        receipt = producer(1, "EVIDENCE", "v1", "v1", "EVIDENCE")
         receipt["status"] = "blocked"
         value = run([receipt], status="blocked")
         self.assertIn("failed-work-not-held", self.codes(value))
@@ -366,9 +369,10 @@ class PageLifecycleAuditTest(unittest.TestCase):
     def test_receipt_versions_must_be_continuous(self):
         value = run(
             [
-                producer(1, "DRAFT", "v0", "v1", "PROBE"),
-                producer(2, "PROBE", "v2", "v2", "CHECK"),
-                check(3, "v2"),
+                producer(1, "DRAFT", "v0", "v1", "OUTLINE"),
+                producer(2, "OUTLINE", "v2", "v2", "DRAFT"),
+                producer(3, "DRAFT", "v2", "v2", "CHECK"),
+                check(4, "v2"),
             ]
         )
         self.assertIn("version-continuity", self.codes(value))
@@ -390,6 +394,23 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run([check(1, "v1")])
         value["packet"]["start_phase"] = "DRAFT"
         self.assertIn("start-phase-mismatch", self.codes(value))
+
+    def test_unknown_page_ruling_is_rejected(self):
+        value = run([check(1, "v1")])
+        value["packet"]["page_ruling"] = "invented-policy"
+        self.assertIn("unknown-page-ruling", self.codes(value))
+
+    def test_owner_page_ruling_requires_the_packet_gate(self):
+        for page_ruling in ("domain-gate", "local"):
+            with self.subTest(page_ruling=page_ruling):
+                value = run([check(1, "v1")], gate_required=False)
+                value["packet"]["page_ruling"] = page_ruling
+                self.assertIn("owner-gate-not-required", self.codes(value))
+
+    def test_none_page_ruling_can_close_without_an_owner_gate(self):
+        value = run([check(1, "v1")], gate_required=False)
+        value["packet"]["page_ruling"] = "none"
+        self.assertClean(value)
 
     def test_receipt_round_cannot_exceed_declared_bound(self):
         receipt = check(1, "v1", "HOLD", round=4, verdict="blocked")
@@ -418,14 +439,14 @@ class PageLifecycleAuditTest(unittest.TestCase):
             )
 
     def test_prepare_pause_allows_the_next_pass_after_hold(self):
-        """260819 pause rule: a HOLD from OUTLINE/PROBE/EVIDENCE with an open
+        """260819 pause rule: a HOLD from OUTLINE/EVIDENCE with an open
         required gate is a PAUSE between passes of one round, not a terminal.
         The live 260819 round appended one receipt per pass and 10 of 12 legal
         passes audited as receipt-after-terminal before this rule existed."""
         gate = {"required": True, "status": "pending",
                 "evidence": ["outline approved: line, unticked"]}
         steps = []
-        for i, phase in enumerate(("OUTLINE", "PROBE", "EVIDENCE", "OUTLINE"), 1):
+        for i, phase in enumerate(("OUTLINE", "EVIDENCE", "OUTLINE", "EVIDENCE"), 1):
             r = producer(i, phase, "v1", "v1", "HOLD")
             r["human_gate"] = dict(gate)
             steps.append(r)
@@ -482,12 +503,12 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertEqual({k: set(v) for k, v in LEGAL_ROUTES.items()}, js)
 
     def test_workflow_separates_producer_and_reviewer_agents(self):
-        # One producer agent per phase since 260819; the base agent is the
-        # dispatch FALLBACK, and the judge is never in the producer map.
+        # One producer agent per phase since 260819 (probe's retired 260901);
+        # the base agent is the dispatch FALLBACK, and the judge is never in
+        # the producer map.
         self.assertIn("const PRODUCER_AGENTS = {", self.script)
         for agent_name in (
             "haipipe-page-outline-agent",
-            "haipipe-page-probe-agent",
             "haipipe-page-evidence-agent",
             "haipipe-page-draft-agent",
             "haipipe-page-revise-agent",
@@ -523,16 +544,22 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIsNotNone(m)
         self.assertIn("status: 'blocked'", m.group(1))
 
-    def test_auto_hardens_the_one_gate_it_may_never_waive(self):
-        """Auto defers the four ticks that HAVE a rules file and hardens the
-        RULING, which has none by design. A run nobody watched is exactly the
-        run that must not certify itself."""
-        self.assertIn("const humanGate = (mode === 'auto' && !declaredGate.required)",
+    def test_phase_contract_controls_whether_an_owner_gate_is_hardened(self):
+        """The generic Page loop does not invent a RULING for every Folder."""
+        self.assertIn("const pageRuling = String(parsed.page_ruling || 'legacy-default')",
                       self.script)
-        self.assertIn("required: true", self.script)
+        self.assertIn("const phaseWaivesOwnerGate = pageRuling === 'none'",
+                      self.script)
+        self.assertIn("pageRuling === 'domain-gate' || pageRuling === 'local'",
+                      self.script)
+        self.assertIn("const legacyAutoGate = pageRuling === 'legacy-default' && mode === 'auto'",
+                      self.script)
+        self.assertIn("const humanGate = hardenOwnerGate", self.script)
+        self.assertIn("pageRuling === 'none'", self.script)
         # And it is written BACK, or src.page_lifecycle's own invariant below
         # fails on every receipt the run writes.
         self.assertIn("parsed.human_gate = humanGate", self.script)
+        self.assertIn("parsed.page_ruling = pageRuling", self.script)
 
     def test_the_hardened_gate_satisfies_the_auditors_packet_invariant(self):
         """audit_run asserts receipt.human_gate.required == packet's. The
@@ -575,7 +602,7 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         for phase, route in repair.items():
             with self.subTest(phase=phase, route=route):
                 self.assertIn(route, LEGAL_ROUTES[phase])
-        for phase in ("OUTLINE", "PROBE", "EVIDENCE"):
+        for phase in ("OUTLINE", "EVIDENCE"):
             self.assertEqual(phase, repair[phase])
         self.assertIn(
             "route = MECHANICAL_REPAIR_ROUTE[current] || 'HOLD'", self.script

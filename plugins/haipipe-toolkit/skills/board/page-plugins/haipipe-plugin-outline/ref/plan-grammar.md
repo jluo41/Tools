@@ -108,7 +108,8 @@ first use; a metaphor (`rung`) is rewritten to the plain thing (`step`).
 🎯 A<n>.<m> | P<n>     the Aim on the page this point serves (`P<n>` is a page-level Aim)
 📚 <bibkey>            a PUBLISHED work whose key resolves in bibex/
                        never a board page id (a cross-reference is written in words)
-📮 [PP<NN>]            a question a probe card answers; bare until ② PROBE raises
+📮 [PP<NN>]            a number or fact a run answers; bare until SURVEY rows it,
+                       a PP id only when LAND minted an outbound card PROBE raises
                        the card, then `📮 PP<NN>`
 🧮 PP<NN>.v<n>         one quoted number out of an answered card; the checker
                        recomputes it (`checks/values.py`)
@@ -146,7 +147,7 @@ plan-no-arc           no `arc:` line                                       cli/c
 feedback-unserved     an open Round row no bullet serves and none declines cli/check.py
 serves: anchor        a card's `serves:` names an address the plan lacks    src/plan_shape.py
 coverage              every owing mark served, or bare and counted as owed  checks/outline.py
-                      before ② PROBE; every unit on disk cited
+                      before SURVEY; every unit on disk cited
 value                 every 🧮 number recomputes                            checks/values.py
 head-too-long         a head over 11 words                                  src/plan_shape.py
 head-too-short        a head under 4 words (a code-word head)               src/plan_shape.py

@@ -1,3 +1,10 @@
+# haipipe-insight-meta · version history
+
+## 1.0.0 — 2026-08-31
+
+- Migrated from `haipipe-page-for-meta` to phase-owned `haipipe-insight-meta`.
+- The I0 skill now owns Meta's Page Face, Task Face, plugin profile, GI0, and handoff.
+
 ## 0.3.0 — 2026-08-28
 
 - Gains `## Receipts`. GI0 and every PARTITION BIRTH leave their dated Log row on this page, and until now that duty lived only in `haipipe-insight-workflow` §Phase receipts — which the ruler is explicit does not count, because the page's author reads the page's contract and not the machine file. This closes the last ⑥ gap on the insight side together with for-question 0.5.0.

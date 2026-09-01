@@ -7,7 +7,7 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.2.1"
+  version: "0.5.0"
   last_updated: "2026-08-31"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
@@ -37,12 +37,12 @@ Every phase is named by its authority page (the naming law), with the old
 verb kept as a parenthesized alias.
 
 ```text
-P0 Ideation (ideate)      💭 SD00 · the repo is minted with this page ·
+P0 Ideation (ideate)      💭 Story00 · the repo is minted with this page ·
 │                            ideas cheap and disposable
 │                            gate G0: novelty per claim + pilot + human PROCEED
-P1 Seed (establish)       🌱 SD01 · venue-free · E-board with novelty column
+P1 Seed (establish)       🌱 Story01 · venue-free · E-board with novelty column
 │                            gate G1: skeleton stands · gap list readable
-P2 Roadmap (route)        🗺 SD02 · BLOCK rows serving E-rows · ✋ released ·
+P2 Roadmap (route)        🗺 Story02 · BLOCK rows serving E-rows · ✋ released ·
 │                            then the receipts land on its lap divisions
 │                            gate G2: every 🔨/⬜ E-row has a ▶️ row or waiver
 │                            gate G3: done-when holds · settle written on Seed
@@ -69,7 +69,7 @@ The seven Page Types, one line each:
 
 - **Ideation** is one research direction's ideas, ranked in the source
   reports' own structure (IDEA_REPORT / Novelty Check Report fields), the
-  story group's page zero (`SD00-ideation`), minted with the repo before any
+  story group's page zero (`Story00-ideation`), minted with the repo before any
   Seed exists; eliminated ideas stay forever; the winning idea's `went to`
   names this board's Seed (or, rarely, a sibling repo's).
 - **Seed** is one venue-free identity per paper; it survives retargeting
@@ -151,13 +151,13 @@ authority.
 Evidence evolves through the shared Page loop:
 
 ```text
-① OUTLINE     mark each promised point: prose · 📮 question · 🧮 value ·
+SHAPE         mark each promised point: prose · 📮 question · 🧮 value ·
               📚 citation · 🖼 display
-② PROBE       make a card for each unresolved obligation
-③ EVIDENCE    land proof, values, citations, and displays; update the outline
-④ DRAFT       write only from the agreed outline and landed evidence
-⑤ REVISE      improve prose and bind card/display ids; COMPILE is folded here
-⑦ CHECK       judge the built version; only CHECK may close the Page
+SURVEY        one item row per obligation: which run in tasks/ answers it
+LAND · EMBED  make the runs, land proof, values, citations, displays; fold into the plan
+WRITE         write only from the agreed outline and landed runs
+              (revise: improve prose and bind row/display ids; COMPILE is folded here)
+CHECK         judge the built version; only CHECK may close the Page
 ```
 
 Do not hard-code a linear advance here. Load `haipipe-page-workflow`; its
@@ -241,14 +241,15 @@ Paper-<Slug>/
 ├── 0-paperboard/               the board · 0 is ALWAYS the board · FIXED name,
 │   ├── board.md                tooling may rely on it
 │   ├── board/                  engine-generated HTML (build.py output)
-│   ├── A1-SD-story/            P0-P2 · SD00-ideation · SD01-seed ·
-│   │                           SD02-roadmap · venue-free head
-│   ├── A2-NA-narrative/        P3 · NA<NN>-narrative-<desk> · one page per
-│   │                           desk, numbered in arrival order
-│   ├── Ba-<desk1>/             P4-P5 · first desk's S<D>NN main units,
-│   │                           SA<NN> appendix units, AND its RD<NN> rounds
-│   └── Bb-<desk2>/             second desk, same shape (may hold only RD
-│                               pages for a foreign-desk round)
+│   ├── A1-Story/               P0-P3 · Story00-ideation · Story01-seed ·
+│   │                           Story02-roadmap (the venue-free head), then
+│   │                           Story<NN>-narrative-<desk>, one per desk in
+│   │                           arrival order (Story03 first)
+│   ├── Ba-<desk1>-Main/        P4 · first desk's S<D><NN> main sections
+│   ├── Bb-<desk1>-Appendix/    P4 · its SA<NN> appendix sections
+│   ├── Bc-<desk1>-Round/       P5 · its RD<NN> rounds, one page per batch
+│   └── Bd-<desk2>-Main/ …      second desk continues at the next free letter
+│                               (a foreign-desk round mints only its -Round)
 ├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
 │   ├── sections/               matches the desk's arrival order, the same order
 │   ├── displays/               that assigned its lowercase B letter
@@ -276,11 +277,20 @@ top-level `sections/`, `displays/`, and root `reference.bib` are retired for
 new repos: a second telling that wants the first telling's figure copies it
 from the owning page into its own room, with the page as provenance.
 
-**Group-name grammar (JL 260824)** — `A` groups carry the per-paper journey
-(`A1-SD-story` for P0–P2, `A2-NA-narrative` for P3); `B` groups are one per
-desk in lowercase arrival order (`Ba`, `Bb`, `Bc`…), each hosting that desk's
-three token families together: `S<D>` main units, `SA` appendix units, and
-`RD` rounds — so `RD01 lands in SM05 and SW01` reads without a legend.
+**Group-name grammar (JL 260824; tokens re-ruled 260831)** — one `A` group
+carries the per-paper journey: `A1-Story` holds P0–P3, the venue-free head
+(`Story00-ideation`, `Story01-seed`, `Story02-roadmap`) and then one
+`Story<NN>-narrative-<desk>` per desk, because a page id should explain itself
+(`SD`/`NA` tokens are retired); `B` groups run in lowercase
+letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
+Bb to be Appendix, Bc to be Round"): the first desk takes `Ba-<desk>-Main` for
+the `S<D>` main units, `Bb-<desk>-Appendix` for the `SA` units, and
+`Bc-<desk>-Round` for the `RD` pages; a second desk continues at the next free
+letter (`Bd-<desk2>-Main`, …). The page tokens are unchanged, so `RD01 lands
+in SM05` still reads across the groups. The `<desk>` name keeps its own
+capitals (`Ba-MISQ-Main`); only the letter is lowercase.
+Grandfathered: three groups sharing one desk letter, and a single
+`B<x>-<desk>` group holding all three families.
 **Collision rule**: `<D>` is the first distinctive letter of the desk not
 already claimed on this board; `D` is never available (`SD` is the story
 token), `A` is never available (`SA` is the appendix token), and `N`/`R`
@@ -288,7 +298,7 @@ initials watch for clashes with the `NA`/`RD` tokens; two desks sharing an initi
 next distinctive letter. Review letters live inside their Round page's
 folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `paperboard/`, `0-sections/`, `0-display/`, a shared root `reference.bib`,
-`SC`/`A<D>` tokens, narratives inside the SD story group, a lone `C1-RD-round`
+`SC`/`A<D>`/`SD`/`NA` tokens, a separate `A2-NA-narrative` group, a lone `C1-RD-round`
 group, a story group holding a separate `SD03-collection` page) are
 grandfathered and migrate only on explicit request, because the
 rename touches tex `\input` paths, pagex symlinks, and compile scripts.

@@ -1,15 +1,14 @@
 ---
 name: haipipe-page
 description: >-
-  The PAGE contract and router of a Board: what one page IS on disk (page.md
-  with four on-stage sections beside its outline/ process folder and plugin
-  lanes), how its Page Type is resolved, which Page Phase holds authority,
-  and four verbs: PREVIEW, CREATE, WORK ON, RUN. Trigger: create a page, new
-  page, update a page, preview a page, what does this page say, run page
-  lifecycle, Page Type, Page Phase, /haipipe-page.
+  The Page Face contract and router of a Folder: what the readable .md is on
+  disk, how its phase-owned Folder kind or legacy Page Type is resolved, which
+  Page Phase holds authority, and PREVIEW, CREATE, WORK ON, RUN. Trigger:
+  create a page, update page, run page lifecycle, Page Face, Folder kind,
+  legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.50.0"
-  last_updated: "2026-08-31"
+  version: "0.53.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -47,25 +46,19 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │                  files: requirement · discussion · feedback · evidence ·
 │                  files · log — parsed MEETINGS land here (JL 260831)
 ├── workflow/      MACHINE process: one receipt per phase pass
-│              ─── the LOWER, CODE part: the unit root IS the code home ───
-├── scripts/       the script home, any language (.py · .do · …): the code this
-│   └── config/    unit OWNS. config/ is INSIDE it, because a config is read by
-│                  the code beside it (JL 260831). In a task folder, code SHARED
-│                  with sibling tasks lives in the job's `src/` instead, and the
-│                  different name is what tells the two apart; a lane-local
-│                  script (a display recipe, a bibex helper) is equally legal
-├── runs/          REQUIRED where code exists · tickets + one dated
-│                  record per run · THE ONE DOOR that calls any script
-├── results/       REQUIRED where code exists · regenerable, never PHI,
-│                  NEVER inside evidence/; a result becomes evidence only
-│                  when a probe card binds it (PP<NN>.v<n> → the file)
+│              ─── the LOWER, TASK-side part ───
+├── scripts/       optional owned implementation, any language; shared Task
+│   └── config/    Job code stays one level up in `src/`
+├── runs/          optional authored Run tickets; THE ONE execution door
+├── results/       Folder-local Results only. A canonical Task Page resolves
+│                  generated output at `<job>/results/<task>/<run>/`
 │              ─── the UPPER, PAGE part ───
 ├── evidence/      what the page CITES, each lane behind its gate:
 │   ├── bibex/     citations · verified:
 │   ├── probe/     cards + values (PP<NN>.v<n>) · read:
 │   ├── display/   units, recipes inside · accepted:
-│   ├── pagex/     every link out: borrowed pages AND task units (the
-│   │              collection job first; the task lane merged here)
+│   ├── pagex/     exact-file evidence and whole-Folder relationships;
+│   │              Folder cards show Page Face + live Task status
 │   └── materials/ dated captures
 ├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
 └── studio/        the HUMAN's room on the page (JL 260831): closest to
@@ -74,13 +67,16 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
                    redraw the scene's named elements on your ask
 ```
 
-**The unit symmetry (JL 260831)**: a task folder is a page folder with the
-execution family added, and BOTH carry the same two process lanes:
-`outline/` is the HUMAN half (the agreed plan a person ticks, the open
-threads, the log) and `workflow/` is the MACHINE half (on a page, one
-receipt per pass under `workflow/receipts/`; on a task, `plan.yaml` and
-`report.yaml`). A receipt was formerly folded under a log record; the log
-record stays, the receipt body lands in `workflow/`.
+**The Folder symmetry**: every Folder has a Page Face and Task Face; a
+`primary_face` says which is the usual entry, not which face exists.
+`outline/` is the human planning/decision record and `workflow/` is the
+machine-readable phase/run record. Page-heavy work commonly stores phase
+receipts under `workflow/receipts/`; executable work commonly stores
+`plan.yaml` and `report.yaml`. Runs is an optional presenter beneath this shared
+Task Face. It pairs the local ticket with either a Folder-local Result or the
+containing Task Job's `results/<task>/<run>/`; scripts, config, and notebooks
+appear only when the dialect owns them. Runs is never a third universal face or
+a lifecycle owner.
 
 A unit MAY carry a `README.md`, and it is DERIVED (JL 260831): a generated
 projection of the two-part tree as it actually stands (which lanes exist,
@@ -93,35 +89,41 @@ generator).
 
 A folder is created only when it is used. Values have a surface but no folder:
 each lives inside one probe card's `## Values` block and is cited as
-`PP<NN>.v<n>`. When a page's numbers come from code, ONE collection job
-(task-type `page`, contract `task/haipipe-task-for-page`) answers all its
-task-route cards and ranks first among the page's `evidence/pagex/` links
-(the task lane merged there, JL 260831). The seven `outline/` files, their ids, labels and writers are
+`PP<NN>.v<n>`. Every number shown on a Page Face that comes from a Run crosses
+ONE page-serving collection job (`task-type: page`, contract
+`haipipe-task-for-page`); that Folder answers all related task-route cards and
+ranks first among the page's `evidence/pagex/` whole-Folder links. A local Run
+may validate or reshape non-authoritative intermediates, but it
+cannot become a second value door. A reusable derivation, a source-data change, or any displayed
+numeric result belongs in the linked executable Folder and its QA binding. The
+seven `outline/` files, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A phase loads those two refs, not the plugin
 skill (which owns the tab).
 
-## 🧬 One key claims a page
+## 🧬 One owner claims the Page Face
 
-A property every page carries cannot tell one kind of page from another. A page
+A property every Page carries cannot tell one Folder kind from another. A Page
 shows something, cites something, states a number; so display, literature and
-value are PLUGINS. A Page Type earns its key by stating how that page CLOSES.
-**No `page-type:` key is the default and the most flexible case**: the page
-owes the base section order and nothing more.
+value are plugins. In migrated families, the workflow phase owns the Folder
+kind and its Page Face. In unmigrated families, a Page Type remains the
+compatibility owner. No `folder-kind:` or `page-type:` key is the flexible base.
 
-Resolve ① to ⑤ in order and stop at the first key that matches. EXACTLY ONE
-step may claim a page; a page no key matches, or one carrying two keys that
-disagree, is fixed on the page, never in the resolver. Step ③'s key is
-required on every type that has one and beats the filename. `route: outward |
-inward` is a plugin key naming an evidence lane; it picks no contract.
+Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
+semantic owner may claim the Page Face. An in-place Folder's
+`workflow/phase.yaml current.folder-kind` is authoritative; fixed-kind Folders
+use Page `folder-kind:`. `page-type:` is a compatibility fallback. If current
+state and Markdown disagree, fix the Folder, never the resolver.
 
 ```text
-step  machine-readable key                    Page Type          contract
+step  machine-readable key                    Page Face owner    contract
 ──────────────────────────────────────────────────────────────────────────
-①     filename QBv<n>-                        venue              for-venue
-③     frontmatter `page-type: <key>`          the key names it   for-<key>
-④     filename S-<Family>-<unit>-<slug>       stage              for-stage
-⑤     filename Q<group><n>[<face>]-<slug>     Q decision         base only
+①     workflow/phase.yaml current kind        workflow phase     phase skill
+②     frontmatter `folder-kind: <key>`        workflow phase     phase skill
+③     frontmatter `page-type: <key>`          compatibility key  phase or for-<key>
+④     filename QBv<n>-                        venue              for-venue
+⑤     filename S-<Family>-<unit>-<slug>       stage              for-stage
+⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
 ```
 
 A discovery folder gets no type of its own: `task` carries which kind of
@@ -129,9 +131,9 @@ folder it reads.
 
 ### The inventory is derived, never written by hand
 
-The shipped contract folders (`*/page-types/`, paper's `workflow-phases/`
-plus `paper/haipipe-paper-venue/`) say who MAINTAINS a key, `check.py`'s
-`PAGE_TYPE_VALUES` says what RESOLVES, and the boards say what is IN USE:
+Phase `legacy_page_type` metadata and unmigrated contract folders
+(`*/page-types/`, Paper's phase filename bridge, plus Venue) say who maintains
+a legacy key. `check.py` says what resolves and boards say what is in use:
 
 ```bash
 python3 <haipipe-board>/cli/pagetypes.py           # the table, with live page counts
@@ -144,8 +146,8 @@ ships and nothing uses, is a finding; `--check` is the tooth. The block carries
 the structural facts only; the counts stay in the command's output.
 
 Since 260831 every key also has a RECORD in `ref/type-registry.md`: four
-fields, one consumer each (`outline` → ① OUTLINE · `evidence` → ②/③ ·
-`prose` → ④ DRAFT · `closing` → ⑦ CHECK). The phases are the functions; the
+fields, one consumer each (`outline` → SHAPE · `evidence` → SURVEY and LAND ·
+`prose` → WRITE · `closing` → CHECK). The phases are the functions; the
 record is their arguments. A `contract` key keeps its outline SHAPE in its
 own frontmatter and the registry points at it; a `key-only` record with live
 pages is a `registry-gap` (usage without law), reported by the same
@@ -169,7 +171,6 @@ labeling     —             ✓       `page-type:` line
 meta         application   ✓       `page-type:` line
 narrative    paper         ✓       `page-type:` line
 opening      —             ✓       `page-type:` line
-principle    application   ✓       `page-type:` line
 question     application   ✓       `page-type:` line
 roadmap      paper         ✓       `page-type:` line
 round        paper         ✓       `page-type:` line
@@ -186,48 +187,50 @@ wisdom       application   ✓       `page-type:` line
 
 ### A variant extends the base and never redefines it
 
-A Page Type used by one consumer family is a VARIANT of the base: it defines
-Content and may populate fixed extension points in Aims, and it never
-redefines, adds, removes or reorders the frame sections. A variant ships in
-the folder of the skill set that owns it, so the folder names the owner: a
-`page-types/` folder for most families; paper's types are 1:1 with journey
-phases, so since 260831 they ship as `paper/workflow-phases/haipipe-paper-
-<phase>` plus the non-phase `paper/haipipe-paper-venue/` (JL 260831).
-Load the matching variant before writing or fixing any page of its type; when
-a variant moves, re-run `install.sh --global` or its symlink silently stops
-resolving.
+A Page Face specialization defines Content and fixed extension points without
+reordering the base frame. In a migrated family it lives in the workflow phase
+that owns the Folder kind; an unmigrated Page Type remains a base variant under
+`page-types/`. Load the semantic owner before writing. After moving a skill,
+re-run `install.sh --global` so the installed symlink follows it.
 
-## 🎭 Phases, independent of type
+## 🎭 Page phases, independent of Folder kind
 
-A page persists while the authority acting on it changes. The current phase is
-not a Page Type and is not inferred from the edit operation.
+A Page Face persists while its Page-workflow authority changes. The page
+workflow (`page-workflows/haipipe-page-workflow`) is TWO PARTS of named
+cycles, independent of the domain workflow phase that owns the Folder kind:
 
 ```text
-phase       authority                                          load
+part      cycle     phase (the skill that acts)                  gate
 ──────────────────────────────────────────────────────────────────────────────────
-OUTLINE 🚧  agree the SHAPE; exit only on a person's tick       page-workflows/haipipe-page-outline
-PROBE       turn each outline mark into a card and ask          page-workflows/haipipe-page-probe
-EVIDENCE    land every promised claim's card, key or unit       page-workflows/haipipe-page-evidence
-DRAFT       write the page from the plan and landed evidence    page-workflows/haipipe-page-draft
-REVISE      improve the realization while purpose and Aims hold page-workflows/haipipe-page-revise
-COMPILE     rebuild latex · pdf · word from that prose          page-workflows/haipipe-page-revise
-CHECK       judge one version and route its next authority      page-workflows/haipipe-page-check
+OUTLINE   SHAPE     page-workflows/haipipe-page-outline           👤 approved:
+          SURVEY    page-workflows/haipipe-page-outline           👤 Decide per item row
+          LAND      page-workflows/haipipe-page-evidence          ⚙ every make-row landed
+          EMBED     page-workflows/haipipe-page-evidence          ⚙ back to SHAPE
+DRAFT     WRITE     page-workflows/haipipe-page-draft + -revise   ⚙ cold pre-check ready
+          CHECK     page-workflows/haipipe-page-check             👤 accepted:
 ```
 
-Resolve one invocation as: base page contract → matching Page Type → current
-Page Phase → the page-local plugins and family craft the artifact requires.
-The phases form a routing grammar, not a conveyor belt: each may repeat,
-PROBE and EVIDENCE may be skipped when the page promises no claim it cannot
-support, and CHECK may route to any earlier phase. When the visible operation
+The law under the OUTLINE part: every evidence number is answered by a RUN at
+a real `tasks/` address; the run computes, the page interprets (EMBED). The
+item table `outline/<stem>-items.md` is the one ledger
+(`haipipe-plugin-outline/ref/item-table.md`).
+
+Resolve one invocation as: Folder → base Page Face → phase-owned Folder kind
+(or a legacy Page-Type compatibility contract) → current cycle →
+phase-selected and page-local plugins.
+The cycles form a routing grammar, not a conveyor belt: each may repeat,
+SURVEY and LAND are skipped when the page promises nothing it cannot already
+support, and CHECK may route to any earlier cycle. When the visible operation
 is ambiguous, the authority test decides:
 
 ```text
-the section list itself is being agreed  → OUTLINE
-purpose or Aims change                   → DRAFT
-a marked hole has no card open for it    → PROBE
-a card is open and its answer must land  → EVIDENCE
-the same purpose and Aims are improved   → REVISE
-a concrete version is judged             → CHECK
+the section list itself is being agreed        → SHAPE
+a mark has no item row, or a row no Decide     → SURVEY
+a decided row has no result on disk            → LAND
+a landed row is not yet in the plan            → EMBED
+purpose or Aims change                         → WRITE, new round (DRAFT)
+the same purpose and Aims are improved         → WRITE (REVISE)
+a concrete version is judged                   → CHECK
 ```
 
 `RUN` is the router verb, deliberately not `ADVANCE`; it is owned by
@@ -389,7 +392,8 @@ writing; a copied checklist in a prompt is a second authority and drifts.
 Evaluation asks whether the authored page satisfies its declared
 requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
-→ the Page Type variant → the current Phase contract → the page's own
+→ the phase-owned Page Face (or legacy Page-Type variant) → the current Page
+Phase contract → the page's own
 `### Writing Style` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and
@@ -440,7 +444,7 @@ Every id inside a fenced figure renders as a link.
 haipipe-page/
 ├── SKILL.md            this contract
 ├── ref/glossary.md     every word this family uses, with the path it names
-├── ref/type-registry.md  one record per Page Type key; the phases' arguments
+├── ref/type-registry.md  compatibility key records + phase-owner arguments
 └── CHANGELOG.md        version history, and the only home for retired rules
 ```
 

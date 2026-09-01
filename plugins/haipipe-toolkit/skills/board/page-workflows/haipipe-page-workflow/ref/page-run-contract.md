@@ -17,9 +17,10 @@ The caller supplies facts and authority, not a proposed paragraph formula.
 run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
 page: /absolute/path/to/QB5-page-loop.md
-start_phase: CHECK             # OUTLINE | DRAFT | PROBE | EVIDENCE | REVISE |
-                               # CHECK; COMPILE parses for legacy receipts only
-                               # (⑥ folded into REVISE 260819)
+start_phase: CHECK             # OUTLINE | DRAFT | EVIDENCE | REVISE | CHECK;
+                               # COMPILE parses for legacy receipts only (folded
+                               # into REVISE 260819); PROBE parses as EVIDENCE
+                               # for receipts older than 260901
 intent: audit and improve the automatic Page loop
 mode: copilot                  # copilot (default) | auto — see § below
 sources:                       # exact files the run may rely on
@@ -30,9 +31,11 @@ related_context:               # derived from this Page's Files for start_phase
   packet: "# Related Board Pages ..."  # exact bounded Markdown handed to the phase
 constraints:                   # settled rulings that no phase may reopen silently
   - Page is not a configuration
+page_ruling: none              # none | domain-gate | local; resolved from the
+                               # Folder's owning phase; omit only for legacy Pages
 human_gate:
-  required: false              # ⚠️ mode: auto HARDENS this to true and writes it
-  rule: all Aims met or explicitly held   #    back into the packet, see § below
+  required: false              # controller hardens domain-gate/local, plus a
+  rule: all Aims met or explicitly held   # legacy Page in auto; see § below
 limits:
   max_steps: 12
   max_rounds: 3
@@ -43,8 +46,8 @@ Required fields are `run_id`, `board`, `page`, `start_phase`, and `intent`.
 
 ## 🔀 `mode` · copilot and auto are ONE rule set read two ways (260821)
 
-The five person-reserved ticks are identical in both modes, and no machine writes
-one in either. What changes is what happens while a tick is UNANSWERED:
+The selected person-reserved ticks are identical in both modes, and no machine
+writes one in either. What changes is what happens while a tick is UNANSWERED:
 
 ```text
   🧑 copilot   the human half BLOCKS.  A person is here; an unticked gate is a
@@ -52,7 +55,7 @@ one in either. What changes is what happens while a tick is UNANSWERED:
   🤖 auto      the human half DEFERS.  The loop keeps moving on the machine half
                (`checked:`, agents/approve-rules/) and the debt accumulates on
                the ledger, handed over once at the end instead of interrupting
-               five times.  `cli/pagephase.py <page-dir> --owed`
+               once per selected tick.  `cli/pagephase.py <page-dir> --owed`
 ```
 
 This is JL's 260818 ruling made executable — *"human not to approve, they to
@@ -60,31 +63,35 @@ break"*: the RUN proceeds on `checked: ✅` alone, and a plan nobody objected to
 not blocked. A person's 🛑 still outranks everything and still stops the run in
 either mode.
 
-**AUTO DEFERS FOUR TICKS AND HARDENS THE FIFTH.** `approved:` `verified` `read:`
-and `accepted:` each have a rules file under `agents/approve-rules/`, so an
-approver can establish everything around them. The Page Type's RULING has NONE,
-on purpose — deciding a page's own question is the point of the page — so it is
-the one act auto may never waive:
+**AUTO DEFERS PLUGIN TICKS; `page_ruling` OWNS THE CLOSING GATE.** `approved:`
+`verified` `read:` and `accepted:` each have a rules file under
+`agents/approve-rules/`, so an approver can establish everything around them.
+The owning workflow phase supplies one of three policies:
 
 ```text
-  mode: auto  ⇒  human_gate.required is forced TRUE, whatever the packet said
-              ⇒  and written BACK into the packet, because the deterministic
-                 auditor (src/page_lifecycle.py) asserts that every receipt's
-                 human_gate.required equals the packet's. A hardened gate the
-                 echoed packet did not know about fails the audit on its own
-                 receipt — the same class of bug the `page` normalization above
-                 was written to prevent.
+  none         no owner RULING; the Page loop adds no gate
+  domain-gate  reuse the phase Gate/Closure receipt; do not ask twice
+  local        require a Page-local RULING
 ```
 
-So an auto run's terminal state is a HOLD **by design, not by failure**: it
-reaches CHECK, everything mechanical passes, and it stops at exactly ONE gate
-instead of five. Its `reason` says so in those words, because a person who reads
-a clean auto run as a broken one will go back to attending every step.
+`domain-gate` and `local` force `human_gate.required` true even when the caller
+omitted it; a missing `page_ruling` preserves the legacy rule that auto hardens a
+local gate. The controller writes the normalized policy and gate BACK into the
+packet because the deterministic auditor asserts that every receipt's
+`human_gate.required` equals the packet's. A hardened gate the echoed packet did
+not know about would fail the audit on its own receipt.
+
+An auto run may therefore reach HOLD **by design, not by failure** when a required
+owner or caller gate remains open. A `page_ruling: none` Folder with no separately
+declared gate may CLOSE after its mechanical and semantic checks pass.
 
 `mode` is echoed on every run result, so a stored receipt can never be read
 without knowing which reading of the ticks produced it.
-The caller resolves the stable Page Type before dispatch. A missing source,
-unknown gate, or ambiguous authority is a named HOLD, never a guessed input.
+The caller resolves the phase-owned Folder contract before dispatch:
+`workflow/phase.yaml current.folder-kind` for an in-place Folder, then Page
+`folder-kind:` for a fixed identity. A legacy Page Type/filename is fallback
+only. A missing source, malformed current block, conflicting kind, unknown
+policy, or ambiguous authority is a named HOLD, never a guessed input.
 
 Before every phase dispatch, the controller resolves `### 🔗 Related Board
 Pages` with `../../../haipipe-board/cli/pagecontext.py`. Only rows matching that
@@ -97,7 +104,7 @@ controller rematerializes context for the new phase rather than reusing CHECK's
 packet.
 
 For a new Page, CREATE scaffolds and registers the persistent Page first; RUN
-then begins at OUTLINE, which has been phase ① since 260817. Beginning at DRAFT was correct only while DRAFT owned the outline. For an existing Page whose next need is unknown, RUN
+then begins at OUTLINE (the SHAPE cycle), the head of the loop since 260817. Beginning at DRAFT was correct only while DRAFT owned the outline. For an existing Page whose next need is unknown, RUN
 begins at CHECK so a fresh judge routes the visible version.
 
 ## Phase receipt
@@ -148,7 +155,7 @@ MUTABILITY       a tick can go BACKWARD: a changed display `intake/` drops
                  a value that reverts cannot live in one
 ```
 
-The five ticks and the missing single surface are argued on `QPw00g-human-gate`.
+The selected ticks and their joined ledger are argued on `QPw00g-human-gate`.
 
 The minimum auditable identity is the SHA-256 of the Markdown source joined to
 the SHA-256 of its rendered HTML. The auditor requires lowercase 64-character
@@ -186,8 +193,9 @@ round                 first receipt: a positive integer; after     round-start �
                       DRAFT/OUTLINE with reopens_promise true,
                       else unchanged; never above
                       limits.max_rounds
-phase                 one of OUTLINE DRAFT PROBE EVIDENCE          unknown-phase ·
-                      REVISE COMPILE CHECK; must equal the         route-phase-mismatch ·
+phase                 one of OUTLINE DRAFT EVIDENCE REVISE         unknown-phase ·
+                      COMPILE CHECK (PROBE reads as EVIDENCE in     route-phase-mismatch ·
+                      pre-260901 receipts); must equal the
                       previous receipt's route; nothing may        receipt-after-terminal
                       follow a CLOSE or HOLD receipt
 route                 in LEGAL_ROUTES[phase]; only CHECK may       illegal-route ·
@@ -231,8 +239,11 @@ reopens_promise       true requires route=DRAFT; a non-DRAFT,      reopen-withou
 Run-level, from the same auditor: the packet must be present with `run_id`,
 `board`, `page`, `start_phase`, `intent`, and its `run_id`/`board`/`page` must
 equal the run's (`missing-packet`, `missing-packet-field`,
-`packet-run-mismatch`); `limits.max_steps`/`max_rounds` are positive integers
-and the receipt count stays within them (`invalid-limit`,
+`packet-run-mismatch`); `page_ruling` must be `none`, `domain-gate`, `local`, or
+the compatibility value `legacy-default` (`unknown-page-ruling`), and
+`domain-gate`/`local` require `human_gate.required: true`
+(`owner-gate-not-required`); `limits.max_steps`/`max_rounds` are positive
+integers and the receipt count stays within them (`invalid-limit`,
 `max-steps-exceeded`); `final_version` is required in the same
 `<source>:<render>` format and, on CLOSE, must equal the terminal CHECK's
 `checked_version` (`missing-final-version`, `invalid-final-version-format`,
@@ -242,35 +253,32 @@ route is CLOSE (`status-route-mismatch`).
 ## Legal routes
 
 ```text
-from OUTLINE  → OUTLINE | PROBE | EVIDENCE | DRAFT | HOLD
-from PROBE    → PROBE | EVIDENCE | OUTLINE | HOLD
-from EVIDENCE → EVIDENCE | OUTLINE | HOLD
-from DRAFT    → DRAFT | PROBE | REVISE | CHECK | HOLD
-from REVISE   → REVISE | COMPILE† | EVIDENCE | DRAFT | CHECK | HOLD
+from OUTLINE  → OUTLINE | EVIDENCE | DRAFT | HOLD        (SHAPE ⇄ SURVEY, then LAND, or the DRAFT part)
+from EVIDENCE → EVIDENCE | OUTLINE | HOLD                (LAND → EMBED → back to SHAPE)
+from DRAFT    → DRAFT | OUTLINE | REVISE | CHECK | HOLD  (a claim without a run → SURVEY)
+from REVISE   → REVISE | COMPILE† | OUTLINE | EVIDENCE | DRAFT | CHECK | HOLD
 from COMPILE† → COMPILE† | CHECK | REVISE | HOLD
-from CHECK    → CLOSE | OUTLINE | PROBE | EVIDENCE | DRAFT | REVISE | HOLD
+from CHECK    → CLOSE | OUTLINE | EVIDENCE | DRAFT | REVISE | HOLD
 
-**The PREPARE pause (260819).** A `HOLD` from OUTLINE, PROBE or EVIDENCE while
+**The OUTLINE-part pause (260819, renamed 260901).** A `HOLD` from OUTLINE or EVIDENCE while
 the packet's human gate is required and the step's own gate is still open
 (`status: pending`) is a PAUSE between passes of one converging round, not a
 terminal: the next receipt's phase must be legal FROM the paused phase, and
-`receipt-after-terminal` does not fire, and a cold ⑦ CHECK may follow the pause directly: the judge reads and routes any version, it produces nothing. `CLOSE` is always terminal, and a HOLD
-outside PREPARE, or with a settled gate, stays terminal. Because one round
+`receipt-after-terminal` does not fire, and a cold CHECK may follow the pause directly: the judge reads and routes any version, it produces nothing. `CLOSE` is always terminal, and a HOLD
+outside the OUTLINE part, or with a settled gate, stays terminal. Because one round
 appends one receipt per pass, a packet's `max_steps` must be declared with the
 loop in mind: it bounds the passes a run may spend, so `1` fits only a
-single-pass errand, never a PREPARE round.
+single-pass errand, never an OUTLINE-part round.
 
-† COMPILE edges are for legacy receipts only (⑥ folded into REVISE 260819).
+† COMPILE edges are for legacy receipts only (folded into REVISE 260819).
   The rows stay, in this table and in the auditor's `LEGAL_ROUTES`, because
   removing them would make a stored receipt naming COMPILE unauditable.
 
-`PROBE` is a live phase: it runs the Task/Discovery QA branch, matches banks,
-raises cards, and dispatches the neutral Q-executor. PageX is the Probe family's
-accepted-Page branch and runs in OUTLINE, never as a fallback inside the PROBE
-phase. `EVIDENCE` starts when the answer comes back and lands
-the value, citation, proof, or Display intake. Receipts from the short 260816
-rename that used PROBE as EVIDENCE remain auditable through the auditor's
-legacy-shape compatibility rule.
+`PROBE` retired on 260901: its MATCH half is OUTLINE's SURVEY cycle (the item
+table's Run column), its dispatch half is EVIDENCE's LAND cycle (a card only
+when a question leaves the page). A stored receipt naming PROBE reads as
+EVIDENCE through the auditor's alias, so every pre-260901 run stays auditable.
+A producer's receipt carries `cycle:` beside `phase:` since 260901.
 ```
 
 Only CHECK may CLOSE. CLOSE is a route, not a fifth Page Phase. HOLD is also a
@@ -304,7 +312,7 @@ QPw00's first full loop (260819-20): DRAFT at the session tier spent 77% of
 ```text
 OUTLINE · CHECK                 inherit the session tier: synthesis and the
                                 verdict are where the hard judgment lives
-PROBE · EVIDENCE · DRAFT ·      'high', one tier down: they execute a plan a
+EVIDENCE · DRAFT ·              'high', one tier down: they execute a plan a
 REVISE · COMPILE                person already approved, and their own exit
                                 checks (four checks, mechanical checker,
                                 receipt continuity) catch a shallow pass
@@ -315,14 +323,14 @@ page-lifecycle.workflow.js); a phase absent from the map inherits. A caller
 may override for one run by saying so in the packet, and the receipt's actor
 line is unaffected either way.
 
-## The fused ④+⑤ pass
+## The fused DRAFT+REVISE pass · the WRITE cycle
 
-When DRAFT is entered with the promise UNCHANGED — through the gate after
-PREPARE, or re-entered without `reopens_promise` — the controller dispatches
-ONE producer that performs DRAFT and then continues into REVISE (⑥ COMPILE
-folded in) in the same context. Measured on QPw00 (260819-20), the separate
-⑤ boot re-loaded the same contracts and re-read the same page for about 50k
-tokens that bought no independence: ④ and ⑤ are both unattended, both
+When DRAFT is entered with the promise UNCHANGED — through the boundary after
+the OUTLINE part, or re-entered without `reopens_promise` — the controller dispatches
+ONE producer that performs DRAFT and then continues into REVISE (COMPILE
+folded in) in the same context: this is the WRITE cycle. Measured on QPw00 (260819-20), the separate
+REVISE boot re-loaded the same contracts and re-read the same page for about 50k
+tokens that bought no independence: DRAFT and REVISE are both unattended, both
 producers, and CHECK judges them cold either way.
 
 ```text
@@ -331,7 +339,8 @@ fused     one agent · one context · TWO receipt steps in the run file
           typed return: phase DRAFT, requested route CHECK
 not fused a DRAFT that reopens the promise runs alone, because its REVISE
           must meet the changed promise in a fresh context
-unchanged the walls (Opening, outline/, probe/, display/, bibex/), the
+unchanged the walls (Opening, outline/, evidence/probe/, evidence/display/,
+          evidence/bibex/), the
           builder/judge separation, and every human tick
 ```
 
@@ -427,10 +436,11 @@ measured 260818 after the fix      board 4 errors, ALL foreign
                                    (QPf5 ×2, QPf6 ×2) · QPw00 ZERO
 ```
 
-Do not append a CHECK result to the Page's own Log after approval: that would
-change the just-checked version. OUTLINE owns its versioned plan; DRAFT,
-EVIDENCE, and REVISE may update the Page Log as part of the version they
-produce; PROBE owns its card folders; COMPILE owns only derived build outputs.
+Do not append a CHECK result to the Folder's outline log after approval: that
+would change the just-checked version. OUTLINE owns its versioned plan; DRAFT,
+EVIDENCE, and REVISE may update `outline/<stem>-log.md` as part of the version
+they produce; EVIDENCE owns the item table's result pointers and any outbound
+card folder; COMPILE owns only derived build outputs.
 Terminal CHECK evidence stays in the audit bundle or the Page Type's declared
 review surface.
 
@@ -458,10 +468,10 @@ the gate and its evidence.
 The shipped harness must exercise at least these cases:
 
 ```text
-  happy paths     OUTLINE→PROBE→EVIDENCE→OUTLINE→DRAFT→REVISE→CHECK→CLOSE
+  happy paths     OUTLINE→EVIDENCE→OUTLINE→DRAFT→REVISE→CHECK→CLOSE
                   OUTLINE→DRAFT→CHECK→CLOSE
-  legal loops     OUTLINE→PROBE→EVIDENCE→OUTLINE (the PREPARE loop);
-                  CHECK→REVISE→CHECK; CHECK→PROBE; CHECK→EVIDENCE;
+  legal loops     OUTLINE→EVIDENCE→OUTLINE (the OUTLINE part);
+                  CHECK→REVISE→CHECK; CHECK→EVIDENCE;
                   CHECK→OUTLINE; CHECK→DRAFT(new round)
 faults          producer=self-judge; version changed after CHECK; illegal route
 gates           required human approval absent; explicit HOLD

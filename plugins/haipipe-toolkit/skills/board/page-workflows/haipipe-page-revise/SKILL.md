@@ -27,9 +27,9 @@ What is REVISE's alone: the Page may change a great deal here while its promise 
 Its risk is the quiet swap: a revision that redefines what the Page is for while calling itself an improvement, which is why the fixed purpose and Aims are the phase's one test.
 The moment the promise stops fitting, the work is a new DRAFT round and says so.
 
-**REVISE may arrive fused to ④**: when the promise is unchanged, the same
+**REVISE may arrive fused to DRAFT, as the WRITE cycle**: when the promise is unchanged, the same
 context that just performed DRAFT continues into this phase and appends this
-phase's own receipt step (page-run-contract.md §The fused ④+⑤ pass). The
+phase's own receipt step (page-run-contract.md §The fused DRAFT+REVISE pass). The
 contract below applies unchanged; only the boot is shared.
 
 ## ⚡ Brief
@@ -68,10 +68,10 @@ ROUTES (§🔀)
   purpose or Aims must change                    → DRAFT, new round
   more work under the same promise               → REVISE again
 
-FUSED    REVISE may arrive fused to ④: the same context continues from
-         DRAFT and appends this phase's own receipt step; only the boot
-         is shared (../haipipe-page-workflow/ref/page-run-contract.md
-         §The fused ④+⑤ pass)
+FUSED    REVISE may arrive fused to DRAFT (the WRITE cycle): the same
+         context continues from DRAFT and appends this phase's own receipt
+         step; only the boot is shared (../haipipe-page-workflow/ref/
+         page-run-contract.md §The fused DRAFT+REVISE pass)
 
 RECEIPT  one phase receipt per pass, shape in §🧾 below; field law:
          ../haipipe-page-workflow/ref/page-run-contract.md
@@ -215,7 +215,7 @@ The base is `haipipe-page`; Page Type variants live under `page-types/`; prose a
 The Board engine owns execution and audit; this phase owns only its authority and receipt.
 
 **This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §⑤, with ⑥ folded in. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
+`../haipipe-page-workflow/ref/phase-cards.md` §WRITE, with COMPILE folded in. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
 
 **The Board page that argues this contract** is `QPw5-revise` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open.
 

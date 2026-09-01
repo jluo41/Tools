@@ -1,24 +1,28 @@
 ---
 name: haipipe-task-for-endpoint
-description: "endpoint job specialist: scaffolds AND executes {NN}_<name>/ jobs that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) via c_endpoint_nb.py. Called by /haipipe-task when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
-argument-hint: "[project_id] [group] [job-name]"
+description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-07-08"
+  version: "0.2.4"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-endpoint
 =================================
 
-Scaffolds an **endpoint job** (default C-series; letters are project-specific).
-Takes a trained ModelInstance_Set (Stage 5, with examples) and packages it into a self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
+Scaffolds an **endpoint job with one nested Task Folder** (default C-series;
+letters are project-specific). The Task is the Page: it takes a trained
+ModelInstance_Set (Stage 5, with examples) and packages it into a
+self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
 The task `.py` is an exact copy of `code/scripts/haistepnb/c_endpoint_nb.py`.
 CONFIG is overridden at runtime by papermill, NOT by editing the file.
 
-**Invocation modes:** interactive (human steers) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build).
+**Invocation modes:** interactive (human steers) OR headless
+(`haipipe-task-creator-agent` calls this skill during Phase 2: Build). Legacy
+flat endpoint jobs remain readable; every new scaffold uses the nested
+`jNN_*/tNN_*/` Task shape owned by `haipipe-task`.
 
 
 Position in the ABC pipeline
@@ -39,16 +43,28 @@ What this scaffolds
 -------------------
 
 ```
-tasks/C{NN}_{group_name}/
-  └── {NN}_{job_name}/
-      ├── 1_{task_name}.py           ← exact copy of c_endpoint_nb.py
-      ├── configs/
-      │   └── run_{task_name}.yaml   ← endpoint config (5 Fn names + model ref)
-      ├── runs/
-      │   └── run_{task_name}.sh     ← papermill runner
-      ├── results/                   ← (created at runtime)
-      └── notebooks/                 ← (created at runtime)
+tasks/bNN_<endpoint-block>/
+└── jNN_<endpoint-job>/
+    ├── t01_<task_name>/
+    │   ├── t01_<task_name>.md       ← Page Face (`page-type: task`)
+    │   ├── scripts/
+    │   │   ├── <task_name>.py       ← exact copy of c_endpoint_nb.py
+    │   │   └── config/
+    │   │       └── r01_base.yaml    ← endpoint config
+    │   ├── runs/
+    │   │   └── r01_base.sh          ← papermill runner
+    │   ├── workflow/                ← Task Face: plan/report + inbox/
+    │   │   └── inbox/application/   ← immutable X2 candidates, when present
+    │   └── evidence/pagex/
+    │       └── t01_<task_name>.md   ← whole-Folder relationship list
+    ├── results/t01_<task_name>/r01_base/      ← created at runtime
+    └── notebooks/t01_<task_name>/r01_base.ipynb
 ```
+
+The Page Face declares `task-type: endpoint` and binds this Folder. An X2
+writer may add only a proposed packet under `workflow/inbox/application/` and
+a reciprocal whole-Folder PageX row; Plan/Build/Execute/Report remain owned by
+the endpoint Task.
 
 
 Config YAML structure
@@ -138,13 +154,13 @@ Execution
 CLI (A layer):
 ```bash
 python code/scripts/haistepcli/endpoint.py \
-    --config examples/.../C01_.../configs/run_endpoint_*.yaml
+    --config examples/.../t01_endpoint/scripts/config/r01_base.yaml
 ```
 
 Notebook (B layer — papermill):
 ```bash
 papermill 1_endpoint_*.ipynb output.ipynb \
-    -p CONFIG examples/.../C01_.../configs/run_endpoint_*.yaml
+    -p CONFIG examples/.../t01_endpoint/scripts/config/r01_base.yaml
 ```
 
 
@@ -179,10 +195,13 @@ Scaffold flow
 
   1. Identify project + block (letter C).
   2. Collect metadata (NN, name, model ref, 5 Fn names, _meta).
-  3. Copy `c_endpoint_nb.py` to task folder (exact copy).
-  4. Seed config from `ref/config-seed.yaml`.
-  5. Create `runs/run_{task_name}.sh` from template.
-  6. Emit return contract.
+  3. Create `t01_<task_name>/t01_<task_name>.md`, `workflow/`, and
+     `evidence/pagex/t01_<task_name>.md`.
+  4. Copy `c_endpoint_nb.py` to `t01_<task_name>/scripts/<task_name>.py`
+     (exact copy).
+  5. Seed `scripts/config/r01_base.yaml` from `ref/config-seed.yaml`.
+  6. Create `runs/r01_base.sh` from the shared template.
+  7. Emit return contract.
 
 
 MUST NOT
@@ -192,6 +211,8 @@ MUST NOT
 - Put project configs in `code/scripts/haistepconfig/` — those are reference templates only.
 - Skip `ExampleConfig` in training — without examples, no `payload.json`.
 - Create `README.md`.
+- Put Task-owned code/config/runs at the job root; new work uses the nested
+  Task Folder.
 
 
 Return contract
@@ -200,7 +221,9 @@ Return contract
 ```
 status:     ok | blocked | failed
 task_folder: <path to scaffolded task folder>
-run_name:   run_{task_name}
-files:      [1_{task_name}.py, configs/run_{task_name}.yaml, runs/run_{task_name}.sh]
+run_name:   r01_base
+files:      [t01_<task_name>.md, scripts/<task_name>.py,
+             scripts/config/r01_base.yaml, runs/r01_base.sh,
+             evidence/pagex/t01_<task_name>.md]
 next:       run the task, then /haipipe-end deploy <target>
 ```

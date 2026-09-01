@@ -1,3 +1,51 @@
+## 0.23.0 — 2026-09-01
+
+- TWO PARTS, six cycle WORDS (JL 260901): the OUTLINE part SHAPE → SURVEY →
+  LAND → EMBED → SHAPE until the plan and its runs agree; the DRAFT part WRITE
+  (draft → revise → compile chained, an inner loop of teeth + a fresh-context
+  pre-check, budget 3, a finding surviving two rounds = HOLD) then CHECK. The
+  ①-⑦ numbering and the PREPARE name retire from every contract; a cycle is
+  never a letter code (`C<n>` is a Content division, `W` the Wisdom handoff).
+- The law under the first part: every evidence number is answered by a RUN at
+  a real tasks/ address; the run computes, the page interprets at EMBED; the
+  item table `outline/<stem>-items.md` is the one ledger.
+- PROBE retired with `/haipipe-probe` (both in `_old/`): MATCH → SURVEY's Run
+  column, dispatch + the stake wall → LAND's outbound card, the cost ladder →
+  the outcome words. `ref/phase-cards.md` rewritten per cycle; the run refs
+  carry `cycle:` beside `phase:`, legal routes re-cut (DRAFT/REVISE → OUTLINE,
+  no PROBE), PROBE reads as EVIDENCE in old receipts.
+- A person's "no" at CHECK is routed like a finding and promoted into a rule.
+
+## 0.22.5 — 2026-08-31
+
+- Point phase-authored change records at `outline/<stem>-log.md`; a CHECK
+  result still cannot mutate the version it just approved.
+
+## 0.22.4 — 2026-08-31
+
+- Make RUN Folder-first, including authoritative in-place identity from
+  `workflow/phase.yaml`; Page Type/filename routing is compatibility-only.
+- Point value evidence at the canonical Probe `proof/` directory, not the
+  retired `answer/` spelling.
+
+## 0.22.3 — 2026-08-31
+
+- Make the owner RULING a deterministic phase-contract field instead of a
+  universal fifth Page tick: `none` adds no gate, `domain-gate` reuses the
+  workflow receipt, and `local` keeps a Page-local ruling. Legacy Pages retain
+  their conservative auto-hardened gate.
+- Put normalized `page_ruling` into the RUN packet and controller, keep the
+  human-gate packet/receipt invariant, and make the owed ledger variable while
+  preserving `sum(ticks_owed) == len(owed_ledger())`.
+
+## 0.22.2 — 2026-08-31
+
+- Canonicalize new Probe writes to `evidence/probe/`; flat `probe/` is a
+  migration alias only.
+- For phase-owned Folders, derive the Page owner RULING from the phase's Gate
+  and Closure: mechanical gates add no human tick, while a human domain gate
+  reuses one receipt instead of demanding duplicate approval.
+
 ## 0.22.1 — 2026-08-31
 
 - `ref/phase-cards.md` ① and ④ aligned with `haipipe-page-outline` 0.12.0 and

@@ -1,5 +1,10 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.2.1 — 2026-08-31
+- Point all segments at canonical `delivery/<lane>/` addresses and present
+  Render as a live Folder-native writer with an optional served adapter, not a
+  ghost route.
+
 ## 0.2.0 — 2026-08-31
 - The Slides segment gained the ✨ authoring bar (explicit press →
   /_board/autodeck) as the shell's native 🎞 row folded with the studio

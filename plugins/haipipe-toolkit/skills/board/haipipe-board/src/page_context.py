@@ -19,15 +19,12 @@ from .parse import parse_dir
 # could serve only four of the seven: `--phase OUTLINE` errored outright, and
 # `--phase PROBE` silently returned EVIDENCE's scope (fixed 260821).
 #
-# PROBE had been an ALIAS of EVIDENCE since the 260816 rename. The 260817 split
-# made them two phases with two different authorities, and the alias outlived it
-# by four days. Retiring it renames nothing: every `· PROBE ·` row in the repo
-# lives in template, snapshot or _archive text, and none in a live board page.
-#
-# PHASE_ALIASES stays as the mechanism, empty. The next rename adds one row here
-# rather than a second hard-coded token list further down.
-PHASE_ALIASES = {}
-PHASES = ("OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK")
+# PROBE retired on 260901 (the item table took its MATCH half, LAND its
+# dispatch half), so it is an ALIAS of EVIDENCE again, on purpose this time:
+# a `· PROBE ·` row in template, snapshot or archive text selects EVIDENCE's
+# scope instead of silently matching nothing.
+PHASE_ALIASES = {"PROBE": "EVIDENCE"}
+PHASES = ("OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK")
 ROW_PHASES = PHASES + ("ALL",)
 READABLE_ROW_PHASES = ROW_PHASES + tuple(PHASE_ALIASES)
 RELATIONS = ("reads", "constrained by", "continues", "contrasts")

@@ -79,7 +79,8 @@ subjective-label/
 │   ├── label-building/ · label-building-workflow/
 │   ├── label-scanning/ · label-scanning-workflow/
 │   ├── subjective-label-workflow/
-│   └── page-types/haipipe-page-for-labeling/
+│   ├── page-types/haipipe-page-for-labeling/
+│   └── page-plugins/haipipe-plugin-labeling/  🏷 receipt workbench + Page Chat
 ├── agents/                              bounded execution roles
 ├── engine/                                 partial technical primitives
 ├── ref/                                 authority, artifact, and handoff contracts

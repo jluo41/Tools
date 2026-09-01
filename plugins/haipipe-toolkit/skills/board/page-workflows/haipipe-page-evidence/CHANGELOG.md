@@ -1,3 +1,18 @@
+## 0.14.0 · 2026-09-01
+
+- Owns the OUTLINE part's two machine-gated cycles: LAND (make every ☑ make
+  row's run in the REAL tasks/ tree, fill the lanes, append ` → <result>` to
+  the row; a card under evidence/probe/ only when a question leaves the page,
+  with the stake wall and the one courier moved here from the retired
+  haipipe-page-probe) and EMBED (write the numbers and their reading into
+  plan v<N+1> as Answered:/Drawn:, fill never restructure, always back to
+  SHAPE; `stale` reopens). The run-anchored law stated at the top.
+
+## 0.13.2 · 2026-08-31
+
+- Name the three canonical Folder-native lanes explicitly as
+  `evidence/bibex/`, `evidence/probe/`, and `evidence/display/`.
+
 ## 0.13.1 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

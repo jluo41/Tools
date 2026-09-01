@@ -15,7 +15,7 @@ metadata:
   changelog: "./CHANGELOG.md"
 ---
 
-# ⑦ CHECK judge
+# CHECK judge · and WRITE's pre-check
 
 **A phase-and-scope-locked specialization of `haipipe-board-reviewer-agent`.**
 (The judge side has no carved-out ref yet: the reviewer's procedure serves its

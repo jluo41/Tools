@@ -1,4 +1,20 @@
-# haipipe-page-for-question · version history
+# haipipe-insight-question · version history
+
+## 1.0.2 — 2026-08-31
+
+- Define I1 ownership of the Task-RF bridge: a QW row pins the exact external
+  Page/RF version and its local I5 W Folder, reopens on staleness, and settles
+  only after that Application-owned W is signed.
+
+## 1.0.1 — 2026-08-31
+
+- Put register and target-Folder receipts in their canonical
+  `outline/<stem>-log.md` files.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-question` and migrated into workflow phase I1.
+- Question Folder semantics now include both Page and Task faces; the legacy page-type is compatibility only.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

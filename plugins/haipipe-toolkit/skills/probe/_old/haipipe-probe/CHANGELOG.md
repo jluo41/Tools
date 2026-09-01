@@ -1,3 +1,8 @@
+## 0.18.1 — 2026-08-31
+
+- Canonicalize PageX and Probe storage to `evidence/pagex/` and
+  `evidence/probe/`; flat lanes remain migration aliases only.
+
 ## 0.18.0 — 2026-08-21
 
 **R13 and R15 are back.** Both were ruled on 260714 (`diagram/260714-probe-qa/`

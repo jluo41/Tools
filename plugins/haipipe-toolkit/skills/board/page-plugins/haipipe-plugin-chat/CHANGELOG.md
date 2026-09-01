@@ -1,3 +1,11 @@
+## 0.4.4 — 2026-08-31
+- Chat routing and traces now name canonical `evidence/probe/` and the grouped
+  evidence lanes.
+
+## 0.4.3 — 2026-08-31
+- Page collection jobs are now PageX whole-Folder relationships; Chat no
+  longer names or reads a separate `task/` plugin lane.
+
 ## 0.4.2 — 2026-08-31
 - Composer grew ⌨ TUI (presses the header's .term — one switch, QD1; the
   ← returns) and the ⚙ menu an Aa text-size select (--chatfs, stored).

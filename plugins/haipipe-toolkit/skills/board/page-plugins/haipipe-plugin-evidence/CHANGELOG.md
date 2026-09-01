@@ -1,5 +1,16 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.3.2 — 2026-08-31
+- Route `evidence/pagex/` to `haipipe-plugin-pagex`; Probe owns only its own
+  `evidence/probe/` evidence-acquisition lane.
+
+## 0.3.1 — 2026-08-31
+- Name all presented lanes by their canonical `evidence/<lane>/` address.
+
+## 0.3.0 — 2026-08-31
+- PageX's whole-Folder cards now present Page Face plus Task plan/report/QA
+  directly. The retired Task plugin contributes no lane or route.
+
 ## 0.2.0 — 2026-08-31
 - Sixth segment 🔗 Pagex (the borrow view, pens inline); the standalone 🔗
   strip row folded in (85-plugin-pagex.js removed); five-lane wording

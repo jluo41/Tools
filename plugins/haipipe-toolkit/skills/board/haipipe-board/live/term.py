@@ -26,7 +26,13 @@ from urllib.parse import unquote
 
 from . import base as _base
 from .base import HERE, HOLD, RING_CAP, TERMS, TERM_DIR, group_stem
-from .chat import prime_context
+from .chat import chat_guard, prime_context
+
+
+def labeling_tui_hold(f) -> str:
+    """Return the server-owned Labeling HOLD reason for any TUI door."""
+    _, _, reason = chat_guard(Path(f), {})
+    return reason
 
 
 def term_key(f, sid=""):
@@ -331,6 +337,9 @@ class TermMixin:
         t = TERMS.get(key)
         if not t:
             return self.send_error(404, "no such terminal")
+        reason = labeling_tui_hold(t.get("file") or "")
+        if reason:
+            return self.send_error(423, reason + " · TUI is read-only at this gate")
         try:
             up = sk.socket(sk.AF_UNIX, sk.SOCK_STREAM)
             up.settimeout(10)
@@ -424,6 +433,9 @@ class TermMixin:
         a websocket on this same listener. What it adds is a named door for one line
         of text, so a surface does not have to speak the terminal's wire protocol.
         """
+        reason = labeling_tui_hold(f)
+        if reason:
+            return None, reason + " · TUI is read-only at this gate"
         sid = (p.get("session") or "").strip()
         key = term_key(f, sid) if sid else term_key(f)
         cur = TERMS.get(key)
@@ -463,6 +475,9 @@ class TermMixin:
         the ssh hop back to itself, so one paste in any terminal on any machine
         gets there. That is the honest primitive; the copy button is the door.
         """
+        reason = labeling_tui_hold(f)
+        if reason:
+            return None, reason + " · TUI is read-only at this gate"
         import getpass
         import shlex
         import socket
@@ -498,6 +513,9 @@ class TermMixin:
         A PARKED terminal counts as there: parking is what a reload does, and
         the whole point is to come back to it.
         """
+        reason = labeling_tui_hold(f)
+        if reason:
+            return {"live": False, "terminals": [], "blocked": reason}, None
         live = [(k, x) for k, x in terms_for(f) if self.alive(x["pid"])]
         if not live:
             return {"live": False, "terminals": []}, None
@@ -558,6 +576,9 @@ class TermMixin:
     def terminal(self, f, p, board):
         import shutil
         import time
+        reason = labeling_tui_hold(f)
+        if reason:
+            return None, reason + " · TUI is read-only at this gate"
         # QD1's Law is one window per session. A held chat client (QD2 M1) owns
         # the same .jsonl, so it must let go before the PTY opens on it.
         try:
@@ -688,6 +709,9 @@ class TermMixin:
         t = TERMS.get(key)
         if not t or t.get("kind") != "pty":
             return self.send_error(404, "no such terminal")
+        reason = labeling_tui_hold(t.get("file") or "")
+        if reason:
+            return self.send_error(423, reason + " · TUI is read-only at this gate")
         wskey = self.headers.get("Sec-WebSocket-Key")
         if not wskey:
             return self.send_error(400, "not a websocket request")
@@ -751,6 +775,11 @@ class TermMixin:
                     except Exception:
                         pass
                 elif c == b"0":                # 输入
+                    reason = labeling_tui_hold(t.get("file") or "")
+                    if reason:
+                        ws_send(client, b"0\r\n" + reason.encode("utf-8") +
+                                b"\r\nTUI is read-only at this gate.\r\n")
+                        break
                     try:
                         os.write(t["fd"], msg[1:])
                     except OSError:

@@ -9,8 +9,8 @@ description: >-
   resuming a calibration round, opening a round card, resuming a Session,
   closing a checkpoint, or /label-building-workflow.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-30"
+  version: "0.5.4"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,6 +45,62 @@ file it leaves behind.
 G0 (family workflow) is tested on the five P0 files it names; `cache/embeddings/`
 is provenance, not a gate input. Contract runs once; a rerun with a changed
 corpus checksum is a new job, not a resume.
+
+The canonical technical entry is `engine/job.py create`. It imports one
+already-fenced corpus snapshot and its opaque sealed-test reservation into the
+Page's direct `labeling/` lane, writes the five P0 artifacts through an
+additive/idempotent writer, and leaves `authority.meaning_confirmed: false`.
+It hashes and byte-copies the protected manifest as an opaque payload, but
+never parses, prints, or renders it; it never copies a historical round, proxy
+judgment, or model-derived gold. `engine/job.py status` rehashes the corpus,
+opaque reservation, policy components, and P0 receipt without writing. A
+differing existing artifact is a hard refusal, not an overwrite. The next
+frontier after creation is **P0 human meaning confirmation**, not a redefinition
+of family gate G0; mere file presence or a bare boolean does not route to Round
+1. A valid confirmation needs the identified human's receipt in `config.yaml`.
+
+`create` intentionally leaves `cache/embeddings/` empty. P0 step 5 is an
+explicit non-gating follow-on because choosing or invoking an embedding model
+is a separate execution decision; the scaffold API never makes a network/model
+call implicitly.
+
+`create` is idempotent only while the P0 scaffold is unchanged. After the
+human-confirmation action legitimately changes `config.yaml`, rerunning
+`create` must refuse rather than roll the job backward; use `status` or resume
+the phase API instead.
+
+The create call must name the real Page source file; the API resolves it and
+accepts only `<page-file.parent>/labeling` as `--job-root`. It refuses a
+detached same-basename folder. The incoming sealed status must already carry a
+valid custodian, frame, exclusion access policy, invalidation state, and the
+matching opaque-manifest checksum. The P0 receipt binds all five authority
+artifacts by checksum, and `status` rehashes each of them.
+
+```bash
+python3 Tools/plugins/subjective-label/engine/job.py create \
+  --source-job <fenced-source> \
+  --page-file <page-home>/<page>.md \
+  --job-root <page-home>/labeling \
+  --job-id <id> --target <target> --human-id <human>
+```
+
+Human confirmation is a separate explicit API action; never infer it from
+chat or flip a boolean by hand. `--accept-current-schema` means the identified
+human confirms the current construct, class schema, seven regions,
+uncertainty/unresolved disposition, and G_00 manifest. `confirm` binds those
+semantics in `authority.meaning_receipt`, rewrites `config.yaml` only from the
+exact P0 receipt checksum, and writes `gates/g0/receipt.json` binding the final
+five artifacts. It is idempotent. Without both semantic and G0 receipts,
+`status` remains at P0. The G0 receipt must declare the canonical schema,
+`status: passed`, the same identified human, and the exact semantic-receipt
+checksum; presence alone never passes the gate.
+
+```bash
+python3 Tools/plugins/subjective-label/engine/job.py confirm \
+  --page-file <page-home>/<page>.md \
+  --job-root <page-home>/labeling \
+  --human-id <human> --accept-current-schema
+```
 
 ## P1 Round · order
 

@@ -1,247 +1,134 @@
 ---
 name: haipipe-application-feedback
-description: "Utility verb. Captures a complaint/confusion/wish about the application SKILL itself, ROUTED at capture time to the specific sub-skill it concerns (else the orchestrator fallback). `feedback list` aggregates across all inboxes; `feedback move` re-routes a mis-filed item."
-argument-hint: "[\"<text>\" | list [skill] | move <file> <skill>]"
+description: >-
+  Utility verb for capturing feedback about the Application skill family and
+  routing it to the owning door, workflow, phase-owned Folder contract,
+  plugin, or venue reference pack. Merge repeated concerns; list or move
+  existing items. This records feedback only and never fixes it in the same
+  invocation.
+argument-hint: '["<text>" | list [owner] | move <file> <owner>]'
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 
-# Feedback (capture skill feedback, route at capture, fix later)
+# Feedback · route the concern to its current owner
 
-Captures feedback about the application SKILL (confusing dashboard, clunky
-stage, missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE
-CODE THAT NEEDS FIXING. Does NOT fix anything; fixing is a separate revision
-pass. Distinguish from intervention content: feedback is about the TOOL, not the
-intervention it produces.
+Capture feedback about the Application machinery, not about the substantive
+intervention or artifact it produces. The new architecture has no lifecycle
+stage inboxes: ownership follows the Folder model and the native I0-I5/D0-D5
+workflows.
 
-Capture-time routing: each complaint is inferred to a specific sub-skill and
-written into THAT sub-skill's `feedback/` folder. When no sub-skill matches
-(cross-cutting discipline, or genuinely unclassifiable), it lands in the
-orchestrator fallback `feedback/`. The folder a file lives in IS the record of
-which skill it concerns; there is no separate `skill:` field.
+## Capture
 
-## Capture: `/haipipe-application feedback "<text>"`
+For /haipipe-application feedback "<text>":
 
-```
-1. Read the active intervention + frontier from .intervention-console.yaml if
-   present (the active stage is the SECONDARY routing signal).
-2. INFER the target skill (see "Routing the capture" below).
-3. Resolve the skill -> its feedback/ folder PATH (see "Inbox paths").
-   If that folder is missing, create it + a one-line README (template below).
-4. MERGE-OR-CREATE (an inbox must NOT grow without bound):
-   a. Read the OPEN (and fixed) items already in the resolved inbox
-      (small set: one skill's folder).
-   b. SAME-TOPIC test: is the new item the same underlying concern as an
-      existing file -- not merely the same skill? (see "Same-topic test").
-   c. SAME TOPIC -> UPDATE that file in place:
-        - append a dated line under "## Recurrences" in the reporter's NEW
-          words. NEVER edit, compress, or translate the prior text -- earlier
-          wording is preserved verbatim.
-        - bump frontmatter: updated: <today>; occurrences: +1.
-        - if status was `fixed`, REOPEN: status: open + regressed: <today>.
-          A fixed concern resurfacing is a REGRESSION signal, not a dup.
-        - sharpen the title only if the new instance genuinely clarifies it.
-   d. NEW TOPIC -> CREATE one file: <inbox>/<YYYY-MM-DD>_<short-slug>.md
-      (frontmatter + body per "One file per item" below).
-   e. AMBIGUOUS near-match (manual capture) -> ASK "looks like <file> -- merge
-      or new?" rather than guess. (Under digest, the confirm gate decides.)
-5. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
-   it matched; offer the one-line correction:
-   "filed -> haipipe-application-pitch/feedback/ NEW (matched keyword 'pitch').
-    wrong target? /haipipe-application feedback move <file> <skill>"
-   (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
-   already approved and its step-6 report is the single confirmation.)
-   Do NOT attempt a fix now.
-```
+1. Read the named Folder/Board and its current folder-kind or phase when the
+   invocation supplies one. Runtime context is a secondary routing signal;
+   the feedback words are primary.
+2. Apply the cross-cutting guard. A concern about the two-board boundary,
+   accepted terminal, or Application-wide routing belongs to
+   haipipe-application/feedback/. A concern about the neutral two-face model
+   belongs beside haipipe-folder.
+3. Otherwise resolve the narrowest current owner using the table below.
+4. Read that one inbox. Merge the item when it is the same underlying behavior
+   or desired change; same owner alone is insufficient. If a manual capture is
+   an ambiguous near-match, ask merge-or-new.
+5. On merge, append the reporter's exact new wording under ## Recurrences,
+   bump updated and occurrences, and reopen a fixed item as a regression.
+   On new, create <YYYY-MM-DD>_<short-slug>.md using the schema below.
+6. Report the resolved owner, NEW or MERGED, and file path. Do not implement a
+   fix in this invocation.
 
-### Same-topic test (for merge-or-create)
+## Current routing table
 
-```
-SAME TOPIC = complains about the SAME behavior, or wishes for the SAME change,
-even if phrased differently. Same skill alone is NOT enough.
-  same topic   "the SMS draft blew past the venue character limit"  +  "the
-               draft came back too long for the channel"   -> both = draft
-               ignores the length constraint            -> MERGE
-  diff topic   "the SMS draft blew past the venue character limit"  +  "the
-               draft used the wrong audience tone (too clinical for a patient)"
-               -> distinct concerns, same skill (draft)   -> SEPARATE
-When unsure, prefer ASK (manual) / the confirm gate (digest) over a silent
-guess: a wrong MERGE buries a distinct concern, a wrong SPLIT regrows the inbox.
-```
+    concern                                            owner
+    ────────────────────────────────────────────────────────────────────────
+    Application crossing, two Boards, accepted stop   haipipe-application
+    X0-X3 handoff/routing                              haipipe-application-workflow
+    Folder, Page Face, Task Face, phase ownership      haipipe-folder
+    shared Page frame or Page-local workflow           haipipe-page / haipipe-page-workflow
+    whole-Folder link or live Folder status            haipipe-plugin-pagex
+    optional run/result + supporting files surface     haipipe-plugin-runs
 
-### Routing the capture (cross-cutting guard first, then keyword, then stage)
+    Insight lane/register/partition/climb              haipipe-insight
+    Insight phase order/frontier/GI gates              haipipe-insight-workflow
+    I0 scope/source inventory                          haipipe-insight-meta
+    I1 question/register/settlement                    haipipe-insight-question
+    I2 observations/run/QA binding                     haipipe-insight-data
+    I3 rates/contrasts                                 haipipe-insight-information
+    I4 claim/strength/rivals                           haipipe-insight-knowledge
+    I5 counsel/signed handoff                          haipipe-insight-wisdom
 
-```
-signal A (primary):   a routing keyword appears in the feedback TEXT
-signal B (secondary): the active lifecycle stage in .intervention-console.yaml
-resolve:
-  0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
-     does the complaint assert a rule about the lifecycle/spine AS A WHOLE
-     (something that should hold at EVERY stage, however phrased) OR name a
-     known cross-cutting concern -- rather than report a bug in ONE stage's
-     behavior or output? If yes -> orchestrator FALLBACK, STOP. This overrides
-     any keyword it contains.
-       Signals that it is spine-wide (non-exhaustive examples, NOT a checklist):
-         - quantifies over stages: "every/each/all stages", "at every step",
-           "across the lifecycle", "throughout", "spine-wide", "always ...
-           before done", or the same idea with no trigger word at all
-           (e.g. "the venue depth isn't respected at any stage" = a spine-wide
-           depth rule -> fallback, NOT -venue even mid-venue-stage).
-         - names a known cross-cutting concern: stage strip, stage gate /
-           user-confirm, status tail, illuminate-every-stage, depth-by-venue,
-           diagram-ascii habit, interrogate-every-unit.
-       Rule of thumb: "would this complaint be equally true at the seed stage,
-       the claims stage, AND the display stage?" If yes, it is cross-cutting.
-       Contrast: "every stage must respect the venue depth" -> fallback (spine
-       rule); "the display stage skipped the panel widget I asked for" -> one
-       bug in -display.
-  1. else keyword match in TEXT -> that skill (most specific wins)
-  2. else active-stage skill
-  3. else orchestrator fallback
-```
+    Design lane/reads/grants/bets                      haipipe-design
+    Design phase order/thread/round/GD gates           haipipe-design-workflow
+    D0 Brief/roster/need                               haipipe-design-brief
+    D1 Card/release/kill                               haipipe-design-card
+    D2 Unit/realization                                haipipe-design-unit
+    D3 independent verdict/prospect                    haipipe-design-verdict
+    D4 Division/render/accept/emit/Principle role      haipipe-design-division
+    D5 PageDown/round truth pass                       haipipe-design-pagedown
+    design/ thread storage                             haipipe-plugin-design
+    render projection                                  haipipe-plugin-render
+    venue/channel-specific rail                        application/venue/venue-<name>
 
-Keyword -> skill map (first/most-specific match wins):
+Runs presentation is not lifecycle ownership. Route lifecycle, Execute,
+progress, or closure issues to the phase's Task Face; route only the optional
+Run/Result surface to haipipe-plugin-runs. There is no Task plugin; X2's
+`workflow/inbox/application/` is ordinary Task-Face raw material, not a plugin
+surface. There is no Application haipipe-page-for-* inbox.
 
-```
-seed                                    -> haipipe-application-seed
-descriptions, data profile, D entry     -> haipipe-application-descriptions
-themes, theme, T entry                  -> haipipe-application-themes
-pitch                                   -> haipipe-application-pitch
-venue, modality, channel pick           -> haipipe-application-venue
-claims, claim, settlement               -> haipipe-application-claims
-advice, advise, A entry, recommendation,
-  design advice, W deposit, principles (legacy) -> haipipe-application-advice
-ladder, ladder sweep, gate batching     -> haipipe-application-lifecycle
-narrative                               -> haipipe-application-narrative
-display, panel, widget, content elem,
-  minimap, unit job                     -> haipipe-application-display
-section-edit, section, §N               -> haipipe-application-section-edit
-lifecycle orchestration                 -> haipipe-application-lifecycle
-draft, write, generate SMS, the message,
-  artifact, compose                     -> haipipe-application-artifact
-probe, evidence dispatch, PPNN card     -> haipipe-application-evidence
-review                                  -> haipipe-application-review
-deploy, ship, send, go live             -> haipipe-application-deploy
-claim-audit, evidence check             -> haipipe-application-claim-audit
-iterate                                 -> haipipe-application-iterate
-round, rounds                           -> haipipe-application-round
-enter, console, dashboard, status       -> haipipe-application-enter
-gate, check, stage gate, approve        -> haipipe-application-check
---------------------------------------------------------------------------
-NO MATCH  (cross-cutting: stage strip, illuminate-every-stage, gate
-          discipline, status tail, depth-by-venue, anything true across all
-          stages) ............................ -> orchestrator fallback (this folder)
-```
+When several words match, choose the owner of the behavior complained about,
+not merely the artifact named in the example. For example, "the SMS render
+ignored its character rail" routes to venue-sms; "PageX did not show the SMS
+Folder's report" routes to PageX.
 
-(Retired targets: `-ask` and `-minimap` were deleted 260822; feedback about
-their old behavior files to the fallback with a note.)
+## Inbox resolution
 
-When more than one keyword matches, prefer the MOST SPECIFIC. When the only
-signal is the active stage and the complaint is plainly cross-cutting, prefer
-the fallback over the stage skill (do not bury a spine-wide rule inside one
-stage).
+For a skill owner, locate its current SKILL.md through the installed skill
+catalog and use <skill-directory>/feedback/. Do not maintain another hard-coded
+path inventory here. For a venue pack, use
+application/venue/venue-<name>/feedback/. The Application fallback is
+haipipe-application/feedback/.
 
-### One file per item (schema)
+Create an inbox lazily with this README when it does not exist:
 
-```
----
-status: open | fixed
-created: YYYY-MM-DD
-updated: YYYY-MM-DD        # = created until the first merge
-occurrences: 1            # bumped on each same-topic merge
-context: <stage/intervention, or "general">
-fixed_in: ""
-regressed: ""             # set to a date if a fixed item resurfaces
----
-<the feedback, in the reporter's words>
+    # <owner> · Feedback Inbox
 
-## Recurrences            # added on the FIRST merge; one dated line per re-surfacing
-- YYYY-MM-DD: <the new phrasing, verbatim from the reporter>
+    Feedback about this owner, routed by /haipipe-application feedback.
+    One file per concern: <YYYY-MM-DD>_<slug>.md. Keep fixed files as history.
 
-Fix: <added when resolved>
-```
+## One item
 
-### Inbox paths (relative to the APPLICATION SKILL ROOT)
+    ---
+    status: open | fixed
+    created: YYYY-MM-DD
+    updated: YYYY-MM-DD
+    occurrences: 1
+    context: <Folder/Board/phase, or general>
+    fixed_in: ""
+    regressed: ""
+    ---
+    <feedback in the reporter's exact words>
 
-The application skill root is the `skills/application/` directory (resolve
-symlinks: this skill is reached via `.claude/skills/haipipe-application` ->
-`…/skills/application/haipipe-application`, so the root is one level ABOVE the
-orchestrator folder, i.e. `…/skills/application`, NOT
-`…/skills/application/haipipe-application`). Inboxes are created LAZILY on first
-capture, so a mapped folder not existing yet is expected, not an error.
+    ## Recurrences
+    - YYYY-MM-DD: <later wording, exact>
 
-```
-haipipe-application-seed          1-lifecycle/0-seed/haipipe-application-seed/feedback/
-haipipe-application-descriptions  1-lifecycle/1a-descriptions/haipipe-application-descriptions/feedback/
-haipipe-application-themes        1-lifecycle/1b-themes/haipipe-application-themes/feedback/
-haipipe-application-claims        1-lifecycle/1c-claims/haipipe-application-claims/feedback/
-haipipe-application-advice    1-lifecycle/1d-advice/haipipe-application-advice/feedback/
-haipipe-application-pitch         1-lifecycle/2-pitch/haipipe-application-pitch/feedback/
-haipipe-application-narrative     1-lifecycle/3-narrative/haipipe-application-narrative/feedback/
-haipipe-application-display       1-lifecycle/4-display/haipipe-application-display/feedback/
-haipipe-application-section-edit  1-lifecycle/5-section-edit/haipipe-application-section-edit/feedback/
-haipipe-application-venue         1-lifecycle/haipipe-application-venue/feedback/
-haipipe-application-lifecycle     1-lifecycle/haipipe-application-lifecycle/feedback/
-haipipe-application-draft         _old/ (retired; last feedback under _old/2-phase*/0-draft/)
-haipipe-application-evidence      _old/ (retired; last feedback under _old/2-phase*/1-evidence/)
-haipipe-application-revise        _old/ (retired; last feedback under _old/2-phase*/2-revise/)
-haipipe-application-check         _old/ (retired; last feedback under _old/2-phase*/3-check/)
-haipipe-application-artifact      3-deliver/haipipe-application-artifact/feedback/
-haipipe-application-review        3-deliver/haipipe-application-review/feedback/
-haipipe-application-claim-audit   3-deliver/haipipe-application-claim-audit/feedback/
-haipipe-application-deploy        3-deliver/haipipe-application-deploy/feedback/
-haipipe-application-iterate       4-iterate/haipipe-application-iterate/feedback/
-haipipe-application-round         _old/ (retired; last feedback under _old/0-enter*/)
-haipipe-application-enter         _old/ (retired 260823; the live verb is fn/enter.md)
-ORCHESTRATOR FALLBACK             haipipe-application/feedback/   (this skill's own folder)
-```
+    Fix: <added only during a later revision pass>
 
-New-inbox README template (write only if the folder lacks a README.md):
+## List
 
-```
-# <skill-name> — Feedback Inbox
+feedback list [owner] discovers every feedback/ directory under the Application
+family plus the current Folder/Page/plugin owners named above, then prints open
+items newest-first and grouped by owner. With an owner, read only that inbox.
+Folder location is the owner record; there is no duplicate skill field.
 
-Feedback about THIS skill, captured by `/haipipe-application feedback "<text>"`
-when the text or the active stage points here (capture-time routing), or moved
-here via `/haipipe-application feedback move <file> <skill-name>`.
+## Move
 
-One file per item: `<YYYY-MM-DD>_<slug>.md` (`status: open|fixed`). Fix in a
-later revision pass; keep files as history (never delete). Shared convention:
-the orchestrator inbox `application/haipipe-application/feedback/README.md`.
-```
+feedback move <file> <owner> resolves the current owner exactly as capture does,
+creates the target inbox if needed, and moves the file without changing its
+body. Report both old and new paths.
 
-## List: `/haipipe-application feedback list [skill]`
+## Resolve later
 
-```
-AGGREGATE across every feedback/ inbox under the application skill root, not
-just this folder. Grep all */feedback/*.md (and this folder) for `status: open`
-and print them newest-first, GROUPED BY inbox (skill), each line showing the
-slug + context. If [skill] is given, restrict to that one inbox.
-
-  find <application-skill-root> -type d -name feedback   # enumerate inboxes
-  then grep each for `status: open`
-
-The folder each file sits in tells you which skill it concerns.
-```
-
-## Move (re-route a mis-filed item): `/haipipe-application feedback move <file> <skill>`
-
-```
-Move <file> from its current inbox to <skill>'s feedback/ folder (resolve via
-"Inbox paths"; create the target + README if missing). Use after a wrong
-capture-time guess. This is a pure file move; no content edit.
-```
-
-## Resolve (during a revision pass, not via this verb)
-
-```
-Set status: fixed + fixed_in: <skill version> + a one-line Fix note.
-Keep the file as history; never delete it.
-```
-
-## Where it lives
-
-There is no single inbox. Each skill keeps its OWN `feedback/` folder so the
-report sits right next to the code that needs fixing; the orchestrator's
-`feedback/` is the fallback for cross-cutting and unclassifiable items. There is
-no cross-skill shared feedback. All inboxes travel with the skills in the
-submodule.
+A later revision sets status: fixed, fixed_in: <version>, and one concise Fix:
+line. Never delete the history. A repeated fixed concern becomes status: open
+with regressed: <date>.

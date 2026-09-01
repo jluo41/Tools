@@ -7,7 +7,7 @@ description: >-
   Page-local values, citations, probes, and displays. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.6.0"
+  version: "0.6.2"
   last_updated: "2026-08-31"
   group-token: "S<D> | SA"
   outline:
@@ -57,10 +57,10 @@ Prose never outranks a changed Narrative row or binding desk rule.
 
 ```text
 0-paperboard/
-├── Ba-<desk1>/            S<D><NN>-<kind>   the desk's main reading order
-│                          SA<NN>-<slug>    its appendix sections
-│                          RD<NN>-<event>    its rounds live here too (P6)
-└── Bb-<desk2>/            a later desk, same shape
+├── Ba-<desk1>-Main/       S<D><NN>-<kind>   the desk's main reading order
+├── Bb-<desk1>-Appendix/   SA<NN>-<slug>     its appendix sections
+├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P6)
+└── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
 
 One B group per desk (journey 0.5.0): the desk's main units, appendix units,

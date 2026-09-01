@@ -1,3 +1,6 @@
+## 0.6.1 · 260831
+- Home renamed A1-Story/Story00-ideation (SD/NA retired, JL 260831); the tellings close the same group.
+
 ## 0.6.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):

@@ -30,8 +30,8 @@ agree with the judgment inside the question". PP01's `7 phases` is the worked
 example: counting the folders is mechanical, and whether COMPILE counts as a
 phase at all is not.
 
-Each recomputation below is a PROBE this board actually raised, and the recipe is
-the same one its `executor/q-executor.md` names. A value this file cannot
+Each recomputation below is an evidence item this board actually surveyed, and the
+recipe is the one its item row (or its outbound card's `executor/q-executor.md`) names. A value this file cannot
 recompute is reported as `unchecked`, never as passing: silence about coverage is
 how a green check gets read as a verified page.
 """
@@ -55,7 +55,7 @@ def _phase_census():
                        if p.parent.name != "haipipe-page-workflow")
     cards = (d / "haipipe-page-workflow/ref/phase-cards.md").read_text(
         encoding="utf-8", errors="replace")
-    ticks = re.search(r"(?ms)^## 🧾 The five person-reserved ticks.*?```text\n(.*?)```",
+    ticks = re.search(r"(?ms)^## 🧾 Person-reserved ticks, gathered.*?```text\n(.*?)```",
                       cards)
     n_ticks = 0
     if ticks:
@@ -76,8 +76,8 @@ def _run_index(board: Path):
         r = d.get("receipts") or (d if isinstance(d, list) else [])
         receipts += len(r)
         phases |= {x.get("phase") for x in r if isinstance(x, dict)}
-    seven = ["OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK"]
-    covered = [p for p in seven if p in phases]
+    six = ["OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK"]
+    covered = [p for p in six if p in phases]
     return {"runs_total": len(runs), "receipts_total": receipts,
             "coverage": "%d of 7" % len(covered),
             "phases_never_run": len(seven) - len(covered)}

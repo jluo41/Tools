@@ -1,20 +1,31 @@
 ---
 name: haipipe-page-evidence
 description: >-
-  The EVIDENCE phase contract for a Board Page: land every support item the
-  approved outline promised into the plugin that owns it — citations in
-  bibex/, Task or Discovery answers and values in probe/, frozen display
-  material in display/. Never writes Content. Trigger: page evidence, EVIDENCE
-  phase, bind an answer, probe value, display intake, /haipipe-page-evidence.
+  The EVIDENCE phase of a Board Page and the WORKING half of its OUTLINE part:
+  two machine-gated cycles, LAND (make every run the item table decided on, in
+  the real tasks/ tree, and fill the lanes: citations in evidence/bibex/, cards
+  in evidence/probe/ only for questions that leave the page, display units in
+  evidence/display/) and EMBED (write the landed numbers into plan v<N+1>,
+  never restructure it, and return to SHAPE). Never writes Content. Trigger:
+  page evidence, EVIDENCE phase, land the run, make the run, embed the number,
+  fold evidence, bind an answer, display intake, /haipipe-page-evidence.
 metadata:
-  version: "0.13.1"
-  last_updated: "2026-08-31"
+  version: "0.14.0"
+  last_updated: "2026-09-01"
 ---
 
-# /haipipe-page-evidence · land support before prose uses it
+# /haipipe-page-evidence · LAND the runs, then EMBED the numbers
 
 EVIDENCE changes what a Page can safely know. It does not decide the argument
 and does not write a sentence of `## Content`.
+
+```text
+OUTLINE part
+  SHAPE    outline    brief → propose → react → revise      👤 approved:
+  SURVEY   outline    the item table: Need · Route · Run     👤 Decide, per row
+  LAND     this file  make the runs, fill the lanes          ⚙ every make-row landed
+  EMBED    this file  fold the numbers into plan v<N+1>      ⚙ back to SHAPE
+```
 
 Load contracts in this order:
 
@@ -22,143 +33,175 @@ Load contracts in this order:
 haipipe-page
   → matching Page Type
   → haipipe-page-evidence
-  → page-local plugin for each promised support item
-  → haipipe-probe QA branch only when an answer crosses from Task or Discovery
+  → haipipe-plugin-outline/ref/item-table.md   the table this phase executes
+  → the lane plugin for each thing it lands (bibex · probe · display · value)
+  → haipipe-task, for a row whose outcome is new-run / new-task / new-job / new-block
 ```
 
 ## ⚡ Phase card
 
 ```text
-READS    target Page · approved outline version · raised local cards
-WRITES   <page>/evidence/bibex/ · <page>/evidence/probe/ · <page>/evidence/display/
-NEVER    target prose · purpose · Aims · bank-owned QA files by hand
-EXITS    OUTLINE when all promised support is pointable; otherwise EVIDENCE/HOLD
-HUMAN    verifies citation · reads probe answer · accepts display at CHECK
+READS    target Page · the approved plan · outline/<stem>-items.md, every row
+         decided · the runs the rows name · existing cards and units
+WRITES   the project's tasks/ tree (a run config, a scaffolded task, executed
+         results) · <page>/evidence/bibex/ · <page>/evidence/probe/ (outbound
+         rows only) · <page>/evidence/display/ · the ` → <result>` append on a
+         row's Run line (LAND) · plan v<N+1>'s Answered: / Drawn: lines (EMBED)
+NEVER    target prose · purpose · Aims · the plan's heads, bullets or order ·
+         a Decide · a Status word · row-level data or PHI into a page
+EXITS    LAND: every ☑ make row is landed · EMBED: every landed row is folded,
+         then SHAPE re-agrees the plan
+HUMAN    supplies a citation and ticks verified: · accepts a display at CHECK ·
+         nothing else; both cycles run unattended
 ```
 
-PageX belongs to the Probe family but not to the EVIDENCE phase. It already
-supplied accepted Page context while OUTLINE was designed. EVIDENCE is for
-support that still must be made or bound.
+## ⚖️ The law this phase executes · a run computes, the page interprets
 
-## 🧾 Three support lanes
+Every evidence number is answered by a RUN at a real address in the project's
+`tasks/` tree (block > job > task > run). The run carries NO interpretation,
+which is exactly why any page may bind to it; the reading of a result is
+written on the page, at EMBED, under the page's own stake. This generalizes
+`haipipe-page-for-task`'s law ("every shown number names the run that produced
+it, and a rerun reopens the page") to every page.
+
+The neutrality wall this replaces stripped questions because a language answer
+can be bent by the asker. A run cannot: it is deterministic, its config is
+diffable, and rerunning it is the audit. So a card with a stripped question
+exists only for the rows that still cross to someone else's hands.
+
+## 🟢 LAND · make what the table decided, where it belongs
+
+One pass per decided table; the rows run in parallel where their inputs allow.
 
 ```text
-outline mark   local owner                         bindable when
-──────────────────────────────────────────────────────────────────────────
-📚 citation    <page>/evidence/bibex/                       key resolves; source is
-                                                   transcribed, not invented
-🧮 value       <page>/evidence/probe/PP<NN>-<slug>/         exact QA target + A-executor +
-                                                   proof/value address resolve
-🖼 display     <page>/evidence/display/<unit>/               frozen intake + recipe/assets +
-                                                   preview.pdf are present
+outcome       what LAND does                                         landed when
+────────────────────────────────────────────────────────────────────────────────────
+found         nothing to make: append ` → <result file>` to the row   the file exists
+rerun         execute the named run again (/haipipe-task, its runs/)  fresh results/ on disk
+new-run       mint one r<NN>_ config in the named task, execute it    results/ on disk
+new-task      scaffold t<NN> in the named job (/haipipe-task), then   as new-run
+new-job       scaffold j<NN> in the named block, then a task and run  as new-run
+new-block     scaffold b<NN>, then down the tree                      as new-run
+person        transcribe what the person supplied, verbatim           the entry is in the lane
+none          nothing: the row is SHAPE's, LAND skips it              never
 ```
 
-The plugins own their schemas. This phase coordinates their landing and returns
-a receipt; it does not create a second evidence Page, `E0/E<n>` divisions,
-`1-probes/`, or Paper S03/S04 stages.
+- **Runs go into the REAL upstream folders**, never a page-side shadow. A
+  page-serving computation that belongs to no upstream task is a `new-task`
+  under the block that owns the data, named by the stranger test. The
+  scaffold, the config grammar and the execution are `/haipipe-task`'s (the
+  `runs/` door, `results/` regenerable, simple-code law); this phase names the
+  address and presses the door.
+- **LAND refuses a `☐` row.** A row with no signed Decide is SURVEY's; a
+  machine that makes it anyway has passed a person's gate.
+- **The row's Run line gains the arrow, nothing else.** ` → <result file>` is
+  the one write LAND makes into the table, repo-relative, the exact file that
+  holds the number. Status is never typed; `cli/evidence-status.py` derives
+  `landed` from that file's existence.
+- **The arrow points where the results ACTUALLY are.** A task's outputs live
+  in its own `results/` or in the resolved result store its runner names
+  (`result_store:` in the run's config, the `RESULT_STORE` root of
+  `haipipe-task/ref/run-sh-template.sh`; the CMS report store under
+  `_WorkSpace/0-CMS-Store/` is one). LAND resolves that root and writes the
+  real path; it never assumes the file sits inside the task folder.
+- **Aggregate only, never rows.** A result that lands here is a table, a log
+  line, a summary: nothing row-level, no identifiers, no PHI. The CMS store's
+  rule (results/ never PHI) is this phase's rule too.
 
-## 📚 Citation lane
+### 🚪 When a card is still raised · a question leaves the page
 
-Load `../../page-plugins/haipipe-plugin-bibex`.
+A `new-*` row whose computation someone ELSE runs (the secure server, another
+person's job, a discovery sweep once that tree joins) becomes a card at
+`<page>/evidence/probe/PP<NN>-<slug>/` (`haipipe-plugin-probe`: card.md ·
+consumer/ · executor/ · proof/). The wall survives here and only here:
 
-- A machine may subset or transcribe a real bibliographic record; it never
-  composes one from memory.
-- Preserve the source and key so later prose can cite it deterministically.
-- `verified` is a human gate. EVIDENCE may report it missing but may not tick it.
-- If the outline's requested claim and the source disagree, preserve the source
-  and return to OUTLINE. Do not bend the citation to the claim.
+- `consumer/q-consumer.md` holds the stake (page id, claim, why it matters,
+  what breaks); `executor/q-executor.md` is the neutral question and is THE
+  ONLY THING DISPATCHED; the payload may name card id, route and return
+  address, never the stake.
+- **One door out, and it is an agent**: hand the batch to
+  `haipipe-probe-q-executor-agent`. A phase never calls a task or discovery
+  orchestrator itself (JL 260820: 永远只有 haipipe-probe-q-executor-agent 才能够做这件事).
+- The card's `serves:` names the row's address; the row's Run line names the
+  card in its note. When the answer returns, `proof/` holds the aggregate
+  extract, the value gets its `PP<NN>.v<n>` address (`haipipe-plugin-probe`
+  §🧮), and the row gains its arrow.
+- A `found` or `person` row never mints a card. The table IS its record.
 
-## 🧮 Value lane
+### 📚 The citation lane
 
-Load `haipipe-probe` and `../../page-plugins/haipipe-plugin-probe` only for an
-obligation whose source is a Task or Discovery folder.
+Load `haipipe-plugin-bibex`. A machine may subset the sealed bank or
+transcribe a real record a person supplied; it never composes one from memory.
+`verified` is the person's tick; LAND reports it missing and may not tick it.
+If the outline's claim and the source disagree, preserve the source and route
+the row back to SHAPE. Do not bend the citation to the claim. Citations are
+`person` rows until the discoveries/ tree joins the run grammar.
 
-PROBE already created the local card and ran ORGANIZE, MATCH, and DISPATCH.
-EVIDENCE owns the return half:
+### 🖼 The display lane
+
+Load `haipipe-plugin-display` and the renderer named by the unit. LAND owns the
+material and the drawing, not the prose that discusses it:
 
 ```text
-④ POINT       bind card.md target: to the exact bank QA file
-⑤ INTERPRET   preserve A-executor verbatim and write consumer/a-consumer.md
-BIND          pull allowed aggregate proof and allocate PP<NN>.v<n> values
-```
-
-One answer may yield many values. A sentence-level value is pointable only as
-`PP<NN>.v<n>`, whose row names the exact proof file and field. When the page
-has a collection job (`task/haipipe-task-for-page`), `target:` binds to that
-job's QA file and the value rows copy from its `values.yaml`; a refresh run
-whose diff drifts a bound value is a stale binding re-landed here and absorbed
-at OUTLINE. Never pull
-row-level data, identifiers, or PHI into a Page.
-
-`answered` is machine completion; `read` is the human gate. EVIDENCE may write
-the Page-specific interpretation in `consumer/a-consumer.md`, but it does not
-write target Page prose and cannot mark `read`. A changed target, proof, or
-A-consumer invalidates an earlier read gate.
-
-## 🖼 Display lane
-
-Load `../../page-plugins/haipipe-plugin-display` and the renderer named by the
-unit. EVIDENCE owns the material and drawing, not the prose that discusses it:
-
-```text
-① INTAKE   freeze the accepted source material into intake/
+① INTAKE   freeze the source material into intake/ (from the row's landed result)
 ② RENDER   named renderer writes its recipe/candidates
 ③ PICK     record the selected candidate when the plugin calls for one
 ④ BUILD    create assets, float source, and preview.pdf
 ⑤ ACCEPT   human gate at CHECK; never ticked here
 ```
 
-For a data display, intake freezes from probe proof or another declared,
-non-sensitive source. For a conceptual display, intake lists the exact source
-Pages/files and versions. A folder without intake is not evidence; frozen intake
-without a preview is a HOLD.
+The unit's recipe IS a run, and its inputs come from runs, so the law holds
+twice. A folder without intake is not evidence; frozen intake without a
+preview is a HOLD. One `haipipe-display-unit-agent` per 🖼 row, dispatched by
+the caller, each owning one folder.
 
-## 🔗 Evidence bundle
+## 📌 EMBED · write the number into the plan, and only the number
 
-For each approved outline point, expose a derived bundle rather than writing a
-new artifact:
+One pass per landed table, and it is the OUTLINE part's merge point: every
+return converges on the ONE plan file, so EMBED never fans out.
 
-```text
-C3.P1.B4
-  ├─ citations      bibex keys + verification state
-  ├─ values         PP ids + target path + proof manifest + read state
-  ├─ displays       unit id + frozen intake + preview + acceptance state
-  └─ prose          still absent until DRAFT/REVISE
-```
-
-The outline address is stable. Local cards point back with `serves:`. EVIDENCE
-does not edit the frozen outline to pre-author card ids; the OUTLINE fold may
-append derived ids after cards exist.
+- **Reads each `landed` row's result file and writes the plan's fold lines**:
+  a value becomes `Answered: <number> · <PP<NN>.v<n> or the result path>` on
+  the bullet that asked; a built unit's README claim becomes `Drawn:`; a
+  served Round row `Routed:`. These append under the bullet; they never edit
+  its head or Note.
+- **The interpretation is written here, page-side**: what the number means
+  for THIS bullet, one clause on the `Answered:` line or in the bullet's Note
+  as `v<N+1>`. The run never said it; the page says it under its own stake.
+- **EMBED fills, never restructures.** It may not add, remove or reorder a
+  bullet, a paragraph or a division, and may not change a head. A landed
+  answer that breaks a bullet's claim is a ROUTE, not an edit: EMBED stops,
+  writes the conflict as a `D<nn>` thread, and routes to SHAPE, where the
+  structural pen lives.
+- **The result is plan v<N+1>, `approved: ⬜`**, `supersedes: v<N>`; v<N> is
+  kept. A tick belongs to the version it ticked.
+- **It always returns to SHAPE.** The person re-reads the embedded plan and
+  ticks; the tick carries the fork (every row `folded` → the DRAFT part; fresh
+  marks → SURVEY). A machine never decides that the part is over.
+- **`stale` reopens.** A rerun upstream that changes a result newer than the
+  plan flips the row's derived Status to `stale`; the next EMBED re-folds it,
+  and a page already drafted routes back here from CHECK.
 
 ## 🔀 Exit and routing
 
-The exit test is support, not prose:
-
 ```text
-every promised citation resolves,
-every promised Task/Discovery question has an exact local card and bank target,
-every used value has a PP<NN>.v<n> proof address,
-and every declared display is built and previewable.
+LAND   every ☑ make row landed                        → EMBED
+LAND   a row's run cannot be made (data absent,        → HOLD, naming the row; or
+       server not reachable, PHI would move)              SHAPE if the bullet is wrong
+LAND   an outbound card still unanswered               → LAND again (waiting)
+EMBED  every landed row folded                         → SHAPE (plan v<N+1>)
+EMBED  a landed answer breaks a bullet's claim         → SHAPE with the D<nn> named
 ```
 
-Route the result:
-
-```text
-all support pointable                      → OUTLINE
-answer changes claim, order, or allocation → OUTLINE with the conflict named
-authorized question still unresolved      → EVIDENCE again
-no allowed route can answer it             → HOLD with reason
-```
-
-EVIDENCE always returns to OUTLINE because the plan must absorb the answer and
-recheck coverage, address, value, and shape before drafting. It never routes
-directly to DRAFT, REVISE, or CLOSE.
+EVIDENCE never routes to the DRAFT part. The plan absorbs the numbers and a
+person re-agrees it before prose begins.
 
 ## 📖 Read economy
 
-Read fully only the target Page, approved outline, and cards that changed. Trust
-unchanged card summaries except for one spot check. Scope checker output to the
-target Page and keep build logs out of the reasoning context.
+Read fully only the target Page, the approved plan, the item table and the
+result files the rows name. Trust unchanged rows except for one spot check.
+Scope checker output to the target Page and keep build logs out of the
+reasoning context.
 
 ## 🧾 RUN receipt
 
@@ -166,19 +209,24 @@ When called by RUN, follow `../haipipe-page-workflow/ref/page-run-contract.md`
 and add:
 
 ```text
-reason:       unsupported outline obligations addressed
-cards:        one row per citation, probe card, and display unit changed
-targets:      exact bank QA paths and bibex keys
+phase:        EVIDENCE
+cycle:        LAND | EMBED
+rows:         n decided · n made (by outcome) · n landed · n still owed
+runs:         one row per run made or executed: address · results path
+cards:        one row per outbound card raised or answered (PP id · serves · state)
 values:       PP<NN>.v<n> bindings created or revalidated
 renderers:    display unit → renderer → preview path
-human_gates:  verified/read/accepted states, never synthesized
-limits:       support still absent or weaker than the outline promised
-route:        OUTLINE | EVIDENCE | HOLD
-reopens:      true when the returned support changes purpose, Aim, or shape
+folded:       n rows written into plan v<N+1> (EMBED)
+human_gates:  verified / accepted states, never synthesized
+limits:       rows that could not be made, and why
+route:        EMBED | SHAPE | LAND | HOLD
+reopens:      true when a landed answer changes purpose, Aim, or shape
 ```
 
-The Page source hash may remain unchanged because EVIDENCE normally writes only
-plugin surfaces. The receipt must still name every artifact it landed.
+The Page source hash may remain unchanged because EVIDENCE writes plugin
+surfaces, the tasks/ tree and the plan, never the page. The receipt must still
+name every artifact it landed.
 
-
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+> Since 260831 the lanes live under the page's category folder (`evidence/`,
+> haipipe-page §📁); a flat lane name on an unmigrated page, or a flat SYMLINK
+> STUB on a migrated one, is the same lane during the migration.

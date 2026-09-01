@@ -1,5 +1,22 @@
 # CHANGELOG · haipipe-task-for-page
 
+## 0.2.2 · 2026-08-31
+
+Make the serving job genuinely generic: any Folder Page Face uses
+`tasks/b<NN>_page_service/j<NN>_values_<page-stem>/`; Paper's older service
+block name remains a readable project profile, not the universal contract.
+
+## 0.2.1 · 2026-08-31
+
+The serving-page diagram now places the address in canonical
+`evidence/probe/`; the collection job remains a whole-Folder PageX relation.
+
+## 0.2.0 · 2026-08-31
+
+The serving Page now links its collection job as one whole Folder through
+PageX. PageX reads Page Face, plan, report and QA live; the separate `task/`
+lane and `haipipe-plugin-task` dependency are gone.
+
 ## 0.1.0 · 2026-08-31
 
 First release (JL: "it try to do the task for the probing, and generated the

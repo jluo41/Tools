@@ -1,4 +1,4 @@
 interface:
   display_name: "Application"
   short_description: "Turn application insights into audience-specific designs"
-  default_prompt: "Use $haipipe-application to open this application and continue its Brief, Insight, Design, or Artifact frontier."
+  default_prompt: "Use $haipipe-application to open this Application, resolve its native Insight I0-I5 and Design D0-D5 frontiers, and continue one legal unit or crossing."

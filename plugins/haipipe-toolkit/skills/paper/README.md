@@ -11,11 +11,11 @@ Six phases, each named by its authority page, gated by
 library outside the journey:
 
 ```text
-P0 Ideation (ideate)     SD00 · the repo is minted with this page · sends one
+P0 Ideation (ideate)     Story00 · the repo is minted with this page · sends one
                          idea to its Seed
-P1 Seed (establish)      SD01 · one per paper · venue-free · E-board with
+P1 Seed (establish)      Story01 · one per paper · venue-free · E-board with
                          novelty column
-P2 Roadmap (route)       SD02 · block rows serving E-rows · person-released ·
+P2 Roadmap (route)       Story02 · block rows serving E-rows · person-released ·
                          then dispatch cards and receipts, lap by lap, on the
                          same page
    ↺ P1↔P2 = the establish loop · exits only through the Seed at G4
@@ -29,11 +29,11 @@ P5 Round (respond)       in the desk's B group · routes each concern once →
 Each Page runs the shared workflow and owns the evidence it uses:
 
 ```text
-OUTLINE ⇄ PROBE ⇄ EVIDENCE → DRAFT → REVISE/COMPILE → CHECK
+SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED (the OUTLINE part) → WRITE → CHECK (the DRAFT part)
 
 Probe family
 ├─ PageX      accepted Pages · runs in OUTLINE
-└─ QA Probe   Task/Discovery · runs in PROBE/EVIDENCE
+└─ item table Task/Discovery · surveyed at SURVEY, made at LAND; a card only when a question leaves the page
 
 <page-dir>/
 ├── <page>.md

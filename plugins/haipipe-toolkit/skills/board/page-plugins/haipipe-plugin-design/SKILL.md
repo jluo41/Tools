@@ -16,8 +16,8 @@ description: >-
   spec, prospect, forecast, message artifact, design plugin, design card,
   card law, stance, release a card, kill a card, /haipipe-plugin-design.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-08-28"
+  version: "0.10.3"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,7 +42,9 @@ Until 260828 the card lived in its own `direction/` folder under its own plugin;
 <page>/design/
 └── DU<NN>-<slug>/
     ├── card.md          the design card, the folder's FIRST file (§card owns its
-    │                    grammar) · present from proposal, alone until release
+    │                    grammar) · sole design material until release
+    ├── workflow/        shared Folder control metadata; phase.yaml may exist
+    │   └── phase.yaml   current kind + append-only D1/D2/D3 transitions
     ├── README.md        identity · kind: routes to a venue pack
     ├── spec.md          the COMPILED config the agent obeys and the judge checks against
     ├── evidence.md      the granted evidence rows, bound by path (pagex mechanics)
@@ -51,11 +53,11 @@ Until 260828 the card lived in its own `direction/` folder under its own plugin;
     └── content/         the artifact itself · format follows kind
 ```
 
-README fields: `unit:` id, `kind:` (sms | email | push | reminder | ui-card | dashboard | checklist | report — the venue packs ARE the route table; a new object is a new pack, this plugin does not change), `serves:` the owning division, `depth:` copied from the card, `state: draft | judged | accepted@v<N>` — no `direction:` field since 260828: the card is `./card.md` and a shared folder cannot dangle, and — written at the verdict, by the judge — `judged: <actor> <YYMMDD> · <n>/<m> acceptance items pass`.
+README fields: `unit:` id, `kind:` (sms | email | push | reminder | ui-card | dashboard | checklist | report — the venue packs ARE the route table; a new object is a new pack, this plugin does not change), `serves:` the owning division, `depth:` copied from the card, `state: draft | judged` — no `direction:` field since 260828: the card is `./card.md` and a shared folder cannot dangle, and — written at the verdict, by the judge — `judged: <actor> <YYMMDD> · <n>/<m> acceptance items pass`. Acceptance exists only on the parent D4 division row; Folder/PageX surfaces may derive it but never copy it into README. Legacy `accepted@v<N>` remains readable during migration and is not written on new work.
 
 **The verdict line (260827).** The JUDGE — a fresh context, never the designer that wrote the unit — checks the unit against its spec's acceptance list and the ⊆ chain, then writes the `judged:` line and flips `state: draft → judged` in the same edit. That line is the ex-post verdict's on-disk home: `haipipe-design-workflow`'s GD3 reads it, and no other actor may write it — the designer is forbidden (its own contract), the person writes only the division's `accepted:` row.
 
-One further `state:` exists and only on a board that declares `mode: record` on board.md: `historical-record`, for a unit transcribed from an artifact made before this contract. Nothing judged it and no acceptance list existed to judge it against, so neither `judged` nor `accepted@v<N>` would be true. Record mode relaxes the card vocabulary the same way (§card checker note): a historical `released:`, no stance, no grant — and nothing structural.
+One further `state:` exists and only on a board that declares `mode: record` on board.md: `historical-record`, for a unit transcribed from an artifact made before this contract. Nothing judged it and no acceptance list existed to judge it against, so `judged` would be false. Record mode relaxes the card vocabulary the same way (§card checker note): a historical `released:`, no stance, no grant — and nothing structural.
 
 ## 🃏 §card · the grammar and the release gate
 
@@ -72,11 +74,15 @@ grant: <the exact evidence this card may hand its unit>                (ignore c
 released: ⬜ | <person> <YYMMDD>
 ```
 
-A killed thread keeps its folder forever: card.md alone, the reason inside — the tombstone law, folder-shaped. `landed:` is gone from the grammar; the checker's `card-landed-bare` tests the same law by asking a landed card for the README beside it.
+A killed thread keeps its folder forever: card.md plus optional `workflow/`
+control history, the reason inside — the tombstone law, folder-shaped. No
+realization material survives. `landed:` is gone from the grammar; the
+checker's `card-landed-bare` tests the same law by asking a landed card for the
+README beside it.
 
 ## ⚖️ Five card laws
 
-1. **Release is a person's act.** The machine proposes; only a person's decision flips `released:`. A card at `proposed` blocks its own fan-out and nothing else, so proposing is always safe. This is the standing stop-after-draft ruling wearing its design clothes. A person may release card by card, or by a RECORDED BLANKET over a named set: the person states in writing which cards are released, the run transcribes `released: <person> (blanket, <YYMMDD>)` onto each named card as a clerical record of that act, and the person's words are cited in the owning DS page's Log. A machine's inference that a person "would release" is never a release. **A release binds only cards that EXIST when the words are recorded** (260828): a blanket written before its cards were authored has the wager terms authored after the person agreed to them — the inversion a live run recorded as friction that day — so a commission may authorize PROPOSING, and the release follows as its own act once the written cards can be read.
+1. **Release is a person's act.** The machine proposes; only a person's decision flips `released:`. A card at `proposed` blocks its own fan-out and nothing else, so proposing is always safe. This is the standing stop-after-draft ruling wearing its design clothes. A person may release card by card, or by a RECORDED BLANKET over a named set: the person states in writing which cards are released, the run transcribes `released: <person> (blanket, <YYMMDD>)` onto each named card as a clerical record of that act, and the person's words are cited in the owning DS Folder's `outline/<DS-stem>-log.md`. A machine's inference that a person "would release" is never a release. **A release binds only cards that EXIST when the words are recorded** (260828): a blanket written before its cards were authored has the wager terms authored after the person agreed to them — the inversion a live run recorded as friction that day — so a commission may authorize PROPOSING, and the release follows as its own act once the written cards can be read.
 2. **No expected effect, no release.** A card that cannot say what it is for and what would falsify it is not a bet; `ignore` cards state `baseline, calibrates` explicitly rather than leaving the field empty.
 3. **The grant narrows, never widens.** `grant` must sit inside the owning board's `reads:`; the unit's `evidence.md` must sit inside the grant. A `bet-against` card's grant includes the claim it bets against, because refuting something you may not read is not a bet either.
 4. **A `generate` card's license is a theory, not a gradient** (260828). The other stances position against evidence that exists; `generate` proposes an artifact no fielded data can yet score — the abductive move design exists for (QD4 §2's anchors, Dorst 2011 above all). Its warrant is therefore TWO legs, both inside the grant: **warrant-insight**, one named row on a board in `reads:` saying who this is for and what is true of them (an I-layer segment fact is admissible — a thin K/W lane must not block generation), and **warrant-theory**, one Discovery QA file stating the general mechanism the copy will instantiate. The `stance:` field names that mechanism (`generate self-referencing`, `generate framing-match`). `expected effect:` may state a direction ONLY as the theory's direction, written `theory-typed`, never as a data-derived prediction — which is why this law does not collide with a Wisdom page's prohibition on reading level gradients as wording licenses: the license never comes from the gradient. The rule that two rounds proved necessary: a card that cannot produce a warrant-theory leg is not a timid generate, it is a follow-family or bet-against card wearing the wrong word. **The insight leg alone may be POOR and the card still legal** (JL 260828: design must run in both information regimes): when the lane holds no insight row for this audience, the leg reads `warrant-insight: brief-only` and names the Brief's audience/goal row instead (board-local, always legal in a grant: a board may read itself, and `card-grant-outside-reads` must not fire on it) — and the same round EMITs the missing insight as a BR00 need, so designing without information and registering the information you lacked are one act, the co-evolution edge entered from the poor side. What never relaxes, in either regime: warrant-theory, the unit's novelty duty, the ideation record, and the rails.
@@ -153,7 +159,10 @@ Scope: required before acceptance on units realized under `/haipipe-design-workf
 
 1. **The wager lives on the card.** Expected effect and falsification line are the design card's fields; the rest of the folder cites the card and never restates them, so the bet's terms cannot drift in two places.
 2. **Evidence within grant.** `evidence.md` binds only rows inside the owning card's `grant`, which sits inside the board's `reads:`. The chain narrows at every step and the judge checks the set-difference.
-3. **A unit without a passing spec cannot be accepted.** `state:` moves draft → judged (the acceptance list passed) → accepted@v<N> (a person's row on the owning division names this unit and a render version). No person, no accepted.
+3. **A unit without a passing spec cannot be accepted.** Unit `state:` moves
+   draft → judged when the acceptance list passes. A person's row on the
+   owning D4 division then names this unit and render version; README stays
+   judged so there is one acceptance authority. No person, no accepted.
 
 ## 🔎 What the checker enforces (260824)
 
@@ -169,11 +178,11 @@ card-grant-path               a grant entry resolving to nothing
 card-grant-outside-reads      a grant reaching outside the board's `reads:` ← card law 3
 card-landed-bare              `state: landed` with no README beside the card
 unit-no-card                  a thread folder with no card.md
-unit-realized-before-release  a proposed card with sibling files            ← card law 1
-unit-tombstone-extra          a killed thread holding more than card.md (WARN)
+unit-realized-before-release  a proposed card with realization material      ← card law 1
+unit-tombstone-extra          a killed thread retaining realization material (WARN)
 unit-no-readme · unit-file-missing · unit-no-content   the folder contract
 unit-depth-word / -no-why / -extra-why                 depth matches the files present
-unit-state-word                                        draft · judged · accepted@v<N>
+unit-state-word                                        draft · judged (legacy accepted@v<N> readable)
 unit-dead-reference           ANY relative reference that resolves to nothing ← unit law 1
 unit-evidence-outside-grant   evidence beyond the card's grant               ← unit law 2
 ```
@@ -190,7 +199,7 @@ The page's producer (or the design door's verb) births the thread folder with ca
 
 ## 📡 Surface
 
-The owning page's division table cites cards and units by id; the page's state line counts them (`three cards proposed · none released`). A killed card stays in the folder as its own tombstone; deleting one deletes the record that the bet was considered. `render/` projects `content/` into what the recipient sees, stamped with design, warrant and render versions as `haipipe-plugin-render` already rules.
+The owning page's division table cites cards and units by id; the page's state line counts them (`three cards proposed · none released`). A killed card stays in the folder as its own tombstone; deleting one deletes the record that the bet was considered. `delivery/render/` projects `content/` into what the recipient sees, stamped with design, warrant and render versions as `haipipe-plugin-render` already rules.
 
 ## Variants · one wager, many realizations (260828)
 

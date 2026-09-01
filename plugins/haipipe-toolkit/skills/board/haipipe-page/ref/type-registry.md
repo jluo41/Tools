@@ -1,21 +1,24 @@
-# The Page Type registry · one record per key, one consumer per field
+# Legacy Page-Type compatibility registry · phase owners included
 
-A Page Type is a RECORD whose fields parameterize the phases (JL 260831: "the
-page types might be a function in other skills' content"). The phases are the
-functions; this registry is their argument table.
+This table keeps runtime `page-type:` keys resolvable while families migrate
+to phase-owned `folder-kind:` contracts. Its fields still parameterize Page
+phases. For a migrated key, `law:` points to the domain workflow phase that
+owns the Folder kind and both faces; for an unmigrated key it points to the
+remaining Page-Type contract.
 
 ```text
 field       consumed by       what it answers
 ──────────────────────────────────────────────────────────────
-outline     ① OUTLINE         what shape may the plan take
-evidence    ② PROBE ·         what this kind of page owes exactly
-            ③ EVIDENCE        (and what the collection job batches)
-prose       ④ DRAFT           division vocabulary and budgets
-closing     ⑦ CHECK           when this kind of page may close
+outline     SHAPE             what shape may the plan take
+evidence    SURVEY · LAND     what this kind of page owes exactly
+                              (the item rows its survey must produce)
+prose       WRITE             division vocabulary and budgets
+closing     CHECK             when this kind of page may close
 ```
 
 **One home per fact.** A key whose `standing:` is `contract` keeps its
-`outline:` SHAPE in the contract file's frontmatter (the phases read the
+`outline:` shape in the owning phase or compatibility contract's frontmatter
+(the Page phases read the
 file's first 20 lines; this registry carries only the mode and the pointer).
 A key whose standing is `record-only` or `key-only` has no file, so its row
 here IS the authority. `closing:` lines quoted from a contract are verbatim;
@@ -119,7 +122,7 @@ brief:
   mode: fixed
   evidence: "core PageX inputs named; insight needs raised as questions"
   closing: "the promise and Design roster stand alone for a Design page (provisional)"
-  law: application/page-types/haipipe-page-for-brief
+  law: application/workflow-phases/haipipe-design-brief
 data:
   owner: application
   standing: contract          # 0 live pages: dormant
@@ -127,14 +130,14 @@ data:
   mode: fixed
   evidence: "run-resolvable D rows"
   closing: "every D row names a resolvable run and a person has read the numbers against the origin's own question"
-  law: application/page-types/haipipe-page-for-data
+  law: application/workflow-phases/haipipe-insight-data
 design:
   owner: application
   standing: contract
   mode: grammar
   evidence: "insight handoffs and venue-pack rails; units carry accepted: on their owning divisions"
   closing: "every unit accepted on its owning division (provisional)"
-  law: application/page-types/haipipe-page-for-design
+  law: application/workflow-phases/haipipe-design-division
 information:
   owner: application
   standing: contract          # 0 live pages: dormant
@@ -142,7 +145,7 @@ information:
   mode: fixed
   evidence: "every I row derives from named D rows"
   closing: "every I row derives from named D rows and the nulls are visible"
-  law: application/page-types/haipipe-page-for-information
+  law: application/workflow-phases/haipipe-insight-information
 knowledge:
   owner: application
   standing: contract          # 0 live pages: dormant
@@ -150,7 +153,7 @@ knowledge:
   mode: fixed
   evidence: "propositions name their Information parents"
   closing: "the proposition names its Information parents, its strength, its uneliminated rivals and its boundary"
-  law: application/page-types/haipipe-page-for-knowledge
+  law: application/workflow-phases/haipipe-insight-knowledge
 meta:
   owner: application
   standing: contract
@@ -158,15 +161,7 @@ meta:
   mode: fixed
   evidence: "the source inventory with unit, grain, population, window, freshness"
   closing: "inventory and shared thresholds pinned (provisional)"
-  law: application/page-types/haipipe-page-for-meta
-principle:
-  owner: application
-  standing: contract          # 0 live pages: dormant
-  token: P
-  mode: fixed
-  evidence: "one warrant at a pinned version per rule; the rail repeats its forbidden clause"
-  closing: "the rule names one warrant at a pinned version and a designer can apply it without opening the InsightBoard"
-  law: application/page-types/haipipe-page-for-principle
+  law: application/workflow-phases/haipipe-insight-meta
 question:
   owner: application
   standing: contract          # 0 live pages: dormant
@@ -174,7 +169,7 @@ question:
   mode: grammar
   evidence: "each Queue cell names its answering page once one exists"
   closing: "every Queue cell terminal: ✅ answered or 🚫 closed-without-answer"
-  law: application/page-types/haipipe-page-for-question
+  law: application/workflow-phases/haipipe-insight-question
 wisdom:
   owner: application
   standing: contract          # 0 live pages: dormant
@@ -182,7 +177,7 @@ wisdom:
   mode: fixed
   evidence: "every counsel names a K parent; the forbidden clause is written"
   closing: "every counsel names a K parent, the forbidden clause is written, and the handoff reads standalone"
-  law: application/page-types/haipipe-page-for-wisdom
+  law: application/workflow-phases/haipipe-insight-wisdom
 # ── key-only: the engine accepts them, no contract and no record ───────
 collection:
   owner: none

@@ -1,19 +1,25 @@
-# The six producers, one per phase
+# The five producers, one per phase, two cycles each
 
-One agent per phase since 260819, the same day each display unit got one.
-`haipipe-page-creator-agent` (plugin root `agents/`) is the shared BASE: the
-packet shape, the procedure, the house rules and the return contract live there
-and only there. These five bind `phase` and name the skill chain, nothing more.
+One agent per phase since 260819, the same day each display unit got one;
+since 260901 a phase agent owns the two CYCLES of its phase
+(`haipipe-page-workflow` §🔁: the OUTLINE part SHAPE · SURVEY · LAND · EMBED,
+the DRAFT part WRITE · CHECK). `haipipe-page-creator-agent` (plugin root
+`agents/`) is the shared BASE: the packet shape, the procedure, the house rules
+and the return contract live there and only there. These bind `phase`, name
+the skill chain, and nothing more.
 
-    ① haipipe-page-outline-agent    also the PREPARE fold-back (workflow §🧭)
-    ② haipipe-page-probe-agent
-    ③ haipipe-page-evidence-agent   display lane fans out via
-                                    haipipe-display-unit-agent (caller dispatches)
-    ④ haipipe-page-draft-agent
-    ⑤ haipipe-page-revise-agent     ⑥ COMPILE folded in
-    ⑦ haipipe-page-check-agent      read-only judge of ONE page version;
-                                    base + whole-board reviews stay with
-                                    haipipe-board-reviewer-agent
+    haipipe-page-outline-agent    SHAPE · SURVEY   the plan, then the item table
+    haipipe-page-evidence-agent   LAND · EMBED     the runs, then the fold; display
+                                                   lane fans out via
+                                                   haipipe-display-unit-agent
+                                                   (caller dispatches)
+    haipipe-page-draft-agent      WRITE step 1
+    haipipe-page-revise-agent     WRITE step 2     COMPILE folded in
+    haipipe-page-check-agent      CHECK, and WRITE's pre-check; read-only judge
+                                                   of ONE page version; base +
+                                                   whole-board reviews stay with
+                                                   haipipe-board-reviewer-agent
+    _old/haipipe-page-probe-agent retired 260901: MATCH → SURVEY, dispatch → LAND
 
 ## Stand-in rule
 

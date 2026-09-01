@@ -20,12 +20,14 @@ fourth row; this file only prints it. Never writes.
 The strip has always printed the owed COUNT. A count says there is a debt; it
 never says where to spend the one act that is a person's. `--owed` is the LIST,
 and it is the surface `QPw00g-human-gate` records as missing ("no surface joins
-the five ticks"). It is what makes one artifact serve both modes: in copilot you
-watch it shrink, in auto you are handed it at the end.
+the owed ticks"). It is what makes one artifact serve both modes: in copilot you
+watch it shrink, in auto you are handed it at the end. Its length is variable:
+the owning phase may declare no Page RULING, reuse a domain gate, or require a
+local one.
 
 ⚠️ The `→ now` row is the first phase whose exit test FAILS, read in loop
 order. That is a REPORT, not a routing: which phase actually runs next is
-decided by authority (haipipe-page's authority test), and ⑦ CHECK may route
+decided by authority (haipipe-page's authority test), and CHECK may route
 anywhere.
 """
 import argparse
@@ -76,17 +78,24 @@ def main():
     L = [f"{st['page']} · phase strip (from disk, "
          f"{'receipt ' + rec['file'] if rec else 'no receipt'})"]
     row = lambda k: f"{MARK[m[k]]} {EMOJI[k]} {LABEL[k]:<14s}"
+    it = st.get("items")
     L.append(f"{row('OUTLINE')} v{o['version']} "
              f"{'approved' if o['approved'] else ('UNAPPROVED' if o['file'] else 'no file')}"
-             f" · marks 📮{mk['📮']} 🧮{mk['🧮']} 📚{mk['📚']} 🖼{mk['🖼']}")
-    L.append(f"{row('PROBE')} {len(cards)} cards raised"
-             + (f" · MISSING {','.join(st['missing'])}" if st["missing"]
-                else " · every outline PP id has a card"))
-    L.append(f"{row('EVIDENCE')} 🧮 {len(st['answered'])}/{len(cards)} answered"
-             + (f" ({len(st['blocked'])} blocked)" if st["blocked"] else "")
-             + f" · bank-bound {sum(1 for c in cards if c['bound'])}"
-             + f" · 📚 {st['bibex']['verified']}/{st['bibex']['entries']} verified"
-             + f" · 🖼 {len(st['drawn'])}/{len(disp)} drawn · {len(st['accepted'])}/{len(disp)} accepted")
+             f" · marks 📮{mk['📮']} 🧮{mk['🧮']} 📚{mk['📚']} 🖼{mk['🖼']}"
+             + (f" · items {it['rows']}/{it['marks']} · decided {it['decided']}/{it['rows']}"
+                if it and it["rows"] else " · no item table yet"))
+    if it and it["rows"]:
+        c = it["counts"]
+        L.append(f"{row('EVIDENCE')} " + " · ".join(f"{w} {c[w]}" for w in
+                 ("owed", "bound", "landed", "folded", "accepted", "stale", "deferred", "dropped", "blocked") if c[w])
+                 + f" · 📚 {st['bibex']['verified']}/{st['bibex']['entries']} verified"
+                 + f" · 🖼 {len(st['drawn'])}/{len(disp)} drawn")
+    else:
+        L.append(f"{row('EVIDENCE')} 🧮 {len(st['answered'])}/{len(cards)} answered"
+                 + (f" ({len(st['blocked'])} blocked)" if st["blocked"] else "")
+                 + (f" · MISSING {','.join(st['missing'])}" if st["missing"] else "")
+                 + f" · 📚 {st['bibex']['verified']}/{st['bibex']['entries']} verified"
+                 + f" · 🖼 {len(st['drawn'])}/{len(disp)} drawn · {len(st['accepted'])}/{len(disp)} accepted")
     L.append(f"{row('DRAFT')} {st['divisions']} content divisions"
              + ("" if not o["file"] else
                 (" · page edited AFTER outline tick" if st["page_after_tick"]
@@ -97,7 +106,7 @@ def main():
     L.append(f"{row('CHECK')} last receipt: "
              + (f"{last.get('phase')} → {last.get('route')} (round {last.get('round')})"
                 if last else "none"))
-    L.append(f"→ now: {st['now']} · ✋ human ticks still owed: {sum(tk.values())}"
+    L.append(f"→ now: {st['now']} · cycle {st.get('cycle')} · ✋ human ticks still owed: {sum(tk.values())}"
              f" (read:{tk['read']} verified:{tk['verified']} accepted:{tk['accepted']}"
              f"{'' if not tk['approved'] else ' approved:1'}"
              f"{'' if not tk['ruling'] else ' ruling:1'})"

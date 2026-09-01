@@ -60,7 +60,8 @@ Own:
 - Readability of the changed Q/S pages in the context supplied by `board.md`.
 - Voice and page-specificity of changed Openings when read consecutively in
   Board order.
-- Consistency among the page-level `state:`, `## Aims`, `## States`, and `## Log`.
+- Consistency among page-level `state:`, `## Aims` plus their `Now:` lines,
+  and `outline/<stem>-log.md`.
 - Stale or contradictory claims visible in the Board and the files it links.
 - Page and group ownership clarity when `board.md` changed.
 

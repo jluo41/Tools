@@ -3,11 +3,11 @@ name: haipipe-plugin-meeting
 description: >-
   The meeting/ plugin of a Board page: a person's own record of a conversation
   bearing on this page, one folder per meeting holding digest.md and an
-  optional transcript.md. Distinct from the Meeting-<n> page type, which
+  optional transcript.md. Distinct from a numbered Meeting Page, which
   routes a decision elsewhere. Trigger: meeting plugin, keep a meeting,
   meeting record, meeting digest, /haipipe-plugin-meeting.
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-08-18"
 ---
 # /haipipe-plugin-meeting · a page's own kept meeting notes
@@ -30,7 +30,7 @@ This file owns only meeting's delta: the dated-folder shape, why it is standalon
     └── transcript.md        the raw exchange · reference only · optional
 ```
 
-No store file, no rank: unlike pagex/task/skill, a meeting is not read in a
+No store file, no rank: unlike PageX and Skill attachments, a meeting is not read in a
 person's chosen order. It is read by WHEN IT HAPPENED, so the folder name is
 the only index and the view lists newest first. The stamp is the SERVER
 clock, never the client's — the rule every other timestamped write in this
@@ -63,7 +63,7 @@ this plugin never competes with that path.
 
 `meeting_entry` only ever ADDS a folder; it never edits or removes one — a
 kept meeting is a record, not a list a person curates afterward. There is no
-✕ or ↩ here, unlike pagex/task/skill, because nothing here is meant to be
+✕ or ↩ here, unlike PageX and Skill attachments, because nothing here is meant to be
 un-kept.
 
 ## 📂 Files

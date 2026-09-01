@@ -1,3 +1,27 @@
+## 0.6.4 — 2026-08-31
+
+- Make the consumption boundary explicit: RF is unsigned, consumer-neutral
+  evidence. An Application may use it only through its own I1-registered,
+  contextual, human-signed I5 bridge; it never binds RF directly to Design.
+
+## 0.6.3 — 2026-08-31
+
+- Align the agent discovery manifest with the task-only contract: Task Insight
+  Page, consumer-neutral DIKW, and Reusable Findings rather than an
+  Application-local Design Handoff.
+
+## 0.6.2 — 2026-08-31
+
+- Remove the retired Application scope completely. This Page Type is now one
+  task-only, consumer-neutral D→I→K→W chain ending in Reusable Findings;
+  downstream workflows borrow it through PageX and own their own handoffs.
+
+## 0.6.1 — 2026-08-31
+
+- Replace retired Application Page-Type references with the phase-owned
+  I2-I5 Folder contracts under `haipipe-insight-workflow`.
+- Show Probe, PageX, and Display under their canonical `evidence/` parent.
+
 ## 0.4.0 — 2026-08-20
 
 - Moved the runtime home to `<DataSubject>-InsightBoard/1-I-insights/` under the

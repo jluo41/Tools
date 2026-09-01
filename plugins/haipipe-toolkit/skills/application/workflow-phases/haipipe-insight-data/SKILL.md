@@ -1,74 +1,96 @@
 ---
-name: haipipe-page-for-data
+name: haipipe-insight-data
 description: >-
-  The Page Type contract for one DATA page on an InsightBoard: a run-bound set of observations with no interpretation. One page per coherent observation set, normally one task folder or one QA answer, cited by many Information pages so the same counts are never restated. Use when a task or discovery has produced numbers that other pages will cite, when a source re-runs and its observations must be refreshed in one place, or when an Information page is about to inline counts it does not own. Trigger: data page, observations, run-bound counts, page-type data, /haipipe-page-for-data.
+  InsightBoard workflow phase I2 and Folder contract for run-bound Data:
+  observations with source/run provenance and no interpretation. Owns both
+  Page and Task faces. Use when a Task, Discovery, or linked Folder has produced
+  observations the board must cite once. Trigger: insight data, observations,
+  I2, folder-kind data, legacy page-type data, /haipipe-insight-data.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-28"
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "1.0.3"
+  last_updated: "2026-09-01"
+  workflow: haipipe-insight-workflow
+  phase: I2
+  folder_kind: data
+  primary_face: task
+  page_ruling: none
+  legacy_page_type: data
   group-token: "D"
   outline:
     mode: fixed
     source: "this SKILL.md"
     shape: "Origin → Source and Run → Observations → Coverage and Gaps"
-  parent: haipipe-page-for-task
 ---
 
-# /haipipe-page-for-data · record what was observed, and name the run that produced it
+# /haipipe-insight-data · record what was observed
 
-Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when reaching Task or Discovery sources and `haipipe-plugin-pagex` when citing another page on this board.
+Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Use `folder-kind: data`; `page-type: data` remains a read-only compatibility key.
 
-Declare `page-type: data`. On a rung-major board this page lives in `<InsightBoard>/1-D-data/D<NN>-<slug>/`; on a partition-major board (`haipipe-application` `ref/partition.md`) it lives in its partition group, `<NN>-<L>-<slug>/<L>D<NN>-<slug>/`, and the group token is the partition letter. Row ids stay `D<n>` either way: the partition letter belongs to the PAGE id, never to a row.
+## Position
 
-One page owes a reader exactly this: **what was observed, and from which run**.
+I2 answers a `QD` question after GI1 and supplies named D rows to I3. It lives
+in `1-D-data/D<NN>-<slug>/` on rung-major boards or the corresponding partition
+group on partition-major boards.
 
-## Boundary
+## Folder Kind
 
-```text
-MT00-meta            what data EXISTS, at what grain     describes, never asks
-MT01-question-data   what is ASKED of this rung          asks, never concludes
-D page               what was OBSERVED, and whence       counts, never compares
-I page               what pattern the observations form  rates, contrasts, segments
-```
+One Data Folder holds one coherent observation set. It says **what was
+observed and from which exact run**. It never computes a comparison, trend,
+explanation, strength, or recommendation.
 
-**A D page never compares.** A count, a value or a distribution is a D row; a rate, a ratio, a rank, a delta, a trend or an explanation is an I row, and writing one here does not cross the boundary so much as erase it. The test is mechanical: a row naming TWO groups, or carrying a denominator that is not its own population's, belongs one rung up. This is the most-broken rule on the board precisely because a rate feels like an observation.
+## Input
 
-## Fixed Content outline
+- one registered QD ask;
+- one exact source Folder plus an accepted QA answer backed by a named run;
+- source version, run identity, unit, window, and coverage.
 
-```text
-### 1 · Origin              which task, discovery or QA answer produced this
-### 2 · Source and Run      run identity, extract date, the exact query or script
-### 3 · Observations        the rows · D<n> ids · counts, values, distributions
-### 4 · Coverage and Gaps   who is in, who is excluded, what is missing
-```
+## Page Face
 
-- **Origin** names the producing task folder or QA file. It states no finding.
-- **Source and Run** pins run identity and extract date, inherited from `MT00-meta`'s Freshness row. A number with no resolvable run is a defect, not a row.
-- **Observations** carries `D<n>` rows: counts, values, distributions. No rate that compares two groups, because a comparison is Information.
-- **Coverage and Gaps** states exclusions with reasons and what this set cannot show.
+Use `Origin → Source and Run → Observations → Coverage and Gaps`. Every D row
+has a stable id and names the source/run path that produced it. Counts are
+reported once here; higher rungs cite rows instead of restating them.
 
-## Closing rule
+## Task Face
 
-This page closes when every D row names a resolvable run and a person has read the numbers against the origin's own question.
+Resolve the source relationship and live status through PageX. For every value
+coming from a Task or Discovery Folder, resolve an accepted QA answer through
+Probe even when the producing Folder is already linked and reported. Verify the
+named run and coverage; transcribe only reproducible observations; and reopen
+this Folder on rerun. This phase does not launch another Folder's Run and
+does not read raw `results/` when a QA/report surface is owed.
 
-## Closing checks
+One local Run may normalize or validate an intermediate owned by this Data
+Folder, but it cannot authorize a displayed value. Every displayed number
+produced by a Run still crosses the one page-serving collection job and its QA
+binding. A
+reusable computation or source-data change belongs in its own linked executable
+Folder.
 
-- Every D row resolves to a run identity and an extract date.
-- No row compares, ranks, rates or explains: those are Information.
-- Exclusions carry reasons.
-- A re-run of the named source visibly reopens this page first, and on a partition-major board its partition mirrors with it, because one extract feeds every partition's D pages through different configs.
-- If a register cell names this page `🟡 <id> final`, a `## Log` row here names that question id and why the remainder cannot close.
+## Plugins
 
-## Chain law
+- `pagex` required for the source Folder relationship and live task status;
+- `probe` required for every Task/Discovery-derived value; accepted Page
+  material may bind through PageX without a new Probe only when it already
+  exposes the exact accepted evidence the phase needs;
+- `outline` required;
+- `runs` optional only when this Folder itself owns a declared Run/Result
+  derivation; scripts remain optional. Otherwise it is absent.
 
-This rung sits in the six-level lifting chain stated ONCE for the family, at `haipipe-insight` §The Climb Law: MT00's extract → D → I → K → W → a signed Handoff, each rung citing only named ROWS of the rung below, nulls and contradictions surviving upward, a level free to narrow what its parent said and never to broaden it, and a parent's change REOPENING every child row that cited it. It is cited here and deliberately not copied: four contracts restating one law in four places is how a patch comes to contradict itself.
+## Gate and Closure
 
-This rung owns no exception to it. A D row's parent is a RUN, never another page on this board, which is why staleness enters the chain here and travels outward by citation rather than by hand.
+GI2 passes when every D value is bound by path to an accepted QA answer backed
+by a named source/run, unit/window and coverage are explicit, gaps are visible,
+and no interpretation has entered.
+A rerun or changed source version reopens the affected rows and children.
 
-## Register
+## Handoff
 
-The question this page answers is registered once on `MT01-question-data`, the register facing this rung; the board rollup on `MT04-question-wisdom` is what reassembles a chain spanning four pages. When the page is created, the LAP'S REGISTER PEN records this page's id in its question's Queue row (`⬜ <id>`): the write is the register's even when the mint occasions it, so the three pens stay uncrossed.
+Hand I3 the question id, D-row ids, exact provenance paths, unit/window, and
+coverage/gaps. Do not hand it a precomputed claim.
 
-**The 🟡 receipt duty.** When this page closes part of its question and cannot close the rest, its register cell reads `🟡 <this page> final` (`haipipe-page-for-question`) and THIS page owes the sentence licensing it: a `## Log` row naming the question id and why the remainder cannot close. The register pen writes the cell, the page writes the reason, and neither may write the other's half. A cell reading final over a page carrying no such row is the defect the pair exists to prevent, because settled-partial and abandoned are indistinguishable on disk otherwise.
+## Files
 
-This variant owns no scripts.
+- Page: `<DataFolder>/<DataFolder>.md`
+- Cross-Folder binding: `evidence/pagex/`
+- Required Task/Discovery QA bindings: `evidence/probe/`

@@ -98,7 +98,8 @@ from live.write import WriteMixin
 from live.chat import ChatMixin
 from live import chat as live_chat
 from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
-                       spawn_pty, pty_pump, pty_resize, ws_send)
+                       spawn_pty, pty_pump, pty_resize, ws_send,
+                       labeling_tui_hold)
 from live.xcal import XcalMixin
 from live.evidence import EvidenceTabMixin
 from live.delivery import DeliveryTabMixin
@@ -107,7 +108,6 @@ from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
 from live.pagex import PagexMixin
-from live.task import TaskMixin
 from live.meeting import MeetingMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
@@ -138,7 +138,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -187,6 +187,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         t = TERMS.get(m.group(1)) if m else None
         if not (t and t.get("kind") == "pty"):
             return False
+        reason = labeling_tui_hold(t.get("file") or "")
+        if reason:
+            self.send_error(423, reason + " · TUI is read-only at this gate")
+            return True
         sub = m.group(2) or "/"
         if sub == "/ws":
             self.ws_term(m.group(1))
@@ -510,23 +514,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.pagex_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/pagex-match":    # PROBE's read-only shortlist
+        if self.path == "/_board/pagex-match":    # SURVEY's read-only shortlist
             res, err = self.pagex_match(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        # 🗂 task, the fourth citation twin (QPf13): the page's borrowings
-        # from `tasks/` — whole task FOLDERS, one store + symlinks re-minted
-        # from it, status read from plan.yaml / report.yaml / QA/ on disk.
-        if self.path == "/_board/task":           # re-mint the links + view
-            res, err = self.task_refresh(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/task-order":     # the drag: rank = the order
-            res, err = self.task_order(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/task-entry":     # the pen: link · ✕ · ↩
-            res, err = self.task_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         # 🗣 meeting (QPf14): a person's own record of a conversation, kept

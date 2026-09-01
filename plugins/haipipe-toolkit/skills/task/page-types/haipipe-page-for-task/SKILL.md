@@ -8,8 +8,8 @@ description: >-
   but nobody wrote what they mean. Trigger: task page, technical report,
   results reading, verdict, rerun reopens, page-type task.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-08-30"
+  version: "0.10.2"
+  last_updated: "2026-08-31"
   folder-kind: task | discovery   # a discovery folder is a special task (260819)
   outline:
     mode: grammar          # fixed | grammar | resolved
@@ -196,12 +196,11 @@ Content       🔒 one fixed word · ✍️ one free title, in ONE of two shapes
   FLAT     one topic  · the words ARE the divisions
   NESTED   many topics · a topic is the division, the words sit inside it
   ### n · Conclusion · <free>   exactly 1, ALWAYS LAST, in BOTH shapes
-Aims         one Aim per question this task must answer
-States       per question: answered · needs another run · dropped
-Files        the job paths, including every QA/<n>-<slug>.md
+Aims         one Aim per question; each Now: says answered · another run · dropped
+outline/     files index + dated log + discussion, all off the Page stage
 ```
 
-**⛔ A division names what the READER LEARNS, never where the material came from.** `Inputs`, `Runs`, `Provenance` and `Run receipts` are MACHINERY, and a task page is the single most likely page in the system to lead with them, because its subject IS a folder and the folder's own names are sitting right there. Copying `configs/ runs/ results/` into `### 1 · Inputs`, `### 2 · Steps`, `### 3 · Runs` hands the reader the author's filing system instead of the finding. The machinery goes in `## Files`, or in a final appendix division, and never at the front. This is the base rule (`haipipe-page-draft` §🗂), restated here because this type walks into it by construction.
+**⛔ A division names what the READER LEARNS, never where the material came from.** `Inputs`, `Runs`, `Provenance` and `Run receipts` are MACHINERY, and a task page is the single most likely page in the system to lead with them, because its subject IS a folder and the folder's own names are sitting right there. Copying `configs/ runs/ results/` into `### 1 · Inputs`, `### 2 · Steps`, `### 3 · Runs` hands the reader the author's filing system instead of the finding. Register machinery as `F<n>` rows in `outline/<stem>-files.md`, or use a final appendix division when the machinery itself is the finding; never lead with it. This is the base rule (`haipipe-page-draft` §🗂), restated here because this type walks into it by construction.
 
 **Group by result family, or by topic.** `Scaling holds to 5M` and `Where it breaks` are divisions. Script-run order, config order, and the order the runs happened are accidents of history, and an outline that follows one reads as a log.
 
@@ -240,7 +239,7 @@ which rows are ⬜, and knows where to start without reconstructing the argument
 
 ## 📋 The outline DRAFT hands over
 
-⛔ **THE OUTLINE IS NEVER WRITTEN INTO `## Content`** (JL 260817: "we should not have the outline here, we will have it in the outline plugin"). The 🧭 outline plugin DERIVES it from the `###` headings, the Aims and the States, on every open, storing nothing. A copy pasted into the body is a second authority that goes stale at the next edit, and on `QC1-visitlbp` it also dragged an HTML comment and a `verbatim` block into the generated `.tex`.
+⛔ **THE OUTLINE IS NEVER WRITTEN INTO `## Content`** (JL 260817: "we should not have the outline here, we will have it in the outline plugin"). The 🧭 outline plugin DERIVES it from the `###` headings and Aims/Now rows on every open, storing nothing. A copy pasted into the body is a second authority that goes stale at the next edit, and on `QC1-visitlbp` it also dragged an HTML comment and a `verbatim` block into the generated `.tex`.
 
 The table below is what the 🧭 tab SHOWS a person before prose is written. It is the shape to read, not the shape to type:
 
@@ -308,7 +307,7 @@ Conclusion   what it means, and what to run next    🔒 exactly 1 the LAST divi
                                                                 PAGE level, never
                                                                 inside a topic
 ──────────────────────────────────────────────────────────────────────────────────
-(Runs)       ─ deleted, into ## Files ─
+(Runs)       ─ deleted, into outline/<stem>-files.md ─
 (Why)        ─ renamed Introduction 260822, see below ─
 ```
 
@@ -343,7 +342,7 @@ A reader who can find an abstract can find an introduction, and nobody confuses 
 
 - **No `Task-` prefix.** `QPs1` §0.6 already ruled the identical case: the page id drops off the front of a chip "because the tab and the breadcrumb already say which page you are on". The page type says `task` in its own head key, so repeating it on every chip costs width and buys nothing.
 - **`Data` and `Result`, not `Input` and `Output`.** Input and output are the pipeline's words, and this same contract forbids the pipeline's words at division level twelve lines above. `Result` also matches the term already used here, RESULT FAMILY.
-- **`Method`, and it records the CHOICE, not the steps.** `Why` was tried first and is too narrow: of the thirteen real Method divisions, six are titled `Why X and not Y` but five state what was actually run (`Three tests, three questions`, `Residualize, then recompute, rather than adding a control term`), and a regression's specification is not a "why". What all thirteen DO share is a FORK: every title names something that could have gone another way, marked by `and not`, `rather than`, or `deliberately`. So the division holds the choice and its alternative, never a step list, because the steps are in the code and the code is in `## Files`.
+- **`Method`, and it records the CHOICE, not the steps.** `Why` was tried first and is too narrow: of the thirteen real Method divisions, six are titled `Why X and not Y` but five state what was actually run (`Three tests, three questions`, `Residualize, then recompute, rather than adding a control term`), and a regression's specification is not a "why". What all thirteen DO share is a FORK: every title names something that could have gone another way, marked by `and not`, `rather than`, or `deliberately`. So the division holds the choice and its alternative, never a step list, because the steps stay in Folder code and are indexed in `outline/<stem>-files.md`.
 - **`Conclusion`, ruled 260821 by JL, replacing `Meaning`.** The set grows and CHANGES only by ruling, so the swap is recorded here rather than applied silently. `Meaning` was chosen on 260816 because the heading itself stated the closing rule: the page closes when someone says what the result MEANS, and a division named for the reader's takeaway beats one named for the act of reading, which is why it had replaced `Reading`. What that argument missed is that the reader already owns a name for this division. A task page IS a technical report (§📰), a report's last division has been called `Conclusion` for as long as there have been reports, and `Meaning` asks a reader to learn a local word for a section they can already find blindfolded.
 - `Conclusion` clears every bar the 260816 rejections set: one word, not rare, not idiom, and the checker's grep stays a plain alternation. It was never considered then, which is why it did not win then.
 - ⚠️ **What the rename gives up, and how it is paid back.** `Meaning` carried a demand inside the word: a division named for meaning cannot be filled with a restatement of the divisions above it. `Conclusion` is the softer word and invites exactly that summary. The demand therefore moves out of the name and into a rule: **a `Conclusion` division with no READING record in it is not written yet.** The closing rule below is unchanged; this line is what stops the word from loosening it.
@@ -473,15 +472,15 @@ A topic-level `Data` OVERRIDES the page-level one for that topic, and a topic th
            Introduction, when present, is the FIRST ### and appears once
 ```
 
-⛔ **AN EVIDENCE ENTRY IS A CARD, NOT A SENTENCE.** The `evidence owed` column above is the 🧭 tab's; the CARD is the file on disk and the 🚪 Probe tab is where a person reads it. A body sentence like `Evidence owed: probe/PP03-regression-n-gap, state raised.` is the defect: it duplicates a card that already renders, and it carries a `state:` the card owns, so the two disagree the moment the card moves. The page's prose cites a card by its bare id and says nothing about its state.
+⛔ **AN EVIDENCE ENTRY IS A CARD, NOT A SENTENCE.** The `evidence owed` column above is the 🧭 tab's; the CARD is the file on disk and the 🚪 Probe tab is where a person reads it. A body sentence like `Evidence owed: evidence/probe/PP03-regression-n-gap, state raised.` is the defect: it duplicates a card that already renders, and it carries a `state:` the card owns, so the two disagree the moment the card moves. The page's prose cites a card by its bare id and says nothing about its state.
 
 🚨 **A DECLARED ARTIFACT THAT DOES NOT EXIST IS THE WORST CASE OF THIS.** On `QC1-visitlbp` the outline declared `🖼 display` for one division and the page shipped with ZERO display unit folders: the sentence was the entire deliverable. Before a phase reports done, count them:
 
 ```text
   declared in the outline        exists on disk               verdict
   ──────────────────────────────────────────────────────────────────────
-  🔢 4 value cards               4 × probe/PP<NN>-…/card.md   ✅ done
-  🖼 1 display                   0 × display/<stem>-Display…/  🚨 NOT done
+  🔢 4 value cards     4 × evidence/probe/PP<NN>-…/card.md   ✅ done
+  🖼 1 display         0 × evidence/display/<stem>-Display…/  🚨 NOT done
 ```
 
 A division that needs a display and has no numbers yet writes NO display row at all, and says in one sentence that there is nothing to draw. Owing a thing and pretending to owe it are different, and only the first is honest.
@@ -508,16 +507,16 @@ data           the filter, the join, and why this    QD4 · requiring all ten sc
 
 ## 🃏 The four evidence cards, and which division owes which
 
-`haipipe-page-evidence` ships THREE card kinds, and `probe` is not a fourth one: the value card LIVES in the probe lane, at `<page>/probe/PP<NN>-<slug>/card.md`. Probe is the folder, value is the kind, and they are one card.
+`haipipe-page-evidence` ships THREE card kinds, and `probe` is not a fourth one: the value card LIVES in the Probe lane, at `<page>/evidence/probe/PP<NN>-<slug>/card.md`. Probe is the lane, value is the kind, and they are one card.
 
 A task page needs a fourth kind that genuinely does not exist yet: **the CODE card**, which binds a claim to the job that produced it (JL 260816, "when I say the method, I mean link it to the job"). A `Method` division saying `k-means on five traits and not on ten` is unbacked prose until something on disk points at the script that ran the k-means.
 
 ```text
 kind          the card on disk                          BINDS TO                 GATE 🧑
 ────────────────────────────────────────────────────────────────────────────────────────
-📚 citation   <page>/bibex/<stem>.bib entry             a published work         verified
-🔢 value      <page>/probe/PP<NN>-<slug>/card.md        a QA file in the bank    state: bound
-🖼 display    <page>/display/<stem>-Display<N>-…        a frozen intake +        accepted: ✅
+📚 citation   <page>/evidence/bibex/<stem>.bib entry    a published work         verified
+🔢 value      <page>/evidence/probe/PP<NN>-…/card.md   a QA file in the bank    state: bound
+🖼 display    <page>/evidence/display/<stem>-Display<N>-…  a frozen intake +      accepted: ✅
                                                         its named renderer
 💻 code  ⭐   <page>/code/CD<NN>-<slug>/card.md          the JOB,                 state: pinned
               ⭐ NEW for this type                        by path + commit
@@ -576,15 +575,15 @@ DRAFT's job on a task page is therefore mostly PROMOTION, not invention: take th
 
 **`Inputs` SURVIVES when it carries a finding, and it usually does.** The earlier rule here said `Inputs` is machinery and must go. That was ruled without reading the real pages, and it is wrong: on `QC1` the sample division holds the four-cohort-number problem, and on `QD4` it holds the two-sample-size split. Both are findings a reader needs. What was wrong was the HEADING, never the material.
 
-**`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already written in `## States` as `A5.2`. A division that repeats States and Files is not a division.
+**`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already represented by Aim `A5.2` and the files index. A division that repeats Aims/Now and Folder records is not a division.
 
 **`Inputs` SURVIVES when it carries a finding, and it usually does.** The earlier rule here said `Inputs` is machinery and must go. That was ruled without reading the real pages, and it is wrong: on `QC1` the Inputs division holds the four-cohort-number problem, and on `QD4` it holds the two-sample-size split. Both are findings a reader needs. What was wrong was the HEADING, never the material.
 
-**`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already written in `## States` as `A5.2`. A division that repeats States and Files is not a division.
+**`Runs` does NOT survive, and the pages prove it.** On `QC1` it is one line. On `QD4` its only finding, an `INDEX.md` naming a run script that does not exist, is already represented by Aim `A5.2` and the files index. A division that repeats Aims/Now and Folder records is not a division.
 
 The evidence column uses the three kinds `haipipe-page-evidence` owns: 📚 citation · 🔢 value · 🖼 display. On a task page almost every row is 🔢 value, because the job's own runs are what produce them, and each 🔢 names the run under rule ② below. A division with a blank evidence column is a division nobody can finish. The `Conclusion` row is the exception: its evidence is the numbers the rows above already landed, and the hand that fills it is human.
 
-**The run table is not a division.** The `<NAME>` token binding the four sister files (`ref/authoring-conventions.md` §1) — `configs/<NAME>.yaml`, `runs/<NAME>.sh`, `results/<NAME>/`, `notebooks/<NAME>.ipynb` — is what makes rule ② checkable, and it lives in `## Files` where a reader looks for machinery.
+**The run table is not a division.** The `<NAME>` token binding the four sister files (`ref/authoring-conventions.md` §1) — `configs/<NAME>.yaml`, `runs/<NAME>.sh`, `results/<NAME>/`, `notebooks/<NAME>.ipynb` — is what makes rule ② checkable, and it lives as `F<n>` records in `outline/<stem>-files.md` where a reader looks for machinery.
 
 ## ⛓ Four binding rules
 
@@ -604,7 +603,7 @@ QA/<n>-<slug>.md   ONE outside caller's question · write-once · lives IN the f
 the page           the task's OWN standing reading · edited over rounds · on the board
 ```
 
-🚫 Never copy QA prose onto the page, and never edit a QA file from the page. `## Files` lists them by path, and that is the whole relationship. A question that arrives from outside is answered in a QA file; the reading the page carries is the one the task took of itself.
+🚫 Never copy QA prose onto the page, and never edit a QA file from the page. `outline/<stem>-files.md` lists it by path, and that is the whole relationship. A question that arrives from outside is answered in a QA file; the reading the page carries is the one the task took of itself.
 
 ## 📥📤 What this page reads, and what it hands on
 
@@ -618,11 +617,11 @@ the page           the task's OWN standing reading · edited over rounds · on t
               plan.yaml · report.yaml              intent and record
               QA/<n>-<slug>.md                     digests written for outside callers
 
- 📤 OUTPUT  the READING · a verdict bound to one run name, plus the States
-            rows saying which of this task's questions are now answered
+ 📤 OUTPUT  the READING · a verdict bound to one run name, plus each Aim's
+            Now: row saying which task question is now answered
 ```
 
-⚠️ **`diagram/*.txt` inside a job is the shape this page replaces.** `ref/task-structure.md` §"Job-level diagram/" already specifies `01-overview.txt` (what/why/inputs/outputs), `02-design.txt` (the approach), `03-runs.txt` (the run table), and `04-progress.txt` (a dated log): divisions 1, 2 and 3 plus `## Log`, in four .txt files that nothing renders and nobody opens. A task with a page does not keep both. **Open ruling for JL**: the page absorbs `diagram/`, or `diagram/` stays as the source the page renders from. Until it is ruled, a task page names the .txt files in `## Files` and does not duplicate their prose.
+⚠️ **`diagram/*.txt` inside a job is source material, not a second Page.** Bind any retained file as an `F<n>` row in `outline/<stem>-files.md`; do not duplicate its prose. Dated change and gate receipts live only in `outline/<stem>-log.md`. The readable Page keeps the shared on-stage frame and never recreates retired Files or Log sections.
 
 ## 📂 Files
 

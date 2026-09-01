@@ -64,6 +64,10 @@ STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON 
 # as files beside an HTML page, so checker must recognize them rather than
 # calling the Board Home navigation a dead static href.
 LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw", "/boards")
+APPLICATION_BOARD_NAME = re.compile(
+    r"^(?:(?:A\d+_)?[A-Za-z0-9][A-Za-z0-9-]*-InsightBoard|"
+    r"(?:B\d+_)?[A-Za-z0-9][A-Za-z0-9-]*-DesignBoard)$"
+)
 
 # Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
@@ -277,6 +281,19 @@ def check_board(d, rep):
         return {}, {}, False
     text = bmd.read_text(encoding="utf-8")
     links = declared_links(text)
+
+    if ("InsightBoard" in d.name or "DesignBoard" in d.name) and not (
+        APPLICATION_BOARD_NAME.fullmatch(d.name)
+    ):
+        rep.add(
+            WARN,
+            "legacy-application-board-name",
+            str(d),
+            "new Application boards use subject-first names: "
+            "<Subject>-InsightBoard or <Topic>-DesignBoard, with an optional "
+            "A<NN>_ or B<NN>_ ordering prefix; kind-first names are readable "
+            "compatibility addresses only",
+        )
 
     if not re.search(r"^#\s+\S", text, re.M):
         rep.add(ERROR, "board-missing-title", "board.md", "no `# title` line")
@@ -1228,9 +1245,10 @@ def _one_generated_block(tag, block, latest, name, rep):
 
 
 def check_evidence_file(path, name, rep):
-    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.17.2):
-    one bullet, one line, in the Evidence Bundle's six status words, written
-    only by `cli/evidence-status.py`. Two things can go wrong with a derived
+    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.21.0):
+    the item table (`<stem>-items.md`, authored at SURVEY) joined to the disk,
+    one record per marked bullet, its Status one word of the item ladder,
+    written only by `cli/evidence-status.py`. Two things can go wrong with a derived
     file and both are silent: it is older than the evidence it describes, or
     someone typed into it. A stale status that reads as measured is worse than
     no file (JL 260831)."""
@@ -1559,7 +1577,7 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "principle", "view", "stage", "ideation",
+                    "wisdom", "brief", "view", "stage", "ideation",
                     "roadmap", "collection")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
@@ -1817,17 +1835,22 @@ def check_design_family(d, rep):
                         f"{' · '.join(sorted(CARD_STATES))}")
 
             # Law: release before realize, now checkable as folder purity.
+            # workflow/ is Folder control metadata (current phase + append-only
+            # transitions), not realization material. A proposed/killed Card
+            # may retain it without passing the release gate or keeping output.
             siblings = [f.name for f in unit.iterdir()
-                        if f.name not in {"card.md"} and not f.name.startswith(".")]
+                        if f.name not in {"card.md", "workflow"}
+                        and not f.name.startswith(".")]
             if state == "proposed" and siblings:
                 rep.add(ERROR, "unit-realized-before-release",
                         f"{uname} -> {' · '.join(sorted(siblings)[:4])}",
                         "the card still says proposed but the folder already holds "
-                        "more than card.md; realizing an unreleased card passes a "
+                        "realization material; realizing an unreleased card passes a "
                         "person's gate mechanically")
             if state == "killed" and siblings:
                 rep.add(WARN, "unit-tombstone-extra", uname,
-                        "a killed thread is a tombstone: card.md and nothing else")
+                        "a killed thread retains card.md and optional workflow/ "
+                        "control history, but no realization material")
 
             # Law: no expected effect, no release.
             eff = (vals["expected effect"] or "").strip()
@@ -2015,22 +2038,27 @@ def check_insight_family(d, rep):
                     rep.add(ERROR, "partial-final-ghost-page", name,
                             f"`🟡 {pid} final` cites a page this board does not hold")
                 else:
-                    ctext = cited.read_text(encoding="utf-8")
-                    lm = re.search(r"^## Log\s*$", ctext, re.M)
-                    log = ctext[lm.end():] if lm else ""
+                    log_path = (cited.parent / "outline" /
+                                f"{cited.stem}-log.md")
+                    log = (log_path.read_text(encoding="utf-8", errors="replace")
+                           if log_path.is_file() else "")
                     # WARN, not ERROR, deliberately: a missing receipt is
                     # repairable debt on a settled decision, not broken
-                    # structure — but it is scanned in ## Log ONLY, because a
-                    # dated line elsewhere is prose, not a receipt (round 3
-                    # friction 10: checker weaker than statute both ways).
-                    if not re.search(rf"^\d{{6}} .*{qid}.*final|^\d{{6}} .*final.*{qid}",
-                                     log, re.M):
+                    # structure — but only a canonical outline-log record
+                    # heading counts. A sentence on the Page is prose, not a
+                    # receipt (round 3 friction 10), and Page `## Log` was
+                    # retired by haipipe-plugin-outline 0.16.1.
+                    heads = [line for line in log.splitlines()
+                             if re.match(r"^###\s+\d{6}(?:\s+\d{3,4})?\s+·", line)]
+                    if not any(qid in line and re.search(r"\bfinal\b", line)
+                               for line in heads):
                         rep.add(WARN, "partial-final-no-page-receipt", name,
                                 f"`{qid}` leans on a sentence in {pid} and {pid}'s "
-                                "## Log does not record it: the flip leaves TWO "
-                                "receipts (insight-workflow §Marks), because a "
-                                "citation invisible from the cited end cannot "
-                                "carry staleness")
+                                f"`outline/{cited.stem}-log.md` does not record "
+                                "it: the flip leaves TWO receipts "
+                                "(insight-workflow §Marks), because a citation "
+                                "invisible from the cited end cannot carry "
+                                "staleness")
 
 
 PARTITION_KEYWORDS = {
@@ -2155,7 +2183,8 @@ def check_plugin_roster(d, rep):
         page = md.parent
         if md.stem != page.name:
             continue
-        # A unit INSIDE a plugin lane (`display/S-Display-1a/…`, `probe/PP01/…`)
+        # A unit inside an evidence lane (`evidence/display/S-Display-1a/…`,
+        # `evidence/probe/PP01/…`)
         # also keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`,
         # `source/`, `versions/` are that plugin's own anatomy, not page
         # folders. The roster governs the page's direct children only; walking

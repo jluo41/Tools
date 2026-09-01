@@ -1,13 +1,13 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level phase machine: six phases (Ideation -> Seed -> Roadmap ->
-  Narrative -> Section -> Round) with a checkable gate between each. Use when
+  The paper-level phase machine: six phases (Ideation → Seed → Roadmap →
+  Narrative → Section → Round) with a checkable gate between each. Use when
   asking where a paper is, whether it may advance, or what to mint next.
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.6.2"
+  version: "0.7.3"
   last_updated: "2026-08-31"
 ---
 
@@ -51,19 +51,19 @@ cross-phase journey: names, gates, groups, receipts.
 ```text
 phase                     authority page                 what the phase produces
 ──────────────────────────────────────────────────────────────────────────────
-P0 Ideation (ideate)      ideation   (A1-SD-story/SD00)  a winning idea sent to
+P0 Ideation (ideate)      ideation   (A1-Story/Story00)  a winning idea sent to
                                                          its Seed · the repo is
                                                          minted WITH this page
-P1 Seed (establish)       seed       (A1-SD-story/SD01)  a defensible identity
+P1 Seed (establish)       seed       (A1-Story/Story01)  a defensible identity
                                                          + E-board
-P2 Roadmap (route)        roadmap    (A1-SD-story/SD02)  released blocks: where
+P2 Roadmap (route)        roadmap    (A1-Story/Story02)  released blocks: where
                                                          to go, who runs it,
                                                          done-when · then the
                                                          landed QA receipts,
                                                          lap by lap, settled
                                                          back onto the Seed
    ↺ P1↔P2 is the ESTABLISH LOOP · exits only through the Seed at G4
-P3 Narrative (tell)       narrative  (A2-NA, 1 per desk) a desk decision +
+P3 Narrative (tell)       narrative  (A1-Story, 1/desk)  a desk decision +
                                                          section map
 P4 Section (realize)      section    (B group, per row)  signed-off units
    P4.9                   assemble — a VERB, not a phase the built deliverable ·
@@ -112,8 +112,8 @@ G0  Ideation → Seed        precondition, tested on the idea's summary row
                            pilot result or explicit waiver · a person's
                            PROCEED tick (or PROCEED WITH CAUTION with its risk
                            accepted in the tick) · receipt, recorded after the
-                           act: SD01-seed exists in this board's A1-SD-story,
-                           its §5 first row binds SD00-ideation back, and the
+                           act: Story01-seed exists in this board's A1-Story,
+                           its §5 first row binds Story00-ideation back, and the
                            idea's `went to` cell names it (an idea that went
                            to a DIFFERENT paper adds: that new repo exists as
                            a submodule)
@@ -163,12 +163,15 @@ Gate numbers are stable across 0.6.0: G2 and G3 both read the Roadmap now
 ## 🗃 Group mapping (JL 260828)
 
 ```text
-P0–P2   A1-SD-story/         SD00-ideation · SD01-seed · SD02-roadmap —
-                             the venue-free head, one each
-P3      A2-NA-narrative/     NA<NN>-narrative-<desk>, one page per desk,
-                             numbered in arrival order
-P4–P5   B<x>-<desk>/         one group per desk: its section pages (S<D> main,
-                             SA appendix) AND its rounds (RD token) live together
+P0–P3   A1-Story/            Story00-ideation · Story01-seed · Story02-roadmap,
+                             the venue-free head, one each; then
+                             Story<NN>-narrative-<desk>, one page per desk in
+                             arrival order (Story03 first; JL 260831)
+P4–P5   Ba-<desk>-Main/      the desk's S<D> main sections
+        Bb-<desk>-Appendix/  its SA appendix sections
+        Bc-<desk>-Round/     its RD rounds (JL 260831: one letter per group;
+                             a second desk continues at Bd; shared-letter and
+                             combined B<x>-<desk> layouts are grandfathered)
 ```
 
 A foreign-desk round (feedback from a desk this board never told) mints that

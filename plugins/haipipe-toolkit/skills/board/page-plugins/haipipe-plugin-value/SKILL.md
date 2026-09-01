@@ -2,13 +2,13 @@
 name: haipipe-plugin-value
 description: >-
   The 🧮 value surface of a Board page: every number the page owes or uses, one
-  row each, joining each probe card's ## Values block to the PP<NN>.v<n>
+  row each, joining each probe card's ## Values block to PPNN.vN
   citations in the prose. No storage of its own. Answers which number came
   from where, and which answered number nobody uses. Trigger: value plugin,
   value tab, PP01.v2, unsourced number, cite a number, /haipipe-plugin-value.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-19"
+  version: "0.1.2"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,7 +25,7 @@ sentence uses one of them (JL 260819: "probe 是一个大 folder，里面放了�
 value，而有的时候我们在正文里面只会用到一个具体的 value").
 
 ```text
-  probe/PP01-phase-contract-count/     one question, four numbers
+  evidence/probe/PP01-phase-contract-count/  one question, four numbers
     v1  phases the loop declares   7
     v2  contracts that ship        6
     v3  person-reserved ticks      5
@@ -40,13 +40,13 @@ number each used, and a value nobody used looked exactly like one everybody did.
 ## 🧊 Four facets, and only two of them exist
 
 ```text
-📦 storage   NONE. The number lives in probe/PP<NN>/proof/ with its source, run
+📦 storage   NONE. The number lives in evidence/probe/PP<NN>/proof/ with its source, run
              and sha256. A <page>/value/ folder would be a second home for one
              thing, which is the rule that retired the proof mark on 260819 (its glyph 🧮 now means value here).
 📡 surface   THIS. One row per value on the page, read live on every open.
 ✍️ writer    NOBODY. EVIDENCE writes the `## Values` block in card.md when the
              answer lands. This surface never writes and calls no model.
-🚧 boundary  reads probe/*/card.md and the page's own .md. Nothing else.
+🚧 boundary  reads evidence/probe/*/card.md and the Page's own .md. Nothing else.
 ```
 
 **Storage-less is not a new idea on this board**: `haipipe-plugin-outline` 0.1.0

@@ -1,3 +1,7 @@
+## 0.1.2 — 2026-08-31
+
+- Canonicalize the storage and reader boundary to `evidence/probe/`.
+
 ## 0.1.1 — 2026-08-19
 
 - **The value mark is 🧮** (JL: "🧮 maybe this one?" — he never liked 🔢).

@@ -9,10 +9,9 @@ description: >-
   through the probe crossing, never directly by a phase. Trigger: page
   collection job, collect the values, serve the page's cards, values.yaml,
   propose the missing task, task-type page, /haipipe-task-for-page.
-argument-hint: "[page-path] [--job <job-path>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
+  version: "0.2.2"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,13 +46,13 @@ EXITS    Report: every question answered in values.yaml + QA, or carried as
 ## 🧱 One job per page, linked where the page already looks
 
 ```text
-paper project                                    the page
+project or Application                          any Folder's Page Face
 tasks/                                           <page>/
-└── b<NN>_paper_service/        one block per    ├── probe/PP<NN>-<slug>/   the ADDRESS stays here:
-    ├── j01_values_<pageA>/     paper's pages    │     card.md · executor/ · proof/
+└── b<NN>_page_service/         one service      ├── evidence/probe/PP<NN>-<slug>/
+    ├── j01_values_<pageA>/     block per project│     card.md · executor/ · proof/
     │   ├── t01_collect_values/                  │     ## Values → PP<NN>.v<n>
-    │   │   ├── t01_collect_values.py            └── task/<stem>.md         this job's path,
-    │   │   ├── t01_collect_values.md                  ranked FIRST (plugin-task lane)
+    │   │   ├── t01_collect_values.py            └── evidence/pagex/<stem>.md
+    │   │   ├── t01_collect_values.md                  whole job Folder ranked FIRST
     │   │   ├── config/r01_<batch>.yaml
     │   │   └── runs/r01_<batch>.sh
     │   ├── workflow/  plan.yaml · report.yaml · proposals.md
@@ -68,25 +67,29 @@ tasks/                                           <page>/
   whole page's task-route cards in one place; EVIDENCE ④ POINT binds each
   card's `target:` to this job's QA file and pulls its value rows from
   `values.yaml`.
-- **One job per page, one block per paper's service jobs**; a paper with three
-  drafted pages holds three sibling jobs. The block and job names pass the
-  stranger test (`b<NN>_paper_service`, `j<NN>_values_<page-stem>`); a run
-  config is one BATCH of questions (`r01_<batch>.yaml`), and a refresh is a
-  new run of the same ticket, never a new folder.
-- **The page links the job in its `task/` lane** (`<page>/task/<stem>.md`,
-  `haipipe-plugin-task`), ranked first; the 🗂 tab then shows the job's
-  planned/reported state beside the page.
+- **One job per Page Face, one service block per project**; three served Pages
+  hold three sibling jobs, whether their owning Folder belongs to Paper,
+  Application, or another Board family. The canonical stranger-test names are
+  `b<NN>_page_service` and `j<NN>_values_<page-stem>`. A project with an
+  established compatible service block may reuse it; legacy
+  `b<NN>_paper_service` remains readable but is never required for non-Paper
+  work. A run config is one batch (`r01_<batch>.yaml`), and a refresh is a new
+  run of the same ticket, never a new Folder.
+- **The page links the job as one whole Folder through PageX**
+  (`<page>/evidence/pagex/<stem>.md`), ranked first. The Folder card reads
+  Page Face plus live plan/report/QA state from the source. There is no
+  separate `task/` lane or Task plugin.
 
 ## 🚪 How work arrives · the same doors, never a new one
 
 ```text
-② PROBE      raises cards, MATCHes, and hands the batch out through
+LAND         raises the outbound cards the item table decided on and hands the batch out through
              haipipe-probe-q-executor-agent — the ONE door (JL 260820)
 executor     for each task-route question: /haipipe-task qa "<question>" <this job>
              gate ① existing QA answer → path · ② results/ hold it → digest ·
              ③ neither → ENTER the lifecycle HERE: extend the collection
              script, rerun the ticket, complete the QA file at Report
-③ EVIDENCE   binds card target: → the QA path · allocates PP<NN>.v<n> from
+LAND         binds card target: → the QA path · allocates PP<NN>.v<n> from
              values.yaml · a changed value reopens OUTLINE
 ```
 
@@ -178,5 +181,4 @@ haipipe-task-for-page/
 The base is `haipipe-task` (hierarchy, phases, `fn/qa.md` for the QA-file
 anatomy this job writes). The page-side contracts it serves but never loads:
 `haipipe-plugin-probe` (the card and the wall), `haipipe-page-evidence`
-(the binding), `haipipe-plugin-task` (the lane the page links this job in).
-The design record is QPf13 (task lane) on `BoardSkillBoard-260722`.
+(the binding), and `haipipe-plugin-pagex` (the whole-Folder relationship).

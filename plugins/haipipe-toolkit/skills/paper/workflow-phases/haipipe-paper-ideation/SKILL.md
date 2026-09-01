@@ -8,7 +8,7 @@ description: >-
   Trigger: ideation page, find ideas, brainstorm, novelty check, page-type
   ideation.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-31"
   group-token: "SD"
   outline:
@@ -41,23 +41,23 @@ sits in the same group as the Seed its best idea becomes, before it:
 
 ```text
 Paper-<Slug>/0-paperboard/
-└── A1-SD-story/                    the venue-free P0-P2 head (journey 0.6.0)
-    ├── SD00-ideation/              one direction, its ideas, ranked
-    ├── SD01-seed/                  what the winning idea became
-    └── SD02-roadmap/               where the campaign goes next, and what
+└── A1-Story/                    the venue-free P0-P2 head (journey 0.6.0)
+    ├── Story00-ideation/              one direction, its ideas, ranked
+    ├── Story01-seed/                  what the winning idea became
+    └── Story02-roadmap/               where the campaign goes next, and what
                                     it brought back
 ```
 
-(The tellings live next door in `A2-NA-narrative/`, one page per desk.)
+(The tellings close the same group: `Story<NN>-narrative-<desk>`, one page per desk.)
 
 **The repo precedes the Seed** (0.2.0): minting a paper's Ideation Page is
 what creates `Paper-<Slug>/` — as a git submodule immediately, per the
-scaffold rule — with only `0-paperboard/A1-SD-story/SD00-ideation/` inside.
+scaffold rule — with only `0-paperboard/A1-Story/Story00-ideation/` inside.
 The direction's name may seed the repo slug; a direction that dies leaves the
 repo standing as its own record. **A board holds exactly ONE ideation page**
 (the journey fixes the story group's roles, one each): a direction that
 genuinely forks is a new direction, so it mints its own `Paper-<Slug>/` with
-its own `SD00-ideation`, and the two pages cross-reference through the
+its own `Story00-ideation`, and the two pages cross-reference through the
 originating row's `went to`. Before 0.5.0 a fork could take "the next free SD
 number"; that reading died when the journey fixed every SD number's role.
 
@@ -97,7 +97,7 @@ blank:
 ```text
 id  idea (one line)                  novelty            pilot           verdict              went to
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-i1  <one sentence>                   HIGH · closest:    ✅ QA path      ✅ PROCEED           SD01 (here) ·
+i1  <one sentence>                   HIGH · closest:    ✅ QA path      ✅ PROCEED           Story01 (here) ·
                                      <prior>                            (JL 260823)          or Paper-<Other>
 i2  <one sentence>                   ⬜ unchecked        —               ⬜ open               —
 ```
@@ -198,7 +198,7 @@ An idea's row may name a Seed in `went to` only when all three hold:
   Recommendation field; the verdict is human, and eliminated ideas never
   leave.
 
-It is a two-way act: `went to` names the Seed — normally `SD01` beside this
+It is a two-way act: `went to` names the Seed — normally `Story01` beside this
 page, or the new repo when an idea leaves for a DIFFERENT paper — and that
 Seed's §5 first row binds THIS page back through `pagex/`. A row naming a
 Seed that does not bind back, or a Seed claiming an origin this page does not

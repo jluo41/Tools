@@ -324,12 +324,12 @@ def main():
                     gaps.extend(f"{p.name}: {m}" for m in hs_fails + hs_gaps)
                     gaps.extend(f"{p.name}: {m}" for m in check_note_quotes_page(p, plan_txt))
                     # self-consistency test ①: an owing mark nothing serves.
-                    # The PROBE receipt reports `coverage: n of n` and nothing
+                    # A SURVEY receipt reports `items: n of n` and nothing
                     # recomputed it, so a receipt could claim coverage its own
                     # disk did not have.
                     # ⚠️ REPORTED, not failed. An unserved mark on a page in
-                    # mid-PREPARE is what PROBE is FOR, so failing the sweep on
-                    # it would cry wolf on 8 pages that are simply not finished.
+                    # the OUTLINE part is what SURVEY and LAND are FOR, so failing
+                    # the sweep on it would cry wolf on 8 pages that are simply not finished.
                     # It stays a HARD exit inside that page's own OUTLINE gate
                     # (haipipe-page-outline §🚦 test ①), where it belongs.
                     gaps.extend(f"{p.name}: {m}" for m in check_coverage(p, plan_txt))
@@ -342,7 +342,7 @@ def main():
     print()
     if gaps:
         pages = len({g.split(":")[0] for g in gaps})
-        print("🔎 %d gap(s) (coverage · head and Note law) on %d page(s) still inside the PREPARE loop"
+        print("🔎 %d gap(s) (coverage · head and Note law) on %d page(s) still inside the OUTLINE part"
               % (len(gaps), pages))
         for g in gaps[:8]:
             print("   ", g)

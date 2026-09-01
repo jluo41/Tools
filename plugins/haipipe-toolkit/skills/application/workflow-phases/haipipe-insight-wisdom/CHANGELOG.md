@@ -1,4 +1,21 @@
-# haipipe-page-for-wisdom · version history
+# haipipe-insight-wisdom · version history
+
+## 1.0.2 — 2026-08-31
+
+- Let I5 contextualize one exact, CHECK-current Task Reusable Finding through
+  the workflow's pre-climbed external-parent bridge. The local W still owns
+  applicability, forbidden overreach, `serves:`, and the human-signed Design
+  Handoff; RF never becomes Design authority.
+
+## 1.0.1 — 2026-08-31
+
+- Correct gate ownership: GI5 is the human signature gate; GI6 is the later I1
+  register settlement, not a second Wisdom release gate.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-wisdom` and migrated into workflow phase I5.
+- Counsel/signing work and the reader-facing handoff now close as one two-face Folder.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

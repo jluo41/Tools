@@ -3,6 +3,55 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.0.6] — 2026-08-31
+
+- Route a settled Task Reusable Finding through an Application-owned bridge:
+  I1 registers QW, I5 contextualizes the exact PageX-bound RF and earns the
+  signed Design Handoff. Task RF never crosses directly into Design.
+- Align the agent manifest with native Insight I0-I5 and Design D0-D5
+  frontiers; Artifact is no longer advertised as an Application frontier.
+
+## [1.0.5] — 2026-08-31
+
+- Remove the last two-scope Insight Page claim: Task owns the one-page
+  consumer-neutral DIKW contract, while an Application owns separate I1-I5
+  phase Folders.
+
+## [1.0.4] — 2026-08-31
+
+- Call I2-I5's runtime authorities phase-owned Folder contracts in the `chain`
+  procedure; no Application page-type contract remains.
+
+## [1.0.3] — 2026-08-31
+
+- Remove the last active Artifact-Page/tree vocabulary: D4 owns divisions and
+  `delivery/render/` owns projections. Normalize the live PageX, Display,
+  Outline, and Probe lane addresses under the two-face Folder contract.
+
+## [1.0.2] — 2026-08-31
+
+- Make board naming one unambiguous grammar everywhere:
+  `<DataSubject>-InsightBoard` and `<DesignTopic>-DesignBoard`, optionally
+  prefixed by `A<NN>_` or `B<NN>_`. Remove the remaining kind-first examples.
+
+## [1.0.1] — 2026-08-31
+
+- Align the Design tree with audience × job × venue identity and the canonical
+  `delivery/render/` lane.
+- Design Card → Unit → Verdict now evolve one DU Folder in place; PageDown
+  leaves a minimal round receipt before the Application stops.
+
+## [1.0.0] — 2026-08-31
+
+- Application became a thin two-board door. Insight I0-I5 and Design D0-D5
+  workflow phases now own the Folder kind, Page Face, Task Face, plugins,
+  gate, closure, and handoff.
+- The independent Application `haipipe-page-for-*` family retired. Legacy
+  `page-type:` keys resolve through phase metadata; new work writes
+  `folder-kind:`.
+- Principle folded into D4 as an optional promoted role and PageX became the
+  one cross-Folder surface, including executable Folder status.
+
 ## [0.12.0] — 2026-08-21
 
 - The question register split out of Meta and BY RUNG (JL 260821): four

@@ -17,12 +17,16 @@ Usage:
 Output: <project>/eval/per_version/<tag>_<engine>_results.jsonl
 Config source: <project>/config.yaml
     labels: {values: [...], type: categorical|ordinal}
-    labeler: {engines: {claude_sdk: {model: haiku}, codex: {model: gpt-5.5}}}  # optional overrides
+    labeler: {engines: {claude_sdk: {model: haiku}, codex: {model: gpt-5.5},
+                        openai_api: {model: gpt-4o-mini}}}  # optional overrides
 """
+
+from __future__ import annotations
 
 import argparse
 import asyncio
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -107,13 +111,39 @@ async def label_codex(system_prompt: str, text: str, model: str = "gpt-5.5") -> 
     return r.content
 
 
-ENGINES = {"claude_sdk": label_claude_sdk, "codex": label_codex}
-DEFAULT_MODEL = {"claude_sdk": "haiku", "codex": "gpt-5.5"}
+async def label_openai_api(
+    system_prompt: str, text: str, model: str = "gpt-4o-mini"
+) -> str:
+    """OpenAI API-key transport; never falls back to Codex OAuth."""
+    from openai import AsyncOpenAI
+
+    client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    response = await client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": text},
+        ],
+        temperature=0,
+    )
+    return response.choices[0].message.content or ""
+
+
+ENGINES = {
+    "claude_sdk": label_claude_sdk,
+    "codex": label_codex,
+    "openai_api": label_openai_api,
+}
+DEFAULT_MODEL = {
+    "claude_sdk": "haiku",
+    "codex": "gpt-5.5",
+    "openai_api": "gpt-4o-mini",
+}
 
 
 async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
                      system_prompt: str, items: list, parse_label, model: str,
-                     concurrency: int = 4):
+                     concurrency: int = 4, output_path: Path | None = None):
     fn = ENGINES[engine]
     sem = asyncio.Semaphore(concurrency)
     results = [None] * len(items)
@@ -138,7 +168,9 @@ async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
 
     await asyncio.gather(*(one(i, it) for i, it in enumerate(items)))
 
-    out = project_dir / "eval" / "per_version" / f"{tag}_{engine}_results.jsonl"
+    out = output_path or (
+        project_dir / "eval" / "per_version" / f"{tag}_{engine}_results.jsonl"
+    )
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in results))
     n_ok = sum(1 for r in results if r["pred"] not in ("PARSE_ERROR", "ERROR"))
@@ -150,43 +182,79 @@ async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--project-dir", type=Path, required=True)
     ap.add_argument("--version", default="v01", help="guideline version = system prompt")
-    ap.add_argument("--engine", default="both", choices=["claude_sdk", "codex", "both"])
+    ap.add_argument(
+        "--engine",
+        default="both",
+        choices=["claude_sdk", "codex", "openai_api", "both"],
+    )
     ap.add_argument("--labels", default=None, help="override config labels, e.g. HIGH,LOW,NONE")
-    ap.add_argument("--input", default=None, help="jsonl of items (default: eval/anchor_set.jsonl)")
+    ap.add_argument(
+        "--input",
+        default=None,
+        help="jsonl of items (default: corpus/items.jsonl, then legacy eval/anchor_set.jsonl)",
+    )
     ap.add_argument("--tag", default=None, help="output-name prefix (default: version)")
     ap.add_argument("--concurrency", type=int, default=4)
+    ap.add_argument("--limit", type=int, default=None, help="send only the first N items")
+    ap.add_argument("--model", default=None, help="override the selected engine's model")
+    ap.add_argument("--output", type=Path, default=None, help="explicit JSONL output path")
     args = ap.parse_args()
 
     pd = args.project_dir.resolve()
     cfg = _read_config(pd)
     labels = _resolve_labels(cfg, args.labels)
     parse_label = _make_parser(labels)
+    eng_cfg = (cfg.get("labeler") or {}).get("engines") or {}
+    engines = ["claude_sdk", "codex"] if args.engine == "both" else [args.engine]
+    if "openai_api" in engines and not os.environ.get("OPENAI_API_KEY"):
+        raise SystemExit(
+            "HOLD · OPENAI_API_KEY is not configured; no item was transmitted"
+        )
 
-    src = Path(args.input) if args.input else pd / "eval" / "anchor_set.jsonl"
+    if args.input:
+        src = Path(args.input)
+    elif (pd / "corpus" / "items.jsonl").is_file():
+        src = pd / "corpus" / "items.jsonl"
+    else:
+        src = pd / "eval" / "anchor_set.jsonl"
     if not src.is_absolute():
         src = pd / src
     items = [json.loads(l) for l in src.read_text().splitlines() if l.strip()]
+    if args.limit is not None:
+        if args.limit < 1:
+            raise SystemExit("--limit must be positive")
+        items = items[: args.limit]
     for i, it in enumerate(items):
         it.setdefault("anchor_idx", i + 1)
+        it.setdefault("id", it.get("item_id", f"item-{i + 1}"))
 
-    gpath = pd / "guideline" / "versions" / f"{args.version}.md"
+    gpath = pd / "policy" / "versions" / args.version / "guideline.md"
+    if not gpath.exists():
+        gpath = pd / "guideline" / "versions" / f"{args.version}.md"
     if not gpath.exists():
         gpath = pd / "guideline" / "guideline.md"
+    if not gpath.exists():
+        raise SystemExit(f"guideline not found for {args.version}: {gpath}")
     system_prompt = gpath.read_text().strip() + _output_contract(labels)
 
     tag = args.tag or args.version
-    eng_cfg = (cfg.get("labeler") or {}).get("engines") or {}
-    engines = ["claude_sdk", "codex"] if args.engine == "both" else [args.engine]
 
     print("=" * 60)
     print(f"LLM Labeler — guideline {args.version} — labels {labels}")
     print(f"  items: {len(items)}   engines: {engines}")
     print("=" * 60)
     for eng in engines:
-        model = (eng_cfg.get(eng) or {}).get("model", DEFAULT_MODEL[eng])
+        model = args.model or (eng_cfg.get(eng) or {}).get("model") \
+            or (os.environ.get("OPENAI_MODEL") if eng == "openai_api" else None) \
+            or DEFAULT_MODEL[eng]
         print(f"\n[{eng} · {model}]")
+        out = args.output
+        if out is not None and not out.is_absolute():
+            out = pd / out
+        if out is not None and len(engines) > 1:
+            raise SystemExit("--output requires exactly one engine")
         await run_engine(pd, eng, args.version, tag, system_prompt, items, parse_label,
-                         model, args.concurrency)
+                         model, args.concurrency, out)
 
 
 if __name__ == "__main__":

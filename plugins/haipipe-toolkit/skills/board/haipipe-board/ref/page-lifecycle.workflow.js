@@ -1,6 +1,6 @@
 export const meta = {
   name: 'haipipe-page-lifecycle',
-  description: 'Route one Page through bounded OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, and independent CHECK loops.',
+  description: 'Route one Page through its OUTLINE part (OUTLINE, EVIDENCE) and DRAFT part (DRAFT, REVISE, COMPILE) with an independent CHECK.',
   phases: [
     { title: 'Produce', detail: 'a phase-scoped producer performs any phase except CHECK' },
     { title: 'Snapshot', detail: 'rebuild, run mechanical checks, and identify the exact Page version' },
@@ -35,40 +35,61 @@ const limits = parsed.limits || {}
 const maxSteps = limits.max_steps || 12
 const maxRounds = limits.max_rounds || 3
 // ── COPILOT | AUTO (260821) ──────────────────────────────────────────────
-// Not two rule sets — ONE, read two ways. The five person-reserved ticks are
-// the same in both; what changes is what happens while one is UNANSWERED:
+// Not two rule sets — ONE, read two ways. The selected plugin ticks and any
+// owner RULING are the same in both; what changes is what happens while one is
+// UNANSWERED:
 //
 //   copilot   the human half BLOCKS. A person is here; wait for them.
 //   auto      the human half DEFERS. The loop keeps moving and the debt
 //             accumulates on the ledger (`cli/pagephase.py --owed`), which is
-//             handed over at the end instead of interrupting five times.
+//             handed over together at the end instead of interrupting once
+//             per selected tick.
 //
 // This is JL's 260818 ruling made executable: "human not to approve, they to
 // break" — the RUN proceeds on `checked: ✅` alone, and a plan nobody objected
-// to is not blocked. It defers FOUR ticks and HARDENS the fifth, below.
+// to is not blocked. It defers plugin ticks and obeys the phase-owned RULING
+// policy below.
 const mode = String(parsed.mode || 'copilot').toLowerCase()
 if (!['copilot', 'auto'].includes(mode)) {
   log(`page-lifecycle: unknown mode=${mode}`)
   return { status: 'blocked', reason: `unknown mode ${mode}; use copilot | auto`, receipts: [] }
 }
 
-// AUTO DEFERS FOUR TICKS AND HARDENS THE FIFTH. `approved:` `verified` `read:`
-// and `accepted:` each have a rules file under agents/approve-rules/, so an
-// approver can establish everything around them and write `checked:`. The
-// Page Type's RULING has NONE, on purpose — deciding a page's own question is
-// the point of the page — so it is the one act auto mode may never waive. A
-// run nobody watched is exactly the run that must not certify itself.
+// OWNER RULING IS PHASE-OWNED. `page_ruling` is resolved from the Folder's
+// phase contract before dispatch: `none` adds no Page gate; `domain-gate`
+// reuses the owning workflow gate; `local` adds a Page-local gate. Missing
+// metadata means a legacy Page: preserve the historical behavior in which
+// AUTO hardens a local gate while COPILOT honors the caller's declaration.
+// Plugin ticks (`approved:` `verified` `read:` `accepted:`) remain selected by
+// actual artifacts and may be deferred onto the owed ledger.
+const pageRuling = String(parsed.page_ruling || 'legacy-default').toLowerCase()
+if (!['none', 'domain-gate', 'local', 'legacy-default'].includes(pageRuling)) {
+  log(`page-lifecycle: unknown page_ruling=${pageRuling}`)
+  return { status: 'blocked', reason: `unknown page_ruling ${pageRuling}; use none | domain-gate | local`, receipts: [] }
+}
 const declaredGate = parsed.human_gate || { required: false, rule: '' }
-const humanGate = (mode === 'auto' && !declaredGate.required)
+const phaseWaivesOwnerGate = pageRuling === 'none'
+const phaseOwnsGate = !phaseWaivesOwnerGate && (pageRuling === 'domain-gate' || pageRuling === 'local')
+const legacyAutoGate = pageRuling === 'legacy-default' && mode === 'auto'
+const hardenOwnerGate = !declaredGate.required && (phaseOwnsGate || legacyAutoGate)
+const ownerGateLabel = pageRuling === 'domain-gate'
+  ? 'phase-owned domain gate'
+  : pageRuling === 'local'
+    ? 'phase-owned local RULING'
+    : pageRuling === 'legacy-default'
+      ? 'legacy Page RULING'
+      : 'declared human gate'
+const humanGate = hardenOwnerGate
   ? { ...declaredGate, required: true,
       rule: (declaredGate.rule ? declaredGate.rule + '; ' : '') +
-            'auto mode: the Page Type RULING is a person\'s and cannot be waived' }
+            `${ownerGateLabel} cannot be waived` }
   : declaredGate
 // Written back for the SAME reason `parsed.page` is normalized above:
 // src/page_lifecycle.py asserts every receipt's human_gate.required equals the
 // packet's. A hardened gate that the echoed packet did not know about would
 // fail the audit on its own receipt.
 parsed.human_gate = humanGate
+parsed.page_ruling = pageRuling
 // Set when CHECK reopened the promise into a new DRAFT round; a reopened
 // DRAFT is never fused with REVISE (page-run-contract.md §The fused pass).
 let promiseReopened = false
@@ -77,33 +98,32 @@ if (!board || !page || !runId || !intent || !parsed.start_phase) {
   log('page-lifecycle: missing board, page, run_id, intent, or start_phase')
   return { status: 'blocked', reason: 'missing required raw-material packet field', receipts: [] }
 }
-if (!['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK'].includes(startPhase)) {
+if (startPhase === 'PROBE') startPhase = 'EVIDENCE' // retired 260901; old packets still parse
+if (!['OUTLINE', 'DRAFT', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK'].includes(startPhase)) {
   log(`page-lifecycle: unknown start_phase=${startPhase}`)
   return { status: 'blocked', reason: `unknown start_phase ${startPhase}`, receipts: [] }
 }
 
-const ROUTES = ['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK', 'CLOSE', 'HOLD']
-// THE PREPARE LOOP, 260819. OUTLINE is the head of a converging loop
-// (OUTLINE -> PROBE -> EVIDENCE and back) until the plan passes its four
-// self-consistency checks. This table REJECTED all three of those edges until
-// now, so a run obeying the current contracts routed to HOLD. COMPILE keeps its
-// row so an already-stored receipt naming it stays auditable.
+const ROUTES = ['OUTLINE', 'DRAFT', 'EVIDENCE', 'REVISE', 'COMPILE', 'CHECK', 'CLOSE', 'HOLD']
+// THE OUTLINE PART, 260901 (the 260819 PREPARE loop, re-cut when PROBE
+// retired): OUTLINE (SHAPE, SURVEY) -> EVIDENCE (LAND, EMBED) -> OUTLINE until
+// the plan and its runs agree; DRAFT is reachable from OUTLINE only. The WRITE
+// cycle (DRAFT, REVISE) may send a claim without a run back to OUTLINE. COMPILE
+// keeps its row so an already-stored receipt naming it stays auditable.
 const LEGAL = {
-  OUTLINE: ['OUTLINE', 'PROBE', 'EVIDENCE', 'DRAFT', 'HOLD'], // EVIDENCE added 260819: ② and ③ dispatch in parallel after the 🧑 LOOK
-  PROBE: ['PROBE', 'EVIDENCE', 'OUTLINE', 'HOLD'],
+  OUTLINE: ['OUTLINE', 'EVIDENCE', 'DRAFT', 'HOLD'],
   EVIDENCE: ['EVIDENCE', 'OUTLINE', 'HOLD'],
-  DRAFT: ['DRAFT', 'PROBE', 'REVISE', 'CHECK', 'HOLD'],
-  REVISE: ['REVISE', 'COMPILE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
+  DRAFT: ['DRAFT', 'OUTLINE', 'REVISE', 'CHECK', 'HOLD'],
+  REVISE: ['REVISE', 'COMPILE', 'OUTLINE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
   COMPILE: ['COMPILE', 'CHECK', 'REVISE', 'HOLD'],
-  CHECK: ['CLOSE', 'OUTLINE', 'PROBE', 'EVIDENCE', 'DRAFT', 'REVISE', 'HOLD'],
+  CHECK: ['CLOSE', 'OUTLINE', 'EVIDENCE', 'DRAFT', 'REVISE', 'HOLD'],
 }
 
 // A deterministic failure returns to the phase that owns the broken artifact.
-// In particular, PREPARE phases cannot jump to REVISE, which owns existing Page
-// prose rather than outlines, questions, or evidence bindings.
+// In particular, OUTLINE-part phases cannot jump to REVISE, which owns existing
+// Page prose rather than outlines, item rows, or evidence bindings.
 const MECHANICAL_REPAIR_ROUTE = {
   OUTLINE: 'OUTLINE',
-  PROBE: 'PROBE',
   EVIDENCE: 'EVIDENCE',
   DRAFT: 'REVISE',
   REVISE: 'REVISE',
@@ -117,7 +137,8 @@ const PRODUCER_RESULT = {
   properties: {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['ok', 'blocked', 'failed'] },
-    phase: { type: 'string', enum: ['OUTLINE', 'DRAFT', 'PROBE', 'EVIDENCE', 'REVISE', 'COMPILE'] },
+    phase: { type: 'string', enum: ['OUTLINE', 'DRAFT', 'EVIDENCE', 'REVISE', 'COMPILE'] },
+    cycle: { type: 'string', enum: ['SHAPE', 'SURVEY', 'LAND', 'EMBED', 'WRITE'] },
     route: { type: 'string', enum: ROUTES },
     reason: { type: 'string' },
     reopens_promise: { type: 'boolean' },
@@ -151,7 +172,7 @@ const REVIEW_RESULT = {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
     verdict: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
-    route: { type: 'string', enum: ['CLOSE', 'OUTLINE', 'REVISE', 'PROBE', 'EVIDENCE', 'DRAFT', 'COMPILE', 'HOLD'] },
+    route: { type: 'string', enum: ['CLOSE', 'OUTLINE', 'REVISE', 'EVIDENCE', 'DRAFT', 'COMPILE', 'HOLD'] },
     reason: { type: 'string' },
     checked_version: { type: 'string' },
     reopens_promise: { type: 'boolean' },
@@ -228,7 +249,6 @@ let producerActors = {}
 // so a roster gap degrades to the old behavior instead of a dead dispatch.
 const PRODUCER_AGENTS = {
   OUTLINE: 'haipipe-page-outline-agent',
-  PROBE: 'haipipe-page-probe-agent',
   EVIDENCE: 'haipipe-page-evidence-agent',
   DRAFT: 'haipipe-page-draft-agent',
   REVISE: 'haipipe-page-revise-agent',
@@ -241,7 +261,6 @@ const PRODUCER_AGENTS = {
 // INHERIT the session tier by carrying no entry here. The middle phases
 // execute an already-approved plan, so they run one tier down at 'high'.
 const PHASE_EFFORT = {
-  PROBE: 'high',
   EVIDENCE: 'high',
   DRAFT: 'high',
   REVISE: 'high',
@@ -258,7 +277,7 @@ for (let step = 1; step <= maxSteps; step++) {
       `Load haipipe-page, the matching Page Type, and haipipe-page-check. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
-      `Do not edit, rebuild, or cure a finding. Route to CLOSE, OUTLINE, REVISE, PROBE, EVIDENCE, DRAFT, or HOLD. ` +
+      `Do not edit, rebuild, or cure a finding. Route to CLOSE, OUTLINE, REVISE, EVIDENCE, DRAFT, or HOLD. ` +
       `DRAFT requires reopens_promise=true because purpose or Aims must change. ` +
       `CLOSE requires verdict=pass and durable evidence for every required human gate.`,
       {
@@ -344,12 +363,12 @@ for (let step = 1; step <= maxSteps; step++) {
     }
     if (route === 'CLOSE' && review.human_gate.required && (review.human_gate.status !== 'passed' || !review.human_gate.evidence.length)) {
       route = 'HOLD'
-      // In AUTO this is the DESIGNED terminal, not a failure: the loop ran end
-      // to end and stopped at the one act it may never perform. Say so, or a
-      // person reads a clean run as a broken one. `--owed` lists what is left.
+      // In AUTO this can be a DESIGNED terminal rather than a failure: the
+      // loop ran end to end and stopped at the required owner or caller gate.
+      // Say which authority owns it; `--owed` lists what is left.
       reason = mode === 'auto'
-        ? `${reason}; AUTO reached CHECK and stopped at the one gate it may never ` +
-          `waive — the Page Type RULING. Everything mechanical passed. See the ` +
+        ? `${reason}; AUTO reached CHECK and stopped at the required ` +
+          `${ownerGateLabel}. Everything mechanical passed. See the ` +
           `owed ticks: cli/pagephase.py <page-dir> --owed`
         : `${reason}; required human gate lacks durable passed evidence`
     }

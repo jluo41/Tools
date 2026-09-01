@@ -4,8 +4,8 @@ description: >-
   The design door of the Application family: one place assembling the laws for a DesignBoard that designs as BETS. A board declares reads: (which InsightBoards anything on it may cite); a Brief declares born-of: (the signed W handoff or the mandate it exists because of); a Design page proposes design cards as card.md, the first file of each thread folder under its design/ plugin (stance toward evidence, thesis, expected effect), a person releases each card, one designer realizes each released card as one artifact unit in the design/ plugin, a judge checks the unit against its compiled spec, and a person accepts each division. Ends at ACCEPTED, never ships. Use for creating or driving a DesignBoard, writing a brief, proposing or releasing design cards, realizing units, message or email or UI design, reviewing and accepting. Trigger: design board, design door, design card, release cards, design unit, message design, email design, ui design, born-of, reads whitelist, stance, /haipipe-design.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-28"
+  version: "1.0.3"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,7 +23,9 @@ haipipe-plugin-design        the THREAD: the card (§card — proposal, release 
                              grant) and the unit (spec, evidence, prospect, content,
                              kind routing, the judged: verdict line) · absorbed
                              haipipe-plugin-direction 260828
-haipipe-page-for-brief/-design/-principle   what each page IS
+haipipe-design-brief/-card/-unit/-verdict/-division/-pagedown
+                             the six phase-owned Folder contracts
+haipipe-folder               the shared two-face Folder contract
 haipipe-page-workflow        the loop every page here runs, like every page anywhere
 ```
 
@@ -47,7 +49,12 @@ Authority to cite evidence narrows at every level, and each level must sit insid
 ④ design unit evidence.md rows                 what the artifact cites · ⊆ ③
 ```
 
-A grant NAMES InsightBoard pages by path — and, since 0.5.0, may also name a Discovery QA file when a card's warrant-theory leg requires one, PROVIDED the board's `reads:` lists the discovery bank (the generate/brainstorm stances made theory a citable input, so the whitelist gained a second kind of entry) — and that is not a breach of the principle layer's monopoly: `haipipe-page-for-principle` owns the WARRANT, the reason a division may exist, while a grant is the evidence a designer may quote while composing. Warranting and granting are different acts and the chain above governs only the second.
+A grant NAMES InsightBoard pages by path — and, since 0.5.0, may also name a
+Discovery QA file when a card's warrant-theory leg requires one, PROVIDED the
+board's `reads:` lists the discovery bank. That does not replace the D4
+warrant role: `haipipe-design-division` owns WHY a division may exist, while
+a grant names evidence a designer may quote while composing. Warranting and
+granting are different acts.
 
 **A board with no `reads:` at all.** Declaring none is legal and means exactly what it says: nothing on this board may cite anything, so every card's grant is `none` and every unit's `evidence.md` records an absence. That is the correct shape for a board holding a PRE-CONTRACT artifact, one produced before this vocabulary existed, and such a board declares `mode: record` on `board.md`. Record mode relaxes the WORDS and nothing structural: a card may carry a historical `released:` rather than a person's tick, may have no stance, and a unit may sit at `state: historical-record`; files, depth, resolvable references and evidence-within-grant are still checked. Writing a `reads:` line for a source that carries no run identity would assert a grant chain that never existed, which is the one thing a record board must not do.
 
@@ -95,33 +102,38 @@ Either way `born-of:` is written and resolvable, and a subgroup-audience Design 
 ## The board, concretely
 
 ```text
-B<NN>_DesignBoard-<Topic>/
+<Topic>-DesignBoard/        canonical; optional B<NN>_ ordering prefix
 ├── board.md                 spine · close · reads:
 ├── 0-BR-brief/BR00-brief/   born-of: · opportunity · audience set · outcome+kill ·
 │                            venue scope · promise · needs (OUT to insight registers) · roster
 ├── (1 vacant)               the principle group's reserved slot; principles exist only
-│                            promoted (haipipe-page-for-principle: reuse across pages,
+│                            promoted (haipipe-design-division: reuse across pages,
 │                            or two boards in conflict)
+├── workflow/rounds/         one minimal R<NN>-pagedown/ receipt Folder per sealed round
 └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/
     ├── DS<NN>-….md          one division per landed unit: cites DU id · stance · accepted:
     ├── design/              one THREAD per folder (260828: direction/ retired):
-    │   └── DU<NN>-<slug>/   card.md is the folder's first file and birth
-    │                        certificate; the realization grows beside it after
-    │                        release (haipipe-plugin-design owns both: §card the
-    │                        card law, the rest the unit law)
-    └── outline/ · pagex/ · render/           ordinary page plugins, unchanged jobs
+    │   └── DU<NN>-<slug>/   one stable Folder evolving in place:
+    │                        design-card → design-unit → design-verdict;
+    │                        workflow/phase.yaml preserves every transition
+    └── outline/ · evidence/pagex/ · delivery/render/   selected Page capabilities
 ```
 
-## The page types this door owns
+## The Folder phases this door owns
 
 ```text
-BR00      haipipe-page-for-brief       what is BUILT and for whom · one per board
-DS<NN>    haipipe-page-for-design      one audience × job × venue · many per board
-PR<NN>    haipipe-page-for-principle   because <W>, do <move>, within <rail> ·
-                                       promoted only, hence the vacant group above
+D0  haipipe-design-brief       frame one board
+D1  haipipe-design-card        state and release/kill one bet
+D2  haipipe-design-unit        realize one released card
+D3  haipipe-design-verdict     judge realization and prospect independently
+D4  haipipe-design-division    render; accept or emit; promoted Principle lives here
+D5  haipipe-design-pagedown    make grown pages read true and seal the round
 ```
 
-THREE, and no others: a page on a DesignBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/` beside the insight door's six, so the folder cannot say who owns what and this roster is where the design half is named. Versions are never restated here — `/skill-set-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
+These are workflow phases, not independent configuration/Page-Type skills.
+Every phase owns both faces and its selected plugins. Legacy `page-type: brief`
+resolves to D0 and `page-type: design` resolves to D4. Principle has no
+independent phase: D4 promotes it only on reuse/conflict, and D5 rereads it.
 
 ## Verbs
 
@@ -132,19 +144,23 @@ design              create/resume one DS page (audience × job × venue, per the
 diverge | ideate    build or extend the DS page's ideation SLATE: goal, then many
                     candidate moves, evidence-fed and theory-fed both · judged
                     loosely, most die unminted
-direction | cards   mint the few slate rows worth wagering as cards at `proposed`
+cards | bet         mint the few slate rows worth wagering as cards at `proposed`
                     on one DS page · NEVER release them
 release | kill      RECORD a person's decision on named cards · never decide it
 realize | compose   for each released, unlanded card: dispatch one designer
                     (agents/haipipe-designer-agent) · packet carries only the grant ·
                     inline fallback runs the same contract serially when agents are unavailable
 judge               check each landed unit against its spec's acceptance list + the ⊆ chain
-render              project content/ through the page's render/ plugin
-accept              record the person's per-division accepted: row · the last act
-workflow | run      drive the loop: propose → ✋release → realize → judge → ✋accept · STOP
+render              project content/ through the page's delivery/render/ plugin
+accept              record the person's per-division accepted: row · last design decision;
+                    PageDown/GD6 still seals the round
+workflow | run      drive: propose → ✋release → realize → judge → ✋accept → PageDown/GD6 · STOP
 ```
 
-The two ✋ gates never have an auto mode: releasing a card and accepting a division are a person's, and every page dispatched into `haipipe-page-workflow` pins `mode: copilot` for the same reason the application workflow does.
+The two Design cross-phase ✋ gates never have an auto mode: releasing a card
+and accepting a division are a person's. Page-local outline/read/verified ticks
+remain nested authoring controls rather than extra GD transitions. Every page
+dispatched into `haipipe-page-workflow` pins `mode: copilot`.
 
 ## The journey, mapped onto existing machinery
 

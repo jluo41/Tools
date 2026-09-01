@@ -2,6 +2,16 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
+- 0.10.3 (260831): point blanket-release evidence at the owning DS Folder's
+  canonical `outline/<DS-stem>-log.md` record.
+
+- 0.10.2 (260831): acceptance has one authority, the parent D4 division row;
+  Unit README stops at `judged` and legacy `accepted@v<N>` is read-only.
+  `workflow/` phase metadata is control material, not premature realization.
+
+- 0.10.1 (260831): align visible projections with the Render plugin's
+  canonical `delivery/render/` lane.
+
 - 0.10.0 (JL 260828, "要不然谁能知道，对吧？谁能看得出来呀？"): every pool entry gains a `from:` line beside `trying:` — provenance as an honesty label, never a warrant: `insight · <row id>` / `knowledge · <mechanism>` / `intuition`, composable with `×`, and intuition ALWAYS carries its information regime (`brief-only` | `informed`) because the two intuitions are different things (JL: "啥都没有的时候你有一种 intuition，看了一部分东西之后再有 intuition，效果可能完全不一样"). Derivable from converge's finalist-to-ancestor map + the unit's regime; judge's pool checks go five → six (a `from: insight` must name a row the grant reaches); pre-260828 pools backfill from their own ideation records as maintenance, not re-judged. The DU16 (brief-only) vs DU17/18 (informed) pair on B00 is the first natural experiment for the research question the line opens.
 - 0.9.0 (JL 260828, "我们这个 plug-in direction 是不是也要删掉了呀"): absorbed haipipe-plugin-direction whole and that plugin was DELETED, git the only copy (the retired-page-type precedent). One folder, one law: the card grammar, release gate and five card laws now live here as §card; the three stale spots the old file carried into 0.7.0 (a direction/ storage tree, DR<NN> numbering, "check.py reads direction/DR*.md") were corrected in transit. The card laws are unchanged in substance and keep their numbers as "card law 1-5"; the unit laws are now "unit law 1-3". haipipe-plugin-direction's own version history (0.1.0-0.7.0) lives in git at its deletion commit.
 - 0.8.0 (JL 260828, the one-thread-one-folder merge): card.md joins the unit anatomy as the folder's first file; README loses `direction:`; the designer's only card write is the released→landed state flip; checker rules unit-no-direction/-ghost retired for unit-no-card + unit-realized-before-release. See haipipe-plugin-direction 0.7.0 for the card side.

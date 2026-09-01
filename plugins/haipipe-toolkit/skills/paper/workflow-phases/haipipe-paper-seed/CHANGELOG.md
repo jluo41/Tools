@@ -1,3 +1,6 @@
+## 0.6.1 · 260831
+- Home renamed A1-Story/Story01-seed (SD/NA retired, JL 260831); group tree gains the narrative pages that close the group.
+
 ## 0.6.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):

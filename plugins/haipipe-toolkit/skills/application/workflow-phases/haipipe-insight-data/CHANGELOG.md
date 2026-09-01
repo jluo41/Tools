@@ -1,4 +1,27 @@
-# haipipe-page-for-data · version history
+# haipipe-insight-data · version history
+
+## 1.0.3 — 2026-09-01
+
+- Rename the optional presenter from Execution to Runs; Execute remains with
+  the owning workflow and the plugin exposes declared Run/Result attempts.
+
+## 1.0.2 — 2026-09-01
+
+- Rename optional local Code to Execution. A declared Run/Result derivation
+  selects it; reusable scripts remain optional and confer no evidence authority.
+
+## 1.0.1 — 2026-08-31
+
+- Separate PageX relationship/status from Probe evidence authority.
+- Require every Task/Discovery-derived value to bind an accepted QA answer
+  backed by a named run, including values from already-linked Folders.
+- Limit local Code to non-authoritative validation/reshaping; displayed numbers
+  still cross the page-serving collection job.
+
+## 1.0.0 — 2026-08-31
+
+- Renamed to `haipipe-insight-data` and migrated into workflow phase I2.
+- Added explicit Page Face, Task Face, plugin selection, GI2, and handoff.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

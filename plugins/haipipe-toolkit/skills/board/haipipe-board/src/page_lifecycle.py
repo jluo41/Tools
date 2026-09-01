@@ -9,41 +9,38 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-# PROBE is a live phase again: it raises and dispatches the card, while
-# EVIDENCE lands what comes back. Receipts written during the short 260816
-# rename used `phase: PROBE` for the widened EVIDENCE phase; `_legacy_probe`
-# below recognizes that old shape (PROBE → REVISE) without sacrificing the new
-# phase for current runs.
-PHASE_ALIASES = {}
-PHASES = {"OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE", "CHECK"}
+# PROBE retired 260901 (JL: the item table replaced the MATCH half, LAND's
+# outbound card the dispatch half). A stored receipt naming PROBE reads as
+# EVIDENCE through PHASE_ALIASES, so every pre-260901 run stays auditable;
+# the short 260816 PROBE-as-EVIDENCE shape (PROBE → REVISE) collapses the
+# same way, so `_legacy_probe` below is now only a flag for the trace note.
+PHASE_ALIASES = {"PROBE": "EVIDENCE"}
+PHASES = {"OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK"}
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
-# THE PREPARE LOOP, 260819. `haipipe-page-outline` 0.3.0 made OUTLINE the head of
-# a converging loop: OUTLINE -> PROBE -> EVIDENCE and back, until the plan passes
-# its four self-consistency checks. Until this table was updated it REJECTED all
-# three of those edges, so a run obeying the current contracts audited as an
-# illegal route. Found by the display agent rebuilding QPw00-Display2, which
-# derived R from the contracts and then compared.
+PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
+# THE OUTLINE PART, 260901 (the 260819 PREPARE loop, renamed and re-cut):
+# OUTLINE (SHAPE, SURVEY) -> EVIDENCE (LAND, EMBED) -> OUTLINE, until the
+# plan and its runs agree; the one door out is OUTLINE's approved: tick with
+# every make-row folded, so DRAFT is reachable from OUTLINE only. DRAFT and
+# REVISE (the WRITE cycle) may send a claim without a run back to OUTLINE
+# (SURVEY) and a stale row back to EVIDENCE. CHECK may route anywhere.
 #
-# The one door out of PREPARE is OUTLINE's gate, which is the fourth law the
-# figure now prints: DRAFT is in neither R(PROBE) nor R(EVIDENCE).
-#
-# COMPILE keeps its row. It is declared as phase 6 and drawn in the loop, it has
-# no contract of its own and is folded into REVISE (haipipe-page-revise 0.5.0),
-# and a stored receipt may still name it. Removing the row would make an old
-# receipt unauditable, which is the opposite of what this table is for.
+# COMPILE keeps its row. It is folded into REVISE (haipipe-page-revise 0.5.0),
+# has no contract of its own, and a stored receipt may still name it.
+# Removing the row would make an old receipt unauditable, which is the
+# opposite of what this table is for.
 LEGAL_ROUTES = {
-    "OUTLINE": {"OUTLINE", "PROBE", "EVIDENCE", "DRAFT", "HOLD"},  # EVIDENCE added 260819: after the 🧑 LOOK, ② and ③ dispatch in parallel
-    "PROBE": {"PROBE", "EVIDENCE", "OUTLINE", "HOLD"},
+    "OUTLINE": {"OUTLINE", "EVIDENCE", "DRAFT", "HOLD"},
     "EVIDENCE": {"EVIDENCE", "OUTLINE", "HOLD"},
-    "DRAFT": {"DRAFT", "PROBE", "REVISE", "CHECK", "HOLD"},
-    "REVISE": {"REVISE", "COMPILE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
+    "DRAFT": {"DRAFT", "OUTLINE", "REVISE", "CHECK", "HOLD"},
+    "REVISE": {"REVISE", "COMPILE", "OUTLINE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
     "COMPILE": {"COMPILE", "CHECK", "REVISE", "HOLD"},
-    "CHECK": {"CLOSE", "OUTLINE", "PROBE", "EVIDENCE", "DRAFT", "REVISE", "HOLD"},
+    "CHECK": {"CLOSE", "OUTLINE", "EVIDENCE", "DRAFT", "REVISE", "HOLD"},
 }
 
 
 def phase_token(value: Any) -> Any:
-    """Normalize one phase or route token without collapsing live PROBE."""
+    """Normalize one phase or route token; PROBE reads as EVIDENCE (260901)."""
     if isinstance(value, str):
         return PHASE_ALIASES.get(value.strip().upper(), value.strip().upper())
     return value
@@ -293,6 +290,29 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
     declared_gate_required = (
         packet_gate.get("required") is True if isinstance(packet_gate, dict) else False
     )
+    page_ruling_value = packet.get("page_ruling", "legacy-default")
+    page_ruling = (
+        page_ruling_value.strip().lower()
+        if isinstance(page_ruling_value, str)
+        else ""
+    )
+    if page_ruling not in PAGE_RULINGS:
+        findings.append(
+            _finding(
+                "unknown-page-ruling",
+                "run",
+                "packet.page_ruling must be none, domain-gate, local, or "
+                "legacy-default for an older packet",
+            )
+        )
+    elif page_ruling in {"domain-gate", "local"} and not declared_gate_required:
+        findings.append(
+            _finding(
+                "owner-gate-not-required",
+                "run",
+                f"packet.page_ruling={page_ruling} requires human_gate.required=true",
+            )
+        )
 
     producers: dict[str, str] = {}
     previous: dict[str, Any] | None = None
@@ -452,7 +472,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                     )
                 )
             if verdict == "revise" and route not in {
-                "OUTLINE", "DRAFT", "PROBE", "EVIDENCE", "REVISE", "COMPILE"
+                "OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE"
             }:
                 findings.append(
                     _finding(
@@ -518,17 +538,17 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         if previous is not None:
             previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
             previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
-            # THE PREPARE PAUSE, 260819. A HOLD from OUTLINE/PROBE/EVIDENCE
+            # THE OUTLINE-PART PAUSE, 260819. A HOLD from OUTLINE/EVIDENCE
             # while the packet's human gate is required and the step's gate is
             # still open is a PAUSE between passes of one converging round,
             # not a terminal: the ruled loop appends one receipt per pass, and
             # 10 of tonight's 12 legal passes audited as receipt-after-terminal
             # before this rule existed. The next phase must be legal FROM the
             # paused phase (phase-repeat included). CLOSE stays terminal, and
-            # a HOLD outside PREPARE or with a settled gate stays terminal.
+            # a HOLD outside the OUTLINE part or with a settled gate stays terminal.
             prepare_pause = (
                 previous_route == "HOLD"
-                and previous_phase in {"OUTLINE", "PROBE", "EVIDENCE"}
+                and previous_phase in {"OUTLINE", "EVIDENCE"}
                 and declared_gate_required
                 and str(_gate(previous).get("status", "")) in {"pending", "waiting"}
             )

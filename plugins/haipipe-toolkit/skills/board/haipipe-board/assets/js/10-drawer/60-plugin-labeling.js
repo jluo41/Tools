@@ -1,4 +1,4 @@
-/* 🏷 Labeling · one right-pane plugin for a page-local subjective-label job.
+/* 🏷 Labeling · one right-pane plugin for a Page's optional subjective-label job.
  *
  * The retired version of this file was a bottom workflow inferred from
  * `## States` and offered /label-* commands.  The 0.5 family made canonical
@@ -13,26 +13,35 @@
     return (page && page.getAttribute('data-file')) || '';
   }
 
-  function isRunPage(page, type) {
+  function isSurfacePage(page) {
     var file = pageFile(page);
-    return type === 'labeling' && !!file && !/(?:^|\/)S-Label-Dash\.md$/.test(file);
+    /* Plugin availability belongs to the Page/Folder, not to whether a job
+       already exists or whether the Page chose the specialized labeling Page
+       grammar. The control dashboard is the only Page with no per-Page lane. */
+    return !!file && !/(?:^|\/)S-Label-Dash\.md$/.test(file);
   }
 
   function board() {
     try { return boardPath(); } catch (e) { return location.pathname; }
   }
 
+  /* Studio binds Chat to the CURRENT generated Page URL, not board.md.  Keep
+     that exact address in the presenter request so live/labeling.py can frame
+     the same `?pane=chat` document Studio uses. */
+  function pageURL() { return location.pathname; }
+
   function url(page) {
     var file = pageFile(page);
     if (!file) return '';
     return '/_board/labeling?path=' + encodeURIComponent(board())
-         + '&file=' + encodeURIComponent(file);
+         + '&file=' + encodeURIComponent(file)
+         + '&page=' + encodeURIComponent(pageURL());
   }
 
   function write(page, cb, err) {
     fetch('/_board/labeling', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: board(), file: pageFile(page) })
+      body: JSON.stringify({ path: board(), file: pageFile(page), page: pageURL() })
     }).then(function (r) { return r.json(); })
       .then(function (j) {
         if (!j.ok) { if (err) err(j.err || 'labeling surface failed'); return; }
@@ -47,7 +56,7 @@
       label: '🏷 Labeling',
       hint: 'canonical frontier and gates above · Studio Chat below',
       menu: 'plugin',
-      applies: isRunPage,
+      applies: isSurfacePage,
       open: function (page) {
         var u = url(page);
         if (u) window.open(u, '_blank', 'noopener');

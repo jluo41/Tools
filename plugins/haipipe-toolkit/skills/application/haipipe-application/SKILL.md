@@ -1,28 +1,35 @@
 ---
 name: haipipe-application
 description: >-
-  One door for building an Application as TWO boards. The InsightBoard is headed by one Meta Page saying what data exists plus four question registers saying what is asked of each rung, and holds D/I/K/W chain pages that turn Task-backed evidence into answers and a Design Handoff. The DesignBoard is headed by one Brief Page saying what is being built and for whom, and holds audience/job Design Pages that consume settled handoffs through PageX and never Probe. The Application ENDS AT ACCEPTED: building, shipping, running the experiment, and collecting data are task-layer work. Use for application setup or status, data meta, raising or checking questions, DIKW for a design need, message/intervention design, SMS/email/dashboard/checklist/report design, review, acceptance, or retargeting. Trigger: application, InsightBoard, DesignBoard, data meta, source inventory, question register, raise a question, insight need, design page, message design, artifact, SMS, email, dashboard, checklist, report, review, accept, retarget, PageX insight, /haipipe-application.
+  One thin door over an Application's InsightBoard and DesignBoard. Their
+  native I0-I5 and D0-D5 workflow phases own each Folder kind, both Folder
+  faces, plugin profile, gates, and handoffs. The Application door owns only
+  cross-board routing and ends at accepted Design. Trigger: application,
+  InsightBoard, DesignBoard, Folder phase, data meta, question, DIKW, Brief,
+  design, review, accept, retarget, PageX crossing, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.18.0"
-  last_updated: "2026-08-27"
+  version: "1.0.6"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-application · understand on one board, design on the other
 
-Read `PREFERENCES.md` first. This skill is the only user-facing Application door. Resolve the Application root, select one owning Page, and hand it to `haipipe-page` with the matching Page Type and current Page phase.
+Read `PREFERENCES.md` first. This skill is the only user-facing Application
+door. Load `haipipe-folder`, resolve the owning Board/workflow phase, then let
+that phase own the Folder's Page Face, Task Face, plugins, and closure.
 
 ## Architecture
 
 ```text
-Task / Discovery evidence
-          │ Probe · Task authority
+Task / Discovery Folders
+          │ PageX whole-Folder link · Probe when evidence is missing
           ▼
 🔎 InsightBoard                            🎨 DesignBoard
-Meta → chain pages      ──── PageX ────▶   Brief → Design Page(s) → ✅ accepted
+I0 Meta → I1-I5 Folders ──── PageX ────▶  D0 Brief → D1-D5 Folders → ✅ accepted
         D→I→K→W                                     R<n> divisions
-        + Design Handoff                            2-artifacts/ projections
+        + Design Handoff                            D4 divisions + delivery/render/
 ```
 
 Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how a chain page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
@@ -38,30 +45,23 @@ One board carrying both halves made one Brief Page do two jobs and gave two diff
 
 PageX crosses boards unchanged, because it binds by path rather than by board.
 
-## Page Types
+## Phase-owned Folder kinds
 
 ```text
-🔎 InsightBoard · framing asks, the chain answers, one page per LEVEL
-page-type: meta         exactly one · sources, grain, freshness · holds NO question
-page-type: question     exactly four · MT01-MT04, one register per rung · QD/QI/QK/QW
-                        ids · asks and tracks, never concludes · no probe/, no display/
-page-type: data         D · observed, run-bound, uninterpreted
-page-type: information  I · rates and contrasts derived from named D rows
-page-type: knowledge    K · a proposition with strength, rivals, boundary
-page-type: wisdom       W · counsel + the Design Handoff · the ONLY bindable level
+🔎 haipipe-insight-workflow
+I0 Meta · I1 Question · I2 Data · I3 Information · I4 Knowledge · I5 Wisdom
 
-🎨 DesignBoard · frame, warrant, compose
-page-type: brief        exactly one · outcome, venue scope, audience SET, needs
-page-type: principle    P · because <W>, do <move>, within <rail> · PROMOTED
-                        only · the WARRANT crossing when it exists; a direction
-                        card GRANTS evidence by path, a different act
-page-type: design       DS · one audience × job × venue · units as divisions
-
-`page-type: insight` is TASK-ONLY: the consumer-neutral whole chain in one page on
-the Task/Insights Board, which is where dataset-first exploration lives.
+🎨 haipipe-design-workflow
+D0 Brief · D1 Card · D2 Unit · D3 Verdict · D4 Division · D5 PageDown
 ```
 
-`page-type: intervention` and `page-type: artifact` were retired on 260820. Intervention was renamed to `design` because one concept wearing two words is what made readers ask whether Design and Artifact were the same thing. Artifact was absorbed: five of its six Content roles already existed inside a Design Page's unit division, and the sixth, acceptance, is now a per-division row.
+These twelve phase skills live under `application/workflow-phases/`. Each owns
+one Folder kind's Page Face, Task Face, plugin profile, gate, and handoff.
+`page-type: meta|question|data|information|knowledge|wisdom|brief|design`
+remains a runtime compatibility lookup only. Promoted Principle is an optional
+D4 Folder role reviewed again at D5, not an independent Page Type or phase.
+`page-type: insight` remains Task-only for the consumer-neutral Task/Insights
+Board.
 
 ## Verbs
 
@@ -69,21 +69,20 @@ the Task/Insights Board, which is where dataset-first exploration lives.
 enter | status | board         open or scaffold the Application through fn/enter.md
 meta | data | sources          create/resume the one Meta Page through fn/meta.md
 question | ask | queue         register one question on the rung register it faces,
-                               MT01-MT04 · haipipe-page-for-question
+                               MT01-MT04 · haipipe-insight-question
 chain | understand | DIKW      open or extend one D→I→K→W chain through fn/chain.md
 brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
 design | intervention | message
-  | arc | components           create/resume one Design Page through fn/design.md
-artifact | project | render    generate a versioned projection through fn/render.md
+  | arc | components           create/resume one Design Folder through fn/design.md
+render | project              generate a versioned projection through fn/render.md;
+                              `artifact` is a legacy command alias, never a Folder kind
 review | audit | check         CHECK selected Design versions and their trace
 accept                         record the per-division acceptance row · the last act
 retarget                       re-pin venue or audience and reopen dependent Design
 feedback | digest              run the existing family feedback procedures
-workflow | run | drive         drive the whole Application forward through the
-                               sibling RUN head, haipipe-application-workflow:
-                               five phases in two lanes, four blocking human gates.
-                               Phases are named by their authority page: Meta,
-                               Chain, Wisdom · Brief, Design
+workflow | run | drive         cross the two boards through
+                               haipipe-application-workflow; each board's
+                               interior phases stay owned by its own workflow
 
 insight-side verbs (meta · question · chain · partition · verdict · settle ·
 handoff · check) are OWNED by the sibling door /haipipe-insight since 260827: the
@@ -123,11 +122,11 @@ A board's folder name SAYS ITS SUBJECT (JL 260820). `InsightBoard/` and `DesignB
 
 The subject is PascalCase; the suffix is the literal kind, so `ls *InsightBoard*` finds them all. The two subjects are named independently, which is what makes the count free: an Application may hold several InsightBoards when it reads distinct data, several DesignBoards when it designs for distinct topics, and any DesignBoard may PageX-bind any InsightBoard. Two boards is the common case, not the limit. No date suffix: the `<NN>-<topic>-<YYMMDD>` rule governs boards newly opened under `diagram/`, and these are runtime boards.
 
-A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821, e.g. `tasks/D01_*`, `discoveries/S01_*`) may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_InsightBoard-SMSR2Full`, `B01_DesignBoard-RefillFraming`. The prefix is project-local ordering only; the canonical shape stays `<Kind>-<Subject>`, and the letter never appears inside pages.
+A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821, e.g. `tasks/D01_*`, `discoveries/S01_*`) may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_SMSR2Full-InsightBoard`, `B01_RefillFraming-DesignBoard`. The prefix is project-local ordering only; the canonical shape stays `<Subject>-<Kind>`, and the letter never appears inside pages.
 
 ```text
 <application-root>/
-├── InsightBoard-<Cohort>/                e.g. InsightBoard-SMSR2Full
+├── <Cohort>-InsightBoard/                e.g. SMSR2Full-InsightBoard
 │   ├── board.md
 │   ├── 0-MT-meta/
 │   │   ├── MT00-meta/                    sources · grain · freshness · NO question
@@ -139,15 +138,16 @@ A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821
 │   ├── 2-I-information/I<NN>-<slug>/     derived · cites D
 │   ├── 3-K-knowledge/K<NN>-<slug>/       claimed · cites I
 │   └── 4-W-wisdom/W<NN>-<slug>/          counsel + handoff · cites K
-└── DesignBoard-<Program>/                e.g. DesignBoard-RefillFraming
+└── <Program>-DesignBoard/                e.g. RefillFraming-DesignBoard
     ├── board.md                          reads: · the evidence whitelist
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
-    ├── 1-P-principle/P<NN>-<slug>/        cites W · the only WARRANT crossing
-    └── 2-DS-design/DS<NN>-<slug>/         units as divisions
-        ├── direction/                    design cards · the bet, before any copy
-        ├── design/                       artifact units · one per released card
-        ├── render/                       the unit as the recipient sees it
-        └── pagex/ outline/ display/
+    ├── 1-P-principle/P<NN>-<slug>/        optional subordinate D4 promotion
+    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/  units as divisions
+        ├── design/                       card + unit · one thread per Folder
+        ├── delivery/render/              the unit as the recipient sees it
+        ├── evidence/pagex/              cross-Folder relationships
+        ├── evidence/display/            Page-owned displays, when selected
+        └── outline/                     human plan and decision record
 ```
 
 The InsightBoard tree above is the RUNG-MAJOR layout; the next section gives the partition-major alternative, and a page's path depends on which one its board uses.
@@ -166,21 +166,25 @@ The tree above is the default, RUNG-MAJOR: groups are the four rungs, and a subg
                           (index-free: letters sort last · legacy: 9-X-cross/)
 ```
 
-Page id = partition letter + rung letter + NN (`BK01` is partition B, Knowledge, first page); page types are unchanged. The grammar's single source is `ref/partition.md`: the mirror rule, the MT00 partition register, the shared-threshold rule, the X-only comparison law, and the SPLIT verdict as the only birth certificate a per-partition child board may cite. The choice of layout is made once, at scaffold.
+Page id = partition letter + rung letter + NN (`BK01` is partition B,
+Knowledge, first page); phase ownership is unchanged. The grammar's single
+source is `ref/partition.md`: the mirror rule, MT00 partition register,
+shared-threshold rule, X-only comparison law, and SPLIT verdict.
 
-Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each rung page owns its own bounded `probe/`; Meta, the registers, Brief, and Design Pages own none.
+Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each rung page owns its own bounded `evidence/probe/`; Meta, the registers, Brief, and Design Pages own none.
 
 ## The two authorities
 
 ```text
 InsightBoard
-  may PROBE Task/Discovery under Task-backed evidence authority
-  (the rung contracts inherit haipipe-page-for-task; page-type: insight itself is task-only)
+  may PROBE Task/Discovery under each rung phase's Task Face
+  (page-type: insight itself remains task-only)
   owns D→I→K and application-contextual W
 
 DesignBoard
   may use PageX only
-  owns selection, design principles, message roles, concrete content, and acceptance
+  owns selection, inline/promoted warrants, message roles, concrete content,
+  and acceptance
 ```
 
 The law: **Design Pages own no Probe; rung pages may Probe under Task-backed evidence authority.**
@@ -200,8 +204,9 @@ D→I→K→W chain pages
 Brief
   states the opportunity, audience, outcome, venue scope, and the needs it raises
     ↓
-Design Page(s)
-  translate handoffs into principles, message architecture, R<n> divisions, and rails
+Design Folder(s)
+  translate handoffs into cards, judged units, optional promoted warrants,
+  R<n> divisions, and rails
     ↓
 Review → ✅ accepted · STOP
 ```
@@ -221,15 +226,29 @@ a dataset lands, no Brief yet
         │
         │  ... later, a Brief raises a need this already answers
         ▼
-   PageX binding                  borrowed straight into the Application
+🔎 Application I1 QW              registers the need and exact RF version
         │
+        ▼ PageX · pre-climbed external parent
+🔎 Application I5 W               contextual counsel + forbidden overreach
+        │ ✋ signed local Design Handoff · then GI6
         ▼
-🎨 Design Page                    no local chain page needed at all
+🎨 Design Page                    binds only the signed Application W
 ```
 
-The chain verb (`fn/chain.md`, step 2) searches the Task/Insights Board FIRST and binds a settled `scope: task` Page rather than reopening the same question locally. A local chain is for what that search does not answer: the reading that only makes sense for this audience, this venue, this promise.
+The chain verb (`fn/chain.md`, step 2) searches the Task/Insights Board FIRST
+and treats a settled `scope: task`, Wisdom-targeted RF as a **pre-climbed
+external parent** rather than recomputing D/I/K locally. The Application still
+owns the commission and consequence: I1 registers one QW row, a local I5 W
+Folder PageX-binds the exact RF version, contextualizes it, and earns a human
+signature before GI6. A Task RF is consumer-neutral evidence, never a signed
+Design Handoff and never direct Design authority. The normal local I2-I5 climb
+remains the route when the Task Page is incomplete, stale, below Wisdom, or
+does not answer the registered need.
 
-The two scopes share one contract and one key, `page-type: insight`, with `scope:` picking the instance. Read `haipipe-page-for-insight` before writing either.
+These routes do not share a Page Type. Task owns the one-page
+`haipipe-page-for-insight` contract. An Application owns an I1 Question
+register plus separate I2 Data, I3 Information, I4 Knowledge, and I5 Wisdom
+Folder contracts under `haipipe-insight-workflow`.
 
 ## Insight-to-design handoff
 
@@ -237,6 +256,9 @@ A chain keeps D/I/K evidence-led and lets W become Application-contextual only a
 
 ```text
 Application Need → neutral Question → D → I → K → contextual W → Design Handoff
+                                     or
+Application Need → QW → exact Task RF → contextual W → Design Handoff
+                         pre-climbed      local + signed
 ```
 
 The Design Handoff names finding, strength, boundary, source versions, design consequence, forbidden overreach, and the Brief/Design need it serves. It does not write final message copy.
@@ -264,10 +286,10 @@ Acceptance is written on the division, not the page, so one unit may be accepted
 ✅ accepted ──▶ 🔧 shipped elsewhere
                       │
                       ▼
-                🧪 task folder · Plan → Build → Execute → Report
+                🧪 executable Folder · Plan → Build → Execute → Report
                       │
                       ▼
-                🔎 chain page refreshes · handoff v2
+                🔎 Insight Folder refreshes · handoff v2
                       │  PageX binding goes stale
                       ▼
                 🎨 Design division reopens
@@ -310,9 +332,9 @@ fn/enter.md             open an Application, or scaffold both boards from nothin
 fn/meta.md              Meta Page create/resume and the Source Inventory
 fn/chain.md             open or extend one D→I→K→W chain for one question
 fn/brief.md             Brief create/resume and the needs it raises
-fn/principle.md         one because/do/within rule, citing one W handoff
-fn/design.md            one audience/job/venue design, units as divisions
-fn/render.md            render a unit through the page's render/ plugin
+fn/principle.md         compatibility verb for an optional subordinate D4 warrant
+fn/design.md            one audience/job/venue Design Folder, units as divisions
+fn/render.md            render a unit through the page's delivery/render/ plugin
 fn/feedback.md          family feedback
 fn/digest.md            session feedback digestion
 

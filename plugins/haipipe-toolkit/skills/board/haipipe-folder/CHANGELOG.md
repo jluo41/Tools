@@ -1,0 +1,44 @@
+# Changelog
+
+## 0.3.0 · 2026-09-01
+
+- Rename the optional presenter from Execution to Runs; Execute remains a
+  workflow action and Runs presents plural durable attempts.
+- Define Folder-local and Job-backed Task Run/Result mappings as two physical
+  dialects of one logical address; never copy Job Results under the Task Page.
+
+## 0.2.0 · 2026-09-01
+
+- Replace the optional Code capability with Execution: exact `runs/` and
+  `results/` pairs define the capability, while `scripts/` and config are
+  optional implementation material.
+- Keep the Task Face universal and Execution optional; the presenter owns no
+  lifecycle or closure authority.
+
+## 0.1.3 · 2026-08-31
+
+- Make `workflow/phase.yaml current.folder-kind` the runtime authority for an
+  in-place Folder; malformed current state and conflicting Page frontmatter
+  block routing instead of falling back.
+
+## 0.1.2 · 2026-08-31
+
+- Give `workflow/phase.yaml` a concrete current/history grammar and classify it
+  as control metadata that does not violate phase material-purity gates.
+- Add required `page_ruling: none | domain-gate | local` metadata so the owning
+  phase, not the generic Page loop, determines whether CHECK owes a person
+  RULING and whether it reuses a domain gate.
+
+## 0.1.1 · 2026-08-31
+
+- Define in-place phase evolution: stable Folder address, one current
+  `folder-kind`, and append-only `workflow/phase.yaml` history.
+- Require cross-Folder audit phases to leave a minimal addressable receipt
+  Folder instead of existing only as an unrecorded verb.
+
+## 0.1.0 · 2026-08-31
+
+- Establish Folder as the neutral work object with Page and Task faces.
+- Place Folder-kind semantics in domain workflow phases rather than Page-Type skills.
+- Define the phase metadata/section contract and legacy `page-type:` bridge.
+- Retire the architectural need for a separate Task plugin; PageX binds Folders.

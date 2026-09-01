@@ -1,3 +1,9 @@
+## 0.6.2 · 260831
+- Runtime home tree letters per group: Ba-Main · Bb-Appendix · Bc-Round; later desk continues at Bd (JL 260831).
+
+## 0.6.1 · 260831
+- Runtime home tree shows the three desk groups (-Main/-Appendix/-Round, JL 260831).
+
 ## 0.6.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):

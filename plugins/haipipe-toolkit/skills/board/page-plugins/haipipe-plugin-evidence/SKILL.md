@@ -8,7 +8,7 @@ description: >-
   evidence plugin, evidence tab, show the evidence, citations cards values
   displays together, evidence bundle tab, /haipipe-plugin-evidence.
 metadata:
-  version: "0.2.0"
+  version: "0.3.2"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -24,10 +24,13 @@ takes the same shape one level up.
 
 ```text
 this file     the 🧾 Evidence tab: segments, the per-bullet join, the counts
-the lanes     bibex/ (haipipe-plugin-bibex) · probe/ + pagex/ (haipipe-plugin-probe)
-              · ## Values blocks (haipipe-plugin-value) · display/
+the lanes     evidence/bibex/ (haipipe-plugin-bibex) · evidence/probe/
+              (haipipe-plugin-probe) · evidence/pagex/
+              (haipipe-plugin-pagex) · ## Values blocks
+              (haipipe-plugin-value) · evidence/display/
               (haipipe-plugin-display) — storage, writers, walls, gates UNCHANGED
-the phase     ③ EVIDENCE (haipipe-page-evidence) lands what this tab shows
+the cycles    LAND and EMBED (haipipe-page-evidence) land and fold what this tab shows;
+              the item table it joins is SURVEY's (haipipe-plugin-outline ref/item-table.md)
 the fields    the page type's evidence: record names what is OWED
               (haipipe-page/ref/type-registry.md)
 ```
@@ -58,8 +61,8 @@ are form segments inside one 💬 Chat tab). It ranks after 🧭 Outline and
 ├── 🖼 Displays      the unit strip, as haipipe-plugin-display §surface
 └── 🔗 Pagex         the borrow view, as haipipe-plugin-pagex §surface — its
                      pens ride inside the saved view, so the standalone 🔗
-                     strip row folded in here (260831); the task lane's read
-                     arrives here when a pagex card learns a task unit's status
+                     strip row folded in here; exact-file cards show evidence
+                     scope and whole-Folder cards show Page/Task Face status
 ```
 
 - **By bullet is the default** because the reader's question is "what does
@@ -72,17 +75,17 @@ are form segments inside one 💬 Chat tab). It ranks after 🧭 Outline and
   present-and-uncited (the outline tab's law, kept identical here).
 - **The tab writes nothing and calls no model.** Every pen stays with its
   lane: the bibex entry pen, the probe crossing, the display `accepted:` row,
-  the value allocation at ③ EVIDENCE.
+  the value allocation at LAND.
 
 ## 🔒 What merging the surface must never merge
 
 ```text
 lane        writer                       human gate      the wall
 ────────────────────────────────────────────────────────────────────────────
-bibex/      person-supplied, transcribed  verified:       never composed from memory
-probe/      ② raises · ③ binds            read:           stake behind consumer/
+evidence/bibex/   person-supplied, transcribed  verified:  never composed from memory
+evidence/probe/   ② raises · ③ binds            read:      stake behind consumer/
 values      ③ allocates PP<NN>.v<n>       (rides read:)   aggregate only, never rows
-display/    the display family renders    accepted:       intake frozen before render
+evidence/display/ the display family renders accepted:    intake frozen before render
 ```
 
 A surface that offered one "approve all" control would collapse three gates

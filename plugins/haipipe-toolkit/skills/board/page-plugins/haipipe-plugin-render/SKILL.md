@@ -2,12 +2,12 @@
 name: haipipe-plugin-render
 description: >-
   The render/ plugin of a Board page: the page's units as the RECIPIENT sees
-  them, at <page>/delivery/render/<stem>-<unit>-v<N>.<ext>, derived, so a person can
+  them, at PAGE/delivery/render/STEM-UNIT-vN.EXT, derived, so a person can
   accept a message they have actually seen. Trigger: render plugin, message
   preview, as the recipient sees it, render version, sms preview,
   /haipipe-plugin-render.
 metadata:
-  version: "0.1.2"
+  version: "0.1.3"
   last_updated: "2026-08-31"
 ---
 
@@ -16,7 +16,9 @@ metadata:
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only render's delta: why it exists before acceptance, and the three stamps.
 
-> 📤 Since 260831 this lane's surface home is the 📱 segment inside the 📤 Delivery tab (`haipipe-plugin-delivery`), a ghost until the route ships.
+> 📤 This lane's surface home is the 📱 segment inside the 📤 Delivery tab
+> (`haipipe-plugin-delivery`). The files remain fully usable through the Folder
+> surface even when a served UI adapter is unavailable.
 
 ## 🎯 Why this exists
 
@@ -43,25 +45,30 @@ The extension follows the venue: `.txt` for sms, push and reminder; `.html` for 
 **Three stamps, not one**, because the same content can be re-rendered unchanged and the same render can go stale when the evidence under it moves:
 
 ```text
-design   the DS page version the division came from
-warrant  the P page version, and through it the W handoff version
-render   this file's own version
+design    the DS page version the division came from
+warrants  zero or more promoted-P versions PLUS every directly bound W handoff
+render    this file's own version
 ```
 
 ## ⚖️ The one law · the page is the source
 
 A render is regenerated, never edited. Someone will edit a rendered file directly, usually while reading it aloud in review, and that edit is real feedback landing in the wrong place. Copy it into the owning division, which clears that division's `accepted:` row, then re-render. Never re-render over an unreconciled edit: that silently deletes it.
 
-## ⚙️ Writer · one route
+## ⚙️ Writer · one contract, optional UI adapter
 
 ```text
-POST /_board/render     one division or all · stamps all three versions ·
-                        rebuilds the preview · refuses when the venue is unpinned
+haipipe-application/fn/render.md
+    render one division or all · stamp design/warrants/render · rebuild the
+    derived preview · refuse when the venue is unpinned
+
+POST /_board/render
+    optional served adapter over the same writer; its absence never blocks the
+    Folder-native render verb
 ```
 
 ## 📡 Surface · the 📱 tab
 
-One card per unit showing the render as the recipient sees it, its character count against the venue cap in red when over, its three stamps, and whether the owning division carries an `accepted:` row. A unit whose division changed after its last render shows ⚠️ STALE, which `haipipe-plugin-folder` already computes for any derived plugin.
+One card per unit showing the render as the recipient sees it, its character count against the venue cap in red when over, its three stamp classes, and whether the owning division carries an `accepted:` row. A unit whose division changed after its last render shows ⚠️ STALE, which `haipipe-plugin-folder` already computes for any derived plugin.
 
 
 > Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.

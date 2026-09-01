@@ -65,11 +65,21 @@ def chat_guard(page, payload):
     `quality_check` is a useful browser request; a Labeling HOLD is an artifact
     fact and therefore cannot be disabled by changing or omitting that request.
     """
+    page = Path(page)
+    try:
+        head = page.read_text(encoding="utf-8", errors="ignore")[:4096]
+        labeling_hint = bool(re.search(r"(?m)^page-type:\s*labeling\s*$", head))
+    except OSError:
+        labeling_hint = False
     try:
         from .labeling import labeling_chat_hold
-        labeling_hold, reason = labeling_chat_hold(Path(page))
+        labeling_hold, reason = labeling_chat_hold(page)
     except Exception:
-        labeling_hold, reason = False, ""
+        # A known Labeling page fails closed when its receipt derivation cannot
+        # be trusted. Other Page types retain their ordinary Chat permissions.
+        labeling_hold = labeling_hint
+        reason = ("HOLD · labeling receipts could not be safely inspected"
+                  if labeling_hint else "")
     read_only = bool(payload.get("quality_check")) or labeling_hold
     mode = "scoped" if read_only else chat_scope(payload)
     return read_only, mode, reason
@@ -472,8 +482,8 @@ def page_folder_context(f, root):
         out.append("  · phase: " + compact(phase_state(f)) + "   (cli/pagephase.py <page-dir> --owed lists the ticks that are the person's)")
     except Exception:
         pass
-    for lane, label in (("skill", "skills this page is written with (load the one a message needs)"),
-                        ("task", "task folders this page links (haipipe-task law applies there)")):
+    for lane, label in (
+            ("skill", "skills this page is written with (load the one a message needs)"),):
         lst = d / lane / f"{stem}.md"
         if lst.is_file():
             rows = [ln[2:].strip() for ln in lst.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.startswith("- ")]
@@ -546,7 +556,7 @@ which is your working directory: the whole SPACE). Its folder holds:
   <page>.md          Opening · Diagram · Content · Aims          the PRODUCT
   outline/           the plan (-outline-v<N>.md) and six record files: -requirement
                      -discussion (D<nn> threads) -feedback -evidence -files -log
-  probe/ bibex/ display/ pagex/   the evidence lanes
+  evidence/                       probe/ · bibex/ · display/ · pagex/ lanes
 
 WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full table):
   a comment on a sentence     > Comment WHO · text · YYMMDD HHMM  directly under that sentence
@@ -556,25 +566,36 @@ WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full 
   a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (REVISE)
   a plan change               outline/<stem>-outline-v<N>.md; v<N+1> if v<N> is approved ✅ (OUTLINE)
   a ruling by the person      transcribe it with the quote and time; never decide a tick
-  a fact the page lacks       a probe card under probe/PP<NN>-<slug>/ + a > Comment lane (PROBE)
+  a fact the page lacks       a row in outline/<stem>-items.md (SURVEY); a card under
+                              evidence/probe/PP<NN>-<slug>/ only when the question leaves the page (LAND)
   a promise change            the Aim row on the page: Done when: and Now: (DRAFT)
   task work                   the task folder the page links; haipipe-task law applies
   EVERY write                 one record in outline/<stem>-log.md:
                               `### YYMMDD HHMM · chat: <what changed>` naming the file (newest first)
 
-THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Seven phases, and the
-strip below says which one the page is in; a phase word from the person runs that
-pass here, in this session, leaving the artifact, one log record (receipt folded
+THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Two parts, six cycles,
+and the strip below says which one the page is in; a cycle word from the person runs
+that pass here, in this session, leaving the artifact, one log record (receipt folded
 under it) and the strip in your reply:
-  ① OUTLINE  /haipipe-page-outline   the plan; five checks; the person ticks approved:
-  ② PROBE    /haipipe-page-probe     one card per mark; MATCH before DISPATCH
-  ③ EVIDENCE /haipipe-page-evidence  keys, values, units land; the person ticks read:/verified:
-  ④ DRAFT    /haipipe-page-draft     slot → sentence with realizes: and a Value lane
-  ⑤ REVISE   /haipipe-page-revise    prose under fixed Aims; ✎ lanes; ⑥ COMPILE rebuilds latex/ word/
-  ⑦ CHECK    dispatch haipipe-page-check-agent (a fresh judge); here only the read-only Quality Check
-Announce the phase on every reply (`Phase ④ DRAFT · <page>`). ① ⇄ ② ⇄ ③ loop until
-the plan and its evidence agree; ④ ⑤ ⑥ run without asking; never skip ② for a new
-Task/Discovery question; never write the person's four ticks; never judge your own version.
+  OUTLINE part · the page decides what is true
+    SHAPE    /haipipe-page-outline    brief → propose → react → revise; the person ticks approved:
+    SURVEY   /haipipe-page-outline    one row per mark in outline/<stem>-items.md: Need · Route ·
+                                      Run (found | rerun | new-run | new-task | new-job | new-block |
+                                      person | none · tasks/ address); the person writes Decide
+    LAND     /haipipe-page-evidence   make the decided runs in the real tasks/ tree, fill the lanes,
+                                      append ` → <result file>` to the row; a card only when a
+                                      question leaves the page
+    EMBED    /haipipe-page-evidence   write the numbers into plan v<N+1> (Answered: lines), never
+                                      restructure; back to SHAPE
+  DRAFT part · the page is written
+    WRITE    /haipipe-page-draft then /haipipe-page-revise   slot → sentence with realizes: and a
+                                      Value lane; ✎ lanes; latex/ word/ rebuilt; teeth then a fresh
+                                      cold pre-check, budget 3
+    CHECK    dispatch haipipe-page-check-agent (a fresh judge); here only the read-only Quality Check
+Announce the cycle on every reply (`SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
+until the plan and its runs agree; every evidence number is answered by a RUN, the run computes
+and the page interprets; WRITE runs without asking; never write the person's ticks (approved:,
+Decide, verified:, accepted:); never judge your own version.
 
 WALLS: generated files (-feedback, -requirement, -evidence) are regenerated with
 their cli/*.py, never hand-edited · _runs/, runs/ and a QA file in `state: working`

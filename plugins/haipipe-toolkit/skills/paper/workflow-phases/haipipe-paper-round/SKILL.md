@@ -7,7 +7,7 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   last_updated: "2026-08-31"
   group-token: "RD"
   outline:
@@ -78,12 +78,12 @@ response-due      date, explicit none, or unknown
 Store supplied letters or memos INSIDE this Round page's folder — a received
 letter floating at the repo root is homeless material (JL 260823). Preserve
 their wording; never rewrite received material into a cleaner second source.
-The runtime home is the DESK'S OWN B GROUP (journey 0.5.0, JL 260824):
-`0-paperboard/B<x>-<desk>/RD<NN>-<event>/`, beside that desk's section pages,
-so one group tells one desk's whole downstream story — P5 units and P6
-rounds together. A foreign-desk round mints its desk's B group even when the
-group holds only RD pages. Boards with the older lone `C1-RD-round/` group
-are grandfathered.
+The runtime home is the DESK'S OWN ROUND GROUP (JL 260831, three groups per
+desk): `0-paperboard/B<x>-<desk>-Round/RD<NN>-<event>/`, beside that desk's
+-Main and -Appendix groups, so the desk's downstream story sits in three
+named shelves. A foreign-desk round mints its desk's -Round group even when
+that is the desk's only group. Boards with a combined `B<x>-<desk>` group or
+the older lone `C1-RD-round/` group are grandfathered.
 
 ## 📐 Required Content roles
 

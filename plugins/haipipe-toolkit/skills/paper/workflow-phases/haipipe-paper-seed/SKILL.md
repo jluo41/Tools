@@ -8,7 +8,7 @@ description: >-
   Trigger: seed page, paper identity, pitch, establishment board, page-type
   seed.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-31"
   group-token: "SD"
   outline:
@@ -21,7 +21,7 @@ metadata:
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
 Declare `page-type: seed`. In a runtime paper board this page lives at
-`0-paperboard/A1-SD-story/SD01-seed/`, second page of the venue-free story
+`0-paperboard/A1-Story/Story01-seed/`, second page of the venue-free story
 group it shares with its Ideation origin and the establish loop's two working
 pages (journey 0.5.0, JL 260824; older boards with narratives inside this
 group are grandfathered):
@@ -35,12 +35,14 @@ opens the first Narrative. The Seed alone writes E-row flips; the Roadmap only
 proposes settles. `haipipe-paper-workflow` holds the full gate assertions; this
 block only places the phase. The page itself always runs through
 `/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK), never a
-private lifecycle. ```text 0-paperboard/A1-SD-story/ ├── SD00-ideation/ the
-ideas this paper came from ├── SD01-seed/ what the paper IS · venue-free ·
-exactly one └── SD02-roadmap/ where to go next AND what came back · plans
-against §6's gaps, proposes the settles ``` The group law: the story group is
-the paper's venue-free head (P0–P2); no manuscript prose and no venue word
-lives here — the tellings start next door in `A2-NA-narrative/`. In the
+private lifecycle. ```text 0-paperboard/A1-Story/ ├── Story00-ideation/ the
+ideas this paper came from ├── Story01-seed/ what the paper IS · venue-free ·
+exactly one ├── Story02-roadmap/ where to go next AND what came back · plans
+against §6's gaps, proposes the settles └── Story<NN>-narrative-<desk>/ the
+tellings, one per desk (Story03 first) ``` The group law: the head pages
+(P0–P2) are the paper's venue-free head; no manuscript prose and no venue word
+lives in them — the tellings close the same group as
+`Story<NN>-narrative-<desk>` pages (JL 260831). In the
 establish loop this page is the SCOREBOARD: the Roadmap plans and registers,
 and the Seed ALONE writes E-row flips, each flip citing the landed QA path the
 Roadmap's lap carries.
@@ -168,7 +170,7 @@ during OUTLINE. An asset in `pagex/` with no §5 row, or a §6 citation naming
 an asset §5 does not row, is a defect.
 
 **The birth certificate** (0.4.0): when this paper came from an Ideation
-Page, §5's first row binds that page through `pagex/` — normally `SD00-ideation`
+Page, §5's first row binds that page through `pagex/` — normally `Story00-ideation`
 beside this page in the story group, cross-repo only when the idea
 left ANOTHER paper's ideation page — and that page's `went to` cell
 points back here. A Seed claiming no origin when an ideation page names it, or naming

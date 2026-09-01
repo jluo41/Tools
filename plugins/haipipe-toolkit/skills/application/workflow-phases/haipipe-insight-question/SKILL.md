@@ -1,11 +1,20 @@
 ---
-name: haipipe-page-for-question
+name: haipipe-insight-question
 description: >-
-  The Page Type contract for one QUESTION page on an InsightBoard: the register of what is asked of one ladder rung, never what is concluded from it. Four exist per board, one facing each of D, I, K and W, each holding that rung's queue, one division per question, with the target, the raiser, what would answer it, and the current state. Use when a Brief raises a need, when someone reading the data becomes curious and the question has nowhere to go, when checking what is runnable today, or when a question is re-targeted to a different rung. Trigger: question page, question register, raise a question, what should we ask, insight queue, board backlog, re-target a question, page-type question, /haipipe-page-for-question.
+  InsightBoard workflow phase I1 and Folder contract for one rung-facing
+  Question register. Owns question birth, target rung, queue state, and the
+  Page and Task faces without concluding the answer. Use to raise, retarget,
+  queue, or audit an Insight question. Trigger: insight question, question
+  register, I1, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-28"
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "1.0.2"
+  last_updated: "2026-08-31"
+  workflow: haipipe-insight-workflow
+  phase: I1
+  folder_kind: question
+  primary_face: page
+  page_ruling: none
+  legacy_page_type: question
   group-token: "MT"
   outline:
     mode: grammar
@@ -13,160 +22,86 @@ metadata:
     shape: "division 1 is Queue, always first; every later division's first word is a question id Q[DIKW]<n>, in id order"
 ---
 
-# /haipipe-page-for-question · hold what is asked of one rung, and how far it has got
+# /haipipe-insight-question · make the board's ask explicit
 
-Load `haipipe-page` first, and `haipipe-plugin-pagex` when borrowing the inventory or a lower rung's register.
+Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Existing registers may retain `page-type: question`; new ones use
+`folder-kind: question` plus `question-rung:`.
 
-Declare `page-type: question` and `question-rung: data | information | knowledge | wisdom`.
+## Position
 
-Four pages exist per InsightBoard, in the `0-MT-meta/` group beside the Meta page:
-
-```text
-MT01-question-data/           question-rung: data           faces the D rung
-MT02-question-information/    question-rung: information    faces the I rung
-MT03-question-knowledge/      question-rung: knowledge      faces the K rung
-MT04-question-wisdom/         question-rung: wisdom         faces the W rung
-
-rung-major: the rung is one group (1-D-data/ .. 4-W-wisdom/)
-partition-major: the rung spans every partition group (ref/partition.md)
-```
-
-## Why this Page exists
-
-Until 260821 a question could only be a table row: `N<n>` in the Brief's Insight Needs, mirrored into `MT00-meta`'s Insight Roster. Two defects followed. A question raised on the InsightBoard itself, by someone reading the data rather than by a Brief, had no home at all, and `haipipe-page-for-meta` forbids one, because Meta raises no question of its own. And a row cannot carry why the question is asked now, what would answer it, or what it is blocked on.
-
-JL ruled the split by rung on 260821, over a single flat register. A question is not asked of the board in general; it is asked of one rung, and the answer lands in that rung's group. Pairing the register with the rung it faces is what makes the queue readable: `MT01`'s queue and the D pages that answer it are the two halves of one sentence.
-
-## Boundary
+I1 follows GI0 and precedes the first runnable D/I/K/W rung. Four Question
+Folders live beside Meta:
 
 ```text
-MT00-meta          what data EXISTS                    describes, never asks
-MT0N-question-*    what is ASKED of one rung           asks, never concludes
-D/I/K/W page       the ANSWER                          concludes, cites its parent
-Brief              which needs BLOCK a design          raises, never answers
+MT01-question-data          question-rung: data
+MT02-question-information   question-rung: information
+MT03-question-knowledge     question-rung: knowledge
+MT04-question-wisdom        question-rung: wisdom
 ```
 
-**Nothing in the MT group concludes.** A question page may say the segment size is unknown. It may not say the segment is small. The moment a division states a value, a comparison or a preference, it belongs on a D, I, K or W page and fails here.
+## Folder Kind
 
-A question may be raised from either side. The Brief raises one when design is blocked; the board raises one when someone reading `MT00-meta` becomes curious. Both land here identically, and division 2 onward records which.
+A Question Folder is a register, never an answer. Each question has one stable
+`QD|QI|QK|QW<n>` id and one owning register. Retargeting moves the record; it
+does not clone it.
 
-## Question ids
+## Input
 
-The rung letter is in the id, so a question names its own home.
+Questions have two legal births: need-first from BR00's `Insight Needs Raised`,
+or insight-first from a reader observing a gap on this board. Record raiser,
+target rung, why now, what would answer it, affected partition(s), and blocked
+Aim. No preferred answer is admissible.
 
-```text
-QD<n>   registered on MT01     answered on the D rung, in the owning group(s)
-QI<n>   registered on MT02     answered on the I rung, in the owning group(s)
-QK<n>   registered on MT03     answered on the K rung, in the owning group(s)
-QW<n>   registered on MT04     answered on the W rung, in the owning group(s)
-```
+A pre-climbed external-parent bridge is still an ordinary Wisdom question. Its
+QW row additionally records the exact Task Insight Page and `RF<n>@<version>`
+being evaluated plus the one local I5 W Folder that will contextualize it. The
+borrowed RF is evidence for the question, not its Application answer.
 
-Numbering runs per page, so `QD1` and `QI1` coexist. The id is permanent: a question that is re-targeted moves page and takes a NEW id, and its old division stays behind as a one-line tombstone naming the successor. Nothing that was ever raised silently disappears.
+## Page Face
 
-## Partition-major boards: the Queue gains columns (0.2.0)
+Division 1 is the Queue; later divisions are one question each in id order.
+The Queue shows the current Folder ids and canonical marks (`⬜`, `🟡`, `✅`,
+`🚫`) per partition where applicable. It asks and tracks; it never contains a
+D/I/K/W conclusion.
 
-On a partition-major InsightBoard (`haipipe-application` `ref/partition.md`) a question is written ONCE and asked per partition. The id stays partition-free, `QK1` and never `QK1-B`. The Queue carries one column per partition registered on `MT00`, plus an X column whenever the register holds an X-routed question; X is the cross GROUP, not a partition, so a register with no cross question carries no X column:
+## Task Face
 
-```text
-id   question                              F·full      B·youngmale   X·cross
-──────────────────────────────────────────────────────────────────────────────
-QK1  which arm separates, rivals out?      ✅ FK01     🔨 EVIDENCE   ·
-QK2  do the arm effects genuinely differ?  ·           ·             ⬜ ready
-```
+Classify the minimum rung that can answer the ask; mint or resume the target
+Folder; update the Queue from phase receipts; preserve partial-final reasons;
+and propagate reopening when a cited parent changes. The register pen writes
+queue state; target Folders write receipts in their own
+`outline/<stem>-log.md`.
 
-Three cell rules, all closing checks on this layout:
-
-- **A blank cell is illegal.** Every cell is a state, a `🚫` refusal with a reason, or a dot.
-- **A dot cell is an explicit routing, restated in the question's division.** A cross-partition question cannot be answered by a per-partition page, so its per-partition cells are `·` and its X cell is live; the reverse holds for per-partition questions with no cross half.
-- **A refused cell is the register's half of the mirror rule.** When a partition group is missing a page its template has, the refusal lives HERE, `🚫` plus the reason, so the gap is a recorded decision rather than a silence.
-
-The question's division stays ONE division; it records per-partition standing inside "where it stands" rather than splitting per partition. On a rung-major board this section does not apply and the Queue keeps its single-column shape.
-
-## Fixed Content outline
-
-```text
-### 1 · Queue               this rung's questions, target, raiser, state, blocker
-#### 2 · Q<R>1 · <slug>     one division per question, in id order
-#### 3 · Q<R>2 · <slug>
-```
-
-**Queue** is the whole page in one screen. One row per question:
-
-```text
-id   question, one line              raised by   answering page   state
-─────────────────────────────────────────────────────────────────────────────
-QD1  what do the 13 arms say?        BR00 · N4   —                ⬜ ready
-QD2  which rows carry an opt-out?    MT00 read   D02-optout       🔨 EVIDENCE
-```
-
-`state` is one of `⬜ ready` when nothing blocks it, `⬜ blocked on <id>` when something does, `🔨 <phase>` once the answering page exists, `🟡 partial` when part of the ask has closed and more is owed, `✅ answered` once the answering page closes, and `🚫 <reason>` when the cell closes WITHOUT an answer — refusal reasons (thin, F-only, defer, no-measure) and the tombstone (`🚫 retired`) share ONE grammar: 🚫 always means closed-without-answer, and the reason follows. Only `✅` and `🚫` settle. A `🟡` is never folded into an answered count and keeps its row lap-eligible UNTIL its page states why the remainder cannot close: the cell then reads `🟡 <page> final`, is settled-partial, leaves the lap, and still never joins an answered count. A cell or row may name the planned answering page beside `⬜` (`⬜ FD01`), which reads: the page is allocated and still planned; a `⬜` may also carry a short reason annotation (`⬜ calc` — computed, not yet authored), and an annotated `⬜` is still OPEN, never a refusal. A rollup may abbreviate a token only as `<mark>(<letter>)` with a legend line mapping it to the full token — where the grammar is silent, legends invent, which is how `⬜OPEN` and `🟡f` were coined. When a header count and the Queue rows disagree, the Queue rows are the record and the header is stale — and "header" means EVERY on-register restatement of the Queue: the state line, the Diagram, the Opening. Status WORDS derive by fixed mapping (any lap-eligible cell → 🟡 PARTIAL; all cells terminal → ✅ SETTLED), so reconciling them is the same register-pen act as reconciling a count. A mark's spelling includes its spacing (`🚫 F-only`, never `🚫Fonly`); canonical forward, and a live board is re-spelled only in an authorized sweep that re-pads its tables in the same pass. The `⬜` annotations are the register pen's, like every cell mark: a note about work is state.
-
-**Each question division** owes a reader four things and nothing else:
-
-- **The ask**, in one line, in the words the data uses.
-- **Why now**, which is what is blocked or what prompted it. A Brief-raised question names the Brief's Aim; a board-raised question names what was being read.
-- **What would answer it**, which is the shape of an acceptable answer, not a guess at its value. "A count of distinct message bodies per arm" is legitimate; "roughly thirteen distinct bodies" has already answered.
-- **Where it stands**, naming the answering page once one exists.
-
-A division that argues for an expected answer has decided, and fails the closing checks.
-
-## Aims and States carry the status
-
-One Aim per question, so the engine's own machinery is the status board. The `## States` section is what a reader checks and what `git diff` shows moving.
-
-```text
-## Aims                              ## States
-### A1 · Queue                       ### A1 · Queue
-- A1.1 every raised question         - ✅ A1.1 · four rows, all honest
-  is visible, answered or not
-#### A2 · QD1                        #### A2 · QD1
-- A2.1 the corpus is described       - ⬜ A2.1 · no answering page yet
-  Done when: QD1 reaches a D page
-```
-
-An Aim's **Done when** names the rung, and only this page's rung. `MT01`'s Aims close at a D page; a D page that turns out to license a recommendation has produced a W claim, and that is a new `QW<n>` on `MT04`, not a broader Done-when here.
+For the pre-climbed external-parent bridge, verify the five assertions owned by
+`haipipe-insight-workflow`, write the Task Page/RF version and local W Folder on
+the QW row, and reopen that row whenever the RF or one of its source versions
+changes. Never mark the row terminal merely because the Task RF is settled.
 
 ## Plugins
 
-```text
-outline/    ✅   the plan, like any page
-pagex/      ✅   borrow MT00's inventory and the rung below's register
-probe/      ❌   FORBIDDEN
-display/    ❌   FORBIDDEN
-```
+- `outline` required;
+- `pagex` optional for the originating Brief need or lower-rung register;
+- `probe` and `code` forbidden: the register dispatches work but does not do it.
 
-**A question page owns no `probe/`.** A probe card reaches Task or Discovery and brings an answer back; if a question page could raise one, the question and its answer would share a folder and the MT group would stop being question-only. The card belongs to the page that answers, at `<D|I|K|W page>/probe/PP<NN>-<slug>/`, and that page names the question id it serves.
+## Gate and Closure
 
-`display/` is forbidden for the same reason: a figure is an answer.
+GI1 passes for one question when its id, rung, origin, answerability test, and
+initial Queue cell are complete. A bridge QW additionally requires its exact
+Task Page/RF version and local W Folder. GI6 closes the registered chain only
+when its target rung is terminal and every partial final has a reason on its
+target Folder; for a bridge, that terminal is the signed local I5 Folder, never
+the external RF. An empty register is valid and closed as a register.
 
-## Receipts
+## Handoff
 
-Two of the lane's gates leave their dated `## Log` row on THIS page (`haipipe-insight-workflow` §Phase receipts), and a duty stated only in the machine file is a duty the page's author never reads:
+Hand the next rung a neutral question id, exact ask, target, scope/partition,
+answerability test, and blocked Aim. A bridge handoff also carries the exact
+Task Page/RF version to I5. Never hand it an anticipated result or Design
+permission.
 
-```text
-GI1 Question → Data   the cell's row carries target, raiser, what-would-answer and a
-                      state cell · its partition group exists on disk
-GI6 settle            the cell flipped ✅, or 🚫 with a reason, or `🟡 <page> final` —
-                      always naming the page that closed it
-```
+## Files
 
-A `🟡 <page> final` flip leaves TWO receipts and this page owns the FIRST: a Log row QUOTING the sentence on the answering page that licenses the partial close. The answering page owns the second, in its own `## Log`, under its own contract. Neither pen may write the other's half, and the reason both exist is that a citation invisible from one end cannot carry staleness — a settled-partial cell whose licensing page does not know it was cited goes stale silently when that page changes.
-
-## Staleness
-
-A question does not go stale; its answer does. When a source re-runs and reopens a D page, the question whose row names that page moves back from `✅ answered` to `🔨`. The Queue row is the visible consequence, and it is updated by whoever reopens the answering page.
-
-## Closing checks
-
-- Every question in the Queue has a division, and every division has a Queue row.
-- No division states a value, a comparison, a rank or a preference.
-- No question carries a hoped-for answer, in either its ask or its what-would-answer-it.
-- Every question names its raiser: a Brief need id, or what was being read.
-- Every `⬜ blocked on <id>` names a real id on this board.
-- Every question's target rung is this page's rung. A question facing another rung has been mis-filed and moves.
-- The page owns no `probe/` and no `display/`.
-- A re-targeted question left a tombstone naming its successor.
-- Partition-major only: no cell is blank; every dot cell's routing is restated in its question's division; every 🚫 cell carries a reason.
-- Every settle this page granted (GI6) has a dated `## Log` row naming the cell and the closing page, and a `🟡 <page> final` flip's row QUOTES the licensing sentence.
-
-This variant owns no scripts.
+- Runtime: `0-MT-meta/MT01-question-data/` through `MT04-question-wisdom/`
+- Queue grammar is owned here; register receipts live at
+  `<register>/outline/<register-stem>-log.md`; no private scripts.

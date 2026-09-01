@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-draft
 description: >-
-  The DRAFT phase of a Board Page, phase ④: one pass that turns the approved
+  The DRAFT phase of a Board Page, step 1 of the WRITE cycle: one pass that turns the approved
   plan and its landed evidence into the page. A Section plan's sentence slot
   becomes one sentence; any other plan's point becomes one or more sentences;
   every sentence names its slot, every number carries its provenance lane,
@@ -37,7 +37,7 @@ WALLS    enters only on approved: ✅ · names no division the plan lacks ·
          hole token into prose · opens no card · writes no Files, Log,
          States or Discussion section (all live in outline/) · Content
          states the present, no dates, no names as authority
-ROUTES   PROBE (a claim lacks support) · OUTLINE (the plan is wrong) ·
+ROUTES   OUTLINE (a claim lacks a landed run → SURVEY; the plan is wrong → SHAPE) ·
          REVISE (promise stable, realization needs work; may run fused in
          the same context) · CHECK · DRAFT again · HOLD
          never EVIDENCE, never COMPILE, never CLOSE
@@ -46,14 +46,14 @@ RECEIPT  §🧾; field law: ../haipipe-page-workflow/ref/page-run-contract.md
 
 ## ⓪ Boot · enter on landed evidence
 
-- **The PREPARE loop has run** (① OUTLINE ⇄ ② PROBE ⇄ ③ EVIDENCE), so the
-  plan carries every landed value inline. DRAFT writes the number; a hole is
+- **The OUTLINE part has run** (SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED), so the
+  plan carries every landed value inline, each traced to a run. DRAFT writes the number; a hole is
   the exception and names the input it is missing.
 - **Trust `Answered:` and `Drawn:` as written.** Re-read only a card whose
   line ends `· recount`, plus one spot-check; a mismatch means the plan is
   stale and the route is OUTLINE, not a silent correction.
 - **In session or as `haipipe-page-draft-agent`, the trace is the same**: the
-  page, the log record, the receipt. A fused ④+⑤ pass continues into
+  page, the log record, the receipt. The WRITE cycle continues into
   `haipipe-page-revise` in the same context and writes that phase's own
   receipt step.
 
@@ -91,8 +91,8 @@ any other type       one POINT → one or more sentences
    written with `state=provisional`; a number that does not exist yet, where
    the sentence's shape needs it, is `{VAL:? what is owed} [Q-<id>]`, which
    renders as an unbound chip; a number that can be added as a clause later
-   gets a clean sentence, a `> Comment CC` lane naming the card, and the card
-   at PROBE. A hole with no named blocker means PREPARE exited early: OUTLINE.
+   gets a clean sentence, a `> Comment CC` lane naming the item row, and the
+   row at SURVEY. A hole with no named blocker means the OUTLINE part exited early: OUTLINE.
 3. **Evidence is cited by id**, `PP01.v1`, `Display4`, a bib key, never
    restated; a display is cited where the plan drew it, and its caption is
    REVISE's.
@@ -136,9 +136,9 @@ any other type       one POINT → one or more sentences
 ## 🔀 Routes
 
 ```text
-a Task/Discovery-backed claim lacks support   → PROBE (bank MATCH, then cards)
+a claim lacks a landed run                    → OUTLINE (SURVEY: the table gains a row)
 the plan is wrong, or an existing-Page binding
-  is missing                                   → OUTLINE
+  is missing                                   → OUTLINE (SHAPE)
 promise stable, realization needs work         → REVISE (fused when the context continues)
 version ready for judgment                     → CHECK
 promise still unsettled                        → DRAFT again
@@ -156,7 +156,7 @@ page: <page>/<stem>.md
 sentences: n written · n realizes: · n with a Value lane · n provisional · n {VAL:?}
 aims: n rows · n Now: updated · n added
 log: <the record's headline>
-route: DRAFT | PROBE | OUTLINE | REVISE | CHECK | HOLD
+route: DRAFT | OUTLINE | REVISE | CHECK | HOLD
 reason: <the authority exercised and why this route follows>
 reopens_promise: true | false
 ```
@@ -179,7 +179,7 @@ haipipe-page-draft/
 
 Owns no scripts. The base is `haipipe-page`; Page Type variants live under
 `page-types/`; the plan grammar is `haipipe-plugin-outline/ref/plan-grammar.md`;
-the lanes are `haipipe-sentence`'s; the question crossing is `haipipe-probe`'s
-and begins at ② PROBE. The six-field card is
-`../haipipe-page-workflow/ref/phase-cards.md` §④. The design page is
+the lanes are `haipipe-sentence`'s; the run behind every number is found at
+SURVEY and made at LAND (`haipipe-page-outline`, `haipipe-page-evidence`). The
+six-field card is `../haipipe-page-workflow/ref/phase-cards.md` §WRITE. The design page is
 `QPw2-draft` on `BoardSkillBoard-260722`.

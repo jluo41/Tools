@@ -34,6 +34,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from src.common import evidence_lane_dir, evidence_lane_dirs
+
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
 _SCRIPTS = (Path(__file__).resolve().parents[2]
@@ -127,47 +129,49 @@ class ExportMixin:
         return page_src.stem
 
     def _page_units(self, page_src):
-        """[(short, rec)] for every display unit under `<page>/display/`
+        """[(short, rec)] for every unit under `<page>/evidence/display/`
         (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
         the id the page's prose cites; rec reads the unit's OWN float.tex for
         label, kind, and caption, never composing a second one."""
         out = []
-        ddir = page_src.parent / "display"
-        if not ddir.is_dir():
-            return out
         stem = page_src.stem
-        for f in sorted(ddir.glob("*/float.tex")):
-            d = f.parent
-            tex = f.read_text(encoding="utf-8", errors="replace")
-            lab = re.search(r"\\label\{([^}]+)\}", tex)
-            kind = re.search(r"\\begin\{(table|figure)", tex)
-            cap, i = "", tex.find("\\caption{")
-            if i >= 0:
-                k, depth = i + 9, 1
-                while k < len(tex) and depth:
-                    depth += (tex[k] == "{") - (tex[k] == "}")
-                    k += 1
-                cap = tex[i + 9:k - 1].strip()
-            # A page stem may itself contain hyphens (for example QC1-lbp).
-            # The old first-two-segments rule collapsed every display on such
-            # a page to the same short id and made placement impossible.
-            prefix = stem + "-Display"
-            aliases = []
-            if d.name.startswith(prefix):
-                number = d.name[len(stem) + 1:].split("-", 1)[0]
-                short = stem + "-" + number
-                # A Page is a local namespace. Its prose normally says
-                # `Display1`, while cross-page material may say
-                # `<stem>-Display1`; both address the same unit and the
-                # exporter must place it once.
-                aliases = [short, number]
-            else:
-                short = "-".join(d.name.split("-")[:2])
-                aliases = [short]
-            out.append((short,
-                        {"dir": d, "label": lab.group(1) if lab else None,
-                         "kind": kind.group(1) if kind else "figure",
-                         "caption": cap, "aliases": aliases}))
+        seen = set()
+        for ddir in evidence_lane_dirs(page_src.parent, "display"):
+            for f in sorted(ddir.glob("*/float.tex")):
+                d = f.parent
+                if d.name in seen:
+                    continue
+                seen.add(d.name)
+                tex = f.read_text(encoding="utf-8", errors="replace")
+                lab = re.search(r"\\label\{([^}]+)\}", tex)
+                kind = re.search(r"\\begin\{(table|figure)", tex)
+                cap, i = "", tex.find("\\caption{")
+                if i >= 0:
+                    k, depth = i + 9, 1
+                    while k < len(tex) and depth:
+                        depth += (tex[k] == "{") - (tex[k] == "}")
+                        k += 1
+                    cap = tex[i + 9:k - 1].strip()
+                # A page stem may itself contain hyphens (for example QC1-lbp).
+                # The old first-two-segments rule collapsed every display on such
+                # a page to the same short id and made placement impossible.
+                prefix = stem + "-Display"
+                aliases = []
+                if d.name.startswith(prefix):
+                    number = d.name[len(stem) + 1:].split("-", 1)[0]
+                    short = stem + "-" + number
+                    # A Page is a local namespace. Its prose normally says
+                    # `Display1`, while cross-page material may say
+                    # `<stem>-Display1`; both address the same unit and the
+                    # exporter must place it once.
+                    aliases = [short, number]
+                else:
+                    short = "-".join(d.name.split("-")[:2])
+                    aliases = [short]
+                out.append((short,
+                            {"dir": d, "label": lab.group(1) if lab else None,
+                             "kind": kind.group(1) if kind else "figure",
+                             "caption": cap, "aliases": aliases}))
         return out
 
     def _first_unit_mention(self, body, unit):
@@ -366,7 +370,7 @@ document.getElementById('rebuild').onclick = function () {
         # citation store, so the PDF cites what the page cites — the paper's
         # 0-*.bib is the fallback for pages that have no store of their own.
         bib = None
-        own = page_src.parent / "bibex" / (stem + ".bib")
+        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
         if own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bib = own
@@ -575,7 +579,7 @@ document.getElementById('rebuild').onclick = function () {
         # the References section then come from the one store the workbench
         # maintains. A page with no store keeps the paper-root fallback.
         proot = self._paper_root(page_src)
-        own = page_src.parent / "bibex" / (stem + ".bib")
+        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
         if own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bbl = own.parent / ".board-refs.bbl"
@@ -657,7 +661,7 @@ document.getElementById('rebuild').onclick = function () {
         if units:
             # the unit index for the page address, and the Display comment
             # bubble beside the Citation ones — the docx's evidence card
-            cmd += ["--display-root", str(page_src.parent / "display"),
+            cmd += ["--display-root", str(evidence_lane_dir(page_src.parent, "display")),
                     "--lanes", "Citation,Display"]
         if proot:
             cmd += ["--paper-root", str(proot)]

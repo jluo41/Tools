@@ -1,3 +1,8 @@
+## 0.9.4 · 2026-08-31
+
+- Correct the remaining value and proof examples to canonical
+  `evidence/probe/` and `evidence/display/` addresses.
+
 ## 0.9.3 · 2026-08-31
 
 Category-folder sweep: lane paths read `<page>/evidence/<lane>` or

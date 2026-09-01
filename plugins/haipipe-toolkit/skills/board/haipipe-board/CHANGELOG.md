@@ -1,3 +1,52 @@
+## 0.159.0 · 2026-09-01
+
+- The item table (JL 260901, "evidence is linked to the runs!!!"):
+  `src/item_table.py` (read the table, derive the ladder word per row,
+  `summarize` for the strip); `cli/evidence-status.py` writes the table joined
+  to the disk (Status first, `cycle: …` on the plan line); `live/outline.py`'s
+  pill knows the ladder words; `cli/outline-pass.py` prints the cycle line;
+  `tests/test_item_table.py` pins the derivation (bound · landed · folded ·
+  stale · deferred · dropped · blocked, and a typed Status is ignored).
+- PROBE retired from the engine: `src/page_lifecycle.py` aliases it to
+  EVIDENCE and re-cuts LEGAL_ROUTES to the two-part loop; the controller's
+  enums, agent map and effort map drop it and gain `cycle`; `src/page_phase.py`
+  and `cli/pagephase.py` draw five phase rows, OUTLINE/EVIDENCE fed by the
+  table (`→ now: … · cycle …`); `src/page_context.py` aliases `· PROBE ·`
+  rows to EVIDENCE; the pageflow stepper, `checks/values.py`, `live/chat.py`'s
+  workflow prompt and the pagex docstrings follow.
+
+## 0.158.9 · 2026-08-31
+
+- Remove live Page-template and agent instructions that still wrote embedded
+  Files, Discussion, States, or Log sections; process records now point to
+  canonical `outline/<stem>-*.md` files.
+
+## 0.158.8 · 2026-08-31
+
+- Make the Insight partial-final checker read only the answering Folder's
+  canonical `outline/<stem>-log.md` record; a retired Page `## Log` no longer
+  satisfies the two-receipt law.
+
+## 0.158.7 · 2026-08-31
+
+- Resolve in-place Folder identity from the authoritative
+  `workflow/phase.yaml current` block and report any stale conflicting Page
+  key. The board checker now warns when a new Application Board uses the
+  readable-but-legacy kind-first name instead of the subject-first suffix.
+- The Delivery surface reads canonical `delivery/render/` and opens saved
+  recipient previews; the live Folder-native writer is no longer shown as a
+  pending ghost route.
+
+## 0.158.6 · 2026-08-31
+
+- Resolve a Page's phase-owned `folder-kind` through the Folder contract and
+  derive whether the owed ledger includes no owner RULING, a reused domain
+  gate, or a local ruling; legacy Pages remain conservative.
+- Read Probe cards from canonical `evidence/probe/` first while retaining flat
+  `probe/` as a compatibility lane. The Page lifecycle controller now carries
+  normalized `page_ruling` and hardens only the gate its owner declares; the
+  deterministic auditor rejects unknown policies and an unhardened owner gate.
+
 ## 0.158.5 · 2026-08-31
 
 group_token joins the WHOLE pre-· head, spaces to hyphens ("JAMA main" →

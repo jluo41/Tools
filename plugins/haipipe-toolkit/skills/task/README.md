@@ -15,7 +15,8 @@ page-type: task                  page-type: insight
 
 Execution answers whether the implementation and run are right. An Insight Page
 answers what the evidence means and how far that meaning can travel. Consumers
-read the settled Insight handoff; they never read `results/` directly.
+read settled Reusable Findings; they never read `results/` directly. RF is
+consumer-neutral evidence, not a signed Application Design Handoff.
 
 ## Mental Model
 
@@ -73,9 +74,10 @@ task/page-types/
 ```
 
 An Insight Page may read several Task Pages, Task `QA/` answers, Discovery
-Pages, or prior Insight Pages. It remains consumer-neutral: Paper selects K and
-Application selects K/W, but neither downstream stake is written into the
-Insight Page.
+Pages, or prior Insight Pages. It remains consumer-neutral and exports RF.
+Paper and Application may bind that exact RF version, but neither downstream
+stake is written into the Insight Page; an Application must turn it into its
+own contextual, signed I5 handoff before Design may use it.
 
 ## Boundary (self-contained by design)
 
@@ -93,9 +95,9 @@ task       = execute internal work (code, runs, metrics)
 discovery  = inspect outside evidence (literature, prior art)
 
 📄 the knowledge wall — Task/Insights Board interprets, without consumer stake
-insight    = D → I → K → W, settled once and reused
+insight    = D → I → K → W → RF, settled once and reused as evidence
 
-📦 the consumers — they select and re-express; they never enter the folder
+📦 the consumers — they bind RF and own every contextual consequence
 paper      = academic expression through Opening → Narrative → Section
-application= intervention expression through Brief → Intervention → Artifact
+application= I1 registration → signed I5 bridge → Design D0 → D5
 ```

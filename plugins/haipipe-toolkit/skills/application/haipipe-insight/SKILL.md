@@ -1,11 +1,17 @@
 ---
 name: haipipe-insight
 description: >-
-  The insight door of the Application family: one place assembling the laws for an InsightBoard that answers as a CLIMB. A board reads ONE dataset (Meta declares the extract; a subgroup is a partition, never a sibling board); four registers hold what is ASKED of each rung and never conclude; chain pages lift evidence one rung at a time — D observes run-bound, I derives from named D rows, K claims from named I rows, W counsels from named K rows — every value bound to a Task/Discovery QA file by path; and the W page exports a Design Handoff a person signs, the only thing a DesignBoard may bind. Ends at the signed handoff, never designs. Use for creating or driving an InsightBoard, registering questions, climbing a chain, partitions and the pooling verdict, settling a register, issuing or signing a Design Handoff. Trigger: insight board, insight door, question register, raise a question, climb, chain, lap, DIKW, rung, data page, knowledge claim, wisdom counsel, design handoff, partition, pooling verdict, /haipipe-insight.
+  InsightBoard door for the I0-I5 climb over one dataset. Meta declares the
+  extract; Question registers ask; Data observes; Information derives;
+  Knowledge claims; Wisdom counsels and exports a person-signed Design
+  Handoff. Phase skills own each Folder and both faces; this door owns the
+  one-dataset, register, climb, partition and signing laws. Ends at signed
+  handoff, never designs. Trigger: InsightBoard, question register, DIKW,
+  climb, chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-08-28"
+  version: "1.0.5"
+  last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,19 +25,25 @@ metadata:
 
 ```text
 haipipe-insight               this door · the one-dataset/climb/register/handoff laws · the verbs
-haipipe-page-for-meta         the head: source inventory only, holds NO question
-haipipe-page-for-question     the four registers MT01-MT04: asked and tracked, never concluded
-haipipe-page-for-data/-information/-knowledge/-wisdom     what each rung IS
+haipipe-insight-meta         the head: source inventory only, holds NO question
+haipipe-insight-question     the four registers MT01-MT04: asked and tracked, never concluded
+haipipe-insight-data/-information/-knowledge/-wisdom     what each rung IS
 haipipe-application           the umbrella keeps ref/partition.md (the partition grammar's single
                               source) and fn/meta.md + fn/chain.md, the page-level procedures
 haipipe-page-workflow         the loop every page here runs, like every page anywhere
-haipipe-insight-workflow      the lane's own phase machine: I0-I5 named by the six page types,
-                              gates GI0-GI6, the CELL as frontier unit, the climb order
-haipipe-application-workflow  the two-lane view above both boards: 🔎P0 = I0+I1, P1 = I2-I4,
-                              P2 = I5 · gates G0-G3 read the same cells
+haipipe-insight-workflow      the lane's phase machine: I0-I5, GI0-GI6,
+                              the CELL frontier, dispatch, receipts, climb order
+haipipe-folder                the shared two-face Folder and phase contract
+haipipe-application-workflow  cross-board handoffs only; no duplicate Insight phases
 ```
 
-`page-type: insight` stays TASK-ONLY: the consumer-neutral whole chain in one page (`/haipipe-task insight`), which is where dataset-first exploration lives. This door never mints one — its pages are meta, question, data, information, knowledge and wisdom — and a settled `scope: task` insight page reaches a Design page through PageX with local P2 legally empty.
+`page-type: insight` stays TASK-ONLY: the consumer-neutral whole chain in one
+Page (`/haipipe-task insight`), which is where dataset-first exploration lives.
+This door never mints one—its Folders are Meta, Question, Data, Information,
+Knowledge, and Wisdom. A settled Wisdom-targeted Task RF may enter only as the
+workflow's pre-climbed external parent: I1 registers its exact version and a
+local I5 Wisdom Folder contextualizes and signs the Application Design Handoff.
+RF never reaches Design directly.
 
 ## The Climb Law · a six-level lifting chain
 
@@ -47,6 +59,11 @@ Authority to conclude LIFTS one rung at a time, each rung citing only named rows
 ```
 
 Level-skipping is a CHECK routing failure, with exactly two exceptions, both inside the X cross group and both recorded in the rung contracts: the contrast I page derives from MIRRORED I rows (I-from-I), and the pooling-verdict K page cites the heterogeneity K row (K-from-K), because its subject is a claim about claims.
+
+The pre-climbed external-parent bridge is not a third skip: the Task Insight
+Page already contains and CHECK-closes the complete `D→I→K→W→RF` chain. GI4
+verifies that authority before local I5 performs the new Application-contextual
+operation; see `haipipe-insight-workflow`.
 
 **One dataset, one board.** The chain's ① is a scope, not a suggestion:
 
@@ -90,7 +107,8 @@ The join is a round trip through one question id: the register row's cell cites 
 ## The board, concretely
 
 ```text
-A<NN>_InsightBoard-<DataSubject>/          RUNG-MAJOR · the default
+<DataSubject>-InsightBoard/                RUNG-MAJOR · canonical
+(optional A<NN>_ ordering prefix before the subject)
 ├── board.md                               spine · close · store:
 ├── 0-MT-meta/MT00-meta/ + MT01-MT04/      inventory + the four registers
 ├── 1-D-data/D<NN>-<slug>/                 observed · run-bound
@@ -106,20 +124,22 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
                                            letters sort last (legacy: 9-X-cross/)
 ```
 
-The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page owns its own bounded `probe/`; Meta and the four registers own none, and no flat `1-probes/` exists. The `A<NN>_` prefix above is a project-local ordering option, not the canonical shape, which stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
+The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page owns its own bounded `evidence/probe/`; Meta and the four registers own none, and no flat `1-probes/` exists. A flat `probe/` on an unmigrated Page is a compatibility alias, never the shape new work writes. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
 
-## The page types this door owns
+## The Folder phases this door owns
 
 ```text
-MT00        haipipe-page-for-meta          what data EXISTS · one per board
-MT01-MT04   haipipe-page-for-question      what is ASKED of one rung · four per board
-D rung      haipipe-page-for-data          observed · run-bound · never compares
-I rung      haipipe-page-for-information   derived from named D rows · never claims
-K rung      haipipe-page-for-knowledge     claimed from named I rows · never advises
-W rung      haipipe-page-for-wisdom        counsel + the signed Design Handoff
+MT00        haipipe-insight-meta          what data EXISTS · one per board
+MT01-MT04   haipipe-insight-question      what is ASKED of one rung · four per board
+D rung      haipipe-insight-data          observed · run-bound · never compares
+I rung      haipipe-insight-information   derived from named D rows · never claims
+K rung      haipipe-insight-knowledge     claimed from named I rows · never advises
+W rung      haipipe-insight-wisdom        counsel + the signed Design Handoff
 ```
 
-SIX, and no others: a page on an InsightBoard declaring any other `page-type:` has been mis-filed. They ship in `application/page-types/`, the same folder holding the design door's three, so the folder cannot say who owns what and this roster is where the insight half is named. Versions are never restated here — `/skill-set-status` reads them from disk, and the family's dated table lives in `application/README.md` §Family status.
+These are six workflow phases, not six configuration/Page-Type skills. Each
+named skill owns its Folder kind's Page Face, Task Face, plugins, gate, and
+handoff. Legacy `page-type:` keys resolve to these skills during migration.
 
 ## Verbs
 
@@ -140,7 +160,12 @@ check | review      CHECK selected rung pages in a fresh context
 workflow | run      drive laps (§The lap): gap → climb (✋release inside) → ✋sign → settle · STOP
 ```
 
-The two ✋ gates never have an auto mode: releasing a probe card and signing a handoff are a person's, and every page dispatched into `haipipe-page-workflow` pins `mode: copilot`. With the design door's two (card release, acceptance) they are the application's four human gates, two per door.
+The two Insight cross-phase ✋ gates never have an auto mode: releasing a probe
+card and signing a handoff are a person's, and every page dispatched into
+`haipipe-page-workflow` pins `mode: copilot`. Page-local outline/read/verified
+ticks remain nested controls rather than new Insight gates. With the Design
+door's two cross-phase gates (card release, acceptance), they are the
+Application's four domain authority transfers, two per door.
 
 ## The lap, step by step
 
@@ -158,7 +183,7 @@ lap entry: pick one frontier question, a register cell not yet settled
            records the allocation, `⬜ <id>`, in the same lap
 ③ CLIMB    run that ONE page through haipipe-page-workflow,      pen: chain page
            mode: copilot — cards raised at PROBE (a card is the
-           probe plugin's `probe/PP<NN>-<slug>/card.md`, states
+           probe plugin's `evidence/probe/PP<NN>-<slug>/card.md`, states
            and shape per board/haipipe-plugin/ref/roster.md —
            this door POINTS, it does not restate) · MATCH the
            QA bank BEFORE raising and AGAIN at dispatch — a
@@ -177,20 +202,34 @@ lap entry: pick one frontier question, a register cell not yet settled
 ────────────────────────────────────────────────────────────────────────────
 ```
 
-The pens own their steps — ① and ⑤ write STATE, ② and ③ write FINDINGS, ④ exports — and the lap's two ✋ are the door's two gates; no third appears. A ZERO-CARD ③ is a legal quiet pass: when every value the page owes already exists in the store, PROBE raises nothing, there is nothing to release, and the lap proceeds — a skipped phase is a phase that had cards and ignored them, not a phase that had none. A quiet pass is DECLARED, never silent: the run states "PROBE: zero cards (quiet pass)" where it would have presented cards, because from the operator's side an undeclared quiet pass and a skipped phase look identical. SIGN precedes SETTLE because a W question's "what would answer it" includes the signed handoff: the cell cites a page whose person's tick already exists.
+The pens own their steps — ① and ⑤ write STATE, ② and ③ write FINDINGS, ④
+exports — and the lap's two cross-phase ✋ are the door's two domain gates; no
+third GI transfer appears. A ZERO-CARD ③ is a legal quiet pass: when every
+value the page owes already exists in the store, PROBE raises nothing, there is
+nothing to release, and the lap proceeds — a skipped phase is a phase that had
+cards and ignored them, not a phase that had none. A quiet pass is DECLARED,
+never silent: the run states "PROBE: zero cards (quiet pass)" where it would
+have presented cards, because from the operator's side an undeclared quiet pass
+and a skipped phase look identical. SIGN precedes SETTLE because a W question's
+"what would answer it" includes the signed handoff: the cell cites a page whose
+person's tick already exists. GI5 forbids outward composition; GI6 then records
+the settlement before the cell stops.
 
 **Serial in a chain, parallel across.** One chain is strictly serial — each rung cites only the rung below, so there is nothing inside it to parallelize. Parallelism lives ACROSS: questions each on their own lap, partition mirrors climbing side by side. The design door is the opposite shape: its fan-out is per-card INSIDE one page, one arm-agent each.
 
 ## The journey, mapped onto existing machinery
 
-The lane has its own phase machine, `haipipe-insight-workflow`: six phases named by the six page types this door owns — I0 Meta, I1 Question, I2 Data, I3 Information, I4 Knowledge, I5 Wisdom — with gates GI0-GI6 and the register CELL (question × partition) as the frontier unit. The division of labor with this door:
+The lane has its own phase machine, `haipipe-insight-workflow`: six
+phase-owned Folder kinds — I0 Meta, I1 Question, I2 Data, I3 Information, I4
+Knowledge, I5 Wisdom — with gates GI0-GI6 and the register CELL (question ×
+partition) as the frontier unit. The division of labor with this door:
 
 ```text
 this door        the LAW: one dataset, the Climb Law, the pens, the two ✋ · and the
                  LAP, which is HOW one cell moves
 insight-workflow the PHASES: where a cell is, which gate it faces, the climb order
                  (template, mirrors in parallel, X, every W), receipts, stop rules
-application-wf   the two-lane view above both boards: 🔎P0 = I0+I1, P1 = I2-I4, P2 = I5
+application-wf   cross-board receipts and handoffs; it never renames these phases
 page-workflow    OUTLINE…CHECK inside every single page RUN
 ```
 

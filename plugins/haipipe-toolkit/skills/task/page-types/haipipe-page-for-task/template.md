@@ -1,4 +1,4 @@
-<!-- TEMPLATE · haipipe-page-for-task 0.9.0
+<!-- TEMPLATE · haipipe-page-for-task 0.10.2
      Copy to <page>/<page-id>.md and delete each RULE comment as it is satisfied.
      A RULE comment left in a shipped page is an unfinished page.
      The base frame is haipipe-page; only what a TASK page adds is templated here. -->
@@ -53,7 +53,8 @@ folder-kind: task
 
 ### 2 · Data · <what went in, and the one fact about it a reader must know>
 <!-- RULE · Machinery names are banned at division level: Inputs, Runs,
-     Provenance, Run receipts. Those go in ## Files. The material survives; the
+     Provenance, Run receipts. Those go in
+     outline/<page-stem>-files.md. The material survives; the retired on-page
      heading does not. -->
 
 ### 3 · Method · <what was run, AND what it was run INSTEAD OF>
@@ -91,8 +92,8 @@ next run       <the run that would settle it, or "none: the question is dead">
 <!-- RULE · one Aim per question this task must answer; its row carries the tick and a
      **Now:** line saying answered · needs another run · dropped (no `## States`). -->
 
-## Files
-<!-- RULE · ALL machinery lives here, including every QA/<n>-<slug>.md by path.
+<!-- RULE · ALL machinery is registered in outline/<page-stem>-files.md,
+     including every QA/<n>-<slug>.md by path.
      RULE · The <NAME> token binds the four sister files and is what makes
      "every number names its run" checkable:
        configs/<NAME>.yaml · runs/<NAME>.sh · results/<NAME>/ · notebooks/<NAME>.ipynb
@@ -102,5 +103,5 @@ next run       <the run that would settle it, or "none: the question is dead">
      Listing them by path is the whole relationship. -->
 
 ## Law
-
-## Log
+<!-- RULE · Dated change and gate receipts live newest-first in
+     outline/<page-stem>-log.md. Never add an embedded Log section. -->

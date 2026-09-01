@@ -1,3 +1,6 @@
+## 0.6.1 · 260831
+- Narratives close the story group as Story<NN>-narrative-<desk> (JL 260831); a separate A2-NA-narrative group with NA numbering is grandfathered.
+
 ## 0.6.0 — 2026-08-31
 
 - **Renamed and moved** (JL 260831: "replace page-types to be workflow-phases"):
