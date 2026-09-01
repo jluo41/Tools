@@ -140,7 +140,7 @@ body.split .chatbtn{display:none}
    never empty. Measured 260803 from his own console: 35 tool cards, every one
    `h=1`, each holding real text (`Bash`, the command, `done`). */
 #chat .bd > *{flex:0 0 auto}
-#chat{--chatfs:12.5px}
+#chat{--chatfs:11.5px}
 #chat .m{max-width:90%;padding:7px 11px;border-radius:var(--radius-surface);font-size:var(--chatfs);line-height:1.55;
  white-space:pre-wrap;word-break:break-word}
 #chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}

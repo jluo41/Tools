@@ -1,3 +1,12 @@
+## 0.158.2 · 2026-08-31
+
+Chat default text down to 11.5px (JL: "smaller here"); the ⚙ Aa options
+shift a step down (10.5 · 11.5 · 12.5 · 14 · 16), a stored choice still
+wins everywhere. And the pane opens AT THE BOTTOM every time it becomes
+visible (JL): a visibility watcher snaps .bd to the newest message on
+every hidden→shown edge, covering tab switches and the return from the
+terminal, not just the first replay.
+
 ## 0.158.1 · 2026-08-31
 
 PURE WHITE ground (JL: "kind of yellow, right?"): every warm light-scheme

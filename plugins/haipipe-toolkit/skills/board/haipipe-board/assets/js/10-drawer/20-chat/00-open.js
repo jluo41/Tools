@@ -52,8 +52,9 @@
     '<select class="eff"><option>low</option><option>medium</option>' +
     '<option selected>high</option><option>xhigh</option><option>max</option></select>' +
     '<select class="fsz" title="chat text size — JL 260831: windows differ in width and zoom, so the size is yours to set">' +
-    '<option value="11">Aa 11</option><option value="12.5" selected>Aa 12.5</option>' +
-    '<option value="14">Aa 14</option><option value="16">Aa 16</option></select>' +
+    '<option value="10.5">Aa 10.5</option><option value="11.5" selected>Aa 11.5</option>' +
+    '<option value="12.5">Aa 12.5</option><option value="14">Aa 14</option>' +
+    '<option value="16">Aa 16</option></select>' +
     '<select class="scope" title="Permission tier: Scoped = this question only · Full = all tools + skills, like the CLI">' +
     '<option value="scoped">Scoped</option>' +
     '<option value="full" selected>Full · ask</option>' +
@@ -177,6 +178,20 @@
     } catch (e) {}
     drawNote('✋ the drawing lives in the board shell — open this page in the split view');
   };
+  /* ⤓ open at the NEWEST message EVERY time the pane becomes visible (JL
+     260831 "make the GUI chat to the bottom everytime I open it"): the
+     replay-time scroll (40-permissions) only covers the first open — a tab
+     switch or a return from the terminal reveals the pane mid-transcript.
+     Watch visibility itself: on every hidden→shown edge, snap to bottom. */
+  (function () {
+    var bd = chat.querySelector('.bd');
+    var wasVisible = false;
+    setInterval(function () {
+      var vis = !!bd.offsetParent && bd.clientHeight > 0;
+      if (vis && !wasVisible) bd.scrollTop = bd.scrollHeight;
+      wasVisible = vis;
+    }, 400);
+  })();
   /* Aa the chat text size is the reader's (JL 260831 "still large here"):
      one CSS variable, one stored choice, applied at boot. */
   var FSZ = 'board-chat-fsz';
@@ -185,7 +200,7 @@
     chat.style.setProperty('--chatfs', v + 'px');
     if (fszSel) fszSel.value = v;
   }
-  try { applyFsz(localStorage.getItem(FSZ) || '12.5'); } catch (e) { applyFsz('12.5'); }
+  try { applyFsz(localStorage.getItem(FSZ) || '11.5'); } catch (e) { applyFsz('11.5'); }
   if (fszSel) fszSel.onchange = function () {
     try { localStorage.setItem(FSZ, fszSel.value); } catch (e) {}
     applyFsz(fszSel.value);
