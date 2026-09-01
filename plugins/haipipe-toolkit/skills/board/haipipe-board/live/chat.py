@@ -59,6 +59,22 @@ def quality_tool_allowed(name):
     return name in QUALITY_READONLY
 
 
+def chat_guard(page, payload):
+    """Return (read_only, mode, reason), with Labeling HOLD server-owned.
+
+    `quality_check` is a useful browser request; a Labeling HOLD is an artifact
+    fact and therefore cannot be disabled by changing or omitting that request.
+    """
+    try:
+        from .labeling import labeling_chat_hold
+        labeling_hold, reason = labeling_chat_hold(Path(page))
+    except Exception:
+        labeling_hold, reason = False, ""
+    read_only = bool(payload.get("quality_check")) or labeling_hold
+    mode = "scoped" if read_only else chat_scope(payload)
+    return read_only, mode, reason
+
+
 # 真正会改盘上文件的工具 —— 只有跑过这些，才配说「改动已写盘」。
 WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 
@@ -826,6 +842,11 @@ class ChatMixin:
         #   bypass  全工具 + 全技能 · 什么都不问（= --dangerously-skip-permissions）
         quality_check = bool(p.get("quality_check"))
         mode = chat_scope(p)
+        guarded, guarded_mode, labeling_hold_reason = chat_guard(f, p)
+        if guarded:
+            quality_check = True
+            mode = guarded_mode
+        labeling_hold = bool(labeling_hold_reason)
         # 整板会话（QD5）：f 是 board.md 而不是某一题。规则、开场定位、
         # 「自动放行哪些写」三处跟着换；session 照旧记在 f（= board.md）头部。
         is_board = f.name == "board.md"
@@ -902,7 +923,10 @@ class ChatMixin:
             if quality_check and not quality_tool_allowed(name):
                 denied.append(tool_brief(name, tin))
                 return PermissionResultDeny(
-                    message="Quality Check is read-only: it may inspect evidence but cannot write or run tools.")
+                    message=("Labeling HOLD is read-only: Chat may inspect and discuss, "
+                             "but cannot write, run, or cross the human gate."
+                             if labeling_hold else
+                             "Quality Check is read-only: it may inspect evidence but cannot write or run tools."))
             if name in READONLY:
                 return PermissionResultAllow()
             key = str(f)
@@ -992,6 +1016,7 @@ class ChatMixin:
                           "WebFetch", "WebSearch"]   # Skill stays: it loads text, writes nothing
             if quality_check:
                 SCOPED_OFF += ["Edit", "Write", "MultiEdit", "TodoWrite"]
+                SCOPED_OFF += ["NotebookEdit"]
             # cwd 是整个 repo（SPACE），不是板文件夹 —— 会话要能读它讨论的代码。
             # 所以给系统提示的是「相对 repo 根的路径」，不再是光文件名。
             try:
@@ -1017,6 +1042,11 @@ class ChatMixin:
                         if is_board else
                         (FULL_RULES + f"\n\nThis session's question file: {rel}\n\n")) + prime
                 sources = ["user", "project", "local"]   # 加载技能 → Skill 工具可用
+            if labeling_hold:
+                sysp += ("\n\nLABELING HOLD — READ-ONLY CONSULTATION. "
+                         + labeling_hold_reason
+                         + " You may inspect and discuss. Do not edit any file, run any "
+                           "command, create any semantic event, or claim that the frontier advanced.")
             kw = dict(
                 cwd=str(self.root),
                 system_prompt=sysp,
@@ -1167,7 +1197,10 @@ class ChatMixin:
             # every turn look different and silently reconnected every time
             # (caught by the stage line still saying "booting" on turn two).
             # A held client IS the conversation; only an explicit pick moves it.
-            fp = (model, effort, mode, is_board, bool(stream))
+            # `quality_check` is CONNECT-time because its disallowed_tools are;
+            # include it so a held writable scoped client can never be reused
+            # for a read-only Quality Check or Labeling HOLD turn.
+            fp = (model, effort, mode, is_board, bool(stream), quality_check)
             key = str(f)
 
             async def make():

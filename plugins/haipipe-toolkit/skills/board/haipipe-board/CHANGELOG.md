@@ -1,3 +1,11 @@
+## 0.157.2 · 2026-08-31
+
+Stuck-in-TUI fix: the docked pane has hidden the header's .term since the
+strip segment owned switching — with that segment retired the terminal had
+no visible exit. body.pane-chat.termon now surfaces '← GUI' while the
+terminal shows; the GUI keeps its clean header (the composer ⌨ is the
+door in).
+
 ## 0.157.1 · 2026-08-31
 
 The TUI on Windows was letter-spaced wide: the font list found none of the

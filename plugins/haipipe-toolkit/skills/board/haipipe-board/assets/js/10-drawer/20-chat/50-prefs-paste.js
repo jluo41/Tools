@@ -1,3 +1,7 @@
+  /* A Labeling HOLD is visible in the iframe URL, but the server independently
+     re-derives it from canonical artifacts. This flag only makes the UI honest. */
+  var labelingHold = new URLSearchParams(location.search).get('labeling_hold') === '1';
+
   /* 模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask */
   (function () {
     var m = chat.querySelector('.mdl'), e = chat.querySelector('.eff'),
@@ -11,6 +15,11 @@
        `full` for CLI-style per-call prompts. A choice already made is
        remembered, so this only changes what a NEW browser starts with. */
     s.value = localStorage.getItem(SK) || 'bypass';
+    if (labelingHold) {
+      s.value = 'scoped';
+      s.disabled = true;
+      s.title = 'Labeling HOLD: read-only consultation, enforced again by the server';
+    }
     m.onchange = function () { localStorage.setItem(MK, m.value); };
     e.onchange = function () { localStorage.setItem(EK, e.value); };
     s.onchange = function () {
@@ -402,8 +411,9 @@
           /* A one-click Quality Check is deliberately unable to inherit a
              remembered Full · no ask choice. The server independently pins
              this flag to read-only scoped mode. */
-          scope: (opts && opts.scope) || chat.querySelector('.scope').value,
-          quality_check: !!(opts && opts.qualityCheck) })
+          scope: labelingHold ? 'scoped' :
+                 ((opts && opts.scope) || chat.querySelector('.scope').value),
+          quality_check: !!(opts && opts.qualityCheck) || labelingHold })
       });
       /* 服务器一行一条 JSON 地往下发，边收边显示 */
       /* A refusal (HOLD taken, a turn already running, no SDK) comes back as a

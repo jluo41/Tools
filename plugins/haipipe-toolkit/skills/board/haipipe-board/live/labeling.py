@@ -218,6 +218,21 @@ def inspect(page_src: Path) -> dict:
     }
 
 
+def labeling_chat_hold(page_src: Path) -> tuple[bool, str]:
+    """Server-side Chat guard; no browser flag can turn a labeling HOLD off."""
+    if not page_src.is_file():
+        return False, ""
+    try:
+        head = page_src.read_text(encoding="utf-8", errors="ignore")[:4096]
+    except OSError:
+        return False, ""
+    if not re.search(r"(?m)^page-type:\s*labeling\s*$", head):
+        return False, ""
+    state = inspect(page_src)
+    action = state["next_action"]
+    return action.startswith("HOLD"), action
+
+
 _CSS = """
 :root{--bg:#fbfbfa;--fg:#202124;--mut:#72747b;--line:#dddeda;--card:#f2f2ee;
  --accent:#8055a5;--ok:#26734d;--hold:#a34b24}
@@ -274,7 +289,12 @@ def render(page_src: Path, path_q: str, file_q: str) -> str:
         f"handoff {'present' if state['handoff'].is_file() else 'absent'} · "
         f"production {len(state['prod_runs'])} · audits {len(state['audits'])}"
     )
+    hard_hold = state["next_action"].startswith("HOLD")
     chat_url = path_q + ("&" if "?" in path_q else "?") + "pane=chat"
+    if hard_hold:
+        chat_url += "&labeling_hold=1"
+    chat_mode = ("read-only consultation · server-enforced HOLD"
+                 if hard_hold else "discuss or run the routed action")
     prompt = (
         "Use /subjective-label for this labeling page. Derive both frontiers from "
         "canonical artifacts under labeling/, name the first failed G0-G6 assertion, "
@@ -301,7 +321,7 @@ def render(page_src: Path, path_q: str, file_q: str) -> str:
   <p class=mut>Protected item text, sealed ids, and per-item judgments are intentionally not rendered here.</p>
  </div>
 </div></section>
-<section><div class=talk><b>💬 Studio Chat · discuss or run the routed action</b>
+<section><div class=talk><b>💬 Studio Chat · {html.escape(chat_mode)}</b>
 <button id=prefill type=button>Prefill safe status ask</button></div>
 <iframe id=chat src="{html.escape(chat_url, quote=True)}" title="labeling chat"></iframe></section>
 <script>(function(){{'use strict';var C={ctx};document.getElementById('prefill').onclick=function(){{

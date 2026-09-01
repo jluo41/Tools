@@ -92,6 +92,10 @@ body.pane-chat #chat .hd .x{display:none !important}
    and keeps doing the work, hidden, because the switch hands a session back and
    forth under QD1's one-window Law and should have one implementation. */
 body.pane-chat #chat .hd .term{display:none !important}
+/* …except while the TERMINAL is showing (JL 260831 "there is no place to be
+   back to GUI"): the composer — the door IN — hides with the GUI, so the
+   header's '← GUI' must surface. body.termon is termView()'s own mark. */
+body.pane-chat.termon #chat .hd .term{display:inline-flex !important;align-items:center}
 """,
     "page": """
 /* QD5 page pane: the page, alone. The sidebar is the index pane's job now, and the

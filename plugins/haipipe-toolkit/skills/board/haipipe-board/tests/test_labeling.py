@@ -4,7 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from live.labeling import P0_FILES, inspect, render
+from live.chat import chat_guard
+from live.labeling import P0_FILES, inspect, labeling_chat_hold, render
 
 
 class LabelingSurfaceTest(unittest.TestCase):
@@ -118,6 +119,26 @@ class LabelingSurfaceTest(unittest.TestCase):
         state = inspect(self.page)
         self.assertEqual(state["root"], old)
         self.assertIn("migrate", state["location_note"])
+
+    def test_labeling_hold_forces_server_side_read_only_chat(self):
+        self.make_contract(
+            "simulation_only: true\nauthority:\n  human_id: PROXY\n"
+            "  mode: simulation_proxy_only\n  creates_human_gold: false\n"
+        )
+        self.put("rounds/round_01/checkpoint.json", json.dumps({"state": "closed"}))
+        held, reason = labeling_chat_hold(self.page)
+        self.assertTrue(held)
+        self.assertIn("HOLD", reason)
+        # A forged writable client request cannot turn the artifact-derived guard off.
+        read_only, mode, guarded_reason = chat_guard(
+            self.page, {"quality_check": False, "scope": "bypass"})
+        self.assertTrue(read_only)
+        self.assertEqual(mode, "scoped")
+        self.assertEqual(guarded_reason, reason)
+        body = render(self.page, "/demo/board/SL/S-Label-1-demo.html",
+                      "SL/S-Label-1-demo/S-Label-1-demo.md")
+        self.assertIn("labeling_hold=1", body)
+        self.assertIn("server-enforced HOLD", body)
 
 
 class LabelingRegistrationTest(unittest.TestCase):
