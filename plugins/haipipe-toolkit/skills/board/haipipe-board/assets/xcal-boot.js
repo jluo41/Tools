@@ -199,19 +199,38 @@
   put_files(scene.files).then(start, start);
 
   /* ---- 2. the badge: saving is invisible otherwise -------------------- */
-  var pill;
+  /* It COLLAPSES to its emoji after a few seconds (JL 260831: the full pill
+     sat on excalidraw's bottom toolbar in the studio's half-height canvas);
+     hover expands it again. A "bad" tone (read-only, blocked) never
+     collapses — a standing warning must stand. */
+  var pill, pillFull = "", pillTimer = null;
   function say(text, tone) {
     if (!pill) {
       pill = document.createElement("div");
       pill.setAttribute("style",
         "position:fixed;left:12px;bottom:12px;z-index:2147483647;font:12px/1.5 " +
         "ui-monospace,Menlo,monospace;padding:5px 10px;border-radius:999px;" +
-        "pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.25)");
+        "box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:default;" +
+        "transition:max-width .25s;white-space:nowrap;overflow:hidden");
       (document.body || document.documentElement).appendChild(pill);
+      pill.addEventListener("mouseenter", function () { pill.textContent = pillFull; });
+      pill.addEventListener("mouseleave", function () {
+        if (pillTimer === "done") pill.textContent = pillFull.split(" ")[0];
+      });
     }
+    pillFull = text;
     pill.textContent = text;
     pill.style.background = tone === "bad" ? "#c0392b" : tone === "busy" ? "#8a6d3b" : "#2d6a4f";
     pill.style.color = "#fff";
+    if (pillTimer && pillTimer !== "done") clearTimeout(pillTimer);
+    pillTimer = null;
+    if (tone !== "bad") {
+      pillTimer = setTimeout(function () {
+        pillTimer = "done";
+        pill.textContent = pillFull.split(" ")[0];   // the emoji alone
+        pill.title = pillFull;
+      }, 5000);
+    }
   }
   function ready() {
     if (!document.body) return setTimeout(ready, 60);

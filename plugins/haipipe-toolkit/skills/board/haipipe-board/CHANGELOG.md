@@ -1,3 +1,10 @@
+## 0.158.3 · 2026-08-31
+
+The xcal ownership pill collapses to its emoji 5s after boot (hover
+expands, title carries the words) — the full pill sat on excalidraw's
+bottom toolbar in the studio's half-height canvas (JL). A "bad" tone
+(read-only, blocked) never collapses.
+
 ## 0.158.2 · 2026-08-31
 
 Chat default text down to 11.5px (JL: "smaller here"); the ⚙ Aa options
