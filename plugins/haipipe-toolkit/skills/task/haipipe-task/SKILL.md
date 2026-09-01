@@ -388,7 +388,7 @@ Step 3a (scope=job only): Task-type inference cascade.
 
   (1) EXPLICIT — type given as positional after `job` (alias `task-folder`), or already pinned at Step 2 cascade (2). Done.
 
-  (2) SCRIPT-INFERRED — if pwd is inside an existing job, read the main `*.py` script and `scripts/` code. Detect type from imports and content:
+  (2) SCRIPT-INFERRED — if pwd is inside an existing job, read the main `*.py` script plus the task's `scripts/` and the job's `src/` code. Detect type from imports and content:
     - `from haipipe` / `SourceFn` / `RecordFn` → data
     - `databricks` / `spark.sql` / `dbutils` / catalog extract → raw
     - `import torch` / `Trainer` / `sweep` → fit
@@ -458,8 +458,9 @@ Step 3d: Block iteration (scope=block-iterate).
       ```
       for d in <block-path>/*/; do
         # a JOB is a directory that holds work — not one whose NAME matches a pattern
-        [ -n "$(find "$d" -maxdepth 1 -name '*.py' -print -quit)" ] || [ -d "$d/scripts" ] ||
-        [ -d "$d/workflow" ] || [ -d "$d/results" ] || [ -d "$d/configs" ] || [ -d "$d/runs" ] || continue
+        [ -n "$(find "$d" -maxdepth 1 -name '*.py' -print -quit)" ] || [ -d "$d/src" ] ||
+        [ -d "$d/scripts" ] || [ -d "$d/workflow" ] || [ -d "$d/results" ] ||
+        [ -d "$d/configs" ] || [ -d "$d/runs" ] || continue
         echo "$d"
       done | sort
       ```
@@ -509,6 +510,8 @@ Step 4: RUN THE CHECKLIST before reporting anything.
   S7  an sbatch that never says one-by-one   or parallel, or says it inconsistently
   S8  a doc naming something that is gone    every rename so far left one behind
   S9  an entry point splatting @Rest         -WhatIf binds positionally and it fails
+  S10 code at the wrong LEVEL              a job holding scripts/, a task holding src/,
+                                           or config/ left at a task root
   ```
 
   S8 is the one that pays for itself: a page listing what the tree already holds

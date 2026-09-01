@@ -77,9 +77,11 @@ page-specific deviation is a `D<nn>` thread, never a requirement line. A page
 with no `structure-source:` gets no file.
 
 **Evidence** is a dated snapshot of the 🧭 join: one record per marked bullet,
-`Has` what the disk says, `Status` one of the six words `evidence-ready ·
-needs-probe · needs-intake · needs-citation · needs-revision · accepted`; the
-page line reads `owed · landed · accepted`. A bare mark a card serves counts as
+its head carrying THE PLAN'S OWN WORDS after the mark (0.18.1, JL 260831: a
+bare ref in the head "lost a lot of informations"), `Has` what the disk says,
+`Ref` the serving card/unit id only when one exists, `Status` one of the six
+words `evidence-ready · needs-probe · needs-intake · needs-citation ·
+needs-revision · accepted`; the page line reads `owed · landed · accepted`. A bare mark a card serves counts as
 raised. It imports the tab's own parse, so file and tab cannot disagree.
 
 **Files** is one record per file the page reads, writes, checks or keeps:

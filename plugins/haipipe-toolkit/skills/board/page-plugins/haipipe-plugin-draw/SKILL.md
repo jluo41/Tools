@@ -7,7 +7,7 @@ description: >-
   attach a drawing, page scene, group scene, excalidraw, autodraw, draw it,
   /haipipe-plugin-draw.
 metadata:
-  version: "0.2.3"
+  version: "0.2.4"
   last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-draw · one scene per owner, saved to exactly one owner

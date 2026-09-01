@@ -101,21 +101,38 @@ production data/reg jobs already use (e.g. OpioidRx R03_Reg_TraitCABG/
 C01_data_pipeline_cabg and D01-reg_visitami_leftdigit):
 
 ```
-{LNN}_{stage}[_<study>]/            NESTED (data/reg stages, current production)
-├── sbatch/<all>.ps1                submit the whole DAG (calls tickets in order)
-├── scripts/
-│   ├── src/                        shared: lib-*.do + the runner .ps1 + config-defaults.do
-│   │                               (was 0-libs/; the OpioidRx tree keeps that name —
-│   │                                hierarchy.md "The 0-libs exemption")
-│   └── {N}_{task_name}/            one TASK = one pipeline: config*.do (the run's
-│                                   globals, IN the task) + run-*-pipeline.do + step-*.do
-├── runs/<task-named>.ps1           thin tickets, one per task run
-├── results/<run>/                  log/*.txt · report artifacts · config_snapshot.do
+jNN_{L}_{kind}_{subject}/           NESTED (current production, 260831)
+├── sbatch/                         batchers that SPAN tasks + batch.psd1 declaring
+│                                   Mode (sequential|parallel) · Ceiling · CollisionKey
+├── src/                            SHARED by every task in this job: lib-*.do,
+│   │                               the runner .ps1, config-defaults.do, the
+│   │                               dispatcher .do the launcher resolves
+│   └── 0-libs/                     the pre-260830 name, now an ordinary subfolder
+│                                   (hierarchy.md "`0-libs/`: the one older name")
+├── tNN_{L}_{kind}_{subject}/       one TASK = one pipeline, directly under the job
+│   ├── scripts/                    THE TASK'S OWN CODE (JL 260831)
+│   │   ├── run-*-pipeline.do       the spine: the plan, printed not executed
+│   │   └── config/                 INSIDE scripts/ — the run's globals sit beside
+│   │                               the code that reads them; rNN_*.do per run,
+│   │                               plus any SHARED cohort .do no ticket names
+│   ├── runs/rNN_*.ps1              thin tickets, one per run identity
+│   └── tNN_*.md                    the page a reader opens
+├── results/<task>/<run>/           log/*.txt · report artifacts · config_snapshot.do
 └── workflow/ · diagram/ · ISSUES.md
+
+TWO WORDS ON PURPOSE (JL 260831): `src/` is the JOB's shared code, `scripts/` is
+the TASK's own. The name alone says the level, so no one walks the path to find out.
 ```
 
-The FLAT dispatcher shape below is the cms/case-stage anatomy (and the legacy
-form of data/reg):
+The FLAT dispatcher shape below is the LEGACY cms/case-stage anatomy (and the
+legacy form of data/reg). Read it to understand an old tree; do not scaffold it.
+The cms and case stages migrated to the NESTED shape above on 260831.
+
+⚠️ Its job-root `scripts/` is the WORKER LIBRARY and predates the two-word
+ruling, so the same word means two different things across the two shapes: here
+it is the job's shared step code (which is `src/` in the nested shape), while in
+a nested tree `scripts/` is a TASK's own code. That collision is exactly what
+the ruling removed, and it is why this shape is not scaffolded any more.
 
 ```
 {LNN}_{stage}_pipeline/

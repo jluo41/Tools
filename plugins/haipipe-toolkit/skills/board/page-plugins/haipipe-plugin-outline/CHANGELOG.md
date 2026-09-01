@@ -1,3 +1,7 @@
+## 0.20.2 — 2026-08-31
+- Evidence record heads carry the plan's words (record-shape 0.18.1);
+  `Ref` its own row, only when one exists.
+
 ## 0.20.1 · 2026-08-31
 
 Scope: outline/ is legal on any unit folder, task folders included (the unit

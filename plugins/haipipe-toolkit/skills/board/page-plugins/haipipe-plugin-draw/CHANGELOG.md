@@ -1,3 +1,8 @@
+## 0.2.4 — 2026-08-31
+- The shell's ✨ drawbar retired: the ask now types into the chat COMPOSER
+  and fires from the 🖌 menu (__studioDrawIt); autodraw route and refusals
+  unchanged.
+
 ## 0.2.3 — 2026-08-31
 - Surface rehomed: the editor is the upper half of the one 🎨 Studio tab
   (haipipe-plugin-studio), ✨ bar riding with it; rules unchanged.

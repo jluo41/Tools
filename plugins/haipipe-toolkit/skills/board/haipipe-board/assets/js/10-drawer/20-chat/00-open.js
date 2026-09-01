@@ -35,6 +35,13 @@
        260831: "make the sessions hidden ... it will show a list of menu").
        Same .gtoggle/.utoggle/.stoggle classes, so setUtility is unchanged. */
     '<div class="utility"><div class="utility-body"><div class="acts"></div>' +
+    /* 🖌 the draw menu (JL 260831: the shell's ✨ drawbar retired — "I want
+       it to be in the input box"): Draw-it reads the COMPOSER text as the
+       ask, the fold row is the studio's hide/show. */
+    '<div class="drawmenu">' +
+    '<button class="dact draw-go" type="button">✨ Draw it — uses the text in the box · empty = this page&#39;s ## Diagram</button>' +
+    '<button class="dact draw-fold" type="button">🖌 Hide the drawing</button>' +
+    '</div>' +
     '<div class="sessions"><details class="spick" hidden open>'+
     '<summary></summary><div class="spl"></div></details></div>' +
     '<div class="settings"><div class="tip"></div>' +
@@ -89,9 +96,11 @@
   var utility = chat.querySelector('.utility'), utilityToggle = chat.querySelector('.utoggle'),
       settingsToggle = chat.querySelector('.stoggle'),
       sessionsToggle = chat.querySelector('.gtoggle');
+  var drawToggle = chat.querySelector('.dtoggle');
   var UTABS = [['actions', 'show-actions', utilityToggle],
                ['sessions', 'show-sessions', sessionsToggle],
-               ['settings', 'show-settings', settingsToggle]];
+               ['settings', 'show-settings', settingsToggle],
+               ['draw', 'show-draw', drawToggle]];
   function setUtility(mode) {
     var known = UTABS.filter(function (t) { return t[0] === mode; }).length;
     mode = known ? mode : '';
@@ -109,6 +118,12 @@
       var sp = chat.querySelector('.spick');
       if (sp) sp.open = true;
       if (typeof loadSessions === 'function') loadSessions();   // refresh on reveal
+    }
+    if (mode === 'draw') {
+      var fr = chat.querySelector('.draw-fold'), shown = true;
+      try { shown = !parent || !parent.__studioDrawShown || parent.__studioDrawShown(); }
+      catch (e) {}
+      fr.textContent = shown ? '🖌 Hide the drawing' : '🖌 Show the drawing';
     }
   }
   UTABS.forEach(function (t) {
@@ -131,9 +146,36 @@
     setUtility('');
     if (window.__chatNewSession) window.__chatNewSession('');
   };
-  /* 🖌 the draw fold lives in the SHELL (the studio's upper half); this is
-     the composer's remote for it. Outside the shell it does nothing. */
-  chat.querySelector('.dtoggle').onclick = function () {
-    try { if (parent && parent.__studioToggleDraw) parent.__studioToggleDraw(); }
+  /* one small toast pill for the draw menu's progress words */
+  function drawNote(msg) {
+    var t = chat.querySelector('.lrf.draw');
+    if (!t) {
+      t = document.createElement('div');
+      t.className = 'lrf draw';
+      chat.appendChild(t);
+    }
+    t.textContent = msg;
+    clearTimeout(t._bye);
+    if (/^(✅|✋)/.test(msg)) t._bye = setTimeout(function () { t.remove(); }, 6000);
+  }
+  /* the drawing itself lives in the SHELL (the studio's upper half); the
+     menu rows are the composer's remote for it. Outside the shell they say so. */
+  chat.querySelector('.draw-go').onclick = function () {
+    setUtility('');
+    var ta = chat.querySelector('textarea');
+    var ask = ta.value.trim();
+    try {
+      if (parent && parent.__studioDrawIt) {
+        parent.__studioDrawIt(ask, drawNote);
+        if (ask) ta.value = '';
+        return;
+      }
+    } catch (e) {}
+    drawNote('✋ the drawing lives in the board shell — open this page in the split view');
+  };
+  chat.querySelector('.draw-fold').onclick = function () {
+    setUtility('');
+    try { if (parent && parent.__studioToggleDraw) { parent.__studioToggleDraw(); return; } }
     catch (e) {}
+    drawNote('✋ the drawing lives in the board shell — open this page in the split view');
   };

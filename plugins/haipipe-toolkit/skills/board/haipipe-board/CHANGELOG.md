@@ -1,3 +1,19 @@
+## 0.156.0 · 2026-08-31
+
+The drawbar RETIRED into the composer (JL: "I want it to be in the input
+box"): shell exposes __studioDrawIt(ask, note) + __studioDrawShown; the
+chat 🖌 opens a two-row menu — ✨ Draw it (reads the COMPOSER text as the
+ask, empty = ## Diagram, progress as a toast) · Hide/Show the drawing.
+evidence-status records carry THE PLAN'S WORDS in their heads (0.18.1:
+`### addr · mark <words>` + Ref row only when real — the bare-ref head was
+the "hard and ugly"). folderstat rows carry REAL PATHS (evidence/bibex/,
+studio/draw/; category dirs expand to lane rows), stubs recognized and
+counted, flat callout keyed on path. MISQ board swept: 14 pages migrated
+to evidence/+delivery/+studio/ with flat-name stubs (pagex deferred — its
+borrow symlinks are depth-sensitive until pagex.py learns the lane
+resolver); QPf1 draw→studio completing the pilot; 19 evidence snapshots
+regenerated with words.
+
 ## 0.155.0 · 2026-08-31
 
 The chat composer in the Claude Code shape (JL's screenshot): one rounded

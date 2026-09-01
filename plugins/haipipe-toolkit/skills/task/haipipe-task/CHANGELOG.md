@@ -1,11 +1,14 @@
+haipipe-task — Changelog
+========================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 ## 0.12.0 · 2026-08-31
 
-**`scripts/` is the code home, at every unit level (JL 260831).** A unit's code
-lived in three different places depending on which level and which engine you
-were looking at: `src/` for a job's shared code, `0-libs/` for one project's,
-and the task ROOT for a task's own. A reader had to know the level and the
-engine before knowing the folder.
+**Every unit's code gets a named folder, and the NAME says the level (JL 260831).**
+A task's own code used to sit loose at the task ROOT, and `0-libs/` was a third
+name carrying its own paragraph of law. Now a task's code is `scripts/`, a job's
+shared code stays `src/`, and `0-libs/` is an ordinary subfolder under it.
 
 - **Two words, on purpose (JL 260831).** `src/` at the JOB is code SHARED by all
   its tasks; `scripts/` at the TASK is code that task OWNS. One word for both was
@@ -23,18 +26,14 @@ engine before knowing the folder.
   paragraph of law explaining why it survived; under `src/0-libs/` it is an
   ordinary subfolder and the paragraph is gone.
 - `0-libs/` stays READABLE by every tool; nothing WRITES it.
-
-## 0.11.0 · 2026-08-31
-
-The unit symmetry (JL): outline/ (human half: ticked prose plan, D<nn>
-threads, log — the page family's record shape) is legal in a task folder,
-beside workflow/ (machine half, unchanged). Pilots with the first
-haipipe-task-for-page collection job.
-
-haipipe-task — Changelog
-========================
-
-Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+- **The law now has a tooth.** `ref/check_task_tree.py` code **S10** reports a job
+  holding `scripts/`, a task holding `src/`, and a `config/` left at a task root.
+  It was run against a tree broken all three ways and reported all three before it
+  was trusted (GATE-1); the six real blocks report 0.
+- **Swept the rest of the family**, which the first pass missed: `ref/block-job-task-run.md`
+  R5, `agents/haipipe-task-reviewer-agent.md` job-shape detection, and
+  `8_stata/haipipe-task-for-stata/ref/stata-dialect.md`, whose NESTED anatomy was two
+  renames out of date and whose FLAT shape uses `scripts/` for the OPPOSITE thing.
 
 ## 0.11.0 · 2026-08-31
 
@@ -425,3 +424,4 @@ Skill-set review fixes (see task/SKILLSET_REVIEW.md for the full diagnosis):
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
+

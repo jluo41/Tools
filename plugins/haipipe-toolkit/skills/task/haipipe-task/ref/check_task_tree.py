@@ -13,6 +13,20 @@ SHAPE = {"data","table","pipeline","analysis","pool","rank","set","list","baseli
 IDX   = re.compile(r'^([bjtr])(\d\d)_(.+)$')
 DO    = re.compile(r'\bdo\s+"([A-Za-z0-9_./${}`\'-]+\.do)"')
 
+
+def cfgdir(task):
+    """A task's config home. scripts/config/ since 260831; config/ was the old one,
+    and is still READ so a half-migrated tree reports the real finding, not a
+    missing folder."""
+    return task/"scripts"/"config" if (task/"scripts"/"config").is_dir() else task/"config"
+
+
+def codedir(job):
+    """The JOB's SHARED code folder. Two words on purpose (JL 260831): `src/` is
+    shared by every task in the job, `scripts/` is one task's own, and the name is
+    what tells them apart without reading the path."""
+    return job/"src"
+
 def rows(root):
     for block in sorted(p for p in ([root] if root.name.startswith("b") else root.iterdir()) if p.is_dir()):
         if not block.name.startswith("b"): continue
@@ -50,7 +64,16 @@ def check(root):
                 if not (t/f"{t.name}.md").exists():
                     bad("S5", t.name, "no task page")
 
-                cfg_dir = t/"config"
+                # S10 the two-word law (JL 260831): `src/` is the JOB's shared
+                # code, `scripts/` is the TASK's own. Either word at the wrong
+                # level makes a reader walk the path to learn what a folder is,
+                # which is the whole thing the two words exist to prevent.
+                if (t/"src").is_dir():
+                    bad("S10", t.name, "task holds src/; a task's own code is scripts/")
+                if (t/"config").is_dir() and (t/"scripts").is_dir():
+                    bad("S10", t.name, "config/ at the task root; it belongs inside scripts/")
+
+                cfg_dir = cfgdir(t)
                 shared = [c for c in cfg_dir.glob("*.do") if not c.name.startswith("r")] if cfg_dir.is_dir() else []
                 if cfg_dir.is_dir() and len(shared) != 1:
                     bad("N8", t.name, f"config/ must hold exactly one shared (non-rNN) .do; found {len(shared)}")
@@ -64,11 +87,14 @@ def check(root):
                     if not re.match(r'^r\d\d_[ABCD]_(cms|case|data|reg)_', k):
                         bad("N2", f"{t.name}/{k}", "run name carries no stage letter and kind")
 
+            if (job/"scripts").is_dir():
+                bad("S10", job.name, "job holds scripts/; a job's shared code is src/")
+
             # N4 applies only to ALTERNATIVES — the folders a config picks between,
             # which are exactly the ones pipeline_dir names. Folders with distinct
             # purposes (outcome/, pipeline/, 0-libs/) are not a sequence.
             alts = set()
-            for c in job.glob("t0*/config/**/r*.do"):
+            for c in list(job.glob("t0*/scripts/config/**/r*.do")) + list(job.glob("t0*/config/**/r*.do")):
                 m = re.search(r'global pipeline_dir "src/([0-9A-Za-z_]+)"', c.read_text())
                 if m: alts.add(m.group(1))
             unordered = sorted(a for a in alts if not re.match(r'^[0-9]', a))
@@ -93,16 +119,19 @@ def check(root):
                 task = k.parents[0]
                 while task and task.name != "runs": task = task.parent
                 task = task.parent
-                if not (task/"config"/m.group(1).replace("\\","/")).exists():
+                if not (cfgdir(task)/m.group(1).replace("\\","/")).exists():
                     bad("S2", k.name, f"config does not exist: {m.group(1)}")
-            for c in job.glob("t0*/config/**/r*.do"):
+            for c in list(job.glob("t0*/scripts/config/**/r*.do")) + list(job.glob("t0*/config/**/r*.do")):
                 m = re.search(r'global pipeline_dir "src/([0-9a-z_]+)"', c.read_text())
                 if not m: continue
-                task = c.parent if c.parent.name == "config" else c.parent.parent
-                task = task.parent
-                if not (task/f"run_regression_pipeline_{m.group(1)}.do").exists():
+                task = c.parent
+                while task.name not in ("config",): task = task.parent
+                task = task.parent                       # scripts/ or the task itself
+                if task.name == "scripts": task = task.parent
+                if not (task/"scripts"/f"run_regression_pipeline_{m.group(1)}.do").exists() \
+                   and not (task/f"run_regression_pipeline_{m.group(1)}.do").exists():
                     bad("S3", c.name, f"no spine run_regression_pipeline_{m.group(1)}.do")
-                if not (job/"src"/m.group(1)).is_dir():
+                if not (codedir(job)/m.group(1)).is_dir():
                     bad("S3", c.name, f"no step folder src/{m.group(1)}")
 
             # S6 no file may RESTATE the tree. A list of every ticket duplicates
@@ -164,9 +193,18 @@ def check(root):
         if any(x in p.parts for x in ("results", ".git")): continue
         live.add(p.name); live.add(p.stem)
     TOKEN = re.compile(r'\b([bjtr]\d\d_[A-Za-z0-9_]+|[a-z][a-z0-9_]*\.ps1)\b')
+    # `<!-- s8-skip -->` on its own line exempts the NEXT fenced block, for the one
+    # honest case: a snippet whose whole point is to CREATE the files it names.
     for md in sorted(root.rglob("*.md")):
         if "results" in md.parts: continue
+        armed = skip = False
         for i, line in enumerate(md.read_text().splitlines(), 1):
+            if line.strip() == "<!-- s8-skip -->": armed = True; continue
+            if line.lstrip().startswith("```"):
+                if armed: skip, armed = True, False
+                elif skip: skip = False
+                continue
+            if skip: continue
             if "tasks/" in line: continue          # provenance, points at the OLD tree
             for tok in set(TOKEN.findall(line)):
                 if tok in live or tok.rsplit(".",1)[0] in live: continue

@@ -233,7 +233,7 @@ run in either without being edited.
    SHARED CODE and holds nothing generated at all:
 
 jNN_{job_name}/                the SAME job, minus everything generated
-├── scripts/  runs/  sbatch/  diagram/
+├── src/  tNN_<task>/ (its scripts/ + runs/)  sbatch/  diagram/
 ├── CODE_REVIEW.md             stays: it reviews CODE at a git_sha, not a cohort
 
 <store>/<this job's path under tasks/>/
@@ -451,7 +451,7 @@ the name itself (SKILL.md Step 3b).
 Project   Proj{Series}-{Category}-{Num}-{Name}
 Block     bNN_{block_name}           2 digits, pipeline order
 Job       jNN_{job_name}             2 digits within the block
-Task      tNN_{task_name}            2 digits within the job's scripts/
+Task      tNN_{task_name}            2 digits within the job
 Run       rNN_{stem}.yaml            2 digits within the task's config/; a name, never a folder
 Cross-ref "b02j01t01r03"             the four prefixes joined, read off the path;
                                      readable "b02.j01.t01.r03"; legacy "A01.01" still resolves
@@ -461,13 +461,13 @@ Rules:
 
 - **2 digits.** Always `01`, `02`, ..., `09`, `10`, ... — never `1`, `2`,
   never `001`. Sorts cleanly up to 99 per bucket. (Real bug: `10_` sorting
-  before `2_` in a single-digit scripts/ tree.)
+  before `2_` in a single-digit tree.)
 - **Start at 01.** Indices are 1-based; `00` is reserved for slots that
   must sort at the very top: `00-index.txt` in `diagram/`, a block-level
   `00` index for stage-0 work that precedes the pipeline (e.g. the
   embedded raw-extraction block `A00_rawstore_<cohort>/` sorting above
   `A01_data_pipeline_*`), and `00_*_fn_develop_*` builder jobs. Inside a
-  job's scripts/, `0-` (with a dash) marks SHARED NON-TASK folders.
+  job's `src/`, `0-` (with a dash) marks SHARED NON-TASK folders.
 - **No gaps when scaffolding.** Pick the next free NN within the bucket.
 - **Forward-fill on deletion.** If `02_foo` is removed, do NOT renumber
   `03_bar` → `02_bar`. Existing references (papers, runs, notebooks)
@@ -556,7 +556,7 @@ notebooks/<task>/<run>.ipynb        EXECUTION       (papermill output;
 ```
 
 Both are GENERATED, so both live under $OUTPUT_ROOT/notebooks/ — never in
-scripts/, which in mode ② holds nothing generated (run-sh-template.sh
+the job's own tree, which in mode ② holds nothing generated (run-sh-template.sh
 NOTEBOOK_TEMPLATE). Never edit either by hand — edit the .py. (An author may
 preview-convert beside the .py while writing; that file is untracked scratch.)
 
@@ -665,27 +665,29 @@ PowerShell binds positionally: an entry point written that way bound `-WhatIf` t
 the next axis parameter and failed on every call. Forward `@PSBoundParameters`,
 which is a hashtable. Checker code S9.
 
+**Code at the wrong LEVEL is silent.** A job holding `scripts/`, a task holding
+`src/`, or a `config/` left at a task root all run perfectly and cost a reader the
+one thing the two words buy: knowing the level from the name. Checker code S10,
+proven against a tree broken all three ways before it was trusted (GATE-1).
+
 Reference copies: `ref/run_slice-template.ps1` (the engine, identical in all nine
 Physician-SPACE jobs), `ref/batch-psd1-template.psd1` (a filled declaration with its
 reasoning in comments), `ref/write_pages.py` (regenerates entry points, task pages
 and sbatch READMEs from the tree), `ref/check_task_tree.py` (codes N* and S*).
 
-### `0-libs/` and `src/`: the two older names
+### `0-libs/`: the one older name
 
-Both are older names for the same thing, and `scripts/` replaced them on 260831.
+`0-libs/` was the pre-260830 name for a job's shared folder. It survives in one
+tree, `Project-Personality-OpioidRx` (Physician-SPACE), and it is no longer an
+exemption with a rule of its own: under `src/` it is an ORDINARY SUBFOLDER,
+`src/0-libs/`, and needs no law. That is what the exemption cost and what
+retiring it bought. Tooling READS it and never writes it.
 
-`0-libs/` was the pre-260830 name for the shared folder, and it survives in one
-tree, `Project-Personality-OpioidRx` (Physician-SPACE). It is no longer an
-exemption with its own rule: under `scripts/` it is an ORDINARY SUBFOLDER,
-`scripts/0-libs/`, and needs no law of its own. That is what the exemption cost
-and what retiring it bought.
-
-`src/` was the 260830-to-260831 name for a job's shared code. It stopped being
-right the day the task got a code home too: two words for one idea meant a reader
-had to know the LEVEL before knowing the folder, which is the same failure
-`0-libs/` caused with the engine.
-
-Tooling READS all three; nothing WRITES anything but `scripts/`.
+`src/` and `scripts/` are NOT two names for one idea (JL 260831). `src/` is the
+JOB's shared code; `scripts/` is the TASK's own code; `config/` sits inside
+`scripts/`. The different word IS the mechanism: a reader knows which level a
+folder belongs to from its name alone, without walking the path back up. Both
+are WRITTEN. A job never scaffolds `scripts/`, and a task never scaffolds `src/`.
 
 **MANY .sh in one sbatch/ (JL 260830).** A batcher folder usually grows past one
 file, and the files are ALTERNATIVE ENTRY POINTS, not a sequence — a person picks

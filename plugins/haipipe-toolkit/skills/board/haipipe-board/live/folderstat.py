@@ -174,14 +174,15 @@ def folder_status(page_src):
     page_dir = page_src.parent
     md_mtime = page_src.stat().st_mtime
     rows = []
-    for d in sorted(page_dir.iterdir()):
-        if not d.is_dir():
-            continue
+    stubs = []
+
+    def row_for(d, label):
         files = sorted((f for f in d.rglob("*") if f.is_file()),
                        key=lambda f: str(f.relative_to(d)))
         newest = max((f.stat().st_mtime for f in files), default=0)
-        rows.append({
+        return {
             "name": d.name,
+            "label": label,
             "icon": ICON.get(d.name.lstrip("_"), ICON.get(d.name, "📁")),
             "files": len(files),
             "bytes": sum(f.stat().st_size for f in files),
@@ -189,8 +190,28 @@ def folder_status(page_src):
             "derived": d.name in DERIVED,
             "stale": d.name in DERIVED and bool(files) and newest < md_mtime,
             "list": [(str(f.relative_to(d)), f) for f in files],
-        })
-    return page_dir.name, md_mtime, rows
+        }
+
+    for d in sorted(page_dir.iterdir()):
+        if not d.is_dir():
+            continue
+        # a migration STUB (flat name -> its category home) is a compatibility
+        # NAME, not a folder: listing it would double-count the lane and keep
+        # the flat-lanes callout firing on already-migrated pages
+        if d.is_symlink():
+            stubs.append(d.name)
+            continue
+        # a CATEGORY folder shows AS ITS LANES, each row carrying the real
+        # path (JL 260831: "evidence / display — I want to really reflect the
+        # folder structure"), so the table reads exactly like the disk
+        if d.name in ("evidence", "delivery", "studio"):
+            for lane in sorted(d.iterdir()):
+                if lane.is_dir() and not lane.is_symlink():
+                    rows.append(row_for(lane, f"{d.name}/{lane.name}"))
+            continue
+        rows.append(row_for(d, d.name))
+    rows.sort(key=lambda r: r["label"])
+    return page_dir.name, md_mtime, rows, stubs
 
 
 def _as_tree(pairs):
@@ -242,7 +263,7 @@ class FolderStatMixin:
         f, board = got
         page_src = Path(board) / f
         now = time.time()
-        title, md_mtime, rows = folder_status(page_src)
+        title, md_mtime, rows, stubs = folder_status(page_src)
         root = self.root.resolve()
         present, absent = [], []
         for r in rows:
@@ -257,15 +278,18 @@ class FolderStatMixin:
                 state = '<span class="fresh">✅ fresh</span>'
             else:
                 state = '<span class="mut">source material</span>'
+            # a nested lane already SAYS its category in the path; only a
+            # flat, pre-sweep lane still needs the chip naming where it goes
             cat = CATEGORY.get(r["name"].lstrip("_"), "")
+            flat_here = cat and r["label"] == r["name"]
             cat_chip = (' <span class=mut title="this lane\'s category folder'
-                        ' in the two-part unit grammar">· %s</span>' % cat
-                        if cat else "")
+                        ' in the two-part unit grammar">· %s (flat)</span>' % cat
+                        if flat_here else "")
             present.append(
                 "<tr class=plug><td><span class=caret>▸</span>%s</td>"
                 "<td><code>%s/</code>%s</td><td>%d file%s · %s</td>"
                 "<td>%s</td><td>%s</td></tr>" % (
-                    r["icon"], html.escape(r["name"]), cat_chip, r["files"],
+                    r["icon"], html.escape(r["label"]), cat_chip, r["files"],
                     "s"[:r["files"] != 1], _fmt_bytes(r["bytes"]),
                     _age(r["newest"], now), state))
             # A FOLDER IS A TREE, not a sorted list of path strings (JL
@@ -335,10 +359,15 @@ class FolderStatMixin:
                  if c not in have_cat]
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))
-        flat = sorted(n for n in known if n in CATEGORY)
+        flat = sorted(r["name"] for r in rows
+                      if r["name"] in CATEGORY and r["label"] == r["name"])
         if flat:
             absent.append("📦 pre-migration flat lanes: " + " · ".join(flat)
                           + " — the sweep folds them under their category")
+        if stubs:
+            absent.append("🔗 %d compatibility stub%s (flat name → category), "
+                          "dropped when the engine de-symlinks"
+                          % (len(stubs), "s"[:len(stubs) != 1]))
         cures = [MECHANICAL[r["name"]] for r in rows
                  if r["stale"] and r["name"] in MECHANICAL]
         allbtn = ('<button class=rball type=button data-routes="%s">'

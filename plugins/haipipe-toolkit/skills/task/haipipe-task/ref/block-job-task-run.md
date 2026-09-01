@@ -133,8 +133,10 @@ R4  A VARIANT IS A CONFIG, NOT A NEW TICKET SCHEME.
     are two task folders.
 
 R5  UNDER A JOB, `tNN_*` IS EXACTLY ONE TASK AND EVERYTHING ELSE IS NOT.
-    Shared material lives in `src/`, one name for every engine (`0-libs/` is read
-    but never written — hierarchy.md "The 0-libs exemption"); the reserved
+    Code SHARED by the job's tasks lives in the job's `src/`; code ONE task owns
+    lives in that task's `scripts/`, with its `config/` inside (JL 260831, two
+    words on purpose — hierarchy.md "`0-libs/`: the one older name"). `0-libs/`
+    is read but never written, and survives only as `src/0-libs/`. The reserved
     siblings are `sbatch/ results/ notebooks/ QA/ workflow/ diagram/`. Loose
     files currently use a competing `_` prefix (_lib-describe.do,
     _load-raw-standard.do, _resolve-raw-dir.do) — unify those into `src/`.
@@ -196,9 +198,14 @@ RESULTS_DIR=$OUTPUT_ROOT/results/<task>/<run>, verified on a mock repo.
 
 STILL OPEN:
 
-  0-libs/run-regression-pipeline.ps1:11   $RESULTS = Join-Path $TASK_DIR "results\$RunName"
-  0-libs/run-data-pipeline.ps1:22         same
-                              -> resolve a store first, then two levels.
+  src/0-libs/run-regression-pipeline.ps1:62  $RESULTS = Join-Path $TASK_DIR "results\$Task\$RunName"
+  src/0-libs/run-data-pipeline.ps1              same
+                              -> two levels now, but still no store: the path is
+                                 pinned to the job root, so mode (2) cannot route
+                                 it. Resolve a store FIRST, then the two levels.
+                              -> `$TASK_DIR` holds the JOB root, not the task dir
+                                 (it is joined with `$Task` on the next line).
+                                 Misleading name; rename to `$JOB_ROOT`.
 
 GAP, and it is the side holding PHI: the PowerShell runners have NO store
 resolution, NO split-bank guard, and no equivalent of the bash suite's

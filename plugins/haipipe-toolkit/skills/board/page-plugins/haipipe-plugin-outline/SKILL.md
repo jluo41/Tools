@@ -8,7 +8,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, D<nn> thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.20.1"
+  version: "0.20.2"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

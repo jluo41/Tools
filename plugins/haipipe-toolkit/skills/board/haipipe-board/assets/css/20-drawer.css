@@ -248,8 +248,13 @@ body.split .chatbtn{display:none}
 /* three tabs, one open at a time: every panel hides unless its tab is the
    active one, which scales past the original two-way rule */
 #chat .utility-body .acts,#chat .utility-body .sessions,
-#chat .utility-body .settings{display:none}
+#chat .utility-body .settings,#chat .utility-body .drawmenu{display:none}
+#chat .utility.show-draw .drawmenu{display:block;padding:4px 6px}
+#chat .dact{display:block;width:100%;text-align:left;border:none;background:none;
+ color:var(--fg);padding:8px 10px;border-radius:8px;font:13px inherit;cursor:pointer}
+#chat .dact:hover{background:var(--card)}
 #chat .utility.show-actions .acts{display:block}
+#chat .utility.show-draw .drawmenu{display:block}
 #chat .utility.show-sessions .sessions{display:block}
 #chat .utility.show-settings .settings{display:block}
 #chat .utility .sessions .spick{border:none;background:transparent}

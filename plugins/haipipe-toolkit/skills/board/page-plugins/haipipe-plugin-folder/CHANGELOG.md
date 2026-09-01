@@ -1,5 +1,9 @@
 # haipipe-plugin-folder · Changelog
 
+## 0.2.2 — 2026-08-31
+- Rows carry REAL PATHS (evidence/bibex/ …, JL: "really reflect the folder
+  structure"); stubs counted separately; flat callout keyed on path.
+
 ## 0.2.1 — 2026-08-31
 - The view speaks the two-part grammar: a category chip per lane row, the
   gaps line names outline/workflow + missing categories instead of the old

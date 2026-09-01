@@ -1,3 +1,7 @@
+## 0.4.1 — 2026-08-31
+- 🖌 grew its menu: ✨ Draw it (composer text = the ask, toast progress) ·
+  Hide/Show the drawing; outside the shell both say where the drawing lives.
+
 ## 0.4.0 — 2026-08-31
 - The composer took the Claude Code shape (JL): rounded card, control row
   inside (＋ 🗂 ✨ ⚙ 🖌 ➤); the toggles open POPUPS above the composer;

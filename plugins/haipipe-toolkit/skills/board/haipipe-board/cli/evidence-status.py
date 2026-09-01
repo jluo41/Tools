@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write `outline/<stem>-evidence.md`: one bullet, one RECORD, what it owes and
 what has landed, in the Evidence Bundle's own six status words
-(`### <address> · <mark> <ref>` + Has / Status rows: the folder's one shape, 0.18.0).
+(`### <address> · <mark> <the plan's words>` + Has / Ref / Status rows, 0.18.1).
 
     python3 evidence-status.py <page.md>            one page
     python3 evidence-status.py --all <board-dir>    every page that has a plan
@@ -129,9 +129,15 @@ def build(page_md: Path) -> str:
             if st in ("evidence-ready", "accepted"): owed["landed"] += 1
             if st == "accepted": owed["accepted"] += 1
             emo = {v: k for k, v in lo._MARK.items()}[kind]
-            # One record per bullet, the folder's one shape (0.18.0):
-            # `### <address> · <mark> <ref>` then Has / Status rows.
-            rows.append(f"### {addr} · {emo} {ref or '—'}\n- **Has**: {note.strip()}\n- **Status**: {st}")
+            # One record per bullet, the folder's one shape (0.18.1):
+            # `### <address> · <mark> <the plan's own words>` then Has / Ref /
+            # Status rows. The head CARRIES THE WORDS (JL 260831 "it lost a
+            # lot of informations" + tonight "kind of hard and ugly"): an
+            # address with a bare ref told a reader nothing about WHAT is
+            # owed; the ref moved to its own row and shows only when real.
+            rows.append(f"### {addr} · {emo} {head or '—'}\n- **Has**: {note.strip()}"
+                        + (f"\n- **Ref**: {ref}" if ref else "")
+                        + f"\n- **Status**: {st}")
     worst = ("needs-probe" if any(r.endswith("needs-probe") for r in rows) else
              "needs-intake" if any(r.endswith("needs-intake") for r in rows) else
              "needs-citation" if any(r.endswith("needs-citation") for r in rows) else

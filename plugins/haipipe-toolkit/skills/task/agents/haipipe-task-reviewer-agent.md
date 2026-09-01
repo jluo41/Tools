@@ -106,13 +106,16 @@ Verdict: `pass` | `revise` (with specific feedback for creator)
 
 ### Python dialect flow
 
-> **JOB SHAPE (260830):** a job is NESTED (`<task>/config/<run>.yaml` ·
+> **JOB SHAPE (260831):** a job is NESTED (`<task>/scripts/config/<run>.yaml` ·
 > `<task>/runs/<run>.sh` · `results/<task>/<run>/` · `notebooks/<task>/<run>.ipynb`,
-> shared `src/`) or FLAT legacy (configs/<run>.yaml · runs/<run>.sh at job root).
+> shared code in the job's `src/`) or FLAT legacy (configs/<run>.yaml ·
+> runs/<run>.sh at job root).
 > DETECT FIRST, in this order:
->   a `tNN_*` child dir at JOB ROOT            → nested, 260830 shape
+>   a `tNN_*` child dir at JOB ROOT            → nested, 260830+ shape
 >   a `scripts/` dir with `tNN_*` children     → nested, pre-260830 shape
 >   neither                                    → flat legacy
+> Then, inside a nested task, find its code in `<task>/scripts/` (260831) or at
+> the task ROOT (260830). `src/` at the JOB is SHARED code and is never a task.
 > then read/write every per-run path in THAT shape. Never audit a nested job with
 > flat globs: they match nothing at the root and report a working job as empty.
 > Authority: haipipe-task/ref/hierarchy.md "Two job shapes".

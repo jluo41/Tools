@@ -93,12 +93,15 @@ valid, detected by tooling from the ticket's own path.
 NESTED (canonical):
 
   tNN_*/          TASKS, directly under the job (260830), one script pipeline
-                  each, holding code + config/ + runs/ + the page tNN_*.md
-                  (nothing generated).
-  src/            SHARED — job-wide libs plus the defaults that carry the
-                  job's `store:`. ONE name for every engine, Stata included.
-                  `0-libs/` is read but never written (hierarchy.md "The
-                  0-libs exemption"); `code/` is the SPACE's package, not this.
+                  each, holding scripts/ (with config/ INSIDE it) + runs/ +
+                  the page tNN_*.md (nothing generated).
+  src/            SHARED by more than one task in this job — job-wide libs plus
+                  the defaults that carry the job's `store:`. ONE name for every
+                  engine, Stata included. TWO WORDS ON PURPOSE (JL 260831):
+                  `src/` is the JOB's, `scripts/` is the TASK's, so the name
+                  says the level. `0-libs/` is read but never written
+                  (hierarchy.md "`0-libs/`: the one older name"); `code/` is
+                  the SPACE's package, not this.
   runs/           TICKETS, one runs/ inside each task folder: <task>/runs/<run>.sh
                   names a config and submits; carries NO parameters and never
                   repeats its own name (derive task + run from $0).
@@ -148,7 +151,7 @@ runs/ rules (tickets):
   - ATOMIC: each ticket submits exactly ONE config of ONE task. No loops.
   - NO parameters, no CLI args, no name repetition: the ticket derives task
     and run from its own path and hands off. Parameters live only in config/.
-  - no .py in runs/; logic stays in scripts/.
+  - no .py in runs/; logic stays in the task's scripts/ or the job's src/.
   - orchestration (loops, GPU assignment) belongs in sbatch/, which calls
     tickets, never code directly.
 
@@ -187,17 +190,24 @@ notebooks/ rules:
 sbatch/ rules:
   - ORCHESTRATION: each .sh coordinates one or several tickets; assigns GPU,
     sets CUDA_VISIBLE_DEVICES, loops over runs.
-  - sbatch/ scripts call tickets in runs/, NOT scripts/ code directly.
+  - sbatch/ scripts call tickets in runs/, NOT scripts/ or src/ code directly.
   - one level only: job/sbatch/ (submit the DAG, or GPU-split this job's
     own tickets). A batcher that would span jobs says those jobs are one job.
 
 Drift checks (nested shape — run from the job root; both must print nothing):
 
-  comm -3 <(ls runs/) <(ls scripts/ | grep '^t[0-9][0-9]_')
+  for t in t[0-9][0-9]_*/; do
+    [ -d "$t/scripts" ] || echo "task with no scripts/: $t"
+    [ -d "$t/runs" ]    || echo "task with no runs/:    $t"
+  done
 
-  comm -3 <(find scripts -path "*/config/*" -type f \
-              | sed "s|^scripts/||; s|/config/|/|; s|\.[^./]*$||" | sort) \
-          <(find runs -type f | sed "s|^runs/||; s|\.[^./]*$||" | sort)
+  comm -3 <(find . -path "*/scripts/config/*" -type f -name 'r[0-9][0-9]_*' \
+              | sed "s|/scripts/config/|/|; s|\.[^./]*$||" | sort) \
+          <(find . -path "*/runs/*" -type f -name 'r[0-9][0-9]_*' \
+              | sed "s|/runs/|/|; s|\.[^./]*$||" | sort)
+
+Only `rNN_` files pair: a config/ may also hold SHARED settings (a cohort .do,
+_defaults.yaml) that no ticket names, and that is not drift.
 
 Left column = a config with no ticket; right column = a ticket with no config.
 Verified 260829; details + why flat naming could not be checked:
