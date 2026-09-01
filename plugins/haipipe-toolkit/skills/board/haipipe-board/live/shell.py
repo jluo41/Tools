@@ -1250,7 +1250,11 @@ def _shell_doc(page_url, index_url):
        whatever mode is actually live, which want() alone decides. */
     var seg = document.getElementById('rpmode');
     if (seg) {
-      seg.hidden = hidden || (tab !== 'chat' && tab !== 'studio');
+      /* RETIRED from the strip (JL 260831: "I don't want the TUI and GUI
+         here — put it in the chatbot input box"): the composer's ⌨ button
+         opens the terminal form and the pane header's ← returns; the hidden
+         radios stay because want()/restore still speak through them. */
+      seg.hidden = true;
       [].forEach.call(seg.querySelectorAll('.rpm'), function (m) {
         m.setAttribute('aria-checked', String(m.dataset.mode === liveMode()));
       });

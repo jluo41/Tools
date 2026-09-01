@@ -7,7 +7,7 @@ description: >-
   folders. Trigger: pagex plugin, borrow a file from another page, reference
   other pages, symlink plugin, /haipipe-plugin-pagex.
 metadata:
-  version: "0.6.2"
+  version: "0.6.3"
   last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-pagex · which files this page borrows from other pages

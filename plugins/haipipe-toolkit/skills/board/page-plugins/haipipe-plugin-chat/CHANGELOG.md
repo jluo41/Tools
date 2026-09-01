@@ -1,3 +1,7 @@
+## 0.4.2 — 2026-08-31
+- Composer grew ⌨ TUI (presses the header's .term — one switch, QD1; the
+  ← returns) and the ⚙ menu an Aa text-size select (--chatfs, stored).
+
 ## 0.4.1 — 2026-08-31
 - 🖌 grew its menu: ✨ Draw it (composer text = the ask, toast progress) ·
   Hide/Show the drawing; outside the shell both say where the drawing lives.

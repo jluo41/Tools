@@ -7,7 +7,7 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-31"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
@@ -246,7 +246,7 @@ Paper-<Slug>/
 │   ├── A2-NA-narrative/        P3 · NA<NN>-narrative-<desk> · one page per
 │   │                           desk, numbered in arrival order
 │   ├── Ba-<desk1>/             P4-P5 · first desk's S<D>NN main units,
-│   │                           A<D>NN appendix units, AND its RD<NN> rounds
+│   │                           SA<NN> appendix units, AND its RD<NN> rounds
 │   └── Bb-<desk2>/             second desk, same shape (may hold only RD
 │                               pages for a foreign-desk round)
 ├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
@@ -279,16 +279,16 @@ from the owning page into its own room, with the page as provenance.
 **Group-name grammar (JL 260824)** — `A` groups carry the per-paper journey
 (`A1-SD-story` for P0–P2, `A2-NA-narrative` for P3); `B` groups are one per
 desk in lowercase arrival order (`Ba`, `Bb`, `Bc`…), each hosting that desk's
-three token families together: `S<D>` main units, `A<D>` appendix units, and
+three token families together: `S<D>` main units, `SA` appendix units, and
 `RD` rounds — so `RD01 lands in SM05 and SW01` reads without a legend.
 **Collision rule**: `<D>` is the first distinctive letter of the desk not
 already claimed on this board; `D` is never available (`SD` is the story
-token) and `A`/`N`/`R` initials watch for clashes with the `A<D>`/`NA`/`RD`
-tokens; two desks sharing an initial resolve by the later arrival taking its
+token), `A` is never available (`SA` is the appendix token), and `N`/`R`
+initials watch for clashes with the `NA`/`RD` tokens; two desks sharing an initial resolve by the later arrival taking its
 next distinctive letter. Review letters live inside their Round page's
 folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `paperboard/`, `0-sections/`, `0-display/`, a shared root `reference.bib`,
-`SC`/`SA` tokens, narratives inside the SD story group, a lone `C1-RD-round`
+`SC`/`A<D>` tokens, narratives inside the SD story group, a lone `C1-RD-round`
 group, a story group holding a separate `SD03-collection` page) are
 grandfathered and migrate only on explicit request, because the
 rename touches tex `\input` paths, pagex symlinks, and compile scripts.

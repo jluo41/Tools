@@ -253,7 +253,11 @@ class PagexMixin:
                                    "mint" % (src, inner))
                 else:
                     link.parent.mkdir(parents=True, exist_ok=True)
-                    link.symlink_to(os.path.relpath(resolved, link.parent))
+                    # relpath from the REAL directory (resolve() walks the
+                    # category-migration stub): a link computed against the
+                    # flat NAME would be one level too shallow once pagex
+                    # lives at evidence/pagex (JL 260831)
+                    link.symlink_to(os.path.relpath(resolved, link.parent.resolve()))
                     rec["link"] = "%s/%s" % (src, inner)
                     # The card opens the BOARD PAGE when the borrow is one;
                     # the raw file is the fallback, never the first choice.

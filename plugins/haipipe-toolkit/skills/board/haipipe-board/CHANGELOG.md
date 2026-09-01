@@ -1,3 +1,19 @@
+## 0.157.0 · 2026-08-31
+
+Round 5, all JL's evening rulings: the 🧭 lens strip wraps (compact nowrap
+rects — eight pills in a 500px pane had shrunk into tall circles, the
+"hard and ugly"); the GUI/TUI segment left the shell strip for the
+composer's ⌨ button (the header's .term stays the one switch, QD1);
+chat text size is the reader's — one --chatfs variable, an Aa select in ⚙
+(11/12.5/14/16, stored per browser) because JL's windows differ in width
+and zoom; pagex mints relpath from the REAL dir (resolve() walks the
+category stub — a flat-name computation was one level shallow). MISQ
+sweep round 2: chat→studio/chat, pagex→evidence/pagex (inner borrow links
+re-aimed +1 level), task/ folders REMOVED, studio pair pre-created with
+stubs on all 19 pages so future keeps and drawings land in the category
+home. NA01's untracked borrow list, emptied by a stale-engine re-mint,
+restored by hand and re-minted green.
+
 ## 0.156.0 · 2026-08-31
 
 The drawbar RETIRED into the composer (JL: "I want it to be in the input

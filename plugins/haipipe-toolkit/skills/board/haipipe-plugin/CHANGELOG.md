@@ -1,3 +1,9 @@
+## 0.3.2 · 2026-08-31
+
+task/ row ⚰️ RETIRED outright (JL: "we will not have the task/ folder
+anymore") — swept pages' folders deleted; pagex/ nested under evidence/
+with the mint depth fix noted; studio pair pre-created on swept pages.
+
 ## 0.3.1 · 2026-08-31
 
 task/ and meeting/ lose their strip-menu rows (JL: "the task and meeting

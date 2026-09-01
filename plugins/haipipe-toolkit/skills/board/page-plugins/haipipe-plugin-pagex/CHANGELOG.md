@@ -1,5 +1,9 @@
 # CHANGELOG · haipipe-plugin-pagex
 
+## 0.6.3 — 2026-08-31
+- Lives nested at evidence/pagex (JL); minter computes relpath from the
+  REAL dir so stub-era re-mints keep the right depth.
+
 ## 0.6.2 — 2026-08-31
 - Surface rehomed: the borrow view is the 🔗 Pagex segment inside the one 🧾
   Evidence tab; the standalone strip row folded away, every pen rides inside

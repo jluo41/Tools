@@ -140,7 +140,8 @@ body.split .chatbtn{display:none}
    never empty. Measured 260803 from his own console: 35 tool cards, every one
    `h=1`, each holding real text (`Bash`, the command, `done`). */
 #chat .bd > *{flex:0 0 auto}
-#chat .m{max-width:90%;padding:7px 11px;border-radius:var(--radius-surface);font-size:12.5px;line-height:1.55;
+#chat{--chatfs:12.5px}
+#chat .m{max-width:90%;padding:7px 11px;border-radius:var(--radius-surface);font-size:var(--chatfs);line-height:1.55;
  white-space:pre-wrap;word-break:break-word}
 #chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}
 #chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
@@ -199,9 +200,9 @@ body.split .chatbtn{display:none}
 #chat .m.md ul,#chat .m.md ol{margin:4px 0 7px;padding-left:20px}
 #chat .m.md li{margin:2px 0}
 #chat .m.md li.cont{list-style:none;color:var(--mut);margin-left:-6px}
-#chat .m.md pre{margin:6px 0;padding:8px 10px;font-size:11.5px;line-height:1.5;
+#chat .m.md pre{margin:6px 0;padding:8px 10px;font-size:calc(var(--chatfs) - 1px);line-height:1.5;
  background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-control);overflow-x:auto}
-#chat .m.md code{font-size:11.5px}
+#chat .m.md code{font-size:calc(var(--chatfs) - 1px)}
 #chat .ft{display:flex;padding:8px 10px 10px;flex:0 0 auto}
 /* the composer card (JL 260831, the Claude Code manner): textarea on top,
    the control row inside the same rounded box */
@@ -279,8 +280,9 @@ body.split .chatbtn{display:none}
  #chat .sfquote{-webkit-line-clamp:2;font-size:12.5px}
  #chat .bd{padding:10px;gap:7px}
  /* the docked studio pane is narrower than this breakpoint, so this rule
-    IS the pane's everyday size — 15px here was the "too big" JL saw */
- #chat .m{max-width:96%;padding:7px 9px;font-size:13px;line-height:1.5}
+    IS the pane's everyday size — 15px here was the "too big" JL saw;
+    since 260831 the size is the ⚙ setting's one variable */
+ #chat .m{max-width:96%;padding:7px 9px;line-height:1.5}
  #chat .m.sys{max-width:100%;font-size:11px;line-height:1.4;text-align:center}
  #chat .tk{max-width:100%;padding:3px 8px}
  #chat .tk .tk-body{max-height:180px;font-size:12px}

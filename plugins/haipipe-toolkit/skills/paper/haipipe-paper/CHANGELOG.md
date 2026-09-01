@@ -1,5 +1,8 @@
 # CHANGELOG · haipipe-paper
 
+## 0.2.1 · 260831
+- Group-name grammar caught up with the SA ruling (JL 260831): appendix token is `SA` (Section-Appendix), never `A<D>`; the collision rule now retires desk letter `A`; the grandfathered legacy list names `A<D>` instead of `SA`. haipipe-paper-workflow 0.6.1 and haipipe-page-for-section 0.5.5 already carried it; this door was the leftover.
+
 ## 0.2.0 — 2026-08-31
 
 - **workflow-phases/ replaces page-types/** (JL 260831: "replace page-types to

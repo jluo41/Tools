@@ -7,7 +7,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-08-31"
 ---
 

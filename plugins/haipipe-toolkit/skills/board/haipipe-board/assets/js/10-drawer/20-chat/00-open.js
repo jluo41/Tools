@@ -51,6 +51,9 @@
     '<option value="sonnet">Sonnet 5</option><option value="haiku">Haiku 4.5</option></select>' +
     '<select class="eff"><option>low</option><option>medium</option>' +
     '<option selected>high</option><option>xhigh</option><option>max</option></select>' +
+    '<select class="fsz" title="chat text size — JL 260831: windows differ in width and zoom, so the size is yours to set">' +
+    '<option value="11">Aa 11</option><option value="12.5" selected>Aa 12.5</option>' +
+    '<option value="14">Aa 14</option><option value="16">Aa 16</option></select>' +
     '<select class="scope" title="Permission tier: Scoped = this question only · Full = all tools + skills, like the CLI">' +
     '<option value="scoped">Scoped</option>' +
     '<option value="full" selected>Full · ask</option>' +
@@ -65,6 +68,7 @@
     '<button class="utoggle" type="button" aria-expanded="false" title="quick actions">✨</button>' +
     '<button class="stoggle" type="button" aria-expanded="false" title="settings">⚙</button>' +
     '<button class="dtoggle" type="button" title="show / hide the drawing above">🖌</button>' +
+    '<button class="mtoggle" type="button" title="open this chat in the real terminal (same session) — the ← in the header returns">⌨ TUI</button>' +
     '<button class="send" title="send">➤</button>' +
     '</div></div></div>';
   document.body.appendChild(chat);
@@ -172,6 +176,27 @@
       }
     } catch (e) {}
     drawNote('✋ the drawing lives in the board shell — open this page in the split view');
+  };
+  /* Aa the chat text size is the reader's (JL 260831 "still large here"):
+     one CSS variable, one stored choice, applied at boot. */
+  var FSZ = 'board-chat-fsz';
+  var fszSel = chat.querySelector('.fsz');
+  function applyFsz(v) {
+    chat.style.setProperty('--chatfs', v + 'px');
+    if (fszSel) fszSel.value = v;
+  }
+  try { applyFsz(localStorage.getItem(FSZ) || '12.5'); } catch (e) { applyFsz('12.5'); }
+  if (fszSel) fszSel.onchange = function () {
+    try { localStorage.setItem(FSZ, fszSel.value); } catch (e) {}
+    applyFsz(fszSel.value);
+  };
+  /* ⌨ the GUI/TUI switch moved here from the shell strip (JL 260831).
+     One implementation law (QD1): the header's .term button IS the switch,
+     this row button only presses it. The composer hides in TUI, so this
+     door only ever leads IN; the header's ← leads back. */
+  chat.querySelector('.mtoggle').onclick = function () {
+    var t = chat.querySelector('.hd .term');
+    if (t) t.click();
   };
   chat.querySelector('.draw-fold').onclick = function () {
     setUtility('');

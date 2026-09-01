@@ -178,10 +178,13 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 body{{margin:0;padding:16px;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
 h1{{font-size:17px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:13px}}
-.chips{{display:flex;gap:6px;margin:10px 0}}
-.chip{{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);
- border-radius:999px;padding:4px 12px;cursor:pointer;background:var(--card);
- color:var(--fg)}}
+/* the lens strip WRAPS and never breaks a label (JL 260831 "hard and ugly":
+   eight pills in a 500px pane shrank and wrapped their text into tall
+   circles); compact rounded rects, one line each, extra rows if needed */
+.chips{{display:flex;gap:5px;margin:10px 0;flex-wrap:wrap}}
+.chip{{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);
+ border-radius:8px;padding:3px 9px;cursor:pointer;background:var(--card);
+ color:var(--fg);white-space:nowrap;flex:0 0 auto}}
 .chip.on{{border-color:var(--acc);color:var(--acc)}}
 .ok{{color:var(--ok);font-weight:600}} .warn{{color:var(--warn);font-weight:600}}
 .card{{background:var(--card);border:1px solid var(--line);border-radius:10px;
