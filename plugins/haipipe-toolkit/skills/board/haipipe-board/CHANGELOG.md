@@ -1,3 +1,14 @@
+## 0.157.1 · 2026-08-31
+
+The TUI on Windows was letter-spaced wide: the font list found none of the
+Mac monos and resolved to Microsoft YaHei (proportional), so xterm
+measured a CJK-wide cell — Consolas/Cascadia now sit before the CJK names,
+which stay for per-glyph 汉字 fallback. The terminal follows the pane's
+color scheme (white paper + a VS Code Light+ ANSI palette; dark under
+prefers-dark), .tm box included. The way back from the terminal says
+'← GUI' in the header instead of a bare arrow (JL: "how could I shift
+back?").
+
 ## 0.157.0 · 2026-08-31
 
 Round 5, all JL's evening rulings: the 🧭 lens strip wraps (compact nowrap

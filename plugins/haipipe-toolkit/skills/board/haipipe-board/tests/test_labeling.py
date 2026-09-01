@@ -55,6 +55,10 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("owner:", state["next_action"])
         self.assertIn("preserve: rounds/round_01/checkpoint.json", state["next_action"])
         self.assertIn("G2", state["first_failed"])
+        self.assertLess(state["first_failed"].index("quality"),
+                        state["first_failed"].index("human STOP"))
+        self.assertLess(state["first_failed"].index("human STOP"),
+                        state["first_failed"].index("simulation/proxy"))
         self.assertEqual(state["human_id"], "PROXY")
 
     def test_complete_file_set_without_identified_human_is_hold(self):
@@ -63,6 +67,14 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertTrue(state["authority_hold"])
         self.assertIn("owner: one identified real human", state["next_action"])
         self.assertIn("does not name one identified human", state["first_failed"])
+        self.assertIn("G0", state["first_failed"])
+
+    def test_real_contract_without_checkpoint_routes_to_first_round(self):
+        self.make_contract("authority:\n  human_id: JL\n  mode: real-human\n  creates_human_gold: true\n")
+        state = inspect(self.page)
+        self.assertIn("G1 Round close", state["first_failed"])
+        self.assertIn("P1 Round", state["next_action"])
+        self.assertNotIn("Freeze", state["next_action"])
 
     def test_surface_never_renders_protected_or_item_text(self):
         self.make_contract()

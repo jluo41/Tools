@@ -133,6 +133,8 @@ def inspect(page_src: Path) -> dict:
                        "real-authority Building lineage%s" % (checkpoint_rel, target))
     elif open_rounds:
         next_action = "P1 Round · resume " + open_rounds[0] + " at its first missing canonical event"
+    elif not checkpoints:
+        next_action = "P1 Round · propose and obtain human release for the first round card"
     elif checkpoints and not (all(gate_pass.values()) and stop_signoff):
         next_action = "P1 Round · derive one bounded next action from the newest checkpoint and register"
     elif not handoff.is_file():
@@ -152,14 +154,16 @@ def inspect(page_src: Path) -> dict:
 
     if missing:
         first_failed = "G0 Contract → Round · missing " + ", ".join(missing)
-    elif authority_hold:
-        first_failed = "G2 Round → Freeze · " + authority_reason
+    elif missing_human:
+        first_failed = "G0 Contract → Round · " + authority_reason
     elif not checkpoints:
         first_failed = "G1 Round close · no Keeper-closed checkpoint exists"
-    elif not (all(gate_pass.values()) and stop_signoff):
+    elif not (all(gate_pass.values()) and stop_signoff) or authority_hold:
         failed = [name for name, passed in gate_pass.items() if not passed]
         if not stop_signoff:
             failed.append("human STOP signoff")
+        if authority_hold:
+            failed.append(authority_reason)
         first_failed = "G2 Round → Freeze · " + ", ".join(failed) + " remains open"
     elif not (handoff.is_file() and handoff_status == "valid" and eval_registry.is_file()):
         owed = []

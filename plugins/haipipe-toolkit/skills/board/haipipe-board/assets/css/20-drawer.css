@@ -88,7 +88,7 @@ body.split .chatbtn{display:none}
  border-radius:var(--radius-control);background:transparent;color:var(--mut);cursor:pointer;line-height:1}
 #chat .hd button:hover{background:var(--bg);border-color:var(--accent);color:var(--accent)}
 #chat .hd .term{margin-left:2px;font:600 12px ui-monospace,Menlo,monospace}
-#chat .tm{display:none;flex:1 1 auto;min-height:0;width:100%;background:#0b0d12;
+#chat .tm{display:none;flex:1 1 auto;min-height:0;width:100%;background:var(--bg,#0b0d12);
  padding:6px 8px;overflow:hidden}
 #chat .tm .xterm{height:100%}
 #chat .tm .xterm-viewport{overflow-y:auto}
