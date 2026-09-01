@@ -1,3 +1,11 @@
+## 0.158.5 · 2026-08-31
+
+group_token joins the WHOLE pre-· head, spaces to hyphens ("JAMA main" →
+"JAMA-main"): first-word derivation collided two desks at #group-<word>
+(JAMAOpioidBoard's report, duplicate-html-id on index.html). Single-word
+heads keep their exact old tokens, so existing anchors and <token>.html
+filenames do not move.
+
 ## 0.158.4 · 2026-08-31
 
 Composer row truly aligned (JL, twice): the ＋ button's class collided

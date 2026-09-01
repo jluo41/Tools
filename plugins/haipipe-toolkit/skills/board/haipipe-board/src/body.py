@@ -227,11 +227,16 @@ GROUP_IDS = set()
 def group_token(heading):
     """"QA · Defining a board" -> "QA": the group's travelling name.
 
-    Every group heading on every board is `<token> · <words>`; the fallback to
-    the first whitespace token keeps a heading that forgot the separator from
-    anchoring at the whole sentence."""
+    Every group heading on every board is `<token> · <words>`. The WHOLE
+    pre-`·` segment joins the token, spaces to hyphens ("JAMA main" ->
+    "JAMA-main"): deriving from only the first word made two desks that
+    share it collide at #group-<word> (JAMAOpioidBoard 260831,
+    duplicate-html-id on index.html). A single-word head keeps its exact
+    old token, so existing boards' anchors and <token>.html filenames do
+    not move; a heading that forgot the separator still anchors at its
+    words, not the whole sentence."""
     head = heading.split("·", 1)[0].strip()
-    return head.split()[0] if head.split() else heading.strip()
+    return "-".join(head.split()) if head.split() else heading.strip()
 
 
 @lru_cache(maxsize=8)
