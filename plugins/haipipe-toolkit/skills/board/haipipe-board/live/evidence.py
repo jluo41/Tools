@@ -25,7 +25,7 @@ import pathlib
 import re
 
 _CSS = """
-:root{--bg:#fbfbfa;--fg:#1c1d1f;--mut:#71727a;--line:#e3e3df;--card:#f2f2ee;--acc:#3b6ea5}
+:root{--bg:#ffffff;--fg:#1c1d1f;--mut:#71727a;--line:#e4e4e7;--card:#f7f7f8;--acc:#3b6ea5}
 @media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23;--acc:#7aa7d8}}
 body{margin:0;background:var(--bg);color:var(--fg);

@@ -213,11 +213,16 @@ body.split .chatbtn{display:none}
 #chat textarea{border:none;border-radius:0;padding:2px;outline:none;
  font:13px inherit;background:none;color:var(--fg);resize:none;max-height:110px}
 #chat .crow{display:flex;gap:2px;align-items:center}
-#chat .crow button{border:none;background:none;color:var(--mut);cursor:pointer;
- font-size:14px;line-height:1;padding:5px 7px;border-radius:8px}
+/* every control on ONE height and ONE centerline (JL 260831 "not aligned"):
+   text glyphs (＋, ⌨ TUI) sat on the baseline while emoji rendered tall,
+   so each button centers its content in a fixed 28px box instead */
+#chat .crow button{display:inline-flex;align-items:center;justify-content:center;
+ height:28px;min-width:28px;border:none;background:none;color:var(--mut);
+ cursor:pointer;font-size:14px;line-height:1;padding:0 7px;border-radius:8px}
 #chat .crow button:hover{background:var(--card);color:var(--fg)}
 #chat .crow button.active{background:var(--card);color:var(--accent)}
-#chat .crow .gnew{font-size:16px}
+#chat .crow .gnew{font-size:17px}
+#chat .crow .mtoggle{font-size:12px;font-weight:600;gap:3px}
 #chat .crow .send{margin-left:auto;background:var(--accent);color:#fff;border:none;
  border-radius:9px;width:32px;height:28px;cursor:pointer;font-size:13px;padding:0}
 #chat .crow .send:hover{background:var(--accent);color:#fff}

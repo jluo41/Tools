@@ -489,7 +489,7 @@ class PagexMixin:
                 "html,body{height:100%%;margin:0}"
                 ".bar{display:flex;gap:12px;align-items:center;height:34px;"
                 "padding:0 12px;border-bottom:1px solid #dedeb8;"
-                "font:13px -apple-system,sans-serif;background:#fbfbf9}"
+                "font:13px -apple-system,sans-serif;background:#ffffff}"
                 "@media(prefers-color-scheme:dark){.bar{background:#161719;"
                 "border-color:#2c2e33;color:#e8e8e6}.bar a{color:#7fb2ea}}"
                 ".bar a{color:#1f5aa8;text-decoration:none}"

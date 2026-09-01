@@ -1,3 +1,16 @@
+## 0.158.1 · 2026-08-31
+
+PURE WHITE ground (JL: "kind of yellow, right?"): every warm light-scheme
+token neutralized across the engine and the saved-view builders —
+#fbfbf9/#fbfbfa → #ffffff, card #f2f2ee/#fff → #f7f7f8, pre #f4f4f0 →
+#f4f4f5, line #e4e4df/#e3e3df → #e4e4e7; dark scheme untouched. Verified
+in Chrome: body backgrounds rgb(255,255,255) in the shell and every pane.
+Composer row aligned (JL "not aligned"): every control centers in a fixed
+28px inline-flex box, so ＋ and ⌨ TUI sit on the emoji's centerline.
+
+## 0.158.0 · 260831
+- Story family (JL 260831): parse.py page-id grammar gains a capitalised-word token ([A-Z][a-z]+ digits), so Story00-ideation..Story03-narrative-<desk> parse, sort, and register; _token_label maps STORY to "story" ahead of the S-prefix main-sections rule.
+
 ## 0.157.2 · 2026-08-31
 
 Stuck-in-TUI fix: the docked pane has hidden the header's .term since the

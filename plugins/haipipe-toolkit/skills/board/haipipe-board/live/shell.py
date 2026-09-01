@@ -231,7 +231,7 @@ def _shell_doc(page_url, index_url):
      a single hairline on a shared background, so the split does the same: these
      are the board's own variables, values and dark query copied, because the
      shell is a separate document and cannot inherit them. */
-  :root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;
+  :root{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff;
     --accent:#1f5aa8}
   @media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
     --line:#2c2e33;--card:#1d1f23;--accent:#6ea8f0}}
@@ -289,16 +289,16 @@ def _shell_doc(page_url, index_url):
     grid-template-columns:var(--iw,250px) 5px 1fr 5px var(--cw,520px)}
   #split.hi{grid-template-columns:0 0 1fr 5px var(--cw,520px)}
   #rp{display:flex;flex-direction:column;min-width:0;overflow:hidden;
-  border-left:1px solid var(--line,#e4e4df);background:var(--bg,#fff)}
+  border-left:1px solid var(--line,#e4e4e7);background:var(--bg,#fff)}
 #rptabs{flex:0 0 auto;display:flex;align-items:stretch;gap:2px;padding:5px 6px 0 6px;
-  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
-.rpt{border:1px solid var(--line,#e4e4df);border-bottom:0;background:transparent;
+  border-bottom:1px solid var(--line,#e4e4e7);background:var(--card,#fff)}
+.rpt{border:1px solid var(--line,#e4e4e7);border-bottom:0;background:transparent;
   color:var(--mut,#7c7c78);cursor:pointer;border-radius:7px 7px 0 0;padding:5px 11px;
   font:600 12px/1 ui-monospace,Menlo,monospace}
 .rpt:hover{background:var(--bg,#f1f3f5)}
 /* the OPEN tab is the one that looks attached to the pane below it */
 .rpt[aria-selected="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c);
-  border-color:var(--line,#e4e4df);margin-bottom:-1px;padding-bottom:6px}
+  border-color:var(--line,#e4e4e7);margin-bottom:-1px;padding-bottom:6px}
 .rpt[hidden]{display:none}
 .rp-sp{flex:1}
 /* the OPEN SET machinery (haipipe-plugin): the active tab's own ✕, the ＋
@@ -323,7 +323,7 @@ def _shell_doc(page_url, index_url):
 /* the FORM segment: subordinate to the Chat tab, never a tab itself */
 #rpmode{display:flex;align-items:center;gap:2px;padding-bottom:4px}
 #rpmode[hidden]{display:none}
-.rpm{border:1px solid var(--line,#e4e4df);background:transparent;cursor:pointer;
+.rpm{border:1px solid var(--line,#e4e4e7);background:transparent;cursor:pointer;
   color:var(--mut,#7c7c78);border-radius:6px;padding:3px 8px;
   font:600 11px/1 ui-monospace,Menlo,monospace}
 .rpm:hover{background:var(--bg,#f1f3f5)}
@@ -337,13 +337,13 @@ def _shell_doc(page_url, index_url):
 #rp iframe[hidden]{display:none}
 /* ✨ the Draw and Slides tabs' control bars: one ask, one button, one status word */
 #drawbar,#slidebar{flex:0 0 auto;display:flex;gap:6px;align-items:center;padding:6px 8px;
-  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
+  border-bottom:1px solid var(--line,#e4e4e7);background:var(--card,#fff)}
 #drawbar[hidden],#slidebar[hidden]{display:none}
 #adask,#sdask{flex:1 1 auto;min-width:0;font:12px ui-monospace,Menlo,monospace;
-  padding:5px 8px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  padding:5px 8px;border:1px solid var(--line,#e4e4e7);border-radius:7px;
   background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #adgo,#sdgo{flex:0 0 auto;font:600 12px/1 ui-monospace,Menlo,monospace;cursor:pointer;
-  padding:6px 10px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  padding:6px 10px;border:1px solid var(--line,#e4e4e7);border-radius:7px;
   background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #adgo:hover,#sdgo:hover{background:var(--bg,#f1f3f5)}
 #adgo:disabled,#sdgo:disabled{opacity:.5;cursor:default}
@@ -1202,7 +1202,7 @@ def _shell_doc(page_url, index_url):
   function noteDoc(msg) {
     return 'data:text/html;charset=utf-8,' + encodeURIComponent(
       '<body style="margin:0;display:grid;place-items:center;height:100vh;'
-      + 'font:13px ui-monospace,Menlo,monospace;color:#7c7c78;background:#fbfbf9">'
+      + 'font:13px ui-monospace,Menlo,monospace;color:#7c7c78;background:#ffffff">'
       + '<div style="max-width:80%;white-space:pre-wrap">' + msg + '</div></body>');
   }
 
