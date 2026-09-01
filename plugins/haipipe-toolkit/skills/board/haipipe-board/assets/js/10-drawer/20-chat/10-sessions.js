@@ -471,6 +471,19 @@
     } catch (e) { /* serve.py 没跑 → 没有拣选器，其余照旧 */ }
   }
 
+  /* the composer's ＋ (00-open.js): the same flow as the "＋ New session"
+     row, without the naming input — the registry can name it later. */
+  window.__chatNewSession = function (nm) {
+    nm = (nm || '').trim();
+    if (window.__boardTermOn && window.__boardTermOn()) {
+      sessName = nm; chatSid = 'new';
+      say('Starting another terminal…');
+      window.__boardTermAttach('new').then(function () { loadSessions(); });
+      return;
+    }
+    switchTo('', nm, false);
+  };
+
   function clearSentenceFocus() {
     sentenceFocus = null;
     var box = chat.querySelector('.sfocus');

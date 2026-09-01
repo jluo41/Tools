@@ -1,3 +1,9 @@
+## 0.4.0 — 2026-08-31
+- The composer took the Claude Code shape (JL): rounded card, control row
+  inside (＋ 🗂 ✨ ⚙ 🖌 ➤); the toggles open POPUPS above the composer;
+  sessions no longer auto-open at boot (reverses 260815 "list first");
+  ＋ = new session direct; 🖌 = the studio draw fold; bubbles 12.5px.
+
 ## 0.3.3 — 2026-08-31
 - Surface rehomed: the pane is the lower half of the one 🎨 Studio tab
   (haipipe-plugin-studio); GUI/TUI segment, keep step, walls unchanged.

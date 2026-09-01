@@ -7,8 +7,8 @@ description: >-
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   first tab, /haipipe-plugin-folder.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-16"
+  version: "0.2.1"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-folder · the folder is the truth, the first tab shows it
 

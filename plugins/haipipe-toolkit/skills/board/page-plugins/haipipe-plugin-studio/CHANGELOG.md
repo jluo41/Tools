@@ -1,5 +1,10 @@
 # Changelog · haipipe-plugin-studio
 
+## 0.1.1 — 2026-08-31
+- The draw half FOLDS (JL: "make the draw collapsable"): ⌄/⌃ on the ✨ bar
+  and 🖌 in the chat composer both press window.__studioToggleDraw; the
+  choice is per reader, remembered (board-studio-draw).
+
 ## 0.1.0 — 2026-08-31
 - Born (JL: "put both of them into the studio, as one page"): ONE 🎨 tab
   staging the drawing above the chat, both live; shell strip rows 💬 🖌 🎞

@@ -1,3 +1,16 @@
+## 0.155.0 · 2026-08-31
+
+The chat composer in the Claude Code shape (JL's screenshot): one rounded
+card, textarea on top, control row inside — ＋ new chat (direct, via
+__chatNewSession) · 🗂 ✨ ⚙ as POPUP menus floating above the composer
+(closed by default, click-away closes; reverses the 260815 "list first"
+boot) · 🖌 draw fold remote (shell exposes __studioToggleDraw) · ➤ send.
+GUI chat text 14px → 12.5px (bubbles, textarea 13px, code 11.5px).
+86-plugin-task.js and 87-plugin-meeting.js menu rows REMOVED (JL).
+folderstat speaks the two-part grammar: category chips, grammar-aware gaps
+line, flat pre-sweep lanes named for the sweep. Studio draw half folds
+(⌄/⌃ + composer 🖌), per reader, remembered.
+
 ## 0.154.0 · 2026-08-31
 
 The 🎨 Studio tab (JL: "put both of them into the studio, as one page"):

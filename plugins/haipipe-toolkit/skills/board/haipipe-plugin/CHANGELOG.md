@@ -1,3 +1,9 @@
+## 0.3.1 · 2026-08-31
+
+task/ and meeting/ lose their strip-menu rows (JL: "the task and meeting
+should be removed as well") — storage stays on disk, task's read still owed
+to a pagex card; roster surface cells updated.
+
 ## 0.3.0 · 2026-08-31
 
 §🔌 finalized as JL ruled it ("one plugin for evidence, one for the

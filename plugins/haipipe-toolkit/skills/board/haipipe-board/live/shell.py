@@ -447,6 +447,10 @@ def _shell_doc(page_url, index_url):
         placeholder="what to draw · empty = this page's ## Diagram">
       <button id="adgo" type="button">✨ Draw it</button>
       <span id="adstat"></span>
+      <!-- 🎨 fold the canvas away (JL 260831: "make the draw collapsable");
+           the bar stays as the handle, the choice is the reader's, remembered. -->
+      <button id="adfold" type="button" hidden
+        title="fold the drawing away · bring it back">⌄</button>
     </div>
     <!-- ✨ THE SLIDES TAB'S ONE CONTROL (JL 260815: "add a new button to it so
          we can regenerate the slide"). Ask is optional: empty means present the
@@ -879,6 +883,11 @@ def _shell_doc(page_url, index_url):
   var fs = document.getElementById('fs');
   var tab = 'studio';               // 🎨 studio (chat gui|tui + draw) · any open tab id
 
+  /* 🎨 whether the studio's draw half is unfolded — per reader, remembered */
+  function drawOpen() {
+    try { return localStorage.getItem('board-studio-draw') !== '0'; }
+    catch (e) { return true; }
+  }
   function drawURL() {
     try {
       var w = frames.page;
@@ -931,6 +940,17 @@ def _shell_doc(page_url, index_url):
     }
     go.addEventListener('click', run);
     askEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+    /* 🎨 the fold: one click hides the canvas (chat takes the whole room),
+       one click brings it back; stage() re-reads the choice. The chat pane's
+       composer 🖌 presses the same switch through window.__studioToggleDraw. */
+    window.__studioToggleDraw = function () {
+      try {
+        localStorage.setItem('board-studio-draw', drawOpen() ? '0' : '1');
+      } catch (e) {}
+      if (tab === 'studio') stage('studio');
+    };
+    var fold = document.getElementById('adfold');
+    if (fold) fold.addEventListener('click', window.__studioToggleDraw);
   })();
 
   var sceneStamp = '';
@@ -1181,13 +1201,23 @@ def _shell_doc(page_url, index_url):
        the DRAW tab; the studio room is both tools', by JL's ask.) */
     var duo = id === 'studio';
     var hasScene = !!(fd.getAttribute('src') || '');
+    var showDraw = duo && hasScene && drawOpen();
     document.getElementById('fc').hidden = id !== 'chat' && !duo;
-    fd.hidden = id !== 'draw' && !(duo && hasScene);
+    fd.hidden = id !== 'draw' && !showDraw;
     fs.hidden = id !== 'slides';
-    /* ✨ Draw's control bar rides above the canvas, wherever the canvas is. */
+    /* ✨ Draw's control bar rides above the canvas, wherever the canvas is —
+       and in the studio it STAYS while the canvas is folded: it is the handle
+       that brings the drawing back. */
     var bar = document.getElementById('drawbar');
     if (bar) bar.hidden = !(id === 'draw' || (duo && hasScene));
-    rp.classList.toggle('studio', duo && hasScene);
+    var fold = document.getElementById('adfold');
+    if (fold) {
+      fold.hidden = !duo;
+      fold.textContent = drawOpen() ? '⌄' : '⌃';
+      fold.title = drawOpen() ? 'fold the drawing away — chat takes the room'
+                              : 'bring the drawing back';
+    }
+    rp.classList.toggle('studio', showDraw);
     var sbar = document.getElementById('slidebar');
     if (sbar) sbar.hidden = id !== 'slides';
     extraFrames().forEach(function (f) { f.hidden = ('fx-' + id) !== f.id; });

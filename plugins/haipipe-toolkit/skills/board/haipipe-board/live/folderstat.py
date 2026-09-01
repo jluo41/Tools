@@ -29,7 +29,22 @@ from urllib.parse import parse_qs, quote, urlparse
 
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
-        "meeting": "🗣", "probe": "🧪", "_runs": "🧾", "_fixture": "📦"}
+        "meeting": "🗣", "probe": "🧪", "_runs": "🧾", "_fixture": "📦",
+        "outline": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
+        "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
+        "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
+        "results": "📦"}
+
+# The two-part unit grammar (haipipe-plugin §🗂/🔌, JL 260831): which category
+# owns each lane, so the table can say it and the gaps line can speak the
+# grammar instead of the pre-260831 flat roster. A flat lane name counts for
+# its category until the sweep folds it in (a stub keeps it resolving after).
+CATEGORY = {"bibex": "evidence", "probe": "evidence", "display": "evidence",
+            "pagex": "evidence", "materials": "evidence",
+            "latex": "delivery", "word": "delivery", "slide": "delivery",
+            "render": "delivery",
+            "chat": "studio", "draw": "studio",
+            "scripts": "code", "runs": "code", "results": "code"}
 DERIVED = {"latex", "word", "bibex", "slide", "display"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
@@ -242,11 +257,15 @@ class FolderStatMixin:
                 state = '<span class="fresh">✅ fresh</span>'
             else:
                 state = '<span class="mut">source material</span>'
+            cat = CATEGORY.get(r["name"].lstrip("_"), "")
+            cat_chip = (' <span class=mut title="this lane\'s category folder'
+                        ' in the two-part unit grammar">· %s</span>' % cat
+                        if cat else "")
             present.append(
                 "<tr class=plug><td><span class=caret>▸</span>%s</td>"
-                "<td><code>%s/</code></td><td>%d file%s · %s</td>"
+                "<td><code>%s/</code>%s</td><td>%d file%s · %s</td>"
                 "<td>%s</td><td>%s</td></tr>" % (
-                    r["icon"], html.escape(r["name"]), r["files"],
+                    r["icon"], html.escape(r["name"]), cat_chip, r["files"],
                     "s"[:r["files"] != 1], _fmt_bytes(r["bytes"]),
                     _age(r["newest"], now), state))
             # A FOLDER IS A TREE, not a sorted list of path strings (JL
@@ -306,11 +325,20 @@ class FolderStatMixin:
                 "<tr class=files><td colspan=5>%s</td></tr>"
                 % ("".join(items) or '<span class="mut f">empty</span>'))
         known = {r["name"] for r in rows}
-        gaps = [n for n in ("draw", "slide", "chat", "latex", "word", "bibex",
-                            "display", "skill", "meeting")
-                if n not in known]
+        # The gaps line speaks the two-part grammar (260831), not lane names:
+        # a category counts as present when its folder exists OR any of its
+        # flat pre-sweep lanes does.
+        have_cat = {c for c in ("evidence", "delivery", "studio") if c in known}
+        have_cat |= {c for n, c in CATEGORY.items() if n in known}
+        gaps = [n for n in ("outline", "workflow") if n not in known]
+        gaps += [c + "/" for c in ("evidence", "delivery", "studio")
+                 if c not in have_cat]
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))
+        flat = sorted(n for n in known if n in CATEGORY)
+        if flat:
+            absent.append("📦 pre-migration flat lanes: " + " · ".join(flat)
+                          + " — the sweep folds them under their category")
         cures = [MECHANICAL[r["name"]] for r in rows
                  if r["stale"] and r["name"] in MECHANICAL]
         allbtn = ('<button class=rball type=button data-routes="%s">'

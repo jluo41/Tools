@@ -29,7 +29,7 @@ project        examples/Proj{...}/
         └── job    jNN_{name}/              self-contained, submittable (= Databricks Job)
               ├── tNN_<task>/              TASK = PAGE, self-contained (260830):
               │     ├── tNN_<task>.md          the page a reader opens
-              │     ├── scripts/               THE CODE HOME (260831), the same word at every level
+              │     ├── scripts/               THE TASK'S OWN CODE (260831); shared code is the job's src/
               │     │     ├── <stem>.py        the pipeline
               │     │     └── config/          INSIDE scripts/: a config sits beside the code that
               │     │                          reads it. SHARED (cohort.do) + PER-RUN rNN_<stem>, 1:1 with a ticket
@@ -37,15 +37,15 @@ project        examples/Proj{...}/
               │                                (year, source, fold), never a setting the config
               │                                already holds. Wherever a setting lives, the run
               │                                records it in results/<task>/<run>/runtime.yaml
-              ├── scripts/                 shared by more than one task in this job; the unit that
-              │                            OWNS the folder says what it shares, and that is the only
-              │                            difference between this one and the task's own
+              ├── src/                     SHARED by more than one task in this job. Two words on
+              │                            purpose: `src/` is shared, `scripts/` is owned, so the
+              │                            NAME says which without reading the path
               ├── sbatch/                  batcher that SPANS tasks (one for a single
               │                            task goes in tNN_<task>/sbatch/ instead)
               └── results/<task>/<run>/    a RUN is an execution, never a folder of its own
               ONE GRAMMAR at every level: <level letter b·j·t·r><NN>_<noun>_<qualifier>;
               the address is the prefixes joined, read off the path: b02j01t01r03
-              (legacy: code at the task ROOT and `src/` for the job's shared code, both pre-260831;
+              (legacy: code at the task ROOT, pre-260831;
               FLAT job: .py at root + flat configs/ runs/ — one implicit task)
               TWO MODES:
               ① self-serving      output stays in the job     results/ notebooks/ QA/

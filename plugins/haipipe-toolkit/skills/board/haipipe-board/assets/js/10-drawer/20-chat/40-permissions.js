@@ -222,12 +222,11 @@
     loadSessions();
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
-    /* LIST FIRST (JL 260815: "We first show all the sessions name, and then
-       select the specific session"). Opening a chat leads with the session
-       list, so picking where to continue is the first gesture, not a fold
-       hidden in the 🗂 tab. Choosing a row (or sending a message) proceeds
-       exactly as before. */
-    setUtility('sessions');
+    /* CLOSED FIRST (JL 260831: "make the sessions hidden — now every time I
+       open the chat GUI, it is open"), reversing the 260815 "list first"
+       ruling: the pane opens on the conversation, and 🗂 in the composer row
+       pops the list up when asked. */
+    setUtility('');
     /* Land on the NEWEST message, not the oldest (JL 260801: "它还是一直在最
        上面 ... 我还得往下面去翻"). bubble() already scrolls on every append,
        but the replay above runs while #chat is still display:none, where

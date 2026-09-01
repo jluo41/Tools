@@ -140,7 +140,7 @@ body.split .chatbtn{display:none}
    never empty. Measured 260803 from his own console: 35 tool cards, every one
    `h=1`, each holding real text (`Bash`, the command, `done`). */
 #chat .bd > *{flex:0 0 auto}
-#chat .m{max-width:90%;padding:9px 13px;border-radius:var(--radius-surface);font-size:14px;line-height:1.6;
+#chat .m{max-width:90%;padding:7px 11px;border-radius:var(--radius-surface);font-size:12.5px;line-height:1.55;
  white-space:pre-wrap;word-break:break-word}
 #chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}
 #chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
@@ -160,12 +160,12 @@ body.split .chatbtn{display:none}
 /* 思考过程折叠块 */
 #chat .tk{align-self:flex-start;max-width:92%;border:1px dashed var(--line);
  border-radius:var(--radius-surface);background:var(--bg);padding:4px 11px;margin:1px 0}
-#chat .tk>summary{cursor:pointer;color:var(--mut);font-size:12.5px;list-style:none;padding:3px 0}
+#chat .tk>summary{cursor:pointer;color:var(--mut);font-size:12px;list-style:none;padding:3px 0}
 #chat .tk>summary::-webkit-details-marker{display:none}
 #chat .tk>summary::before{content:"▸ ";color:var(--mut)}
 #chat .tk[open]>summary::before{content:"▾ "}
 #chat .tk .tk-body{white-space:pre-wrap;word-break:break-word;color:var(--mut);
- font-size:12.5px;line-height:1.6;padding:4px 0 6px;max-height:280px;overflow-y:auto}
+ font-size:12px;line-height:1.55;padding:4px 0 6px;max-height:280px;overflow-y:auto}
 /* 权限提示，跟 CLI 那个弹窗一个意思 */
 #chat .ask{align-self:stretch;border:1px solid var(--wip);border-radius:var(--radius-surface);
  padding:10px 12px;background:var(--bg)}
@@ -199,17 +199,29 @@ body.split .chatbtn{display:none}
 #chat .m.md ul,#chat .m.md ol{margin:4px 0 7px;padding-left:20px}
 #chat .m.md li{margin:2px 0}
 #chat .m.md li.cont{list-style:none;color:var(--mut);margin-left:-6px}
-#chat .m.md pre{margin:6px 0;padding:9px 11px;font-size:12px;line-height:1.5;
+#chat .m.md pre{margin:6px 0;padding:8px 10px;font-size:11.5px;line-height:1.5;
  background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-control);overflow-x:auto}
-#chat .m.md code{font-size:12.5px}
-#chat .ft{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);
- align-items:flex-end;flex:0 0 auto}
-#chat textarea{flex:1;border:1px solid var(--line);border-radius:var(--radius-surface);padding:8px 11px;
- font:14px inherit;background:var(--bg);color:var(--fg);resize:none;max-height:110px}
-#chat .send{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-surface);
- width:38px;height:36px;cursor:pointer;font-size:15px}
-#chat .send:disabled{opacity:.45;cursor:default}
-#chat .send.stop{background:var(--todo)}
+#chat .m.md code{font-size:11.5px}
+#chat .ft{display:flex;padding:8px 10px 10px;flex:0 0 auto}
+/* the composer card (JL 260831, the Claude Code manner): textarea on top,
+   the control row inside the same rounded box */
+#chat .composer{flex:1;display:flex;flex-direction:column;gap:2px;
+ border:1px solid var(--line);border-radius:14px;background:var(--bg);
+ padding:8px 10px 6px}
+#chat .composer:focus-within{border-color:var(--accent)}
+#chat textarea{border:none;border-radius:0;padding:2px;outline:none;
+ font:13px inherit;background:none;color:var(--fg);resize:none;max-height:110px}
+#chat .crow{display:flex;gap:2px;align-items:center}
+#chat .crow button{border:none;background:none;color:var(--mut);cursor:pointer;
+ font-size:14px;line-height:1;padding:5px 7px;border-radius:8px}
+#chat .crow button:hover{background:var(--card);color:var(--fg)}
+#chat .crow button.active{background:var(--card);color:var(--accent)}
+#chat .crow .gnew{font-size:16px}
+#chat .crow .send{margin-left:auto;background:var(--accent);color:#fff;border:none;
+ border-radius:9px;width:32px;height:28px;cursor:pointer;font-size:13px;padding:0}
+#chat .crow .send:hover{background:var(--accent);color:#fff}
+#chat .crow .send:disabled{opacity:.45;cursor:default}
+#chat .crow .send.stop{background:var(--todo)}
 #chat .tip{padding:0 13px 9px;font-size:11.5px;color:var(--mut)}
 #chat .cfg{display:flex;gap:7px;align-items:center;padding:0 13px 8px;flex:0 0 auto}
 #chat .cfg select{border:1px solid var(--line);border-radius:var(--radius-control);padding:4px 7px;
@@ -223,13 +235,16 @@ body.split .chatbtn{display:none}
  border-radius:var(--radius-pill);padding:5px 12px;font:12.5px inherit;cursor:pointer}
 #chat .act:hover{border-color:var(--accent)}
 #chat .act.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
-#chat .utility{flex:0 0 auto;border-top:1px solid var(--line);background:var(--card)}
-#chat .utility-tabs{display:flex;gap:6px;padding:6px 13px}
-#chat .utoggle,#chat .stoggle{border:1px solid var(--line);background:var(--bg);color:var(--mut);
- border-radius:var(--radius-pill);padding:5px 10px;font:600 12px inherit;cursor:pointer}
-#chat .utoggle.active,#chat .stoggle.active{border-color:var(--accent);background:var(--accent);color:#fff}
+/* the utility is a POPUP now (JL 260831): its toggle buttons live in the
+   composer's .crow, and the body floats above the composer like a menu */
+#chat .utility{flex:0 0 auto;position:relative;border-top:none;background:transparent}
+/* (the utoggle/stoggle pill dress retired 260831: the toggles are .crow
+   icon buttons in the composer now, styled with their row) */
 #chat .utility-body{display:none}
-#chat .utility.open .utility-body{display:block;border-top:1px solid var(--line);padding-top:3px}
+#chat .utility.open .utility-body{display:block;position:absolute;bottom:4px;
+ left:10px;right:10px;background:var(--bg);border:1px solid var(--line);
+ border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.20);z-index:60;
+ max-height:46vh;overflow:auto;padding:6px 0}
 /* three tabs, one open at a time: every panel hides unless its tab is the
    active one, which scales past the original two-way rule */
 #chat .utility-body .acts,#chat .utility-body .sessions,
@@ -258,7 +273,9 @@ body.split .chatbtn{display:none}
  #chat .sfrow{margin-bottom:4px}
  #chat .sfquote{-webkit-line-clamp:2;font-size:12.5px}
  #chat .bd{padding:10px;gap:7px}
- #chat .m{max-width:96%;padding:8px 10px;font-size:15px;line-height:1.48}
+ /* the docked studio pane is narrower than this breakpoint, so this rule
+    IS the pane's everyday size — 15px here was the "too big" JL saw */
+ #chat .m{max-width:96%;padding:7px 9px;font-size:13px;line-height:1.5}
  #chat .m.sys{max-width:100%;font-size:11px;line-height:1.4;text-align:center}
  #chat .tk{max-width:100%;padding:3px 8px}
  #chat .tk .tk-body{max-height:180px;font-size:12px}
@@ -269,18 +286,17 @@ body.split .chatbtn{display:none}
  #chat .askd pre{font-size:10.5px;padding:5px 7px}
  #chat .ask .b{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
  #chat .ask button{min-height:36px;padding:5px 4px;font-size:11.5px;line-height:1.2;white-space:normal}
- #chat .ft{gap:7px;padding:8px max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
- #chat textarea{padding:8px 10px;font-size:16px;line-height:1.35;max-height:90px}
- #chat .send{width:40px;height:40px;flex:0 0 40px}
+ #chat .ft{padding:6px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ #chat textarea{font-size:16px;line-height:1.35;max-height:90px}
+ #chat .crow .send{width:36px;height:32px}
  #chat .cfg{padding:0 10px 6px;gap:4px;flex-wrap:wrap}
  #chat .cfg select{min-width:0;flex:1 1 29%;padding:5px 4px;font-size:11px}
  #chat .cfg .cost{flex:1 0 100%;margin-left:0;font-size:10.5px}
  #chat .sid{padding:0 10px 6px;font-size:10.5px}
  #chat .acts{padding:7px 10px 2px;gap:5px}
  #chat .act{padding:5px 9px;font-size:11.5px}
- #chat .utility-tabs{padding:5px 10px;gap:5px}
- #chat .utoggle,#chat .stoggle{flex:1;min-height:32px;padding:5px 8px;font-size:11.5px}
- #chat .utoggle:active,#chat .stoggle:active{filter:brightness(.96)}
+ #chat .crow button{padding:5px 6px}
+ #chat .crow button:active{filter:brightness(.96)}
  /* The session history is part of Options on a phone. It stays in its
     desktop location in the DOM, but is only exposed together with the
     other advanced controls so it cannot steal a row from every turn. */

@@ -1,5 +1,10 @@
 # haipipe-plugin-folder · Changelog
 
+## 0.2.1 — 2026-08-31
+- The view speaks the two-part grammar: a category chip per lane row, the
+  gaps line names outline/workflow + missing categories instead of the old
+  flat roster, and flat pre-sweep lanes are called out for the sweep.
+
 ## 0.2.0 · 2026-08-16
 
 The unfold shows a folder's structure instead of its path list (JL: "是不是应该加一个 folder structure？… 这个排版不是非常按照我们的思路来排的").

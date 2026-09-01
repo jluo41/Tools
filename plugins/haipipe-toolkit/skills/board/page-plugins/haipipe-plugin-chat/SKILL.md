@@ -8,7 +8,7 @@ description: >-
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.3.3"
+  version: "0.4.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -21,6 +21,8 @@ rules (`live/chat.py` primes every session with the compact form of §🗺 and
 §🔒 and points here), and the kept record.
 
 > 🎨 Since 260831 evening this pane is the LOWER half of the one 🎨 Studio tab (`haipipe-plugin-studio`), staged under the live drawing; the GUI/TUI segment, session keep, walls and log record are unchanged — only where the pane hangs moved.
+
+> ⌨️ Same evening the COMPOSER took the Claude Code shape (JL showed it): one rounded card — the textarea on top, a control row inside it (＋ new chat · 🗂 sessions · ✨ quick actions · ⚙ settings · 🖌 draw fold · ➤ send). The three toggles open POPUP menus floating above the composer; NOTHING opens by itself (reverses the 260815 "list first" boot ruling — JL: "make the sessions hidden"); ＋ starts a fresh session with no menu; 🖌 presses the shell's studio fold through `window.__studioToggleDraw`.
 
 ## 📡 Surface · one tab, the form inside it
 

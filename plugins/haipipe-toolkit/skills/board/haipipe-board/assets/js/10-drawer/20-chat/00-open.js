@@ -26,18 +26,15 @@
     '<div class="sfpath"></div><div class="sfquote"></div>' +
     '<details class="sfattached"><summary></summary><pre></pre></details></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
-    '<div class="utility"><div class="utility-tabs">' +
-    /* Sessions belongs beside the other two, not in a separate strip under the
-       header (JL 260801: "我怎么能加一个新的 button，叫 Sessions"). The picker
-       element itself is UNMOVED in every other sense: same .spick / .spl
-       selectors, so loadSessions and renderSessions need no change.
-       ORDER, left to right (JL 260802): which conversation, then what to say in
-       it, then how it is configured — widest scope first, and Settings last
-       because it is the one you touch least. */
-    '<button class="gtoggle" type="button" aria-expanded="false">🗂 Sessions</button>' +
-    '<button class="utoggle" type="button" aria-expanded="false">✨ Quick actions</button>' +
-    '<button class="stoggle" type="button" aria-expanded="false">⚙ Settings</button></div>' +
-    '<div class="utility-body"><div class="acts"></div>' +
+    /* THE COMPOSER CARD (JL 260831, from the Claude Code composer he showed):
+       one rounded box — the textarea on top, a control ROW under it: ＋ new
+       chat · 🗂 sessions · ✨ quick actions · ⚙ settings · 🖌 draw fold on
+       the left, ➤ send on the right. The three toggles open POPUP menus
+       floating above the composer instead of expanding the pane, and nothing
+       opens by itself (reverses the 260815 "list first" boot ruling — JL
+       260831: "make the sessions hidden ... it will show a list of menu").
+       Same .gtoggle/.utoggle/.stoggle classes, so setUtility is unchanged. */
+    '<div class="utility"><div class="utility-body"><div class="acts"></div>' +
     '<div class="sessions"><details class="spick" hidden open>'+
     '<summary></summary><div class="spl"></div></details></div>' +
     '<div class="settings"><div class="tip"></div>' +
@@ -53,8 +50,16 @@
     '<option value="bypass">Full · no ask</option></select>' +
     '<span class="cost"></span></div>' +
     '<div class="sid"></div></div></div></div>' +
-    '<div class="ft"><textarea rows="1" placeholder="Ask about this question…"></textarea>' +
-    '<button class="send">➤</button></div>';
+    '<div class="ft"><div class="composer">' +
+    '<textarea rows="1" placeholder="Ask about this question…"></textarea>' +
+    '<div class="crow">' +
+    '<button class="gnew" type="button" title="new chat — starts fresh, primed with this page">＋</button>' +
+    '<button class="gtoggle" type="button" aria-expanded="false" title="sessions">🗂</button>' +
+    '<button class="utoggle" type="button" aria-expanded="false" title="quick actions">✨</button>' +
+    '<button class="stoggle" type="button" aria-expanded="false" title="settings">⚙</button>' +
+    '<button class="dtoggle" type="button" title="show / hide the drawing above">🖌</button>' +
+    '<button class="send" title="send">➤</button>' +
+    '</div></div></div>';
   document.body.appendChild(chat);
   /* The drawer is position:fixed OVER the page, so a wheel with nothing to
      scroll inside it chains to the document and the PAGE moves instead — and
@@ -107,7 +112,28 @@
     }
   }
   UTABS.forEach(function (t) {
-    t[2].onclick = function () {
+    t[2].onclick = function (ev) {
+      if (ev) ev.stopPropagation();
       setUtility(utility.classList.contains(t[1]) ? '' : t[0]);
     };
   });
+  /* a popup closes on a click anywhere outside it (the Claude Code manner) */
+  document.addEventListener('click', function (ev) {
+    if (!utility.classList.contains('open')) return;
+    for (var n = ev.target; n; n = n.parentNode) {
+      if (n === utility) return;
+      if (n.classList && n.classList.contains('crow')) return;
+    }
+    setUtility('');
+  });
+  /* ＋ new chat: one press, no menu — the session registry names it later */
+  chat.querySelector('.gnew').onclick = function () {
+    setUtility('');
+    if (window.__chatNewSession) window.__chatNewSession('');
+  };
+  /* 🖌 the draw fold lives in the SHELL (the studio's upper half); this is
+     the composer's remote for it. Outside the shell it does nothing. */
+  chat.querySelector('.dtoggle').onclick = function () {
+    try { if (parent && parent.__studioToggleDraw) parent.__studioToggleDraw(); }
+    catch (e) {}
+  };
