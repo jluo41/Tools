@@ -1,3 +1,29 @@
+## 0.16.0 — 2026-09-02
+
+- Extend each SURVEY Evidence Item graph with zero-to-many exact PageX source
+  bindings. PageX authorities are named in the item's one frozen Local Input;
+  they are sources, never Supporting Runs, local Runs, or Result types.
+- Keep SHAPE and SURVEY planning-only: they specify item identity, expected
+  ready evidence, acceptance, source graph, and actions without allocating or
+  executing a Level-4 Run.
+
+## 0.15.0 — 2026-09-01
+
+- **Human review packet**: when a person asks to review, check, read, or
+  approve an outline, the phase now presents four linked parts before seeking
+  a decision: current Shape and arc; material typed Evidence Items and their
+  surveyed sources; routed feedback/requirements/open threads that shaped the
+  plan; and the exact human decision still needed.  The packet reports records
+  on disk, does not write prose, and never infers `approved:` or `Decide:`.
+
+## 0.14.0 — 2026-09-01
+
+- SHAPE now names typed `E<NN>-VALUE|CITE|DISPLAY-<slug>` items and specifies
+  Target, Need, Expected, and Acceptance. SURVEY remains planning-only and
+  adds 0..N Execution/Discovery Supporting Runs plus exactly one local Page
+  Evidence Item Run. The ledger is `<stem>-evidence-items.md`; `found`,
+  `person`, and `none` retire as actions.
+
 ## 0.13.0 — 2026-09-01
 
 - Owns the OUTLINE part's two human-gated cycles: SHAPE (brief → propose →

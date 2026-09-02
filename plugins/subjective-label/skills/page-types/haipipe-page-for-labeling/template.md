@@ -2,7 +2,7 @@
      Copy this file to `<board>/<group-folder>/S-Label-<n>-<corpus>-<target>.md`, fill it, and
      DELETE each RULE comment as you satisfy it. A RULE comment never ships in a filled page.
 
-     WHAT THIS FILE IS. The shape of a labeling run page, in the order its sections must run,
+     WHAT THIS FILE IS. The shape of a labeling Job Page, in the order its sections must run,
      with one RULE comment per rule. It states no rule that is not already in
      `haipipe-page-for-labeling/SKILL.md` (this Page Type) or in `haipipe-page`
      (the base frame). Load both before filling this in.
@@ -298,7 +298,7 @@ runs/<corpus>-<target>/                the job folder, ref-assets.md §1
 
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
 - `reads · ALL` · [S-Label-Dash page](<group>/S-Label-Dash.md)
-  The Dash carries this run's row and the one gate it is blocked on.
+  The Dash carries this job's row and the one gate it is blocked on.
 
 <!-- RULE · this exact row shape or the check reports `related-row-form`.
      ⚠️ ONLY PAGES ON THIS BOARD MAY APPEAR HERE. A path that leaves this board reports

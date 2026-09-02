@@ -37,7 +37,7 @@ a `status: complete` Result.
 
 ## Coverage declaration
 
-Coverage belongs to the Topic Page's source-map section, not to every Result.
+Coverage belongs to the Task Page's source-map section, not to every Result.
 It states channels searched, channels not searched, date, and candidate
 selection rule:
 

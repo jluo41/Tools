@@ -40,7 +40,7 @@ def _slugify(t):
 # Advised sections are written OUT, so declining one is a deletion rather than an
 # omission. Optional ones are listed in a comment instead: an author cannot choose
 # a section they never learn exists (JL 260726, after a new page arrived with no
-# Diagram and nothing said one was available), and a comment is dropped at render,
+# Outline and nothing said one was available), and a comment is dropped at render,
 # so the page never shows a box opened onto nothing.
 Q_STUB = """# {title}
 state: 🔴 OPEN
@@ -59,8 +59,8 @@ English only. One sentence per source line. Use plain declaratives, name evidenc
      earns and delete this comment; empty beats wrong, so leave out what you
      cannot fill (grammar: ref/page-template.md, layout: QA4).
 
-## Diagram      one ascii figure of the shape or flow, collapsed on the page.
-                An excalidraw share URL alone on a line embeds as a canvas.
+## Outline      optional ascii narrative map. The current plan in outline/
+                renders here as the Outline table; draw remains in studio/draw/.
 ## Content      ### is a division that folds, #### is one paragraph inside it.
 ## Law          rules this page has settled.
 ## Lesson       traps hit, with the concrete failure attached.

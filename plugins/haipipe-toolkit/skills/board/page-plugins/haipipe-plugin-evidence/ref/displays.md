@@ -1,19 +1,12 @@
----
-name: haipipe-plugin-display
-description: >-
-  The display/ plugin of a Board page: figure and table UNITS at
-  PAGE/evidence/display/STEM-DisplayN-SLUG/, routed to a renderer by kind, with a
-  human-only accepted: tick. A unit's id named in prose chips as an evidence
-  card. Trigger: display plugin, page display, display unit, make a figure for
-  this page, cite a display, /haipipe-plugin-display.
-metadata:
-  version: "0.3.2"
-  last_updated: "2026-08-31"
----
-# /haipipe-plugin-display · the page as a small paper, its figures as accepted units
+# Displays lane · the Page as a small paper
 
-**LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
-This file owns only display's delta: where a unit lives on a PAGE, which renderer makes it, and how a sentence cites it.
+Read this reference from `haipipe-plugin-evidence` when a Page Evidence Item is
+`DISPLAY`, or when the 🧾 Evidence tab must present a display unit. The unified
+Evidence plugin owns the Page-facing lane and surface. Renderer skills still
+own their craft and `recipe/`; they are workers, not Page plugins.
+
+This reference defines where a unit lives on a Page, which renderer makes it,
+and how a sentence cites it.
 The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-output-contract.md` is adopted verbatim (QPf5, ruled JL 260815), and this skill cites it the way `haipipe-plugin-latex` cites `md2tex.py` — a caller, never a fork.
 
 ## 🗂 Storage · one unit per folder, the paper contract at a page address
@@ -36,7 +29,8 @@ The address delta a fresh agent must know: the renderer skills speak PAPER addre
 
 ## ✍️ Writer · a family routed by kind, and a gate no machine may tick
 
-Display is the first plugin whose writer is not one endpoint but a ROUTING DECISION: the claim's kind picks the renderer skill, and the renderer owns `recipe/` end to end.
+Display writing is a ROUTING DECISION: the claim's kind picks the renderer
+skill, and the renderer owns `recipe/` end to end.
 
 ```text
 driven by   kind             renderer                          recipe holds
@@ -86,15 +80,23 @@ The commonest question about a data-driven unit is where its numbers come from (
 
 **The unit never reaches into the workspace a second time.** The card already crossed the wall and recorded the provenance; a unit that re-pulls the same file is a second, unwitnessed pull that can silently disagree with the card. `intake/manifest.yaml` names the card, the card's state, and the card's own `sha256`, which is what makes staleness COMPUTABLE: if the card re-pulls and the hash moves, the intake is stale and `accepted:` drops back to ⬜.
 
-**A DATA-driven unit may only be created once a card serving it has ANSWERED.** Its `intake/` freezes from a `proof/` that does not exist until an answer does, which is why such a unit is created at LAND and not at SHAPE or SURVEY (`haipipe-page-workflow` §🃏). Until then the plan carries a bare `🖼 owed` mark and no folder: on `QC1-visitlbp` that is 1 of 4 proposed units buildable, because the other three wait on two rows not yet landed. A CONCEPT unit (diagram · tex · illustration) waits for no card: its intake freezes a LISTING of the source files it reads, and it may be created as soon as that listing exists.
+**A DATA-driven unit may only be created once the Results supporting it are
+valid.** Its `intake/` freezes from the Evidence Item's Local Input, which does
+not exist until LAND validates every declared Supporting Result and PageX
+binding. Until then the typed `DISPLAY` item carries its expectation and Run
+plan but no display unit folder. A CONCEPT unit may have zero Supporting Runs
+when its approved item contract is sufficient; LAND still freezes one Local
+Input and executes one Local Run.
 
 **The recipe TYPES no cell.** `recipe/` reads the frozen intake at run time, so re-running it against the same intake yields the same bytes and a reader can check any printed number against the card's `proof/`. It also fails loudly on a ragged read: `QC1-visitlbp-Display1-control-ladder` caught Stata writing `="771,449"`, where the `=` outside the quote makes a CSV parser split inside the number and deliver 11 cells where 5 were expected.
 
 **A unit names the bullet it serves**, the same backlink a probe card carries (`haipipe-plugin-probe` §↩), in a `serves:` row of its README: the plan was frozen before the unit existed, so the unit points at the plan and never the reverse.
 
-## 🖼 Surface · the strip that shows everything and writes nothing
+## 🖼 Evidence segment · the strip that shows everything and writes nothing
 
-The right-pane 🖼 tab is `POST /_board/display` (`live/plugview.py`) writing the derived `<stem>-view.html`.
+`POST /_board/display` (`live/plugview.py`) remains the compatibility route
+that writes the derived `<stem>-view.html` shown inside the 🖼 Displays segment
+of the unified 🧾 Evidence tab. It is not a standalone Plugin surface.
 Units lay as a horizontal strip, one filling the pane, snap-shifted right to the next; a chip row names every unit and clicking a chip shifts the strip to it.
 Each card leads with the framed `preview.pdf` (or a 🕳 no-render-yet notice naming which step is missing), then the README rows, then the unit's folder tree with the ⚙️ derived halves marked — the drawn thing first, its description under it (JL 260819: "display the pdf at the very top, and then show information").
 The strip header reports three independently computed counts: **declared** means a unit folder exists, **rendered** means a winning asset and `preview.pdf` both exist, and **accepted** means the README carries a human `accepted: ✅ ...` decision. Folder count is never presented as completed work.
@@ -123,7 +125,7 @@ THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cite
 
 > Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
-## 📂 Files
+## 📂 Files and ownership
 
 - `../../../display/ref/display-unit-output-contract.md`
   The unit's internal shape; adopted verbatim, never forked.
@@ -134,4 +136,4 @@ THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cite
 - `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
   The drawer registration: the Plugin ▾ rows for 🖼 Display and 🚪 Probe.
 - `../../haipipe-plugin/ref/roster.md`
-  The row this skill expands.
+  The internal `display/` storage row owned by `haipipe-plugin-evidence`.

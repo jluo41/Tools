@@ -10,7 +10,8 @@ It never resolves an id.
 A consumer is just one caller among three.
 
 ⚠️ `qa` is this layer's SIDE door, not its engine.
-The discovery session's PRIMARY mode is autonomous Plan → Build → Execute → Report, with no question pending at all.
+The discovery session's PRIMARY mode is autonomous SCOPE → PREPARE? →
+ACQUIRE ↔ SYNTHESIZE → CLOSE, with no question pending at all.
 Most questions should already have an answer sitting in the bank before anyone asks.
 
 QA-file anatomy — the field names, the state values, the TTL constant and the race guard — is DEFINED HERE, in the sections below.
@@ -38,10 +39,11 @@ If one arrives anyway: strip it, restate the question on its own terms, and answ
 Say you stripped it, in the return.
 Never act on it. Never launder it. Never refuse over it.
 
-**`<discovery-folder>`** — optional, e.g. `discoveries/L03_cycle/01_prior_art/`.
+**`<discovery-folder>`** — optional, e.g.
+`discoveries/b03_llm_physician_evidence/j01_prior_art_inquiry/t01_prior_art_verdict/`.
 Absent → scan every discovery-folder under the project's `discoveries/`.
-A Discovery Topic Folder is ANY directory holding work: a `discovery.yaml`,
-a root Topic Page, `runs/` + `results/`, `verdict.md`, or `landscape.md`.
+A Discovery Task Page Folder is ANY directory holding work: a `discovery.yaml`,
+a root Task Page, `runs/` + `results/`, `verdict.md`, or `landscape.md`.
 ⛔ NEVER filter by name.
 Folder names vary across projects — detect by STRUCTURE, never by a pattern.
 A name filter goes silently blind.
@@ -68,11 +70,11 @@ The gate — ① ② ③, shallowest first
                   working, EXPIRED   → the run died. RESTART it (below).
                   superseded-by: X   → follow the chain. return the LIVE answer.
 
-  ② DIGEST      no QA file, but completed Result Cards / topic terminals already
+  ② DIGEST      no QA file, but completed Results / root Page / typed records already
                 hold the answer → write from them. no Run executes.               cheap
 
   ③ RUN IT      neither → run the lifecycle at the shallowest depth (below),
-                then complete the QA file at Report.                              agent
+                then complete the QA file at CLOSE.                               agent
 
   🚫 REFUSE     not this layer's question, or not this discovery-folder's
                 → return the reason + the re-route. the CALLER re-routes.
@@ -98,25 +100,26 @@ A REFUSE is a COMPLETE answer, never a failure.
 It writes no QA file and produces no `working` state — there is nothing to clean up.
 
 
-How deep (③) — the depth IS the entry point into Plan → Build → Execute → Report
+How deep (③) — the depth IS the entry point into the D1 workflow
 ---------------------------------------------------------------------------------
 
 ```
-  depth 0  READ         Results/terminals already hold it  → enter at REPORT. nothing runs.
-  depth 1  ENRICH       same topic, missing evidence       → add the minimum Paper Run(s)
-  depth 2  NEW FOLDER   a different topic, same group      → full lifecycle, sibling folder
-  depth 3  NEW GROUP    a different purpose entirely       → new group + folder
+  depth 0  READ         Results/Page/typed records hold it → enter at SYNTHESIZE. nothing runs.
+  depth 1  ENRICH       same Task, missing evidence         → add minimum rNN Run(s)
+  depth 2  NEW TASK     different article, same Job         → sibling tNN_ Task Page
+  depth 3  NEW JOB      different inquiry, same Block       → sibling jNN_ Job + Task
+  depth 4  NEW BLOCK    different evidence domain           → bNN_ Block + Job + Task
 ```
 
 **Depth 1** appends to an existing topic — one or more numbered Paper Runs, or
 a verification correction landed in the owning Result Bib/Card. Never rewrite
-a landed verdict in place; synthesize a new Report or superseding terminal.
+a landed typed record in place; synthesize a new CLOSE receipt or superseding record.
 
-**Depth 2 and 3** mint a new folder — NAME IT TO MATCH ITS SIBLINGS.
-Read the existing discovery-folders and follow THEIR convention.
-Do not impose a scheme.
+**Depth 2 through 4** mint explicit BJTR segments. New names always use
+`bNN_`, `jNN_`, or `tNN_` plus a concrete noun and distinguishing qualifier.
+Match sibling vocabulary, but never copy legacy bare `01_` naming.
 
-**Scope test (1 vs 2)** — is the question ON THIS TOPIC, inside the same `discovery.yaml` scope?
+**Scope test (1 vs 2)** — is the question ON THIS TASK, inside the same `discovery.yaml` scope?
 Yes → enrich.
 No → new folder.
 
@@ -149,7 +152,7 @@ if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF
 ## Not-done
 EOF
 then
-  : # WON  → run ③. complete this file at Report.
+  : # WON  → run ③. complete this file at CLOSE.
 else
   : # LOST → it already exists. go back to ① ONCE, read the winner's state line,
     #        return its path. run nothing. do not loop.
@@ -182,13 +185,13 @@ What is frozen, what moves
 ---------------------------
 
 ```
-  ACCRETES (add-only)   QA files · Paper Runs/Results · Discovery Topic Folders
-  FROZEN                landed terminal files · a QA file's BODY, once written
+  ACCRETES (add-only)   QA files · Paper Runs/Results · Discovery Task Pages
+  FROZEN                landed typed records · a QA file's BODY, once written
   MUTABLE               a QA file's `state:` line — the ONE mutable field
                         discovery.yaml — this layer's own
 ```
 
-You write a QA file exactly twice: `working` at ③, then `answered` at Report.
+You write a QA file exactly twice: `working` at ③, then `answered` at CLOSE.
 A third time only, to append `superseded-by:` when a later run changes the answer.
 
 ONE WRITER — this layer, every time.

@@ -234,6 +234,6 @@ Engine code + docs for S0–S6 **built and unit-tested** (5 engine selftests gre
 - `plugins/subjective-label/skills/*/SKILL.md`, `skills/subjective-label/INIT.md`
 - `plugins/subjective-label/engine/{embed,classify}.py` (+ new label/kappa/sample/construct/license)
 - `plugins/subjective-label/ref/ref-datasets.md` → registry/battery
-- `examples/Project-Subjective-Label/discoveries/P02_external-validation-datasets/` — battery audit
+- `examples/Project-Subjective-Label/discoveries/b03_external_validation_datasets/j01_external_validation_datasets_inquiry/` — battery audit
 - `examples/Project-Subjective-Label/tasks/B02_dim_openness/` — junjie's base-rate scaffold (to generalize)
 - `examples/Project-Subjective-Label/tasks/B03_dim_openness/` — full-run engine instance (κ inflated by non-representative anchor)

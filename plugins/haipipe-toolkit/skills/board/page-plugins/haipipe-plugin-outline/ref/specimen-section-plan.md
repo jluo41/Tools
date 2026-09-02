@@ -1,16 +1,16 @@
 # Specimen · a Section plan in the approved shape
 
-A frozen copy of `Ba-misq/SM00-abstract/outline/SM00-abstract-outline-v3.md` (MISQ abstract, approved by JL 260831 0146). One bullet is one sentence slot; heads are 4 to 11 plain words; every Note is one line; the marks end the Note line; `Routed:` lines follow. Read it beside `ref/plan-grammar.md`; do not edit it.
+A frozen copy of the MISQ Abstract v3 plan, now named `S-MISQ-Main-Abstract` (approved by JL 260831 0146). One bullet is one sentence slot; heads are 4 to 11 plain words; every Note is one line; the marks end the Note line; `Routed:` lines follow. Read it beside `ref/plan-grammar.md`; do not edit it.
 
 ```markdown
-# SM00-abstract · outline v3
+# S-MISQ-Main-Abstract · outline v3
 outline-version: v3
 supersedes: v2
 round: RD01-misq-feedback-20260825
 date: 260831
 approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"; transcribed by CC, the tick is JL's
 status: approved · DRAFT written 260831 0137, REVISE trimming to the length aim
-narrative-row: Story03 / SM00
+narrative-row: Story03 / S-MISQ-Main-Abstract
 structure-source: QBv1-misq §4 Sec-0-Abstract
 feedback: 8 routed · 8 served · 0 declined
 arc: A doctor-decision problem, measured through reviews, answered by one main result, bounded by patient pressure and room to decide, closed on the IS meaning.

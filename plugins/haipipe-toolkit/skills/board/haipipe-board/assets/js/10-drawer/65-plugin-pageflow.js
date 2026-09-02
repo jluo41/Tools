@@ -1,8 +1,6 @@
-/* 📄 Page phases · the page family's own workflow, registered into the 🪜 menu.
+/* 📄 Page phases · internal lifecycle view (no Plugin row).
  *
- * THE SECOND MEMBER. The registry's Workflow group was reserved for exactly this
- * (05-plugins.js: "Page's four phases arrive as the second member"). Labeling is a
- * LADDER — each door locked by the one before; this is a LOOP — OUTLINE/EVIDENCE
+ * The Page phases view remains a LOOP — OUTLINE/EVIDENCE
  * (the OUTLINE part) then DRAFT/REVISE/COMPILE/CHECK (the DRAFT part), selected by
  * authority, CHECK routes backward, and
  * only CHECK may CLOSE. So this surface lights the last acted phase and names where
@@ -302,20 +300,6 @@
     if (p && !p.hidden) { p.hidden = true; open(); }
   });
 
-  /* Registered, not wired: the engine holds no branch for this surface. It applies
-     to the pages the lifecycle applies to — Q decision and S stage pages. `Skill-`
-     and `S-` both start with S, so the test is on the full basename. */
-  if (window.boardPlugins) {
-    window.boardPlugins.register({
-      id: 'pageflow',
-      label: '📄 Page phases',
-      hint: 'where this page stands in DRAFT · EVIDENCE · REVISE · CHECK',
-      menu: 'workflow',
-      applies: function (page) {
-        var name = pageFile(page).split('/').pop();
-        return /^(Q|S-)/.test(name);
-      },
-      open: function () { open(); }
-    });
-  }
+  /* The lifecycle engine remains available to internal callers. It no longer
+     registers a reader-facing row: Page phases is process state, not a Plugin. */
 })();

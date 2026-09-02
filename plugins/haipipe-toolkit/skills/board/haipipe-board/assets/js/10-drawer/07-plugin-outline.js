@@ -1,4 +1,4 @@
-/* 🧭 Outline · the page re-read per division, the rail's SECOND surface.
+/* 🧭 Outline · the page re-read per division, the rail's FIRST surface.
  *
  * THE GAP IT CLOSES (JL 260816): a page is grouped by section kind — all
  * Content, then all Aims, then all States — so nothing shows one division
@@ -6,8 +6,7 @@
  * one card per Content division, everything belonging to it inside, plus a
  * 🚦 lens that buckets every aim into ⬜ open and ✅ done.
  *
- * SECOND because this file sorts at 07-, right after 📂 folder: registration
- * order is asset sort order, which is the rail's order. The two are twins —
+ * FIRST by explicit Plugin order. Outline and Folder remain twins —
  * 📂 shows what the page's FOLDER holds, 🧭 what its PROSE holds — and both
  * are live meta-surfaces with no subfolder and no roster row.
  *
@@ -52,6 +51,7 @@
       label: '🧭 Outline',
       hint: 'each Content division with its own aims, ticks, and states',
       menu: 'plugin',
+      order: 10,
       /* Every page has prose, so unlike 📂 this applies flat or folded. */
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {

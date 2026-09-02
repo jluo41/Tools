@@ -122,7 +122,7 @@ A board's folder name SAYS ITS SUBJECT (JL 260820). `InsightBoard/` and `DesignB
 
 The subject is PascalCase; the suffix is the literal kind, so `ls *InsightBoard*` finds them all. The two subjects are named independently, which is what makes the count free: an Application may hold several InsightBoards when it reads distinct data, several DesignBoards when it designs for distinct topics, and any DesignBoard may PageX-bind any InsightBoard. Two boards is the common case, not the limit. No date suffix: the `<NN>-<topic>-<YYMMDD>` rule governs boards newly opened under `diagram/`, and these are runtime boards.
 
-A project whose sibling folders use the `<Letter><NN>_<slug>` grammar (JL 260821, e.g. `tasks/D01_*`, `discoveries/S01_*`) may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_SMSR2Full-InsightBoard`, `B01_RefillFraming-DesignBoard`. The prefix is project-local ordering only; the canonical shape stays `<Subject>-<Kind>`, and the letter never appears inside pages.
+A project whose executable Task folders use a stage-letter grammar such as `tasks/D01_*` may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_SMSR2Full-InsightBoard`, `B01_RefillFraming-DesignBoard`. Discovery uses its own explicit `bNN_/jNN_/tNN_/rNN_` address and does not supply a board prefix. The Application prefix is project-local ordering only; the canonical shape stays `<Subject>-<Kind>`, and the letter never appears inside pages.
 
 ```text
 <application-root>/

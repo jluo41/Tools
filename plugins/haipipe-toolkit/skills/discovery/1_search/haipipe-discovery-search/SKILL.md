@@ -1,18 +1,20 @@
 ---
 name: haipipe-discovery-search
-description: "Search type specialist for Discovery Topic Page Folders: find candidates, resolve canonical papers/sources, and materialize one numbered .sh Run plus same-stem Result per selected Subject. Builds the Topic source map from completed Results. Trigger: search sources, find papers, add paper run, read this paper, source base, /haipipe-discovery-search."
+description: "Search-route specialist for source-map and source-reading Discovery Pages: find candidates, resolve canonical papers/sources, and materialize one numbered .sh Run plus same-stem Result per admitted Subject. Trigger: search sources, find papers, add paper run, read this paper, source map, source reading, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-01"
+  version: "0.4.0"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-discovery-search · Search type specialist
 
-Owns Search-type Execute for a durable Discovery Topic, plus one-off inline
-lookup. LOAD haipipe-discovery first for the Topic lifecycle and
-ref/paper-run-contract.md for every durable source.
+Owns ACQUIRE craft for every Discovery type and contributes source-map /
+source-reading article craft during SYNTHESIZE, plus one-off inline lookup.
+LOAD haipipe-discovery first for the Topic workflow and
+read `ref/page-types.md` for the Page promise and
+`ref/paper-run-contract.md` for every durable source.
 
 ## Workers
 
@@ -38,7 +40,8 @@ mode records the omitted pass in the Topic coverage declaration.
 
 ## Durable procedure
 
-1. Read discovery.yaml and the root Topic Page. Sweep local Discovery Results
+1. Read `discovery_type` from discovery.yaml (or normalize a legacy
+   Search/role pair) and the root Task Page. Sweep local Discovery Results
    before web calls when sources.local_first is true.
 2. FIND candidates across the required channels. Wide mechanical sweeps may fan
    out read-only search workers; the specialist keeps relevance judgment,
@@ -47,19 +50,22 @@ mode records the omitted pass in the Topic coverage declaration.
    venue/year, and DOI/arXiv/publisher URL. A secondary post or short link is a
    Trigger, not automatically the Subject.
 4. ADMIT only candidates relevant enough to analyze. For each Subject call the
-   Topic's add operation: allocate the next RUNNAME and create BOTH
-   runs/<RUNNAME>.sh and results/<RUNNAME>/runtime.yaml (status: planned).
+   Task Page's add operation: allocate the next RUNNAME and create BOTH
+   runs/<RUNNAME>.sh and results/<RUNNAME>/runtime.yaml (`family: discovery`,
+   matching paper/source analysis operation, `status: planned`).
    One candidate paper = one Run. A Trigger mentioning N papers fans out to N
    Runs.
 5. EXECUTE each pending ticket. Dispatch the appropriate read worker and write
    the paired Result Card, facts.md, one-entry authoritative <RUNNAME>.bib, and
    the completed runtime receipt. PDF and captured Trigger text are optional.
-6. CHECK the Run/Result spine and rebuild the Topic Evidence Bib using the
-   deterministic script named by the Discovery orchestrator.
-7. Update the Topic Page's Source map: coverage boundary plus one readable
-   Result link per source. Do not create a new monolithic notes.md.
-8. Return Run counts by state, unresolved Trigger count, Topic Page path, and
-   aggregate Bib path. The orchestrator owns topic status and Report.
+6. CHECK the Run/Result spine. Hand completed Results to SYNTHESIZE; the
+   Evidence plugin owns the deterministic Task Page Bib aggregation.
+7. During SYNTHESIZE for source-map/source-reading, update the root Page:
+   source-map emphasizes coverage and readable source units; source-reading
+   synthesizes what selected sources say. Both keep Result links and never
+   create a monolithic notes.md.
+8. Return Discovery type, Run counts by state, unresolved Trigger count, Task Page path, and
+   aggregate Bib path. The orchestrator owns Task Page status and CLOSE.
 
 VERIFIED requires independent canonical identity confirmation. A fabricated or
 memory-composed Bib entry is the worst failure and cannot produce

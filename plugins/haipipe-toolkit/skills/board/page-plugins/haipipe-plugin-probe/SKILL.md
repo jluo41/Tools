@@ -108,7 +108,11 @@ A card whose `serves:` is empty is not an error while the plan is still being wr
 
 ## ✍️ Writer · the loop lands each piece, and the state is checkable by FILE
 
-The lifecycle is five steps across the OUTLINE part since 260901 (`haipipe-probe` retired): SURVEY does ② MATCH as the item table's Run column, LAND does ① ORGANIZE ③ DISPATCH for an outbound row and ④ POINT when the answer returns, EMBED does ⑤ INTERPRET into the plan. No board route writes a card; this plugin only says where each step lands.
+The current typed Evidence Item lifecycle does not require a new probe card:
+SURVEY plans Discovery/Execution Supporting Runs and one local Page Evidence
+Item Run; LAND binds the ready local Result; EMBED interprets it. This plugin
+remains the compatibility contract for existing outbound card folders and says
+where their historical steps land; it is not a current SURVEY action or family.
 
 ```text
 step                                  where it lands
@@ -421,7 +425,7 @@ On a `dialect: paper` board the join key from a sentence to the question that ow
   back to ⬜, which is how two ANSWERED cards read as untouched.
 - `../../haipipe-board/src/dialect_paper.py`
   The `[Q-…]` join key, and the state a bracket resolves to.
-- `../haipipe-plugin-display/SKILL.md`
+- `../haipipe-plugin-evidence/ref/displays.md`
   The unit whose folder shape this one mirrors, and the consumer of `proof/` through `intake/`.
 - `../../haipipe-plugin/ref/roster.md`
   The row this skill expands.

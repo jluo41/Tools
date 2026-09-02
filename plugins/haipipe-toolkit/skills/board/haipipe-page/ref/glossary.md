@@ -27,13 +27,15 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   then its mark. Addressed by POSITION, never by a name.
 - **address** — `C3.P1.B2` = section 3, paragraph 1, bullet 2. It is the
   bullet's only id, so moving a bullet renames it, on purpose.
-- **mark** — the one symbol at the end of a bullet saying what it still owes:
-  🎯 an aim · 📮 a question to ask · 🧮 a number to pull · 📚 a citation to
-  land · 🖼 a picture to draw.
-- **item row** — one record per mark in `outline/<stem>-items.md`, written at
-  SURVEY: what is owed, which run in tasks/ answers it (`found · rerun ·
-  new-run · new-task · new-job · new-block · person · none`), and a person's
-  Decide. Its Status is derived (`owed → bound → landed → folded → accepted`).
+- **Evidence Item** — one named, typed thing an outline bullet expects:
+  `E<NN>-VALUE|CITE|DISPLAY-<slug>`. SHAPE writes its expected ready payload and
+  acceptance; SURVEY plans Supporting Runs and exactly one local Run in
+  `outline/<stem>-evidence-items.md`. Status is derived (`specified → planned →
+  ready → folded → accepted`).
+- **Supporting Run** — an Execution or Discovery Run whose detailed Result is
+  frozen into an Evidence Item's one local input envelope. Zero or more per item.
+- **local Evidence Item Run** — the one Page · Evidence Item Run that converts
+  the frozen input into a focal ready VALUE/CITE/DISPLAY Result for EMBED.
 - **card**, also **probe card** — ONE question this page needs answered by
   someone else, as a folder. Raised at LAND only when the question LEAVES the
   page; a `found` row never mints one.
@@ -50,8 +52,8 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 - **receipt** — the machine-readable record of one phase pass: who acted, which
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
 - **the bank** — the task and discovery folders that ANSWER questions, and know
-  nothing about who asked. `tasks/<group>/<folder>/QA/<n>-<slug>.md` and
-  `discoveries/<group>/<folder>/QA/<n>-<slug>.md`
+  nothing about who asked. `tasks/<block>/<job>/<task>/QA/<n>-<slug>.md` and
+  `discoveries/bNN_<block>/jNN_<job>/tNN_<task>/QA/<n>-<slug>.md`
 - **QA file** — one answer in the bank, written in general language with no
   page, claim or stake in it, so any consumer can read it. Its number is only
   the ORDER that task folder answered questions in, never a rank or a version:

@@ -3,7 +3,7 @@
 
     python xcal.py <board-folder>            regenerate fig/board.excalidraw
     python xcal.py <board-folder> --wire     ... and put each frame's URL in its
-                                             page's ## Diagram
+                                             page's ## Outline
 
 ONE excalidraw per board, one FRAME per page (JL 260726). Never a file per page:
 a single surface is the only thing that can say how the pages RELATE, which is
@@ -11,7 +11,7 @@ the whole argument for drawing at all. A page's Diagram opens at its own frame
 through `serve.py`'s `?frame=<ID>` projection; the file on disk is one scene.
 
 Each frame is SEEDED with the ASCII figure that page already has in its
-`## Diagram`, as one monospace text element. A frame holding nothing is a blank
+`## Outline`, as one monospace text element. A frame holding nothing is a blank
 box that tells the reader the feature is broken (JL 260726, on opening QB3 and
 finding an empty rectangle), and a seeded one gives them something to redraw.
 The ASCII stays the truth on the page: this is a one-way seed, not a source.
@@ -79,11 +79,11 @@ def text(el_id, s, x, y, size, mono, frame=None, color="#1e1e1e"):
 
 
 def figure_of(page):
-    """that page's ## Diagram ASCII figure — the first fenced block, verbatim.
+    """A page's Outline ASCII map — the first fenced block, verbatim.
 
-    Only ## Diagram: a fenced block under ## Content belongs to a paragraph's
-    argument, not to the page's picture of itself."""
-    d = sec(page.get("sec", {}), "Diagram")
+    Only Outline (with legacy Diagram accepted): a fenced block under Content
+    belongs to a paragraph's argument, not to the page's map of itself."""
+    d = sec(page.get("sec", {}), "Outline")
     if not d:
         return ""
     m = re.search(r"^```[^\n]*\n(.*?)^```", d, re.S | re.M)
@@ -223,7 +223,7 @@ XURL = re.compile(r"^[ \t]*(https?://[^\s]*excalidraw[^\s]*)[ \t]*$\n?", re.M)
 
 
 def wire(folder, pages, rel, host, port):
-    """put each frame's URL in its page's ## Diagram, replacing any older one.
+    """Put each frame's URL in its page's ## Outline, replacing any older one.
 
     Rebuilds the section rather than splicing: every old excalidraw line comes
     out, the new one goes on the end with one blank line either side. Same
@@ -248,23 +248,24 @@ def wire(folder, pages, rel, host, port):
         # `/` resolves against whatever host the board was loaded from, so the
         # page stops caring where it is being served.
         url = f"{host}/?board={rel}&frame={p['id']}"
-        if len(re.findall(r"^## Diagram\s*$", txt, re.M)) > 1:
-            print(f"   ! {p['file']} has more than one ## Diagram; "
+        if len(re.findall(r"^## (?:Outline|Diagram)\s*$", txt, re.M)) > 1:
+            print(f"   ! {p['file']} has more than one ## Outline/Diagram; "
                   "merge them by hand, this only writes into the first")
         # `[ \t]*$\n?` and not `\s*$`: the second spans blank lines, so group(1)
         # starts at a place that depends on how the page was spaced
-        m = re.search(r"^## Diagram[ \t]*$\n?(.*?)(?=^## |\Z)", txt, re.S | re.M)
+        m = re.search(r"^## (?:Outline|Diagram)[ \t]*$\n?(.*?)(?=^## |\Z)", txt,
+                      re.S | re.M)
         if not m:
-            # on-stage order (QA4): Diagram sits after Question/Boundary and
+            # on-stage order (QA4): Outline sits after Question/Boundary and
             # before everything else, so anchor on the first section that is
             # allowed to follow it. Not `## Content` alone: a short page may
             # have none, and two did (QB5, QC3).
             anchor = re.search(r"^## (?:Content|Aims|Items to Finish|Done when|"
                                r"States|State|Where we are|Now|Files)\s*$", txt, re.M)
             if not anchor:
-                print(f"   ! {p['file']} has no section to put a Diagram before")
+                print(f"   ! {p['file']} has no section to put an Outline before")
                 continue
-            txt = (txt[:anchor.start()] + "## Diagram\n\n" + url + "\n\n"
+            txt = (txt[:anchor.start()] + "## Outline\n\n" + url + "\n\n"
                    + txt[anchor.start():])
             n_new += 1
         else:
@@ -291,7 +292,7 @@ def wire(folder, pages, rel, host, port):
             body = "\n" + (body + "\n\n" if body else "") + url + "\n\n"
             txt = txt[:m.start(1)] + body + txt[m.end(1):]
         f.write_text(txt, encoding="utf-8")
-    print(f"   ## Diagram: replaced {n_rep} · appended {n_add} · created {n_new}")
+    print(f"   ## Outline: replaced {n_rep} · appended {n_add} · created {n_new}")
     if theirs:
         print(f"   left alone, holds an excalidraw that is not this board's: "
               f"{', '.join(theirs)}")
@@ -311,7 +312,7 @@ if __name__ == "__main__":
                     help="what serve.py serves; default = nearest pyproject.toml")
     ap.add_argument("--port", type=int, default=5599)
     ap.add_argument("--wire", action="store_true",
-                    help="also put each frame's URL in its page's ## Diagram")
+                    help="also put each frame's URL in its page's ## Outline")
     ap.add_argument("--fresh", action="store_true",
                     help="ignore the existing scene: relayout every frame and "
                          "DROP anything a human drew. Needed when the layout "

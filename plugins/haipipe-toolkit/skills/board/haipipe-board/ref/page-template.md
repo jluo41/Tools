@@ -57,12 +57,12 @@ provides: one compact phrase naming the downstream handoff
      build.py fetches content by these exact names, so any mark goes in the body, never in the
      heading line, and state: takes one status only.
      The visible hierarchy is fixed, and it is the SAME for both kinds:
-       Opening -> Diagram -> Content -> Aims (Files lives in outline/<stem>-files.md since 260831).
+       Opening -> Outline -> Content -> Aims (Files lives in outline/<stem>-files.md since 260831).
      Each section answers ONE reader question, and that is the test for every sentence you
      write into it (JL 260801; the five-row contract per section, conveys · holds · source ·
      rules · omit, lives in the design board's QB4 Content parts and in /haipipe-page):
-       Opening: what is this page and why should I care? (never omit) · Diagram: can I see
-       the whole subject at once? (delete when no figure helps) · Content: what does this
+       Opening: what is this page and why should I care? (never omit) · Outline: how is this
+       page structured and supported? (delete only when neither plan nor map exists) · Content: what does this
        page establish? (Q may omit, S never) · Aims: which durable target states should this
        page establish, and what is true now for each? (never omit) ·
        folds: the durable memory (each optional).
@@ -75,8 +75,18 @@ provides: one compact phrase naming the downstream handoff
      Opening carries the lead question. Clicking the visible paragraph opens the drawer, which
      carries "More details", "Writing Style", and the whole Stage Contract FLAT: everything is
      seen in one go and no row inside the drawer folds a second time (JL 260725). Stage Contract
-     is therefore not a section of its own on the page. Optional Diagram is its own collapsed section and opens only when its heading
-     is clicked. On Q and S pages, everything after the FIRST BLANK LINE becomes the collapsed "More
+     is therefore not a section of its own on the page. Outline is its own open-by-default section,
+     generated only from the current versioned plan's table. Do not write a Page-level narrative map.
+     A manuscript `page-type: section` is the reader-facing exception: its Opening renders only
+     the visible paragraph. Page-owned prose rules live as authored W records in
+     `outline/<stem>-requirement.md`, beside generated venue V records; the product Page carries no Writing Style block.
+     Post-paragraph notes and Stage Contract remain source-side for drafting and CHECK.
+     Opening's visible label is `🚪 Opening`; Outline keeps `🧭 Outline`, so orientation and plan
+     are distinct at a glance. A bare internal address such as `C1`, `E3`, or a Run id never carries
+     the Opening. State the plain-English subject first and keep an address only as a secondary,
+     compact named handle, for example `primary total-MME association (Claim1.TotalMME)`.
+     Content, Aims, References, Files, and every other fold start shut. On Q and S pages, everything
+     after the FIRST BLANK LINE becomes the collapsed "More
        The visible paragraph is 5-6 lines and about 450 characters, 520 at the ceiling; past that a
        reader stops before the question is answered.
        Write it in PLAIN ENGLISH for a weak English reader: short sentences, ordinary words, and
@@ -108,7 +118,7 @@ Write the title, this Opening, and Content for someone who arrived today: the cu
 ## Stage Contract
 S required · Q delete this whole section. This section carries the explicit upstream acceptance conditions from `requires:` and the Venue references from `style-from:`. `stage.py` materializes the referenced prose rules in this page's own `## Writing Style`; do not copy an upstream page's whole Content.
 
-It renders inside `🧭 Opening` as one collapsed row, not as a section of its own on the page.
+It renders inside `🚪 Opening` as one collapsed row, not as a section of its own on the page.
 
 **Do not hand-copy the markers below.** They are shown so you can recognize them; the `sha256=...`
 is a real hash of the upstream sources, and a hand-written one makes the build report the page as unsynchronized. Let `stage.py new` create the block, or run `stage.py sync` to fill it. Never write your own prose between the markers either: sync replaces everything there, so hand-written contract text goes AFTER the end marker, where it is preserved.
@@ -126,14 +136,16 @@ The generated part is bounded by these markers:
 <!-- haipipe:contract:end -->
 ```
 
-`stage.py sync` may replace only that marked block. Author-owned material stays after it, so this is where any hand-written contract lives: the venue contract for a manuscript page (its venue, section type, binding blueprint, and style pointer) belongs here as its own `###` subsection, NOT in Content. Actual prose rules live only in `## Writing Style`.
+`stage.py sync` may replace only that marked block. Author-owned material stays after it, so this is where any hand-written contract lives: the venue contract for a manuscript page (its venue, section type, binding blueprint, and style pointer) belongs here as its own `###` subsection, NOT in Content. On a non-Section stage, actual prose rules live in `## Writing Style`; a manuscript Section stores them as authored W records in `outline/<stem>-requirement.md`.
 
 ### Provides
 State the compact, observable output this stage hands downstream. Keep it short enough for a dependent page to inherit without copying this page's Content.
 
 ## Writing Style
-required · How this page must be written, so that whoever edits it next edits to the same rules.
-Renders as a plain row inside Opening's drawer, beside More details.
+Non-Section compatibility only · How this page must be written, so that whoever edits it next edits to the same rules.
+Renders as a plain row inside Opening's drawer, beside More details. A manuscript
+`page-type: section` deletes this block and writes one authored `W<n>` record per rule in
+`outline/<stem>-requirement.md` instead.
 
 On an S page, `stage.py new` or `stage.py sync` places inherited `style-from` rules between `haipipe:style` markers in this section. Write page-owned rules outside those markers. The sync may refresh the marked inheritance, but it never turns Stage Contract into a second style source.
 
@@ -154,9 +166,11 @@ Never stack three clauses behind a colon; break it into short sentences that eac
 
 **Voice**: Declarative, not tentative. A ruling that is the decider's carries their name and the date.
 
-## Diagram
-optional · One ascii figure showing the shape or flow of the question, right below Opening.
-If you cannot draw it, delete the whole section: empty beats wrong.
+<!-- OUTLINE IS DERIVED: the Page automatically renders the current versioned
+     outline/<stem>-outline-v<N>.md as its read-only `▤ Outline table`.
+     Do not add a `## Outline` source block, paste the table, or author an ASCII
+     narrative map: outline/ remains the authority for plan, evidence, feedback,
+     requirement, discussion, file, and log records. -->
 
 CONTENT IS NUMBERED ALL THE WAY DOWN (JL 260801). A division is `### 3 · Content`, a group inside it is `**3.2 · Group title**`, and a paragraph is `#### 3.2.1 · Its heading`. An ungrouped division numbers its paragraphs `#### 3.1 ·` straight through, so the DEPTH of the number says whether a group exists. Every number is followed by ` · ` and the heading's own words. The index is what makes a long division navigable and citable: `1.2.3` is something a person can point at in chat, and a bare heading is not.
 
@@ -165,23 +179,15 @@ ABOVE, because an explanation arriving after the figure arrives after the reader
 
 A ROW IS A LABEL AND ITS VALUE, NEVER A CLAUSE (JL 260801, asking why the figures carried so many words). If a row could end in a period it is prose, and it belongs in the paragraph under the figure rather than inside the fence. Write `🎯 Aims   A3.1 · A3.2 · P1`, not `🎯 Aims are durable targets that stay stable when the route changes`. A figure earns its fence by being SCANNABLE, so a wall of clauses in a box is slower to read than the same clauses outside it. Draw it with `/diagram-ascii`, keep it under about 80 characters wide, and put an emoji on every box, row label and status marker.
 
-It renders as its own `🖼 Diagram` section, collapsed by default. The heading remains visible;
-the figure appears only after the reader clicks it.
-
-`## Diagram` holds the ascii figure and nothing else (JL 260815). A drawing is MATERIAL: it lives as a scene file in the page's own `draw/` folder and opens through the 🖌 Draw split beside the page, never inline in this section. The ascii is the half with zero dependencies — it renders with scripts off and survives every host.
-
-**Name of the figure**: what this diagram shows.
-
-```text
-source question ──▶ decision or stage ──▶ observable handoff
-```
-
-Replace the example with this page's real figure.
+It renders as its own `🧭 Outline` section, open by default, as the one
+plan-derived `▤ Outline table`. A drawing is MATERIAL: it lives as a scene
+file in the page's own `studio/draw/` folder and opens through the 🖌 Draw split
+beside the page, never inline in the Outline section.
 
 ## Content
 S required · Q optional. The page's substantive material after orientation. Delete this explicit section in a Q that needs no additional material.
 
-On an S page, Content is the stage's real product and nothing else (JL 260725). For a manuscript page that means the section itself: its parts, its paragraphs, its prose. Three kinds of material accumulate around a stage and belong elsewhere: Required Inputs and Venue go to `## Stage Contract`, page prose rules go to `## Writing Style`, settled flags and corrections go to the owning Aim's `Now:` line because they report what is now true, and intended outcomes go to `## Aims`. The page heading names the stage for this reason, reading `📚 Content · Main 7 §6 Results` rather than a subsection count, so if that name does not describe what a reader finds here, this section is holding something that belongs in one of the other three.
+On an S page, Content is the stage's real product and nothing else (JL 260725). For a manuscript page that means the section itself: its parts, its paragraphs, its prose. Material around it belongs elsewhere: Required Inputs and Venue go to `## Stage Contract`, manuscript page prose rules become authored W records in `outline/<stem>-requirement.md`, settled flags and corrections go to the owning Aim's `Now:` line because they report what is now true, and intended outcomes go to `## Aims`. The page heading names the stage for this reason, reading `📚 Content · Main 7 §6 Results` rather than a subsection count, so if that name does not describe what a reader finds here, this section is holding something that belongs elsewhere.
 
 Content carries exactly two heading levels, and the number carries the depth (JL 260725). A direct `###` is a division: a part that holds content of its own and folds on its own. A `####` is one paragraph inside it, always, and there is no third level: the page folds one level, so a deeper tree would collapse a whole section into a single box. Read the depth off the numbering, `§6` against `§6.1`. Write a division only when it holds something, so a flat section carries one `### §1 Introduction` over its paragraphs while a subsectioned one starts at `### §6.1`, and no page opens a box onto nothing. This makes the shape checkable without reading the prose: the subsection count is the number of `###` headings whose number contains a dot.
 

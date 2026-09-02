@@ -31,9 +31,9 @@ Each Page runs the shared workflow and owns the evidence it uses:
 ```text
 SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED (the OUTLINE part) → WRITE → CHECK (the DRAFT part)
 
-Probe family
-├─ PageX      accepted Pages · runs in OUTLINE
-└─ item table Task/Discovery · surveyed at SURVEY, made at LAND; a card only when a question leaves the page
+Evidence Item graph
+├─ Supporting Runs   Execution/Discovery 0..N · planned at SURVEY
+└─ Local Run         Page · Evidence Item exactly 1 · executed at LAND
 
 <page-dir>/
 ├── <page>.md
@@ -80,7 +80,7 @@ paper/
 
 ## Family status
 
-as of 2026-08-28 · regenerate with `/skill-set-status paper` · this block is a dated receipt, never a second authority
+as of 2026-08-28 · regenerate with `/workflow-table paper` · this block is a dated receipt, never a second authority
 
 Five classes, five column sets. A row with an empty field record is `(provisional)` whatever its static score.
 

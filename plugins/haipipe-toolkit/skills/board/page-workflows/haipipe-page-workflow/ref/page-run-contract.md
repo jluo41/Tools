@@ -439,8 +439,8 @@ measured 260818 after the fix      board 4 errors, ALL foreign
 Do not append a CHECK result to the Folder's outline log after approval: that
 would change the just-checked version. OUTLINE owns its versioned plan; DRAFT,
 EVIDENCE, and REVISE may update `outline/<stem>-log.md` as part of the version
-they produce; EVIDENCE owns the item table's result pointers and any outbound
-card folder; COMPILE owns only derived build outputs.
+they produce; EVIDENCE owns allocated Run ids and local Result pointers in
+`outline/<stem>-evidence-items.md`; COMPILE owns only derived build outputs.
 Terminal CHECK evidence stays in the audit bundle or the Page Type's declared
 review surface.
 

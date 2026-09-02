@@ -1,22 +1,9 @@
----
-name: haipipe-plugin-value
-description: >-
-  The 🧮 value surface of a Board page: every number the page owes or uses, one
-  row each, joining each probe card's ## Values block to PPNN.vN
-  citations in the prose. No storage of its own. Answers which number came
-  from where, and which answered number nobody uses. Trigger: value plugin,
-  value tab, PP01.v2, unsourced number, cite a number, /haipipe-plugin-value.
-metadata:
-  version: "0.1.2"
-  last_updated: "2026-08-31"
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
----
+# Values lane · every number, and where it came from
 
-# /haipipe-plugin-value · every number, and where it came from
-
-**LOAD `haipipe-plugin` FIRST**, then `haipipe-plugin-probe` for the card and its
-`## Values` block. This file owns only the delta: the join, the surface, and the
-two failures it makes visible.
+Read this reference from `haipipe-plugin-evidence` when a Page Evidence Item is
+`VALUE`, or when the 🧾 Evidence tab must explain a number's provenance. The
+unified Evidence plugin owns the lane and surface; `haipipe-plugin-probe`
+still owns any legacy card whose `## Values` block supplies the value.
 
 ## 🎛 The gap it closes
 
@@ -43,7 +30,8 @@ number each used, and a value nobody used looked exactly like one everybody did.
 📦 storage   NONE. The number lives in evidence/probe/PP<NN>/proof/ with its source, run
              and sha256. A <page>/value/ folder would be a second home for one
              thing, which is the rule that retired the proof mark on 260819 (its glyph 🧮 now means value here).
-📡 surface   THIS. One row per value on the page, read live on every open.
+📡 surface   the 🧮 Values segment of the one 🧾 Evidence tab. One row per
+             value on the page, read live on every open.
 ✍️ writer    NOBODY. EVIDENCE writes the `## Values` block in card.md when the
              answer lands. This surface never writes and calls no model.
 🚧 boundary  reads evidence/probe/*/card.md and the Page's own .md. Nothing else.
@@ -81,10 +69,11 @@ typed. The surface renders that as a named 🚨 rather than dropping the row.
 Both render as a named row, never as a blank, which is the same rule the probe
 and display strips already carry.
 
-## 📡 Surface · one parse, one table
+## 📡 Evidence segment · one parse, one table
 
-`GET /_board/value?path=<board>&file=<page>` (`live/value.py`), drawer
-`assets/js/10-drawer/08-plugin-value.js`, sorted `08-` so it sits after 🧭.
+`GET /_board/value?path=<board>&file=<page>` (`live/value.py`) remains the
+compatibility route loaded inside the unified 🧾 Evidence tab. It is not a
+standalone Plugin surface.
 
 ```text
   id        what it is                    number   from                 used by
@@ -97,17 +86,13 @@ and display strips already carry.
 `POST /_board/value` exists only so the shell's `tab: {url, write}` contract
 holds; it writes nothing.
 
-## 📂 Files
+## 📂 Files and ownership
 
-```
-page-plugins/haipipe-plugin-value/
-├── SKILL.md            this contract
-└── CHANGELOG.md        version history
-```
-
-Owns no scripts of its own. The card, its states and the `## Values` grammar are
-`haipipe-plugin-probe`'s; the four facets are `haipipe-plugin`'s; the phase that
-writes a value is `page-workflows/haipipe-page-evidence`, stage ② BIND.
+This reference owns no scripts. `haipipe-plugin-evidence` owns the Page-facing
+lane and joined surface; the phase that binds a ready value is
+`page-workflows/haipipe-page-evidence` at LAND. The card, its states, and any
+legacy `## Values` grammar remain `haipipe-plugin-probe`'s until that storage
+is migrated.
 
 **The Board page that argues this contract** is `QPw4v-value` on
 `BoardSkillBoard-260722`.

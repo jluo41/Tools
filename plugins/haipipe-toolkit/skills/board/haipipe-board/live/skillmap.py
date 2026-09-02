@@ -2,7 +2,7 @@
 
 BIBEX'S TWIN, deliberately (JL 260815: "a plugin named skill, showing what
 skills is related to this page, or is designed based on the content of this
-page"). BibEx is the page's references into the literature; this is the page's
+page"). Evidence Citations is the page's references into the literature; this is the page's
 references into the skill tree.
 
 FLATTENED ON JL's RULING (260816: "maybe we don't need to have these concept

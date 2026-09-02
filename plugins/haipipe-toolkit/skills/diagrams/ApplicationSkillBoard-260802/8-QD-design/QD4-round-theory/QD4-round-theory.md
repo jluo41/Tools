@@ -24,7 +24,7 @@ D2 realize   parallel > serial · fixation               7 sources  · QA 03
 D3 evaluate  🪞 reflect (ex-post) · 🔮 prospect (ex-ante) 13 sources · QA 04
 D4 decide    co-evolution · DSR cycles · calibration    11 sources · QA 05
              └── EMIT a register question → insight lap → round r+1
-bank: designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/
+bank: designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/
 ```
 
 ## Content
@@ -143,15 +143,15 @@ Two sweeps independently failed to verify the Schön 1983 monograph and one caug
   The door whose card/unit/division grammar the D1-D3 anchors justify.
 
 ### 📥 Input files
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/01_brief-framing-and-satisficing/QA/1-brief-framing-satisficing-literature.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t01_brief_framing_and_satisficing/QA/1-brief-framing-satisficing-literature.md`
   QA 01 · D0's seventeen sources.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/02_rationale-capture-and-prereg/QA/1-design-as-hypothesis-grounding.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t02_rationale_capture_and_prereg/QA/1-design-as-hypothesis-grounding.md`
   QA 02 · D1's eleven sources.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/03_parallel-vs-serial-prototyping/QA/1-parallel-serial-prototyping-fixation-ideation.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t03_parallel_vs_serial_prototyping/QA/1-parallel-serial-prototyping-fixation-ideation.md`
   QA 03 · D2's seven sources.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/04_ex-ante-ex-post-evaluation/QA/1-ex-ante-vs-ex-post-design-evaluation-frameworks.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t04_ex_ante_ex_post_evaluation/QA/1-ex-ante-vs-ex-post-design-evaluation-frameworks.md`
   QA 04 · D3's thirteen sources.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/05_iterative-co-evolution-and-calibration/QA/1-iterative-design-cycles-and-forecast-calibration.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t05_iterative_co_evolution_and_calibration/QA/1-iterative-design-cycles-and-forecast-calibration.md`
   QA 05 · D4 and the outer loop's eleven sources.
 
 ### 🔗 Related Board Pages

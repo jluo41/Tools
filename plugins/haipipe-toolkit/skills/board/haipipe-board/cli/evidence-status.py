@@ -1,124 +1,135 @@
 #!/usr/bin/env python3
-"""Write `outline/<stem>-evidence.md`: the ITEM TABLE joined to the disk.
+"""Generate ``outline/<stem>-evidence.md`` from typed Evidence Items.
 
-    python3 evidence-status.py <page.md>            one page
-    python3 evidence-status.py --all <board-dir>    every page that has a plan
-
-One record per marked plan bullet, in the folder's one record shape
-(`### <address> · <mark> <the plan's words>` + label rows). The AUTHORED half
-of each record is copied from `outline/<stem>-items.md` (Need · Route · Run ·
-Decide, written at SURVEY, `haipipe-plugin-outline/ref/item-table.md`); the
-DERIVED half is computed here (Has · Status). Status is one word of the item
-ladder, never typed by anyone:
-
-    owed → bound → landed → folded → accepted   (+ stale · deferred · dropped · blocked)
-
-WHY A FILE beside the live 🧭 tab (JL 260831): a person can read it with no
-server, `git diff` shows what landed since yesterday, and a CHECK receipt can
-quote "4 items · 2 landed". WHY IT IS GENERATED ONLY: a hand-typed `landed`
-outranks the disk the moment it is typed. Nobody writes into this file; the
-ticks stay on their owners (`Decide` on the item row, `verified` on the key,
-`accepted:` on the page) and this file only reports them. `check.py` reports
-`evidence-stale` when any lane, the plan or the item table is newer than the
-stamp.
-
-The plan parse is `live/outline.py`'s, imported, so the file and the 🧭 tab
-cannot disagree: same plan parse, same disk state, same per-mark verdict.
+The authored half comes from ``<stem>-evidence-items.md``. The generated half
+joins each item to its local Page Evidence Item Result and the outline fold.
+Status is always derived; nobody types it into either source file.
 """
-import argparse, datetime, importlib.util, re, sys
+import argparse
+import datetime
+import importlib.util
+import re
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(HERE))  # live/outline.py imports src.common
+sys.path.insert(0, str(HERE))
 _spec = importlib.util.spec_from_file_location("live_outline", HERE / "live" / "outline.py")
-lo = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(lo)
+lo = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(lo)
 
-BEGIN, END = "# --- evidence-status:begin (generated) ---", "# --- evidence-status:end ---"
-from src.item_table import (LADDER, EMOJI, OUTCOMES, CYCLES, MARKS, repo_root,  # noqa: E402
-                            read_items, resolve as _exists, bullets, item_status, cycle_now)
+from src.item_table import (  # noqa: E402
+    CYCLES, EMOJI, ITEM_TYPES, LADDER, bullets, cycle_now, item_status,
+    read_items, repo_root, resolve,
+)
+
+BEGIN = "# --- evidence-status:begin (generated) ---"
+END = "# --- evidence-status:end ---"
 
 
 def build(page_md: Path) -> str:
-    plan, ver = lo._latest_plan(page_md)
+    plan, version = lo._latest_plan(page_md)
     if plan is None:
         return ""
-    cards, units, keys, serves, display_serves = lo._disk_state(page_md)
-    page_txt = page_md.read_text(encoding="utf-8", errors="replace")
-    # Aims live on the PAGE again (JL 260831, QPf12-outline row 2); the plan
-    # is the fallback for a page not yet reverted.
-    aims = lo._aim_rows(page_txt) or \
-           lo._aim_rows(plan.read_text(encoding="utf-8", errors="replace"))
-    plan_txt = plan.read_text(errors="replace")
-    approved = bool(re.search(r"^approved:\s*✅", plan_txt, re.M))
-    page_accepted = bool(re.search(r"^accepted:\s*✅", page_txt, re.M))
+    plan_text = plan.read_text(encoding="utf-8", errors="replace")
+    page_text = page_md.read_text(encoding="utf-8", errors="replace")
+    approved = bool(re.search(r"^approved:\s*✅", plan_text, re.M))
+    page_accepted = bool(re.search(r"^accepted:\s*✅", page_text, re.M))
     items = read_items(page_md)
     root, page_dir = repo_root(page_md.parent), page_md.parent
-    plan_mtime = plan.stat().st_mtime
-    rows, counts, statuses = [], {w: 0 for w in LADDER}, []
-    # The ↩ backlink: a card or unit names the bullets it SERVES, so a BARE
-    # mark whose bullet already has a card is RAISED (the plan is frozen
-    # before the card exists). Reading marks alone printed 37 "not raised"
-    # rows on SM06 for bullets its cards already served.
-    by_bullet = {}
-    for pid, addrs in serves.items():
-        for a in addrs: by_bullet.setdefault(a, []).append(pid)
-    for did, addrs in display_serves.items():
-        for a in addrs: by_bullet.setdefault(a, []).append(did)
-    n_marks = 0
-    for addr, head, kind, refs, folded in bullets(plan_txt):
-        if kind is None or kind == "aim":
-            continue
-        n_marks += 1
-        if not refs and by_bullet.get(addr):
-            want = "Display" if kind == "display" else "PP"
-            refs = [x for x in by_bullet[addr] if x.startswith(want)] or [""]
-        ref = (refs or [""])[0]
-        cls, note, _detail = lo._live(kind, ref, cards, units, keys, aims)
-        row = items.get(addr)
-        lane_ok = cls == "ok"
-        st = item_status(row, lane_ok, lane_ok and ("accepted" in note or "verified" in note),
-                         folded, page_accepted, plan_mtime, root, page_dir)
-        counts[st] += 1; statuses.append(st)
-        emo = {v: k for k, v in MARKS.items()}[kind]
-        # One record per bullet, the folder's one shape: the head CARRIES THE
-        # WORDS (JL 260831 "it lost a lot of informations"). The authored
-        # half is copied from the item table verbatim; a bullet with no row
-        # says so, which is the SURVEY still owed.
-        lines = [f"### {addr} · {emo} {head or '—'}", f"- **Status**: {EMOJI[st]} {st}"]
+    counts = {word: 0 for word in LADDER}
+    statuses, records = [], []
+
+    for item_id, target, bullet_head, item_type, expected, acceptance, folded in bullets(plan_text):
+        row = items.get(item_id)
+        status = item_status(
+            row, folded, page_accepted, plan.stat().st_mtime, root, page_dir,
+        )
+        counts[status] += 1
+        statuses.append(status)
+        name = row["name"] if row else bullet_head
+        lines = [
+            f"### {item_id} · {target} · {name}",
+            f"- **Status**: {EMOJI[status]} {status}",
+            f"- **Type**: {item_type}",
+            f"- **Target**: {target}",
+            f"- **Expected**: {(row or {}).get('expected') or expected}",
+            f"- **Acceptance**: {(row or {}).get('acceptance') or acceptance or '—'}",
+        ]
         if row:
-            lines += [f"- **Need**: {row['need'] or '—'}",
-                      f"- **Route**: {row['route'] or '—'}",
-                      f"- **Run**: {row['run'] or '—'}",
-                      f"- **Decide**: {row['decide'] or '☐'}"]
+            result = resolve(row["result"], root, page_dir)
+            lines.extend([
+                f"- **Supporting Runs**: {row['supporting_runs'] or '—'}",
+                f"- **PageX Bindings**: {row['pagex_bindings'] or '—'}",
+                f"- **Local Input**: {row['local_input'] or '—'}",
+                f"- **Local Run**: {row['local_run'] or '—'}",
+                f"- **Decide**: {row['decide'] or '☐'}",
+                f"- **Has**: {str(result) if result else 'local Result not ready'}",
+            ])
         else:
-            lines.append("- **Run**: not surveyed yet")
-        lines.append(f"- **Has**: {note.strip()}" + (f" · {ref}" if ref else ""))
-        rows.append("\n".join(lines))
-    cyc = cycle_now(approved, items, statuses, n_marks)
+            lines.extend([
+                "- **Supporting Runs**: not surveyed yet",
+                "- **PageX Bindings**: not surveyed yet",
+                "- **Local Input**: not surveyed yet",
+                "- **Local Run**: not surveyed yet",
+                "- **Decide**: ☐",
+                "- **Has**: Evidence Item record missing",
+            ])
+        records.append("\n".join(lines))
+
+    n_items = len(statuses)
+    cycle = cycle_now(approved, items, statuses, n_items)
     now = datetime.datetime.now().strftime("%y%m%d %H%M")
-    tally = " · ".join(f"{w} {counts[w]}" for w in LADDER if counts[w]) or "nothing owed"
-    decided = sum(1 for r in items.values() if r["decision"])
-    head = [f"# {page_md.stem} · evidence status", f"page: {page_md.stem}",
-            "kind: evidence · ⚙️ derived · never hand-edited · the item table joined to the disk", "",
-            BEGIN, f"  EVIDENCE STATUS, MEASURED {now}. GENERATED; do not hand-edit.",
-            f"  regenerate: cli/evidence-status.py {page_md.name}", "",
-            f"plan: {ver} · approved: {'✅' if approved else '⬜'} · cycle: {cyc} · items {n_marks}"
-            f" · decided {decided}/{len(items) or n_marks} · {tally}", ""]
-    return "\n".join(head + ["\n\n".join(rows) if rows else "(no marked bullet in the plan)"] + ["", END, ""])
+    tally = " · ".join(f"{word} {counts[word]}" for word in LADDER if counts[word]) or "nothing owed"
+    type_tally = {kind: 0 for kind in ITEM_TYPES}
+    for item_id, *_rest in bullets(plan_text):
+        type_tally[item_id.split("-", 2)[1]] += 1
+    types = " · ".join(f"{kind} {type_tally[kind]}" for kind in ITEM_TYPES if type_tally[kind])
+    decided = sum(1 for row in items.values() if row["decision"])
+    head = [
+        f"# {page_md.stem} · evidence status",
+        f"page: {page_md.stem}",
+        "kind: evidence · ⚙️ derived · never hand-edited · Evidence Items joined to local Results",
+        "",
+        BEGIN,
+        f"  EVIDENCE STATUS, MEASURED {now}. GENERATED; do not hand-edit.",
+        f"  regenerate: cli/evidence-status.py {page_md.name}",
+        "",
+        f"plan: {version} · approved: {'✅' if approved else '⬜'} · cycle: {cycle} · items {n_items}"
+        f" · decided {decided}/{len(items) or n_items} · {types or 'no types'} · {tally}",
+        "",
+    ]
+    body = "\n\n".join(records) if records else "(no typed Evidence Item in the plan)"
+    return "\n".join(head + [body, "", END, ""])
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("target", type=Path); ap.add_argument("--all", action="store_true")
-    a = ap.parse_args()
-    pages = ([p / f"{p.name}.md" for g in a.target.iterdir() if g.is_dir() and not g.name.startswith(("_", ".", "board"))
-              for p in g.iterdir() if p.is_dir() and (p / f"{p.name}.md").exists()] if a.all else [a.target])
-    n = 0
-    for pg in pages:
-        txt = build(pg)
-        if not txt: continue
-        out = pg.parent / "outline" / f"{pg.stem}-evidence.md"
-        out.write_text(txt, encoding="utf-8"); n += 1
-        print(f"wrote {out.relative_to(Path.cwd()) if out.is_relative_to(Path.cwd()) else out}")
-    print(f"{n} file(s)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("target", type=Path)
+    parser.add_argument("--all", action="store_true")
+    args = parser.parse_args()
+    pages = (
+        [
+            page_dir / f"{page_dir.name}.md"
+            for group in args.target.iterdir()
+            if group.is_dir() and not group.name.startswith(("_", ".", "board"))
+            for page_dir in group.iterdir()
+            if page_dir.is_dir() and (page_dir / f"{page_dir.name}.md").exists()
+        ]
+        if args.all else [args.target]
+    )
+    count = 0
+    for page in pages:
+        text = build(page)
+        if not text:
+            continue
+        output = page.parent / "outline" / f"{page.stem}-evidence.md"
+        output.write_text(text, encoding="utf-8")
+        count += 1
+        shown = output.relative_to(Path.cwd()) if output.is_relative_to(Path.cwd()) else output
+        print(f"wrote {shown}")
+    print(f"{count} file(s)")
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

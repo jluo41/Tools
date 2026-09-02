@@ -11,8 +11,10 @@ from urllib.parse import quote, unquote
 from . import body as bd
 from .body import body, inline, nav_inline
 from .common import aim_progress, esc, sec, stinfo
-from .page_question import (parse_content_sections, render_question,
-                            split_stage_record, structure_rows)
+from .item_table import (compact_global_run, read_items, readable_global_run,
+                         repo_root, run_registry)
+from .page_question import (has_outline_plan, parse_content_sections,
+                            render_question, split_stage_record, structure_rows)
 from .page_stage import render_doc_slide
 
 
@@ -118,6 +120,11 @@ def board_map(meta):
     )
 
 
+def pages_only_index(meta):
+    """Whether this Board opts into the deliberately quiet Pages-only index."""
+    return (meta.get("index_view") or "").strip().lower() == "pages"
+
+
 def group_canvas(meta, group, members):
     """The live linked drawing for one generated Group page."""
     host = (meta.get("excalidraw") or "").strip().rstrip("/")
@@ -146,7 +153,7 @@ def group_canvas(meta, group, members):
     except ValueError:
         return ""
     # NO INLINE CANVAS ON STAGE (JL 260815: "I don't want the draw in here").
-    # The same ruling that took Excalidraw out of `## Diagram` applies one level
+    # The same ruling that keeps Excalidraw out of `## Outline` applies one level
     # up: a group page's body stays prose, and the composed drawing opens in the
     # Draw split. What the page emits is only the OWNER ADDRESS, invisible, so
     # the plugin can derive the scene without the build and the client keeping
@@ -318,11 +325,11 @@ def board_status(qs):
         cells = []
         cells.append(cell("opening", "ok" if sec(d, "Opening").strip() else "no",
                           "✓" if sec(d, "Opening").strip() else "—"))
-        dia = sec(d, "Diagram")
-        nfig = dia.count("```") // 2
-        has_canvas = "/_excalidraw/" in dia
-        dtxt = (f"▧{nfig}" if nfig else "") + ("✏️" if has_canvas else "")
-        cells.append(cell("diagram", "ok" if dtxt else "no", dtxt or "—"))
+        page_src = (Path(bd.BASE or ".") / q["file"]
+                    if q.get("file") else None)
+        has_plan = has_outline_plan(page_src)
+        dtxt = "▤" if has_plan else ""
+        cells.append(cell("outline", "ok" if dtxt else "no", dtxt or "—"))
         divs = [(h, b) for h, b in parse_content_sections(sec(d, "Content")) if h]
         faced = sum(1 for _h, b in divs if b.lstrip().startswith("```"))
         if divs:
@@ -363,9 +370,10 @@ def board_status(qs):
             f'<tr><th class="bsp"><a href="#{pid}">{tok} {esc(pid)}</a></th>'
             + "".join(cells) + "</tr>")
 
-    head = ("<tr><th>page</th><th>🧭</th><th>🖼</th><th>📚</th>"
+    head = ("<tr><th>page</th><th>🧭</th><th>▤</th><th>📚</th>"
             "<th>🎯</th><th>📍</th><th>📎</th><th>🗄</th></tr>")
-    legend = ('📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
+    legend = ('🧭 <code>▤</code> current plan table &nbsp;·&nbsp; '
+              '📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
               '🎯 <code>met/total</code> aims &nbsp;·&nbsp; '
               '📍 <code>DN·k</code> Decision Now ticks owed, <code>e</code> dated entries '
               '&nbsp;·&nbsp; 📎 <code>n·gg</code> files · groups &nbsp;·&nbsp; '
@@ -580,7 +588,11 @@ def sidebar_rows(qs, href_for=None, group_href=None, meta=None):
             # 于是那一页每一个 division 链接都错开一格（JL 260801 统一命名时发现）。
             _, csecs = split_stage_record(
                 q.get("kind"), parse_content_sections(sec(q["sec"], "Content")))
-            for key, label, val, subs in structure_rows(q["sec"], csecs):
+            page_src = (Path(bd.BASE or ".") / q["file"]
+                        if q.get("file") else None)
+            for key, label, val, subs in structure_rows(
+                    q["sec"], csecs, has_outline_plan(page_src),
+                    q.get("page_type", "")):
                 out.append(f'<a class="sb-s" data-k="{key}" href="{href_for(q)}">'
                            f'<span class="t">{esc(label)}</span>'
                            f'<span class="m">{esc(val)}</span></a>')
@@ -656,8 +668,9 @@ def render(meta, qs):
     # The Index row unfolds too (QB2a, JL 260731: "what should be the index's
     # section content? Please add them as well"): its rows are the Index's own
     # components in on-page order, each present only when the board has it.
-    bmap = board_map(meta)
-    rf = related_folders(meta)
+    minimal_index = pages_only_index(meta)
+    bmap = "" if minimal_index else board_map(meta)
+    rf = "" if minimal_index else related_folders(meta)
     ix = []
 
     def ixrow(key, label, mtxt=""):
@@ -669,10 +682,11 @@ def render(meta, qs):
         ixrow("map", "🗺 Board Map")
     if rf:
         ixrow("related", "🗂 Related Folders")
-    ixrow("status", "🩺 Section Matrix",
-          f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
     ixrow("pages", "📄 All Pages", str(n))
-    ixrow("activity", "📈 Activity")
+    if not minimal_index:
+        ixrow("status", "🩺 Section Matrix",
+              f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
+        ixrow("activity", "📈 Activity")
 
     sidebar = ('<button type="button" id="sbtoggle" class="sbtoggle" '
                'aria-label="Toggle the pages sidebar">☰</button>'
@@ -700,11 +714,18 @@ def render(meta, qs):
             gated = sum(1 for q in pages if q["state"].startswith("✅"))
             stagebits.append(f"{gated}/{len(pages)} {label}")
     stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
-    return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
-                      close=inline(meta["close"]), bar=bar, done=done, n=nq,
-                      stagebar=stagebar,
-                      board_map=bmap, related=rf, board_status=board_status(qs),
-                      activity=ACTIVITY_HTML,
+    heading = ('<div class="board-heading"><span class="board-mark" aria-hidden="true">'
+               + MARK_SVG + f'</span><h1 class="h1">{esc(meta["title"])}</h1></div>')
+    pages = ('<h3 class="sec" id="qlist">ALL PAGES'
+             '<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>'
+             f'<div class="idx">{idx}</div>')
+    overview = (heading + pages if minimal_index else
+                heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
+                f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
+                f'<p class="bar">{bar}  {done}/{nq} questions settled{stagebar}</p>'
+                + bmap + rf + board_status(qs) + pages)
+    return TPL.format(title=esc(meta["title"]), overview=overview,
+                      activity="" if minimal_index else ACTIVITY_HTML,
                       index=idx,
                       sidebar=sidebar,
                       cards="\n".join(cards), js=JS, css=CSS,
@@ -768,19 +789,7 @@ TPL = """<!DOCTYPE html>
 {css}
 </style></head><body class="single" data-board="{boarddir}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 
-<div class="board-heading"><span class="board-mark" aria-hidden="true">{mark}</span>
-<h1 class="h1">{title}</h1></div>
-<div class="spine"><p><b>🦴 Spine</b> {spine}</p><p><b>🏁 Close when</b> {close}</p></div>
-<p class="bar">{bar}  {done}/{n} questions settled{stagebar}</p>
-
-{board_map}
-
-{related}
-
-{board_status}
-
-<h3 class="sec" id="qlist">ALL PAGES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
-<div class="idx">{index}</div>
+{overview}
 
 <span id="all"></span>
 {cards}
@@ -1002,6 +1011,97 @@ def tree_page_name(q):
     return f"{stem}.html"
 
 
+def run_index_body(qs):
+    """One generated index of the real global Runs cited by Page ledgers.
+
+    An evidence ledger is allowed to plan a `new-*` route before LAND, but it
+    must not mint an `rNN`.  This index therefore contains only full global
+    identities.  It gives a short Run link a stable destination without
+    guessing a legacy task tree's physical Ticket or Result location.
+    """
+    base = Path(bd.BASE or ".")
+    root = repo_root(base)
+    registry = run_registry(str(root))
+    refs = {}
+
+    def record(address, q, item, layer, declaration):
+        compact = compact_global_run(address)
+        if not compact:
+            return
+        refs.setdefault(compact, []).append({
+            "page": q,
+            "item": item["item"],
+            "layer": layer,
+            "declaration": declaration,
+        })
+
+    for q in qs:
+        source = base / (q.get("file") or "")
+        if not source.is_file():
+            continue
+        for item in read_items(source).values():
+            for entry in item["supporting_runs"].split(";"):
+                parts = [part.strip() for part in entry.split("·")]
+                if len(parts) >= 3:
+                    record(parts[2], q, item, "Supporting", entry.strip())
+            record(item.get("address", ""), q, item, "Local", item["local_run"])
+
+    heading = ('<div class="board-heading"><h1 class="h1">Run index</h1></div>'
+               '<p class="gpurpose">Registered Runs cited by this Board’s Evidence '
+               'Item ledgers. Dotted addresses link here from Outline tables.</p>')
+    if not refs:
+        return (heading + '<p class="mut">No Level-4 Run has been allocated on '
+                'this Board yet.</p>')
+
+    rows = []
+    for compact in sorted(refs):
+        readable = readable_global_run(compact)
+        uses = []
+        for ref in refs[compact]:
+            q = ref["page"]
+            group = bd.group_token(q.get("group") or "") or "_ungrouped"
+            href = f'{group}/{tree_page_name(q)}'
+            uses.append(
+                '<li><a href="%s">%s · %s</a> <span class="mut">%s</span></li>' %
+                (esc(href), esc(q["id"]), esc(ref["item"]), esc(ref["layer"])))
+        record = registry.get(compact)
+        if record:
+            ticket_href = os.path.relpath(root / record["ticket"], base / "board")
+            paths = [
+                '<p class="run-index-path"><b>Ticket</b> '
+                '<a href="%s"><code>%s</code></a></p>' %
+                (esc(ticket_href), esc(record["ticket"])),
+            ]
+            if record.get("task_root"):
+                paths.insert(
+                    0,
+                    '<p class="run-index-path"><b>Task</b> <code>%s</code></p>' %
+                    esc(record["task_root"]),
+                )
+            if record.get("runtime"):
+                runtime_href = os.path.relpath(root / record["runtime"], base / "board")
+                paths.append(
+                    '<p class="run-index-path"><b>Result receipt</b> '
+                    '<a href="%s"><code>%s</code></a></p>' %
+                    (esc(runtime_href), esc(record["runtime"])),
+                )
+            else:
+                paths.append(
+                    '<p class="run-index-path"><b>Result receipt</b> '
+                    '<span class="mut">not created yet</span></p>'
+                )
+            meta = ('<p><span class="run-index-status">%s</span></p>'
+                    '<div class="run-index-paths">%s</div>' %
+                    (esc(record["label"]), "".join(paths)))
+        else:
+            meta = '<p class="mut">Unregistered: no Ticket + runtime receipt found.</p>'
+        rows.append(
+            '<section class="run-index-row" id="run-%s"><h3><code>%s</code></h3>%s'
+            '<ul>%s</ul></section>' %
+            (esc(compact), esc(readable), meta, "".join(uses)))
+    return heading + '<div class="run-index">%s</div>' % "".join(rows)
+
+
 def render_tree(meta, qs, out_dir, only=None):
     """Write the board/ tree. Returns the list of files written."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1145,21 +1245,20 @@ def render_tree(meta, qs, out_dir, only=None):
     bd.EMBEDS.clear()
     rows = index_rows(meta, qs, href_for=_href,
                       group_href=lambda tok: f"{tok}.html")
-    # JL 260731 ruled exactly three board-level components onto this index:
-    # the Board Map, the Section Matrix, and the Activity panel. All three are
-    # the SAME generators render() uses, with their fragment links rewritten.
+    # The default index carries Board-level orientation; a Board can opt into
+    # `index-view: pages` when the page roster is the only useful landing view.
     hrefs = tree_href_map(qs)
-    body = (f'<div class="board-heading">'
-            f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
-            f'<h1 class="h1">{esc(meta["title"])}</h1></div>'
-            f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
+    heading = (f'<div class="board-heading">'
+               f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
+               f'<h1 class="h1">{esc(meta["title"])}</h1></div>')
+    pages = f'<h3 class="sec" id="qlist">ALL PAGES</h3><div class="idx">{"".join(rows)}</div>'
+    body = (heading + pages if pages_only_index(meta) else
+            heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
             f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
             + tree_relink(board_map(meta), hrefs)
             + tree_relink(related_folders(meta), hrefs)
             + tree_relink(board_status(qs), hrefs)
-            + f'<h3 class="sec" id="qlist">ALL PAGES</h3>'
-            + f'<div class="idx">{"".join(rows)}</div>'
-            + ACTIVITY_HTML)
+            + pages + ACTIVITY_HTML)
     # `index_rows()` also renders each group's authored intro and ASCII map, so
     # relink the complete body rather than only the three Board-level panels.
     body = tree_relink(body, hrefs)
@@ -1169,12 +1268,25 @@ def render_tree(meta, qs, out_dir, only=None):
                  encoding="utf-8")
     written.append(f)
 
+    # Every short Run link on a Page points here.  This page is deliberately
+    # derived from full identities already cited in Evidence Item ledgers; it
+    # never allocates a planned `new-*` route or guesses a physical run path.
+    bd.CARDS.clear()
+    bd.CHIP_N = 0
+    bd.EMBED_SEEN.clear()
+    bd.EMBEDS.clear()
+    f = out_dir / "runs.html"
+    f.write_text(scrub_cjk_comments(shell("Run index", run_index_body(qs), "", "",
+                                     tree_sidebar(meta, qs, ""))),
+                 encoding="utf-8")
+    written.append(f)
+
     # Prune orphans. Deleting or renaming a page's .md used to leave its .html
     # in the tree forever: still linkable, still looking real, describing a page
     # that no longer exists (JL 260731, found by deleting one and rebuilding).
     # The expected set is computed from EVERY page, not from `written`, so this
     # is correct under --only too.
-    expected = {out_dir / "index.html"}
+    expected = {out_dir / "index.html", out_dir / "runs.html"}
     for q in qs:
         gt = bd.group_token(q.get("group") or "") or "_ungrouped"
         expected.add(out_dir / gt / tree_page_name(q))

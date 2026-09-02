@@ -1,136 +1,230 @@
-# The item table · `<stem>-items.md` · one row per evidence mark
+# The Evidence Item table · `<stem>-evidence-items.md`
 
-The item table is the eighth record kind in `<page>/outline/` (JL 260901: "I
-want in the outline plugin to maintain the evidence item table"). It answers
-one question the seven other files cannot: **for each thing the plan owes,
-where does it come from, how big is the gap, and did a person decide to make
-it?** The SURVEY cycle writes the rows, a person writes `Decide`, and the
-machine never writes into this file at all: the item's STATUS is derived at
-render time and lands in the generated twin, `<stem>-evidence.md`.
+The Evidence Item table is the authored contract between planning and work. It
+answers, for every thing the approved outline needs:
+
+1. **What ready evidence is expected?** SHAPE specifies this.
+2. **Which accepted cross-Folder sources does it bind?** SURVEY records zero
+   or more exact PageX bindings.
+3. **Which upstream Results support it?** SURVEY registers zero or more
+   Supporting Runs.
+4. **Which one local Run makes it ready for this Page?** SURVEY registers
+   exactly one Page · Evidence Item Run; LAND executes it.
+
+SHAPE and SURVEY are planning cycles. Neither executes a Level-4 Run. SURVEY
+may allocate and scaffold Tickets with planned runtime receipts; LAND is the
+first cycle that executes a Run or materializes a Result.
 
 ```text
-<stem>-items.md      AUTHORED   the survey: Need · Route · Run · Decide
-<stem>-evidence.md   GENERATED  the same rows joined to the disk: + Has · Status
+<stem>-evidence-items.md  AUTHORED   item identity + expectation + audited candidate Run graph
+<stem>-evidence.md        GENERATED  the same items joined to Run receipts and Results
 ```
 
-## The law behind the table · every number is answered by a RUN
+## The unit · one typed item with a readable name
 
-JL 260901: "evidence is linked to the runs!!!" A run is the atom of evidence:
-one real address in the project's `tasks/` tree, config + code + results, and
-it carries NO interpretation. The item row points at the run; the run's
-results say whether the number exists; the plan's `Answered:` line says whether
-the page has used it; and the reading of the number is written only on the
-page, at EMBED, under the page's own stake. Nothing in `tasks/` ever says what a
-result means, which is exactly why any page may bind to it.
-
-Two lanes are not runs and the table says so in the `Route` column: a 📚
-citation is answered by a verified bib entry a person supplies (`person`), and
-a 🖼 display is built by its own recipe run from numbers that runs produced.
-The discoveries/ tree joins the same grammar later (a discovery folder is the
-task, a sweep is its run, `sources.md` its results); until then citations are
-`person`.
-
-## The grammar · one record per marked bullet, the folder's one record shape
+Every item has one immutable id:
 
 ```text
-# <stem> · items
+E<NN>-<TYPE>-<slug>
+```
+
+The initial type vocabulary is closed:
+
+| Type | Ready evidence | Typical local Result |
+|---|---|---|
+| `VALUE` | a checked scalar, interval, count, or comparison | structured value + units + provenance |
+| `CITE` | a source claim ready to cite | verified citation record + supported claim |
+| `DISPLAY` | a figure, table, diagram, or illustration ready to place | preview/build artifact + caption claim + provenance |
+
+Examples: `E01-VALUE-adjusted-effect`, `E02-DISPLAY-effect-forest`,
+`E03-CITE-prior-work`. Never use a bare `E01`: the type and human-readable
+name must be visible before SURVEY can plan Runs.
+
+The item id is stable across outline versions. If its evidence type, target,
+or acceptance meaning changes materially, create a new item id and retire the
+old one; do not silently redefine it.
+
+## The authored grammar
+
+```text
+# <stem> · evidence items
 page: <stem>
-kind: items · authored · SURVEY writes the rows, a person writes Decide, Status is never here
-plan: v<N>                       the plan version the rows were surveyed against
+kind: evidence-items · authored · SHAPE specifies; SURVEY registers; LAND binds
+plan: v<N>
 surveyed: YYMMDD HHMM · <who>
 
-### C2.P3.B1 · 📮 S5 · C1: +9.34 MME per visit, comparison owed
-- **Need**: the mean per-encounter total MME in the LBP sample, so 9.34 can be read as a share
-- **Route**: task
-- **Run**: new-run · tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair · one descriptive pass, secure server
+### E01-VALUE-adjusted-effect · C2.P3.B1 · adjusted treatment effect
+- **Target**: C2.P3.B1
+- **Need**: the adjusted effect estimate used by this bullet
+- **Expected**: VALUE · estimate, 95% interval, unit, population, and model label
+- **Acceptance**: recomputes from named Results; aggregate only; no row-level data
+- **Supporting Runs**: Execution · reuse · b01j02t03r04; Discovery · registered · b02j01t05r01
+- **PageX Bindings**: other/page/results/r04/result.yaml · authority b01j02t03r04
+- **Local Input**: Supporting Results + PageX bindings
+- **Local Run**: Page · Evidence Item · registered · b03j01t02r01
 - **Decide**: ☑ make · JL 260901
-> Comment JL · aggregate values only, nothing row-level leaves the server · 260901
+> Comment JL · local input freezes both Supporting Results before execution · 260901
 ```
 
-- **The head is the plan's own words**: `### <address> · <mark> <the bullet's head>`,
-  byte-identical to the head `cli/evidence-status.py` prints, so the two files
-  join by address and a reader sees the same line in both.
-- **One row per mark, no row without a mark.** A bullet with no mark owes
-  nothing and gets no row; a mark with no row means SURVEY has not run on this
-  plan version, and the render says so.
-- **The four labels are fixed, in this order.** A fifth label is a defect;
-  the comment lane holds anything else.
+The record head has three parts: item id, target bullet address, and a short
+human-readable evidence name. `Target` repeats the address intentionally so
+record renderers can show it as a column. The labels are fixed and ordered:
 
-## The four columns
+The Board wall projects that identity as
+`E<n><kind>.<ShortNameNoSpaces>`, where
+`V = VALUE`, `C = CITE`, and `D = DISPLAY`; for example,
+`E3V.TotalMME`. This compact label is presentation only:
+the immutable `E<NN>-<TYPE>-<slug>` remains the authored id and is exposed in
+the item detail. A wall must never show only `E01 · VALUE`, because that hides
+what the evidence contains. It must also present `Supporting Runs` and `Local
+Run` as separate columns; they are different graph layers, not one folded
+`Route` field. A real global Run is shown in readable dotted form, such as
+`b01.j02.t03.r04`, links to the Run Index, and carries its short lifecycle
+label (for example `Ready` or `Rerun`). A current Task ticket with no validated
+Result is `Rerun`, even if a smoke receipt exists; an absent ticket is displayed
+as `needs … Run` and never assigned an invented address. An unregistered `new-*` route is only a
+pre-registration note and cannot close SURVEY. The Page Outline grid has no
+separate item `Status` column: colour is the compact state
+signal, and the evidence-item popover names the exact derived state. `CITE`
+items share the Evidence column with VALUE and DISPLAY;
+several citation items may support one bullet.
+
+| Label | Written by | Contract |
+|---|---|---|
+| `Target` | SHAPE | exactly one `C<n>.P<m>.B<k>` address |
+| `Need` | SHAPE | why the outline needs this item, in one line |
+| `Expected` | SHAPE | `<TYPE> · <ready-to-use payload>` |
+| `Acceptance` | SHAPE | observable checks for the ready Evidence Result |
+| `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of `Family · reuse/rerun/registered · full global Run id` |
+| `PageX Bindings` | SURVEY; LAND validates | `[]` or exact cross-Folder file/Result paths, each with its source authority; never a whole Folder |
+| `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus PageX bindings and/or named pre-existing local paths; LAND appends `→ <packet>#<sha256>` |
+| `Local Run` | SURVEY; LAND binds | exactly one `Page · Evidence Item · reuse/rerun/registered · full global Run id [→ Result]` |
+| `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop` |
+
+Comments hold rationale; they never replace an expected payload, acceptance
+test, or Run address. A typed `Status` label is a defect because status is
+derived from receipts and Results.
+
+## The Run graph · zero-to-many supports, exactly one local Run
 
 ```text
-label     who writes it   value
-──────────────────────────────────────────────────────────────────────────────
-Need      SURVEY          one line: exactly what is owed, in the plan's words
-Route     SURVEY          task · discovery · bibex · display · pagex
-Run       SURVEY          <outcome> · <address> [· <note>]   then LAND appends
-                          ` → <result file>` when the material exists on disk
-Decide    a PERSON        ☐ make (undecided) · ☑ make · ☑ defer · <reason>
-                          · ☑ drop · <reason>   signed `· <who> YYMMDD`
+Supporting Runs  0..N  Execution | Discovery
+PageX Bindings   0..N  exact accepted cross-Folder files/Results; not Runs
+                         ↓ validated upstream authorities
+Local Input       1     one frozen envelope containing those Results/bindings
+                         ↓
+Local Run         1     Page · Evidence Item
+                         ↓
+Ready Result      1     VALUE | CITE | DISPLAY, accepted by this item's contract
 ```
 
-**The outcome words**, one per row, authored at SURVEY and then frozen. Each
-names how far up the `tasks/` tree the gap sits (block > job > task > run, the
-b/j/t/r grammar), so a stranger reads the cost off the word:
+This is the precise meaning of “one input and one execution”: one Evidence
+Item has one frozen input envelope and exactly one local execution. The input
+envelope may contain zero, one, or many Supporting Results, zero or more
+validated PageX bindings, plus pre-existing governed local artifacts named in
+`Local Input`. Calls, retries,
+scripts, render passes, and model turns inside that local execution remain
+implementation details unless they independently satisfy the base Run tests.
+
+The local Result is factual and reusable; it does not interpret the evidence
+for the Page. EMBED owns that interpretation and writes it into the next
+outline version.
+
+## Families and actions are separate dimensions
+
+Supporting Run families are only:
 
 ```text
-found        a run exists AND its results answer the need    LAND binds; nothing to make
-rerun        the run exists, results missing or stale         LAND executes it again
-new-run      the task exists, no run gives this exact thing   LAND mints one r<NN>_ config
-new-task     the job exists, no task computes this            LAND scaffolds t<NN>, then a run
-new-job      the block exists, no job covers this             LAND scaffolds j<NN> first
-new-block    nothing in tasks/ touches this                   LAND scaffolds b<NN> first
-person       a citation, or a number only a person holds      LAND transcribes what you supply
-none         no run could ever produce it                     not makeable: the bullet is wrong
-                                                              → SHAPE, never Decide = make
+Execution   computation · data · model · deterministic tooling
+Discovery   search · papers · sources · external evidence
 ```
 
-`add-run`, `borrow`, `new-folder` and the T0-T4 cost ladder were considered and
-retired on 260901: a run is the atom, so binding to another page's number is
-binding to its run; the level words say the cost; there is nothing to borrow.
+The action vocabulary is:
 
-**The search order that produces the outcome**, cheapest first, by READING:
-this page's own earlier rows → the project's `tasks/` tree by block, job, task,
-run (their QA/ digests and `results/` listings are the index) → nothing. A
-project with a mature tree should survey mostly `found`; a page whose rows are
-all `new-*` says something about the project, not the page.
+| Action | Meaning at SURVEY | Address rule |
+|---|---|---|
+| `reuse` | an accepted Result already satisfies this support or local target | full global Run id and registered Ticket/receipt required |
+| `rerun` | the same frozen Run contract must execute again | full global Run id and registered Ticket/receipt required |
+| `registered` | a new Run Ticket and planned runtime receipt are scaffolded; LAND will execute it | full global Run id required |
+| `new-run` | pre-registration note only; SURVEY must allocate/scaffold before closing | parent `bNNjNNtNN` |
+| `new-task` | pre-registration note only; SURVEY must scaffold before closing | parent `bNNjNN` |
+| `new-job` | pre-registration note only; SURVEY must scaffold before closing | parent `bNN` |
+| `new-block` | pre-registration note only; SURVEY must scaffold before closing | planned block name |
 
-## The derived status · never in this file
+`reuse` and `rerun` always name a full global id such as `b01j02t03r04`.
+`rerun` preserves the same target, frozen inputs, and acceptance contract. If
+any of those change materially, register a new Run and record
+`supersedes: b01j02t03r04` in the new Run receipt.
 
-`cli/evidence-status.py` joins every row to the disk and writes the twin file.
-One word per row, one emoji, computed from three things: the row's `Run`
-address, that run's results on disk, and the plan's `Answered:` line.
+There is no `person`, `found`, or `none` action. A citation can use a Discovery
+Supporting Run; existing work is `reuse`; and an impossible item routes back
+to SHAPE. No supports is represented structurally as `Supporting Runs: []`.
+That form is valid only when `Local Input` names sufficient pre-existing local
+material or says `item contract only` for a genuinely source-free construction.
+
+A sibling Evidence Item's future local Result is never an implicit local input.
+If two items need the same upstream evidence, both list the same Execution or
+Discovery Supporting Run (normally `reuse`). This keeps item graphs independently
+closable and preserves LAND's item-level parallelism.
+
+## PageX bindings are sources, never Results
+
+PageX is the optional cross-Folder source-binding mechanism of the unified
+`haipipe-plugin-evidence`. It is not an Evidence Item type, Run family, action,
+or fourth Result kind. The authored value is either `[]` or a semicolon-separated
+list:
 
 ```text
-state        meaning                                  derived from                  next act
-────────────────────────────────────────────────────────────────────────────────────────────
-⬜ owed      mark exists, no run bound                 no row, or no address         SURVEY
-🔗 bound     the row names a run and you said make    address + ☑ make              LAND
-🟢 landed    the bound run's result is on disk        the `→` file exists           EMBED
-📌 folded    the plan carries the number              bullet has Answered:          nothing
-✅ accepted  the page passed CHECK                     accepted: ✅ on the page      nothing
-⚠️ stale     folded, but the result changed since     result newer than the plan    EMBED again
-⏸ deferred   Decide = defer                            the row                       you
-✖ dropped    Decide = drop                             the row                       none
-⛔ blocked   outcome none                              the row                       SHAPE
+<repo-relative exact file-or-Result path> · authority <Run id, accepted artifact id, or accepted Page version>
 ```
 
-`stale` is the reopen law made visible: a rerun upstream flips a folded row by
-mtime alone, so the page never silently carries an old number. A person who
-types a status into either file has copied the disk, and the copy is wrong the
-moment the disk moves; `check.py`'s `evidence-hand-edited` tooth exists for
-exactly that.
+Each path must identify the exact accepted material used by this item and must
+not end `/`. A whole-Folder PageX relationship is valid navigation, but not an
+evidence binding. When bindings are present, `Local Input` must explicitly say
+that it freezes `PageX bindings`; LAND then resolves the path, verifies the
+named authority and freshness, and records the frozen pointer/hash.
 
-## Who writes what, and when
+The PageX segment is derived from this item graph. It shows the selected source
+beside the item's Supporting Runs, Local Run, and ready Result; it does not keep
+a disconnected evidence list or count the link as another Run.
 
-```text
-SHAPE    writes no row; marks in the plan are the placeholders
-SURVEY   writes every row: Need · Route · Run (outcome + address); a person writes Decide
-LAND     appends ` → <result file>` to a row's Run line when the material lands
-EMBED    writes the plan's Answered: line; touches this file not at all
-render   derives Status into <stem>-evidence.md, never into this file
-```
+## What SHAPE, SURVEY, LAND, and EMBED write
 
-A row is SURVEY-complete when it has its outcome, its address where one exists,
-and a signed Decide. The cycle's gate is every row complete. LAND refuses a row
-whose Decide is `☐`.
+| Cycle | Level-4 Runs? | Writes to this table |
+|---|---:|---|
+| SHAPE | none | item id/name/type, Target, Need, Expected, Acceptance |
+| SURVEY | allocate + scaffold only | registered Supporting Runs, PageX bindings, one Local Input, exactly one registered Local Run, Decide gate |
+| LAND | execute only | validated/frozen PageX bindings and `→ <Result>` on completed bindings |
+| EMBED | none | nothing; it writes `Answered:` or `Drawn:` into outline v<N+1> |
+
+SURVEY is complete when every approved item has registered Supporting Runs and
+Local Run Tickets with planned runtime receipts, valid PageX bindings, one
+explicit Local Input plan, and a signed decision. `Ready` on a Run means its
+Ticket is ready to execute; evidence-item `ready` still requires a validated
+local Result. LAND refuses an undecided or unregistered item. Item graphs may execute in parallel,
+but within one item its local Run waits until every declared Supporting Result
+and PageX binding is valid and frozen into the input envelope. LAND closes only
+when both the Supporting and local Run layers are finished for every `make`
+item.
+
+## Derived status · simple in the overview, detailed on click
+
+The generated `<stem>-evidence.md` and Runs surface derive one compact item
+state; the authored table never stores it:
+
+| State | Meaning | Next cycle |
+|---|---|---|
+| `specified` | SHAPE fields exist; Run graph or decision is incomplete | SURVEY |
+| `planned` | Run graph is complete and `Decide = make`; local Result absent | LAND |
+| `ready` | the local Page · Evidence Item Result exists and passes acceptance | EMBED |
+| `folded` | the next outline version binds the ready Result | SHAPE / DRAFT |
+| `accepted` | the Page passed CHECK | closed |
+| `stale` | a bound Result changed after the fold | LAND or EMBED |
+| `deferred` | signed defer | human route |
+| `dropped` | signed drop | SHAPE if the outline still asks for it |
+| `blocked` | a commissioned Run truthfully cannot complete | LAND / SHAPE |
+
+The overview stays compact: item id, type, target, support count, PageX binding
+count, local Run, state, Result. Clicking the item or Run reveals the frozen
+input, individual Supporting Runs, PageX authorities, receipts, acceptance
+checks, and artifacts.

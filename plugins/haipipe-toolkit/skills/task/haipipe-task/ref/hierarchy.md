@@ -1,6 +1,10 @@
 Task Hierarchy — Block / Job / Task / Run
 ==========================================
 
+Load `../../../run/haipipe-run/SKILL.md` for the neutral Level-4 Run identity,
+Ticket/Result pairing, receipt, lifecycle, and audit invariants. This file owns
+the Job-backed Task dialect and its code/config/notebook/output rules.
+
 Settled with JL 2026-08-29 (absorbing ref/block-job-task-run.md). Four levels,
 named against Databricks so one word never means two things in a workspace
 that deploys there:

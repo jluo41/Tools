@@ -1,47 +1,51 @@
----
-name: haipipe-plugin-pagex
-description: >-
-  The cross-Folder link plugin: one ranked PageX list may point to an exact
-  file or a whole work Folder anywhere inside the repo. Whole-Folder cards
-  expose Page Face plus live Task plan/report/QA state. Trigger: pagex plugin,
-  borrow a file, link another Folder, task Folder status, reference another
-  Page, symlink plugin, /haipipe-plugin-pagex.
-metadata:
-  version: "1.0.1"
-  last_updated: "2026-08-31"
----
-# /haipipe-plugin-pagex · how one Folder points into another Folder
+# PageX lane · how one Folder points into another Folder
 
-**LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
-This file owns only PageX's delta: link scope, ranked row, minted link, safety
-vet, live Folder-face read, and prose seeding.
+Read this reference from `haipipe-plugin-evidence` when SURVEY considers an
+accepted cross-Folder source or the 🧾 Evidence tab presents that relationship.
+PageX is an internal Evidence lane and source-binding mechanism—not a Plugin,
+Run family, action, or typed Result. This reference owns its link scope, ranked
+row, minted link, safety vet, live Folder-face read, and prose seeding.
 
-BibEx points into literature, Skill points into the skill tree, and PageX
+The Evidence Citations lane points into literature, Skill points into the
+skill tree, and PageX
 points into the repo's Folder graph. There is no separate Task plugin:
 execution belongs to a Folder's Task Face; a cross-Folder task relationship is
 still a PageX link.
 The design page is `QPf11` on the board skill's board.
 
-> 🧾 Since 260831 this view is the 🔗 Pagex SEGMENT inside the one 🧾 Evidence tab (`haipipe-plugin-evidence`); the standalone strip row folded away, and every pen below rides inside the saved view unchanged.
+> 🧾 This view is the 🔗 PageX segment inside the one 🧾 Evidence tab
+> (`haipipe-plugin-evidence`). There is no standalone PageX Plugin or Result.
 
-## 🔎 Probe family · the existing-Page lane
+## 🔎 SURVEY binding · select an exact authority, not a topic
 
-For evidence reuse, PageX is the cross-Page lookup surface used while OUTLINE
-decides which already accepted material the consumer will rely on. It is the
-`source: page` lane inside the Probe family. It is not a bank and it does not
-dispatch:
+For evidence reuse, PageX is the cross-Page lookup surface used while SURVEY
+decides which already accepted material a typed Evidence Item will rely on. It
+is not a bank and it does not dispatch:
 
 ```text
-Probe source router
-  ├─ page             ── PageX ───── exact file/scope binding in OUTLINE
-  └─ task/discovery   ── the item table (SURVEY) ── a card only when a question leaves the page (LAND)
+SURVEY · one Evidence Item
+  ├─ Supporting Runs   0..N Execution/Discovery plans
+  ├─ PageX Bindings    0..N exact accepted cross-Folder sources
+  ├─ Local Input       exactly one future frozen envelope
+  └─ Local Run         exactly one Page · Evidence Item plan
 ```
 
-The PageX selection is valid only when the borrowed file and scope literally
-support the outline obligation or name the exact accepted Display being reused.
-A Page that merely shares a topic is a candidate, not evidence. The OUTLINE
-records the selected source path/scope; the ranked borrow list remains the
-person's durable choice.
+The PageX selection is valid only when the borrowed exact file or Result and
+its named authority literally support the Evidence Item's obligation. A Page
+that merely shares a topic is a candidate, not evidence. SURVEY records the
+selected exact path and authority in the item's `PageX Bindings`; the ranked
+borrow list remains the person's durable navigation choice.
+
+An Evidence Item binding uses:
+
+```text
+<repo-relative exact file-or-Result path> · authority <Run id, accepted artifact id, or accepted Page version>
+```
+
+`PageX Bindings: []` means the item uses no cross-Folder Page source. A path
+ending `/` is a whole-Folder relationship and may be useful navigation, but it
+cannot satisfy an evidence binding until SURVEY resolves an exact accepted
+file or Result within it.
 
 The board exposes `POST /_board/pagex-match` as a read-only candidate
 shortlist. It reports transparent token overlap and a short excerpt, but its
@@ -54,6 +58,20 @@ does not open a new local Probe card merely to mirror the source. When a Display
 is reused as evidence, cite its fully qualified unit id or borrow its specific
 file. Link the whole Folder only when the relationship is to that work object
 and its lifecycle, not as a shortcut for naming an evidentiary scope.
+
+## 🛬 LAND validation · link, supports, input, then local Result
+
+For every `☑ make` item, LAND validates every PageX binding before freezing the
+Local Input. It confirms that the exact target exists, its authority is
+accepted, and the bytes, version, or hash still match what SURVEY selected. A
+dangling, superseded, whole-Folder-only, or merely similar source keeps the item
+in LAND or routes it back to SURVEY.
+
+PageX never replaces either Run layer. LAND closes only when all declared
+Supporting Results are valid, all PageX bindings are valid, one Local Input
+freezes both sets of sources, and exactly one local Page Evidence Item Run has
+an accepted `VALUE`, `CITE`, or `DISPLAY` Result. The PageX segment shows this
+whole lineage without counting the link as another Run or Result.
 
 ## 🗂 Storage · MIXED, one ranked list and the links minted from it
 
@@ -128,7 +146,7 @@ A target that resolves outside the repo root, is not an addressable Folder, is
 self-referential, or already has a real file in its slot is refused with the
 reason shown on its card.
 
-## 📡 Surface · the 🔗 tab
+## 📡 Evidence segment · the 🔗 view
 
 Exact files retain ONE CARD PER SOURCE PAGE, in the person's rank, not one per
 borrowed file (JL 260816: "每一个 page folder 我们用了它的哪些 information …
@@ -156,11 +174,11 @@ The mark stays bare: pagex mints links whose place mirrors the source, so spelli
 
 > Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
-## 📂 Files
+## 📂 Files and ownership
 
 - `../../haipipe-board/live/pagex.py`
   The three routes, the store writer, the minter and its vet, the prose scan behind the seeder, and the card view.
-- `../../haipipe-board/assets/js/10-drawer/85-plugin-pagex.js`
-  The registry entry whose `tab` spec the shell builds the 🔗 tab from.
+- `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
+  The single 🧾 Evidence registration that includes the 🔗 PageX segment.
 - `../../haipipe-plugin/ref/roster.md`
-  The row this skill expands.
+  The internal `pagex/` storage row owned by `haipipe-plugin-evidence`.

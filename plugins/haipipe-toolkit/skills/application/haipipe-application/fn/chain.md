@@ -31,7 +31,7 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
    - I settled, no K → `3-K-knowledge/K<NN>-<slug>/` with `folder-kind: knowledge`
    - K settled, no W → `4-W-wisdom/W<NN>-<slug>/` with `folder-kind: wisdom`
    On a partition-major board (`ref/partition.md`) the rungs live inside partition groups: resolve the owning group from the question's Queue CELL (its column names the partition; a dot cell routes to the X group), then open `<group>/<L><rung letter><NN>-<slug>/` with the partition letter prefixed to the page id. The phase-owned Folder contracts are the same four.
-4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. Load `haipipe-plugin-probe` for a D Folder commissioning missing evidence and `haipipe-plugin-pagex` for the producing Folder or any accepted parent.
+4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. Load `haipipe-plugin-probe` for a D Folder commissioning missing evidence and `haipipe-plugin-evidence/ref/pagex.md` for the producing Folder or any accepted parent.
 5. Cite the parent page and the parent ROWS by id. Never restate a parent's content: a D page's counts are cited, not copied.
 6. Update the question's Queue row on its register with the new page id and state.
 7. Run the Page workflow until CHECK settles or holds the page.

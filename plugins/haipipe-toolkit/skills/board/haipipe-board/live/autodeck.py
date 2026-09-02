@@ -28,7 +28,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 TIMEOUT = 600          # a deck is authored, not reflowed; minutes are normal
-MAX_MD = 14000         # Opening + Diagram + Content + Aims on any page here
+MAX_MD = 14000         # Opening + Outline + Content + Aims on any page here
 
 HEAD = """<!DOCTYPE html>
 <html lang="en" data-theme="academic-report">

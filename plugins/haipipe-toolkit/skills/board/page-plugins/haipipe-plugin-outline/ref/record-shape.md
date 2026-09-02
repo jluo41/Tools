@@ -17,15 +17,17 @@ Every file opens with three lines: `# <stem> · <kind>` · `page: <stem>` ·
 file                     answers                  id            labels                              writer                         teeth
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 <stem>-outline-v<N>.md   what we AGREED           C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks        plan-* (grammar §7)
-<stem>-requirement.md    what we MUST obey        V1 V2 V3 V4   Rule · Arc · Words · Citations ·    cli/requirement.py, venue only  requirement-missing ·
-                                                                Displays · Source                                                  -hand-edited · -stale
+<stem>-requirement.md    what we MUST obey        V1 V2 V3 V4   V: Rule · Arc · Words · Citations · generator refreshes V; page     requirement-missing ·
+                                                  W<n>          Displays · Source                  authors W; generator preserves   -hand-edited · -stale ·
+                                                                W: Rule · Applies · Source                                         section-writing-in-page
 <stem>-discussion.md     what is still ASKED      D<nn>         Ask · Options · We lean · Decide    this page, any phase, the chat  discussion-settled-thread
 <stem>-feedback.md       what OTHERS said         S<x>-PP<n>    From · Feedback · Work · State ·    cli/feedback.py collect;        feedback-uncollected ·
                                                   R<nn>         Landed                              the page writes Landed only     -coverage · -unserved
-<stem>-items.md          what each mark OWES and  C.P.B         Need · Route · Run · Decide         SURVEY; a person writes Decide; (ref/item-table.md)
-                         which RUN answers it                                                        LAND appends → <result>
-<stem>-evidence.md       what has LANDED          C.P.B         Status · Need · Route · Run ·       cli/evidence-status.py          evidence-stale · -hand-edited
-                                                                Decide · Has
+<stem>-evidence-items.md what each typed item      E<NN>-TYPE-   Target · Need · Expected ·          SHAPE specifies; SURVEY plans;  (ref/item-table.md)
+                         must become and its Runs  <slug>        Acceptance · Supporting Runs ·      LAND freezes input + binds Result
+                                                                PageX Bindings · Local Input · Local Run · Decide
+<stem>-evidence.md       what is READY             E<NN>-TYPE-   Status · Target · Expected ·        cli/evidence-status.py          evidence-stale · -hand-edited
+                                                  <slug>        Supporting Runs · PageX Bindings · Local Input · Local Run · Has
 <stem>-files.md          what it READS and WRITES F<n>          Path · Role                         this page                       dead-file-path
 <stem>-log.md            what CHANGED             YYMMDD [HHMM] headline only; detail folded        this page; append, newest first generated-block-stale reads it
 ```
@@ -72,29 +74,44 @@ one field is `Landed: <the checked version that answered the row>`, preserved
 by row id across regeneration. To argue with a row, open a `D<nn>` thread with
 `serves: <RD> <row id>`.
 
-**Requirement** is venue only, four records: V1 Shape (with the desk's Arc),
-V2 Size (Words · Citations · Displays; `measured …` folded), V3 Refused (one
-Rule line per anti-pattern), V4 Moves (the slot names; exemplars folded). Each
+**Requirement** has a generated venue portion with up to four records: V1
+Shape is always present and carries the desk's Arc when supplied; V2 Size,
+V3 Refused, and V4 Moves appear only when the bound venue source supplies
+their format, anti-pattern, or slot material. V2 uses Words · Citations ·
+Displays with measured detail folded; V3 uses one Rule per anti-pattern; V4
+uses the slot names with exemplars folded. Each
 record prints its address, `` `<desk>.md` §<n> <Sec-token>.<sub> ``. A
 page-specific deviation is a `D<nn>` thread, never a requirement line. A page
 with no `structure-source:` gets no file.
 
-**Items** is the item table (`ref/item-table.md`, 260901): one record per
-marked bullet, head byte-identical to the evidence file's, four authored
-labels: `Need` (what exactly is owed) · `Route` · `Run` (`<outcome> ·
-<address>`, the outcome one of `found · rerun · new-run · new-task · new-job ·
-new-block · person · none`; LAND appends ` → <result file>`) · `Decide` (a
-person's: `☐ make` until signed `☑ make · JL 260901`, `☑ defer · why`, `☑ drop
-· why`). No Status word is ever typed here.
+The same **Requirement** file also holds the Page's authored writing contract
+as `W<n>` records after the generated block. Each has a short imperative
+headline that previews the instruction, followed by `Rule`, `Applies`, and
+`Source`. `Rule` is one complete sentence; `Applies` names the page, division,
+prose kind, or display cells it governs; `Source` names the authority without
+copying it. `cli/requirement.py` replaces only the bounded V block and preserves
+the authored W records verbatim. A manuscript Section carries no `###
+Writing Style` block in the product `<page>.md` and no separate writing file.
 
-**Evidence** is a dated snapshot of the item table joined to the disk: one
-record per marked bullet, its head carrying THE PLAN'S OWN WORDS after the
-mark (0.18.1, JL 260831: a bare ref in the head "lost a lot of informations"),
-`Status` first, one word of the item ladder `owed · bound · landed · folded ·
-accepted · stale · deferred · dropped · blocked` (the pre-260901 six words
-retired), then the row's Need · Route · Run · Decide copied verbatim, then
-`Has`, what the lane on disk says; the page line reads `cycle: … · items n ·
-decided n/n · <ladder tally>`. It imports the tab's own parse and
+**Evidence Items** is the authored table (`ref/item-table.md`): one record per
+typed outline item. Its immutable id is `E<NN>-<TYPE>-<slug>` where TYPE is
+`VALUE · CITE · DISPLAY`; its head also names the target `C.P.B` and readable
+item name. SHAPE writes `Target · Need · Expected · Acceptance`. SURVEY writes
+`Supporting Runs` (zero or more Execution/Discovery plans), `PageX Bindings`
+(zero or more exact cross-Folder file/Result paths plus accepted authorities),
+exactly one `Local Input` envelope plan, exactly one `Local Run` (`Page ·
+Evidence Item`), and leaves `Decide` for a person. LAND validates PageX,
+appends allocated global Run ids, freezes the input pointer/hash, and binds the
+local `→ <Result>`. PageX is not a Run or Result type. No Status word is ever
+typed here.
+
+**Evidence** is a dated snapshot of the Evidence Item table joined to Run
+receipts and Results: one record per typed item, `Status` first, one word of
+`specified · planned · ready · folded · accepted · stale · deferred · dropped
+· blocked`, followed by its target, expectation, Supporting Runs, PageX
+Bindings, Local Input, Local Run, decision, and `Has`. The page line reads
+`cycle: … · items n · decided n/n ·
+<status tally>`. It imports the tab's own parse and
 `src/item_table.py`, so file, strip and tab cannot disagree.
 
 **Files** is one record per file the page reads, writes, checks or keeps:
@@ -105,8 +122,9 @@ grammar `cli/pagecontext.py` reads.
 
 ## The three laws that hold every kind
 
-- A generated file is regenerated, never edited; the `*-hand-edited` teeth
-  fire on a missing GENERATED line.
+- A generated file is regenerated, never edited. Requirement is the bounded
+  exception: regenerate its V block and author its W block; the
+  `requirement-hand-edited` tooth fires when the generated marker disappears.
 - Every kind is one flat file carrying the stem; only the plan is
   many-per-page, by version. No file name contains `outline` except the plan,
   because the plan globs are `*-outline-*.md`.

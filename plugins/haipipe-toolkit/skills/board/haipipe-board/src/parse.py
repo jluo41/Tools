@@ -54,6 +54,9 @@ def parse_board(board):
         if len(parts) == 2 and not ln.startswith("#"):
             LINKS[parts[0]] = parts[1].strip()
     return dict(title=title, spine=f("spine"), close=f("close"),
+                # `index-view: pages` keeps a Board landing page to its name
+                # and page roster; orientation material remains source-only.
+                index_view=f("index-view"),
                 session=f("session"),   # 整板会话的 id（QD5）——serve.py 记在 board.md 头部
                 excalidraw=f("excalidraw"),  # the board's own Excalidraw host, e.g.
                                             # http://127.0.0.1:5610 (self-hosted, QA4a)
@@ -247,6 +250,16 @@ def parse_dir(d):
         # decisions have been routed onto the pages that own them, never by a
         # checkbox count, which is why it stays outside the settled-question sum.
         meeting_m = re.match(r"Meeting-(\d+)-(.+)$", p.stem)
+        # A Paper Section is a named manuscript unit, not an opaque ordinal.
+        # `S-MISQ-Main-Results` says its object, desk, manuscript lane, and
+        # reader-facing job without consulting a crosswalk. The old SM/SA
+        # forms remain below for existing boards and archives.
+        semantic_section = re.match(
+            r"S-(?P<desk>[A-Za-z][A-Za-z0-9-]*?)-"
+            r"(?P<section_family>Main|Appendix)-"
+            r"(?P<section_name>[A-Za-z][A-Za-z0-9-]*)$",
+            p.stem,
+        )
         full_sm = re.match(
             # The unit is a NUMBER (a manuscript section), a single CAPITAL
             # (an appendix), or a CAPITALISED WORD. The third is for a page that
@@ -280,7 +293,7 @@ def parse_dir(d):
         # claims SA as a runtime group token (2-SA-appendix), so SA01-<slug>
         # must parse as app_m family SA, not as a legacy stage page.
         legacy_sm = re.match(r"(S)(\d+[a-z]?)", p.stem, re.I)
-        sm = full_sm or legacy_sm
+        sm = semantic_section or full_sm or legacy_sm
         # 260820, Application runtime boards. M00-meta, I01-<slug>, A00-brief and
         # D01-<slug> are the ids the Application spec has always named, and no
         # matcher here claimed them, so an InsightBoard or DesignBoard parsed to
@@ -338,6 +351,16 @@ def parse_dir(d):
                 page_id = "Q" + qm.group(1) + qm.group(2) + qm.group(3)
                 kind = "question"
                 family = ""
+            elif semantic_section:
+                family = semantic_section.group("section_family").lower()
+                desk = semantic_section.group("desk")
+                unit = semantic_section.group("section_name")
+                family_order = {"main": 6, "appendix": 7}[family]
+                # Semantic units are ordered by the explicit board.md reader
+                # map; this key merely provides a deterministic fallback.
+                key = (1, family_order, 2, desk.casefold(), unit.casefold())
+                page_id = p.stem
+                kind = "stage"
             elif full_sm:
                 family = full_sm.group(1).lower()
                 # NORMALISE THE UNIT THE WAY THE COMPOSER DOES, and no other way

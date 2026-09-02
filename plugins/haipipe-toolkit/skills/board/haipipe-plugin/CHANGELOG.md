@@ -1,3 +1,15 @@
+## 0.4.0 · 2026-09-02
+
+- Separate rostered storage lanes from Plugin identity: a category Plugin may
+  own several internal lanes without minting one Skill per subfolder.
+- Record the unified Evidence ownership of Citation/Bib, Value, Display, and
+  PageX; Probe remains the separately governed crossing shown in the same tab.
+
+## 0.3.8 · 2026-09-02
+- Treat category Plugins as possible direct owners of an internal lane.
+- `haipipe-plugin-evidence` now owns Citations/Bib at `evidence/bibex/`; a
+  storage lane no longer implies a duplicate Bibex Plugin Skill.
+
 ## 0.3.7 · 2026-09-01
 - Make the Runs presenter overview-first: Execution, Discovery, and Page rows
   each join their authored Ticket to the paired Result; Page divides into

@@ -12,9 +12,9 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-09-01"
-  summary: "Discovery orchestrator for Topic Page + Paper Run architecture."
+  version: "2.5.0"
+  last_updated: "2026-09-02"
+  summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
 # Discovery Orchestrator
@@ -33,7 +33,7 @@ in, restate the question generally, and report that lint defect.
 
 ~~~text
 QA      run fn/qa.md; return one QA path or a refusal
-FULL    open/run one Topic through Plan -> Build(opt) -> Execute -> Report
+FULL    open/run one Task Page through SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
 ENRICH  add the minimum new Paper Run(s) to an existing on-topic Folder
 ~~~
 
@@ -47,7 +47,8 @@ rebuilds the aggregate Bib, and resynthesizes only the affected Topic surface.
 creator       haipipe-discovery-creator-agent
 reviewer      haipipe-discovery-reviewer-agent
 search fanout haipipe-discovery-search-worker-agent
-type Execute haipipe-discovery-search | -review | -idea
+ACQUIRE      haipipe-discovery-search
+SYNTHESIZE   haipipe-discovery-search | -review | -idea
 ~~~
 
 Mechanical channel workers return candidates only. The orchestrator/creator
@@ -55,31 +56,36 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
 
 ## FULL protocol
 
-1. Resolve project, group, and Topic scope structurally.
-2. Creator Plan; reviewer checks the Topic question, type/role, Page/Task Faces,
-   source coverage, candidate rule, and terminal.
-3. Creator Build only when a reusable instrument is necessary; reviewer checks
+1. Resolve the Discovery bank, `bNN_` Block, `jNN_` Job, and `tNN_` Task Page
+   structurally. New paths must expose all three prefixes; never infer `tNN`
+   from a bare `NN_` folder.
+2. Creator SCOPE; reviewer checks the Topic question, canonical
+   `discovery_type`, root Page promise, Page/Task Faces, source coverage, and
+   candidate rule.
+3. Creator PREPARE only when a reusable instrument is necessary; reviewer checks
    it.
-4. Creator resolves Triggers. One Trigger may yield 0/1/N canonical Subjects;
+4. Creator ACQUIRE resolves Triggers. One Trigger may yield 0/1/N canonical Subjects;
    one Subject creates one same-stem Run/Result pair.
-5. Creator executes pending tickets through the type specialist. Reviewer
-   checks every complete Result and topic synthesis.
-6. Creator runs the deterministic checker and Bib builder. Any hard failure is
-   REVISE; Report cannot claim ok.
-7. Creator writes Page/terminal/Report and, when commissioned, completes the
-   already-claimed QA ticket. Reviewer runs the final gate.
+5. Creator executes pending tickets through Search. Reviewer checks every
+   complete Result.
+6. Creator SYNTHESIZE dispatches the type specialist, writes the root Page and
+   optional typed record, then asks Evidence to rebuild the citation aggregate.
+7. Creator CLOSE runs the checker and reconciles the two Faces; any hard
+   failure routes backward and CLOSE cannot claim ok;
+   when commissioned, it completes the already-claimed QA ticket. Reviewer
+   runs the final gate.
 
 ## QA claim
 
 Follow haipipe-discovery/fn/qa.md exactly. Gate order is:
 
 ~~~text
-1 QA scan -> 2 digest existing Results/terminals -> 3 claim then lifecycle
+1 QA scan -> 2 digest existing Results/Page/typed records -> 3 claim then lifecycle
 ~~~
 
 A working QA file means someone is already on it. Return its path and run
 nothing. Gate 3 creates the claim under noclobber before searches. The creator
-completes that same file at Report. A consumer never writes a Discovery QA
+completes that same file at CLOSE. A consumer never writes a Discovery QA
 file.
 
 ## Run truth
@@ -89,6 +95,10 @@ Before reporting success, require:
 ~~~text
 runs/<RUNNAME>.sh                      executable
 results/<RUNNAME>/runtime.yaml         valid state
+                                       address: bNN.jNN.tNN.rNN
+                                       address_compact: bNNjNNtNNrNN
+                                       family: discovery
+                                       operation: paper-analysis | source-analysis
 results/<RUNNAME>/<RUNNAME>.md         when complete
 results/<RUNNAME>/facts.md             when complete
 results/<RUNNAME>/<RUNNAME>.bib        one entry when complete
@@ -96,18 +106,22 @@ Card cite: @Key == Bib key
 ~~~
 
 Trigger provenance and canonical Subject identity both survive in runtime.
-Only complete Results enter evidence/bibex/<topic>.bib.
+Only complete Results enter evidence/bibex/<task>.bib.
 
 ## Return
 
 ~~~text
-topic:          <path>
-mode:           qa | full | enrich
-runs:           {planned, running, complete, blocked, unresolved}
-terminal:       <path | none>
-evidence_bib:   <path | none>
-qa_file:        <path | none>
-qa_state:       answered | working | none
-review:         pass | revise | blocked
-summary:        one line
+topic:         <path>
+address:       <bNN.jNN.tNN>
+address_compact:<bNNjNNtNN>
+mode:          qa | full | enrich
+page:          <root Page path>
+discovery_type:<canonical Page Type>
+runs:          {planned, running, complete, blocked, unresolved}
+typed_record:  <path | none>
+evidence_bib:  <path | none>
+qa_file:       <path | none>
+qa_state:      answered | working | none
+review:        pass | revise | blocked
+summary:       one line
 ~~~

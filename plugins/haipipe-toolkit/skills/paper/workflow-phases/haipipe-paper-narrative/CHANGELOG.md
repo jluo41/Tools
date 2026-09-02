@@ -1,3 +1,11 @@
+## 0.7.1 · 260901
+- Corrected the abstraction boundary: the Section-control table is view 2 inside the existing `## Diagram`, not a new surface between Diagram and Content. The Page's large structure remains unchanged.
+
+## 0.7.0 · 260901
+- Narrative now requires a reader-order Diagram followed immediately by one Narrative Control Table: one live Section per row, with reader job, outline shape, must-say, must-not-say, evidence gate or cut rule, and reader exit.
+- The table is an executive compression of claims, arc, reader journey, detailed Section rows, and handoffs; disagreement between those surfaces reopens Narrative.
+- Optional evidence must carry an explicit cut rule and may not appear necessary for the sufficient paper.
+
 ## 0.6.1 · 260831
 - Narratives close the story group as Story<NN>-narrative-<desk> (JL 260831); a separate A2-NA-narrative group with NA numbering is grandfathered.
 

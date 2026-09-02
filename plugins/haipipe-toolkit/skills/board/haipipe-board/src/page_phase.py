@@ -7,8 +7,8 @@ both call `phase_state()` here. Never writes.
 The states, and what each is read from:
 
     🧭 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
-                 (SHAPE), plus the item table's Decide per row (SURVEY)
-    🃏 EVIDENCE  the item table joined to the disk: landed · folded rows (LAND,
+                 (SHAPE), plus the Evidence Item table's Decide per item (SURVEY)
+    🃏 EVIDENCE  the Evidence Item table joined to local Results: ready · folded (LAND,
                  EMBED); legacy pages without a table: card state: lines ·
                  bibex verified= · display preview.pdf + accepted:
     ✏️ DRAFT     the page's own ### content divisions, and whether it postdates the tick
@@ -155,7 +155,7 @@ def _displays(pd):
 def _bibex(pd):
     """One row per bibtex ENTRY, because a count cannot be spent.
 
-    `verified` is a person's (cite-rules, and haipipe-plugin-bibex ruled it
+    `verified` is a person's (cite-rules, and haipipe-plugin-evidence rules it
     260815); `checked` is the approver's R1-R7 pass. An entry carrying
     `verified = {}` is EXPLICITLY unverified — cite-rules R7 — so an empty
     brace reads as owed, never as done.
@@ -283,10 +283,9 @@ def phase_state(page_md, board=None):
     rec = _last_receipt(pd, board)
     last = rec["last"] if rec else None
 
-    # the item table (haipipe-plugin-outline ref/item-table.md): one row per
-    # mark, SURVEY's Decide and LAND's result pointers; None on a page that
-    # has no plan yet. A page with a plan but no table is a legacy page and
-    # keeps the card-based reading below.
+    # The Evidence Item table: SHAPE's typed contracts, SURVEY's Run graphs,
+    # and LAND's local Result pointers. A page with no typed table keeps the
+    # legacy lane-based reading below during migration.
     items = item_table.summarize(page_md, of) if of else None
     has_table = bool(items and items["rows"])
     ic = items["counts"] if items else {}
@@ -297,7 +296,7 @@ def phase_state(page_md, board=None):
         "OUTLINE": ("done" if approved and (not has_table or items["decided"] == items["rows"])
                     else ("part" if of else "owed")),
         "EVIDENCE": ((("done" if live_rows and folded_rows >= live_rows
-                       else ("owed" if not ic.get("landed") and not ic.get("bound") and not folded_rows
+                       else ("owed" if not ic.get("planned") and not ic.get("ready") and not folded_rows
                              else "part")) if has_table else
                      ("done" if (cards and len(answered) >= len(live)
                                  and disp and len(drawn) == len(disp))

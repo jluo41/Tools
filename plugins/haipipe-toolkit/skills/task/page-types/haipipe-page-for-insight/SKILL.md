@@ -19,7 +19,9 @@ metadata:
 
 # /haipipe-page-for-insight · turn evidence into a reusable D→I→K→W chain
 
-Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load `haipipe-plugin-probe` when inspecting Task/Discovery sources and `haipipe-plugin-pagex` when reusing accepted Page material.
+Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load
+`haipipe-plugin-probe` when inspecting Task/Discovery sources and
+`haipipe-plugin-evidence/ref/pagex.md` when reusing accepted Page material.
 
 ## Where this type is used, and where it is not
 

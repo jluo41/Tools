@@ -1,3 +1,13 @@
+## 0.8.0 · 260902
+
+- A Section's page-owned prose rules now live as authored `W<n>` records in
+  `outline/<stem>-requirement.md`, after its generated venue `V<n>` block. The
+  product Page carries no `### Writing Style`; one Requirement lens exposes
+  both rule families for DRAFT, REVISE, and CHECK.
+
+## 0.7.0 · 260901
+- Section Pages use semantic IDs (`S-<desk>-Main-<section-name>` and `S-<desk>-Appendix-<section-name>`), with the Board Map governing order. Retained `S<D><NN>` / `SA<NN>` only for historical archive compatibility.
+
 ## 0.6.2 · 260831
 - Runtime home tree letters per group: Ba-Main · Bb-Appendix · Bc-Round; later desk continues at Bd (JL 260831).
 

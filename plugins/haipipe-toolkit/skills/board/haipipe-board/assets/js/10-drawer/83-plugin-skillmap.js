@@ -53,6 +53,7 @@
       label: '🛠 Skill',
       hint: 'the skills related to this page, ranked by you',
       menu: 'plugin',
+      order: 60,
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {
         write(page, function (j) {

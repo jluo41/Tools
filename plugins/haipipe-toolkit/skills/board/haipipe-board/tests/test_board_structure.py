@@ -39,6 +39,14 @@ class BoardStructureTest(unittest.TestCase):
         self.assertEqual(meta["structure"], "")
         self.assertNotIn("Board-Structure — Board-Folder and Board-Webpage", html)
 
+    def test_pages_only_index_hides_orientation_panels(self):
+        meta = parse_board(self.board_source() + "index-view: pages\n")
+        html = render(meta, [])
+        self.assertEqual(meta["index_view"], "pages")
+        self.assertIn("ALL PAGES", html)
+        self.assertNotIn("<b>🦴 Spine</b>", html)
+        self.assertNotIn("When, then where", html)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,8 +9,8 @@ description: >-
   log record. Trigger: page draft, DRAFT phase, slot to sentence, write the
   number, track the change, /haipipe-page-draft.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-08-31"
+  version: "0.10.1"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,8 +27,8 @@ Q        write the page from the approved plan and the landed evidence: a
          slot or a point becomes sentences that carry the number and cite
          their evidence by id
 READS    the approved plan (Answered:/Drawn: trusted; `· recount` re-read) ·
-         the page · outline/<stem>-requirement.md (V1 to V4) · the cards
-         and units the plan cites
+         the page · outline/<stem>-requirement.md (generated V<n> plus
+         authored W<n>) · the cards and units the plan cites
 WRITES   <page>.md: Opening · Diagram · Content · Aims (rows and Now:) ·
          one record in outline/<stem>-log.md
 WALLS    enters only on approved: ✅ · names no division the plan lacks ·

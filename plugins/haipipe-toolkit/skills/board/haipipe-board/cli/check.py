@@ -59,6 +59,9 @@ ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
 # `Q<group><n>-<slug>` or `S-<Family>-<unit>-<slug>`, as the heading writes it.
 PAGE_ID_RE = re.compile(r"Q[A-Za-z]*\d+[\w-]*|S-[\w-]+")
+SEMANTIC_SECTION_PAGE = re.compile(
+    r"^S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-[A-Za-z][A-Za-z0-9-]*\.md$"
+)
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
 # The generated Board site can link to live server routes. They do not resolve
 # as files beside an HTML page, so checker must recognize them rather than
@@ -372,9 +375,9 @@ def check_board(d, rep):
     seen = {}
     for name in sorted(pages):
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
-        if not m:
+        if not m and not SEMANTIC_SECTION_PAGE.fullmatch(name):
             continue
-        fid = m.group(1)
+        fid = Path(name).stem if SEMANTIC_SECTION_PAGE.fullmatch(name) else m.group(1)
         if fid in seen:
             rep.add(ERROR, "duplicate-id", name, f"id {fid} is already used by {seen[fid]}")
         seen[fid] = name
@@ -431,7 +434,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # or the legacy shorthand S<d>. A bare startswith("S") also claimed
     # application families like SD00-seed and SA01-<slug> (260821), which are
     # not stages; SM/SA shorthands left parse.py the same day.
-    if re.match(r"S(?:-|\d)", name):
+    if re.match(r"S(?:-|\d)", name) and not SEMANTIC_SECTION_PAGE.fullmatch(name):
         for canon in ("Stage Contract", "Content"):
             if not has_section(text, canon):
                 shown = " / ".join(alias_names(canon))
@@ -461,7 +464,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # live references today, which is why these are WARN: see the retired-id
     # convention item on QA9.
     for lineno, ln in strip_fences(text, prose_only=True):
-        for tok in re.findall(r"`([QS][A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
+        for tok in re.findall(r"`(S-[A-Za-z0-9-]+|Q[A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
             if tok in links or tok in page_ids:
                 continue
             rep.add(WARN, "unresolved-id", f"{name}:{lineno}",
@@ -565,6 +568,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_evidence_file(path, name, rep)
     check_discussion_file(path, name, rep)
     check_requirement_file(text, path, name, rep)
+    check_section_writing_requirements(text, path, name, rep)
     check_retired_blocks(text, name, rep)
 
     progress = aim_progress(aims_text, states_text)
@@ -852,9 +856,9 @@ def check_content_attribution(text, name, rep):
     transcription another pen owns; the CHECK judge reads those by eye.
     New authority names join the name pattern here when the board gains them.
     """
-    body = re.search(r"(?ms)^## (?:Content|Diagram)\b.*?(?=^## (?!Content|Diagram)|\Z)",
+    body = re.search(r"(?ms)^## (?:Content|Outline|Diagram)\b.*?(?=^## (?!Content|Outline|Diagram)|\Z)",
                      text)
-    spans = re.findall(r"(?ms)^## (?:Content|Diagram)\b[^\n]*\n(.*?)(?=^## |\Z)",
+    spans = re.findall(r"(?ms)^## (?:Content|Outline|Diagram)\b[^\n]*\n(.*?)(?=^## |\Z)",
                        text)
     if not spans:
         return
@@ -1245,9 +1249,10 @@ def _one_generated_block(tag, block, latest, name, rep):
 
 
 def check_evidence_file(path, name, rep):
-    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.21.0):
-    the item table (`<stem>-items.md`, authored at SURVEY) joined to the disk,
-    one record per marked bullet, its Status one word of the item ladder,
+    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.22.0):
+    the typed table (`<stem>-evidence-items.md`, specified at SHAPE and planned
+    at SURVEY) joined to local Results, one record per Evidence Item, its Status
+    one word of the item ladder,
     written only by `cli/evidence-status.py`. Two things can go wrong with a derived
     file and both are silent: it is older than the evidence it describes, or
     someone typed into it. A stale status that reads as measured is worse than
@@ -1306,12 +1311,10 @@ def check_discussion_file(path, name, rep):
 
 
 def check_requirement_file(text, path, name, rep):
-    """`outline/<stem>-requirement.md` is DERIVED by `cli/requirement.py` from
-    the VENUE division the page binds, and nothing else (JL 260831: "focus on
-    the venue is sufficient"; the first generator also copied the Narrative
-    row and the board rules in, and the tab was unreadable). A Section page
-    that binds a division and has no file shows no 📏 chip (JL 260831: "I
-    didn't see the requirement"); a file without its GENERATED line was typed."""
+    """`outline/<stem>-requirement.md` holds a generated venue V block and an
+    authored page-writing W block. `cli/requirement.py` refreshes only V. A
+    Section that binds a venue division and has no file shows no 📏 chip; a V
+    block without its GENERATED line has lost its ownership boundary."""
     if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
         return
     if not re.search(r"(?m)^structure-source:\s*\S", text[:3000]):
@@ -1324,7 +1327,7 @@ def check_requirement_file(text, path, name, rep):
         return
     if "GENERATED; do not hand-edit" not in f.read_text(encoding="utf-8", errors="replace"):
         rep.add(WARN, "requirement-hand-edited", name,
-                f"`outline/{f.name}` carries no GENERATED line; a requirement nobody generated is one somebody typed")
+                f"`outline/{f.name}` carries no GENERATED line for its venue V block; regenerate it without replacing authored W records")
         return
     # STALE: the venue desk (its one source) is newer than the stamp; a
     # requirement that outlives a moved desk reads as binding.
@@ -1345,6 +1348,50 @@ def check_requirement_file(text, path, name, rep):
                     f"`outline/{f.name}` was measured {stamp.group(1)} {stamp.group(2) or ''} but `{s.name}` changed "
                     f"later; regenerate with `cli/requirement.py {path.name}`")
             return
+
+
+def check_section_writing_requirements(text, path, name, rep):
+    """A Section's page-owned writing rules are authored W records in the
+    mixed-ownership Requirement file. The generated V block and authored W
+    block share one reader question but never one writer."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if re.search(r"(?m)^#{2,3}\s+Writing Style\b", text):
+        rep.add(WARN, "section-writing-in-page", name,
+                "a manuscript Section stores writing rules in "
+                f"`outline/{path.stem}-requirement.md` as W<n> records; remove the Page's "
+                "`Writing Style` block after migrating each instruction to a W<n> record")
+    retired = path.parent / "outline" / f"{path.stem}-writing.md"
+    if retired.exists():
+        rep.add(WARN, "writing-file-retired", name,
+                f"`outline/{retired.name}` is a redundant sidecar; move its W<n> "
+                f"records into `outline/{path.stem}-requirement.md`")
+    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    if not f.exists():
+        # check_requirement_file already reports the missing shared file.
+        return
+    ftxt = f.read_text(encoding="utf-8", errors="replace")
+    records = list(re.finditer(r"(?ms)^###\s+(W\d+)\s*·\s*([^\n]+)\n(.*?)(?=^###\s+|\Z)", ftxt))
+    if not records:
+        rep.add(WARN, "writing-shape", name,
+                f"`outline/{f.name}` has no authored `### W<n> · <preview>` records")
+        return
+    writing_begin = ftxt.find("# --- writing:begin (authored) ---")
+    writing_end = ftxt.find("# --- writing:end ---")
+    if writing_begin < 0 or writing_end <= writing_begin:
+        rep.add(WARN, "writing-shape", name,
+                f"`outline/{f.name}` must bound W<n> records with authored writing markers")
+    elif any(not (writing_begin < record.start() < writing_end) for record in records):
+        rep.add(WARN, "writing-shape", name,
+                f"every W<n> record in `outline/{f.name}` must remain inside the authored writing block")
+    for record in records:
+        body = record.group(3)
+        missing = [label for label in ("Rule", "Applies", "Source")
+                   if not re.search(rf"(?m)^- \*\*{label}\*\*:\s*\S", body)]
+        if missing:
+            rep.add(WARN, "writing-shape", name,
+                    f"`{record.group(1)}` in `outline/{f.name}` lacks "
+                    + ", ".join(missing))
 
 
 def check_retired_blocks(text, name, rep):
@@ -1535,7 +1582,7 @@ def check_one_canvas(text, name, rep):
     lines silently produce two canvases and no reader can tell which is the
     current drawing.
     """
-    dia = section_text(text, "Diagram") or ""
+    dia = section_text(text, "Outline") or section_text(text, "Diagram") or ""
     urls, fence = [], False
     for ln in dia.split("\n"):
         if ln.lstrip().startswith("```"):
@@ -1547,7 +1594,7 @@ def check_one_canvas(text, name, rep):
         if re.match(r"^(?:/_excalidraw/|https?://(?:app\.)?excalidraw\.com/)\S*$", s2):
             urls.append(s2)
     if len(urls) > 1:
-        rep.add(WARN, "two-canvases", f"{name} · Diagram",
+        rep.add(WARN, "two-canvases", f"{name} · Outline",
                 f"{len(urls)} canvas URLs; a page attaches one (QB4 §2.7). "
                 f"Keep either the board scene or the hosted link, not both")
 
@@ -2486,6 +2533,8 @@ def main():
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if m:
             page_ids.add(m.group(1))
+        elif SEMANTIC_SECTION_PAGE.fullmatch(name):
+            page_ids.add(Path(name).stem)
     for name, p in sorted(pages.items()):
         check_face(p, name, rep, links, page_ids, decision_only)
     check_topic_entries(d, pages, rep)

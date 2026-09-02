@@ -1,28 +1,12 @@
-/* 🔌 Registry of what a page can OPEN · two menus, one list.
+/* 🔌 Registry of what a page can OPEN · one menu, one list.
  *
  * WHY A REGISTRY. The picker used to be two hardcoded buttons, so the board engine
  * had to know every surface by name. A plugin now registers its own entry, and the
  * engine never learns that labeling exists (JL 260807).
  *
- * TWO MENUS, AND THE SPLIT IS NOT COSMETIC (JL 260808).
- *
- *   🔌 Plugin    a SURFACE you open. Opens to the RIGHT, tab-like. It has no
- *                opinion about where you are on the page, so it applies almost
- *                everywhere. GUI Chat, TUI Chat, and later Draw and Slide.
- *   🪜 Workflow  a STEPPER over THIS page. Opens along the BOTTOM. Its whole job
- *                is to say which step is live and which are refused, so it is
- *                gated on the page's declared type. Labeling, and later Page.
- *
- * This reverses the 260807 ruling that there is no Workflow entry, and the reason
- * the earlier one was right is the reason this one is: a category with one member
- * names a concept nobody owns. Page's four phases arrive as the second member, so
- * the category now describes something real instead of anticipating it.
- *
- * A WORKFLOW IS NOT ALWAYS A LADDER. Labeling's five doors are ordered and each is
- * locked by the one before. Page's DRAFT/EVIDENCE/REVISE/CHECK is a loop whose CHECK
- * routes BACKWARD ("RUN is deliberately not ADVANCE"), so it has a current phase and
- * legal next phases and no locks at all. Each surface computes its own dimming; the
- * registry holds no step model, which is what lets both live in one menu.
+ * ONE MENU. The picker sells category surfaces, not the internal lanes they
+ * present. Chat + Draw live in Studio; Slides lives in Delivery. Page phases is
+ * lifecycle machinery, not a reader-facing Plugin row.
  *
  * `applies` KEEPS THE MENU HONEST. An entry that cannot act on the open page is not
  * shown, so the menu never offers work that would be refused. It follows that an
@@ -33,22 +17,33 @@
   'use strict';
 
   var reg = [];
+  var seq = 0;
   var defaultId = '';
 
-  var MENUS = ['plugin', 'workflow'];
+  var MENUS = ['plugin'];
 
-  /* {id, label, hint, menu, applies(page)->bool, open(page)} · order is registration
-     order, which is asset sort order, which is stable across builds.
+  /* {id, label, hint, menu, order, applies(page)->bool, open(page)}.
 
-     `menu` defaults to 'plugin' so an entry written before the split still lands
-     somewhere visible rather than silently in neither menu. An unknown menu name is
-     corrected to 'plugin' for the same reason: a typo should misfile an entry, not
-     delete it. */
+     `order` is the reader-facing sequence and must not depend on asset load order.
+     Equal or omitted values retain registration order, so third-party entries remain
+     stable without the registry knowing their names.
+
+     `menu` defaults to 'plugin'. An unknown menu name is corrected to 'plugin',
+     so a typo cannot hide an otherwise usable surface. */
   function register(spec) {
     if (!spec || !spec.id || typeof spec.open !== 'function') return;
     if (MENUS.indexOf(spec.menu) < 0) spec.menu = 'plugin';
     reg = reg.filter(function (e) { return e.id !== spec.id; });
+    spec._pluginSeq = seq++;
     reg.push(spec);
+  }
+
+  function ordered(entries) {
+    return entries.slice().sort(function (a, b) {
+      var ao = Number.isFinite(a.order) ? a.order : 1000;
+      var bo = Number.isFinite(b.order) ? b.order : 1000;
+      return ao - bo || a._pluginSeq - b._pluginSeq;
+    });
   }
 
   function livePage() {
@@ -70,11 +65,11 @@
   /* `menu` is optional: omitted, this answers "everything this page can open", which
      is what the in-page picker wants when it draws both groups in one list. */
   function applicable(page, menu) {
-    return reg.filter(function (e) {
+    return ordered(reg.filter(function (e) {
       if (menu && e.menu !== menu) return false;
       try { return !e.applies || e.applies(page, pageType(page)); }
       catch (err) { return false; }
-    });
+    }));
   }
 
   /* THE DEFAULT, and why it is a second call rather than a `register` field:
@@ -96,7 +91,7 @@
 
   window.boardPlugins = {
     register: register,
-    all: function () { return reg.slice(); },
+    all: function () { return ordered(reg); },
     applicable: applicable,
     menus: function () { return MENUS.slice(); },
     livePage: livePage,

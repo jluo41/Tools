@@ -56,6 +56,7 @@
       label: '🏷 Labeling',
       hint: 'canonical frontier and gates above · Studio Chat below',
       menu: 'plugin',
+      order: 70,
       applies: isSurfacePage,
       open: function (page) {
         var u = url(page);

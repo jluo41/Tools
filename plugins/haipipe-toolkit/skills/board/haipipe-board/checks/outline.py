@@ -231,7 +231,7 @@ def main():
             encoding="utf-8",
         )
         bundle_html = plan_card(page)
-        for wanted in ("Evidence Bundles", "C1.P1.B1", "C1.P1.S1", "needs-probe",
+        for wanted in ("Evidence Bundles", "C1.P1.B1", "C1.P1.S1", "incomplete",
                        "feedback PP01: read", "feedback Display2: accepted"):
             if wanted not in bundle_html:
                 fails.append(f"derived bundle omitted {wanted!r}")

@@ -1,3 +1,41 @@
+## 0.160.4 · 2026-09-02
+
+- Tighten the Page Outline to five columns by removing the redundant Status
+  column and shrinking Evidence buttons to label-width chips. Derived state
+  remains available through chip colour and the item popover.
+
+## 0.160.3 · 2026-09-02
+
+- Retire the Page-authored Narrative map. `🧭 Outline` now renders only the
+  current versioned plan's `▤ Outline table`; the sidebar and Section Matrix
+  likewise describe only that plan projection.
+
+## 0.160.2 · 2026-09-02
+
+- Open `🧭 Outline` by default immediately after the always-visible Opening.
+  The plan-derived `▤ Outline table` is now the first block; the optional
+  Narrative map is second and starts collapsed. Content, Aims, References, and
+  other Page folds remain collapsed by default.
+
+## 0.160.1 · 2026-09-01
+
+- Make `▤ Outline table` on the Page a real five-column review grid. C/P rows
+  retain narrative hierarchy; B rows join the source plan to typed evidence,
+  the surveyed source/run path, and live status. The Outline plugin's richer
+  plan card and all `outline/` records remain unchanged.
+
+## 0.160.0 · 2026-09-01
+
+- Replace the Page-level `Diagram` section with `Outline`. `🧭 Outline` now
+  presents an optional Page-authored ASCII narrative map and a read-only
+  `▤ Outline table` from the current versioned plan. Existing `## Diagram`
+  sources remain readable as a compatibility alias; `outline/` and its plugin
+  remain the canonical process authority.
+
+## 0.159.1 · 2026-09-01
+
+- Accept full semantic Section IDs in parsing, feedback projection, and board checks: `S-<desk>-Main-<section-name>` and `S-<desk>-Appendix-<section-name>`. The legacy two-letter ordinal form remains readable for archived boards.
+
 ## 0.159.0 · 2026-09-01
 
 - The item table (JL 260901, "evidence is linked to the runs!!!"):

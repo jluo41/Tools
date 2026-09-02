@@ -1,0 +1,6 @@
+interface:
+  display_name: "Workflow Table"
+  short_description: "Map phases, skills, and runs in one workflow"
+  default_prompt: "Use $workflow-table to design or audit a workflow, including skill coverage, Run profiles, and human gates."
+policy:
+  allow_implicit_invocation: true

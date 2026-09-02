@@ -260,24 +260,11 @@
       .catch(function () { showNone(d, page); });
   }
 
-  if (window.boardPlugins) {
-    window.boardPlugins.register({
-      id: 'slides',
-      label: '\u{1F39E} Slides',
-      hint: 'this page’s authored deck, in the right pane',
-      // 🔌 A PLUGIN, not a workflow: it stores nothing on the page and locks no step.
-      menu: 'plugin',
-      // Applies everywhere: every page CAN have a deck, and the panel explains
-      // how to get one when none exists yet.
-      applies: function () { return true; },
-      open: open
-    });
-  }
-
+  /* Slides is an internal Delivery lane. Keep its URL/opener exports for the
+     Delivery presenter; do not register a second top-level Plugin row. */
   window.boardSlidesOpen = open;   // for direct calls and for the tests
-  /* The SHELL's hook (JL 260815: Slides is a TAB beside Chat and Draw). The
-     shell asks WHERE this page's saved deck would be; whether one exists is a
-     HEAD request away, and writing one is an AGENT's job, not a browser's. */
+  /* Delivery asks where this page's saved deck would be; whether one exists is
+     a HEAD request away, and writing one is an agent's job, not a browser's. */
   window.boardSlidesURL = function (page) {
     page = page || (window.boardPlugins && window.boardPlugins.livePage());
     return page ? savedUrl(page) : '';

@@ -1,4 +1,4 @@
-"""📂 Folder · the page-folder's own status, the tab rail's FIRST surface.
+"""📂 Folder · the page-folder's own live status surface.
 
 WHAT THIS ANSWERS (JL 260815: "a first item in the plugin to show the content
 of the page-folder status"): the tab rail shows the surfaces someone built;

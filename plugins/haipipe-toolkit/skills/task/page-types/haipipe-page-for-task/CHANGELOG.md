@@ -1,3 +1,11 @@
+## 0.11.0 · 2026-09-01
+
+- Restrict this empirical technical-report variant to `folder-kind: task`.
+  Discovery remains task-like on its Task Face, but its workflow now owns its
+  Page Face and article grammar under the phase-owned Folder contract.
+- A Discovery root Page writes `folder-kind: discovery` and does not select the
+  legacy `page-type: task` compatibility grammar.
+
 ## 0.10.2 · 2026-08-31
 
 - Remove the last authoritative Task template `## Files` and `## Log`

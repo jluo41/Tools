@@ -1,27 +1,32 @@
 #!/usr/bin/env python3
-"""Write `outline/<stem>-requirement.md`: what this page must OBEY, resolved
-from the VENUE division the page names, four short records a writer can hold
-in one look (haipipe-plugin-outline §📏).
+"""Write `outline/<stem>-requirement.md`: everything this page must OBEY.
+
+The generated block resolves venue records from the division the Page names;
+the authored block keeps page-owned writing records. The generator replaces
+only V records and preserves the authored W records verbatim.
 
     python3 cli/requirement.py <page.md>            one page
     python3 cli/requirement.py --all <board-dir>    every section page
 
 The law shipped in 0.17.1 and the generator did not, so the 🧭 tab never
 showed a 📏 chip (JL 260831: "among them I didn't see the requirement").
-The first generator also copied the narrative row and the board's writing
-rules in; JL 260831: "requirement is very hard to read, make it concise and
-readable, and maybe focus on the venue is sufficient". So: venue only.
+The first generator copied the Narrative row and broad board rules into the
+venue block; JL 260831 asked that block to stay concise and venue-focused.
+Page-specific writing rules are requirements too, but have a different owner:
+they live as authored W records after the generated block.
 
-  V1  Shape    the division's lead sentence, plus the ARC chain if the desk draws one
-  V2  Size     the format values: words, citations, displays (one line each)
-  V3  Refused  each named anti-pattern, one line each, the pack's own words
-  V4  Moves    the slot names as a chain; the exemplar sentences fold underneath
+  V1  Shape    always: the division's lead sentence, plus ARC when supplied
+  V2  Size     when supplied: words, citations, displays
+  V3  Refused  when supplied: named anti-patterns in the pack's own words
+  V4  Moves    when supplied: slot names; exemplar sentences fold underneath
 
-The page's own reader question is on the 🧭 tab already; the narrative row
-lives on the Narrative page; the board rules live in `ref/writing-rules.md`.
+  Wn  Writing  one page-owned instruction: Rule · Applies · Source
 
-Never authored, never versioned: regenerate, do not edit. `check.py` reports
-`requirement-missing`, `requirement-hand-edited` and `requirement-stale`.
+The Page's own reader question is on the 🧭 tab already; the Narrative row
+lives on the Narrative page; broad board rules live in `ref/writing-rules.md`.
+
+The V block is regenerated and never edited. The W block is authored and
+never overwritten. `check.py` reports missing, malformed, or stale blocks.
 """
 import argparse, datetime, re, sys
 from pathlib import Path
@@ -29,6 +34,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent          # haipipe-board/
 SKILLS = HERE.parent.parent                             # skills/
 BEGIN, END = "# --- requirement:begin (generated) ---", "# --- requirement:end ---"
+WBEGIN, WEND = "# --- writing:begin (authored) ---", "# --- writing:end ---"
 
 
 def _fm(text, key):
@@ -207,17 +213,41 @@ def venue_records(page_text, board):
     return recs
 
 
-def build(page_md: Path, board: Path) -> str:
+def _writing_records(existing, legacy=""):
+    """Return authored W records from the mixed file or the retired sidecar.
+
+    The sidecar read is migration compatibility only. Once imported, future
+    runs preserve the block in requirement.md and need no second file.
+    """
+    marked = re.search(
+        rf"(?ms)^{re.escape(WBEGIN)}\s*\n(.*?)^\s*{re.escape(WEND)}\s*$",
+        existing,
+    )
+    if marked:
+        return marked.group(1).strip()
+    for source in (existing.split(END, 1)[-1] if END in existing else "", legacy):
+        first = re.search(r"(?m)^###\s+W\d+\s*·", source)
+        if first:
+            return source[first.start():].strip()
+    return ""
+
+
+def build(page_md: Path, board: Path, existing="", legacy="") -> str:
     text = page_md.read_text(encoding="utf-8", errors="replace")
     recs = venue_records(text, board)
     if not recs:
         return ""
     now = datetime.datetime.now().strftime("%y%m%d %H%M")
+    writing = _writing_records(existing, legacy)
     head = [f"# {page_md.stem} · requirement", f"page: {page_md.stem}",
-            f"kind: requirement · generated {now} by cli/requirement.py · venue only · never hand-edited", "",
+            f"kind: requirement · generated venue + authored page writing · refreshed {now} by cli/requirement.py", "",
             BEGIN, f"  REQUIREMENT, MEASURED {now}. GENERATED; do not hand-edit.",
             f"  regenerate: cli/requirement.py {page_md.name}", ""]
-    return "\n".join(head + ["\n\n".join(recs)] + ["", END, ""])
+    return "\n".join(
+        head + ["\n\n".join(recs)] + ["", END, "", WBEGIN,
+        writing or "<!-- add one `### W<n> · <preview>` record per page-owned writing rule -->",
+        WEND, ""]
+    )
 
 
 def main():
@@ -234,7 +264,13 @@ def main():
     n = 0
     for pg in sorted(pages):
         out = pg.parent / "outline" / f"{pg.stem}-requirement.md"
-        made = build(pg, board)
+        legacy = pg.parent / "outline" / f"{pg.stem}-writing.md"
+        made = build(
+            pg,
+            board,
+            out.read_text(encoding="utf-8", errors="replace") if out.exists() else "",
+            legacy.read_text(encoding="utf-8", errors="replace") if legacy.exists() else "",
+        )
         if not made:
             print(f"skip  {pg.name}: no `structure-source:` on the page, nothing to resolve"); continue
         out.parent.mkdir(exist_ok=True)

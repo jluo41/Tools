@@ -19,8 +19,9 @@ from .parse import parse_dir
 # could serve only four of the seven: `--phase OUTLINE` errored outright, and
 # `--phase PROBE` silently returned EVIDENCE's scope (fixed 260821).
 #
-# PROBE retired on 260901 (the item table took its MATCH half, LAND its
-# dispatch half), so it is an ALIAS of EVIDENCE again, on purpose this time:
+# PROBE retired on 260901. Typed Evidence Items now plan Supporting Runs at
+# SURVEY and execute their support/local graph at LAND. PROBE remains an alias
+# of EVIDENCE for historical rows, on purpose:
 # a `· PROBE ·` row in template, snapshot or archive text selects EVIDENCE's
 # scope instead of silently matching nothing.
 PHASE_ALIASES = {"PROBE": "EVIDENCE"}

@@ -103,7 +103,8 @@ body.pane-chat.termon #chat .hd .term{display:inline-flex !important;align-items
    in the file (A2.2 is what deletes the bytes; this only stops drawing them). */
 body.pane-page{padding:0 !important}
 body.pane-page .sidebar,body.pane-page .sbtoggle,body.pane-page .sbrz,
-body.pane-page #chat,body.pane-page #chatfab{display:none !important}
+body.pane-page #chat,body.pane-page #chatfab,body.pane-page #chatfabmore,
+body.pane-page #chatpick{display:none !important}
 """,
 }
 
@@ -1418,6 +1419,9 @@ def _shell_doc(page_url, index_url):
       .then(function (r) { r.ok ? land(u) : build(); })
       .catch(build);
   }
+  /* The page frame's compact picker delegates category opening to the shell.
+     This is the only cross-frame door it needs; lane ids remain internal. */
+  window.__boardShowTab = showTab;
 
   /* ✕ ON THE ACTIVE TAB closes THAT TAB: out of the set, focus to its left
      neighbour, and closing the last one closes the pane. Always visible and
@@ -1458,9 +1462,6 @@ def _shell_doc(page_url, index_url):
     if (!pmenu.hidden) return closePlus();
     if (openSet === null) loadSet();
     var rows = [];
-    ['chat', 'draw', 'slides'].forEach(function (id) {
-      if (openSet.indexOf(id) < 0 && offerable(id)) rows.push({ id: id });
-    });
     xdefs().forEach(function (e) {
       if (openSet.indexOf(e.id) < 0) rows.push({ id: e.id, def: e });
     });
@@ -1514,6 +1515,12 @@ def _shell_doc(page_url, index_url):
     setTimeout(reaimTabs, 300);
   });
   reaimOK = true;
+  var requestedPlugin = '';
+  try { requestedPlugin = new URLSearchParams(location.search).get('plugin') || ''; }
+  catch (e) {}
+  if (requestedPlugin && offerable(requestedPlugin)) {
+    setTimeout(function () { showTab(requestedPlugin); }, 350);
+  }
   setTimeout(paintTabs, 900);
   var _paint = paint;
   paint = function () { _paint(); paintTabs(); };

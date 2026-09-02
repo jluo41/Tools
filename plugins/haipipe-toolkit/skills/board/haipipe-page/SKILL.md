@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.53.0"
-  last_updated: "2026-09-01"
+  version: "0.56.1"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,7 +41,7 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 
 ```text
 <page>/
-├── <page>.md      Opening · Diagram · Content · Aims           THIS contract
+├── <page>.md      Opening · Outline · Content · Aims           THIS contract
 ├── outline/       HUMAN process: the plan (versioned, ticked) and six record
 │                  files: requirement · discussion · feedback · evidence ·
 │                  files · log — parsed MEETINGS land here (JL 260831)
@@ -126,8 +126,9 @@ step  machine-readable key                    Page Face owner    contract
 ⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
 ```
 
-A discovery folder gets no type of its own: `task` carries which kind of
-folder it reads.
+A Discovery Folder resolves `folder-kind: discovery` to its Discovery workflow
+phase. Its Task Face does not select the empirical `page-type: task`
+compatibility grammar.
 
 ### The inventory is derived, never written by hand
 
@@ -203,16 +204,17 @@ cycles, independent of the domain workflow phase that owns the Folder kind:
 part      cycle     phase (the skill that acts)                  gate
 ──────────────────────────────────────────────────────────────────────────────────
 OUTLINE   SHAPE     page-workflows/haipipe-page-outline           👤 approved:
-          SURVEY    page-workflows/haipipe-page-outline           👤 Decide per item row
-          LAND      page-workflows/haipipe-page-evidence          ⚙ every make-row landed
+          SURVEY    page-workflows/haipipe-page-outline           👤 Decide per Evidence Item
+          LAND      page-workflows/haipipe-page-evidence          ⚙ every make-item ready
           EMBED     page-workflows/haipipe-page-evidence          ⚙ back to SHAPE
 DRAFT     WRITE     page-workflows/haipipe-page-draft + -revise   ⚙ cold pre-check ready
           CHECK     page-workflows/haipipe-page-check             👤 accepted:
 ```
 
-The law under the OUTLINE part: every evidence number is answered by a RUN at
-a real `tasks/` address; the run computes, the page interprets (EMBED). The
-item table `outline/<stem>-items.md` is the one ledger
+The law under the OUTLINE part: SHAPE specifies typed Evidence Items; SURVEY
+plans zero-to-many Execution/Discovery Supporting Runs plus exactly one local
+Page Evidence Item Run; LAND produces one ready local Result; EMBED interprets
+it. The ledger is `outline/<stem>-evidence-items.md`
 (`haipipe-plugin-outline/ref/item-table.md`).
 
 Resolve one invocation as: Folder → base Page Face → phase-owned Folder kind
@@ -225,9 +227,9 @@ is ambiguous, the authority test decides:
 
 ```text
 the section list itself is being agreed        → SHAPE
-a mark has no item row, or a row no Decide     → SURVEY
-a decided row has no result on disk            → LAND
-a landed row is not yet in the plan            → EMBED
+an item has no valid Run graph or Decide        → SURVEY
+a decided item has no ready local Result        → LAND
+a ready item is not yet in the plan             → EMBED
 purpose or Aims change                         → WRITE, new round (DRAFT)
 the same purpose and Aims are improved         → WRITE (REVISE)
 a concrete version is judged                   → CHECK
@@ -244,7 +246,7 @@ trace (the artifact, one log record, the receipt).
 ## 📑 Four sections on stage, and nothing else
 
 The authority is `haipipe-board/ref/board-form.md` §4: the on-stage order is
-`Opening → Diagram → Content → Aims`, the optional folds (`Law` · `Lesson` ·
+`Opening → Outline → Content → Aims`, the optional folds (`Law` · `Lesson` ·
 `Glossary`) follow, and everything else a page used to carry lives in
 `outline/` (log, discussion, files) or was merged (States into Aims).
 `check.py` reports a surviving `## States`, `## Files`, `## Log`,
@@ -253,9 +255,8 @@ The authority is `haipipe-board/ref/board-form.md` §4: the on-stage order is
 ```text
 #   section    conveys · the reader question                 phase authority              omit
 ────────────────────────────────────────────────────────────────────────────────────────────────
-1   Opening    what is this page, why should I care?         DRAFT defines · REVISE clarifies   never
-    ### Writing Style  how the NEXT writer should write it   inside Opening's drawer            allowed
-2   Diagram    can I see the whole subject at once?          DRAFT/REVISE, within type rules    when no figure helps
+1   🚪 Opening what is this page, why should I care?         DRAFT defines · REVISE clarifies   never
+2   Outline    how is this page structured and supported?    generated authoritative projection       when no plan exists
 3   Content    what does this page actually establish?       DRAFT defines · REVISE realizes    Q may · S never
 4   Aims       what should become true, for which Content    DRAFT sets target and test;        never
                division, and what is true now for each?      any phase updates Now:
@@ -263,11 +264,43 @@ The authority is `haipipe-board/ref/board-form.md` §4: the on-stage order is
 
 Each section answers one reader question, and a sentence answering another
 section's question is misplaced: substance in Opening moves to Content,
-inherited inputs and venue move to the Stage Contract, prose rules to
-Opening's `### Writing Style`, intended outcomes to an Aim's target, current
+inherited inputs and venue move to the Stage Contract, page-owned prose rules
+to authored W records in `outline/<stem>-requirement.md`, intended outcomes to an Aim's target, current
 facts to that Aim's `Now:`, and a question for a person to a `D<nn>` record.
 There is no `## Boundary` section: what a page covers is the Opening's job,
 stated as a `**Covered elsewhere**:` part in its drawer.
+
+`## Outline` is the only on-page projection of the planning process. It opens
+by default immediately after the always-visible Opening. Normally it renders
+the current plan's `▤ Outline table`: `Address · Planned move · Evidence ·
+Supporting Run · Local Run`; C/P rows are narrative group headers and B rows
+are the checkable claim/evidence rows. Evidence chip colour and its popover
+carry the derived item state, so no separate Status column is shown. A Page
+Type may define one generated
+executive projection from its own authoritative Content records. When it does,
+that projection appears first and the generic plan table remains available in
+a closed evidence drawer. The Narrative type uses this exception for its
+Section-control table. No projection is copied into a Page-authored `##
+Outline`, and a Page-authored narrative map does not exist. Content, Aims,
+References, and every other optional fold start shut. The `outline/` folder
+remains the authority for every plan, writing rule, evidence, feedback,
+requirement, discussion, file, and log record.
+
+The visible labels are `🚪 Opening` and `🧭 Outline`; they must not reuse one
+icon because they answer different reader questions. Opening is reader prose,
+not an internal ledger: a bare claim, Evidence, or Run address is forbidden
+there. Name the subject in plain English first and keep any address only as a
+secondary compact handle, such as `primary total-MME association
+(Claim1.TotalMME)`.
+
+A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
+renders exactly one paragraph and has no reader drawer. Its page-owned prose
+rules live as authored `W<n>` records in `outline/<stem>-requirement.md`, after
+its generated venue `V<n>` records. The Outline plugin exposes both through
+one `📏 Requirement` lens to DRAFT, REVISE, and CHECK. The Section
+product source carries no `### Writing Style`; post-paragraph notes and Stage
+Contract remain source-side and do not appear on the manuscript review
+surface. Other Page Types retain the ordinary Opening drawer when they need it.
 
 ## 🎯 One Aim is one row: target, test, and Now
 
@@ -394,7 +427,7 @@ requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
 → the phase-owned Page Face (or legacy Page-Type variant) → the current Page
 Phase contract → the page's own
-`### Writing Style` (and `## Stage Contract` on S) → the local division
+authored W records in `outline/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and
 that criterion is not judged until the owner resolves it. The rubric (four

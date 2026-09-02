@@ -83,7 +83,7 @@ tasks/                                           <page>/
 ## 🚪 How work arrives · the same doors, never a new one
 
 ```text
-LAND         raises the outbound cards the item table decided on and hands the batch out through
+LAND         executes the Evidence Item Supporting/Local Run graphs and hands any legacy outbound batch through
              haipipe-probe-q-executor-agent — the ONE door (JL 260820)
 executor     for each task-route question: /haipipe-task qa "<question>" <this job>
              gate ① existing QA answer → path · ② results/ hold it → digest ·
@@ -181,4 +181,5 @@ haipipe-task-for-page/
 The base is `haipipe-task` (hierarchy, phases, `fn/qa.md` for the QA-file
 anatomy this job writes). The page-side contracts it serves but never loads:
 `haipipe-plugin-probe` (the card and the wall), `haipipe-page-evidence`
-(the binding), and `haipipe-plugin-pagex` (the whole-Folder relationship).
+(the binding), and `haipipe-plugin-evidence/ref/pagex.md` (the exact accepted
+cross-Folder source relationship).

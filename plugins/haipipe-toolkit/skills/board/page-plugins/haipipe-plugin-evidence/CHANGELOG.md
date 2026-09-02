@@ -1,5 +1,22 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.5.0 — 2026-09-02
+
+- Absorb the former Value, Display, and PageX plugin contracts into the one
+  Evidence plugin, alongside Citation/Bib. Their detailed lane laws now live
+  under `ref/`; no standalone plugin skill remains.
+- Define PageX as the optional exact source binding chosen in SURVEY and
+  validated/frozen in LAND. It can feed VALUE, CITE, or DISPLAY local Results
+  but is never itself a Result type. Probe remains separately governed.
+
+## 0.4.0 — 2026-09-02
+
+- Absorb the former Bibex plugin contract into the one Evidence plugin.
+- Own ordinary Page Bibs, Discovery Result-Bib aggregation, citation
+  verification, and the no-composition law in `ref/citations.md`.
+- Keep `evidence/bibex/` as the compatible internal storage address without
+  exposing a second plugin or skill.
+
 ## 0.3.2 — 2026-08-31
 - Route `evidence/pagex/` to `haipipe-plugin-pagex`; Probe owns only its own
   `evidence/probe/` evidence-acquisition lane.

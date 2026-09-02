@@ -111,7 +111,7 @@ Validate the handoff; preregister candidate executors, model-family roles,
 wrappers, baselines, metrics, repeats, quality floors, and selection rule;
 authorize test-text release; collect and LOCK blind human `T*` before any
 candidate prediction (the GOLD step); then run every candidate with gold
-hidden, close every prediction run before scoring, produce comparable
+hidden, close every candidate prediction attempt before scoring, produce comparable
 scorecards, and qualify a production route only when every required floor
 passes (the SCORE step).
 

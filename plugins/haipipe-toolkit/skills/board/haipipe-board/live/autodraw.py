@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from cli.draw import read_scene  # noqa: E402  (the same validator every writer uses)
 
 TIMEOUT = 300          # claude -p can think for minutes on a dense page
-MAX_MD = 12000         # enough for Opening + Diagram + Content on any page here
+MAX_MD = 12000         # enough for Opening + Outline + Content on any page here
 
 PROMPT = """You are generating the ELEMENTS of an Excalidraw scene for one page \
 of a design board. Output ONLY a JSON object {{"elements": [...]}} — no prose, no \
@@ -43,7 +43,7 @@ THE PAGE (markdown):
 ---
 
 Rules for the drawing:
-- If the page has a `## Diagram` ascii figure and no other ask, draw THAT figure \
+- If the page has a `## Outline` ascii map and no other ask, draw THAT map \
 faithfully: same boxes, same arrows, same labels (emoji included).
 {ascii_line}
 - Layout left-to-right / top-down, total span roughly 900x600 starting near (0,{y0}).
@@ -80,8 +80,8 @@ def _fail(msg):
 
 
 def ascii_figure(md):
-    """The page's `## Diagram` fenced figure, verbatim, or ''."""
-    m = re.search(r"^## Diagram\b.*?^```[a-z]*\n(.*?)^```", md,
+    """The page's `## Outline` (legacy `## Diagram`) ASCII map, or ''."""
+    m = re.search(r"^## (?:Outline|Diagram)\b.*?^```[a-z]*\n(.*?)^```", md,
                   flags=re.S | re.M)
     return m.group(1).rstrip("\n") if m else ""
 
@@ -149,7 +149,7 @@ def autodraw(root, payload):
     md = md_path.read_text(encoding="utf-8")[:MAX_MD] if md_path.is_file() else ""
     pid = f.stem
     ask_line = f"THE ASK: {ask}" if ask else \
-        "THE ASK: draw this page's ## Diagram figure (or, if none, its core idea)."
+        "THE ASK: draw this page's ## Outline map (or, if none, its core idea)."
     fig = ascii_figure(md)
     fig_el, y0 = (None, 0)
     ascii_line = "- (this page carries no ascii figure)"
@@ -202,7 +202,7 @@ def autodraw(root, payload):
                            "markdown": str(md_path.relative_to(root))
                            if md_path.is_file() else ""})
     hp["autodraw"] = {"by": "claude", "at": dt.datetime.now().strftime("%y%m%d %H%M"),
-                      "prompt": ask or "## Diagram"}
+                      "prompt": ask or "## Outline"}
     if fig_el:
         elements = [e for e in elements if e.get("id") != "ascii-figure"]
         elements.insert(0, fig_el)

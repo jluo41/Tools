@@ -7,9 +7,9 @@ description: >-
   Page-local values, citations, probes, and displays. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.6.2"
-  last_updated: "2026-08-31"
-  group-token: "S<D> | SA"
+  version: "0.8.0"
+  last_updated: "2026-09-01"
+  group-token: "S-<desk>-Main | S-<desk>-Appendix"
   outline:
     mode: resolved
     source: "paper/venue/bank/1-QBv-desks/QBv*/QBv*.md"
@@ -53,21 +53,37 @@ Seed boundary
 
 Prose never outranks a changed Narrative row or binding desk rule.
 
+## 🚪 Opening stays with the reader
+
+The rendered Section Opening is exactly one paragraph: the question and the
+minimum orientation needed to enter the manuscript unit. It has no reader
+drawer. Page-owned prose rules live in
+`outline/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
+`Applies`, and `Source`, after the generated venue `V<n>` block. The Outline
+plugin exposes both through one `📏 Requirement` lens for DRAFT, REVISE, and
+CHECK. A Section Page carries no `### Writing Style` block.
+Post-paragraph notes and `## Stage Contract` remain source-side and do not
+render on the manuscript review surface. This keeps writer instructions out
+of the paper reading path without deleting their authority.
+
 ## 🏠 Runtime home (0.4.0)
 
 ```text
 0-paperboard/
-├── Ba-<desk1>-Main/       S<D><NN>-<kind>   the desk's main reading order
-├── Bb-<desk1>-Appendix/   SA<NN>-<slug>     its appendix sections
+├── Ba-<desk1>-Main/       S-<desk>-Main-<kind>       the desk's main reader order
+├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<slug>   its appendix sections
 ├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P6)
 └── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
 
 One B group per desk (journey 0.5.0): the desk's main units, appendix units,
 and rounds share the group, so one folder tells one desk's whole downstream
-story. Tokens carry the desk letter per the door's group grammar: `S<D>` for
-main units, `SA` for appendix sections (Section-Appendix, JL 260831), `<D>` the desk's first distinctive
-letter; split Ba1/Ba2 pair groups are grandfathered.
+story. Section IDs are semantic: `S-<desk>-Main-<kind>` and
+`S-<desk>-Appendix-<slug>`. The ID must tell a reader the object, desk, lane,
+and page job without a numeric crosswalk. The ordered group in `board.md`
+supplies reading order; a new section is never renamed merely because another
+section is inserted. Older `S<D><NN>` and `SA<NN>` IDs stay readable only as
+legacy/archive compatibility.
 
 **Where the words live (0.3.1)**: the tex a unit page tracks sits in its
 telling's desk room, `<N>-<desk><year>/sections/`, and that room is
@@ -101,7 +117,7 @@ structure-source    the bound QBv page FILE, e.g. `paper/venue/bank/1-QBv-desks/
                     QBv1-misq/QBv1-misq.md`, or `ref/generic-template.md`; a
                     path, because `src/plan_shape.py` resolves it on disk
 structure-division  the row inside it: `§8 Sec-4-Results` (EXACT), `§7
-                    Sec-3-Methods · shared with SM05` (SHARED), or the reason
+                    Sec-3-Methods · shared with another named Section` (SHARED), or the reason
                     the fallback was taken (ABSENT BY DESIGN · MISSING)
 evidence-allowlist  card, citation, value, and display ids
 transition-in/out   required joins to neighboring Sections
@@ -223,7 +239,7 @@ paragraphs group by move (`### C2.P1 · Problem and question · S1 to S3`); a
 finding carries its claim id plus a word (`S6 · C1: +9.34 MME per visit,
 comparison owed`); one `Cut:` bullet names what leaves the section and where it
 goes; a Note is one line and never the drafted sentence, which lives on the
-page. The approved specimen is `SM00-abstract-outline-v3.md` on the MISQ board,
+page. The approved specimen is `S-MISQ-Main-Abstract-outline-v3.md` on the MISQ board,
 quoted in `haipipe-plugin-outline` §✂️.
 
 ## 🃏 Landing evidence in prose

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Discovery Paper Runs and build the derived Topic Evidence Bib."""
+"""Validate a Discovery Page Folder and build its derived Evidence Bib."""
 
 from __future__ import annotations
 
@@ -14,6 +14,11 @@ from typing import Iterable
 
 
 RUN_RE = re.compile(r"^r[0-9]{2}_[a-z0-9]+[0-9]{4}_[a-z0-9_]+$")
+SEGMENT_RE = {
+    "block": re.compile(r"^(b[0-9]{2})_([a-z0-9][a-z0-9-]*_[a-z0-9][a-z0-9_-]*)$"),
+    "job": re.compile(r"^(j[0-9]{2})_([a-z0-9][a-z0-9-]*_[a-z0-9][a-z0-9_-]*)$"),
+    "task": re.compile(r"^(t[0-9]{2})_([a-z0-9][a-z0-9-]*_[a-z0-9][a-z0-9_-]*)$"),
+}
 BIB_START_RE = re.compile(
     r"(?im)^[ \t]*@([a-z]+)\s*([({])\s*([^,\s]+)\s*,"
 )
@@ -23,6 +28,21 @@ CITE_RE = re.compile(
 STATUS_RE = re.compile(r"(?m)^status:\s*['\"]?([a-z_-]+)['\"]?\s*$")
 RUN_FIELD_RE = re.compile(r"(?m)^run:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
 PAGE_FIELD_RE = re.compile(r"(?m)^page:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+ADDRESS_FIELD_RE = re.compile(r"(?m)^address:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+ADDRESS_COMPACT_FIELD_RE = re.compile(
+    r"(?m)^address_compact:\s*['\"]?([^'\"\s]+)['\"]?\s*$"
+)
+KIND_FIELD_RE = re.compile(r"(?m)^kind:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+VERSION_FIELD_RE = re.compile(r"(?m)^version:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+DISCOVERY_TYPE_RE = re.compile(
+    r"(?m)^discovery_type:\s*['\"]?([^'\"\s]+)['\"]?\s*$"
+)
+LEGACY_TYPE_RE = re.compile(r"(?m)^type:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+LEGACY_ROLE_RE = re.compile(r"(?m)^role:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+FAMILY_FIELD_RE = re.compile(r"(?m)^family:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
+OPERATION_FIELD_RE = re.compile(
+    r"(?m)^operation:\s*['\"]?([^'\"\s]+)['\"]?\s*$"
+)
 EXECUTED_AT_RE = re.compile(r"(?m)^executed_at:\s*['\"]?([^'\"\n]+)['\"]?\s*$")
 DOI_RE = re.compile(r'(?im)\bdoi\s*=\s*[{"]\s*([^}"]+?)\s*[}"]')
 ALLOWED_STATUSES = {
@@ -33,7 +53,59 @@ ALLOWED_STATUSES = {
     "unresolved",
     "superseded",
 }
+TASK_STATUSES = {
+    "planned",
+    "building",
+    "executing",
+    "reported",
+    "ok",
+    "inconclusive",
+    "blocked",
+}
+REPORT_REQUIRED_TASK_STATUSES = {"reported", "ok", "inconclusive"}
 NON_ENTRY_TYPES = {"comment", "preamble", "string"}
+DISCOVERY_TYPES = {
+    "source-map",
+    "source-reading",
+    "topic-summary",
+    "prior-art-verdict",
+    "counterevidence-review",
+    "landscape-review",
+    "benchmark-landscape",
+    "ideation",
+    "novelty-verdict",
+}
+LEGACY_DISCOVERY_TYPES = {
+    ("search", "source_gather"): "source-map",
+    ("search", "source_read"): "source-reading",
+    ("search", "search_and_read"): "source-reading",
+    ("review", "topic_summary"): "topic-summary",
+    ("review", "prior_art_check"): "prior-art-verdict",
+    ("review", "counterevidence"): "counterevidence-review",
+    ("review", "landscape_review"): "landscape-review",
+    ("review", "benchmark_landscape"): "benchmark-landscape",
+    ("idea", "idea_generation"): "ideation",
+    ("idea", "novelty_check"): "novelty-verdict",
+}
+ALLOWED_OPERATIONS = {"paper-analysis", "source-analysis"}
+DISCOVERY_PAGE_ROLES = (
+    "Question and boundary",
+    "Type payload",
+    "Evidence map",
+    "Limits and next move",
+)
+WRITING_STYLE_LABELS = (
+    "Language and voice",
+    "Sentence shape",
+    "Evidence rule",
+    "Required sections",
+    "Optional sections",
+    "Question and boundary",
+    "Type payload",
+    "Evidence map",
+    "Limits and next move",
+    "Section rules",
+)
 
 
 @dataclass(frozen=True)
@@ -131,6 +203,219 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
     return runs, results
 
 
+def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
+    """Return readable/compact b.j.t identity derived only from the path."""
+    errors: list[str] = []
+    task = topic
+    job = task.parent
+    block = job.parent
+    bank = block.parent
+    parts: list[str] = []
+    for level, path in (("block", block), ("job", job), ("task", task)):
+        match = SEGMENT_RE[level].fullmatch(path.name)
+        if match is None:
+            errors.append(f"address-{level}-name-invalid: {path}")
+        else:
+            parts.append(match.group(1))
+    if bank.name != "discoveries":
+        errors.append(f"address-bank-invalid: {bank}: expected discoveries/")
+    if errors:
+        return None, None, errors
+    return ".".join(parts), "".join(parts), errors
+
+
+def _page_errors(page: Path, question: str = "") -> list[str]:
+    text = page.read_text(encoding="utf-8")
+    errors: list[str] = []
+    if not re.search(r"(?m)^folder-kind:\s*discovery\s*$", text):
+        errors.append(f"page-folder-kind-invalid: {page}: expected discovery")
+    if re.search(r"(?m)^page-type:\s*task\s*$", text):
+        errors.append(f"page-task-type-forbidden: {page}")
+    opening = re.search(
+        r"(?ms)^## (?:Opening|Question)\s*\n(?P<body>.*?)(?=\n\s*\n|\Z)",
+        text,
+    )
+    if not opening:
+        errors.append(f"page-opening-missing: {page}")
+    else:
+        visible = re.sub(r"\s+", " ", opening.group("body")).strip()
+        sentence_count = len(re.findall(r"[.!?](?=\s|$)", visible))
+        if sentence_count not in {4, 5}:
+            errors.append(
+                f"page-opening-sentence-count: {page}: {sentence_count}"
+            )
+        if len(visible) > 520:
+            errors.append(f"page-opening-too-long: {page}: {len(visible)}")
+        question_words = re.findall(r"[a-z0-9]+", question.casefold())[:5]
+        visible_words = re.findall(r"[a-z0-9]+", visible.casefold())[:5]
+        if question_words and visible_words != question_words:
+            errors.append(f"page-opening-question-drift: {page}")
+    writing_style = re.search(
+        r"(?ms)^## Writing Style\s*\n(.*?)(?=^## Content\s*$)", text
+    )
+    if not writing_style:
+        errors.append(f"page-writing-style-missing: {page}")
+    else:
+        for label in WRITING_STYLE_LABELS:
+            if not re.search(
+                rf"(?m)^\*\*{re.escape(label)}\*\*:\s+\S", writing_style.group(1)
+            ):
+                errors.append(f"page-writing-style-label-missing: {page}: {label}")
+    if not re.search(r"(?m)^## Content\s*$", text):
+        errors.append(f"page-content-missing: {page}")
+    if not re.search(r"(?m)^## Aims\s*$", text):
+        errors.append(f"page-aims-missing: {page}")
+
+    division_pairs = re.findall(r"(?m)^### ([0-9]+) · (.+?)\s*$", text)
+    divisions = {number: name.strip() for number, name in division_pairs}
+    aim_pairs = re.findall(r"(?m)^### A([0-9]+) · (.+?)\s*$", text)
+    aim_groups = {
+        number: re.sub(r"^[^A-Za-z0-9]+", "", name).strip()
+        for number, name in aim_pairs
+    }
+    if len(division_pairs) != 4 or set(divisions) != {"1", "2", "3", "4"}:
+        errors.append(f"page-discovery-division-set-invalid: {page}")
+    if len(aim_pairs) != 4 or set(aim_groups) != {"1", "2", "3", "4"}:
+        errors.append(f"page-discovery-aim-set-invalid: {page}")
+    for index, role in enumerate(DISCOVERY_PAGE_ROLES, start=1):
+        name = divisions.get(str(index), "")
+        if not name.startswith(f"{role} · ") or not name[len(role) + 3 :].strip():
+            errors.append(
+                f"page-discovery-role-invalid: {page}: {index} expected {role!r}"
+            )
+    for number, aim_name in aim_groups.items():
+        division_name = divisions.get(number)
+        if division_name is None:
+            errors.append(f"page-aim-division-missing: {page}: A{number}")
+        elif aim_name != division_name:
+            errors.append(
+                f"page-aim-name-drift: {page}: A{number} "
+                f"{aim_name!r} != {division_name!r}"
+            )
+
+    content = re.search(r"(?ms)^## Content\s*\n(.*?)(?=^## Aims\s*$)", text)
+    if content:
+        body = content.group(1)
+        headings = list(re.finditer(r"(?m)^### [0-9]+ · .+?\s*$", body))
+        for index, heading in enumerate(headings):
+            end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
+            division = body[heading.end() : end]
+            if not re.match(
+                r"\s*\*\*[^*\n]+\*\*: [^\n]+\n```(?:text)?\s*\n",
+                division,
+            ):
+                errors.append(
+                    f"page-content-division-diagram-missing: {page}: "
+                    f"{heading.group(0)}"
+                )
+
+    state = re.search(r"(?m)^state:\s*(.+?)\s*$", text)
+    if state and state.group(1).startswith("✅"):
+        ticks = re.findall(r"(?m)^- ([^\s]+)\s+A[0-9]+\.[0-9]+\s+·", text)
+        if any(tick not in {"✅", "❄️"} for tick in ticks):
+            errors.append(f"page-done-with-open-aim: {page}")
+    return errors
+
+
+def _manifest_errors(topic: Path) -> list[str]:
+    manifest = topic / "discovery.yaml"
+    if not manifest.is_file():
+        return [f"manifest-missing: {manifest}"]
+
+    text = manifest.read_text(encoding="utf-8")
+    errors: list[str] = []
+    readable, compact, identity_errors = _topic_identity(topic)
+    errors.extend(identity_errors)
+    if _field(text, VERSION_FIELD_RE) != "6":
+        errors.append(f"manifest-version-invalid: {manifest}")
+    if _field(text, KIND_FIELD_RE) != "discovery":
+        errors.append(f"manifest-kind-invalid: {manifest}")
+    task_status = _field(text, STATUS_RE)
+    if task_status not in TASK_STATUSES:
+        errors.append(f"manifest-status-invalid: {manifest}: {task_status!r}")
+    elif (
+        task_status in REPORT_REQUIRED_TASK_STATUSES
+        and _yaml_block(text, "report") is None
+    ):
+        errors.append(f"manifest-report-missing: {manifest}: status={task_status}")
+
+    if readable is not None:
+        manifest_address = _field(text, ADDRESS_FIELD_RE)
+        if manifest_address != readable:
+            errors.append(
+                f"manifest-address-mismatch: {manifest}: "
+                f"{manifest_address!r} != {readable!r}"
+            )
+        manifest_compact = _field(text, ADDRESS_COMPACT_FIELD_RE)
+        if manifest_compact != compact:
+            errors.append(
+                f"manifest-address-compact-mismatch: {manifest}: "
+                f"{manifest_compact!r} != {compact!r}"
+            )
+        section_paths = (topic.parent.parent, topic.parent, topic)
+        for section, expected, section_path in zip(
+            ("block", "job", "task"), readable.split("."), section_paths
+        ):
+            block_text = _yaml_block(text, section)
+            actual = _block_field(block_text, "id") if block_text else None
+            if actual != expected:
+                errors.append(
+                    f"manifest-{section}-id-mismatch: {manifest}: "
+                    f"{actual!r} != {expected!r}"
+                )
+            actual_slug = _block_field(block_text, "slug") if block_text else None
+            expected_slug = section_path.name[4:]
+            if actual_slug != expected_slug:
+                errors.append(
+                    f"manifest-{section}-slug-mismatch: {manifest}: "
+                    f"{actual_slug!r} != {expected_slug!r}"
+                )
+
+    page = _field(text, PAGE_FIELD_RE)
+    expected_page = f"{topic.name}.md"
+    if page is None:
+        errors.append(f"manifest-page-missing: {manifest}")
+    elif Path(page).is_absolute() or Path(page).name != page:
+        errors.append(f"manifest-page-invalid: {manifest}: {page!r}")
+    elif page != expected_page:
+        errors.append(
+            f"manifest-page-stem-mismatch: {manifest}: {page!r} != {expected_page!r}"
+        )
+    elif not (topic / page).is_file():
+        errors.append(f"page-missing: {topic / page}")
+    else:
+        errors.extend(
+            _page_errors(topic / page, question=_yaml_block(text, "question") or "")
+        )
+
+    canonical = _field(text, DISCOVERY_TYPE_RE)
+    legacy_type = _field(text, LEGACY_TYPE_RE)
+    legacy_role = _field(text, LEGACY_ROLE_RE)
+    legacy = None
+    if legacy_type or legacy_role:
+        legacy = LEGACY_DISCOVERY_TYPES.get(
+            ((legacy_type or "").casefold(), (legacy_role or "").casefold())
+        )
+        if legacy is None:
+            errors.append(
+                f"manifest-legacy-type-invalid: {manifest}: "
+                f"{legacy_type!r}/{legacy_role!r}"
+            )
+
+    if canonical is None and legacy is None:
+        errors.append(f"manifest-discovery-type-missing: {manifest}")
+    elif canonical is not None and canonical not in DISCOVERY_TYPES:
+        errors.append(
+            f"manifest-discovery-type-invalid: {manifest}: {canonical!r}"
+        )
+    elif canonical is not None and legacy is not None and canonical != legacy:
+        errors.append(
+            f"manifest-discovery-type-conflict: {manifest}: "
+            f"{canonical!r} != legacy {legacy!r}"
+        )
+    return errors
+
+
 def _bib_conflicts(entries: Iterable[BibEntry]) -> list[str]:
     errors: list[str] = []
     by_key: dict[str, BibEntry] = {}
@@ -168,7 +453,13 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
     if not topic.is_dir():
         return [f"topic-missing: {topic}"], counts, complete_entries
 
+    errors.extend(_manifest_errors(topic))
+    topic_readable, topic_compact, _ = _topic_identity(topic)
+
     runs, results = _pair_maps(topic)
+    for stem in sorted(runs.keys() | results.keys()):
+        if not RUN_RE.fullmatch(stem):
+            errors.append(f"runname-invalid: {stem}")
     for stem in sorted(runs.keys() - results.keys()):
         errors.append(f"missing-result: runs/{stem}.sh has no results/{stem}/")
     for stem in sorted(results.keys() - runs.keys()):
@@ -177,8 +468,6 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
     for stem in sorted(runs.keys() & results.keys()):
         run_path = runs[stem]
         result_dir = results[stem]
-        if not RUN_RE.fullmatch(stem):
-            errors.append(f"runname-invalid: {stem}")
         if not os.access(run_path, os.X_OK):
             errors.append(f"run-not-executable: {run_path}")
 
@@ -195,12 +484,45 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
             errors.append(
                 f"runtime-run-mismatch: {runtime_path}: {runtime_run!r} != {stem!r}"
             )
+        if topic_readable is not None and RUN_RE.fullmatch(stem):
+            run_id = stem[:3]
+            expected_address = f"{topic_readable}.{run_id}"
+            expected_compact = f"{topic_compact}{run_id}"
+            runtime_address = _field(runtime_text, ADDRESS_FIELD_RE)
+            runtime_compact = _field(runtime_text, ADDRESS_COMPACT_FIELD_RE)
+            if runtime_address != expected_address:
+                errors.append(
+                    f"runtime-address-mismatch: {runtime_path}: "
+                    f"{runtime_address!r} != {expected_address!r}"
+                )
+            if runtime_compact != expected_compact:
+                errors.append(
+                    f"runtime-address-compact-mismatch: {runtime_path}: "
+                    f"{runtime_compact!r} != {expected_compact!r}"
+                )
+        family = _field(runtime_text, FAMILY_FIELD_RE)
+        if family != "discovery":
+            errors.append(f"runtime-family-invalid: {runtime_path}: {family!r}")
+        operation = _field(runtime_text, OPERATION_FIELD_RE)
+        if operation not in ALLOWED_OPERATIONS:
+            errors.append(
+                f"runtime-operation-invalid: {runtime_path}: {operation!r}"
+            )
         if not re.search(r"(?m)^trigger:\s*$", runtime_text):
             errors.append(f"runtime-trigger-missing: {runtime_path}")
-        if status != "unresolved" and not re.search(
-            r"(?m)^subject:\s*$", runtime_text
-        ):
+        subject_block = _yaml_block(runtime_text, "subject")
+        if subject_block is None:
             errors.append(f"runtime-subject-missing: {runtime_path}")
+        elif subject_block is not None and operation in ALLOWED_OPERATIONS:
+            subject_kind = _block_field(subject_block, "kind")
+            expected_operation = (
+                "paper-analysis" if subject_kind == "paper" else "source-analysis"
+            )
+            if operation != expected_operation:
+                errors.append(
+                    f"runtime-operation-subject-mismatch: {runtime_path}: "
+                    f"{operation!r} != {expected_operation!r}"
+                )
 
         if status != "complete":
             continue
@@ -291,7 +613,7 @@ def command_check(topic: Path) -> int:
         for error in errors:
             print(f"ERROR {error}", file=sys.stderr)
         return 1
-    print("OK paper-run contract")
+    print("OK discovery-page-and-run contract")
     return 0
 
 
@@ -324,9 +646,11 @@ def parse_aggregate(text: str) -> list[str]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    check = subparsers.add_parser("check", help="validate Run/Result pairs")
+    check = subparsers.add_parser(
+        "check", help="validate the Discovery Page plus Run/Result pairs"
+    )
     check.add_argument("topic", type=Path)
-    bib = subparsers.add_parser("build-bib", help="build derived Topic Evidence Bib")
+    bib = subparsers.add_parser("build-bib", help="build derived Task Page Evidence Bib")
     bib.add_argument("topic", type=Path)
     bib.add_argument("--output", type=Path)
     bib.add_argument("--write", action="store_true")

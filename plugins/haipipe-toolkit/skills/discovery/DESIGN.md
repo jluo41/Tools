@@ -1,7 +1,7 @@
 # Discovery — architecture
 
-Discovery is the durable external-evidence executor. Its unit is a research
-Topic represented by one Folder with a Page Face and a Task Face.
+Discovery is the durable external-evidence executor. Its article unit is a
+`tNN_` Task Page with a Page Face and a Task Face, addressed inside BJTR.
 
 Runtime authority lives in:
 
@@ -18,22 +18,27 @@ win.
 ## Four levels
 
 ~~~text
-L1 Block    discoveries/
-L2 Drop     discoveries/<GROUP>/
-L3 TaskPage discoveries/<GROUP>/<NN_topic>/
-L4 Run      runs/<RUNNAME>.sh <-> results/<RUNNAME>/
+bank        discoveries/
+L1 Block    bNN_<noun>_<qualifier>/
+L2 Job      jNN_<noun>_<qualifier>/
+L3 TaskPage tNN_<noun>_<qualifier>/
+L4 Run      runs/rNN_<author><year>_<paper>.sh <-> results/rNN_.../
 ~~~
 
-L3 owns one Topic/question. L4 owns one canonical evidence Subject, normally
+L1 is a broad evidence domain; L2 is a self-contained inquiry/campaign; L3 owns
+one article question and `discovery_type`; L4 owns one canonical evidence Subject, normally
 one paper. Result is the generated projection of Run, not an additional level.
+
+All four levels use `<level-letter><NN>_<noun>_<qualifier>`. Their joined
+address is `bNNjNNtNNrNN`; `discoveries/` is a bank and contributes no segment.
 
 ## Two Faces
 
 ~~~text
 Page Face                              Task Face
-<topic>.md                             discovery.yaml
+tNN_<task>.md                         discovery.yaml
 outline/                               scripts/ optional
-evidence/bibex/<topic>.bib             runs/
+evidence/bibex/tNN_<task>.bib          runs/
 topic-level synthesis                  results/
 ~~~
 
@@ -43,14 +48,33 @@ owns. The manifest plans the Topic; a .sh ticket plans one Paper Run.
 ## Three orthogonal dimensions
 
 ~~~text
-Hierarchy   Block -> Drop -> TaskPage -> Run
-Lifecycle   Plan -> Build(optional) -> Execute -> Report
-Type        Search | Review | Idea
+Hierarchy   Block -> Job -> Task Page -> Run
+Workflow    D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+Page Type   source-map | source-reading | topic-summary | prior-art-verdict |
+            counterevidence-review | landscape-review | benchmark-landscape |
+            ideation | novelty-verdict
 ~~~
 
-Search resolves and admits evidence Subjects. Review synthesizes completed
-Results. Idea generates at Topic level and uses Paper Runs for novelty
-evidence. Worker/API/CLI calls are runtime detail inside a Run receipt.
+The Page Type says what article the root Page is writing. It does not add a
+folder level and it does not define a Run. Search, Review, and Idea remain
+specialist routes: Search resolves evidence Subjects, Review synthesizes
+completed Results, and Idea works at Topic level while using Paper Runs for
+novelty evidence. Worker/API/CLI calls are runtime detail inside a Run receipt.
+
+## D1 Cycle × Run map
+
+~~~text
+SCOPE       no Run
+PREPARE     no Run; scripts/ are supporting instruments
+ACQUIRE     paper-analysis | source-analysis × N admitted Subjects
+SYNTHESIZE  no Run; promotes Results into Page/typed record/Evidence Bib
+CLOSE       no Run; checks and reconciles the two Faces
+
+Total R = N admitted canonical Subjects
+~~~
+
+Search queries, candidate rows, synthesis passes, and idea generation are not
+Runs. A Run begins only after one canonical evidence Subject is admitted.
 
 ## Trigger and Subject
 
@@ -75,14 +99,17 @@ runtime.yaml
 ~~~
 
 PDF, raw extraction, and captured Trigger are optional. Result Card cite key
-and Bib key are identical. The Page Evidence Bib is a deterministic derived
-union of complete Result Bibs; conflicts hard-fail.
+and Bib key are identical. `haipipe-plugin-evidence` owns the deterministic
+derived union of complete Result Bibs; conflicts hard-fail.
 
 ## Synthesis
 
 Topic Content and Paper Results are many-to-many. A paper may support several
-divisions, and a division normally synthesizes several papers. The Page links
-to Results; it does not copy their entire readouts into a flat notes ledger.
+divisions, and a division normally synthesizes several papers. The root Page
+is always the human-facing article. Optional `summary.md`, `verdict.md`,
+`landscape.md`, and `ideas.md` are typed Task-side synthesis records, not rival
+Pages or Runs. The Page links to Results; it does not copy their entire
+readouts into a flat notes ledger.
 
 ## Compatibility
 

@@ -86,8 +86,9 @@ step  machine-readable key                    Page Type          contract
 ⑤     filename Q<group><n>[<face>]-<slug>     Q decision         base only
 ```
 
-A discovery folder gets no type of its own: `task` carries which kind of
-folder it reads.
+A Discovery Folder resolves `folder-kind: discovery` to its Discovery workflow
+phase. Its Task Face does not select the empirical `page-type: task`
+compatibility grammar.
 
 ### The inventory is derived, never written by hand
 

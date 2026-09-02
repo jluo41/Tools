@@ -52,6 +52,7 @@
       label: '📤 Delivery',
       hint: 'latex, word, slides and renders · what leaves the page, one surface',
       menu: 'plugin',
+      order: 40,
       /* Any page with a source file: an unbuilt lane still opens, and the
          🏠 segment says what exists before anything is compiled. */
       applies: function (page) { return !!pageFile(page); },

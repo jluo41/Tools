@@ -1,3 +1,14 @@
+## 0.6.5 — 2026-09-02
+
+- Resolve manuscript Section writing instructions from authored W records in
+  `outline/<stem>-requirement.md`; retain source-level Writing Style only as
+  non-Section compatibility.
+
+## 0.6.4 — 2026-09-02
+
+- Assign the citation `verified` gate to `haipipe-plugin-evidence`; the
+  separate Bibex Plugin no longer exists.
+
 ## 0.6.3 — 2026-08-31
 
 - Replace the universal five-tick claim with artifact-selected plugin ticks

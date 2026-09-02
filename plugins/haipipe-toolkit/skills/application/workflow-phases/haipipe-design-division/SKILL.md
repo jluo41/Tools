@@ -24,7 +24,7 @@ metadata:
 # /haipipe-design-division · make each judged unit decidable
 
 Load `haipipe-folder`, `haipipe-page`, the Design door/workflow,
-`haipipe-plugin-design`, `haipipe-plugin-pagex`, and the venue pack. Existing
+`haipipe-plugin-design`, `haipipe-plugin-evidence/ref/pagex.md`, and the venue pack. Existing
 Design Pages may retain `page-type: design`; new work resolves this phase as
 `folder-kind: design-division`.
 

@@ -3,6 +3,12 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.12.6 · 2026-09-01
+
+- Make the Job-backed Task Run dialect an explicit specialization of
+  `haipipe-run`; keep config, notebook, light/heavy output, and Task type laws
+  in this family.
+
 ## 0.12.5 · 2026-09-01
 
 - Name the optional Task Page presenter Runs, reserving Execute for phase 3.

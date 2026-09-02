@@ -1,3 +1,19 @@
+## 0.25.0 — 2026-09-02
+
+- Add PageX to the Phase × Run Map as a SURVEY-planned, LAND-validated source
+  binding. It has exact path plus accepted authority and is not counted in L4
+  Run cardinality or typed Result cardinality.
+- Tighten LAND closure to require valid Supporting Results and PageX bindings,
+  one frozen Local Input, and one accepted local Result for every make-item.
+
+## 0.24.0 — 2026-09-01
+
+- Publish the concrete Phase × Run Map, including which L3 Task content each
+  cycle modifies, exact skill-chain slots, and L4 cardinalities. SHAPE/SURVEY
+  mint no Run; LAND executes Supporting Runs then one local Evidence Item Run.
+- Remove `haipipe-page-for-task` from the active Page chain and route semantic
+  policy directly to the owning workflow-phase skill.
+
 ## 0.23.0 — 2026-09-01
 
 - TWO PARTS, six cycle WORDS (JL 260901): the OUTLINE part SHAPE → SURVEY →

@@ -9,8 +9,8 @@ description: >-
   new labeling jobs, calibration rounds, human annotation sessions, boundary
   discovery, guideline revision, stopping decisions, freeze, or /label-building.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-30"
+  version: "0.6.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -46,17 +46,32 @@ P2 Freeze     one signed Label Handoff binding exact G* and D_cal*
 Each phase is a phase because it has an authority artifact of its own; the
 artifacts are named in `subjective-label-workflow`.
 
-## The round unit
+## Building Run boundary
 
-A round is one folder, `rounds/round_<t>/`, born as a card and closed by a
-checkpoint (`../../ref/ref-assets.md` §3). Laws of the unit:
+Building uses the operation catalog in `../../ref/ref-run.md`:
+
+```text
+P0  corpus-contract · discovery-search* · guideline-seed · test-reserve · embedding-build
+P1  round-prepare · weak-prelabel* · human-calibration · guideline-learn
+    · round-measure · round-close
+P2  handoff-freeze
+```
+
+A round folder, `rounds/round_<t>/`, is an episode grouped by one Card and one
+checkpoint (`../../ref/ref-assets.md` §3). It is not an extra umbrella Run.
+While the Card is proposed it is planning. Human release makes it the frozen
+commission for `round-prepare`; later operations allocate only when their own
+inputs freeze. P0 human meaning confirmation, Card release, STOP, and the
+freeze signature are gate events rather than additional Runs.
+
+Laws across the round's Runs:
 
 1. **Card before work.** The card states the register cell it targets, its two
    arms, its seed, and its expected finding. A person releases it; a machine
    never does. Round 1's card names no cell and draws at random.
 2. **Seal before sight.** Every weak prediction is sealed before the human's
    first record for that item exists; a seal that follows a first record
-   voids the round's blinding check.
+   voids the affected operation and blocks `round-close`.
 3. **Forecast before judgment.** `prospect.md` is written before the first
    item is shown, so the checkpoint can score the round against it.
 4. **Views are not authority.** `view/` and `README.md` are rendered from the
@@ -86,7 +101,7 @@ freeze     the human signs the exact G* and D_cal* checksums and the lineage    
 
 `stop` and `freeze` are two ticks: stopping approves that no round is owed;
 freeze signs the handoff. A batch-selection charter may pre-authorize
-mechanical sampling classes for one bounded run; it cannot pre-authorize a
+mechanical sampling classes for one bounded Run; it cannot pre-authorize a
 release, a label, a rule, a stop, or a freeze.
 
 ## Verbs
@@ -94,7 +109,7 @@ release, a label, a rule, a stop, or a freeze.
 ```text
 enter | status      resolve the Building frontier from closed artifacts
 start | contract    establish or resume P0 without creating gold
-round               run or resume exactly one P1 round unit
+round               run or resume exactly one operation in the active P1 episode
 card                propose a round card for a person to release
 prepare · judge · learn · checkpoint   the round steps, ordered by label-building-workflow
 freeze              run P2 and record the human-signed Label Handoff

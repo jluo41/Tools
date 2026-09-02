@@ -93,7 +93,7 @@ venue:
 task:
   owner: task
   standing: contract
-  token: "folder-kind: task | discovery"
+  token: "folder-kind: task"
   mode: grammar
   evidence: "every shown number names the run that produced it; a rerun reopens the page"
   closing: "a person has read the result against the folder's own kind; a rerun reopens"

@@ -2,26 +2,39 @@
 name: haipipe-page-outline
 description: >-
   The OUTLINE phase of a Board Page and the THINKING half of its OUTLINE part:
-  two cycles, SHAPE (brief → propose → react → revise until a person ticks
-  `approved:`) and SURVEY (one row per evidence mark in the item table: what is
-  owed, which run in tasks/ answers it, how far up the tree the gap sits, and a
-  person's Decide). Writes the versioned plan, the item table, the open threads
-  and one log record; never raises a card, never lands material. Trigger: page
-  outline, OUTLINE phase, shape the plan, survey the items, item table, approve
-  the outline, fold evidence into the plan, /haipipe-page-outline.
+  two planning cycles, SHAPE (brief → propose → react → revise; name every typed
+  Evidence Item and its expected ready payload) and SURVEY (register zero-to-many
+  Execution/Discovery Supporting Runs, zero-to-many exact PageX bindings, plus
+  exactly one local Page Evidence Item Run). Writes the versioned plan,
+  Evidence Item table, open threads and log;
+  registers Tickets and planned runtime receipts but executes no material. Trigger: page outline, OUTLINE
+  phase, shape the plan, survey the evidence items, evidence item table, review,
+  check, read, or approve the outline, fold evidence into the plan,
+  /haipipe-page-outline.
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-09-01"
+  version: "0.17.0"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-page-outline · SHAPE the plan, then SURVEY what it owes
 
-Load, in this order: `haipipe-page` (the base), the Page Type's `outline:`
-block, this file, then `haipipe-plugin-outline/ref/plan-grammar.md` for the
-plan's grammar and `ref/item-table.md` for the table's. Nothing else before
-the page itself. The plugin skill, the sibling pages and board-wide checker
-output are not loaded.
+Load the concrete chain, in order:
+
+```text
+haipipe-page-workflow
+  → haipipe-page-outline
+  → haipipe-plugin-outline/ref/plan-grammar.md
+  → haipipe-plugin-outline/ref/item-table.md
+  → haipipe-plugin-evidence/ref/pagex.md (when SURVEY considers a cross-Folder source)
+  → haipipe-plugin-outline/ref/review-packet.md (only for a human review or approval)
+  → the exact owning workflow-phase skill, for example haipipe-paper-narrative
+```
+
+The owning workflow phase supplies the Page's outline/narrative/style policy.
+Do not route through `haipipe-page-for-task`; that compatibility variant is no
+longer part of this design. Load no sibling Page and no board-wide checker
+output before reading the target Page.
 
 The page workflow has two PARTS (haipipe-page-workflow §🔁): the OUTLINE part
 decides what is true and what the page will therefore say; the DRAFT part
@@ -30,10 +43,10 @@ sibling `haipipe-page-evidence` owns the two machine-gated ones (LAND, EMBED).
 
 ```text
 OUTLINE part
-  SHAPE    this file    brief → propose → react → revise      👤 approved:
-  SURVEY   this file    the item table: Need · Route · Run     👤 Decide, per row
-  LAND     evidence     make the runs, fill the lanes          ⚙ every make-row landed
-  EMBED    evidence     fold the numbers into plan v<N+1>      ⚙ back to SHAPE
+  SHAPE    this file    plan + typed item expectation          👤 approved:
+  SURVEY   this file    register supports + PageX + Local Input + Run 👤 Decide, per item
+  LAND     evidence     execute registered sources → local Result    ⚙ every make-item ready
+  EMBED    evidence     fold ready Results into plan v<N+1>     ⚙ back to SHAPE
 ```
 
 ## ⚡ Brief
@@ -44,21 +57,22 @@ Q        what will this page say, division by division, bullet by bullet;
          come from?
 READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          (open rows) · outline/<stem>-evidence.md (the table joined to the
-         disk) · the Page Type's outline: mode · the page · the current plan ·
-         the project's tasks/ tree (SURVEY only)
-WRITES   outline/<stem>-outline-v<N>.md · outline/<stem>-items.md (SURVEY) ·
+         disk) · the owning workflow phase's outline policy · the page · the current plan ·
+         the project's tasks/ tree and unified Evidence PageX shortlist
+         (SURVEY only)
+WRITES   outline/<stem>-outline-v<N>.md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
-         person is asked (SHAPE); every mark has a row with an outcome and an
-         address where one exists (SURVEY)
+         person is asked (SHAPE); every make-item has registered Supporting and
+         Local Tickets, planned runtime receipts, valid PageX/input, and one decision (SURVEY)
 ENDS     SHAPE: a person ticks approved: (or a chat approval is transcribed
-         with the quote) · SURVEY: every row carries a signed Decide
-WALLS    writes no prose · raises no card · dispatches nothing · runs nothing ·
+         with the quote) · SURVEY: every row carries a signed Decide and each make-Run is registered
+WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
          mints no Aim · names no division the type refuses · ticks nothing ·
          changes a ✅ plan only as v<N+1> · never writes a Status word
 ROUTES   SHAPE → SURVEY (approved, marks owed) · SHAPE → the DRAFT part
-         (approved, every row folded) · SURVEY → LAND (every row decided) ·
+         (approved, every item folded) · SURVEY → LAND (every item graph registered and decided) ·
          either → SHAPE again · HOLD (the person is unavailable)
 RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
          ../haipipe-page-workflow/ref/page-run-contract.md §Receipt step
@@ -66,11 +80,11 @@ RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
 
 ## ⓪ Boot · load little, trust the plan
 
-- **Load**: this brief, the Page Type's `outline:` block (`fixed` lists the
+- **Load**: this brief, the owning workflow phase's outline policy (`fixed` lists the
   divisions · `grammar` fixes a first-word set and an order rule · `resolved`
   points at a source outside the type · no key means the base section order),
   `ref/plan-grammar.md`, the page, and the eight files under `outline/`. The
-  `outline:` block sits in the type's SKILL.md frontmatter, which the Skill
+  policy sits in the phase skill's contract, which the Skill
   tool strips: read the file's first 20 lines with the Read tool. Read the
   page once, with the Read tool; a page piped through `cat` into a persisted
   output is read twice.
@@ -90,8 +104,8 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
 
 ```text
 1 BRIEF     the person says the narrative in a few lines: what this page must argue
-2 PROPOSE   the AI writes plan v1 from the brief + the type's outline: block + the
-            venue's requirement; every owed thing is a MARK, nothing else exists yet
+2 PROPOSE   the AI writes plan v1 from the brief + owning phase policy + venue;
+            every owed thing is a named typed Evidence Item with Expected + Accept
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
 4 REVISE    the AI folds the rulings into v2
 loop 3 ⇄ 4 until the person ticks approved:
@@ -117,7 +131,7 @@ its folded receipt carries measured numbers:
 ```text
 requirement  V1 Shape · V2 Size · V3 Refused · V4 Moves   read before a bullet is written
 feedback     n routed · n open · n served · n declined     an open row is served or declined this pass
-evidence     cycle: … · items n · decided n/n · <ladder tally>   what the table says
+             evidence     cycle: … · items n · decided n/n · <status tally>   what the table says
 checks       plan-shape-off-type · bullet-missing-note · plan-no-arc ·
              feedback-unserved · head-too-long · head-too-short ·
              note-too-long · note-quotes-page · serves anchors   0 ❌ before the tick
@@ -129,9 +143,9 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 (`src/plan_shape.py`, as `checks/outline.py --boards <board>` runs them),
 `cli/check.py <board>`, and `cli/build.py <board>`.
 
-### ② Plan · the type gives the words, this pass gives the argument
+### ② Plan · the owning phase gives the words, this pass gives the argument
 
-- **Read the mode first.** `fixed`: fill the listed divisions, add none, drop
+- **Read the phase policy first.** `fixed`: fill the listed divisions, add none, drop
   none. `grammar`: choose how many of each first word, write the free title
   after it. `resolved`: resolve the source the type names; a missing source
   is a hole, never a licence to invent a shape or copy a sibling's.
@@ -153,10 +167,12 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   the budget; a division V3 refuses fails ④ here and never reaches the DRAFT
   part. Terms are defined inline the first time; the plan never quotes the
   sentence it plans.
-- **A hole is marked, never answered.** `📮` on the bullet that owes a number
-  or a fact; `🧮` on one that owes a recomputed value; `📚` a citation; `🖼
-  owed · <kind>` on the one that owes a figure. A plan that already knows
-  every answer was written after the fact.
+- **A hole is specified, never answered.** Add
+  `Evidence: E<NN>-<TYPE>-<slug> · <expected ready evidence>` and its immediate
+  `Accept: <observable checks>` under the bullet. TYPE is `VALUE`, `CITE`, or
+  `DISPLAY`; a bare `E01` or an icon-only hole is invalid. SHAPE also creates
+  the matching record in `<stem>-evidence-items.md` with Target, Need,
+  Expected, and Acceptance. It does not plan or allocate a Run.
 - **The fold appends to the bullet that asked** (EMBED's write, read here): a
   landed value becomes `Answered:`, a built unit's README claim becomes
   `Drawn:`, a served Round row becomes `Routed:`; never a new bullet, never an
@@ -182,11 +198,11 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 ```text
 ⓪ ARC       arc: present and an argument · adjacent pairs pass the swap test ·
             the heaviest finding has a division
-① COVERAGE  every owing mark is served by a table row, a card or a unit, or is
-            bare and counted as owed in the receipt (SURVEY has not run yet) ·
-            every unit on disk is cited or retired · every open feedback row is
+① COVERAGE  every Evidence line has a typed id, expectation, Accept line, and
+            exactly one matching Evidence Item record · every unit on disk is
+            cited or retired · every open feedback row is
             served or declined
-② ADDRESS   every card's and every table row's address names a bullet this plan has
+② ADDRESS   every card and Evidence Item Target names a bullet this plan has
 ③ VALUE     every 🧮 number recomputes (checks/values.py)
 ④ SHAPE     divisions match the type's mode · heads 4 to 11 words · Notes
             ≤ 30 words · no Note quotes the page · nothing V3 refuses
@@ -195,6 +211,33 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 Any ❌ is fixed in the plan here; the person is not asked yet. ⓪ is half a
 judgment: `arc:` present is mechanical, whether it argues is this pass's call
 and the person may overturn it at the tick.
+
+### 🤝 Human review and approval · present the packet before asking for a decision
+
+When a person says **review**, **check**, **read**, or **approve** an outline,
+load `haipipe-plugin-outline/ref/review-packet.md` and give the human its
+four-part packet before seeking a response.  The packet is a compact map of
+the records already on disk, not a second plan and not a prose draft:
+
+1. **Current Shape** — link the current versioned plan, state `approved:`,
+   quote its `arc:`, and show the C/P reader path in a compact map.
+2. **Evidence owed** — link the Evidence Item table and report typed/status
+   counts.  Show the items that determine the page's central claim: target,
+   expected evidence, acceptance, and the surveyed source/Run path.
+3. **What shaped it** — link and summarize only the feedback rows,
+   requirements, and open discussion threads that materially changed a
+   division or bullet.  State the exact `Routed:` address or say that no such
+   record exists; never imply a feedback row landed merely because it was read.
+4. **Human decision** — say precisely what can be approved now, what still
+   blocks approval, and which choice belongs to the human.  An `approved:` or
+   `Decide:` tick is never inferred from a vague positive reaction.
+
+Use clickable local-file links in the response when the host supports them.
+If the packet would be long, preserve all four parts but collapse routine
+items into counts and show only material evidence/feedback rows; offer the
+full linked records rather than omitting the provenance.  The same packet is
+required when revising an already-reviewed outline, with a short “changed
+since v<N>” line under Current Shape.
 
 ### 🧑 The tick ends the cycle, and it carries the fork
 
@@ -214,45 +257,66 @@ and the person may overturn it at the tick.
   part, `approved:` with fresh marks sends the page to SURVEY again. The
   machine never decides that the part is over.
 
-## 🔍 SURVEY · one row per mark: where does it come from, how big is the gap
+## 🔍 SURVEY · register the Run graph for each ready-evidence contract
 
-The cycle that makes the probe's old MATCH step VISIBLE and puts a person's
-decision behind it (JL 260901: "the run should be the basic element … for
-each evidence item, what are their current status, how large they will be").
-It runs only on an approved plan, and it creates nothing on disk but the table.
+SURVEY runs only after SHAPE has named every item and the outline is approved.
+It registers each selected Level-4 Run by allocating its full identity and
+scaffolding its Ticket plus planned runtime receipt. It does not execute a
+worker, materialize a Result, or write prose.
 
-- **The law it serves**: every evidence number is answered by a RUN, a real
-  address in the project's `tasks/` tree; the run computes, and only the page
-  interprets (at EMBED). `ref/item-table.md` carries the grammar; this section
-  carries the pass.
-- **Write `outline/<stem>-items.md`**: one record per marked bullet, head
-  byte-identical to the plan's words (`### <address> · <mark> <head>`), four
-  labels: **Need** (one line, what exactly is owed) · **Route** (`task ·
-  discovery · bibex · display · pagex`) · **Run** (`<outcome> · <address>
-  [· note]`) · **Decide** (`☐ make`, left for the person).
-- **Find the run by READING, cheapest first**: this page's own earlier rows →
-  the `tasks/` tree by block, job, task, run (their `QA/` digests and
-  `results/` listings are the index) → nothing. Never guess an outcome from
-  the question's shape; open the folder.
-- **The outcome word names the gap's LEVEL** in the b/j/t/r grammar, so the
-  cost reads off the word: `found` (results answer it) · `rerun` (run exists,
-  results missing or stale) · `new-run` (task exists, mint an `r<NN>_` config)
-  · `new-task` · `new-job` · `new-block` (scaffold that level first) ·
-  `person` (a citation, or a fact only a person holds) · `none` (no run could
-  ever produce it: the bullet is wrong, and the row routes back to SHAPE, never
-  to a Decide of make).
-- **Citations are `person` for now.** The discoveries/ tree joins the same
-  grammar later (a discovery folder is the task, a sweep its run, `sources.md`
-  its results); until that mapping lands, the person supplies the entry and
-  LAND transcribes it verbatim (`haipipe-plugin-bibex`).
-- **A row is complete** when it has its outcome, its address where one exists,
-  and a signed Decide (`☑ make · JL 260901`, `☑ defer · <reason>`, `☑ drop ·
-  <reason>`). The cycle's gate is every row complete; LAND refuses a `☐`.
-- **The table replaces the card for light rows.** A card folder
-  (`evidence/probe/PP<NN>-<slug>/`) exists only when a question has to LEAVE
-  the page at LAND (an outbound `new-*` computation someone else runs); a
-  `found` row lives entirely in its table row. Card states, the consumer /
-  executor wall and the `PP<NN>.v<n>` value grammar stay `haipipe-plugin-probe`'s.
+- **Preserve SHAPE's contract.** Item id, type, name, Target, Need, Expected,
+  and Acceptance are frozen inputs to SURVEY. If they are insufficient or
+  impossible, route the item back to SHAPE; do not repair the meaning here.
+- **Register Supporting Runs, zero to many.** Each is
+  `Execution | Discovery · reuse | rerun | registered · bNNjNNtNNrNN`.
+  Read existing Tickets, receipts, and Results before choosing. `reuse` and
+  `rerun` name an already registered full global id; when new work is needed,
+  use `haipipe-run` to allocate and scaffold it now, then write `registered`
+  with its full id. Every id must resolve to a Ticket and a planned runtime
+  receipt. A current Task ticket with a smoke-only or otherwise invalid result
+  is explicitly `rerun`; when no Ticket exists, render `needs <family> Run`
+  and keep the row in SURVEY rather than inventing a global id. Write `[]` when
+  no upstream support is needed.
+- **Bind PageX sources, zero to many.** Write `PageX Bindings: []` when the
+  item uses no cross-Folder Page material. Otherwise name each exact
+  repo-relative file or Result plus its authority using
+  `haipipe-plugin-evidence/ref/pagex.md`. PageX is not a Run family, action, or
+  Result type. A whole-Folder link is navigation only and cannot satisfy an
+  item until an exact accepted source inside it is selected.
+- **Plan exactly one Local Input.** State whether its one future frozen
+  envelope contains Supporting Results, PageX bindings, named pre-existing
+  local paths, or `item contract only`. When PageX bindings exist, the field
+  must explicitly say they are frozen. A sibling item's future local Result is
+  not a local source; both items must name the shared upstream
+  Execution/Discovery Run instead.
+- **Register exactly one Local Run.** It is always
+  `Page · Evidence Item · reuse | rerun | registered · bNNjNNtNNrNN` and
+  targets the Evidence Item id. When it is new, allocate and scaffold the
+  Ticket and planned runtime receipt now, then write `registered`. Its future
+  frozen input envelope may include every Supporting Result plus local source
+  material. Its future Result must satisfy the item's typed Acceptance
+  contract. Page interpretation is not part of this Run.
+- **Keep family and action separate.** Discovery is a Supporting Run family,
+  not an action. Existing accepted work is `reuse`; the same frozen contract
+  to be executed again is `rerun`; an allocated/scaffolded future Run is
+  `registered`. Changed target/input/acceptance gets a new registered Run with
+  `supersedes`. `new-run`, `new-task`, `new-job`, and `new-block` are only
+  pre-registration notes; they cannot close SURVEY. There is no `found`,
+  `person`, or `none` action.
+- **Citations use the same graph.** A `CITE` item may reuse or commission a
+  Discovery Run, then its local Page Evidence Item Run produces the focal,
+  verified citation claim. It is not routed to a special `person` outcome.
+- **A SURVEY row is complete** when every declared Supporting Run and its
+  Local Run resolve to a full registered id, Ticket, and planned runtime
+  receipt; PageX bindings are valid; one Local Input is explicit; and Decide
+  is signed (`☑ make`, `☑ defer`, or `☑ drop`). A planned runtime renders
+  `Ready`: it is ready to execute, not evidence-item `ready`. LAND refuses
+  `☐` and any unregistered route.
+
+The rendered 🧾 Evidence lens is the compact table: Item, Type, Target,
+Supporting Runs, PageX bindings, Local Run, Status, Result. Run and source
+details stay behind the row; SURVEY does not make the overview carry logs,
+commands, or output trees.
 
 ### 🧑 The Decide ends the cycle
 
@@ -260,20 +324,21 @@ A person reads the table on the 🧭 tab (the 🧾 Evidence lens, which renders
 the table joined to the disk with a derived Status chip per row) and writes
 one Decide per row. A machine may transcribe a chat decision with the quote;
 it never ticks `☑` on its own. `cli/evidence-status.py` prints `cycle: SURVEY
-· decided n/n` until every row is signed, then `cycle: LAND`.
+· decided n/n · registered n/n` until every row is signed and registered,
+then `cycle: LAND`.
 
 ## 🔀 Routes
 
 ```text
 SHAPE  any of the five ❌                     fix the plan here; no tick yet
-SHAPE  five pass, marks owed, approved ✅     SURVEY
-SHAPE  five pass, every row folded, ✅        the DRAFT part (haipipe-page-draft)
+SHAPE  five pass, items owed, approved ✅     SURVEY
+SHAPE  five pass, every item folded, ✅       the DRAFT part (haipipe-page-draft)
 SHAPE  approved ⬜, person unavailable        HOLD
-SURVEY rows incomplete                        SURVEY (waiting on Decide) · HOLD
-SURVEY every row decided                      LAND (haipipe-page-evidence)
-SURVEY a row's outcome is none                SHAPE, naming the bullet
-the Page Type refuses the shape               fix the plan, never the type, unless the
-                                              mismatch is a real finding against the type
+SURVEY graph unregistered or Decide open      SURVEY · HOLD when human input is required
+SURVEY every make graph registered + decided  LAND (haipipe-page-evidence)
+SURVEY item cannot be specified truthfully    SHAPE, naming item and target bullet
+owning phase policy refuses the shape         fix the plan, unless the mismatch is a real
+                                              finding against that policy
 ```
 
 OUTLINE never routes to the DRAFT part's REVISE or CHECK.
@@ -283,13 +348,15 @@ OUTLINE never routes to the DRAFT part's REVISE or CHECK.
 ```text
 phase: OUTLINE
 cycle: SHAPE | SURVEY
-file: <page>/outline/<stem>-outline-v<N>.md | <page>/outline/<stem>-items.md
+file: <page>/outline/<stem>-outline-v<N>.md | <page>/outline/<stem>-evidence-items.md
 supersedes: v<N-1> | none
 requirement: V1 V2 V3 V4 read ✅
 feedback: n routed · n served · n declined
-items: n marks · n rows · decided n · by outcome: found n · rerun n · new-run n · … · none n
+items: n typed · n specified · n planned · n decided · by type VALUE/CITE/DISPLAY
+runs-registered: supporting n (Execution n · Discovery n) · local n · Ready n
+pagex-bindings: n exact · n unresolved/invalid
 checks: ⓪ ✅ ① ✅ ② ✅ ③ ✅ ④ ✅        (SHAPE)
-counts: divisions · paragraphs · bullets · marks by kind
+counts: divisions · paragraphs · bullets · Evidence Items by type
 threads: D<nn> opened … · D<nn> settled …
 approved: ✅ <who> <date> | ⬜ waiting
 next: SHAPE | SURVEY | LAND | DRAFT | HOLD
@@ -306,7 +373,8 @@ haipipe-page-outline/
 Owns no scripts. The base is `haipipe-page`; the folder, the tab, the plan
 grammar and the item table's grammar are `haipipe-plugin-outline`'s
 (`ref/plan-grammar.md`, `ref/item-table.md`, `ref/record-shape.md`,
-`ref/specimen-section-plan.md`); the two-part loop and the receipt law are
+`ref/specimen-section-plan.md`); PageX binding semantics are
+`haipipe-plugin-evidence/ref/pagex.md`; the two-part loop and the receipt law are
 `haipipe-page-workflow`'s; the six-field card of every phase is
 `../haipipe-page-workflow/ref/phase-cards.md`; the next phase is
 `haipipe-page-evidence` (LAND, EMBED), and after the part exits,

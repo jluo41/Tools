@@ -11,7 +11,7 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.12.5"
+  version: "0.12.6"
   last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -211,6 +211,7 @@ The `workflow/` folder is the task's observability surface: Plan = intent, Repor
 
 **The unit symmetry (JL 260831)**: a task folder is a special page folder, and both carry the same two process lanes. `workflow/` is the MACHINE half (this folder, unchanged). `outline/` is the HUMAN half and is now legal in a task folder too: the prose plan a person ticks, the open `D<nn>` threads, and the log, in the page family's record shape (`haipipe-plugin-outline/ref/record-shape.md`). The board renders a task's `tNN_<task>.md` as a page already; `outline/` gives its human decisions the same home a page's have. First real instance: the page-serving collection job (`haipipe-task-for-page`).
 
+Load `haipipe-run` for the neutral Level-4 identity and pairing contract.
 The optional Task-side presenter is `haipipe-plugin-runs`, not Execution.
 Execute remains phase 3 of P-B-E-R; **Runs** lists the durable attempts. For a
 canonical nested Task Page it resolves the authored

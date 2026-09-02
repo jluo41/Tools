@@ -32,6 +32,16 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from src.common import evidence_lane_dirs
+from src.item_table import (
+    ITEM_TYPES,
+    LADDER as ITEM_LADDER,
+    bullets as typed_bullets,
+    cycle_now as item_cycle,
+    item_status,
+    read_items,
+    repo_root,
+    wall_label,
+)
 
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
 DONE = {"✅"}
@@ -316,6 +326,14 @@ object.evfig{{height:32vh}}
 .bundles{{margin:7px 0 8px;padding:5px 8px;border:1px solid var(--line);
  border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card))}}
 .bundles>summary{{font-size:10px}}
+.reviewpacket{{margin:9px 0 8px;padding:7px 9px;border:1px solid var(--line);
+ border-left:3px solid var(--acc);border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card));
+ font-size:12.5px;line-height:1.5}}
+.reviewpacket>b{{font:650 11px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.05em;color:var(--acc)}}
+.reviewsteps{{margin-top:3px;overflow-wrap:anywhere}}
+.reviewpacket details{{margin-top:4px}}
+.reviewpacket summary{{font-size:10.5px}}
 .bundle-row{{display:flex;gap:7px;align-items:baseline;padding:2px 0;
  font-size:11px;line-height:1.35;border-top:1px solid var(--line)}}
 .bundle-row:first-of-type{{border-top:0}}
@@ -704,6 +722,207 @@ def _latest_plan(page_src):
         if bestkey is None or key > bestkey:
             best, bestkey = f, key
     return best, (best.stem.split("-outline-")[-1] if best else "")
+
+
+def _typed_item_review(page_src, plan, plan_text, approved):
+    """Read the typed Evidence Item table once for the plan-card join.
+
+    The authored plan says *which* bullet owes an item; the authored item table
+    says how that item will be surveyed and run; the status ladder derives the
+    live state.  Keeping that join here (rather than re-parsing the evidence
+    projection) lets a reader inspect Shape and Survey together without making
+    either source authoritative over the other.
+    """
+    table = read_items(page_src)
+    page_text = page_src.read_text(encoding="utf-8", errors="replace")
+    page_accepted = bool(re.search(r"^accepted:\s*✅", page_text, re.M))
+    root = repo_root(page_src.parent)
+    by_target, active_rows, values, statuses = {}, {}, [], []
+    counts = {word: 0 for word in ITEM_LADDER}
+    types = {item_type: 0 for item_type in ITEM_TYPES}
+
+    for item_id, target, head, item_type, expected, acceptance, folded in typed_bullets(plan_text):
+        row = table.get(item_id)
+        status = item_status(
+            row, folded, page_accepted, plan.stat().st_mtime, root, page_src.parent
+        )
+        counts[status] += 1
+        types[item_type] += 1
+        statuses.append(status)
+        if row is not None:
+            active_rows[item_id] = row
+        value = {
+            "id": item_id,
+            "target": target,
+            "head": head,
+            "name": ((row or {}).get("name")
+                     or item_id.split("-", 2)[-1].replace("-", " ")),
+            "type": item_type,
+            "expected": (row or {}).get("expected") or expected,
+            "acceptance": (row or {}).get("acceptance") or acceptance,
+            "supporting_runs": (row or {}).get("supporting_runs") or "— not surveyed",
+            "pagex_bindings": (row or {}).get("pagex_bindings") or "— not surveyed",
+            "local_input": (row or {}).get("local_input") or "— not surveyed",
+            "local_run": (row or {}).get("local_run") or "— not surveyed",
+            "action": (row or {}).get("action") or "",
+            "address": (row or {}).get("address") or "",
+            "result": (row or {}).get("result") or "— no local Result bound",
+            "decide": (row or {}).get("decide") or "☐ make / defer / drop",
+            "decision": (row or {}).get("decision") or "",
+            "status": status,
+            "folded": folded,
+        }
+        by_target.setdefault(target, []).append(value)
+        values.append(value)
+
+    decided = sum(1 for value in values if value["decision"])
+    return {
+        "items": values,
+        "by_target": by_target,
+        "counts": counts,
+        "types": types,
+        "decided": decided,
+        "cycle": item_cycle(approved, active_rows, statuses, len(values)),
+    }
+
+
+def _content_divisions(page_text):
+    """Return the current Content divisions in display order, never prose."""
+    inside, found = False, []
+    for line in page_text.splitlines():
+        if re.match(r"^##\s+Content\b", line, re.I):
+            inside = True
+            continue
+        if inside and line.startswith("## "):
+            break
+        if not inside:
+            continue
+        match = _DIV_RE.match(line)
+        if match and not match.group(2):
+            found.append((match.group(1), (match.group(3) or match.group(4) or "").strip()))
+    return found
+
+
+def _shape_content_map(plan_text, page_text):
+    """A structural map for review, deliberately not a semantic verdict."""
+    shape = []
+    for line in plan_text.splitlines():
+        match = re.match(r"^##\s+C(\d+)\s*·\s*(.*)$", line)
+        if match:
+            shape.append((match.group(1), match.group(2).strip()))
+    content = _content_divisions(page_text)
+
+    def normal(text):
+        return re.sub(r"[^a-z0-9]+", "", text.lower())
+
+    label_matches = sum(
+        1 for (_number, shape_name), (_content_number, content_name)
+        in zip(shape, content)
+        if normal(shape_name) and normal(content_name)
+        and (normal(shape_name) in normal(content_name)
+             or normal(content_name) in normal(shape_name))
+    )
+    if not shape:
+        summary, cls = "⚠️ no Shape divisions in this plan", "warn"
+    elif len(shape) != len(content):
+        summary, cls = (
+            "⚠️ Shape has %d division%s; current Content has %d" % (
+                len(shape), "s"[:len(shape) != 1], len(content)
+            ),
+            "warn",
+        )
+    elif label_matches == len(shape):
+        summary, cls = "✅ %d Shape division%s map to current Content" % (
+            len(shape), "s"[:len(shape) != 1]
+        ), "ok"
+    else:
+        summary, cls = "⚠️ %d Shape ↔ Content divisions; %d/%d labels match" % (
+            len(shape), label_matches, len(shape)
+        ), "warn"
+
+    def show(rows, prefix):
+        return " · ".join(
+            "%s%s %s" % (prefix, number, name or "—") for number, name in rows
+        ) or "—"
+
+    return {
+        "summary": summary,
+        "cls": cls,
+        "shape": show(shape, "C"),
+        "content": show(content, "§"),
+    }
+
+
+def _typed_item_chip(item, popover_id):
+    """One compact status tag with its Survey graph behind a native popover."""
+    status = item["status"]
+    cls = "ok" if status in {"ready", "folded", "accepted"} else (
+        "mut" if status in {"deferred", "dropped"} else "warn"
+    )
+    rows = (
+        ("Target", item["target"]),
+        ("Expected", item["expected"]),
+        ("Acceptance", item["acceptance"]),
+        ("Supporting Runs", item["supporting_runs"]),
+        ("PageX Bindings", item["pagex_bindings"]),
+        ("Local Input", item["local_input"]),
+        ("Local Run", item["local_run"]),
+        ("Result", item["result"]),
+        ("Decide", item["decide"]),
+    )
+    detail = "".join(
+        '<div class=rr><b>%s</b><span>%s</span></div>' % (_e(label), _inl(value))
+        for label, value in rows
+    )
+    # The wall identity is deliberately short but semantic: readers see the
+    # item number, evidence kind, and readable preview name. The immutable id,
+    # full type, status, and complete route remain in the popover.
+    label = wall_label(item["id"], item["type"], item["name"])
+    return (
+        '<button class="evchip %s" popovertarget="%s">%s</button>'
+        '<div id="%s" popover class="chipcard %s">'
+        '<div class=cch><b>%s</b><span class=cck>%s · %s</span></div>'
+        '<div class="ccb rrows">%s</div></div>'
+        % (cls, popover_id, _e(label), popover_id, cls, _e(item["id"]),
+           _e(item["type"]), _e(status), detail)
+    )
+
+
+def _review_packet(page_src, plan_text, typed):
+    """The visible four-step packet used to review one Section at a time."""
+    alignment = _shape_content_map(
+        plan_text, page_src.read_text(encoding="utf-8", errors="replace")
+    )
+    feedback_file = page_src.parent / "outline" / (page_src.stem + "-feedback.md")
+    feedback_count = 0
+    if feedback_file.is_file():
+        feedback_text = feedback_file.read_text(encoding="utf-8", errors="replace")
+        feedback_count = len(re.findall(r"(?m)^###\s+", feedback_text))
+    counts = typed["counts"]
+    status_line = " · ".join(
+        "%d %s" % (counts[word], word)
+        for word in ("specified", "planned", "ready", "folded", "accepted")
+    ) if typed["items"] else "no typed Evidence Item owed"
+    survey = "%d typed item%s · Decide %d/%d · %s" % (
+        len(typed["items"]), "s"[:len(typed["items"]) != 1],
+        typed["decided"], len(typed["items"]), status_line,
+    )
+    return (
+        '<div class="reviewpacket">'
+        '<b>Review this Section</b>'
+        '<div class=reviewsteps>① <b>Shape</b>: read the plan below '
+        '→ ② <b>Survey</b>: %s '
+        '→ ③ <b>Feedback</b>: %d routed record%s in 🗣 Feedback '
+        '→ ④ <b>Content</b>: <span class=%s>%s</span></div>'
+        '<details><summary>Shape ↔ Content map</summary>'
+        '<div class=rr><b>Shape</b><span>%s</span></div>'
+        '<div class=rr><b>Current Content</b><span>%s</span></div>'
+        '<div class=mut>Structural map only; approve the substantive alignment during review.</div>'
+        '</details></div>'
+        % (_e(survey), feedback_count, "s"[:feedback_count != 1],
+           alignment["cls"], _e(alignment["summary"]),
+           _e(alignment["shape"]), _e(alignment["content"]))
+    )
 
 
 def _disk_state(page_src):
@@ -1113,11 +1332,13 @@ def _count_accepted(txt, cards, units):
 
 def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
                   cards, units, keys, scaffolds=None):
-    """Return the compact, derived status for one marked Outline Point.
+    """Return one complete/incomplete roll-up for a marked Outline Point.
 
     This deliberately returns data rather than HTML so the plan surface and a
     future API can share the same Evidence Bundle semantics. The bundle is
-    keyed by the frozen Point address; plugin folders remain the authorities.
+    keyed by the frozen Point address; plugin folders and typed Evidence Item
+    states remain the authorities. The bundle does not mint another status
+    vocabulary.
     """
     probes = sorted(set(by_bullet.get(address, [])))
     displays = sorted(set(display_by_bullet.get(address, [])))
@@ -1146,32 +1367,32 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
                   if _pstate(cards.get(p, ("", 0, "", False))[0]) in LANDED
                   and (cards.get(p, ("", 0, "", False))[1] > 0
                        or cards.get(p, ("", 0, "", False))[3])]
-        status = "evidence-ready" if probes and len(landed) == len(probes) \
-            else "needs-probe"
+        summary = "complete" if probes and len(landed) == len(probes) \
+            else "incomplete"
         return {"probes": probes, "displays": [], "citations": [],
-                "sentences": sentences, "feedback": feedback, "status": status,
+                "sentences": sentences, "feedback": feedback, "summary": summary,
                 "have": len(landed), "need": max(1, len(probes))}
     if kind == "display":
         rendered = [d for d in displays if units.get(d, (False, False, "", False, ""))[0]]
         intake = [d for d in displays if units.get(d, (False, False, "", False, ""))[3]]
-        status = "evidence-ready" if displays and len(rendered) == len(displays) \
+        summary = "complete" if displays and len(rendered) == len(displays) \
             and len(intake) == len(displays) \
-            else "needs-intake"
+            else "incomplete"
         return {"probes": probes, "displays": displays, "citations": [],
                 "sentences": sentences, "feedback": feedback,
-                "status": status, "have": len(rendered),
+                "summary": summary, "have": len(rendered),
                 "need": max(1, len(displays))}
     if kind == "cite":
-        status = "evidence-ready" if refs and len(citations) == len(refs) \
-            else "needs-citation"
+        summary = "complete" if refs and len(citations) == len(refs) \
+            else "incomplete"
         return {"probes": probes, "displays": displays,
                 "citations": citations, "sentences": sentences,
-                "feedback": feedback, "status": status,
+                "feedback": feedback, "summary": summary,
                 "have": len(citations), "need": max(1, len(refs))}
     return {"probes": probes, "displays": displays,
             "citations": citations, "sentences": sentences,
             "feedback": feedback,
-            "status": "evidence-ready",
+            "summary": "complete",
             "have": 1, "need": 1}
 
 
@@ -1184,6 +1405,7 @@ def plan_card(page_src, root=None):
     approved = bool(re.search(r"^approved:\s*✅", txt, re.M))
     cards, units, keys, serves, display_serves = _disk_state(page_src)
     page_text = page_src.read_text(encoding="utf-8", errors="replace")
+    typed = _typed_item_review(page_src, f, txt, approved)
     # The page is the Aims' home (JL 260831, QPf12 row 2: "In the Page as well,
     # and should map to the content"); a plan that still carries Aim rows only
     # fills ids the page does not have.
@@ -1284,6 +1506,15 @@ def plan_card(page_src, root=None):
         # differs, and it differs because the units differ.
         full_addr = "C%d.P%d.B%d" % (cn, max(pn, 1), sn)
         addr = full_addr
+
+        # New typed Evidence Items are the current contract.  Their short
+        # inline tags keep the Shape readable; the native popover exposes the
+        # whole Survey graph (supports, local Run, Result, and human Decide).
+        typed_chips = []
+        for item in typed["by_target"].get(full_addr, []):
+            nid += 1
+            typed_chips.append(_typed_item_chip(item, "typed-ev%d" % nid))
+
         def _backlink(exclude=()):
             """The ↩ tag: cards that name THIS bullet in their `serves:`.
             It is skipped for a card the row already prints as a chip, because
@@ -1353,7 +1584,9 @@ def plan_card(page_src, root=None):
             # tag on every line was wrong (JL 260817) and made the plan
             # unreadable: the plan is prose, the notes are the exception.
             tally["plain point"] = tally.get("plain point", 0) + 1
-            rows.append(_bullet_row(body, _backlink()))
+            rows.append(_bullet_row(body, " ".join(
+                [chip for chip in [_backlink(), *typed_chips] if chip]
+            )))
             continue
         emo, kind = hit
         tally[kind] = tally.get(kind, 0) + 1
@@ -1435,6 +1668,7 @@ def plan_card(page_src, root=None):
             bl = _backlink(exclude=refs)
             if bl:
                 chips.append(bl)
+        chips.extend(typed_chips)
         if kind in {"probe", "value", "display", "cite"}:
             bundle = _bundle_state("value" if kind == "probe" else kind,
                                    refs, full_addr, by_bullet,
@@ -1453,13 +1687,13 @@ def plan_card(page_src, root=None):
                 labels.append("feedback " + ", ".join(bundle["feedback"]))
             if not labels:
                 labels.append("no landed resource")
-            state_cls = "ok" if bundle["status"] in {"evidence-ready", "accepted"} else "warn"
+            state_cls = "ok" if bundle["summary"] == "complete" else "warn"
             bundle_rows.append(
                 '<div class="bundle-row"><span class=addr>%s</span>'
                 '<span class=bundle-kind>%s</span><span class=bundle-items>%s</span>'
                 '<span class="bundle-state %s">%s</span></div>'
                 % (full_addr, kind, _e(" · ".join(labels)), state_cls,
-                   _e(bundle["status"]))
+                   _e(bundle["summary"]))
             )
         # The chips go INSIDE the sentence's own span, never beside it. As
         # siblings of `.row`'s flex they each became a COLUMN, stole width from
@@ -1499,19 +1733,35 @@ def plan_card(page_src, root=None):
     # The counts run through _e(), so an `&nbsp;` written into the STRING is
     # escaped and printed as the five literal characters (seen in the 260817
     # screenshot: "0 accepted &nbsp; aim 9"). Separators belong in the markup.
-    counts = "%d owed · %d landed · %d accepted" % (owed, landed, accepted)
-    kinds = " · ".join("%s %d" % (k, v) for k, v in sorted(tally.items()))
+    if typed["items"]:
+        counts = "%d typed · %s" % (
+            len(typed["items"]),
+            " · ".join(
+                "%d %s" % (typed["counts"][word], word)
+                for word in ("specified", "planned", "ready", "folded", "accepted")
+            ),
+        )
+        kinds = " · ".join(
+            ["%s %d" % (kind, typed["types"][kind]) for kind in ITEM_TYPES
+             if typed["types"][kind]]
+            + ["Decide %d/%d" % (typed["decided"], len(typed["items"])),
+               "cycle %s" % typed["cycle"]]
+        )
+    else:
+        counts = "%d owed · %d landed · %d accepted" % (owed, landed, accepted)
+        kinds = " · ".join("%s %d" % (k, v) for k, v in sorted(tally.items()))
     bundle = ""
     if bundle_rows:
         bundle = ('<details class=bundles><summary>🔗 Evidence Bundles · %d '
                   'Point%s</summary>%s</details>'
                   % (len(bundle_rows), "s"[:len(bundle_rows) != 1],
                      "".join(bundle_rows)))
+    review = _review_packet(page_src, txt, typed)
     return ('<div class=card><h2>%s %s</h2>'
             '<div class=mut>%s<span class=sep>%s</span>%s<span class=sep>%s</span>'
-            '%s</div>%s%s</div>'
+            '%s</div>%s%s%s</div>'
             % (head, gate, _e(counts), "&nbsp;&middot;&nbsp;", _e(kinds),
-               "&nbsp;&middot;&nbsp;", _e(f.name), bundle, "".join(rows)))
+               "&nbsp;&middot;&nbsp;", _e(f.name), review, bundle, "".join(rows)))
 
 
 
@@ -1557,11 +1807,12 @@ def _page_now(plan, plan_head, cards):
 # shapes (bare `YYMMDD ·` log rows, `- id · head` feedback rows with indented
 # `key:` lines, `status:` metadata under a thread, the evidence table) are
 # still READ, so an unmigrated page renders instead of breaking.
-# 📎 Files is the seventh kind (JL 260831, QPf12-outline row 3: `## Files`
+# 📎 Files is one process-record kind (JL 260831, QPf12-outline row 3:
+# `## Files`
 # leaves the page for `<stem>-files.md`, one `### F<n> · <what it is for>`
 # per file with Path and Role).
 _SIBLINGS = (("req", "📏 Requirement", "requirement"), ("disc", "💬 Discussion", "discussion"),
-             ("fb", "🗣 Feedback", "feedback"), ("ev", "🧾 Evidence", "evidence"),
+             ("fb", "🗣 Feedback", "feedback"), ("ev", "🧾 Evidence / Survey", "evidence"),
              ("files", "📎 Files", "files"), ("log", "📜 Log", "log"))
 
 _HDR_RE = re.compile(r"^(page|kind|rounds|written|status|plan|ids|measured):\s")
@@ -1678,7 +1929,7 @@ def _pill(rec):
         # the item ladder (haipipe-plugin-outline ref/item-table.md): landed ·
         # folded · accepted read green; owed · bound · stale · blocked amber;
         # deferred · dropped grey (the default below)
-        if any(k in low for k in ("✅", "settled", "landed", "folded", "accepted", "evidence-ready", "decided", "gated")) \
+        if any(k in low for k in ("✅", "settled", "landed", "folded", "accepted", "decided", "gated")) \
                 or low in ("met", "yes"):
             return (lab, "ok", v)
         if any(k in low for k in ("open", "needs", "🔴", "🟡", "hold", "unmet", "⬜", "bound", "stale", "blocked")) \

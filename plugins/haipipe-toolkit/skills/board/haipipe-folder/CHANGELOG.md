@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 · 2026-09-01
+
+- Require every phase with addressable work to implement its workflow's
+  Phase × Run row through a matching Task-Face Run Profile.
+- Keep the workflow table as index, phase profile as executable detail, and
+  runtime receipts as actual inventory; treat disagreement as structural error.
+
+## 0.3.1 · 2026-09-01
+
+- Delegate the shared Level-4 Run identity, Ticket/Result pairing, receipt,
+  lifecycle, and audit invariants to the new neutral `haipipe-run` contract.
+
 ## 0.3.0 · 2026-09-01
 
 - Rename the optional presenter from Execution to Runs; Execute remains a

@@ -14,7 +14,7 @@ Diagram`, `### Key Points`, `### Decisions`, `### Action Items`, `### Open
 Questions`), so the mapping below is a lookup rather than an interpretation:
 
     ### TL;DR            -> ## Opening          managed
-    ### Diagram          -> ## Diagram          managed  (already ASCII)
+    ### Diagram          -> ## Outline          managed  (already ASCII)
     ### Key Points       -> ## Content          managed
     ### Decisions        -> ## Content          managed
     ## Conversation      -> ## Content          managed  (one ### per chapter)
@@ -210,7 +210,7 @@ What it settled, what it reopened, and which pages should not be read without it
 ## Writing Style
 Preserve the meeting's language in quoted material. Write Board-facing interpretation in plain English, one sentence per source line, and never alter the imported record to improve its style.
 
-## Diagram
+## Outline
 {diagram}
 
 ## Content

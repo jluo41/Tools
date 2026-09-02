@@ -161,7 +161,7 @@ and never writes a shared status ledger.
 
 ## Family status
 
-Run 260831 · regenerate: `/skill-inspect board --score` (0_utils/skill-inspect, SCORE mode)
+Regenerate with: `/workflow-table board` (Workflow Table + final Skill Coverage static-quality view)
 
 ```text
 CONTRACT

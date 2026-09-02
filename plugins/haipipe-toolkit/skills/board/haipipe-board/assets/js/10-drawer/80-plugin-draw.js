@@ -227,20 +227,9 @@
     document.body.classList.add('has-draw');
   }
 
-  if (window.boardPlugins) {
-    window.boardPlugins.register({
-      id: 'draw',
-      label: '\u{1F58C} Draw',
-      hint: 'this page’s drawing, beside the page',
-      // 🔌 A PLUGIN: a surface you look through. It stores no state on the page
-      // and locks no step, which is the test the two menus split on.
-      menu: 'plugin',
-      applies: function (page) { return !!owner(page); },
-      open: open
-    });
-  }
-
-  /* The SHELL needs the scene url to put this drawing in its right-hand tab, and
+  /* Draw is an internal Studio lane, so it exports its owner/opener without
+     registering a second top-level Plugin row. The shell needs the scene URL to
+     put this drawing in Studio's upper half, and
      deriving it a second time up there would be a second answer to "which file
      does this view save to". One export, one derivation (JL 260810). */
   window.boardDrawOwner = owner;

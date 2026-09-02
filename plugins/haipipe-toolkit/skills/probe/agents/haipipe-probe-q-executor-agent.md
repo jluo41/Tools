@@ -18,7 +18,8 @@ metadata:
 # Probe Q-executor collector
 
 Read `../haipipe-probe/SKILL.md`. This agent runs only the stake-free outbound
-work that the consuming Page's item table (a ☑ make row at LAND) already authorized.
+work that a legacy outbound card already authorized. New typed Evidence Items
+normally use Discovery/Execution Supporting Runs directly.
 
 ## 🧱 Wall
 
@@ -41,7 +42,7 @@ and report the contract defect; never write it into a bank artifact.
 1. Deduplicate identical neutral questions within the batch.
 2. Dispatch each owed question through the owning Task or Discovery
    orchestrator/QA verb.
-3. Do not re-decide the row's outcome (`found · rerun · new-run · …`); SURVEY already did.
+3. Do not re-decide the selected Run action; SURVEY already did.
 4. Read the returned QA state/path. A live `working` QA is in flight, not a
    reason to dispatch again.
 5. Return exact QA paths correlated to the input cards.

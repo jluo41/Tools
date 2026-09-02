@@ -2,14 +2,15 @@
 name: haipipe-plugin-outline
 description: >-
   The outline/ plugin of a Board page: the page's PROCESS folder (eight record
-  kinds: the versioned plan, requirement, discussion, feedback, items, evidence,
-  files, log) and the 🧭 tab that reads them, first and default on every page.
+  kinds: the versioned plan, requirement, discussion, feedback, evidence
+  items, evidence, files, log) and the 🧭 tab that reads them,
+  first and default on every page.
   Read-only surface; the deliverable of the OUTLINE phase. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-09-01"
+  version: "0.27.3"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,11 +42,13 @@ stem; only the plan is many-per-page, by version.
 ```text
 <page>/outline/
 ├── <stem>-outline-v<N>.md    what we AGREED      authored · a person ticks · versioned
-├── <stem>-requirement.md     what we MUST obey   generated · cli/requirement.py · venue only
+├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
+│                             cli/requirement.py refreshes V and preserves W
 ├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
 ├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
-├── <stem>-items.md           what each mark OWES authored · SURVEY writes Need·Route·Run, a person writes Decide
-│                             and which RUN answers it        (ref/item-table.md)
+├── <stem>-evidence-items.md  what each item MUST BECOME
+│                             authored · SHAPE specifies; SURVEY registers Supporting Runs + PageX Bindings + one Local Input + one Local Run
+│                             LAND validates sources and binds the ready Result (ref/item-table.md)
 ├── <stem>-evidence.md        what has LANDED     generated · cli/evidence-status.py · the table joined to the disk
 ├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
 └── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
@@ -55,13 +58,34 @@ stem; only the plan is many-per-page, by version.
   answers another file's question is misplaced: a settled thread is a log
   record, a deviation from the venue is a thread, a plan's status is on the
   page's Aims.
-- **Authored versus generated is the line, not topic.** A generated file is
-  regenerated whole and never hand-edited (`*-hand-edited` teeth); an
-  authored file is written by the page and its signed lanes are never deleted.
+- **Authored versus generated is marked explicitly.** Most generated files are
+  regenerated whole; Requirement is the bounded exception: its V block is
+  generated and its W block is authored, so `cli/requirement.py` refreshes V
+  while preserving the authored W records verbatim.
 - **No file name contains `outline` except the plan**, because the plan globs
   are `*-outline-*.md`.
-- **The page keeps four on-stage sections**, Opening · Diagram · Content ·
-  Aims, and nothing this folder holds. `check.py` reports a surviving
+- **The page keeps four on-stage sections**, 🚪 Opening · 🧭 Outline · Content ·
+  Aims, and nothing this folder holds. Opening stays visible and the Page's
+  `🧭 Outline` opens by default and renders only the read-only current-plan
+  table. The grid is `Address · Planned move · Evidence · Supporting Runs ·
+  Local Run`: C/P headers keep the plan's reader order and B rows join
+  typed Evidence Items to their surveyed Supporting Runs and local route in
+  separate columns. A real Run is a short, linked readable address such as
+  `b01.j02.t03.r04` plus its lifecycle label (for example `Ready` or
+  `Rerun`). A real current Task ticket with no validated output is shown as
+  `Rerun`, never `Done`; a missing ticket is rendered as `needs … Run`, not a
+  made-up id. An unregistered route stays visibly `unregistered` and keeps SURVEY open. Item
+  status has no column: chip colour carries
+  the quick signal and the popover names the exact derived state. The compact Evidence label is
+  `E<n><V/C/D>.<ShortNameNoSpaces>`; clicking it reveals the immutable id,
+  full readable name, full type, PageX sources,
+  acceptance contract, routes, and Result. There is no separate Page-authored
+  narrative map. Content, Aims, and every other fold start shut. This folder
+  remains the only authority for all eight records. A manuscript Section keeps
+  no `### Writing Style` block in its product source; its page-owned writing
+  rules are `W<n>` records inside `outline/<stem>-requirement.md`.
+  Opening and Outline use distinct icons because the former orients the reader
+  and the latter exposes the plan. `check.py` reports a surviving
   `## States`, `## Files`, `## Log` or `## Discussion` as `retired-section`.
 
 The grammar of every record file, its labels, its writer and its teeth:
@@ -76,7 +100,9 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
 ## C<n> · <name>                     division · ≤ 8 words · names its subject
 ### C<n>.P<m> · <move> · S<a> to S<b> paragraph · a Section page names the sentence span
 - B<k> · <head>                      4 to 11 plain words: what the point DOES
-  Note: <≤ 30 words> <marks>         the constraint or definition; the marks end it
+  Note: <≤ 30 words> [🎯 Aim]        the constraint or definition
+  Evidence: E<NN>-<TYPE>-<slug> · …  named expectation, written at SHAPE
+  Accept: …                           observable ready-evidence contract
   Answered: · Drawn: · Routed:       appended by the fold, one per line
 ```
 
@@ -87,9 +113,10 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
   page; the plan says what the sentence must do and what constrains it. A Note
   is at most 30 words (a wrapped source line is still one Note); a Note that
   carries prose is DRAFT leaking upward.
-- **A mark is the exception**: 🎯 aim · 📚 citation · 📮 probe · 🧮 value ·
-  🖼 display, at the end of the Note line; unmarked means nothing is owed.
-- **The plan carries no Aim rows.** Aims live on the page; a 🎯 mark names one.
+- **Typed Evidence Items are the exception**: `E<NN>-VALUE-<slug>`,
+  `E<NN>-CITE-<slug>`, or `E<NN>-DISPLAY-<slug>`, each with an expectation and
+  an `Accept:` line. No Evidence line means nothing is owed.
+- **The plan carries no Aim rows.** Aims live on the page; a 🎯 annotation names one.
   An ask with no Aim is a `D<nn>` thread, never a minted Aim.
 - **The address is `C<n>.P<m>.B<k>`** and it is the join key for every other
   file in the folder and every card, key and unit in the sibling lanes.
@@ -120,7 +147,7 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
 🧭 shows the plan and, against each part of it, what that part still owes.
 
 ```text
-🧭 By part · 🚦 What is left · 📏 Requirement · 4 · 💬 Discussion · 5 · 🗣 Feedback · 8 ·
+🧭 By part · 🚦 What is left · 📏 Requirement · 8 · 💬 Discussion · 5 · 🗣 Feedback · 8 ·
 🧾 Evidence · 3 · 📎 Files · 4 · 📜 Log · 20
 ```
 
@@ -131,9 +158,9 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
   does not exist draws no chip. Every lens draws records the same way: id
   badge, headline, label grid, status pill, detail behind "more".
 - **The plan card sits above the division cards** and joins each bullet to
-  the disk: `📚` key in `bibex/` or not · `📮` card state, proof present or
-  not · `🖼` unit declared → rendered → accepted · `↩ PP04 0/1` when a card
-  serves a bare mark. Header counts `owed · landed · accepted` are computed
+  the disk: each `E<NN>-TYPE-<slug>` joins its Supporting Runs, PageX bindings,
+  local Page · Evidence Item Run, ready Result, and fold. Header counts `specified · planned
+  · ready · folded · accepted` are computed
   separately and never collapsed.
 - **Both failure modes render as a named row, never a blank**: 🕳 owed and
   nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
@@ -146,28 +173,63 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
   (done · left · waiting), then the cards; unfinished rows stay in sight and
   finished ones fold.
 
+The built Board page also carries a smaller, always-visible **Page Outline
+table** (`haipipe-board/src/page_question.py::_outline_grid`). It is a compact
+projection, not a second full tab: `Address · Planned move · Evidence ·
+Supporting Runs · Local Run`. It deliberately omits aggregate state counts and
+the broader sibling-material bundle. Those remain in the richer live 🧭 tab;
+item state on the compact table is conveyed only by chip colour and popover.
+
+### 🤝 Human review packet · the chat counterpart of the tab
+
+When a person asks to review, check, read, or approve a page outline, the
+OUTLINE phase reads these existing records as one compact, linked packet:
+
+```text
+① Current Shape    plan v<N> · approval state · arc · C/P reader path
+② Evidence owed    Evidence Item table · typed/status counts · material source/Run paths
+③ What shaped it   routed Feedback · applicable Requirement · open Discussion only
+④ Human decision   exact approval/Decide choice · blockers · no inferred tick
+```
+
+The response links the current plan and every record it names.  A feedback row
+is shown with the bullet it shapes (`Routed:` address), not merely as a count;
+an Evidence Item is shown with its expected payload, acceptance, and surveyed
+path, not merely its identifier.  Routine rows may collapse into counts, but
+the response never hides a material open row behind a count.  This packet is
+read-only and belongs to the human-chat contract in
+`page-workflows/haipipe-page-outline`; the tab remains the authoritative live
+surface and writes nothing.
+
 ### Chips stay inside the sentence
 
 ```text
 ① INLINE, never a column   a chip lives in the row's own span; a sibling column steals the text's width
 ② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px padding
 ③ the note is a WORD       `in bibex/` → nothing (the colour says it) · `no unit declared yet` → `owed`
-④ never say it twice       a chip is `emoji · id · note`; the ↩ tag is suppressed for a card the row already names
+④ never say it twice       a chip is `E<n><V/C/D>.<ShortNameNoSpaces>`; the ↩ tag is suppressed for a card the row already names
 ```
 
-No emoji inside a tag. A chip opens a native popover holding the THING itself
+No emoji inside a tag; status belongs to colour and the popover detail. A chip opens a native popover holding the THING itself
 (the reference as printed, the card's own question, the unit's own claim); a
 📚 panel prints `Author et al.`, never the author list.
+`CITE` is one Evidence Item type, not a separate table column: one bullet may
+show several compact `E<n>C.<Name>` chips beside its VALUE and DISPLAY items.
+A Results bullet may legitimately show no CITE chip when it reports only this
+study's analysis and points to its own displays.
 
 ## 🔗 The evidence bundle · a derived view, not a folder
 
 The tab may show, per bullet, the join of the frozen address to everything
 that names it: the sentence scaffold (`realizes:`), probe cards (`serves:`),
-bibex keys, `proof/`, display units and their `accepted:` tick. It is a
-projection; Probe, Bibex and Display keep their own folders, and a human
-choice such as `selected: Display2` lives on the owning unit. The status words
-and rules are `ref/evidence-bundle.md`; `<stem>-evidence.md` is the same join
-written to disk with a date.
+Evidence citation keys, `proof/`, display units and their `accepted:` tick.
+It is a projection; Evidence, Probe and Display keep their own authority, and a human
+choice such as `selected: Display2` lives on the owning unit. Each typed item's
+state comes only from the ladder in `ref/item-table.md`. The broader point-level
+projection is described in `ref/evidence-bundle.md`; it has no competing status
+vocabulary and is not `<stem>-evidence.md`. That generated file is specifically
+the authored Evidence Item table joined to Supporting/Local Run receipts and
+ready local Results.
 
 ## ✍️ Who writes what
 
@@ -175,11 +237,14 @@ written to disk with a date.
 file            written by                                    regenerate with
 ────────────────────────────────────────────────────────────────────────────────────────────────
 plan            SHAPE (in session or haipipe-page-outline-agent); EMBED's fold appends   never
-requirement     the generator                                 cli/requirement.py <page>.md
+requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.py <page>.md
+                the bound venue source supplies their material
+requirement W   the page author; generator preserves verbatim never (authored)
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
-items           SURVEY (in session or haipipe-page-outline-agent): Need · Route · Run;   never
-                a person: Decide; LAND appends ` → <result file>` only
+evidence-items  SHAPE: Target · Need · Expected · Acceptance; SURVEY: registered Runs +  never
+                PageX Bindings + one Local Input + one Local Run; person: Decide;
+                LAND executes/validates sources and binds input + Result
 evidence        the generator                                 cli/evidence-status.py <page>.md
 files           any phase or the page chat                    never (authored)
 log             every phase and the page chat, append only    never (authored)
@@ -191,12 +256,13 @@ holds; it writes nothing.
 ## 📂 Files
 
 - `ref/plan-grammar.md` · the plan file's grammar, type switch, marks, versions, teeth
-- `ref/item-table.md` · the item table: one row per mark, the outcome words, the derived status ladder
-- `ref/record-shape.md` · the seven record kinds: ids, labels, writers, per-kind rules
-- `ref/specimen-section-plan.md` · the approved Section plan, frozen (SM00 v3)
-- `ref/evidence-bundle.md` · the derived per-bullet join (its six status words superseded by the item ladder, 260901)
+- `ref/item-table.md` · the Evidence Item table: typed identities, Run graph, derived status
+- `ref/record-shape.md` · the eight record kinds: ids, labels, writers, per-kind rules
+- `ref/specimen-section-plan.md` · the approved Section plan, frozen (MISQ Abstract v3)
+- `ref/evidence-bundle.md` · the broader derived per-bullet join; item states come from the item ladder
 - `../../haipipe-board/live/outline.py` · the parse, the lenses, `plan_card`, `_records`, the chips
 - `../../haipipe-board/live/shell.py` · the tab strip; 🧭 ranked first and opened by default
+- `../../haipipe-board/src/page_question.py` · the compact five-column Page Outline projection
 - `../../haipipe-board/checks/outline.py` · the standing check over every board's plans
 - `../../haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
 - `../../haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators

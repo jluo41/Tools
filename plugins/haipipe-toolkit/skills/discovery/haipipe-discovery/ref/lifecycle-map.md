@@ -1,83 +1,121 @@
-# Discovery Lifecycle Map (v3 — Topic Page + Paper Runs)
+# Discovery Lifecycle Map (v6 — D1 cycles over BJTR + Paper Runs)
 
-A Discovery Folder is one durable research Topic with BOTH a Page Face and a
-Task Face. It is a sibling of a task-folder, not a flat citation note. This file
+A Discovery `tNN_` Folder is one durable research article/question with BOTH a
+Page Face and a Task Face. It is a Task Page, not a flat citation note. This file
 is the canonical authority for the lifecycle/type cross; Level-4 mechanics live
 only in `paper-run-contract.md`.
 
 ## Three independent dimensions
 
 ```text
-HIERARCHY   Block -> Drop -> Discovery Task Page Folder -> Paper Run
-LIFECYCLE   Plan -> Build(optional) -> Execute -> Report
-TYPE        Search | Review | Idea
+HIERARCHY       Block -> Job -> Task Page -> Paper/Source Run
+WORKFLOW        D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+DISCOVERY TYPE  one article form from page-types.md
 ```
 
-Hierarchy says WHERE the unit lives. Lifecycle says WHEN work happens. Type
-says WHAT topic-level terminal is produced. Never use phase names as folder
-levels or worker calls as Paper Runs.
+`discoveries/` is the bank/root and has no address segment. Hierarchy says
+WHERE the unit lives. Workflow says WHEN work happens.
+Discovery Type says WHAT article the root Page promises. Never use phase names
+or types as folder levels, or worker calls as Paper Runs.
 
 ## Hierarchy
 
 ```text
-discoveries/                         Block
-└── <GROUP>/                         Drop
-    └── <NN_topic>/                  Discovery Task Page Folder: one topic
-        ├── runs/<RUNNAME>.sh        Paper Run: authored projection
-        └── results/<RUNNAME>/       same Paper Run: generated projection
+discoveries/                                  bank, not Block
+└── b01_<noun>_<qualifier>/                   Block: broad evidence Board/program
+    ├── j01_<noun>_<qualifier>/               Job: inquiry/campaign group
+    └── j02_<noun>_<qualifier>/               sibling group on the same Board
+        └── t01_<noun>_<qualifier>/           Task: one typed article Page
+            ├── t01_<noun>_<qualifier>.md     Page Face
+            ├── runs/r01_<author><year>_<paper>.sh
+            └── results/r01_<author><year>_<paper>/
 ```
 
-One Topic Folder holds MANY numbered Paper Runs. Each Run owns exactly one
+One Task Page holds MANY numbered Paper Runs. Each Run owns exactly one
 canonical paper/source subject and has an exact same-stem Result. Result is not
 a fifth hierarchy level. Full contract: `paper-run-contract.md`.
+
+All four address-bearing levels use
+`<level-letter><NN>_<noun>_<qualifier>`. The path yields compact
+`b01j01t01r01` and readable `b01.j01.t01.r01`. Bare `01_` is invalid.
+
+## BJTR meanings in Discovery
+
+| Level | Discovery meaning | Owns |
+|---|---|---|
+| Block `bNN_` | broad evidence Board/program; prefer few and group related Jobs | Jobs |
+| Job `jNN_` | self-contained inquiry or discovery campaign group | related Task Pages |
+| Task `tNN_` | one question plus one `discovery_type` article | Page/Task Faces and local Runs |
+| Run `rNN_` | one analysis of one admitted canonical Subject | Ticket, Result, runtime receipt |
 
 ## The two Faces
 
 ```text
 Page Face                              Task Face
 ---------                              ---------
-<topic>.md                             discovery.yaml
+tNN_<task>.md                         discovery.yaml
 outline/                               scripts/ (optional instrument)
-evidence/bibex/<topic>.bib             runs/
-topic-level synthesis                  results/
+evidence/bibex/tNN_<task>.bib          runs/
+(citation lane owned by Evidence)      results/
+typed Page synthesis                   runtime receipts
 ```
 
-The Faces work on the same Topic. The Page synthesizes many Results; the Task
+The Faces work on the same Task question. The Page synthesizes many Results; the Task
 Face plans and executes them. `discovery.yaml` is the Task manifest, not the
 whole folder or the only file that matters.
 
-## Lifecycle ownership
+## D1 Cycle ownership
 
-| Phase | Meaning | Writes |
+| Cycle | Meaning | Authoritative writes |
 |---|---|---|
-| **Plan** | declare type, role, topic question, scope, terminal, and candidate selection rule | `discovery.yaml`; Page opening when needed |
-| **Build** *(optional)* | author reusable search/extraction/synthesis instruments | `scripts/`; never an empty scaffold |
-| **Execute** | resolve triggers; create one `.sh`/Result pair per selected Subject; run paper analyses | `runs/`, `results/`, topic terminal draft |
-| **Report** | validate Runs, rebuild aggregate Bib, synthesize outcome/confidence/caveats | `<topic>.md`, type terminal, `evidence/bibex/`, `discovery.yaml report:` |
+| **SCOPE** | freeze BJTR identity, `discovery_type`, question, boundary, and admission rule | `discovery.yaml` intent and Page opening |
+| **PREPARE** *(optional)* | author reusable search/extraction/synthesis support | `scripts/`; never an empty scaffold |
+| **ACQUIRE** | resolve Triggers, admit Subjects, and execute one analysis Run per Subject | `runs/`, paired `results/`, Task progress/receipt links |
+| **SYNTHESIZE** | validate and promote completed Results into the promised article | root Page, optional typed record, derived Evidence citation Bib |
+| **CLOSE** | check and reconcile Page/Task state and publish the outcome receipt | `discovery.yaml report/status`, Page state/Aims, handoff pointers |
 
 Low-level calls to arXiv, Crossref, a CLI, an API, or another skill are recorded
 inside a Paper Run receipt. They are not Level-4 Runs themselves.
 
-## Types and terminals
+## Workflow summary
 
-The exact type/role table lives in `discovery-yaml-schema.md`.
+The complete contract table is owned by `haipipe-discovery-workflow`:
 
-- **Search** finds candidates and admits selected canonical Subjects as Paper
-  Runs. Its topic terminal is a readable source map/index derived from Results.
-- **Review** reads completed Paper Results and writes a verdict or landscape.
-  Missing evidence creates another Paper Run; it is not pasted into one
-  monolithic notes file.
-- **Idea** writes ranked ideas or a novelty verdict. Idea generation itself is
-  topic-level Page work, not a fake Paper Run. Every paper used for novelty
-  evidence still earns its own Paper Run.
+| Cycle | L3 authority | L4 Run profile | Gate | Route |
+|---|---|---|---|---|
+| SCOPE | manifest intent + Page boundary | none | path/manifest/Page/type agree | PREPARE / ACQUIRE |
+| PREPARE | optional `scripts/` | none | declared support exists or is omitted | ACQUIRE |
+| ACQUIRE | Task progress only | Discovery paper/source analysis · `N_admitted` | one valid Ticket/Result per admitted Subject | ACQUIRE / SYNTHESIZE / HOLD |
+| SYNTHESIZE | Page + typed record + derived Evidence Bib | none | every claim resolves to an accepted Result/cite key | ACQUIRE / CLOSE / HOLD |
+| CLOSE | report/status + Page state/Aims | none | checker passes and both Faces agree | CLOSE / ACQUIRE / SYNTHESIZE / HOLD |
+
+Expected total Level-4 Runs is `R = N_admitted canonical Subjects`. Search
+queries, candidate rows, redirects, worker/API calls, synthesis passes, typed
+records, and the SYNTHESIZE/CLOSE cycles do not add Runs. Actual inventory comes only from
+allocated Tickets with runtime receipts.
+
+## Discovery Types and specialist routes
+
+The exact article-form table lives in `page-types.md`; the manifest schema lives
+in `discovery-yaml-schema.md`.
+
+- **Search route** serves source-map and source-reading Pages.
+- **Review route** serves topic summaries, prior-art/counterevidence verdicts,
+  and literature/benchmark landscapes.
+- **Idea route** serves ideation and novelty-verdict Pages.
+
+Every route writes the root Page. Optional `summary.md`, `verdict.md`,
+`landscape.md`, or `ideas.md` files are typed Task-side records, not rival Pages
+or Level-4 Results. Missing evidence always creates another Paper/Source Run;
+it is never pasted into one monolithic notes file.
 
 The chain remains:
 
 ```text
-Search Topic Results -> Review Topic synthesis -> Idea Topic synthesis
+Source Results -> Review/Summary Page -> Ideation/Novelty Page
 ```
 
-Folders may reference another Topic's terminal from their own side. A
+Folders may reference another Topic's Page or typed record from their own side. A
 Discovery Folder remains probe-unaware and never tracks its consumers.
 
 ## Trigger resolution
@@ -90,8 +128,14 @@ URL / DOI / PDF / citation / request
 ```
 
 The Trigger is provenance. The Subject owns RUNNAME and the authoritative Bib.
-An unresolved Trigger writes a truthful `status: unresolved` receipt and never
-enters the Page Evidence Bib.
+A Trigger that resolves to zero Subjects opens no Run and is returned/logged as
+unresolved intake. An allocated Subject whose analysis cannot finish may own a
+truthful `status: unresolved` Result, which never enters the Page Evidence Bib.
+Before allocation, match the canonical Subject and frozen intent against
+existing runtimes. An unchanged duplicate Trigger reuses the existing Run and
+Result and opens no new `rNN`; log or return the existing link without rewriting
+its frozen inputs. A materially changed analysis allocates a new Run with
+`supersedes:`.
 
 ## Agents
 
@@ -100,23 +144,33 @@ enters the Page Evidence Bib.
 - **reviewer** audits search coverage, Run/Result bijection, Subject identity,
   one-entry Bibs, claim anchors, and topic-level scope.
 
-Citation verification is the highest-value Discovery gate. The deterministic
-checker and Bib builder run before Report can claim `status: ok`.
+Citation verification is the highest-value Discovery gate and is owned by
+`haipipe-plugin-evidence`. The checker and Bib builder are deterministic, but
+`verified` is an artifact-local person judgment. Every promoted citation must
+be verified before CLOSE can claim epistemic `status: ok` or
+`status: inconclusive`; without it, the receipt is `blocked`. `inconclusive`
+is reserved for completed, verified admissible evidence that cannot establish
+the substantive answer.
 
 ## Command routing
 
 ```text
-/haipipe-discovery                         -> dashboard
-/haipipe-discovery open <type> <question> -> scaffold Topic Page Folder
-/haipipe-discovery plan <topic>           -> write/update Task manifest
-/haipipe-discovery build <topic>          -> author optional instrument
-/haipipe-discovery add <topic> <trigger>  -> resolve trigger; scaffold Paper Run(s)
-/haipipe-discovery run <topic> [RUNNAME]  -> execute one/all Paper Runs
-/haipipe-discovery execute <topic>        -> type-level Execute (includes pending Runs)
-/haipipe-discovery report <topic>         -> check, aggregate Bib, synthesize Report
-/haipipe-discovery <topic>                -> run full lifecycle
-/haipipe-discovery <specialist> [args]    -> one-off worker, no durable folder
+/haipipe-discovery                              -> dashboard
+/haipipe-discovery open-block <name>            -> scaffold bNN Block
+/haipipe-discovery open-job <block> <name>      -> scaffold jNN Job
+/haipipe-discovery open <job> <type> <question> -> scaffold tNN Task Page
+/haipipe-discovery scope <task>                 -> freeze manifest intent and boundary
+/haipipe-discovery prepare <task>               -> author optional instrument
+/haipipe-discovery add <task> <trigger>         -> resolve trigger; scaffold Paper Run(s)
+/haipipe-discovery run <task> [RUNNAME]         -> execute one/all Paper Runs
+/haipipe-discovery acquire <task>               -> resolve/admit/analyze Subjects
+/haipipe-discovery synthesize <task>            -> promote completed Results
+/haipipe-discovery close <task>                 -> check and reconcile both Faces
+/haipipe-discovery plan|build|execute|report    -> compatibility aliases
+/haipipe-discovery <task>                       -> run full Task lifecycle
+/haipipe-discovery <specialist> [args]          -> one-off worker, no durable folder
 ```
 
-`add` is intake; `run` is Level-4 execution; `execute` is the Topic lifecycle
-phase. These names deliberately separate hierarchy from workflow.
+`add` resolves intake and `run` executes Level-4 tickets inside ACQUIRE.
+SYNTHESIZE changes authoritative L3 Page content; CLOSE only checks,
+reconciles, and publishes the outcome.

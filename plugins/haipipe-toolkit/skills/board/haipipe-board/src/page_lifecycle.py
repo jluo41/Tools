@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-# PROBE retired 260901 (JL: the item table replaced the MATCH half, LAND's
-# outbound card the dispatch half). A stored receipt naming PROBE reads as
+# PROBE retired 260901; current typed Evidence Items use Supporting/Local Runs.
+# A stored receipt naming PROBE reads as
 # EVIDENCE through PHASE_ALIASES, so every pre-260901 run stays auditable;
 # the short 260816 PROBE-as-EVIDENCE shape (PROBE → REVISE) collapses the
 # same way, so `_legacy_probe` below is now only a flag for the trace note.
@@ -21,7 +21,7 @@ PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
 # THE OUTLINE PART, 260901 (the 260819 PREPARE loop, renamed and re-cut):
 # OUTLINE (SHAPE, SURVEY) -> EVIDENCE (LAND, EMBED) -> OUTLINE, until the
 # plan and its runs agree; the one door out is OUTLINE's approved: tick with
-# every make-row folded, so DRAFT is reachable from OUTLINE only. DRAFT and
+# every make-item folded, so DRAFT is reachable from OUTLINE only. DRAFT and
 # REVISE (the WRITE cycle) may send a claim without a run back to OUTLINE
 # (SURVEY) and a stale row back to EVIDENCE. CHECK may route anywhere.
 #

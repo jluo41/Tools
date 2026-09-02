@@ -1,21 +1,25 @@
 ---
 name: haipipe-plugin
 description: >-
-  The PLUGIN contract of a Board page: every subfolder of a page's folder is a
-  plugin, defined by four things — STORAGE, SURFACE (its tab), WRITER,
-  BOUNDARY. ref/roster.md is the single list of plugin names. Trigger: page
+  The PLUGIN contract of a Board page: every Board-material subfolder is
+  rostered, while one category plugin may own several internal storage lanes.
+  A plugin is defined by STORAGE, SURFACE, WRITER, and BOUNDARY.
+  ref/roster.md is the single list of material names. Trigger: page
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.3.7"
-  last_updated: "2026-09-01"
+  version: "0.4.1"
+  last_updated: "2026-09-02"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
 
 `haipipe-page` owns what the page's `.md` SAYS; this skill owns what sits BESIDE it.
-A page lives in its own home folder (QPf1 on the design board), and every subfolder of that folder is a PLUGIN.
-A plugin is defined ONCE, by four things, and the roster in `ref/roster.md` is the single list of names.
+A page lives in its own home folder (QPf1 on the design board), and every
+Board-material subfolder is ROSTERED. A roster row may be an internal lane
+owned by a category Plugin; folder count and Plugin count are not required to
+match. A Plugin is defined ONCE by four things, and `ref/roster.md` is the
+single list of material names.
 
 ## 🧩 The four things a plugin is
 
@@ -26,14 +30,19 @@ A plugin is defined ONCE, by four things, and the roster in `ref/roster.md` is t
 🚧 BOUNDARY  board discovery never enters a plugin folder
 ```
 
-A folder that meets all four is a plugin; a folder that meets none is not board material and the checker may warn on it.
-Adding plugin N+1 is one roster row plus one drawer registration — the shell is never edited for it.
+A category Plugin meets all four directly. An internal lane inherits the
+category's surface while retaining its named storage, writer, and gate. A
+folder absent from the roster is not Board material and the checker may warn.
+Adding a new top-level Plugin is one roster update plus one drawer
+registration—the shell is never edited for it.
 
 ## 📦 Storage
 
 Material lands in `<page-dir>/<plugin>/`, and artifacts carry the page's stem: `QPf2-draw-attach/draw/QPf2.excalidraw`.
 PRIMARY plugins hold originals a person makes (draw, chat, meeting): they are committed and only their writer edits them.
-DERIVED plugins hold projections of the page's own text (slide, latex, word, bibex): they regenerate on demand, a hand edit is overwritten on the next build, and the folder is safe to gitignore.
+DERIVED plugins hold projections of the page's own text (slide, latex, word,
+citation workbench): they regenerate on demand, a hand edit is overwritten on
+the next build, and the folder is safe to gitignore.
 A flat page (no home folder yet) uses the board-level `<board>/<plugin>/` fallback; folded pages are the norm and every writer lands beside its page.
 
 ## 🖼 Surface
@@ -48,7 +57,7 @@ Closing is always safe by construction: a derived view has nothing to lose, an e
 ## ✍️ Writer
 
 Each plugin names one writer in the roster, and everything else asks it.
-The drawer plugin registers `{id, label, hint, menu, applies, open, tab}` in `assets/js/10-drawer/05-plugins.js`'s registry; `tab.url(page)` names the saved artifact and `tab.write(page, cb, err)` builds one, so how an artifact is made never reaches the shell.
+The drawer plugin registers `{id, label, hint, menu, order, applies, open, tab}` in `assets/js/10-drawer/05-plugins.js`'s registry; `order` fixes the reader-facing sequence independently of asset load order, while `tab.url(page)` names the saved artifact and `tab.write(page, cb, err)` builds one, so how an artifact is made never reaches the shell.
 Server-side builders live as one `live/` module per concern and one `/_board/<plugin>` route (`live/autodeck.py` and `/_board/autodeck` are the slide's pair).
 
 ## 🚧 Boundary
@@ -59,8 +68,14 @@ The `session:` line and the page's own text stay `haipipe-page`'s; this contract
 ## 🗂 The roster, and each plugin's own skill
 
 `ref/roster.md` is the single list: name · kind · storage · surface · writer · status.
-Plugin-vs-workflow is the registry's own test: a plugin is a surface you open beside the page; a workflow is a stepper over the page and lives in the other menu.
-A plugin's OPERATING knowledge lives in its own skill under `page-plugins/haipipe-plugin-<name>/` (JL 260815: one skill per plugin, keep haipipe-board small), the same third leg `page-types/` and `page-workflows/` give the page family.
+Every optional surface, including the Page phases stepper, appears in the one
+Plugin picker. A surface may use its own panel layout after opening, but that
+never creates a second top-level menu.
+A Plugin's OPERATING knowledge lives in its own skill under
+`page-plugins/haipipe-plugin-<name>/`. Internal lanes may instead live as
+references under their owning category skill; Citation/Bib, Value, Display,
+and PageX therefore live under `haipipe-plugin-evidence/ref/` and do not mint
+four duplicate skills.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
@@ -68,7 +83,8 @@ This contract stays the base every one of them loads on top of; the board pages 
 
 A unit folder has TWO PARTS (JL 260831 v5). The UPPER, page part: three
 CATEGORY folders that group lanes without changing any lane's grammar,
-writer or gate — `evidence/` (bibex · probe · display · pagex · materials —
+writer or gate — `evidence/` (citations in `bibex/` · probe · display ·
+pagex · materials —
 what the page CITES, each behind its human gate), `delivery/` (latex · word ·
 slide · render — what leaves the page) and `studio/` (chat · draw — the
 HUMAN's room: the person talks and sketches, and the chat may redraw on
@@ -76,7 +92,10 @@ their ask) — plus outline/ and workflow/. The LOWER, Task-side material is
 presented as **Runs**: each authored ticket pairs with one generated Result by
 logical Run address. A standalone/Discovery Folder stores both projections at
 its root; a canonical Task Page stores the ticket inside the Task and its
-generated Result at the containing Job's `results/<task>/<run>/`. `scripts/`
+generated Result at the containing Job's `results/<task>/<run>/`. A custom
+Labeling dialect keeps Ticket and Result receipt in its authority-owning
+round/evaluation/production/audit folder while preserving the same logical Run
+address and receipt contract. `scripts/`
 (any language, with optional `config/` inside) is supporting material only when
 reusable local code exists; many Runs call a skill, CLI, API, or worker with no
 scripts lane. The ticket is the ONE execution door under the simple-code law.
@@ -86,19 +105,23 @@ dialects: `ref/roster.md` and `haipipe-plugin-runs`.
 
 ## 🔌 The two plugin kinds, and the tab bar they make (260831)
 
-A LANE plugin owns one rostered folder's LAW — storage grammar, the one
-writer, the gate (`haipipe-plugin-bibex`, `-probe`, `-display`, …). A
-PRESENTER plugin owns one SURFACE over a whole category and stores nothing —
-no roster row, no folder of its own, every pen it shows is a lane's own
-route pressed explicitly. ONE TAB PER CATEGORY (JL 260831: "one plugin for
+A LANE contract owns one rostered folder's LAW—storage grammar, the one
+writer, and the gate. It may be a separate Plugin such as
+`haipipe-plugin-probe`, or an internal reference owned by its category.
+A CATEGORY plugin owns one SURFACE over a whole category. It may delegate a
+lane to another contract or own it directly: `haipipe-plugin-evidence` owns
+Citation/Bib, Value, Display, and PageX, while presenting separately governed
+Probe beside them. A storage lane therefore does not require a duplicate
+Plugin or Skill. ONE TAB PER CATEGORY (JL 260831: "one plugin for
 evidence, one plugin for the delivery, only one plugin for the studio"),
 outline included:
 
 ```text
 🧭 Outline   haipipe-plugin-outline    outline/ + workflow/ — the page's own
                                        process; FIRST and the default tab
-🧾 Evidence  haipipe-plugin-evidence   bibex · probe · value · display · pagex,
-                                       one segment each
+🧾 Evidence  haipipe-plugin-evidence   citations · probe · value · display ·
+                                       pagex, one segment each; Evidence owns
+                                       all except Probe's crossing contract
 📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
                                        🎞 segment carries the deck's ✨ pen
 🎨 Studio    haipipe-plugin-studio     chat + draw AS ONE PAGE: the drawing
@@ -107,13 +130,16 @@ outline included:
                                        of the person talking. Both tools keep
                                        every rule and pen they had
 ⚙️ Runs      haipipe-plugin-runs       one overview table: Execution ·
-                                       Discovery · Page, each row pairing its
+                                       Discovery · Page · Labeling, each row pairing its
                                        ticket + Result; Scripts below, optional
 📂 Folder    haipipe-plugin-folder     the roster itself, the meta-surface
 ```
 
-So the strip a reader sees is five categories and a mirror:
-🧭 · 🧾 · 📤 · 🎨 · (⚙️) · 📂. No lane sells its own strip row; the shell's
+The reader-facing Plugin picker follows one fixed sequence:
+🧭 Outline · 🧾 Evidence · 🎨 Studio · 📤 Delivery · 📂 Folder · 🛠 Skill ·
+🏷 Labeling. Optional entries still keep their assigned place when applicable;
+an unassigned third-party entry follows these in stable registration order.
+No lane sells its own strip row; the shell's
 old 💬, 🖌 and 🎞 rows folded 260831 (stored tab sets migrate on load). The
 260815 refusal of "full chat under the canvas" bound the DRAW tab; the
 studio room is both tools', by JL's 260831 ask.

@@ -1,5 +1,31 @@
 # Changelog · haipipe-plugin-runs
 
+## 0.8.1 — 2026-09-02
+- Evidence Item detail rows show PageX source count and accepted authorities
+  beside Supporting Runs and the local Run. PageX remains a source binding,
+  never an extra Run or Result row.
+
+## 0.8.0 — 2026-09-01
+- Add `Page · Evidence Item` to the Page group. Its compact row shows typed
+  item target, support count, local Run, status, and ready Result; detailed
+  Supporting Runs and frozen input remain behind the row.
+
+## 0.7.0 — 2026-09-01
+- Present each independently closable Labeling operation as one Run row and
+  group by P0-P5 episode without adding Round/Test/Scan/Audit umbrella rows.
+- Resolve Labeling Tickets and safe Result envelopes from root `runs/` and
+  `results/`, while canonical protected artifacts stay in their domain paths.
+
+## 0.6.0 — 2026-09-01
+- Add Labeling as a fourth Run family with Calibration Round, Qualification
+  Test, Production Scan, and Final Audit operations.
+- Resolve Labeling through its authority-owned domain folders and keep the Runs
+  view read-only, protected-data-safe, and control-free.
+
+## 0.5.1 — 2026-09-01
+- Load the neutral `haipipe-run` contract before presenting Run identities,
+  paired Results, receipts, and normalized statuses.
+
 ## 0.5.0 — 2026-09-01
 - Replace the independent Runs, Results, Notebook, and Scripts segments with
   two regions: one compact Run overview and one collapsible Scripts tree.

@@ -1,82 +1,121 @@
-# discovery.yaml — Discovery Topic Task Manifest (v4.0)
+# discovery.yaml — Discovery BJTR Task Manifest (v6.0)
 
-One research Topic = one Discovery Task Page Folder. `discovery.yaml` is the
-Task Face manifest; `<topic>.md` and its lanes are the Page Face. Neither Face
+One research article/question = one `tNN_` Discovery Task Page. `discovery.yaml`
+is its Task Face manifest; `tNN_<task>.md` and its lanes are the Page Face. Neither Face
 replaces the other. Level-4 Run inventory is derived from `runs/` and
 `results/`, never copied into YAML.
 
 ```text
-<topic>/
-├── <topic>.md                       Page Face
-├── discovery.yaml                   Task Face manifest
-├── outline/                         optional
-├── evidence/bibex/<topic>.bib       derived Page Evidence Bib
-├── scripts/                         optional instrument
-├── runs/<RUNNAME>.sh
-├── results/<RUNNAME>/
-├── verdict.md | landscape.md | ideas.md   optional type terminal
-└── QA/                              optional readable digests
+discoveries/                                  bank
+└── b01_<noun>_<qualifier>/                   Block
+    └── j01_<noun>_<qualifier>/               Job
+        └── t01_<noun>_<qualifier>/           Task Page
+            ├── t01_<noun>_<qualifier>.md
+            ├── discovery.yaml
+            ├── outline/                      optional
+            ├── evidence/bibex/t01_<...>.bib  derived
+            ├── scripts/                      optional instrument
+            ├── runs/r01_<author><year>_<paper>.sh
+            ├── results/r01_<author><year>_<paper>/
+            ├── summary.md | verdict.md | landscape.md | ideas.md
+            └── QA/
 ```
+
+Every new name uses `<level-letter><NN>_<noun>_<qualifier>`. `discoveries/` is
+not a Block. The path is the identity: `b01j01t01r01` compact and
+`b01.j01.t01.r01` readable. A bare `01_` at any addressed level is invalid.
 
 Full Level-4 contract: `paper-run-contract.md`.
 
-## Types × roles → topic-level terminal
+## Discovery Page Type → route and typed record
 
 ```text
-type    role                 question                          terminal
-------  -------------------  --------------------------------  ----------------
-Search  source_gather        what sources exist?               <topic>.md source map
-Search  source_read          what do the key sources say?      <topic>.md synthesis
-Review  prior_art_check      does the claim already exist?     verdict.md
-Review  counterevidence      what argues against the claim?    verdict.md
-Review  landscape_review     map approaches / baselines        landscape.md
-Review  benchmark_landscape  standard evaluation setups        landscape.md
-Idea    idea_generation      generate + rank candidate claims  ideas.md
-Idea    novelty_check        is this idea new enough?          verdict.md
+discovery_type          route    question                              typed record
+----------------------  -------  ------------------------------------  ----------------
+source-map              Search   what relevant sources exist?          none
+source-reading          Search   what do the selected sources say?     none
+topic-summary           Review   what is known about this topic?       summary.md optional
+prior-art-verdict       Review   does the named claim already exist?   verdict.md
+counterevidence-review  Review   what argues against the claim?        verdict.md
+landscape-review        Review   map approaches / disagreements / gaps landscape.md
+benchmark-landscape     Review   compare standard evaluation setups    landscape.md
+ideation                Idea     generate + rank candidate claims      ideas.md
+novelty-verdict         Idea     is this idea new enough?              verdict.md
 ```
 
-Paper/Source Cards are Level-4 Result readouts, not topic terminals. Search
-candidate discovery is topic-level work; only selected canonical Subjects
-become Runs. Idea generation is also topic-level work; papers used to ground or
-check novelty still become Runs.
+The root `tNN_<task>.md` is the Page and human-facing article for every type.
+Typed records are Task-side synthesis receipts, not rival Pages or Level-4
+Results. Paper/Source Cards are Level-4 Result readouts. Search candidate
+discovery, topic synthesis, and idea generation are Page work; only selected
+canonical Subjects become Runs. Full article grammar and legacy mapping:
+`page-types.md`.
 
 ## Fields
 
 | Field | Required | Notes |
 |---|---|---|
+| `version` | yes | manifest schema version; `6` for this contract |
 | `kind` | yes | always `discovery` |
-| `id` | yes | `<GROUP-id>.<NN>`, mirrors the path |
-| `type` | yes | `Search` / `Review` / `Idea` |
-| `role` | yes | table above |
-| `group` | yes | `{id, slug, title}` |
-| `slug`, `title` | yes | folder slug and human title |
-| `page` | yes | root Page markdown filename |
-| `status` | yes | topic lifecycle status |
-| `question` | yes | external-world Topic question |
+| `address` | yes | readable `bNN.jNN.tNN`, derived from the path |
+| `address_compact` | yes | compact `bNNjNNtNN`, derived from the same path |
+| `discovery_type` | yes | one canonical article form from the table above |
+| `block` | yes | `{id: bNN, slug, title}` matching the Block folder |
+| `job` | yes | `{id: jNN, slug, title}` matching the Job folder |
+| `task` | yes | `{id: tNN, slug, title}` matching the Task folder |
+| `page` | yes | exactly `<task-folder-name>.md` |
+| `status` | yes | Task Page lifecycle status |
+| `question` | yes | external-world research question |
 | `sources` | optional | coverage and candidate-selection policy |
 | `instrument` | optional | `{needed, path}` under `scripts/` |
-| `terminal` | yes | topic-level terminal path |
-| `report` | at Report | appended outcome block; absent before Report |
+| `typed_record` | optional | `summary.md`, `verdict.md`, `landscape.md`, or `ideas.md` when the type owns one |
+| `report` | at CLOSE | appended outcome block; absent before CLOSE |
 | `created_at`, `updated_at` | yes | quoted ISO8601 strings |
 
 No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
 is authoritative for both. No `parent` or `consumed_by` field: the Discovery
 bank remains probe-unaware.
 
+Legacy manifests using `type` + `role` remain readable through the exact map in
+`page-types.md`. Legacy group/`01_` paths remain inspectable but must migrate to
+explicit b/j/t addresses before the v6 checker accepts them. New manifests
+write `discovery_type` only. If both type forms are present they must normalize
+to the same value.
+
+For an existing two-level bank, use `../scripts/migrate_bjtr.py`. Its default
+mode is a no-write preview. The structural mapping is one legacy bank -> one
+Board Block, each legacy Group -> a numbered `jNN_..._inquiry` Job, then each
+numbered leaf -> its same-number `tNN_` Task Page. Existing source, note,
+synthesis, QA, and PDF artifacts move intact;
+the migrator never manufactures historical Paper Runs from them.
+A legacy `report:` preserves the old outcome but supports only `reported` after
+structural migration; old `review`, `ok`, and `inconclusive` do not prove that
+the v6 Result-backed evidence map is closed. Without that receipt, those states
+truthfully reopen as `executing`. Migration never invents a Report or Paper Run
+to defend an old status token. `--repair-pages` refreshes only deterministic
+migration Pages and preserves their human-edited title line.
+
 ## Skeleton
 
 ```yaml
+# path: discoveries/b01_rare_phenotype_lift/j02_adaptive_sampling_prior_art/t01_adaptive_sampling_verdict/
+version: 6
 kind: discovery
-id: P01.02
-type: Review
-role: prior_art_check
-group:
-  id: P01
-  slug: rare-phenotype-lift
+address: b01.j02.t01
+address_compact: b01j02t01
+discovery_type: prior-art-verdict
+block:
+  id: b01
+  slug: rare_phenotype_lift
   title: Rare phenotype lift
-slug: prior-art-adaptive-sampling
-title: Does adaptive sampling for rare phenotypes already exist?
-page: prior-art-adaptive-sampling.md
+job:
+  id: j02
+  slug: adaptive_sampling_prior_art
+  title: Adaptive sampling prior-art inquiry
+task:
+  id: t01
+  slug: adaptive_sampling_verdict
+  title: Does adaptive sampling for rare phenotypes already exist?
+page: t01_adaptive_sampling_verdict.md
 status: planned
 created_at: "2026-09-01T10:00:00-04:00"
 updated_at: "2026-09-01T10:00:00-04:00"
@@ -94,16 +133,16 @@ sources:
 instrument:
   needed: false
   path: ""
-terminal: verdict.md
+typed_record: verdict.md
 
-# Appended at Report only:
+# Appended at CLOSE only:
 report:
   outcome: supports
   summary: One line a human can act on.
   confidence: medium
   completed_runs: 7
   unresolved_runs: 1
-  evidence_bib: evidence/bibex/prior-art-adaptive-sampling.bib
+  evidence_bib: evidence/bibex/t01_adaptive_sampling_verdict.bib
 ```
 
 ## Lifecycle status
@@ -112,26 +151,54 @@ report:
 planned -> building (optional) -> executing -> reported -> ok | inconclusive | blocked
 ```
 
-Topic status and Paper Run status are different axes. A Topic may report an
+This v6 field is a backward-compatible summary, not the D1 Cycle identity:
+`planned` roughly covers SCOPE, `building` covers optional PREPARE,
+`executing` may cover ACQUIRE or SYNTHESIZE, and reported/terminal values
+belong to CLOSE. Do not infer an exact current Cycle from `status`. A later
+schema migration will split workflow state/current Cycle from epistemic
+`report.outcome`; until then the Workflow Table and receipts are authoritative.
+
+Task Page status and Paper Run status are different axes. A Task Page may report an
 `inconclusive` outcome while every admitted Paper Run is technically complete.
 Conversely, unresolved Runs prevent `status: ok` when they are material to the
 question.
 
-## Report outcomes
+Terminal classification is exact: `blocked` means an operational or gate
+dependency remains (including citation-verification debt); `inconclusive`
+means all admitted evidence completed but could not establish the substantive
+answer; `ok` means every load-bearing Aim is met. Both epistemic outcomes
+require every promoted citation to be verified; otherwise the outcome is
+`blocked`. A non-load-bearing limitation may be recorded without becoming a
+held load-bearing Aim.
+
+## CLOSE outcomes
 
 ```text
-Search             gathered
-Review-judge       supports | contradicts | inconclusive
-Review-synthesize  mapped
-Idea-generate      generated
-Idea-novelty       novel | partial | preempted | inconclusive
+source-map · source-reading                        gathered
+topic-summary · landscape-review · benchmark-landscape mapped
+prior-art-verdict · counterevidence-review        supports | contradicts | inconclusive
+ideation                                             generated
+novelty-verdict                                     novel | partial | preempted | inconclusive
 ```
 
 Common fields: `outcome`, `summary`, `confidence`, `completed_runs`,
-`unresolved_runs`, and `evidence_bib`. Judge roles may add `supports_claim` and
+`unresolved_runs`, and `evidence_bib`. Verdict types may add `supports_claim` and
 `contradicts_claim`.
 
-## Topic terminal templates
+## Typed record templates
+
+### summary.md
+
+```md
+# Topic summary: <topic>
+- confidence: high | medium | low
+
+## Synthesis
+One bounded answer organized by findings, not one paragraph per paper.
+
+## Evidence boundary
+- Result links + cite keys, disagreements, and unresolved gaps.
+```
 
 ### verdict.md
 
@@ -173,14 +240,14 @@ One paragraph answering the Topic question.
 1. <claim> — rationale — novelty — testability — grounding Result links
 ```
 
-Search writes its source map and synthesis into the Page Content rather than a
-second monolithic `notes.md`. A generated `sources.md` may be kept as a legacy
-index, but it is not authority.
+Search and every other type write their reader-facing synthesis into the root
+Page Content rather than a second monolithic `notes.md`. A generated
+`sources.md` may be kept as a legacy index, but it is not authority.
 
 ## QA digests
 
 `QA/` remains optional and is governed by `fn/qa.md`. A QA answer anchors to
-stable Result Cards or topic terminal sections:
+stable Result Cards, root Page sections, or typed-record sections:
 
 ```md
 # Q — <self-contained question>
@@ -199,11 +266,11 @@ Plain answer. Anchors: [→ results/r03_x/r03_x.md#Facts] [→ verdict.md#Eviden
 ## Project log events
 
 ```text
-discovery.opened      {"ts", "event", "discovery_group", "discovery_folder", "type", "role"}
-discovery.run_opened  {"ts", "event", "discovery_folder", "run", "trigger_kind"}
-discovery.run_done    {"ts", "event", "discovery_folder", "run", "status", "subject"}
-discovery.completed   {"ts", "event", "discovery_folder", "status", "outcome"}
-discovery.consumed    {"ts", "event", "discovery_folder", "consumed_by"}
+discovery.opened      {"ts", "event", "block", "job", "task", "address", "discovery_type"}
+discovery.run_opened  {"ts", "event", "task", "address", "run", "trigger_kind"}
+discovery.run_done    {"ts", "event", "task", "address", "run", "status", "subject"}
+discovery.completed   {"ts", "event", "task", "address", "status", "outcome"}
+discovery.consumed    {"ts", "event", "task", "address", "consumed_by"}
 ```
 
 `discovery.consumed` is written by the consumer, never by the Discovery Folder.

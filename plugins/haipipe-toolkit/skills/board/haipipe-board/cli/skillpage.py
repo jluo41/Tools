@@ -48,7 +48,7 @@ from src.common import page_files  # noqa: E402
 
 # Three managed spans, because the derived material belongs in three different
 # sections and one block cannot straddle them (JL 260726: the tree goes in
-# Diagram, the skill's content in Content, the changelog in Log).
+# Outline, the skill's content in Content, the changelog in Log).
 PARTS = ("tree", "body", "log")
 
 
@@ -574,7 +574,7 @@ Delete these instructions once the paragraph is written; the FIRST BLANK LINE ab
 ## Writing Style
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
-## Diagram
+## Outline
 {tree}
 
 **How `{name}` is used**: REPLACE THIS CAPTION with what your figure below actually shows.

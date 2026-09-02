@@ -81,13 +81,16 @@ def main():
     it = st.get("items")
     L.append(f"{row('OUTLINE')} v{o['version']} "
              f"{'approved' if o['approved'] else ('UNAPPROVED' if o['file'] else 'no file')}"
-             f" · marks 📮{mk['📮']} 🧮{mk['🧮']} 📚{mk['📚']} 🖼{mk['🖼']}"
+             + (" · item types " + " ".join(
+                 f"{kind} {count}" for kind, count in it["types"].items() if count
+             ) if it and it["marks"] else
+                f" · legacy marks 📮{mk['📮']} 🧮{mk['🧮']} 📚{mk['📚']} 🖼{mk['🖼']}")
              + (f" · items {it['rows']}/{it['marks']} · decided {it['decided']}/{it['rows']}"
                 if it and it["rows"] else " · no item table yet"))
     if it and it["rows"]:
         c = it["counts"]
         L.append(f"{row('EVIDENCE')} " + " · ".join(f"{w} {c[w]}" for w in
-                 ("owed", "bound", "landed", "folded", "accepted", "stale", "deferred", "dropped", "blocked") if c[w])
+                 ("specified", "planned", "ready", "folded", "accepted", "stale", "deferred", "dropped", "blocked") if c[w])
                  + f" · 📚 {st['bibex']['verified']}/{st['bibex']['entries']} verified"
                  + f" · 🖼 {len(st['drawn'])}/{len(disp)} drawn")
     else:

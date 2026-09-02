@@ -270,7 +270,7 @@ land, D5 pages the round down (the grown pages made true and readable) and GD6 s
 
 ## 📚 Why each phase, in the literature
 
-The literature lives on the skill board, never in this file (JL 260827): `diagrams/ApplicationSkillBoard-260802/8-QD-design/QD4-round-theory/` registers the verified anchors per phase, and the full lists sit in the five QA files under `designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/`. Cite that page or a QA file, never a paper from memory.
+The literature lives on the skill board, never in this file (JL 260827): `diagrams/ApplicationSkillBoard-260802/8-QD-design/QD4-round-theory/` registers the verified anchors per phase, and the full lists sit in the Task Page QA files under `designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/`. Cite a Task Page or QA file, never a paper from memory.
 
 ## 🗃 Artifact mapping
 

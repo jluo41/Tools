@@ -12,6 +12,12 @@ Human-readable Markdown files are rendered views and never a second source of tr
 ├── .state.json
 ├── REPORT.md
 ├── register.md                       the seven regions × open / covered / risky
+├── runs/
+│   └── rNN_labeling-<operation>_<target>.yaml      authored Run Ticket
+├── results/
+│   └── rNN_labeling-<operation>_<target>/
+│       ├── runtime.yaml              lifecycle and attempt trail
+│       └── result.yaml               safe pointers to canonical domain Results
 ├── corpus/
 │   ├── manifest.json
 │   ├── items.jsonl
@@ -115,11 +121,31 @@ Required rendered views:
 
 Rendered files may be regenerated and never confer gold or close a state.
 
-## 3. Round unit
+## 2a. Labeling Run dialect
 
-A round is one folder and one unit, the Building side's twin of a Design
-unit: born as a card, realized by the steps `label-building-workflow` orders,
-closed by a checkpoint, cited by the run page's `§2 · Rounds` division by id.
+The project root is one Level-3 Labeling job. Every allocated Level-4 Run uses
+one generic envelope:
+
+```text
+runs/<RUNNAME>.yaml
+results/<RUNNAME>/runtime.yaml
+results/<RUNNAME>/result.yaml
+```
+
+The envelope points to the canonical artifacts already owned by P0-P5; it does
+not copy them or become semantic authority. The 25 operation kinds include
+bounded P0 construction, P1 calibration work, P2 handoff, P3 prediction and
+scoring, P4 shards and review, and P5 audit and materialization. Round, Test,
+Scan, and Audit are grouping episodes, not extra Runs. Item events, tool calls,
+and retries under unchanged frozen inputs stay inside the relevant operation.
+Read `ref-run.md` for allocation, count law, completion gates, and presentation.
+
+## 3. Calibration Round episode
+
+A round is one grouping folder: proposed as a card, realized by the independent
+operations `label-building-workflow` orders, closed by a checkpoint, and cited
+by the Job Page's `§2 · Rounds` division by id. A proposed Card is planning and
+has no `round-prepare` Run until a person releases it.
 
 ### card.md · the wager, the folder's first file
 
@@ -143,7 +169,7 @@ card keeps its folder forever with the reason inside.
 unit: round_03
 lineage: <policy lineage id>
 policy_in: G_02 · policy_out: G_03
-serves: <run page id> · §2 Rounds
+serves: <Job Page id> · §2 Rounds
 state: open | judged | closed@checkpoint-03
 closed: <keeper> <YYMMDD> · route: another round | freeze | HOLD
 ```
@@ -218,7 +244,7 @@ Every policy version has one manifest and separate components:
 | `wrappers/` | model-specific output and interface instructions |
 | `diff.yaml` | semantic, procedural, casebook, wrapper, and editorial changes |
 | `regression.jsonl` | affected prior gold and patch outcomes |
-| `cheatsheet.md` | rendered: one screen of class rules and the seven region tests, what the run page's §1 quotes |
+| `cheatsheet.md` | rendered: one screen of class rules and the seven region tests, what the Job Page's §1 quotes |
 | `gallery.md` | rendered: two or three real items per region from `D_t`, each with the human's reason |
 
 `policy/current` points to the latest closed version.
@@ -270,7 +296,8 @@ points here; `ref-config.md` §4 gives the per-candidate entry schema):
 - the minimal-instruction baseline;
 - metrics, quality floors, and the selection rule.
 
-Every prediction is append-only and linked to one run.
+Every candidate prediction is the canonical Result of one independently
+addressed `executor-predict` Run in the Test episode.
 Every scorecard links to predictions, `T*` gold, metric code or definition, intervals, costs, and errors.
 
 ## 9. Production
@@ -301,7 +328,7 @@ The final report states provenance shares, weighted error and interval, protecte
 |---|---|
 | vector cache and indexes | Embedder |
 | `C_t` and `B_t` manifests | Candidate Selector |
-| executor predictions | registered executor run |
+| executor predictions | registered executor through one `executor-predict` Run |
 | Session human records | Strong Calibration Agent recording human input |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |
 | round card `released:` | a person |

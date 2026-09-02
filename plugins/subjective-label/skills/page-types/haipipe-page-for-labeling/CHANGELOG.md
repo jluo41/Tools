@@ -1,5 +1,11 @@
 # haipipe-page-for-labeling · CHANGELOG
 
+## 0.5.0 · 2026-09-01
+
+Rename the Level-3 surface from a run Page to a Labeling Job Page. Clarify that
+a round fails the Page-unit independence test while still becoming a Level-4
+Calibration Run after human release.
+
 ## 0.1.0 · 2026-08-07
 
 First edition. Splits out of a single worked sample that was trying to be three things at once: a contract, a specimen, and one real run.

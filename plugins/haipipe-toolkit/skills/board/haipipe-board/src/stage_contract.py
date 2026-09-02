@@ -103,7 +103,7 @@ def replace_managed(text, block):
     if heading:
         at = heading.end()
         return text[:at] + "\n\n" + block + text[at:]
-    before = re.search(r"^## (?:Diagram|Content)\s*$", text, re.M)
+    before = re.search(r"^## (?:Outline|Diagram|Content)\s*$", text, re.M)
     at = before.start() if before else len(text.rstrip())
     prefix = text[:at].rstrip()
     suffix = text[at:].lstrip()
@@ -118,7 +118,7 @@ def replace_managed_style(text, block):
         return text[:span[0]] + block + text[span[1]:]
     heading = re.search(r"^## Writing Style\s*$", text, re.M)
     if not heading:
-        before = re.search(r"^## (?:Stage Contract|Diagram|Content)\s*$", text, re.M)
+        before = re.search(r"^## (?:Stage Contract|Outline|Diagram|Content)\s*$", text, re.M)
         at = before.start() if before else len(text.rstrip())
         prefix = text[:at].rstrip()
         suffix = text[at:].lstrip()

@@ -311,12 +311,12 @@ def check_bullet_grammar(plan_text: str):
         j, folded = i + 1, False
         while (j < len(lines) and lines[j].startswith("  ")
                and not lines[j].lstrip().startswith("- ")):
-            if re.match(r"^\s+(Note|More|Answered|Drawn|Routed):", lines[j]):
+            if re.match(r"^\s+(Note|Evidence|Accept|More|Answered|Drawn|Routed):", lines[j]):
                 folded = True
                 break
             j += 1
         if not folded:
-            out.append("C%d.P%d.B%d has no Note:/Answered:/Drawn: line"
+            out.append("C%d.P%d.B%d has no Note:/Evidence:/Answered:/Drawn: line"
                        % (cn, max(pn, 1), sn))
     return out
 
@@ -326,15 +326,69 @@ _MARKS = {"📮": "probe", "🧮": "value", "🔢": "value", "🖼": "display", 
 
 
 def check_coverage(page_src: pathlib.Path, plan_text: str):
-    """-> [finding] · every OWING mark is served by at least one card or unit.
+    """Return findings for typed Evidence Items, with legacy mark fallback.
 
     Self-consistency test ① of `haipipe-page-outline` §④. A SURVEY receipt
     reports `items: n of n`, and nothing recomputed it, so a receipt could
     claim a coverage its own disk did not have.
 
-    🎯 aim and ✅ have it are NOT owing marks and are skipped. A 📚 whose key is
-    already known needs no card either, so an unserved 📚 is reported as a note
-    rather than a gap: a person lands a bib entry by hand."""
+    Current grammar requires a typed id, expectation, immediate Accept line,
+    and exactly one matching record in ``<stem>-evidence-items.md``. Plans with
+    no ``Evidence:`` line use the legacy icon/card check below during migration.
+    """
+    if re.search(r"(?m)^\s*Evidence:", plan_text):
+        item_re = re.compile(
+            r"^\s*Evidence:\s*(E\d+-(VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)\s*·\s*(.+)$"
+        )
+        wanted, out, cn, pn, bn = {}, [], 0, 0, 0
+        lines = plan_text.splitlines()
+        for i, line in enumerate(lines):
+            m = re.match(r"^## C(\d+)\b", line)
+            if m:
+                cn, pn, bn = int(m.group(1)), 0, 0
+                continue
+            m = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+            if m:
+                cn, pn, bn = int(m.group(1)), int(m.group(2)), 0
+                continue
+            m = re.match(r"^- [BS](\d+)\s*·", line)
+            if m:
+                bn = int(m.group(1))
+                continue
+            m = item_re.match(line)
+            if not m:
+                continue
+            item_id = m.group(1)
+            target = f"C{cn}.P{pn}.B{bn}"
+            if item_id in wanted:
+                out.append(f"{item_id} appears more than once in the plan")
+            wanted[item_id] = target
+            if i + 1 >= len(lines) or not re.match(r"^\s*Accept:\s*\S", lines[i + 1]):
+                out.append(f"{item_id} has no immediate Accept line")
+
+        table = page_src.parent / "outline" / f"{page_src.stem}-evidence-items.md"
+        records = {}
+        if table.is_file():
+            record_re = re.compile(
+                r"^###\s+(E\d+-(?:VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)"
+                r"\s*·\s*(C\d+\.P\d+\.B\d+)\s*·"
+            )
+            for line in table.read_text(encoding="utf-8", errors="replace").splitlines():
+                match = record_re.match(line)
+                if match:
+                    if match.group(1) in records:
+                        out.append(f"{match.group(1)} appears more than once in the table")
+                    records[match.group(1)] = match.group(2)
+        for item_id, target in wanted.items():
+            if item_id not in records:
+                out.append(f"{item_id} has no Evidence Item record")
+            elif records[item_id] != target:
+                out.append(f"{item_id} targets {records[item_id]} in the table, expected {target}")
+        for item_id in sorted(set(records) - set(wanted)):
+            out.append(f"{item_id} is in the table but not the current plan")
+        return out
+
+    # Legacy icon/card grammar below, read-only during migration.
     served = set()
     for card in _probe_cards(page_src):
         m = re.search(r"(?m)^serves:\s*(.+?)\s*$", card.read_text(
@@ -450,7 +504,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
 # ── the head and Note law (haipipe-plugin-outline ref/plan-grammar.md §3, §4) ──
 _MARK_EMOJI = "🎯📚📮🧮🔢🖼"
 NOTE_MAX = 30          # the specimen's longest Note is 27 words
-_LABEL_RE = re.compile(r"^\s+(Note|More|Answered|Drawn|Routed):")
+_LABEL_RE = re.compile(r"^\s+(Note|Evidence|Accept|More|Answered|Drawn|Routed):")
 
 
 def _head_words(head: str) -> list:

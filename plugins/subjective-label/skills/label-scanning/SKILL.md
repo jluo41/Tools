@@ -9,8 +9,8 @@ description: >-
   model qualification, production labeling, risk queues, corpus scanning, spot
   checks, repair, final audit, or /label-scanning.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-30"
+  version: "0.6.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,7 +26,7 @@ Scanning may choose and execute an implementation of `G*`; it may not redefine
 the human construct. `G*`, `D_cal*`, the corpus snapshot, and the sealed-test
 reservation are read-only inputs bound by the handoff checksum. A semantic
 defect found here is preserved as evidence and returned to Building under a new
-lineage; it is never patched inside a scanning run, and neither are wrappers,
+lineage; it is never patched inside a Scanning Run, and neither are wrappers,
 thresholds, or routing.
 
 ## The three phases and what each may create
@@ -42,17 +42,28 @@ P5 Audit   an immutable audit receipt and, on pass, D* with bounded claims
 Public datasets may supply separately labeled external-validity evidence. They
 never replace project-specific `T*` and never license production.
 
-## Laws of the run
+Scanning uses the independently closable operations in `../../ref/ref-run.md`:
 
-1. **Gold before prediction.** No executor runs on the test before `T*` is
-   locked; no score is computed while any prediction run is open.
+```text
+P3  test-gold-lock · executor-predict* · executor-score* · executor-select
+P4  scan-preflight · scan-shard* · risk-route · human-review · reconcile
+P5  audit-sample · audit-human-gold · audit-analyze · dstar-materialize
+```
+
+Test, Scan, and Audit are episodes that group these Runs and their phase gates;
+they are not additional umbrella Runs.
+
+## Laws of Scanning Runs
+
+1. **Gold before prediction.** No `executor-predict` Run starts before
+   `test-gold-lock` closes; no score Run starts while any registered prediction Run is open.
 2. **Registry before release.** Candidates, wrappers, metrics, floors, and
    the selection rule are frozen before protected text is released; a
    registry edited afterwards invalidates the test.
 3. **"Best among failures" is not qualified.** A route qualifies only by
    passing every required floor; otherwise the route is human-only or `HOLD`.
-4. **A manifest is immutable.** A changed executor, wrapper, or threshold is a
-   new production run with its own preflight.
+4. **A manifest is immutable.** A changed executor, wrapper, or threshold opens
+   a new Production episode with a new preflight and downstream Runs.
 5. **Human review overrides, never edits.** A human production decision
    overrides the machine's label for that item and changes no policy.
 6. **Unresolved is never `NONE`.** Over-capacity or undecidable items keep the

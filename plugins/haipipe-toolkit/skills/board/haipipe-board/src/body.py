@@ -1168,7 +1168,7 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
     比一段接一段的散句好扫。`- [ ]` 是勾选清单，不走这条路。
 
     fold_code=True（默认）：``` 代码块也收进 <details>，默认合着、想看再点开（JL 260723），
-    跟节标题的 expand-all 联动。传 False 才铺开（`## Diagram` 那张招牌图就用它）。
+    跟节标题的 expand-all 联动。传 False 才铺开（`## Outline` 那张叙事图就用它）。
     """
     global REGISTER
     out, fence, blt, lg, flang = [], None, None, None, ""

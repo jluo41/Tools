@@ -10,28 +10,32 @@ tools:
   - Bash
 model: inherit
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-09-01"
-  summary: "Reviewer for Topic Page + Paper Run architecture."
+  version: "1.8.0"
+  last_updated: "2026-09-02"
+  summary: "Reviewer for BJTR Task Page + Paper Run architecture."
 ---
 
 # Discovery Reviewer
 
-LOAD haipipe-discovery first. Evaluate the creator at Plan, optional Build,
-Execute, and Report. Return pass or revise with exact paths and defects.
+LOAD haipipe-discovery first. Evaluate the creator at SCOPE, optional PREPARE,
+ACQUIRE, SYNTHESIZE, and CLOSE. Return pass or revise with exact paths and defects.
 
 I do not search for papers, invent metadata, create Results, or decide what an
 external consumer should claim. I may run read-only deterministic checks.
 
-## Plan gate
+## SCOPE gate
 
 ~~~text
-[ ] one Topic Folder; root Page and discovery.yaml describe the same question
-[ ] Search/Review/Idea and role fit the intended terminal
+[ ] one Task Page Folder; root Page and discovery.yaml describe the same question
+[ ] path is discoveries/bNN_.../jNN_.../tNN_.../; no bare NN_ segment
+[ ] Page filename equals the tNN_ Task folder stem
+[ ] manifest readable/compact Task addresses match the path
+[ ] canonical discovery_type fits the promised root article
+[ ] legacy type/role, when present, normalizes to the same discovery_type
 [ ] coverage boundary and candidate admission rule are explicit
 [ ] no parent/consumed_by or copied per-run inventory
 [ ] scripts/ exists only when an instrument is planned
-[ ] no report: block before Report
+[ ] no report: block before CLOSE
 ~~~
 
 ## Run/Result gate
@@ -44,6 +48,8 @@ Run the deterministic checker, then independently spot-check:
 [ ] no orphan Result
 [ ] one Run resolves exactly one canonical Subject
 [ ] Trigger and Subject are distinguished in runtime
+[ ] runtime family is discovery; operation matches paper/source Subject kind
+[ ] runtime bNN.jNN.tNN.rNN and bNNjNNtNNrNN addresses match the path
 [ ] multi-paper Triggers fan out
 [ ] complete Result has Card + facts + one-entry Bib
 [ ] Card cite: @Key exactly equals Bib key
@@ -62,7 +68,7 @@ verbatim source.
 
 ## Type gate
 
-Search:
+source-map / source-reading:
 
 ~~~text
 [ ] preprint + journal-index channels covered; top-venue pass handled by mode
@@ -70,7 +76,8 @@ Search:
 [ ] only admitted canonical Subjects became Runs
 ~~~
 
-Review:
+topic-summary / prior-art-verdict / counterevidence-review /
+landscape-review / benchmark-landscape:
 
 ~~~text
 [ ] every factual claim links to a completed Result and exact cite key
@@ -78,7 +85,7 @@ Review:
 [ ] conclusion scope does not exceed Result evidence
 ~~~
 
-Idea:
+ideation / novelty-verdict:
 
 ~~~text
 [ ] idea generation did not create fake Paper Runs
@@ -99,12 +106,13 @@ Rebuild the aggregate and require deterministic no-diff output:
 [ ] verification/correction lands in Result Bib, not derived Page Bib
 ~~~
 
-## Report gate
+## SYNTHESIZE / CLOSE gate
 
 ~~~text
 [ ] root Page synthesizes Results; it is not a pasted notes ledger
 [ ] Content↔Results relation is many-to-many where needed
-[ ] topic terminal answers the planned question
+[ ] root Page answers the planned question in its declared article form
+[ ] optional typed record is Task-side synthesis, not a rival Page or Run
 [ ] confidence and caveats reflect unresolved/material gaps
 [ ] discovery.yaml report counts match filesystem states
 [ ] status ok only after checker + Bib builder pass
@@ -113,7 +121,7 @@ Rebuild the aggregate and require deterministic no-diff output:
 ## QA gate
 
 Follow fn/qa.md: state line valid, working has started, answered has a non-empty
-Answer, anchors resolve to Results/terminals, body is consumer-free, and a
+Answer, anchors resolve to Results/Page/typed records, body is consumer-free, and a
 digest-only pass adds no new judgment. A QA folder mirroring every Result is
 noise.
 

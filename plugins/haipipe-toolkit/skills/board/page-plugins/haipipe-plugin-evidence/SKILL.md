@@ -1,116 +1,150 @@
 ---
 name: haipipe-plugin-evidence
 description: >-
-  The ONE presentation plugin for a page's evidence: a single 🧾 Evidence tab
-  that shows the bibex, probe, value, display and pagex lanes together,
-  joined per plan bullet. Presentation only — the storage folders, their writers,
-  their walls and their human gates stay with their own contracts. Trigger:
-  evidence plugin, evidence tab, show the evidence, citations cards values
-  displays together, evidence bundle tab, /haipipe-plugin-evidence.
+  The ONE evidence plugin for a Board Page. It owns the 🧾 Evidence tab and
+  the Citation/Bib, Value, Display, and PageX lanes, including their storage,
+  writers, gates, and joined lineage. PageX is a SURVEY source binding that
+  LAND validates beside Supporting and local Runs, never a Result type.
+  Probe remains a separately governed crossing shown inside this tab. Trigger:
+  evidence plugin, evidence tab, citations, page bib, Discovery evidence bib,
+  verify citation, evidence bundle, /haipipe-plugin-evidence.
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-08-31"
+  version: "0.5.0"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-evidence · one tab presents what five lanes hold
+# /haipipe-plugin-evidence · one evidence authority and one tab
 
-**LOAD `haipipe-plugin` FIRST.** This plugin owns no storage and no writer:
-it is the SURFACE over five lanes that keep their own contracts (JL 260831:
-"we still have the subfolder for bibex, etc, but we just need one evidence
-plugin, to present bibex, display, etc"). The precedent is Probe, "a logical
-family over two rows", and value, "a surface with no folder" — this file
-takes the same shape one level up.
+**LOAD `haipipe-plugin` FIRST.** This is the only Evidence plugin. It owns two
+things that must agree:
 
 ```text
-this file     the 🧾 Evidence tab: segments, the per-bullet join, the counts
-the lanes     evidence/bibex/ (haipipe-plugin-bibex) · evidence/probe/
-              (haipipe-plugin-probe) · evidence/pagex/
-              (haipipe-plugin-pagex) · ## Values blocks
-              (haipipe-plugin-value) · evidence/display/
-              (haipipe-plugin-display) — storage, writers, walls, gates UNCHANGED
-the cycles    LAND and EMBED (haipipe-page-evidence) land and fold what this tab shows;
-              the item table it joins is SURVEY's (haipipe-plugin-outline ref/item-table.md)
-the fields    the page type's evidence: record names what is OWED
-              (haipipe-page/ref/type-registry.md)
+AUTHORITY  Citation/Bib · Value · Display · PageX storage, writers, gates,
+           typed payload rules, and cross-Folder source bindings
+SURFACE    the 🧾 Evidence tab: one joined view over Evidence Items,
+           Supporting Runs, PageX sources, Local Runs, and ready Results
 ```
 
-## 🗂 Since the v3 folder, the tab has a disk twin
+There is no separate Bibex, Value, Display, or PageX plugin or skill. Their
+storage addresses and compatibility engine routes remain, but the folder or
+endpoint name does not create another Plugin. Load only the reference needed
+for the current Evidence Item:
 
-JL 260831 ("the evidence should include the display, the bibex, the pagex"):
-the lanes this tab presents now LIVE under `<page>/evidence/` (bibex · probe ·
-display · pagex · code · materials), one category folder a stranger opens for
-"what backs this page". Flat lane names are migration stubs for the unpatched
-engine paths. The tab is the category folder's surface; nothing else changed.
+```text
+ref/citations.md   CITE authority, verification, Discovery aggregation
+ref/values.md      VALUE provenance and joined value surface
+ref/displays.md    DISPLAY unit, renderer dispatch, acceptance
+ref/pagex.md       PageX SURVEY binding, LAND validation, cross-Folder links
+evidence/probe/    haipipe-plugin-probe remains the crossing/card contract
+```
+
+## 📦 Evidence category
+
+Since the v3 Folder, the Page's evidence lives under one category:
+
+```text
+<page>/evidence/
+├── bibex/       citations/Bib storage owned by THIS skill
+├── probe/       governed by haipipe-plugin-probe
+├── display/     display units owned here; renderer crafts write recipe/assets
+├── pagex/       PageX links and exact SURVEY bindings owned here
+└── materials/   immutable external captures
+```
+
+Flat legacy lane names may remain migration symlink stubs. New work treats
+`evidence/` as the category and 🧾 Evidence as its one Plugin surface.
+
+## 📚 Citation authority
+
+Two modes share one law: a machine may retrieve, subset, validate,
+deduplicate, stable-sort, or copy a real BibTeX entry; it MUST NOT invent or
+complete citation fields from memory.
+
+```text
+ordinary Page
+  evidence/bibex/<stem>.bib          PRIMARY
+  evidence/bibex/<stem>-bib.html     DERIVED workbench
+
+Discovery Task Page
+  results/<RUNNAME>/<RUNNAME>.bib    PRIMARY · exactly one verified Subject
+                    │
+                    └── validate + union completed Results
+                        ↓
+  evidence/bibex/<task>.bib          DERIVED Page Evidence Bib
+  evidence/bibex/<task>-bib.html     DERIVED workbench
+```
+
+Corrections land at the primary authority: the Page Bib in ordinary mode, or
+the owning Result Bib in Discovery mode. The derived Discovery aggregate is
+never edited as the correction target. Full writer and conflict rules are in
+`ref/citations.md`.
 
 ## 📡 Surface · one tab, six segments, one join
 
-One 🧾 Evidence tab on the page, replacing the separate 📚, 🚪 and 🖼 tabs in
-the strip (each remains reachable as a SEGMENT inside it, the way GUI and TUI
-are form segments inside one 💬 Chat tab). It ranks after 🧭 Outline and
-💬 Chat.
-
 ```text
 🧾 Evidence
-├── ⧉ By bullet      the JOIN, first and default: one row per owing plan
-│                    bullet — its marks, then what each mark has on disk
-│                    (key state · card state · value rows · unit state)
-├── 📚 Citations     the bibex workbench, as haipipe-plugin-bibex §surface
-├── 🚪 Cards         the probe card list, as haipipe-plugin-probe §surface
-├── 🧮 Values        every PP<NN>.v<n> row with its source path
-├── 🖼 Displays      the unit strip, as haipipe-plugin-display §surface
-└── 🔗 Pagex         the borrow view, as haipipe-plugin-pagex §surface — its
-                     pens ride inside the saved view, so the standalone 🔗
-                     strip row folded in here; exact-file cards show evidence
-                     scope and whole-Folder cards show Page/Task Face status
+├── ⧉ By bullet      default join: one row per owing plan bullet
+├── 📚 Citations     Bib workbench, verification, DOI/URL/Scholar links
+├── 🚪 Cards         Probe card list
+├── 🧮 Values        PP<NN>.v<n> rows with source paths
+├── 🖼 Displays      display-unit strip
+└── 🔗 PageX         SURVEY bindings + ranked cross-Folder borrow view
 ```
 
-- **By bullet is the default** because the reader's question is "what does
-  this page still owe", not "what does this folder hold"; the segment order
-  is the mark order 📚 📮 🧮 🖼.
-- **Counts stay separate**: the tab header prints `owed n · landed n ·
-  accepted n` computed as `cli/evidence-status.py` computes them, never
-  collapsed into one number.
-- **Both failure modes render as named rows**: 🕳 owed-and-absent · 🎈
-  present-and-uncited (the outline tab's law, kept identical here).
-- **The tab writes nothing and calls no model.** Every pen stays with its
-  lane: the bibex entry pen, the probe crossing, the display `accepted:` row,
-  the value allocation at LAND.
+- **By bullet is first** because the reader asks what the Page still owes. Each
+  typed item joins its Supporting Runs, PageX bindings, Local Input, Local Run,
+  ready Result, and fold.
+- **Counts stay separate**: `owed n · landed n · accepted n`.
+- **Both failure modes are named**: 🕳 owed-and-absent and 🎈 present-and-uncited.
+- **The surface calls no model.** It writes only through the owning lane's
+  explicit pen. Citations use this skill's citation routes; every other pen
+  stays with its lane contract.
 
-## 🔒 What merging the surface must never merge
+## 🔒 Writers, gates, and walls do not collapse
 
-```text
-lane        writer                       human gate      the wall
-────────────────────────────────────────────────────────────────────────────
-evidence/bibex/   person-supplied, transcribed  verified:  never composed from memory
-evidence/probe/   ② raises · ③ binds            read:      stake behind consumer/
-values      ③ allocates PP<NN>.v<n>       (rides read:)   aggregate only, never rows
-evidence/display/ the display family renders accepted:    intake frozen before render
-```
+| Lane | Writer | Human gate | Wall |
+|---|---|---|---|
+| Citations/Bib | trusted-entry copy/subset; Discovery deterministic builder | `verified` | never compose citation fields from memory |
+| Probe | raise/bind crossing | `read:` | consumer stake never crosses |
+| Values | LAND through this plugin's typed payload rule | rides owning read gate | aggregates only; never raw rows |
+| Display | renderer craft dispatched through this plugin | `accepted:` | intake frozen after supports/PageX validate |
+| PageX | this plugin's ranked-link/source-binding writer | human rank | exact authority link, never copy or Result |
 
-A surface that offered one "approve all" control would collapse three gates
-into one tick; this tab shows each gate beside its own thing and offers none.
+The tab offers no “approve all” control. Each judgment remains beside the
+artifact whose contract owns it.
 
-## 🗺 Status · 🟢 built 260831, driven in a real browser
+## 🗺 Workflow relation
 
-`live/evidence.py` serves GET `/_board/evidence` (the segmented surface) and
-its POST twin; `84-plugin-evidence.js` registers the ONE row; the 📚 BibEx,
-🧮 Values, 🖼 Display and 🚪 Probe strip rows are folded (their builder routes
-stay, pressed by the segments on demand); 260831 evening the 🔗 Pagex strip
-row folded in too (85-plugin-pagex.js removed, the saved view's inline pens
-ride along). Verified end to end on SM05-results:
-menu entry → tab → segments → the Values segment loading the live view.
+`haipipe-page-outline` SURVEY writes each item's Supporting Runs, optional
+PageX bindings, Local Input, and Local Run plan. `haipipe-page-evidence` LAND
+validates every Supporting Result and PageX authority, freezes one Local Input,
+and finishes exactly one local Run before the item becomes ready. EMBED folds
+only that ready `VALUE`, `CITE`, or `DISPLAY` Result. A PageX link is never a
+fourth Result type and never substitutes for either Run layer. Discovery's
+ACQUIRE cycle produces per-Subject Results; SYNTHESIZE promotes completed
+Results through this skill's citation aggregation; CLOSE checks the joined
+evidence without minting an umbrella Run.
+
+## 🗺 Status · 🟢 live
+
+`live/evidence.py` serves the segmented surface and its POST twin;
+`84-plugin-evidence.js` registers the one tab row. The former standalone
+Citation, Value, Display, Probe, and PageX strip rows are segments here. The
+former Value, Display, and PageX Skill entrypoints retired into `ref/`; their
+engine routes and storage remain compatibility internals of this one plugin.
 
 ## 📂 Files
 
-- `../haipipe-plugin-bibex/SKILL.md` · `../haipipe-plugin-probe/SKILL.md` ·
-  `../haipipe-plugin-value/SKILL.md` · `../haipipe-plugin-display/SKILL.md` ·
-  `../haipipe-plugin-pagex/SKILL.md` · the lane contracts this surface presents
-- `../haipipe-plugin-outline/ref/evidence-bundle.md` · the per-bullet join
-  and its six status words, reused verbatim by ⧉ By bullet
-- `../../haipipe-board/cli/evidence-status.py` · the counts and the
-  `<stem>-evidence.md` snapshot
-- `../../haipipe-board/live/evidence.py` · the segmented surface and its twin
-- `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js` · the one registry row
-- `../../page-workflows/haipipe-page-evidence/SKILL.md` · phase ③, which
-  lands what this tab shows
+- `ref/citations.md` — citation/Bib storage, writers, verification, and
+  Discovery aggregate authority.
+- `ref/values.md` — VALUE provenance and the joined Values segment.
+- `ref/displays.md` — DISPLAY unit shape, renderer dispatch, and acceptance.
+- `ref/pagex.md` — PageX source bindings, storage, safety, and joined view.
+- `../haipipe-plugin-probe/SKILL.md` — the separately governed crossing/card
+  contract presented inside this tab.
+- `../haipipe-plugin-outline/ref/evidence-bundle.md` — the per-bullet join.
+- `../../haipipe-board/cli/evidence-status.py` — counts and snapshot.
+- `../../haipipe-board/live/evidence.py` — segmented surface and citation pens.
+- `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js` — one tab row.
+- `../../page-workflows/haipipe-page-evidence/SKILL.md` — LAND/EMBED workflow.

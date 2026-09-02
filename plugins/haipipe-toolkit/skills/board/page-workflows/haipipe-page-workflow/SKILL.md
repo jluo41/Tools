@@ -9,8 +9,8 @@ description: >-
   ADVANCE; only CHECK may CLOSE. Trigger: run a page, run page lifecycle,
   outline part, draft part, page run receipt, /haipipe-page-workflow.
 metadata:
-  version: "0.23.0"
-  last_updated: "2026-09-01"
+  version: "0.25.0"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,13 +40,13 @@ drifted within a day on 260819).
 
 ```text
 OUTLINE part · the page decides what is TRUE and what it will therefore say
-  SHAPE    haipipe-page-outline    brief → propose → react → revise      👤 approved:
-  SURVEY   haipipe-page-outline    the item table: Need · Route · Run     👤 Decide per row
-  LAND     haipipe-page-evidence   make the runs, fill the lanes          ⚙ every make-row landed
-  EMBED    haipipe-page-evidence   fold numbers into plan v<N+1>          ⚙ back to SHAPE
+  SHAPE    haipipe-page-outline    plan + typed evidence expectations     👤 approved:
+  SURVEY   haipipe-page-outline    supports + PageX + input + local Run   👤 Decide per item
+  LAND     haipipe-page-evidence   validate sources → local Result         ⚙ every make-item ready
+  EMBED    haipipe-page-evidence   fold ready Results into plan v<N+1>    ⚙ back to SHAPE
            └─ at SHAPE the tick carries the fork:
-              approved + fresh marks   → SURVEY again
-              approved + every row folded → the DRAFT part
+              approved + fresh items   → SURVEY again
+              approved + every item folded → the DRAFT part
 
 DRAFT part · the page is WRITTEN against a plan already agreed
   WRITE    haipipe-page-draft +    draft → revise → compile, chained; an inner
@@ -59,15 +59,31 @@ DRAFT part · the page is WRITTEN against a plan already agreed
               the argument itself → SHAPE · pass → CLOSE
 ```
 
-**The law that makes the OUTLINE part converge** (JL 260901: "evidence is
-linked to the runs!!!"): every evidence number is answered by a RUN at a real
-address in the project's `tasks/` tree; the run computes and never interprets;
-the page interprets at EMBED, under its own stake. The item table
-(`outline/<stem>-items.md`, `haipipe-plugin-outline/ref/item-table.md`) is the
-one ledger: SURVEY writes a row per mark, a person writes `Decide`, LAND
-appends the result pointer, EMBED writes the plan's `Answered:` line, and the
-render derives one Status word per row (`owed → bound → landed → folded →
-accepted`, plus `stale · deferred · dropped · blocked`).
+**The law that makes the OUTLINE part converge**: SHAPE names each typed
+Evidence Item and the ready Result it expects. SURVEY plans zero-to-many
+Execution/Discovery Supporting Runs, optional exact PageX bindings, plus
+exactly one local Page Evidence Item Run. LAND validates every supporting
+Result and PageX authority, freezes one Local Input, and finishes the local
+Run; EMBED interprets only the ready local Result.
+The one authored ledger is `outline/<stem>-evidence-items.md`
+(`haipipe-plugin-outline/ref/item-table.md`). Status is derived as `specified →
+planned → ready → folded → accepted`, plus `stale · deferred · dropped · blocked`.
+
+### Phase × Run Map · the workflow-level table every skill set must publish
+
+| Cycle | L3 Task content modified | L4 Runs | Input / policy | Skill chain | Close / handoff |
+|---|---|---|---|---|---|
+| SHAPE | outline plan + item identity/expectation/acceptance | none | brief + phase-owned outline/narrative/style policy | `haipipe-page-workflow → haipipe-page-outline → haipipe-plugin-outline → <owning phase, e.g. haipipe-paper-narrative>` | approved typed plan |
+| SURVEY | Evidence Item Supporting Runs + PageX Bindings + Local Input + Local Run plans + Decide | none | approved item contracts + existing Run/source inventory | `haipipe-page-workflow → haipipe-page-outline → haipipe-run → haipipe-plugin-evidence/ref/pagex.md` | every item graph and exact source binding valid and decided |
+| LAND · Supporting | item ledger gains resolved Run IDs and validated PageX authorities | Execution/Discovery `0..N` per item | selected Tickets/Results + exact PageX files/Results | `haipipe-page-workflow → haipipe-page-evidence → haipipe-run → haipipe-plugin-evidence → <Execution/Discovery worker>` | every Supporting Result and PageX binding valid |
+| LAND · Local | item ledger binds frozen input, local Run ID, and typed Result | Page · Evidence Item exactly `1` per make-item | one envelope of Supporting Results + PageX/local sources | `haipipe-page-workflow → haipipe-page-evidence → haipipe-run → haipipe-plugin-evidence` | both Run layers finished; one ready local Result per item |
+| EMBED | outline v<N+1> fold lines | none | ready local Results | `haipipe-page-workflow → haipipe-page-evidence` | return to SHAPE |
+| WRITE | Page Content division | Page · Division Writing, one per commissioned division | approved evidence-aware outline + writing/style policy | `haipipe-page-workflow → haipipe-page-draft/haipipe-page-revise → <owning phase>` | built Page ready for CHECK |
+| CHECK | receipt/findings; no producer mutation | none | built Page + plan + acceptance policy | `haipipe-page-workflow → haipipe-page-check → <owning phase gate>` | CLOSE or route back |
+
+`<owning phase>` is an exact installed skill name, never a generic Page-Type
+placeholder. For a paper Narrative Folder it is `haipipe-paper-narrative`.
+There is no `haipipe-page-for-task` hop in the current chain.
 
 **Why the parts split where they do.** The OUTLINE part is where the page
 decides WHAT IS TRUE; everything after is execution against a plan already
@@ -79,7 +95,7 @@ compile"), and a controller that halts inside WRITE for a person is halting in
 the wrong place.
 
 **The boundary is hard.** The DRAFT part refuses to start until the OUTLINE
-part has exited: plan `approved: ✅` AND every `☑ make` row `folded`. A hole
+part has exited: plan `approved: ✅` AND every `☑ make` item `folded`. A hole
 found later is a ROUTE BACK (CHECK → SURVEY or SHAPE), never patched inline.
 Each part is separately runnable (`run <page> outline` walks SHAPE→EMBED and
 stops; `run <page> draft` walks WRITE→CHECK; `run <page>` does both through
@@ -246,8 +262,8 @@ RULING. The latter two are nonwaivable and the controller hardens them even when
 the caller omitted `human_gate.required`. A Page without phase metadata keeps the
 legacy behavior: auto hardens its local RULING. `ref/page-run-contract.md` §🔀
 fixes the packet and the audit invariant behind the write-back. The `Decide`
-column of the item table is a person's in both modes; auto may leave a row `☐`
-and LAND then skips it, reporting the row as owed.
+field of the Evidence Item table is a person's in both modes; auto may leave an
+item `☐` and LAND then refuses it, reporting the item as still in SURVEY.
 
 Every step reports its `phase:` and its `cycle:` to whoever is watching, not
 only into the receipt: work that does not name its cycle cannot be routed or
@@ -363,13 +379,14 @@ position, which is why the verb is RUN and not ADVANCE.
 phase       authority                                          load
 ────────────────────────────────────────────────────────────────────────────────
 OUTLINE 🚧  SHAPE writes <page>/outline/<stem>-outline-v<N>.md,  ../haipipe-page-outline
-            the plan down to the POINT, each bullet marked        (the plan's shape is
-            🎯aim 📮ask 🧮value 📚cite 🖼display, exit ONLY on     haipipe-plugin-outline §📐,
-            a person's approved:; SURVEY writes <stem>-items.md,  the table's is its
-            one row per mark, exit on a person's Decide            ref/item-table.md)
-EVIDENCE ⚖️ LAND makes the decided runs in tasks/, fills the      ../haipipe-page-evidence
-            lanes, raises a card only when a question leaves the
-            page; EMBED writes the numbers into plan v<N+1> and
+            the plan down to the POINT, each owed thing a named    (the plan's shape is
+            E<NN>-VALUE/CITE/DISPLAY item with expectation and      haipipe-plugin-outline §📐,
+            acceptance; SURVEY completes <stem>-evidence-items.md  the table's is its
+            with support/PageX/input/local Run plans and Decide     ref/item-table.md)
+EVIDENCE ⚖️ LAND validates each item's Supporting Results and     ../haipipe-page-evidence
+            exact PageX authorities, freezes one input, then
+            executes exactly one local Evidence Item
+            Run; EMBED writes ready Results into plan v<N+1> and
             returns to SHAPE
 DRAFT       instantiate each Point as sentences with real numbers  ../haipipe-page-draft
 REVISE      realize the prose, cite units by id, caption, and       ../haipipe-page-revise
@@ -378,15 +395,19 @@ CHECK       judge the BUILT version and route its authority;       ../haipipe-pa
             in pre-check mode, gate WRITE's inner loop
 ```
 
-PROBE retired on 260901 with `/haipipe-probe`: its MATCH half is SURVEY's Run
-column (page-local rows → the tasks/ tree → nothing), its dispatch half is
-LAND's outbound card, its cost ladder became the outcome words (`found · rerun
-· new-run · new-task · new-job · new-block · person · none`), and its stake wall
-survives verbatim in `haipipe-page-evidence` §🚪. The 260817 splits still hold
+PROBE retired on 260901 with `/haipipe-probe`. SURVEY now plans the graph using
+two separate dimensions: family (`Execution | Discovery`) and action (`reuse |
+rerun | new-run | new-task | new-job | new-block`). LAND executes that graph.
+`found`, `person`, and `none` are not current actions. The 260817 splits still hold
 (OUTLINE ≠ DRAFT: one phase must not agree the shape AND write the page;
 raising ≠ landing: a card at `raised` bound to a bank that did not exist read
 as done; REVISE ≠ COMPILE: "the prose is right" shipped a PDF full of raw
 `<!-- -->`).
+
+Existing outbound-card history remains canonical at
+`evidence/probe/<id>/proof/`; the current typed Evidence Item graph reads those
+aggregates only through a declared Supporting Result and does not mint a new
+card merely to represent a Run.
 
 ## 🪪 Each phase in SIX fields · `ref/phase-cards.md`
 
@@ -413,42 +434,30 @@ selected tick run machine-only from start to finish.
 That file is a SUMMARY and this family is its source. When the two disagree, the
 phase contract wins and the card is the defect.
 
-## 🃏 One item, five states, and only ONE cycle opens a folder
-
-The commonest question about this loop is where an evidence item is born and
-where it lives, and until 260817 three member skills answered it three
-different ways; on 260901 the item table made it one row:
+## 🃏 One typed item through planning, Runs, and the Page
 
 ```text
-SHAPE    the MARK      `- B4 · the four coordinates    📮`     nothing on disk
-SURVEY   the ROW       outline/<stem>-items.md: Need · Route ·  status ⬜ owed,
-                       Run (found | new-run | …) · Decide        then 🔗 bound
-LAND     the RESULT    the run in tasks/ (made or found), its    🟢 landed
-                       file appended to the row as ` → <file>`;
-                       a card folder ONLY when the question
-                       leaves the page, its aggregate extract in
-                       evidence/probe/<id>/proof/
-EMBED    the NUMBER    plan v<N+1>: `Answered:` under the bullet 📌 folded
-WRITE    the SENTENCE  writes the folded number into prose; a
-                       hole only for a named blocker
-CHECK    the TICK      accepted: on the page                     ✅ accepted
+SHAPE    E01-VALUE-adjusted-effect
+         Target + Need + Expected + Acceptance             specified
+SURVEY   Supporting Runs: Execution/Discovery 0..N
+         PageX Bindings: exact accepted cross-Folder sources 0..N
+         Local Run: Page · Evidence Item exactly 1          planned
+LAND     validate supports + PageX → freeze one input → local Run
+         → one typed ready Result                           ready
+EMBED    `Answered: E01… · interpretation · Result`         folded
+WRITE    one or more Division Writing Runs realize prose
+CHECK    accepted: on the Page                              accepted
 ```
 
-**Why the folder waits.** A plan is rejectable in ten seconds and must leave
-nothing behind, so SHAPE may not: the mark IS the proposal. A row is cheap and
-lives in one authored file, so SURVEY may write it before anyone decides. A
-run is real work, so LAND makes it only behind a person's `☑ make`. And a card
-(`evidence/probe/PP<NN>-<slug>/`) is the one thing that still carries a stake
-wall, so it exists only for the question that crosses to another pair of hands.
+SHAPE and SURVEY modify planning content in the L3 Task Folder but mint no L4
+Run. LAND is where work identities begin. Different item graphs may execute in
+parallel; within one item the local Run waits for its declared supports and
+PageX bindings. This is not a contradiction with parallel LAND—the dependency
+is local to the item.
 
-**The display unit goes at LAND, not earlier.** Its `intake/` freezes FROM a
-landed result, so declaring a unit that nothing can fill yet is how a page
-shipped "1 display declared · 0 unit folders on disk" (260817).
-
-**⚖️ LAND is lanes, not steps.** The rows run at once, each with its own hand
-and its own landed test; the cycle ends when every `☑ make` row has landed, and
-no row waits on another. `stale` is the reopen law: a rerun upstream newer than
-the plan flips a folded row, and the page never silently carries an old number.
+`stale` is the reopen law: a changed Supporting Result or PageX authority
+invalidates the frozen local input; a changed local Result invalidates the fold. The historical Runs
+stay immutable while LAND or EMBED repeats with the correct identity.
 
 ## 🪞 The page never writes prose about what a plugin already holds
 

@@ -6,11 +6,11 @@ description: >-
   and a Task Face for intent, work, progress, and closure; a domain workflow
   phase owns both faces and selects optional plugins such as PageX or Runs.
   Use when defining a Folder kind, authoring a workflow-phase skill, deciding
-  whether something is a page or a task, or routing a legacy page-type.
+  whether something is a page or a task, filling a Phase × Run Map, or routing a legacy page-type.
   Trigger: folder contract, page face, task face, folder kind, phase-owned
   configuration, workflow phase, /haipipe-folder.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   last_updated: "2026-09-01"
 ---
 
@@ -109,6 +109,8 @@ Folder's identity; do not copy it under the Page. `scripts/`, config, and
 notebooks are conditional supporting projections. `haipipe-plugin-runs` is the
 optional presenter over the logical Run spine. It does not replace the
 universal Task Face or own Execute, lifecycle, or closure authority.
+`haipipe-run` owns the shared Level-4 identity, pairing, receipt, lifecycle, and
+audit invariants beneath both physical dialects.
 
 ## Phase skill contract
 
@@ -143,6 +145,23 @@ and reopening conditions. The Task Face specifies the work, writer, progress
 record, execution boundary, and terminal states. Closure is one cross-face
 assertion: neither face may report closed while the other still owes a
 load-bearing artifact or decision.
+
+The owning workflow publishes the complete Phase × Run Map defined by
+`haipipe-run`. This phase must make its row executable:
+
+- when the row lists Run operations, add `### Run Profile` inside `## Task
+  Face` with ALLOWED, TARGET, TICKET, INPUTS, WORKER, RESULT, ACCEPT,
+  PROMOTION, and REOPEN;
+- make the profile's operations and cardinality agree exactly with the
+  workflow row;
+- when the row says `none`, omit empty `runs/`, `results/`, and Runs-presenter
+  lanes rather than manufacturing work;
+- keep the phase gate in `## Gate and Closure`; a human tick or phase receipt
+  does not become a Run merely because the Task Face records it.
+
+The workflow map is the index, this phase profile is the executable detail,
+and runtime receipts are actual inventory. A disagreement is a structural
+error, never a license to infer missing Runs.
 
 `page_ruling` tells the shared Page Workflow whether CHECK owes an owner-level
 person decision. `domain-gate` reuses the phase's named human gate receipt;
@@ -192,6 +211,9 @@ Application `page-type:` merely because the checker still accepts the key.
 - Cross-Folder inputs bind through PageX, never a private task-link lane.
 - Runs, when present, launch only through `runs/`, resolve one paired Result by
   Folder dialect, and write only declared output.
+- The workflow's Phase × Run row and this phase's Run Profile agree on
+  operations and symbolic cardinality; planned counts remain distinct from
+  receipt-backed actual inventory.
 - The phase's gate and handoff are testable from named files.
 
 ## Files
@@ -200,3 +222,4 @@ Application `page-type:` merely because the checker still accepts the key.
 - `../haipipe-board/cli/foldercontracts.py` is the executable inventory/gate.
 - `../haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
 - `../haipipe-plugin/SKILL.md` owns reusable plugin mechanics.
+- `../../run/haipipe-run/SKILL.md` owns the neutral Level-4 Run contract.

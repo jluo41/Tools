@@ -20,11 +20,17 @@ verbatim and regenerated whole, so it cannot drift from its source.
 import re
 from pathlib import Path
 
-PAGE_ID = re.compile(r"\b([A-Z]{2}\d{2})\b")
+LEGACY_PAGE_ID = r"[A-Z]{2}\d{2}"
+SEMANTIC_SECTION_ID = (
+    r"S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-[A-Za-z][A-Za-z0-9-]*"
+)
+PAGE_ID_TOKEN = rf"(?:{SEMANTIC_SECTION_ID}|{LEGACY_PAGE_ID})"
+PAGE_ID = re.compile(rf"(?<![A-Za-z0-9-])({PAGE_ID_TOKEN})(?![A-Za-z0-9-])")
 RANGE = re.compile(r"\b([A-Z]{2})(\d{2})[–-]([A-Z]{2})?(\d{2})\b")
 HEAD = re.compile(r"(?m)^#### (S[A-Z0-9]+) \(([^)]*)\) · (.+)$")
 ROW = re.compile(r"(?m)^- \*\*(S[A-Z0-9]+-PP\d+) · (.+?)\*\* \((.*?)\)\.(.*?)\*\*State:\*\* (\w+)")
-A_ROW = re.compile(r"(?m)^\| ([A-Z]{2}\d{2}(?: \+ [A-Z]{2}\d{2})?|Appendices [A-Z]{2}\d{2}[–-][A-Z]{2}\d{2}) · ([^|]+)\| ([^|]+)\| ([^|]+)\| ([^|]+)\| ([^|]+)\|")
+PAGE_LIST = rf"(?:{PAGE_ID_TOKEN})(?: \+ {PAGE_ID_TOKEN})*|Appendices {LEGACY_PAGE_ID}[–-]{LEGACY_PAGE_ID}"
+A_ROW = re.compile(rf"(?m)^\| ({PAGE_LIST}) · ([^|]+)\| ([^|]+)\| ([^|]+)\| ([^|]+)\| ([^|]+)\|")
 LEDGER = re.compile(r"(?m)^\| (R\d{2}) \| ([^|]*)\| ([^|]*)\| ([^|]*)\| (\w+) \|")
 RID = r"(?:S[A-Z0-9]+-PP\d+|R\d{2})"
 # Both register shapes: the 0.18.0 record (`### id · head` + `- **Landed**: x`)
@@ -34,7 +40,7 @@ REG_ROW = re.compile(r"(?m)^(?:###|-) (" + RID + r") · .*?\n(?:(?:  |- \*\*).*\
 
 
 def expand_ids(text):
-    """'SM04 + SM05' -> {SM04, SM05} · 'AM01–AM06' -> {AM01..AM06}"""
+    """Expand legacy ranges and named Section ids from a Round routing cell."""
     ids = set(PAGE_ID.findall(text))
     for a, lo, b, hi in RANGE.findall(text):
         b = b or a

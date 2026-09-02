@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""The item table · one row per mark, a derived ladder word per row.
-
-`haipipe-plugin-outline/ref/item-table.md` (JL 260901): SURVEY writes Need ·
-Route · Run · Decide, LAND appends ` → <result file>`, and the Status is never
-typed: it is derived from the row, the result file and the plan's Answered:
-line. These tests pin the derivation so the strip and the evidence file cannot
-disagree with the law.
-"""
+"""Tests for the typed Evidence Item ledger and derived Page cycle."""
 import os
+import sys
 import tempfile
 import time
 import unittest
 from pathlib import Path
+
+ENGINE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ENGINE))
 
 from src import item_table as it
 
@@ -20,135 +17,358 @@ approved: {tick}
 
 ## C1 · One
 ### C1.P1 · move
-- B1 · the count of physicians
-  Note: a number 📮
-- B2 · the guideline anchor
-  Note: a citation 📚
-- B3 · the funnel figure
-  Note: a picture 🖼 owed · figure
-- B4 · no mark here
+- B1 · the adjusted treatment estimate
+  Note: report the focal estimate
+  Evidence: E01-VALUE-adjusted-effect · estimate, interval, unit, population, and model label
+  Accept: recomputes from the accepted model Result
+- B2 · the guideline and figure
+  Note: support and show the comparison
+  Evidence: E02-CITE-guideline-anchor · verified guideline claim and locator
+  Accept: source identity and locator resolve
+  Evidence: E03-DISPLAY-effect-forest · forest plot ready to place
+  Accept: preview, caption claim, and frozen intake exist
+- B3 · no item here
   Note: nothing owed
 """
 
-ITEMS = """# QT2 · items
+ITEMS = """# QT2 · evidence items
 page: QT2
-kind: items · authored
+kind: evidence-items · authored
 plan: v1
 
-### C1.P1.B1 · 📮 the count of physicians
-- **Need**: the count
-- **Route**: task
-- **Run**: found · tasks/b01/j01/t01 · the build run{arrow}
+### E01-VALUE-adjusted-effect · C1.P1.B1 · adjusted treatment effect
+- **Target**: C1.P1.B1
+- **Need**: the focal estimate
+- **Expected**: VALUE · estimate, interval, unit, population, and model label
+- **Acceptance**: recomputes from the accepted model Result
+- **Supporting Runs**: Execution · reuse · b01j01t01r01
+- **PageX Bindings**: source/page/results/r01/result.yaml · authority b01j01t01r01
+- **Local Input**: Supporting Results + PageX bindings
+- **Local Run**: Page · Evidence Item · new-run · b02j01t01{arrow}
 - **Decide**: {decide}
 
-### C1.P1.B2 · 📚 the guideline anchor
-- **Need**: the CDC guideline
-- **Route**: bibex
-- **Run**: person · you supply the entry
-- **Decide**: ☑ make · JL 260901
+### E02-CITE-guideline-anchor · C1.P1.B2 · guideline anchor
+- **Target**: C1.P1.B2
+- **Need**: a verified source claim
+- **Expected**: CITE · verified guideline claim and locator
+- **Acceptance**: source identity and locator resolve
+- **Supporting Runs**: Discovery · rerun · b01j02t01r03
+- **PageX Bindings**: []
+- **Local Input**: Supporting Results only
+- **Local Run**: Page · Evidence Item · new-run · b02j01t01
+- **Decide**: ☑ defer · awaiting source access
 
-### C1.P1.B3 · 🖼 the funnel figure
-- **Need**: the funnel
-- **Route**: display
-- **Run**: none · a judgment, no run can draw it
-- **Decide**: ☐ make
+### E03-DISPLAY-effect-forest · C1.P1.B2 · effect forest
+- **Target**: C1.P1.B2
+- **Need**: a ready forest plot
+- **Expected**: DISPLAY · forest plot ready to place
+- **Acceptance**: preview, caption claim, and frozen intake exist
+- **Supporting Runs**: []
+- **PageX Bindings**: []
+- **Local Input**: item contract only
+- **Local Run**: Page · Evidence Item · new-run · b02j01t01
+- **Decide**: ☑ drop · no longer needed
 """
 
 
-def _page(root, *, tick="⬜", decide="☐ make", arrow="", result=True, answered=False):
-    pd = Path(root) / "QT2"
-    (pd / "outline").mkdir(parents=True)
-    (pd / "QT2.md").write_text("# QT2\n\nstate: 🟡\n")
+def _register_runtime(root, global_id):
+    """Create the minimum formal Ticket + planned runtime receipt for a test."""
+    match = it._GLOBAL_RUN_RE.fullmatch(global_id)
+    assert match
+    block, job, task, run = match.groups()
+    root = Path(root)
+    (root / "pyproject.toml").write_text("[project]\nname = 'fixture'\n")
+    (root / "code").mkdir(exist_ok=True)
+    stem = f"b{block}_fixture/j{job}_fixture"
+    ticket = (f"tasks/{stem}/runs/t{task}_fixture/r{run}_fixture.md")
+    ticket_path = root / ticket
+    ticket_path.parent.mkdir(parents=True, exist_ok=True)
+    ticket_path.write_text(f"# {global_id}\n")
+    # Tickets live under tasks/, while runtime receipts live under the formal
+    # results/ mirror.  Keep both paths explicit so the registry checks both.
+    runtime = (root / "examples" / "Fixture" / "tasks" / f"b{block}_fixture"
+               / f"j{job}_fixture" / "results" / f"t{task}_fixture"
+               / f"r{run}_fixture" / "runtime.yaml")
+    runtime.parent.mkdir(parents=True, exist_ok=True)
+    runtime.write_text(
+        f"global_id: {global_id}\nfamily: Test\ntarget: fixture\n"
+        f"status: planned\nticket: {ticket}\n"
+    )
+
+
+def _page(root, *, tick="⬜", decide="☐ make", arrow="", result=True,
+          folded=False, registered=False):
+    page_dir = Path(root) / "QT2"
+    (page_dir / "outline").mkdir(parents=True)
+    (page_dir / "QT2.md").write_text("# QT2\n\naccepted: ⬜\n")
     plan = PLAN.format(tick=tick)
-    if answered:
-        plan = plan.replace("  Note: a number 📮\n", "  Note: a number 📮\n  Answered: 226,149 · tasks/b01/j01/t01/results/n.txt\n")
-    (pd / "outline" / "QT2-outline-v1.md").write_text(plan)
+    if folded:
+        plan = plan.replace(
+            "  Accept: recomputes from the accepted model Result\n",
+            "  Accept: recomputes from the accepted model Result\n"
+            "  Answered: E01-VALUE-adjusted-effect · 1.25 · results/local/value.yaml\n",
+        )
+    (page_dir / "outline" / "QT2-outline-v1.md").write_text(plan)
     if result:
-        (pd / "tasks" / "b01" / "j01" / "t01" / "results").mkdir(parents=True)
-        (pd / "tasks" / "b01" / "j01" / "t01" / "results" / "n.txt").write_text("226149\n")
-    (pd / "outline" / "QT2-items.md").write_text(ITEMS.format(decide=decide, arrow=arrow))
-    return pd / "QT2.md"
+        (page_dir / "results" / "local").mkdir(parents=True)
+        (page_dir / "results" / "local" / "value.yaml").write_text("value: 1.25\n")
+    items = ITEMS.format(decide=decide, arrow=arrow)
+    if registered:
+        _register_runtime(root, "b01j01t01r01")
+        _register_runtime(root, "b02j01t01r01")
+        items = items.replace(
+            "Execution · reuse · b01j01t01r01",
+            "Execution · registered · b01j01t01r01",
+        ).replace(
+            f"Page · Evidence Item · new-run · b02j01t01{arrow}",
+            f"Page · Evidence Item · registered · b02j01t01r01{arrow}",
+            1,
+        )
+        it.run_registry.cache_clear()
+    (page_dir / "outline" / "QT2-evidence-items.md").write_text(items)
+    return page_dir / "QT2.md"
 
 
 class ItemTableTest(unittest.TestCase):
-    def test_read_items_parses_outcome_address_result_and_decision(self):
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, decide="☑ make · JL 260901", arrow=" → tasks/b01/j01/t01/results/n.txt")
-            rows = it.read_items(md)
-            r = rows["C1.P1.B1"]
-            self.assertEqual(("found", "tasks/b01/j01/t01", "tasks/b01/j01/t01/results/n.txt", "make"),
-                             (r["outcome"], r["address"], r["result"], r["decision"]))
-            self.assertEqual("none", rows["C1.P1.B3"]["outcome"])
-            self.assertEqual("", rows["C1.P1.B3"]["decision"])
+    def test_wall_label_is_compact_and_keeps_type(self):
+        self.assertEqual(
+            it.wall_label("E03-VALUE-primary-association", "VALUE", "Total MME"),
+            "E3V.TotalMME",
+        )
+        self.assertEqual(
+            it.wall_label("E02-CITE-guideline", "CITE", "guideline source"),
+            "E2C.GuidelineSource",
+        )
+        self.assertEqual(
+            it.wall_label("E08-DISPLAY-table", "DISPLAY", "sequence table"),
+            "E8D.SequenceTable",
+        )
 
-    def test_bullets_yield_every_mark_and_the_folded_flag(self):
-        got = [(a, k, f) for a, _h, k, _r, f in it.bullets(PLAN.format(tick="⬜"))]
-        self.assertEqual([("C1.P1.B1", "probe", False), ("C1.P1.B2", "cite", False),
-                          ("C1.P1.B3", "display", False), ("C1.P1.B4", None, False)], got)
-        folded = [f for a, _h, k, _r, f in it.bullets(PLAN.format(tick="⬜").replace(
-            "  Note: a number 📮\n", "  Note: a number 📮\n  Answered: 1\n")) if a == "C1.P1.B1"]
-        self.assertEqual([True], folded)
+    def test_global_run_addresses_accept_dotted_input_and_keep_compact_key(self):
+        self.assertEqual("b01j02t03r04", it.compact_global_run("b01.j02.t03.r04"))
+        self.assertEqual("b01.j02.t03.r04", it.readable_global_run("b01j02t03r04"))
+        self.assertEqual("", it.compact_global_run("b01.j02.t03"))
 
-    def test_ladder_owed_bound_landed_folded(self):
-        with tempfile.TemporaryDirectory() as d:
-            # ☐ + no arrow → owed; a ☑ make person row waiting on the person → bound
-            md = _page(d)
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(1, s["counts"]["owed"])        # B1: undecided, no pointer
-            self.assertEqual(1, s["counts"]["bound"])       # B2: person, ☑ make, nothing supplied yet
-            self.assertEqual(1, s["counts"]["blocked"])     # B3: outcome none
-            self.assertEqual("SURVEY", s["cycle"])          # a ☐ row keeps the cycle at SURVEY
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, decide="☑ make · JL 260901")
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(2, s["counts"]["bound"])       # B1 decided with an address, no result yet; B2 as above
-            self.assertEqual("SURVEY", s["cycle"])          # B3 is still ☐, so the table is not survey-complete
-            f = it.items_path(md)
-            f.write_text(f.read_text().replace("- **Run**: none · a judgment, no run can draw it\n- **Decide**: ☐ make",
-                                               "- **Run**: none · a judgment, no run can draw it\n- **Decide**: ☑ drop · SHAPE rewrites the bullet"))
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual("LAND", s["cycle"])            # every row decided, two bound → LAND
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, decide="☑ make · JL 260901", arrow=" → tasks/b01/j01/t01/results/n.txt")
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(1, s["counts"]["landed"])      # the pointer resolves (page-relative)
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, tick="✅ JL", decide="☑ make · JL 260901",
-                       arrow=" → tasks/b01/j01/t01/results/n.txt", answered=True)
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(1, s["counts"]["folded"])      # landed + Answered: line
+    def test_read_items_parses_typed_identity_graph_and_local_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory,
+                decide="☑ make · JL 260901",
+                arrow=" → results/local/value.yaml",
+            )
+            rows = it.read_items(page)
+            row = rows["E01-VALUE-adjusted-effect"]
+            self.assertEqual("VALUE", row["type"])
+            self.assertEqual("C1.P1.B1", row["target"])
+            self.assertEqual("Execution · reuse · b01j01t01r01", row["supporting_runs"])
+            self.assertEqual(
+                "source/page/results/r01/result.yaml · authority b01j01t01r01",
+                row["pagex_bindings"],
+            )
+            self.assertEqual(1, row["pagex_count"])
+            self.assertTrue(row["pagex_valid"])
+            self.assertEqual(
+                ("new-run", "b02j01t01", "results/local/value.yaml", "make"),
+                (row["action"], row["address"], row["result"], row["decision"]),
+            )
 
-    def test_stale_when_the_result_is_newer_than_the_plan(self):
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, tick="✅ JL", decide="☑ make · JL 260901",
-                       arrow=" → tasks/b01/j01/t01/results/n.txt", answered=True)
-            plan = md.parent / "outline" / "QT2-outline-v1.md"
+    def test_plan_parser_allows_multiple_items_on_one_bullet(self):
+        got = [(item, target, kind, folded) for item, target, _head, kind, _expected, _accept, folded
+               in it.bullets(PLAN.format(tick="⬜"))]
+        self.assertEqual([
+            ("E01-VALUE-adjusted-effect", "C1.P1.B1", "VALUE", False),
+            ("E02-CITE-guideline-anchor", "C1.P1.B2", "CITE", False),
+            ("E03-DISPLAY-effect-forest", "C1.P1.B2", "DISPLAY", False),
+        ], got)
+
+    def test_status_and_cycle_specified_planned_ready_folded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, tick="✅ JL", result=False)
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["specified"])
+            self.assertEqual(1, summary["counts"]["deferred"])
+            self.assertEqual(1, summary["counts"]["dropped"])
+            self.assertEqual("SURVEY", summary["cycle"])
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, tick="✅ JL", decide="☑ make · JL 260901",
+                result=False, registered=True,
+            )
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["planned"])
+            self.assertEqual("LAND", summary["cycle"])
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, tick="✅ JL", decide="☑ make · JL 260901",
+                arrow=" → results/local/value.yaml", registered=True,
+            )
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["ready"])
+            self.assertEqual("EMBED", summary["cycle"])
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, tick="✅ JL", decide="☑ make · JL 260901",
+                arrow=" → results/local/value.yaml", folded=True, registered=True,
+            )
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["folded"])
+            self.assertEqual("WRITE", summary["cycle"])
+
+    def test_stale_when_local_result_is_newer_than_folded_plan(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, tick="✅ JL", decide="☑ make · JL 260901",
+                arrow=" → results/local/value.yaml", folded=True, registered=True,
+            )
+            plan = page.parent / "outline" / "QT2-outline-v1.md"
             old = time.time() - 600
             os.utime(plan, (old, old))
-            s = it.summarize(md, plan)
-            self.assertEqual(1, s["counts"]["stale"])
+            summary = it.summarize(page, plan)
+            self.assertEqual(1, summary["counts"]["stale"])
 
-    def test_defer_drop_and_the_status_is_never_typed(self):
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d, decide="☑ defer · after the server run")
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(1, s["counts"]["deferred"])
-            # a typed Status row in the table is ignored: the derivation wins
-            f = it.items_path(md)
-            f.write_text(f.read_text().replace("- **Decide**: ☑ defer · after the server run",
-                                               "- **Status**: 📌 folded\n- **Decide**: ☑ drop · out of scope"))
-            s = it.summarize(md, md.parent / "outline" / "QT2-outline-v1.md")
-            self.assertEqual(1, s["counts"]["dropped"])
-            self.assertEqual(0, s["counts"]["folded"])
+    def test_status_label_in_authored_file_is_ignored(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, decide="☑ make · JL 260901", result=False,
+                registered=True,
+            )
+            path = it.items_path(page)
+            path.write_text(path.read_text().replace(
+                "- **Decide**: ☑ make · JL 260901",
+                "- **Status**: accepted\n- **Decide**: ☑ make · JL 260901",
+            ))
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["planned"])
+            self.assertEqual(0, summary["counts"]["accepted"])
 
-    def test_no_table_reads_from_the_lane(self):
-        with tempfile.TemporaryDirectory() as d:
-            md = _page(d)
-            it.items_path(md).unlink()
-            plan = md.parent / "outline" / "QT2-outline-v1.md"
-            s = it.summarize(md, plan, lane=lambda kind, ref: (kind == "cite", False))
-            self.assertEqual({"owed": 2, "landed": 1}, {k: v for k, v in s["counts"].items() if v})
-            self.assertEqual("SHAPE", s["cycle"])
+    def test_reuse_and_rerun_require_full_global_run_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, tick="✅ JL", decide="☑ make · JL 260901", result=False)
+            path = it.items_path(page)
+            path.write_text(path.read_text().replace(
+                "Execution · reuse · b01j01t01r01",
+                "Execution · reuse · b01j01t01",
+            ))
+            rows = it.read_items(page)
+            self.assertFalse(rows["E01-VALUE-adjusted-effect"]["planned"])
+            summary = it.summarize(page, page.parent / "outline" / "QT2-outline-v1.md")
+            self.assertEqual(1, summary["counts"]["specified"])
+            self.assertEqual("SURVEY", summary["cycle"])
+
+    def test_registered_run_requires_both_ticket_and_planned_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory, tick="✅ JL", decide="☑ make · JL 260901",
+                result=False, registered=True,
+            )
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertTrue(row["runs_registered"])
+            self.assertTrue(row["planned"])
+
+            ticket = (Path(directory) / "tasks" / "b02_fixture" / "j01_fixture"
+                      / "runs" / "t01_fixture" / "r01_fixture.md")
+            ticket.unlink()
+            it.run_registry.cache_clear()
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertFalse(row["runs_registered"])
+            self.assertFalse(row["planned"])
+
+    def test_current_task_ticket_without_a_real_result_is_rerun(self):
+        """A pre-existing current-tree Ticket is not promoted to Done by a smoke receipt."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pyproject.toml").write_text("[project]\nname = 'fixture'\n")
+            (root / "code").mkdir()
+            task = (root / "examples" / "Fixture" / "task" / "b03_live"
+                    / "j02_regression" / "t01_lbp")
+            ticket = task / "runs" / "agre" / "r01_lbp_af7d_ols.ps1"
+            ticket.parent.mkdir(parents=True)
+            ticket.write_text("# Ticket\n")
+            runtime = (task.parent / "results" / task.name / "run_lbp_af7d_ols"
+                       / "runtime.yaml")
+            runtime.parent.mkdir(parents=True)
+            runtime.write_text(
+                "status: complete\n"
+                "config: r01_lbp_af7d_ols.do\n"
+            )
+            # A config snapshot alone is not empirical output.
+            (runtime.parent / "config_snapshot.do").write_text("// snapshot\n")
+            it.run_registry.cache_clear()
+            record = it.run_registry(str(root))["b03j02t01r01"]
+            self.assertEqual("rerun", record["status"])
+            self.assertEqual("Rerun", record["label"])
+
+    def test_current_task_ticket_without_a_receipt_is_run_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pyproject.toml").write_text("[project]\nname = 'fixture'\n")
+            (root / "code").mkdir()
+            ticket = (root / "examples" / "Fixture" / "task" / "b03_live"
+                      / "j02_regression" / "t01_lbp" / "runs" / "agre"
+                      / "r04_lbp_af14d_ols.ps1")
+            ticket.parent.mkdir(parents=True)
+            ticket.write_text("# Ticket\n")
+            it.run_registry.cache_clear()
+            record = it.run_registry(str(root))["b03j02t01r04"]
+            self.assertEqual("ticket", record["status"])
+            self.assertEqual("Run only", record["label"])
+            self.assertEqual(
+                "examples/Fixture/task/b03_live/j02_regression/t01_lbp",
+                record["task_root"],
+            )
+            self.assertEqual("", record["runtime"])
+
+    def test_discovery_ticket_requires_complete_same_stem_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pyproject.toml").write_text("[project]\nname = 'fixture'\n")
+            (root / "code").mkdir()
+            task = (root / "examples" / "Fixture" / "discoveries" / "b01_lit"
+                    / "j01_question" / "t04_measurement")
+            ticket = task / "runs" / "r01_luo2026_measurement.sh"
+            ticket.parent.mkdir(parents=True)
+            ticket.write_text("#!/bin/sh\n")
+            ticket.chmod(0o755)
+            result = task / "results" / ticket.stem
+            result.mkdir(parents=True)
+            (result / "runtime.yaml").write_text("status: complete\n")
+            (result / f"{ticket.stem}.md").write_text("# Card\n")
+            (result / f"{ticket.stem}.bib").write_text("@article{key,}\n")
+            (result / "facts.md").write_text("# Facts\n")
+            it.run_registry.cache_clear()
+            record = it.run_registry(str(root))["b01j01t04r01"]
+            self.assertEqual("Discovery", record["family"])
+            self.assertEqual("complete", record["status"])
+            self.assertEqual("Done", record["label"])
+            self.assertEqual(
+                "examples/Fixture/discoveries/b01_lit/j01_question/t04_measurement",
+                record["task_root"],
+            )
+
+    def test_pagex_binding_requires_exact_path_and_authority(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, tick="✅ JL", decide="☑ make · JL 260901", result=False)
+            path = it.items_path(page)
+            path.write_text(path.read_text().replace(
+                "source/page/results/r01/result.yaml · authority b01j01t01r01",
+                "source/page/ · authority accepted Page v2",
+            ))
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertFalse(row["pagex_valid"])
+            self.assertFalse(row["planned"])
+
+    def test_pagex_binding_must_be_named_in_local_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, tick="✅ JL", decide="☑ make · JL 260901", result=False)
+            path = it.items_path(page)
+            path.write_text(path.read_text().replace(
+                "Supporting Results + PageX bindings",
+                "Supporting Results only",
+                1,
+            ))
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertTrue(row["pagex_valid"])
+            self.assertFalse(row["planned"])
 
 
 if __name__ == "__main__":

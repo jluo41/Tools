@@ -210,13 +210,13 @@ Until those three rules land, the checks are the judge's cold read, which is a w
 
 ### 📥 Input files
 
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/06_divergence-and-convergence/QA/1-divergent-convergent-phase-separation.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t06_divergence_and_convergence/QA/1-divergent-convergent-phase-separation.md`
   QA 06 · fifteen verified sources on phase separation; the C-K, Guilford, Osborn and quantity anchors of §2 and all three qualifications of §6.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/03_parallel-vs-serial-prototyping/QA/1-parallel-serial-prototyping-fixation-ideation.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t03_parallel_vs_serial_prototyping/QA/1-parallel-serial-prototyping-fixation-ideation.md`
   QA 03 · the parallel, fixation and production-blocking anchors of §2.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/02_rationale-capture-and-prereg/QA/1-design-as-hypothesis-grounding.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t02_rationale_capture_and_prereg/QA/1-design-as-hypothesis-grounding.md`
   QA 02 · the QOC and IBIS anchors of §3, and the abductive order of §4.
-- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/05_iterative-co-evolution-and-calibration/QA/1-iterative-design-cycles-and-forecast-calibration.md`
+- `../../../../../../../../designs/Project-Application-SMSDesign/discoveries/b02_design_process_theory/j01_design_process_theory_inquiry/t05_iterative_co_evolution_and_calibration/QA/1-iterative-design-cycles-and-forecast-calibration.md`
   QA 05 · the co-evolution anchors of §5.
 
 ### 🔗 Related Board Pages

@@ -5,7 +5,8 @@ uses one of them (JL 260819). Until the `PP<NN>.v<n>` id existed, both sentences
 could only cite `PP01`, so nobody could tell which number each used and a value
 nobody used looked exactly like one everybody did.
 
-NO STORAGE and NO WRITER, by contract (`haipipe-plugin-value` §🧊): the number
+NO STORAGE and NO WRITER, by contract
+(`haipipe-plugin-evidence/ref/values.md` §🧊): the number
 lives in `evidence/probe/PP<NN>/proof/` with its source, run and sha256. This module reads
 `card.md`'s `## Values` block and the page's own prose, and joins them.
 """

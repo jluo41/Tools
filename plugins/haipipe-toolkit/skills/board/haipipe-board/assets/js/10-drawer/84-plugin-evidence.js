@@ -90,6 +90,7 @@
       label: '🧾 Evidence',
       hint: 'citations, cards, values, displays and borrows · one surface, five lanes',
       menu: 'plugin',
+      order: 20,
       /* Any page with a source file: an empty lane still opens, and the
          ghost scaffold it shows is the contract teaching itself. */
       applies: function (page) { return !!pageFile(page); },

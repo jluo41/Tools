@@ -1,3 +1,8 @@
+## 0.10.1 — 2026-09-02
+
+- Read page-owned manuscript writing rules from the authored W records inside
+  `outline/<stem>-requirement.md` before converting slots to sentences.
+
 ## 0.10.0 — 2026-08-31
 
 Rewritten as ONE pass: 453 → 185 lines, present tense. ① the conversion by

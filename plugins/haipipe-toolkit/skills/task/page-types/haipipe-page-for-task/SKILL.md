@@ -8,9 +8,9 @@ description: >-
   but nobody wrote what they mean. Trigger: task page, technical report,
   results reading, verdict, rerun reopens, page-type task.
 metadata:
-  version: "0.10.2"
-  last_updated: "2026-08-31"
-  folder-kind: task | discovery   # a discovery folder is a special task (260819)
+  version: "0.11.0"
+  last_updated: "2026-09-01"
+  folder-kind: task
   outline:
     mode: grammar          # fixed | grammar | resolved
     source: "this SKILL.md"
@@ -20,36 +20,28 @@ metadata:
 
 # /haipipe-page-for-task · the folder ran, and someone has to say what it means
 
-## 📂 A DISCOVERY folder is a special task, not a page type of its own
+## 📂 Task Face does not select this Page variant
 
-Ruled 260819 (JL: "the discovery will be in the task as well, like a special
-task?"). One `folder-kind:` key says which kind this page reads, and everything
-else on this contract holds unchanged:
-
-```text
-  folder-kind: task        tasks/<group>/<folder>/     plan · build · execute · report
-  folder-kind: discovery   discoveries/<group>/<folder>/  plan · build(opt) · execute · report
-```
-
-**Why one contract and not two.** Both are executors with the same four-phase
-lifecycle, both answer a question by writing `QA/<n>-<slug>.md`, and both hand a
-page the same job: read what the folder produced and say what it means. A sibling
-contract would restate that and then drift from it. `haipipe-task` and
-`haipipe-discovery` already share this shape at the layer below.
-
-**What the key CHANGES**, and it is only these:
+This compatibility contract covers only `folder-kind: task`. A Discovery
+Folder is task-like on its Task Face—it plans, executes, tracks, and closes—but
+that shared capability does not make its Page Face an empirical task report.
+The neutral Folder contract assigns both faces to the owning workflow phase:
 
 ```text
-  where the page reads      tasks/… vs discoveries/…
-  what a `Result` division  a run's numbers  vs  a source list, a verdict,
-  is reading                                     a landscape, or ideas
-  what the verdict binds    a run name       vs  a discovery folder + its QA file
+folder-kind: task
+  Page Face  -> this variant · Introduction…Result…Conclusion
+  Task Face  -> haipipe-task
+
+folder-kind: discovery
+  Page Face  -> haipipe-discovery · Question/Type payload/Evidence map/Limits
+  Task Face  -> haipipe-discovery · Paper/Source Runs
 ```
 
-**What it does NOT change**: the grammar (as of 0.9.0, `Introduction · Concept ·
-Landscape · Data · Method · Result · Conclusion`), the FLAT/NESTED fork (⚠️ these two words here describe the PAGE's division layout — one topic vs many; hierarchy.md reuses the same pair for a JOB's folder shape, a different axis entirely), `Conclusion` always last and page-level,
-or the closing rule that a person must read the result against the folder's own
-question. A discovery page that skips `Conclusion` is as unclosed as a task page.
+A Discovery root Page therefore writes `folder-kind: discovery` and does not
+write `page-type: task`. Its Level-3 object is still a Task Page Folder; “Task”
+names the work altitude, while `folder-kind` selects the workflow-owned Page
+promise. This resolves the earlier compatibility shortcut under the newer
+phase-owned Folder law without creating a sibling legacy Page Type.
 
 
 **LOAD `haipipe-page` FIRST.** It owns the base frame. What this file guards is READING: a job can produce a correct number and answer nothing, and no file inside that folder is allowed to say so.

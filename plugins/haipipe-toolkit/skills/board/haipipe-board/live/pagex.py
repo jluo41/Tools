@@ -2,7 +2,7 @@
 
 THE THIRD CITATION TWIN (JL 260816: "我们在生成一个新 pages 的时候，可能需要
 引用其他几个 pages 的内容来 build … 不是 all-in-one，按需引用 … 可以用软链接
-的方法把那些内容给弄出来"). BibEx holds a page's references into the
+的方法把那些内容给弄出来"). Evidence Citations holds a page's references into the
 literature, skill into the skill tree, and pagex into the repo's page tree.
 
   BORROWED BY SCOPE         one exact file when only that evidence is needed;

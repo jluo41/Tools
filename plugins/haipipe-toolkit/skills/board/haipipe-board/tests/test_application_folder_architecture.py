@@ -521,7 +521,8 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         live_delivery = (
             self.skills / "board" / "haipipe-board" / "live" / "delivery.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("evidence/pagex/\n              (haipipe-plugin-pagex)", evidence)
+        self.assertIn("PageX is a SURVEY source binding", evidence)
+        self.assertIn("There is no separate Bibex, Value, Display, or PageX plugin", evidence)
         self.assertNotIn("evidence/pagex/ (haipipe-plugin-probe)", evidence)
         self.assertIn("Folder-native `haipipe-application/fn/render.md`", delivery)
         self.assertNotIn("ghost until the lane's route ships", delivery)

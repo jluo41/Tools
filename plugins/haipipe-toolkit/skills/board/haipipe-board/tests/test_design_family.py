@@ -239,7 +239,8 @@ class DesignFamilyTest(unittest.TestCase):
                 "reads: A00_Test-InsightBoard · discoveries")(d)
             sub(CARD, r"^grant: .*$",
                 "grant: ../../../../../A00_Test-InsightBoard/1-F-full/FW01-win/"
-                "FW01-win.md · ../../../../../../discoveries/S01_topic/QA/"
+                "FW01-win.md · ../../../../../../discoveries/b01_topic_bank/"
+                "j01_topic_inquiry/t01_topic_page/QA/"
                 "1-answer.md")(d)
             rep = Report()
             check_board(d, rep)

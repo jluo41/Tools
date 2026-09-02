@@ -12,7 +12,7 @@ The family has one router, `haipipe-probe`, and two Page-local surfaces:
 
 | Lane | Contract | Storage |
 |---|---|---|
-| PageX | `../board/page-plugins/haipipe-plugin-pagex/SKILL.md` | `<page>/pagex/` |
+| PageX | `../board/page-plugins/haipipe-plugin-evidence/ref/pagex.md` | `<page>/evidence/pagex/` |
 | QA Probe | `../board/page-plugins/haipipe-plugin-probe/SKILL.md` | `<page>/probe/` |
 
 A THIRD file completes the QA lane and is not listed above because it is not a
@@ -30,7 +30,6 @@ The crossing is stated ONCE, in the router. Until 260821 the phase file restated
 §①②③ near-verbatim and had grown a sixth bullet mark that no mark authority
 carries; that is why the rule is written here.
 
-PageX is grouped here conceptually but remains a Page plugin physically. This
-keeps plugin discovery and the existing Board tab stable. The lanes never share
-records: PageX does not create QA cards, and QA Probe does not search Pages.
-
+PageX is grouped here conceptually but is an internal source-binding lane of
+the unified Evidence Plugin. The lanes never share records: PageX does not
+create QA cards, and QA Probe does not search Pages.

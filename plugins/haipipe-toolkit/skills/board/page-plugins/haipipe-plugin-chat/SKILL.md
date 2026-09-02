@@ -74,7 +74,7 @@ what you type                         lands in                                gr
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
-"where is S6's number?"  a fact       outline/<stem>-items.md, one row + Comment  Run: found · <tasks/ address>          SURVEY · haipipe-page-outline
+"where is S6's number?"  a fact       outline/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-page-outline
   the page lacks
 "the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         DRAFT · haipipe-page-draft
   a promise change
@@ -115,9 +115,9 @@ word you type is the verb:
 you type                 phase     the chat loads                       ends when                                   trace it leaves
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 "outline it" · "plan"    SHAPE     haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<N> · D<nn> · log record · receipt
-"survey"                 SURVEY    haipipe-page-outline                 every mark has an item row with its run     outline/<stem>-items.md · log record · receipt
-"land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make row has its result on disk     tasks/ runs · row → pointer · receipt
-"embed" · "fold"         EMBED     haipipe-page-evidence                every landed row is in plan v<N+1>          outline/<stem>-outline-v<N+1>.md · receipt
+"survey"                 SURVEY    haipipe-page-outline                 every item has support + input + local Run  outline/<stem>-evidence-items.md · log · receipt
+"land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make item has a ready local Result  Runs · item → Result · receipt
+"embed" · "fold"         EMBED     haipipe-page-evidence                every ready item is in plan v<N+1>          outline/<stem>-outline-v<N+1>.md · receipt
 "land it" · "evidence"   LAND      haipipe-page-evidence               keys, values, units landed; YOUR read:/verified: evidence/ lanes · log record
 "draft it"               WRITE     haipipe-page-draft                   every slot has its sentence, every number its lane  page.md · log record with the diff
 "revise" · "trim"        WRITE     haipipe-page-revise                  promise fixed, prose works; latex/ word/ rebuilt   page.md · ✎ lanes · log record

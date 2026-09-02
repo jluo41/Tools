@@ -1,3 +1,17 @@
+## haipipe-page-outline-agent 0.3.1 · haipipe-page-evidence-agent 0.3.1 — 2026-09-02
+
+- Outline SURVEY now plans exact PageX bindings beside Supporting Runs, while
+  Evidence LAND validates and freezes them before the one local item Run.
+- Both producers keep PageX outside Run and Result cardinality and route its
+  lane law through the unified Evidence Plugin.
+
+## haipipe-page-outline-agent 0.3.0 · haipipe-page-evidence-agent 0.3.0 — 2026-09-01
+
+- Outline agent specifies typed Evidence Items at SHAPE and plans their
+  Supporting/Local Run graphs at SURVEY without allocating Runs.
+- Evidence agent executes support → frozen input → one local Result at LAND
+  and limits EMBED to interpreting ready local Results.
+
 ## haipipe-page-outline-agent 0.2.0 · haipipe-page-evidence-agent 0.2.0 — 2026-09-01
 
 - Each phase agent owns its phase's two cycles (outline: SHAPE, SURVEY;

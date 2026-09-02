@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-31"
+  version: "0.6.0"
+  last_updated: "2026-09-01"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
 
@@ -245,8 +245,8 @@ Paper-<Slug>/
 │   │                           Story02-roadmap (the venue-free head), then
 │   │                           Story<NN>-narrative-<desk>, one per desk in
 │   │                           arrival order (Story03 first)
-│   ├── Ba-<desk1>-Main/        P4 · first desk's S<D><NN> main sections
-│   ├── Bb-<desk1>-Appendix/    P4 · its SA<NN> appendix sections
+│   ├── Ba-<desk1>-Main/        P4 · first desk's named Main sections
+│   ├── Bb-<desk1>-Appendix/    P4 · its named Appendix sections
 │   ├── Bc-<desk1>-Round/       P5 · its RD<NN> rounds, one page per batch
 │   └── Bd-<desk2>-Main/ …      second desk continues at the next free letter
 │                               (a foreign-desk round mints only its -Round)
@@ -277,18 +277,20 @@ top-level `sections/`, `displays/`, and root `reference.bib` are retired for
 new repos: a second telling that wants the first telling's figure copies it
 from the owning page into its own room, with the page as provenance.
 
-**Group-name grammar (JL 260824; tokens re-ruled 260831)** — one `A` group
+**Group-name grammar (JL 260824; Section IDs re-ruled 260901)** — one `A` group
 carries the per-paper journey: `A1-Story` holds P0–P3, the venue-free head
 (`Story00-ideation`, `Story01-seed`, `Story02-roadmap`) and then one
 `Story<NN>-narrative-<desk>` per desk, because a page id should explain itself
 (`SD`/`NA` tokens are retired); `B` groups run in lowercase
 letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
 Bb to be Appendix, Bc to be Round"): the first desk takes `Ba-<desk>-Main` for
-the `S<D>` main units, `Bb-<desk>-Appendix` for the `SA` units, and
+the named Main units, `Bb-<desk>-Appendix` for its named Appendix units, and
 `Bc-<desk>-Round` for the `RD` pages; a second desk continues at the next free
-letter (`Bd-<desk2>-Main`, …). The page tokens are unchanged, so `RD01 lands
-in SM05` still reads across the groups. The `<desk>` name keeps its own
-capitals (`Ba-MISQ-Main`); only the letter is lowercase.
+letter (`Bd-<desk2>-Main`, …). Section Pages use full semantic IDs:
+`S-<desk>-Main-<kind>` and `S-<desk>-Appendix-<slug>`. Thus a Round routes to
+`S-MISQ-Main-Results`, not to an opaque `SM05`; `board.md` alone supplies
+reader order. The `<desk>` name keeps its own capitals (`Ba-MISQ-Main`); only
+the group letter is lowercase.
 Grandfathered: three groups sharing one desk letter, and a single
 `B<x>-<desk>` group holding all three families.
 **Collision rule**: `<D>` is the first distinctive letter of the desk not

@@ -117,9 +117,9 @@ def preview(path: pathlib.Path) -> str:
         out.append("")
 
     tail = []
-    diagram = secs.get("Diagram", "")
+    diagram = secs.get("Outline", secs.get("Diagram", ""))
     if diagram.strip():
-        tail.append(f"🖼 diagram {len(diagram.strip().splitlines())} lines")
+        tail.append(f"🧭 outline map {len(diagram.strip().splitlines())} lines")
     files = [ln for ln in secs.get("Files", "").split("\n") if ln.strip().startswith(("-", "|"))]
     if files:
         tail.append(f"📂 {len(files)} file rows")

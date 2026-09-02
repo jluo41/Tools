@@ -17,9 +17,10 @@ R1  EVERY SECTION IS ACCOUNTED FOR. Each `## C<n>` in the plan maps to a real
     scope, not omitted.
 R2  THE OUT-OF-SCOPE LIST IS EXPLICIT. The plan states which divisions,
     Aims, States and open Decision Now rows it does NOT touch.
-R3  EVERY BULLET CARRIES A MARK. One of 🔢 value · 📚 citation · 🖼 display ·
-    📮 probe · 🧮 value `PP<NN>.v<n>` (legacy alias 🔢) · 🎯 aim. (✅ "have it" retired 260819.) An unmarked bullet owes something nobody
-    named.
+R3  EVERY OWED THING IS NAMED BEFORE APPROVAL. Use
+    `Evidence: E<NN>-VALUE|CITE|DISPLAY-<slug> · <expected>` followed by an
+    `Accept:` line and matching Evidence Item record. A bullet with no
+    Evidence line truthfully owes no evidence; 🎯 remains an Aim annotation.
 R4  NO BULLET CONTRADICTS A `## Law` ROW on its own page or on a page that
     page cites as binding.
 R5  THE ROUND IS CLASSIFIED CORRECTLY. A plan that changes purpose or any

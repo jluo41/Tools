@@ -103,7 +103,7 @@
   }
   /* An outline row opens its page (the anchor's own navigation), then opens
      and scrolls to the section once :target has applied. */
-  var SEL = { diagram: 'details.diagram-section', content: 'details.sect.content',
+  var SEL = { outline: 'details.outline-section', content: 'details.sect.content',
               items: 'details.sect.goal', now: 'details.sect.now',
               files: 'details.sect.fls',
               /* the Index's own components (QB2a): #top is the wrap, so the

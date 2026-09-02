@@ -1,3 +1,89 @@
+## 0.27.2 · 2026-09-02
+
+- Distinguish the compact five-column Page Outline table from the richer live
+  Outline tab. Aggregate state counts and the broader sibling-material bundle
+  remain live-tab responsibilities rather than extra columns on the Page.
+
+## 0.27.1 · 2026-09-02
+
+- Make the Page Outline a five-column grid by removing the redundant Status
+  column. Evidence chips now fit their labels, wrap as a compact set, and keep
+  derived state in colour plus the popover. CITE remains a typed Evidence item
+  in the shared Evidence column, including multiple citations for one bullet.
+
+## 0.27.0 · 2026-09-02
+
+- Let `<stem>-requirement.md` hold both kinds of requirement under explicit
+  ownership: generated venue `V<n>` records and authored page-writing `W<n>`
+  records with `Rule`, `Applies`, and `Source`.
+- `cli/requirement.py` refreshes only the generated V block and preserves the
+  authored W records verbatim. Manuscript Sections keep no source-level
+  `Writing Style` block and need no separate writing file.
+- V1 is always generated; V2–V4 appear only when the bound venue source
+  supplies format, refused-pattern, or move material, so missing source
+  content is not replaced with invented requirements.
+
+## 0.26.1 · 2026-09-02
+
+- Make wall Evidence labels compact but previewable as
+  `E<n><V/C/D>.<ShortNameNoSpaces>` while keeping the immutable typed id in the
+  item popover.
+- Replace the folded `Source / run` route with separate `Supporting Run` and
+  `Local Run` columns so the two execution layers cannot be conflated.
+- Remove the retired Evidence Bundle status vocabulary from the main contract;
+  typed Evidence Item states now have one authority in `ref/item-table.md`.
+
+## 0.26.0 · 2026-09-02
+
+- Add `PageX Bindings` to the canonical Evidence Item record between
+  Supporting Runs and Local Input. Each binding names an exact file or Result
+  plus accepted authority; a whole Folder cannot satisfy an item.
+- The Outline tab now exposes PageX source counts and authorities without
+  counting them as Runs or Results. LAND readiness includes their validation.
+
+## 0.25.3 · 2026-09-02
+
+- Name citation keys and verification as Evidence authority after the Bibex
+  Plugin contract was absorbed.
+
+## 0.25.2 · 2026-09-02
+
+- Retire the separate Page-authored Narrative map. The Page-facing Outline is
+  only the current plan table derived from the authoritative `outline/` folder.
+
+## 0.25.1 · 2026-09-02
+
+- Make the Page-facing Outline review path explicit: open `🧭 Outline` by
+  default, show the current-plan table first, and keep the optional Narrative
+  map as the second, initially collapsed block.
+
+## 0.25.0 · 2026-09-01
+
+- Specify the Page-level `▤ Outline table` as a real five-column review grid.
+  The plan's C/P hierarchy becomes group headers; B rows show the typed
+  Evidence Item, its source/run route, and derived status without duplicating
+  `outline/` records.
+
+## 0.24.0 · 2026-09-01
+
+- The Page now renders the current versioned plan as its `▤ Outline table`
+  beside an optional narrative map under `🧭 Outline`. This is a read-only
+  projection: `outline/`, its tab, and all eight canonical records are unchanged.
+
+## 0.23.0 · 2026-09-01
+
+- **Human review packet**: documents the four linked records a person sees in
+  chat before an outline decision—current Shape, material Evidence Items,
+  routed feedback/requirements/open threads, and the exact human choice.  The
+  page-outline phase owns delivery; the tab stays read-only and authoritative.
+
+## 0.22.0 · 2026-09-01
+
+- Rename the authored ledger to `<stem>-evidence-items.md`. Each immutable id
+  carries its type and name; SHAPE writes its expected ready evidence and
+  acceptance, SURVEY plans Supporting/Local Runs, and LAND binds the local
+  Result. The derived ladder is specified → planned → ready → folded → accepted.
+
 ## 0.21.0 · 2026-09-01
 - Eighth record kind: `<stem>-items.md`, the item table (`ref/item-table.md`,
   new): one authored row per evidence mark (Need · Route · Run · Decide), the

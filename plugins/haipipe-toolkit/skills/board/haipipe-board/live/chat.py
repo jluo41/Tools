@@ -553,7 +553,7 @@ EFFORTS = ("low", "medium", "high", "xhigh", "max")
 
 PAGE_RULES_BODY = """The page you belong to is the file given below (relative to the repo root,
 which is your working directory: the whole SPACE). Its folder holds:
-  <page>.md          Opening · Diagram · Content · Aims          the PRODUCT
+  <page>.md          Opening · Outline · Content · Aims          the PRODUCT
   outline/           the plan (-outline-v<N>.md) and six record files: -requirement
                      -discussion (D<nn> threads) -feedback -evidence -files -log
   evidence/                       probe/ · bibex/ · display/ · pagex/ lanes
@@ -566,8 +566,8 @@ WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full 
   a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (REVISE)
   a plan change               outline/<stem>-outline-v<N>.md; v<N+1> if v<N> is approved ✅ (OUTLINE)
   a ruling by the person      transcribe it with the quote and time; never decide a tick
-  a fact the page lacks       a row in outline/<stem>-items.md (SURVEY); a card under
-                              evidence/probe/PP<NN>-<slug>/ only when the question leaves the page (LAND)
+  a fact the page lacks       a typed record in outline/<stem>-evidence-items.md;
+                              SHAPE sets expectation; SURVEY plans supports + PageX + input + local Run
   a promise change            the Aim row on the page: Done when: and Now: (DRAFT)
   task work                   the task folder the page links; haipipe-task law applies
   EVERY write                 one record in outline/<stem>-log.md:
@@ -579,13 +579,11 @@ that pass here, in this session, leaving the artifact, one log record (receipt f
 under it) and the strip in your reply:
   OUTLINE part · the page decides what is true
     SHAPE    /haipipe-page-outline    brief → propose → react → revise; the person ticks approved:
-    SURVEY   /haipipe-page-outline    one row per mark in outline/<stem>-items.md: Need · Route ·
-                                      Run (found | rerun | new-run | new-task | new-job | new-block |
-                                      person | none · tasks/ address); the person writes Decide
-    LAND     /haipipe-page-evidence   make the decided runs in the real tasks/ tree, fill the lanes,
-                                      append ` → <result file>` to the row; a card only when a
-                                      question leaves the page
-    EMBED    /haipipe-page-evidence   write the numbers into plan v<N+1> (Answered: lines), never
+    SURVEY   /haipipe-page-outline    each typed item gets 0..N Execution/Discovery Supporting Runs,
+                                      0..N exact PageX bindings, one Local Input, one local Run, and Decide
+    LAND     /haipipe-page-evidence   validate/execute supports + PageX, freeze one input, execute one
+                                      local Run, and bind its ready VALUE/CITE/DISPLAY Result
+    EMBED    /haipipe-page-evidence   interpret ready local Results into plan v<N+1>, never
                                       restructure; back to SHAPE
   DRAFT part · the page is written
     WRITE    /haipipe-page-draft then /haipipe-page-revise   slot → sentence with realizes: and a

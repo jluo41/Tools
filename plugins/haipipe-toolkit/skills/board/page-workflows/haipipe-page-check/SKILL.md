@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.6.3"
-  last_updated: "2026-08-31"
+  version: "0.6.5"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -53,7 +53,8 @@ WALLS
   never invents a gate and never skips a declared one
 
 READ ECONOMY
-  read fully ONLY the target page, the plan, and this brief
+  read fully ONLY the target page, the plan, applicable Requirement and
+    Writing records, and this brief
   trust the plan's Answered:/Drawn: values as written; re-read only cards
     whose line ends `· recount`, plus one spot-check (haipipe-page-draft §📖)
   batch shell calls; scope cli/check.py output to your page with grep
@@ -210,8 +211,8 @@ CHECK administers display acceptance and any owner RULING that exists:
 tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
 `approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
-`Decide`         outline/<stem>-items.md, per row  haipipe-page-outline     SURVEY
-`verified`       each evidence/bibex entry         haipipe-plugin-bibex     LAND
+`Decide`         outline/<stem>-evidence-items.md, per item  haipipe-page-outline  SURVEY
+`verified`       each evidence/bibex entry         haipipe-plugin-evidence   LAND
 `read:`          each outbound evidence/probe card haipipe-plugin-probe     LAND
 `accepted: ✅`   the page · each display README    this contract            CHECK
 the RULING       phase Gate/Closure, when declared  owning workflow phase    CHECK
@@ -275,9 +276,11 @@ durable passed evidence routes to HOLD.
 ## 📏 The rubric · four axes, four verdicts, one row per unit
 
 Requirements resolve in the order `haipipe-page` §🔍 states (base and
-template → Page Type → Phase → the page's `### Writing Style` and Stage
-Contract → the division purpose and each paragraph's job line); a conflict
-between two sources is reported and that criterion is not judged.
+template → Page Type → Phase → the page's authored W records in
+`outline/<stem>-requirement.md` and Stage Contract → the division purpose
+and each paragraph's job line); a conflict between two sources is reported
+and that criterion is not judged. A non-Section compatibility page may still
+carry `## Writing Style` in its source.
 
 ```text
 axis          question                                                            judge

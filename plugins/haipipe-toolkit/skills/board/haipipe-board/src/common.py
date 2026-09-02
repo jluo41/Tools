@@ -72,7 +72,8 @@ STN = {k.replace("️", ""): v for k, v in ST.items()}
 # "Opening" is the CANON for the lead section (JL 260731: "just one single
 # Opening, Remove all the Question things from the skills"). Every existing
 # page written as `## Question` keeps parsing through the alias, forever.
-ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"], "Diagram": ["图"],
+ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"],
+         "Outline": ["Diagram", "图"],
          "Stage Contract": ["Inherited Requirements", "阶段契约"],
          "Content": ["内容"],
          "Files": ["文件"],

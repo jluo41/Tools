@@ -1,3 +1,24 @@
+## 0.16.0 · 2026-09-02
+
+- LAND now validates every SURVEY-selected PageX binding beside the declared
+  Supporting Results before freezing one Local Input and executing exactly one
+  local Page Evidence Item Run.
+- Define PageX as an exact accepted cross-Folder source authority, not a Run or
+  fourth Result type. LAND closes only after supports, PageX bindings, the
+  frozen input, and the accepted typed local Result are all valid.
+
+## 0.15.1 · 2026-09-02
+
+- Route CITE Evidence Item work to `haipipe-plugin-evidence`, which now owns
+  citation/Bib authority.
+
+## 0.15.0 · 2026-09-01
+
+- LAND executes one dependency graph per typed Evidence Item: validate 0..N
+  Supporting Results, freeze one local input, execute exactly one Page
+  Evidence Item Run, and bind its ready Result. EMBED reads only that local
+  Result. Discovery is a family; reuse/rerun/new-* are actions.
+
 ## 0.14.0 · 2026-09-01
 
 - Owns the OUTLINE part's two machine-gated cycles: LAND (make every ☑ make

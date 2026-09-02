@@ -45,7 +45,7 @@ What must a patient satisfy to enter this study's analysis cohort?
 Wrong entry criteria void every later result, and this is the most expensive thing in the project to rework.
 While it stays open, QA2 has no stable cohort to validate.
 
-## Diagram
+## Outline
 ```
 all claims records  1,240,000 people
       │  ① age ≥ 18

@@ -1,3 +1,40 @@
+## 0.56.1 · 2026-09-02
+
+- Specify the Page Outline as `Address · Planned move · Evidence ·
+  Supporting Run · Local Run`. Item state stays in Evidence-chip colour and
+  detail rather than occupying a duplicate Status column.
+
+## 0.56.0 · 2026-09-02
+
+- Move manuscript Section writing rules out of the product Page source and
+  into authored W records in `outline/<stem>-requirement.md`, beside the
+  generated venue V records. Section Opening remains one reader paragraph.
+
+## 0.55.2 · 2026-09-02
+
+- Retire the Page-authored Narrative map. The one Page-level Outline is the
+  current plan's derived table; no second map or source block is authored.
+
+## 0.55.1 · 2026-09-02
+
+- Specify the Page reader default: Opening stays visible; Outline opens with
+  its plan table first; the optional Narrative map and all other Page folds
+  start closed.
+
+## 0.55.0 · 2026-09-01
+
+- Make the Page's `▤ Outline table` a real review grid: `Address · Planned
+  move · Evidence · Source / run · Status`. C/P headers preserve reader order;
+  B rows join their typed Evidence Item and surveyed route without creating a
+  second plan or evidence authority.
+
+## 0.54.0 · 2026-09-01
+
+- Replace the Page's optional `Diagram` section with `Outline`. The Page now
+  shows its optional narrative map plus a read-only `▤ Outline table` projected
+  from the current `outline/<stem>-outline-v<N>.md`; the outline plugin and all
+  eight canonical process records remain unchanged and authoritative.
+
 ## 0.53.0 · 2026-09-01
 
 - Rename the optional presenter from Execution to Runs: Execute stays a
@@ -84,7 +121,8 @@ family IS the folder root, so the page mirrors the task exactly.
 
 ## 0.47.1 · 2026-08-31
 
-Internal drift caught by the /skill-inspect --score review: the collection-job
+Internal drift caught by the Workflow Table Skill Coverage static-quality
+review: the collection-job
 paragraph still ranked the job in the retired `task/` lane; it ranks among
 `evidence/pagex/` links now (the merge this same file's tree already stated).
 

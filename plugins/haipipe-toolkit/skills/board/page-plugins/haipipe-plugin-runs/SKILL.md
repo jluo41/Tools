@@ -3,22 +3,23 @@ name: haipipe-plugin-runs
 description: >-
   The optional Runs presenter of a Folder: one ⚙️ surface over authored Run
   tickets and their paired generated Results. Its default overview table groups
-  complete Runs as Execution, Discovery, or Page; Page divides into Division
-  Writing and Display. A second, collapsible Scripts region shows freestyle
+  Runs as Execution, Discovery, Page, or Labeling; Page divides into Evidence
+  Item, Division Writing, and Display, while Labeling groups its independently
+  closable operations by P0-P5 episode. A second, collapsible Scripts region shows freestyle
   implementation files when present. Use for Discovery Paper Runs, Task Page
-  runs, model/data jobs, run status tables, result details, or any Folder that
+  runs, Labeling Runs, model/data jobs, run status tables, result details, or any Folder that
   exposes addressable Runs. Presentation only; the owning workflow controls
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-01"
+  version: "0.8.1"
+  last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-plugin-runs · one surface for addressable Runs
 
-**LOAD `haipipe-plugin` FIRST.** This is a PRESENTER plugin
+**LOAD `haipipe-plugin` and `haipipe-run` FIRST.** This is a PRESENTER plugin
 (`haipipe-plugin` §🔌): it owns no folder and has no roster row. It presents
 the Run projections already owned by the Folder or its containing Task Job.
 
@@ -51,9 +52,15 @@ JOB-BACKED TASK · canonical haipipe Task Page
   <job>/results/<task>/<run>/
   optional input:  <job>/<task>/scripts/config/<run>.*
   optional record: <job>/notebooks/<task>/<run>.ipynb
+
+LABELING JOB · subjective-label
+  runs/<RUNNAME>.yaml
+  results/<RUNNAME>/runtime.yaml
+  results/<RUNNAME>/result.yaml
+  result.yaml points to canonical P0-P5 artifacts without copying protected data
 ```
 
-The two paths are two storage dialects of the same Run contract. Never copy or
+These are storage dialects of the same Run contract. Never copy or
 symlink job-owned Results into the Task Page merely to make the first shape.
 Never treat a Result folder as a fifth hierarchy level.
 
@@ -69,24 +76,35 @@ ticket's actual command is the authority for which files a Run invokes.
 ├── RUN OVERVIEW
 │   ├── Execution                 computation · data · models
 │   ├── Discovery                 search · papers · external evidence
-│   └── Page
+│   ├── Page
+│       ├── Evidence Item          one focal ready VALUE/CITE/DISPLAY Result
 │       ├── Division Writing
 │       └── Display
+│   └── Labeling
+│       ├── P0 Contract operations
+│       ├── P1 Round operations grouped by round_<t>
+│       ├── P2 Handoff operation
+│       ├── P3 Test operations
+│       ├── P4 Scan operations
+│       └── P5 Audit operations
 └── SCRIPTS                          collapsible · freestyle · read-only
 ```
 
 ### Run overview
 
-Show one compact table, with `All · Execution · Discovery · Page` as
-filters rather than four competing ledgers. One row is one complete Run; its
+Show one compact table, with `All · Execution · Discovery · Page · Labeling` as
+filters rather than competing ledgers. One row is one logical Run; its
 Result is the returned half of that same row, never a separate Results section.
 
 ```text
 Run   Kind                       Target       Status       Result
 r01   Execution                  Model fit    ✅ Done      4 files
 r02   Discovery                  Smith 2025   🔄 Running   —
-r03   Page · Division Writing     C02          ⏸ Held      candidate
-r04   Page · Display              C02.F01      ✅ Done      preview
+r03   Page · Evidence Item        E01-VALUE…   ✅ Done      ready value
+r04   Page · Division Writing     C02          ⏸ Held      candidate
+r05   Page · Display              C02.F01      ✅ Done      preview
+r06   Labeling · Human Calibration round_03    ⏸ Held      human gate
+r07   Labeling · Scan Shard       shard_01     ✅ Done      1 pointer
 ```
 
 Keep the overview vocabulary to `Ready · Running · Done · Failed · Held`.
@@ -98,6 +116,20 @@ Clicking a row opens that Run's detail: summary, authored ticket, paired Result,
 receipt/log or error, and links to any script/config/notebook paths the ticket
 actually uses. Do not put commands, logs, actor metadata, or full output trees
 in the overview.
+
+For Page · Evidence Item rows, the overview shows item id/type, target, support
+count, PageX binding count, local global Run id, status, and ready Result. The
+detail shows the one frozen input envelope, its zero-to-many Supporting Run
+ids, and exact PageX authorities. PageX links are sources, never extra Runs or
+Results. Never expand Supporting Runs into extra local rows or present the
+Result as a separate Run.
+
+For Labeling rows, show safe identities, checksums, gate summaries, and counts
+only. Never render sealed ids, protected text, raw judgments, or a second
+approve/freeze/reveal/final/run control. A row may deep-link to the same Run in
+the Labeling workbench; only the subjective-label workflow may operate it.
+Use the operation name as the row Kind and the P0-P5 episode only as a grouping
+label. Never add a second row for the Round, Test, Scan, or Audit episode.
 
 Surface an orphan or logical address mismatch as an error. A missing Result is
 normal for `Ready` or `Running`; it is a finding only when the Run claims
@@ -136,13 +168,18 @@ BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
 
 ## 🗺 Status · 🟡 contract 260901 · tab pending
 
-The contract covers both Discovery Paper Runs and canonical Task Page Runs. A
+The contract covers Discovery Paper Runs, canonical Task Page Runs, and the
+25-operation Labeling dialect. A
 live `runs.py` drawer and registry row remain pending; until then the 📂 Folder
 tab is the filesystem surface.
 
 ## 📂 Files
 
+- `../../../run/haipipe-run/SKILL.md` · the neutral Level-4 identity, pairing,
+  receipt, and audit contract this surface presents
 - `../../haipipe-plugin/ref/roster.md` · lane and presenter roster
 - `../../../task/haipipe-task/ref/hierarchy.md` · Task Run address/dialect
 - `../../../discovery/haipipe-discovery/ref/paper-run-contract.md` ·
   Discovery Folder-local dialect
+- `../../../../../subjective-label/ref/ref-run.md` · Labeling operations,
+  authority-owned resolver, gates, and protected surface boundary

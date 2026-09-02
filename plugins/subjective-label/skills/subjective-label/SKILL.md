@@ -10,15 +10,16 @@ description: >-
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
   or /subjective-label.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-30"
+  version: "0.7.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /subjective-label · build the label, then scan under it
 
-This is the only user-facing door. Resolve one job as one corpus snapshot plus
-one target trait, inspect its artifacts, and route to the owning sibling door.
+This is the only user-facing door. Resolve one Level-3 job as one corpus
+snapshot plus one target trait and one identified human semantic authority,
+inspect its artifacts, and route to the owning sibling door.
 Do not expose internal round actions as a menu of lifecycle phases.
 
 ## Architecture
@@ -46,6 +47,7 @@ Three layers, never mixed:
 LAW      label-building · label-scanning          who may decide, human gates, verbs, forbidden acts
 ORDER    label-building-workflow · label-scanning-workflow   step order, resume, run receipts
 CROSSING subjective-label-workflow               phase numbers P0-P5, gates G0-G6, handoff validity, invalidation
+RUN      haipipe-run + ref-run.md                 Level-4 identity, Ticket/Result pairing, receipt, presentation
 ```
 
 A rule that fits two layers goes in the door. Phase and gate numbers are
@@ -64,11 +66,17 @@ The only legal crossing is one immutable Label Handoff. It binds:
 
 Scanning reads the handoff by checksum. It never reads policy drafts as
 authority and never edits `G*` or `D_cal*`. A semantic change returns to
-Building, mints a new lineage, and invalidates affected scorecards, runs, and
+Building, mints a new lineage, and invalidates affected scorecards, Runs, and
 claims.
 
 Read `../../ref/ref-label-handoff.md` whenever creating, validating, or
 consuming the crossing.
+
+Read `../../ref/ref-run.md` whenever allocating, resuming, presenting, or
+auditing a Labeling Run. It defines 25 independently closable operation kinds
+across P0-P5. Round, Test, Scan, and Audit are grouping episodes, not extra
+Runs. A human gate event is not a Run by itself; a bounded human-work operation
+such as `human-calibration` or `audit-human-gold` may be one.
 
 ## Ownership
 
@@ -99,7 +107,8 @@ No-argument behavior:
 1. resolve the job;
 2. load `subjective-label-workflow` (it defines gates G0-G6) and derive the
    highest valid gate from canonical artifacts;
-3. dispatch the single next runnable action;
+3. dispatch the single next runnable action, allocating or resuming its exact
+   Level-4 Run only when its Ticket contract is ready;
 4. stop at a human gate or explicit `HOLD`.
 
 Do not ask the user to choose among `pick`, `seal`, `judge`, `rules`, `measure`,
@@ -134,8 +143,9 @@ consensus. Maintain:
 - `D_cal*`, `G*`, sealed `T*`, executor scorecards, completed `D*`, and full
   provenance.
 
-Read `../../ref/ref-contract.md` for authority and claim rules and
-`../../ref/ref-assets.md` for canonical artifact locations. Every `../../ref/`
+Read `../../ref/ref-contract.md` for authority and claim rules,
+`../../ref/ref-assets.md` for canonical artifact locations, and
+`../../ref/ref-run.md` for the Labeling Run dialect. Every `../../ref/`
 path is relative to this skill's REAL folder inside the plugin; when the skill
 was loaded through a symlink (`~/.claude/skills/...`), resolve it first.
 

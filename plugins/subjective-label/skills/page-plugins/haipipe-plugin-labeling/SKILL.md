@@ -8,7 +8,7 @@ description: >-
   when designing, opening, diagnosing, or implementing the labeling
   plugin/tab/folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.2.0"
+  version: "0.4.0"
   last_updated: "2026-09-01"
 ---
 
@@ -25,6 +25,7 @@ one page folder
 └── labeling/                    the job itself · canonical
     ├── config.yaml · corpus/ · policy/ · rounds/ · gold/ · handoff/
     ├── test/ · evaluation/ · production/ · audit/
+    ├── runs/ · results/            Level-4 operation envelopes
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
 🏷 Labeling tab
@@ -41,8 +42,9 @@ one page folder
 | WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts |
 | BOUNDARY | Board discovery never enters `labeling/`; the surface never renders protected item text or sealed ids and never treats an observed file as a validated gate |
 
-The specialized `page-type: labeling` run Page owns one corpus snapshot × one
-target construct and uses the labeling Page grammar. That Page type is not a
+The specialized `page-type: labeling` Job Page owns one corpus snapshot × one
+target construct × one identified human semantic authority and uses the
+labeling Page grammar. That Page type is not a
 capability switch: a paper section, algorithm Page, or other Folder may open
 the same plugin before a job exists and route P0 creation through Chat. The
 control Page `S-Label-Dash` owns no job and therefore gets no Labeling lane or
@@ -54,7 +56,7 @@ The workbench answers five questions without opening raw rows:
 
 1. Which P0-P5 authority artifact is the frontier?
 2. Which named G0-G6 assertion fails first?
-3. Who is the declared human semantic authority, and is the run simulation-only?
+3. Who is the declared human semantic authority, and is the job simulation-only?
 4. Which round/checkpoint, handoff, evaluation, production, and audit artifacts exist?
 5. What is exactly one honest next action, human gate, or `HOLD`?
 
@@ -97,9 +99,20 @@ The browser surface itself is read-only. It offers no “approve,” “freeze,�
 “reveal,” “final,” or arbitrary run button. Those actions ship only when their
 workflow writer and authority check exist end-to-end.
 
+## ⚙️ Relationship to Runs
+
+This workbench is the operational surface for one Labeling job. It may allocate
+and resume the 25 independently closable operation kinds declared in
+`ref-run.md`; P0-P5 and their Round/Test/Scan/Audit episodes group those Runs
+without adding umbrella rows. `⚙️ Runs` presents the same Tickets and safe
+Result envelopes under a `Labeling` filter, but it is read-only and creates no
+parallel status, Result, or control. A Run row may deep-link here at the same
+Run address. There is never a second run, approve, freeze, reveal, or final
+button in the Runs surface.
+
 ## 🔁 Operate or implement
 
-When opening or diagnosing a run:
+When opening or diagnosing a job or one of its Runs:
 
 ```text
 resolve   the folded Page and its direct labeling/ lane
@@ -135,7 +148,9 @@ copy a second job root or authorize new writes outside the folded lane.
 ## 📂 Files
 
 - `../../../ref/ref-assets.md` · full job tree and canonical/rendered split
+- `../../../ref/ref-run.md` · 25 Labeling Run operations, resolver, count law,
+  gates, and safe presentation boundary
 - `../../../ref/ref-label-handoff.md` · the only Building → Scanning crossing
 - `../../subjective-label-workflow/SKILL.md` · P0-P5, G0-G6, receipt chain
-- `../../page-types/haipipe-page-for-labeling/SKILL.md` · run Page contract
+- `../../page-types/haipipe-page-for-labeling/SKILL.md` · Job Page contract
 - the Board-engine paths in the implementation list above
