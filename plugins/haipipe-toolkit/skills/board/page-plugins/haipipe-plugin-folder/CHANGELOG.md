@@ -1,5 +1,12 @@
 # haipipe-plugin-folder · Changelog
 
+## 0.3.0 — 2026-09-03
+- Show exact category-owned lanes as independent rows, including every existing
+  `outline/evidence/<lane>/` and `delivery/<lane>/`.
+- Count only direct process files on the `outline/` row so evidence is visible
+  without being double-counted under its parent.
+- Remove Evidence and Probe from the active surface/roster wording.
+
 ## 0.2.2 — 2026-08-31
 - Rows carry REAL PATHS (evidence/bibex/ …, JL: "really reflect the folder
   structure"); stubs counted separately; flat callout keyed on path.

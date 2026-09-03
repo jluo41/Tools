@@ -7,7 +7,7 @@ description: >-
   plugin, word export, docx export, page to word, coauthor docx,
   /haipipe-plugin-word.
 metadata:
-  version: "0.2.2"
+  version: "0.3.0"
   last_updated: "2026-08-31"
 ---
 
@@ -44,7 +44,7 @@ With no page store, a paper's `0-*.bib` found upward rides along; outside any pa
 
 **Evidence rides as comments**: `--lanes` defaults to Citation alone (the paper family's ruling); whether a BOARD page's export wants lanes at all is QPf7's open A2.1, answered by a real coauthor's markup.
 
-**The page's display evidence embeds (JL 260816)**: when `<page>/evidence/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/evidence/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
+**The page's display evidence embeds (JL 260816)**: when `<page>/outline/evidence/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/outline/evidence/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
 The docx then carries the figure (rasterized from the unit's winning `figure.pdf`) with the unit's own caption, the inline `(Figure n)`, and a 🖼 Display comment on the citing sentence; the page source is never edited and the temp is deleted after the run.
 
 **Tables remain native and editable**: booktabs `tabular` and `tabularx` assets, including balanced column specifications such as `@{}X r@{}` and `\multicolumn`, are parsed into Word table rows. TeX wrappers and note minipages do not leak into cell text.
@@ -67,4 +67,6 @@ The Board's `**Name**:` caption markers are Page scaffolding; the shared reader 
 The twin needs Chrome on the machine; without it the view keeps the ⬇ download and names the failure.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+The writer always lands new artifacts in `delivery/word/`. A pre-migration
+flat `word/` may be read during a sweep, but it is not a current destination
+and must not be shown as the canonical Folder row.

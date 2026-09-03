@@ -1,3 +1,68 @@
+## 0.29.0 · 2026-09-03
+
+- Reframe the Outline surface as `Bullet Workspace + Evidence Workspace`.
+- Group Requirement, Discussion, and Feedback under Plan Context; group Files
+  and Log under Page Records, retaining their independent on-disk records.
+- Require Folder to expose each `outline/evidence/<lane>/` explicitly instead
+  of hiding all evidence under one aggregate Outline row.
+
+## 0.28.5 · 2026-09-03
+
+- Make the folder tree and authored file header use SURVEY's classify/declare
+  vocabulary rather than the retired “register every Run” wording.
+
+## 0.28.4 · 2026-09-03
+
+- Remove remaining UI/writer language that required every SURVEY route to be
+  registered; bounded `new-*` plans can close SURVEY and allocate in LAND.
+
+## 0.28.3 · 2026-09-03
+
+- Align the required Evidence Item reference with the complete `new-*`
+  hierarchy and the SURVEY-versus-LAND ownership boundary.
+
+## 0.28.2 · 2026-09-03
+
+- Make the required Evidence Item grammar inventory-only in SURVEY and move
+  allocation/scaffolding of `new-*` routes to LAND.
+- Distinguish `registered` never-attempted Tickets from `rerun` attempted or
+  stale Tickets; `Ticket only` is a Result-availability state, not an action.
+
+## 0.28.1 · 2026-09-03
+
+- State the exhaustive evidence storage contract: typed VALUE payloads remain
+  at real Result paths, and no value or Probe copy lane is created.
+- Define dotted Run addresses as linked presentation typography for the same
+  canonical compact identity.
+
+## 0.28.0 · 2026-09-03
+
+- Make Outline the single Page planning/evidence authority: the main Page keeps
+  one compact derived table, while the Outline plugin owns the detailed Shape,
+  Evidence Workspace, and process materials.
+- Nest citation, display, PageX, supporting-run lineage, and materials under
+  `outline/evidence/`; Run/Result artifacts remain sibling folders.
+- Retire the standalone Evidence tab and deep-link compact Run chips into the
+  Outline Evidence Workspace.
+
+## 0.27.6 · 2026-09-03
+
+- Point every Outline Run token to its owning card in the unified
+  `Evidence Items` panel and expose Run/Result paths there.
+- Retain old `By bullet` and `Run links` routes as compatibility aliases only.
+
+## 0.27.5 · 2026-09-02
+
+- Restore real navigation on every Outline Run token. Supporting and planned
+  routes now open the owning Evidence Item in `Evidence → Run links` instead
+  of rendering as link-styled spans with no click target.
+
+## 0.27.4 · 2026-09-02
+
+- Render Evidence chips from an explicit 1–12 character authored `Label`
+  instead of expanding the full item name. Legacy records use a bounded
+  fallback, while immutable ids and full names remain visible on click.
+
 ## 0.27.2 · 2026-09-02
 
 - Distinguish the compact five-column Page Outline table from the richer live

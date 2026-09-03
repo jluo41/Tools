@@ -261,7 +261,7 @@
     window.boardPlugins.register({
       id: 'studio', label: '\u{1F3A8} Studio',
       hint: 'the human’s room · drawing above, chat below',
-      order: 30,
+      order: 20,
       applies: function (page) { return !!page; },
       open: function () {
         try {

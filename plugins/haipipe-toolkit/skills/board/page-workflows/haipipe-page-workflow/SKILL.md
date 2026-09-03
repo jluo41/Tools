@@ -9,7 +9,7 @@ description: >-
   ADVANCE; only CHECK may CLOSE. Trigger: run a page, run page lifecycle,
   outline part, draft part, page run receipt, /haipipe-page-workflow.
 metadata:
-  version: "0.25.0"
+  version: "0.25.1"
   last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -74,7 +74,7 @@ planned → ready → folded → accepted`, plus `stale · deferred · dropped �
 | Cycle | L3 Task content modified | L4 Runs | Input / policy | Skill chain | Close / handoff |
 |---|---|---|---|---|---|
 | SHAPE | outline plan + item identity/expectation/acceptance | none | brief + phase-owned outline/narrative/style policy | `haipipe-page-workflow → haipipe-page-outline → haipipe-plugin-outline → <owning phase, e.g. haipipe-paper-narrative>` | approved typed plan |
-| SURVEY | Evidence Item Supporting Runs + PageX Bindings + Local Input + Local Run plans + Decide | none | approved item contracts + existing Run/source inventory | `haipipe-page-workflow → haipipe-page-outline → haipipe-run → haipipe-plugin-evidence/ref/pagex.md` | every item graph and exact source binding valid and decided |
+| SURVEY | Evidence Item Supporting Runs + PageX Bindings + Local Input + Local Run plans + Decide | none | approved item contracts + existing Run/source inventory | `haipipe-page-workflow → haipipe-page-outline → haipipe-run → haipipe-plugin-outline/ref/evidence/pagex.md` | every item graph and exact source binding valid and decided |
 | LAND · Supporting | item ledger gains resolved Run IDs and validated PageX authorities | Execution/Discovery `0..N` per item | selected Tickets/Results + exact PageX files/Results | `haipipe-page-workflow → haipipe-page-evidence → haipipe-run → haipipe-plugin-evidence → <Execution/Discovery worker>` | every Supporting Result and PageX binding valid |
 | LAND · Local | item ledger binds frozen input, local Run ID, and typed Result | Page · Evidence Item exactly `1` per make-item | one envelope of Supporting Results + PageX/local sources | `haipipe-page-workflow → haipipe-page-evidence → haipipe-run → haipipe-plugin-evidence` | both Run layers finished; one ready local Result per item |
 | EMBED | outline v<N+1> fold lines | none | ready local Results | `haipipe-page-workflow → haipipe-page-evidence` | return to SHAPE |
@@ -404,10 +404,9 @@ raising ≠ landing: a card at `raised` bound to a bank that did not exist read
 as done; REVISE ≠ COMPILE: "the prose is right" shipped a PDF full of raw
 `<!-- -->`).
 
-Existing outbound-card history remains canonical at
-`evidence/probe/<id>/proof/`; the current typed Evidence Item graph reads those
-aggregates only through a declared Supporting Result and does not mint a new
-card merely to represent a Run.
+Legacy outbound-card history is read-only migration input. The current typed
+Evidence Item graph reads any retained aggregate only through a declared
+Supporting Result and never creates a new `probe/` lane or card.
 
 ## 🪪 Each phase in SIX fields · `ref/phase-cards.md`
 
@@ -438,7 +437,7 @@ phase contract wins and the card is the defect.
 
 ```text
 SHAPE    E01-VALUE-adjusted-effect
-         Target + Need + Expected + Acceptance             specified
+         Target + Label + Need + Expected + Acceptance     specified
 SURVEY   Supporting Runs: Execution/Discovery 0..N
          PageX Bindings: exact accepted cross-Folder sources 0..N
          Local Run: Page · Evidence Item exactly 1          planned
@@ -469,8 +468,8 @@ what got written into the page body        what already held it        what happ
 the DRAFT outline table, pasted into       🧭 the outline plugin,      two copies, and the
 `## Content`                                which derives it from       body copy goes stale
                                             the ### headings            the next edit
-"Evidence owed: evidence/probe/PP03-…;     🧾 the evidence surface,    the sentence carries a
-state raised."                              which renders the row       state the table owns
+"Evidence owed: E03 is specified"          🧭 Outline Evidence         the sentence carries a
+                                            Workspace renders it        state the item owns
                                             and its live status         and will contradict
 "evidence owed: 🖼 display"                 🖼 the display surface      🚨 ZERO units existed.
                                                                         The sentence WAS the

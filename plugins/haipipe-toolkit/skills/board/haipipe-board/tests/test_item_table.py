@@ -38,6 +38,7 @@ plan: v1
 
 ### E01-VALUE-adjusted-effect · C1.P1.B1 · adjusted treatment effect
 - **Target**: C1.P1.B1
+- **Label**: AdjustedFx
 - **Need**: the focal estimate
 - **Expected**: VALUE · estimate, interval, unit, population, and model label
 - **Acceptance**: recomputes from the accepted model Result
@@ -49,6 +50,7 @@ plan: v1
 
 ### E02-CITE-guideline-anchor · C1.P1.B2 · guideline anchor
 - **Target**: C1.P1.B2
+- **Label**: Guideline
 - **Need**: a verified source claim
 - **Expected**: CITE · verified guideline claim and locator
 - **Acceptance**: source identity and locator resolve
@@ -60,6 +62,7 @@ plan: v1
 
 ### E03-DISPLAY-effect-forest · C1.P1.B2 · effect forest
 - **Target**: C1.P1.B2
+- **Label**: EffectForest
 - **Need**: a ready forest plot
 - **Expected**: DISPLAY · forest plot ready to place
 - **Acceptance**: preview, caption claim, and frozen intake exist
@@ -132,16 +135,30 @@ def _page(root, *, tick="⬜", decide="☐ make", arrow="", result=True,
 class ItemTableTest(unittest.TestCase):
     def test_wall_label_is_compact_and_keeps_type(self):
         self.assertEqual(
-            it.wall_label("E03-VALUE-primary-association", "VALUE", "Total MME"),
-            "E3V.TotalMME",
+            it.wall_label(
+                "E03-VALUE-primary-association", "VALUE",
+                "the complete primary association and benchmark", "LBPEffect",
+            ),
+            "E3V.LBPEffect",
         )
         self.assertEqual(
-            it.wall_label("E02-CITE-guideline", "CITE", "guideline source"),
-            "E2C.GuidelineSource",
+            it.wall_label(
+                "E02-CITE-guideline", "CITE", "guideline source", "Guideline"
+            ),
+            "E2C.Guideline",
         )
         self.assertEqual(
-            it.wall_label("E08-DISPLAY-table", "DISPLAY", "sequence table"),
-            "E8D.SequenceTable",
+            it.wall_label(
+                "E08-DISPLAY-table", "DISPLAY", "sequence table", "SeqTable"
+            ),
+            "E8D.SeqTable",
+        )
+        self.assertEqual(
+            it.wall_label(
+                "E09-VALUE-legacy", "VALUE",
+                "an extremely long legacy evidence item name",
+            ),
+            "E9V.AnExtremelyL",
         )
 
     def test_global_run_addresses_accept_dotted_input_and_keep_compact_key(self):
@@ -160,6 +177,7 @@ class ItemTableTest(unittest.TestCase):
             row = rows["E01-VALUE-adjusted-effect"]
             self.assertEqual("VALUE", row["type"])
             self.assertEqual("C1.P1.B1", row["target"])
+            self.assertEqual("AdjustedFx", row["label"])
             self.assertEqual("Execution · reuse · b01j01t01r01", row["supporting_runs"])
             self.assertEqual(
                 "source/page/results/r01/result.yaml · authority b01j01t01r01",

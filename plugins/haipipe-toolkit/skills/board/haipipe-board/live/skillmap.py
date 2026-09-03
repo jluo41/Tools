@@ -473,7 +473,7 @@ document.addEventListener('dragend', function () {
                         "location.href=document.querySelector('a.nx').href});"
                         "</script>"
                         % (jump(pv), _esc(stops[pv][0]),
-                           _esc(mrel[:-3] + "-skill.html?plain"),
+                           _esc(mrel[:-3] + "-skill.html?embed"),
                            here + 1, len(stops),
                            jump(nx), _esc(stops[nx][0])))
 

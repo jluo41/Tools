@@ -12,7 +12,7 @@ The states, and what each is read from:
                  EMBED); legacy pages without a table: card state: lines ·
                  bibex verified= · display preview.pdf + accepted:
     ✏️ DRAFT     the page's own ### content divisions, and whether it postdates the tick
-    🖊 REVISE    latex/ present and its newest pdf at least as new as the page (⑥ folded)
+    🖊 REVISE    delivery/latex/ present and its newest pdf at least as new as the page (⑥ folded)
     🔍 CHECK     the newest _runs/page/<page>/*.json receipt routed CLOSE
 
 ⚠️ `now` is the FIRST phase whose exit test fails, in loop order. That is a
@@ -25,7 +25,7 @@ from pathlib import Path
 
 from src import item_table
 
-from .common import evidence_lane_dirs
+from .common import delivery_lane_dirs, evidence_lane_dirs
 from .folder_contract import (
     current_folder_kind,
     resolve as resolve_folder_contract,
@@ -276,8 +276,8 @@ def phase_state(page_md, board=None):
     divs = len(re.findall(r"^### \d+ · ", page_txt, re.M))
     md_m = page_md.stat().st_mtime
     ap_m = of.stat().st_mtime if of else 0
-    tex = pd / "latex"
-    pdfs = sorted(tex.rglob("*.pdf")) if tex.is_dir() else []
+    tex_dirs = delivery_lane_dirs(pd, "latex")
+    pdfs = sorted(p for tex in tex_dirs for p in tex.rglob("*.pdf"))
     pdf_fresh = bool(pdfs) and max(p.stat().st_mtime for p in pdfs) >= md_m
 
     rec = _last_receipt(pd, board)
@@ -302,7 +302,7 @@ def phase_state(page_md, board=None):
                                  and disp and len(drawn) == len(disp))
                       else ("owed" if not cards and not disp and not ent else "part")))),
         "DRAFT": "done" if (divs and md_m >= ap_m) else ("part" if divs else "owed"),
-        "REVISE": "done" if pdf_fresh else ("part" if tex.is_dir() else "owed"),
+        "REVISE": "done" if pdf_fresh else ("part" if tex_dirs else "owed"),
         "CHECK": "done" if (last and last.get("phase") == "CHECK"
                             and last.get("route") == "CLOSE") else "owed",
     }

@@ -1,7 +1,7 @@
 # PageX lane · how one Folder points into another Folder
 
-Read this reference from `haipipe-plugin-evidence` when SURVEY considers an
-accepted cross-Folder source or the 🧾 Evidence tab presents that relationship.
+Read this reference from `haipipe-plugin-outline` when SURVEY considers an
+accepted cross-Folder source or the 🧭 Outline plugin's Evidence Workspace presents that relationship.
 PageX is an internal Evidence lane and source-binding mechanism—not a Plugin,
 Run family, action, or typed Result. This reference owns its link scope, ranked
 row, minted link, safety vet, live Folder-face read, and prose seeding.
@@ -13,8 +13,8 @@ execution belongs to a Folder's Task Face; a cross-Folder task relationship is
 still a PageX link.
 The design page is `QPf11` on the board skill's board.
 
-> 🧾 This view is the 🔗 PageX segment inside the one 🧾 Evidence tab
-> (`haipipe-plugin-evidence`). There is no standalone PageX Plugin or Result.
+> 🧾 This view is the 🔗 PageX segment inside the 🧭 Outline plugin's Evidence Workspace
+> (`haipipe-plugin-outline`). There is no standalone PageX Plugin or Result.
 
 ## 🔎 SURVEY binding · select an exact authority, not a topic
 
@@ -76,7 +76,7 @@ whole lineage without counting the link as another Run or Result.
 ## 🗂 Storage · MIXED, one ranked list and the links minted from it
 
 ```text
-<page>/evidence/pagex/
+<page>/outline/evidence/pagex/
 ├── <stem>.md                         PRIMARY · link list, ORDER = rank
 ├── <src-page>/<inner path>           DERIVED · exact-file symlinks
 ├── _folders/<repo-relative Folder>/  DERIVED · whole-Folder symlinks
@@ -140,7 +140,7 @@ relationship.
 The pen's field is `borrow`, not `path`: every view merges the board context `{path, file}` into its POST body, so a borrowed file sent as `path` is overwritten by the board's own path.
 
 **The minter's one safety rule**: it only ever unlinks a SYMLINK inside
-`evidence/pagex/` (or an explicitly detected flat compatibility stub).
+`outline/evidence/pagex/` (or an explicitly detected flat compatibility stub).
 A real file that lands there is never touched, so a re-mint can be run at any moment without eating anything it did not make.
 A target that resolves outside the repo root, is not an addressable Folder, is
 self-referential, or already has a real file in its slot is refused with the
@@ -172,13 +172,14 @@ The 📂 folder tab marks a symlink row with a bare 🔗, full target on hover, 
 The mark stays bare: pagex mints links whose place mirrors the source, so spelling the target out repeats the row's own name and was the first fix's own defect.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+> The canonical lane is `outline/evidence/pagex/`. A former root `evidence/`
+> or flat PageX path is read-only migration input and must not be recreated.
 
 ## 📂 Files and ownership
 
 - `../../haipipe-board/live/pagex.py`
   The three routes, the store writer, the minter and its vet, the prose scan behind the seeder, and the card view.
-- `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
-  The single 🧾 Evidence registration that includes the 🔗 PageX segment.
+- `../../haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
+  The single 🧭 Outline registration whose Evidence Workspace includes PageX.
 - `../../haipipe-plugin/ref/roster.md`
-  The internal `pagex/` storage row owned by `haipipe-plugin-evidence`.
+  The internal `pagex/` storage row owned by `haipipe-plugin-outline`.

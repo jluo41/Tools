@@ -4,7 +4,7 @@
     python3 checks/intake.py [--board DIR ...]
 
 A display unit's `intake/manifest.yaml` exists so that staleness is COMPUTABLE
-(`haipipe-plugin-evidence/ref/displays.md` §❄️): the unit copied its sources and recorded a
+(`haipipe-plugin-outline/ref/evidence/displays.md` §❄️): the unit copied its sources and recorded a
 sha256, so anyone can ask whether the copy still matches what is on disk now.
 Nothing asked.
 

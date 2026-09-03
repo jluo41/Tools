@@ -32,7 +32,7 @@ and mirrors drift (the whole 260819 session is the proof).
 
 **Load:** read the ⚡ Phase card at the top of `haipipe-page-evidence` FIRST.
 Then load `haipipe-run`, `haipipe-plugin-outline/ref/item-table.md`,
-`haipipe-plugin-evidence`, `haipipe-plugin-evidence/ref/pagex.md` when bindings
+`haipipe-plugin-evidence`, `haipipe-plugin-outline/ref/evidence/pagex.md` when bindings
 exist, and the exact Supporting Run workers selected by SURVEY. Do not load
 `haipipe-page-for-task`.
 

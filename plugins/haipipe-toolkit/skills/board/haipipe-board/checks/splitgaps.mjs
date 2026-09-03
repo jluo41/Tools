@@ -59,16 +59,13 @@ async function goto(url, ready) {
   return false;
 }
 
-// ── G1 · the ordinary page is exactly as it was ────────────────────────────
-console.log('G1 · an ordinary board page, opened on its own, is unchanged');
-/* `?plain` NOW, because a bare board url opened in a browser is the split
-   (260802). The opt-out is what this whole G is about: the one-document board
-   has to be reachable and unchanged, and this is the address that reaches it. */
-const PLAIN = PAGE + '?plain';
-ok('the plain page loaded',
-   await goto(PLAIN, `document.readyState === 'complete' && !!document.querySelector('div.wrap')`));
-ok('no pane marker outside the shell',
-   await ev(`typeof window.__boardPane`) === 'undefined');
+// ── G1 · the page pane is a real reader surface ────────────────────────────
+console.log('G1 · the page pane loads and refreshes in place');
+const PAGE_PANE = PAGE + '?pane=page';
+ok('the page pane loaded',
+   await goto(PAGE_PANE, `document.readyState === 'complete' && !!document.querySelector('div.wrap')`));
+ok('the page pane is marked as a page pane',
+   await ev(`window.__boardPane`) === 'page');
 
 /* the router: a click must SWAP, not navigate — the window survives */
 await ev(`window.__alive = 1; 1`);
@@ -88,7 +85,7 @@ ok('and the url moved anyway (pushState)', moved !== PAGE, moved);
 
 
 /* live refresh: an edit must land IN PLACE, still without a reload */
-await goto(PLAIN, `document.readyState === 'complete' && !!document.querySelector('div.wrap')`);
+await goto(PAGE_PANE, `document.readyState === 'complete' && !!document.querySelector('div.wrap')`);
 await ev(`window.__alive = 1; window.__upd = 0;
           window.addEventListener('board:updated', function(){ window.__upd++ }); 1`);
 /* LET THE 4000 ms POLL TAKE ITS BASELINE FIRST. `20-live-refresh.js` records
@@ -103,7 +100,7 @@ for (let i = 0; i < 120; i++) {
   await sleep(250);
   if (await ev(`window.__upd > 0`) === true) { updated = true; break; }
 }
-ok('the ordinary page still refreshed itself', updated);
+ok('the page pane still refreshed itself', updated);
 ok('and it did so WITHOUT a reload (window survived)',
    await ev(`!!window.__alive`) === true);
 

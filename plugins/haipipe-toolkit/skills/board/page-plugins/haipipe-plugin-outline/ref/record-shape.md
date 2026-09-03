@@ -23,10 +23,10 @@ file                     answers                  id            labels          
 <stem>-discussion.md     what is still ASKED      D<nn>         Ask · Options · We lean · Decide    this page, any phase, the chat  discussion-settled-thread
 <stem>-feedback.md       what OTHERS said         S<x>-PP<n>    From · Feedback · Work · State ·    cli/feedback.py collect;        feedback-uncollected ·
                                                   R<nn>         Landed                              the page writes Landed only     -coverage · -unserved
-<stem>-evidence-items.md what each typed item      E<NN>-TYPE-   Target · Need · Expected ·          SHAPE specifies; SURVEY plans;  (ref/item-table.md)
+<stem>-evidence-items.md what each typed item      E<NN>-TYPE-   Target · Label · Need · Expected ·  SHAPE specifies; SURVEY plans;  (ref/item-table.md)
                          must become and its Runs  <slug>        Acceptance · Supporting Runs ·      LAND freezes input + binds Result
                                                                 PageX Bindings · Local Input · Local Run · Decide
-<stem>-evidence.md       what is READY             E<NN>-TYPE-   Status · Target · Expected ·        cli/evidence-status.py          evidence-stale · -hand-edited
+<stem>-evidence.md       what is READY             E<NN>-TYPE-   Status · Label · Target · Expected · cli/evidence-status.py          evidence-stale · -hand-edited
                                                   <slug>        Supporting Runs · PageX Bindings · Local Input · Local Run · Has
 <stem>-files.md          what it READS and WRITES F<n>          Path · Role                         this page                       dead-file-path
 <stem>-log.md            what CHANGED             YYMMDD [HHMM] headline only; detail folded        this page; append, newest first generated-block-stale reads it
@@ -96,7 +96,9 @@ Writing Style` block in the product `<page>.md` and no separate writing file.
 **Evidence Items** is the authored table (`ref/item-table.md`): one record per
 typed outline item. Its immutable id is `E<NN>-<TYPE>-<slug>` where TYPE is
 `VALUE · CITE · DISPLAY`; its head also names the target `C.P.B` and readable
-item name. SHAPE writes `Target · Need · Expected · Acceptance`. SURVEY writes
+item name. SHAPE writes `Target · Label · Need · Expected · Acceptance`.
+`Label` is the stable 1–12 character ASCII alphanumeric wall name; the UI does
+not derive it from the full item name. SURVEY writes
 `Supporting Runs` (zero or more Execution/Discovery plans), `PageX Bindings`
 (zero or more exact cross-Folder file/Result paths plus accepted authorities),
 exactly one `Local Input` envelope plan, exactly one `Local Run` (`Page ·

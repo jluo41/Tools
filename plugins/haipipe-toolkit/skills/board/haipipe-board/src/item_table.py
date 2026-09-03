@@ -25,6 +25,15 @@ EMOJI = {
 ACTIONS = (
     "reuse", "rerun", "registered", "new-run", "new-task", "new-job", "new-block",
 )
+ACTION_LABELS = {
+    "reuse": "reuse",
+    "rerun": "rerun",
+    "registered": "registered",
+    "new-run": "newrun",
+    "new-task": "newtask",
+    "new-job": "newjob",
+    "new-block": "newblock",
+}
 OUTCOMES = ACTIONS  # compatibility import for callers; actions replaced outcomes
 CYCLES = ("SHAPE", "SURVEY", "LAND", "EMBED", "WRITE")
 ITEM_TYPES = ("VALUE", "CITE", "DISPLAY")
@@ -36,6 +45,7 @@ _REC_RE = re.compile(
     rf"^###\s+({_ITEM_ID})\s*·\s*(C\d+\.P\d+\.B\d+)\s*·\s*(.*)$"
 )
 _LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
+_WALL_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,11}$")
 _EVIDENCE_RE = re.compile(rf"^\s*Evidence:\s*({_ITEM_ID})\s*·\s*(.+)$")
 _GLOBAL_RUN_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
 _TASK_RE = re.compile(r"^b\d+\.?j\d+\.?t\d+(?:\.?r\d+)?$")
@@ -66,6 +76,49 @@ def readable_task(value: str) -> str:
     if not match:
         return ""
     return "b%s.j%s.t%s" % match.groups()
+
+
+def readable_paper_route(value: str) -> str:
+    """Return a Paper-Board-local relative address for a global route.
+
+    One Paper Board is the local block. Its UI therefore shows the route below
+    that block (``jNN.tNN[.rNN]``), while the authored ledger retains the full
+    ``bNN...`` address for cross-folder lookup and migration safety.
+    """
+    full = _GLOBAL_RUN_RE.fullmatch((value or "").strip())
+    if full:
+        _block, job, task, run = full.groups()
+        return "j%s.t%s.r%s" % (job, task, run)
+    parent = _PARENT_TASK_RE.fullmatch((value or "").strip())
+    if parent:
+        _block, job, task = parent.groups()
+        return "j%s.t%s" % (job, task)
+    return ""
+
+
+def action_label(action: str) -> str:
+    """Return the compact reader-facing token for one authored action."""
+    return ACTION_LABELS.get((action or "").lower(), "")
+
+
+def planned_route_anchor(address: str, action: str, *, page_id: str = "",
+                         item_id: str = "", layer: str = "") -> str:
+    """Return one stable Run-Index fragment for an unallocated ``new-*`` route.
+
+    A new Run has a parent address but no ``rNN``; a legacy local new Task may
+    not even have a parent yet.  Both still need a durable, clickable plan
+    card.  The action keeps otherwise identical parent addresses distinct.
+    """
+    action_part = re.sub(r"[^a-z0-9]+", "-", (action or "").lower()).strip("-")
+    address_part = re.sub(r"[^a-z0-9]+", "", (address or "").lower())
+    if address_part:
+        return "plan-%s-%s" % (action_part or "route", address_part)
+    fallback = "-".join(
+        re.sub(r"[^a-z0-9]+", "-", part.lower()).strip("-")
+        for part in (page_id, item_id, layer)
+        if part
+    )
+    return "plan-%s-%s" % (action_part or "route", fallback or "unallocated")
 
 
 RUN_STATUS_LABEL = {
@@ -256,18 +309,28 @@ def run_registry(root_text: str) -> dict[str, dict[str, str]]:
     return records
 
 
-def wall_label(item_id: str, item_type: str, name: str) -> str:
-    """Return the compact visual identity; authored ids remain unchanged."""
+def wall_label(item_id: str, item_type: str, name: str, label: str = "") -> str:
+    """Return a bounded visual identity; authored ids remain unchanged.
+
+    New and updated records author an explicit ``Label`` of at most twelve
+    ASCII alphanumeric characters.  The derived fallback keeps legacy ledgers
+    readable without allowing their full names to widen the Outline grid.
+    """
     number = re.match(r"^E0*(\d+)", item_id)
     short_number = "E%s" % (number.group(1) if number else item_id)
     short_type = {"VALUE": "V", "CITE": "C", "DISPLAY": "D"}.get(
         item_type, item_type[:1]
     )
-    words = re.findall(r"[A-Za-z0-9]+", name)
-    compact_name = "".join(
-        word if word.isupper() else word[:1].upper() + word[1:]
-        for word in words
-    ) or "Item"
+    authored = (label or "").strip()
+    if _WALL_NAME_RE.fullmatch(authored):
+        compact_name = authored
+    else:
+        words = re.findall(r"[A-Za-z0-9]+", name)
+        derived = "".join(
+            word if word.isupper() else word[:1].upper() + word[1:]
+            for word in words
+        ) or "Item"
+        compact_name = derived[:12]
     return "%s%s.%s" % (short_number, short_type, compact_name)
 
 
@@ -286,6 +349,11 @@ def items_path(page_md: Path) -> Path:
 def _parse_local(value: str) -> tuple[str, str, str]:
     """Return action, address, Result path from a Local Run field."""
     left, _, result = value.partition("→")
+    if left.strip().lower() == "— design page evidence task":
+        # Legacy paper wording for a local Page-Evidence task that has not
+        # yet been allocated.  Preserve the authored text but expose the
+        # current controlled action to renderers and the Plan Index.
+        return "new-task", "", result.strip()
     parts = [p.strip() for p in left.split("·")]
     if len(parts) < 4 or [p.lower() for p in parts[:2]] != ["page", "evidence item"]:
         return "", "", result.strip()
@@ -364,7 +432,7 @@ def read_items(page_md: Path) -> dict:
     if not f.is_file():
         return {}
     labels = (
-        "target", "need", "expected", "acceptance", "supporting runs",
+        "target", "label", "need", "expected", "acceptance", "supporting runs",
         "pagex bindings", "local input", "local run", "decide",
     )
     rows, cur = {}, None

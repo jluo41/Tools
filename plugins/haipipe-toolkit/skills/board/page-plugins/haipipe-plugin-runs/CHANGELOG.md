@@ -1,5 +1,28 @@
 # Changelog · haipipe-plugin-runs
 
+## 0.9.1 — 2026-09-03
+
+- Keep Runs visible on source-backed Board Pages even when no local Run is
+  allocated, using one truthful empty state without creating empty folders.
+
+## 0.9.0 — 2026-09-03
+
+- Point evidence lineage to the Outline plugin's Evidence Workspace and name
+  its generated folder `outline/evidence/supporting-runs/`.
+- Keep Runs limited to physical page-local `runs/` and `results/` pairs.
+
+## 0.8.4 — 2026-09-03
+
+- Use Run/Result as the only reader-facing object names and show their exact,
+  wrapping repository-relative paths.
+- Route Outline lineage to the unified Evidence Items panel; keep Runs limited
+  to real page-local Run–Result pairs.
+
+## 0.8.3 — 2026-09-02
+
+- Clarify navigation ownership: Outline Run tokens open Evidence → Run links;
+  only physical page-local Ticket–Result pairs belong in this Runs overview.
+
 ## 0.8.1 — 2026-09-02
 - Evidence Item detail rows show PageX source count and accepted authorities
   beside Supporting Runs and the local Run. PageX remains a source binding,

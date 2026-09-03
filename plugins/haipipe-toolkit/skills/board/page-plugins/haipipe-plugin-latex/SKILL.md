@@ -1,12 +1,12 @@
 ---
 name: haipipe-plugin-latex
 description: >-
-  The latex/ plugin of a Board page: compile the page's Content to a derived,
-  regenerable PDF in its local latex/ folder via md2tex.py and lualatex.
+  The LaTeX lane of a Board page: compile the page's Content to a derived,
+  regenerable PDF in delivery/latex/ via md2tex.py and lualatex.
   Trigger: latex plugin, compile the page, page pdf, tex export, latex tab,
   rebuild the tex, /haipipe-plugin-latex.
 metadata:
-  version: "0.2.3"
+  version: "0.3.0"
   last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-latex · the page compiled, by the paper family's own writer
@@ -45,7 +45,7 @@ Three caller rules, each earned on 260815:
   A page outside any paper compiles cite-less, with `\citep` shown literally; inside a paper the master gains natbib, `plainnat`, and a bibtex pass.
 - A code span QUOTES and never EXECUTES: backticked TeX commands are escaped on the way out, so `\citep` prints instead of running.
 - **The Page title prints**: the standalone master opens with the complete canonical H1, TeX-escaped as plain text. The title is document identity, not a Content division, so it is emitted independently of numbered `###` manuscript headings.
-- THE PAGE'S DISPLAY EVIDENCE PRINTS (JL 260816): a unit under `<page>/evidence/display/` that the prose cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN` is embedded once as a real float after the citing paragraph, in citation order, under MISQ's first-reference rule.
+- THE PAGE'S DISPLAY EVIDENCE PRINTS (JL 260816): a unit under `<page>/outline/evidence/display/` that the prose cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN` is embedded once as a real float after the citing paragraph, in citation order, under MISQ's first-reference rule.
   The float is built from the unit's WINNING asset plus its own authored caption and label, so the wrapper master needs no tikz or renderer package; a ⬜ unit with no render is skipped, and a mention inside a verbatim fence is an illustration, not a citation.
 
 ## 📡 Surface · the tab, and what a failure shows
@@ -54,7 +54,9 @@ The right-pane 📜 tab frames the PDF; 🔄 rebuild re-runs the route and reloa
 `lualatex` producing no PDF is never a blank frame: the view page shows the `.tex` and the log tail, so the failure is readable where it happened.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+The writer always lands new artifacts in `delivery/latex/`. A pre-migration
+flat `latex/` may be read during a sweep, but it is not a current destination
+and must not be shown as the canonical Folder row.
 
 ## 📂 Files
 

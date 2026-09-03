@@ -1,5 +1,33 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.6.0 — 2026-09-03
+
+- Retire the standalone Evidence plugin and preserve this skill only as a
+  compatibility redirect to `haipipe-plugin-outline`.
+- Move the four active lane references under
+  `haipipe-plugin-outline/ref/evidence/` and forbid a root `<page>/evidence/`.
+
+## 0.5.5 — 2026-09-03
+
+- Merge `By bullet` and `Run links` into one default `Evidence Items` panel.
+- Use the Outline Table's canonical `E<n><kind>.<Label>` identity on every
+  Evidence card and group each Supporting/Local Run item beneath it.
+- Present only Run/Result vocabulary and reveal exact repository-relative
+  paths in one compact, wrapping `Run & Result paths` disclosure.
+- Preserve old `seg=bybullet` and `seg=runlinks` deep links as aliases.
+
+## 0.5.4 — 2026-09-03
+
+- Make `Run links` a compact Evidence Item index: short item names, clickable
+  dotted Run chips, one Local state, and collapsed Ticket/receipt details.
+- Preserve the global dotted identity and Ticket link for an allocated local
+  Run while its Result receipt is still absent.
+
+## 0.5.3 — 2026-09-02
+
+- Accept Outline deep links that select `Run links` and focus the owning
+  Evidence Item, while preserving parent-only routes as plans rather than Runs.
+
 ## 0.5.0 — 2026-09-02
 
 - Absorb the former Value, Display, and PageX plugin contracts into the one

@@ -37,9 +37,9 @@ const ev = async x => {
 const fails = [];
 const ok = (n, c, d) => { console.log(`${c ? '  ✅' : '  ❌'} ${n}${c ? '' : '  — ' + d}`); if (!c) fails.push(`${n}: ${d}`); };
 
-/* These pages are opened PLAIN, not in the split: the index and a group file
-   are where a board/group session is offered, and the split's chat pane always
-   binds to the page in its page frame. */
+/* TODO(legacy-plain): This acceptance helper still exercises the retired
+   standalone `?plain` reader and its `#chatfab`. Replace its callers with the
+   shell-native Board/Group session entry, then delete this helper and marker. */
 async function openPlain(url) {
   await send('Page.navigate', { url }); await sleep(6000);
   await ev(`Object.keys(localStorage).filter(function(k){return /board-split/.test(k)}).forEach(function(k){localStorage.removeItem(k)})`);

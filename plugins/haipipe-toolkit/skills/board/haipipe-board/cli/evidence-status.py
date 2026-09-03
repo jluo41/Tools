@@ -11,6 +11,7 @@ import importlib.util
 import re
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
@@ -19,9 +20,11 @@ lo = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(lo)
 
 from src.item_table import (  # noqa: E402
-    CYCLES, EMOJI, ITEM_TYPES, LADDER, bullets, cycle_now, item_status,
-    read_items, repo_root, resolve,
+    CYCLES, EMOJI, ITEM_TYPES, LADDER, action_label, bullets, compact_global_run,
+    cycle_now, item_status, read_items, readable_global_run, readable_task, repo_root, resolve,
+    run_registry,
 )
+from src.common import evidence_run_dir  # noqa: E402
 
 BEGIN = "# --- evidence-status:begin (generated) ---"
 END = "# --- evidence-status:end ---"
@@ -52,6 +55,7 @@ def build(page_md: Path) -> str:
             f"### {item_id} · {target} · {name}",
             f"- **Status**: {EMOJI[status]} {status}",
             f"- **Type**: {item_type}",
+            f"- **Label**: {(row or {}).get('label') or 'legacy fallback'}",
             f"- **Target**: {target}",
             f"- **Expected**: {(row or {}).get('expected') or expected}",
             f"- **Acceptance**: {(row or {}).get('acceptance') or acceptance or '—'}",
@@ -103,6 +107,105 @@ def build(page_md: Path) -> str:
     return "\n".join(head + [body, "", END, ""])
 
 
+def _map_href(root: Path, stored_path: str) -> str:
+    """A Board-root link from Outline's Supporting-Run map to an artifact."""
+    if not stored_path:
+        return ""
+    target = root / stored_path
+    if not target.is_file():
+        return ""
+    return "/" + quote(stored_path, safe="/")
+
+
+def _run_ref(family: str, action: str, address: str, registry: dict[str, dict[str, str]],
+             root: Path) -> str:
+    """One compact, auditable evidence-to-Run reference.
+
+    This reports the outcome of SURVEY.  A ``new-*`` parent has no ``rNN`` and
+    stays explicitly unallocated; it is never converted into a fake Run.
+    """
+    action = (action or "").lower()
+    compact = compact_global_run(address)
+    route = readable_global_run(compact) if compact else (readable_task(address) or address)
+    label = action_label(action) or action or "unspecified"
+    if action.startswith("new-"):
+        return f"`{route or 'unallocated'}` · {label} · Run not allocated"
+    record = registry.get(compact) if compact else None
+    if not record:
+        return f"`{route or 'unregistered'}` · {label} · Run/Result paths not found"
+    run_href = _map_href(root, record.get("ticket", ""))
+    result_href = _map_href(root, record.get("runtime", ""))
+    route_label = f"[{route}]({run_href})" if run_href else f"`{route}`"
+    run_label = "[Run](%s)" % run_href if run_href else "Run path not found"
+    result_label = "[Result](%s)" % result_href if result_href else "Result not found"
+    return (f"{route_label} · {label} · {record.get('label') or 'Unregistered'} · "
+            f"{run_label} · {result_label}")
+
+
+def _allocated_local(item: dict, local_rows: list[dict], root: Path) -> str:
+    """Resolve an authored local binding without inferring one from proximity."""
+    declared = item.get("local_run", "")
+    address = item.get("address", "")
+    for row in local_rows:
+        global_id = row.get("global_id") or row["run_id"]
+        tokens = (
+            global_id, row.get("compact_id", ""), row["run_id"],
+            row["ticket"].name, str(row["ticket"]),
+        )
+        if any(token and token in declared for token in tokens) or address == str(global_id).replace(".", ""):
+            run_href = _map_href(root, str(row["ticket"].relative_to(root)))
+            result_href = (_map_href(root, str(row["runtime"].relative_to(root)))
+                           if row["runtime"] else "")
+            route_label = f"[{global_id}]({run_href})" if run_href else f"`{global_id}`"
+            run_label = "[Run](%s)" % run_href if run_href else "Run path not found"
+            result_label = "[Result](%s)" % result_href if result_href else "Result not found"
+            return (f"{route_label} · {row['status']} · {run_label} · {result_label}")
+    if item.get("action", "").startswith("new-") or declared.startswith("—"):
+        return "planned local Evidence Task · Run not allocated"
+    return f"`{declared or 'not declared'}` · local Run path not found"
+
+
+def build_run_bindings(page_md: Path) -> str:
+    """Project Run lineage into ``outline/evidence/supporting-runs/``.
+
+    The projection contains pointers only: no Run, Result, runtime, log, or
+    output is copied into Evidence.  Physical page-local pairs remain at the
+    sibling ``runs/`` and ``results/`` roots and external supporting work stays
+    in its owning task/discovery tree.
+    """
+    items = read_items(page_md)
+    root = repo_root(page_md.parent)
+    registry = run_registry(str(root))
+    try:
+        from live.runs import local_runs
+        local_rows = local_runs(page_md)
+    except (ImportError, OSError):
+        local_rows = []
+    lines = [
+        f"# {page_md.stem} · evidence run bindings",
+        f"page: {page_md.stem}",
+        "kind: evidence-runs · ⚙️ derived · never hand-edited · pointers only",
+        "source: outline/*-evidence-items.md + owning task/discovery Runs + page runs/results/",
+        "boundary: supporting Runs/Results stay external; local Runs stay in runs/; local Results stay in results/.",
+        "",
+    ]
+    if not items:
+        lines.append("(no typed Evidence Item ledger yet)")
+    for item in items.values():
+        lines.append(f"## {item['item']} · {item['target']} · {item['name']}")
+        lines.append("- **Supporting Runs**:")
+        support_lines = []
+        for raw in (item.get("supporting_runs", "") or "").split(";"):
+            parts = [part.strip() for part in raw.split("·")]
+            if len(parts) >= 3:
+                support_lines.append("  - " + _run_ref(parts[0], parts[1], parts[2], registry, root))
+        lines.extend(support_lines or ["  - —"])
+        lines.append("- **Local Run**: " + _allocated_local(item, local_rows, root))
+        lines.append("- **Local Result**: " + (item.get("result") or "not allocated"))
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("target", type=Path)
@@ -125,9 +228,15 @@ def main():
             continue
         output = page.parent / "outline" / f"{page.stem}-evidence.md"
         output.write_text(text, encoding="utf-8")
+        bindings = evidence_run_dir(page.parent) / f"{page.stem}-run-bindings.md"
+        bindings.parent.mkdir(parents=True, exist_ok=True)
+        bindings.write_text(build_run_bindings(page), encoding="utf-8")
         count += 1
         shown = output.relative_to(Path.cwd()) if output.is_relative_to(Path.cwd()) else output
+        shown_bindings = (bindings.relative_to(Path.cwd())
+                          if bindings.is_relative_to(Path.cwd()) else bindings)
         print(f"wrote {shown}")
+        print(f"wrote {shown_bindings}")
     print(f"{count} file(s)")
 
 

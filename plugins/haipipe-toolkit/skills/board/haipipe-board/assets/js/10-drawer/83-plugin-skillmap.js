@@ -57,7 +57,7 @@
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {
         write(page, function (j) {
-          if (j.url) window.open(j.url + '?plain', '_blank', 'noopener');
+          if (j.url) window.open(j.url + '?embed', '_blank', 'noopener');
         }, function (e) { alert('⚠ ' + e); });
       },
       tab: {

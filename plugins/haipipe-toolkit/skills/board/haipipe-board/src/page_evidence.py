@@ -14,7 +14,7 @@ exists", so nothing reported that it had not been taken. These checks report it.
 
 WHAT IT DOES NOT DO. It never renders, never edits a unit, and never ticks
 ``accepted:``. Step ⑤ of the display walk is a person's and stays a person's
-(`page-plugins/haipipe-plugin-evidence/ref/displays.md`). This module only says which step a unit
+(`page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`). This module only says which step a unit
 is stuck on, in the same vocabulary the 🖼 tab uses, so the tab and the checker
 cannot disagree about what "rendered" means.
 
@@ -38,7 +38,7 @@ WINNING_ASSETS = ("table-body.tex", "figure.pdf", "figure.png", "figure.svg")
 UNIT_DIR_RE = re.compile(r"^(?P<stem>.+)-Display(?P<n>\d+)-(?P<slug>.+)$")
 
 # BOTH citation forms resolve to the same unit and both exporters place it once
-# (`haipipe-plugin-evidence/ref/displays.md`, "Citation"): the bare Page-local id inside its own
+# (`haipipe-plugin-outline/ref/evidence/displays.md`, "Citation"): the bare Page-local id inside its own
 # page, and the fully qualified `<stem>-DisplayN` in cross-page prose. Matching
 # only the bare form called seven correctly-cited units uncited on
 # CMSStoreBoard, because `QC2-cancer-Display3` is preceded by a hyphen.

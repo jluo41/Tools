@@ -79,7 +79,7 @@ being guessed.
 5. For `revise-opening`, draft from the page's actual subject and evidence.
    Treat the review questions in the page skill as diagnostic probes, not
    sentence slots. Replace only the Opening body.
-6. For `outline`, `draft`, `probe`, `evidence`, `revise` or `compile`, perform
+6. For `outline`, `draft`, `evidence`, `revise` or `compile`, perform
    only the authority named by the loaded phase contract. Three of the six write
    somewhere OTHER than the page body, and writing into the body instead is the
    phase boundary being crossed rather than a stylistic choice:
@@ -87,11 +87,8 @@ being guessed.
    ```text
    outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
                 itself. Leave `approved:` UNTICKED: it is a person's.
-   probe     ─▶ <page>/evidence/probe/PP<NN>-<slug>/ with card.md,
-                consumer/, executor/
-                and a proof/ holding only its manifest. Never an answer.
-   evidence  ─▶ evidence/bibex/ entries, a card's `state: answered` +
-                `target:`, and a frozen evidence/display/ intake/. Leave
+   evidence  ─▶ outline/evidence/bibex/ entries, accepted local Evidence Item
+                Results, and frozen outline/evidence/display/ intake/. Leave
                 `verified` and `read:` UNTICKED.
    ```
 

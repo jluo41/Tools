@@ -34,7 +34,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from src.common import evidence_lane_dir, evidence_lane_dirs
+from src.common import (DELIVERY_LANES, EVIDENCE_LANES, delivery_lane_dir,
+                        evidence_lane_dir, evidence_lane_dirs)
 
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
@@ -95,10 +96,14 @@ class ExportMixin:
             return None, None, None, "not a page .md: %s" % f
         # A folded page owns its material (haipipe-plugin); a flat page
         # keeps the board-level fallback, which is this door's own.
-        if page_src.parent.name == page_src.stem:
-            out_dir = page_src.parent / plugin
+        page_home = (page_src.parent if page_src.parent.name == page_src.stem
+                     else Path(board))
+        if plugin in EVIDENCE_LANES:
+            out_dir = evidence_lane_dir(page_home, plugin)
+        elif plugin in DELIVERY_LANES:
+            out_dir = delivery_lane_dir(page_home, plugin)
         else:
-            out_dir = Path(board) / plugin
+            out_dir = page_home / plugin
         out_dir.mkdir(parents=True, exist_ok=True)
         return page_src, out_dir, board, None
 
@@ -129,7 +134,7 @@ class ExportMixin:
         return page_src.stem
 
     def _page_units(self, page_src):
-        """[(short, rec)] for every unit under `<page>/evidence/display/`
+        """[(short, rec)] for every unit under `<page>/outline/evidence/display/`
         (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
         the id the page's prose cites; rec reads the unit's OWN float.tex for
         label, kind, and caption, never composing a second one."""

@@ -30,12 +30,21 @@ class PluginMenuTest(unittest.TestCase):
         self.assertIn("body.pane-page #chatfabmore", shell)
         self.assertIn("window.__boardShowTab = showTab;", shell)
 
+    def test_outline_run_link_opens_outline_evidence_workspace(self):
+        outline = (ROOT / "07-plugin-outline.js").read_text(encoding="utf-8")
+        self.assertIn("a[data-outline-focus]", outline)
+        self.assertIn("localStorage.setItem('board-outline-lens', 'workspace')", outline)
+        self.assertIn("localStorage.setItem('board-outline-evidence-focus', focus)", outline)
+        self.assertIn("parent.__boardShowTab('outline')", outline)
+        self.assertIn("event.metaKey || event.ctrlKey || event.shiftKey", outline)
+        self.assertFalse((ROOT / "84-plugin-evidence.js").exists())
+
     def test_picker_uses_explicit_reader_order(self):
         registry = (ROOT / "05-plugins.js").read_text(encoding="utf-8")
         sources = {
             "outline": ROOT / "07-plugin-outline.js",
-            "evidence": ROOT / "84-plugin-evidence.js",
             "studio": ROOT / "50-structure.js",
+            "runs": ROOT / "85-plugin-runs.js",
             "delivery": ROOT / "82-plugin-delivery.js",
             "folder": ROOT / "06-plugin-folder.js",
             "skill": ROOT / "83-plugin-skillmap.js",
@@ -43,8 +52,8 @@ class PluginMenuTest(unittest.TestCase):
         }
         expected = {
             "outline": 10,
-            "evidence": 20,
-            "studio": 30,
+            "studio": 20,
+            "runs": 30,
             "delivery": 40,
             "folder": 50,
             "skill": 60,
@@ -61,6 +70,8 @@ class PluginMenuTest(unittest.TestCase):
             )
             self.assertIsNotNone(match, plugin_id)
             self.assertEqual(int(match.group(1)), expected[plugin_id])
+        for source in ROOT.glob("*.js"):
+            self.assertNotIn("id: 'evidence'", source.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

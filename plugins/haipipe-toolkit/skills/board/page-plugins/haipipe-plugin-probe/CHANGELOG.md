@@ -1,3 +1,9 @@
+## 1.0.0 · 2026-09-03
+
+- Retire the Page-local Probe plugin and `probe/` storage lane.
+- Redirect current evidence work to typed Evidence Items in the combined
+  Outline workspace; legacy Probe artifacts remain read-only migration input.
+
 ## 0.9.4 · 2026-08-31
 
 - Correct the remaining value and proof examples to canonical

@@ -7,7 +7,7 @@ description: >-
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   folder inventory, /haipipe-plugin-folder.
 metadata:
-  version: "0.2.3"
+  version: "0.3.0"
   last_updated: "2026-09-02"
 ---
 # /haipipe-plugin-folder · the folder is the truth
@@ -23,15 +23,27 @@ A status has no artifact: written to disk it starts aging the moment it lands, a
 
 ## ⚖️ The one law · staleness is claimed narrowly
 
-Only a DERIVED plugin — `latex` `word` `bibex` `slide` `display` — can be ⚠️ STALE, and it is stale exactly when its newest file predates the page's `.md`.
-Source material (`draw` `chat` `meeting` `skill` `probe`) is often older than the prose and that is HEALTHY: it gets an age, never a warning.
+Only a DERIVED lane — `delivery/latex` `delivery/word` `outline/evidence/bibex`
+`delivery/slide` `outline/evidence/display` — can be ⚠️ STALE, and it is stale
+exactly when its newest file predates the page's `.md`.
+Source material (`studio/draw` `studio/chat` `meeting` `skill`) is often older
+than the prose and that is HEALTHY: it gets an age, never a warning.
 Widening the flag to source folders would train readers to ignore it, which is the one way a staleness signal dies.
 
-## 📡 Surface · after the four work surfaces, live on every open
+## 📡 Surface · explicit lanes, live on every open
 
-The 📂 tab follows 🧭 Outline, 🧾 Evidence, 🎨 Studio, and 📤 Delivery. This keeps the paper workflow first and the supporting inventory afterward; an explicit registry `order` makes the sequence independent of asset filenames. Folder still tells a reader "no deck" from "deck built, tab unopened".
+The 📂 tab follows 🧭 Outline, 🎨 Studio, ⚙️ Runs, and 📤 Delivery. This keeps
+the paper workflow first and the supporting inventory afterward; an explicit
+registry `order` makes the sequence independent of asset filenames. Folder
+still tells a reader "no deck" from "deck built, tab unopened".
 It applies only to a FOLDED page (`<stem>/<stem>.md`); a flat page has no folder to show.
-`GET /_board/folderstat?path=…&file=…` renders one row per subfolder — icon · name · file count and weight · newest age · state (⚠️ STALE / ✅ fresh / source material) — plus a ⬜ not-present line for roster names the folder lacks.
+`GET /_board/folderstat?path=…&file=…` renders one row per material lane — icon
+· exact path · file count and weight · newest age · state (⚠️ STALE / ✅ fresh
+/ source material) — plus a ⬜ not-present line for categories the folder lacks.
+`outline/` counts only the process files it directly owns; each existing
+`outline/evidence/<lane>/` is a separate row. Delivery likewise shows
+`delivery/latex/`, `delivery/word/`, `delivery/slide/`, and `delivery/render/`.
+No aggregate parent row recursively double-counts the files shown beneath it.
 A row is a door, not just a gauge (JL 260816): clicking it unfolds the folder in place, ▸ turning ▾, and every file is a link that opens the served file itself in a new browser tab, so the status view is also the folder's browser.
 The unfold shows STRUCTURE, not a path list: files a level owns come first, then one 📁 branch per subfolder with its own file count, indented by depth (JL 260816: a flat alphabetical list buried a folder's shape, and `display/` spelled every unit's inner path on every line).
 A file that is a symlink wears a bare 🔗 with its full target on hover, because the row reports the RESOLVED file and a borrowed page md would otherwise read as duplicated bytes.

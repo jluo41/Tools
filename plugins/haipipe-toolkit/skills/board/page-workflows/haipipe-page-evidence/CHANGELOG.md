@@ -1,3 +1,26 @@
+## 0.18.3 · 2026-09-03
+
+- Include `new-job` in LAND's complete planned Supporting-route vocabulary.
+
+## 0.18.2 · 2026-09-03
+
+- Keep SURVEY inventory-only: it classifies existing, rerun, and new-design
+  routes without allocating Tickets or `rNN` ids.
+- Move allocation, Ticket scaffolding, and execution of planned Supporting and
+  local Evidence Item Runs into LAND.
+
+## 0.18.1 · 2026-09-03
+
+- Clarify that VALUE, CITE, and DISPLAY are Result types rather than copy
+  directories; real payloads stay at their local or Supporting Result paths.
+
+## 0.18.0 · 2026-09-03
+
+- Load typed evidence authority from the Outline skill and keep all material
+  lanes under `outline/evidence/`.
+- Forbid recreating a root Evidence category or standalone Evidence tab; actual
+  local execution remains in sibling `runs/` and `results/` folders.
+
 ## 0.16.0 · 2026-09-02
 
 - LAND now validates every SURVEY-selected PageX binding beside the declared

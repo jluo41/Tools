@@ -1,3 +1,8 @@
+## 0.25.1 — 2026-09-02
+
+- Add the compact Evidence Item `Label` to SHAPE's cross-phase contract;
+  immutable item ids and full readable names remain unchanged.
+
 ## 0.25.0 — 2026-09-02
 
 - Add PageX to the Phase × Run Map as a SURVEY-planned, LAND-validated source

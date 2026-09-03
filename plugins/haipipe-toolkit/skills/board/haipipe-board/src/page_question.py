@@ -3,13 +3,15 @@ the old render(), moved verbatim). page_stage.py owns embedded source content;
 this file owns the page-template anatomy on stage."""
 import pathlib
 import re
+from urllib.parse import quote
 
 from . import body as _bd
 from .body import (body, flat_rows, inline, note_body, render_apparatus,
                    render_thread, sort_log)
 from .common import aim_progress, aim_summary, esc, sec, stinfo
-from .item_table import (compact_global_run, readable_global_run, repo_root,
-                         readable_task, run_registry, wall_label)
+from .item_table import (action_label, compact_global_run, readable_global_run,
+                         readable_paper_route, repo_root, readable_task,
+                         run_registry, wall_label)
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -260,28 +262,88 @@ def _outline_grid(page_src):
             "".join(cycle_chips))
 
     registry = run_registry(str(repo_root(pathlib.Path(_bd.BASE or "."))))
+    board_root = pathlib.Path(_bd.BASE or page_src.parent).resolve()
+    workspace_root = repo_root(board_root)
+    try:
+        board_source = "/" + (board_root / "board.md").relative_to(
+            workspace_root
+        ).as_posix()
+    except ValueError:
+        board_source = "/board.md"
+    try:
+        page_file = page_src.resolve().relative_to(board_root).as_posix()
+    except ValueError:
+        page_file = page_src.name
+    outline_url = "/_board/outline?path=%s&amp;file=%s" % (
+        quote(board_source, safe="/"), quote(page_file, safe="/"),
+    )
 
-    def run_badge(address):
-        """A short Run address plus its registered lifecycle label."""
+    def readable_route(address):
+        """Render a Run or its pre-registration parent without inventing ``rNN``."""
+        return (readable_global_run(address) or readable_task(address)
+                or (address or "").strip())
+
+    def run_badge(address, action, family="", *, item_id="", layer=""):
+        """Render one route as ``D|X global-address`` or ``P local-address``.
+
+        The action is the decision made by SURVEY (reuse, rerun, registered,
+        or a pre-registration new-* note).  It must not be replaced by the
+        registry's observed receipt state: a Ticket can be "Run only" while
+        the selected action is still ``rerun``.  The latter remains visible;
+        the observed state stays available in the hover detail and Run Index.
+        """
         compact = compact_global_run(address)
-        readable = readable_global_run(address)
-        if not compact:
+        readable = readable_route(address)
+        label = action_label(action)
+        if not label:
             return ""
+        visible_action = "new" if action.startswith("new-") else label
         record = registry.get(compact)
-        label = record["label"] if record else "Unregistered"
-        css = re.sub(r"[^a-z]+", "-", label.lower()).strip("-")
-        run = ('<a class="outline-run-link" href="../runs.html#run-%s" '
-               'title="Open Run Index: %s · %s">%s</a>' %
-               (esc(compact), esc(readable), esc(label), esc(readable)))
-        return ('<span class="outline-run-set">%s'
-                '<span class="outline-run-status %s">%s</span></span>' %
-                (run, esc(css), esc(label)))
+        observed = record["label"] if record else "Unregistered"
+        css = re.sub(r"[^a-z]+", "-", action.lower()).strip("-")
+        family_key = (family or "").strip().lower()
+        family_mark = ("D" if family_key.startswith("discovery") else
+                       "X" if family_key.startswith("execution") else
+                       "P" if family_key.startswith("page") else "")
+        scope = "Paper Board" if family_mark == "P" else (family or "Run")
+        title = "%s · action: %s · result: %s · inspect in Outline workspace" % (
+            scope, label, observed
+        )
+        if family_mark == "P":
+            # The Paper Board is the local block: do not repeat an inherited
+            # global bNN prefix in a Paper-local route.
+            readable = readable_paper_route(address) or readable
 
-    def design_run(address):
-        """Render a surveyed B/J/T parent without inventing an ``rNN``."""
-        parent = readable_task(address)
-        return (f'<span class="outline-run-pending">Design Run · {esc(parent)}</span>'
-                if parent else '')
+        def outline_link(text, class_name):
+            """Deep-link this route to its Evidence Item in Outline."""
+            if not item_id:
+                return '<span class="%s" title="%s">%s</span>' % (
+                    esc(class_name), esc(title), esc(text)
+                )
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
+            return (
+                '<a class="%s" href="%s&amp;lens=workspace&amp;focus=%s" '
+                'data-outline-focus="%s" title="%s">%s</a>' %
+                (esc(class_name), outline_url, esc(focus), esc(focus),
+                 esc(title), esc(text))
+            )
+
+        if not readable and action.startswith("new-"):
+            return outline_link(label, "outline-run-action %s" % css)
+        if compact:
+            run = outline_link(readable, "outline-run-link")
+        elif action.startswith("new-"):
+            run = outline_link(readable or label, "outline-run-link")
+        else:
+            run = ('<span class="outline-run-pending" title="%s">%s</span>' %
+                   (esc(title), esc(readable or label)))
+        marker_class = "paper" if family_mark == "P" else family_key.split(" ", 1)[0]
+        marker_title = "Paper Board" if family_mark == "P" else (family or "Run")
+        marker = ('<span class="outline-run-family %s" title="%s">%s</span>' %
+                  (esc(marker_class), esc(marker_title), family_mark)) if family_mark else ""
+        return ('<span class="outline-run-set">%s%s'
+                '<span class="outline-run-action %s">%s</span></span>' %
+                (marker, run, esc(css), esc(visible_action)))
 
     def supporting_cell(item):
         """Show audited supporting Runs; full plans stay in the card."""
@@ -291,26 +353,18 @@ def _outline_grid(page_src):
         if value.startswith("—"):
             return '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
         entries = [entry.strip() for entry in value.split(";") if entry.strip()]
-        links, has_new = [], False
+        links = []
         for entry in entries:
             parts = [part.strip() for part in entry.split("·")]
             if len(parts) < 3:
                 continue
-            link = run_badge(parts[2])
+            link = run_badge(parts[2], parts[1], parts[0], item_id=item.get("id", ""),
+                             layer="supporting")
             if link:
                 links.append(link)
-            elif len(parts) >= 2 and parts[1].lower() == "new-run":
-                design = design_run(parts[2])
-                if design:
-                    links.append(design)
-                else:
-                    has_new = True
-            elif len(parts) >= 2 and parts[1].lower().startswith("new-"):
-                has_new = True
         if links:
             return " ".join(links)
-        return ('<span class="outline-run-pending">unregistered</span>' if has_new
-                else '<span class="outline-run-empty">—</span>')
+        return '<span class="outline-run-empty">—</span>'
 
     def local_cell(item):
         """Show the one allocated local Run, never a Page evidence reference."""
@@ -318,17 +372,15 @@ def _outline_grid(page_src):
         if not value:
             return '<span class="outline-run-empty">—</span>'
         if value.startswith("—"):
-            return '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
-        link = run_badge(item.get("address", ""))
+            link = run_badge("", item.get("action", ""),
+                             "Page · Evidence Item", item_id=item.get("id", ""),
+                             layer="local")
+            return link or '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
+        link = run_badge(item.get("address", ""), item.get("action", ""),
+                         "Page · Evidence Item", item_id=item.get("id", ""), layer="local")
         if link:
             return link
-        if item.get("action") == "new-run":
-            design = design_run(item.get("address", ""))
-            if design:
-                return design
-        return ('<span class="outline-run-pending">unregistered</span>'
-                if item.get("action", "").startswith("new-")
-                else '<span class="outline-run-empty">—</span>')
+        return '<span class="outline-run-empty">—</span>'
 
     def evidence_cell(address):
         items = typed["by_target"].get(address, [])
@@ -337,9 +389,12 @@ def _outline_grid(page_src):
             return empty, empty, empty
         evidence_parts = []
         for item in items:
-            visible_label = wall_label(item["id"], item["type"], item["name"])
+            visible_label = wall_label(
+                item["id"], item["type"], item["name"], item.get("label", "")
+            )
             popover_id = "outline-item-%s" % re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
             detail_rows = (
+                ("Label", item.get("label") or "legacy fallback"),
                 ("Name", item["name"]),
                 ("Target", item["target"]),
                 ("Expected", item["expected"]),

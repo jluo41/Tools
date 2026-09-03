@@ -248,7 +248,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("a later commissioned round re-enters D0", workflow)
         self.assertNotIn("D5 → D0", workflow)
 
-    def test_canonical_probe_lane_reaches_shared_page_runtime(self):
+    def test_probe_lane_is_legacy_read_only(self):
         workflow = (
             self.skills / "board" / "page-workflows"
             / "haipipe-page-workflow" / "SKILL.md"
@@ -256,7 +256,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         phase = (
             self.skills / "board" / "haipipe-board" / "src" / "page_phase.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("evidence/probe/", workflow)
+        self.assertIn("never creates a new `probe/` lane", workflow)
         self.assertIn('evidence_lane_dirs(pd, "probe")', phase)
 
     def test_designer_agent_uses_current_thread_grammar(self):
@@ -304,14 +304,14 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("write the D5 receipt, pass GD6", design)
         self.assertNotIn("Run D1–D4", design)
 
-    def test_page_run_is_folder_first_and_probe_proof_is_canonical(self):
+    def test_page_run_is_folder_first_and_probe_is_retired(self):
         workflow = (
             self.skills / "board" / "page-workflows"
             / "haipipe-page-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("authoritative `workflow/phase.yaml`", workflow)
-        self.assertIn("evidence/probe/<id>/proof/", workflow)
-        self.assertNotIn("evidence/probe/<id>/answer/", workflow)
+        self.assertIn("Legacy outbound-card history is read-only", workflow)
+        self.assertNotIn("remains canonical at\n`evidence/probe", workflow)
         self.assertNotIn("Resolve\n   the Page Type from the filename", workflow)
 
     def test_brainstorm_contract_has_no_fake_forecast(self):
@@ -510,9 +510,9 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertNotIn("page-type contracts", chain)
 
     def test_presenters_route_pagex_and_render_to_their_real_owners(self):
-        evidence = (
+        outline = (
             self.skills / "board" / "page-plugins"
-            / "haipipe-plugin-evidence" / "SKILL.md"
+            / "haipipe-plugin-outline" / "SKILL.md"
         ).read_text(encoding="utf-8")
         delivery = (
             self.skills / "board" / "page-plugins"
@@ -521,9 +521,9 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         live_delivery = (
             self.skills / "board" / "haipipe-board" / "live" / "delivery.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("PageX is a SURVEY source binding", evidence)
-        self.assertIn("There is no separate Bibex, Value, Display, or PageX plugin", evidence)
-        self.assertNotIn("evidence/pagex/ (haipipe-plugin-probe)", evidence)
+        self.assertIn("Evidence Workspace is an internal lens", outline)
+        self.assertIn("ref/evidence/pagex.md", outline)
+        self.assertNotIn("haipipe-plugin-evidence/ref/pagex.md", outline)
         self.assertIn("Folder-native `haipipe-application/fn/render.md`", delivery)
         self.assertNotIn("ghost until the lane's route ships", delivery)
         self.assertIn('base / "delivery" / "render"', live_delivery)

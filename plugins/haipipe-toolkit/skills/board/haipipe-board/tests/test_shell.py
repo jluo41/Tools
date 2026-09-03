@@ -55,8 +55,8 @@ class SplitDoorTest(unittest.TestCase):
         self.assertEqual(self.ask("/x/board/QD/QD5-y.html?split"),
                          "/x/board/QD/QD5-y.html")
 
-    def test_plain_is_the_opt_out(self):
-        self.assertIsNone(self.ask("/x/board/QD/QD5-y.html?plain", Accept="text/html"))
+    def test_embed_is_an_internal_file_route(self):
+        self.assertIsNone(self.ask("/x/board/QD/QD5-y.html?embed", Accept="text/html"))
 
     def test_a_pane_is_not_a_split_and_a_split_is_not_a_pane(self):
         self.assertIsNone(self.ask("/x/board/QD/QD5-y.html?pane=page", Accept="text/html"))
@@ -117,9 +117,10 @@ class ShellDocTest(unittest.TestCase):
         self.assertIn('name="index" id="fi" data-src="/b/board/index.html?pane=index"', self.doc)
         self.assertIn('name="chat"  id="fc" data-src="/b/board/QD/QD5-x.html?pane=chat"', self.doc)
 
-    def test_the_side_panes_are_hidden_until_asked_for(self):
+    def test_the_plugin_pane_is_visible_on_a_first_visit(self):
         self.assertIn("var off = true;", self.doc)      # the rail
-        self.assertIn("var hidden = true;", self.doc)   # the chat
+        self.assertIn("var hidden = false;", self.doc)  # the direct plugin strip
+        self.assertIn("if (savedPane !== null) hidden = savedPane !== '1';", self.doc)
 
     def test_no_placeholder_survives_into_the_served_document(self):
         self.assertNotIn("__", self.doc.replace("__", "", 0) and
@@ -132,10 +133,11 @@ class ShellDocTest(unittest.TestCase):
         self.assertNotIn("EventSource", self.doc)
         self.assertNotIn("_events", self.doc)
 
-    def test_the_strip_names_the_board_and_offers_the_way_out(self):
-        for hook in ('id="where"', 'id="what"', 'id="plain"', 'href="/boards"',
+    def test_the_strip_names_the_board_without_an_old_view_exit(self):
+        for hook in ('id="where"', 'id="what"', 'href="/boards"',
                      'id="ti"', 'id="mtui"', 'id="mgui"'):
             self.assertIn(hook, self.doc)
+        self.assertNotIn('id="plain"', self.doc)
 
     def test_the_chat_is_two_toggles_and_not_a_menu(self):
         """JL 260802: which chat you want and whether you want one are the same
@@ -144,19 +146,18 @@ class ShellDocTest(unittest.TestCase):
         self.assertIn('data-mode="tui"', self.doc)
         self.assertIn('data-mode="gui"', self.doc)
 
-    def test_the_way_out_asks_for_plain(self):
-        """A bare url is the split now, so `↗ plain` has to say `?plain`."""
-        self.assertIn("?plain", self.doc)
+    def test_internal_frames_use_embed_not_a_second_reader_view(self):
+        self.assertIn("?embed", self.doc)
 
     def test_plugin_frame_detects_html_from_the_url_path_only(self):
         """A plugin query may end in an encoded Page URL whose value is .html.
 
         That does not make the plugin endpoint itself an HTML Page. The old
-        raw-string suffix test appended ``?plain`` to Labeling's ``page=``
+        raw-string suffix test appended ``?embed`` to Labeling's ``page=``
         value and the right pane landed on a 400 response.
         """
         self.assertIn("new URL(u, location.href).pathname", self.doc)
-        self.assertNotIn("u + (/\\.html$/.test(u) ? '?plain' : '')", self.doc)
+        self.assertNotIn("u + (/\\.html$/.test(u) ? '?embed' : '')", self.doc)
 
     def test_registry_tabs_are_filtered_by_the_live_pages_applies_gate(self):
         """A type-specific tab must not remain in another Page's menus."""
@@ -165,6 +166,30 @@ class ShellDocTest(unittest.TestCase):
             self.doc,
         )
         self.assertNotIn("w.boardPlugins.all().forEach(function (e)", self.doc)
+
+    def test_direct_plugin_tabs_can_close_and_stay_closed(self):
+        """The first page visit opens its palette; later visits honor a close."""
+        self.assertIn("xdefs().forEach(function (entry) { openSet.push(entry.id); });",
+                      self.doc)
+        self.assertIn("if (!storedSet) {", self.doc)
+        self.assertIn("if (i > 0) openSet.unshift(id);", self.doc)
+        self.assertNotIn("if (i !== 0) openSet.unshift(id);", self.doc)
+        self.assertIn("openSet.indexOf(def) >= 0", self.doc)
+        self.assertIn('class="rptx" data-close="', self.doc)
+        self.assertIn("closeTab(b.dataset.close);", self.doc)
+        self.assertIn("if (offerable(openSet[j]))", self.doc)
+        self.assertIn("if (plus) plus.hidden = true;", self.doc)
+        self.assertIn("overflow-x:auto", self.doc)
+
+    def test_active_plugin_close_is_a_touch_target_not_a_tiny_glyph(self):
+        """The active tab must be reliably closable on a phone."""
+        self.assertIn("width:36px;min-width:36px", self.doc)
+        self.assertIn("touch-action:manipulation", self.doc)
+        self.assertIn("b.addEventListener('pointerdown'", self.doc)
+        self.assertIn("ev.stopPropagation();", self.doc)
+        start = self.doc.index("b.addEventListener('pointerdown'", self.doc.index(".rptx"))
+        end = self.doc.index("});", start)
+        self.assertNotIn("preventDefault", self.doc[start:end])
 
     def test_the_page_it_was_opened_on_is_baked_in(self):
         self.assertIn("OPENED = '/b/board/QD/QD5-x.html'", self.doc)

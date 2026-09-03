@@ -1,5 +1,10 @@
 # haipipe-plugin-slide · Changelog
 
+## 0.2.0 · 2026-09-03
+
+- Make `delivery/slide/` the only current writer destination and update the
+  saved-deck URL accordingly.
+
 ## 0.1.4 — 2026-08-31
 - The 📤 Delivery 🎞 segment is now the ONE surface and carries the ✨
   authoring bar; the shell's native 🎞 row folded (studio fold).

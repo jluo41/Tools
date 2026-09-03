@@ -206,14 +206,10 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
                 complete = bool(pages and settled == pages)
                 status_class = "ready" if complete else "active"
                 status_label = "Settled" if complete else "Active"
-                # Two doors, because they are two different jobs: reading the
-                # board is one document, OPERATING it (QD5) is three panes with
-                # a chat beside the page. Same board either way.
-                # The split is what a board opens as now, so it is the plain
-                # link; `?plain` is the opt-out back to the one-document board.
-                action = (f'<a class="primary" href="{href}">Open board <span aria-hidden="true">↗</span></a>'
-                          f'<a class="secondary" href="{href}?plain"'
-                          f' title="Open the one-document board">Plain</a>')
+                # One reader-facing door: the live Board shell, with its Page
+                # and Plugin surfaces. Embedded artifacts use the server's
+                # private `?embed` route and are never offered as another view.
+                action = f'<a class="primary" href="{href}">Open board <span aria-hidden="true">↗</span></a>'
             else:
                 status_class = "build"
                 status_label = "Needs build"

@@ -741,17 +741,17 @@ def inline(s):
             # exactly slide N, which is how a slide page embeds one deck file
             # per division without copying slides out of it (JL 260805).
             #
-            # `plain` is appended for serve.py: its shell-vs-file fallback is
+            # `embed` is appended for serve.py: its shell-vs-file fallback is
             # the Accept header, and a browser's IFRAME request sends the same
             # `Accept: text/html` a tab navigation does, so over a tailnet
-            # address (no Sec-Fetch-Dest on plain http) every embed came back
+            # address (no Sec-Fetch-Dest on private http) every embed came back
             # as the three-pane shell with the query dropped: seven divisions,
             # seven covers (JL 260805, "they are always of the same slide
-            # number"). `plain` is the shell's own documented opt-out.
+            # number"). `embed` is the shell's internal no-shell route.
             if re.search(r"\.html?(?:[?#].*)?$", src, re.I):
                 base, _, frag = src.partition("#")
                 sep = "&amp;" if "?" in base else "?"
-                live = f'{base}{sep}plain' + (f'#{frag}' if frag else "")
+                live = f'{base}{sep}embed' + (f'#{frag}' if frag else "")
                 # `?preview=5-7` is a RANGE: the deck renders those slides as
                 # a vertical strip (JL 260805, ruled B on QA4), so the frame
                 # grows to hold the whole strip instead of clipping it to one

@@ -10,8 +10,8 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-09-02"
+  version: "0.18.3"
+  last_updated: "2026-09-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,8 +23,8 @@ shape and does not write a sentence of `## Content`.
 ```text
 OUTLINE part
   SHAPE    outline    specify item identity + expected ready evidence  👤 approved:
-  SURVEY   outline    register Tickets + PageX + input + local Run     👤 Decide
-  LAND     this file  execute registered sources → local Result        ⚙ ready
+  SURVEY   outline    inventory routes + PageX + input + local Run     👤 Decide
+  LAND     this file  allocate planned Tickets, execute → local Result ⚙ ready
   EMBED    this file  bind ready Result into plan v<N+1>               ⚙ SHAPE
 ```
 
@@ -35,10 +35,11 @@ haipipe-page-workflow
   → haipipe-page-evidence
   → haipipe-run
   → haipipe-plugin-outline/ref/item-table.md
-  → haipipe-plugin-evidence (VALUE/CITE/DISPLAY authority and surface)
-  → haipipe-plugin-evidence/ref/pagex.md (when PageX bindings exist)
+  → haipipe-plugin-outline (the single workspace and material authority)
+  → haipipe-plugin-outline/ref/evidence/values.md | citations.md | displays.md
+  → haipipe-plugin-outline/ref/evidence/pagex.md (when PageX bindings exist)
   → the exact Supporting Run workers selected by SURVEY
-  → the renderer craft selected by haipipe-plugin-evidence for DISPLAY
+  → the renderer craft selected by haipipe-plugin-outline for DISPLAY
 ```
 
 Do not load or route through `haipipe-page-for-task`. The Folder's owning
@@ -84,9 +85,9 @@ no Page argument: EMBED owns the interpretation.
 | Cycle | Level-4 Run operations | Cardinality | Close |
 |---|---|---:|---|
 | SHAPE | none | 0 | typed item expectation approved |
-| SURVEY | allocate + scaffold only | 0 executions | each item has registered Tickets/receipts + Decide |
-| LAND · Supporting | Execution / Discovery | `sum(S_i)`, `S_i ≥ 0` | every declared Supporting Result and PageX binding valid |
-| LAND · Local | Page · Evidence Item | exactly `N_make` | one accepted local Result per make-item |
+| SURVEY | inventory + classify only | 0 allocations, 0 executions | each route is existing Result, Ticket only, rerun, or new design + Decide |
+| LAND · Supporting | allocate/scaffold planned Execution / Discovery routes, then execute or reuse | `sum(S_i)`, `S_i ≥ 0` | every declared Supporting Result and PageX binding valid |
+| LAND · Local | allocate/scaffold, then execute Page · Evidence Item | exactly `N_make` | one accepted local Result per make-item |
 | EMBED | none | 0 | every ready Result folded into v<N+1> |
 
 There is no umbrella EVIDENCE Run. Each independently closable Supporting Run
@@ -102,7 +103,7 @@ TICKET       Folder dialect selected by haipipe-run; global id bNNjNNtNNrNN
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
              Run ids, receipt hashes, 0..N validated PageX bindings, and any
              governed local source pointers
-WORKER       haipipe-plugin-evidence owns VALUE/CITE/DISPLAY payload rules;
+WORKER       haipipe-plugin-outline owns VALUE/CITE/DISPLAY payload rules;
              DISPLAY may dispatch a renderer craft beneath that one plugin
 RESULT       runtime receipt + typed evidence-item result + safe artifact pointers
 ACCEPT       every SHAPE acceptance check passes; provenance resolves; aggregate only
@@ -132,13 +133,16 @@ For every item whose `Decide` is `☑ make`:
 1. **Validate the plan.** Confirm type, Target, Expected, Acceptance, Supporting
    Runs, PageX Bindings, and exactly one Local Run. An invalid meaning routes to SHAPE; an
    incomplete graph routes to SURVEY.
-2. **Resolve Supporting Runs.** Work only the full, registered ids SURVEY
-   selected: `reuse`, `rerun`, or `registered`.
-   Supporting families are only Execution and Discovery.
-3. **Use registered global ids.** Every route must already name
-   `bNNjNNtNNrNN` with a Ticket and planned runtime receipt. A rerun uses the
-   same target, frozen inputs, and acceptance contract; a material change
-   routes back to SURVEY to register a new Run with `supersedes`.
+2. **Resolve Supporting routes.** Work only the routes SURVEY selected:
+   existing full Run ids classified `reuse`, `rerun`, or `registered`, plus
+   bounded `new-run`, `new-task`, `new-job`, or `new-block` plans. Supporting families
+   are only Execution and Discovery.
+3. **Allocate before execution.** An existing route keeps its registered
+   `bNNjNNtNNrNN`. For a planned route, invoke the owning Execution or
+   Discovery workflow now to allocate one real `rNN`, scaffold its Ticket and
+   planned runtime receipt, and write that full id back to the item lineage.
+   A rerun uses the same target, frozen inputs, and acceptance contract; a
+   material change routes back to SURVEY for a new design with `supersedes`.
 4. **Require valid Supporting Results.** Trust no claimed `complete` without
    the owning worker's Result gate and runtime receipt. Preserve truthful
    failed or blocked receipts; do not invent `none` or ask a `person` action.
@@ -155,9 +159,12 @@ For every item whose `Decide` is `☑ make`:
    sufficient. Never smuggle a sibling Evidence Item's future local Result
    into this envelope; if two items need the same evidence, both name the same
    upstream Supporting Run.
-7. **Execute exactly one Local Run.** It targets this Evidence Item and emits
-   one typed Result. The Run may invoke several scripts or calls internally;
-   they remain one execution because target and Result gate are shared.
+7. **Allocate and execute exactly one Local Run.** Reuse the real Ticket when
+   SURVEY found one; otherwise allocate one `rNN` and scaffold its Page ·
+   Evidence Item Ticket from the bounded local declaration before execution.
+   It targets this Evidence Item and emits one typed Result. The Run may invoke
+   several scripts or calls internally; they remain one execution because
+   target and Result gate are shared.
 8. **Bind the local Result.** Append the allocated global id and
    `→ <result path>` to `Local Run`. Do not point the item directly at a raw
    Supporting Result.
@@ -182,7 +189,13 @@ commission Discovery work without a special citation route.
 
 The common Result envelope names item id, type, local Run id, frozen input,
 Supporting Run ids, PageX authorities, payload paths, acceptance checks, and
-provenance. `haipipe-plugin-evidence` owns the typed payload grammar:
+provenance. `haipipe-plugin-outline` owns the typed payload grammar:
+
+VALUE, CITE, and DISPLAY are Result types, not sibling material directories.
+Their contracts and lineage remain in `outline/`; the payload from a real
+page-local Run lives only in `<page>/results/`, while an external payload stays
+at its Supporting Run's own Result path. Never introduce
+`outline/evidence/value/` as a second copy of the Result.
 
 | Type | Local Result must make ready |
 |---|---|
@@ -241,6 +254,10 @@ folded: item ids written into outline v<N+1>
 limits: Run ids that did not complete and truthful reasons
 route: LAND | SURVEY | EMBED | SHAPE | HOLD
 ```
+
+The material lanes remain under `outline/evidence/`; actual Page-local Run and
+Result artifacts remain sibling `runs/` and `results/` folders. No LAND step
+may recreate a root `<page>/evidence/` category or a standalone Evidence tab.
 
 Read fully only the target Page, approved plan, Evidence Item table, named Run
 receipts, and Results required by the current item graph. Keep broad build logs

@@ -36,19 +36,17 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   frozen into an Evidence Item's one local input envelope. Zero or more per item.
 - **local Evidence Item Run** — the one Page · Evidence Item Run that converts
   the frozen input into a focal ready VALUE/CITE/DISPLAY Result for EMBED.
-- **card**, also **probe card** — ONE question this page needs answered by
-  someone else, as a folder. Raised at LAND only when the question LEAVES the
-  page; a `found` row never mints one.
-  `<page>/evidence/probe/PP<NN>-<slug>/` holding `card.md`, `consumer/`,
-  `executor/`, `proof/`.
+- **probe card** — retired Page-local compatibility shape. New evidence work
+  is a typed Evidence Item with Supporting Runs, an exact Local Input, and one
+  local Run; never create a new `probe/` lane.
 - **display unit**, often shortened to **unit** — ONE picture and everything
   needed to rebuild it. Created at LAND, one per 🖼 mark.
-  `<page>/evidence/display/<PageId>-Display<N>-<slug>/` holding `intake/`,
+  `<page>/outline/evidence/display/<PageId>-Display<N>-<slug>/` holding `intake/`,
   `recipe/`, `assets/`, `float.tex`, `preview.pdf`, `README.md`.
 - **intake** — the unit's FROZEN inputs plus their sha256 hashes, so a moved
   source file is caught rather than silently redrawn. `<unit>/intake/`
 - **bibex entry** — one reference, landed by a person, never invented.
-  `<page>/evidence/bibex/<stem>.bib`
+  `<page>/outline/evidence/bibex/<stem>.bib`
 - **receipt** — the machine-readable record of one phase pass: who acted, which
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
 - **the bank** — the task and discovery folders that ANSWER questions, and know

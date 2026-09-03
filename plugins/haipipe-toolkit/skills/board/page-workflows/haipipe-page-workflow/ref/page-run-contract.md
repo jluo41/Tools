@@ -339,8 +339,8 @@ fused     one agent · one context · TWO receipt steps in the run file
           typed return: phase DRAFT, requested route CHECK
 not fused a DRAFT that reopens the promise runs alone, because its REVISE
           must meet the changed promise in a fresh context
-unchanged the walls (Opening, outline/, evidence/probe/, evidence/display/,
-          evidence/bibex/), the
+unchanged the walls (Opening, outline/, outline/evidence/display/,
+          outline/evidence/bibex/, runs/, results/), the
           builder/judge separation, and every human tick
 ```
 

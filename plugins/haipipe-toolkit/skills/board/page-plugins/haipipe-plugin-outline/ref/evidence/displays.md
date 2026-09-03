@@ -1,7 +1,7 @@
 # Displays lane · the Page as a small paper
 
-Read this reference from `haipipe-plugin-evidence` when a Page Evidence Item is
-`DISPLAY`, or when the 🧾 Evidence tab must present a display unit. The unified
+Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
+`DISPLAY`, or when the 🧭 Outline plugin's Evidence Workspace must present a display unit. The unified
 Evidence plugin owns the Page-facing lane and surface. Renderer skills still
 own their craft and `recipe/`; they are workers, not Page plugins.
 
@@ -12,7 +12,7 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 ## 🗂 Storage · one unit per folder, the paper contract at a page address
 
 ```text
-<page>/evidence/display/
+<page>/outline/evidence/display/
 └── <stem>-Display<N>-<slug>/     the unit, named by the page's stem
     ├── README.md                 claim · kind · accepted: — the human gate lives here
     ├── intake/                   🧑 manifest.yaml + small approved extracts
@@ -25,7 +25,7 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 
 The kind is MIXED, and the split runs through the unit: `intake/`, `recipe/`, `float.tex`, `README.md` are PRIMARY originals; `preview.pdf`, `assets/`, `candidates/`, `versions/` are regenerable from them.
 What of the derived half is committed is QPf5's open Decision Now row (default ⭐B: sources + `assets/` + `float.tex` in, previews and candidates ignored) — read the row there, this file does not rule it.
-The address delta a fresh agent must know: the renderer skills speak PAPER addresses (`displays/displayNN-slug/`, a paper root, the lifecycle gallery); on a page the unit lives at `<page>/evidence/display/`, `preview.tex` compiles standalone from the unit folder, and no paper root exists or is walked for.
+The address delta a fresh agent must know: the renderer skills speak PAPER addresses (`displays/displayNN-slug/`, a paper root, the lifecycle gallery); on a page the unit lives at `<page>/outline/evidence/display/`, `preview.tex` compiles standalone from the unit folder, and no paper root exists or is walked for.
 
 ## ✍️ Writer · a family routed by kind, and a gate no machine may tick
 
@@ -96,7 +96,7 @@ Input and executes one Local Run.
 
 `POST /_board/display` (`live/plugview.py`) remains the compatibility route
 that writes the derived `<stem>-view.html` shown inside the 🖼 Displays segment
-of the unified 🧾 Evidence tab. It is not a standalone Plugin surface.
+of the 🧭 Outline plugin's Evidence Workspace. It is not a standalone Plugin surface.
 Units lay as a horizontal strip, one filling the pane, snap-shifted right to the next; a chip row names every unit and clicking a chip shifts the strip to it.
 Each card leads with the framed `preview.pdf` (or a 🕳 no-render-yet notice naming which step is missing), then the README rows, then the unit's folder tree with the ⚙️ derived halves marked — the drawn thing first, its description under it (JL 260819: "display the pdf at the very top, and then show information").
 The strip header reports three independently computed counts: **declared** means a unit folder exists, **rendered** means a winning asset and `preview.pdf` both exist, and **accepted** means the README carries a human `accepted: ✅ ...` decision. Folder count is never presented as completed work.
@@ -116,7 +116,7 @@ Steps ① ③ ⑤ are a person's and steps ② ④ are machinery
 ```
 
 The `> Display:` lane under a sentence is the FILING surface, kept for two cases: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there rather than clotting the line.
-`dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/evidence/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
+`dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/outline/evidence/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
 Inside its own Page, write the bare Page-local id (`Display1`, `Display2`, …); cross-page prose may use the fully qualified `<stem>-DisplayN` id. Both aliases resolve to the same unit and both exporters place that unit once. A backticked id is a code span, and a code span QUOTES instead of chipping.
 Naming a ⬜ unit is legal and useful — it binds a pending render, and the chip says what is owed.
 Candidate rendering does not wait for release approval: PHI-safe aggregate intake may be rendered for review while a method or provenance Probe remains open. Release and interpretation still require the Probe gates and the separate human `accepted:` decision.
@@ -132,8 +132,8 @@ THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cite
 - `../../haipipe-board/live/plugview.py`
   The 🖼 surface: strip, chips, trees, ghost scaffold; read-only.
 - `../../haipipe-board/src/dialect_paper.py`
-  The citation index: `<page>/evidence/display/*/float.tex` → evidence chips.
-- `../../haipipe-board/assets/js/10-drawer/84-plugin-evidence.js`
+  The citation index: `<page>/outline/evidence/display/*/float.tex` → evidence chips.
+- `../../haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
   The drawer registration: the Plugin ▾ rows for 🖼 Display and 🚪 Probe.
 - `../../haipipe-plugin/ref/roster.md`
-  The internal `display/` storage row owned by `haipipe-plugin-evidence`.
+  The internal `display/` storage row owned by `haipipe-plugin-outline`.

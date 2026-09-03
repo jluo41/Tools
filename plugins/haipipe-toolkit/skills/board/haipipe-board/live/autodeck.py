@@ -26,6 +26,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.common import delivery_lane_dir
 
 TIMEOUT = 600          # a deck is authored, not reflowed; minutes are normal
 MAX_MD = 14000         # Opening + Outline + Content + Aims on any page here
@@ -115,7 +116,7 @@ def autodeck(root, payload):
     if not md_path.is_file():
         return _fail(f"{rel} does not exist")
 
-    slide_dir = md_path.parent / "slide"
+    slide_dir = delivery_lane_dir(md_path.parent, "slide")
     out = slide_dir / f"{md_path.stem}-deck.html"
 
     # The skill beside THIS engine, the resolution deck.py settled on 260815:

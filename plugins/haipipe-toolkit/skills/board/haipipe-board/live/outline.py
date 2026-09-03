@@ -190,14 +190,18 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 body{{margin:0;padding:16px;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
 h1{{font-size:17px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:13px}}
-/* the lens strip WRAPS and never breaks a label (JL 260831 "hard and ugly":
-   eight pills in a 500px pane shrank and wrapped their text into tall
-   circles); compact rounded rects, one line each, extra rows if needed */
-.chips{{display:flex;gap:5px;margin:10px 0;flex-wrap:wrap}}
-.chip{{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);
+/* Four calm workspaces replace the old nine-button strip.  The second row is
+   local navigation inside the selected workspace, so process records no
+   longer compete visually with Bullet and Evidence. */
+.spaces,.subchips{{display:flex;gap:5px;margin:10px 0 6px;flex-wrap:wrap}}
+.subchips{{display:none;margin:0 0 10px;padding-left:2px}}
+.subchips.show{{display:flex}}
+.space,.chip{{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);
  border-radius:8px;padding:3px 9px;cursor:pointer;background:var(--card);
  color:var(--fg);white-space:nowrap;flex:0 0 auto}}
-.chip.on{{border-color:var(--acc);color:var(--acc)}}
+.space.on,.chip.on{{border-color:var(--acc);color:var(--acc)}}
+.subchips .chip{{font-weight:500;color:var(--mut);background:transparent}}
+.subchips .chip.on{{color:var(--acc);background:var(--card)}}
 .ok{{color:var(--ok);font-weight:600}} .warn{{color:var(--warn);font-weight:600}}
 .card{{background:var(--card);border:1px solid var(--line);border-radius:10px;
  padding:10px 14px;margin:0 0 10px}}
@@ -381,6 +385,8 @@ object.evfig{{height:32vh}}
  text-transform:uppercase;letter-spacing:.05em}}
 .rpre{{color:var(--mut);font-size:13px;margin:2px 0;line-height:1.5}}
 .lens .card pre{{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}}
+.workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
+ min-height:560px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
 .lens{{display:none}} .lens.show{{display:block}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
@@ -388,30 +394,84 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 {lead}
 <div class=tally>{tally}</div>
 <div class="mut">always up to date · read from the page each time · {chip}</div>
-<div class=chips>
- <button class="chip on" data-lens=div>🧭 By part</button>
- <button class=chip data-lens=prog>🚦 What is left</button>{extra_chips}
+<div class=spaces>
+ <button class="space on" data-space=bullet data-default=div>🧭 Bullet Workspace</button>
+ <button class=space data-space=evidence data-default=workspace>Evidence Workspace</button>{context_space}{records_space}
 </div>
+<div class="subchips show" data-subspace=bullet>
+ <button class="chip lens-chip on" data-lens=div>By part</button>
+ <button class="chip lens-chip" data-lens=prog>What is left</button>
+</div>
+{context_chips}{records_chips}
 <div class="lens show" id=lens-div>{by_div}</div>
-<div class=lens id=lens-prog>{by_prog}</div>{extra_lenses}
+<div class=lens id=lens-prog>{by_prog}</div>
+<div class=lens id=lens-workspace><iframe class=workspace-frame
+ title="Evidence Workspace" data-src="{workspace_url}"></iframe></div>{record_lenses}
 <script>
-document.querySelectorAll('.chip').forEach(function(c){{
-  c.addEventListener('click',function(){{
-    document.querySelectorAll('.chip').forEach(function(x){{
+var SPACE_FOR={{div:'bullet',prog:'bullet',workspace:'evidence',
+ req:'context',disc:'context',fb:'context',files:'records',log:'records'}};
+function showLens(c){{
+    document.querySelectorAll('.lens-chip').forEach(function(x){{
       x.classList.remove('on');}});
     document.querySelectorAll('.lens').forEach(function(x){{
       x.classList.remove('show');}});
-    c.classList.add('on');
-    document.getElementById('lens-'+c.dataset.lens).classList.add('show');
-  }});
+    if(c)c.classList.add('on');
+    var lens=document.getElementById('lens-'+c.dataset.lens);
+    lens.classList.add('show');
+    if(c.dataset.lens==='workspace'){{
+      var frame=lens.querySelector('iframe'), src=frame.dataset.src||'';
+      var focus='';
+      try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
+          localStorage.removeItem('board-outline-evidence-focus');}}catch(e){{}}
+      if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+      if(src)frame.setAttribute('src',src);
+    }}
+}}
+function activateLens(name){{
+  var space=SPACE_FOR[name]||'bullet';
+  document.querySelectorAll('.space').forEach(function(x){{
+    x.classList.toggle('on',x.dataset.space===space);}});
+  document.querySelectorAll('.subchips').forEach(function(x){{
+    x.classList.toggle('show',x.dataset.subspace===space);}});
+  var chip=document.querySelector('.lens-chip[data-lens="'+name+'"]');
+  if(chip)showLens(chip);
+  else{{
+    var lens=document.getElementById('lens-'+name);
+    if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
+      lens.classList.add('show');
+      if(name==='workspace'){{
+        var frame=lens.querySelector('iframe'),src=frame.dataset.src||'',focus='';
+        try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
+            localStorage.removeItem('board-outline-evidence-focus');}}catch(e){{}}
+        if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+        if(src)frame.setAttribute('src',src);
+      }}
+    }}
+  }}
+}}
+document.querySelectorAll('.lens-chip').forEach(function(c){{
+  c.addEventListener('click',function(){{activateLens(c.dataset.lens);}});
+}});
+document.querySelectorAll('.space').forEach(function(c){{
+  c.addEventListener('click',function(){{activateLens(c.dataset.default);}});
 }});
 document.querySelectorAll('a.badge').forEach(function(a){{
   a.addEventListener('click',function(ev){{
     ev.preventDefault();
-    document.querySelector('.chip[data-lens=div]').click();
+    activateLens('div');
     var el=document.getElementById(a.getAttribute('href').slice(1));
     if(el)el.scrollIntoView({{behavior:'smooth'}});
   }});
+}});
+var params=new URLSearchParams(location.search), requested=params.get('lens')||'', focus=params.get('focus')||'';
+try{{requested=localStorage.getItem('board-outline-lens')||requested;
+    localStorage.removeItem('board-outline-lens');
+    if(focus)localStorage.setItem('board-outline-evidence-focus',focus);}}catch(e){{}}
+if(requested)activateLens(requested);
+window.addEventListener('storage',function(ev){{
+  if(ev.key!=='board-outline-lens'||!ev.newValue)return;
+  activateLens(ev.newValue);
+  try{{localStorage.removeItem('board-outline-lens');}}catch(e){{}}
 }});
 </script>
 </body></html>"""
@@ -757,6 +817,7 @@ def _typed_item_review(page_src, plan, plan_text, approved):
             "head": head,
             "name": ((row or {}).get("name")
                      or item_id.split("-", 2)[-1].replace("-", " ")),
+            "label": (row or {}).get("label") or "",
             "type": item_type,
             "expected": (row or {}).get("expected") or expected,
             "acceptance": (row or {}).get("acceptance") or acceptance,
@@ -860,6 +921,7 @@ def _typed_item_chip(item, popover_id):
         "mut" if status in {"deferred", "dropped"} else "warn"
     )
     rows = (
+        ("Label", item.get("label") or "legacy fallback"),
         ("Target", item["target"]),
         ("Expected", item["expected"]),
         ("Acceptance", item["acceptance"]),
@@ -877,7 +939,9 @@ def _typed_item_chip(item, popover_id):
     # The wall identity is deliberately short but semantic: readers see the
     # item number, evidence kind, and readable preview name. The immutable id,
     # full type, status, and complete route remain in the popover.
-    label = wall_label(item["id"], item["type"], item["name"])
+    label = wall_label(
+        item["id"], item["type"], item["name"], item.get("label", "")
+    )
     return (
         '<button class="evchip %s" popovertarget="%s">%s</button>'
         '<div id="%s" popover class="chipcard %s">'
@@ -1812,7 +1876,7 @@ def _page_now(plan, plan_head, cards):
 # leaves the page for `<stem>-files.md`, one `### F<n> · <what it is for>`
 # per file with Path and Role).
 _SIBLINGS = (("req", "📏 Requirement", "requirement"), ("disc", "💬 Discussion", "discussion"),
-             ("fb", "🗣 Feedback", "feedback"), ("ev", "🧾 Evidence / Survey", "evidence"),
+             ("fb", "🗣 Feedback", "feedback"),
              ("files", "📎 Files", "files"), ("log", "📜 Log", "log"))
 
 _HDR_RE = re.compile(r"^(page|kind|rounds|written|status|plan|ids|measured):\s")
@@ -1983,23 +2047,43 @@ def _records_html(items, kind):
     return head + ("".join(out) or '<div class=mut>nothing here yet</div>')
 
 def _lenses(page_src):
-    """-> (chips html, lenses html) for the sibling files that exist."""
+    """Return the two quiet record groups plus their shared lens bodies.
+
+    Requirement/Discussion/Feedback explain why the plan is shaped this way;
+    Files/Log record what the page touched.  They remain separate records on
+    disk but no longer appear as five competing top-level workspaces.
+    """
     if page_src is None:
-        return "", ""
-    chips, lenses = [], []
+        return "", "", "", "", ""
+    context, records, lenses = [], [], []
     for key, label, suffix in _SIBLINGS:
         f = page_src.parent / "outline" / ("%s-%s.md" % (page_src.stem, suffix))
         if not f.is_file():
             continue
         items = _records(f.read_text(encoding="utf-8", errors="replace"))
         n = sum(1 for k, _ in items if k == "rec")
-        chips.append('\n <button class=chip data-lens=%s title="outline/%s">%s%s</button>'
-                     % (key, f.name, label, (" · %d" % n) if n else ""))
+        chip = ('\n <button class="chip lens-chip" data-lens=%s '
+                'title="outline/%s">%s%s</button>'
+                % (key, f.name, label, (" · %d" % n) if n else ""))
+        (context if key in ("req", "disc", "fb") else records).append(chip)
         lenses.append('\n<div class=lens id=lens-%s><div class=card>%s</div></div>'
                       % (key, _records_html(items, key)))
-    return "".join(chips), "".join(lenses)
+    context_html = ('<div class=subchips data-subspace=context>%s</div>'
+                    % "".join(context)) if context else ""
+    records_html = ('<div class=subchips data-subspace=records>%s</div>'
+                    % "".join(records)) if records else ""
+    context_space = ('\n <button class=space data-space=context '
+                     'data-default=%s>Plan Context</button>'
+                     % ("req" if any("data-lens=req" in x for x in context)
+                        else "disc" if any("data-lens=disc" in x for x in context)
+                        else "fb")) if context else ""
+    records_space = ('\n <button class=space data-space=records '
+                     'data-default=%s>Page Records</button>'
+                     % ("files" if any("data-lens=files" in x for x in records)
+                        else "log")) if records else ""
+    return context_space, records_space, context_html, records_html, "".join(lenses)
 
-def render(title, o, page_src=None, root=None):
+def render(title, o, page_src=None, root=None, path_q="", file_q=""):
     """-> the full html page: both lenses rendered, chips toggle."""
     # Say it in words a tired reader can take in the first time (JL 260816).
     # "3 loose lines" and "aligned" are this plugin's own shorthand, and a
@@ -2058,10 +2142,17 @@ def render(title, o, page_src=None, root=None):
 
     lead = ('<div class=lead>%s</div>' % _e(o.get("lead", ""))
             if o.get("lead") else "")
-    extra_chips, extra_lenses = _lenses(page_src)
+    context_space, records_space, context_chips, records_chips, record_lenses = _lenses(page_src)
+    workspace_url = ""
+    if page_src is not None:
+        workspace_url = ("/_board/evidence?path=%s&file=%s&embed=1" %
+                         (quote(path_q or ""), quote(file_q or page_src.name)))
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
-                        extra_chips=extra_chips, extra_lenses=extra_lenses)
+                        workspace_url=html.escape(workspace_url, quote=True),
+                        context_space=context_space, records_space=records_space,
+                        context_chips=context_chips, records_chips=records_chips,
+                        record_lenses=record_lenses)
 
 
 class OutlineMixin:
@@ -2089,7 +2180,7 @@ class OutlineMixin:
                 po = parse_outline(plan.read_text(encoding="utf-8", errors="replace"))
                 if po.get("aims"):
                     o["aims"] = po["aims"]
-        page = render(page_src.stem, o, page_src, self.root)
+        page = render(page_src.stem, o, page_src, self.root, p["path"], p["file"])
         return self._outline_send(page.encode("utf-8"), 200, head_only)
 
     def _outline_send(self, body, code, head_only):

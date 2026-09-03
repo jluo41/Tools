@@ -1,5 +1,11 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.3.0 — 2026-09-03
+- Make `delivery/latex/`, `delivery/word/`, `delivery/slide/`, and
+  `delivery/render/` the physical writer destinations and saved-view URLs.
+- Keep old flat lanes readable only for migration; never present or write them
+  as the current structure.
+
 ## 0.2.1 — 2026-08-31
 - Point all segments at canonical `delivery/<lane>/` addresses and present
   Render as a live Folder-native writer with an optional served adapter, not a

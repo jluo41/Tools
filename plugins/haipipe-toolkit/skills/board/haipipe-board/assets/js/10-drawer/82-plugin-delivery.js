@@ -13,7 +13,7 @@
  * replaced 82-plugin-exports.js (git mv, 260831): the separate 📜 LaTeX and
  * 📝 Word rows folded in here the way 📚 bibex folded into 🧾 Evidence.
  *
- * Same `tab` spec as 84-plugin-evidence.js: register with {tab: {url, write}}
+ * Uses the standard plugin tab spec: register with {tab: {url, write}}
  * and the shell builds the right-pane tab — plugin N+1 ships by registering.
  */
 (function () {

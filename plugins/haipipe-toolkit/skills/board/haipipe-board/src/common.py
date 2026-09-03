@@ -6,23 +6,27 @@ import re
 from pathlib import Path
 
 
-EVIDENCE_LANES = frozenset({"bibex", "probe", "display", "pagex", "materials"})
+EVIDENCE_LANES = frozenset({"bibex", "display", "pagex", "materials"})
+LEGACY_EVIDENCE_LANES = frozenset({"probe"})
+DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
 
 
 def evidence_lane_dirs(page_dir, lane):
     """Existing lane directories, canonical first, with symlink aliases deduped.
 
-    New work lives under ``evidence/<lane>/``. A flat ``<lane>/`` remains a
-    readable migration alias, and may be either a symlink stub or an older
-    independent directory. Readers use every distinct directory; new Pages
-    resolve to the canonical address while an unmigrated Page may continue to
-    use its one real legacy directory until it is refolded.
+    New work lives under ``outline/evidence/<lane>/``.  The former
+    ``evidence/<lane>/`` category and a flat ``<lane>/`` remain readable
+    migration aliases.  Readers use every distinct directory; writers always
+    choose the canonical Outline-owned address for a new Page.
     """
     page_dir = Path(page_dir)
-    if lane not in EVIDENCE_LANES:
+    if lane not in EVIDENCE_LANES | LEGACY_EVIDENCE_LANES:
         raise ValueError("not an evidence lane: %s" % lane)
     out, seen = [], set()
-    for candidate in (page_dir / "evidence" / lane, page_dir / lane):
+    candidates = [page_dir / "evidence" / lane, page_dir / lane]
+    if lane in EVIDENCE_LANES:
+        candidates.insert(0, page_dir / "outline" / "evidence" / lane)
+    for candidate in candidates:
         if not candidate.is_dir():
             continue
         key = candidate.resolve()
@@ -36,7 +40,76 @@ def evidence_lane_dirs(page_dir, lane):
 def evidence_lane_dir(page_dir, lane):
     """Canonical lane when present/new, or the sole readable lane on old Pages."""
     dirs = evidence_lane_dirs(page_dir, lane)
-    return dirs[0] if dirs else Path(page_dir) / "evidence" / lane
+    if dirs:
+        return dirs[0]
+    if lane in EVIDENCE_LANES:
+        return Path(page_dir) / "outline" / "evidence" / lane
+    return Path(page_dir) / "evidence" / lane
+
+
+def evidence_run_dirs(page_dir):
+    """Readable Supporting-Run lineage directories, canonical first.
+
+    These folders contain generated Evidence Item bindings only.  Actual local
+    executions remain in the Page's sibling ``runs/`` and ``results/``.
+    """
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (
+        page_dir / "outline" / "evidence" / "supporting-runs",
+        page_dir / "outline" / "evidence" / "runs",
+        page_dir / "evidence" / "runs",
+    ):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def evidence_run_dir(page_dir):
+    """Canonical generated Supporting-Run lineage directory."""
+    dirs = evidence_run_dirs(page_dir)
+    return (dirs[0] if dirs else
+            Path(page_dir) / "outline" / "evidence" / "supporting-runs")
+
+
+def delivery_lane_dirs(page_dir, lane):
+    """Existing Delivery lane directories, canonical first and deduped.
+
+    New work always lives in ``delivery/<lane>/``.  A pre-migration flat
+    ``<lane>/`` remains readable, including when it is a symlink alias to the
+    canonical directory, but it is never selected as the destination for a
+    new artifact.
+    """
+    if lane not in DELIVERY_LANES:
+        raise ValueError("not a delivery lane: %s" % lane)
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (page_dir / "delivery" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def delivery_lane_dir(page_dir, lane):
+    """The canonical destination for one Delivery lane.
+
+    Unlike the evidence migration helper, this writer deliberately does not
+    fall back to an old flat directory.  Compatibility is a reader concern;
+    every new build makes the nested category truthful on disk.
+    """
+    if lane not in DELIVERY_LANES:
+        raise ValueError("not a delivery lane: %s" % lane)
+    return Path(page_dir) / "delivery" / lane
 
 
 def scene_text(scene) -> str:

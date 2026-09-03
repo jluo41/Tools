@@ -92,7 +92,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
                 "Shape has 1 division; current Content has 2", "routed record",
             ):
                 self.assertIn(wanted, body)
-            self.assertIn("E1V.ReviewCohortCounts", body)
+            self.assertIn("E1V.ReviewCohort", body)
             self.assertNotIn("📝 E1", body)
             start = body.index('<div id="typed-ev1" popover')
             card = body[start:body.index("</div></div>", start) + len("</div></div>")]
@@ -103,11 +103,19 @@ class OutlineReviewPacketTest(unittest.TestCase):
             ):
                 self.assertIn(field, card)
 
-    def test_evidence_lens_names_the_survey_cycle(self):
+    def test_outline_owns_one_internal_evidence_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
-            rendered = render("SM00", parse_outline(page.read_text(encoding="utf-8")), page)
-            self.assertIn("Evidence / Survey", rendered)
+            rendered = render(
+                "SM00", parse_outline(page.read_text(encoding="utf-8")), page,
+                path_q="/Board/board.md", file_q="MAIN/SM00-abstract/SM00-abstract.md",
+            )
+            self.assertIn("Bullet Workspace", rendered)
+            self.assertIn("Evidence Workspace", rendered)
+            self.assertIn("Plan Context", rendered)
+            self.assertIn("Page Records", rendered)
+            self.assertIn("/_board/evidence?path=/Board/board.md&amp;file=MAIN/SM00-abstract/SM00-abstract.md&amp;embed=1", rendered)
+            self.assertNotIn("Evidence / Survey", rendered)
             self.assertIn("🗣 Feedback", rendered)
             self.assertIn("📏 Requirement", rendered)
             self.assertIn("Keep estimates and intervals together", rendered)

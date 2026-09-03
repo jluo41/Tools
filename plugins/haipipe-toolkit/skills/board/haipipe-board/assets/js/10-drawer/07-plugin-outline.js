@@ -45,6 +45,33 @@
       .catch(function (e) { err && err(String(e)); });
   }
 
+  /* A Run in the compact Page table belongs to the detailed Outline
+     workspace.  Keep one public plugin: select Outline, open its Evidence
+     Workspace lens, and focus the owning Evidence Item. */
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest && event.target.closest('a[data-outline-focus]');
+    if (!link) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey ||
+        event.altKey) return;
+    var page = link.closest('section.slide.q')
+            || (window.boardPlugins && window.boardPlugins.livePage());
+    var focus = link.getAttribute('data-outline-focus') || '';
+    var url = outlineUrl(page);
+    if (!url) return;
+    event.preventDefault();
+    try {
+      localStorage.setItem('board-outline-evidence-focus', focus);
+      localStorage.setItem('board-outline-lens', 'workspace');
+    } catch (e) {}
+    try {
+      if (parent !== window && typeof parent.__boardShowTab === 'function') {
+        parent.__boardShowTab('outline');
+        return;
+      }
+    } catch (e) {}
+    window.location.assign(url + '&lens=workspace&focus=' + encodeURIComponent(focus));
+  });
+
   if (window.boardPlugins) {
     window.boardPlugins.register({
       id: 'outline',

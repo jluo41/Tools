@@ -7,7 +7,7 @@ description: >-
   preview, as the recipient sees it, render version, sms preview,
   /haipipe-plugin-render.
 metadata:
-  version: "0.1.3"
+  version: "0.2.0"
   last_updated: "2026-08-31"
 ---
 
@@ -71,7 +71,9 @@ POST /_board/render
 One card per unit showing the render as the recipient sees it, its character count against the venue cap in red when over, its three stamp classes, and whether the owning division carries an `accepted:` row. A unit whose division changed after its last render shows ⚠️ STALE, which `haipipe-plugin-folder` already computes for any derived plugin.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+The writer always lands new previews in `delivery/render/`. A pre-migration
+flat `render/` may be read during a sweep, but it is not a current destination
+and must not be shown as the canonical Folder row.
 
 ## 📂 Files
 

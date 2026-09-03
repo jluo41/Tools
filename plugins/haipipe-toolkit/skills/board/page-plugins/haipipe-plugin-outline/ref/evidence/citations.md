@@ -1,6 +1,6 @@
 # Citations and Bib authority
 
-This reference is loaded by `haipipe-plugin-evidence` when work reads or
+This reference is loaded by `haipipe-plugin-outline` when work reads or
 writes citation entries, verifies a source, builds a citation workbench, or
 aggregates Discovery Result Bibs. The parent skill remains the only Plugin.
 
@@ -18,7 +18,7 @@ complete supplied entry may land through the person route.
 ## Authority mode A · ordinary Page
 
 ```text
-<page>/evidence/bibex/
+<page>/outline/evidence/bibex/
 ├── <stem>.bib           PRIMARY · the Page's own person/workflow material
 └── <stem>-bib.html      DERIVED · citation workbench
 ```
@@ -36,8 +36,8 @@ entry may land verbatim. The workbench regenerates freely.
                          ├── deduplicate exact entries
                          └── stable key sort
                          ↓
-<task>/evidence/bibex/<task>.bib        DERIVED · Page Evidence Bib
-<task>/evidence/bibex/<task>-bib.html   DERIVED · citation workbench
+<task>/outline/evidence/bibex/<task>.bib        DERIVED · Page Evidence Bib
+<task>/outline/evidence/bibex/<task>-bib.html   DERIVED · citation workbench
 ```
 
 Only Results whose runtime says `status: complete` enter the union. Every
@@ -94,4 +94,4 @@ remains a person's judgment. Discovery reads it from
 `runtime.yaml#bib.verification`; ordinary Pages read the owning CITE gate.
 
 During category-folder migration, a legacy flat `bibex/` lane and
-`evidence/bibex/` are the same logical citation storage lane.
+`outline/evidence/bibex/` are the same logical citation storage lane.

@@ -8,7 +8,7 @@ description: >-
   board/index.html to VS Code, not create one. Trigger: board, open a board,
   add a question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.160.4"
+  version: "0.160.5"
   last_updated: "2026-09-02"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -57,12 +57,11 @@ haipipe-plugin     SPEC · every subfolder of a page's folder is a plugin:
                          its ref/roster.md is the single list of names
 page-plugins/            reusable capability deltas over that contract:
                          draw · slide · chat · latex · word · bibex · display ·
-                         probe · pagex · skill and the live roster's peers
+                         pagex · skill and the live roster's peers
 ref/topic-entry-contract.md
                          LEGACY CHECKER COMPATIBILITY ONLY · validates archived
                          route/E-division Pages; current Page work uses
-                         evidence/pagex/ for existing Folders and
-                         evidence/probe/ for Task or Discovery evidence. Never
+                         outline/evidence/pagex/ for current Folders. Never
                          load it as a current contract.
 haipipe-sentence   DOOR + SPEC · one sentence: comment, edit, card;
                          lanes, addresses, the archive-never-delete lifecycle
@@ -579,7 +578,7 @@ The chat forms are `haipipe-plugin-chat`'s to state and the canvas is `haipipe-p
 
 Routed to `haipipe-plugin-draw` (page-plugins/), which owns the draw plugin whole: one scene per owner, the ownership rule, the two group-editor modes, and the split/sync/compose/verify commands.
 The engine files stay here (`cli/draw.py`, `live/xcal.py`); the contract lives there.
-Same routing for every material plugin: slide, chat, latex, word, bibex, probe, skill, and display each own a `haipipe-plugin-<name>` under `page-plugins/`, delta-only over `haipipe-plugin`; the roster in `haipipe-plugin/ref/roster.md` stays the single list.
+Same routing for every material plugin: slide, chat, latex, word, bibex, skill, and display each own a `haipipe-plugin-<name>` under `page-plugins/`, delta-only over `haipipe-plugin`; the roster in `haipipe-plugin/ref/roster.md` stays the single list.
 The 📂 Folder tab (the rail's first, folded pages only) is `haipipe-plugin-folder`'s — the meta-surface over the folder itself, with no subfolder and no roster row.
 
 ### comment / edit / card · anything about ONE SENTENCE (routed)

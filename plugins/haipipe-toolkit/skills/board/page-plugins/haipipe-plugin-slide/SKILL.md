@@ -6,7 +6,7 @@ description: >-
   page's own .md by /_board/autodeck. Trigger: slide plugin, page deck,
   regenerate the deck, slides tab, autodeck, /haipipe-plugin-slide.
 metadata:
-  version: "0.1.4"
+  version: "0.2.0"
   last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-slide · the page's deck, authored from the page's own words
@@ -40,7 +40,9 @@ The deck links straight at `display/html-ppt`'s own assets by relative path: 36 
 Nothing is vendored, so the deck improves when that skill improves; reimplementing any of it in the board would be the second worst thing here, and copying it the worst.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+The writer always lands new decks in `delivery/slide/`. A pre-migration flat
+`slide/` may be read during a sweep, but it is not a current destination and
+must not be shown as the canonical Folder row.
 
 ## 📂 Files
 

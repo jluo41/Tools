@@ -16,9 +16,9 @@ missing deck is a ghost until then. Render is built by the Folder-native
 Application render verb; this presenter lists and opens whatever that live
 lane holds. A served render POST remains optional.
 
-Render resolves canonical `delivery/render/` first and keeps flat `render/`
-readable. The older LaTeX/Word/Slide views still resolve through their flat
-symlink stubs (`latex -> delivery/latex`, QPf1) during category migration.
+Every current lane resolves at `delivery/<lane>/`.  Readers may still inspect
+an old flat Render folder during migration, but every builder and every saved
+URL uses the nested category path.
 """
 from __future__ import annotations
 
@@ -83,11 +83,11 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     render_files = sorted(f.name for f in rn.iterdir() if f.is_file()) if rn.is_dir() else []
     n_render = len(render_files)
     home = "\n".join([
-        row("📜", "LaTeX", f"latex/{stem}.pdf", "the segment compiles it on first open"),
-        row("📝", "Word", f"word/{stem}.docx", "the segment builds it on first open"),
-        row("🎞", "Slides", f"slide/{stem}-deck.html",
+        row("📜", "LaTeX", f"delivery/latex/{stem}.pdf", "the segment compiles it on first open"),
+        row("📝", "Word", f"delivery/word/{stem}.docx", "the segment builds it on first open"),
+        row("🎞", "Slides", f"delivery/slide/{stem}-deck.html",
             "authored on the 🎞 tab's ✨ bar, never auto-built here"),
-        "<div class=row><b>📱 Render</b><code>render/</code>"
+        "<div class=row><b>📱 Render</b><code>delivery/render/</code>"
         "<span class=mut>%s</span></div>"
         % ("%d file(s) on disk · Folder-native writer live" % n_render if n_render
            else "empty · run the Folder-native render verb"),
@@ -102,7 +102,7 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
 <style>{_CSS}</style>
 <header><h1>📤 Delivery · {html.escape(stem)}</h1>
 <div class=mut>one surface, four lanes · what leaves the page · builders and
-storage stay with latex/ · word/ · slide/ · render/</div></header>
+storage stay with delivery/latex/ · delivery/word/ · delivery/slide/ · delivery/render/</div></header>
 <nav>
 <button class=on data-seg=home>🏠 What's built</button>
 <button data-seg=latex>📜 LaTeX</button>
@@ -131,9 +131,9 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
   /* build: a deterministic route safe to press on click; slides has an
      AUTHORING pen (claude -p) so it gets a ghost, never an auto-press. */
   var LANES = {{
-    latex:  {{url: savedUrl('latex', CTX.stem + '-view.html'), route: 'latex'}},
-    word:   {{url: savedUrl('word',  CTX.stem + '-view.html'), route: 'word'}},
-    slides: {{url: savedUrl('slide', CTX.stem + '-deck.html'),
+    latex:  {{url: savedUrl('delivery/latex', CTX.stem + '-view.html'), route: 'latex'}},
+    word:   {{url: savedUrl('delivery/word',  CTX.stem + '-view.html'), route: 'word'}},
+    slides: {{url: savedUrl('delivery/slide', CTX.stem + '-deck.html'),
               ghost: 'No deck yet \\u2014 the \\u2728 bar above authors one from ' +
                      'this page\\u2019s .md (claude -p, a minute or two).'}},
     render: {{files: CTX.render_files || []}}
@@ -176,14 +176,14 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
     if (id === 'render') {{ showRenders(lane.files); return; }}
     if (!lane.url) {{ ghost(lane.ghost || 'no saved view for ' + id); return; }}
     fetch(lane.url, {{method: 'HEAD'}}).then(function (r) {{
-      if (r.ok) {{ frame.src = lane.url + '?plain'; return; }}
+      if (r.ok) {{ frame.src = lane.url + '?embed'; return; }}
       if (!lane.route) {{ ghost(lane.ghost); return; }}
       fetch('/_board/' + lane.route, {{
         method: 'POST', headers: {{'Content-Type': 'application/json'}},
         body: JSON.stringify({{path: CTX.path, file: CTX.file}})
       }}).then(function (r2) {{ return r2.json(); }})
         .then(function (j) {{
-          if (j.ok && j.url) frame.src = j.url + '?plain';
+          if (j.ok && j.url) frame.src = j.url + '?embed';
           else ghost('⚠ ' + ((j && j.err) || 'the ' + id + ' build failed'));
         }});
     }});
@@ -213,7 +213,7 @@ storage stay with latex/ · word/ · slide/ · render/</div></header>
           if (!j.ok) {{ st.textContent = '✋ ' + (j.err || 'refused'); return; }}
           st.textContent = '✅ ' + (j.slides || '') + ' slides — loading';
           var u = LANES.slides.url;
-          if (u) {{ frame.src = ''; setTimeout(function () {{ frame.src = u + '?plain'; }}, 300); }}
+          if (u) {{ frame.src = ''; setTimeout(function () {{ frame.src = u + '?embed'; }}, 300); }}
         }})
         .catch(function () {{ go.disabled = false; st.textContent = '✋ server unreachable'; }});
     }}

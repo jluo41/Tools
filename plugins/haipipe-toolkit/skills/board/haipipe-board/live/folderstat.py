@@ -29,23 +29,27 @@ from urllib.parse import parse_qs, quote, urlparse
 
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
-        "meeting": "🗣", "probe": "🧪", "_runs": "🧾", "_fixture": "📦",
+        "meeting": "🗣", "_runs": "🧾", "_fixture": "📦",
         "outline": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
         "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
         "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
-        "results": "📦"}
+        "results": "📦", "outline/evidence/supporting-runs": "🧷"}
 
 # The two-part unit grammar (haipipe-plugin §🗂/🔌, JL 260831): which category
 # owns each lane, so the table can say it and the gaps line can speak the
 # grammar instead of the pre-260831 flat roster. A flat lane name counts for
 # its category until the sweep folds it in (a stub keeps it resolving after).
-CATEGORY = {"bibex": "evidence", "probe": "evidence", "display": "evidence",
-            "pagex": "evidence", "materials": "evidence",
+# Evidence is not a top-level category: it is the material workspace owned by
+# Outline.  The old flat lanes remain named here only so Folder can explain
+# their migration destination.
+CATEGORY = {"bibex": "outline/evidence", "display": "outline/evidence",
+            "pagex": "outline/evidence", "materials": "outline/evidence",
             "latex": "delivery", "word": "delivery", "slide": "delivery",
             "render": "delivery",
             "chat": "studio", "draw": "studio",
             "scripts": "code", "runs": "code", "results": "code"}
 DERIVED = {"latex", "word", "bibex", "slide", "display"}
+DERIVED_LABELS = {"outline/evidence/supporting-runs"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
 # judgment. display joined the same day (JL: "I want to add the rebuild
@@ -176,19 +180,20 @@ def folder_status(page_src):
     rows = []
     stubs = []
 
-    def row_for(d, label):
-        files = sorted((f for f in d.rglob("*") if f.is_file()),
+    def row_for(d, label, recursive=True):
+        candidates = d.rglob("*") if recursive else d.iterdir()
+        files = sorted((f for f in candidates if f.is_file()),
                        key=lambda f: str(f.relative_to(d)))
         newest = max((f.stat().st_mtime for f in files), default=0)
         return {
             "name": d.name,
             "label": label,
-            "icon": ICON.get(d.name.lstrip("_"), ICON.get(d.name, "📁")),
+            "icon": ICON.get(label, ICON.get(d.name.lstrip("_"), ICON.get(d.name, "📁"))),
             "files": len(files),
             "bytes": sum(f.stat().st_size for f in files),
             "newest": newest,
-            "derived": d.name in DERIVED,
-            "stale": d.name in DERIVED and bool(files) and newest < md_mtime,
+            "derived": d.name in DERIVED or label in DERIVED_LABELS,
+            "stale": (d.name in DERIVED or label in DERIVED_LABELS) and bool(files) and newest < md_mtime,
             "list": [(str(f.relative_to(d)), f) for f in files],
         }
 
@@ -201,10 +206,21 @@ def folder_status(page_src):
         if d.is_symlink():
             stubs.append(d.name)
             continue
-        # a CATEGORY folder shows AS ITS LANES, each row carrying the real
-        # path (JL 260831: "evidence / display — I want to really reflect the
-        # folder structure"), so the table reads exactly like the disk
-        if d.name in ("evidence", "delivery", "studio"):
+        # Category folders show their lanes as first-class rows. Outline keeps
+        # one direct-files row for its authored process records, while each
+        # evidence lane gets its own explicit path. This prevents the plan's
+        # eight records from being visually merged with bibex/display/PageX
+        # material and avoids counting the same files twice.
+        if d.name == "outline":
+            rows.append(row_for(d, "outline", recursive=False))
+            evidence = d / "evidence"
+            if evidence.is_dir():
+                for lane in sorted(evidence.iterdir()):
+                    if lane.is_dir() and not lane.is_symlink():
+                        rows.append(row_for(
+                            lane, "outline/evidence/%s" % lane.name))
+            continue
+        if d.name in ("delivery", "studio"):
             for lane in sorted(d.iterdir()):
                 if lane.is_dir() and not lane.is_symlink():
                     rows.append(row_for(lane, f"{d.name}/{lane.name}"))
@@ -352,10 +368,10 @@ class FolderStatMixin:
         # The gaps line speaks the two-part grammar (260831), not lane names:
         # a category counts as present when its folder exists OR any of its
         # flat pre-sweep lanes does.
-        have_cat = {c for c in ("evidence", "delivery", "studio") if c in known}
+        have_cat = {c for c in ("delivery", "studio") if c in known}
         have_cat |= {c for n, c in CATEGORY.items() if n in known}
         gaps = [n for n in ("outline", "workflow") if n not in known]
-        gaps += [c + "/" for c in ("evidence", "delivery", "studio")
+        gaps += [c + "/" for c in ("delivery", "studio")
                  if c not in have_cat]
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))

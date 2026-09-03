@@ -1,7 +1,7 @@
 # Values lane · every number, and where it came from
 
-Read this reference from `haipipe-plugin-evidence` when a Page Evidence Item is
-`VALUE`, or when the 🧾 Evidence tab must explain a number's provenance. The
+Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
+`VALUE`, or when the 🧭 Outline plugin's Evidence Workspace must explain a number's provenance. The
 unified Evidence plugin owns the lane and surface; `haipipe-plugin-probe`
 still owns any legacy card whose `## Values` block supplies the value.
 
@@ -30,7 +30,7 @@ number each used, and a value nobody used looked exactly like one everybody did.
 📦 storage   NONE. The number lives in evidence/probe/PP<NN>/proof/ with its source, run
              and sha256. A <page>/value/ folder would be a second home for one
              thing, which is the rule that retired the proof mark on 260819 (its glyph 🧮 now means value here).
-📡 surface   the 🧮 Values segment of the one 🧾 Evidence tab. One row per
+📡 surface   the 🧮 Values segment of the 🧭 Outline plugin's Evidence Workspace. One row per
              value on the page, read live on every open.
 ✍️ writer    NOBODY. EVIDENCE writes the `## Values` block in card.md when the
              answer lands. This surface never writes and calls no model.
@@ -72,7 +72,7 @@ and display strips already carry.
 ## 📡 Evidence segment · one parse, one table
 
 `GET /_board/value?path=<board>&file=<page>` (`live/value.py`) remains the
-compatibility route loaded inside the unified 🧾 Evidence tab. It is not a
+compatibility route loaded inside the 🧭 Outline plugin's Evidence Workspace. It is not a
 standalone Plugin surface.
 
 ```text
@@ -88,7 +88,7 @@ holds; it writes nothing.
 
 ## 📂 Files and ownership
 
-This reference owns no scripts. `haipipe-plugin-evidence` owns the Page-facing
+This reference owns no scripts. `haipipe-plugin-outline` owns the Page-facing
 lane and joined surface; the phase that binds a ready value is
 `page-workflows/haipipe-page-evidence` at LAND. The card, its states, and any
 legacy `## Values` grammar remain `haipipe-plugin-probe`'s until that storage

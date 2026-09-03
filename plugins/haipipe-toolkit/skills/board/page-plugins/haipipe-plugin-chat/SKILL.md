@@ -152,7 +152,7 @@ page's question and open Aims, `page-type:` and the phase strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
 evidence owed and landed), the page's own skill list (`<page>/skill/<stem>.md`,
 one ranked `- <name> · note:` row per skill) and its PageX relationships
-(`<page>/evidence/pagex/…`, including any whole executable Folder), the SPACE
+(`<page>/outline/evidence/pagex/…`, including any whole executable Folder), the SPACE
 context and the status-strip duty.
 
 Per message the session loads ONE skill's ⚡ Brief, the one §🗺's row names,

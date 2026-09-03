@@ -225,7 +225,7 @@ Types retain their declared closing gate.
 
 A sixth human-reserved write exists and is deliberately NOT on this list, because
 it is an ORDER rather than a field: the row rank in `skill/` and
-`evidence/pagex/`, whose
+`outline/evidence/pagex/`, whose
 law is "the scan seeds, the person ranks" and where "a refresh never edits,
 reorders, or removes a row".
 

@@ -118,7 +118,9 @@ Accept: <observable checks>                one line directly after each item
   annotation and is not an Evidence Item.
 - Every item id is `E<NN>-<TYPE>-<slug>`; bare `E01` and unnamed icon-only marks
   are invalid. Item numbers are stable within the Page and never renumbered.
-- SHAPE writes the item name, expected ready payload, and `Accept:` line now.
+- SHAPE writes the item name, expected ready payload, and `Accept:` line now;
+  its matching Evidence Item record also carries a stable compact `Label`
+  matching `[A-Za-z][A-Za-z0-9]{0,11}`.
   SURVEY later plans its Supporting Runs, exact PageX bindings, one Local
   Input, and one local Run in
   `<stem>-evidence-items.md`; it does not invent what the item should become.

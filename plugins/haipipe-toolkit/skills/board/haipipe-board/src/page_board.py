@@ -11,7 +11,8 @@ from urllib.parse import quote, unquote
 from . import body as bd
 from .body import body, inline, nav_inline
 from .common import aim_progress, esc, sec, stinfo
-from .item_table import (compact_global_run, read_items, readable_global_run,
+from .item_table import (action_label, compact_global_run, planned_route_anchor,
+                         read_items, readable_global_run, readable_task,
                          repo_root, run_registry)
 from .page_question import (has_outline_plan, parse_content_sections,
                             render_question, split_stage_record, structure_rows)
@@ -1012,23 +1013,57 @@ def tree_page_name(q):
 
 
 def run_index_body(qs):
-    """One generated index of the real global Runs cited by Page ledgers.
+    """Compatibility page for former static Run Index URLs.
 
-    An evidence ledger is allowed to plan a `new-*` route before LAND, but it
-    must not mint an `rNN`.  This index therefore contains only full global
-    identities.  It gives a short Run link a stable destination without
-    guessing a legacy task tree's physical Ticket or Result location.
+    Run lineage now has two focused surfaces: 🧾 Evidence Items for
+    Supporting and planned work, and ⚙️ Runs for allocated page-local
+    Run→Result pairs.  Retaining only this small page avoids breaking old
+    bookmarks without rebuilding the crowded global index or promoting a
+    ``new-*`` plan into a pretend Run.
     """
+    return (
+        '<div class="board-heading"><h1 class="h1">Runs moved</h1></div>'
+        '<p class="gpurpose">Use a Section’s <b>🧾 Evidence Items</b> '
+        'to inspect Supporting Runs, rerun findings, and unallocated plans. '
+        'Use <b>⚙️ Runs</b> for real page-local Run → Result pairs only.</p>'
+    )
+
+    # Retained below temporarily as a migration reference for old generated
+    # trees; it is intentionally unreachable and no longer rendered.
     base = Path(bd.BASE or ".")
     root = repo_root(base)
     registry = run_registry(str(root))
     refs = {}
+    plans = {}
 
     def record(address, q, item, layer, declaration):
         compact = compact_global_run(address)
         if not compact:
             return
         refs.setdefault(compact, []).append({
+            "page": q,
+            "item": item["item"],
+            "layer": layer,
+            "declaration": declaration,
+        })
+
+    def plan(address, action, family, q, item, layer, declaration):
+        """Collect an unallocated route without manufacturing a Run identity."""
+        if not action.startswith("new-"):
+            return
+        anchor = planned_route_anchor(
+            address, action, page_id=q["id"], item_id=item["item"], layer=layer,
+        )
+        entry = plans.setdefault(anchor, {
+            "address": address,
+            "action": action,
+            "family": family,
+            "expected": item["expected"],
+            "acceptance": item["acceptance"],
+            "local_input": item["local_input"],
+            "uses": [],
+        })
+        entry["uses"].append({
             "page": q,
             "item": item["item"],
             "layer": layer,
@@ -1043,27 +1078,64 @@ def run_index_body(qs):
             for entry in item["supporting_runs"].split(";"):
                 parts = [part.strip() for part in entry.split("·")]
                 if len(parts) >= 3:
+                    plan(parts[2], parts[1].lower(), parts[0], q, item,
+                         "Supporting", entry.strip())
                     record(parts[2], q, item, "Supporting", entry.strip())
+            plan(item.get("address", ""), item.get("action", ""),
+                 "Page · Evidence Item", q, item, "Local", item["local_run"])
             record(item.get("address", ""), q, item, "Local", item["local_run"])
 
     heading = ('<div class="board-heading"><h1 class="h1">Run index</h1></div>'
-               '<p class="gpurpose">Registered Runs cited by this Board’s Evidence '
-               'Item ledgers. Dotted addresses link here from Outline tables.</p>')
-    if not refs:
-        return (heading + '<p class="mut">No Level-4 Run has been allocated on '
-                'this Board yet.</p>')
+               '<p class="gpurpose">Planned and registered routes cited by this '
+               'Board’s Evidence Item ledgers. A planned route explains what will '
+               'be made; a registered Run links its Ticket and Result receipt.</p>')
+    if not refs and not plans:
+        return (heading + '<p class="mut">No Run route has been declared on this '
+                'Board yet.</p>')
 
-    rows = []
-    for compact in sorted(refs):
-        readable = readable_global_run(compact)
+    def use_list(refs_for_route):
         uses = []
-        for ref in refs[compact]:
+        for ref in refs_for_route:
             q = ref["page"]
             group = bd.group_token(q.get("group") or "") or "_ungrouped"
             href = f'{group}/{tree_page_name(q)}'
             uses.append(
                 '<li><a href="%s">%s · %s</a> <span class="mut">%s</span></li>' %
                 (esc(href), esc(q["id"]), esc(ref["item"]), esc(ref["layer"])))
+        return "".join(uses)
+
+    rows = []
+    for anchor, route in sorted(plans.items()):
+        readable = (readable_global_run(route["address"])
+                    or readable_task(route["address"])
+                    or "Page evidence task")
+        action = action_label(route["action"])
+        paths = [
+            '<p class="run-index-path"><b>Family</b> <code>%s</code></p>' %
+            esc(route["family"]),
+            '<p class="run-index-path"><b>Expected</b> <span>%s</span></p>' %
+            esc(route["expected"]),
+            '<p class="run-index-path"><b>Acceptance</b> <span>%s</span></p>' %
+            esc(route["acceptance"]),
+            '<p class="run-index-path"><b>Ticket</b> '
+            '<span class="mut">not allocated yet</span></p>',
+            '<p class="run-index-path"><b>Result receipt</b> '
+            '<span class="mut">not allocated yet</span></p>',
+        ]
+        if route["local_input"]:
+            paths.insert(
+                2,
+                '<p class="run-index-path"><b>Planned input</b> <span>%s</span></p>' %
+                esc(route["local_input"]),
+            )
+        rows.append(
+            '<section class="run-index-row run-index-plan" id="%s"><h3><code>%s</code> '
+            '<span class="run-index-action %s">%s</span></h3>'
+            '<div class="run-index-paths">%s</div><ul>%s</ul></section>' %
+            (esc(anchor), esc(readable), esc(route["action"]), esc(action),
+             "".join(paths), use_list(route["uses"])))
+    for compact in sorted(refs):
+        readable = readable_global_run(compact)
         record = registry.get(compact)
         if record:
             ticket_href = os.path.relpath(root / record["ticket"], base / "board")
@@ -1098,7 +1170,7 @@ def run_index_body(qs):
         rows.append(
             '<section class="run-index-row" id="run-%s"><h3><code>%s</code></h3>%s'
             '<ul>%s</ul></section>' %
-            (esc(compact), esc(readable), meta, "".join(uses)))
+            (esc(compact), esc(readable), meta, use_list(refs[compact])))
     return heading + '<div class="run-index">%s</div>' % "".join(rows)
 
 
@@ -1268,9 +1340,8 @@ def render_tree(meta, qs, out_dir, only=None):
                  encoding="utf-8")
     written.append(f)
 
-    # Every short Run link on a Page points here.  This page is deliberately
-    # derived from full identities already cited in Evidence Item ledgers; it
-    # never allocates a planned `new-*` route or guesses a physical run path.
+    # Compatibility page only. The live Evidence and Runs plugins own the
+    # normal surfaces; this keeps bookmarks from becoming a 404.
     bd.CARDS.clear()
     bd.CHIP_N = 0
     bd.EMBED_SEEN.clear()

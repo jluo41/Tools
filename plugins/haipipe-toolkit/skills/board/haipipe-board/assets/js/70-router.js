@@ -1,5 +1,5 @@
 /* ── board/ tree navigation (QC9, JL 260731) ───────────────────────────────
-   In the tree each page is its own document, so a plain link click is a real
+   In the tree each page is its own document, so a normal link click is a real
    navigation and a real navigation destroys the chat drawer and the terminal,
    which is the exact failure QD4's parked-outside-the-wrap design exists to
    avoid. So in site mode we intercept internal links, fetch the target, swap
@@ -11,8 +11,8 @@
   /* QD5, corrected 260802. The first cut turned the router OFF in every pane,
      reasoning that a frame is the unit that reloads. That made every click a
      full DOCUMENT boot: fetch the page, parse 400 KB of html, and execute this
-     whole bundle again, where the one-document board had swapped one column and
-     kept everything else alive. JL felt it immediately ("really slow to click
+     whole bundle again. The page pane instead swaps one column and keeps
+     everything else alive. JL felt it immediately ("really slow to click
      and go to a new page"), and he was right: 42 ms against 49 ms on the machine
      serving it, and far worse across a tailnet.
 

@@ -1,3 +1,8 @@
+## 0.3.0 · 2026-09-03
+
+- Make `delivery/latex/` the only current writer destination; flat `latex/`
+  remains a compatibility read only.
+
 ## 0.2.3 — 2026-08-31
 - Surface rehomed: the 📜 tab is now the LaTeX segment inside the one 📤
   Delivery tab (haipipe-plugin-delivery); builder, storage, route unchanged.

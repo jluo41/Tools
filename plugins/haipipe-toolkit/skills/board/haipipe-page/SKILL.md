@@ -87,16 +87,16 @@ drifts. GitHub renders it where the board cannot reach; the 📂 tab computes
 the same walk live (`live/folderstat.py`, whose `--write` becomes the
 generator).
 
-A folder is created only when it is used. Values have a surface but no folder:
-each lives inside one probe card's `## Values` block and is cited as
-`PP<NN>.v<n>`. Every number shown on a Page Face that comes from a Run crosses
+A folder is created only when it is used. Values are typed Evidence Items;
+their accepted local Result and provenance are shown inside the Outline
+Evidence Workspace. Every number shown on a Page Face that comes from a Run crosses
 ONE page-serving collection job (`task-type: page`, contract
 `haipipe-task-for-page`); that Folder answers all related task-route cards and
-ranks first among the page's `evidence/pagex/` whole-Folder links. A local Run
+ranks first among the page's `outline/evidence/pagex/` whole-Folder links. A local Run
 may validate or reshape non-authoritative intermediates, but it
 cannot become a second value door. A reusable derivation, a source-data change, or any displayed
 numeric result belongs in the linked executable Folder and its QA binding. The
-seven `outline/` files, their ids, labels and writers are
+eight `outline/` process files and its nested evidence workspace, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A phase loads those two refs, not the plugin
 skill (which owns the tab).

@@ -1,3 +1,28 @@
+## 0.6.0 · 2026-09-03
+
+- Name Outline's two primary surfaces Bullet Workspace and Evidence Workspace;
+  group Requirement/Discussion/Feedback as Plan Context and Files/Log as Page
+  Records.
+- Make nested category addresses the current storage contract: evidence lanes
+  live under `outline/evidence/`, and outgoing artifacts under
+  `delivery/<lane>/`; flat names are compatibility reads only.
+
+## 0.5.1 · 2026-09-03
+
+- Make the source-backed Board Page picker contract explicit: Runs stays
+  visible with a truthful empty state, while Evidence and Probe have no
+  top-level tabs.
+- Remove the retired `workflow/` category from the unit-folder description.
+
+## 0.4.3 · 2026-09-03
+
+- Make an active Plugin tab's close control a separate 36×36 touch target,
+  and isolate its gesture from tab activation.
+- Keep closed default tabs closed, skip stale entries when choosing the next
+  tab, and align the contract with the intentionally absent pane-level close.
+- Replace the retired explicit-`＋` opening rule with the direct first-visit
+  category strip and Plugin-picker reopen rule used by the live shell.
+
 ## 0.4.0 · 2026-09-02
 
 - Separate rostered storage lanes from Plugin identity: a category Plugin may

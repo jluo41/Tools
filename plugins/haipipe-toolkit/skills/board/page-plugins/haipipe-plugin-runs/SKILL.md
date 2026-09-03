@@ -1,7 +1,7 @@
 ---
 name: haipipe-plugin-runs
 description: >-
-  The optional Runs presenter of a Folder: one ⚙️ surface over authored Run
+  The Runs presenter of a Folder: one ⚙️ surface over authored Run
   tickets and their paired generated Results. Its default overview table groups
   Runs as Execution, Discovery, Page, or Labeling; Page divides into Evidence
   Item, Division Writing, and Display, while Labeling groups its independently
@@ -12,8 +12,8 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-09-02"
+  version: "0.9.1"
+  last_updated: "2026-09-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,8 +34,10 @@ Run address  = ticket identity = Result identity
 ```
 
 The Folder kind and workflow decide whether and when to Execute. Runs only
-presents what was launched and what came back. A Folder may therefore have a
-Task Face without a Runs plugin, and a Runs plugin without reusable local code.
+presents what was launched and what came back. A non-Board integration may
+omit the category entirely, and a Runs plugin may exist without reusable local
+code. On a source-backed Board Page, however, the Runs tab stays visible and
+may truthfully report that no local Run is allocated.
 
 ## 📍 Resolve the physical dialect
 
@@ -63,6 +65,35 @@ LABELING JOB · subjective-label
 These are storage dialects of the same Run contract. Never copy or
 symlink job-owned Results into the Task Page merely to make the first shape.
 Never treat a Result folder as a fifth hierarchy level.
+
+### Board Page separation
+
+For a paper/Board Page, keep the two questions visibly separate:
+
+```text
+outline/evidence/supporting-runs/    Evidence Item → Supporting Runs + Local Run binding map
+                   derived pointers only; may name zero-to-many external runs
+
+runs/             actual page-local Runs only
+results/          paired generated page-local Results only
+```
+
+The `🧭 Outline → Evidence Workspace` explains why an item is supported and
+groups its Supporting and Local Run items. The `⚙️ Runs` plugin lists only a
+physical Run found in the page's own
+`runs/` tree and its paired local Result. A `new-*` route, a parent `bN.jN.tN`
+without an `rN`, an external Supporting Run, or a result copied for display is
+not a local Runs row. Do not create empty `runs/` or `results/` merely to make
+planned work look allocated.
+
+An empty local inventory is still a valid presenter state: render one compact
+“No local Run allocated” message. Do not hide the tab and do not infer that an
+external Supporting Run is local.
+
+Accordingly, a Run token in the Outline first deep-links to the owning
+Evidence Item card in the Outline workspace. From there, allocated Run and Result links open
+their real repository-relative paths. Do not send an unallocated or external
+route to this local Runs overview merely because its text resembles a Run id.
 
 `scripts/`, config, and notebooks are optional projections. A Run may instead
 call a skill, CLI, API, or declared worker. Scripts are freestyle supporting
@@ -112,17 +143,23 @@ Derive it from the ticket and the owning Run contract's receipt/Result; do not
 mint another hand-maintained status file. Put active or recovery-needed rows
 first, then newer rows. Large and raw outputs remain counts or safe labels.
 
-Clicking a row opens that Run's detail: summary, authored ticket, paired Result,
-receipt/log or error, and links to any script/config/notebook paths the ticket
+Reader-facing labels are always `Run` and `Result`. Legacy implementation
+fields may still be named ticket/receipt internally, but the presenter must not
+surface those words as alternative object names. Show literal repository-
+relative Run and Result paths and allow them to wrap on narrow screens.
+
+Clicking a row opens that Run's detail: summary, authored Run, paired Result,
+log or error, and links to any script/config/notebook paths the Run
 actually uses. Do not put commands, logs, actor metadata, or full output trees
 in the overview.
 
-For Page · Evidence Item rows, the overview shows item id/type, target, support
-count, PageX binding count, local global Run id, status, and ready Result. The
-detail shows the one frozen input envelope, its zero-to-many Supporting Run
-ids, and exact PageX authorities. PageX links are sources, never extra Runs or
-Results. Never expand Supporting Runs into extra local rows or present the
-Result as a separate Run.
+For Page · Evidence Item rows, the overview shows the actual local Run,
+paired Result, status, and any explicitly bound Evidence Item ids. The
+detail shows the safe target and exact local paths. Supporting Run ids, frozen
+input envelopes, PageX authorities, and unallocated plans remain in Evidence
+Items. PageX links are sources, never extra Runs or Results. Never
+expand Supporting Runs into extra local rows or present the Result as a
+separate Run.
 
 For Labeling rows, show safe identities, checksums, gate summaries, and counts
 only. Never render sealed ids, protected text, raw judgments, or a second
@@ -149,7 +186,7 @@ nothing.
 ```text
 STORAGE   none of its own; resolve authored/generated Run projections
 SURFACE   ⚙️ Runs: one family-filtered overview table plus a collapsible
-          freestyle Scripts tree; click one Run for its Ticket + Result detail
+          freestyle Scripts tree; click one Run for its Run + Result detail
 WRITER    person/chat authors tickets; the ticket writes its paired Result
 BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
 ```
@@ -166,12 +203,12 @@ BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
   exist; their absence does not invalidate a Run, and unused supporting files
   do not invalidate Scripts.
 
-## 🗺 Status · 🟡 contract 260901 · tab pending
+## 🗺 Status · 🟢 live 260902
 
-The contract covers Discovery Paper Runs, canonical Task Page Runs, and the
-25-operation Labeling dialect. A
-live `runs.py` drawer and registry row remain pending; until then the 📂 Folder
-tab is the filesystem surface.
+`live/runs.py` and `85-plugin-runs.js` serve the read-only Board Page view.
+The current surface is intentionally local-page-only; Task, Discovery, and
+Labeling workflow owners remain responsible for their own allocation and run
+surfaces. The 📂 Folder tab remains the raw filesystem inventory.
 
 ## 📂 Files
 

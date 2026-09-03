@@ -8,7 +8,7 @@ description: >-
   delivery tab, exports tab, show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.2.1"
+  version: "0.3.0"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -26,8 +26,8 @@ this file     the 📤 Delivery tab: a 🏠 stat of what is built, one segment p
 the lanes     delivery/latex/ (haipipe-plugin-latex) · delivery/word/
               (haipipe-plugin-word) · delivery/slide/ (haipipe-plugin-slide) ·
               delivery/render/ (haipipe-plugin-render)
-              — storage, builders, routes UNCHANGED
-the category  <page>/delivery/ (flat names are migration stubs, QPf1)
+              — one canonical physical home per lane
+the category  <page>/delivery/ (flat names are compatibility reads only)
 ```
 
 ## 📡 Surface · one tab, five segments

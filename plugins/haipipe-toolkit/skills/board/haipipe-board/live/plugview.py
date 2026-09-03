@@ -539,6 +539,12 @@ class PlugViewMixin:
 
     # ---- POST /_board/probe ------------------------------------------
     def plug_probe(self, p):
+        """Compatibility refusal: Page-local Probe storage is retired."""
+        return None, ("Probe is retired. Specify a typed Evidence Item in "
+                      "outline/, map Supporting Runs in SURVEY, and LAND one "
+                      "local Result instead.")
+
+    def _retired_plug_probe(self, p):
         """One card per FOLDER, read in WALL ORDER so the reader sees the
         crossing: head, what was asked, what came back, the proof files, and
         the stake-bearing audit copy folded away (haipipe-plugin-probe §🚪).

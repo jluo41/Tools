@@ -1,3 +1,47 @@
+## 0.19.0 · 2026-09-03
+
+- Define the Outline UI as Bullet Workspace + Evidence Workspace, with Plan
+  Context and Page Records as subordinate groups rather than peer plugins.
+- Keep the compact Outline Table on the main Page and all detailed records in
+  the single `outline/` authority.
+
+## 0.18.4 — 2026-09-03
+
+- Require Local Run plans to use the same complete `new-*` hierarchy as
+  Supporting routes; retire the free-text dash placeholder.
+
+## 0.18.3 — 2026-09-03
+
+- Replace the remaining “registered graph” shorthand with the inventory-only
+  SURVEY contract and report existing versus planned routes separately.
+
+## 0.18.2 — 2026-09-03
+
+- Define the complete `new-run` / `new-task` / `new-job` / `new-block`
+  hierarchy and separate a never-attempted registered Ticket from a rerun.
+
+## 0.18.1 — 2026-09-03
+
+- Define dotted `bNN.jNN.tNN.rNN` labels as presentation aliases of canonical
+  compact Run identities, with no `rNN` invented for planned parents.
+
+## 0.18.0 — 2026-09-03
+
+- Make the Outline plugin the one review surface for Shape, Evidence Items,
+  supporting-run lineage, and routed feedback.
+- Write generated lineage to `outline/evidence/supporting-runs/`; the main Page
+  remains a compact read-only projection of this authority.
+
+## 0.17.3 — 2026-09-03
+
+- Require one joined Evidence Items panel after SURVEY: canonical compact item
+  identity, grouped Run items, and collapsed Run/Result paths.
+
+## 0.17.2 — 2026-09-02
+
+- Make SHAPE author a stable 1–12 character `Label` for every new or updated
+  Evidence Item so Outline chips remain concise without replacing immutable ids.
+
 ## 0.16.0 — 2026-09-02
 
 - Extend each SURVEY Evidence Item graph with zero-to-many exact PageX source

@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.common import evidence_lane_dirs  # noqa: E402
+from src.common import delivery_lane_dirs, evidence_lane_dirs  # noqa: E402
 
 def _pages(board: Path, group: str | None):
     out = []
@@ -113,8 +113,8 @@ def _count(pd: Path, md: Path):
     for o in ((pd / "outline").glob("*-outline-v*.md") if (pd / "outline").is_dir() else []):
         if re.search(r"^approved:\s*✅", o.read_text(errors="replace"), re.M): r["apv"] += 1
     r["px"]  = 1 if evidence_lane_dirs(pd, "pagex") else 0
-    r["tex"] = 1 if (pd / "latex").is_dir() else 0
-    r["doc"] = 1 if (pd / "word").is_dir() else 0
+    r["tex"] = 1 if delivery_lane_dirs(pd, "latex") else 0
+    r["doc"] = 1 if delivery_lane_dirs(pd, "word") else 0
     r["ln"]  = t.count("\n") + 1
     r["state"] = (re.search(r"^state:\s*(\S+)", t, re.M) or [None, "?"])[1]
     r["tick"] = r["apv"] + r["vfd"] + r["read"] + r["acc"]

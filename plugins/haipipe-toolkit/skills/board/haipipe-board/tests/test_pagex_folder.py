@@ -30,7 +30,7 @@ class PagexFolderTest(unittest.TestCase):
         self.consumer.mkdir(parents=True)
         self.page = self.consumer / "Q1.md"
         self.page.write_text("# Q1\nstate: 🟡 active\n", encoding="utf-8")
-        self.base = self.consumer / "evidence" / "pagex"
+        self.base = self.consumer / "outline" / "evidence" / "pagex"
         self.base.mkdir(parents=True)
         self.store = self.base / "Q1.md"
         self.state = {

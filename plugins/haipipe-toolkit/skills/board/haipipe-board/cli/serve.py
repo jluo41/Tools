@@ -114,6 +114,7 @@ from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
 from live.value import ValueMixin
 from live.pageruns import PageRunsMixin
+from live.runs import RunsTabMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
 # exactly as before (QE3's Law: one implementation, the console is a pipe).
@@ -138,7 +139,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -262,6 +263,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/labeling":
             # 🏷 canonical labeling receipts above, page chat below
             return self.labeling_view()
+        if self.path.split("?", 1)[0] == "/_board/runs":
+            # ⚙️ one page's planned and registered Tickets, never an execute door
+            return self.runs_view()
         if self.path.split("?", 1)[0] == "/_board/pageruns":
             # 🪜 one page's lifecycle receipts, for the Page phases stepper
             return self.pageruns_view()
@@ -344,6 +348,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.delivery_tab_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling":
             return self.labeling_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/runs":
+            return self.runs_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -552,6 +558,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/labeling":    # 🏷 read-only receipt surface
             res, err = self.plug_labeling(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/runs":        # ⚙️ read-only Run overview
+            res, err = self.plug_runs(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/display":    # list display/ units + previews

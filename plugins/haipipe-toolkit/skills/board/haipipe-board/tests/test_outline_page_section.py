@@ -8,7 +8,7 @@ ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ENGINE))
 
 from src import body as board_body
-from src.page_board import sidebar_rows
+from src.page_board import run_index_body, sidebar_rows
 from src.page_question import render_question
 from src.parse import parse_page
 
@@ -50,6 +50,7 @@ ITEMS = """# Outline fixture · evidence items
 page: fixture
 
 ### E01-VALUE-product · C1.P1.B1 · checked product source
+- **Label**: Product
 - **Expected**: VALUE · one checked source for the page product
 - **Acceptance**: the source and its local receipt are named.
 - **Supporting Runs**: Execution · reuse · b01j01t01r01
@@ -92,6 +93,8 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertNotIn("OUTLINE cycles", html)
         self.assertNotIn("Item progress", html)
         self.assertNotIn("🗺 Narrative map", html)
+        self.assertIn('class="outline-run-family paper" title="Paper Board">P</span>', html)
+        self.assertIn(">j01.t01.r01</a>", html)
         self.assertNotIn("Opening -&gt; Outline -&gt; Content", html)
         self.assertIn("Address</th>", html)
         self.assertIn("Planned move</th>", html)
@@ -102,26 +105,32 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertNotIn("Status</th>", html)
         self.assertIn("State the page product", html)
         self.assertIn('aria-label="E01-VALUE-product · VALUE · checked product source"', html)
-        self.assertIn("<b>E1V.CheckedProductSource</b>", html)
+        self.assertIn("<b>E1V.Product</b>", html)
         self.assertIn('popovertarget="outline-item-E01-VALUE-product"', html)
         self.assertIn('id="outline-item-E01-VALUE-product" popover', html)
         for field in (
-            "Name", "Target", "Expected", "Acceptance", "Supporting Runs",
+            "Label", "Name", "Target", "Expected", "Acceptance", "Supporting Runs",
             "PageX Bindings", "Local Input", "Local Run", "Result",
         ):
             self.assertIn(f"<b>{field}</b>", html)
-        self.assertIn('href="../runs.html#run-b01j01t01r01"', html)
+        self.assertNotIn('href="../runs.html', html)
+        self.assertIn(
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;focus=run-E01-VALUE-product"',
+            html,
+        )
+        self.assertIn('data-outline-focus="run-E01-VALUE-product"', html)
         self.assertIn("b01.j01.t01.r01", html)
-        self.assertIn("b02.j01.t01.r01", html)
+        self.assertIn("j01.t01.r01", html)
+        self.assertNotIn(">b02.j01.t01.r01</a>", html)
         self.assertIn("specified", html)
         self.assertNotIn("🖼 Diagram", html)
 
     def test_wall_abbreviates_all_three_evidence_types(self):
         cases = (
-            ("CITE", "E02-CITE-guideline", "guideline source", "E2C.GuidelineSource"),
-            ("DISPLAY", "E03-DISPLAY-forest", "association forest", "E3D.AssociationForest"),
+            ("CITE", "E02-CITE-guideline", "guideline source", "Guideline", "E2C.Guideline"),
+            ("DISPLAY", "E03-DISPLAY-forest", "association forest", "EffectForest", "E3D.EffectForest"),
         )
-        for item_type, item_id, name, visible in cases:
+        for item_type, item_id, name, label, visible in cases:
             with self.subTest(item_type=item_type), TemporaryDirectory() as temp:
                 root = Path(temp)
                 source = root / "QA" / "QA1.md"
@@ -132,6 +141,7 @@ class OutlinePageSectionTest(unittest.TestCase):
                 plan = PLAN.replace("E01-VALUE-product", item_id)
                 items = ITEMS.replace("E01-VALUE-product", item_id)
                 items = items.replace("checked product source", name)
+                items = items.replace("**Label**: Product", f"**Label**: {label}")
                 items = items.replace("**Expected**: VALUE ·", f"**Expected**: {item_type} ·")
                 (outline / "QA1-outline-v1.md").write_text(plan, encoding="utf-8")
                 (outline / "QA1-evidence-items.md").write_text(items, encoding="utf-8")
@@ -146,6 +156,55 @@ class OutlinePageSectionTest(unittest.TestCase):
 
             self.assertIn(f"<b>{visible}</b>", html)
             self.assertIn(f'popovertarget="outline-item-{item_id}"', html)
+
+    def test_outline_shows_authored_run_action_not_derived_receipt_label(self):
+        """The grid keeps SURVEY's action even when no concrete Run exists."""
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "QA" / "QA1.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(PAGE, encoding="utf-8")
+            outline = source.parent / "outline"
+            outline.mkdir()
+            (outline / "QA1-outline-v1.md").write_text(PLAN, encoding="utf-8")
+            items = ITEMS.replace(
+                "Execution · reuse · b01j01t01r01",
+                "Discovery · new-run · b01j01t01; "
+                "Execution · rerun · b03j02t01r04",
+            ).replace(
+                "Page · Evidence Item · reuse · b02j01t01r01",
+                "— Design Page Evidence Task",
+            )
+            (outline / "QA1-evidence-items.md").write_text(items, encoding="utf-8")
+
+            prior_base = board_body.BASE
+            board_body.BASE = root
+            try:
+                page = parse_page("QA1", PAGE, file="QA/QA1.md")
+                html = render_question(page, None, None)
+                run_index = run_index_body([page])
+            finally:
+                board_body.BASE = prior_base
+
+        self.assertIn("b01.j01.t01", html)
+        self.assertIn('class="outline-run-family discovery" title="Discovery">D</span>', html)
+        self.assertIn('class="outline-run-family execution" title="Execution">X</span>', html)
+        self.assertIn(">new</span>", html)
+        self.assertIn("b03.j02.t01.r04", html)
+        self.assertIn("rerun", html)
+        self.assertIn("newtask", html)
+        self.assertIn(
+            'data-outline-focus="run-E01-VALUE-product"', html
+        )
+        self.assertNotIn('href="../runs.html', html)
+        self.assertIn("Runs moved", run_index)
+        self.assertIn("🧾 Evidence Items", run_index)
+        self.assertNotIn("Design Run", html)
+        self.assertNotIn(
+            '<td><span class="outline-run-pending">Design Page Evidence Task</span></td>',
+            html,
+        )
+        self.assertNotIn("Run only", html)
 
     def test_legacy_diagram_source_does_not_render_a_second_outline(self):
         page = parse_page("QA2", PAGE.replace("## Outline", "## Diagram"))
