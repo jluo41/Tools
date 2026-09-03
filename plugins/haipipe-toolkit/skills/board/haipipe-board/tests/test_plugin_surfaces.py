@@ -7,6 +7,7 @@ from pathlib import Path
 
 from live.export import ExportMixin
 from live.plugview import _display_state, _probe_body_html
+from live.delivery import render as render_delivery
 from src.common import delivery_lane_dir, delivery_lane_dirs
 
 
@@ -81,6 +82,18 @@ class PluginSurfaceTest(unittest.TestCase):
         self.assertEqual(source, page)
         self.assertEqual(out, page_home / "delivery" / "latex")
         self.assertTrue(out.is_dir())
+
+    def test_delivery_surface_links_only_nested_current_paths(self):
+        page_home = self.root / "S-Test"
+        page_home.mkdir()
+        page = page_home / "S-Test.md"
+        page.write_text("# Test\n", encoding="utf-8")
+        body = render_delivery(page, "/Board/board.md", "MAIN/S-Test/S-Test.md")
+        for lane in ("latex", "word", "slide", "render"):
+            self.assertIn("delivery/%s" % lane, body)
+        self.assertNotIn("savedUrl('latex'", body)
+        self.assertNotIn("savedUrl('word'", body)
+        self.assertNotIn("savedUrl('slide'", body)
 
 
 class WordTitleTest(unittest.TestCase):

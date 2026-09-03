@@ -105,7 +105,7 @@ tr.files>td{{padding:6px 8px 12px 30px;border-bottom:1px solid var(--line)}}
 {allbtn}<h1>📂 {title}</h1>
 <div class="mut">the page's own folder · rendered live, never stored ·
 source .md edited {md_age}</div>
-<table><tr><th></th><th>plugin</th><th>holds</th><th>newest</th><th>state</th></tr>
+<table><tr><th></th><th>path</th><th>holds</th><th>newest</th><th>state</th></tr>
 {rows}</table>
 <div class="mut" style="margin-top:10px">{absent}</div>
 <script>

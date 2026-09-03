@@ -2,8 +2,8 @@
 name: haipipe-plugin-folder
 description: >-
   The 📂 Folder tab of a Board page: the live inventory surface, one row per
-  plugin subfolder with file count, weight, age, and a ⚠️ STALE flag when a
-  derived plugin predates the page's .md. Stores nothing, renders live.
+  explicit material lane with file count, weight, age, and a ⚠️ STALE flag
+  when a derived lane predates the page's .md. Stores nothing, renders live.
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   folder inventory, /haipipe-plugin-folder.
 metadata:
