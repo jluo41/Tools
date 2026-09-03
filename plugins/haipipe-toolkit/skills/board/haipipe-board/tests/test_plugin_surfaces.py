@@ -7,6 +7,7 @@ from pathlib import Path
 
 from live.export import ExportMixin
 from live.plugview import _display_state, _probe_body_html
+from src.common import delivery_lane_dir, delivery_lane_dirs
 
 
 class PluginSurfaceTest(unittest.TestCase):
@@ -49,6 +50,37 @@ class PluginSurfaceTest(unittest.TestCase):
 
         state = _display_state(unit, [("accepted", "✅ JL 2026-08-16")])
         self.assertTrue(state["accepted"])
+
+    def test_delivery_writer_is_nested_while_flat_lane_remains_readable(self):
+        page_home = self.root / "S-Test"
+        flat = page_home / "latex"
+        flat.mkdir(parents=True)
+        self.assertEqual(delivery_lane_dir(page_home, "latex"),
+                         page_home / "delivery" / "latex")
+        self.assertEqual(delivery_lane_dirs(page_home, "latex"), [flat])
+
+        nested = page_home / "delivery" / "latex"
+        nested.mkdir(parents=True)
+        self.assertEqual(delivery_lane_dirs(page_home, "latex"), [nested, flat])
+
+    def test_export_target_creates_canonical_delivery_lane(self):
+        page_home = self.root / "S-Test"
+        page_home.mkdir()
+        page = page_home / "S-Test.md"
+        page.write_text("# Test\n", encoding="utf-8")
+        outer = self
+
+        class Fake(ExportMixin):
+            root = outer.root
+
+            def target(self, _payload):
+                return "S-Test/S-Test.md", outer.root
+
+        source, out, _board, err = Fake()._export_target({}, "latex")
+        self.assertIsNone(err)
+        self.assertEqual(source, page)
+        self.assertEqual(out, page_home / "delivery" / "latex")
+        self.assertTrue(out.is_dir())
 
 
 class WordTitleTest(unittest.TestCase):

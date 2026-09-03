@@ -79,6 +79,10 @@ class OutlineReviewPacketTest(unittest.TestCase):
             "# --- writing:end ---\n",
             encoding="utf-8",
         )
+        (outline / "SM00-abstract-log.md").write_text(
+            "# SM00 · log\n\n### 260903 1200 · Outline grouped\n",
+            encoding="utf-8",
+        )
         return page
 
     def test_packet_joins_shape_survey_feedback_and_content_map(self):
