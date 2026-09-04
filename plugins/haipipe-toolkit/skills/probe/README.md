@@ -5,19 +5,19 @@ Probe is the shared evidence-acquisition family for a consumer Page.
 ```text
 Probe
 ├─ PageX      accepted Board Page → exact file/scope binding in OUTLINE
-└─ QA Probe   Task/Discovery → QA-bank crossing in PROBE/EVIDENCE
+└─ QA Probe   Task/Discovery → QA-bank crossing at LAND (outbound rows only; `haipipe-probe` retired 260901 into `_old/`)
 ```
 
 The family has one router, `haipipe-probe`, and two Page-local surfaces:
 
 | Lane | Contract | Storage |
 |---|---|---|
-| PageX | `../board/page-plugins/haipipe-plugin-pagex/SKILL.md` | `<page>/pagex/` |
+| PageX | `../board/page-plugins/haipipe-plugin-evidence/ref/pagex.md` | `<page>/evidence/pagex/` |
 | QA Probe | `../board/page-plugins/haipipe-plugin-probe/SKILL.md` | `<page>/probe/` |
 
 A THIRD file completes the QA lane and is not listed above because it is not a
 surface: `../board/page-workflows/haipipe-page-probe/SKILL.md` is the Board
-Page's PROBE **phase** — when a card may be created, how `PP<NN>` is allocated,
+Page's LAND **cycle** (`haipipe-page-evidence` §🚪) — when a card may be created, how `PP<NN>` is allocated,
 and the run receipt. Three files, three altitudes, and each owns exactly one:
 
 ```text
@@ -30,7 +30,6 @@ The crossing is stated ONCE, in the router. Until 260821 the phase file restated
 §①②③ near-verbatim and had grown a sixth bullet mark that no mark authority
 carries; that is why the rule is written here.
 
-PageX is grouped here conceptually but remains a Page plugin physically. This
-keeps plugin discovery and the existing Board tab stable. The lanes never share
-records: PageX does not create QA cards, and QA Probe does not search Pages.
-
+PageX is grouped here conceptually but is an internal source-binding lane of
+the unified Evidence Plugin. The lanes never share records: PageX does not
+create QA cards, and QA Probe does not search Pages.

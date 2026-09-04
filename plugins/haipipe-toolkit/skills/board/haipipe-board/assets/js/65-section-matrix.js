@@ -3,7 +3,7 @@
 (function () {
   var bs = document.querySelector('.board-status');
   if (!bs) return;
-  var SEL = { diagram: 'details.diagram-section', content: 'details.sect.content',
+  var SEL = { outline: 'details.outline-section', content: 'details.sect.content',
               items: 'details.sect.goal', now: 'details.sect.now',
               files: 'details.sect.fls', folds: '.folds' };
   bs.addEventListener('click', function (e) {

@@ -36,7 +36,8 @@ without becoming a second source of truth. Machine-readable records remain canon
 ```markdown
 # {project} — {construct}
 
-status **{state}** · round **{round/phase}** · policy **{G_t}** · human gold **{D_t_n}**
+Building **{Contract|Round|Freeze|HOLD}** · Scanning **{not runnable|Test|Scan|Audit|complete|HOLD}**
+handoff **{absent|valid checksum|invalid reason}** · policy **{G_t/G*}** · human gold **{D_t_n}**
 
 | gate | evidence | result |
 |---|---|---|
@@ -47,7 +48,8 @@ status **{state}** · round **{round/phase}** · policy **{G_t}** · human gold 
 | sealed test | {reserved/frozen/released/valid/invalid} | {custodian} |
 
 holds: {none or concise capability list}
-next: **{one valid command or human decision}**
+human gate: **{none or one owed decision}**
+next: **{one valid action}**
 ```
 
 Keep the dashboard compact, but do not impose a line limit that removes material risk.
@@ -94,7 +96,7 @@ set.
 ```markdown
 # Executor scorecard — {executor/run}
 
-test **{T_star checksum}** · policy **{G_star checksum}** · validity **{valid/invalid}**
+handoff **{Label Handoff checksum}** · test **{T_star checksum}** · policy **{G_star checksum}** · validity **{valid/invalid}**
 
 | evidence | score | interval | floor/result |
 |---|---:|---:|---|

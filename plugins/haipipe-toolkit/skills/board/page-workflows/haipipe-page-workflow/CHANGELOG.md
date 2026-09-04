@@ -1,3 +1,124 @@
+## 0.26.1 — 2026-09-04
+
+- Define one canonical dependency order for every Page phase: Page base,
+  router, phase, owning workflow, exact Page Type, phase policy, optional Run
+  workers, then the Outline presenter.
+- Distinguish phase `route` from cycle `next_cycle` in producer receipts.
+
+## 0.26.0 — 2026-09-04
+
+- Replace the two-part OUTLINE/DRAFT model with five numbered Page phases:
+  `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, and `04 CHECK`.
+- Add the canonical detailed workflow table with exact inputs, skill chain,
+  Outline workspace, L3 mutations, L4 Runs, exits, and backward routes.
+- Make CONTEXT, OUTLINE, and EVIDENCE share `haipipe-plugin-outline` through
+  Context, Bullet, and Evidence workspaces while preserving distinct phase
+  authority.
+- Replace active DRAFT/REVISE dispatch with one CONTENT/WRITE phase; Draft,
+  Revise, Build, and Pre-check are internal movements.
+- Remove PageX Bindings from the active evidence graph. Cross-Folder evidence
+  now enters through Supporting Run Results; related Pages remain context.
+- Keep stored DRAFT, REVISE, COMPILE, and PROBE receipts as compatibility
+  inputs rather than new workflow outputs.
+
+## 0.25.2 — 2026-09-03
+
+- Route LAND through the current Outline-owned Evidence Workspace and remove
+  the retired standalone Evidence plugin from the active chain.
+- Align the person-reserved citation verification path with
+  `outline/evidence/bibex/`.
+
+## 0.25.1 — 2026-09-02
+
+- Add the compact Evidence Item `Label` to SHAPE's cross-phase contract;
+  immutable item ids and full readable names remain unchanged.
+
+## 0.25.0 — 2026-09-02
+
+- Add PageX to the Phase × Run Map as a SURVEY-planned, LAND-validated source
+  binding. It has exact path plus accepted authority and is not counted in L4
+  Run cardinality or typed Result cardinality.
+- Tighten LAND closure to require valid Supporting Results and PageX bindings,
+  one frozen Local Input, and one accepted local Result for every make-item.
+
+## 0.24.0 — 2026-09-01
+
+- Publish the concrete Phase × Run Map, including which L3 Task content each
+  cycle modifies, exact skill-chain slots, and L4 cardinalities. SHAPE/SURVEY
+  mint no Run; LAND executes Supporting Runs then one local Evidence Item Run.
+- Remove `haipipe-page-for-task` from the active Page chain and route semantic
+  policy directly to the owning workflow-phase skill.
+
+## 0.23.0 — 2026-09-01
+
+- TWO PARTS, six cycle WORDS (JL 260901): the OUTLINE part SHAPE → SURVEY →
+  LAND → EMBED → SHAPE until the plan and its runs agree; the DRAFT part WRITE
+  (draft → revise → compile chained, an inner loop of teeth + a fresh-context
+  pre-check, budget 3, a finding surviving two rounds = HOLD) then CHECK. The
+  ①-⑦ numbering and the PREPARE name retire from every contract; a cycle is
+  never a letter code (`C<n>` is a Content division, `W` the Wisdom handoff).
+- The law under the first part: every evidence number is answered by a RUN at
+  a real tasks/ address; the run computes, the page interprets at EMBED; the
+  item table `outline/<stem>-items.md` is the one ledger.
+- PROBE retired with `/haipipe-probe` (both in `_old/`): MATCH → SURVEY's Run
+  column, dispatch + the stake wall → LAND's outbound card, the cost ladder →
+  the outcome words. `ref/phase-cards.md` rewritten per cycle; the run refs
+  carry `cycle:` beside `phase:`, legal routes re-cut (DRAFT/REVISE → OUTLINE,
+  no PROBE), PROBE reads as EVIDENCE in old receipts.
+- A person's "no" at CHECK is routed like a finding and promoted into a rule.
+
+## 0.22.5 — 2026-08-31
+
+- Point phase-authored change records at `outline/<stem>-log.md`; a CHECK
+  result still cannot mutate the version it just approved.
+
+## 0.22.4 — 2026-08-31
+
+- Make RUN Folder-first, including authoritative in-place identity from
+  `workflow/phase.yaml`; Page Type/filename routing is compatibility-only.
+- Point value evidence at the canonical Probe `proof/` directory, not the
+  retired `answer/` spelling.
+
+## 0.22.3 — 2026-08-31
+
+- Make the owner RULING a deterministic phase-contract field instead of a
+  universal fifth Page tick: `none` adds no gate, `domain-gate` reuses the
+  workflow receipt, and `local` keeps a Page-local ruling. Legacy Pages retain
+  their conservative auto-hardened gate.
+- Put normalized `page_ruling` into the RUN packet and controller, keep the
+  human-gate packet/receipt invariant, and make the owed ledger variable while
+  preserving `sum(ticks_owed) == len(owed_ledger())`.
+
+## 0.22.2 — 2026-08-31
+
+- Canonicalize new Probe writes to `evidence/probe/`; flat `probe/` is a
+  migration alias only.
+- For phase-owned Folders, derive the Page owner RULING from the phase's Gate
+  and Closure: mechanical gates add no human tick, while a human domain gate
+  reuses one receipt instead of demanding duplicate approval.
+
+## 0.22.1 — 2026-08-31
+
+- `ref/phase-cards.md` ① and ④ aligned with `haipipe-page-outline` 0.12.0 and
+  `haipipe-page-draft` 0.10.0: ① writes the plan, the open `D<nn>` records and
+  one log record and exits on FIVE checks (⓪ ARC added; ④ SHAPE carries the
+  head and Note law); ④ writes sentences ending `<!-- realizes: … -->` with a
+  `> Value:` lane per number and no hole token, and one log record with the
+  diff folded (the `States section` and `<HOLE>` are gone).
+- §🧭 no longer forbids the in-session outline pass: a pass in the page chat
+  that leaves the plan, one log record with the receipt folded under it and
+  the strip is a pass; the section forbids a traceless edit and a
+  self-judged version.
+
+## 0.22.0 — 2026-08-28
+
+- Two pre-dispatch duties before CHECK, priced on the SD02-roadmap live run
+  (three serialized checks, ~27% of spend settling as tax): ① cure every debt
+  the version itself registers before buying a cold judge — CHECK against a
+  known-dirty version returns the page's own registration as a route; ② the
+  producing phase's exit sweep is a mechanical pre-dispatch step, not advice —
+  the one skipped sweep left a stale States clause and forced a third CHECK.
+
 ## 0.21.0 — 2026-08-21
 
 - **`mode: copilot | auto` is in the packet, and the controller acts on it.**

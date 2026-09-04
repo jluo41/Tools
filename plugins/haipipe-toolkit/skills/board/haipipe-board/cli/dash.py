@@ -162,14 +162,15 @@ def render(family, kind, control, units, date, board_name):
 
 
 def write_into(control, block):
-    """Replace the block, or insert it under Diagram the first time."""
+    """Replace the block, or insert it under Outline the first time."""
     t = control.read_text(encoding="utf-8")
     if BEGIN in t:
         head, rest = t.split(BEGIN, 1)
         return head + block + rest.split(END, 1)[1], "replaced"
-    anchor = re.search(r"(?m)^## Diagram\s*$", t) or re.search(r"(?m)^## Content\s*$", t)
+    anchor = (re.search(r"(?m)^## (?:Outline|Diagram)\s*$", t)
+              or re.search(r"(?m)^## Content\s*$", t))
     if not anchor:
-        return None, "no ## Diagram or ## Content to insert under"
+        return None, "no ## Outline or ## Content to insert under"
     lead = ("\n\n**Where its units stand**: measured from the unit pages, "
             "never typed.\n\n")
     return (t[:anchor.end()] + lead + "```text\n" + block + "\n```\n"

@@ -359,7 +359,7 @@ Layer 3: PRODUCTION    code/haifn/fn_endpoint/fn_*/*.py
 4. Builder tests with real ModelInstanceStore data (not synthetic)
 5. After all builders pass → run endpoint packaging task (`01_endpoint_*`)
 
-**Task-folder convention:** The `00_endpoint_set_fn_develop` folder follows /haipipe-task structure: each builder is an independent run with its own config/run/results.
+**Folder convention:** `00_endpoint_set_fn_develop/` is not ONE job — each builder (a1_build_metafn … f1_roundtrip_test) is its own job-shaped unit with its own config/run/results; the folder is the block-like container holding them.
 Can run one at a time or all sequentially.
 
 **Rule:** Templates (Layer 1) are WellDoc references — don't modify them.

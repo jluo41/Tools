@@ -1,3 +1,92 @@
+## 0.19.1 · 2026-09-04
+
+- Use the canonical Page dependency order.
+- Keep producer `route` values at Page-phase granularity and carry the target
+  cycle separately as `next_cycle`.
+
+## 0.19.0 · 2026-09-04
+
+- Require a fresh CONTEXT record before LAND and route governing-input drift
+  back to `haipipe-page-context`.
+- Remove PageX Bindings from the active evidence graph. LAND now validates
+  Supporting Results, freezes one Local Input containing those Results plus
+  governed page-local sources, and executes one local Evidence Item Run.
+- Keep cross-Folder evidence behind Supporting Run Results and keep related
+  Page links in Context Workspace as navigation/constraints only.
+
+## 0.18.3 · 2026-09-03
+
+- Include `new-job` in LAND's complete planned Supporting-route vocabulary.
+
+## 0.18.2 · 2026-09-03
+
+- Keep SURVEY inventory-only: it classifies existing, rerun, and new-design
+  routes without allocating Tickets or `rNN` ids.
+- Move allocation, Ticket scaffolding, and execution of planned Supporting and
+  local Evidence Item Runs into LAND.
+
+## 0.18.1 · 2026-09-03
+
+- Clarify that VALUE, CITE, and DISPLAY are Result types rather than copy
+  directories; real payloads stay at their local or Supporting Result paths.
+
+## 0.18.0 · 2026-09-03
+
+- Load typed evidence authority from the Outline skill and keep all material
+  lanes under `outline/evidence/`.
+- Forbid recreating a root Evidence category or standalone Evidence tab; actual
+  local execution remains in sibling `runs/` and `results/` folders.
+
+## 0.16.0 · 2026-09-02
+
+- LAND now validates every SURVEY-selected PageX binding beside the declared
+  Supporting Results before freezing one Local Input and executing exactly one
+  local Page Evidence Item Run.
+- Define PageX as an exact accepted cross-Folder source authority, not a Run or
+  fourth Result type. LAND closes only after supports, PageX bindings, the
+  frozen input, and the accepted typed local Result are all valid.
+
+## 0.15.1 · 2026-09-02
+
+- Route CITE Evidence Item work to `haipipe-plugin-evidence`, which now owns
+  citation/Bib authority.
+
+## 0.15.0 · 2026-09-01
+
+- LAND executes one dependency graph per typed Evidence Item: validate 0..N
+  Supporting Results, freeze one local input, execute exactly one Page
+  Evidence Item Run, and bind its ready Result. EMBED reads only that local
+  Result. Discovery is a family; reuse/rerun/new-* are actions.
+
+## 0.14.0 · 2026-09-01
+
+- Owns the OUTLINE part's two machine-gated cycles: LAND (make every ☑ make
+  row's run in the REAL tasks/ tree, fill the lanes, append ` → <result>` to
+  the row; a card under evidence/probe/ only when a question leaves the page,
+  with the stake wall and the one courier moved here from the retired
+  haipipe-page-probe) and EMBED (write the numbers and their reading into
+  plan v<N+1> as Answered:/Drawn:, fill never restructure, always back to
+  SHAPE; `stale` reopens). The run-anchored law stated at the top.
+
+## 0.13.2 · 2026-08-31
+
+- Name the three canonical Folder-native lanes explicitly as
+  `evidence/bibex/`, `evidence/probe/`, and `evidence/display/`.
+
+## 0.13.1 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
+## 0.13.0 · 2026-08-31
+
+Value lane: when the page has a collection job (`task/haipipe-task-for-page`),
+④ POINT binds `target:` to its QA file and value rows copy from its
+`values.yaml`; a refresh-run diff that drifts a bound value re-lands here and
+is absorbed at OUTLINE.
+
 ## 0.12.0 — 2026-08-20
 
 - **0.12.0 shipped in SKILL.md with no entry here.** Reconstructed from the

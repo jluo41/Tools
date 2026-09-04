@@ -223,37 +223,6 @@ A rule whose origin is lost is a rule nobody can argue with later, so the stamp 
 
 ## Aims
 
-### A1 · ✋ Five ticks, and the contract line that reserves each one
-- A1.1 · Each of the five names the contract line that forbids the machine.
-  Done when all five rows carry a quoted reserving rule rather than a paraphrase.
-
-### A2 · 🗂 The surface does not exist: five ticks, three phases, N files
-- A2.1 · One surface presents all five ticks for one page.
-  Done when a person can read and write all five from one place, with the tick still stored in its owning artifact.
-- A2.2 · A count exists saying how many of a page's required ticks are done.
-  Done when `cli/check.py` or the 🚪 strip reports `<n> of <n> ticked` per page.
-
-### A3 · 📄 The built deliverable has no tick of its own
-- A3.1 · The PDF and the docx have a named human sign-off or a written ruling that they need none.
-  Done when either a tick field exists for the projections, or this page records the decision that machine findings suffice for them.
-
-### A4 · ✅ Accept-bias changes what is shown and never who writes
-- A4.1 · No gate is presented while any computed finding for that page is non-zero.
-  Done when the surface refuses to open on a page with a live error.
-- A4.2 · No tick has ever been written by anything other than a person.
-  Done when every tick on this board traces to a named person and a date.
-
-### A5 · 🚪 Where this gate lives, and why it is last
-- A5.1 · The seam against the receipts page is written on both pages.
-  Done when `QPw00r` and this page each carry the rule that a receipt points at a tick and never holds one.
-
-### A6 · 🛑 A person's job is to BREAK, not to approve
-- A6.1 · Four of the five ticks are passed by rule rather than by a person.
-  Done when `haipipe-board-approver-agent` has written an `auto` pass on at least one artifact of each kind: outline, display, cite, value.
-- A6.2 · No break is answered twice.
-  Done when every 🛑 on this board either appears as a numbered rule in `agents/approve-rules/` with its origin stamp, or is recorded as a steer that could not be written down.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether the built PDF and docx get a human tick of their own
       📍 `Part` §3, the built deliverable has no tick of its own
@@ -263,26 +232,51 @@ A rule whose origin is lost is a rule nobody can argue with later, so the stamp 
       🛑 `Blocks` A3.1, and the surface's field list in A2.1
       🤖 `If nobody answers` A takes effect, because it adds no tick and the counts it relies on already exist
 
+
 ### A1 · ✋ Five ticks, and the contract line that reserves each one
-- ✅ A1.1 · Met. All five rows in `§1` carry their reserving rule from `haipipe-page-outline`, the bibex law, `haipipe-plugin-probe`, and `haipipe-page-check`.
+- ✅ A1.1 · Each of the five names the contract line that forbids the machine.
+  Done when all five rows carry a quoted reserving rule rather than a paraphrase.
+  **Now:** Met. All five rows in `§1` carry their reserving rule from `haipipe-page-outline`, the bibex law, `haipipe-plugin-probe`, and `haipipe-page-check`.
+
 
 ### A2 · 🗂 The surface does not exist: five ticks, three phases, N files
-- ⬜ A2.1 · Not started. This is the page's whole reason for existing and nothing is built.
-- ⬜ A2.2 · Not started. No per-page tick count exists anywhere.
+- ⬜ A2.1 · One surface presents all five ticks for one page.
+  Done when a person can read and write all five from one place, with the tick still stored in its owning artifact.
+  **Now:** Not started. This is the page's whole reason for existing and nothing is built.
+- ⬜ A2.2 · A count exists saying how many of a page's required ticks are done.
+  Done when `cli/check.py` or the 🚪 strip reports `<n> of <n> ticked` per page.
+  **Now:** Not started. No per-page tick count exists anywhere.
+
 
 ### A3 · 📄 The built deliverable has no tick of its own
-- 🧠 A3.1 · Waiting on the Decision Now row above.
+- 🧠 A3.1 · The PDF and the docx have a named human sign-off or a written ruling that they need none.
+  Done when either a tick field exists for the projections, or this page records the decision that machine findings suffice for them.
+  **Now:** Waiting on the Decision Now row above.
+
 
 ### A4 · ✅ Accept-bias changes what is shown and never who writes
-- ⬜ A4.1 · Not started. The rule was ruled on 260818 and nothing presents a gate yet.
-- ✅ A4.2 · Met so far, trivially: no tick exists anywhere on this board, so none has been faked.
+- ⬜ A4.1 · No gate is presented while any computed finding for that page is non-zero.
+  Done when the surface refuses to open on a page with a live error.
+  **Now:** Not started. The rule was ruled on 260818 and nothing presents a gate yet.
+- ✅ A4.2 · No tick has ever been written by anything other than a person.
+  Done when every tick on this board traces to a named person and a date.
+  **Now:** Met so far, trivially: no tick exists anywhere on this board, so none has been faked.
+
 
 ### A5 · 🚪 Where this gate lives, and why it is last
-- ✅ A5.1 · Met. The seam is a `## Law` row on this page and on `QPw00r`.
+- ✅ A5.1 · The seam against the receipts page is written on both pages.
+  Done when `QPw00r` and this page each carry the rule that a receipt points at a tick and never holds one.
+  **Now:** Met. The seam is a `## Law` row on this page and on `QPw00r`.
+
 
 ### A6 · 🛑 A person's job is to BREAK, not to approve
-- 🔨 A6.1 · Being worked on now. The four rules files and the approver agent shipped 260818; no `auto` pass exists on any artifact yet, so the count is 0 of 4 kinds.
-- ⬜ A6.2 · Not met. One rule is promoted (`approve-rules.md` R8) against six breaks JL made on 260818, so five of his six are recorded nowhere as either a rule or a steer.
+- 🔨 A6.1 · Four of the five ticks are passed by rule rather than by a person.
+  Done when `haipipe-board-approver-agent` has written an `auto` pass on at least one artifact of each kind: outline, display, cite, value.
+  **Now:** Being worked on now. The four rules files and the approver agent shipped 260818; no `auto` pass exists on any artifact yet, so the count is 0 of 4 kinds.
+- ⬜ A6.2 · No break is answered twice.
+  Done when every 🛑 on this board either appears as a numbered rule in `agents/approve-rules/` with its origin stamp, or is recorded as a steer that could not be written down.
+  **Now:** Not met. One rule is promoted (`approve-rules.md` R8) against six breaks JL made on 260818, so five of his six are recorded nowhere as either a rule or a steer.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -330,3 +324,5 @@ A rule whose origin is lost is a rule nobody can argue with later, so the stamp 
 - 260818 · [REVISE-CC] four ticks corrected to FIVE across the title, state line, Opening, `§1`, `§1.2`, `§2`, both Aim groups, the Law rows and the Glossary. The missed one is `read:` on a probe card, reserved by `haipipe-plugin-probe`: "Only a person may tick it, and a changed `target` or a re-pulled `proof/` drops the tick back." `§1.2` said `accepted: ✅` was the only tick that reverts; TWO revert, and the pair is now the argument for keeping all five in their artifacts instead of a receipt.
 
 - 260818 1600 · [DRAFT-CC] `§6` added on JL's ruling that a person's job is to BREAK, not to approve: His example, said in Chinese and rendered here: a person is the one who feels this display is no good OVERALL, or that this outline's DIRECTION is wrong, and those are the places a person must break and propose. The cut is whether a rule survives being written down. Four of the five ticks moved to a new `haipipe-board-approver-agent` that passes by DEFAULT against four numbered rules files under `agents/approve-rules/`, seeded from the `display-*` findings `check.py` already emits plus the craft checks nothing was running. The RULING stays a person's and has no rules file, because deciding a page's own question is the point of the page. `§6.1` is the measurement rather than the argument: JL made six interventions on 260818 and every one was a whole-artifact judgment, while all four errors the checker found the same day were local and rule-shaped. `§6.3` closes the loop: a break is promoted into the matching rules file in the person's own words with a `promoted <date> from <who>'s break on <what>` stamp, and R8 of `approve-rules.md` is the first one.- 260818 · [DRAFT-CC] page created, and it is the only page of the QPw group born with nothing on disk behind it, which is the point: the five ticks it collects are defined and enforced in three separate phases and no surface joins them. JL ruled two things into it the same day. First, the page goes LAST, after `QPw00r` receipts, reversing an earlier draft that had them the other way round; the reason is written as `## Law` on both pages so neither can absorb the other later. Second, "human should be more likely to accept it", which is implemented as an accept-bias on PRESENTATION only: the gate opens when the computed findings are zero, and the one line that may not move is that silence is never consent. The genuine hole, as opposed to the dispersion problem, is `§3`: the PDF and the docx have machine findings and no human sign-off at all, which is the Decision Now row.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

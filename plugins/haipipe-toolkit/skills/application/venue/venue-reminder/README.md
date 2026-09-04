@@ -12,18 +12,15 @@ habit through repetition.
 - **Tone:** supportive, not nagging
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  skip
-  display:    skip
-  section-edit:    skip
-
-claims_settlement: light
+design_profile:
+  evidence_bar: light
+  narrative: none
+  display: none
+  section_edit: none
+  terminal: accepted
 ```
 
 
@@ -33,11 +30,11 @@ claims_settlement: light
 template:
   - slot: prompt
     job: name the action to take
-    claim_source: action claim (W)
+    claim_source: GD0-closed Brief + signed Wisdom handoff
     chars: ~100
   - slot: motivation
     job: brief reason why (varies per instance)
-    claim_source: primary claim (K)
+    claim_source: released card grant
     chars: ~80
   - slot: encouragement
     job: positive reinforcement
@@ -46,12 +43,15 @@ template:
 ```
 
 
-## Lifecycle mappings
+## Phase use
 
-### → Claims (light)
-1-2 K/W entries. The motivation slot cycles through different
-framings across reminder instances.
+### D1/D2 · bet and realize
 
-### → Draft
+Use one narrow grant for the prompt and motivation. The motivation slot cycles
+through variants of the same released wager; a different thesis needs a new
+card.
+
+### D3/D4 · judge and decide
 Draft a set of 3-5 reminder variants that rotate. Each follows
-the template but varies the motivation slot.
+the template but varies the motivation slot. Judge each variant, render the
+set to `delivery/render/`, then accept or emit.

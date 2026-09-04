@@ -39,6 +39,16 @@ concurrency: three steps, do not skip one
 
 
 ## Aims
+### Decision Now
+- [ ] ✂️ Pick which sections the page may edit first
+      All of it, or the minimal set this page calls smallest change with most of the value: `## States` body text, ticking `## Aims` rows, and the `state:` line.
+      A tick here also closes the same row in Aims.
+- [ ] 🔒 Pick how far to take concurrency
+      The fork is ① per-file lock, ② optimistic, ③ CRDT (Yjs); the recommendation on this page is ① first, with ③ not discussed until two people really do edit one question at the same time.
+- [ ] ✏️ Pick the editor
+      A plain `<textarea>` over the markdown source, which this page calls zero dependencies and most honest, or TipTap / Milkdown with the board's section grammar taught to it.
+
+
 ### The editor half
 - [ ] Decide which sections are editable from the page
       All of it?
@@ -59,9 +69,10 @@ concurrency: three steps, do not skip one
       That is the acceptance test.
       Not "a lock was added", but someone really collided and saw the warning.
 
-## States
-**Writing back to markdown has worked for a while; it is just only exposed one sentence or one remark at a time, never a whole section.**
+## Discussion
 
+### From the retired States section (merged 260831)
+**Writing back to markdown has worked for a while; it is just only exposed one sentence or one remark at a time, never a whole section.**
 - Write-back that already runs
   `live/write.py`'s `add_comment` / `edit_sentence` / `add_discuss` / `add_sentence` / `add_card` / `add_diagram` edit the page's own `.md` directly; `cli/serve.py` only routes the POST and calls `build.py` to rebuild, which is why "there is no such thing as an unsynced comment".
   The writers moved out of `serve.py` into `live/` on 260731 under `gate_live.py`'s response-identical gate.
@@ -77,15 +88,6 @@ concurrency: three steps, do not skip one
 - Where the mature option fits
   For several people editing the same markdown, the industry answer is a CRDT (Yjs) with a ProseMirror-family editor (TipTap / Milkdown).
   It is the one mature component worth importing out of `QE3`, but only once "two people typing at once" is actually needed.
-
-### Decision Now
-- [ ] ✂️ Pick which sections the page may edit first
-      All of it, or the minimal set this page calls smallest change with most of the value: `## States` body text, ticking `## Aims` rows, and the `state:` line.
-      A tick here also closes the same row in Aims.
-- [ ] 🔒 Pick how far to take concurrency
-      The fork is ① per-file lock, ② optimistic, ③ CRDT (Yjs); the recommendation on this page is ① first, with ③ not discussed until two people really do edit one question at the same time.
-- [ ] ✏️ Pick the editor
-      A plain `<textarea>` over the markdown source, which this page calls zero dependencies and most honest, or TipTap / Milkdown with the board's section grammar taught to it.
 
 ## Files
 - `live/write.py`
@@ -111,3 +113,5 @@ Yjs is the common implementation. per-file lock: only one person may write a giv
 - 260806 · [REVISE-CC] swept to the 260806 architecture; the write-back facts moved to `live/write.py` / `live/base.py` / `src/parse.py`, the retired `## Items to Finish` and `## Where we are` names became `## Aims` and `## States`, the retired `QA6` pointer became `QB8`, the shipped single-sentence edit (`QB8 §6`, 260729) is no longer listed as not writable, and `QE3` is recorded as landed
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1242 · Opened: JL wants to "really work on a question page: edit, comment, discuss, log the changes". The three comment actions are already done in QA6; this question owns **editing body text** and the concurrency that comes with it
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

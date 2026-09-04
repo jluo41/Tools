@@ -1,14 +1,23 @@
-# `principle` · one because/do/within rule, citing one W handoff
+# `principle` · promote one D4 warrant only when reuse earns it
 
-1. Require one settled `page-type: wisdom` page with a Design Handoff on some InsightBoard.
-2. Reuse a matching `page-type: principle` page when its rule already covers the move; otherwise create `1-P-principle/P<NN>-<slug>/` with `page-type: principle`.
-3. Bind the handoff through PageX at a pinned version. Exactly one handoff per principle: a rule citing two is doing two jobs and is two pages.
-4. Write the rule as one sentence, `because <W handoff>, do <move>, within <rail>`. An "and" between two moves means split it.
-5. Carry the handoff's forbidden clause into the Rail division verbatim. The rail is the evidence's limit, not the designer's caution.
-6. State Scope: `all arcs`, or the named audiences and venues it applies to.
-7. Record Declined Alternatives: the tempting move this warrant does NOT license.
-8. Run the Page workflow until CHECK settles or holds the page.
+This is a compatibility verb owned by `haipipe-design-division`. It never
+creates a Page Type, phase, workflow, or independently routed skill.
 
-This is the only DesignBoard layer permitted to read an InsightBoard. A Design page cites principles and never a handoff, so a changed handoff reopens one principle rather than every design that leaned on it.
+1. Resolve the owning D4 Design Folder and its signed W handoff.
+2. Keep the warrant inline on the card's `stance:` by default. Promote only
+   when the same warrant serves at least two Design Folders, or when two
+   InsightBoards create a conflict that must be ruled once.
+3. Reuse a matching promoted record when it already covers the move; otherwise
+   create `1-P-principle/P<NN>-<slug>/` as a subordinate D4 Folder with
+   `folder-kind: design-division` and `role: promoted-principle`.
+4. Bind exactly one signed W handoff/version through PageX and write exactly
+   one rule: `because <W handoff>, do <move>, within <rail>`. Two moves mean
+   two records.
+5. Carry the handoff's forbidden clause into the rail, state scope, and record
+   the tempting declined alternative.
+6. Update every citing D4 division. A changed warrant reopens those divisions;
+   it does not start a separate Principle lifecycle.
+7. D5 PageDown rereads the promoted record with every affected Design Folder.
 
-Return the principle path, the handoff and version it cites, its scope, and which design pages cite it.
+Return the subordinate record path, promotion reason, pinned warrant, scope,
+and affected D4 divisions.

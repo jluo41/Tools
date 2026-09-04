@@ -71,14 +71,11 @@ Deployment receipts and feedback rounds are not Page Types. They reopen the smal
 ## Aims
 
 ### A1 · Contract
-- A1.1 · Every current Application procedure writes into this tree.
+- ✅ A1.1 · Every current Application procedure writes into this tree.
   **Done when:** no public procedure requires legacy `0-lifecycle/` or
   application-local `1-probes/`.
+  **Now:** Application 0.8.0 and its procedures declare this tree.
 
-## States
-
-### A1 · Contract
-- ✅ A1.1 · Application 0.8.0 and its procedures declare this tree.
 
 ## Files
 
@@ -94,3 +91,5 @@ Folders follow authority and dependency; they do not mirror every internal skill
 
 260820 · Added `1-insights/` and `2-design/`; made `3-artifacts/` optional.
 260820 · Replaced the single-board tree with two named boards, renamed the group folders to carry their token, and dropped `4-deploy/` and `5-rounds/`.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

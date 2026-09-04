@@ -31,6 +31,18 @@ import re
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
+from src.common import evidence_lane_dirs
+from src.item_table import (
+    ITEM_TYPES,
+    LADDER as ITEM_LADDER,
+    bullets as typed_bullets,
+    cycle_now as item_cycle,
+    item_status,
+    read_items,
+    repo_root,
+    wall_label,
+)
+
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
 DONE = {"✅"}
 STATE_EMOJI = ("✅", "⬜", "🔨", "🧠", "❄️", "🟡", "🟠", "⏸️")
@@ -45,7 +57,12 @@ _SEC_ALIAS = {"opening": "opening", "question": "opening",
 # (`### §6.1 · Title`) is one paragraph inside division 6, so it registers 6
 # with no title of its own: an S page whose Content is written entirely as
 # 6.1, 6.2 still gets its division 6 card, and its A6 aims land in it.
-_DIV_RE = re.compile(r"^###\s+§?(\d+)(\.\d+)*(?:\s*·\s*(.*))?\s*$")
+# One division grammar, the same one check.py:1176 splits on: `### 3 · Title`,
+# `### §6.1 Main Results` (a Section page numbers by the MANUSCRIPT, with a
+# space and no ` · `), and a dotted subdivision. Requiring the ` · ` here made
+# every Section page's divisions invisible, so each `§7` anchor in its plan
+# read as "invented" (JL 260830, 5 of 7 plan-checker failures on MISQ).
+_DIV_RE = re.compile(r"^###\s+§?(\d+)(\.\d+)*(?:\s*·\s*(.*)|\s+(?!·)(.*))?\s*$")
 # An Aims/States group. The leading `(?:[^\w\s]|\s)*` is not decoration: pages
 # write `### 🗣 Decision Now` with the emoji BEFORE the name, and without this
 # the decision block goes unrecognized and its pending asks leak into States as
@@ -165,7 +182,7 @@ _CHECK_RE = re.compile(r"^-\s+\[( |x|X)\]\s*(.*)$")
 _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>
-:root{{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;
+:root{{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff;
  --warn:#b3541e;--ok:#3a7d44;--acc:#3e5c84}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;
  --mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--warn:#e0955a;--ok:#7dbb87;
@@ -173,11 +190,18 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 body{{margin:0;padding:16px;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
 h1{{font-size:17px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:13px}}
-.chips{{display:flex;gap:6px;margin:10px 0}}
-.chip{{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);
- border-radius:999px;padding:4px 12px;cursor:pointer;background:var(--card);
- color:var(--fg)}}
-.chip.on{{border-color:var(--acc);color:var(--acc)}}
+/* Three calm workspaces replace the old nine-button strip. The second row is
+   local navigation inside the selected workspace, so process records no
+   longer compete visually with Bullet and Evidence. */
+.spaces,.subchips{{display:flex;gap:5px;margin:10px 0 6px;flex-wrap:wrap}}
+.subchips{{display:none;margin:0 0 10px;padding-left:2px}}
+.subchips.show{{display:flex}}
+.space,.chip{{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);
+ border-radius:8px;padding:3px 9px;cursor:pointer;background:var(--card);
+ color:var(--fg);white-space:nowrap;flex:0 0 auto}}
+.space.on,.chip.on{{border-color:var(--acc);color:var(--acc)}}
+.subchips .chip{{font-weight:500;color:var(--mut);background:transparent}}
+.subchips .chip.on{{color:var(--acc);background:var(--card)}}
 .ok{{color:var(--ok);font-weight:600}} .warn{{color:var(--warn);font-weight:600}}
 .card{{background:var(--card);border:1px solid var(--line);border-radius:10px;
  padding:10px 14px;margin:0 0 10px}}
@@ -306,6 +330,12 @@ object.evfig{{height:32vh}}
 .bundles{{margin:7px 0 8px;padding:5px 8px;border:1px solid var(--line);
  border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card))}}
 .bundles>summary{{font-size:10px}}
+.planmeta{{margin:2px 0 7px;color:var(--mut);font-size:12.5px;line-height:1.45}}
+.cyclebar{{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:2px 0 7px;
+ font:500 11px ui-monospace,Menlo,monospace;color:var(--mut)}}
+.cyclebar span{{white-space:nowrap}}.cyclebar b{{font-weight:500;margin-right:3px}}
+.cyclebar .done{{color:var(--ok)}}.cyclebar .current{{color:var(--fg);font-weight:700;
+ background:color-mix(in srgb,var(--acc) 12%,var(--card));border-radius:5px;padding:0 5px}}
 .bundle-row{{display:flex;gap:7px;align-items:baseline;padding:2px 0;
  font-size:11px;line-height:1.35;border-top:1px solid var(--line)}}
 .bundle-row:first-of-type{{border-top:0}}
@@ -322,6 +352,64 @@ object.evfig{{height:32vh}}
 .st{{color:var(--mut);font-size:12px;margin:0 0 4px 2px;padding-left:10px;
  border-left:2px solid var(--line)}}
 .err{{color:var(--warn);font-size:12px}}
+/* the sibling-file records, one shape for every kind (0.18.0) */
+.rmeta{{margin:0 0 6px;font:11.5px ui-monospace,Menlo,monospace}}
+.rec{{padding:8px 0 6px;border-top:1px solid var(--line)}}
+.rec:first-of-type{{border-top:0;padding-top:2px}}
+.rh{{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}}
+.rid{{flex:none;font:600 11px ui-monospace,Menlo,monospace;color:var(--acc);
+ border:1px solid var(--line);border-radius:6px;padding:0 6px;white-space:nowrap}}
+.rt{{flex:1;min-width:12em;font-size:14.5px;font-weight:600;line-height:1.4}}
+.pill{{flex:none;font:600 10.5px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.04em;border-radius:999px;padding:1px 8px;border:1px solid currentColor;
+ max-width:16em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.pill.ok{{color:var(--ok)}} .pill.warn{{color:var(--warn)}}
+.pill.mut{{color:var(--mut)}} .pill.acc{{color:var(--acc)}}
+.rrows{{margin-top:3px}}
+.rr{{display:grid;grid-template-columns:5.4em 1fr;gap:6px;font-size:13.5px;
+ line-height:1.5;padding:1px 0}}
+.rr b{{font:600 11px -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;
+ letter-spacing:.04em;padding-top:3px}}
+.rq{{margin:3px 0 0 5.8em;padding-left:9px;border-left:2px solid var(--line);
+ color:var(--mut);font-size:12.5px;line-height:1.5}}
+.rd{{margin:3px 0 0 5.8em}} .rd>summary{{font-size:11.5px;color:var(--mut);
+ cursor:pointer;list-style:none}}
+.rd>summary::-webkit-details-marker{{display:none}}
+.rd>summary::before{{content:"▸ "}} .rd[open]>summary::before{{content:"▾ "}}
+.rdb{{margin:3px 0 0;padding-left:9px;border-left:2px solid var(--line);color:var(--mut);
+ font-size:13px;line-height:1.5;overflow-wrap:anywhere}}
+.rec>.rdb{{margin-left:5.8em}}
+.rgrp{{margin:12px 0 4px;font:600 12px -apple-system,sans-serif;color:var(--mut);
+ text-transform:uppercase;letter-spacing:.05em}}
+.rpre{{color:var(--mut);font-size:13px;margin:2px 0;line-height:1.5}}
+/* Feedback is a decision surface, not a source-file dump. Keep the reviewer's
+   ask and each requested change visible; fold order, gate, provenance and
+   routing so all metadata does not compete at the same visual weight. */
+.fbsummary{{display:flex;gap:12px;flex-wrap:wrap;margin:1px 0 12px;
+ color:var(--mut);font:600 11.5px ui-monospace,Menlo,monospace}}
+.fbsummary b{{color:var(--fg);font-weight:650}}
+.fbgroup{{display:flex;gap:8px;align-items:baseline;margin:12px 0 4px}}
+.fbgroup .rid{{border:0;padding:0;color:var(--acc)}}
+.fbgtitle{{font-size:14px;font-weight:650}}
+.fbask{{margin:7px 0 6px;padding:8px 11px;border-left:3px solid var(--acc);
+ border-radius:0 7px 7px 0;background:color-mix(in srgb,var(--acc) 5%,var(--card));
+ font-size:14px;line-height:1.55}}
+.fbask b,.fbwork b{{font:650 10.5px -apple-system,sans-serif;color:var(--acc);
+ text-transform:uppercase;letter-spacing:.05em;margin-right:7px}}
+.fbsource{{color:var(--mut);font-size:12.5px;line-height:1.45;margin:1px 0 5px}}
+.fbcontext{{margin:2px 0 9px}} .fbcontext>summary{{font-size:11px}}
+.fbcontext .rdb{{margin-left:0}}
+.fbmsg{{margin:6px 0 3px;font-size:14px;line-height:1.55;color:var(--fg)}}
+.fbwork{{margin:3px 0;color:var(--mut);font-size:13px;line-height:1.5}}
+.fbaux{{display:grid;grid-template-columns:4.8em 1fr;gap:5px;
+ padding:1px 0;font-size:12.5px;line-height:1.5}}
+.fbaux b{{font:600 10px -apple-system,sans-serif;color:var(--mut);
+ text-transform:uppercase;letter-spacing:.04em;padding-top:3px}}
+.fbroute{{margin:3px 0;padding-left:9px;border-left:2px solid var(--line);
+ color:var(--mut);font-size:12.5px;line-height:1.5}}
+.lens .card pre{{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}}
+.workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
+ min-height:560px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
 .lens{{display:none}} .lens.show{{display:block}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
@@ -329,30 +417,96 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 {lead}
 <div class=tally>{tally}</div>
 <div class="mut">always up to date · read from the page each time · {chip}</div>
-<div class=chips>
- <button class="chip on" data-lens=div>🧭 By part</button>
- <button class=chip data-lens=prog>🚦 What is left</button>
+<div class=spaces>
+ <button class="space on" data-space=bullet data-default=div>🧭 Bullet Workspace</button>
+ <button class=space data-space=evidence data-default=workspace>Evidence Workspace</button>{context_space}{records_space}
 </div>
+<div class="subchips show" data-subspace=bullet>
+ <button class="chip lens-chip on" data-lens=div>By part</button>
+ <button class="chip lens-chip" data-lens=prog>What is left</button>
+</div>
+{context_chips}{records_chips}
 <div class="lens show" id=lens-div>{by_div}</div>
 <div class=lens id=lens-prog>{by_prog}</div>
+<div class=lens id=lens-workspace><iframe class=workspace-frame
+ title="Evidence Workspace" data-src="{workspace_url}"></iframe></div>{record_lenses}
 <script>
-document.querySelectorAll('.chip').forEach(function(c){{
-  c.addEventListener('click',function(){{
-    document.querySelectorAll('.chip').forEach(function(x){{
+var SPACE_FOR={{div:'bullet',prog:'bullet',workspace:'evidence',ctx:'context',
+ req:'context',disc:'context',fb:'context',files:'context',log:'context',skills:'context'}};
+function showLens(c){{
+    document.querySelectorAll('.lens-chip').forEach(function(x){{
       x.classList.remove('on');}});
     document.querySelectorAll('.lens').forEach(function(x){{
       x.classList.remove('show');}});
-    c.classList.add('on');
-    document.getElementById('lens-'+c.dataset.lens).classList.add('show');
-  }});
+    if(c)c.classList.add('on');
+    var lens=document.getElementById('lens-'+c.dataset.lens);
+    lens.classList.add('show');
+    if(c.dataset.lens==='workspace'){{
+      var frame=lens.querySelector('iframe'), src=frame.dataset.src||'';
+      var focus='',run='';
+      try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
+          run=localStorage.getItem('board-outline-evidence-run')||'';
+          localStorage.removeItem('board-outline-evidence-focus');
+          localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
+      if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+      if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
+      if(src)frame.setAttribute('src',src);
+    }} else {{
+      var nested=lens.querySelector('iframe');
+      if(nested && !nested.getAttribute('src') && nested.dataset.src)
+        nested.setAttribute('src',nested.dataset.src);
+    }}
+}}
+function activateLens(name){{
+  var space=SPACE_FOR[name]||'bullet';
+  document.querySelectorAll('.space').forEach(function(x){{
+    x.classList.toggle('on',x.dataset.space===space);}});
+  document.querySelectorAll('.subchips').forEach(function(x){{
+    x.classList.toggle('show',x.dataset.subspace===space);}});
+  var chip=document.querySelector('.lens-chip[data-lens="'+name+'"]');
+  if(chip)showLens(chip);
+  else{{
+    var lens=document.getElementById('lens-'+name);
+    if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
+      lens.classList.add('show');
+      if(name==='workspace'){{
+        var frame=lens.querySelector('iframe'),src=frame.dataset.src||'',focus='',run='';
+        try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
+            run=localStorage.getItem('board-outline-evidence-run')||'';
+            localStorage.removeItem('board-outline-evidence-focus');
+            localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
+        if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+        if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
+        if(src)frame.setAttribute('src',src);
+      }}
+    }}
+  }}
+}}
+document.querySelectorAll('.lens-chip').forEach(function(c){{
+  c.addEventListener('click',function(){{activateLens(c.dataset.lens);}});
+}});
+document.querySelectorAll('.space').forEach(function(c){{
+  c.addEventListener('click',function(){{activateLens(c.dataset.default);}});
 }});
 document.querySelectorAll('a.badge').forEach(function(a){{
   a.addEventListener('click',function(ev){{
     ev.preventDefault();
-    document.querySelector('.chip[data-lens=div]').click();
+    activateLens('div');
     var el=document.getElementById(a.getAttribute('href').slice(1));
     if(el)el.scrollIntoView({{behavior:'smooth'}});
   }});
+}});
+var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
+    focus=params.get('focus')||'', run=params.get('run')||'';
+try{{requested=localStorage.getItem('board-outline-lens')||requested;
+    localStorage.removeItem('board-outline-lens');
+    if(focus)localStorage.setItem('board-outline-evidence-focus',focus);
+    if(run)localStorage.setItem('board-outline-evidence-run',run);}}catch(e){{}}
+if(requested)activateLens(requested);
+window.addEventListener('storage',function(ev){{
+  if(ev.key!=='board-outline-lens'||!ev.newValue)return;
+  activateLens(ev.newValue);
+  try{{localStorage.removeItem('board-outline-lens');}}catch(e){{}}
 }});
 </script>
 </body></html>"""
@@ -364,7 +518,12 @@ def _sections(text):
     for line in text.splitlines():
         m = re.match(r"^##\s+(.*?)\s*$", line)
         if m:
-            cur = _SEC_ALIAS.get(m.group(1).strip().lower())
+            # A plan's trailing section is written `## Aims · what must become
+            # true, and how you would know` (haipipe-plugin-outline §📐), so
+            # the name is the part before the first ` · `; keying on the whole
+            # line found no Aims in any plan (JL 260830, SM08).
+            head = m.group(1).strip().split(" · ", 1)[0].strip().lower()
+            cur = _SEC_ALIAS.get(head)
             if cur:
                 out.setdefault(cur, [])
             continue
@@ -388,7 +547,7 @@ def parse_outline(text):
         m = _DIV_RE.match(line)
         if m:
             n, dotted = int(m.group(1)), m.group(2)
-            title = (m.group(3) or "").strip()
+            title = (m.group(3) or m.group(4) or "").strip()
             if n not in seen:
                 seen[n] = {"n": n, "title": "" if dotted else title}
                 divs.append(seen[n])
@@ -618,6 +777,20 @@ def _tally(o):
     return " ".join(bits)
 
 
+def _outline_cycle_strip(cycle):
+    """Render the same SHAPE → SURVEY → LAND → EMBED status used on the Page."""
+    stages = ("SHAPE", "SURVEY", "LAND", "EMBED")
+    current = stages.index(cycle) if cycle in stages else len(stages)
+    cells = []
+    for index, stage in enumerate(stages):
+        cls = "done" if index < current else "current" if index == current else "future"
+        aria = ' aria-current="step"' if index == current else ""
+        cells.append('<span class="%s"%s><b>%d</b> %s</span>' % (
+            cls, aria, index + 1, stage
+        ))
+    return '<div class=cyclebar aria-label="Outline evidence workflow">%s</div>' % "".join(cells)
+
+
 
 # ---------------------------------------------------------------- the plan
 # The OUTLINE phase's own file, `<page>/outline/<stem>-outline-v<N>.md`
@@ -660,6 +833,105 @@ def _latest_plan(page_src):
     return best, (best.stem.split("-outline-")[-1] if best else "")
 
 
+def _typed_item_review(page_src, plan, plan_text, approved):
+    """Read the typed Evidence Item table once for the plan-card join.
+
+    The authored plan says *which* bullet owes an item; the authored item table
+    says how that item will be surveyed and run; the status ladder derives the
+    live state.  Keeping that join here (rather than re-parsing the evidence
+    projection) lets a reader inspect Shape and Survey together without making
+    either source authoritative over the other.
+    """
+    table = read_items(page_src)
+    page_text = page_src.read_text(encoding="utf-8", errors="replace")
+    page_accepted = bool(re.search(r"^accepted:\s*✅", page_text, re.M))
+    root = repo_root(page_src.parent)
+    by_target, active_rows, values, statuses = {}, {}, [], []
+    counts = {word: 0 for word in ITEM_LADDER}
+    types = {item_type: 0 for item_type in ITEM_TYPES}
+
+    for item_id, target, head, item_type, expected, acceptance, folded in typed_bullets(plan_text):
+        row = table.get(item_id)
+        status = item_status(
+            row, folded, page_accepted, plan.stat().st_mtime, root, page_src.parent
+        )
+        counts[status] += 1
+        types[item_type] += 1
+        statuses.append(status)
+        if row is not None:
+            active_rows[item_id] = row
+        value = {
+            "id": item_id,
+            "target": target,
+            "head": head,
+            "name": ((row or {}).get("name")
+                     or item_id.split("-", 2)[-1].replace("-", " ")),
+            "label": (row or {}).get("label") or "",
+            "type": item_type,
+            "expected": (row or {}).get("expected") or expected,
+            "acceptance": (row or {}).get("acceptance") or acceptance,
+            "supporting_runs": (row or {}).get("supporting_runs") or "— not surveyed",
+            "local_input": (row or {}).get("local_input") or "— not surveyed",
+            "local_run": (row or {}).get("local_run") or "— not surveyed",
+            "action": (row or {}).get("action") or "",
+            "address": (row or {}).get("address") or "",
+            "result": (row or {}).get("result") or "— no local Result bound",
+            "decide": (row or {}).get("decide") or "☐ make / defer / drop",
+            "decision": (row or {}).get("decision") or "",
+            "status": status,
+            "folded": folded,
+        }
+        by_target.setdefault(target, []).append(value)
+        values.append(value)
+
+    decided = sum(1 for value in values if value["decision"])
+    return {
+        "items": values,
+        "by_target": by_target,
+        "counts": counts,
+        "types": types,
+        "decided": decided,
+        "cycle": item_cycle(approved, active_rows, statuses, len(values)),
+    }
+
+
+def _typed_item_chip(item, popover_id):
+    """One compact status tag with its Survey graph behind a native popover."""
+    status = item["status"]
+    cls = "ok" if status in {"ready", "folded", "accepted"} else (
+        "mut" if status in {"deferred", "dropped"} else "warn"
+    )
+    rows = (
+        ("Label", item.get("label") or "legacy fallback"),
+        ("Target", item["target"]),
+        ("Expected", item["expected"]),
+        ("Acceptance", item["acceptance"]),
+        ("Supporting Runs", item["supporting_runs"]),
+        ("Local Input", item["local_input"]),
+        ("Local Run", item["local_run"]),
+        ("Result", item["result"]),
+        ("Decide", item["decide"]),
+    )
+    detail = "".join(
+        '<div class=rr><b>%s</b><span>%s</span></div>' % (_e(label), _inl(value))
+        for label, value in rows
+    )
+    # The wall identity is deliberately short but semantic: readers see the
+    # item number, evidence kind, and readable preview name. The immutable id,
+    # full type, status, and complete route remain in the popover.
+    label = wall_label(
+        item["id"], item["type"], item["name"], item.get("label", "")
+    )
+    return (
+        '<button class="evchip %s" popovertarget="%s">%s</button>'
+        '<div id="%s" popover class="chipcard %s">'
+        '<div class=cch><b>%s</b><span class=cck>%s · %s</span></div>'
+        '<div class="ccb rrows">%s</div></div>'
+        % (cls, popover_id, _e(label), popover_id, cls, _e(item["id"]),
+           _e(item["type"]), _e(status), detail)
+    )
+
+
 def _disk_state(page_src):
     """Read sibling plugin folders, including the bundle backlinks.
 
@@ -670,9 +942,12 @@ def _disk_state(page_src):
     """
     base = page_src.parent
     cards, units, serves, display_serves = {}, {}, {}, {}
-    pd = base / "probe"
-    if pd.is_dir():
+    seen_cards = set()
+    for pd in evidence_lane_dirs(base, "probe"):
         for d in sorted(pd.iterdir()):
+            if d.name in seen_cards:
+                continue
+            seen_cards.add(d.name)
             c = d / "card.md"
             if not c.is_file():
                 continue
@@ -690,7 +965,7 @@ def _disk_state(page_src):
             why_empty = bool(re.search(r"^why_empty:\s*\S+", t, re.M))
             sv = (re.search(r"^serves:\s*(.+)$", t, re.M) or [None, ""])[1]
             serves.setdefault(d.name.split("-")[0], []).extend(
-                re.findall(r"C\d+\.P\d+\.B\d+", sv))
+                [re.sub(r"\.S(\d+)$", r".B\1", a) for a in re.findall(r"C\d+\.P\d+\.[BS]\d+", sv)])
             q = (re.search(r"^question:\s*(.+)$", t, re.M) or [None, ""])[1]
             if not q:
                 q = (re.search(r"^#\s*\S+\s*\n+(.+)$", t, re.M) or [None, ""])[1]
@@ -705,9 +980,12 @@ def _disk_state(page_src):
                                         vb.group(1)):
                     vals[row.group(1)] = row.group(2)
             cards[d.name.split("-")[0]] = (st, n, q.strip(), why_empty, vals)
-    dd = base / "display"
-    if dd.is_dir():
+    seen_units = set()
+    for dd in evidence_lane_dirs(base, "display"):
         for d in sorted(dd.iterdir()):
+            if d.name in seen_units:
+                continue
+            seen_units.add(d.name)
             m = re.search(r"-(Display\d+)-", d.name)
             if not d.is_dir() or not m:
                 continue
@@ -754,15 +1032,18 @@ def _disk_state(page_src):
                                  intake_ready and renderer, renderer, asset)
             sv = (re.search(r"^serves:\s*(.+)$", txt, re.M) or [None, ""])[1]
             display_serves[m.group(1)] = re.findall(
-                r"C\d+\.P\d+\.B\d+", sv
+                r"C\d+\.P\d+\.[BS]\d+", sv
             )
     # The KEY alone says the citation resolves; the reader also wants to see
     # WHAT it is without leaving the tab (JL 260817: "我点它之后，它把这个内容
     # 就直接出现了"). So the entry's own fields come back with it.
     keys = {}
-    bx = base / "bibex"
-    if bx.is_dir():
+    seen_bibs = set()
+    for bx in evidence_lane_dirs(base, "bibex"):
         for f in bx.glob("*.bib"):
+            if f.name in seen_bibs:
+                continue
+            seen_bibs.add(f.name)
             for ent in re.split(r"\n(?=@)", f.read_text(errors="replace")):
                 m = re.match(r"@\w+\{\s*([^,\s]+)", ent.strip())
                 if not m:
@@ -859,9 +1140,32 @@ def _aim_rows(page_text):
         m = re.search(r"(?m)^## %s\b[^\n]*$(.*?)(?=^## |\Z)" % name, page_text, re.S)
         return m.group(1) if m else ""
     want, got = {}, {}
-    for m in re.finditer(r"(?m)^-\s+(A\d+\.\d+|P\d+)\s*·\s*(.+?)\s*$",
-                         _sec("Aims")):
-        want.setdefault(m.group(1), m.group(2))
+    # Since haipipe-plugin-outline 0.16.0 the Aims live in the PLAN, and a plan
+    # row is `- [ ] A1.1 · target` (a person's box) with its state on the
+    # folded `**Now:** …` line, because `## States` is retired. Reading only
+    # the bare `- A1.1 ·` form made a migrated page's 🧭 tab say "this page
+    # lists no aims yet" while ten Aims sat in its plan (JL 260830, SM08).
+    aims_txt = _sec("Aims")
+    # The merged-States row is `- ⬜ A1.1 · …` (tick before the id, the set
+    # src/common.py AIM_RE reads); without the tick group every 🎯 mark read
+    # "not on the page yet" while the row sat on the page (MISQ-Board, 260831).
+    for m in re.finditer(r"(?m)^-\s+(?:\[([ xX])\]\s+)?(?:(⬜|🔨|🧠|✅|❄️?|🟡|🟠|⏸️?)\s+)?(A\d+\.\d+|P\d+)\s*·\s*(.+?)\s*$",
+                         aims_txt):
+        box, tick, aid, sentence = m.group(1), m.group(2), m.group(3), m.group(4)
+        want.setdefault(aid, sentence)
+        tail = aims_txt[m.end():]
+        nxt = re.search(r"(?m)^-\s+", tail)
+        block = tail[:nxt.start()] if nxt else tail
+        now = re.search(r"\*\*Now:\*\*\s*(.+)", block)
+        if now:
+            fact = now.group(1).strip()
+            em = re.match(r"([⬜🔨🧠✅❄️🟡🟠⏸])\s*", fact)
+            emoji = em.group(1) if em else (tick or ("✅" if (box or "").lower() == "x" else "⬜"))
+            got.setdefault(aid, (emoji, fact[em.end():].strip() if em else fact))
+        elif tick is not None:
+            got.setdefault(aid, (tick, ""))
+        elif box is not None:
+            got.setdefault(aid, ("✅" if box.lower() == "x" else "⬜", ""))
     for m in re.finditer(r"(?m)^-\s+(\S+)\s+(A\d+\.\d+|P\d+)\s*·\s*(.+?)\s*$",
                          _sec("States")):
         got.setdefault(m.group(2), (m.group(1), m.group(3)))
@@ -1009,7 +1313,7 @@ def _live(mark, ref, cards, units, keys=(), aims=None):
 def _count_landed(txt, cards, units, keys):
     """How many owed things EXIST. Not how many are finished."""
     n = 0
-    for m in re.finditer(r"🧮[^\n]*?(PP\d+)", txt):
+    for m in re.finditer(r"🧮[^\n]*?(?<![A-Za-z0-9-])(PP\d+)", txt):
         st = _pstate(cards.get(m.group(1), (None, 0, ""))[0])
         n += st in LANDED
     for m in re.finditer(r"🖼[^\n]*?(Display\d+)", txt):
@@ -1028,18 +1332,20 @@ def _count_accepted(txt, cards, units):
     for m in re.finditer(r"🖼[^\n]*?(Display\d+)", txt):
         got = units.get(m.group(1))
         n += bool(got and got[1])
-    for m in re.finditer(r"🧮[^\n]*?(PP\d+)", txt):
+    for m in re.finditer(r"🧮[^\n]*?(?<![A-Za-z0-9-])(PP\d+)", txt):
         n += _pstate(cards.get(m.group(1), (None, 0, ""))[0]) in READ
     return n
 
 
 def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
                   cards, units, keys, scaffolds=None):
-    """Return the compact, derived status for one marked Outline Point.
+    """Return one complete/incomplete roll-up for a marked Outline Point.
 
     This deliberately returns data rather than HTML so the plan surface and a
     future API can share the same Evidence Bundle semantics. The bundle is
-    keyed by the frozen Point address; plugin folders remain the authorities.
+    keyed by the frozen Point address; plugin folders and typed Evidence Item
+    states remain the authorities. The bundle does not mint another status
+    vocabulary.
     """
     probes = sorted(set(by_bullet.get(address, [])))
     displays = sorted(set(display_by_bullet.get(address, [])))
@@ -1068,32 +1374,32 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
                   if _pstate(cards.get(p, ("", 0, "", False))[0]) in LANDED
                   and (cards.get(p, ("", 0, "", False))[1] > 0
                        or cards.get(p, ("", 0, "", False))[3])]
-        status = "evidence-ready" if probes and len(landed) == len(probes) \
-            else "needs-probe"
+        summary = "complete" if probes and len(landed) == len(probes) \
+            else "incomplete"
         return {"probes": probes, "displays": [], "citations": [],
-                "sentences": sentences, "feedback": feedback, "status": status,
+                "sentences": sentences, "feedback": feedback, "summary": summary,
                 "have": len(landed), "need": max(1, len(probes))}
     if kind == "display":
         rendered = [d for d in displays if units.get(d, (False, False, "", False, ""))[0]]
         intake = [d for d in displays if units.get(d, (False, False, "", False, ""))[3]]
-        status = "evidence-ready" if displays and len(rendered) == len(displays) \
+        summary = "complete" if displays and len(rendered) == len(displays) \
             and len(intake) == len(displays) \
-            else "needs-intake"
+            else "incomplete"
         return {"probes": probes, "displays": displays, "citations": [],
                 "sentences": sentences, "feedback": feedback,
-                "status": status, "have": len(rendered),
+                "summary": summary, "have": len(rendered),
                 "need": max(1, len(displays))}
     if kind == "cite":
-        status = "evidence-ready" if refs and len(citations) == len(refs) \
-            else "needs-citation"
+        summary = "complete" if refs and len(citations) == len(refs) \
+            else "incomplete"
         return {"probes": probes, "displays": displays,
                 "citations": citations, "sentences": sentences,
-                "feedback": feedback, "status": status,
+                "feedback": feedback, "summary": summary,
                 "have": len(citations), "need": max(1, len(refs))}
     return {"probes": probes, "displays": displays,
             "citations": citations, "sentences": sentences,
             "feedback": feedback,
-            "status": "evidence-ready",
+            "summary": "complete",
             "have": 1, "need": 1}
 
 
@@ -1106,14 +1412,22 @@ def plan_card(page_src, root=None):
     approved = bool(re.search(r"^approved:\s*✅", txt, re.M))
     cards, units, keys, serves, display_serves = _disk_state(page_src)
     page_text = page_src.read_text(encoding="utf-8", errors="replace")
-    aims = _aim_rows(page_text)
-    aims.update({k: v for k, v in _aim_rows(txt).items() if v[0]})
+    typed = _typed_item_review(page_src, f, txt, approved)
+    # The page is the Aims' home (JL 260831, QPf12 row 2: "In the Page as well,
+    # and should map to the content"); a plan that still carries Aim rows only
+    # fills ids the page does not have.
+    aims = {k: v for k, v in _aim_rows(txt).items() if v[0]}
+    aims.update(_aim_rows(page_text))
     scaffolds = {}
     for m in re.finditer(r"(?m)^([^\n]*?)<!--\s*realizes:\s*"
-                         r"(C\d+\.P\d+\.B\d+)\s*-->\s*$", page_text):
+                         r"(C\d+\.P\d+\.[BS]\d+)\s*-->\s*$", page_text):
         sm = re.search(r"\b(C\d+\.P\d+\.S\d+)\b", m.group(1))
         if sm:
-            scaffolds.setdefault(m.group(2), []).append(sm.group(1))
+            # canonical B key: a slot plan's realizes may say .S<n>; slot
+            # number == position, so it is the same bullet (JAMA repro 260831)
+            scaffolds.setdefault(
+                re.sub(r"\.S(\d+)$", r".B\1", m.group(2)), []
+            ).append(sm.group(1))
 
     # A card names the bullets it SERVES, so the plan never has to be edited
     # to carry an id that did not exist when it was frozen. Many-to-many: PP04
@@ -1199,6 +1513,15 @@ def plan_card(page_src, root=None):
         # differs, and it differs because the units differ.
         full_addr = "C%d.P%d.B%d" % (cn, max(pn, 1), sn)
         addr = full_addr
+
+        # New typed Evidence Items are the current contract.  Their short
+        # inline tags keep the Shape readable; the native popover exposes the
+        # whole Survey graph (supports, local Run, Result, and human Decide).
+        typed_chips = []
+        for item in typed["by_target"].get(full_addr, []):
+            nid += 1
+            typed_chips.append(_typed_item_chip(item, "typed-ev%d" % nid))
+
         def _backlink(exclude=()):
             """The ↩ tag: cards that name THIS bullet in their `serves:`.
             It is skipped for a card the row already prints as a chip, because
@@ -1248,7 +1571,7 @@ def plan_card(page_src, root=None):
         def _bullet_row(head_raw, chips_html):
             """One bullet row; Answered:/Drawn:/Note: text folds behind a
             click (JL 260819), so the pane shows only the terse head."""
-            m2 = re.search(r'\s(Answered:|Drawn:|Note:|More:)\s', head_raw)
+            m2 = re.search(r'\s(Answered:|Drawn:|Note:|More:|Routed:)\s', head_raw)
             if not m2:
                 return ('<div class=row><span class=addr>%s</span>'
                         '<span class=x>%s %s</span></div>'
@@ -1268,7 +1591,9 @@ def plan_card(page_src, root=None):
             # tag on every line was wrong (JL 260817) and made the plan
             # unreadable: the plan is prose, the notes are the exception.
             tally["plain point"] = tally.get("plain point", 0) + 1
-            rows.append(_bullet_row(body, _backlink()))
+            rows.append(_bullet_row(body, " ".join(
+                [chip for chip in [_backlink(), *typed_chips] if chip]
+            )))
             continue
         emo, kind = hit
         tally[kind] = tally.get(kind, 0) + 1
@@ -1276,13 +1601,13 @@ def plan_card(page_src, root=None):
         # end mark may legally mention any glyph.
         raw_said = body[:hit_at].strip()
         after = body[hit_at + len(emo):]
-        pat = {"probe": r"(PP\d+)", "value": r"(PP\d+(?:\.v\d+)?)",
+        pat = {"probe": r"(?<![A-Za-z0-9-])(PP\d+)", "value": r"(?<![A-Za-z0-9-])(PP\d+(?:\.v\d+)?)",
                "display": r"(Display\d+)",
                # [A-Za-z]* after the year, not [a-z]?: author-year-WORD keys
                # (`luo2026eventglucose`) were truncated to `luo2026e`, and the
                # chip then reported not-in-bibex for a key nobody wrote.
-               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*)",
-               "aim": r"(A\d+\.\d+|P\d+)"}.get(kind)
+               "cite": r"(QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*|[A-Za-z][\w-]*[_:][\w:-]+|[A-Z][A-Z0-9-]{3,})",
+               "aim": r"(?<![A-Za-z0-9.\-])(A\d+\.\d+|P\d+)"}.get(kind)
         # ALL of them, not the first. "📚 Dowell2016 · Dowell2022" registered
         # only Dowell2016, so the second key appeared as an orphan on the very
         # reverse-join row built to catch orphans (found 260817 by driving it).
@@ -1294,9 +1619,9 @@ def plan_card(page_src, root=None):
         _tail = body[-64:]
         for _emo, _kind in _MARK.items():
             _at = _tail.rfind(_emo)
-            _p = {"probe": r"PP\d+", "value": r"PP\d+(?:\.v\d+)?",
+            _p = {"probe": r"(?<![A-Za-z0-9-])PP\d+", "value": r"(?<![A-Za-z0-9-])PP\d+(?:\.v\d+)?",
                   "display": r"Display\d+",
-                  "cite": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*"}.get(_kind)
+                  "cite": r"QB\d+|[A-Za-z][\w:-]*\d{4}[A-Za-z]*|[A-Za-z][\w-]*[_:][\w:-]+|[A-Z][A-Z0-9-]{3,}"}.get(_kind)
             if _at >= 0 and _p:
                 cited.update(re.findall(_p, _tail[_at:]))
         # A BARE mark whose bullet already has a card is RAISED, and saying
@@ -1350,6 +1675,7 @@ def plan_card(page_src, root=None):
             bl = _backlink(exclude=refs)
             if bl:
                 chips.append(bl)
+        chips.extend(typed_chips)
         if kind in {"probe", "value", "display", "cite"}:
             bundle = _bundle_state("value" if kind == "probe" else kind,
                                    refs, full_addr, by_bullet,
@@ -1368,13 +1694,13 @@ def plan_card(page_src, root=None):
                 labels.append("feedback " + ", ".join(bundle["feedback"]))
             if not labels:
                 labels.append("no landed resource")
-            state_cls = "ok" if bundle["status"] in {"evidence-ready", "accepted"} else "warn"
+            state_cls = "ok" if bundle["summary"] == "complete" else "warn"
             bundle_rows.append(
                 '<div class="bundle-row"><span class=addr>%s</span>'
                 '<span class=bundle-kind>%s</span><span class=bundle-items>%s</span>'
                 '<span class="bundle-state %s">%s</span></div>'
                 % (full_addr, kind, _e(" · ".join(labels)), state_cls,
-                   _e(bundle["status"]))
+                   _e(bundle["summary"]))
             )
         # The chips go INSIDE the sentence's own span, never beside it. As
         # siblings of `.row`'s flex they each became a COLUMN, stole width from
@@ -1409,24 +1735,28 @@ def plan_card(page_src, root=None):
     landed = _count_landed(txt, cards, units, keys)
     accepted = _count_accepted(txt, cards, units)
     head = "%s plan %s" % ("🔒" if approved else "✍️", _e(ver))
-    gate = ('<span class=ok>approved</span>' if approved
-            else '<span class=wait>🚧 approved: ⬜ — waiting on a person</span>')
+    gate = ('<span class=ok>approved: ✅</span>' if approved
+            else '<span class=mut>approved: ⬜</span>')
     # The counts run through _e(), so an `&nbsp;` written into the STRING is
     # escaped and printed as the five literal characters (seen in the 260817
     # screenshot: "0 accepted &nbsp; aim 9"). Separators belong in the markup.
-    counts = "%d owed · %d landed · %d accepted" % (owed, landed, accepted)
-    kinds = " · ".join("%s %d" % (k, v) for k, v in sorted(tally.items()))
+    if typed["items"]:
+        item_n = len(typed["items"])
+        counts = "%d evidence item%s · Decisions %d/%d" % (
+            item_n, "s"[:item_n != 1], typed["decided"], item_n,
+        )
+    else:
+        counts = "%d owed · %d landed · %d accepted" % (owed, landed, accepted)
     bundle = ""
     if bundle_rows:
         bundle = ('<details class=bundles><summary>🔗 Evidence Bundles · %d '
                   'Point%s</summary>%s</details>'
                   % (len(bundle_rows), "s"[:len(bundle_rows) != 1],
                      "".join(bundle_rows)))
-    return ('<div class=card><h2>%s %s</h2>'
-            '<div class=mut>%s<span class=sep>%s</span>%s<span class=sep>%s</span>'
-            '%s</div>%s%s</div>'
-            % (head, gate, _e(counts), "&nbsp;&middot;&nbsp;", _e(kinds),
-               "&nbsp;&middot;&nbsp;", _e(f.name), bundle, "".join(rows)))
+    cycle_strip = _outline_cycle_strip(typed["cycle"])
+    return ('<div class=card><h2>%s · %s</h2>'
+            '%s<div class=planmeta>%s</div>%s%s</div>'
+            % (head, gate, cycle_strip, _e(counts), bundle, "".join(rows)))
 
 
 
@@ -1454,7 +1784,366 @@ def _page_now(plan, plan_head, cards):
     return (plan_head + plan + fold) if plan else body
 
 
-def render(title, o, page_src=None, root=None):
+# ── the five sibling lenses (haipipe-plugin-outline 0.17.3) ────────────────
+# ── the sibling files · ONE record shape, ONE renderer (0.18.0) ────────────
+# JL 260831, reading the Discussion and Log lenses on SM00: "really hard to
+# read", "the discussion is not for human", "the logging is very bad", then
+# "the design of all of them are very bad … we should unify the format".
+# Every sibling file is a list of RECORDS with one grammar
+# (haipipe-plugin-outline §🧾 One record shape):
+#
+#   ### <ID> · <HEADLINE>        one line a stranger can read
+#   - **<Label>**: <value>       a fixed label set per kind, one line each
+#     indented lines             detail, folded under the record
+#   > Comment WHO · text · date  signed lanes, kept forever
+#
+# and this ONE renderer draws every kind the same way: id badge, headline,
+# label rows, a status pill, detail folded behind "more". The pre-0.18.0
+# shapes (bare `YYMMDD ·` log rows, `- id · head` feedback rows with indented
+# `key:` lines, `status:` metadata under a thread, the evidence table) are
+# still READ, so an unmigrated page renders instead of breaking.
+# 📎 Files is one process-record kind (JL 260831, QPf12-outline row 3:
+# `## Files`
+# leaves the page for `<stem>-files.md`, one `### F<n> · <what it is for>`
+# per file with Path and Role).
+_SIBLINGS = (("ctx", "🧭 Overview", "context"),
+             ("req", "📏 Requirement", "requirement"), ("disc", "💬 Discussion", "discussion"),
+             ("fb", "🗣 Feedback", "feedback"),
+             ("files", "📎 Files", "files"), ("log", "📜 Log", "log"))
+
+_HDR_RE = re.compile(r"^(page|kind|rounds|written|status|plan|ids|measured):\s")
+_REC_RE = re.compile(r"^###\s+([^·]+?)\s*·\s*(.*)$")
+_OLD_LOG_RE = re.compile(r"^(\d{6}(?:\s+\d{4})?)\s*·\s*(.*)$")
+_OLD_FB_RE = re.compile(r"^- ((?:S[A-Z0-9]+-PP\d+|R\d{2}))\s*·\s*(.*)$")
+_OLD_EV_RE = re.compile(r"^(C\d+\.P\d+\.B\d+)\s+(\S+)\s+(\S+)\s+(.*?)\s{2,}(\S+)\s*$")
+_LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
+_KV_RE = re.compile(r"^\s*(status|serves|round|opened|settled|parent|anchors|state|landed|"
+                    r"implements|owner|moved|question|ruling|rationale|consequences|refs|"
+                    r"source|received)\s*:\s*(.*)$")
+_QUOTE_RE = re.compile(r"^\s*>\s?(.*)$")
+_PILL_LABELS = ("status", "state", "landed", "decide", "decides", "met")
+
+def _inl(t):
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from src.body import inline as _inline
+        return _inline(t)
+    except Exception:
+        return html.escape(t)
+
+def _auto_head(text, limit=26):
+    """An old one-paragraph row: its first sentence is the headline, the rest
+    folds. Long rows were the whole complaint (JL 260831: a 150-word Log row
+    rendered as one paragraph)."""
+    words = text.split()
+    if len(words) <= limit + 6:
+        return text, ""
+    m = re.match(r"(.{20,240}?[.!?])(?:\s+|$)(.*)", text, re.S)
+    if m and len(m.group(1).split()) <= limit + 14:
+        return m.group(1), m.group(2).strip()
+    return " ".join(words[:limit]) + " …", text
+
+def _records(text):
+    """-> [("meta", line) | ("group", title) | ("text", line) | ("rec", rec)]
+    rec = {id, head, rows:[[label, value]], quotes:[str], detail:[str]}"""
+    items, rec, q, body, q_indent = [], None, None, False, 0
+    def push():
+        nonlocal rec
+        if rec is not None:
+            items.append(("rec", rec)); rec = None
+    for raw in text.splitlines():
+        ln = raw.rstrip()
+        s = ln.strip()
+        if not s:
+            q = None; continue
+        if ln.startswith("# ---") or s.startswith("EVIDENCE STATUS") or s.startswith("REQUIREMENT") \
+                or s.startswith("regenerate:") or s.startswith("GENERATED"):
+            continue
+        if ln.startswith("# "):
+            continue                      # the file's own title; the tab says it
+        if not body and _HDR_RE.match(ln):
+            items.append(("meta", s)); continue
+        m = _REC_RE.match(ln)
+        if m:
+            push(); body = True; q = None
+            rec = dict(id=m.group(1).strip(), head=m.group(2).strip(), rows=[], quotes=[], detail=[])
+            continue
+        if ln.startswith("## "):
+            push(); body = True; items.append(("group", ln[3:].strip())); continue
+        m = _OLD_LOG_RE.match(ln)
+        if m and not ln.startswith(" "):
+            push(); body = True
+            head, rest = _auto_head(m.group(2).strip())
+            rec = dict(id=m.group(1), head=head, rows=[], quotes=[], detail=[rest] if rest else [])
+            continue
+        m = _OLD_FB_RE.match(ln)
+        if m:
+            push(); body = True
+            rec = dict(id=m.group(1), head=m.group(2).strip(), rows=[], quotes=[], detail=[]); continue
+        m = _OLD_EV_RE.match(ln)
+        if m:
+            push(); body = True
+            rec = dict(id=m.group(1), head="%s %s" % (m.group(2), m.group(3)),
+                       rows=[["Has", m.group(4).strip()], ["Status", m.group(5)]], quotes=[], detail=[])
+            push(); continue
+        if rec is None:
+            m = _KV_RE.match(ln)
+            items.append(("text", "%s: %s" % (m.group(1), m.group(2)) if m else s)); continue
+        m = _LABEL_RE.match(s)
+        if m:
+            rec["rows"].append([m.group(1).strip(), m.group(2).strip()]); q = None; continue
+        m = _KV_RE.match(ln)
+        if m and not s.startswith("- "):
+            rec["rows"].append([m.group(1).capitalize(), m.group(2).strip()]); q = None; continue
+        m = _QUOTE_RE.match(ln)
+        if m:
+            rec["quotes"].append(m.group(1)); q = rec["quotes"]
+            q_indent = len(ln) - len(ln.lstrip()); continue
+        # a lane continues only on a line indented DEEPER than the lane itself;
+        # migrated records indent every line by two, and reading those as
+        # continuation glued a whole ruling record into one quote (SM06 D01)
+        if q is not None and (len(ln) - len(ln.lstrip())) > q_indent:
+            q[-1] += " " + s; continue
+        q = None
+        rec["detail"].append(s[2:] if s.startswith("- ") else s)
+    push()
+    return items
+
+def _pill(rec):
+    """The one row that says where the record stands, as a pill."""
+    for lab, val in rec["rows"]:
+        L = lab.lower()
+        if L not in _PILL_LABELS:
+            continue
+        v = val.strip(); low = v.lower()
+        if L in ("decide", "decides"):
+            # the pill names WHO rules; the row stays, it carries serves/opened
+            return (None, "acc", v.split(" · ")[0].strip() or "open")
+        if L == "landed":
+            return (lab, "warn", "not landed") if v in ("", "—", "-") else (lab, "ok", v)
+        # the item ladder (haipipe-plugin-outline ref/item-table.md): landed ·
+        # folded · accepted read green; owed · bound · stale · blocked amber;
+        # deferred · dropped grey (the default below)
+        if any(k in low for k in ("✅", "settled", "landed", "folded", "accepted", "decided", "gated")) \
+                or low in ("met", "yes"):
+            return (lab, "ok", v)
+        if any(k in low for k in ("open", "needs", "🔴", "🟡", "hold", "unmet", "⬜", "bound", "stale", "blocked")) \
+                or v in ("", "—", "-"):
+            return (lab, "warn", v or "open")
+        return (lab, "mut", v)
+    return None
+
+def _rec_html(rec, kind):
+    pill = _pill(rec)
+    h = ['<div class="rec %s"><div class=rh><span class=rid>%s</span><span class=rt>%s</span>'
+         % (kind, _e(rec["id"]), _inl(rec["head"]))]
+    if pill:
+        h.append('<span class="pill %s">%s</span>' % (pill[1], _e(pill[2])))
+    h.append("</div>")
+    rows = [(l, v) for l, v in rec["rows"] if not (pill and l == pill[0])]
+    if rows:
+        h.append("<div class=rrows>" + "".join(
+            '<div class=rr><b>%s</b><span>%s</span></div>' % (_e(l), _inl(v)) for l, v in rows) + "</div>")
+    qs = rec["quotes"]
+    inline_q = qs if (len(qs) <= 2 and sum(len(x) for x in qs) <= 300) else []
+    for qq in inline_q:
+        h.append('<div class=rq>%s</div>' % _inl(qq))
+    d = [x for x in rec["detail"] if x]
+    folded_q = [] if inline_q else qs
+    n = len(d) + len(folded_q)
+    if n:
+        body = "".join('<div class=rq>%s</div>' % _inl(x) for x in folded_q) + \
+               "".join('<div>%s</div>' % _inl(x) for x in d)
+        if n > 2 or sum(len(x) for x in d + folded_q) > 240:
+            h.append('<details class=rd><summary>more · %d line%s</summary><div class=rdb>%s</div></details>'
+                     % (n, "s"[:n != 1], body))
+        else:
+            h.append('<div class=rdb>%s</div>' % body)
+    h.append("</div>")
+    return "".join(h)
+
+def _feedback_rec_html(rec):
+    """Feedback reads as request → next action; provenance stays available."""
+    pill = _pill(rec)
+    h = ['<div class="rec feedback"><div class=rh><span class=rid>%s</span>'
+         '<span class=rt>%s</span>' % (_e(rec["id"]), _inl(rec["head"]))]
+    if pill:
+        h.append('<span class="pill %s">%s</span>' % (pill[1], _e(pill[2])))
+    h.append("</div>")
+    visible, aux = {}, []
+    for label, value in rec["rows"]:
+        low = label.lower()
+        if pill and label == pill[0]:
+            continue
+        if low in ("feedback", "work") and low not in visible:
+            visible[low] = value
+        else:
+            aux.append((label, value))
+    if visible.get("feedback"):
+        h.append('<div class=fbmsg>%s</div>' % _inl(visible["feedback"]))
+    if visible.get("work"):
+        h.append('<div class=fbwork><b>Next</b>%s</div>' % _inl(visible["work"]))
+    folded = []
+    folded.extend('<div class=fbaux><b>%s</b><span>%s</span></div>'
+                  % (_e(label), _inl(value)) for label, value in aux)
+    folded.extend('<div class=fbroute>%s</div>' % _inl(value)
+                  for value in rec["quotes"] + [x for x in rec["detail"] if x])
+    if folded:
+        h.append('<details class="rd fbcontext"><summary>Source &amp; routing</summary>'
+                 '<div class=rdb>%s</div></details>' % "".join(folded))
+    if not visible and not folded:
+        h.append('<div class=mut>no feedback detail</div>')
+    h.append("</div>")
+    return "".join(h)
+
+def _feedback_html(items):
+    """A calm review queue: tally, round ask, then actionable feedback rows."""
+    out, summary, context = [], "", []
+
+    def flush_context():
+        if not context:
+            return
+        body = "".join('<div class=fbaux><b>%s</b><span>%s</span></div>'
+                       % (_e(label), _inl(value)) for label, value in context)
+        out.append('<details class=fbcontext><summary>Order, gate &amp; source</summary>'
+                   '<div class=rdb>%s</div></details>' % body)
+        context[:] = []
+
+    for kind, value in items:
+        if kind == "meta":
+            if value.startswith("status:"):
+                m = re.search(r"(\d+)\s+of\s+(\d+)\s+open\s+·\s+(\d+)\s+landed\s+·\s+(\d+)\s+round", value)
+                if m:
+                    summary = ('<div class=fbsummary><span><b>%s</b> open</span>'
+                               '<span><b>%s</b> landed</span><span><b>%s</b> round%s</span></div>'
+                               % (m.group(1), m.group(3), m.group(4),
+                                  "s"[:m.group(4) != "1"]))
+            continue
+        if kind == "group":
+            flush_context()
+            rid, sep, title = value.partition(" · ")
+            out.append('<div class=fbgroup><span class=rid>%s</span><span class=fbgtitle>%s</span></div>'
+                       % (_e(rid), _inl(title if sep else value)))
+            continue
+        if kind == "text":
+            if value.startswith("The Round's own words"):
+                continue
+            m = re.match(r"\*\*(Ask|Order|Gate)\*\*\s*·\s*(.*)", value)
+            if m:
+                if m.group(1) == "Ask":
+                    out.append('<div class=fbask><b>Main ask</b>%s</div>' % _inl(m.group(2)))
+                else:
+                    context.append((m.group(1), m.group(2)))
+                continue
+            if value.startswith("**"):
+                context.append(("Source", value))
+            else:
+                out.append('<div class=rpre>%s</div>' % _inl(value))
+            continue
+        flush_context()
+        out.append(_feedback_rec_html(value))
+    flush_context()
+    return summary + ("".join(out) or '<div class=mut>nothing here yet</div>')
+
+def _records_html(items, kind):
+    if kind == "fb":
+        return _feedback_html(items)
+    out, meta = [], []
+    for k, v in items:
+        if k == "meta":
+            if not v.startswith(("page:", "kind:")):
+                meta.append(_e(v))
+        elif k == "group":
+            out.append('<div class=rgrp>%s</div>' % _inl(v))
+        elif k == "text":
+            out.append('<div class=rpre>%s</div>' % _inl(v))
+        else:
+            out.append(_rec_html(v, kind))
+    head = ('<div class="mut rmeta">%s</div>' % " · ".join(meta)) if meta else ""
+    return head + ("".join(out) or '<div class=mut>nothing here yet</div>')
+
+def _lenses(page_src, root=None):
+    """Return one Context Workspace over the separate process records.
+
+    The generated Context overview, Requirement, Discussion, Feedback, Files,
+    Log, and Skills remain separate stores on disk. The workspace merges only
+    their presentation, replacing the old Plan Context/Page Records split.
+    """
+    if page_src is None:
+        return "", "", "", "", ""
+    context, records, lenses = [], [], []
+    for key, label, suffix in _SIBLINGS:
+        f = page_src.parent / "outline" / ("%s-%s.md" % (page_src.stem, suffix))
+        if not f.is_file():
+            continue
+        items = _records(f.read_text(encoding="utf-8", errors="replace"))
+        n = sum(1 for k, _ in items if k == "rec")
+        chip = ('\n <button class="chip lens-chip" data-lens=%s '
+                'title="outline/%s">%s%s</button>'
+                % (key, f.name, label, (" · %d" % n) if n else ""))
+        context.append(chip)
+        lenses.append('\n<div class=lens id=lens-%s><div class=card>%s</div></div>'
+                      % (key, _records_html(items, key)))
+    # Skills is an Outline-owned Page Record under outline/skill/.  A former
+    # sibling skill/ store remains a read-only fallback during migration.
+    skill_dirs = [page_src.parent / "outline" / "skill",
+                  page_src.parent / "skill"]
+    skill_dir = next((d for d in skill_dirs
+                      if (d / (page_src.stem + ".md")).is_file()),
+                     skill_dirs[0])
+    skill_store = skill_dir / (page_src.stem + ".md")
+    if skill_store.is_file():
+        skill_text = skill_store.read_text(encoding="utf-8", errors="replace")
+        skill_count = sum(
+            1 for line in skill_text.splitlines()
+            if line.startswith("- ") and " · removed" not in line
+        )
+        context.append(
+            '\n <button class="chip lens-chip" data-lens=skills '
+            'title="outline/skill/%s">🛠 Skills · %d</button>'
+            % (skill_store.name, skill_count)
+        )
+        skill_view = skill_dir / (page_src.stem + "-skill.html")
+        skill_url = ""
+        if skill_view.is_file() and root is not None:
+            try:
+                skill_url = "/" + skill_view.resolve().relative_to(
+                    Path(root).resolve()).as_posix() + "?embed=1"
+            except ValueError:
+                skill_url = ""
+        if skill_url:
+            skill_body = (
+                '<iframe class=workspace-frame title="Skills" data-src="%s"></iframe>'
+                % html.escape(skill_url, quote=True)
+            )
+        else:
+            active = [
+                line[2:].split(" · ", 1)[0]
+                for line in skill_text.splitlines()
+                if line.startswith("- ") and " · removed" not in line
+            ]
+            skill_body = '<div class=card>%s</div>' % (
+                "".join('<div class=rpre>🛠 %s</div>' % _e(name) for name in active)
+                or '<div class=mut>no skills ranked yet</div>'
+            )
+        lenses.append('\n<div class=lens id=lens-skills>%s</div>' % skill_body)
+    context_html = ('<div class=subchips data-subspace=context>%s</div>'
+                    % "".join(context)) if context else ""
+    records_html = ""
+    context_space = ('\n <button class=space data-space=context '
+                     'data-default=%s>Context Workspace</button>'
+                     % ("ctx" if any("data-lens=ctx" in x for x in context)
+                        else "req" if any("data-lens=req" in x for x in context)
+                        else "disc" if any("data-lens=disc" in x for x in context)
+                        else "fb" if any("data-lens=fb" in x for x in context)
+                        else "files" if any("data-lens=files" in x for x in context)
+                        else "log" if any("data-lens=log" in x for x in context)
+                        else "skills")) if context else ""
+    records_space = ""
+    return context_space, records_space, context_html, records_html, "".join(lenses)
+
+def render(title, o, page_src=None, root=None, path_q="", file_q=""):
     """-> the full html page: both lenses rendered, chips toggle."""
     # Say it in words a tired reader can take in the first time (JL 260816).
     # "3 loose lines" and "aligned" are this plugin's own shorthand, and a
@@ -1495,8 +2184,7 @@ def render(title, o, page_src=None, root=None):
     # is what is written now. Reading them unlabelled beside each other, with
     # two different section lists, is what made the tab confusing.
     plan = plan_card(page_src, root) if page_src is not None else ""
-    plan_head = ('<div class=lead>🧭 THE PLAN &mdash; what this page said it '
-                 'would cover. Authored, frozen when approved.</div>')
+    plan_head = ''
     by_div = _page_now(plan, plan_head, cards) if o["divs"] else (plan +
         cards[-1] + '<div class=mut>no numbered Content divisions found; '
         'everything is 🌐 until the page grows `### N ·` parts</div>')
@@ -1513,8 +2201,17 @@ def render(title, o, page_src=None, root=None):
 
     lead = ('<div class=lead>%s</div>' % _e(o.get("lead", ""))
             if o.get("lead") else "")
+    context_space, records_space, context_chips, records_chips, record_lenses = _lenses(page_src, root)
+    workspace_url = ""
+    if page_src is not None:
+        workspace_url = ("/_board/evidence?path=%s&file=%s&embed=1" %
+                         (quote(path_q or ""), quote(file_q or page_src.name)))
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
-                        chip=chip, by_div=by_div, by_prog="".join(prog))
+                        chip=chip, by_div=by_div, by_prog="".join(prog),
+                        workspace_url=html.escape(workspace_url, quote=True),
+                        context_space=context_space, records_space=records_space,
+                        context_chips=context_chips, records_chips=records_chips,
+                        record_lenses=record_lenses)
 
 
 class OutlineMixin:
@@ -1532,7 +2229,17 @@ class OutlineMixin:
         f, board = got
         page_src = Path(board) / f
         o = parse_outline(page_src.read_text(encoding="utf-8"))
-        page = render(page_src.stem, o, page_src, self.root)
+        # haipipe-plugin-outline 0.16.0: the Aims live in the PLAN and the page
+        # keeps no copy, so a migrated page parsed alone reads "lists no aims
+        # yet" while its plan holds them (JL 260830, SM08). Page first, plan
+        # second, the same order check.py's page_aims_text uses.
+        if not o.get("aims"):
+            plan, _v = _latest_plan(page_src)
+            if plan is not None:
+                po = parse_outline(plan.read_text(encoding="utf-8", errors="replace"))
+                if po.get("aims"):
+                    o["aims"] = po["aims"]
+        page = render(page_src.stem, o, page_src, self.root, p["path"], p["file"])
         return self._outline_send(page.encode("utf-8"), 200, head_only)
 
     def _outline_send(self, body, code, head_only):

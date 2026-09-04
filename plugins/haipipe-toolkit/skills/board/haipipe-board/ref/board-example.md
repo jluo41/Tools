@@ -45,7 +45,7 @@ What must a patient satisfy to enter this study's analysis cohort?
 Wrong entry criteria void every later result, and this is the most expensive thing in the project to rework.
 While it stays open, QA2 has no stable cohort to validate.
 
-## Diagram
+## Outline
 ```
 all claims records  1,240,000 people
       │  ① age ≥ 18
@@ -60,21 +60,15 @@ all claims records  1,240,000 people
 
 ## Aims
 ### P · Page-level cohort definition
-- P1 · All four conditions exist as executable checks.
+- ✅ P1 · All four conditions exist as executable checks.
   **Done when:** Each translates into one SQL statement or a short code block, not "roughly".
-- P2 · Every condition has a head count.
+  **Now:** Met; all four checks run.
+- ✅ P2 · Every condition has a head count.
   **Done when:** The page reports how many people survive each screen, layer by layer.
-- P3 · Every condition has a stated reason.
+  **Now:** Met; the layer-by-layer counts are reported (31,500).
+- 🧠 P3 · Every condition has a stated reason.
   **Done when:** A reviewer can see why each screen belongs.
-
-## States
-The four conditions are written down and the head counts have been run (31,500).
-The code list for condition ④ (pre-existing contraindication) is still unsettled: what we run today is a list copied from elsewhere that nobody has checked.
-
-### P · Page-level cohort definition
-- ✅ P1 · Met; all four checks run.
-- ✅ P2 · Met; the layer-by-layer counts are reported.
-- 🟠 P3 · Waiting for the contraindication list to be checked.
+  **Now:** Waiting for the contraindication list (condition ④) to be checked; what we run today is a list copied from elsewhere that nobody has checked.
 
 ## Glossary
 observation window: the stretch of time in which the data can see this person's records, so anyone whose window is too short has an incomplete prescription history and cannot be counted.
@@ -105,18 +99,12 @@ Until QA1's condition ④ is settled, any validation result is unstable too.
 
 ## Aims
 ### P · Page-level validation
-- P1 · Demographics line up with a published cohort.
+- 🧠 P1 · Demographics line up with a published cohort.
   **Done when:** Age, sex, and region show no unexplained large gap.
-- P2 · Fifty people pass manual review.
+  **Now:** Not started; waiting for QA1 condition ④, before which any validation result is unstable.
+- 🧠 P2 · Fifty people pass manual review.
   **Done when:** Raw-record review confirms each sampled person belongs in the cohort.
-
-## States
-Not a single step has been done.
-It becomes meaningful only once QA1's condition ④ is settled.
-
-### P · Page-level validation
-- 🟠 P1 · Waiting for QA1 condition ④.
-- 🟠 P2 · Waiting for QA1 condition ④.
+  **Now:** Not started; waiting for QA1 condition ④.
 
 ## Discussion
 

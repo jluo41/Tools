@@ -53,13 +53,24 @@ from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
+from src.feedback import rounds as _rounds, parse_round, register_path, register_ids  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
+MAX_PAGE_TITLE_WORDS = 6
+# `Q<group><n>-<slug>` or `S-<Family>-<unit>-<slug>`, as the heading writes it.
+PAGE_ID_RE = re.compile(r"Q[A-Za-z]*\d+[\w-]*|S-[\w-]+")
+SEMANTIC_SECTION_PAGE = re.compile(
+    r"^S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-[A-Za-z][A-Za-z0-9-]*\.md$"
+)
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
 # The generated Board site can link to live server routes. They do not resolve
 # as files beside an HTML page, so checker must recognize them rather than
 # calling the Board Home navigation a dead static href.
 LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw", "/boards")
+APPLICATION_BOARD_NAME = re.compile(
+    r"^(?:(?:A\d+_)?[A-Za-z0-9][A-Za-z0-9-]*-InsightBoard|"
+    r"(?:B\d+_)?[A-Za-z0-9][A-Za-z0-9-]*-DesignBoard)$"
+)
 
 # Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
@@ -274,6 +285,19 @@ def check_board(d, rep):
     text = bmd.read_text(encoding="utf-8")
     links = declared_links(text)
 
+    if ("InsightBoard" in d.name or "DesignBoard" in d.name) and not (
+        APPLICATION_BOARD_NAME.fullmatch(d.name)
+    ):
+        rep.add(
+            WARN,
+            "legacy-application-board-name",
+            str(d),
+            "new Application boards use subject-first names: "
+            "<Subject>-InsightBoard or <Topic>-DesignBoard, with an optional "
+            "A<NN>_ or B<NN>_ ordering prefix; kind-first names are readable "
+            "compatibility addresses only",
+        )
+
     if not re.search(r"^#\s+\S", text, re.M):
         rep.add(ERROR, "board-missing-title", "board.md", "no `# title` line")
     for canon in ("Topic", "Pipeline", "Pages"):
@@ -323,7 +347,10 @@ def check_board(d, rep):
                         "a `reads:` entry must be a plain sibling-board name or a "
                         "repo-relative path with no `..` and no `~`")
                 continue
-            cand = [d.parent / entry, Path(entry)]
+            # repo-relative means from the CHECKOUT ROOT, never the invoker's
+            # cwd: the same board must check identically from anywhere.
+            _rr = _repo_root(d)
+            cand = [d.parent / entry] + ([_rr / entry] if _rr else [])
             if not any(c.is_dir() for c in cand):
                 rep.add(ERROR, "board-reads-target", f"board.md -> {entry}",
                         "a `reads:` entry names no board on disk; the grant chain "
@@ -348,9 +375,9 @@ def check_board(d, rep):
     seen = {}
     for name in sorted(pages):
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
-        if not m:
+        if not m and not SEMANTIC_SECTION_PAGE.fullmatch(name):
             continue
-        fid = m.group(1)
+        fid = Path(name).stem if SEMANTIC_SECTION_PAGE.fullmatch(name) else m.group(1)
         if fid in seen:
             rep.add(ERROR, "duplicate-id", name, f"id {fid} is already used by {seen[fid]}")
         seen[fid] = name
@@ -375,9 +402,29 @@ def check_board(d, rep):
 def check_face(path, name, rep, links, page_ids, decision_only=False):
     text = path.read_text(encoding="utf-8")
 
-    if not re.search(r"^#\s+\S", text, re.M):
+    title_match = re.search(r"^#\s+(\S.*?)\s*$", text, re.M)
+    if not title_match:
         rep.add(ERROR, "missing-title", name, "no `# title` line")
+    else:
+        title = title_match.group(1)
+        # The heading is written `{id} · {title}` (src/page_board.py), and the
+        # page id is not part of the title, so drop a leading id-shaped token.
+        head, sep, tail = title.partition("\u00b7")
+        if sep and PAGE_ID_RE.fullmatch(head.strip()):
+            title = tail.strip()
+        # Visible words are semantic tokens, not punctuation-only separators.
+        # A hyphenated compound, slash-joined identifier, or acronym is one word.
+        words = re.findall(r"[A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*", title)
+        if len(words) > MAX_PAGE_TITLE_WORDS:
+            line = text[:title_match.start()].count("\n") + 1
+            rep.add(WARN, "title-too-long", f"{name}:{line}",
+                    f"title has {len(words)} visible words; target 3-5 and keep the whole "
+                    f"title at or below {MAX_PAGE_TITLE_WORDS} (JL 260827)")
     for canon in REQUIRED:
+        # `Done when` is satisfied by the page's PLAN once the page migrated to
+        # haipipe-plugin-outline 0.16.0 and kept no copy.
+        if canon == "Done when" and page_aims_text(text, path)[1]:
+            continue
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
             rep.add(ERROR, "missing-section", name, f"no `## {shown}` section")
@@ -387,7 +434,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # or the legacy shorthand S<d>. A bare startswith("S") also claimed
     # application families like SD00-seed and SA01-<slug> (260821), which are
     # not stages; SM/SA shorthands left parse.py the same day.
-    if re.match(r"S(?:-|\d)", name):
+    if re.match(r"S(?:-|\d)", name) and not SEMANTIC_SECTION_PAGE.fullmatch(name):
         for canon in ("Stage Contract", "Content"):
             if not has_section(text, canon):
                 shown = " / ".join(alias_names(canon))
@@ -417,7 +464,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # live references today, which is why these are WARN: see the retired-id
     # convention item on QA9.
     for lineno, ln in strip_fences(text, prose_only=True):
-        for tok in re.findall(r"`([QS][A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
+        for tok in re.findall(r"`(S-[A-Za-z0-9-]+|Q[A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
             if tok in links or tok in page_ids:
                 continue
             rep.add(WARN, "unresolved-id", f"{name}:{lineno}",
@@ -514,9 +561,15 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                     "a whole-line **bold** renders as a group title with 🔹, but prose follows it, "
                     "not a run of items (QA4 §3)")
 
-    aims_text, states_text = section_text(text, "Done when"), section_text(text, "Now")
+    aims_text, in_plan = page_aims_text(text, path)
+    states_text = section_text(text, "Now")
     check_state_mirrors_aims(aims_text, states_text, name, rep)
-    check_generated_block(text, name, rep)
+    check_generated_block(text, name, rep, path)
+    check_evidence_file(path, name, rep)
+    check_discussion_file(path, name, rep)
+    check_requirement_file(text, path, name, rep)
+    check_section_writing_requirements(text, path, name, rep)
+    check_retired_blocks(text, name, rep)
 
     progress = aim_progress(aims_text, states_text)
     met, total, closed = progress["met"], progress["total"], progress["closed"]
@@ -552,12 +605,14 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
 
     check_opening(text, name, rep)
+    check_feedback_coverage(path, text, name, rep)
+    check_plan_arc(path, name, rep)
     check_page_type(path, text, name, rep)
     check_group_names(text, name, rep)
     check_one_canvas(text, name, rep)
     check_division_figures(text, name, rep)
     check_comment_form(text, name, rep)
-    check_file_paths(text, name, rep, path.parent)
+    check_file_paths(text, name, rep, path.parent, path=path)
     check_related_board_pages(path, name, text, rep)
     check_canvas_frames(text, name, rep, path.parent)
     check_duplicate_sections(text, name, rep)
@@ -566,6 +621,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_page_evidence(path, text, name, rep, ERROR, WARN)
     check_fence_balance(text, name, rep)
     check_content_attribution(text, name, rep)
+    check_section_sentences(text, path, name, rep)
 
 
 # QB4 §1 states seven rules for the Opening and NOT ONE of them was checked, so
@@ -680,6 +736,17 @@ RETIRED_SECTIONS = {
     "Question": "renamed to `## Opening` (260731)",
     "Items to Finish": "renamed to `## Aims` (260731)",
     "Where we are": "renamed to `## States` (260731), then merged into `## Aims` (260819)",
+    # The 260819 merge named only the OLD name above, so `RETIRED_SECTIONS.get`
+    # returned None for the CURRENT one and the comment at the head of this file
+    # ("`retired-section` reports it") described behaviour the table did not
+    # have. 1,026 lines of a retired section passed silently on the MISQ paper
+    # board for eleven days (JL 260830).
+    "Files": "moved to `outline/<stem>-files.md` (JL 260831, QPf12 row 3): one "
+             "`### F<n> · <what it is for>` record per file with `Path` and `Role`; a "
+             "Related Board Page is a record with `Role: related` and its row verbatim under it",
+    "States": "merged into `## Aims` (260819): one Aim row carries its tick, "
+              "its `Done when:` test and its `Now:` fact. Live asks "
+              "(`### Needs JL · tick these`) become that Aim's `Now:` line",
 }
 
 
@@ -789,9 +856,9 @@ def check_content_attribution(text, name, rep):
     transcription another pen owns; the CHECK judge reads those by eye.
     New authority names join the name pattern here when the board gains them.
     """
-    body = re.search(r"(?ms)^## (?:Content|Diagram)\b.*?(?=^## (?!Content|Diagram)|\Z)",
+    body = re.search(r"(?ms)^## (?:Content|Outline|Diagram)\b.*?(?=^## (?!Content|Outline|Diagram)|\Z)",
                      text)
-    spans = re.findall(r"(?ms)^## (?:Content|Diagram)\b[^\n]*\n(.*?)(?=^## |\Z)",
+    spans = re.findall(r"(?ms)^## (?:Content|Outline|Diagram)\b[^\n]*\n(.*?)(?=^## |\Z)",
                        text)
     if not spans:
         return
@@ -821,6 +888,70 @@ def check_content_attribution(text, name, rep):
                         + " and ".join(hits) + "; state the rule itself and move "
                         "the who/when to a Log row (haipipe-page-draft, the "
                         "present-tense rule).")
+
+
+_NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+|\b\d+\.\d+\b|\b\d+(?:\.\d+)?\s*(?:million|thousand|billion|percent|%)")
+
+
+def _latest_plan_approved(path):
+    """-> True when the page's newest outline-v<N>.md carries `approved: ✅`."""
+    o = path.parent / "outline"
+    if not o.is_dir():
+        return False
+    plans = sorted(o.glob(f"{path.stem}-outline-v*.md"),
+                   key=lambda q: int(re.search(r"-v(\d+)\.md$", q.name).group(1))
+                   if re.search(r"-v(\d+)\.md$", q.name) else 0)
+    if not plans:
+        return False
+    return bool(re.search(r"(?m)^approved:\s*✅", plans[-1].read_text(encoding="utf-8", errors="replace")))
+
+
+def check_section_sentences(text, path, name, rep):
+    """The DRAFT contract on a Section page drafted from an APPROVED plan
+    (haipipe-page-draft §① §②): every Content sentence ends `<!-- realizes:
+    C.P.B -->` (`sentence-without-realizes`), and every sentence that carries a
+    number (a comma-grouped count, a decimal, `8.69 million`, a percentage) has
+    a `> Value:` lane under it (`number-without-lane`). Gated on the approved
+    plan because a page with no agreed slot plan has nothing to realize; the
+    pages written before the rule stay silent until their next DRAFT."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if not _latest_plan_approved(path):
+        return
+    spans = re.findall(r"(?ms)^## Content\b[^\n]*\n(.*?)(?=^## |\Z)", text)
+    if not spans:
+        return
+    span = spans[0]
+    start = text.index(span)
+    base = text[:start].count("\n") + 1
+    lines = span.split("\n")
+    fenced = False
+    for i, line in enumerate(lines):
+        st = line.strip()
+        if st.startswith(FENCE):
+            fenced = not fenced
+            continue
+        if fenced or not st or st.startswith((">", "#", "<!--", "(", "**", "-", "|", "!", "["  )):
+            continue
+        core = re.sub(r"<!--.*?-->", "", st).strip()
+        if not re.search(r"[.?!][\"')\]]*(\s*\[[^\]]*\])?\s*$", core):
+            continue                      # a title line, a keyword list: not a sentence
+        if "realizes:" not in st:
+            rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
+                    "a Section sentence drafted from an approved plan names its slot: "
+                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-draft §①)")
+        probe = re.sub(r"\[[^\]]*\]|\\cite[pt]?\{[^}]*\}", "", core)
+        if _NUM_RE.search(probe):
+            j, has_lane = i + 1, False
+            while j < len(lines) and lines[j].strip().startswith(">"):
+                if re.match(r"^>\s*Value:", lines[j].strip()):
+                    has_lane = True
+                    break
+                j += 1
+            if not has_lane:
+                rep.add(WARN, "number-without-lane", "%s:%d" % (name, base + i),
+                        "this sentence states a number and no `> Value:` lane follows it; "
+                        "write the source page, bracket or card and its state (haipipe-page-draft §②)")
 
 
 def check_retired_sections(text, name, rep):
@@ -922,7 +1053,18 @@ def check_canvas_frames(text, name, rep, board_dir=None):
                         "so the link 404s (QB4 §2.7)")
 
 
-def check_file_paths(text, name, rep, board_dir=None):
+def _files_record_text(path):
+    """The page's outline/<stem>-files.md, with each `- **Path**: `x`` row
+    rewritten as a bare `- `x`` row so the Files path checks read it unchanged."""
+    if not path:
+        return ""
+    p = Path(path); f = p.parent / "outline" / f"{p.stem}-files.md"
+    if not f.is_file():
+        return ""
+    t = f.read_text(encoding="utf-8", errors="replace")
+    return re.sub(r"(?m)^(\s*[-*])\s+\*\*Path\*\*:\s*", r"\1 ", t)
+
+def check_file_paths(text, name, rep, board_dir=None, path=None):
     """Every backticked path in `## Files` must resolve (JL 260802).
 
     Files is the action map, and a stale path is worse than no path: the
@@ -935,6 +1077,9 @@ def check_file_paths(text, name, rep, board_dir=None):
     repo root, because a Files row may point at any of the three.
     """
     block = section_text(text, "Files") or ""
+    # Since 260831 the file map lives in outline/<stem>-files.md (JL, QPf12 row 3);
+    # its `- **Path**: `x`` rows are checked with the same teeth as a page's rows.
+    block = block + "\n" + _files_record_text(path)
     roots = [HERE, HERE.parent]
     if board_dir:
         d = Path(board_dir)
@@ -991,7 +1136,7 @@ def check_related_board_pages(path, name, text, rep):
     Pages row is narrower: its target must be a real Page on this Board, its
     visible Page id must agree with that source, and its requested Content scope
     must exist. Those facts are deterministic, so malformed context never waits
-    for an agent to discover it during DRAFT, EVIDENCE, REVISE, or CHECK.
+    for an agent to discover it during CONTEXT, OUTLINE, EVIDENCE, CONTENT, or CHECK.
     """
     for finding in audit_related_rows(path, text):
         level = ERROR if finding.level == "ERROR" else WARN
@@ -1043,7 +1188,7 @@ def _ymd(token):
     return t[2:] if len(t) == 8 else t
 
 
-def check_generated_block(text, name, rep):
+def check_generated_block(text, name, rep, path=None):
     """A measured block must say when it was measured, and not be older than
     the page it measures.
 
@@ -1069,7 +1214,16 @@ def check_generated_block(text, name, rep):
         blocks.append((tag, tail[0]))
     if not blocks:
         return
+    # The Log may live on the page OR, since haipipe-plugin-outline 0.16.0, in
+    # `outline/<stem>-log.md`. Reading only the page made this check lose its
+    # input the moment a page migrated: `latest` went "" for ever and a stale
+    # form block could never be reported again. A finding count dropping because
+    # a check lost its input is worse than the finding (field test, JL 260830).
     log = section_text(text, "Log")
+    if path is not None:
+        side = path.parent / "outline" / f"{path.stem}-log.md"
+        if side.exists():
+            log += "\n" + side.read_text(encoding="utf-8", errors="replace")
     latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
     for tag, block in blocks:
         _one_generated_block(tag, block, latest, name, rep)
@@ -1091,6 +1245,248 @@ def _one_generated_block(tag, block, latest, name, rep):
                 f"the block was measured {_ymd(stamp.group(1))} and this page has "
                 f"logged work through {latest}, so it measures a version that no "
                 "longer exists")
+
+
+
+def check_evidence_file(path, name, rep):
+    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.22.0):
+    the typed table (`<stem>-evidence-items.md`, specified at SHAPE and planned
+    at SURVEY) joined to local Results, one record per Evidence Item, its Status
+    one word of the item ladder,
+    written only by `cli/evidence-status.py`. Two things can go wrong with a derived
+    file and both are silent: it is older than the evidence it describes, or
+    someone typed into it. A stale status that reads as measured is worse than
+    no file (JL 260831)."""
+    if path is None:
+        return
+    ev = path.parent / "outline" / f"{path.stem}-evidence.md"
+    if not ev.exists():
+        return
+    text = ev.read_text(encoding="utf-8", errors="replace")
+    stamp = re.search(r"MEASURED\s+(2\d{5})(?:\s+(\d{4}))?", text)
+    if not stamp or "GENERATED; do not hand-edit" not in text:
+        rep.add(WARN, "evidence-hand-edited", name,
+                "`outline/%s` carries no `MEASURED <date>` + GENERATED line; a status "
+                "nobody generated is a status somebody typed" % ev.name)
+        return
+    import datetime as _dt
+    measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
+    newest, newest_name = 0.0, ""
+    lanes = [path.parent / "outline", path.parent / "probe", path.parent / "bibex",
+             path.parent / "display", path.parent / "pagex"]
+    for lane in lanes:
+        if not lane.is_dir():
+            continue
+        for f in lane.rglob("*"):
+            if f.is_file() and f != ev and f.stat().st_mtime > newest:
+                newest, newest_name = f.stat().st_mtime, f.relative_to(path.parent).as_posix()
+    if newest > measured + 60:
+        rep.add(WARN, "evidence-stale", name,
+                "`outline/%s` was measured %s %s but `%s` changed later; regenerate "
+                "with `cli/evidence-status.py`" % (ev.name, stamp.group(1), stamp.group(2) or "", newest_name))
+
+
+def check_discussion_file(path, name, rep):
+    """`outline/<stem>-discussion.md` holds OPEN questions only (haipipe-plugin-
+    outline 0.18.0, JL 260831: "the solved one go to logs, and only leave the
+    one we have not solved"). A thread that is settled, decided or dropped has
+    moved: its ruling is one `### YYMMDD · D<nn> …` record in `-log.md`. A
+    settled thread still sitting here is the old shape, and the file it makes
+    is the one nobody could read."""
+    if path is None:
+        return
+    f = path.parent / "outline" / f"{path.stem}-discussion.md"
+    if not f.exists():
+        return
+    text = f.read_text(encoding="utf-8", errors="replace")
+    for m in re.finditer(r"(?ms)^### (D\d+) · [^\n]*\n(.*?)(?=^### |\Z)", text):
+        body = m.group(2)
+        if re.search(r"(?m)^\s*(?:status:|- \*\*Status\*\*:)\s*(✅|🚫)", body) \
+                or re.search(r"(?m)^\s*(?:settled:|- \*\*Settled\*\*:)", body) \
+                or re.search(r"(?m)^\s*status:\s*✅", body):
+            rep.add(WARN, "discussion-settled-thread", name,
+                    f"thread `{m.group(1)}` is settled and still in `outline/{f.name}`; the discussion "
+                    f"holds open questions only, so its ruling belongs in `outline/{path.stem}-log.md` "
+                    f"as one dated record (haipipe-plugin-outline 0.18.0)")
+
+
+def check_requirement_file(text, path, name, rep):
+    """`outline/<stem>-requirement.md` holds a generated venue V block and an
+    authored page-writing W block. `cli/requirement.py` refreshes only V. A
+    Section that binds a venue division and has no file shows no 📏 chip; a V
+    block without its GENERATED line has lost its ownership boundary."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if not re.search(r"(?m)^structure-source:\s*\S", text[:3000]):
+        return
+    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    if not f.exists():
+        rep.add(WARN, "requirement-missing", name,
+                f"this page binds a venue division and `outline/{f.name}` "
+                f"does not exist; run `cli/requirement.py {path.name}`")
+        return
+    if "GENERATED; do not hand-edit" not in f.read_text(encoding="utf-8", errors="replace"):
+        rep.add(WARN, "requirement-hand-edited", name,
+                f"`outline/{f.name}` carries no GENERATED line for its venue V block; regenerate it without replacing authored W records")
+        return
+    # STALE: the venue desk (its one source) is newer than the stamp; a
+    # requirement that outlives a moved desk reads as binding.
+    ftxt = f.read_text(encoding="utf-8", errors="replace")
+    stamp = re.search(r"MEASURED\s+(2\d{5})(?:\s+(\d{4}))?", ftxt)
+    if not stamp:
+        return
+    import datetime as _dt
+    measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
+    skills = Path(__file__).resolve().parents[3]
+    srcs = []
+    m = re.search(r"(?m)^structure-source:\s*(\S+)", text[:3000])
+    if m:
+        srcs += [q for q in (skills / m.group(1), path.parents[2] / m.group(1)) if q.exists()]
+    for s in srcs:
+        if s.exists() and s.stat().st_mtime > measured + 60:
+            rep.add(WARN, "requirement-stale", name,
+                    f"`outline/{f.name}` was measured {stamp.group(1)} {stamp.group(2) or ''} but `{s.name}` changed "
+                    f"later; regenerate with `cli/requirement.py {path.name}`")
+            return
+
+
+def check_section_writing_requirements(text, path, name, rep):
+    """A Section's page-owned writing rules are authored W records in the
+    mixed-ownership Requirement file. The generated V block and authored W
+    block share one reader question but never one writer."""
+    if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
+        return
+    if re.search(r"(?m)^#{2,3}\s+Writing Style\b", text):
+        rep.add(WARN, "section-writing-in-page", name,
+                "a manuscript Section stores writing rules in "
+                f"`outline/{path.stem}-requirement.md` as W<n> records; remove the Page's "
+                "`Writing Style` block after migrating each instruction to a W<n> record")
+    retired = path.parent / "outline" / f"{path.stem}-writing.md"
+    if retired.exists():
+        rep.add(WARN, "writing-file-retired", name,
+                f"`outline/{retired.name}` is a redundant sidecar; move its W<n> "
+                f"records into `outline/{path.stem}-requirement.md`")
+    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    if not f.exists():
+        # check_requirement_file already reports the missing shared file.
+        return
+    ftxt = f.read_text(encoding="utf-8", errors="replace")
+    records = list(re.finditer(r"(?ms)^###\s+(W\d+)\s*·\s*([^\n]+)\n(.*?)(?=^###\s+|\Z)", ftxt))
+    if not records:
+        rep.add(WARN, "writing-shape", name,
+                f"`outline/{f.name}` has no authored `### W<n> · <preview>` records")
+        return
+    writing_begin = ftxt.find("# --- writing:begin (authored) ---")
+    writing_end = ftxt.find("# --- writing:end ---")
+    if writing_begin < 0 or writing_end <= writing_begin:
+        rep.add(WARN, "writing-shape", name,
+                f"`outline/{f.name}` must bound W<n> records with authored writing markers")
+    elif any(not (writing_begin < record.start() < writing_end) for record in records):
+        rep.add(WARN, "writing-shape", name,
+                f"every W<n> record in `outline/{f.name}` must remain inside the authored writing block")
+    for record in records:
+        body = record.group(3)
+        missing = [label for label in ("Rule", "Applies", "Source")
+                   if not re.search(rf"(?m)^- \*\*{label}\*\*:\s*\S", body)]
+        if missing:
+            rep.add(WARN, "writing-shape", name,
+                    f"`{record.group(1)}` in `outline/{f.name}` lacks "
+                    + ", ".join(missing))
+
+
+def check_retired_blocks(text, name, rep):
+    """`### Stage Record` is a leftover of the retired Submission-0 stage
+    lifecycle ("Rollup: S Submission 0 Reconcile Unit: 1 of 9"). It renders
+    as a fold that says nothing true about the page (JL 260831: "why we have
+    this? we should not have this"). Delete it; nothing replaces it."""
+    for m in re.finditer(r"(?m)^###\s+Stage Record\b", text):
+        rep.add(WARN, "retired-block", name,
+                "`### Stage Record` is a leftover of the retired stage lifecycle; delete the block")
+
+
+def page_aims_text(text, path):
+    """The page's Aims, wherever they live.
+
+    Since `haipipe-plugin-outline` 0.16.0 the Aims live in the page's PLAN and
+    `page.md` keeps no copy, so sourcing them from the page alone made the law
+    and this checker contradict each other: obeying the law produced
+    `missing-section` + `no-aims` on every migrated page (field test, JL
+    260830). Page first, so an unmigrated board is untouched; plan second.
+    """
+    on_page = section_text(text, "Done when")
+    if on_page.strip() or path is None:
+        return on_page, False
+    d = path.parent / "outline"
+    plans = sorted(d.glob("*-outline-v*.md")) if d.is_dir() else []
+    if not plans:
+        return on_page, False
+    plan = plans[-1].read_text(encoding="utf-8", errors="replace")
+    m = re.search(r"(?m)^## Aims\b.*?$(.*)\Z", plan, re.S)
+    return (m.group(1) if m else ""), bool(m)
+
+
+_ROUND_CACHE = {}
+
+
+def check_plan_arc(path, name, rep):
+    """haipipe-page-outline §🚦 ⓪.1: `arc:` present is mechanical. It was
+    parsed by nothing until NA01's field desk grepped for it (260831)."""
+    if path is None:
+        return
+    for plan in sorted((path.parent / "outline").glob("*-outline-v*.md")):
+        head = plan.read_text(encoding="utf-8", errors="replace")[:1500]
+        if not re.search(r"(?m)^arc:\s*\S", head):
+            rep.add(WARN, "plan-no-arc", f"{name} · {plan.name}",
+                    "the plan carries no `arc:` line; a division list with no "
+                    "stated argument is a table of contents (§🚦 ⓪.1)")
+
+
+def check_feedback_coverage(path, text, name, rep):
+    """Both directions of the Round⇄page join (haipipe-page-outline ⓪ COLLECT).
+
+    Forward: every §2B row a Round routes to this page appears in the page's
+    outline/feedback/<RD>.md. Reverse: every register row names a real Round
+    row. A page that never ran OUTLINE never collected, so G7 must not close on
+    a Round whose targets carry no register (field test, JL 260831)."""
+    if path is None or re.search(r"(?m)^page-type:\s*round\b", text[:600]):
+        return
+    board = path.parents[2]
+    if board not in _ROUND_CACHE:
+        _ROUND_CACHE[board] = [(rd, parse_round(rd)) for rd in _rounds(board)]
+    pid = path.stem.split("-")[0]
+    for rd, data in _ROUND_CACHE[board]:
+        routed = {r["id"] for r in data["rows"].get(pid, [])}
+        if not routed:
+            continue
+        reg = register_path(path)
+        if not reg.exists():
+            rep.add(WARN, "feedback-uncollected", name,
+                    f"{rd.stem.split('-')[0]} routes {len(routed)} row(s) here and "
+                    f"`outline/{reg.name}` does not exist; run "
+                    f"`cli/feedback.py collect` (OUTLINE ⓪)")
+            continue
+        have = register_ids(reg)
+        # the OTHER direction the law promises (haipipe-page-outline ⓪): an
+        # OPEN register row is served by a plan bullet carrying `Routed:` or
+        # declined in the plan's header (`declined: <RD> <id> · <reason>`).
+        # NA01's field desk (260831) found this tooth missing while the plugin
+        # text claimed "both directions".
+        plans = sorted((path.parent / "outline").glob("*-outline-v*.md"))
+        plan = plans[-1].read_text(encoding="utf-8", errors="replace") if plans else ""
+        rdid = rd.stem.split("-")[0]
+        served = set(re.findall(rf"(?m)^\s+Routed:\s*{rdid}\s+(\S+)", plan))
+        declined = set(re.findall(rf"(?m)^declined:\s*{rdid}\s+(\S+)", plan))
+        open_rows = {r["id"] for r in data["rows"].get(pid, []) if r["state"] == "open"}
+        for rid in sorted((open_rows & have) - served - declined):
+            rep.add(WARN, "feedback-unserved", f"{name} · {reg.name}",
+                    f"open row `{rid}` is served by no plan bullet (`Routed: {rdid} {rid}`) "
+                    f"and not declined (`declined: {rdid} {rid} · <reason>`)")
+        for rid in sorted(routed - have):
+            rep.add(WARN, "feedback-coverage", f"{name} · {reg.name}",
+                    f"Round row `{rid}` is routed here and missing from the register")
+        for rid in sorted(have - routed):
+            rep.add(WARN, "feedback-coverage", f"{name} · {reg.name}",
+                    f"register row `{rid}` names no row the Round routes here")
 
 
 def check_state_mirrors_aims(aims_text, states_text, name, rep):
@@ -1115,14 +1511,18 @@ def check_state_mirrors_aims(aims_text, states_text, name, rep):
     declared = aim_ids(aims_text)
     if not declared:
         return
-    rows = [aim_id for _emoji, aim_id in AIM_STATE_RE.findall(states_text or "")]
+    # Since the 260819 merge the tick sits on the Aim row itself; a page that
+    # still carries `## States` is read the old way, so an unmigrated board
+    # keeps its findings and a migrated one stops reading as "all ⬜".
+    src = states_text if (states_text or "").strip() else aims_text
+    rows = [aim_id for _emoji, aim_id in AIM_STATE_RE.findall(src or "")]
     seen = collections.Counter(rows)
 
     missing = [a for a in declared if not seen[a]]
     if missing:
         shown = " · ".join(missing[:6]) + (" …" if len(missing) > 6 else "")
         rep.add(WARN, "aim-without-state", name,
-                f"{len(missing)} of {len(declared)} Aim(s) carry no row in States, "
+                f"{len(missing)} of {len(declared)} Aim(s) carry no tick, on the row or in States, "
                 f"so each renders as ⬜ and the page reads less done than it is: {shown}")
 
     twice = sorted(a for a, n in seen.items() if n > 1 and a in declared)
@@ -1182,7 +1582,7 @@ def check_one_canvas(text, name, rep):
     lines silently produce two canvases and no reader can tell which is the
     current drawing.
     """
-    dia = section_text(text, "Diagram") or ""
+    dia = section_text(text, "Outline") or section_text(text, "Diagram") or ""
     urls, fence = [], False
     for ln in dia.split("\n"):
         if ln.lstrip().startswith("```"):
@@ -1194,7 +1594,7 @@ def check_one_canvas(text, name, rep):
         if re.match(r"^(?:/_excalidraw/|https?://(?:app\.)?excalidraw\.com/)\S*$", s2):
             urls.append(s2)
     if len(urls) > 1:
-        rep.add(WARN, "two-canvases", f"{name} · Diagram",
+        rep.add(WARN, "two-canvases", f"{name} · Outline",
                 f"{len(urls)} canvas URLs; a page attaches one (QB4 §2.7). "
                 f"Keep either the board scene or the hosted link, not both")
 
@@ -1224,7 +1624,7 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "principle", "view", "stage", "ideation",
+                    "wisdom", "brief", "view", "stage", "ideation",
                     "roadmap", "collection")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
@@ -1264,7 +1664,21 @@ def check_group_names(text, name, rep):
         block = section_text(text, sec_name) or ""
         return dict(re.findall(pat, block, re.M))
 
-    divs = groups("Content", r"^### (\d+) · (.+)$")
+    # ORDINAL, not the printed number (JL 260831, QPf12 row 2: Aims "should map
+    # to the content"): `A<n>` is the n-th direct `###` division of Content,
+    # whatever its label, because a section page numbers `### §3.1 · …` and a
+    # paper page writes `### Title`, and the 🧭 tab's `C<n>` addresses count the
+    # same way. On a `### 1 · …` page ordinal and printed number coincide, so
+    # nothing an older board reports changes there.
+    content = section_text(text, "Content") or ""
+    divs, fence = {}, False
+    for ln in content.split("\n"):
+        if ln.lstrip().startswith("```"):
+            fence = not fence
+        if fence or not re.match(r"^### \S", ln):
+            continue
+        title = re.sub(r"^### (?:§?[\d.]+(?: · | ))?", "", ln).strip()
+        divs[str(len(divs) + 1)] = title
     if not divs:
         return
     for sec_name in ("Aims", "States"):
@@ -1282,11 +1696,11 @@ def check_group_names(text, name, rep):
             if want is not None:
                 want = re.sub(r"^\W+\s*", "", want)
             if want is None:
-                rep.add(WARN, "group-no-division", f"{name} · {sec_name} C{gid}",
-                        f"`C{gid}` names no Content division on this page")
+                rep.add(WARN, "group-no-division", f"{name} · {sec_name} A{gid}",
+                        f"there is no Content division #{gid} on this page (ordinal: the {gid}th `###` heading under Content)")
             elif want.strip() != gname.strip():
-                rep.add(WARN, "group-name-drift", f"{name} · {sec_name} C{gid}",
-                        f"reads {gname.strip()!r}; its division `### {gid}` is "
+                rep.add(WARN, "group-name-drift", f"{name} · {sec_name} A{gid}",
+                        f"reads {gname.strip()!r}; Content division #{gid} is "
                         f"{want.strip()!r} (QB4 §0.5: same id, same name)")
 
 
@@ -1326,7 +1740,10 @@ def check_draw_folders(d, rep):
 
 
 CARD_FIELDS = ["state", "stance", "depth", "thesis", "expected effect",
-               "grant", "released", "landed"]
+               "grant", "released"]   # `landed:` retired 260828: the card and
+                                      # its unit share a folder, so the folder
+                                      # IS the binding and a pointer would only
+                                      # be one more thing that can dangle
 CARD_STATES = {"proposed", "released", "landed", "killed"}
 UNIT_STATES = {"draft", "judged"}          # accepted@v<N> is matched separately
 DEPTHS = {"copy", "copy+why", "copy+why+expectation"}
@@ -1413,45 +1830,79 @@ def check_design_family(d, rep):
         # A board named in `reads:` is two places on disk: its page tree, and
         # the result bank its tasks write to. A grant that cites the bank is
         # citing that board's own evidence, so both count as inside the read.
-        cands = [d.parent / entry, Path(entry)]
+        # A repo-relative entry resolves from the checkout root, never the
+        # invoker's cwd: the same board must check identically from anywhere.
+        cands = [d.parent / entry]
         if root:
-            cands.append(root / "_WorkSpace" / "InsightBoardResult" / entry)
+            cands += [root / entry,
+                      root / "_WorkSpace" / "InsightBoardResult" / entry]
         for cand in cands:
             if cand.is_dir():
                 read_dirs.add(cand.resolve())
 
-    for cards_dir in sorted(d.rglob("direction")):
-        if not cards_dir.is_dir():
+    for units_dir in sorted(d.rglob("design")):
+        if not units_dir.is_dir():
             continue
-        parts = cards_dir.relative_to(d).parts
+        parts = units_dir.relative_to(d).parts
         if "board" in parts or any(p.startswith("_") for p in parts):
             continue
-        page = cards_dir.parent
-        units_dir = page / "design"
-        for card in sorted(cards_dir.glob("DR*.md")):
-            cname = f"{page.name} · {card.name}"
+        page = units_dir.parent
+        if not page.name.startswith("DS"):
+            continue
+
+        for unit in sorted(p for p in units_dir.iterdir() if p.is_dir()):
+            if unit.name.startswith("_"):
+                continue
+            uname = f"{page.name} · {unit.name}"
+
+            # ── the card, first file of the thread (260828: one thread, one
+            # folder — the card is card.md inside the unit it commissions) ──
+            card = unit / "card.md"
+            if not card.is_file():
+                rep.add(ERROR, "unit-no-card", uname,
+                        "a thread folder without card.md names no bet; the card "
+                        "is the folder's birth certificate and its first file")
+                continue
             ctext = card.read_text(encoding="utf-8")
             vals = {k: _card_field(ctext, k) for k in CARD_FIELDS}
 
             for k in CARD_FIELDS:
                 if vals[k] is None:
-                    rep.add(ERROR, "card-field-missing", cname,
-                            f"a direction card declares `{k}:`; without it the bet is "
+                    rep.add(ERROR, "card-field-missing", uname,
+                            f"a design card declares `{k}:`; without it the bet is "
                             "not written down, which is the one thing the card is for")
                 elif not vals[k]:
-                    rep.add(ERROR, "card-field-empty", cname,
+                    rep.add(ERROR, "card-field-empty", uname,
                             f"`{k}:` is present but empty")
 
             state = (vals["state"] or "").split()[0] if vals["state"] else ""
             if state and state not in CARD_STATES:
-                rep.add(ERROR, "card-state-word", cname,
+                rep.add(ERROR, "card-state-word", uname,
                         f"`state: {state}` is not on the ladder "
                         f"{' · '.join(sorted(CARD_STATES))}")
+
+            # Law: release before realize, now checkable as folder purity.
+            # workflow/ is Folder control metadata (current phase + append-only
+            # transitions), not realization material. A proposed/killed Card
+            # may retain it without passing the release gate or keeping output.
+            siblings = [f.name for f in unit.iterdir()
+                        if f.name not in {"card.md", "workflow"}
+                        and not f.name.startswith(".")]
+            if state == "proposed" and siblings:
+                rep.add(ERROR, "unit-realized-before-release",
+                        f"{uname} -> {' · '.join(sorted(siblings)[:4])}",
+                        "the card still says proposed but the folder already holds "
+                        "realization material; realizing an unreleased card passes a "
+                        "person's gate mechanically")
+            if state == "killed" and siblings:
+                rep.add(WARN, "unit-tombstone-extra", uname,
+                        "a killed thread retains card.md and optional workflow/ "
+                        "control history, but no realization material")
 
             # Law: no expected effect, no release.
             eff = (vals["expected effect"] or "").strip()
             if state in {"released", "landed"} and len(eff) < 12:
-                rep.add(ERROR, "card-released-no-wager", cname,
+                rep.add(ERROR, "card-released-no-wager", uname,
                         "a card at `released` or `landed` must say what it is for and "
                         "what would falsify it; releasing a card with no wager is "
                         "designing for design's sake, which this plugin exists to stop")
@@ -1459,11 +1910,11 @@ def check_design_family(d, rep):
             # Law: release is a person's act, recorded.
             rel = (vals["released"] or "").strip()
             if state in {"released", "landed"} and rel in {"", "⬜", "-", "—"}:
-                rep.add(ERROR, "card-released-unsigned", cname,
+                rep.add(ERROR, "card-released-unsigned", uname,
                         "`state:` says released but `released:` carries no signature; "
                         "a release with nobody's name on it passed no gate")
             if state == "proposed" and rel not in {"", "⬜", "-", "—"}:
-                rep.add(ERROR, "card-proposed-signed", cname,
+                rep.add(ERROR, "card-proposed-signed", uname,
                         "`released:` is signed while `state:` still says proposed")
 
             # Law: the grant narrows, never widens.
@@ -1471,47 +1922,33 @@ def check_design_family(d, rep):
             graw = (vals["grant"] or "").strip()
             if graw and not graw.lower().startswith("none"):
                 for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
-                    hit = _resolve_cited(raw, card.parent, root)
+                    hit = _resolve_cited(raw, unit, root)
                     if hit is None:
-                        rep.add(ERROR, "card-grant-path", f"{cname} -> {raw}",
+                        rep.add(ERROR, "card-grant-path", f"{uname} -> {raw}",
                                 "a grant entry resolves to nothing, so every citation "
                                 "under it is unverifiable")
                         continue
                     grant_paths.add(hit)
                     if read_dirs and not any(
-                            r == hit or r in hit.parents for r in read_dirs) \
-                            and d.resolve() not in hit.parents:
-                        rep.add(ERROR, "card-grant-outside-reads", f"{cname} -> {raw}",
+                            r == hit or r in hit.parents for r in read_dirs)                             and d.resolve() not in hit.parents:
+                        rep.add(ERROR, "card-grant-outside-reads", f"{uname} -> {raw}",
                                 "a grant entry sits outside every board named in "
                                 "`reads:`; the chain must narrow at each level")
-            elif not record and state in {"released", "landed"} \
-                    and not (vals["stance"] or "").startswith("ignore"):
-                rep.add(WARN, "card-grant-none", cname,
+            elif not record and state in {"released", "landed"}                     and not (vals["stance"] or "").startswith("ignore"):
+                rep.add(WARN, "card-grant-none", uname,
                         "a card with no grant may cite nothing; only an `ignore` "
                         "card is normally born that way")
 
-            # Law: one released card, one unit.
-            landed = (vals["landed"] or "").strip()
-            if landed and landed not in {"—", "-", ""} and state != "killed":
-                if not (units_dir / landed).is_dir() and \
-                        not list(units_dir.glob(landed + "*")):
-                    rep.add(ERROR, "card-landed-ghost", f"{cname} -> {landed}",
-                            "`landed:` names a unit folder that is not on disk")
-            if state == "landed" and landed in {"—", "-", ""}:
-                rep.add(ERROR, "card-landed-empty", cname,
-                        "`state: landed` with no unit named")
-
-        # ── the units ────────────────────────────────────────────────────────
-        if not units_dir.is_dir():
-            continue
-        for unit in sorted(p for p in units_dir.iterdir() if p.is_dir()):
-            if unit.name.startswith("_"):
+            # ── the realization, when the state says there is one ────────────
+            if state in {"proposed", "killed"}:
                 continue
-            uname = f"{page.name} · {unit.name}"
             readme = unit / "README.md"
+            if state == "landed" and not readme.is_file():
+                rep.add(ERROR, "card-landed-bare", uname,
+                        "`state: landed` but the folder holds no README.md; a "
+                        "landing with no unit behind it is the ghost pointer's "
+                        "old failure wearing the new layout")
             if not readme.is_file():
-                rep.add(ERROR, "unit-no-readme", uname,
-                        "a unit folder without README.md has no identity")
                 continue
             rtext = readme.read_text(encoding="utf-8")
             depth = (_card_field(rtext, "depth") or "").strip()
@@ -1520,7 +1957,8 @@ def check_design_family(d, rep):
             for req in ["spec.md", "evidence.md"]:
                 if not (unit / req).is_file():
                     rep.add(ERROR, "unit-file-missing", f"{uname} -> {req}",
-                            "the unit contract names README, spec, evidence and content/")
+                            "the unit contract names card, README, spec, evidence "
+                            "and content/")
             if not (unit / "content").is_dir() or not any((unit / "content").iterdir()):
                 rep.add(ERROR, "unit-no-content", uname,
                         "content/ is the artifact itself; an empty one is not a design")
@@ -1533,28 +1971,13 @@ def check_design_family(d, rep):
             if depth == "copy" and (unit / "why.md").is_file():
                 rep.add(WARN, "unit-depth-extra-why", uname,
                         "`depth: copy` carries a why.md it did not declare")
-            if ustate and not record and ustate not in UNIT_STATES \
-                    and not re.match(r"accepted@v\d+$", ustate):
+            if ustate and not record and ustate not in UNIT_STATES                     and not re.match(r"accepted@v\d+$", ustate):
                 rep.add(ERROR, "unit-state-word", uname,
                         f"`state: {ustate}` is not draft, judged or accepted@v<N>")
 
-            # Law: the wager lives on the card, and the unit CITES it.
-            back = (_card_field(rtext, "direction") or "").strip()
-            owner = None
-            if not back:
-                rep.add(ERROR, "unit-no-direction", uname,
-                        "README declares no `direction:`, so the unit names no bet")
-            else:
-                hits = list(cards_dir.glob(back + "*.md"))
-                if not hits:
-                    rep.add(ERROR, "unit-direction-ghost", f"{uname} -> {back}",
-                            "`direction:` names a card that is not in direction/")
-                else:
-                    owner = hits[0]
-
-            # Every relative reference inside the unit must resolve. A dead
-            # pointer to the owning card makes the wager unreachable from the
-            # artifact, which is exactly how DU03 failed on 260824.
+            # Every relative reference inside the unit must resolve. The
+            # cross-folder pointer that dangled on 260824 is structurally gone,
+            # but a dead reference anywhere still breaks the chain of custody.
             for f in sorted(unit.rglob("*.md")):
                 ftext = f.read_text(encoding="utf-8")
                 for raw in _cited_paths(ftext):
@@ -1564,31 +1987,225 @@ def check_design_family(d, rep):
                         rep.add(ERROR, "unit-dead-reference",
                                 f"{uname} · {f.name} -> {raw}",
                                 "a relative reference inside a unit resolves to "
-                                "nothing; if it points at the owning card, the "
-                                "wager is unreachable from the artifact")
+                                "nothing, and every citation under it is "
+                                "unverifiable")
 
             # Law: evidence within grant. Only citations that leave this board
-            # are evidence; a pointer to the unit's own card is structure.
+            # are evidence; a pointer inside the unit's own folder is structure.
             ev = unit / "evidence.md"
-            if ev.is_file() and owner is not None:
-                gtext = owner.read_text(encoding="utf-8")
-                graw = (_card_field(gtext, "grant") or "").strip()
+            if ev.is_file():
                 if graw and not graw.lower().startswith("none"):
-                    granted = set()
-                    for raw in _cited_paths(graw) or [t for t in graw.split() if "/" in t]:
-                        hit = _resolve_cited(raw, owner.parent, root)
-                        if hit:
-                            granted.add(hit)
                     for raw in _cited_paths(ev.read_text(encoding="utf-8")):
                         hit = _resolve_cited(raw, ev.parent, root)
                         if hit is None or d.resolve() in hit.parents:
                             continue
-                        if hit not in granted:
+                        if hit not in grant_paths:
                             rep.add(ERROR, "unit-evidence-outside-grant",
                                     f"{uname} -> {raw}",
                                     "this unit cites evidence its card never granted; "
                                     "the chain reads -> grant -> evidence narrows at "
                                     "every step and this widens it")
+
+
+def check_insight_family(d, rep):
+    """The insight family's first teeth (JL 260828, fieldtest rounds 1-2).
+
+    Two live runs on A00 produced eighteen frictions caught by a human or a
+    cold agent and none by machinery. The three mechanical ones land here:
+    a Design Handoff whose signature gate has no row to test (round 1 #2),
+    a refusal token spelled three ways on one board (round 2 F7/F12), and a
+    settled-partial cell whose licensing sentence the cited page does not
+    know it carries (round 2 F14). Each is proven to FAIL in
+    tests/test_insight_family.py before being trusted.
+    """
+    for md in sorted(d.rglob("*.md")):
+        parts = md.relative_to(d).parts
+        if "board" in parts or any(pt.startswith("_") for pt in parts):
+            continue
+        try:
+            text = md.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        m = re.search(r"^page-type:\s*(\w+)", text, re.M)
+        ptype = m.group(1) if m else ""
+        name = md.name
+
+        if ptype == "wisdom":
+            # A deferring W page exports no handoff and owes no signature; the
+            # SERVES row is the handoff's marker (for-wisdom 0.3.0).
+            if re.search(r"^SERVES\b", text, re.M):
+                if not re.search(r"^signed:", text, re.M):
+                    rep.add(ERROR, "wisdom-handoff-no-signed-row", name,
+                            "a Design Handoff carries a `signed:` row (for-wisdom "
+                            "0.3.0); without one the signature gate GI5 has nothing "
+                            "to test, which is how two settled cells fell back on a "
+                            "version bump")
+                elif re.search(r"^signed:\s*⬜", text, re.M):
+                    rep.add(WARN, "wisdom-handoff-unsigned", name,
+                            "the handoff's `signed:` row is ⬜ — GI5 blocks, and a "
+                            "DesignBoard binding this handoff is non-conformant "
+                            "until a person signs")
+
+        if ptype == "meta":
+            check_partition_register(text, name, rep)
+
+        if ptype == "question":
+            for bad in re.findall(r"🚫\s?F\s?only\b|🚫F-only", text):
+                rep.add(WARN, "refusal-token-legacy", name,
+                        f"`{bad}` is not the token: a mark's spelling includes its "
+                        "spacing and the canonical form is `🚫 F-only` "
+                        "(for-question 0.4.1); a checker grepping the token misses "
+                        "every legacy cell")
+            lmq = re.search(r"^## Log\s*$", text, re.M)
+            queue_side = text[:lmq.start()] if lmq else text
+            # ## Log is excluded: a receipt QUOTING a retired token is a
+            # mention, not a mark (round 4 friction 2 — the sweep's own
+            # receipt tripped the rule it was satisfying).
+            spaced = len(re.findall(r"[🟡🚫⬜](?=[A-Za-z])", queue_side))
+            if spaced:
+                rep.add(WARN, "mark-spacing-legacy", name,
+                        f"{spaced} cell mark(s) run straight into a word (🟡BI03, "
+                        "🚫thin, ⬜OPEN): a mark's spelling includes its spacing "
+                        "(insight-workflow §Marks), and two spellings in one "
+                        "column defeat the mark; re-spell in an authorized sweep "
+                        "that re-pads the table")
+            # One Queue row holds one cell per PARTITION COLUMN, so a single
+            # line may carry several `final` cells; matching once per line
+            # missed every column after the first on live A00 (QI3·C, QI7·C).
+            hits = []
+            for line in text.splitlines():
+                lm = re.match(r"(Q[DIKW]\d+)", line)
+                if lm:
+                    for pid in re.findall(r"🟡\s*([A-Z]{1,3}\d{2})\s+final", line):
+                        hits.append((lm.group(1), pid))
+            for qid, pid in hits:
+                cited = next((c for c in d.rglob(f"{pid}-*/{pid}-*.md")
+                              if "board" not in c.relative_to(d).parts), None)
+                if cited is None:
+                    rep.add(ERROR, "partial-final-ghost-page", name,
+                            f"`🟡 {pid} final` cites a page this board does not hold")
+                else:
+                    log_path = (cited.parent / "outline" /
+                                f"{cited.stem}-log.md")
+                    log = (log_path.read_text(encoding="utf-8", errors="replace")
+                           if log_path.is_file() else "")
+                    # WARN, not ERROR, deliberately: a missing receipt is
+                    # repairable debt on a settled decision, not broken
+                    # structure — but only a canonical outline-log record
+                    # heading counts. A sentence on the Page is prose, not a
+                    # receipt (round 3 friction 10), and Page `## Log` was
+                    # retired by haipipe-plugin-outline 0.16.1.
+                    heads = [line for line in log.splitlines()
+                             if re.match(r"^###\s+\d{6}(?:\s+\d{3,4})?\s+·", line)]
+                    if not any(qid in line and re.search(r"\bfinal\b", line)
+                               for line in heads):
+                        rep.add(WARN, "partial-final-no-page-receipt", name,
+                                f"`{qid}` leans on a sentence in {pid} and {pid}'s "
+                                f"`outline/{cited.stem}-log.md` does not record "
+                                "it: the flip leaves TWO receipts "
+                                "(insight-workflow §Marks), because a citation "
+                                "invisible from the cited end cannot carry "
+                                "staleness")
+
+
+PARTITION_KEYWORDS = {
+    "where", "and", "or", "not", "in", "eq", "ne", "lte", "gte", "declared",
+    "unfiltered", "rows", "of", "no", "its", "own", "none", "null", "true",
+    "false", "template", "row", "the", "test", "partition", "that", "passed",
+    "contains", "every", "below", "fails", "clause", "construction", "which",
+    "exempts", "from", "seated", "yaml", "cross", "full",
+}
+
+
+def _partition_rows(text):
+    """MT00's partition register as (letter, name, population text, percent).
+
+    Returns [] when the register does not parse. A rule that guesses at a
+    layout it does not recognise reports noise, and noise is how a checker
+    gets ignored.
+    """
+    m = re.search(r"\*\*Partitions\*\*.*?```text\n(.*?)```", text, re.S)
+    if not m:
+        return []
+    rows, cur = [], None
+    for line in m.group(1).splitlines():
+        head = re.match(r"^([A-Z])\s{2,}(\S+)\s+(.*)$", line)
+        if head:
+            cur = [head.group(1), head.group(2), head.group(3)]
+            rows.append(cur)
+        elif cur is not None and line.strip():
+            cur[2] += " " + line.strip()
+    out = []
+    for letter, nm, body in rows:
+        pm = re.search(r"·\s*([\d.]+)\s*%", body)
+        out.append((letter, nm, body, float(pm.group(1)) if pm else None))
+    return out
+
+
+def _filter_columns(body):
+    """The column identifiers a partition's population block filters on."""
+    body = re.sub(r"[\d,]+ of [\d,]+ rows.*", " ", body)
+    body = re.sub(r"\S+\.yaml|\S+/", " ", body)
+    return {w for w in re.findall(r"\b[a-z][a-z0-9_]{2,}\b", body)
+            if w not in PARTITION_KEYWORDS}
+
+
+def check_partition_register(text, name, rep):
+    """The partition test's clause ① made mechanical (JL 260828, a live breach).
+
+    `haipipe-insight-workflow` calls the three admission clauses "each
+    mechanically checkable" and until 260828 none of the three was checked by
+    anything. A00 registered `J · minorityzip` and `L · lowincome`, ran to
+    136.79% coverage across seven subgroup partitions, grew a page under one,
+    and this checker stayed green for the whole window; a human reader caught
+    it. Clause ① is the one with a proof that needs no judgment: disjoint
+    subgroups of ONE extract cannot cover more than the extract.
+
+    F is the template and X is the cross group, and both are excluded by the
+    statute itself — F "fails ① by construction, which the test exempts it
+    from", and X holds no rows of its own.
+    """
+    rows = [r for r in _partition_rows(text) if r[0] not in ("F", "X")]
+    if len(rows) < 2:
+        return
+
+    pcts = [r[3] for r in rows if r[3] is not None]
+    if len(pcts) == len(rows):
+        total = sum(pcts)
+        # 100.5 not 100.0: the register prints rounded percentages, and a rule
+        # that fires on rounding is a rule people learn to skip.
+        if total > 100.5:
+            named = " + ".join(f"{r[0]}·{r[1]} {r[3]:.2f}%" for r in rows)
+            rep.add(ERROR, "partition-sum-over-100", name,
+                    f"registered subgroup partitions cover {total:.2f}% of the "
+                    f"extract ({named}) — disjoint groups of ONE extract cannot "
+                    "exceed 100%, so clause ① is broken on arithmetic alone "
+                    "(insight-workflow §The partition test): a coverage gap is "
+                    "legal where an overlap never is, and overlapping groups "
+                    "make every X contrast double-count the people they share")
+
+    cols = {r[0]: _filter_columns(r[2]) for r in rows}
+    for letter, nm, _, _ in rows:
+        mine = cols[letter]
+        if not mine:
+            continue
+        if all(not (mine & cols[other]) for other in cols if other != letter):
+            rep.add(WARN, "partition-cross-cutting", name,
+                    f"`{letter} · {nm}` filters on {sorted(mine)}, a column no "
+                    "sibling partition filters on: a cut sharing no axis with "
+                    "its siblings slices ACROSS them, which is a COVARIATE and "
+                    "belongs in an I-page column, never a group "
+                    "(insight-workflow §The partition test, the covariate row)")
+
+    # A third rule was written and DROPPED the same hour: "a filter column MT00
+    # names nowhere outside its own register". It fired four times on a
+    # corrected A00 over `patient_gender`, which the page discusses at length in
+    # prose without ever declaring as a column, and it passed `age` only because
+    # substring matching found it inside "coverage". A rule that needs prose to
+    # say a column's name in one exact place reports a documentation habit, not
+    # a defect — and the covariate rule above already catches the case that
+    # motivated it, since an unregistered filter column is almost always a
+    # column no sibling shares.
 
 
 def check_plugin_roster(d, rep):
@@ -1613,6 +2230,14 @@ def check_plugin_roster(d, rep):
         page = md.parent
         if md.stem != page.name:
             continue
+        # A unit inside an evidence lane (`evidence/display/S-Display-1a/…`,
+        # `evidence/probe/PP01/…`)
+        # also keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`,
+        # `source/`, `versions/` are that plugin's own anatomy, not page
+        # folders. The roster governs the page's direct children only; walking
+        # into a lane reported 36 false rows on the MISQ board (JL 260831).
+        if any(part in names for part in parts[:-1]):
+            continue
         for sub in sorted(p for p in page.iterdir() if p.is_dir()):
             if sub.name.startswith("_") or sub.name in names:
                 continue
@@ -1633,6 +2258,20 @@ def check_page(d, rep):
     if not (site / "index.html").exists():
         rep.add(ERROR, "no-html", "board/index.html", "not built yet; run build.py")
         return
+
+    # A stale build is indistinguishable from link rot in this report: on 260829
+    # a 9-day-old render shipped 184 dead-href ERRORs that a rebuild took to 0,
+    # because the site still pointed at page-types deleted upstream. Say so
+    # first, so nobody debugs the sources for a finding the build owns.
+    built = (site / "index.html").stat().st_mtime
+    newer = [f for f in d.rglob("*.md")
+             if "/board/" not in f.as_posix() and f.stat().st_mtime > built]
+    if newer:
+        rep.add(WARN, "board-build-stale", "board/index.html",
+                f"{len(newer)} source .md newer than the render "
+                f"(e.g. {newer[0].relative_to(d).as_posix()}); run build.py before "
+                f"trusting dead-href or completeness findings")
+
     pages = sorted(site.glob("*.html")) + sorted(site.glob("*/*.html"))
 
     for html in pages:
@@ -1827,9 +2466,46 @@ def check_template(rep, quiet):
                         "the shared source did not render with the documented Q/S-specific placement")
 
 
+def print_rules():
+    """The rulebook, derived from this file's own rep.add calls.
+
+    The 260828 field test found the checker's laws teachable only through
+    error text, discovered after writing (friction F11). This prints every
+    finding code with its message template BEFORE anyone writes, from the
+    same source the findings come from, so the roster cannot drift.
+    """
+    src = Path(__file__).read_text(encoding="utf-8")
+    rules = {}
+    for m in re.finditer(r'rep\.add\(\s*(ERROR|WARN|GAP),\s*"([a-z0-9-]+)"', src):
+        level, code = m.group(1), m.group(2)
+        # the call text: balance parens from the match to its closing one
+        depth, i = 0, m.start()
+        while i < len(src):
+            if src[i] == "(":
+                depth += 1
+            elif src[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        call = src[m.start():i]
+        literals = re.findall(r'"((?:[^"\\]|\\.)*)"', call)[1:]  # drop the code itself
+        msg = " ".join(s for s in literals
+                       if len(re.sub(r"\{[^}]*\}", "", s).split()) >= 2)
+        entry = rules.setdefault((level, code), {"msg": msg, "sites": 0})
+        entry["sites"] += 1
+        if not entry["msg"]:
+            entry["msg"] = msg
+    order = {ERROR: 0, WARN: 1, GAP: 2}
+    print(f"{len(rules)} finding codes, derived from this file's rep.add calls\n")
+    for (level, code), e in sorted(rules.items(), key=lambda kv: (order[kv[0][0]], kv[0][1])):
+        sites = f" ({e['sites']} sites)" if e["sites"] > 1 else ""
+        print(f"{level:<6} {code:<26} {e['msg'] or '(message is fully computed)'}{sites}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="structural half of QA9")
-    ap.add_argument("board", help="the board folder")
+    ap.add_argument("board", nargs="?", help="the board folder")
     ap.add_argument("--strict", action="store_true",
                     help="exit 1 on any ERROR (JL's ruling on blocking is open; default reports)")
     ap.add_argument("--quiet", action="store_true", help="findings only, no summary")
@@ -1838,7 +2514,16 @@ def main():
     ap.add_argument("--summary", action="store_true",
                     help="score instead of a list: findings per rule and the "
                          "worst pages, so 'how are we doing' is one command")
+    ap.add_argument("--rules", action="store_true",
+                    help="print every finding code and its message, no board "
+                         "needed: the laws, readable before writing")
     a = ap.parse_args()
+
+    if a.rules:
+        print_rules()
+        return 0
+    if not a.board:
+        ap.error("a board folder is required unless --rules")
 
     d = Path(a.board).resolve()
     rep = Report()
@@ -1848,11 +2533,14 @@ def main():
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if m:
             page_ids.add(m.group(1))
+        elif SEMANTIC_SECTION_PAGE.fullmatch(name):
+            page_ids.add(Path(name).stem)
     for name, p in sorted(pages.items()):
         check_face(p, name, rep, links, page_ids, decision_only)
     check_topic_entries(d, pages, rep)
     check_draw_folders(d, rep)
     check_design_family(d, rep)
+    check_insight_family(d, rep)
     check_plugin_roster(d, rep)
     check_page(d, rep)
     check_css(rep)

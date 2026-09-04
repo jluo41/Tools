@@ -1,18 +1,13 @@
 ---
 name: figure-to-svg
 description: >-
-  Turn a whole figure/diagram/infographic PNG into an editable master SVG that recreates it —
-  icons regenerated clean via codex image-gen, plus real <text> labels at their original
-  positions. Default mode embeds icons as transparent PNGs (fast, visually faithful); pass
-  `svg` to hand-vectorize each icon for full editability. Use this whenever the user says
-  /figure-to-svg, wants to "replicate this figure as svg", "turn this figure/diagram into an
-  editable svg", "regenerate this infographic as vector", "rebuild this graphic so I can edit
-  it", or vectorize a multi-item figure (panels of icons + labels). Pipeline: split →
-  regenerate icons → slice → transparentize → [vectorize if svg mode] → compose → fresh-eyes
-  review loop. Also home of the plugin's knowledge verbs — lesson (capture craft gotchas),
-  feedback (file skill/script defects), digest (harvest a session) — use it for those too.
-  Prefer this over one-shot tracing whenever the user wants an editable, clean, recolorable
-  result.
+  Turn a whole figure/diagram/infographic PNG into an editable master SVG that
+  recreates it — icons regenerated clean, plus real <text> labels at their
+  original positions. Pass `svg` to hand-vectorize each icon for full
+  editability. Use for /figure-to-svg, replicate this figure as svg, turn this
+  diagram into an editable svg, or vectorize a multi-item figure. Also home of
+  the plugin's lesson / feedback / digest verbs.
+
 ---
 
 # figure-to-svg

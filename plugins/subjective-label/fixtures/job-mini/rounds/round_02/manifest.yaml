@@ -1,0 +1,5 @@
+batch: 8
+challenge: 6
+audit: 2
+seed: 20260831
+blind: true

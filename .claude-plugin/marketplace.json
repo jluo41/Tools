@@ -36,8 +36,8 @@
     },
     {
       "name": "subjective-label",
-      "description": "Multi-agent subjective text annotation with calibration, validation, and scale workflows",
-      "version": "0.3.0",
+      "description": "Human-grounded subjective labeling with separate Building and Scanning doors joined by a signed, auditable handoff",
+      "version": "0.5.0",
       "source": "./plugins/subjective-label",
       "category": "research"
     }

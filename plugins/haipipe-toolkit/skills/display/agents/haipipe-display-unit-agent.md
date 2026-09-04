@@ -57,7 +57,7 @@ exists reads as declared work. Return `HOLD` naming the card you are waiting on.
 
 🚫 **Never reach into the workspace for a number.** The card already crossed the
 wall and recorded source, run and sha256; a second unwitnessed pull can silently
-disagree with it (`haipipe-plugin-display` §❄️).
+disagree with it (`haipipe-plugin-evidence/ref/displays.md` §❄️).
 
 🚫 **Never type a value into a recipe.** The recipe READS the frozen intake at
 run time, so re-running it yields the same bytes and a reader can check any
@@ -142,5 +142,5 @@ skills/display/agents/
 
 The door is `../haipipe-display`; the unit's shape is
 `../ref/display-unit-output-contract.md`; the page-side rules are
-`board/page-plugins/haipipe-plugin-display`; the intake law is that plugin's
+`board/page-plugins/haipipe-plugin-evidence/ref/displays.md`; the intake law is that lane's
 §❄️; the judge is `board/agents/haipipe-board-reviewer-agent`.

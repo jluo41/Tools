@@ -1,18 +1,18 @@
-fn-scaffold: Scaffold a model-training task-folder
+fn-scaffold: Scaffold a model-training job
 ====================================================
 
 Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelInstanceStore/`.
 Group letter default: **A** (model-run).
 For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
 
-Output: `tasks/A{NN}_<group>/{NN}_<task_name>/`.
+Output: `tasks/A{NN}_<group>/{NN}_<job_name>/`.
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **A**; scaffold a new `A{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **A**; scaffold a new `A{NN}_<block_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -33,8 +33,8 @@ Step 3 — Create skeleton
 
 ```
 A{NN}_<group>/
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── configs/
     │   └── 5_model_<name>.yaml             from ref/config-seed.yaml
     ├── runs/
@@ -61,7 +61,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` for each variant.
-Set `TASK_NAME="{NN}_{task_name}"`.
+Set `TASK_NAME="{NN}_{job_name}"`.
 Variant differences go via papermill `-p key value` overrides in the run script.
 
 
@@ -78,7 +78,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded training task <NN>_<name> under A{NN}_<group>.
+summary:   Scaffolded training job <NN>_<name> under A{NN}_<group>.
 artifacts: [paths created]
 next:      /haipipe-nn-tuner (define sweep) OR run a variant
 ```
@@ -101,7 +101,7 @@ First-run gate
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     task-folder to produce a fresh `CODE_REVIEW.md`:
+     job to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:

@@ -3,6 +3,258 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.12.6 · 2026-09-01
+
+- Make the Job-backed Task Run dialect an explicit specialization of
+  `haipipe-run`; keep config, notebook, light/heavy output, and Task type laws
+  in this family.
+
+## 0.12.5 · 2026-09-01
+
+- Name the optional Task Page presenter Runs, reserving Execute for phase 3.
+- Bind Task-local tickets to Job-owned `results/<task>/<run>/` and optional
+  runtime notebooks without copying generated output into the Task Folder.
+
+## 0.12.4 · 2026-08-31
+
+- Name the Task Insight output precisely as an unsigned, consumer-neutral
+  Reusable Finding. It can feed an Application's I1→I5 bridge but can never
+  serve as a signed Design Handoff or direct Design authority.
+
+## 0.12.3 · 2026-08-31
+
+- Make `insight` mint the specialized `I<NN>-<slug>/` Folder directly instead
+  of routing through the generic folded Q/S identity.
+
+## 0.12.2 · 2026-08-31
+
+- Route `insight` through the fixed task-only Insight Page outline; Application
+  consumers borrow settled Reusable Findings instead of selecting a second
+  Page scope.
+
+## 0.12.1 · 2026-08-31
+
+- Clarify the Application boundary: an Insight Task Face may resolve a Task
+  relationship with PageX and accepted QA with Probe, while Design/Paper read
+  only the settled handoff. Define X2 candidate packets as immutable proposed
+  inputs under `workflow/inbox/application/`, never direct Task execution.
+
+## 0.12.0 · 2026-08-31
+
+**Every unit's code gets a named folder, and the NAME says the level (JL 260831).**
+A task's own code used to sit loose at the task ROOT, and `0-libs/` was a third
+name carrying its own paragraph of law. Now a task's code is `scripts/`, a job's
+shared code stays `src/`, and `0-libs/` is an ordinary subfolder under it.
+
+- **Two words, on purpose (JL 260831).** `src/` at the JOB is code SHARED by all
+  its tasks; `scripts/` at the TASK is code that task OWNS. One word for both was
+  written and rejected the same day: it forced a reader to work out which level a
+  folder sat at before knowing what it meant, and the whole point of the rename
+  was to stop making people do that.
+- **`config/` moves INSIDE `scripts/`.** A config is read by the code beside it,
+  so it sits beside that code. `haipipe-page` already shipped this shape; the
+  task contract disagreed, and the task contract was the one that was wrong.
+  Ruled by JL, 260831.
+- **This is the unit symmetry finishing its own sentence.** A task folder is a
+  page folder with the execution family added (JL 260831), and a page's code
+  home has been `scripts/` all along. The task tree simply had not caught up.
+- **`0-libs/` stops being an exemption.** It was a project-specific name with a
+  paragraph of law explaining why it survived; under `src/0-libs/` it is an
+  ordinary subfolder and the paragraph is gone.
+- `0-libs/` stays READABLE by every tool; nothing WRITES it.
+- **The law now has a tooth.** `ref/check_task_tree.py` code **S10** reports a job
+  holding `scripts/`, a task holding `src/`, and a `config/` left at a task root.
+  It was run against a tree broken all three ways and reported all three before it
+  was trusted (GATE-1); the six real blocks report 0.
+- **Swept the rest of the family**, which the first pass missed: `ref/block-job-task-run.md`
+  R5, `agents/haipipe-task-reviewer-agent.md` job-shape detection, and
+  `8_stata/haipipe-task-for-stata/ref/stata-dialect.md`, whose NESTED anatomy was two
+  renames out of date and whose FLAT shape uses `scripts/` for the OPPOSITE thing.
+
+## 0.11.0 · 2026-08-31
+
+**Config and ticket: recoverability replaces "no params" (JL 260831).** The old
+rule said a ticket carries no params. That was a means, not the end; the end is
+that a person can open a results folder months later and know what produced it.
+
+- `config/` now holds TWO kinds: SHARED (loaded by several runs of the task —
+  `cohort.do`, `_defaults.yaml`, no `rNN` prefix) and PER-RUN (`rNN_{stem}`,
+  1:1 with `runs/rNN_{stem}`).
+- A ticket MAY carry settings that SELECT A SLICE (year, source, fold). It must
+  never restate a setting its config already holds — two sources of truth drift,
+  and the drift is silent. Settings that change WHAT is computed (cohort, trait,
+  spec family, outcome) stay in a config, where they are reviewed and diffed.
+- Wherever a setting lives, the RUN records it: `results/<task>/<run>/runtime.yaml`
+  carries run, started, host, user, `git_sha`, `git_dirty`, ticket, `config_file`,
+  `config_sha256`, and every varying setting. Written BEFORE the work starts, so a
+  crashed run still has an identity.
+- `config_sha256` is the load-bearing field: two runs of the same name, from a
+  config edited in between, are otherwise indistinguishable on disk.
+- **Naming law for block/job/task/run, and a checklist that enforces it.**
+  `ref/naming-bjtr.md` states eight rules, each traced to a real break: a name must
+  stand alone at EVERY level (it travels into queues, results paths and logs), carry
+  its stage letter, use the project's own vocabulary, be ordered numerically not
+  alphabetically, never be shape words alone, never collide with a sibling across
+  jobs, share one stem between ticket and config, and never be re-spelled by a script
+  that could look it up.
+- N9: never restate the tree in a file. A `sbatch/all.ps1` listing every ticket
+  duplicates `t*/runs/` and needs a drift guard to stay honest — and that guard is
+  the proof the file should not exist. `run_slice.ps1` with no filter runs
+  everything; `-WhatIf` prints the plan computed from disk, so it cannot go stale.
+  Checker code S6 replaces S4.
+- Step 4 of SKILL.md is now RUN THE CHECKLIST: any verb that created or renamed
+  structure ends by running `_tools/check_task_tree.py <block>` (codes N1 N2 N4 N5
+  N6 N7 N8 S1 S2 S3 S5 S6 S7 S8 S9) and fixing findings before it reports.
+  `--expect-fail` proves the checker can still fail.
+- Audit codes R01 unidentifiable run · R02 same name different config_sha256 ·
+  R03 git_dirty · R04 incomplete record. Reference checker `_tools/check_runs.py`,
+  proven against a known-broken fixture before use (GATE-1).
+
+**A batch DECLARES whether it runs one by one or all at once (JL 260831).** An
+sbatch that does not say is telling the reader nothing, and "sequential" is not a
+safe guess: a job whose runs overwrite each other and a job whose runs are
+independent look identical from outside.
+
+- `sbatch/batch.psd1`, beside the engine, states `Mode` ('sequential' | 'parallel'),
+  `Ceiling` (the most that may run at once), `CollisionKey` and a one-line `Why`.
+  `run_slice.ps1` REFUSES TO START without it.
+- `Ceiling` is CAPACITY, `CollisionKey` is CORRECTNESS, and they are different
+  questions. The engine builds WAVES: two runs that agree on every CollisionKey
+  field land in different waves however wide the job runs. Real case, not
+  hypothetical — in Physician-SPACE stage B a `full` and a `synth` run of one
+  task-year write the same `BENE-*` and `BFAF-*` files, because only `CASES-*`
+  carries the source in its filename.
+- The banner states the mode on EVERY invocation and names the source of it
+  (the file, or the `-Sequential` / `-Parallel <N>` override). `-Parallel` above
+  the ceiling is refused; raising the ceiling is an edit with a reason.
+- A named entry point forwards `@PSBoundParameters` (a hashtable, binds by name),
+  never `@Rest` / `@args` (an array, binds POSITIONALLY). The array form bound
+  `-WhatIf` to the next axis parameter and made all 24 of Physician-SPACE's entry
+  points fail on every call. Checker code S9.
+- New checker codes: **S7** an sbatch that never declares its mode, or declares it
+  inconsistently (sequential with a ceiling above 1, a CollisionKey naming a field
+  that is not a ticket coordinate); **S8** a doc naming a folder, ticket or script
+  that does not exist; **S9** the array-splat entry point. All three proven to fire
+  on deliberately broken copies before use (GATE-1).
+- S8's companion is generation: a page that LISTS what the tree already holds
+  drifts on the next rename, so the listing half of every task page and sbatch
+  README is generated from the tree, and only the hand-written head is preserved.
+  Reference generator: `_tools/write_pages.py`.
+
+## 0.10.0 · 2026-08-31
+
+New task-type `page` → specialist `10_page/haipipe-task-for-page` (one collection
+job per Board Page: answers its task-route probe cards with code, values.yaml +
+QA digests, proposes missing upstream tasks). Type table row, keyword map row
+(collect·values·page-serving·probe-batch), Step 2/3a type lists now 10.
+ref/run-sh-template.sh §4: the exec line hardcoded the pre-260830 `scripts/`
+path for nested jobs while §1's CONFIG branch already handled both shapes;
+`PY_PREFIX` now mirrors that branch (found by the 260831 task-for-page field
+test).
+
+## [0.9.0] — 2026-08-30
+
+- **THE TASK IS THE PAGE, and it is self-contained** (JL: "I think under the job,
+  the task will be the page, so task is more like the page... the runs and configs
+  should within the task folder as well"). A task folder now sits DIRECTLY under
+  the job and holds its own code, `config/`, `runs/` and `tNN_<name>.md`; the
+  `scripts/` level is gone. The three document levels of a Board line up with the
+  three folder levels of a job: BOARD↔BLOCK, GROUP↔JOB, PAGE↔TASK, and RUN keeps
+  no counterpart because an execution is not a document.
+- **The dividing line inside a job is AUTHORED vs GENERATED.** The task folder
+  holds what a person wrote; the job holds what a machine produced (`results/`,
+  `notebooks/`, `QA/`, `workflow/`). This is the line mode ② already drew, which
+  is why a consumer-serving job still moves whole folders to its store.
+- **Shared job code is `src/`, one name for every engine** (JL: "you can change
+  the 0-libs to whatever, like code or src"). Not `code/`, which the SPACE's own
+  package owns. Deliberately NOT an engine rule: `0-libs/` survives only in
+  `Project-Personality-OpioidRx` (12 folders, 868 references, behind the CMS
+  remote loop), recorded in hierarchy.md as "The 0-libs exemption" — a migration
+  cost with a number, not a Stata convention. Tooling reads it; nothing writes it.
+- **`sbatch/` splits by the same question**: one that SPANS tasks stays at job
+  level, one that serves a single task moves into `tNN_<task>/sbatch/`. Many `.sh`
+  in one `sbatch/` are alternative ENTRY POINTS, so they are not numbered: every
+  file is `env.sh` or `run_*.sh`, an engine variant is `<name>.<engine>.sh`, and a
+  job-level `run_` script must reference at least two different `tNN_` folders.
+- **The shape detector changed and was a live bug.** `ref/run-sh-template.sh`
+  decided flat-vs-nested from the ticket's parent folder name being `runs`, which
+  the new shape also produces — every new ticket would have been read as flat and
+  written `results/<run>/` instead of `results/<task>/<run>/`. The grandparent now
+  breaks the tie (`t[0-9][0-9]_*` = a task folder), proven against all three
+  shapes before being trusted.
+- Swept across the family: `hierarchy.md` (level table, board↔block mapping,
+  Levels 2-4, both drift checks, RUNNAME projections, sbatch), `SKILL.md`,
+  `block-job-task-run.md`, `task-structure.md`, `authoring-conventions.md`,
+  `task-lifecycle.workflow.js`, `workflow-template.yaml`, `fn/audit.md`,
+  `fn/run.md`, `fn/qa.md`, and both task agents. STILL OPEN and marked as such in
+  `hierarchy.md`: the Databricks column, "prefer FEW blocks" against a block being
+  board-independent, whether a job name should read as a question group, and the
+  migration bill for the jobs still in the old shape.
+- Type specialists under `3_end/`, `4_individual/`, `8_stata/` and `9_agent/` are
+  NOT yet updated; they still scaffold the pre-260830 shape.
+
+## [0.8.1] — 2026-08-30
+
+- **No orchestration-only job** (JL, the j05 ruling: "I don't understand this
+  job name" → "split them into each job, so the job folder is self-contained"
+  → "no more j05"). A job audits its OWN outputs at the tail of its run ticket
+  and writes a receipt that MIRRORS the run dir under `audits/`; order between
+  jobs is a data dependency, `required_audits` naming the exact upstream run,
+  never a scheduler job. ref/hierarchy.md (block paragraph, nested tree
+  `sbatch/` line), ref/block-job-task-run.md R9.
+- Pilot (LLMRec b02): `j05_audit_ladder` dissolved into
+  `audit_{a1,a2,b,c2}_outputs.py`, per-job `sbatch/run_all_arms.sh`, per-job
+  `derive_model_arm_configs.py`; shared checks in
+  `code/haiutils/agent_sdk/audit.py`; 118 tickets audit themselves; the
+  9_agent llm-engine skill commands re-pointed to the jobs' own tickets.
+
+## [0.8.0] — 2026-08-29
+
+- Hierarchy renamed onto Databricks: BLOCK (was task-group) > JOB (was
+  task-folder, THE self-contained unit) > TASK (new level: scripts/{NN}_*/
+  with config/ always a folder) > RUN (a config stem — an execution, never a
+  folder). Authority absorbed from ref/block-job-task-run.md into
+  ref/hierarchy.md + ref/task-structure.md; old verbs `task-folder` /
+  `task-group` stay as aliases of `job` / `block`.
+- Two job shapes: NESTED canonical (scripts/0-libs shared + tasks; runs/,
+  results/, notebooks/ mirrored at <task>/<run>), FLAT legacy accepted —
+  ref/run-sh-template.sh auto-detects from the ticket's own path (verified
+  both shapes + RESULT_STORE override on a mock repo, 260829).
+- `store:` is a JOB property declared once (0-libs/config-defaults.yaml
+  nested, configs/_defaults.yaml flat); per-run keys still honored as legacy.
+- Two drift checks (task↔ticket, config↔ticket) made possible by the
+  mirrored naming; documented with verified commands.
+- Prefer FEW blocks: the letter is the block's identity (LLMRec audit:
+  15 blocks / 32 jobs → 5 says the same thing).
+- Same-day follow-ons (originally excluded, then done): a 68-file vocabulary
+  sweep across the whole skills/task family (specialists, agents, page-types,
+  fn/*.md; 290 replacements), a `job` alias on the workflow js input key, and
+  a 5-reviewer audit whose fixes made the agent triad, fn/run+audit, the
+  workflow js prompts, the stata dialect, and page-for-task shape-aware
+  (nested <task>/<run> vs flat legacy).
+- ONE GRAMMAR at every level (JL 260829, evening): `bNN_ · jNN_ · tNN_ ·
+  rNN_<stem>` — level letter + two digits + stranger-test words. Block letter
+  schemes and letter families retired (a family shows in the name). The
+  address is the four prefixes joined, read off the path (`b02j01t01r03`);
+  run-sh-template.sh reads them, computes nothing. Proven on a mock repo.
+- LIBRARIES AND PROMPTS (JL 260830): code that several jobs import lives in the
+  SPACE package `code/haiutils/` (LLMRec's agent runtime → haiutils.agent_sdk),
+  never at project/block level; prompts are config and sit in
+  scripts/tNN_*/config/prompts/ beside the config that names them, resolved
+  relative to the config file; a job may be pure orchestration (sbatch/ +
+  layout helpers) for a DAG that spans sibling jobs.
+- A BLOCK IS A FOLDER OF JOBS AND NOTHING ELSE (JL 260829): no sbatch/, no
+  shared code, no results above a job; jobs that share a DAG or a library are
+  one job. Under scripts/, `tNN_*` = task, anything else = shared code, named
+  freely (0-libs/ for Stata, src/ or code/ for Python).
+- Naming law (JL 260829): the STRANGER TEST — `<noun>_<qualifier>`, shape
+  words never alone, coined terms only when the block overview defines them;
+  scaffolds refuse failing names (SKILL.md Step 3b NAME GATE, hierarchy.md
+  "Naming", spec R8).
+- Still open: the PowerShell store-resolution gap (block-job-task-run.md
+  § Code that must change) and the other skill families' vocabulary (~84
+  non-diagram mentions, boundary-reviewed as alias-safe).
+
 ## [0.7.0] — 2026-08-17
 
 - Added the `insight` knowledge door and `fn/insight.md`.

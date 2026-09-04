@@ -1,12 +1,10 @@
 ---
 name: haipipe-workflow
-description: "IPO workflow designer + builder + reporter — the basic orchestration unit of haipipe-toolkit: it defines the shared shape (Input → Process[Steps] → Output) and lifecycle (Plan → Build → Execute → Report) that every skill instantiates. Trigger: workflow, plan workflow, design workflow, IPO, process, phases, build workflow, run workflow, report, /haipipe-workflow."
-argument-hint: "[function] [workflow-name-or-path] [args...]"
+description: "IPO workflow designer + builder + reporter — the basic orchestration unit of haipipe-toolkit: it defines the shared shape (Input → Process[Steps] → Output), lifecycle (Plan → Build → Execute → Report), and Phase × Run Map that every workflow with addressable execution instantiates. Trigger: workflow, plan workflow, design workflow, IPO, process, phases, phase run map, build workflow, run workflow, report, /haipipe-workflow."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.2.5"
-  last_updated: "2026-07-19"
-  summary: "IPO workflow designer + builder + reporter — the basic orchestration unit. The report schema names no consumer; a consumer dispatches its question straight to an executor orchestrator and gets a path back."
+  version: "0.3.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -99,6 +97,37 @@ Each skill:
 - **Hides** its internal Process from its caller
 
 
+Phase × Run Map
+---------------
+
+When a workflow exposes durable, addressable work, publish one table that joins
+its domain phases to the Runs they own. Load `haipipe-run` and use its canonical
+schema and counting law.
+
+```text
+Phase    semantic/control unit: why · order · gate · promotion · handoff
+Episode  optional grouping inside a phase
+Run      independently closable Ticket → Result attempt
+Gate     authority transfer; not a Run merely because a person acts
+```
+
+Use this shape in the workflow-owning skill:
+
+| Phase | Folder / Episode | Phase purpose | Allowed Run operations | Cardinality | Gate / authority | Close / handoff |
+|---|---|---|---|---:|---|---|
+| `<P>` | `<kind or episode>` | `<why>` | `<operation × multiplier>` | `<formula or none>` | `<named gate>` | `<receipt/output>` |
+
+The table is mandatory when any phase permits Runs. Keep operation details in
+the phase's Run Profile; keep Run identity, receipts, planned-versus-actual
+counting, and audit rules in `haipipe-run`. Never count a workflow phase,
+episode, step, tool call, or human tick again when its independently closable
+Runs already appear in the table.
+
+This map concerns **domain workflow phases**. It does not rename this skill's
+outer `PLAN → BUILD → EXECUTE → REPORT` lifecycle. A small `.workflow.js` whose
+steps have no durable Ticket/Result identities writes `none` and gains no Runs.
+
+
 Commands
 --------
 
@@ -139,6 +168,11 @@ For each Phase:
   - **files_in**: which files this step reads
   - **files_out**: which files this step creates
   - **schema**: structured output contract (optional)
+
+After the phase list, draft the Phase × Run Map. For every proposed Run
+operation, apply the four tests in `haipipe-run`; demote mere steps/calls/gates
+to their owning phase or Run. Record the expected cardinality formula, while
+leaving actual inventory to runtime receipts.
 
 ### Round 3 — Output
 - What does the workflow return?

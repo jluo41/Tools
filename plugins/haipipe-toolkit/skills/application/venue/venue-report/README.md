@@ -1,7 +1,7 @@
 # Venue: Report
 
 Formal stakeholder report. Structured sections, citations, data
-tables/figures. The most paper-like venue — all stages required.
+tables/figures. The most paper-like venue in this reference family.
 
 
 ## Constraints
@@ -13,44 +13,39 @@ tables/figures. The most paper-like venue — all stages required.
 - **Data:** tables and figures with captions
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  required
-  display:    required
-  section-edit:    required
-
-claims_settlement: full
+design_profile:
+  evidence_bar: full
+  narrative: required
+  display: required
+  section_edit: required
+  terminal: accepted
 ```
 
+## Phase use
 
-## Lifecycle mappings
+### D1/D2 · bet and realize
 
-### → Claims (full)
-Full claim ledger. Every finding/recommendation must trace to
-a supported claim. GAPs trigger probes.
+Every finding, recommendation, table, and figure maps through the released
+card grant. A load-bearing gap is preserved for D4 EMIT; Design never Probes.
 
-### → Narrative (required)
+### D2 · narrative requirement
 Report arc depends on audience:
 - Regulator: methodology → findings → limitations → recommendations
 - Executive: bottom line → evidence → ask
 - Partner: context → joint findings → next steps
 
-### → Display (required)
+### D2 · display requirement
 Display map: tables (summary stats, comparisons), figures
 (forest plots, trend charts), KPI callouts.
 
-### → Section-edit (required)
-Per-section DPRC on the declared sections; paragraph-level job
-assignments live in each section's outline. This is the venue
-closest to an academic paper.
+### D2 · section pass
+Per-section review on the declared sections; paragraph-level jobs live in the
+Unit's outline. This is the venue closest to an academic paper.
 
-Default section structure (adjust per intervention in 3-narrative;
-the DIKW-spine layout below originated in the C-group report work):
+Default section structure (adjust per released card and audience):
 
 ```yaml
 sections:
@@ -62,6 +57,6 @@ sections:
   - 06-gate-check          # settlement + caveats before shipping
 ```
 
-### → Draft
-Formal report following the narrative arc, assembled from 0-sections/
-by haipipe-application-artifact. Full citations.
+### D3/D4 · judge and decide
+Judge the formal report against the evidence bar and venue rails, render its
+exact version under `delivery/render/`, then accept or emit.

@@ -1,3 +1,40 @@
+## 0.11.0 · 2026-09-01
+
+- Restrict this empirical technical-report variant to `folder-kind: task`.
+  Discovery remains task-like on its Task Face, but its workflow now owns its
+  Page Face and article grammar under the phase-owned Folder contract.
+- A Discovery root Page writes `folder-kind: discovery` and does not select the
+  legacy `page-type: task` compatibility grammar.
+
+## 0.10.2 · 2026-08-31
+
+- Remove the last authoritative Task template `## Files` and `## Log`
+  sections. Machinery is indexed as `F<n>` records in
+  `outline/<stem>-files.md`; dated receipts live in
+  `outline/<stem>-log.md`; state stays in Aim `Now:` rows.
+
+## 0.10.1 · 2026-08-31
+
+- Canonicalize Task Page evidence addresses under `evidence/`: Probe cards,
+  Bibex entries, and Display units no longer appear as new flat lanes.
+
+## 0.10.0 · 2026-08-30 · the page rebinds from the JOB to the TASK
+
+JL settled the task-layer hierarchy the same day: a task is now SELF-CONTAINED and
+its page lives inside it. One sentence in this contract carried the old binding.
+
+- **"one page per JOB" → "one page per TASK".** A job holds many tasks — Proj1's
+  `j04_aidatastore` holds eight — and one page reading eight unrelated
+  computations is a folder listing, not a reading. The page now lives at
+  `tNN_<name>/tNN_<name>.md`, so the page and the thing it reads are one folder,
+  and the page's address IS the task's: `b02j01t03`, read off the path.
+- **`job:` → `task:` in the template**, with `job:` and `task-folder:` kept as
+  readable aliases. A page still carrying `job:` is read as covering that job's
+  whole task set; nothing on disk breaks.
+- Run-token paths follow the task into its folder: `<task>/config/<run>.yaml` and
+  `<task>/runs/<run>.sh`, with `results/` and `notebooks/` staying at job level
+  because they are generated.
+
 ## 0.9.0 · 2026-08-22 · `Introduction` enters the FLAT shape, `Landscape` enters the set, and the ARC leaves this contract
 
 Three rulings by JL in one session, and they split cleanly: two grow the WORD SET,
@@ -320,14 +357,14 @@ First contract, written on JL's question "我们对这个 task 的配置定义�
 - That re-openability is what admits the type under the admission law
   (`QPs2-page-types.md` §1): a stage page closes when a human gate passes and stays
   closed; a task page is re-openable BY DISK, because its subject regenerates.
-- Head keys: `page-type: task` (required, because 31% of real task-folders do not
-  match the `{NN}_<name>` convention, so no filename can mark one), `task-folder:`
+- Head keys: `page-type: task` (required, because 31% of real jobs do not
+  match the `{NN}_<name>` convention, so no filename can mark one), `job:`
   (the companion already on disk), `verdict-run:`.
 - Four binding rules: by path never by copy · every number names its run · a rerun
   re-opens · one authority each between the page and `QA/<n>-<slug>.md`.
 - ⬜ Open ruling for JL, unchanged from 0.1.0: `ref/task-structure.md` §"Task-level
   diagram/" already ships `01-overview · 02-design · 03-runs · 04-progress` per
-  task-folder, in .txt files nothing renders. Either the page absorbs them or they
+  job, in .txt files nothing renders. Either the page absorbs them or they
   stay as its source. Until ruled, the page names them in `## Files` and does not
   duplicate their prose.
 - ⬜ No `template.md` yet: a template serializes the typed record, and freezing its

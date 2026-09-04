@@ -1,4 +1,0 @@
-interface:
-  display_name: "Haipipe Paper Round"
-  short_description: "Manage one paper feedback and response cycle"
-  default_prompt: "Use $haipipe-page-for-round to structure and run one paper feedback and response round."

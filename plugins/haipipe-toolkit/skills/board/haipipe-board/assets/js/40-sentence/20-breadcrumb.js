@@ -131,7 +131,7 @@
     document.querySelectorAll('.hpath').forEach(function (x) { x.remove(); });
     document.querySelectorAll('section.slide.q').forEach(function (sec) {
       var file = sec.getAttribute('data-file') || '';
-      var SECT = 'details.sect, details.diagram-section, details.qd';
+      var SECT = 'details.sect, details.outline-section, details.qd';
       sec.querySelectorAll('.ch').forEach(function (ch) {
         var name = plainLabel(ch);
         if (!name) return;

@@ -17,14 +17,15 @@ R1  EVERY SECTION IS ACCOUNTED FOR. Each `## C<n>` in the plan maps to a real
     scope, not omitted.
 R2  THE OUT-OF-SCOPE LIST IS EXPLICIT. The plan states which divisions,
     Aims, States and open Decision Now rows it does NOT touch.
-R3  EVERY BULLET CARRIES A MARK. One of 🔢 value · 📚 citation · 🖼 display ·
-    📮 probe · 🧮 value `PP<NN>.v<n>` (legacy alias 🔢) · 🎯 aim. (✅ "have it" retired 260819.) An unmarked bullet owes something nobody
-    named.
+R3  EVERY OWED THING IS NAMED BEFORE APPROVAL. Use
+    `Evidence: E<NN>-VALUE|CITE|DISPLAY-<slug> · <expected>` followed by an
+    `Accept:` line and matching Evidence Item record. A bullet with no
+    Evidence line truthfully owes no evidence; 🎯 remains an Aim annotation.
 R4  NO BULLET CONTRADICTS A `## Law` ROW on its own page or on a page that
     page cites as binding.
-R5  THE ROUND IS CLASSIFIED CORRECTLY. A plan that changes purpose or any
-    Aim's intent is a DRAFT round and says so; a plan that only changes
-    realization is REVISE and says so.
+R5  THE AUTHORITY IS CLASSIFIED CORRECTLY. A change to purpose, Aim intent,
+    division shape, or Bullet promise belongs to OUTLINE; realization-only
+    work belongs to CONTENT. Stale governing requirements route to CONTEXT.
 R6  IDS ARE STABLE. Aim and State ids the plan keeps are listed by id, so a
     renumber cannot happen by accident.
 R7  NOTHING IS LOST SILENTLY. Where the plan shrinks or deletes material, it
@@ -37,8 +38,8 @@ R8  NEVER DELETE THE ONLY PLACE A RULE IS WRITTEN, even when the surrounding
     the deletion a finding.
     ⚠️ NOT promoted from any break. This rule was seeded 260818 with a WORKED
     EXAMPLE THAT WAS FALSE: the README claimed the uncertainty rule lived only
-    in QPw00's `#### 1.3`. It does not. `haipipe-page-draft/SKILL.md:24` states
-    it outright and `QPw2-draft §2.2` restates it, which the first approver run
+    in QPw00's `#### 1.3`. It does not. `haipipe-page-content` states
+    the current boundary and the archived DRAFT contract restates it, which the first approver run
     established by checking all twelve deleted paragraphs. The RULE is sound
     and stays; the example was invented and is struck. A seeded rule carries no
     origin stamp because it has no origin, and that is exactly why it must not
@@ -49,12 +50,20 @@ R10 THE AGENT WRITES `checked:`, NEVER `approved:`. Two fields, two authors,
     on two lines:
 
     ```text
-    checked:  ✅ auto <YYMMDD> · approve-rules R1-R9 pass     🤖 the agent
+    checked:  ✅ auto <YYMMDD> · approve-rules R1-R11 pass    🤖 the agent
     approved: ✅ JL <YYMMDD>                                   🧑 the person
     ```
 
     The producer of a plan never checks its own plan: the approver runs in a
     fresh context.
+
+R11 DIVISION HEADINGS ARE SHORT NAMES, NOT SUMMARY SENTENCES. Each division
+    uses exactly `## C<n> · <name>` with no second ` ·` clause. The name is at
+    most 8 English words and at most 56 characters. Its explanation belongs in
+    `arc:`, a paragraph brief, or the bullets below it. The name must also
+    identify its concrete subject: counts or generic roles such as `one
+    contract`, `two readers`, `the boundary`, or `the service` fail when the
+    actual object names are required to understand the division.
 ```
 
 ⚖️ **Why two fields and not one** (resolved 260818, after the first live run).
@@ -91,4 +100,4 @@ waiting on one reader.
 ```
 
 Every one of these changes with what the person wants and cannot be written
-once. They are the 🛑, and the 🛑 outranks every R1-R10 pass beneath it.
+once. They are the 🛑, and the 🛑 outranks every R1-R11 pass beneath it.

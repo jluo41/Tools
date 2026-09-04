@@ -1,4 +1,4 @@
-/* 🧭 Outline · the page re-read per division, the rail's SECOND surface.
+/* 🧭 Outline · the page re-read per division, the rail's FIRST surface.
  *
  * THE GAP IT CLOSES (JL 260816): a page is grouped by section kind — all
  * Content, then all Aims, then all States — so nothing shows one division
@@ -6,10 +6,8 @@
  * one card per Content division, everything belonging to it inside, plus a
  * 🚦 lens that buckets every aim into ⬜ open and ✅ done.
  *
- * SECOND because this file sorts at 07-, right after 📂 folder: registration
- * order is asset sort order, which is the rail's order. The two are twins —
- * 📂 shows what the page's FOLDER holds, 🧭 what its PROSE holds — and both
- * are live meta-surfaces with no subfolder and no roster row.
+ * FIRST by explicit Plugin order. Outline owns the Page's process folder and
+ * reads Bullet + Evidence together; 📂 Folder is the raw inventory twin.
  *
  * RULE-BASED, never authored (QPf12): the mapping is read from the material
  * (the `### A<n>` group grammar, then the `§N` anchor), so the URL is a LIVE
@@ -46,12 +44,43 @@
       .catch(function (e) { err && err(String(e)); });
   }
 
+  /* A Run in the compact Page table belongs to the detailed Outline
+     workspace.  Keep one public plugin: select Outline, open its Evidence
+     Workspace lens, and focus the owning Evidence Item. */
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest && event.target.closest('a[data-outline-focus]');
+    if (!link) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey ||
+        event.altKey) return;
+    var page = link.closest('section.slide.q')
+            || (window.boardPlugins && window.boardPlugins.livePage());
+    var focus = link.getAttribute('data-outline-focus') || '';
+    var run = link.getAttribute('data-outline-run') || '';
+    var url = outlineUrl(page);
+    if (!url) return;
+    event.preventDefault();
+    try {
+      localStorage.setItem('board-outline-evidence-focus', focus);
+      localStorage.setItem('board-outline-evidence-run', run);
+      localStorage.setItem('board-outline-lens', 'workspace');
+    } catch (e) {}
+    try {
+      if (parent !== window && typeof parent.__boardShowTab === 'function') {
+        parent.__boardShowTab('outline');
+        return;
+      }
+    } catch (e) {}
+    window.location.assign(url + '&lens=workspace&focus=' + encodeURIComponent(focus)
+                         + '&run=' + encodeURIComponent(run));
+  });
+
   if (window.boardPlugins) {
     window.boardPlugins.register({
       id: 'outline',
       label: '🧭 Outline',
       hint: 'each Content division with its own aims, ticks, and states',
       menu: 'plugin',
+      order: 10,
       /* Every page has prose, so unlike 📂 this applies flat or folded. */
       applies: function (page) { return !!pageFile(page); },
       open: function (page) {

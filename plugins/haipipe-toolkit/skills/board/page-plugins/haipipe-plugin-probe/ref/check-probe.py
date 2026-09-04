@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check one page's probe/ folder against haipipe-plugin-probe.
+"""Check one Page's canonical evidence/probe/ lane against the Probe contract.
 
     python3 check-probe.py <page-dir> [--task-folder <path>]
 
@@ -157,10 +157,13 @@ def main():
     ap.add_argument("page")
     ap.add_argument("--task-folder", default=None)
     a = ap.parse_args()
-    probe = pathlib.Path(a.page) / "probe"
+    page = pathlib.Path(a.page)
+    probe = page / "evidence" / "probe"
+    if not probe.is_dir():
+        probe = page / "probe"  # migration compatibility
     tf = pathlib.Path(a.task_folder) if a.task_folder else None
     if not probe.is_dir():
-        print(f"no probe/ under {a.page}")
+        print(f"no evidence/probe/ under {a.page}")
         return 0
     cards = sorted(d for d in probe.iterdir() if d.is_dir())
     errs = [e for d in cards for e in check_card(d, tf)]

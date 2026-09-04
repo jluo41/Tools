@@ -8,8 +8,8 @@ Reads Stata logs, summary.txt, and config_snapshot.do — NOT runtime.yaml or no
 When to call
 ------------
 
-After execution, when `/haipipe-task report` targets a Stata task folder.
-Also callable standalone: `/haipipe-task-for-stata report <task-folder-path>`
+After execution, when `/haipipe-task report` targets a Stata job folder.
+Also callable standalone: `/haipipe-task-for-stata report <job-path>`
 
 
 Procedure

@@ -60,20 +60,18 @@ Collapsing in the opposite direction was rejected. A Design Page holds the audie
 ## Aims
 
 ### A1 · Contract
-- A1.1 · No Page Type exists solely to relocate a signature.
+- ✅ A1.1 · No Page Type exists solely to relocate a signature.
   **Done when:** the contract is deleted and its one real rule lives on the division.
+  **Now:** `page-types/haipipe-page-for-artifact/` deleted 260820; `check.py` no longer accepts the key.
+
 
 #### A2 · Coverage
-- A2.1 · The case the type existed for still works.
+- ✅ A2.1 · The case the type existed for still works.
   **Done when:** one unit can be accepted while a sibling is mid-revision.
+  **Now:** Design Page Type 0.3.0 carries the per-division `accepted:` row.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · `page-types/haipipe-page-for-artifact/` deleted 260820; `check.py` no longer accepts the key.
-
-#### A2 · Coverage
-- ✅ A2.1 · Design Page Type 0.3.0 carries the per-division `accepted:` row.
+## Discussion
 
 ## Files
 
@@ -91,3 +89,5 @@ A page kind must change how a page CLOSES. A kind that changes only where a sign
 
 260820 · Shipped `page-type: artifact` 0.2.0 as an optional promotion.
 260820 · Retired it the same day (JL: "I think we only need to keep one conception"). Acceptance became a per-division row on the Design Page; the projections folder survives.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

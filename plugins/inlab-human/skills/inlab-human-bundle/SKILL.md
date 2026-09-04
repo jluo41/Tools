@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Grep, Glob, Agent
 metadata:
   version: "0.1.0"
   last_updated: "2026-07-10"
-  summary: "Builder: cases -> endpoint scores -> narratives -> frozen review_bundle.json."
 ---
 
 Skill: inlab-human-bundle

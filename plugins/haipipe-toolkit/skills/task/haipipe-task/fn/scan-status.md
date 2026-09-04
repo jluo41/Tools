@@ -14,7 +14,7 @@ Execution is fully reproducible: re-run to pick up newly completed evaluations.
 Placement convention
 ---------------------
 
-scan_status.py and scan_groups.json live at the **task-group level** (B01), shared by all subtasks.
+scan_status.py and scan_groups.json live at the **block level** (B01), shared by all subtasks.
 The formatter script runs per subtask.
 
   B01_evaluation_pretrain/

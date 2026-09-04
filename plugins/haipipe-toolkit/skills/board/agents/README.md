@@ -70,9 +70,9 @@ top-level `agents/*.md`, so each live agent has a symlink under
 ```text
 haipipe-board-reviewer-agent    haipipe-page-approver-agent
 haipipe-page-auditor-agent      haipipe-page-creator-agent
-haipipe-page-outline-agent      haipipe-page-probe-agent
-haipipe-page-evidence-agent     haipipe-page-draft-agent
-haipipe-page-revise-agent       haipipe-page-check-agent
+haipipe-page-context-agent      haipipe-page-outline-agent
+haipipe-page-evidence-agent     haipipe-page-content-agent
+haipipe-page-check-agent
 (+ the task family's haipipe-task-creator-agent, haipipe-task-reviewer-agent)
 ```
 

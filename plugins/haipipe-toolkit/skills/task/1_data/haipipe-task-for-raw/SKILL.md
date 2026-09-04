@@ -1,21 +1,25 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw extraction task-folder specialist: scaffolds {NN}_<name>/ task-folders in the raw-extraction task-group (default R-series). Two patterns: extract-wide-process-local (Databricks -> parquet -> local Python; non-PHI) and server-resident (all-Spark pipeline staying on the catalog volume; PHI cohorts, e.g. A00_rawstore_*). Called by /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw."
-argument-hint: "[project_id] [group] [task-name]"
+description: >-
+  Raw extraction job specialist: scaffolds {NN}_<name>/ folders in the
+  raw-extraction block (default R-series). Two patterns:
+  extract-wide-process-local (non-PHI) and server-resident all-Spark (PHI
+  cohorts). Called by /haipipe-task when task-type=raw. Cross-references
+  /haipipe-data-raw.
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.4"
   last_updated: "2026-07-08"
-  summary: "Raw extraction task-folder build specialist (Pattern 1 local / Pattern 2 PHI server-resident)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-raw
 =================================
 
-Scaffolds a **raw extraction task-folder** — a runnable example that extracts source tables from a Databricks catalog as wide parquet files.
+Scaffolds a **raw extraction job** — a runnable example that extracts source tables from a Databricks catalog as wide parquet files.
 In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
-The task-folder keeps scripts, configs, and convert-only notebooks either way.
+The job keeps scripts, configs, and convert-only notebooks either way.
 
 **Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
 `haipipe-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
@@ -43,7 +47,7 @@ What this scaffolds
 
 ```
 tasks/R{NN}_<cohort_name>/                   ← group (R-series)
-└── {NN}_stage{S}_{description}/             ← task-folder this scaffold creates
+└── {NN}_stage{S}_{description}/             ← job this scaffold creates
     ├── {NN}_stage{S}_{description}.py       source + # %% cells (SQL strings in Python)
     ├── configs/
     │   └── <run_name>.yaml                  seeded from ref/config-seed.yaml
@@ -193,7 +197,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, stage number, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.

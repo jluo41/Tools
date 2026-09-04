@@ -1,16 +1,16 @@
-fn-scaffold: Scaffold a data-pipeline task-folder
+fn-scaffold: Scaffold a data-pipeline job
 ==================================================
 
 Invokes one of the Stage 1-4 builders (Source / Record / Case / AIData) to produce data artifacts under `_WorkSpace/{1..4}-*Store/`.
 Group letter default: **D**.
-Output: `tasks/D{NN}_<group>/{NN}_<task_name>/`.
+Output: `tasks/D{NN}_<group>/{NN}_<job_name>/`.
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **D**; scaffold a new `D{NN}_<group_name>/` if needed (see `../../../haipipe-task/fn/task-group.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **D**; scaffold a new `D{NN}_<block_name>/` if needed (see `../../../haipipe-task/fn/task-group.md`).
 
 
 Step 2 — Collect metadata
@@ -32,10 +32,10 @@ The `.py` is an instantiation of a generic template.
 Copy the right template from `code/scripts/haistepnb/`, then change only the CONFIG default and docstring:
 
 ```
-Stage A1 → cp code/scripts/haistepnb/a1_source_nb.py → {task}/{NN}_{task_name}.py
-Stage A2 → cp code/scripts/haistepnb/a2_record_nb.py → {task}/{NN}_{task_name}.py
-Stage A3 → cp code/scripts/haistepnb/a3_case_nb.py   → {task}/{NN}_{task_name}.py
-Stage A4 → cp code/scripts/haistepnb/a4_aidata_nb.py → {task}/{NN}_{task_name}.py
+Stage A1 → cp code/scripts/haistepnb/a1_source_nb.py → {task}/{NN}_{job_name}.py
+Stage A2 → cp code/scripts/haistepnb/a2_record_nb.py → {task}/{NN}_{job_name}.py
+Stage A3 → cp code/scripts/haistepnb/a3_case_nb.py   → {task}/{NN}_{job_name}.py
+Stage A4 → cp code/scripts/haistepnb/a4_aidata_nb.py → {task}/{NN}_{job_name}.py
 ```
 
 After copy:
@@ -45,8 +45,8 @@ After copy:
 Result:
 ```
 {G}{NN}_<group>/
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py                  instantiation of haistepnb template
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py                  instantiation of haistepnb template
     ├── configs/
     │   └── run_<task_name>.yaml             from ref/config-seed.yaml
     ├── runs/
@@ -74,7 +74,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
-Set `TASK_NAME="{NN}_{task_name}"`.
+Set `TASK_NAME="{NN}_{job_name}"`.
 
 
 Step 6 — Cross-skill link
@@ -117,7 +117,7 @@ First-run gate
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     task-folder to produce a fresh `CODE_REVIEW.md`:
+     job to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:

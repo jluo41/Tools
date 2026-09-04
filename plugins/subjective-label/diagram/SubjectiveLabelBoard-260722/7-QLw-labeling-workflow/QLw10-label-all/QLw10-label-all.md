@@ -146,7 +146,7 @@ A phase with one route is not a decision, and a phase with several is not free t
 ## Files
 
 ### Contracts · what this Page describes
-- `../../skills/page-workflows/label-complete/SKILL.md`
+- `../../skills/label-scanning/SKILL.md`
   The command that runs completion and the audit.
 
 ## Law

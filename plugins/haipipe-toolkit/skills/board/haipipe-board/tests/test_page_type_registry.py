@@ -15,7 +15,8 @@ class PageTypeRegistryTest(unittest.TestCase):
     def test_current_cross_family_types_resolve_by_declared_key(self):
         # `intervention` and `artifact` retired 260820 (renamed/absorbed into
         # `design`); the InsightBoard decomposed into meta + question + DIKW
-        # levels 260820-21.
+        # levels 260820-21. `principle` retired as an independent key on
+        # 260831; promoted principles are subordinate design-division roles.
         for value in (
             "seed",
             "venue",
@@ -31,7 +32,6 @@ class PageTypeRegistryTest(unittest.TestCase):
             "knowledge",
             "wisdom",
             "brief",
-            "principle",
             "design",
         ):
             with self.subTest(value=value):
@@ -45,6 +45,18 @@ class PageTypeRegistryTest(unittest.TestCase):
                 self.assertFalse(
                     [row for row in report.rows if row[1] == "page-type-unknown"]
                 )
+
+    def test_retired_principle_type_is_not_a_resolver_key(self):
+        report = Report()
+        check_page_type(
+            Path("Q-principle.md"),
+            "# Fixture\npage-type: principle\n\n## Opening\nQuestion?\n",
+            "Q-principle.md",
+            report,
+        )
+        self.assertTrue(
+            [row for row in report.rows if row[1] == "page-type-unknown"]
+        )
 
     def test_unknown_type_still_warns(self):
         report = Report()

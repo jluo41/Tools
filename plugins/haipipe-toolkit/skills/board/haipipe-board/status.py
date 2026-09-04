@@ -20,6 +20,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from src.parse import parse_dir  # noqa: E402
+from src.server_config import load_server_config  # noqa: E402
 from live.home import board_slug  # noqa: E402  (QE2 owns the slug; one copy)
 
 
@@ -63,14 +64,23 @@ def short_board_name(name, board=None):
 
 
 def configured_base_url(root, explicit=None):
-    """Resolve the reader-facing URL without executing the repo's env.sh.
+    """Resolve the reader-facing URL without executing repository shell files.
 
-    A CLI value wins, then the live environment, then the one machine-local
-    HAIPIPE_BOARD_URL assignment in <served-root>/env.sh. Shared clones retain
-    the loopback fallback without inheriting another machine's tailnet address.
+    An explicit CLI value wins. A root `.server_config/settings.env` is the
+    canonical hosting source when present, then the live environment, then the
+    one machine-local HAIPIPE_BOARD_URL assignment in <served-root>/env.sh.
+    Shared clones retain the loopback fallback without inheriting another
+    machine's tailnet address.
     """
     if explicit:
         return explicit.rstrip("/")
+
+    config = load_server_config(root)
+    value = (config.get("JJLUO_PUBLIC_URL") or
+             config.get("JJLUO_TAILSCALE_URL") or "").strip()
+    if value:
+        return value.rstrip("/")
+
     value = os.environ.get("HAIPIPE_BOARD_URL", "").strip()
     if value:
         return value.rstrip("/")
@@ -343,8 +353,9 @@ def main(argv=None):
         "--base-url",
         default=None,
         help=(
-            "reader-facing origin; defaults to HAIPIPE_BOARD_URL from the "
-            "environment or <root>/env.sh, then loopback"
+            "reader-facing origin; defaults to JJLUO_PUBLIC_URL from the root "
+            ".server_config/settings.env, then the current environment's "
+            "HAIPIPE_BOARD_URL, then <root>/env.sh, then loopback"
         ),
     )
     parser.add_argument(

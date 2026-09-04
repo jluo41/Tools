@@ -13,8 +13,10 @@
       var e = chat.querySelector(s); if (e) e.style.display = on ? 'none' : '';
     });
     var b = chat.querySelector('.term');
-    b.textContent = on ? '←' : '>_';
-    b.setAttribute('aria-label', on ? 'Back to chat' : 'Open terminal');
+    /* SAY WHERE IT GOES (JL 260831 "how could I shift back to the GUI?"):
+       a bare ← in the header was not findable once the composer hid. */
+    b.textContent = on ? '← GUI' : '>_';
+    b.setAttribute('aria-label', on ? 'Back to the GUI chat' : 'Open terminal');
     b.title = on ? 'Back to the web chat (hands the session back)' : 'Open this question in a real terminal (same session)';
     if (on && termT) setTimeout(fitTerm, 0);
   }
@@ -200,10 +202,29 @@
       // CJK fallbacks + lineHeight headroom: Menlo has no 汉字, the browser falls
       // back to a taller proportional font whose glyphs overflow the measured row
       // and bleed into the next line — the vertical smear in JL's QD3 screenshot.
+      // WINDOWS MONOS BEFORE YAHEI (JL 260831 "why is the TUI so wide"): on the
+      // VDI none of the Mac fonts exist, so the family resolved to Microsoft
+      // YaHei — a PROPORTIONAL face — and xterm measured a CJK-wide cell,
+      // spreading every Latin glyph. Consolas/Cascadia take the measurement;
+      // the CJK names stay behind them for per-glyph 汉字 fallback only.
       fontSize: 13, lineHeight: 1.2,
-      fontFamily: 'Menlo, "SF Mono", ui-monospace, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", monospace',
+      fontFamily: 'Menlo, "SF Mono", Consolas, "Cascadia Mono", ui-monospace, "Courier New", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", monospace',
       cursorBlink: true, convertEol: false, scrollback: 4000,
-      theme: { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0' }
+      // THE PANE'S SCHEME, not a fixed dark (JL 260831 "white background"):
+      // light board, light terminal — with an ANSI palette darkened for white
+      // paper (VS Code Light+), because claude's own colors assume a scheme.
+      theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ? { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0',
+            selectionBackground: '#2a4a6e' }
+        : { background: '#ffffff', foreground: '#1c1d1f', cursor: '#3b6ea5',
+            selectionBackground: '#bcd3ee', cursorAccent: '#ffffff',
+            black: '#000000', red: '#cd3131', green: '#107c10',
+            yellow: '#949800', blue: '#0451a5', magenta: '#bc05bc',
+            cyan: '#0598bc', white: '#555555',
+            brightBlack: '#666666', brightRed: '#cd3131',
+            brightGreen: '#107c10', brightYellow: '#8f9408',
+            brightBlue: '#0451a5', brightMagenta: '#bc05bc',
+            brightCyan: '#0598bc', brightWhite: '#a5a5a5' }
     });
     if (window.Unicode11Addon) {           // match claude's wcwidth (see loadXterm)
       termT.loadAddon(new window.Unicode11Addon.Unicode11Addon());
@@ -398,7 +419,8 @@
      chat box is not overruled on every page. */
   var TUIDEF = 'board-tui-default';
   function tuiIsDefault() {
-    try { return localStorage.getItem(TUIDEF) !== '0'; } catch (e) { return true; }
+    /* GUI unless the reader chose TUI (JL 260831); the shell's radio writes this key. */
+    try { return localStorage.getItem(TUIDEF) === '1'; } catch (e) { return false; }
   }
   window.__boardTuiDefault = tuiIsDefault;
   window.__boardOpenDefaultView = async function () {

@@ -133,7 +133,7 @@ class XcalMixin:
         return "", ""
 
     def new_excalidraw(self, f, p):
-        """✨ Mint an Excalidraw+ scene for this page and write its link into ## Diagram.
+        """✨ Mint an Excalidraw+ scene for this page and write its link into ## Outline.
 
         The point is that nobody should have to leave the board, create a drawing
         by hand, and paste a URL back: the page asks for one and gets one.
@@ -215,8 +215,8 @@ class XcalMixin:
         return {"url": url, "key_from": src, **(res or {})}, None
 
     def add_diagram(self, f, p):
-        """➕ Excalidraw in 🖼 Diagram (JL 260726): paste a share URL on the page and it
-        lands on its own line inside `## Diagram` — the same line an author types by hand,
+        """➕ Excalidraw in 🧭 Outline: paste a share URL on the page and it
+        lands on its own line inside `## Outline` — the same line an author types by hand,
         so the md stays the single source and the canvas comes back through build.py.
         One canvas per page: pasting again replaces the old URL instead of stacking a
         second iframe onto the section."""
@@ -250,7 +250,7 @@ class XcalMixin:
                 return True
             return bool(host) and s.startswith(host + "/")
 
-        # ## Diagram 的范围。找的时候要跳 ``` 围栏：QA4 正文里就摆着 md 段落的示例，
+        # ## Outline 的范围。找的时候要跳 ``` 围栏：QA4 正文里就摆着 md 段落的示例，
         # 不跳的话会写进示例里（评论层 260723 真踩过这个坑）。
         fence, start, end = False, None, None
         for i, ln in enumerate(lines):
@@ -260,7 +260,7 @@ class XcalMixin:
             if fence:
                 continue
             if start is None:
-                if re.match(r"^## (?:Diagram|图)\s*$", ln):
+                if re.match(r"^## (?:Outline|Diagram|图)\s*$", ln):
                     start = i
                 continue
             if re.match(r"^## ", ln):
@@ -268,9 +268,9 @@ class XcalMixin:
                 break
 
         if start is None and drop:
-            return None, "this page has no ## Diagram section"
+            return None, "this page has no ## Outline section"
         if start is None:
-            # 没有 Diagram 这一节就现开一节，位置按固定层次：Diagram 在 Content 之前。
+            # 没有 Outline 这一节就现开一节，位置按固定层次：Outline 在 Content 之前。
             fence, anchor = False, None
             for i, ln in enumerate(lines):
                 if ln.lstrip().startswith("```"):
@@ -281,13 +281,13 @@ class XcalMixin:
                 if re.match(r"^## (?:Content|Aims|Items to Finish|Done when|完成条件|清单)\b", ln):
                     anchor = i
                     break
-            block = ["## Diagram", url, ""]
+            block = ["## Outline", url, ""]
             if anchor is None:
                 lines += [""] + block
             else:
                 lines[anchor:anchor] = block
             f.write_text("\n".join(lines), encoding="utf-8")
-            return {"warn": "created ## Diagram holding only a canvas; the ascii figure is "
+            return {"warn": "created ## Outline holding only a canvas; the ascii map is "
                             "the part that survives being copied, so add one"}, None
 
         end = end if end is not None else len(lines)
@@ -300,7 +300,7 @@ class XcalMixin:
             # with a different blast radius.
             gone = [j for j in range(start + 1, end) if is_xcal(lines[j])]
             if not gone:
-                return None, "this Diagram has no excalidraw to remove"
+                return None, "this Outline has no excalidraw to remove"
             for j in reversed(gone):
                 if j - 1 > start and not lines[j - 1].strip():
                     del lines[j - 1:j + 1]
@@ -320,7 +320,7 @@ class XcalMixin:
         f.write_text("\n".join(lines), encoding="utf-8")
         has_ascii = any(lines[j].lstrip().startswith("```") for j in range(start + 1, end))
         return ({} if has_ascii else
-                {"warn": "this Diagram has no ascii figure; the canvas is the half that "
+                {"warn": "this Outline has no ascii map; the canvas is the half that "
                          "disappears when it cannot load"}), None
 
     def proxy_excalidraw(self):

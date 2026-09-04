@@ -200,37 +200,6 @@ The bundle carries no `audit` key at all, which means "audit PASS" for that run 
 
 ## Aims
 
-### A1 · 🧾 One receipt per attempted phase, and attempted is the load-bearing word
-- A1.1 · Every attempted phase in every run on this board returned a receipt.
-  Done when no run bundle has a step gap between its first and last receipt.
-- A1.2 · No illegal route has been accepted.
-  Done when the auditor rejects a route outside the enumerated set for invariant ②.
-
-### A2 · 🔗 The version id is the mechanism, and the auditor recomputes it
-- A2.1 · The auditor rehashes rather than trusting the receipt.
-  Done when a receipt carrying a correct-looking but wrong hash is rejected by `pageflow.py audit`.
-- A2.2 · The rebuild-is-not-a-mutation question is ruled and written into the contract.
-  Done when the contract says whether the SOURCE hash alone is the version identity, and the auditor stops reporting `artifact-version-mismatch` on an innocent rebuild.
-
-### A3 · 🛡 Seven invariants make the loop auditable
-- A3.1 · Each of the seven is separately detectable.
-  Done when each injected fault is rejected for the specific invariant it violates rather than for a generic failure.
-- A3.2 · The fault-injection harness exists and runs.
-  Done when all eleven named fault cases run in a test suite on this board.
-
-### A4 · ⚖️ What the audit can prove, and what it cannot
-- A4.1 · No run record on this board claims quality without naming its gate.
-  Done when every terminal record names what passed, what was inspected, and the residual risk.
-- A4.2 · No CHECK result has been appended to a page's own Log after approval.
-  Done when no page Log on this board carries a CHECK entry written after its closing version.
-
-### A5 · 🔬 The one live run, and the defects it returned against this contract
-- A5.1 · The pre-run snapshot has a receipt home.
-  Done when a run bundle carries its pre-run snapshot rather than leaving it in session history.
-- A5.2 · The bundle carries an `audit` key.
-  Done when a closed run's audit result exists on disk rather than only in a session transcript.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether the SOURCE hash alone is a version's identity
       📍 `Part` §2.1, a rebuild is not a mutation
@@ -240,25 +209,51 @@ The bundle carries no `audit` key at all, which means "audit PASS" for that run 
       🛑 `Blocks` A2.2, and every closed run's audit on this board
       🤖 `If nobody answers` A takes effect, because B makes a closed audit expire for reasons unrelated to the page it audited
 
+
 ### A1 · 🧾 One receipt per attempted phase, and attempted is the load-bearing word
-- ⬜ A1.1 · Not measured. One run bundle exists, `260805-0216-QB8e`, and no gap check has been run over it.
-- ⬜ A1.2 · Not started. No illegal route has been injected to test the rejection.
+- ⬜ A1.1 · Every attempted phase in every run on this board returned a receipt.
+  Done when no run bundle has a step gap between its first and last receipt.
+  **Now:** Not measured. One run bundle exists, `260805-0216-QB8e`, and no gap check has been run over it.
+- ⬜ A1.2 · No illegal route has been accepted.
+  Done when the auditor rejects a route outside the enumerated set for invariant ②.
+  **Now:** Not started. No illegal route has been injected to test the rejection.
+
 
 ### A2 · 🔗 The version id is the mechanism, and the auditor recomputes it
-- ✅ A2.1 · Met. `pageflow.py audit` resolves the page from the receipt and recomputes both digests independently.
-- 🧠 A2.2 · Waiting on the Decision Now row above.
+- ✅ A2.1 · The auditor rehashes rather than trusting the receipt.
+  Done when a receipt carrying a correct-looking but wrong hash is rejected by `pageflow.py audit`.
+  **Now:** Met. `pageflow.py audit` resolves the page from the receipt and recomputes both digests independently.
+- 🧠 A2.2 · The rebuild-is-not-a-mutation question is ruled and written into the contract.
+  Done when the contract says whether the SOURCE hash alone is the version identity, and the auditor stops reporting `artifact-version-mismatch` on an innocent rebuild.
+  **Now:** Waiting on the Decision Now row above.
+
 
 ### A3 · 🛡 Seven invariants make the loop auditable
-- ⬜ A3.1 · Not measured. The invariants are written and no per-invariant rejection test exists.
-- ⬜ A3.2 · Not started. Eleven fault cases are named in the contract and none is implemented as a test.
+- ⬜ A3.1 · Each of the seven is separately detectable.
+  Done when each injected fault is rejected for the specific invariant it violates rather than for a generic failure.
+  **Now:** Not measured. The invariants are written and no per-invariant rejection test exists.
+- ⬜ A3.2 · The fault-injection harness exists and runs.
+  Done when all eleven named fault cases run in a test suite on this board.
+  **Now:** Not started. Eleven fault cases are named in the contract and none is implemented as a test.
+
 
 ### A4 · ⚖️ What the audit can prove, and what it cannot
-- ✅ A4.1 · Met for the one run that exists: its record names its route, its audit result, and eleven residual defects.
-- ✅ A4.2 · Met. No page Log on this board carries a post-approval CHECK entry.
+- ✅ A4.1 · No run record on this board claims quality without naming its gate.
+  Done when every terminal record names what passed, what was inspected, and the residual risk.
+  **Now:** Met for the one run that exists: its record names its route, its audit result, and eleven residual defects.
+- ✅ A4.2 · No CHECK result has been appended to a page's own Log after approval.
+  Done when no page Log on this board carries a CHECK entry written after its closing version.
+  **Now:** Met. No page Log on this board carries a post-approval CHECK entry.
+
 
 ### A5 · 🔬 The one live run, and the defects it returned against this contract
-- ⬜ A5.1 · Not started, and it is item ⑩ of the run's own defect list.
-- ⬜ A5.2 · Not started. The `260805-0216-QB8e` audit PASS exists only in session history.
+- ⬜ A5.1 · The pre-run snapshot has a receipt home.
+  Done when a run bundle carries its pre-run snapshot rather than leaving it in session history.
+  **Now:** Not started, and it is item ⑩ of the run's own defect list.
+- ⬜ A5.2 · The bundle carries an `audit` key.
+  Done when a closed run's audit result exists on disk rather than only in a session transcript.
+  **Now:** Not started. The `260805-0216-QB8e` audit PASS exists only in session history.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -307,3 +302,5 @@ The bundle carries no `audit` key at all, which means "audit PASS" for that run 
 
 ## Log
 - 260818 · [DRAFT-CC] page created, closing the ⬜ debt line that `board.md` carried for the `_runs/` receipt contract since 260816. Written from `haipipe-page-workflow/ref/page-run-contract.md` and the seven invariants already stated in `QPw00 §10.2`. Five divisions: the one-receipt-per-ATTEMPTED-phase rule with the enumerated legal routes, the version chain and the auditor that recomputes it, the seven invariants with the branch and fault coverage they require, the honest limit of what an audit proves, and the single live run `260805-0216-QB8e` with the eleven defects it returned against this contract. Three of those eleven became Aims here rather than prose: the snapshot with no receipt home, the missing `audit` key, and the rebuild-is-not-a-mutation ruling, which is load-bearing enough to be the Decision Now row since every rebuild of this board currently expires every closed audit.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -1,39 +1,49 @@
 ---
 name: haipipe-page-for-labeling
 description: >-
-  The VARIANT contract for a LABELING run Page: one Page per corpus and label target being labeled by a human authority, plus one control page per family. It loads haipipe-page for the base frame and adds only what a run Page needs: the per-unit test that makes one corpus plus one target one Page, the rule that a round is a RECORD and never a division so the Page cannot grow without end, five Content divisions that mirror the run rather than argue a question, Aims that ARE the stopping gates so States answers "may we stop" without a second source of truth, the rule that an empty division is a status, and the evidence rules that a quoted item carries its id and that a machine may propose a class but only a human session makes it gold. Use when writing or fixing a labeling Page, when rounds are turning into sections, when a page shows a score with no round behind it, or when a machine's proposed label is being read as gold. Trigger: labeling page, S-Label, label run, calibration round, annotation policy, gold, sealed test, stopping gate, region, H L N, /haipipe-page-for-labeling.
+  The VARIANT contract for a SUBJECTIVE-LABEL job Page: one Page per corpus and
+  target, spanning the Building and Scanning sides plus one control page per
+  family. It loads haipipe-page for the base frame and adds only what a Job Page
+  needs: a round is a RECORD and never a division; five Content divisions show
+  meaning, rounds, Building stop gates, signed handoff/scorecards, and audited
+  corpus completion; an empty division is status; quoted items carry ids; and
+  only a human event creates gold. Use when writing or fixing a labeling Page,
+  when rounds become sections, when freeze is mistaken for completion, when a
+  score has no bound handoff, or when a machine proposal is read as gold.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-07"
-  summary: "Ships from the plugin that maintains it, not from the board family."
+  version: "0.5.0"
+  last_updated: "2026-09-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-for-labeling · a run page records a judgment it does not make
+# /haipipe-page-for-labeling · a Job Page records a judgment it does not make
 
 **LOAD `haipipe-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the Opening split, the numbering, and the evaluation contract.
 This file adds only what a labeling page needs and an ordinary stage page does not.
 It never repeats a base rule, because a copied rule goes a night out of date while the contract moves.
 
-**What a labeling run is** comes from the `subjective-label` plugin's own board, `diagram/02-subjective-label-260722`, whose QA0 through QF5 fix the method.
-This file never restates that method. It says only what the BOARD PAGE must carry.
+**What a labeling job is** comes from the plugin's current family contracts:
+`subjective-label`, `label-building`, `label-scanning`, and
+`subjective-label-workflow`. The historical design Board records how those laws
+were reached; it is not a second runtime authority. This file says only what the
+BOARD PAGE must carry.
 
 ## 🧩 The two kinds
 
 ```
 kind          filename                          subject                closes when
 ──────────────────────────────────────────────────────────────────────────────────────
-control       S-Label-Dash.md                   which runs exist and   never; it is an
+control       S-Label-Dash.md                   which jobs exist and   never; it is an
                                                 where each one stands  inventory
-per-unit run  S-Label-<n>-<corpus>-<target>.md  ONE corpus and ONE     its human gate
-                                                label target           passes
+per-target job S-Label-<n>-<corpus>-<target>.md ONE corpus and ONE     its human gate
+                                                label target           and final audit close
 ```
 
-**The test for a unit is QC3b's, and it is about people, not files**: can a person say yes to one thing here while saying no to the thing beside it?
-A human authority can accept `authority` on a corpus and still refuse `social-proof` on the same corpus, so each target is its own unit with its own gate.
+**The test for a Page unit is QC3b's, and it is about people, not files**: can a person say yes to one thing here while saying no to the thing beside it?
+A human authority can accept `authority` on a corpus and still refuse `social-proof` on the same corpus, so each target is its own Page/Job unit with its own gate.
 Size does not decide it, and neither does how long the page grows.
 
-**⛔ A ROUND IS NOT A UNIT.** Round 4 cannot be approved while round 3 is refused, because a round opens only after the previous checkpoint closed. Rounds are strictly ordered, so they fail the test, and the rule below follows from that.
+**⛔ A ROUND IS NOT A PAGE UNIT.** Round 4 cannot be approved while round 3 is refused, because a round opens only after the previous checkpoint closed. Rounds are strictly ordered, so they fail the Page-unit test. Once released, each round is nevertheless one Level-4 Calibration Run with its own Ticket, Result, and receipt.
 
 **One target per page also keeps the class single-valued.** One item may carry two targets at once. Giving each target its own page keeps each page's HIGH, LOW, and NONE clean, and lets multi-label live across pages instead of forcing one page to hold classes that are not mutually exclusive.
 
@@ -42,31 +52,42 @@ Size does not decide it, and neither does how long the page grows.
 **A round is a RECORD, never a division.**
 
 Rounds keep arriving, and the base fixes the section order, so a `###` per round would make the Page grow without end and change shape every round.
-One `### 2 · Rounds` division holds them all, newest first, as record blocks:
+One `### 2 · Rounds` division holds them all, newest first, as record blocks.
+A released round is a Calibration Run on disk (`ref/ref-assets.md` §3), and the
+record is its readable index: it names the Run, quotes the card's wager, and scores the
+prospect against what happened.
 
 ```markdown
-**Round 3** · closed 260806 · policy G_3 · 60 items
-  🎯 challenge  policy and the human disagreed on 11 of 60
-  📊 audit      agreement 0.86 on the consensus stratum
-  📜 diff       rule 3 and rule 4 added; no rule dropped
-  🗺 coverage   region 5 still thin at 3 items
+**round_03** · closed 260806 · G_02 → G_03 · 60 items (40 challenge / 20 audit)
+  🃏 card       gap HL, LN · expected disagreement on HL
+  🎯 actual     disagreed on 11 of 60 · forecast said 9 (view/result.md)
+  📜 diff       rule 3 and rule 4 added; no rule dropped · 2 prior rows flipped
+  🗺 register   HL covered · LN still open at 3 items
+  🚦 route      another round
 ```
 
-Round 12 costs exactly what round 2 cost: four lines at the top, and no heading moves.
+Round 12 costs exactly what round 2 cost: five lines at the top, and no heading moves.
 Record lines, never a markdown table.
 The heavy artifacts stay in the run folder on disk; this ledger is the readable index into them.
 
-## 📚 Content: five divisions that mirror the run
+## 📚 Content: five divisions that mirror the job
 
-A labeling page's Content mirrors a run in progress. It does not argue a question.
+A labeling Page's Content mirrors one job lifecycle. It does not argue a question.
 
 ```
 ### 1 · What <target> means now      the boundary as the human draws it TODAY, with real items
 ### 2 · Rounds                       the ledger
-### 3 · Gates: may we stop?          the current reading of each stopping gate
-### 4 · Freeze, sealed test, scores  empty until the policy freezes
-### 5 · The labeled corpus           empty until the executor runs
+### 3 · Building gates               may the Label Handoff be signed?
+### 4 · Handoff, sealed test, scores empty until P2 Freeze signs the handoff
+### 5 · Scanned corpus and audit     empty until Scanning runs
 ```
+
+**§1 QUOTES the built label; it never redrafts it.** The current policy version
+carries two rendered files, `cheatsheet.md` (the class rules and seven region
+tests on one screen) and `gallery.md` (real confirmed items per region with the
+human's reason); §1 shows the cheatsheet block and draws its seed cases from the
+gallery, each with its item id. A §1 whose rules disagree with the closed
+`G_<t>` is a stale view, and the policy version wins.
 
 **§1 must SAY what LOW means on this page**, because it differs by target and a reader cannot guess.
 On a graded trait, LOW is a weaker HIGH.
@@ -85,43 +106,47 @@ On a labeling page those targets are already defined by the method's stopping ga
 ```
 A1  the policy is executable, and every rule is traceable to its round
 A2  every closed round is reproducible from its own folder
-A3  the stopping gates: quality · stability · coverage · risk        ← one Aim item each
-A4  the seal holds, and every candidate executor is scored on it
-A5  the corpus is complete with provenance, and the audit says what is reliable
+A3  the Building gates: quality · stability · coverage · risk        ← one Aim item each
+A4  the signed handoff and seal hold, and every candidate executor is scored on them
+A5  the scanned corpus is complete with provenance, and the audit says what is reliable
 ```
+
+**A gate row READS its value from the newest `checkpoint.json`** (quality,
+stability streak, coverage from `register.md`, risk), naming the checkpoint
+that produced it. A gate row with a number no checkpoint holds is not evidence.
 
 The payoff is that `## States` answers "may we stop" with no second source of truth, and a reader scanning it sees which gate blocks.
 A control button on a division may read that state to decide whether it is enabled; it must never write a state of its own.
 
-## 🌉 The two boards, and why every run page straddles them
+## 🌉 The two boards, and why every Job Page straddles them
 
-**A run page and the method it obeys are always on DIFFERENT boards.**
+**A Job Page and the method it obeys are always on DIFFERENT boards.**
 
 ```
-design board                          run board
-how the loop works                    what one run found
+design board                          job board
+how the loop works                    what one job found
 settles questions, then closes        records a judgment, never settles the method
    QA0 … QF5                             S-Label-Dash · S-Label-1 · S-Label-2 …
 ```
 
-Keeping them apart is what stops "how we decided to do this" and "what this run produced" from being edited as one document.
-It is also what makes the design board closable while runs keep opening.
+Keeping them apart is what stops "how we decided to do this" and "what this job produced" from being edited as one document.
+It is also what makes the design board closable while jobs keep opening.
 
-The cost is that **every reference from a run page to a method page is cross-board**, and cross-board behaves differently in the two places it appears:
+The cost is that **every reference from a Job Page to a method page is cross-board**, and cross-board behaves differently in the two places it appears:
 
 - `requires:` and `style-from:` look a bare page id up in THIS board's pages. A method page is not one, so it needs a real path relative to this board's root. An id there reports `Stage Contract source not found` and then builds anyway.
 - `### 🔗 Related Board Pages` may hold **only pages on this board**. A method page there reports `dead-related-page`, and its rendered link reports `dead-href`. Declare method pages in `board.md`'s `## Links` and cite them by name in a separate block.
 
-Both failures let the page build, so nothing stops an author who gets it wrong. This is the single most likely defect in a new run page, which is why the specimen carries the warning three times.
+Both failures let the page build, so nothing stops an author who gets it wrong. This is the single most likely defect in a new Job Page, which is why the specimen carries the warning three times.
 
 ## 🗂 The control page still needs a Stage Contract
 
 A control page has no upstream, and the checker requires `## Stage Contract` on every S page regardless, reporting `missing-stage-section` without it.
 Write the section and say **None, by design**, with the reason.
-Leaving it out and leaving it empty look identical to the checker and different to a reader, and the reader is the one who has to know that a control page is not a run page missing its inputs.
+Leaving it out and leaving it empty look identical to the checker and different to a reader, and the reader is the one who has to know that a control page is not a Job Page missing its inputs.
 
-Its Aims are about the ROSTER's completeness, never about any run's progress.
-An Aim tracking a run's gate belongs on that run's page, or the same fact lives in two places and one of them goes stale.
+Its Aims are about the ROSTER's completeness, never about any job's progress.
+An Aim tracking a job's gate belongs on that Job Page, or the same fact lives in two places and one of them goes stale.
 
 ## 🧾 Evidence rules
 
@@ -133,19 +158,27 @@ An Aim tracking a run's gate belongs on that run's page, or the same fact lives 
 
 ## 🚦 State
 
-This is an S page, so `✅` means this page's own human gate passed, and the index counts it under the `Label` family.
-A run that is deliberately parked is `⏸️`, and a run whose gates are still open is `🟡` however many rounds have closed.
-`state:` never reads `✅` because the rounds went well; it reads `✅` because a person signed the freeze.
+This is an S page, so `✅` means the whole job reached audited `D*`, and the
+index counts it under the `Label` family. A signed freeze changes the handoff
+row in §4 and opens Scanning; it does not complete the Page. A job deliberately
+parked is `⏸️`, and a job with open Building or Scanning gates is `🟡` however
+many rounds closed or however good its scorecard looks. `state:` never reads
+`✅` from round metrics, a freeze signature alone, or model qualification.
+
+`state:` is DERIVED, never typed from memory: 🟡 while any checkpoint or
+scanning receipt is open, the handoff row in §4 shows `handoff/label-v1.yaml`'s
+id and checksum once it exists (and stays empty as status before), §5 shows
+`D*`'s manifest once the audit receipt closes, and ✅ requires that receipt.
 
 ## 📄 Files
 
 | File | What it is |
 |---|---|
-| `template.md` | The specimen for a RUN page. Copy it, fill it, delete each RULE comment as you satisfy it. |
-| `template-dash.md` | The specimen for the CONTROL page. One per board, not one per run. |
+| `template.md` | The specimen for a JOB Page. Copy it, fill it, delete each RULE comment as you satisfy it. |
+| `template-dash.md` | The specimen for the CONTROL page. One per board, not one per job. |
 | `CHANGELOG.md` | Version history, never loaded at invocation. |
 
-Two kinds, two specimens. Copying the run specimen for a control page produces a page with `requires:` it does not have and Aims about a run it does not own.
+Two kinds, two specimens. Copying the Job specimen for a control page produces a page with `requires:` it does not have and Aims about a job it does not own.
 
 `examples/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-1-acibench-authority.md` is the reference implementation, and `S-Label-Dash.md` beside it is the control page.
 Read them before writing a new one.

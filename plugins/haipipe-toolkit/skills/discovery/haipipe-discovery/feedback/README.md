@@ -9,7 +9,7 @@ Feedback is ROUTED at capture time to the specific bucket unit it concerns. Each
 unit (1_search, 2_review, 3_idea, agents) keeps its OWN `feedback/`
 folder so the report sits next to the code that needs fixing. THIS folder is the
 **fallback**: it holds cross-cutting discipline that no single bucket owns (the
-Plan/Build/Execute/Report lifecycle, the Search/Review/Idea type field,
+D1 SCOPE/PREPARE/ACQUIRE/SYNTHESIZE/CLOSE workflow, the Discovery Page Type field and route map,
 the discovery.yaml schema, the report block, the stage strip, the
 dashboard, the group-letter hints) plus anything the router could not classify.
 The folder a file lives in IS the record of which unit it concerns; there is no

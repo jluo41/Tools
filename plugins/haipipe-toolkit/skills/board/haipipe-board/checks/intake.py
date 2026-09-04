@@ -4,7 +4,7 @@
     python3 checks/intake.py [--board DIR ...]
 
 A display unit's `intake/manifest.yaml` exists so that staleness is COMPUTABLE
-(`haipipe-plugin-display` §❄️): the unit copied its sources and recorded a
+(`haipipe-plugin-outline/ref/evidence/displays.md` §❄️): the unit copied its sources and recorded a
 sha256, so anyone can ask whether the copy still matches what is on disk now.
 Nothing asked.
 
@@ -73,7 +73,7 @@ def _items(txt: str):
 def _project_roots(unit: Path):
     """-> the dirs a manifest's relative `path:` may be written against.
 
-    A page's manifest writes `probe/PP01-.../proof/x.csv` (page-relative) and
+    A Page manifest writes `evidence/probe/PP01-.../proof/x.csv` (Page-relative) and
     `tasks/R01_.../scripts/y.do` (project-relative), so resolution walks out
     from the unit and stops at the repo root.
     """
@@ -260,7 +260,7 @@ def main():
     if unresolved:
         print("⚠️  %d input(s) UNRESOLVED: the manifest froze a copy and named no "
               "source, so its staleness cannot be computed. That is the promise "
-              "`haipipe-plugin-display` §❄️ makes and this shape cannot keep." % unresolved)
+              "the unified Evidence display lane §❄️ makes and this shape cannot keep." % unresolved)
     if unpinned:
         print("🚨 %d unit(s) cannot be checked AT ALL: the manifest pins no "
               "sha256, so staleness is not computable and a green run above "

@@ -83,13 +83,13 @@ are recorded, and no single place tells you which.
 - [ ] 📌 State the edit rule where an editor would see it
       The template is regenerated on every run. Nothing in the template says so, so the first person to edit one loses their work and learns the rule the expensive way.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Both notebooks are produced correctly by the run script, and the conceptual split is documented in
 `hierarchy.md` and `task-structure.md`.
-
 The open items are all about what survives: the record is gitignored by default, the no-mixing rule
 is unverified across the bank, and nothing warns an editor that the template is disposable.
-
 - 260726 CC · 👑 Named the execution notebook as the record
       Both refs describe the two roles. Stating which one is evidence is what makes the gitignore default a question rather than a detail.
 
@@ -103,3 +103,5 @@ is unverified across the bank, and nothing warns an editor that the template is 
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

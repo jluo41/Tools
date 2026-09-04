@@ -12,43 +12,41 @@ in an existing interface.
 - **Update:** persistent, refreshed on data change
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  required
-  display:    required
-  section-edit:    optional
-
-claims_settlement: full
+design_profile:
+  evidence_bar: full
+  narrative: required
+  display: required
+  section_edit: optional
+  terminal: accepted
 ```
 
+## Phase use
 
-## Lifecycle mappings
+### D1/D2 · bet and realize
 
-### → Claims (full)
-Full claim ledger. Each UI element must trace to a claim.
+Every load-bearing UI element and displayed value maps through the released
+card grant. Data bindings name accepted sources; raw results never substitute.
 
-### → Narrative (required)
+### D2 · hierarchy
 Hierarchical arc:
 - Header: hook / alert
 - Body: detail / evidence
 - Action: what to do
 
-### → Display (required)
+### D2 · display requirement
 Widget map: header type, body elements (gauge, list, chart),
 action button, data sources. Each unit carries a per-unit Job:
 one sentence on what the reader must see or do (the absorbed
 minimap concern) — if the card has sub-widgets, one Job per widget.
 
-### → Section-edit (optional)
+### D2 · optional widget pass
 Per-widget review pass on multi-widget cards; simple cards
 (header + body + button) skip.
 
-### → Draft
+### D3/D4 · judge and decide
 UI spec with layout, content, interaction, and data binding,
-produced by haipipe-application-artifact reading the venue profile.
-May include an ASCII wireframe.
+owned by the Design Unit. Include an ASCII wireframe, judge every widget and
+binding, render to `delivery/render/`, then accept or emit.

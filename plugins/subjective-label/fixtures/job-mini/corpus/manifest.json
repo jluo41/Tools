@@ -1,0 +1,10 @@
+{
+  "job_id": "job-mini-empathy",
+  "corpus": "job-mini",
+  "n_items": 30,
+  "items_file": "corpus/items.jsonl",
+  "items_checksum": "816c9cc016c08e742c2ac6ea16f70b818b7bf67070a2aa9c626bd3aa997d4ae2",
+  "target_population": "mock patient reviews of physicians",
+  "development_pool_n": 24,
+  "sealed_reserved_n": 6
+}

@@ -1,3 +1,10 @@
+## 0.16.0 — 2026-09-04
+
+- Align Page packet keeper, producer fallback, and reviewer with the current
+  `00 CONTEXT → 01 OUTLINE ⇄ 02 EVIDENCE → 03 CONTENT → 04 CHECK` grammar.
+- Replace active DRAFT/PROBE/REVISE dispatch language with Context, Evidence,
+  and Content authority routing; legacy phase agents remain audit-only.
+
 ## 0.15.0 — 2026-08-21
 
 - **The 260818 two-field split finally reaches all four rules files.** R10 ruled

@@ -1,12 +1,12 @@
 /* palette + type follow html-ppt's academic-report; layout is body.single
    (base.css's own no-JS mode) so every section is visible without any script. */
 /* Inline `code` has its own pair, separate from --pre (JL 260803). --pre is
-   #f4f4f0 against a #fbfbf9 page: four points of luminance, so a backticked
+   #f4f4f5 against a #ffffff page: four points of luminance, so a backticked
    term was invisible in a paragraph. A fenced block is a whole surface and
    reads fine at that contrast; a five-character span does not, so the span
    gets a cooler tint plus a hairline, and the fences stay calm. */
 :root{--code-bg:#ecf0f6;--code-line:#d5dceb;
- --bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+ --bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#f7f7f8;--pre:#f4f4f5;
  --accent:#1f5aa8;--focus:#075fbd;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a;
  --board-mark-top-a:#2947d6;--board-mark-top-b:#1d35b5;
  --board-mark-left-a:#b394f6;--board-mark-left-b:#9569ee;

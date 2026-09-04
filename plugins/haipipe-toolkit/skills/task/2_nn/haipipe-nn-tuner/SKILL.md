@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.1"
   last_updated: "2026-07-04"
-  summary: "Layer 2 (Tuner) specialist of haipipe-nn."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

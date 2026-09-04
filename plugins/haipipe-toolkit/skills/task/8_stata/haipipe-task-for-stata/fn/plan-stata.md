@@ -1,15 +1,15 @@
 fn/plan-stata — Generate Stata-specific IPO plans
 ===================================================
 
-Called by `/haipipe-task plan` when the task-folder is Stata-engine.
+Called by `/haipipe-task plan` when the job is Stata-engine.
 Generates plan.yaml + plan-script-*.yaml in plan-schema.md format, using the stage-specific samples in `ref/workflow-plan-sample-<stage>.yaml`.
 
 
 When to call
 ------------
 
-Automatically when `/haipipe-task plan` targets an existing Stata task folder.
-Also callable standalone: `/haipipe-task-for-stata plan <task-folder-path>`
+Automatically when `/haipipe-task plan` targets an existing Stata job folder.
+Also callable standalone: `/haipipe-task-for-stata plan <job-path>`
 
 
 Procedure
@@ -24,7 +24,7 @@ Read (in order):
 
 ### Step 1 — Detect stage
 
-Infer stage from the task folder content (NOT from group letter):
+Infer stage from the job folder content (NOT from group letter):
 - Has `scripts/cases/trigger-cases-*.do` → case
 - Has `scripts/b-*-All.do` or Step names `pde carrier_claim` → cms
 - Has `scripts/1-filter-case/` numbered subdirs → data

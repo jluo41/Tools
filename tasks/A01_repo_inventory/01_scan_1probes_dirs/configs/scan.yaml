@@ -1,8 +1,0 @@
-_meta:
-  task: A01.01 scan_1probes_dirs
-  run: scan
-repo_root: /Users/floydluo/Desktop/Tools-SPACE
-target_basename: 1-probes
-entry_pattern: "^PP\\d+_.+"
-exclude_dirs: [".git", "node_modules", ".venv"]
-out: results/scan/probes_dirs.json

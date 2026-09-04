@@ -37,6 +37,7 @@ from live.outline import parse_outline, plan_card, render, _anchors   # noqa: E4
 from src.plan_shape import check as plan_shape_check                  # noqa: E402
 from src.plan_shape import check_serves, check_coverage              # noqa: E402
 from src.plan_shape import check_bullet_grammar                      # noqa: E402
+from src.plan_shape import check_head_style, check_note_quotes_page  # noqa: E402
 
 # (line, leading anchors, trailing anchors) · every row is a real shape seen on
 # a real page, or the exact shape the contract promises to read.
@@ -230,7 +231,7 @@ def main():
             encoding="utf-8",
         )
         bundle_html = plan_card(page)
-        for wanted in ("Evidence Bundles", "C1.P1.B1", "C1.P1.S1", "needs-probe",
+        for wanted in ("Evidence Bundles", "C1.P1.B1", "C1.P1.S1", "incomplete",
                        "feedback PP01: read", "feedback Display2: accepted"):
             if wanted not in bundle_html:
                 fails.append(f"derived bundle omitted {wanted!r}")
@@ -305,13 +306,30 @@ def main():
                     # legacy-grammar").
                     for msg in check_bullet_grammar(plan_txt):
                         fails.append(f"{p.name} bullet-missing-note: {msg}")
+                    # the head and Note law (haipipe-plugin-outline
+                    # ref/plan-grammar.md §3-§4): a head over 11 words, a Note
+                    # on two source lines, or a Note that quotes the page's own
+                    # sentence FAILS; a code-word head under 4 words is
+                    # REPORTED as a gap, so the migration debt is visible
+                    # without failing every plan written before the rule.
+                    # ⚠️ REPORTED board-wide, like coverage: 803 of 3,258
+                    # bullets carried a head over 11 words and 1,008 a head
+                    # under 4 on the day the rule shipped (260831), all in
+                    # plans written before it, so failing the sweep would
+                    # break every session's checker at once. The four are a
+                    # HARD exit inside the page's own OUTLINE gate,
+                    # cli/outline-pass.py, where the plan being written is
+                    # the only one judged.
+                    hs_fails, hs_gaps = check_head_style(plan_txt)
+                    gaps.extend(f"{p.name}: {m}" for m in hs_fails + hs_gaps)
+                    gaps.extend(f"{p.name}: {m}" for m in check_note_quotes_page(p, plan_txt))
                     # self-consistency test ①: an owing mark nothing serves.
-                    # The PROBE receipt reports `coverage: n of n` and nothing
+                    # A SURVEY receipt reports `items: n of n` and nothing
                     # recomputed it, so a receipt could claim coverage its own
                     # disk did not have.
                     # ⚠️ REPORTED, not failed. An unserved mark on a page in
-                    # mid-PREPARE is what PROBE is FOR, so failing the sweep on
-                    # it would cry wolf on 8 pages that are simply not finished.
+                    # the OUTLINE part is what SURVEY and LAND are FOR, so failing
+                    # the sweep on it would cry wolf on 8 pages that are simply not finished.
                     # It stays a HARD exit inside that page's own OUTLINE gate
                     # (haipipe-page-outline §🚦 test ①), where it belongs.
                     gaps.extend(f"{p.name}: {m}" for m in check_coverage(p, plan_txt))
@@ -324,7 +342,7 @@ def main():
     print()
     if gaps:
         pages = len({g.split(":")[0] for g in gaps})
-        print("🔎 %d coverage gap(s) on %d page(s) still inside the PREPARE loop"
+        print("🔎 %d gap(s) (coverage · head and Note law) on %d page(s) still inside the OUTLINE part"
               % (len(gaps), pages))
         for g in gaps[:8]:
             print("   ", g)

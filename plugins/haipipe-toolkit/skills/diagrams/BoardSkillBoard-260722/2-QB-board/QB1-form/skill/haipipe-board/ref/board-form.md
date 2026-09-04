@@ -11,10 +11,11 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 <plugin>/skills/diagrams/<NN>-<topic>-<YYMMDD>/   # plugin skill-design Board
   board.md                  global: title · spine · close · Topic · Pipeline
                             · optional Board Map · Board Structure · Pages
-  QA-<group-title-slug>/    one folder per group (default, JL 260726)
+  1-QA-<group-title-slug>/  one folder per group (default, JL 260726),
+                            numbered by its place in ## Pages (JL 260816)
     QA1-<slug>.md           one file per question
     QA2-<slug>.md
-  QB-<group-title-slug>/
+  2-QB-<group-title-slug>/
     QB1-<slug>.md
     S-Seed-0-<slug>.md      named lifecycle page (write only when a lifecycle exists)
   board/                    generated, do not hand-edit
@@ -27,11 +28,11 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 ```
 
 - **owner-unit** = who this board serves.
-  Boards for a task, project, or paper default to their own `diagram/`; boards inside a plugin used to design a skill collect under that plugin's `skills/diagrams/`.
+  Boards for a task, project, or paper default to their own `diagram/`; boards inside a plugin used to design a skill collect under that plugin's `skills/diagrams` folder.
   A board is a work artifact, a skill is a delivery package, and the two never share one folder.
 - **NN** orders boards within the same topic series; it does not assign a unique number across the whole collection.
   A new topic starts at `01`; only later boards on the same topic use `02`.
-  So a shared `skills/diagrams/` can hold several different topics' `01-*` at once.
+  So a shared `skills/diagrams` folder can hold several different topics' `01-*` at once.
 - **YYMMDD** is **the day the board was opened**, and it never changes afterward.
 
 **The folder question (QC3, JL 260724)**: a Q file can also live inside the very folder it discusses, so a board can sit directly on top of an existing tree (the first consumer: a paper's `0-lifecycle/`):
@@ -53,7 +54,7 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 - Pages still lists only **filenames**; filenames are unique across the whole board, a duplicate warns on the command line and only the first one found is honored.
 - Page write-back (comments, archiving) carries **a path relative to the board root**; archiving flattens a nested question into the board root's `_archive/`.
 - A question newly added from a page **follows its own group** (QA1, JL 260726): `＋Q` looks at where that group's existing pages already live, and if they agree, writes into that folder.
-  When the group has no page yet, it opens a new `Q<letter>-<slug>/` on the spot from `### Q<letter> · <title>`.
+  When the group has no page yet, it opens a new `Q<letter>-<slug>/` on the spot from `### Q<letter> · <title>`, numbered `<N>-Q<letter>-<slug>/` if the board already numbers its group folders.
   Only when the group itself is already scattered across two places does it fall back to the board root (better to leave a scar than to guess blind).
 - A Q file's own path references **stay relative to the board root** (exactly as in a flat layout), regardless of where the question itself lives.
 
@@ -75,6 +76,19 @@ Membership has been path-based, not registration-based, since 260722, and `## Pa
 **JL ruled on 260726: the group folder is the default, from the very first page, on every board.**
 The folder is named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`, `QD-working-on-the-board/`); **it must never be just `QA/`**, because that copies the id twice, and the group title is the half a reader cannot recover from the filename.
 
+**JL ruled on 260816: the folder also carries the group's place in `## Pages`, `<N>-Q<letter>-<slug>`.**
+Letters carry identity and cannot carry order. On the board that found this, `QC-engine/` sorted four rows above `QPs-page-structure/` while board.md read them the other way round, and `QPs`/`QPf` were inverted against each other for the same reason, so the folder listing told a reader one story and the Index another.
+The number fixes the listing without touching a single page id: nobody cites a folder, and 206 path strings move where renaming the letters would have moved 1594 id mentions across 43 pages.
+
+`## Pages` remains the ONLY authority on order and the number is derived from it. You change the order by moving a `###` block, then renaming the folder to match; never the reverse.
+`check.py` holds the two together: `group-number-order` when a folder's number disagrees with `## Pages`, `group-number-missing` when only some folders carry one, and a single `groups-not-numbered` WARN for a board still on the pre-260816 shape.
+A board is numbered or it is not, and no writer may manufacture the middle state: `regroup.py` always numbers because it lays the whole set down at once, while `＋Q` opening one new group asks `board_is_numbered()` first and follows what the board already does.
+
+**Renumbering an ALREADY-FOLDERED board is still a hand move, and that is a gap.**
+`regroup.py` only moves pages that sit at the board ROOT, so on a board whose groups are already folders it reports "every page already lives in a folder" and does nothing. Migrating such a board means renaming each group folder to `<N>-<folder>` in `## Pages` order AND rewriting every path string that cites the old names, at the path HEAD only so a cross-board Link into another board's folder survives. Doing it by hand on this family's own board moved 9 folders and 197 strings across 29 files. Until `regroup.py` grows that pass, `check.py`'s `groups-not-numbered` WARN names the work rather than offering a command.
+Everything that reads a group folder strips the number first through `group_stem()` in `src/common.py`, so the letter stays the group's identity and an unnumbered board keeps working with no migration.
+The generated route never carries the number: `7-QC-engine/` still renders to `board/QC`.
+
 Only Board-level source and derived artifacts stay at the Board root: `board.md`, optional `board.excalidraw`, `fig/`, `_archive/`, and generated `board/`.
 `## Pages` does not change a single character; it still lists only bare filenames.
 A page's ＋Q writes into the folder its group already lives in; a new group with no page yet opens a named folder on the spot, from its first page's `### Q<letter> · <title>`.
@@ -86,7 +100,7 @@ What must be satisfied is this rule, not a resemblance to a design board.
 `regroup.py` therefore only touches pages sitting at the board root, and it skips outright a board with no page at its root.
 
 **⚠️ `## Links` must be updated along with a move; `## Pages` does not need to be.**
-Measured on 260726: after moving 154 pages, 17 declared Links broke, all of the cross-board kind, pointing at some page in another board's home (`../PaperSkillBoard-260725/QC0-….md`).
+Measured on 260726: after moving 154 pages, 17 declared Links broke, all of the cross-board kind, pointing at some page in another board's home (`../01-haipipe-paper-260725/QC0-….md`).
 Pages lists bare filenames so it is unaffected; Links holds real paths, and it is exactly this moment that exposes the difference between the two sections.
 The checker reports these as `dead-link` / `dead-href`, so `check.py` must run once after every move.
 
@@ -243,7 +257,7 @@ provides:       → contract    a short delivery note this page gives downstream
                      because the 🖌 attach-canvas button has to live somewhere.
 ## Content         → .content / .opening-context  required on S, optional on Q; see below
                      S carries only what this stage itself produces (JL 260725): Required Inputs and Venue
-                     belong in `## Stage Contract`, prose rules in `## Writing Style`, settled corrections in `## States`, and
+                     belong in `## Stage Contract`, prose rules in `## Writing Style`, settled corrections in an Aim's `Now:` line, and
                      intended outcomes belong in `## Aims`. On S the section title displays the
                      stage's name (`📚 Content · Main 7 §6 Results`, derived from `# short title`, so when
                      the artifact's own numbering does not line up with the board index, title the page
@@ -259,8 +273,7 @@ provides:       → contract    a short delivery note this page gives downstream
                      box that is empty on click. The payoff is that it is checkable: the count of dotted `###`
                      headings IS the subsection count, checkable against the venue blueprint without reading
                      the prose.
-## Aims           → .col.goal   green border, the column header derives `met/total` from States
-## States         → .col.now    yellow border; one current emoji row per Aim
+## Aims           → .col.goal   green border; one row per Aim carries its tick, `Done when:` and `Now:`, and the column header derives `met/total` from those ticks (`## States` merged into Aims, JL 260819)
 ## Files           → .fls        action map plus scoped Related Board Page context, blue border
 ## Why here        → .folds      legacy only; collapsed when an old page still has it
 ## Discussion      → .folds      collapsed
@@ -274,44 +287,44 @@ provides:       → contract    a short delivery note this page gives downstream
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
-- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+- `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md)
   Why this Page needs that target fragment in this phase.
 ```
 
 - Relation is one of `reads`, `constrained by`, `continues`, or `contrasts`.
-- Phase is `DRAFT`, `PROBE`, `REVISE`, `CHECK`, or `ALL`.
+- Phase is `DRAFT`, `EVIDENCE`, `REVISE`, `CHECK`, or `ALL` (`EVIDENCE` still parses as EVIDENCE).
 - The Markdown target is relative to the Board root, even when the source Page lives in a group folder. The label's Page id must match that source.
-- Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims/States group; several scopes on one target share one identity and Opening in the packet.
+- Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims group; several scopes on one target share one identity and Opening in the packet.
 - `cli/pagecontext.py` filters by phase and follows one hop only. It does not infer dependencies or recursively traverse target rows.
 - `cli/check.py` treats malformed rows, unsafe or dead paths, Page-id mismatches, and dead scopes as errors.
 
-**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Writing Style`, `## Aims`, `## States`.
+**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Writing Style`, `## Aims`.
 S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.
 `## Files` is optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
 There is no `## Boundary` section. Opening itself states the scope, and a page points at the neighbouring page that owns excluded work.
 The order of the canonical folded sections is fixed by `build.py` (Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file; a legacy Why here is collected ahead of them when an old page still has it.
 
 **The on-stage order is fixed**:
-Q is `Opening → Diagram → Content → Aims → States`;
+Q is `Opening → Diagram → Content → Aims`;
 S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
-(Files follows after the state).
+(Files follows after Aims).
 Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. The optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
 Everything after `## Opening`'s FIRST BLANK LINE, on both Q and S, goes into the More details row of that page's own drawer (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q's explanatory paragraph automatically became Content's first subsection).
 A stage has exactly one contract section and it is `## Stage Contract` (JL 260801). There is no Stage Record: an old page that still holds a direct `### Stage Record` under Content has it lifted into that contract verbatim, as its opening lines, and the remaining subsections stay in Content.
 A Q's explicit Content can be omitted.
 Intent comes first (what is being asked, the boundary, what counts as done), then the state (where things stand now).
-An Aim is intent; its State is fact. The paired section labels are plural: `Aims` and `States`. A Plan, when needed, is optional text inside an Aim and never a third fixed top-level section.
+An Aim is intent; its `Now:` line is fact, on the same row (`## States` merged into `## Aims`, JL 260819). A Plan, when needed, is optional text inside an Aim and never a second fixed top-level section.
 
 **`## Why here` is retired.**
 Its job (why this is hard, what happens if it stays unsettled) is merged into `## Opening` below its first blank line and rendered as "More details" (JL 260801, renamed from "Why this matters"): both Q and S put it in Opening's drawer, which is **shut until the visible paragraph is clicked** (JL 260729; before that Q put it in Content's first subsection) and then shows every row FLAT (JL 260725: one door, and nothing behind it folds a second time).
 The old section on an old board is still collected into the folded area at the bottom.
 
-**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names and the historical `## Done when` / `## Items to Finish` (= `## Aims`) and `## State` / `## Now` / `## Where we are` (= `## States`).
+**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names and the historical `## Done when` / `## Items to Finish` (= `## Aims`) and `## State` / `## Now` / `## Where we are` / `## States` (the retired status section, merged into `## Aims` on 260819; `check.py` reports each as `retired-section`).
 
 **The Q-consumer rule on an S page**: do not open a top-level `## Q-consumer`.
 Each consumer is an Aim inside `## Aims`; its heading keeps both a stable Aim id and `Q-<Stage>-<n>`, while its detail keeps Description / Reason / Probe / Done when.
-Mark it `✅` in `## States` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
-`## States` only summarizes the stage; it does not restate each consumer answer.
+Mark its row `✅` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
+An Aim's `Now:` line summarizes; it does not restate the consumer answer.
 
 **The Stage Contract rule on an S page**: dependencies are read from the top-level metadata only, never guessed from Pages order or from a number in a filename:
 
@@ -437,7 +450,7 @@ The Index shows it at 42px and a focused page presses it down to 24px, so the ti
   Every subheading in the drawer is **a bare word carrying no icon**: previously only 2 of 7 had an icon, and that is the inconsistency JL named, JL 260725) →
   `🖼 Diagram` (optional; only the section name is on stage, the content is collapsed by default; open it and ▧ ASCII is seen first, while ✏️ Excalidraw takes one more click, JL 260726) →
   `📚 Content` (only the subsections the author wrote explicitly; since 260729 a Q's explanatory paragraph also goes into Opening) →
-  `🎯 Aims` → `📍 States` → `📁 Files`.
+  `🎯 Aims` → `📁 Files`.
 - **Three levels of hierarchy**: section heading (🧭/📚/🎯/📍, with a rule under it) > **group title** (a whole bold line → 🔹 by default, or the emoji it starts with, leading a run of items) > the item's name (`▸`).
 - **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): EVERY section and every Content division, including the first one (JL 260801, reversing the 260725 open-by-default rule now that the sidebar carries the map), the whole `## Diagram`, an item's explanation (collected into a native `<details>`), a sentence's own apparatus, and a code block in the body (collapsed into one line, `</> code · N lines`).
   Opening is the one section that does not fold from its heading, because a page whose first section can be shut can open showing nothing; its visible paragraph carries the fold instead.
@@ -445,7 +458,7 @@ The Index shows it at 42px and a focused page presses it down to 24px, so the ti
 - **Sunk into the folded area at the bottom**: Discussion · Law · Lesson · Glossary · Log; a legacy Why here is preserved ahead of them when present but is never authored on a new page.
 - The first look at a screen = one clean column of section names and item names; Diagram is opened by hand, and `expand all` spreads out the items / code of the other sections in one click (pure enhancement: with the scripts stripped, every row still opens on its own).
 
-**Other things that are fixed**: Aims and States are **stacked vertically**, not split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
+**Other things that are fixed**: Aims is **stacked** under Content, never split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
 
 **Invariant: delete every `<script>` in the page, and every question and all of the body text is still there.**
 `build.py` asserts this on every generation.

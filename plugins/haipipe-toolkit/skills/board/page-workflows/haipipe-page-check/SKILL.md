@@ -1,11 +1,16 @@
 ---
 name: haipipe-page-check
 description: >-
-  The CHECK phase contract for any Board Page. CHECK judges one concrete rendered version against its purpose, Aims, evidence, Page Type, and local closing rule, records findings where they apply, and routes the work to CLOSE, OUTLINE, PROBE, EVIDENCE, DRAFT, REVISE, or HOLD; it does not cure its own substantive findings. It judges the BUILT deliverable, not only the Markdown: a declared display unit that never rendered, a cited unit the projection never embedded, and a PDF without the Page's own title are CHECK findings, not cosmetics. Load haipipe-page, the matching Page Type, this contract, and haipipe-sentence when findings use sentence lanes, then any family checker. Use when reviewing a Page version, running a declared gate, planting findings in context, choosing the next phase, or preventing a checker from silently revising what it judged. Trigger: page check, CHECK phase, quality gate, review version, close round, route finding, restart phase, human decision, declared not rendered, cited not embedded, check the pdf, check the docx, /haipipe-page-check.
+  The 04 CHECK phase contract for any Board Page: judge one rendered version
+  against its purpose, Aims, evidence, and Page Type, then route to CLOSE,
+  CONTEXT, OUTLINE, EVIDENCE, CONTENT, or HOLD. In pre-check mode it gates the
+  WRITE cycle's inner loop and may only say another pass or ready. It judges the BUILT
+  deliverable, not only the Markdown, and never cures its own findings.
+  Trigger: page check, CHECK phase, quality gate, review version, check the
+  pdf, /haipipe-page-check.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-18"
-  summary: "FIVE person-reserved ticks, not four: the 260818 roster omitted the probe card's read:, and two of the five revert when inputs change."
+  version: "0.7.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,8 +20,10 @@ Load the contracts in this order:
 
 ```text
 haipipe-page
-  → matching page-types/ variant, when one exists
+  → haipipe-page-workflow
   → haipipe-page-check
+  → Folder-owning workflow
+  → exact Page Type, when one exists
   → haipipe-sentence, when findings use sentence lanes
   → family checker, when the Page belongs to paper or application
 ```
@@ -40,7 +47,7 @@ WALLS
   judges the BUILT deliverable (PDF · docx), not only the Markdown;
     declared, rendered, and accepted are three independent counts
   the actor that produced a version may not be its CHECK actor
-  never writes the five person-reserved ticks, and never claims a person
+  never writes any person-reserved tick, and never claims a person
     approved when no person did; silence is not consent
   only `verdict: pass` may route to CLOSE; a required human gate without
     durable passed evidence routes to HOLD
@@ -48,21 +55,22 @@ WALLS
   never invents a gate and never skips a declared one
 
 READ ECONOMY
-  read fully ONLY the target page, the plan, and this brief
+  read fully ONLY the target page, frozen Context, the plan, applicable Requirement and
+    Writing records, and this brief
   trust the plan's Answered:/Drawn: values as written; re-read only cards
-    whose line ends `· recount`, plus one spot-check (haipipe-page-draft §📖)
+    whose line ends `· recount`, plus one spot-check (haipipe-page-content)
   batch shell calls; scope cli/check.py output to your page with grep
   never paste board-wide output or compile logs into your context; the
     board doors return compact JSON, use them
 
-ROUTES (§🔀 · the seven, each finding names one)
+ROUTES (§🔀 · the six, each finding names one)
   ✅ CLOSE      the version meets the closing rule
-  🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens
-                the PREPARE loop
-  📮 PROBE      a marked bullet was never served by a card
-  🔎 EVIDENCE   a promised claim has no card behind it
-  ✍️ DRAFT      purpose or Aims must reopen, beginning a new round
-  🧵 REVISE     purpose and Aims stand, but realization needs work
+  🧭 CONTEXT    policy, requirement, ownership, or related context is stale
+  🧭 OUTLINE    the plan itself is wrong (SHAPE), or an Evidence Item has no
+                complete Run graph (SURVEY): a v<N+1> reopens planning
+  🔎 EVIDENCE   a complete graph lacks a valid local Result (LAND), or a
+                landed Result is stale or must be re-embedded
+  ✍️ CONTENT    Page realization, purpose/Aims, or delivery needs work
   ⏸ HOLD        accept a named defect or park the work with an explicit record
 
 RECEIPT  the common phase receipt plus this file's rows (checked_version ·
@@ -78,7 +86,7 @@ Open the full contract below only where this brief does not settle your case; th
 `## Content` states rules, never attributions. The mechanical checker flags
 each offending line as `content-attribution` (WARN): a bare date code
 ("260819") or a person named as authority in Content or Diagram prose. On a
-page under active work this lane routes REVISE; on a legacy page it is
+page under active work this lane routes CONTENT; on a legacy page it is
 reported, not cured. Fenced blocks are exempt in the checker because a fence
 may carry a frozen transcription another pen owns; this judge reads those by
 eye and lists what it finds for the owning pen.
@@ -123,24 +131,24 @@ A Page that ships a PDF or a docx is judged on what a person opens. Reading the 
 ```text
 finding                          fires when                              route
 ──────────────────────────────────────────────────────────────────────────────────
-display-declared-no-claim        a unit folder with no `claim:` row in    DRAFT
+display-declared-no-claim        a unit folder with no `claim:` row in    CONTENT
                                  its README: litter, not a proposal
-display-declared-not-rendered    a unit folder exists with no winning     REVISE
+display-declared-not-rendered    a unit folder exists with no winning     CONTENT
                                  asset and no preview.pdf; the finding
                                  NAMES the first missing step
                                  (① intake · ② recipe · ② asset · ④ preview)
 display-intake-unfrozen          the unit RENDERED but intake/inputs/     EVIDENCE
                                  holds no frozen snapshot, so a printed
                                  number traces back to nothing
-display-cited-not-embedded       the prose cites the unit but latex/      REVISE
+display-cited-not-embedded       the prose cites the unit but latex/      CONTENT
                                  <stem>.tex never inputs it
-display-rendered-not-cited       the unit rendered and no sentence names   REVISE
+display-rendered-not-cited       the unit rendered and no sentence names   CONTENT
                                  it, so neither projection places it
 display-accept-stale             intake/ changed after `accepted: ✅`,    EVIDENCE
                                  so the tick binds a render that is gone
-latex-untitled                   latex/<stem>.tex carries no title block  REVISE
+latex-untitled                   latex/<stem>.tex carries no title block  CONTENT
                                  built from the Page's own H1
-projection-stale                 latex/ or word/ is older than the        REVISE
+projection-stale                 latex/ or word/ is older than the        CONTENT
                                  Page source it projects
 ```
 
@@ -152,20 +160,21 @@ projection-stale                 latex/ or word/ is older than the        REVISE
 
 ```text
 ✅ CLOSE       the version meets the closing rule
-🧭 OUTLINE    the plan itself is wrong or owes a fold: a v<N+1> reopens the
-              PREPARE loop
-📮 PROBE      a marked bullet was never served by a card
-🔎 EVIDENCE   a promised claim has no card behind it
-✍️ DRAFT      purpose or Aims must reopen, beginning a new round
-🧵 REVISE     purpose and Aims stand, but realization needs work
+🧭 CONTEXT     policy, requirement, ownership, or related context is stale
+🧭 OUTLINE    the plan itself is wrong (SHAPE), or an Evidence Item has no
+              complete Run graph (SURVEY): a v<N+1> reopens OUTLINE
+🔎 EVIDENCE   a complete graph lacks a valid local Result (LAND), or a landed
+              Result is stale or must be re-embedded
+✍️ CONTENT    purpose, Aims, prose, or delivery realization needs work
 ⏸ HOLD        accept a named defect or park the work with an explicit record
 ```
 
 A CHECK finding should name one of these routes.
 “Fail” without an owner leaves the next worker guessing.
 
-Returning to DRAFT does not create another Page or necessarily another unit.
-It starts a new round on the same persistent Page because the promise reopened.
+Returning to CONTENT does not create another Page. It starts another WRITE
+pass on the same persistent Page; if the promise or structure changed, CONTENT
+routes through OUTLINE before writing.
 
 ## 🚪 Human gates belong to the Page Type or local contract
 
@@ -199,39 +208,57 @@ makes yes the likely answer without touching the tick itself.
    otherwise the machine approves itself by timeout
 ```
 
-**FIVE ticks are reserved for a person**, and CHECK administers two of them:
+**Person ticks are selected by artifacts plus the Folder's owning phase.**
+CHECK administers display acceptance and any owner RULING that exists:
 
 ```text
 tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
-`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     ①
-`verified`       each bibex/<stem>.bib entry       haipipe-plugin-bibex     ③c
-`read:`          each probe/PP<NN>-<slug>/card.md  haipipe-plugin-probe     ③v
-`accepted: ✅`   each display/<unit>/README.md     this contract            ⑦
-the RULING       the Page Type's declared gate     this contract            ⑦
+`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
+`Decide`         outline/<stem>-evidence-items.md, per item  haipipe-page-outline  SURVEY
+`verified`       each outline/evidence/bibex entry haipipe-plugin-outline    LAND
+`read:`          legacy outbound source material   owning workflow phase    LAND
+`accepted: ✅`   the page · each display README    this contract            CHECK
+the RULING       phase Gate/Closure, when declared  owning workflow phase    CHECK
 ```
 
-⚠️ **This said FOUR until 260818 and it was wrong.** The count omitted the probe
-card's `read:`, whose reserving rule is `haipipe-plugin-probe` §: "Only a person
-may tick it, and a changed `target` or a re-pulled `proof/` drops the tick back,
-the same rule as a display unit's `accepted:`, for the same reason." Two of the
-five therefore REVERT when their inputs change: `read:` and `accepted: ✅`.
+New Pages use typed Evidence Items and Outline-owned CITE verification; they
+do not create a new `evidence/probe/` lane. A legacy `read:` receipt may still
+be displayed while that migrated outbound material is being retired.
 
-A sixth human-reserved write exists and is deliberately NOT on this list, because
-it is an ORDER rather than a field: the row rank in `skill/` and `pagex/`, whose
-law is "the scan seeds, the person ranks" and where "a refresh never edits,
-reorders, or removes a row".
+`read:` and `accepted: ✅` REVERT when their inputs change. For a phase-owned
+Folder, `page_ruling: none` adds no owner tick, `domain-gate` reuses the phase
+gate receipt, and `local` requires a distinct Page-Face RULING. Legacy Page
+Types retain their declared closing gate.
+
+A further human-reserved write is an ORDER rather than a field: the row rank
+in `outline/skill/`, whose law is "the scan seeds, the person ranks" and where
+a refresh never edits, reorders, or removes a row.
 
 They live in three phases and N files. A read-only collecting surface exists at
 `haipipe-board/live/outline.py`, which shows `approved:`, `verified`, `read` and
 `accepted:` in one card and omits the RULING; it reports no `<n> of <n>` count
-and cannot write. The remaining hole is argued on `QPw00g-human-gate`.
+and cannot write. The joined owed ledger is `cli/pagephase.py --owed`.
 
 ## 🔀 CHECK is not necessarily last
 
-CHECK may appear whenever a concrete version needs judgment.
-It may repeat after REVISE, open EVIDENCE, or send the Page into a new DRAFT round.
-The common `PREPARE(①②③) → DRAFT → REVISE → CHECK` path is a useful route, not a mandatory sequence.
+CHECK may appear whenever a concrete version needs judgment. It may repeat
+after CONTENT, open EVIDENCE, or return the Page to CONTEXT or OUTLINE. The
+common `CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK` route is useful, not a
+mandatory fixed sequence.
+
+**Two things this phase gained on 260901.** (1) PRE-CHECK MODE: inside the
+WRITE cycle the same judge, in a fresh context, reads the built version after
+the mechanical teeth pass and answers only "another pass" or "ready"; it never
+CLOSEs, and the loop's budget (3 rounds, a finding surviving two consecutive
+rounds is a HOLD) is `haipipe-page-workflow` §The WRITE loop's. (2) A PERSON'S
+"NO" IS ROUTED, never a dead end: it lands as one feedback record in
+`outline/`, `accepted:` stays unticked, and it routes like a finding (wording →
+CONTENT/WRITE · an absent Run graph → OUTLINE/SURVEY · an incomplete or stale
+Result → EVIDENCE/LAND · the argument → OUTLINE/SHAPE). A checkable "no" is
+promoted into a tooth or a pre-check rule
+(`agents/approve-rules/`), so the machine catches it every time after. The
+machine's "ready" was always a floor, not a verdict.
 
 ## 🧾 RUN receipt and version gate
 
@@ -243,16 +270,55 @@ checked_version    source SHA-256 joined to rendered HTML SHA-256
 verdict            pass | revise | blocked
 findings           exact defects or none
 evidence           visible support for every pass claim
-route              CLOSE | OUTLINE | PROBE | EVIDENCE | DRAFT | REVISE | HOLD
+route              CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+next_cycle         CHECK | PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE
 human_gate         required, status, and durable evidence
 ```
 
 `checked_version` must equal both version fields and CHECK must not edit either
 artifact. A mismatch means concurrent or hidden mutation and routes to HOLD.
 The actor that produced a version may not be its CHECK actor. A changed version
-after REVISE or DRAFT receives another CHECK; an earlier pass never transfers.
+after CONTENT receives another CHECK; an earlier pass never transfers.
 Only `verdict: pass` may route to CLOSE, and a required human gate without
 durable passed evidence routes to HOLD.
+
+## 📏 The rubric · four axes, four verdicts, one row per unit
+
+Requirements resolve in the order `haipipe-page` §🔍 states (base and
+template → Page Type → Phase → the page's authored W records in
+`outline/<stem>-requirement.md` and Stage Contract → the division purpose
+and each paragraph's job line); a conflict between two sources is reported
+and that criterion is not judged. A non-Section compatibility page may still
+carry `## Writing Style` in its source.
+
+```text
+axis          question                                                            judge
+─────────────────────────────────────────────────────────────────────────────────────────────
+Mechanics     is the required structure present, ordered, addressable, consistent?  check.py
+Function      does this section answer the reader question the contract assigns?    semantic reviewer
+Evidence      can every factual compliance claim point to visible text, an Aim's
+              Now:, or a linked artifact?                                            semantic reviewer
+Readability   can a zero-background reader understand the section without
+              supplying a missing premise?                                           fresh-context reviewer
+```
+
+The review units are every present `##` section, every direct `###` Content
+division, and every `####` paragraph whose job must be tested. Four verdicts
+only: `MEETS`, `NEEDS WORK`, `N/A` (the rule genuinely does not apply),
+`NOT VERIFIABLE` (the evidence is unavailable; never a pass). When the same
+section changed on several pages, the batch is one more readability unit: read
+those sections consecutively in board order, and the batch NEEDS WORK when the
+prose is interchangeable after noun substitution or a repeated scaffold makes
+distinct pages sound like one form letter; the smallest fix restates each
+page's own stake in its own order, never cosmetic synonyms.
+
+```text
+unit | applicable requirements + source | verdict | evidence | smallest fix
+```
+
+Then the requirement conflicts, the mechanical findings, and one page-level
+verdict. The review is read-only: it never edits prose, ticks an Aim, closes a
+Decision Now row, or closes a page.
 
 ## 📂 Files
 
@@ -269,4 +335,4 @@ The Board engine owns execution and audit; this phase owns only its authority an
 **The Board page that argues this phase** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.
 
 **This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §⑦. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
+`../haipipe-page-workflow/ref/phase-cards.md` §CHECK. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.

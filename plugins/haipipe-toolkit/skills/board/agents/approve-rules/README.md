@@ -81,4 +81,5 @@ whole thing is good", added when they get to it.
 
 🛑 A person's mark OUTRANKS every agent pass beneath it, always, needs no rule to
 justify it, and reverts `checked:`. Silence is still never consent for the one
-tick with no rules file at all: the Page Type's RULING.
+tick with no rules file at all: the owner RULING declared by the Folder's phase
+(or by a legacy Page Type).

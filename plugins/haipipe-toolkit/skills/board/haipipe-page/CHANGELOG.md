@@ -1,6 +1,334 @@
+## 0.56.2 · 2026-09-03
+
+- Align the canonical Page tree with the Outline-owned Evidence Workspace:
+  evidence lanes now live under `outline/evidence/`, while root
+  `<page>/evidence/` is legacy migration input only.
+- Keep `runs/` and `results/` as the optional local execution presenter and
+  preserve `workflow/` as the machine phase-receipt lane.
+
+## 0.56.1 · 2026-09-02
+
+- Specify the Page Outline as `Address · Planned move · Evidence ·
+  Supporting Run · Local Run`. Item state stays in Evidence-chip colour and
+  detail rather than occupying a duplicate Status column.
+
+## 0.56.0 · 2026-09-02
+
+- Move manuscript Section writing rules out of the product Page source and
+  into authored W records in `outline/<stem>-requirement.md`, beside the
+  generated venue V records. Section Opening remains one reader paragraph.
+
+## 0.55.2 · 2026-09-02
+
+- Retire the Page-authored Narrative map. The one Page-level Outline is the
+  current plan's derived table; no second map or source block is authored.
+
+## 0.55.1 · 2026-09-02
+
+- Specify the Page reader default: Opening stays visible; Outline opens with
+  its plan table first; the optional Narrative map and all other Page folds
+  start closed.
+
+## 0.55.0 · 2026-09-01
+
+- Make the Page's `▤ Outline table` a real review grid: `Address · Planned
+  move · Evidence · Source / run · Status`. C/P headers preserve reader order;
+  B rows join their typed Evidence Item and surveyed route without creating a
+  second plan or evidence authority.
+
+## 0.54.0 · 2026-09-01
+
+- Replace the Page's optional `Diagram` section with `Outline`. The Page now
+  shows its optional narrative map plus a read-only `▤ Outline table` projected
+  from the current `outline/<stem>-outline-v<N>.md`; the outline plugin and all
+  eight canonical process records remain unchanged and authoritative.
+
+## 0.53.0 · 2026-09-01
+
+- Rename the optional presenter from Execution to Runs: Execute stays a
+  workflow action and the surface lists durable Run identities.
+- Let a Page resolve either Folder-local Results or a canonical Task Page's
+  Job-backed `results/<task>/<run>/` without copying generated output.
+- Retire the stale "LOWER, CODE part" wording; Task-side Runs are primary and
+  scripts/config/notebooks are conditional projections.
+
+## 0.52.1 · 2026-09-01
+
+- Rename the optional lower capability from Code to Execution: Run/Result
+  pairs are stable, while scripts are optional implementation material.
+- Keep Execution beneath the Task Face and outside lifecycle authority.
+
+## 0.52.0 · 2026-09-01
+
+- §🎭 states the workflow as two parts of named cycles (SHAPE · SURVEY · LAND
+  · EMBED · WRITE · CHECK) with the run-anchored evidence law; the authority
+  test routes by cycle; the type registry's four fields map to cycles; the
+  glossary gains item row and cycle, and PROBE leaves it.
+
+## 0.51.3 · 2026-08-31
+
+- Route an in-place Folder's Page Face from
+  `workflow/phase.yaml current.folder-kind` before Markdown frontmatter;
+  legacy Page Type and filename routing remain compatibility fallbacks.
+
+## 0.51.2 · 2026-08-31
+
+- Align the glossary with Folder-native evidence storage:
+  `evidence/probe/`, `evidence/display/`, and `evidence/bibex/` are canonical;
+  flat lanes remain migration aliases only.
+
+## 0.51.1 · 2026-08-31
+
+- Clarify the Code seam: every displayed number produced by code crosses one
+  page-serving collection job and QA binding; local Code may only validate or
+  reshape non-authoritative intermediates.
+
+## 0.51.0 · 2026-08-31
+
+- Page is now explicitly the Page Face of a Folder. A migrated Folder resolves
+  `folder-kind:` to its workflow-phase skill before consulting legacy
+  `page-type:` compatibility.
+- Application Page semantics moved into twelve I0-I5/D0-D5 phase contracts;
+  `principle` left the compatibility inventory and remains a subordinate D4
+  role.
+
+## 0.50.0 · 2026-08-31
+
+studio/ (JL: "this one is closer to the human"): the third category folder,
+holding chat/ and draw/ — the person's own room on the page, where they talk
+and sketch and the chat may redraw on their ask. Earned by nature, not count.
+
+## 0.49.1 · 2026-08-31
+
+A unit may carry README.md, DERIVED only (JL): a generated projection of the
+two-part tree as it stands, for strangers reading the raw folder (GitHub);
+never hand-written — the law stays in this file and the roster. Generator =
+folderstat's walk with a --write flag (declared, not yet shipped).
+
+## 0.49.0 · 2026-08-31
+
+v5 (JL: "we don't need a specific code folder — treat the page/task folder AS
+the code folder; two parts, the upper page part and the lower code part"):
+the code/ wrapper of 0.48.0 is gone. The unit root is the code home, exactly
+as a task folder already is: scripts/ (script files, any language, config/
+inside) is the tidy home while a script may equally live in an evidence lane;
+runs/ and results/ are REQUIRED members wherever code exists, at root; a
+result never sits inside evidence/ and becomes evidence only through a probe
+card's binding. Page and task now share one root grammar with zero wrappers.
+
+## 0.48.0 · 2026-08-31
+
+v4 of the category folder (JL: "code results and config should be separated
+from the evidence"): the execution family gets its own top-level `code/`
+(scripts any language · config/ · runs/ = the one door · results/), out of
+evidence/. The gate line separates them: evidence is CITED material behind a
+human gate; code/results is machinery, regenerable, gate-free, never PHI; a
+result becomes evidence only when a probe card binds it. On a task unit this
+family IS the folder root, so the page mirrors the task exactly.
+
+
+## 0.47.1 · 2026-08-31
+
+Internal drift caught by the Workflow Table Skill Coverage static-quality
+review: the collection-job
+paragraph still ranked the job in the retired `task/` lane; it ranks among
+`evidence/pagex/` links now (the merge this same file's tree already stated).
+
+
+## 0.47.0 · 2026-08-31
+
+The category page folder (JL's evening rulings, v3): evidence/ holds bibex ·
+probe · display · pagex · code · materials; delivery/ holds latex · word ·
+slide · render; runs/ is the one execution door (code anywhere in the folder,
+only a runs/ ticket calls it, simple-code law); meeting leaves the page
+(project/SPACE level, parsed into outline/); the task lane merges into pagex
+(a task folder IS a page folder); logging/ retired. Migration = per page,
+whole, with flat-name SYMLINK STUBS so unpatched engine paths keep resolving;
+piloted on QPf1-folder (bibex 200 via stub, 🧾 tab 200, roster scan silent).
+Engine de-symlinking is tracked debt, per file.
+
+
+## 0.46.0 · 2026-08-31
+
+The unit symmetry (JL: "we should have the workflow and outline in both of
+them"): every unit folder, page or task, carries outline/ (human half) AND
+workflow/ (machine half). On a page, workflow/receipts/ takes one receipt per
+pass, written by the RUN controller; the log record keeps its one-line
+headline and points there. Roster row `workflow/` added; task side keeps its
+plan.yaml/report.yaml unchanged and gains outline/ with its first real
+collection job.
+
+
+## 0.45.0 · 2026-08-31
+
+The Page Type registry (JL: "the page types might be a function in other
+skills' content"): `ref/type-registry.md` holds one record per engine key —
+`outline` (mode; shape stays in a contract's frontmatter) · `evidence` (what
+the kind owes exactly; feeds PROBE and the collection job) · `prose` ·
+`closing`, with `standing: contract | key-only`. `cli/pagetypes.py --check`
+grew the tooth: engine↔registry drift, contract records with missing fields
+or dead law paths, and `registry-gap` for a key-only record with live pages
+(fires today on collection·labeling·view; the missing-field branch proven on
+a broken record first). Zero-page application types stay shipped, marked
+dormant in their records — retiring their folders touches a family other
+sessions run.
+
+
+## 0.44.0 · 2026-08-31
+
+Pointer, not inline (JL asked whether to fold it in): §📁 names the page-serving
+collection job — task-type `page`, contract `task/haipipe-task-for-page`, ranked
+first in the `task/` lane — as the code-shaped answerer of a page's task-route
+cards. The card address `PP<NN>.v<n>` and every phase authority are unchanged.
+
+
+
+## 0.43.0 — 2026-08-31
+Rewritten to one lane, "what a page IS": 787 → 395 lines, present tense, no
+attribution in the law (who ruled and when lives here). Each rule now has one
+home and this file points at it:
+- **Moved out**: the four-axis evaluation rubric, its four verdicts, review
+  units and batch-voice test → `haipipe-page-check` §📏 (this file keeps the
+  requirement-resolution order and a pointer); the five heading tests and the
+  H1 verb-phrase rule → `haipipe-board/ref/writing-rules.md` §A heading is a
+  lookup key; the write-for-the-render examples → one line each, owned by
+  `page-template.md` and `writing-rules.md`.
+- **Retired from the page contract**: the five-row section table with
+  `folds Discussion · Law · Lesson · Glossary · Log` (log, discussion and
+  files live in `outline/`; the folds are `Law · Lesson · Glossary`); every
+  reference to `## States`, `## Files` and a page-side `## Log`; the ten-step
+  create and eight-step work-on lists, now one paragraph each; the retired
+  `route:` step ② row of the type table; the `##`-heading narration of what
+  keys used to mean.
+- **Stated for the first time**: a pass may run inside a person's session or
+  as the phase's agent, and both leave the same trace (artifact, one log
+  record, receipt); a person's chat ruling is transcribed with the quote;
+  `outline/` is the process folder with seven record kinds, grammar in
+  `haipipe-plugin-outline/ref/`; the location grammar gains the bullet address
+  and the `D<nn>` thread.
+- **Kept as is**: the type-resolution table and the generated inventory block
+  (its `—` cells are `pagetypes.py`'s output, not hand-written); `### Decision
+  Now` inside Aims (the one-home question, `D<nn>` versus Decision Now, is an
+  open ruling and is not decided here).
+
+## 0.42.0 — 2026-08-31
+
+- **The page is the Aims' only home** (JL 260831, BoardSkillBoard QPf12 row 2:
+  "In the Page as well, and should map to the content"). Reverses
+  haipipe-plugin-outline 0.16.0's "the page keeps no copy": one row per Aim
+  with tick, `Done when:` and `Now:` on the page; the plan keeps the shape and
+  its 🎯 marks and no Aim rows; `### A<n>` maps to Content division `<n>`,
+  which `check.py group-no-division` already enforces.
+- **`## Files` retired from the page** (QPf12 row 3, "A"): the action map is
+  `outline/<stem>-files.md`, `### F<n>` records with `Path` and `Role`, the
+  a Related Board Page as a record with `Role: related` and its row verbatim; `pagecontext.py` and
+  `check.py` read it, the 🧭 tab shows it as 📎 Files.
+
+## 0.41.0 — 2026-08-31
+
+- **The contract now states the 260819 merge it had only logged.** 0.34.0
+  retired `## States` into `## Aims`, yet the section table, the conveys
+  table, `🎯 One Aim, one State`, Decision Now, preview, create and work-on
+  steps all still named States as a required section (JL 260831, on the
+  MISQ paper board: "I think we removed the state from the page as well").
+  One Aim is one row: tick, target, `Done when:`, `Now:`; a live ask is the
+  Aim's `Now:` line marked `🧠`; `### Decision Now` keeps its shape and is
+  reserved inside Aims. `haipipe-board/ref/page-template.md` and
+  `ref/board-form.md` §4 carry the same change in the same round.
+
+## 0.40.2 — 2026-08-29
+
+- Page titles now target three to five visible words and have a hard ceiling of
+  six. Acronyms, identifiers, and hyphenated compounds count as one word; a
+  colon does not create a second allowance, and the page id is not part of the
+  title. The shared template inherits the rule, and `check.py` reports
+  `title-too-long` when a Page exceeds it.
+
+## 0.40.1 — 2026-08-28
+
+- `preview.py` now also takes a group or board folder (one roster line per
+  page); those grains belong to `haipipe-board` 0.146.0, and this contract's
+  preview subsection points there instead of a glob recipe.
+
+## 0.40.0 — 2026-08-28
+
+The 260828 field test (PaperSkillBoard-260725 repair, 14 minutes, 12 frictions)
+settled 10 MATCH · 1 SKILL GAP · 3 EXPECTATION GAP against a sealed ledger.
+This release is the gap's repair plus one commissioned feature.
+
+- PREVIEW joins the verbs (JL request): `haipipe-board/cli/preview.py <page>`
+  prints one screen — title, the Opening's visible paragraph, Aims joined to
+  their States, the Content division list, the last Log row. The contract had
+  already made those the page's summary surfaces; the tool only collects them.
+  A gist, never a substitute for WORK ON's whole-file read.
+- The laws are now readable before the act (frictions F11/F2, gap E13): the
+  engine block points at `check.py --rules` (every finding code + message,
+  derived from the checker's own source) and at `pagetypes.py` (the live type
+  inventory). The field actor had learned all 19 of its WARNs from error text
+  after writing, and counted Page Types by git archaeology, because nothing on
+  a skill surface pointed at either.
+
+## 0.39.0 — 2026-08-28
+
+The contract had grown into five documents in one file — a type registry, a
+section grammar, a writing guide, a verb door, an evaluation rubric — and no
+reader needed more than a quarter of it, so no reader ever proofread the rest.
+Measured before the rewrite: 32% of the file was two sections telling the same
+retirement story, and they had already contradicted each other. −25% by
+character; every rule kept, every retirement narration moved here.
+
+- **The inventory is DERIVED.** `haipipe-board/cli/pagetypes.py` (new) reads
+  the three places a Page Type actually lives — the shipped `*/page-types/`
+  folders, `check.py`'s `PAGE_TYPE_VALUES`, and every `page-type:` line on the
+  boards — and emits the table between markers in §🧬. `--check` exits 1 on
+  drift. The hand-written table could not stay equal to a Python tuple and a
+  folder listing, and on 260828 it was wrong in both directions at once: four
+  keys were live on disk with no row (`question` 4 pages, `roadmap` 2,
+  `ideation` 2, `collection` 2), and six keys the table called retired were
+  still accepted by the checker. Drift is a finding now, not a paragraph.
+  First run: 7 drifts, all real.
+- **§🗂 `The Page Types that exist, and why the rest went (260819)` DELETED.**
+  It was a second telling of §🧬 and carried the false rows: it listed
+  `intervention` and `artifact` as live application types 355 lines after the
+  same file declared both retired. Its two unique rulings — no key is the
+  DEFAULT, and a discovery folder does not get its own type — moved into §🧬.
+- **§📁 `What a page is on disk` ADDED.** The base contract for what a page IS
+  never showed the page's own folder; `<page-dir>/` lived in `haipipe-paper`
+  and `paper/README.md`, so a consumer owned the definition of the thing. The
+  lane roster stays `haipipe-plugin`'s.
+- **The admission test opens §🧬 as the grain law.** "A property every page
+  carries cannot tell one kind of page from another" is the sentence that
+  decides what earns a Page Type, and it was buried mid-file inside a
+  retirement argument.
+- **§✍️ gains a HEADING law**, five mechanical tests, governing this
+  contract's own `##`, every page's `###` divisions, and every skill's H1:
+  states the law not the topic · no count · no date · no self-reference · a
+  clause after the comma earns its place only by ruling out a real mistake.
+  Test ⑤ catches machine prose, whose commonest form is the negative
+  restatement. Applied to this file the same day: eleven headings rewritten,
+  `Seven Page Phases, independent of Page Type` → `Phases, independent of
+  type` (the count had said `Four` until the 260817 split), `Three verbs, and
+  this skill is the door for all three` → `Create · work on · run`, and the H1
+  from a noun phrase about the document to `one shape every page keeps`.
+- **§✅ `Closing checks` ADDED**, the one property this contract failed on its
+  own eight-property ruler: every variant carries grep-able closing checks and
+  the base carried none, which is why it could drift unnoticed.
+- **History evicted to this file**, per the standing erasure ruling ("a doc
+  states the CURRENT contract and never names the dead thing"). Gone from the
+  contract: the dash merge-then-retire story, the four types deleted 260819,
+  the display/literature/value retirement argument, the slide-deck history,
+  the Writing Style relocation, the section renames, the `## Boundary`
+  removal narration, the 260802 scope measurement. What survived is only
+  history that is still a live rule — `route:` still parses, the retired
+  section names still alias, the top-level `## Writing Style` still parses.
+- Two false claims deleted rather than corrected, because neither was
+  load-bearing: "TWELVE Page Type variants ship across five skill sets" (19
+  across four), and a roster row naming `subjective-label/page-types/` as the
+  owner of `haipipe-page-for-labeling`, a folder that does not exist.
+
 ## 0.38.0 — 2026-08-20
 
-- **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-page-for-narrative`
+- **`page-type: dash` DELETED.** JL proposed merging it into `haipipe-paper-narrative`
   instead; the merge was rejected because Dash covered four families
   (`section · probe · citation · display`) and only `section` was ever
   Narrative-shaped, so folding it in would have stranded the other three with
@@ -547,3 +875,11 @@ The slide binding (division · source · render · acceptance) is its typed reco
 - Names its own next step from QC6 §7: `serve.py`'s `CHAT_RULES` becomes a consumer
   of this contract instead of a hand-rolled copy, which has already rotted once
   (QB5d caught it describing a page shape that no longer existed).
+## 0.57.0 · 2026-09-04
+
+- Adopt `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, and
+  `04 CHECK` as the Page phases.
+- Add generated `outline/<stem>-context.md` and start new Page Runs at CONTEXT.
+- Replace active DRAFT/REVISE phase authority with `haipipe-page-content`.
+- Remove PageX from new Page evidence storage; keep old lanes read-only and
+  route cross-Folder evidence through Supporting Run Results.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Division Folder"
+  short_description: "Render, accept, or emit one judged Design unit"
+  default_prompt: "Use $haipipe-design-division at D4 to create or repair the Design Folder's Page and Task faces from signed Insight handoffs."

@@ -12,18 +12,15 @@ single tap action.
 - **Rich media:** optional image (1:1 ratio, ≤ 1MB)
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  skip
-  display:    skip
-  section-edit:    skip
-
-claims_settlement: light
+design_profile:
+  evidence_bar: light
+  narrative: none
+  display: none
+  section_edit: none
+  terminal: accepted
 ```
 
 
@@ -33,20 +30,23 @@ claims_settlement: light
 template:
   - slot: title
     job: hook + urgency
-    claim_source: primary claim
+    claim_source: released card grant
     chars: ~50
   - slot: body
     job: benefit + action hint
-    claim_source: action claim (W)
+    claim_source: GD0-closed Brief + signed Wisdom handoff
     chars: ~100
 ```
 
 
-## Lifecycle mappings
+## Phase use
 
-### → Claims (light)
-2 K/W entries max — one for the hook, one for the action.
+### D1/D2 · bet and realize
 
-### → Draft
+Keep the grant narrow: one source for the hook and one for the action. Author
+one title, one body, and one deep-link target inside the released card's rails.
+
+### D3/D4 · judge and decide
 Title grabs attention. Body gives one reason + one action.
-No opt-out in body (handled by OS notification settings).
+No opt-out in body (handled by OS notification settings). Render the exact
+notification to `delivery/render/`, then accept or emit.

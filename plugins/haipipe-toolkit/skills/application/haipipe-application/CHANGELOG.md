@@ -3,6 +3,55 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.0.6] — 2026-08-31
+
+- Route a settled Task Reusable Finding through an Application-owned bridge:
+  I1 registers QW, I5 contextualizes the exact PageX-bound RF and earns the
+  signed Design Handoff. Task RF never crosses directly into Design.
+- Align the agent manifest with native Insight I0-I5 and Design D0-D5
+  frontiers; Artifact is no longer advertised as an Application frontier.
+
+## [1.0.5] — 2026-08-31
+
+- Remove the last two-scope Insight Page claim: Task owns the one-page
+  consumer-neutral DIKW contract, while an Application owns separate I1-I5
+  phase Folders.
+
+## [1.0.4] — 2026-08-31
+
+- Call I2-I5's runtime authorities phase-owned Folder contracts in the `chain`
+  procedure; no Application page-type contract remains.
+
+## [1.0.3] — 2026-08-31
+
+- Remove the last active Artifact-Page/tree vocabulary: D4 owns divisions and
+  `delivery/render/` owns projections. Normalize the live PageX, Display,
+  Outline, and Probe lane addresses under the two-face Folder contract.
+
+## [1.0.2] — 2026-08-31
+
+- Make board naming one unambiguous grammar everywhere:
+  `<DataSubject>-InsightBoard` and `<DesignTopic>-DesignBoard`, optionally
+  prefixed by `A<NN>_` or `B<NN>_`. Remove the remaining kind-first examples.
+
+## [1.0.1] — 2026-08-31
+
+- Align the Design tree with audience × job × venue identity and the canonical
+  `delivery/render/` lane.
+- Design Card → Unit → Verdict now evolve one DU Folder in place; PageDown
+  leaves a minimal round receipt before the Application stops.
+
+## [1.0.0] — 2026-08-31
+
+- Application became a thin two-board door. Insight I0-I5 and Design D0-D5
+  workflow phases now own the Folder kind, Page Face, Task Face, plugins,
+  gate, closure, and handoff.
+- The independent Application `haipipe-page-for-*` family retired. Legacy
+  `page-type:` keys resolve through phase metadata; new work writes
+  `folder-kind:`.
+- Principle folded into D4 as an optional promoted role and PageX became the
+  one cross-Folder surface, including executable Folder status.
+
 ## [0.12.0] — 2026-08-21
 
 - The question register split out of Meta and BY RUNG (JL 260821): four
@@ -440,3 +489,18 @@ Parked at user request before the bench run; NO ruling yet on either. Both decis
 - Grammar hardened (ref/partition.md): X pinned at 9; reserved partition letters F/X/Q/S/M; one threshold file per task GROUP, PENDING until written; the template needs full.yaml; adopt pre-existing config names and check their store: key; the template W never defers.
 - Family id sweep: M00-meta/A00-brief → MT00-meta/BR00-brief everywhere live (meta and brief contracts, fn/enter.md, fn/brief.md); brief 0.3.x rekeyed needs from the retired Insight Roster to the question registers; design contract's runtime shape, PageX example and handoff ids corrected to DS<NN>/W-parents.
 - Verbs made layout-aware: fn/chain.md resolves the partition group from the register cell; fn/meta.md step 8 points MT00 at the partition divisions.
+
+## [0.16.0] — 2026-08-24
+
+- Design-side verbs (brief, design, direction, release, realize, judge, render, accept) OWNED by the new sibling door `/haipipe-design`; the verb rows remain as forwards, `fn/brief.md` and `fn/design.md` stay shared.
+
+## [0.17.0] — 2026-08-24
+
+- The principle row still said P is the ONLY DesignBoard layer that reads the InsightBoard, a claim a line break hid from the 260824 sweep and that every direction card contradicts; P is now the promoted WARRANT crossing and a card GRANTS by path. The workflow row reads five phases named by their authority page, four blocking gates.
+
+## [0.18.0] — 2026-08-27
+
+- Insight-side verbs OWNED by the new sibling door `/haipipe-insight` (0.1.0), symmetric to the 260824 design-side split: meta, question, chain, partition, verdict, settle, handoff. The verb rows here remain as forwards; `fn/meta.md` and `fn/chain.md` stay as the page-level procedures both doors share, and `ref/partition.md` stays this skill's file because moving it would break its existing references — the door cites it.
+- The door assembles what was already law: the one-dataset rule, the Climb Law (each rung cites only named rows of the rung below, two X-group exceptions), the three pens (register/chain/handoff), and the two ✋ gates on that board (probe release, handoff signing). Nothing new is legislated; the split gives the InsightBoard the same one-place law home the DesignBoard got in haipipe-design 0.1.0.
+- The reused name is disclaimed in the door itself: the `/haipipe-insight` retired in 6.6.0 (260717) was a KB evidence layer; the new door holds board law and no evidence.
+- Cold-read audit fixes (260827, fresh-context tester): §Dataset-first reworded — a chain page must serve a question REGISTERED on MT01-MT04, need-first or curiosity-first, so the sentence no longer refuses the curiosity birth the door legalizes; the loose "Insight Page" alias for rung/chain pages removed from all live prose (`page-type: insight` is task-only); the insight-side forwards gain `check`.

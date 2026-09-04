@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
-  summary: "Search and analyze research papers, find related work, summarize key ideas."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

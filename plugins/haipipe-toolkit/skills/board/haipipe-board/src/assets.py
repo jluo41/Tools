@@ -50,7 +50,7 @@ def css():
 # default: windows-1252 on most machines. Every non-ASCII glyph in a `content:`
 # rule then mojibakes, and the one that shows is the fold marker on each
 # section header: `▸` (UTF-8 e2 96 b8) renders as `â–¸` (JL 260819, screenshot
-# of Diagram / Content / Aims / States / Files).
+# of Outline / Content / Aims / States / Files).
 #
 # This is the half of the fix that travels WITH the file, so it also holds
 # under `file://` and under any server that is not `cli/serve.py`. It must be

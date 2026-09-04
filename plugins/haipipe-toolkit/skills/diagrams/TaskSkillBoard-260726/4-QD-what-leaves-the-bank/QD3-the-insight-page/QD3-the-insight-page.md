@@ -77,27 +77,22 @@ The handoff carries finding, strength, boundary, source Pages, refresh date, and
 ## Aims
 
 ### A2 · Source Map
-- A2.1 · The contract forbids direct downstream reads of Task results.
+- ✅ A2.1 · The contract forbids direct downstream reads of Task results.
   **Done when:** the shipped skill and this specimen both route sources through Task/QA/Page addresses.
+  **Now:** Met in `haipipe-page-for-insight` 0.1.0; consumers read settled Page handoffs rather than `results/`.
+
 
 ### A3 · Data
-- A3.1 · Source reruns reopen dependent rows.
+- ⬜ A3.1 · Source reruns reopen dependent rows.
   **Done when:** a runtime specimen demonstrates stale detection against a changed run.
+  **Now:** No runtime rerun/staleness specimen exists yet.
+
 
 ### A7 · Reusable Handoff
-- A7.1 · A fresh consumer can use the handoff without Task-folder access.
+- ✅ A7.1 · A fresh consumer can use the handoff without Task-folder access.
   **Done when:** a cold agent builds a valid Brief or Narrative source selection from Division 7 alone.
+  **Now:** Fresh-context validation on 260817 produced a consumer-neutral Division 7, held settlement on unbound sources, and sent downstream consumers through PageX only.
 
-## States
-
-### A2 · Source Map
-- ✅ A2.1 · Met in `haipipe-page-for-insight` 0.1.0; consumers read settled Page handoffs rather than `results/`.
-
-### A3 · Data
-- ⬜ A3.1 · No runtime rerun/staleness specimen exists yet.
-
-### A7 · Reusable Handoff
-- ✅ A7.1 · Fresh-context validation on 260817 produced a consumer-neutral Division 7, held settlement on unbound sources, and sent downstream consumers through PageX only.
 
 ## Files
 
@@ -110,3 +105,5 @@ The handoff carries finding, strength, boundary, source Pages, refresh date, and
 ## Log
 260817 · Fresh agent correctly chose `insight-target: knowledge`, preserved Wisdom as `not targeted`, traced D→I→K without cross-level jumps, and routed further evidence through Insight-owned Probe.
 260817 · JL ruled that the Insights Board is the Task Board and that DIKW belongs here rather than inside each Paper or Application.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

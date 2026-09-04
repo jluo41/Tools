@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, WebFetch, Glob
 metadata:
   version: "0.1.0"
   last_updated: "2026-05-31"
-  summary: "Quick single-paper lookup via AlphaXiv LLM-optimized summaries with tiered source fallback."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

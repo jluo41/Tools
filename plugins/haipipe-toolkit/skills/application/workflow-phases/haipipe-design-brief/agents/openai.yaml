@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Brief Folder"
+  short_description: "Frame an Application and release its Design roster"
+  default_prompt: "Use $haipipe-design-brief to create or repair the Brief Folder at Design workflow phase D0."

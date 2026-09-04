@@ -1,3 +1,211 @@
+## 0.23.1 · 2026-09-04
+
+- Use the canonical Page dependency order.
+- Make copilot-versus-auto gate behavior explicit: auto records human acts as
+  owed and may follow declared policy, but deferral never becomes approval.
+- Separate phase `route` from `next_cycle` in OUTLINE receipts.
+
+## 0.23.0 · 2026-09-04
+
+- Require the frozen `haipipe-page-context` PREPARE record before SHAPE or
+  SURVEY and present it through the shared Outline plugin's Context Workspace.
+- Remove PageX Bindings from the active SURVEY graph. Cross-Folder evidence
+  now arrives through Supporting Run Results; governed page-local static
+  sources may be named in Local Input.
+- Route an approved, fully folded plan to `haipipe-page-content` instead of the
+  retired DRAFT/REVISE phase split.
+- Keep the typed Evidence Item names, separate Supporting and Local Runs, and
+  Paper-local `pjNNtNNrNN` reservation introduced by the preceding design.
+
+## 0.22.3 · 2026-09-03
+
+- Require the main Page and Outline plan card to use the same four-cycle status
+  strip and keep Shape-versus-Content conformance out of the planning UI.
+
+## 0.22.2 · 2026-09-03
+
+- Require Evidence Workspace to distinguish explanatory Evidences from Run
+  cards grouped under the Evidence contracts they support.
+
+## 0.22.1 · 2026-09-03
+
+- Require Run details to separate Purpose/Plan, path-derived Availability,
+  and Next action.
+- Keep unallocated Page-local Run plans in the Evidence Item's Expected,
+  Acceptance, and Local Input fields until LAND creates `runs/` and `results/`.
+
+## 0.22.0 · 2026-09-03
+
+- Give every proposed Paper-local Evidence Item Run its own `pjNNtNNrNN`
+  identity during SURVEY, displayed as `P jNN.tNN.rNN`; keep `new` explicit
+  until LAND creates the Ticket.
+- Keep Evidence wall labels (`E<n><V/C/D>.<Label>`) separate from Run identity.
+
+## 0.21.0 · 2026-09-03
+
+- Read the ranked Skills Page Record from its canonical Outline-owned path,
+  `outline/skill/<stem>.md`.
+
+## 0.20.0 · 2026-09-03
+
+- Define the addressed Bullet as the primary plan-evidence-draft unit shared by
+  Bullet Workspace and Evidence Workspace.
+- Include Skills with Files and Log under Page Records while keeping its one
+  ranked store at the sibling `skill/<stem>.md` path.
+
+## 0.19.0 · 2026-09-03
+
+- Define the Outline UI as Bullet Workspace + Evidence Workspace, with Plan
+  Context and Page Records as subordinate groups rather than peer plugins.
+- Keep the compact Outline Table on the main Page and all detailed records in
+  the single `outline/` authority.
+
+## 0.18.4 — 2026-09-03
+
+- Require Local Run plans to use the same complete `new-*` hierarchy as
+  Supporting routes; retire the free-text dash placeholder.
+
+## 0.18.3 — 2026-09-03
+
+- Replace the remaining “registered graph” shorthand with the inventory-only
+  SURVEY contract and report existing versus planned routes separately.
+
+## 0.18.2 — 2026-09-03
+
+- Define the complete `new-run` / `new-task` / `new-job` / `new-block`
+  hierarchy and separate a never-attempted registered Ticket from a rerun.
+
+## 0.18.1 — 2026-09-03
+
+- Define dotted `bNN.jNN.tNN.rNN` labels as presentation aliases of canonical
+  compact Run identities, with no `rNN` invented for planned parents.
+
+## 0.18.0 — 2026-09-03
+
+- Make the Outline plugin the one review surface for Shape, Evidence Items,
+  supporting-run lineage, and routed feedback.
+- Write generated lineage to `outline/evidence/supporting-runs/`; the main Page
+  remains a compact read-only projection of this authority.
+
+## 0.17.3 — 2026-09-03
+
+- Require one joined Evidence Items panel after SURVEY: canonical compact item
+  identity, grouped Run items, and collapsed Run/Result paths.
+
+## 0.17.2 — 2026-09-02
+
+- Make SHAPE author a stable 1–12 character `Label` for every new or updated
+  Evidence Item so Outline chips remain concise without replacing immutable ids.
+
+## 0.16.0 — 2026-09-02
+
+- Extend each SURVEY Evidence Item graph with zero-to-many exact PageX source
+  bindings. PageX authorities are named in the item's one frozen Local Input;
+  they are sources, never Supporting Runs, local Runs, or Result types.
+- Keep SHAPE and SURVEY planning-only: they specify item identity, expected
+  ready evidence, acceptance, source graph, and actions without allocating or
+  executing a Level-4 Run.
+
+## 0.15.0 — 2026-09-01
+
+- **Human review packet**: when a person asks to review, check, read, or
+  approve an outline, the phase now presents four linked parts before seeking
+  a decision: current Shape and arc; material typed Evidence Items and their
+  surveyed sources; routed feedback/requirements/open threads that shaped the
+  plan; and the exact human decision still needed.  The packet reports records
+  on disk, does not write prose, and never infers `approved:` or `Decide:`.
+
+## 0.14.0 — 2026-09-01
+
+- SHAPE now names typed `E<NN>-VALUE|CITE|DISPLAY-<slug>` items and specifies
+  Target, Need, Expected, and Acceptance. SURVEY remains planning-only and
+  adds 0..N Execution/Discovery Supporting Runs plus exactly one local Page
+  Evidence Item Run. The ledger is `<stem>-evidence-items.md`; `found`,
+  `person`, and `none` retire as actions.
+
+## 0.13.0 — 2026-09-01
+
+- Owns the OUTLINE part's two human-gated cycles: SHAPE (brief → propose →
+  react → revise, `approved:`) and SURVEY (the item table: one row per mark,
+  Need · Route · Run = found | rerun | new-run | new-task | new-job |
+  new-block | person | none with its tasks/ address, a person's Decide).
+  The tick at SHAPE carries the fork (fresh marks → SURVEY, every row folded
+  → the DRAFT part). The circled phase numbers retire.
+
+## 0.12.0 — 2026-08-31
+
+Rewritten as ONE pass: 535 → 199 lines, present tense. ⓪ Boot (load this
+brief, the type's `outline:` block, `ref/plan-grammar.md`, the page, `outline/`;
+nothing else) · ① Prepare, one command: `haipipe-board/cli/outline-pass.py
+<page>.md` regenerates the three derived files, runs the plan checks for this
+page (hard), the page-scoped checker and the build, and prints the receipt-lite
+· ② Plan (the type gives the words, the pass gives the arc; a Section page
+plans sentence slots) · ③ Threads and the log record · ④ Five checks, with
+④ SHAPE now judging heads (4 to 11 words), Notes (≤ 30 words) and a Note that
+quotes the page · 🧑 the tick, with the chat-transcription rule · 🔀 · 🧾.
+- Fixed: the authority test said the Aims live "in the plan file" while
+  `haipipe-page` 0.42.0 put them on the page; the exit and the routing said
+  "four checks" while the brief said five.
+- Stated: a pass in a person's own session is a pass (same trace as the
+  agent's); the ten-box checklist is now the six mechanical boxes inside
+  `outline-pass.py` plus the four the pass writes.
+- **Field-tested the same day** (cold desk, SM01 OUTLINE pass: plan v3 at 0 ❌,
+  10 min, 229k tokens, 15 frictions, 1 of 7 pre-registered gaps hit). Patched
+  from it: the type's `outline:` block is frontmatter the Skill tool strips
+  (read the first 20 lines); read the page once with the Read tool; run
+  `outline-pass.py` twice (before to read, after to measure) and write the log
+  record after the second run, `--no-build` named; the by-hand list now matches
+  the script; one `## C<n>` per Content division (a flat Section is `C1`); the
+  swap test and the heaviest-finding rule at paragraph level on a one-division
+  page; the Narrative row's order binds over a Round's proposed order; ①
+  COVERAGE counts a bare mark as owed before ② PROBE instead of failing.
+
+## 0.11.3 — 2026-08-31
+
+- **Head style rule in the checklist** (JL 260831): heads of 4 to 11 plain
+  words, one-line Notes, no drafted sentence in the plan; points at
+  `haipipe-plugin-outline` §✂️ for the approved SM00 v3 shape.
+
+## 0.11.2 — 2026-08-31
+
+- **⓪ REQUIRE** (JL: "add the fn for the haipipe-page-outline as well … so it
+  can check what is the requirement of writing this page"): every pass opens
+  by running `cli/requirement.py <page>.md` and READING the V (venue division),
+  N (Narrative row, Writing Style) and B (board rules) records before a bullet
+  is written; ④ SHAPE is judged against V and N. Receipt line `requirement:`.
+- **§✅ Checklist** (JL: "it should have a checklist to check the items
+  needed"): ten boxes, REQUIRE → COLLECT → TYPE → PLAN → CHECKS → EVIDENCE →
+  THREADS → LOG → TAB → RECEIPT; receipt line `checklist: n/10`.
+- The THREADS and LOG boxes carry haipipe-plugin-outline 0.18.0's record
+  shape: open threads only, Ask/Options/We lean/Decide; settled threads are
+  log records.
+- `version:` in the frontmatter had stayed at 0.11.0 through 0.11.1; fixed.
+
+## 0.11.1 — 2026-08-31
+
+Patched from the NA01 field test (20 frictions on a 0.11.0 law one run old):
+- **Five checks, not four**, everywhere the brief and the routing said four;
+  the receipt gains an `arc:` line. ⓪ was added on 260822 and three sentences
+  never followed.
+- **`Routed:` keeps the mark on the last line**, stated where the fold is
+  taught, with the measured loss (8 of 16 lines vanished from the render).
+- **A declined row has a shape**: `declined: <RD> <id> · <reason>` in the
+  plan's header, because no division but `## C<n>`/`## Aims` is legal.
+- **A routed concern may mint an Aim** in an unapproved plan; 0.16.1's
+  thread rule covers an ASK from the retired States fold, not a Round's row.
+- `cli/feedback.py reopen` named; the collector's role stated as PULL.
+
+## 0.11.0 — 2026-08-31
+
+- **⓪ COLLECT**: the fold gains a second source. Every OUTLINE pass opens by
+  projecting the Round rows routed to this page into `outline/<stem>-feedback.md` (one file, a section per Round; the per-Round folder lasted one hour)
+  (JL 260831: a function of this phase, not a new plugin). ① COVERAGE gains
+  one direction: an open register row is served by a bullet or declined with a
+  reason. The bullet gains `Routed:` beside `Answered:`/`Drawn:`; the receipt
+  gains `feedback: n routed · n served · n declined`. G7 runs
+  `feedback-coverage` board-wide so a Round cannot close on a page nobody
+  opened.
+
 ## 0.10.0 — 2026-08-22 — this phase takes the ARC, and self-consistency becomes FIVE checks
 
 Ruled by JL while deciding where a story arc belongs when there are ten Page

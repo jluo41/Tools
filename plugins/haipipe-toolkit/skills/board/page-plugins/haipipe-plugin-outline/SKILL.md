@@ -1,462 +1,378 @@
 ---
 name: haipipe-plugin-outline
 description: >-
-  The 🧭 outline surface of a Board page: the page RE-READ one Content division at a time, each division card carrying its own Aims, State rows, and Files rows instead of leaving them in three separate lists, and above them the PLAN card read from the page's own versioned outline file. The plan is primary material; the surface is rule-based and read-only, rendered from the file and live plugin folders on every open, and calls no model because the division tie is already in the material (`### A<n>` group grammar first, then the `§N` anchor). It is the DELIVERABLE of OUTLINE, phase ① of the page workflow, and the surface where that outline is read and approved before any prose is written; each division card also carries an evidence row read live from the page's probe/, display/ and bibex/ folders. Owns only its delta: the anchor grammar, the two lenses, the 🌐 page-wide card, the derived Evidence Bundle, and the two promises its checker guards. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: outline plugin, outline tab, 🧭 tab, page outline, OUTLINE phase, outline gate, evidence column, evidence bundle, what does this page owe, read the page by division, section anchor, §N anchor, which division does this aim belong to, by progress lens, page-wide, approve the outline, /haipipe-plugin-outline.
+  The outline/ plugin of a Board page: the page's single planning authority,
+  its nine process-record kinds, nested Skill record, three workspaces, and the 🧭
+  tab that reads Shape, evidence, and feedback together; first and default on
+  every page. The main Page keeps only the compact Outline Table.
+  Read-only surface shared by CONTEXT, OUTLINE, and EVIDENCE. Trigger: outline
+  plugin, outline tab, page outline, outline folder, plan file, record shape,
+  evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.15.0"
-  last_updated: "2026-08-17"
-  summary: "0.9.0 names the derived Evidence Bundle: one frozen Point joins sentence scaffolds, live Probe/Bibex/proof/Display material, and owner feedback without creating a duplicate folder."
+  version: "0.34.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-outline · the page, read one part at a time
+# /haipipe-plugin-outline · the page's process folder, and the tab that reads it
 
-**LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
-This file owns only outline's delta: how a line says which division it belongs to, and what the tab does with that.
-
-The gap it closes (QPf12, JL 260816): a page is grouped BY SECTION KIND, so all Content sits together, then all Aims, then all States. Reading about one part means jumping between three lists. This surface flips the axis: one card per Content division, everything belonging to it inside.
-
-## 🎛 What this surface IS · the page's one control surface
-
-**🧭 is not one tab among many; it is where a person stands to work a page** (JL 260817: "we need to make the outline plugin to be more important"). Every other plugin shows ONE material: 🚪 the questions, 🖼 the units, 📚 the keys, 📂 the folder. Only 🧭 shows the PLAN and, against each part of it, what that part still owes.
+**LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface,
+writer, boundary. This file owns outline's delta: what the folder holds, what
+the tab shows, and who writes each file. CONTEXT, OUTLINE, and EVIDENCE each
+write only their declared records here; the plugin presents them as one
+coherent process space.
 
 ```text
-  🚪 probe    the cards        ─┐
-  🖼 display  the units        ─┼─▶  🧭 outline   one row per division:
-  📚 bibex    the keys         ─┤                 what it must establish,
-  📄 the .md  divisions·aims   ─┘                 and what it still owes
+  this file      the FOLDER (nine records + Skill + evidence) and ONE TAB
+  ref/           plan-grammar.md · item-table.md · record-shape.md ·
+                 specimen-section-plan.md · evidence-bundle.md: the exact
+                 grammars a writer or parser needs
+  the phases     haipipe-page-context · haipipe-page-outline · haipipe-page-evidence
 ```
 
-That is the promotion, and it comes from a real failure. On 260817 a page carried an outline table pasted into its own `## Content`, three prose sentences restating probe-card states, and a fourth declaring a display that did not exist. Every one of those was a person writing down what this surface should have SHOWN them. When the plan and its evidence are visible in one place, the prose has no reason to duplicate either.
+## 🗂 The folder · product beside process
 
-**The question it answers, and no other surface can**: *what does this page still owe, division by division?* 📂 answers it for the folder, 🚦 By progress answers it for the ticks; neither joins the plan to the evidence.
-
-## 🚧 Whose phase this is
-
-The file is the deliverable of OUTLINE, phase ① of the page workflow. That phase's authority, its human gate and its receipt are `page-workflows/haipipe-page-outline` (260817); this file owns only the MATERIAL and the SURFACE and states neither of those twice.
-
-```text
-  🚧 the phase   what OUTLINE may do, and what ends it   ../../page-workflows/
-                 (a person ticks `approved:`)              haipipe-page-outline
-  🗂 the file    where it lives, its shape, its marks    ← this file
-  📡 the tab     how it is read, and what it joins to    ← this file
-```
-
-## 🗂 Storage · a versioned markdown file, one per round
-
-**Overturned 260817 (JL): the outline is a FILE.** Version 0.1.0 stored nothing and derived everything from the page's own headings. That works for reading a page that already exists and fails for the phase's real job, which is to agree what a page WILL say before it says it. A plan that lives only as a projection of the thing it is planning cannot exist before that thing does.
+`<page>.md` is the PRODUCT: what the page asserts. `<page>/outline/` is the
+PROCESS: how it came to assert it. Since 260831 the folder is legal on any
+UNIT, task folders included (the unit symmetry, `haipipe-page` §📁): same
+kinds, same grammar; a task folder simply never owes the venue-only
+requirement file. Nine kinds, one flat file each with the
+stem; only the plan is many-per-page, by version.
 
 ```text
 <page>/outline/
-├── <stem>-outline-v1.md      the round's plan · 🧑 AUTHORED · never regenerated
-├── <stem>-outline-v2.md      the next round · `supersedes: v1`
-└── <stem>-outline-v_0707.md  a date suffix is equally legal (JL 260817)
+├── <stem>-outline-v<N>.md    what we AGREED      authored · a person ticks · versioned
+├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
+├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
+│                             cli/requirement.py refreshes V and preserves W
+├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
+├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
+├── <stem>-evidence-items.md  what each item MUST BECOME
+│                             authored · SHAPE specifies; SURVEY classifies Supporting routes + one Local Input plan + one Local Run declaration
+│                             LAND validates sources and binds the ready Result (ref/item-table.md)
+├── <stem>-evidence.md        what has LANDED     generated · cli/evidence-status.py · the table joined to the disk
+├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
+├── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
+├── skill/                    ranked Page Skills; one primary store + derived editor
+│   ├── <stem>.md             PRIMARY · one name per row · order is the person's rank
+│   └── <stem>-skill.html     DERIVED · embedded editor
+└── evidence/                 what the plan MAY USE; never a second plan
+    ├── bibex/                citation authority and derived workbench
+    ├── display/              display evidence units
+    ├── supporting-runs/      generated Evidence Item lineage; pointers only
+    └── materials/            immutable captured source material
 ```
 
-**The freeze happens at APPROVAL, not at creation** (JL 260817). Before the tick, `v1` is a working document: discuss it, rewrite it, delete a bullet that turned out wrong. A wrong plan during drafting is just deleted; it needs no version and no record, because nobody has agreed to it yet.
+This is exhaustive for Page evidence storage. Never create a root
+`<page>/evidence/`, an `outline/evidence/value/` copy lane, or an
+`outline/evidence/probe/` lane. VALUE is an Evidence Item type, not a storage
+folder: its contract and binding stay in the Outline records, while an actual
+page-local VALUE payload is the Result of its local Run in sibling
+`<page>/results/`; an external VALUE stays at its Supporting Run's real Result
+path. Probe is retired compatibility material and has no active Page surface.
+`outline/evidence/pagex/` is also legacy migration input: new evidence graphs
+use Supporting Run Results; Related Page links appear in Context Workspace.
+
+- **One question per file, and the questions do not overlap.** A fact that
+  answers another file's question is misplaced: a settled thread is a log
+  record, a deviation from the venue is a thread, a plan's status is on the
+  page's Aims.
+- **Authored versus generated is marked explicitly.** Most generated files are
+  regenerated whole; Requirement is the bounded exception: its V block is
+  generated and its W block is authored, so `cli/requirement.py` refreshes V
+  while preserving the authored W records verbatim.
+- **No file name contains `outline` except the plan**, because the plan globs
+  are `*-outline-*.md`.
+- **The page keeps four on-stage sections**, 🚪 Opening · 🧭 Outline · Content ·
+  Aims, and nothing this folder holds. Opening stays visible and the Page's
+  `🧭 Outline` opens by default and renders only the read-only current-plan
+  table. The grid is `Address · Planned move · Evidence · Supporting Runs ·
+  Local Run`: C/P headers keep the plan's reader order and B rows join
+  typed Evidence Items to their surveyed Supporting Runs and local route in
+  separate columns. A real Run is a short, linked readable address such as
+  `b01.j02.t03.r04` plus a compact next-action label (`run`, `rerun`, or
+  `reuse`). A never-attempted real Ticket is `registered`; a failed,
+  smoke-only, invalid, or explicitly stale attempt is `Rerun`, never `Done`;
+  a missing Ticket is rendered as `needs … Run`, not a
+  made-up id. A Paper-local Run uses the distinct `pjNNtNNrNN` namespace and
+  renders as `P jNN.tNN.rNN`; its `plan` label means the address is proposed
+  but no Run exists. Every displayed Run or planned-route token is an actual anchor:
+  hovering it shows the Run filename, repository-relative Run path, available
+  Result/Runtime paths, availability status, and next action; an unallocated
+  route says so explicitly rather than inventing a path. On click, it opens
+  the Outline plugin's `Evidence Workspace` at that Evidence Item, where
+  its grouped Run items and exact Run/Result paths are shown as selectable
+  text. Raw Run, Result, and Runtime paths are never direct browser anchors:
+  script and receipt responses may otherwise download instead of opening. The old
+  `By bullet` and `Run links` segments are compatibility aliases only. An
+  bounded `new-*` route stays visibly planned and may close SURVEY; only an
+  ambiguous or unplaced route keeps SURVEY open. Item
+  status has no column: chip colour carries the quick signal. A Run popover
+  never compresses unlike facts into one status; it shows `Purpose` (or
+  `Plan` before allocation), `Availability`, and `Next action` separately.
+  Availability says `Planned`, `Run exists · Result missing`, `Run + Result`,
+  or `Paths unresolved`; next action says `Allocate and run`, `Run`, `Rerun`,
+  `Reuse Result`, or `Resolve path`. The compact Evidence label is
+  `E<n><V/C/D>.<Label>`, where the authored `Label` is 1–12 ASCII
+  alphanumeric characters; clicking it reveals the immutable id,
+  full readable name, full type, governed input sources,
+  acceptance contract, routes, and Result. There is no separate Page-authored
+  narrative map. Content, Aims, and every other fold start shut. This folder
+  remains the only authority for all nine records. A manuscript Section keeps
+  no `### Writing Style` block in its product source; its page-owned writing
+  rules are `W<n>` records inside `outline/<stem>-requirement.md`.
+  Opening and Outline use distinct icons because the former orients the reader
+  and the latter exposes the plan. `check.py` reports a surviving
+  `## States`, `## Files`, `## Log` or `## Discussion` as `retired-section`.
+
+The dotted address is presentation typography only. A global Supporting Run
+resolves to `b01j02t03r04`; a Paper-local Run resolves to `pjNNtNNrNN` and is
+shown with the fixed `P` family marker plus `jNN.tNN.rNN`. The two namespaces
+must not be collapsed. Planned external parents omit `.rNN`; a proposed
+Paper-local Run reserves it while remaining visibly `plan` until LAND creates
+the Ticket.
+
+The grammar of every record file, its labels, its writer and its teeth:
+`ref/record-shape.md`.
+
+## 📐 The plan · one grammar
+
+The full grammar is `ref/plan-grammar.md`; the approved example is
+`ref/specimen-section-plan.md`. What a reader must know without opening them:
 
 ```text
-  ✍️ v1, approved: ⬜   discussed many times · edited freely · delete what is wrong
-        │
-        │  🚧 a person ticks approved:
+## C<n> · <name>                     division · ≤ 8 words · names its subject
+### C<n>.P<m> · <move> · S<a> to S<b> paragraph · a Section page names the sentence span
+- B<k> · <head>                      4 to 11 plain words: what the point DOES
+  Note: <≤ 30 words> [🎯 Aim]        the constraint or definition
+  Evidence: E<NN>-<TYPE>-<slug> · …  named expectation, written at SHAPE
+  Accept: …                           observable ready-evidence contract
+  Answered: · Drawn: · Routed:       appended by the fold, one per line
+```
+
+- **The grain is the Page Type's**: on a Section page one bullet is one
+  sentence slot (`S<n> · …`); on every other page one bullet is one point that
+  CONTENT turns into one or more sentences.
+- **The plan never quotes the sentence it plans.** The sentence lives on the
+  page; the plan says what the sentence must do and what constrains it. A Note
+  is at most 30 words (a wrapped source line is still one Note); a Note that
+  carries prose is CONTENT leaking upward.
+- **Typed Evidence Items are the exception**: `E<NN>-VALUE-<slug>`,
+  `E<NN>-CITE-<slug>`, or `E<NN>-DISPLAY-<slug>`, each with an expectation and
+  an `Accept:` line. No Evidence line means nothing is owed.
+- **The plan carries no Aim rows.** Aims live on the page; a 🎯 annotation names one.
+  An ask with no Aim is a `D<nn>` thread, never a minted Aim.
+- **The address is `C<n>.P<m>.B<k>`** and it is the join key for every other
+  file in the folder and every card, key and unit in the sibling lanes.
+
+## 🔒 The plan freezes at approval, not at creation
+
+```text
+  ✍️ v1 · approved: ⬜   a working document: edit, delete, rewrite freely
+        │  🧑 a person ticks approved:
         ▼
-  🔒 v1, approved: ✅   frozen · CORRECT AS OF THAT MOMENT
-        │
-        │  the work moves on: the scope grows, a direction opens
+  🔒 v1 · approved: ✅   frozen, correct as of that date
+        │  the work moves on
         ▼
-  ✍️ v2, approved: ⬜   `supersedes: v1` · a new working document
+  ✍️ v2 · approved: ⬜   supersedes: v1 · v1 is kept, because it was right then
 ```
 
-**`v2` does not mean `v1` was wrong.** It means `v1` was right then and the work has since moved. That is why `v1` is kept rather than corrected: it is the record of a plan that was correct at its date, not a mistake to be fixed.
+The fold's appends (`Answered:` `Drawn:` `Routed:` and a `PP<NN>` id once a
+card serves a bullet) are the one write an approved version accepts, and they
+add, never edit: a plan that rewrote its own heads as work landed would always
+look finished. `approved:` is a person's; a machine may transcribe a person's
+chat approval with the quote and the time, and writes `checked:` for itself.
 
-**PRIMARY material.** The file is authored by OUTLINE and read by every phase after it. Nothing regenerates it, and the page's own `.md` is never its source.
+## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
 
-⚠️ **Storage-less was the old invariant, and it is gone; "cannot be stale" survives in a different form.** The outline file is not a cache of the page and so cannot disagree with it: it is a record of what was agreed at a moment, and the page is what was then built. `v2` supersedes `v1` rather than correcting it.
-
-⚠️ **The surface now reads three things**: the outline file, the page `.md`, and the page's sibling plugin folders (`probe/`, `display/`, `bibex/`). It still writes nothing and still calls no model.
-
-## 📐 The file's shape · Section ▸ Paragraph ▸ Bullet
-
-The plan goes down to the BULLET, and a bullet is a POINT, not a sentence (JL 260817: "我们能一句话把一个 point 讲完吗? 我感觉现在这里更像是 point"). One point becomes ONE OR MORE sentences when it is drafted, so the plan and the page count different units and must say so.
+🧭 Outline is the FIRST and DEFAULT tab on a page (`live/shell.py` asks the
+plugin registry's default and ranks it first; on a group page, which has no
+live page, 💬 Chat is the fallback). Every other tab shows one material; only
+🧭 shows the plan and, against each part of it, what that part still owes.
 
 ```text
-  🧭 outline   C3.P2.B1   one POINT      "OLS: ols-progressive the control
-                                          ladder, ols-lpm-logit the binary
-                                          form, ols-twopart the hurdle, …"
-                             │
-                             ▼  DRAFT writes a sentence scaffold with holes
-  📄 page      C3.P2.S1 · S2 · S3   the sentences that point became
-                             │
-                             ▼  REVISE turns the scaffold into final prose
+🧭 Bullet Workspace       default · By part | What is left
+   Evidence Workspace     Evidences + Runs + typed source material
+   Context Workspace      Overview · Policy & Requirements · Related Information ·
+                          Feedback & Decisions · Records
 ```
 
-`C3.P2` is shared by both, so the link survives; only the last token differs, and it differs because the units differ. `haipipe-sentence` owns `S` on the rendered page and this file owns `B` in the plan; neither redefines the other.
+The three workspaces are peer views of one process authority. Context explains
+why the Page may take its current shape; Bullet shows the planned reader path;
+Evidence shows what each Bullet needs and the Runs that make it ready. Context
+Workspace merges the former Plan Context and Page Records UI groups only:
+Requirement, Discussion, Feedback, Files, Log, and Skills remain separate
+source files. Its Overview is the generated `<stem>-context.md`. Skills reads
+the nested primary store `outline/skill/<stem>.md` and embeds its editor in
+place.
 
-**The letters, and why `C` stays.** `C` is the SECTION, not decoration: Aims use `A` and page-wide uses `P` in that same slot (`haipipe-sentence` §✍️, `QPs1` §0.6), so dropping it would collide `C1` with `A1`. It is printed ONCE on the section heading and the rows below carry only `P<n>.B<n>`, which is the part that changes (JL 260817).
+The plan card mirrors the Page's numbered four-step workflow strip exactly:
+`1 SHAPE  2 SURVEY  3 LAND  4 EMBED`; completed steps, the current step, and
+future steps remain visually distinct. The arrow notation
+`SHAPE → SURVEY → LAND → EMBED` describes flow, not literal UI separators. It
+does not compare an undrafted Page Content
+section with the approved Shape or emit a `Shape/content mismatch` warning:
+zero Content is ordinary before EMBED/CONTENT. Structural conformance remains a
+checker concern at the phase boundary, not an alarm in the planning workspace.
 
-Bullets, not prose: each line says what that point will establish, and carries what it owes.
+- **Two Bullet lenses over one parse**: By part is one card per Content division
+  with its Aims, ticks and `Now:` facts; 🚦 What is left is the same rows with
+  ⬜ before ✅, because opening it is asking what the page still owes.
+- **Evidence Workspace is an internal lens, not another plugin.** Its compact
+  navigation is `Evidences · n | Runs · n | Citations · n | Values · n | Displays · n`,
+  with counts derived from the current typed Evidence Item records. It joins
+  each Evidence Item to Supporting Runs, its optional local Run/Result,
+  citation, value, display, and governed source provenance. Cross-Folder
+  evidence appears through its Supporting Run Result; related Page links stay
+  in Context Workspace. `Evidences` explains each Evidence contract—what
+  it is about, what it must contain, and what will make it ready. `Runs` is
+  grouped by Evidence and renders one card per mapped Supporting or Paper-local
+  Run; a shared Run may therefore appear under each Evidence that uses it.
+  Its header reports both mapping and unique-Run counts. This is the complete
+  evidence-source inventory, not the top-level `⚙️ Runs` inventory of only
+  physically allocated page-local Runs. The standalone Evidence tab is retired; the
+  compatibility `/_board/evidence` renderer may be embedded here only.
+- **Each Run chip opens the Run item, not a file download.** The detail begins
+  with a readable Purpose derived from an allocated Run's Ticket name and the
+  owning Evidence Item. Before allocation it shows a Plan derived from that
+  item's Expected/Acceptance contract and SURVEY's Local Input note. It then
+  separates Availability from Next action and prints Run, Result, and Runtime
+  paths as selectable text. The plan remains authored in
+  `outline/<stem>-evidence-items.md`; allocation creates the real Run under
+  `runs/` and its generated Result under `results/`.
+- **Probe is not a lens or lane.** Do not create or restore a Probe tab or
+  `outline/evidence/probe/`; legacy Probe artifacts may be read only for
+  migration and must be routed into typed Evidence Items.
+- **One subordinate chip per process record file that exists**, with its record
+  count, grouped inside Context Workspace; the bounded Skills
+  exception reads `outline/skill/<stem>.md` and embeds its editor without
+  duplication. A legacy sibling `skill/` is read-only until migrated. A record
+  that does not exist draws no chip.
+  Every lens draws records the same way: id
+  badge, headline, label grid, status pill, detail behind "more".
+- **Feedback is a review queue, not a source-file dump.** Show one compact
+  `open · landed · rounds` tally, then the Round's main Ask. Keep its Order,
+  Gate, and source collapsed. Each feedback row exposes only its headline,
+  Feedback, and next Work; From, Landed provenance, and routed parent rows sit
+  under `Source & routing`. The Round's instructional boilerplate is not shown.
+- **The plan card sits above the division cards** and joins each bullet to
+  the disk: each `E<NN>-TYPE-<slug>` joins its Supporting Runs, Local Input,
+  local Page · Evidence Item Run, ready Result, and fold. Header counts `specified · planned
+  · ready · folded · accepted` are computed
+  separately and never collapsed.
+- **Both failure modes render as a named row, never a blank**: 🕳 owed and
+  nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
+  there and uncited (a card no bullet names).
+- **The tab writes nothing and calls no model.** It reads the plan, the page,
+  the record files and the sibling lanes on every open, so it cannot be stale.
+  The Aims are read from the page first; a plan row fills only an id the page
+  lacks.
+- **The answer comes first**: the page's own question, then one line of counts
+  (done · left · waiting), then the cards; unfinished rows stay in sight and
+  finished ones fold.
 
-```markdown
-# QC1-visitlbp · outline v1
-outline-version: v1
-supersedes: —
-date: 260817
-approved: ⬜            🚧 a person ticks this. No machine may.
+The built Board page also carries a smaller, always-visible **Page Outline
+table** (`haipipe-board/src/page_question.py::_outline_grid`). It is a compact
+projection, not a second full tab: `Address · Planned move · Evidence ·
+Supporting Runs · Local Run`. It deliberately omits aggregate state counts and
+the broader sibling-material bundle. Those remain in the richer live 🧭 tab;
+item state on the compact table is conveyed only by chip colour and popover.
 
-## C3 · Method · The code that produced every number on this page
+### 🤝 Human review packet · the chat counterpart of the tab
 
-### C3.P1 · What actually runs
-- B1 · Script Census
-  Note: the task-folder holds 61 Stata scripts and 14 PowerShell runners
-- B2 · Specification Grid
-  Note: 12 specification families × 5 traits, plus one summary-statistics script
-- B3 · What One Run Fixes
-  Note: one outcome window and one estimator family                   📮 PP04
-```
-
-**The file ends with its own `## Aims` trailing section, and the Aims live HERE
-since 260819** (JL: "Aims should be move together with outline"). One Aim = one
-target plus its test, and `Done when:` IS the test:
-
-```markdown
-## Aims · what must become true, and how you would know
-- A3.1 · The headline coefficient carries its four coordinates.
-  **Done when:** a reader can quote SPEC, window, trait form and outcome
-  without opening the task folder.
-```
-
-Before the move the plan wrote an id and the PAGE held the target, so a plan
-that renumbered its divisions pointed `A4.1` at the page's OLD A4.1; nine of
-sixteen ids on `QPw00-page-loop` did exactly that. DRAFT transcribes the Aims
-onto the page verbatim, because inventing one there would fork the agreed
-target.
-
-**The marks, and every line carries exactly one status plus what it owes:**
+When a person asks to review, check, read, or approve a page outline, the
+OUTLINE phase reads these existing records as one compact, linked packet:
 
 ```text
-🎯 aim        we intend to establish this and have NOT yet
-⛔ ✅ "have it" was RETIRED 260819 (see below): an unmarked bullet
-              already means nothing is owed
-📚 citation   owes a bib key            → bibex/
-📮 probe      owes a QUESTION answered  → probe/PP<NN>/
-              — bare before ② raises
-              the card, `📮 PP<NN>`
-              after; the answer may be
-              a finding or numbers
-🧮 value      QUOTES one number,        → that card's ## Values
-              `PP<NN>.v<n>`, out of an
-              answered card; the
-              machine re-computes it
-🖼 display    owes a figure or table    → display/<stem>-DisplayN-<slug>/
-              · and NAMES ITS KIND: `🖼 owed · table`
+① Current Shape    plan v<N> · approval state · arc · C/P reader path
+② Evidence owed    Evidence Item table · typed/status counts · material source/Run paths
+③ What shaped it   routed Feedback · applicable Requirement · open Discussion only
+④ Human decision   exact approval/Decide choice · blockers · no inferred tick
 ```
 
-⛔ **A fifth mark, proof, was RETIRED on 260819** (it wore 🧮 then; the glyph was revived hours later as the VALUE mark, with 🔢 as the legacy alias). It was created from one
-transcribed quote and no Log row ever ruled it. JL: "我从开始到最后都没有说
-proof，我一直说 probe" — going to a task folder or a discovery folder for the
-evidence behind a claim IS a probe, which is 📮 (the value it yields is quoted as 🧮 PP<NN>.v<n>). The retired mark was the only
-one with no plugin, no folder, no lane, no id and no backlink, and that was the
-symptom. ⚠️ `proof/` the FOLDER is unaffected: it is a probe card's own.
+The response links the current plan and every record it names.  A feedback row
+is shown with the bullet it shapes (`Routed:` address), not merely as a count;
+an Evidence Item is shown with its expected payload, acceptance, and surveyed
+path, not merely its identifier.  Routine rows may collapse into counts, but
+the response never hides a material open row behind a count.  This packet is
+read-only and belongs to the human-chat contract in
+`page-workflows/haipipe-page-outline`; the tab remains the authoritative live
+surface and writes nothing.
 
-**A 🖼 mark carries its KIND, and the bullet's own sentence is the whole design.** There is no display section in a plan: one bullet is one unit, its sentence says what the reader will see, and the mark says which renderer family draws it (JL 260817: "display 的设计都有哪些呢?").
+### Chips stay inside the sentence
 
 ```text
-  - B4 · the funnel drawn as one waterfall, 773,566 down to     🖼 owed · figure
-    765,701, with the unexplained drop as its own bar
-         └── the DESIGN: what a reader sees, in the plan's own words
-                                                     └── kind, so the renderer
-                                                         is picked at plan time
+① INLINE, never a column   a chip lives in the row's own span; a sibling column steals the text's width
+② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px padding
+③ the note is a WORD       `in bibex/` → nothing (the colour says it) · `no unit declared yet` → `owed`
+④ never say it twice       a chip is `E<n><V/C/D>.<Label>` (≤ 12 chars); the ↩ tag is suppressed for a card the row already names
 ```
 
-The five kinds are the display family's: `table` · `figure` · `diagram` · `tex` · `illustration`. What the plan does NOT carry is `claim:`, `caption-job:`, `intake:` and the renderer's own rows; those live in the unit's README and cannot be written until a card has ANSWERED, because the intake freezes from its `proof/` (`haipipe-plugin-display` §❄️). So a plan states the INTENT and a unit states the DESIGN, and the mark goes bare `🖼 owed · <kind>` until the folder exists, then names it: `🖼 Display1 · table`.
+No emoji inside a tag; colour is only a quick signal. A Run chip's small word
+is its next action (`plan`, `run`, `rerun`, or `reuse`), never a combined
+status. A chip opens a native popover holding the THING itself
+(the reference as printed, the card's own question, the unit's own claim); a
+📚 panel prints `Author et al.`, never the author list.
+`CITE` is one Evidence Item type, not a separate table column: one bullet may
+show several compact `E<n>C.<Label>` chips beside its VALUE and DISPLAY items.
+A Results bullet may legitimately show no CITE chip when it reports only this
+study's analysis and points to its own displays.
 
-**A 📚 names a PUBLISHED WORK, never a sibling board page** (JL 260817: "我们这里 citation 的 button 好像不是很多?"). The mark means a bib key in this page's own `bibex/`, and the surface checks it three ways:
+## 🔗 The evidence workspace · nested material, one derived join
+
+The tab shows, per bullet, the join of the frozen address to everything
+that names it: the sentence scaffold (`realizes:`), Evidence citation keys,
+display units and their `accepted:` tick.
+The joined view is a projection. Material authority lives below
+`outline/evidence/`, and a human
+choice such as `selected: Display2` lives on the owning unit. Each typed item's
+state comes only from the ladder in `ref/item-table.md`. The broader point-level
+projection is described in `ref/evidence-bundle.md`; it has no competing status
+vocabulary and is not `<stem>-evidence.md`. That generated file is specifically
+the authored Evidence Item table joined to Supporting/Local Run receipts and
+ready local Results.
+
+## ✍️ Who writes what
 
 ```text
-  📚 Deyo2015    in bibex/                          ✅ the key resolves
-  📚 Foo2020     🚨 not in bibex/                    the key was never landed
-  📚 QB1         🚨 board page, not a citation       the commonest error
+file            written by                                    regenerate with
+────────────────────────────────────────────────────────────────────────────────────────────────
+plan            SHAPE (in session or haipipe-page-outline-agent); EMBED's fold appends   never
+context         CONTEXT/PREPARE; generated source-bound projection         haipipe-page-context
+requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.py <page>.md
+                the bound venue source supplies their material
+requirement W   the page author; generator preserves verbatim never (authored)
+discussion      any phase or the page chat, as D<nn> records  never (authored)
+feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
+evidence-items  SHAPE: Target · Label · Need · Expected · Acceptance; SURVEY: classified existing/planned Runs +  never
+                one Local Input plan + one Local Run declaration; person: Decide;
+                LAND executes/validates sources and binds input + Result
+evidence        the generator                                 cli/evidence-status.py <page>.md
+files           any phase or the page chat                    never (authored)
+log             every phase and the page chat, append only    never (authored)
+skills          scan seed + person's rank/add/remove gestures  /_board/skill (embedded sibling store)
 ```
 
-The third row is a real defect this file caused: a plan marked `📚 QB1 · QB2 · QB3` on the page whose `bibex/` held ZERO entries. Those are board pages, and pointing prose at a sibling page is an internal cross-reference, which is a different act from citing published knowledge. A cross-reference is written in the bullet's own words; only a bib key wears 📚.
-
-**An id on a bullet is a CITATION, not a copy.** `📮 PP01` names a card, `🧮 PP01.v2` quotes one of its values; it never restates the card's question or its state, because the evidence column below reads that live. A bullet that spells out what a card says is the same duplication that put `Evidence owed: probe/PP03-…, state raised.` into a page's prose on 260817.
-
-**A 🎯 aim bullet names the Aim it belongs to, and that is the whole link to `## States`** (JL 260817; the Aims' home moved into the plan file 260819, §📐 above). The id grammar already exists and this surface already parses it, so nothing new is invented:
-
-```text
-  🧭 plan bullet     - the choice has never been written down            🎯 A2.1
-  🧭 plan ## Aims    - A2.1 · Confirm LBP as the lead, and say why
-                       Done when: the rationale is one readable division
-  📄 page ## Aims    the same rows, TRANSCRIBED at DRAFT, never invented there
-  📄 page ## States  - ⬜ A2.1 · No rationale recorded
-```
-
-One id ties the four: the plan's bullet says what the sentence will establish, the plan's `## Aims` says what must become true and how a reader would know, the page carries the transcription, and `## States` says whether it has become true. A 🎯 bullet with no Aim id is an intention nobody is tracking, and an Aim with no bullet is a target no sentence is aiming at; the tab shows both as named rows rather than silence.
-
-An UNMARKED bullet needs no id, because a plain point has nothing to track. The marks point at cards, and cards carry their own state on disk. (`✅ have it` was RETIRED 260819: it claimed backing without NAMING it, so nothing could recheck it; a backed point either cites its id or stands as plain prose, and the ↩ backlink already shows every card that serves a bullet. The glyph also worked two other jobs — the tick syntax `approved: ✅` and phase ⑦ — which produced a phantom-chip bug the same day. JL failed to read the mark three times; a mark that needs explaining fails its only job. Zero plans carried it at retirement.)
-
-**A mark carries an id only when the id already EXISTS.** A 📚 can, because a bib key is found before it is cited. A 📮 or 🖼 usually cannot: the card is created at PROBE, after this file was frozen. So the mark is bare, and the CARD names the bullet it serves (`haipipe-plugin-probe` §↩). The 🧭 tab joins from that side and prints `↩ PP04 serve this bullet · 2 of 3 answered`.
-
-**Each mark names what a bullet OWES; a plugin names WHERE it is answered.
-The two use different words for the same thing, on purpose:**
-
-```text
-  the mark        what the bullet owes      the plugin that owns the answer
-  ────────────────────────────────────────────────────────────────────────
-  📚 citation     a published work           haipipe-plugin-bibex    bibex/
-  📮 probe        a question and its card    haipipe-plugin-probe    probe/
-🧮 value        one quoted PP<NN>.v<n>     haipipe-plugin-value    the card's ## Values
-  🖼 display      a figure or table          haipipe-plugin-display  display/
-```
-
-The middle row is the one that trips people, and it tripped JL twice on 260819:
-the mark is `value` and the folder is `probe/`, so there is no plugin called
-`value` and there should not be one. A probe IS how a value is obtained: you go
-to a task folder or a discovery folder and ask. Adding a fourth plugin would be
-a second home for one folder, which is exactly why the proof mark was retired.
-
-**A paragraph carries 3 to 6 bullets. Seven is two paragraphs** (JL 260819:
-"我们 C2 的话，你这里是只要求一个 paragraph 吗？还是说我们可能写多个 paragraph
-会好一些？"). The `### C<n>.P<n> · …` line is a BRIEF, and the tab prints it above
-the bullets; eight bullets under one brief means the brief cannot describe them.
-Split by IDEA, not by count: `C2` went from one paragraph of eight to three of
-three, and the three briefs are what OUTLINE decides, where the Aims are agreed,
-and the tick that ends the phase.
-
-**A bullet NEVER carries a markdown heading mark** (JL 260819, twice: "I dont
-like '####', could you change it to somehing else?" and "Do not use '##' in the
-outline"). Name the part in words or with the § anchor, because `##` and `####`
-are the file's own syntax and a reader parses them as structure before they
-parse them as a reference:
-
-```text
-  ❌ "- B2 · replace #### 2.1, 2.2 and 2.3 with one pointer paragraph"
-  ❌ "- B4 · `## Opening` says where this page sits"
-  ✅ "- B2 · §4.1, 4.2 and 4.3 collapse to one pointer paragraph"
-  ✅ "- B4 · the Opening section says where this page sits"
-```
-
-The same rule bans a `## ` line anywhere except a `## C<n> ·` division heading
-and the file's own trailing sections. The tab counts divisions by position, so
-a stray `## ` in a preamble became a phantom C1 and shifted every address below
-it by two (found 260818 by driving the parser, fixed in `live/outline.py` by
-matching `^## C\d+` and nothing else).
-
-**A bullet with NO mark is the normal case, not a defect** (JL 260817). Requiring a tag on every line made the plan unreadable and buried the few lines that actually owed something. A mark is the EXCEPTION: it is written only where that point needs evidence, and it sits at the END of the bullet, because that is where the card will hang on the real sentence.
-
-## ⚙️ Writer · nobody, including no model
-
-There is no author. The division tie is read from the material, two grammars deep, and **no model is called at render time** (JL 260816: "我不想每一次都靠一个 code 去做这件事" — I don't want to depend on a code run every time).
-
-```text
-① the A-grammar     `### A3` group and id `A3.1` already carry division 3.
-                    `P1` says page-wide and means it. Nothing to add.
-② the §N anchor     a loose checkbox aim, a State line, or a Files row may
-                    write `§2` to name division 2. A Files row may carry
-                    several. UNANCHORED IS LEGAL and means 🌐 page-wide.
-```
-
-`POST /_board/outline` exists only so the shell's `tab: {url, write}` contract holds; it writes nothing.
-
-## 📡 Surface · one parse, two lenses
-
-`GET /_board/outline?path=<board>&file=<page>` (`live/outline.py`), drawer `assets/js/10-drawer/07-plugin-outline.js`, sorted `07-` so it sits right after 📂 in the rail.
-
-```text
-🧭 By division    one card per `### N ·`, with its aims, ticks, and state receipts
-🚦 By progress    the same data sorted again, ⬜ before ✅ ON PURPOSE:
-                  opening this lens is asking what the page still owes
-🌐 page-wide      the card for everything unanchored — it doubles as the
-                  worklist for anchoring the page
-```
-
-Both lenses render server-side from one parse and toggle client-side with no second request. A bad anchor renders as a named ❌ rather than vanishing.
-
-## 🃏 The evidence column · what each division still owes
-
-✅ **Shipped 260817** (`live/outline.py`, `plan_card`). The plan card sits above the division cards and joins each bullet to what is on disk, so no page ever needs a sentence about a card's state again:
-
-```text
-kind          read from                              the row shows
-─────────────────────────────────────────────────────────────────────────────
-📚 citation   bibex/<stem>.bib                       key · in bibex/ or not
-📮 probe      probe/PP<NN>-<slug>/card.md            id · planned → commissioned
-              + whether proof/ holds files             → answered → read 🧑
-                                                      🚫 answered, proof/ empty
-🖼 display    display/<stem>-DisplayN-<slug>/         id · declared → rendered →
-              README.md + assets/ + preview.pdf      accepted, human tick only
-```
-
-A division owes a card when its prose cites that card's id. So the join is the CITATION, and it runs both ways, which is what makes the two failure modes visible at a glance:
-
-```text
-  🕳 OWED, NOTHING THERE   a division cites `Display2` and no unit folder exists
-                           ← the 260817 failure: the sentence WAS the deliverable
-  🎈 THERE, UNCITED        a card exists that no division names
-                           ← evidence nobody is using, or a citation that got lost
-```
-
-Both render as a named row, never as a blank. An empty cell is a status, never a blank, is the same rule the display and probe strips already carry.
-
-**The counts are computed independently, never inferred from each other**, exactly as the two strips do it: a folder existing is not a rendered unit, and a rendered unit is not an accepted one. The card header shows `3 owed · 2 landed · 1 accepted` and never collapses those into one number.
-
-## 🪪 The plan is SKIMMED, so the evidence never outweighs the sentence
-
-The plan is read to find out what a page will cover. Every pixel the evidence
-takes is a pixel the sentence does not get, and on 260817 the evidence won:
-`📚 Gray2021 in bibex/` rendered as a two-line rounded pill on its own column
-and pushed the bullet into half the pane (JL, with a screenshot: "你把这些
-outline 都给挤得不知道去哪儿了").
-
-**Four rules, and each one is a thing that went wrong:**
-
-```text
-① INLINE, never a column   chips live INSIDE the sentence's own span. As
-                           siblings of the row's flex they became columns,
-                           stole the text's width, then wrapped themselves.
-② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px
-                           padding. The 14px 999px-radius pill was 22px tall
-                           beside a 19px row.
-③ the note is a WORD       `in bibex/` → nothing (the colour says it resolves)
-                           `no unit declared yet` → `owed`
-                           `↩ PP04 serve this bullet · 0 of 1 answered`
-                              → `↩ PP04 0/1`
-④ never say it twice       a chip is `emoji · id · note`, so a note repeating
-                           the id printed `🎯 A4.2 → A4.2`; and the ↩ tag is
-                           SUPPRESSED for a card the row already names, since
-                           `📮 PP01 answered 1` `↩ PP01 ✓` is one fact twice.
-```
-
-🚫 **No emoji inside a tag.** At 10.5px a `⬜` or `📄` renders at full glyph size
-and doubles the tag's width; the tag's own dashed border and muted colour
-already say "not landed".
-
-**The ↩ tag earns its place in the case the row cannot cover**: the plan is
-frozen before the card exists, so the mark is usually BARE, and then the
-backlink is the only thing that names the card at all.
-
-**The three levels read apart** (JL 260819, four-preview pick): a division
-head is bold at the edge; a paragraph row carries its own `C<n>.P<m>` address
-plus a short accent tick in the left gutter; bullets are plain rows. All
-addresses share one left-aligned column, so every title starts at the same x.
-
-### The popover panel
-
-A chip in the line, a panel beside it holding the THING itself: the reference as printed, the card's own question, the unit's own claim. Native `<popover>`, no script, so deleting every `<script>` leaves the panel readable as body text. It is a marginal note, not a modal:
-
-```text
-                    was            now       measured in Chrome
-  ─────────────────────────────────────────────────────────────
-  🧮 probe card     512×131 px     339×120   PP01, the longest
-  🧮 probe card     512×109 px     339×101   PP03
-  📚 citation       367× 86 px     327× 64   Deyo2015
-  width             34em/14px      25em/12.5px
-```
-
-**A 📚 panel prints `Author et al.`, never the author list.** Six names is what made a citation panel twice a probe panel's height, and the key in the panel's own title bar already carries the first author. BibTeX's `---` prints as an EN dash rather than three raw hyphens.
-
-## ✂️ The bullet itself is CONCISE: a head, then its evidence (260819)
-
-The same skim argument reaches the bullet's own words. JL, on a bullet whose
-colon unpacked a whole vocabulary before its mark: "它的核心目的明显就是为了做
-一个图…你冒号后面的东西其实都有点喧宾夺主了…越 concise 越好，最好只有几个字说
-明你的要点，后面再加上后续的证据。"
-
-```text
-  one bullet = HEAD · hidden detail · mark
-
-  HEAD        a terse LABEL or a QUESTION, Capitalized, aim ≤ 10 words
-              ("Figure for Whole Workflow Loop" · "What is the number
-              of plans passing all four checks?") — JL 260819
-  hidden      continuation lines the surface FOLDS behind a click:
-   detail       Note: <one concise explanation>   authored at OUTLINE
-                Answered: <ids + numbers>         appended by the fold
-                Drawn: <what the figure shows>    appended by the fold
-                An Answered: line ends in `· recount` when its value
-                counts the RUN'S OWN artifacts (receipts, findings, a
-                pinned hash) and so drifts as phases append; DRAFT
-                re-reads ONLY these cards and trusts the rest as
-                written (JL 260820, after QPw00's DRAFT re-read all
-                14 folders to find 3 drifts, all self-referential)
-              every bullet carries one of these; a head a reader might
-              not parse owes its Note
-  mark        end-anchored, unchanged grammar, on the LAST line
-```
-
-**How the surface folds it (JL 260819: "点击之后能看到…简明扼要的解释…without
-'>'"):** the row shows only HEAD + chips and looks exactly like a plain row —
-no disclosure marker of any kind, hover is the affordance; clicking the row
-unfolds the detail as muted body text, the `Note:`/`More:` label stripped.
-Native details element, script-free, and the summary hard-resets every
-typography property because the board shell's own drawer styles cascade into
-the injected card (one folded bullet rendered as a section heading before the
-reset).
-
-**What the head may not carry**: anything that lives behind the bullet's own
-mark — the card's question, the unit's claim, a contract's rule. That detail
-is one popover away; restating it in the head makes the guest upstage the
-host (喧宾夺主) and the plan stops being skimmable. A head that needs more
-than one clause of unique detail is usually two points, which is an address
-decision, not a licence for a long line.
-
-**Plain, common words, in heads and Notes alike** (JL 260819, on a head reading
-`The control rung.`: "你这里用了一些非常奇怪的单词…不要用这样的词了"): the
-reader is a weak-English reader, so a rare word fails even when it is apt. A
-technical term survives only as the thing's real NAME (`iv-overid`,
-Callaway–Sant'Anna), defined at first use; metaphor vocabulary (`rung`) is
-rewritten to the plain thing it means (`SPEC`, `control set`, `step`).
-
-## 🧵 What it is for, and what it is NOT
-
-Two jobs, and they are small ones (JL 260817):
-
-```text
-  ① a person reads it fast and knows what this page will cover
-  ② it says which sentences still owe something, so nothing is
-     quietly dropped between the plan and the page
-```
-
-🚫 **It is not a controller.** DRAFT drafts every sentence anyway, REVISE revises anyway, CHECK checks anyway. Writing out which phase consumes which mark adds a second copy of the workflow and buys nothing: the marks say what is owed, and the phases do their own jobs.
-
-🔒 **Once approved, a version's PROMISE is never rewritten; the fold's appends are the one exception, and they add, never edit.** A bullet marked 🎯 aim stays 🎯 aim in an approved `v1`, because that is what was intended that day. The fold APPENDS `Answered:`/`Drawn:` detail (and the `📮 PP<NN>` id once a card serves a bullet) into bullets in place — into the working file while `approved:` is ⬜, or into `v<N+1>` after a tick, because a tick belongs to the version it ticked. What is actually on disk is read from the folders. A plan that rewrote its own heads and marks as work landed would always look finished, and the gap between what was promised and what got built would be invisible.
-
-## 🔗 The Evidence Bundle · a derived view, not another folder
-
-The 🧭 surface may show a compact **Evidence Bundle** for each Point. It joins
-the frozen address `C<n>.P<n>.B<n>` to the sentence scaffold and to every live
-resource that names that address:
-
-```text
-C3.P1.B4
-  ├─ sentence scaffold   realizes: C3.P1.B4
-  ├─ Probe card(s)       serves: C3.P1.B4
-  ├─ Bibex key(s)        cited by the point/sentence
-  ├─ proof/              owned by the Probe card
-  └─ Display unit(s)     serves: C3.P1.B4
-      └─ feedback        owner-held `read` / `accepted` / `verified` decision
-```
-
-This is a projection, not `<page>/evidence/`. Probe, Bibex, proof, and Display
-remain in their own plugin folders; the bundle recomputes their current state
-and never edits the approved plan. A human choice such as `selected: Display2`
-belongs on the owning Display unit, not in a copied bundle manifest.
-
-The full logical shape and status rules live in
-`ref/evidence-bundle.md`. The outline renderer may show only the compact form:
-`2 sentences · 2 probes · 1 citation · 1 display · feedback 2 · evidence-ready`.
+`POST /_board/outline` exists only so the shell's `tab: {url, write}` contract
+holds; it writes nothing.
 
 ## 📂 Files
 
-- `../../haipipe-board/live/outline.py`
-  The parse and both lenses, the GET route, and `plan_card`: the outline file reader and its join against probe/, display/ and bibex/, plus `_pstate`, which resolves a card's state word through the plugin's own ladder and keeps the three retired words readable.
-- `../../haipipe-board/checks/outline.py`
-  The standing check for the two promises above.
-- `ref/evidence-bundle.md`
-  The derived Point-to-sentence/evidence join and its status rules.
-- `../../haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
-  The drawer registration and the client-side lens toggle.
-- `../../../diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf12-outline/QPf12-outline.md`
-  The design page that ruled the anchor grammar and the two lenses.
-- `../../page-workflows/haipipe-page-outline/SKILL.md`
-  The PHASE whose deliverable this file is. DRAFT no longer owns the outline.
+- `ref/plan-grammar.md` · the plan file's grammar, type switch, marks, versions, teeth
+- `ref/item-table.md` · the Evidence Item table: typed identities, Run graph, derived status
+- `ref/record-shape.md` · the nine record kinds: ids, labels, writers, per-kind rules
+- `ref/specimen-section-plan.md` · the approved Section plan, frozen (MISQ Abstract v3)
+- `ref/evidence-bundle.md` · the broader derived per-bullet join; item states come from the item ladder
+- `ref/evidence/citations.md` · CITE authority and verification
+- `ref/evidence/values.md` · VALUE provenance
+- `ref/evidence/displays.md` · DISPLAY unit and acceptance
+- `ref/evidence/pagex.md` · legacy PageX migration note; no active binding field
+- `../../haipipe-board/live/outline.py` · the parse, the lenses, `plan_card`, `_records`, the chips
+- `../../haipipe-board/live/shell.py` · the tab strip; 🧭 ranked first and opened by default
+- `../../haipipe-board/src/page_question.py` · the compact five-column Page Outline projection
+- `../../haipipe-board/checks/outline.py` · the standing check over every board's plans
+- `../../haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
+- `../../haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators
+- `../../page-workflows/haipipe-page-outline/SKILL.md` · the phase whose deliverable this folder is
+- `../haipipe-plugin-skill/SKILL.md` · the nested ranked store embedded as Context Workspace → Records → Skills
+- `../../../diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf12-outline/QPf12-outline.md` · the design page and its rulings

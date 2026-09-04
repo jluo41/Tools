@@ -1,19 +1,23 @@
 ---
 name: haipipe-task-for-display
-description: "display-input task-folder specialist: scaffolds {NN}_<name>/ task-folders in the display task-group (default C-series) that produce a verified display-ready summary CSV plus provenance -> results/<run>/{source_data.csv, provenance.json}. The Paper Display stage snapshots that input into a display unit; this task does not own the final paper asset. Called by /haipipe-task when task-type=display."
-argument-hint: "[project_id] [group] [task-name]"
+description: >-
+  display-input job specialist: scaffolds {NN}_<name>/ folders in the
+  display block (default C-series) producing a verified display-ready
+  summary CSV plus provenance. The Paper Display stage snapshots that input;
+  this task does not own the final paper asset. Called by /haipipe-task when
+  task-type=display.
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-27"
-  summary: "display-input task-folder build specialist: task produces verified summary data; Display owns paper-facing rendering."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-display
 ====================================
 
-Scaffolds a **display-input task-folder** — the verified summary data a paper figure or table needs.
+Scaffolds a **display-input job** — the verified summary data a paper figure or table needs.
 It consumes `results/<run>/` artifacts from upstream tasks and produces a small,
 display-ready `source_data.csv` plus `provenance.json`.
 The Paper Display stage materializes that input into `displays/displayNN-<slug>/intake/` and
@@ -35,7 +39,7 @@ The snapshot manifest repeats the task holder and artifact hash so the paper can
 when the task folder is remote or later changes.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
-Always end with the structured return block (status / task_folder / run_name / files).
+Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).
 
 
 
@@ -43,7 +47,7 @@ What this scaffolds
 -------------------
 
 ```
-tasks/C{NN}_<group_name>/                    ← C-series group (display)
+tasks/C{NN}_<block_name>/                    ← C-series group (display)
 └── {NN}_<figure_or_table_name>/
     ├── {NN}_<name>.py
     ├── configs/
@@ -73,7 +77,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.
@@ -97,7 +101,7 @@ next:      suggested next command (usually bash runs/<run>.sh)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

@@ -182,33 +182,6 @@ A second opinion on an unchanged version is not a route; it is the same verdict 
 
 ## Aims
 
-### A1 · 👁 CHECK judges and may not repair
-- A1.1 · No receipt on this board shows the same actor as producer and judge of one version.
-  Done when a receipt audit over `_runs/page/` finds no shared actor identity across the two roles.
-- A1.2 · Every version mismatch on this board routed to HOLD rather than a re-run.
-  Done when every receipt whose `checked_version` disagrees with its version fields carries `route: HOLD`.
-
-### A2 · 📦 Judge the BUILT artifact, not only the markdown
-- A2.1 · No page on this board passes with a declared count above its rendered count.
-  Done when `cli/check.py` reports zero `display-declared-not-rendered` findings.
-- A2.2 · Every finding names the first missing step rather than the whole walk.
-  Done when every `display-declared-not-rendered` message names one of intake, recipe, asset, or preview.
-
-### A3 · 🧩 Put each finding where it applies
-- A3.1 · No CHECK pass on this board reported only into chat.
-  Done when every finding from a dispatched CHECK exists at a page location as well as in its receipt.
-
-### A4 · 🚪 Human gates belong to the Page Type, and may never be invented or skipped
-- A4.1 · No machine has claimed a person's approval on this board.
-  Done when every `human_gate.status: passed` in a receipt names a durable tick that exists on disk.
-- A4.2 · The accept-bias rule is implemented rather than only stated.
-  Done when a gate is presented only after `mechanical_errors` for that page is zero.
-
-### A5 · 🔀 CHECK is not necessarily last
-- A5.1 · No receipt on this board routes CHECK to CHECK.
-  Done when a receipt audit finds no CHECK row whose route is CHECK.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether WARNINGS may block CLOSE, or only errors may
       📍 `Part` §2, judge the built artifact
@@ -218,23 +191,45 @@ A second opinion on an unchanged version is not a route; it is the same verdict 
       🛑 `Blocks` A2.1, and item ⑤ of the 260805 run's own defect list
       🤖 `If nobody answers` A takes effect, because it keeps the existing gate and adds only a reading obligation
 
+
 ### A1 · 👁 CHECK judges and may not repair
-- ✅ A1.1 · Met. Read from `260805-0216-QB8e`: `role: producer` is `haipipe-board-creator-agent#r1s2` and `#r1s4`; `role: judge` is `haipipe-board-reviewer-agent#r1s1`, `#r1s3`, `#r1s5`. No shared actor identity.
-- ✅ A1.2 · Met vacuously. `QPw00r-receipts` is live and the audit surface is `cli/pageflow.py` with `src/page_lifecycle.py`; the one live run carries no version mismatch, so no receipt needed the HOLD route.
+- ✅ A1.1 · No receipt on this board shows the same actor as producer and judge of one version.
+  Done when a receipt audit over `_runs/page/` finds no shared actor identity across the two roles.
+  **Now:** Met. Read from `260805-0216-QB8e`: `role: producer` is `haipipe-board-creator-agent#r1s2` and `#r1s4`; `role: judge` is `haipipe-board-reviewer-agent#r1s1`, `#r1s3`, `#r1s5`. No shared actor identity.
+- ✅ A1.2 · Every version mismatch on this board routed to HOLD rather than a re-run.
+  Done when every receipt whose `checked_version` disagrees with its version fields carries `route: HOLD`.
+  **Now:** Met vacuously. `QPw00r-receipts` is live and the audit surface is `cli/pageflow.py` with `src/page_lifecycle.py`; the one live run carries no version mismatch, so no receipt needed the HOLD route.
+
 
 ### A2 · 📦 Judge the BUILT artifact, not only the markdown
-- ⬜ A2.1 · Not met. `cli/check.py` reports one `display-declared-not-rendered` on `QPf6-Display1-latex-proof` today.
-- ✅ A2.2 · Met. The finding names the first missing step, and it currently reports `① INTAKE`.
+- ⬜ A2.1 · No page on this board passes with a declared count above its rendered count.
+  Done when `cli/check.py` reports zero `display-declared-not-rendered` findings.
+  **Now:** Not met. `cli/check.py` reports one `display-declared-not-rendered` on `QPf6-Display1-latex-proof` today.
+- ✅ A2.2 · Every finding names the first missing step rather than the whole walk.
+  Done when every `display-declared-not-rendered` message names one of intake, recipe, asset, or preview.
+  **Now:** Met. The finding names the first missing step, and it currently reports `① INTAKE`.
+
 
 ### A3 · 🧩 Put each finding where it applies
-- ⬜ A3.1 · Not measurable yet, because the semantic pass has never been dispatched from this board.
+- ⬜ A3.1 · No CHECK pass on this board reported only into chat.
+  Done when every finding from a dispatched CHECK exists at a page location as well as in its receipt.
+  **Now:** Not measurable yet, because the semantic pass has never been dispatched from this board.
+
 
 ### A4 · 🚪 Human gates belong to the Page Type, and may never be invented or skipped
-- ✅ A4.1 · Met so far. No receipt on this board carries a `human_gate.status: passed`, so none has claimed one falsely.
-- ⬜ A4.2 · Not started. The accept-bias rule was ruled on 260818 and nothing presents a gate yet.
+- ✅ A4.1 · No machine has claimed a person's approval on this board.
+  Done when every `human_gate.status: passed` in a receipt names a durable tick that exists on disk.
+  **Now:** Met so far. No receipt on this board carries a `human_gate.status: passed`, so none has claimed one falsely.
+- ⬜ A4.2 · The accept-bias rule is implemented rather than only stated.
+  Done when a gate is presented only after `mechanical_errors` for that page is zero.
+  **Now:** Not started. The accept-bias rule was ruled on 260818 and nothing presents a gate yet.
+
 
 ### A5 · 🔀 CHECK is not necessarily last
-- ✅ A5.1 · Met. `QPw00-Display2-route-relation` derives the no-CHECK-to-CHECK law and no receipt violates it.
+- ✅ A5.1 · No receipt on this board routes CHECK to CHECK.
+  Done when a receipt audit finds no CHECK row whose route is CHECK.
+  **Now:** Met. `QPw00-Display2-route-relation` derives the no-CHECK-to-CHECK law and no receipt violates it.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -285,3 +280,5 @@ A second opinion on an unchanged version is not a route; it is the same verdict 
 
 ## Log
 - 260818 · [DRAFT-CC] page created, completing the six phase pages of the loop. Written from `haipipe-page-check`. Five divisions: the judge-may-not-repair separation with its two trust rules, the built-artifact rule with the three independent counts, the seeding of findings at their location, the Page-Type-owned human gate including JL's 260818 accept-bias ruling, and the fact that CHECK is not necessarily last. The eight computed findings are named with their routes in the Diagram and the current live counts are written into States rather than described. One thing the 260805 live RUN raised and nobody has ruled became the Decision Now row: warnings do not gate CLOSE, which leaves the semantic judge as the only defence on a WARN-only page, and this board carries 37 warns today.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

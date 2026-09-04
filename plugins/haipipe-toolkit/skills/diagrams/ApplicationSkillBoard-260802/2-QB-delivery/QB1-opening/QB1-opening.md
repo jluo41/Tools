@@ -200,36 +200,6 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 
 ## Aims
 
-### A1 · 🧾 One legacy opening concern, one Brief Page
-- A1.1 · Every downstream stage can find the three answers from this page alone.
-  **Done when:** each answer names its exact artifact path here, and all three paths resolve on a pinned intervention without editing this page.
-- A1.2 · Each answer's refuter is stated beside its promise.
-  **Done when:** `§1.2` names one concrete refutation per answer, and the unruled one carries a Decision Now row instead of a guess.
-
-### A2 · 🌱 The seed wager
-- A2.1 · The seed's venue freedom is preserved in this page's own wording.
-  **Done when:** this page never treats the fixture's sms hunch as a pin, and a re-pin leaves `0-seed.md` unedited.
-- A2.2 · The seed's probe budget is bounded to feasibility.
-  **Done when:** `§2.3` names the two probe shapes and the `[FORWARD -> CLAIMS]` pointer, and no ladder evidence work is described as the seed's.
-
-### A3 · 📌 The venue pin
-- A3.1 · The pin's three STATUS rows and their readers are stated.
-  **Done when:** `§3.1` lists `venue`, `stages_skipped`, and `claims_settlement` and names the consumers that read them.
-- A3.2 · Channel-HOW stays distinct from content-WHAT.
-  **Done when:** Artifact Principles and 1d advice appear as two contracts with two owners, and no advice content is restated on this page.
-
-### A4 · 📣 The pitch
-- A4.1 · The [primary] designation is placed on the pitch, not the ledger.
-  **Done when:** `§4.3` states the designation's home and that a re-pin re-runs it.
-- A4.2 · The anchor rule is stated as the pitch's own done-check.
-  **Done when:** `§4.2` states that every theory-of-change link cites an `A<n>` or `C<n>`, matching the pitch skill's definition of done.
-
-### P · 🏁 Page-level
-- P1 · Refutation of the wager by the ladder has a ruled consequence.
-  **Done when:** JL answers the Decision Now row and the ruling lands in `## Law` with the rejected option and the date.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 If the ladder shows the seed's wager is wrong, what closes: the seed or the intervention?
       📍 `Part` §1.2, beside the three refuters whose consequences are already ruled
@@ -239,24 +209,48 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
       🛑 `Blocks` nothing today; the fixture has not run rung 1a
       🤖 `If nobody answers` A takes effect
 
+
 ### A1 · 🧾 One legacy opening concern, one Brief Page
-- 🔨 A1.1 · Written into `§1.1` and the Diagram; the fixture holds only `0-seed.md` today, so two of the three homes cannot be opened yet.
-- 🔨 A1.2 · `§1.2` names a refuter per answer; the wager's own refutation waits on the Decision Now row above.
+- 🔨 A1.1 · Every downstream stage can find the three answers from this page alone.
+  **Done when:** each answer names its exact artifact path here, and all three paths resolve on a pinned intervention without editing this page.
+  **Now:** Written into `§1.1` and the Diagram; the fixture holds only `0-seed.md` today, so two of the three homes cannot be opened yet.
+- 🔨 A1.2 · Each answer's refuter is stated beside its promise.
+  **Done when:** `§1.2` names one concrete refutation per answer, and the unruled one carries a Decision Now row instead of a guess.
+  **Now:** `§1.2` names a refuter per answer; the wager's own refutation waits on the Decision Now row above.
+
 
 ### A2 · 🌱 The seed wager
-- 🔨 A2.1 · Stated in `§2.2` from the seed skill's own rule and now ruled in `## Law` rather than only derived; no re-pin has happened on the fixture, so survival is untested.
-- ✅ A2.2 · `§2.3` names both probe shapes and the pointer; the fixture's `_LOG_0-seed.md` carries three `[FORWARD -> CLAIMS]` pointers and no internal-data probe, read 260802.
+- 🔨 A2.1 · The seed's venue freedom is preserved in this page's own wording.
+  **Done when:** this page never treats the fixture's sms hunch as a pin, and a re-pin leaves `0-seed.md` unedited.
+  **Now:** Stated in `§2.2` from the seed skill's own rule and now ruled in `## Law` rather than only derived; no re-pin has happened on the fixture, so survival is untested.
+- ✅ A2.2 · The seed's probe budget is bounded to feasibility.
+  **Done when:** `§2.3` names the two probe shapes and the `[FORWARD -> CLAIMS]` pointer, and no ladder evidence work is described as the seed's.
+  **Now:** `§2.3` names both probe shapes and the pointer; the fixture's `_LOG_0-seed.md` carries three `[FORWARD -> CLAIMS]` pointers and no internal-data probe, read 260802.
+
 
 ### A3 · 📌 The venue pin
-- 🔨 A3.1 · Stated in `§3.1` from the venue skill; the fixture's `STATUS.md` confirms the rows are absent until pin time, so no live example of the three rows exists on this board yet.
-- 🔨 A3.2 · The two-contract split is stated in `§3.2`; no reviewer has checked this page for leaked advice content.
+- 🔨 A3.1 · The pin's three STATUS rows and their readers are stated.
+  **Done when:** `§3.1` lists `venue`, `stages_skipped`, and `claims_settlement` and names the consumers that read them.
+  **Now:** Stated in `§3.1` from the venue skill; the fixture's `STATUS.md` confirms the rows are absent until pin time, so no live example of the three rows exists on this board yet.
+- 🔨 A3.2 · Channel-HOW stays distinct from content-WHAT.
+  **Done when:** Artifact Principles and 1d advice appear as two contracts with two owners, and no advice content is restated on this page.
+  **Now:** The two-contract split is stated in `§3.2`; no reviewer has checked this page for leaked advice content.
+
 
 ### A4 · 📣 The pitch
-- 🔨 A4.1 · Stated in `§4.3`; the fixture has no `2-pitch/` folder yet, so the designation has no live example to check against.
-- 🔨 A4.2 · Stated in `§4.2` from the pitch skill's definition of done.
+- 🔨 A4.1 · The [primary] designation is placed on the pitch, not the ledger.
+  **Done when:** `§4.3` states the designation's home and that a re-pin re-runs it.
+  **Now:** Stated in `§4.3`; the fixture has no `2-pitch/` folder yet, so the designation has no live example to check against.
+- 🔨 A4.2 · The anchor rule is stated as the pitch's own done-check.
+  **Done when:** `§4.2` states that every theory-of-change link cites an `A<n>` or `C<n>`, matching the pitch skill's definition of done.
+  **Now:** Stated in `§4.2` from the pitch skill's definition of done.
+
 
 ### P · 🏁 Page-level
-- 🧠 P1 · Waiting on JL; the Decision Now row above carries the options and the default.
+- 🧠 P1 · Refutation of the wager by the ladder has a ruled consequence.
+  **Done when:** JL answers the Decision Now row and the ruling lands in `## Law` with the rejected option and the date.
+  **Now:** Waiting on JL; the Decision Now row above carries the options and the default.
+
 
 ## Files
 
@@ -296,3 +290,5 @@ The designation re-runs on every re-pin, which is why it lives in the pitch and 
 260817 · Renamed the formal Page Type to Brief, preserved `QB1-opening` as a legacy board id, and mapped Seed/Venue/Pitch into the Brief contract.
 260802 · Page created from the assignment packet: seed, pin, and pitch bound as one Opening concern mirroring QB1@paper, and the wager-refutation fork opened in Decision Now.
 260802 · The retarget rule, a re-pin reopens the pitch and leaves the seed, mirrored from QB1@paper into `## Law` with its rejected options; `§3.3` anchored to it and A2.1's State updated, because `A2.1`'s done-when rested on a ruling this board had not recorded. Provenance of the 260729 entry corrected to the paper board's QBv group note, and `§1.2`'s pin refuter reworded from refused to refuted.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

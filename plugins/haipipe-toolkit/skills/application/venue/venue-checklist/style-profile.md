@@ -18,7 +18,7 @@ Before Your Next Visit
 
 **Clinician panel review checklist:**
 ```
-Weekly Panel Review (C3, C5)
+Weekly Panel Review
 ──────────────────────────────
 ☐ Review 4 high-risk refill patients (Dashboard → At Risk)
 ☐ Send refill reminders to patients at T-48h
@@ -33,7 +33,7 @@ Weekly Panel Review (C3, C5)
 1. Each item: action verb + specific object + measurable completion.
 2. 5-12 items. Fewer = too sparse. More = overwhelming.
 3. Order: prep → action → verify → confirm (if sequential).
-4. Each item traces to one K/W entry in claims.
+4. Each item maps through the released card grant.
 
 
 ## Self-review checklist
@@ -43,5 +43,5 @@ Weekly Panel Review (C3, C5)
 [ ] Each item starts with action verb
 [ ] Each item has clear done/not-done state
 [ ] Order is logical (if sequential)
-[ ] adopted_A / declined_A in frontmatter
+[ ] Card id, grant, and exact render version resolve in the Design Folder
 ```

@@ -56,27 +56,24 @@ Inside a board, a group folder is `<NN>-<TOKEN>-<slug>`: `0-M-meta/`, `1-I-insig
 ## Aims
 
 ### A1 · Contract
-- A1.1 · A folder name says which data or which topic before anyone opens it.
+- ✅ A1.1 · A folder name says which data or which topic before anyone opens it.
   **Done when:** every runtime board is `<Subject>-<Kind>` and the kind is greppable.
+  **Now:** Fixed in Application 0.10.0 and stated in the family README.
+
 
 #### P · Cardinality
-- P1 · Nothing in the naming caps the number of boards.
+- ✅ P1 · Nothing in the naming caps the number of boards.
   **Done when:** the subjects are independent and any DesignBoard may bind any InsightBoard.
+  **Now:** Stated in the public door; the fixture uses one of each and neither name implies the other.
+
 
 #### P2 · Buildability
-- P2.1 · The documented names are the ones that actually build.
+- ✅ P2.1 · The documented names are the ones that actually build.
   **Done when:** a worked specimen using these names passes build and check.
+  **Now:** `_fixture/SmsClickR4-InsightBoard` and `_fixture/YoungMaleRefill-DesignBoard` each build 2 pages at 0 error, 0 warn.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Fixed in Application 0.10.0 and stated in the family README.
-
-#### P · Cardinality
-- ✅ P1 · Stated in the public door; the fixture uses one of each and neither name implies the other.
-
-#### P2 · Buildability
-- ✅ P2.1 · `_fixture/SmsClickR4-InsightBoard` and `_fixture/YoungMaleRefill-DesignBoard` each build 2 pages at 0 error, 0 warn.
+## Discussion
 
 ## Files
 
@@ -95,3 +92,5 @@ A runtime board's folder name states its subject, and its group folders state th
 ## Log
 
 260820 · Ruled after the two-board split (JL: "the InsightBoard and DesignBoard should have some name, like what is the data, and what is the topic of the design"). Group-token folders and the engine's page-id families were added when the first runtime board failed to build.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

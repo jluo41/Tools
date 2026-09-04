@@ -83,14 +83,14 @@ been checked.
 - [ ] 🧪 Rename one sister and confirm it fails loudly
       The acceptance test. Today the expected result is a silent failure, which is what this face is about.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The convention is documented in three places, `hierarchy.md`, `task-structure.md` and
 `authoring-conventions.md`, and implemented in `run-sh-template.sh`, which derives the config path
 from the script's own filename.
-
 Enforcement is unverified. `fn/audit.md` audits against the four-sister contract, and whether that
 includes the token set is the open question above.
-
 - 260726 CC · 🧷 Named the pairing as the data structure
       The refs describe the four sisters as a convention. Calling it the data structure is what makes the fragility legible: there is no second place where the relationship is written, so an inconsistency is not a mismatch with a record, it is simply the truth changing.
 
@@ -104,3 +104,5 @@ includes the token set is the open question above.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

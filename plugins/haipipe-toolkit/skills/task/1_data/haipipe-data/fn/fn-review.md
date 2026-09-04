@@ -83,7 +83,7 @@ Present this message:
   Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
     Any builder:   examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/<builder>.py
 
-  Pipeline configs (task-folder configs/)
+  Pipeline configs (job configs/)
     Any config:    <task>/configs/<name>.yaml
   ---------------------------------------------------------------
 

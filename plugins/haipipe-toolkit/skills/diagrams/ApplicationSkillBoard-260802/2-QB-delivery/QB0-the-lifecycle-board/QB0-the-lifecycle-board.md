@@ -261,24 +261,6 @@ The gate ledger is a row inside `STATUS.md`, listed here only so a reader who lo
 
 ## Aims
 
-### A1 · 🧭 The rules that hold across every group
-- A1.1 · The approve-or-reject test is stated and is the only thing deciding page against row.
-  **Done when:** `§1.1` gives the test and at least one worked case each way, and no group division re-argues it.
-- A1.2 · The filename grammar names its parts and says where family and group come apart.
-  **Done when:** `§1.2` names the parts and the figure marks every page whose family is not its group's own.
-- A1.3 · The control page and the number-or-letter choice are stated.
-  **Done when:** `§1.3` defines `Dash` and JL rules number or letter for the accumulating families.
-
-### P · 🏁 Page-level
-- P1 · Every group the figure draws has exactly one Content division, in figure order, answering the same four questions.
-  **Done when:** the group count in the figure equals the division count after `§1`, and every such division opens with the pages, unit, control, today block.
-- P2 · Built, skipped and proposed are accounted per group rather than by one blanket line.
-  **Done when:** each group division's `📍 today` row names what exists, and the figure marks `✅` and `⏭` where they apply.
-- P3 · The layout reads as the whole intervention board in one view, and nothing a real board carries is unlisted.
-  **Done when:** a reader can count the pages of a finished intervention off the figure alone.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Adopt the per-unit page model for the accumulating rungs?
       📍 `Part` 1.1 · A unit earns a page when it can be approved while its neighbour is rejected
@@ -309,15 +291,30 @@ The gate ledger is a row inside `STATUS.md`, listed here only so a reader who lo
       🛑 `Blocks` whether `01_sms_young_male` stays segment-scoped (a QA1 folder-granularity question)
       🤖 `If nobody answers` one dataset, segment branches at S-Claims
 
+
 ### A1 · 🧭 The rules that hold across every group
-- 🔨 A1.1 · Drafted; the test is stated in `§1.1` with the claim and segment cases, and the group divisions cite it rather than re-argue it.
-- 🔨 A1.2 · Drafted; the grammar is stated and the figure marks the two `←` lines, pending the stem-rule ruling.
-- 🧠 A1.3 · Waiting on JL; `Dash` is defined and the number-or-letter choice is a Decision Now row.
+- 🔨 A1.1 · The approve-or-reject test is stated and is the only thing deciding page against row.
+  **Done when:** `§1.1` gives the test and at least one worked case each way, and no group division re-argues it.
+  **Now:** Drafted; the test is stated in `§1.1` with the claim and segment cases, and the group divisions cite it rather than re-argue it.
+- 🔨 A1.2 · The filename grammar names its parts and says where family and group come apart.
+  **Done when:** `§1.2` names the parts and the figure marks every page whose family is not its group's own.
+  **Now:** Drafted; the grammar is stated and the figure marks the two `←` lines, pending the stem-rule ruling.
+- 🧠 A1.3 · The control page and the number-or-letter choice are stated.
+  **Done when:** `§1.3` defines `Dash` and JL rules number or letter for the accumulating families.
+  **Now:** Waiting on JL; `Dash` is defined and the number-or-letter choice is a Decision Now row.
+
 
 ### P · 🏁 Page-level
-- ✅ P1 · Met; the figure draws ten groups and Content carries ten divisions after `§1`, each opening with the same four-row block.
-- ✅ P2 · Met; every group division names what exists today, and the figure marks `S-Seed-0` built and the Display group skipped for the sms fixture.
-- 🔨 P3 · Active; the counts for Opening, Description, Deploy and Display are read off QB1, QB2, QB6 and QB8, while Themes, Claims, Advice and Artifact stay `<placeholder>` because their counts depend on a round that has not run.
+- ✅ P1 · Every group the figure draws has exactly one Content division, in figure order, answering the same four questions.
+  **Done when:** the group count in the figure equals the division count after `§1`, and every such division opens with the pages, unit, control, today block.
+  **Now:** Met; the figure draws ten groups and Content carries ten divisions after `§1`, each opening with the same four-row block.
+- ✅ P2 · Built, skipped and proposed are accounted per group rather than by one blanket line.
+  **Done when:** each group division's `📍 today` row names what exists, and the figure marks `✅` and `⏭` where they apply.
+  **Now:** Met; every group division names what exists today, and the figure marks `S-Seed-0` built and the Display group skipped for the sms fixture.
+- 🔨 P3 · The layout reads as the whole intervention board in one view, and nothing a real board carries is unlisted.
+  **Done when:** a reader can count the pages of a finished intervention off the figure alone.
+  **Now:** Active; the counts for Opening, Description, Deploy and Display are read off QB1, QB2, QB6 and QB8, while Themes, Claims, Advice and Artifact stay `<placeholder>` because their counts depend on a round that has not run.
+
 
 ## Files
 
@@ -366,3 +363,5 @@ The gate ledger is a row inside `STATUS.md`, listed here only so a reader who lo
 260802 · QB0 reproposed as a per-unit layout: each rung splits into one page per unit above a Dash control, following the paper board's QB0; drawn against the fixture, which carries only S-Seed-0 so the rest is proposed.
 260802 · JL ruled the rung S-names S-Description, S-Themes, S-Claims, S-Advice (dropping S-Data, S-Topics); recorded in `## Law`.
 260802 · QB0 created: the S-page spine, the naming map, and the Q-concern versus S-stage duality.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

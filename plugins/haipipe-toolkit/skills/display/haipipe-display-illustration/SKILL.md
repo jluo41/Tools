@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__co
 metadata:
   version: "0.2.2"
   last_updated: "2026-08-05"
-  summary: "AI-illustration renderer that uses a Display Intake for approved narrative context and facts."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

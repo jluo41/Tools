@@ -1,7 +1,7 @@
 """🪜 Page runs · one page's lifecycle receipts, served as JSON.
 
 WHAT THIS ANSWERS: the 📄 Page phases stepper (65-plugin-pageflow.js) has to
-say where ONE page stands in DRAFT/EVIDENCE/REVISE/CHECK. That truth is not in
+say where ONE Page stands in CONTEXT/OUTLINE/EVIDENCE/CONTENT/CHECK. That truth is not in
 the rendered page: the run contract (haipipe-page-workflow) writes it to
 `<board>/_runs/page/<page-id>/<run-id>.json`, one receipt trail per RUN. So
 the stepper asks this route, and this route reads those files and nothing
@@ -14,7 +14,7 @@ run until someone rebuilt the board, which reads as "the run never happened".
 
 NO RECEIPTS IS AN ANSWER, NOT AN ERROR: most pages have never been RUN. The
 route returns an empty list and the surface states the contract's own entry
-rule (an existing page starts at CHECK, a new one at DRAFT).
+rule (an existing Page starts at CHECK, a new one at CONTEXT).
 
 Matching is by the receipt's OWN `page` field, basename against basename,
 never by directory name: the `<page-id>` folder is a filing convention the

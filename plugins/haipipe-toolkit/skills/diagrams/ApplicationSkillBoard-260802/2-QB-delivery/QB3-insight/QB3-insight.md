@@ -159,30 +159,6 @@ The Decision Now row in States puts that choice, 1b exit or 1c intake, in front 
 
 ## Aims
 
-### A1 · 📜 The delivery contract
-- A1.1 · A consumer can read this rung's delivery off this page alone.
-  **Done when:** the contract table's Consumes, Projects to, and Gate rows each trace to a sentence in the shipping `haipipe-application-themes` SKILL.md, and none contradicts it.
-
-### A2 · 🧩 Grounded, or parked
-- A2.1 · The grounding law holds on the fixture intervention.
-  **Done when:** `_fixture/0-lifecycle/1b-themes/1b-themes.md` exists with every T citing at least one resolving D id or source, and every 1a D id consumed or parked with a why.
-
-### A3 · 🔍 The sweep and the reservoir
-- A3.1 · The counter-hunt leaves a record every round.
-  **Done when:** the fixture's first 1b round records either counter-hunt themes or an empty counter-hunt entry in Parked.
-- A3.2 · Parked is re-mined, not write-only.
-  **Done when:** a fixture DRAFT line in `_LOG_1b-themes.md` shows last round's Parked entries re-read against new D ids.
-
-### A4 · 🚦 Promotion
-- A4.1 · The refute-capability test has one enforcement point.
-  **Done when:** JL has answered the Decision Now row, the ruling is recorded in this page's Law, and the enforcing skill's CHECK list names the test.
-
-### P · 🏁 Page-level
-- P1 · The D, I, K boundary reads clean across the ladder pages.
-  **Done when:** no claim-status word attaches to a T id on this page, and reading QB2, this page, and QB4 in order places data anchors, grounding, and adjudication on exactly one page each.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Where does the refute-capability test bite: 1b exit or 1c intake?
       📍 `Part 4` the promotion test it settles
@@ -192,21 +168,39 @@ The Decision Now row in States puts that choice, 1b exit or 1c intake, in front 
       🛑 `Blocks` A4.1, and nothing else; the fixture can run under either reading
       🤖 `If nobody answers` A, the 1c-intake reading, because it matches the shipping lens table
 
+
 ### A1 · 📜 The delivery contract
-- 🔨 A1.1 · The table is drafted from the shipping SKILL.md (v0.2.7) and the family README; the row-by-row trace has not run as its own pass apart from the drafting.
+- 🔨 A1.1 · A consumer can read this rung's delivery off this page alone.
+  **Done when:** the contract table's Consumes, Projects to, and Gate rows each trace to a sentence in the shipping `haipipe-application-themes` SKILL.md, and none contradicts it.
+  **Now:** The table is drafted from the shipping SKILL.md (v0.2.7) and the family README; the row-by-row trace has not run as its own pass apart from the drafting.
+
 
 ### A2 · 🧩 Grounded, or parked
-- ⬜ A2.1 · Not started; the fixture's `0-lifecycle/1b-themes/` holds only a `.gitkeep` today, so there is no artifact to verify against.
+- ⬜ A2.1 · The grounding law holds on the fixture intervention.
+  **Done when:** `_fixture/0-lifecycle/1b-themes/1b-themes.md` exists with every T citing at least one resolving D id or source, and every 1a D id consumed or parked with a why.
+  **Now:** Not started; the fixture's `0-lifecycle/1b-themes/` holds only a `.gitkeep` today, so there is no artifact to verify against.
+
 
 ### A3 · 🔍 The sweep and the reservoir
-- ⬜ A3.1 · Not started; waits on the fixture's first 1b round.
-- ⬜ A3.2 · Not started; there is no prior Parked reservoir to re-mine until a first round banks one.
+- ⬜ A3.1 · The counter-hunt leaves a record every round.
+  **Done when:** the fixture's first 1b round records either counter-hunt themes or an empty counter-hunt entry in Parked.
+  **Now:** Not started; waits on the fixture's first 1b round.
+- ⬜ A3.2 · Parked is re-mined, not write-only.
+  **Done when:** a fixture DRAFT line in `_LOG_1b-themes.md` shows last round's Parked entries re-read against new D ids.
+  **Now:** Not started; there is no prior Parked reservoir to re-mine until a first round banks one.
+
 
 ### A4 · 🚦 Promotion
-- 🧠 A4.1 · Waiting on JL; the Decision Now row above carries the options.
+- 🧠 A4.1 · The refute-capability test has one enforcement point.
+  **Done when:** JL has answered the Decision Now row, the ruling is recorded in this page's Law, and the enforcing skill's CHECK list names the test.
+  **Now:** Waiting on JL; the Decision Now row above carries the options.
+
 
 ### P · 🏁 Page-level
-- 🧠 P1 · This page keeps status vocabulary away from T ids by rule; the cross-page read waits until QB2 and QB4 are readable on this board.
+- 🧠 P1 · The D, I, K boundary reads clean across the ladder pages.
+  **Done when:** no claim-status word attaches to a T id on this page, and reading QB2, this page, and QB4 in order places data anchors, grounding, and adjudication on exactly one page each.
+  **Now:** This page keeps status vocabulary away from T ids by rule; the cross-page read waits until QB2 and QB4 are readable on this board.
+
 
 ## Files
 
@@ -231,3 +225,5 @@ The Decision Now row in States puts that choice, 1b exit or 1c intake, in front 
 ## Log
 
 260802 · Page opened: the Insight rung stated as a delivery concern from the shipping 1b skill (v0.2.7) and the family README, with the grounding law, the lens sweep, the reservoir, and one open promotion ruling for JL.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

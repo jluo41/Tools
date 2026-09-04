@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.2.1"
   last_updated: "2026-07-08"
-  summary: "Input2SrcFn specialist — design and review of the wire-payload-to-record function in an Endpoint_Set (deserializes JSON request into a ProcessedDF row)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

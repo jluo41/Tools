@@ -15,7 +15,7 @@ Import, never copy:
     from taxonomy import classify_shape, classify_label, GRADEABLE
 
 This file moved here from
-`examples/ProjA-CGM-Raw2AIData/tasks/AY1_foodrec_v1/00_benchmark/shapes.py`
+`examples/Proj1-CGM-RawData/tasks/AY1_foodrec_v1/00_benchmark/shapes.py`
 on 260822, unchanged apart from this paragraph. It lives beside the resolver
 now because the taxonomy is a property of the NOUN, not of one project's task:
 `_FoodInfo/6-benchmark/code` is a symlink to this directory, and the old path

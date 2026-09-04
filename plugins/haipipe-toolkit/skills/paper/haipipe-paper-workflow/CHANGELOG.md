@@ -1,3 +1,54 @@
+## 0.7.4 · 260904
+
+- Name the current Page loop CONTEXT through CHECK.
+- Express the Roadmap dispatch/settle handoff through typed Evidence Items,
+  Supporting/local Runs, and accepted local Results instead of an active probe
+  lane.
+
+## 0.7.3 · 260831
+- Replace ASCII angle-bracket arrows in the discovery description with Unicode
+  journey arrows so the package passes skill metadata validation.
+
+## 0.7.2 · 260831
+- One letter per B group (JL 260831 "Ba to be Main, Bb to be Appendix, Bc to be Round"): first desk Ba-<desk>-Main · Bb-<desk>-Appendix · Bc-<desk>-Round, a second desk continues at Bd; shared-letter (0.4.x) and combined-group layouts grandfathered. Live: Ba-MISQ-Main/Bb-MISQ-Appendix/Bc-MISQ-Round, Ba-JAMA-IM-Main/Bb-JAMA-IM-Appendix.
+
+## 0.7.1 · 260831
+- Desk layer split three ways (JL 260831 "I want to make Ba-misq into three page groups"): B<x>-<desk>-Main (S<D> units) · B<x>-<desk>-Appendix (SA units) · B<x>-<desk>-Round (RD pages); page tokens unchanged; a combined B<x>-<desk> group is grandfathered.
+
+## 0.7.0 · 260831
+- Story ids replace SD/NA (JL 260831 "I don't like the SD... make sure to be self explained"): one A1-Story group holds P0-P3, the venue-free head (Story00-ideation, Story01-seed, Story02-roadmap) plus one Story<NN>-narrative-<desk> per desk (Story03 first); the A2-NA-narrative group and the SD/NA tokens are retired to the grandfathered list. Phase table and group mapping updated.
+
+## 0.6.2 — 2026-08-31
+
+- **Phase law location named** (workflow-phases restructure, JL 260831): each
+  journey phase's own law now ships as `workflow-phases/haipipe-paper-<phase>`;
+  one pointer line added above the six-phase table. Gates, names, groups
+  unchanged.
+
+## 0.6.1 — 2026-08-31
+
+- **The appendix token is `SA`, Section-Appendix** (JL 260831: "The AM is not
+  correct, it should be SA"): a desk group's pages are `S<D><NN>` main
+  sections, `SA<NN>` appendix sections, `RD<NN>` rounds. The Round ledger
+  grammar (`SA-PP<n>` rows) already said so; the page ids now agree. MISQ
+  renamed AM01-AM06 → SA01-SA06 the same day; boards still on `A<D>` are
+  grandfathered until their own rename.
+
+## 0.6.0 — 2026-08-28
+
+- **Six phases: the Collection page folded into the Roadmap** (JL 260828: the
+  two were plan and result of the same campaign, one-to-one; the lap-L1 field
+  test showed every Collection edit forcing a mirrored Roadmap edit). P2
+  Roadmap (route) now carries plan AND intake; Narrative, Section, Round
+  renumber P3/P4/P5. The establish loop is P1↔P2.
+- **Gate numbers unchanged**: G2 (plan → dispatch) and G3 (lap → Seed) both
+  read the Roadmap now — its plan face and its lap face — and both leave
+  their receipt Log rows there. Three pens become two: the Roadmap plans and
+  registers; the Seed alone flips.
+- Group mapping: P0–P2 in A1-SD-story (three pages), P3 in A2-NA-narrative,
+  P4–P5 in the desks' B groups. Boards with a separate SD03-collection page
+  are grandfathered; the gazette gains the 0.6.0 renumber rows.
+
 ## 0.5.0 — 2026-08-24
 
 - **Seven phases, named by their authority pages** (JL 260824: "phase 和 page

@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "0.1.1"
   last_updated: "2026-07-04"
-  summary: "Run any Stage 5 NN pipeline work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

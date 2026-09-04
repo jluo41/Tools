@@ -34,6 +34,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from src.common import (DELIVERY_LANES, EVIDENCE_LANES, OUTLINE_LANES,
+                        delivery_lane_dir, evidence_lane_dir,
+                        evidence_lane_dirs, outline_lane_dir)
+
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
 _SCRIPTS = (Path(__file__).resolve().parents[2]
@@ -47,7 +51,7 @@ _CITE = re.compile(r"\\cite[pt]?\*?(?:\[[^\]]*\])*\{([^}]+)\}")
 _VIEW = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>
-:root{{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}}
+:root{{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23}}}}
 body{{margin:0;padding:18px;background:var(--bg);color:var(--fg);
@@ -93,10 +97,16 @@ class ExportMixin:
             return None, None, None, "not a page .md: %s" % f
         # A folded page owns its material (haipipe-plugin); a flat page
         # keeps the board-level fallback, which is this door's own.
-        if page_src.parent.name == page_src.stem:
-            out_dir = page_src.parent / plugin
+        page_home = (page_src.parent if page_src.parent.name == page_src.stem
+                     else Path(board))
+        if plugin in EVIDENCE_LANES:
+            out_dir = evidence_lane_dir(page_home, plugin)
+        elif plugin in OUTLINE_LANES:
+            out_dir = outline_lane_dir(page_home, plugin)
+        elif plugin in DELIVERY_LANES:
+            out_dir = delivery_lane_dir(page_home, plugin)
         else:
-            out_dir = Path(board) / plugin
+            out_dir = page_home / plugin
         out_dir.mkdir(parents=True, exist_ok=True)
         return page_src, out_dir, board, None
 
@@ -127,47 +137,49 @@ class ExportMixin:
         return page_src.stem
 
     def _page_units(self, page_src):
-        """[(short, rec)] for every display unit under `<page>/display/`
+        """[(short, rec)] for every unit under `<page>/outline/evidence/display/`
         (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
         the id the page's prose cites; rec reads the unit's OWN float.tex for
         label, kind, and caption, never composing a second one."""
         out = []
-        ddir = page_src.parent / "display"
-        if not ddir.is_dir():
-            return out
         stem = page_src.stem
-        for f in sorted(ddir.glob("*/float.tex")):
-            d = f.parent
-            tex = f.read_text(encoding="utf-8", errors="replace")
-            lab = re.search(r"\\label\{([^}]+)\}", tex)
-            kind = re.search(r"\\begin\{(table|figure)", tex)
-            cap, i = "", tex.find("\\caption{")
-            if i >= 0:
-                k, depth = i + 9, 1
-                while k < len(tex) and depth:
-                    depth += (tex[k] == "{") - (tex[k] == "}")
-                    k += 1
-                cap = tex[i + 9:k - 1].strip()
-            # A page stem may itself contain hyphens (for example QC1-lbp).
-            # The old first-two-segments rule collapsed every display on such
-            # a page to the same short id and made placement impossible.
-            prefix = stem + "-Display"
-            aliases = []
-            if d.name.startswith(prefix):
-                number = d.name[len(stem) + 1:].split("-", 1)[0]
-                short = stem + "-" + number
-                # A Page is a local namespace. Its prose normally says
-                # `Display1`, while cross-page material may say
-                # `<stem>-Display1`; both address the same unit and the
-                # exporter must place it once.
-                aliases = [short, number]
-            else:
-                short = "-".join(d.name.split("-")[:2])
-                aliases = [short]
-            out.append((short,
-                        {"dir": d, "label": lab.group(1) if lab else None,
-                         "kind": kind.group(1) if kind else "figure",
-                         "caption": cap, "aliases": aliases}))
+        seen = set()
+        for ddir in evidence_lane_dirs(page_src.parent, "display"):
+            for f in sorted(ddir.glob("*/float.tex")):
+                d = f.parent
+                if d.name in seen:
+                    continue
+                seen.add(d.name)
+                tex = f.read_text(encoding="utf-8", errors="replace")
+                lab = re.search(r"\\label\{([^}]+)\}", tex)
+                kind = re.search(r"\\begin\{(table|figure)", tex)
+                cap, i = "", tex.find("\\caption{")
+                if i >= 0:
+                    k, depth = i + 9, 1
+                    while k < len(tex) and depth:
+                        depth += (tex[k] == "{") - (tex[k] == "}")
+                        k += 1
+                    cap = tex[i + 9:k - 1].strip()
+                # A page stem may itself contain hyphens (for example QC1-lbp).
+                # The old first-two-segments rule collapsed every display on such
+                # a page to the same short id and made placement impossible.
+                prefix = stem + "-Display"
+                aliases = []
+                if d.name.startswith(prefix):
+                    number = d.name[len(stem) + 1:].split("-", 1)[0]
+                    short = stem + "-" + number
+                    # A Page is a local namespace. Its prose normally says
+                    # `Display1`, while cross-page material may say
+                    # `<stem>-Display1`; both address the same unit and the
+                    # exporter must place it once.
+                    aliases = [short, number]
+                else:
+                    short = "-".join(d.name.split("-")[:2])
+                    aliases = [short]
+                out.append((short,
+                            {"dir": d, "label": lab.group(1) if lab else None,
+                             "kind": kind.group(1) if kind else "figure",
+                             "caption": cap, "aliases": aliases}))
         return out
 
     def _first_unit_mention(self, body, unit):
@@ -366,7 +378,7 @@ document.getElementById('rebuild').onclick = function () {
         # citation store, so the PDF cites what the page cites — the paper's
         # 0-*.bib is the fallback for pages that have no store of their own.
         bib = None
-        own = page_src.parent / "bibex" / (stem + ".bib")
+        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
         if own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bib = own
@@ -575,7 +587,7 @@ document.getElementById('rebuild').onclick = function () {
         # the References section then come from the one store the workbench
         # maintains. A page with no store keeps the paper-root fallback.
         proot = self._paper_root(page_src)
-        own = page_src.parent / "bibex" / (stem + ".bib")
+        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
         if own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bbl = own.parent / ".board-refs.bbl"
@@ -657,7 +669,7 @@ document.getElementById('rebuild').onclick = function () {
         if units:
             # the unit index for the page address, and the Display comment
             # bubble beside the Citation ones — the docx's evidence card
-            cmd += ["--display-root", str(page_src.parent / "display"),
+            cmd += ["--display-root", str(evidence_lane_dir(page_src.parent, "display")),
                     "--lanes", "Citation,Display"]
         if proot:
             cmd += ["--paper-root", str(proot)]

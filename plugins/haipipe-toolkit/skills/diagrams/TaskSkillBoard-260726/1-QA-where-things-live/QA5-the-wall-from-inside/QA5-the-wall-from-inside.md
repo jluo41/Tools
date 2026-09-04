@@ -92,12 +92,13 @@ without ceasing to be one.
 - [ ] 🔗 Point at `QA8@probe` rather than restating it
       The same wall from the consumer's side. Two statements of one rule will drift; this face should hold only the executor's half.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The rule is stated and unenforced. `SKILL.md` and `fn/qa.md` describe the door, the three callers
 and the vocabulary ban; no checker exists for any of it, and the one measurement available is that
 1 of 107 task-folders has a `QA/` at all, so the door has been used rarely enough that a leak would
 not yet have shown up.
-
 - 260726 CC · 🧱 Written from the executor's side deliberately
       `01-probe-qa-260726` already argues this wall from the consumer's side, in twenty faces. This page holds only what is true from inside the bank, and links rather than repeats.
 
@@ -111,3 +112,5 @@ not yet have shown up.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

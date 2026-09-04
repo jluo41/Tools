@@ -22,8 +22,13 @@ class QualityCheckContractTest(unittest.TestCase):
 
     def test_client_sends_a_dedicated_scoped_quality_check(self):
         self.assertIn("✅ Quality Check", self.client)
-        self.assertIn("✨ Quick actions", self.client)
-        self.assertIn("⚙ Settings", self.client)
+        # 260831: the composer row carries the toggles as icon buttons with
+        # tooltips (JL's Claude-Code-style composer); the surfaces themselves
+        # are unchanged behind the same .utoggle/.stoggle classes.
+        self.assertIn('title="quick actions"', self.client)
+        self.assertIn('title="settings"', self.client)
+        self.assertIn('class="utoggle"', self.client)
+        self.assertIn('class="stoggle"', self.client)
         self.assertIn("qualityCheck: true", self.client)
         self.assertIn("scope: 'scoped'", self.client)
         self.assertIn("quality_check: !!(opts && opts.qualityCheck)", self.client)

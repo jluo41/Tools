@@ -365,57 +365,6 @@ A dedicated design board for the sentence, a future `01-sentence-YYMMDD/`, is wh
 That is a board-folder decision, which `QB1` owns through its two locations, and it is not a skill decision.
 
 ## Aims
-### A1 · 🧪 The test a candidate has to pass
-- A1.1 · Every candidate seam is judged by one stated test rather than by feel.
-  **Done when:** The test is written on this page, and every seam in `skills/board/` has a recorded verdict naming the consumer that does or does not need it with no board open.
-
-### A2 · 🧱 The roster, and what each unit owns
-- A2.1 · JL rules the roster and its shipping order.
-  **Done when:** Every named unit is either on disk or explicitly deferred, and no unit ships that JL did not name.
-- A2.2 · Each shipped unit states what it owns, what stays in `ref/`, and which rule graduates into it.
-  **Done when:** Every SKILL.md in the family carries that boundary, and no rule is written in two of them.
-- A2.3 · Routing resolves a page through the registry rather than through a name pattern.
-  **Done when:** Routing reads `board.md` `## Pages` with `## Links` for older ids, and `check.py` resolves ids the same way.
-- A2.4 · An input at GROUP altitude has a landing rule.
-  **Done when:** Routing states where a finding about a whole group lands, and one real group-altitude finding has been landed by it.
-- A2.5 · Routing and digest have a write protocol before digest is built.
-  **Done when:** What may be written, what may only be proposed, and the section-boundary anchor are all stated in a shipped contract rather than only on this page.
-
-### A3 · 🔢 What the family ships today, counted
-- A3.1 · What the family ships is counted, not estimated.
-  **Done when:** The count names every unit with its version, and re-running it against disk changes nothing.
-
-### A4 · 🧹 Three places the form ships from
-- A4.1 · The board form stops being restated in Python.
-  **Done when:** `live/chat.py`'s four rule strings load `haipipe-page` and `haipipe-sentence` instead of carrying their own prose copy.
-
-### A5 · 🧩 Which unit supports which part
-- A5.1 · A Page or subsection can name the unit that supports it without duplicating the Board-level SkillSet.
-  **Done when:** The syntax is ruled and at least one page carries it.
-
-### A6 · 📜 What SKILL.md must say, and where the cut falls
-- A6.1 · The door answers the four operating questions a newcomer arrives with.
-  **Done when:** `SKILL.md` states how to open a board, how to add a page, when a board closes, and how it stays in sync with the board, each as an action a reader can run.
-- A6.2 · The cut line to `ref/` is a rule rather than a feel.
-  **Done when:** One test decides for any paragraph whether it belongs in `SKILL.md` or in `ref/`, and the door has been re-read against it once.
-- A6.3 · The live layer graduates in as its pages settle.
-  **Done when:** chat and terminal carry real action sections, added one at a time as the `QPf4` pages reach ✅.
-- A6.4 · A fresh agent can open a decent board from the door alone.
-  **Done when:** `QF2` passes on a topic the manual has never seen, and every gap it exposes is written back into the file.
-
-### A7 · 🚧 What is still open
-- A7.1 · `haipipe-board-digest` ships or leaves the roster.
-  **Done when:** Either its contract exists on disk, or this page records the ruling that dropped it.
-- A7.2 · The creator agent has a caller.
-  **Done when:** `haipipe-board`'s `open` and `add` turn an approved proposal table into N assignment packets and run the serialized tail once.
-- A7.3 · The reviewer agent's status is ruled.
-  **Done when:** JL says whether "don't need to have the review agent" retired the unit or only that run, and the three dependent statements are corrected or left alone accordingly.
-
-### P · 🏁 Page-level
-- P1 · A reader can name every unit in this family and say what each one owns.
-  **Done when:** A cold reader lists the roster from this page alone and matches disk.
-
-## States
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
@@ -474,45 +423,88 @@ These are the calls only JL can make; CC ticks nothing here.
       🛑 `Blocks` nothing; it decides whether A6.2's cut line can be checked or only reviewed.
       🤖 `If nobody answers` A for one sentence per line and no em-dash, because both are cheap to check and every recently written unit already passes.
 
+
 ### A1 · 🧪 The test a candidate has to pass
-- ✅ A1.1 · Met 260729 and restated here. Every seam in `skills/board/` was walked once, and `§1.1` carries the verdict for each: stage argues for a clean script, live and canvas are runtime, and the checker, status and regroup are verbs of the manual.
+- ✅ A1.1 · Every candidate seam is judged by one stated test rather than by feel.
+  **Done when:** The test is written on this page, and every seam in `skills/board/` has a recorded verdict naming the consumer that does or does not need it with no board open.
+  **Now:** Met 260729 and restated here. Every seam in `skills/board/` was walked once, and `§1.1` carries the verdict for each: stage argues for a clean script, live and canvas are runtime, and the checker, status and regroup are verbs of the manual.
+
 
 ### A2 · 🧱 The roster, and what each unit owns
-- 🧠 A2.1 · Ruled by conduct and not yet by a tick. JL ordered `index` on 260730 and `page`, `sentence` and `routing` on 260731, and all four are on disk; the confirmation waits in Decision Now above.
-- 🔨 A2.2 · The first audit found a duplication rather than confirming there was none, and the duplication is now resolved.
+- 🧠 A2.1 · JL rules the roster and its shipping order.
+  **Done when:** Every named unit is either on disk or explicitly deferred, and no unit ships that JL did not name.
+  **Now:** Ruled by conduct and not yet by a tick. JL ordered `index` on 260730 and `page`, `sentence` and `routing` on 260731, and all four are on disk; the confirmation waits in Decision Now above.
+- 🔨 A2.2 · Each shipped unit states what it owns, what stays in `ref/`, and which rule graduates into it.
+  **Done when:** Every SKILL.md in the family carries that boundary, and no rule is written in two of them.
+  **Now:** The first audit found a duplication rather than confirming there was none, and the duplication is now resolved.
   `haipipe-board-index`'s `propose` and `materialize` were `haipipe-board`'s `open` action written a second time, and its `regroup` and `check` wrapped the door's own scripts.
   JL ruled `B` on 260802 and the unit is merged into `haipipe-board-routing` 0.9.0, which now owns both write altitudes; the folder is deleted and `src/lanes.py` moved with it.
   One duplication survives ON PURPOSE and is now declared in both files: the door's `open` still describes proposing and materializing a board, because a person opening their first board should not have to load a second skill.
   The remaining three units have not been audited against each other yet.
-- ✅ A2.3 · Met. `haipipe-board-routing` 0.6.0 step 3 reads `board.md` `## Pages` and resolves older ids through `## Links`, and `check.py`'s `declared_links` resolves ids the same way, so the resolver and the checker agree.
-- ✅ A2.4 · Met 260802 by the merge rather than by a separate ruling.
+- ✅ A2.3 · Routing resolves a page through the registry rather than through a name pattern.
+  **Done when:** Routing reads `board.md` `## Pages` with `## Links` for older ids, and `check.py` resolves ids the same way.
+  **Now:** Met. `haipipe-board-routing` 0.6.0 step 3 reads `board.md` `## Pages` and resolves older ids through `## Links`, and `check.py`'s `declared_links` resolves ids the same way, so the resolver and the checker agree.
+- ✅ A2.4 · An input at GROUP altitude has a landing rule.
+  **Done when:** Routing states where a finding about a whole group lands, and one real group-altitude finding has been landed by it.
+  **Now:** Met 260802 by the merge rather than by a separate ruling.
   A group-altitude finding lands in that group's intro prose in `board.md` `## Pages`, written at the section boundary, with `lanes.py` refreshing the block underneath it.
   `haipipe-board-routing` 0.9.0 carries the rule under its own heading, and it was only available once one unit owned both altitudes.
   No real group-altitude finding has been landed through it yet, which is the half of this Aim that rests on the next one that arrives.
-- ✅ A2.5 · Met for the half that ships. `haipipe-board-routing` 0.6.0 carries the human-decision law, the cross-board law and the anchored-append rule under its own headings, so digest inherits a written protocol rather than needing a new one.
+- ✅ A2.5 · Routing and digest have a write protocol before digest is built.
+  **Done when:** What may be written, what may only be proposed, and the section-boundary anchor are all stated in a shipped contract rather than only on this page.
+  **Now:** Met for the half that ships. `haipipe-board-routing` 0.6.0 carries the human-decision law, the cross-board law and the anchored-append rule under its own headings, so digest inherits a written protocol rather than needing a new one.
+
 
 ### A3 · 🔢 What the family ships today, counted
-- ✅ A3.1 · Recounted against disk on 260806: four skills, ten Page Types, four Page Phases, three agents, versions in `§3`. The 260802 count of five skills and two agents is superseded, like the 260729 count of two units before it, and kept only in `## Log`.
+- ✅ A3.1 · What the family ships is counted, not estimated.
+  **Done when:** The count names every unit with its version, and re-running it against disk changes nothing.
+  **Now:** Recounted against disk on 260806: four skills, ten Page Types, four Page Phases, three agents, versions in `§3`. The 260802 count of five skills and two agents is superseded, like the 260729 count of two units before it, and kept only in `## Log`.
+
 
 ### A4 · 🧹 Three places the form ships from
-- ⬜ A4.1 · Not started. The four strings moved from `cli/serve.py` to `live/chat.py` in the `QC1c` live split and none of them reads `ref/` or either spec.
+- ⬜ A4.1 · The board form stops being restated in Python.
+  **Done when:** `live/chat.py`'s four rule strings load `haipipe-page` and `haipipe-sentence` instead of carrying their own prose copy.
+  **Now:** Not started. The four strings moved from `cli/serve.py` to `live/chat.py` in the `QC1c` live split and none of them reads `ref/` or either spec.
+
 
 ### A5 · 🧩 Which unit supports which part
-- ⬜ A5.1 · Not started. The example wording exists in `§5`, and no syntax has been ruled and no page carries one.
+- ⬜ A5.1 · A Page or subsection can name the unit that supports it without duplicating the Board-level SkillSet.
+  **Done when:** The syntax is ruled and at least one page carries it.
+  **Now:** Not started. The example wording exists in `§5`, and no syntax has been ruled and no page carries one.
+
 
 ### A6 · 📜 What SKILL.md must say, and where the cut falls
-- ✅ A6.1 · Met and kept current through the 0.124.x series: the door answers how to open a board (five steps, with the one place it must stop and ask), how to add a page (copy `ref/page-template.md`, rename, list it, rebuild), when a board closes (every page ✅ or ⏸️ and `close:` satisfied), and how it stays in sync (the graduation mechanism, written in as its own section).
-- 🧠 A6.2 · Open, and this is the page's oldest unruled item. The instruction "operations only, spec detail to `ref/`" is a direction rather than a test, and the door has grown from the 581 lines JL ruled the shrink on to 771 at 0.124.0 while every addition looked like an operation.
-- 🔨 A6.3 · Partly landed: `serve`, `excalidraw` and `comment` carry real action sections, while chat and terminal stay pointer-only until the `QPf4` pages settle.
-- ✅ A6.4 · Met twice. `QF2` passed on 260723 on a topic the manual had never seen and again on 260725 against the shared Q/S skill; both runs' gaps were written back the same day, and the S-page authoring gap the second run exposed is the lesson recorded in `§6.3`.
+- ✅ A6.1 · The door answers the four operating questions a newcomer arrives with.
+  **Done when:** `SKILL.md` states how to open a board, how to add a page, when a board closes, and how it stays in sync with the board, each as an action a reader can run.
+  **Now:** Met and kept current through the 0.124.x series: the door answers how to open a board (five steps, with the one place it must stop and ask), how to add a page (copy `ref/page-template.md`, rename, list it, rebuild), when a board closes (every page ✅ or ⏸️ and `close:` satisfied), and how it stays in sync (the graduation mechanism, written in as its own section).
+- 🧠 A6.2 · The cut line to `ref/` is a rule rather than a feel.
+  **Done when:** One test decides for any paragraph whether it belongs in `SKILL.md` or in `ref/`, and the door has been re-read against it once.
+  **Now:** Open, and this is the page's oldest unruled item. The instruction "operations only, spec detail to `ref/`" is a direction rather than a test, and the door has grown from the 581 lines JL ruled the shrink on to 771 at 0.124.0 while every addition looked like an operation.
+- 🔨 A6.3 · The live layer graduates in as its pages settle.
+  **Done when:** chat and terminal carry real action sections, added one at a time as the `QPf4` pages reach ✅.
+  **Now:** Partly landed: `serve`, `excalidraw` and `comment` carry real action sections, while chat and terminal stay pointer-only until the `QPf4` pages settle.
+- ✅ A6.4 · A fresh agent can open a decent board from the door alone.
+  **Done when:** `QF2` passes on a topic the manual has never seen, and every gap it exposes is written back into the file.
+  **Now:** Met twice. `QF2` passed on 260723 on a topic the manual had never seen and again on 260725 against the shared Q/S skill; both runs' gaps were written back the same day, and the S-page authoring gap the second run exposed is the lesson recorded in `§6.3`.
+
 
 ### A7 · 🚧 What is still open
-- ⬜ A7.1 · Not started. `haipipe-board-digest` is named on the roster, described in `§2.1`, and not on disk.
-- 🔨 A7.2 · The caller protocol ships in `haipipe-board` 0.124.0: one fresh creator per page, assignment packets, and the serialized tail (shared writes, one rebuild, one check) kept with the caller; the creator agent is at 0.6.0. The remaining half is `open` and `add` running that protocol routinely from an approved proposal table.
-- 🧠 A7.3 · Waiting on the reviewer-agent ruling in Decision Now above.
+- ⬜ A7.1 · `haipipe-board-digest` ships or leaves the roster.
+  **Done when:** Either its contract exists on disk, or this page records the ruling that dropped it.
+  **Now:** Not started. `haipipe-board-digest` is named on the roster, described in `§2.1`, and not on disk.
+- 🔨 A7.2 · The creator agent has a caller.
+  **Done when:** `haipipe-board`'s `open` and `add` turn an approved proposal table into N assignment packets and run the serialized tail once.
+  **Now:** The caller protocol ships in `haipipe-board` 0.124.0: one fresh creator per page, assignment packets, and the serialized tail (shared writes, one rebuild, one check) kept with the caller; the creator agent is at 0.6.0. The remaining half is `open` and `add` running that protocol routinely from an approved proposal table.
+- 🧠 A7.3 · The reviewer agent's status is ruled.
+  **Done when:** JL says whether "don't need to have the review agent" retired the unit or only that run, and the three dependent statements are corrected or left alone accordingly.
+  **Now:** Waiting on the reviewer-agent ruling in Decision Now above.
+
 
 ### P · 🏁 Page-level
-- 🔨 P1 · The roster, the versions and the owner of each unit are on the page as of 260806; no cold reader has been asked to list them back since the 260816 fold.
+- 🔨 P1 · A reader can name every unit in this family and say what each one owns.
+  **Done when:** A cold reader lists the roster from this page alone and matches disk.
+  **Now:** The roster, the versions and the owner of each unit are on the page as of 260806; no cold reader has been asked to list them back since the 260816 fold.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -574,3 +566,5 @@ These are the calls only JL can make; CC ticks nothing here.
   The parent had been 49 lines of pointers whose one open aim asked whether to merge them, which is the same answer the board reached four times before on `QB4`, `QB8`, `QPf4` and `QA00`.
   Both faces are archived whole with their Logs; their ids resolve here through `## Links`; and the retired ids inside the absorbed prose were swept to the current names in the same pass (`QB4` → `QPs1`, `QB8`/`QB8d` → `QS1`/`QS3`, `QD2` → `QPf4b`, `QE3` → `QO6`, `QC2c` → `QC1c`, `Skill-*`/`Agent-*` → the `Design-*` pages).
 - (the absorbed faces' own Logs stay in `_archive/QA6a-skillmd/` and `_archive/QA6b-subskills/`, unrewritten)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

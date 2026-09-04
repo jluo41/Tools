@@ -1,4 +1,9 @@
-- haipipe-application · note: the only user-facing door; every verb routes through it
+- haipipe-application · note: the umbrella door; every verb routes through it
+- haipipe-application-workflow · note: the RUN head; five phases, gates G0-G5
+- haipipe-insight · note: the InsightBoard law door, new 260827
+- haipipe-insight-workflow · note: the insight lane's phase machine, I0-I5, new 260827
+- haipipe-design · note: the DesignBoard law door, new 260824
+- haipipe-design-workflow · note: the design lane's phase machine, D0-D4 + rounds, new 260827
 - haipipe-page-for-meta · note: InsightBoard head, new 260820
 - haipipe-page-for-insight · note: two scopes, task and application
 - haipipe-page-for-brief · note: DesignBoard head

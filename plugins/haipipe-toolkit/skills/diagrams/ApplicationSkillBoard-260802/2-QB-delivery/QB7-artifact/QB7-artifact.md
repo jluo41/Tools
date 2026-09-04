@@ -105,20 +105,6 @@ So the artifact today is traceable but not reproducible, and whether that is the
 
 ## Aims
 
-### A1 · 📦 The shipped file
-- A1.1 · Every shipped draft is one addressable markdown file whose frontmatter names its venue, audience, and every adopted or declined advice id.
-  **Done when:** an intervention's current draft resolves to `0-artifacts/<slug>-v{N}.md` and its frontmatter carries venue, audience, adopted_A, and declined_A.
-
-### A2 · 🔁 How it is composed
-- A2.1 · No artifact becomes a second evidence source: every number and adopted advice id in it traces through the 1c ledger to a resolvable anchor.
-  **Done when:** the DPRC PROBE step reports zero unflagged inventions on the current draft.
-
-### A3 · ❓ The one-source question
-- A3.1 · The artifact's relationship to its upstream content is ruled rather than inherited by habit.
-  **Done when:** JL answers the Decision Now row, the ruling lands in `## Law` with the rejected options, and the artifact skill's text is updated to match.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Does the paper board's one-source ruling bind the intervention artifact?
       📍 `Part` 3 · The one-source question
@@ -129,14 +115,24 @@ So the artifact today is traceable but not reproducible, and whether that is the
       🛑 `Blocks` this page's Law row and A3.1; composing itself continues under the current skill text.
       🤖 `If nobody answers` B stays in effect, because it is what the artifact skill does today.
 
+
 ### A1 · 📦 The shipped file
-- 🧠 A1.1 · The rule is written in the artifact skill's frontmatter spec and Definition of done; verification waits on the first real intervention draft inspected from this board.
+- 🧠 A1.1 · Every shipped draft is one addressable markdown file whose frontmatter names its venue, audience, and every adopted or declined advice id.
+  **Done when:** an intervention's current draft resolves to `0-artifacts/<slug>-v{N}.md` and its frontmatter carries venue, audience, adopted_A, and declined_A.
+  **Now:** The rule is written in the artifact skill's frontmatter spec and Definition of done; verification waits on the first real intervention draft inspected from this board.
+
 
 ### A2 · 🔁 How it is composed
-- 🧠 A2.1 · The PROBE step that would prove this is specified in the skill; no draft has yet been traced from this board.
+- 🧠 A2.1 · No artifact becomes a second evidence source: every number and adopted advice id in it traces through the 1c ledger to a resolvable anchor.
+  **Done when:** the DPRC PROBE step reports zero unflagged inventions on the current draft.
+  **Now:** The PROBE step that would prove this is specified in the skill; no draft has yet been traced from this board.
+
 
 ### A3 · ❓ The one-source question
-- 🧠 A3.1 · Waiting on JL; the Decision Now row above carries the ask, three options, and CC's default.
+- 🧠 A3.1 · The artifact's relationship to its upstream content is ruled rather than inherited by habit.
+  **Done when:** JL answers the Decision Now row, the ruling lands in `## Law` with the rejected options, and the artifact skill's text is updated to match.
+  **Now:** Waiting on JL; the Decision Now row above carries the ask, three options, and CC's default.
+
 
 ## Files
 
@@ -161,3 +157,5 @@ So the artifact today is traceable but not reproducible, and whether that is the
 ## Log
 
 260802 · Page created from the artifact and section-edit skills and the QB6@paper precedent; the one-source ruling opened for JL as a Decision Now row.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

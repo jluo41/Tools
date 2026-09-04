@@ -227,11 +227,16 @@ GROUP_IDS = set()
 def group_token(heading):
     """"QA · Defining a board" -> "QA": the group's travelling name.
 
-    Every group heading on every board is `<token> · <words>`; the fallback to
-    the first whitespace token keeps a heading that forgot the separator from
-    anchoring at the whole sentence."""
+    Every group heading on every board is `<token> · <words>`. The WHOLE
+    pre-`·` segment joins the token, spaces to hyphens ("JAMA main" ->
+    "JAMA-main"): deriving from only the first word made two desks that
+    share it collide at #group-<word> (JAMAOpioidBoard 260831,
+    duplicate-html-id on index.html). A single-word head keeps its exact
+    old token, so existing boards' anchors and <token>.html filenames do
+    not move; a heading that forgot the separator still anchors at its
+    words, not the whole sentence."""
     head = heading.split("·", 1)[0].strip()
-    return head.split()[0] if head.split() else heading.strip()
+    return "-".join(head.split()) if head.split() else heading.strip()
 
 
 @lru_cache(maxsize=8)
@@ -736,17 +741,17 @@ def inline(s):
             # exactly slide N, which is how a slide page embeds one deck file
             # per division without copying slides out of it (JL 260805).
             #
-            # `plain` is appended for serve.py: its shell-vs-file fallback is
+            # `embed` is appended for serve.py: its shell-vs-file fallback is
             # the Accept header, and a browser's IFRAME request sends the same
             # `Accept: text/html` a tab navigation does, so over a tailnet
-            # address (no Sec-Fetch-Dest on plain http) every embed came back
+            # address (no Sec-Fetch-Dest on private http) every embed came back
             # as the three-pane shell with the query dropped: seven divisions,
             # seven covers (JL 260805, "they are always of the same slide
-            # number"). `plain` is the shell's own documented opt-out.
+            # number"). `embed` is the shell's internal no-shell route.
             if re.search(r"\.html?(?:[?#].*)?$", src, re.I):
                 base, _, frag = src.partition("#")
                 sep = "&amp;" if "?" in base else "?"
-                live = f'{base}{sep}plain' + (f'#{frag}' if frag else "")
+                live = f'{base}{sep}embed' + (f'#{frag}' if frag else "")
                 # `?preview=5-7` is a RANGE: the deck renders those slides as
                 # a vertical strip (JL 260805, ruled B on QA4), so the frame
                 # grows to hold the whole strip instead of clipping it to one
@@ -1163,14 +1168,48 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
     比一段接一段的散句好扫。`- [ ]` 是勾选清单，不走这条路。
 
     fold_code=True（默认）：``` 代码块也收进 <details>，默认合着、想看再点开（JL 260723），
-    跟节标题的 expand-all 联动。传 False 才铺开（`## Diagram` 那张招牌图就用它）。
+    跟节标题的 expand-all 联动。传 False 才铺开（`## Outline` 那张叙事图就用它）。
     """
     global REGISTER
     out, fence, blt, lg, flang = [], None, None, None, ""
+    pipe_table = None
     ifence = None    # 缩进在 item 下的 ``` 块：收进这个 item 的折叠区（JL 260724）
     last_p, appar = None, {}   # 最近一句正文的 out 下标 → 它收集到的 `>` 装置行（QA8）
     pbreak = True   # 源文件里空行=段落边界；下一句正文要戴 pnew（句址 P 的分段依据）
     para_head = False          # 上一行是不是 #### 段落标题（决定紧跟的 (…) 是不是它的活儿）
+
+    def table_flush():
+        """Render one consecutive Markdown pipe-table block as a real table.
+
+        The page renderer used to leave pipe rows as ordinary paragraphs, which
+        made wide Job Matrices unreadable on the shareable Board page. Keep the
+        source as Markdown, but give the reader the same table surface already
+        used by the live drawer's markdown renderer.
+        """
+        nonlocal pipe_table, last_p
+        if pipe_table is None:
+            return
+        flush()
+        cells = [[c.strip() for c in row.strip().strip("|").split("|")]
+                 for row in pipe_table]
+        separator = (
+            len(cells) > 1
+            and all(re.fullmatch(r":?-{2,}:?", cell) for cell in cells[1] if cell)
+        )
+        header = cells[0] if cells else []
+        body_rows = cells[2:] if separator else cells[1:]
+        html = ['<div class="mdtable"><table class="mdt"><thead><tr>']
+        html.extend(f"<th>{inline(cell)}</th>" for cell in header)
+        html.append("</tr></thead><tbody>")
+        for row in body_rows:
+            html.append("<tr>")
+            for cell in row:
+                html.append(f"<td>{inline(cell)}</td>")
+            html.append("</tr>")
+        html.append("</tbody></table></div>")
+        out.append("".join(html))
+        pipe_table = None
+        last_p = None
 
     def flush():
         """把攒着的要点 / 勾选项吐出来。两者共用「小标题 + 缩进解释」这套结构。"""
@@ -1237,6 +1276,17 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
         blt = None
 
     for ln in (txt or "").split("\n"):
+        is_pipe_row = (ln.lstrip().startswith("|")
+                       and "|" in ln.lstrip()[1:])
+        if pipe_table is not None:
+            if is_pipe_row and fence is None and ifence is None:
+                pipe_table.append(ln)
+                continue
+            table_flush()
+        if (is_pipe_row and fence is None and ifence is None
+                and blt is None and lg is None):
+            pipe_table = [ln]
+            continue
         # A `<!-- haipipe:… -->` MACHINE MARKER never reaches the page (JL
         # 260726, seeing six of them printed on the first generated skill page).
         # `parse.strip_notes` keeps them on purpose, because the file is where
@@ -1483,6 +1533,7 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
                     EMBED_SEEN.add(_key)
                     out.append(_fig)
             EMBEDS.clear()
+    table_flush()
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():
@@ -1540,8 +1591,14 @@ def _hang_badge(p_html, badge):
     是关键 —— 有空白就有断行机会，徽标就又可能被推到下一行。
     """
     hung = f'<span class="sbz">{badge}</span>'
-    if p_html.startswith("<p>") and p_html.endswith("</p>"):
-        return "<p>" + p_html[3:-4].rstrip() + hung + "</p>"
+    # Any `<p …>` counts, not only a bare `<p>`: since 260819 a sentence that
+    # opens a paragraph is `<p class="pnew">`, and the old `startswith("<p>")`
+    # test let its badge fall OUTSIDE the closing tag, where the block break
+    # put it on a line of its own again (JL 260831, the Title of SM00).
+    m = re.match(r"^<p(\s[^>]*)?>", p_html)
+    if m and p_html.rstrip().endswith("</p>"):
+        body = p_html.rstrip()[m.end():-4].rstrip()
+        return p_html[:m.end()] + body + hung + "</p>"
     return p_html.rstrip() + hung
 
 # ── 💬 Discussion as a real THREAD (JL 260802) ─────────────────────────────

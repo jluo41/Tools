@@ -1,4 +1,4 @@
-"""📂 Folder · the page-folder's own status, the tab rail's FIRST surface.
+"""📂 Folder · the page-folder's own live status surface.
 
 WHAT THIS ANSWERS (JL 260815: "a first item in the plugin to show the content
 of the page-folder status"): the tab rail shows the surfaces someone built;
@@ -29,8 +29,28 @@ from urllib.parse import parse_qs, quote, urlparse
 
 ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
         "word": "📝", "bibex": "📚", "display": "🖼", "skill": "⚙️",
-        "meeting": "🗣", "probe": "🧪", "_runs": "🧾", "_fixture": "📦"}
-DERIVED = {"latex", "word", "bibex", "slide", "display"}
+        "meeting": "🗣", "_runs": "🧾", "_fixture": "📦",
+        "outline": "🧭", "workflow": "🪜", "pagex": "🔗", "materials": "📥",
+        "evidence": "🧾", "delivery": "📤", "studio": "🎨", "task": "🗂",
+        "render": "📱", "design": "🎨", "scripts": "📜", "runs": "🎫",
+        "results": "📦", "outline/evidence/supporting-runs": "🧷"}
+
+# The two-part unit grammar (haipipe-plugin §🗂/🔌, JL 260831): which category
+# owns each lane, so the table can say it and the gaps line can speak the
+# grammar instead of the pre-260831 flat roster. A flat lane name counts for
+# its category until the sweep folds it in (a stub keeps it resolving after).
+# Evidence is not a top-level category: it is the material workspace owned by
+# Outline.  The old flat lanes remain named here only so Folder can explain
+# their migration destination.
+CATEGORY = {"bibex": "outline/evidence", "display": "outline/evidence",
+            "pagex": "outline/evidence", "materials": "outline/evidence",
+            "skill": "outline",
+            "latex": "delivery", "word": "delivery", "slide": "delivery",
+            "render": "delivery",
+            "chat": "studio", "draw": "studio",
+            "scripts": "code", "runs": "code", "results": "code"}
+DERIVED = {"latex", "word", "bibex", "slide", "display", "render"}
+DERIVED_LABELS = {"outline/evidence/supporting-runs"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
 # judgment. display joined the same day (JL: "I want to add the rebuild
@@ -44,7 +64,7 @@ POINTER = {"slide": "✨ regenerate in the 🎞 Slides tab"}
 _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>
-:root{{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;
+:root{{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff;
  --warn:#b3541e;--ok:#3a7d44}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23;--warn:#e0955a;--ok:#7dbb87}}}}
@@ -86,7 +106,7 @@ tr.files>td{{padding:6px 8px 12px 30px;border-bottom:1px solid var(--line)}}
 {allbtn}<h1>📂 {title}</h1>
 <div class="mut">the page's own folder · rendered live, never stored ·
 source .md edited {md_age}</div>
-<table><tr><th></th><th>plugin</th><th>holds</th><th>newest</th><th>state</th></tr>
+<table><tr><th></th><th>path</th><th>holds</th><th>newest</th><th>state</th></tr>
 {rows}</table>
 <div class="mut" style="margin-top:10px">{absent}</div>
 <script>
@@ -159,23 +179,59 @@ def folder_status(page_src):
     page_dir = page_src.parent
     md_mtime = page_src.stat().st_mtime
     rows = []
-    for d in sorted(page_dir.iterdir()):
-        if not d.is_dir():
-            continue
-        files = sorted((f for f in d.rglob("*") if f.is_file()),
+    stubs = []
+
+    def row_for(d, label, recursive=True):
+        candidates = d.rglob("*") if recursive else d.iterdir()
+        files = sorted((f for f in candidates if f.is_file()),
                        key=lambda f: str(f.relative_to(d)))
         newest = max((f.stat().st_mtime for f in files), default=0)
-        rows.append({
+        return {
             "name": d.name,
-            "icon": ICON.get(d.name.lstrip("_"), ICON.get(d.name, "📁")),
+            "label": label,
+            "icon": ICON.get(label, ICON.get(d.name.lstrip("_"), ICON.get(d.name, "📁"))),
             "files": len(files),
             "bytes": sum(f.stat().st_size for f in files),
             "newest": newest,
-            "derived": d.name in DERIVED,
-            "stale": d.name in DERIVED and bool(files) and newest < md_mtime,
+            "derived": d.name in DERIVED or label in DERIVED_LABELS,
+            "stale": (d.name in DERIVED or label in DERIVED_LABELS) and bool(files) and newest < md_mtime,
             "list": [(str(f.relative_to(d)), f) for f in files],
-        })
-    return page_dir.name, md_mtime, rows
+        }
+
+    for d in sorted(page_dir.iterdir()):
+        if not d.is_dir():
+            continue
+        # a migration STUB (flat name -> its category home) is a compatibility
+        # NAME, not a folder: listing it would double-count the lane and keep
+        # the flat-lanes callout firing on already-migrated pages
+        if d.is_symlink():
+            stubs.append(d.name)
+            continue
+        # Category folders show their lanes as first-class rows. Outline keeps
+        # one direct-files row for its authored process records, while each
+        # evidence lane gets its own explicit path. This prevents the plan's
+        # eight records from being visually merged with bibex/display/PageX
+        # material and avoids counting the same files twice.
+        if d.name == "outline":
+            rows.append(row_for(d, "outline", recursive=False))
+            skill = d / "skill"
+            if skill.is_dir() and not skill.is_symlink():
+                rows.append(row_for(skill, "outline/skill"))
+            evidence = d / "evidence"
+            if evidence.is_dir():
+                for lane in sorted(evidence.iterdir()):
+                    if lane.is_dir() and not lane.is_symlink():
+                        rows.append(row_for(
+                            lane, "outline/evidence/%s" % lane.name))
+            continue
+        if d.name in ("delivery", "studio"):
+            for lane in sorted(d.iterdir()):
+                if lane.is_dir() and not lane.is_symlink():
+                    rows.append(row_for(lane, f"{d.name}/{lane.name}"))
+            continue
+        rows.append(row_for(d, d.name))
+    rows.sort(key=lambda r: r["label"])
+    return page_dir.name, md_mtime, rows, stubs
 
 
 def _as_tree(pairs):
@@ -227,7 +283,7 @@ class FolderStatMixin:
         f, board = got
         page_src = Path(board) / f
         now = time.time()
-        title, md_mtime, rows = folder_status(page_src)
+        title, md_mtime, rows, stubs = folder_status(page_src)
         root = self.root.resolve()
         present, absent = [], []
         for r in rows:
@@ -242,11 +298,18 @@ class FolderStatMixin:
                 state = '<span class="fresh">✅ fresh</span>'
             else:
                 state = '<span class="mut">source material</span>'
+            # a nested lane already SAYS its category in the path; only a
+            # flat, pre-sweep lane still needs the chip naming where it goes
+            cat = CATEGORY.get(r["name"].lstrip("_"), "")
+            flat_here = cat and r["label"] == r["name"]
+            cat_chip = (' <span class=mut title="this lane\'s category folder'
+                        ' in the two-part unit grammar">· %s (flat)</span>' % cat
+                        if flat_here else "")
             present.append(
                 "<tr class=plug><td><span class=caret>▸</span>%s</td>"
-                "<td><code>%s/</code></td><td>%d file%s · %s</td>"
+                "<td><code>%s/</code>%s</td><td>%d file%s · %s</td>"
                 "<td>%s</td><td>%s</td></tr>" % (
-                    r["icon"], html.escape(r["name"]), r["files"],
+                    r["icon"], html.escape(r["label"]), cat_chip, r["files"],
                     "s"[:r["files"] != 1], _fmt_bytes(r["bytes"]),
                     _age(r["newest"], now), state))
             # A FOLDER IS A TREE, not a sorted list of path strings (JL
@@ -306,11 +369,25 @@ class FolderStatMixin:
                 "<tr class=files><td colspan=5>%s</td></tr>"
                 % ("".join(items) or '<span class="mut f">empty</span>'))
         known = {r["name"] for r in rows}
-        gaps = [n for n in ("draw", "slide", "chat", "latex", "word", "bibex",
-                            "display", "skill", "meeting")
-                if n not in known]
+        # The gaps line speaks the two-part grammar (260831), not lane names:
+        # a category counts as present when its folder exists OR any of its
+        # flat pre-sweep lanes does.
+        have_cat = {c for c in ("delivery", "studio") if c in known}
+        have_cat |= {c for n, c in CATEGORY.items() if n in known}
+        gaps = [n for n in ("outline", "workflow") if n not in known]
+        gaps += [c + "/" for c in ("delivery", "studio")
+                 if c not in have_cat]
         if gaps:
             absent.append("⬜ not present: " + " · ".join(gaps))
+        flat = sorted(r["name"] for r in rows
+                      if r["name"] in CATEGORY and r["label"] == r["name"])
+        if flat:
+            absent.append("📦 pre-migration flat lanes: " + " · ".join(flat)
+                          + " — the sweep folds them under their category")
+        if stubs:
+            absent.append("🔗 %d compatibility stub%s (flat name → category), "
+                          "dropped when the engine de-symlinks"
+                          % (len(stubs), "s"[:len(stubs) != 1]))
         cures = [MECHANICAL[r["name"]] for r in rows
                  if r["stale"] and r["name"] in MECHANICAL]
         allbtn = ('<button class=rball type=button data-routes="%s">'

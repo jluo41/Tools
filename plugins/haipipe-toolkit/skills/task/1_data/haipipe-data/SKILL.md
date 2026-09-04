@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "0.1.3"
   last_updated: "2026-07-08"
-  summary: "Run any Stage 1-4 data pipeline work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -67,7 +66,7 @@ PARTITION_INDEX = ""    # "" = all; int = run one partition (1-based)
 NUM_WORKERS    = 1      # >1 = parallel (Stage 3 Case only)
 ```
 
-Recipe — create a task-folder instance:
+Recipe — create a job instance:
 
 ```
 1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/{NN}_{task_name}.py

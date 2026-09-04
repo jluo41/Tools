@@ -132,17 +132,6 @@ restates it will drift from `QA8@paper` and then two boards will disagree about 
 - [ ] 🧪 Enter one real group and get a board
       The acceptance test for this face: a group on disk, one command, a board in the browser, no second command typed.
 
-## States
-Nothing is built. `/haipipe-task` contains no reference to `/haipipe-board`, `board.html` or port
-5599, so the two skills have never been connected in either direction.
-
-The paper side is the working precedent rather than a plan: `haipipe-paper-enter` 0.5.0 already
-resolves a paper, calls the board, pushes the URL and prints only what a terminal is good at. The
-shape is proven; what is unproven here is where to hang it, because this skill has no `enter`.
-
-- 260726 JL · 🚪 Ruled the shape
-      `/haipipe-task` is the single door and `/haipipe-board` is a sub-skill it calls, not a command a human types for a group. The naming of the door was left open.
-
 ## Files
 - `SKILL.md`
   Step 2's scope cascade, where a new verb would land, and the current meaning of a bare group path (branch 4).
@@ -165,5 +154,17 @@ the board's own dialect mechanism, never in the tool's core.
 
 > CC 260726: worth stating that the second sync point is the one that decides whether this is worth doing. A board built only at entry is accurate until the first phase finishes writing, which on a twelve-folder group is a few minutes. If only entry is ruled, the honest description of what we shipped is a screenshot.
 
+
+### From the retired States section (merged 260831)
+Nothing is built. `/haipipe-task` contains no reference to `/haipipe-board`, `board.html` or port
+5599, so the two skills have never been connected in either direction.
+The paper side is the working precedent rather than a plan: `haipipe-paper-enter` 0.5.0 already
+resolves a paper, calls the board, pushes the URL and prints only what a terminal is good at. The
+shape is proven; what is unproven here is where to hang it, because this skill has no `enter`.
+- 260726 JL · 🚪 Ruled the shape
+      `/haipipe-task` is the single door and `/haipipe-board` is a sub-skill it calls, not a command a human types for a group. The naming of the door was left open.
+
 ## Log
 260726 · Created with the board, carrying JL's ruling on the entry shape.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -14,19 +14,20 @@ plain language, single call-to-action.
 - **Opt-out:** required (STOP keyword or similar)
 
 
-## Stage requirements
+## Design-workflow profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  skip
-  display:    skip
-  section-edit:    skip
-
-claims_settlement: light
+design_profile:
+  evidence_bar: light
+  narrative: none
+  display: none
+  section_edit: none
+  terminal: accepted
 ```
+
+This is a venue reference pack, not a private lifecycle. D0-D5 remain the only
+Design workflow phases. It never invents Seed, Pitch, Claims, deployment, or a
+second status ladder.
 
 
 ## Venue template
@@ -41,11 +42,11 @@ template:
     chars: ~30
   - slot: benefit
     job: state the value proposition
-    claim_source: primary claim (K/W)
+    claim_source: card grant through the signed Wisdom handoff
     chars: ~60
   - slot: CTA
     job: specific action + deadline
-    claim_source: action claim (W)
+    claim_source: GD0-closed Brief + signed Wisdom handoff
     chars: ~50
   - slot: close
     job: reassurance or opt-out
@@ -54,18 +55,27 @@ template:
 ```
 
 
-## Lifecycle mappings
+## Phase use
 
-### → Claims (light)
-Select from existing K/W. Each slot maps to one K/W entry.
-No probe planning — if the KB lacks coverage, either use
-common knowledge or trigger an ask session first.
+### D0/D1 · frame and bet
 
-### → Draft
+Pin `kind: sms`, audience, job, one primary venue, CTA availability, opt-out
+mechanism, and variables the system can actually supply. A card may grant only
+the signed handoff/Brief/other sources allowed by the DesignBoard's `reads:`.
+Design never reads D/I/K pages directly.
+
+### D2 · realize
+
 Follow the 4-slot template. Each slot is one sentence or phrase.
 Total ≤ 160 chars for single-segment SMS.
 Tone per audience profile (warm for patient, clinical for clinician).
 
-### → Review
-Check: within char limit, CTA is actionable, opt-out present,
-no jargon (if patient), adopted_A in frontmatter.
+### D3/D4 · judge, render, decide
+
+Check every candidate or variant for character count, actionable single CTA,
+opt-out, variable availability, audience language, and fidelity to the released
+card. Render only to `delivery/render/`; acceptance names that exact render.
+
+If a load-bearing premise or variable is missing, emit a BR00 need and its
+Insight register question. Do not substitute “common knowledge,” open a private
+ask session, or mark the SMS deployed. Shipping is downstream Task work.

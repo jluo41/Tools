@@ -1,0 +1,20 @@
+job_id: job-mini-empathy
+description: "One human-grounded subjective-label project (fixture)"
+target: empathy
+semantic_authority: JL
+schema:
+  labels: [high, low, none]
+  regions: [H, L, N, HL, LN, HN, HLN]
+  uncertainty_separate: true
+  unresolved_is_not_none: true
+stopping:
+  quality_floor: 0.80
+  consecutive_rounds_k: 2
+  risk_max: 0.10
+executors:
+  - id: weak-a
+    engine: claude_sdk
+    model: haiku
+  - id: weak-b
+    engine: codex
+    model: gpt-5.5

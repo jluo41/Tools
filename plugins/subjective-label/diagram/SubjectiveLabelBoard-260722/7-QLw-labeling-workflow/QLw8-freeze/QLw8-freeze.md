@@ -149,7 +149,7 @@ A phase with one route is not a decision, and a phase with several is not free t
 ## Files
 
 ### Contracts · what this Page describes
-- `../../skills/page-workflows/label-evaluate/SKILL.md`
+- `../../skills/label-scanning/SKILL.md`
   The command that runs the freeze and the scoring.
 - `../../skills/page-types/haipipe-page-for-labeling/SKILL.md`
   The Page Type whose ✅ means this signature happened.

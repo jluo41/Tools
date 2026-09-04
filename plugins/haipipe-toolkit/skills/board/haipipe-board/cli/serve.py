@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Serve boards AND accept comment writes — from the machine the files live on.
 
-    python3 serve.py [--root DIR] [--port 5599]
+    python3 serve.py [--root DIR] [--port PORT]
+
+When --host, --port, --space-name, --public-url, or --auth-file is omitted,
+the matching non-secret setting in <root>/.server_config/settings.env is used.
+The explicit --no-auth flag disables HTTP Basic Auth for a trusted private
+network such as a Tailscale tailnet.
 
 Why this exists (JL, 260723): the first design had the browser write the .md
 itself via the File System Access API. That cannot work here — the browser runs
@@ -43,10 +48,10 @@ That venv is uv-managed and has no pip — install into it with:
 it isn't already looking at.
 
 Deliberately narrow, because this is a write endpoint:
-  · binds 127.0.0.1 unless --host says otherwise. There is no auth of any kind
-    and /_term/ is a real shell, so every address you bind to is an address that
-    can run commands as you. A tailnet address (100.x) keeps that inside your own
-    devices; 0.0.0.0 hands it to the whole local network.
+  · binds 127.0.0.1 unless --host says otherwise. With --no-auth, /_term/ is a
+    real shell available to every device that can reach the selected address.
+    A tailnet address (100.x) keeps that inside the tailnet; 0.0.0.0 hands it
+    to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
     · the filename must match Q*.md or S*.md
   · writes are limited to sentence-adjacent comments, one-sentence edits, and
@@ -77,6 +82,7 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
 from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # noqa: E402
+from src.server_config import load_server_config, server_config_dir  # noqa: E402
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
 # POST /_board/stop 把旗子立起来，chat 循环在下一条消息处收工，
@@ -92,19 +98,23 @@ from live.write import WriteMixin
 from live.chat import ChatMixin
 from live import chat as live_chat
 from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
-                       spawn_pty, pty_pump, pty_resize, ws_send)
+                       spawn_pty, pty_pump, pty_resize, ws_send,
+                       labeling_tui_hold)
 from live.xcal import XcalMixin
+from live.evidence import EvidenceTabMixin
+from live.delivery import DeliveryTabMixin
+from live.labeling import LabelingMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
 from live.pagex import PagexMixin
-from live.task import TaskMixin
 from live.meeting import MeetingMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
 from live.value import ValueMixin
 from live.pageruns import PageRunsMixin
+from live.runs import RunsTabMixin
 from live import base
 # re-exported so the console (boards_api.py) keeps importing them from serve
 # exactly as before (QE3's Law: one implementation, the console is a pipe).
@@ -129,7 +139,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, TaskMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, PageRunsMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -178,6 +188,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         t = TERMS.get(m.group(1)) if m else None
         if not (t and t.get("kind") == "pty"):
             return False
+        reason = labeling_tui_hold(t.get("file") or "")
+        if reason:
+            self.send_error(423, reason + " · TUI is read-only at this gate")
+            return True
         sub = m.group(2) or "/"
         if sub == "/ws":
             self.ws_term(m.group(1))
@@ -240,6 +254,18 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/value":
             # 🔢 every number the page owes or uses, joined both ways (QPw4v)
             return self.value_view()
+        if self.path.split("?", 1)[0] == "/_board/evidence":
+            # 🧾 ONE surface over the four evidence lanes (JL 260831)
+            return self.evidence_tab_view()
+        if self.path.split("?", 1)[0] == "/_board/delivery":
+            # 📤 ONE surface over the four delivery lanes (JL 260831)
+            return self.delivery_tab_view()
+        if self.path.split("?", 1)[0] == "/_board/labeling":
+            # 🏷 canonical labeling receipts above, page chat below
+            return self.labeling_view()
+        if self.path.split("?", 1)[0] == "/_board/runs":
+            # ⚙️ one page's planned and registered Tickets, never an execute door
+            return self.runs_view()
         if self.path.split("?", 1)[0] == "/_board/pageruns":
             # 🪜 one page's lifecycle receipts, for the Page phases stepper
             return self.pageruns_view()
@@ -316,6 +342,14 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.outline_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/value":
             return self.value_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/evidence":
+            return self.evidence_tab_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/delivery":
+            return self.delivery_tab_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/labeling":
+            return self.labeling_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/runs":
+            return self.runs_view(head_only=True)
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -486,23 +520,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.pagex_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/pagex-match":    # PROBE's read-only shortlist
+        if self.path == "/_board/pagex-match":    # SURVEY's read-only shortlist
             res, err = self.pagex_match(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        # 🗂 task, the fourth citation twin (QPf13): the page's borrowings
-        # from `tasks/` — whole task FOLDERS, one store + symlinks re-minted
-        # from it, status read from plan.yaml / report.yaml / QA/ on disk.
-        if self.path == "/_board/task":           # re-mint the links + view
-            res, err = self.task_refresh(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/task-order":     # the drag: rank = the order
-            res, err = self.task_order(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/task-entry":     # the pen: link · ✕ · ↩
-            res, err = self.task_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         # 🗣 meeting (QPf14): a person's own record of a conversation, kept
@@ -527,6 +546,22 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)
             res, err = self.plug_value(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/delivery":    # 📤 the same live twin (JL 260831)
+            res, err = self.plug_delivery(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/evidence":    # 🧾 the same live twin (JL 260831)
+            res, err = self.plug_evidence(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/labeling":    # 🏷 read-only receipt surface
+            res, err = self.plug_labeling(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/runs":        # ⚙️ read-only Run overview
+            res, err = self.plug_runs(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/display":    # list display/ units + previews
@@ -632,10 +667,12 @@ if __name__ == "__main__":
         os.environ.pop(_k, None)
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".")
-    ap.add_argument("--port", type=int, default=5599)
-    ap.add_argument("--host", default="127.0.0.1",
+    ap.add_argument("--port", type=int, default=None,
+                    help="listener port; root .server_config wins when omitted")
+    ap.add_argument("--host", default=None,
                     help="绑哪个地址。默认只绑 loopback；给 tailnet 地址（100.x）"
-                         "就能从自己别的设备直接打开，不用 VS Code 转发端口")
+                         "就能从自己别的设备直接打开，不用 VS Code 转发端口；"
+                         "root .server_config wins when omitted")
     ap.add_argument("--daemon", metavar="LOGFILE",
                     help="后台跑，输出写进这个文件")
     ap.add_argument("--ttyd", action="store_true",
@@ -645,13 +682,39 @@ if __name__ == "__main__":
                          "instead of holding one per question")
     ap.add_argument("--auth-file", metavar="PATH",
                     help="optional username:password file; required for a non-loopback host")
+    ap.add_argument("--no-auth", action="store_true",
+                    help="disable HTTP Basic Auth; only use on a trusted private network")
     ap.add_argument("--space-name", default="",
                     help="display name for the SPACE Home, e.g. Physician-SPACE")
     ap.add_argument("--public-url", default="",
                     help="reader-facing URL shown by the SPACE Home")
     a = ap.parse_args()
-    auth_file = Path(a.auth_file).expanduser().resolve() if a.auth_file else None
-    if not host_is_loopback(a.host) and auth_file is None:
+    config = load_server_config(a.root)
+    config_dir = server_config_dir(a.root)
+    host = (a.host or config.get("JJLUO_BIND_HOST") or
+            config.get("JJLUO_TAILSCALE_ADDRESS") or "127.0.0.1").strip()
+    port = a.port
+    if port is None:
+        raw_port = config.get("JJLUO_LOCAL_PORT") or config.get("JJLUO_TAILSCALE_PORT")
+        try:
+            port = int(raw_port) if raw_port else 5599
+        except ValueError:
+            ap.error(f"invalid port in {config_dir / 'settings.env'}: {raw_port!r}")
+    if a.no_auth:
+        auth_file = None
+    else:
+        auth_arg = a.auth_file or config.get("JJLUO_AUTH_FILE")
+        if auth_arg:
+            auth_path = Path(auth_arg).expanduser()
+            if not auth_path.is_absolute() and not a.auth_file:
+                auth_path = Path(a.root).resolve() / auth_path
+            auth_file = auth_path.resolve()
+        else:
+            auth_file = None
+    space_name = (a.space_name or config.get("JJLUO_SPACE_NAME") or "").strip()
+    public_url = (a.public_url or config.get("JJLUO_PUBLIC_URL") or
+                  config.get("JJLUO_TAILSCALE_URL") or "").strip()
+    if not host_is_loopback(host) and auth_file is None and not a.no_auth:
         ap.error("--auth-file is required when --host is not loopback")
     try:
         Handler.configure_auth(auth_file)
@@ -674,10 +737,10 @@ if __name__ == "__main__":
     if a.daemon:
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
-    Handler.space_name = a.space_name.strip()
-    Handler.public_url = a.public_url.strip()
-    base.BIND_HOST = a.host
-    srv = ThreadingHTTPServer((a.host, a.port),
+    Handler.space_name = space_name
+    Handler.public_url = public_url
+    base.BIND_HOST = host
+    srv = ThreadingHTTPServer((host, port),
                               partial(Handler, directory=str(Handler.root)))
     # A non-loopback --host binds THAT ADDRESS ONLY, which quietly breaks the
     # path most people are actually on: a VS Code / ssh -L forward connects to
@@ -687,26 +750,26 @@ if __name__ == "__main__":
     # no exposure that a local process does not already have, and it means
     # choosing a wider address never costs you the narrow one.
     loop = None
-    if not host_is_loopback(a.host) and a.host != "0.0.0.0":
+    if not host_is_loopback(host) and host != "0.0.0.0":
         try:
-            loop = ThreadingHTTPServer(("127.0.0.1", a.port),
+            loop = ThreadingHTTPServer(("127.0.0.1", port),
                                        partial(Handler, directory=str(Handler.root)))
             threading.Thread(target=loop.serve_forever, daemon=True).start()
         except OSError as e:
-            print(f"   ⚠️ loopback {a.port} 没起来：{e}", flush=True)
+            print(f"   ⚠️ loopback {port} 没起来：{e}", flush=True)
     tok, src = oauth_token(Handler.root)
     try:
         import claude_agent_sdk  # noqa: F401
         sdk = "on"
     except ImportError:
         sdk = "off（这个 Python 没装 SDK，聊天接口不可用）"
-    print(f"📡 http://{a.host}:{a.port}  root={Handler.root}\n"
+    print(f"📡 http://{host}:{port}  root={Handler.root}\n"
           + ("" if not loop else
-             f"   ＋ http://127.0.0.1:{a.port} 也在听（VS Code / ssh -L 走的是这个）\n")
-          + ("" if host_is_loopback(a.host) else
-             f"   ⚠️ 绑的不是 loopback：{a.host} 能到的设备都能用 /_term/ 开 shell\n")
+             f"   ＋ http://127.0.0.1:{port} 也在听（VS Code / ssh -L 走的是这个）\n")
+          + ("" if host_is_loopback(host) else
+             f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n")
           + f"   评论 / 状态：直接写在这台机器上\n"
-          f"   认证：{'on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'}\n"
+          f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'))}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
           f"   OAuth 来源：{src}"
           + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")

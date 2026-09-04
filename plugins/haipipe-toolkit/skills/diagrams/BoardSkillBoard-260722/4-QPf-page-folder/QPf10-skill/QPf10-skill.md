@@ -109,42 +109,37 @@ Clicking the lit tab only builds the view again.
 
 ## Aims
 ### A1 · 🗃 One file you own, and one view the machine rebuilds
-- A1.1 · The list, the scan, and the safe refresh shipped.
+- ✅ A1.1 · The list, the scan, and the safe refresh shipped.
   **Done when:** every page keeps its skills in its own `skill/<stem>.md`, and a refresh only appends new names at the bottom of it.
-- A1.2 · One page's list carries a person's own order, not a machine's.
+  **Now:** Tested through its lifecycle 260815 on QPf6, the 260816 move rewrote all 15 live lists to the ranked-list shape in place, and an old-shape list still parses and is rewritten flat on its next write.
+- 🧠 A1.2 · One page's list carries a person's own order, not a machine's.
   **Done when:** a list on disk holds the order a person set by dragging its cards.
-- A1.3 · What git keeps of the rebuilt card view is ruled.
+  **Now:** Waiting on a person: no drag has landed on any list, and QPf3's five rows sit where the 260816 move put them, sorted designs-first by the machine.
+- 🧠 A1.3 · What git keeps of the rebuilt card view is ruled.
   **Done when:** `QPf6`'s Decision row is answered, and this folder follows the answer.
+  **Now:** Waiting on a person: `QPf6`'s Decision Now row, on what git keeps of a folder the machine rebuilds, is still unticked.
+
 
 ### A2 · 🧑 Where you put a name is the whole judgment
-- A2.1 · The cards, the edit buttons, and the typo guard shipped, and the rank became the one judgment.
+- ✅ A2.1 · The cards, the edit buttons, and the typo guard shipped, and the rank became the one judgment.
   **Done when:** the index shows one card per row with ⠿, ✕, ＋ and a note, and the drag is the only judgment it saves.
-- A2.2 · The first REAL judgment on a list is JL's.
+  **Now:** The flattened index is live: ⠿ drag, ✕ with the removed rows folded away, ＋ add at top, and nothing else on the card.
+- 🧠 A2.2 · The first REAL judgment on a list is JL's.
   **Done when:** a person's drag, not a migration, sets the top of a live list.
+  **Now:** Waiting on a person: JL's 260815 work on two QPf3 rows was made in the relation vocabulary the flattening removed, so the list keeps no trace of it and the first drag is still to come.
+
 
 ### A3 · 🖼 One tab, and you can step into a skill without leaving it
-- A3.1 · One action in the workbench makes the whole round trip in a real browser.
+- ✅ A3.1 · One action in the workbench makes the whole round trip in a real browser.
   **Done when:** one click in the 🛠 tab writes the list and draws the view again, seen in the browser JL uses.
+  **Now:** JL's own clicks made the whole round trip through the view's buttons, the POST, and the reload.
+
 
 ### P · 🚧 Discovery stays out of this folder
-- P1 · Discovery treats `skill/` as plugin material and warns on nothing inside it.
+- ✅ P1 · Discovery treats `skill/` as plugin material and warns on nothing inside it.
   **Done when:** no file under any page's `skill/` is listed as a page, and the board builds clean around live `skill/` folders.
+  **Now:** The `_in_plugin` rule in `src/common.py` hides every non-page subfolder of a folded page, so it covers `skill/` without a list of names, and the board builds clean around live skill/ folders.
 
-## States
-### A1 · 🗃 One file you own, and one view the machine rebuilds
-- ✅ A1.1 · Tested through its lifecycle 260815 on QPf6, the 260816 move rewrote all 15 live lists to the ranked-list shape in place, and an old-shape list still parses and is rewritten flat on its next write.
-- 🧠 A1.2 · Waiting on a person: no drag has landed on any list, and QPf3's five rows sit where the 260816 move put them, sorted designs-first by the machine.
-- 🧠 A1.3 · Waiting on a person: `QPf6`'s Decision Now row, on what git keeps of a folder the machine rebuilds, is still unticked.
-
-### A2 · 🧑 Where you put a name is the whole judgment
-- ✅ A2.1 · The flattened index is live: ⠿ drag, ✕ with the removed rows folded away, ＋ add at top, and nothing else on the card.
-- 🧠 A2.2 · Waiting on a person: JL's 260815 work on two QPf3 rows was made in the relation vocabulary the flattening removed, so the list keeps no trace of it and the first drag is still to come.
-
-### A3 · 🖼 One tab, and you can step into a skill without leaving it
-- ✅ A3.1 · JL's own clicks made the whole round trip through the view's buttons, the POST, and the reload.
-
-### P · 🚧 Discovery stays out of this folder
-- ✅ P1 · The `_in_plugin` rule in `src/common.py` hides every non-page subfolder of a folded page, so it covers `skill/` without a list of names, and the board builds clean around live skill/ folders.
 
 ## Files
 ### ⚙️ Engines
@@ -190,3 +185,5 @@ Clicking the lit tab only builds the view again.
 - 260815 2258 · [REVISE-CC] the name-click grew up (JL: "open a new small tab, the whole split should be the skill, like the display split, with ← and →"): the inline lazy iframe of 2240 is retired, the 🛠 card's NAME now posts to the shell, which stages a 🔍 Skill tab framing `/_board/skillview`, and the view itself carries ← → over the page's skills in card order with arrow keys live; standalone workbenches fall back to a browser tab.
 - 260815 2240 · [REVISE-CC] two workbench rulings landed (JL: "only keep the most relative ones" · "each skills we can click and show its content"): pruning became a tombstone, so a person's not-relevant survives every refresh with the removed names in a ↩-restorable fold, and the card's NAME began toggling the skill's live bundle view inline as a lazy iframe; my test tombstone was reverted, because pruning is a person's judgment.
 - 260815 · [DRAFT-CC] page born with the build (JL ruled the plugin into being the same hour): A1/A2 record what shipped and was route-tested, and the store format and refresh rule are written as the contract; the relation vocabulary and drift rule this draft carried were flattened away 260816.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

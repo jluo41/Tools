@@ -5,7 +5,7 @@
     python3 skillpage.py sync <board> <page-id>          # refresh the managed block
     python3 skillpage.py sync <board> --all
     python3 skillpage.py check <board>                   # report staleness, never write
-    python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> skill/ plugin (JL 260815)
+    python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> outline/skill/ (JL 260815)
 
 WHAT THIS IS A SECOND COPY OF. `stage.py`, deliberately. It already solves
 "generate a page from a source that lives somewhere else, then keep it in sync
@@ -48,7 +48,7 @@ from src.common import page_files  # noqa: E402
 
 # Three managed spans, because the derived material belongs in three different
 # sections and one block cannot straddle them (JL 260726: the tree goes in
-# Diagram, the skill's content in Content, the changelog in Log).
+# Outline, the skill's content in Content, the changelog in Log).
 PARTS = ("tree", "body", "log")
 
 
@@ -574,7 +574,7 @@ Delete these instructions once the paragraph is written; the FIRST BLANK LINE ab
 ## Writing Style
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
-## Diagram
+## Outline
 {tree}
 
 **How `{name}` is used**: REPLACE THIS CAPTION with what your figure below actually shows.
@@ -841,7 +841,7 @@ def snapshot(src, dst):
 
 
 def cmd_plug(a):
-    """Write the unit's material into the page's `skill/` plugin (JL 260815).
+    """Write the unit's material into the Page's `outline/skill/` lane.
 
     The design-page shape: the page argues and settles, the plugin holds the
     unit's bytes, and nothing derived is spliced into the .md any more. The
@@ -862,10 +862,10 @@ def cmd_plug(a):
         return (f"{page.name} is not a folded page; a plugin needs the page "
                 f"to own its folder first (QB3)")
     unit_name = src.stem if src.is_file() else src.name
-    dst = page.parent / "skill" / unit_name
+    dst = page.parent / "outline" / "skill" / unit_name
     n = snapshot(src, dst)
     retitle(page, src, unit_name)
-    print(f"🧩 {page.stem} · skill/{unit_name}/ · {n} files (SKILL.md renamed)")
+    print(f"🧩 {page.stem} · outline/skill/{unit_name}/ · {n} files (SKILL.md renamed)")
     return None
 
 

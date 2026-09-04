@@ -47,20 +47,16 @@ A delivery Page keeps its stake locally, sends a consumer-neutral question here,
 ## Aims
 
 ### A1 · Probe belongs at knowledge production
-- A1.1 · New Application and Paper contracts create no local evidence investigation for an existing Insight need.
+- ✅ A1.1 · New Application and Paper contracts create no local evidence investigation for an existing Insight need.
   **Done when:** their Page Types route missing knowledge to this Board.
+  **Now:** Met in the new Paper and Application Page Type contracts written 260817.
+
 
 ### A2 · PageX belongs at knowledge reuse
-- A2.1 · A cross-board fixture resolves a settled Insight handoff without Task-folder access.
+- ⬜ A2.1 · A cross-board fixture resolves a settled Insight handoff without Task-folder access.
   **Done when:** the PageX binding and bounded packet are inspectable.
+  **Now:** Cross-board fixture not yet materialized.
 
-## States
-
-### A1 · Probe belongs at knowledge production
-- ✅ A1.1 · Met in the new Paper and Application Page Type contracts written 260817.
-
-### A2 · PageX belongs at knowledge reuse
-- ⬜ A2.1 · Cross-board fixture not yet materialized.
 
 ## Files
 
@@ -78,3 +74,5 @@ A delivery Page keeps its stake locally, sends a consumer-neutral question here,
 ## Log
 260817 · Two fresh-context runs preserved the direction: Insight used Probe toward Task/Discovery, while Application used PageX toward the settled Insight and routed a missing safety question back to Task.
 260817 · Opened from JL's ruling that Application message design follows the same gather-and-reexpress logic as Paper.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -28,6 +28,8 @@ from . import base
 from . import turnring
 from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from .structure import page_id_of
+from src.common import outline_lane_dirs
+from src.server_config import load_server_config, server_config_dir
 
 
 # ── 权限：跟 Claude Code CLI 一样，该问就问（JL, 260723 1550）──────
@@ -58,8 +60,147 @@ def quality_tool_allowed(name):
     return name in QUALITY_READONLY
 
 
+def chat_guard(page, payload):
+    """Return (read_only, mode, reason), with Labeling HOLD server-owned.
+
+    `quality_check` is a useful browser request; a Labeling HOLD is an artifact
+    fact and therefore cannot be disabled by changing or omitting that request.
+    """
+    page = Path(page)
+    try:
+        head = page.read_text(encoding="utf-8", errors="ignore")[:4096]
+        labeling_hint = bool(re.search(r"(?m)^page-type:\s*labeling\s*$", head))
+    except OSError:
+        labeling_hint = False
+    try:
+        from .labeling import labeling_chat_hold
+        labeling_hold, reason = labeling_chat_hold(page)
+    except Exception:
+        # A known Labeling page fails closed when its receipt derivation cannot
+        # be trusted. Other Page types retain their ordinary Chat permissions.
+        labeling_hold = labeling_hint
+        reason = ("HOLD · labeling receipts could not be safely inspected"
+                  if labeling_hint else "")
+    read_only = bool(payload.get("quality_check")) or labeling_hold
+    mode = "scoped" if read_only else chat_scope(payload)
+    return read_only, mode, reason
+
+
 # 真正会改盘上文件的工具 —— 只有跑过这些，才配说「改动已写盘」。
 WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+
+
+def _space_entries(registry):
+    """Read the small checked-in registry shape without adding a YAML runtime."""
+    if not registry or not registry.is_file():
+        return []
+    entries, current, in_spaces = [], None, False
+    for raw in registry.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if raw == "spaces:":
+            in_spaces = True
+            continue
+        if not in_spaces:
+            continue
+        match = re.match(r"^  - id:\s*(\S+)\s*$", raw)
+        if match:
+            if current:
+                entries.append(current)
+            current = {"id": match.group(1).strip("\"'")}
+            continue
+        field = re.match(r"^    (name|path|config_page):\s*(.+?)\s*$", raw)
+        if current is not None and field:
+            current[field.group(1)] = field.group(2).strip().strip("\"'")
+    if current:
+        entries.append(current)
+    return entries
+
+
+def operating_context(board, root):
+    """Point a Board session at its bounded surrounding SPACE context.
+
+    A Board's own manifest answers which Board/Page is attached.  The shared
+    registry and the SPACE's public config page answer where that Board is
+    mounted and served.  They are intentionally pointers, not eagerly parsed
+    copies: the launched agent reads the live sources when the user's task
+    actually touches one of those facts.
+    """
+    root = Path(root).resolve()
+    board = Path(board).resolve()
+    registries = (
+        root / "spaces" / "registry.yaml",
+        root / "Tools" / "spaces" / "registry.yaml",
+    )
+    registry = next((p for p in registries if p.is_file()), None)
+    entries = _space_entries(registry)
+    owner = next(
+        (entry for entry in entries
+         if root.name in {entry.get("name"), Path(entry.get("path", "")).name}),
+        None,
+    )
+    config_page = root / ".server_config" / "README.md"
+    config_dir = server_config_dir(root)
+    server_values = load_server_config(root)
+
+    lines = [
+        "",
+        "SURROUNDING BOARD CONTEXT (inspect before configuration changes):",
+        "  · Owning unit: " + str(board.parent),
+        "  · Repository / served root: " + str(root),
+    ]
+    if registry:
+        lines.append("  · SPACE registry: " + str(registry.relative_to(root)))
+    else:
+        lines.append("  · SPACE registry: not found under this root")
+    if owner:
+        lines.append(
+            "  · Owning SPACE: {} · {}".format(
+                owner.get("id", "?"), owner.get("name", root.name)
+            )
+        )
+    elif entries:
+        lines.append(
+            "  · Owning SPACE: unregistered/local root; registered neighbors: "
+            + " · ".join(entry.get("id", "?") for entry in entries)
+        )
+    else:
+        lines.append("  · Owning SPACE: unregistered/local root")
+    if config_dir.is_dir():
+        lines.append("  · Root .server_config: PRIMARY hosting configuration")
+        if config_page.is_file():
+            lines.append("  · Shareable hosting protocol: .server_config/README.md")
+        if (config_dir / "settings.env").is_file():
+            lines.append("  · Machine-local hosting settings: .server_config/settings.env")
+            for key, label in (
+                ("JJLUO_SPACE_NAME", "space name"),
+                ("JJLUO_PUBLIC_URL", "reader URL"),
+                ("JJLUO_TAILSCALE_URL", "reader URL"),
+                ("JJLUO_BIND_HOST", "bind host"),
+                ("JJLUO_TAILSCALE_ADDRESS", "Tailscale address"),
+                ("JJLUO_LOCAL_PORT", "listener port"),
+                ("JJLUO_TAILSCALE_PORT", "Tailscale port"),
+                ("JJLUO_ACCESS_MODE", "access mode"),
+            ):
+                if server_values.get(key):
+                    lines.append(f"  · Config {label}: {server_values[key]}")
+            if server_values.get("JJLUO_AUTH_FILE"):
+                lines.append("  · Config auth file: present (contents never print)")
+    elif config_page.is_file():
+        lines.append("  · Public SPACE config page: .server_config/README.md")
+    else:
+        lines.append("  · Public SPACE config page: none at this root")
+    lines.extend([
+        "For hosting, use the root .server_config values first; an explicit user "
+        "or CLI override may win. Use the registry only as ownership/fallback "
+        "context. Read the parent unit and matched config page when the task "
+        "changes Board identity, SPACE routing, hosting, mount, or discovery. "
+        "Update a changed public configuration fact in the same round; ordinary "
+        "Page/Board prose does not mutate SPACE configuration.",
+        "`board.md ## Pages` is the Page registry. The SPACE registry is not a "
+        "Board list. Machine-local `.server_config/settings.env` may be read for "
+        "non-secret startup values, but never print its secrets or edit it "
+        "implicitly.",
+    ])
+    return lines
 
 
 def board_prime_context(board, root):
@@ -103,6 +244,7 @@ def board_prime_context(board, root):
         "grouping in board.md, cross-question consistency. Deep work inside one "
         "question belongs to that question's own chat. Read board.md for the full "
         "picture; wait for the user's instruction.")
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, "board", root))
     return "\n".join(lines)
 
@@ -233,6 +375,7 @@ def group_prime_context(f, board, root):
         "page's own chat. Read the pages for the full picture; wait for the "
         "user's instruction.")
     lines.extend(drawing_owner_context(f, root))
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, letter, root))
     return "\n".join(lines)
 
@@ -286,11 +429,70 @@ def prime_context(f, board, root):
         lines.append(f"  · What it asks: {qtext[:280]}")
     if nitem:
         lines.append(f"  · {nitem} open Aim(s) in its ## Aims.")
+    lines.extend(page_folder_context(f, root))
     lines.append("Read that file for the full picture. You already know which page and board "
                  "this is; wait for the user's instruction.")
     lines.extend(drawing_owner_context(f, root))
+    lines.extend(operating_context(board, root))
     lines.extend(status_strip_context(board, qid, root))
     return "\n".join(lines)
+
+
+def page_folder_context(f, root):
+    """What the page's own folder says at connect time (haipipe-plugin-chat §🧠):
+    page-type, the plan and its tick, open threads, open feedback rows, evidence
+    owed/landed, the page's skill list and task list. Read from disk, never
+    guessed; every part is optional so a page with none still boots."""
+    f = Path(f); d = f.parent; stem = f.stem; out = []
+    try:
+        head = f.read_text(encoding="utf-8", errors="ignore")[:1500]
+        m = re.search(r"(?m)^page-type:\s*(\S+)", head)
+        if m:
+            out.append(f"  · page-type: {m.group(1)}  (load haipipe-page-for-{m.group(1)} before shaping anything)")
+    except Exception:
+        pass
+    o = d / "outline"
+    if o.is_dir():
+        plans = sorted(o.glob(f"{stem}-outline-v*.md"),
+                       key=lambda p: int(re.search(r"-v(\d+)\.md$", p.name).group(1)) if re.search(r"-v(\d+)\.md$", p.name) else 0)
+        parts = []
+        if plans:
+            pt = plans[-1].read_text(encoding="utf-8", errors="ignore")
+            tick = "✅" if re.search(r"(?m)^approved:\s*✅", pt) else "⬜"
+            parts.append(f"plan {plans[-1].name[len(stem)+1:-3]} approved {tick}")
+        disc = o / f"{stem}-discussion.md"
+        if disc.is_file():
+            n = len(re.findall(r"(?m)^### D\d+", disc.read_text(encoding="utf-8", errors="ignore")))
+            parts.append(f"{n} open D<nn> thread(s)")
+        fb = o / f"{stem}-feedback.md"
+        if fb.is_file():
+            m = re.search(r"(?m)^status:\s*(.+)$", fb.read_text(encoding="utf-8", errors="ignore"))
+            if m: parts.append("feedback " + m.group(1).strip())
+        ev = o / f"{stem}-evidence.md"
+        if ev.is_file():
+            m = re.search(r"(?m)^plan:.*?(owed \d+ · landed \d+ · accepted \d+)", ev.read_text(encoding="utf-8", errors="ignore"))
+            if m: parts.append("evidence " + m.group(1))
+        names = [k for k in ("requirement", "discussion", "feedback", "evidence", "files", "log") if (o / f"{stem}-{k}.md").is_file()]
+        out.append("  · outline/: " + (" · ".join(parts) if parts else "no plan yet") + f"  [files: {', '.join(names) or 'none'}]")
+    try:                                   # the phase strip, from disk (src/page_phase.py)
+        import sys as _sys
+        _root = str(Path(__file__).resolve().parent.parent)
+        if _root not in _sys.path:
+            _sys.path.insert(0, _root)
+        from src.page_phase import phase_state, compact
+        out.append("  · phase: " + compact(phase_state(f)) + "   (cli/pagephase.py <page-dir> --owed lists the ticks that are the person's)")
+    except Exception:
+        pass
+    for lane, label in (
+            ("skill", "skills this page is written with (load the one a message needs)"),):
+        dirs = outline_lane_dirs(d, lane)
+        lst = ((dirs[0] / f"{stem}.md") if dirs
+               else d / "outline" / lane / f"{stem}.md")
+        if lst.is_file():
+            rows = [ln[2:].strip() for ln in lst.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.startswith("- ")]
+            if rows:
+                out.append(f"  · outline/{lane}/: {label}: " + " · ".join(r.split(" · ")[0] for r in rows[:12]))
+    return out
 
 
 def tool_brief(name, tin):
@@ -352,103 +554,96 @@ DEFAULT_MODEL, DEFAULT_EFFORT = "opus", "high"
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 
 
-CHAT_RULES = """You are attached to ONE question on a haipipe board.
+PAGE_RULES_BODY = """The page you belong to is the file given below (relative to the repo root,
+which is your working directory: the whole SPACE). Its folder holds:
+  <page>.md          Opening · Outline · Content · Aims          the PRODUCT
+  outline/           Context, Bullet, and Evidence Workspace records owned by
+                     haipipe-plugin-outline
+  runs/ + results/   Level-4 work and paired Results; scripts/ is their engine
 
-Your working directory is the WHOLE repo (the SPACE), so you can read any code
-the question touches — not just the board folder. The one question you belong to
-is the file given below (a path relative to the repo root). That board folder
-holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
-question, each with fixed sections:
-## Opening / ## Diagram / ## Content / ## Aims /
-## States / ## Files / ## Law / ## Lesson / ## Glossary /
-## Discussion / ## Log
-(Old boards may still say `## Items to Finish` or `## Done when` for Aims and
-`## State`, `## Where we are`, or `## Now` for States; all are accepted. `## Why here` is retired.)
+WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full table):
+  a comment on a sentence     > Comment WHO · text · YYMMDD HHMM  directly under that sentence
+  an answerable question      the reply, plus a >> CC<MMDD>: lane under the sentence
+  an open question            ### D<nn> · … (Ask · Options · We lean · Decide) in outline/<stem>-discussion.md
+                              id = highest D<nn> on the board + 1 (discussion AND log files)
+  a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (CONTENT)
+  a plan change               outline/<stem>-outline-v<N>.md; v<N+1> if v<N> is approved ✅ (OUTLINE)
+  a ruling by the person      transcribe it with the quote and time; never decide a tick
+  a fact the page lacks       a typed record in outline/<stem>-evidence-items.md;
+                              SHAPE sets expectation; SURVEY plans supports + input + local Run
+  a promise change            the Aim row on the page: Done when: and Now: (CONTENT)
+  task work                   the task folder the page links; haipipe-task law applies
+  EVERY write                 one record in outline/<stem>-log.md:
+                              `### YYMMDD HHMM · chat: <what changed>` naming the file (newest first)
 
-Sentence-local review is a `>` line written DIRECTLY UNDER a sentence in the
-body, bound to it by adjacency alone, and typed by its first word:
-        The coefficient is 0.42 in the pooled model.
-        > Check: 0.42 is from the robust-SE run, not the clustered one
-        > JL: please fix this before the next draft
-    Lanes are Citation, Value, Display, Check, Q-consumer, Link, Source, Note,
-    plus `> JL:` and `> CC:` threads. A lane is addressed to whoever works on
-    that sentence, which on this turn is you. Read them as requests about the
-    sentence immediately above, not as quoted prose.
+THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Five indexed phases,
+and the strip below says which one the page is in; a cycle word from the person runs
+that pass here, in this session, leaving the artifact, one log record (receipt folded
+under it) and the strip in your reply:
+  00 CONTEXT  /haipipe-page-context    PREPARE: Collect → Resolve → Freeze into Context Workspace
+  01 OUTLINE  /haipipe-page-outline
+    SHAPE    /haipipe-page-outline    brief → propose → react → revise; the person ticks approved:
+    SURVEY   /haipipe-page-outline    each typed item gets 0..N Execution/Discovery Supporting Runs,
+                                      one Local Input, one indexed Local Run, and Decide
+  02 EVIDENCE /haipipe-page-evidence
+    LAND     /haipipe-page-evidence   validate/execute supports, freeze one input, execute one
+                                      local Run, and bind its ready VALUE/CITE/DISPLAY Result
+    EMBED    /haipipe-page-evidence   interpret ready local Results into plan v<N+1>, never
+                                      restructure; back to SHAPE
+  03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
+                                      Page Division Writing Run per commissioned division
+  04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only Quality Check
+Announce the phase/cycle on every reply (`01 OUTLINE / SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
+until the plan and its runs agree; every evidence number is answered by a RUN, the run computes
+and the page interprets; WRITE runs without asking; never write the person's ticks (approved:,
+Decide, verified:, accepted:); never judge your own version.
 
-Scope, and it is hard:
-  · You may READ anywhere in the repo.
-  · You may EDIT ONLY the one question file given below. Nothing else —
-    not board.md, not another question, not build.py.
-  · Every change you make, add one line at the TOP of that file's ## Log:
-    `YYMMDD HHMM · what changed` (newest first).
-  · Preserve direct `> WHO:` comments and `> ✎` edit records; add new review
-    feedback directly beneath the sentence it concerns.
-
-Write the way the board is written: short topic line, then an indented
-explanation. Plain language. No invented jargon. Answer in English by default;
-only switch to another language if the user clearly writes to you in it."""
-
-
-FULL_RULES = """You are a full Claude Code session attached to ONE question on a
-haipipe board. Your working directory is the WHOLE repo (the SPACE) — you have
-the full toolbelt, may call skills, and may reach any file the question is about.
-
-The one question you belong to is the file given below (a path relative to the
-repo root). This session belongs to that question: prefer to keep your board
-edits inside its `QX-<slug>.md`, and whatever you change there, add one line at
-the TOP of its `## Log`: `YYMMDD HHMM · what changed`.
-
-Each `QX-<slug>.md` has fixed sections: ## Opening / ## Diagram / ## Content /
-## Aims / ## States / ## Files / ## Law / ## Lesson / ## Glossary / ## Discussion /
-## Log. Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
-sentence they concern.
-
-Write the way the board is written: short topic line, then an indented
-explanation. Plain language, no invented jargon. Answer in English by default;
-only switch to another language if the user clearly writes to you in it."""
-
-
-BOARD_CHAT_RULES = """You are attached to the WHOLE BOARD of a haipipe board —
-the index page, not one question.
-
-Your working directory is the WHOLE repo (the SPACE), so you can read any code
-the board discusses. The board folder given below holds `board.md` (title ·
-`spine:` · `close:` · ## Topic / ## Pipeline / ## Pages) and one `QX-<slug>.md`
-or `SN-<slug>.md` per page.
-
-Scope, and it is hard:
-  · You may READ anywhere in the repo.
-  · You may EDIT ONLY markdown files INSIDE the board folder (board.md and the
-    page files). Nothing outside it, and never board/ because it is generated.
-  · Board-level work is yours: which page to act on next, ## Pages order,
-    grouping and group intros, cross-question consistency. Deep work inside one
-    question belongs to that question's own chat.
-  · Every page you change, add one line at the TOP of its ## Log:
-    `YYMMDD HHMM · what changed` (newest first).
-  · Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
-    sentence they concern.
+WALLS: generated files (-feedback, -requirement, -evidence) are regenerated with
+their cli/*.py, never hand-edited · _runs/, runs/ and a QA file in `state: working`
+are never written · approved: accepted: read: verified: are a person's · a signed
+lane is never deleted · a sentence is never rewritten without its ✎ record ·
+Content states the present (no dates, no names as authority) · a ✅ plan changes
+only as v<N+1>. Before a write, say the address and the row above you are using.
+Per message load ONE skill's ⚡ Brief (the row names it) and announce it.
+A `>` line under a sentence is a lane addressed to whoever works on that sentence;
+read it as a request about the sentence above, not as quoted prose.
 
 Write the way the board is written: short topic line, then an indented
 explanation. Plain language. No invented jargon. Answer in English by default;
 only switch to another language if the user clearly writes to you in it."""
 
 
-BOARD_FULL_RULES = """You are a full Claude Code session attached to the WHOLE
-BOARD of a haipipe board — the index page, not one question. Your working
-directory is the WHOLE repo (the SPACE) — you have the full toolbelt, may call
-skills, and may reach any file the board is about.
+CHAT_RULES = ("You are attached to ONE page of a haipipe board, in the SCOPED tier: read "
+              "anywhere, write only inside this page's folder and the task folders it links.\n\n"
+              + PAGE_RULES_BODY)
 
-The board folder given below holds `board.md` (title · `spine:` · `close:` ·
-## Topic / ## Pipeline / ## Pages) and one `QX-<slug>.md` or `SN-<slug>.md`
-per page. Board-level work is yours: which page to act on next, the Pages section,
-cross-question edits. Never hand-edit board/ because it is generated. Whatever
-page you change, add one line at the TOP of its `## Log`:
-`YYMMDD HHMM · what changed`. Preserve direct `> WHO:` comments and `> ✎`
-edit records beneath the sentence they concern.
+
+FULL_RULES = ("You are a full Claude Code session attached to ONE page of a haipipe board: "
+              "the full toolbelt, skills, and write access anywhere in the SPACE.\n\n"
+              + PAGE_RULES_BODY)
+
+
+BOARD_RULES_BODY = """The board folder given below holds `board.md` (title · `spine:` · `close:` ·
+## Topic / ## Pipeline / ## Pages) and one page folder per page. Board-level work is
+yours: which page to act on next, the ## Pages order, grouping and group intros,
+cross-page consistency. Deep work inside one page belongs to that page's own chat
+and follows haipipe-plugin-chat §🗺. Never hand-edit board/ (generated). Every page
+you change gets one record at the top of its outline/<stem>-log.md:
+`### YYMMDD HHMM · chat: <what changed>`. Preserve every signed `> Comment` and `> ✎`
+line beneath the sentence it concerns.
 
 Write the way the board is written: short topic line, then an indented
-explanation. Plain language, no invented jargon. Answer in English by default;
+explanation. Plain language. No invented jargon. Answer in English by default;
 only switch to another language if the user clearly writes to you in it."""
+
+
+BOARD_CHAT_RULES = ("You are attached to the WHOLE BOARD of a haipipe board, in the SCOPED tier: "
+                    "read anywhere, write only markdown inside the board folder.\n\n" + BOARD_RULES_BODY)
+
+
+BOARD_FULL_RULES = ("You are a full Claude Code session attached to the WHOLE BOARD of a haipipe "
+                    "board: the full toolbelt, skills, and write access anywhere in the SPACE.\n\n"
+                    + BOARD_RULES_BODY)
 
 
 def transcript_markdown(rows, head):
@@ -669,6 +864,11 @@ class ChatMixin:
         #   bypass  全工具 + 全技能 · 什么都不问（= --dangerously-skip-permissions）
         quality_check = bool(p.get("quality_check"))
         mode = chat_scope(p)
+        guarded, guarded_mode, labeling_hold_reason = chat_guard(f, p)
+        if guarded:
+            quality_check = True
+            mode = guarded_mode
+        labeling_hold = bool(labeling_hold_reason)
         # 整板会话（QD5）：f 是 board.md 而不是某一题。规则、开场定位、
         # 「自动放行哪些写」三处跟着换；session 照旧记在 f（= board.md）头部。
         is_board = f.name == "board.md"
@@ -745,7 +945,10 @@ class ChatMixin:
             if quality_check and not quality_tool_allowed(name):
                 denied.append(tool_brief(name, tin))
                 return PermissionResultDeny(
-                    message="Quality Check is read-only: it may inspect evidence but cannot write or run tools.")
+                    message=("Labeling HOLD is read-only: Chat may inspect and discuss, "
+                             "but cannot write, run, or cross the human gate."
+                             if labeling_hold else
+                             "Quality Check is read-only: it may inspect evidence but cannot write or run tools."))
             if name in READONLY:
                 return PermissionResultAllow()
             key = str(f)
@@ -832,9 +1035,10 @@ class ChatMixin:
             # 直接放行了），所以用 disallowed_tools 硬关 —— 这条是 SDK 层的黑名单，
             # 不经过回调，最稳。scoped 只留读 + 改这一题的文件。
             SCOPED_OFF = ["Bash", "BashOutput", "KillShell", "Task",
-                          "WebFetch", "WebSearch", "Skill"]
+                          "WebFetch", "WebSearch"]   # Skill stays: it loads text, writes nothing
             if quality_check:
                 SCOPED_OFF += ["Edit", "Write", "MultiEdit", "TodoWrite"]
+                SCOPED_OFF += ["NotebookEdit"]
             # cwd 是整个 repo（SPACE），不是板文件夹 —— 会话要能读它讨论的代码。
             # 所以给系统提示的是「相对 repo 根的路径」，不再是光文件名。
             try:
@@ -852,7 +1056,7 @@ class ChatMixin:
                         (BOARD_CHAT_RULES + f"\n\nThe board folder you may edit .md files in: {brel}\n\n")
                         if is_board else
                         (CHAT_RULES + f"\n\nThe question file you may edit: {rel}\n\n")) + prime
-                sources = []                 # 不加载 CLAUDE.md / skill 注册表 → 便宜
+                sources = ["user", "project", "local"]   # skills loadable in scoped too (haipipe-plugin-chat 0.2.0)
             else:
                 sysp = ((BOARD_FULL_RULES + f"\n\nThis session's GROUP folder: {rel}\n\n")
                         if is_group else
@@ -860,6 +1064,11 @@ class ChatMixin:
                         if is_board else
                         (FULL_RULES + f"\n\nThis session's question file: {rel}\n\n")) + prime
                 sources = ["user", "project", "local"]   # 加载技能 → Skill 工具可用
+            if labeling_hold:
+                sysp += ("\n\nLABELING HOLD — READ-ONLY CONSULTATION. "
+                         + labeling_hold_reason
+                         + " You may inspect and discuss. Do not edit any file, run any "
+                           "command, create any semantic event, or claim that the frontier advanced.")
             kw = dict(
                 cwd=str(self.root),
                 system_prompt=sysp,
@@ -1010,7 +1219,10 @@ class ChatMixin:
             # every turn look different and silently reconnected every time
             # (caught by the stage line still saying "booting" on turn two).
             # A held client IS the conversation; only an explicit pick moves it.
-            fp = (model, effort, mode, is_board, bool(stream))
+            # `quality_check` is CONNECT-time because its disallowed_tools are;
+            # include it so a held writable scoped client can never be reused
+            # for a read-only Quality Check or Labeling HOLD turn.
+            fp = (model, effort, mode, is_board, bool(stream), quality_check)
             key = str(f)
 
             async def make():

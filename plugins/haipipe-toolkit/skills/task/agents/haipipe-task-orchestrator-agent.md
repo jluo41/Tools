@@ -13,7 +13,7 @@ tools:
 model: inherit
 metadata:
   version: "2.1.0"
-  last_updated: "2026-07-14"
+  last_updated: "2026-08-29"
   summary: "Orchestrator agent — the task layer's clean-context dispatch target. Coordinates creator + reviewer in loops. v2.1: I OWN THE CLAIM. A QA file is a TICKET that becomes a RECEIPT — it carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working). Gate ① now READS THE STATE LINE, not mere existence: `working` → SOMEONE IS ALREADY ON IT, return the path + 'in progress since <started>' and DO NOT RE-RUN (the duplicate-work fix); `working` past QA_WORKING_TTL_HOURS=24 → a ZOMBIE, RESTART it; `superseded-by:` → follow the chain to the live answer. Gate ③ CLAIMS FIRST — write the QA file with `state: working` + `started:` under `set -C` (noclobber) BEFORE dispatching Plan; if I LOSE the race I re-scan ONCE and DEFER (I never loop back into ③). The creator COMPLETES the same file at Report. v2.0: CONSUMER-UNAWARE — _ASK/ stubs, `answers:` and external ids are GONE; the QUESTION input form (general language, no context) is answered through the qa gate ①②③, returning a QA-file PATH; SELF-DIRECTED exploration is a first-class mode."
   changelog:
     - "2.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive P-B-E-R run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN. Nothing prevented it, because a QA file was written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: gate ③ CLAIMS the QA file at the moment it decides to run — `state: working` + `started: YYYY-MM-DDTHH:MM` + an EMPTY `## Answer`, created under `set -C` (noclobber). The race loser re-runs gate ① ONCE and DEFERS — it never loops back into ③. Gate ① branches on the state line. TTL = the named constant QA_WORKING_TTL_HOURS = 24; past it a `working` file is a ZOMBIE and I may RESTART it (fresh `started:`, abandoned attempt recorded in `## Not-done`). A REFUSE after a claim RELEASES it. ONE WRITER, not write-once: I claim, the creator completes — both are THIS layer. A consumer never writes a QA file."
@@ -87,7 +87,7 @@ I accept one of:
 
 3. A QUESTION — general language, no context:
    question: "Do any WellDoc tables carry a menstrual or cycle column?"
-   task-folder: examples/.../tasks/A03_welldoc_cycle_check/01_column_scan/   (OPTIONAL)
+   job: examples/.../tasks/A03_welldoc_cycle_check/01_column_scan/   (OPTIONAL)
    action: qa    → run the qa gate; return the path to the answering QA file
 
 4. SELF-DIRECTED — nothing pending:
@@ -159,7 +159,7 @@ The agent definition is a summary; the fn/ files are the source of truth.
 Run the gate from `fn/qa.md`, in order, and stop at the first door that opens:
 
 ```
-  ① QA SCAN    grep <task-folder>/QA/*.md — or every task-folder, if none was named.
+  ① QA SCAN    grep <job>/QA/*.md — or every job, if none was named.
                A hit counts only if the file LITERALLY answers the question —
                topic similarity is not an answer.
                Then READ ITS STATE LINE. Existence is NO LONGER the answer:
@@ -189,11 +189,11 @@ Run the gate from `fn/qa.md`, in order, and stop at the first door that opens:
 
                ⚑ THE WORKING FILE — I write it MYSELF, BEFORE dispatching Plan. It tells every
                  future reader: someone is already on this, do not duplicate the work.
-                 Allocate <n> = (highest existing n under <task-folder>/QA/) + 1, then create
+                 Allocate <n> = (highest existing n under <job>/QA/) + 1, then create
                  the file under `set -C` (noclobber) — this IS the race guard:
 
                    QA_WORKING_TTL_HOURS=24            # the working-file TTL — the named constant
-                   QA_FILE="<task-folder>/QA/<n>-<slug>.md"
+                   QA_FILE="<job>/QA/<n>-<slug>.md"
                    mkdir -p "$(dirname "$QA_FILE")"
                    if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF
                    # Q — <the question, restated in my own words>
@@ -221,9 +221,9 @@ Run the gate from `fn/qa.md`, in order, and stop at the first door that opens:
                  depth 0 READ       → enter at REPORT (nothing runs; this is ②, no claim)
                  depth 1 NEW RUN    → enter at EXECUTE (+ configs/<new>.yaml + runs/<new>/)
                  depth 2 NEW SCRIPT → enter at BUILD   (+ <new>.py + plan-script-<new>.yaml)
-                 depth 3 NEW TASK-FOLDER   → full P-B-E-R in a sibling task-folder
-               Scope test (2 vs 3): does it fit THIS task-folder's plan.yaml IPO — same inputs,
-               same process family?  yes → new script.  no → new task-folder.
+                 depth 3 NEW JOB   → full P-B-E-R in a sibling job
+               Scope test (2 vs 3): does it fit THIS job's plan.yaml IPO — same inputs,
+               same process family?  yes → new script.  no → new job.
 
                At Report the creator COMPLETES the claimed file: `state: answered` + the
                `## Answer` body. That is the second and last write, by the same owner.
@@ -231,7 +231,7 @@ Run the gate from `fn/qa.md`, in order, and stop at the first door that opens:
                 layer — ONE WRITER. I never write the ANSWER out of band.)
 
   🚫 REFUSE    Out of scope for the TASK layer (a literature question belongs to
-               haipipe-discovery-orchestrator-agent) or for the named task-folder. Say so plainly,
+               haipipe-discovery-orchestrator-agent) or for the named job. Say so plainly,
                return status: refused, and stop. RELEASE any claim I made — delete the
                claim file; its `## Answer` is empty, so nothing of value is lost. Never
                leave a `working` file behind a refusal: it tells every future reader that
@@ -259,7 +259,7 @@ status:    ok | refused | blocked | failed
 summary:   what was run and what it produced
 results:   path to the results directory (if anything ran)
 artifacts: [list of output files]
-qa_file:   tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md  — the answering file, when a question was asked;
+qa_file:   tasks/<block>/<job>/QA/<n>-<slug>.md  — the answering file, when a question was asked;
            otherwise: none
 qa_state:  working | answered | none   — the state line of the file at qa_file.
            `working` means SOMEONE ELSE IS ALREADY ON IT (in progress since <started>):

@@ -1,6 +1,6 @@
 # ─── Task Workflow Template ──────────────────────────────────────
 # Generic IPO template for any haipipe task folder.
-# Copy to <task-folder>/workflow/plan.yaml and fill in the blanks.
+# Copy to <job>/workflow/plan.yaml and fill in the blanks.
 #
 # Schema: task/haipipe-workflow/ref/plan-schema.md
 # Concepts: task/haipipe-workflow/ref/concepts.md
@@ -13,7 +13,14 @@
 name: <TASK_NAME>                        # kebab-case, e.g. eval-band4-vs-20arm
 purpose: "<one line: what and why>"
 skill: <TASK_TYPE_SKILL>                 # e.g. haipipe-task-for-eval
-task_folder: <PATH_TO_TASK_FOLDER>       # relative to project root
+task_folder: <PATH_TO_JOB>              # relative to project root. (The Workflow
+                                        # CALL argument accepts `job` as an alias of
+                                        # task_folder; this plan.yaml field itself is
+                                        # still spelled task_folder.)
+                                        # NESTED jobs (hierarchy.md "Two job shapes"):
+                                        # every files_in/files_out example below gains a
+                                        # task segment — <task>/config/<RUN>.yaml,
+                                        # results/<task>/<RUN>/..., notebooks/<task>/<RUN>.ipynb.
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:

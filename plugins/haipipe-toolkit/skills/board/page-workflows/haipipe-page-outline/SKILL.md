@@ -1,445 +1,462 @@
 ---
 name: haipipe-page-outline
 description: >-
-  The OUTLINE phase contract for any Board Page, and phase ① of the page workflow.
-  It agrees the Page shape, types each evidence obligation, and uses Probe's
-  PageX lane for exact accepted-Page bindings before prose is written. Task or
-  Discovery obligations are handed to Probe's QA lane in the next phase. Its
-  deliverable is a versioned file at <page>/outline/<stem>-outline-v<N>.md and it
-  exits only when a person approves it. The Page Type supplies WHICH WORDS the
-  plan may use; this phase supplies WHICH ARGUMENT their sequence makes, and
-  runs that as the first of five self-consistency checks. Trigger: page outline,
-  OUTLINE phase, plan the page, story arc, arc check, division order, PageX,
-  accepted Page evidence, approve the outline, /haipipe-page-outline.
+  The 01 OUTLINE phase of a Board Page. Treats the addressed Bullet as the
+  primary plan-evidence-content unit:
+  two planning cycles, SHAPE (brief → propose → react → revise; name every typed
+  Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
+  Execution/Discovery Supporting Runs, one Local Input, and exactly one local
+  Page Evidence Item Run declaration). Writes the versioned plan,
+  Evidence Item table, open threads and log;
+  records evidence-to-Run lineage but allocates no Ticket and executes no material. Trigger: page outline, OUTLINE
+  phase, shape the plan, survey the evidence items, evidence item table, review,
+  check, read, or approve the outline, fold evidence into the plan,
+  /haipipe-page-outline.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-08-22"
-  summary: "0.10.0 takes the ARC: the Page Type supplies WHICH WORDS a page may use and this phase supplies WHICH ARGUMENT they are arranged to make, so the sequence-is-the-argument rule, the three forbidden orderings and the swap test move here from haipipe-page-for-task and reach all ten types; self-consistency grows to FIVE checks with ARC first, and its third test is that the heaviest finding owns a division rather than a bullet inside someone else's. 0.9.0 put Aims in the plan file and made the version rule protect a promise, never a format."
+  version: "0.23.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-outline · agree the shape before writing a word of it
+# /haipipe-page-outline · SHAPE the plan, then SURVEY what it owes
 
-**LOAD `haipipe-page` FIRST**, then the Page Type, then this file, then `haipipe-plugin-outline` for the file's own shape. This contract owns the PHASE: its authority, its exit, and what it may not touch. The plugin owns the file and the tab, and this file never restates them.
+Enter through the canonical Page chain, in order:
+
+```text
+haipipe-page
+  → haipipe-page-workflow
+  → haipipe-page-outline
+  → the exact owning workflow-phase skill
+  → the exact Page Type skill
+  → haipipe-plugin-outline/ref/plan-grammar.md
+  → haipipe-plugin-outline/ref/item-table.md
+  → haipipe-plugin-outline/ref/review-packet.md (only for a human review or approval)
+  → haipipe-run + selected workers (SURVEY inventory only; no dispatch)
+  → haipipe-plugin-outline (presentation)
+```
+
+The current `haipipe-page-context` PREPARE record must be fresh before this
+chain acts. The owning workflow and Page Type supply the Page's
+outline/narrative/style policy.
+Do not route through `haipipe-page-for-task`; that compatibility variant is no
+longer part of this design. Load no sibling Page and no board-wide checker
+output before reading the target Page.
+
+The Page workflow gives OUTLINE two planning cycles. Its sibling
+`haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-content` owns the
+later WRITE cycle. All governing context must first be resolved by
+`haipipe-page-context`.
+
+The reader sees these authorities through one Outline plugin with three
+workspaces: **Context Workspace** for governing inputs, **Bullet Workspace**
+for the plan, and **Evidence Workspace** for what each Bullet needs.
+Requirement, Discussion, Feedback, Files, Log, and Skills remain separate
+records on disk but appear together inside Context Workspace. None is copied
+back into `page.md`.
+
+Both the main Page and the Outline plan card expose the same compact numbered
+workflow strip: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`, with the current cycle
+highlighted. Arrow notation describes phase flow, not literal UI separators.
+The planning surface does not show a Shape-versus-Content mismatch alarm;
+Content may correctly be empty before EMBED/CONTENT. Any structural mismatch
+that matters is evaluated by the owning phase's checker at its boundary.
+
+```text
+OUTLINE part
+  SHAPE    this file    plan + typed item expectation          👤 approved:
+  SURVEY   this file    classify supports + Local Input + Local Run    👤 Decide, per item
+  LAND     evidence     allocate planned routes, execute → Result     ⚙ every make-item ready
+  EMBED    evidence     fold ready Results into plan v<N+1>     ⚙ back to SHAPE
+```
+
+## 🧱 Bullet · the Outline's primary unit
+
+A **Bullet** is one planned reader move with a stable `C<n>.P<m>.B<k>` address.
+It is smaller than a paragraph and more durable than a sentence: a Section Page
+normally realizes one Bullet as one sentence, while another Page type may use
+one or more sentences. Its head names the job the prose must do, not the final
+prose itself.
+
+```text
+Bullet
+├── Address       stable C.P.B identity
+├── Head          planned reader move
+├── Note          bounded rationale or constraint
+├── Evidence      zero-to-many typed Evidence Items
+└── Realization   CONTENT-written Page sentence(s), linked with realizes:
+```
+
+The Bullet is the shared unit across Bullet Workspace and Evidence Workspace.
+SHAPE revises its intended move; SURVEY maps what supports it without changing
+its meaning; LAND and EMBED return ready material; CONTENT alone writes its Page
+prose. Evidence Items serve a Bullet—they do not become competing outline rows.
 
 ## ⚡ Brief
 
 ```text
-Q          agree the SHAPE of the page before a word of it is written:
-           sections, paragraphs, bullets, and what each bullet still owes
-WRITES     <page>/outline/<stem>-outline-v<N>.md only; never the page itself
-
-WALLS
-  never writes prose, lands a card, or dispatches a question
-  never invents a division the Page Type does not allow (§📐: read the
-    type's outline: block; fixed | grammar | resolved | no key = base order)
-  never ticks `approved:`; that tick is a person's
-  a tick belongs to the version it ticked: evidence moving an approved
-    plan makes a v<N+1>, never a quiet edit
-  heads and Notes state the PRESENT: no past tense, no bare date codes
-  an answered ask is APPENDED to its own bullet, never re-bulleted;
-    a built unit's Drawn: is transcribed from its README claim
-  the four checks (① coverage ② address ③ value ④ shape) run and pass
-    BEFORE the person is asked
-
-READ ECONOMY
-  read fully ONLY the target page, the plan, and this brief
-  trust the plan's Answered:/Drawn: values as written; re-read only cards
-    whose line ends `· recount`, plus one spot-check (haipipe-page-draft §📖)
-  batch shell calls; scope cli/check.py output to your page with grep
-  never paste board-wide output or compile logs into your context; the
-    board doors return compact JSON, use them
-
-ROUTES (§🔀)
-  source: page ─▶ Probe/PageX exact-file binding here in OUTLINE
-  source: task|discovery ─▶ Probe/QA after the person's LOOK
-  any of the four ❌ ─▶ fix the plan HERE. The person is not asked yet.
-  four pass, new Task/Discovery question ─▶ 🧑 LOOK, then ② PROBE
-  four pass, existing card or other landing gap ─▶ 🧑 LOOK, then ③ EVIDENCE
-  four pass, nothing owed, approved ✅ ──▶ ④ DRAFT
-  not yet ⬜ ────▶ stay in OUTLINE, or HOLD if the person is unavailable
-  a Page Type refuses the shape ──▶ fix the plan, never the Page Type,
-                                    unless the mismatch is a real finding
-                                    against that type (record it as one)
-
-RECEIPT  one phase receipt per pass, shape in §🧾 below; field law:
-         ../haipipe-page-workflow/ref/page-run-contract.md
-         §Receipt step, field by field
+Q        what will this page say, division by division, bullet by bullet;
+         what does each bullet owe; and where in tasks/ does each owed thing
+         come from?
+READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
+         (open rows) · outline/<stem>-evidence.md (the table joined to the
+         disk) · the owning workflow phase's outline policy · the page · the current plan ·
+         the project's Execution/Discovery Run inventories (SURVEY only) ·
+         outline/<stem>-context.md · outline/skill/<stem>.md when present
+WRITES   outline/<stem>-outline-v<N>.md · outline/<stem>-evidence-items.md ·
+         outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
+         record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
+         (generated pointers) · never the page
+CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
+         person is asked (SHAPE); every make-item has an audited Supporting/Local
+         Run map, one explicit Local Input, and one decision (SURVEY)
+ENDS     SHAPE: copilot records a person's approved: tick; auto records the
+         owed tick and follows the declared gate policy · SURVEY: every row is
+         decided, or auto records the person-reserved Decide as owed
+WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
+         mints no Aim · names no division the type refuses · ticks nothing ·
+         changes a ✅ plan only as v<N+1> · never writes a Status word
+ROUTES   SHAPE → SURVEY (agreed or auto-forwarded, marks owed) · SHAPE → CONTENT
+         (evidence-aware and allowed forward) · SURVEY → LAND (every item graph classified) ·
+         either → SHAPE again · HOLD (copilot waits, or a real input/stop blocks auto)
+RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
+         ../haipipe-page-workflow/ref/page-run-contract.md §Receipt step
 ```
 
-Open the full contract below only where this brief does not settle your case; the full text wins every conflict.
+## ⓪ Boot · load little, trust the plan
 
-## 🎯 The authority test
+- **Load**: this brief, the owning workflow phase's outline policy (`fixed` lists the
+  divisions · `grammar` fixes a first-word set and an order rule · `resolved`
+  points at a source outside the type · no key means the base section order),
+  `ref/plan-grammar.md`, the page, the generated Context record, and the other
+  process records under `outline/`. A missing, stale, or conflicting required
+  Context row routes to CONTEXT before SHAPE or SURVEY continues. The
+  policy sits in the phase skill's contract, which the Skill
+  tool strips: read the file's first 20 lines with the Read tool. Read the
+  page once, with the Read tool; a page piped through `cat` into a persisted
+  output is read twice.
+- **Trust the plan's `Answered:` and `Drawn:` lines as written.** Re-read only
+  a card whose line ends `· recount` (it counts the run's own artifacts), plus
+  one spot-check; a mismatch there means the plan is stale, and the route is
+  this phase again, never a quiet correction.
+- **In session or as an agent, the trace is the same**: the plan file (or the
+  table), the log record, the receipt. `haipipe-page-outline-agent` runs the
+  pass in a fresh context when the RUN loop dispatches it; a pass typed in a
+  person's own session (the 🎨 Studio chat) is equally a pass.
+
+## 🧩 SHAPE · brief → propose → react → revise, until the shape is agreed
+
+The cycle where the human and the AI shape the plan together. Named for what
+BOTH sides do; it ends when the shape is agreed, never earlier.
 
 ```text
-owns       the SHAPE: which sections, which paragraphs, which bullets,
-           and what each bullet still owes
-           and the AIMS: one target plus its `Done when:` test each, agreed
-           HERE and living in the plan file (moved off the page 260819, JL:
-           "Aims should be move together with outline"; DRAFT transcribes)
-may do     add · delete · move · rewrite, freely, while unapproved
-exits      FOUR machine checks pass, THEN a person ticks `approved:`
-           (the four are §🚦 below; the person judges DIRECTION, not arithmetic)
-🚫 may not write prose · land a card · dispatch a question · invent a
-           division the Page Type does not allow
+1 BRIEF     the person says the narrative in a few lines: what this page must argue
+2 PROPOSE   the AI writes plan v1 from the brief + owning phase policy + venue;
+            every owed thing is a named typed Evidence Item with Label + Expected + Accept
+3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
+4 REVISE    the AI folds the rulings into v2
+loop 3 ⇄ 4 until the person ticks approved:
 ```
 
-How a bullet is WRITTEN — a terse Capitalized HEAD, then its folded
-`Note:`/`Answered:`/`Drawn:` line, the mark last, every bullet carrying one of
-the three — is the plugin's §✂️, stated once there and not restated here.
+Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
+on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
+movement of the later CONTENT/WRITE phase, while Brief is SHAPE input.
 
-**A head or Note states the PRESENT, never the past** (JL 260820: "我们这里
-不是做 log 的地方，content 永远只包含最新的东西"): no "Before <date> it was
-X", no "this used to be Y". The plan describes what the page will SAY NOW;
-what changed and when belongs to the page's `## Log` and the run's receipts.
-A renumber or a reversal therefore rewrites the bullet clean instead of
-narrating the old state next to the new one. Attribution is part of the same
-rule: a bare date code ("260819") or a person's name as authority never sits
-in a head or Note — the plan states the rule, and Log rows, Discussion, and
-ticks carry who and when (haipipe-page-draft §🕰, ruled 260820).
+### ① Prepare · one command runs the mechanical half
 
-## 📐 The Page Type's `outline:` block is READ, not assumed
+```bash
+python3 <haipipe-board>/cli/outline-pass.py <page>.md
+```
 
-**Every Page Type that exists already declares its mode.** All ELEVEN LIVE types
-do, in an `outline:` block under `metadata:`. Until 260819 nothing in this phase
-read it, so a plan's shape was whatever its author felt like:
+It regenerates the three derived files, runs the plan checks for this page
+(hard), runs `cli/check.py` scoped to the page, rebuilds the board (skip with
+`--no-build`) and prints a receipt-lite. Run it TWICE: once before the plan is
+written, to read; once after, to measure, because the counts and the checks
+describe the plan on disk. The log record is written after the second run, so
+its folded receipt carries measured numbers:
 
 ```text
-  mode: fixed      brief · insight · round · seed · venue          (5)
-                   the type LISTS the divisions. Fill them. Do not add, drop
-                   or reorder.
-  mode: grammar    intervention · narrative · task                 (3)
-                   a closed FIRST-WORD set plus an order rule. Choose how many
-                   of each; write the free title after the fixed word.
-  mode: resolved   artifact · section · stage                      (3)
-                   the outline lives OUTSIDE the type, at the path its `source:`
-                   names. RESOLVE it first. A missing source is a HOLE, never
-                   a licence to invent one.
+requirement  V1 Shape · V2 Size · V3 Refused · V4 Moves   read before a bullet is written
+feedback     n routed · n open · n served · n declined     an open row is served or declined this pass
+             evidence     cycle: … · items n · decided n/n · <status tally>   what the table says
+checks       plan-shape-off-type · bullet-missing-note · plan-no-arc ·
+             feedback-unserved · head-too-long · head-too-short ·
+             note-too-long · note-quotes-page · serves anchors   0 ❌ before the tick
+tab          🧭 chips rebuilt                               open it and look
 ```
 
-⚠️ **This list was wrong from 260819 to 260822**: it named `dash`, a RETIRED type,
-and omitted `round`, a live one. The COUNT was accidentally right, which is why
-nobody caught it for three days — and the retired type was still on disk, under an
-`_archive/`, answering greps and looking authoritative.
+Run by hand, it is the three generators (`cli/requirement.py`,
+`cli/feedback.py collect`, `cli/evidence-status.py`), the plan checks
+(`src/plan_shape.py`, as `checks/outline.py --boards <board>` runs them),
+`cli/check.py <board>`, and `cli/build.py <board>`.
 
-That is what got the whole archive convention deleted the same day (JL: "我既然把
-它变成 archive 了，意思就是说要把它们都删掉…旧的东西会误导我们"). Nine archive
-roots, 487 files, removed from the skill tree; `skills/STRUCTURE.md` carries the
-rule. A retired type is now DELETED, so this list can only ever drift by omission,
-never by naming something that no longer exists.
+### ② Plan · the owning phase gives the words, this pass gives the argument
 
-`find <skills>/*/page-types -maxdepth 1 -type d -name 'haipipe-page-for-*'` is the
-authority, and it is the only one.
+- **Read the phase policy first.** `fixed`: fill the listed divisions, add none, drop
+  none. `grammar`: choose how many of each first word, write the free title
+  after it. `resolved`: resolve the source the type names; a missing source
+  is a hole, never a licence to invent a shape or copy a sibling's.
+- **One `## C<n>` per Content division of the page.** A flat Section page
+  (one `### §1`) is one `C1` with `P1` to `P<n>`; the SM00 specimen has three
+  because its page has three parts.
+- **`arc:` is one sentence that argues.** Every adjacent pair of divisions
+  (or, on a one-division page, of paragraphs) passes the swap test: name why N
+  must precede N+1 ("Method before Result, or the number cannot be believed");
+  a date, a run order or a config order is not a reason. The heaviest finding
+  has its own division, or its own paragraph on a one-division page; a finding
+  a reader cannot reach from the list is mis-weighted.
+- **The Narrative row's order binds.** A Round's proposed reader order is an
+  input served through that row; where the two differ, follow the row and
+  open a `D<nn>` naming the Round's row, because the Narrative ratifies order
+  changes, not a Section.
+- **A Section page plans sentence slots.** One bullet per slot in the
+  Narrative row's order; the venue's moves (V4) are the slots' jobs; V2 sets
+  the budget; a division V3 refuses fails ④ here and never reaches CONTENT
+  part. Terms are defined inline the first time; the plan never quotes the
+  sentence it plans.
+- **A hole is specified, never answered.** Add
+  `Evidence: E<NN>-<TYPE>-<slug> · <expected ready evidence>` and its immediate
+  `Accept: <observable checks>` under the bullet. TYPE is `VALUE`, `CITE`, or
+  `DISPLAY`; a bare `E01` or an icon-only hole is invalid. SHAPE also creates
+  the matching record in `<stem>-evidence-items.md` with Target, Label, Need,
+  Expected, and Acceptance. `Label` is a stable 1–12 character ASCII
+  alphanumeric display name such as `LBPEffect`; it is not inferred from the
+  full readable name. SHAPE does not plan or allocate a Run.
+- **The fold appends to the bullet that asked** (EMBED's write, read here): a
+  landed value becomes `Answered:`, a built unit's README claim becomes
+  `Drawn:`, a served Round row becomes `Routed:`; never a new bullet, never an
+  edit to the head.
+- **An older-grammar plan is rewritten into the current grammar on this
+  pass**: in place while ⬜, as `v<N+1>` after a tick.
 
-Probe is the evidence-acquisition family. OUTLINE owns its PageX branch because
-accepted Page context can change the plan before any QA work is dispatched.
-PageX records exact accepted files and bounded scopes in `pagex/`; it never
-creates a mirror `probe/` card. Task/Discovery obligations stay source-typed in
-the outline and move to the QA branch during PROBE/EVIDENCE.
+### ③ Threads and the log record
 
-**No `page-type:` key is the flexible DEFAULT** (`haipipe-page-draft` 0.7.3): the
-plan then owes the base section order and nothing more. That is 247 of this
-repo's 274 pages, so the common case is no check at all beyond the base.
+- **Every open ask becomes a `D<nn>` record** in `outline/<stem>-discussion.md`
+  (Ask · Options · We lean · Decide), id allocated board-wide
+  (`ref/record-shape.md`); a settled one is a log record. An ask with no Aim
+  is a thread, never a minted Aim.
+- **Every open feedback row is served or declined**: `Routed: <RD> <row id>`
+  on the bullet that serves it, or `declined: <RD> <row id> · <reason>` in the
+  plan head. `check.py` reports `feedback-unserved` on a row with neither.
+- **One log record per pass**: `### YYMMDD HHMM · SHAPE v<N>: <what changed
+  in one line>` (or `SURVEY: <n> rows …`), the receipt folded under it when
+  no run folder holds it.
 
-**This is a machine-checkable exit, and it runs BEFORE the person is asked.** A
-plan whose shape contradicts its declared type wastes the one gate that is
-supposed to be cheap:
+### ④ Five checks, before the person is asked
 
 ```text
-  fixed     a division the type does not list, or a missing one   ❌ reject
-  grammar   a first word outside the closed set, or an order the
-            rule forbids                                          ❌ reject
-  resolved  no `source:` resolved, or a shape copied from a
-            sibling page instead                                  ❌ reject
+⓪ ARC       arc: present and an argument · adjacent pairs pass the swap test ·
+            the heaviest finding has a division
+① COVERAGE  every Evidence line has a typed id, expectation, Accept line, and
+            exactly one matching Evidence Item record with a compact Label · every unit on disk is
+            cited or retired · every open feedback row is
+            served or declined
+② ADDRESS   every card and Evidence Item Target names a bullet this plan has
+③ VALUE     every 🧮 number recomputes (checks/values.py)
+④ SHAPE     divisions match the type's mode · heads 4 to 11 words · Notes
+            ≤ 30 words · no Note quotes the page · nothing V3 refuses
 ```
 
-`checks/outline.py` reports it as `plan-shape-off-type`. A rejection here is not a
-finding against the person; it is the phase refusing to spend a human tick on a
-shape a file already answered.
+Any ❌ is fixed in the plan here; the person is not asked yet. ⓪ is half a
+judgment: `arc:` present is mechanical, whether it argues is this pass's call
+and the person may overturn it at the tick.
 
-An operation does not identify OUTLINE. Adding a section to the PLAN is OUTLINE; adding a section to the PAGE is DRAFT. The two are different files.
+### 🤝 Human review and approval · present the packet before asking for a decision
 
-## 🎭 The TYPE gives the WORDS. This phase gives the ARGUMENT. (260822)
+When a person says **review**, **check**, **read**, or **approve** an outline,
+load `haipipe-plugin-outline/ref/review-packet.md` and give the human its
+four-part packet before seeking a response.  The packet is a compact map of
+the records already on disk, not a second plan and not a prose draft:
 
-Ruled by JL, deciding where a story arc belongs when there are ten Page Types:
-"我们也会有其他的 pages 所以这个 four types 就是我们提供什么样的 outline
-template，然后 haipipe-page-outline 目的就是想要讲什么样的 story arcs."
+1. **Current Shape** — link the current versioned plan, state `approved:`,
+   quote its `arc:`, and show the C/P reader path in a compact map.
+2. **Evidence owed** — link the Evidence Item table and report typed/status
+   counts.  Show the items that determine the page's central claim: target,
+   expected evidence, acceptance, and the surveyed source/Run path.
+3. **What shaped it** — link and summarize only the feedback rows,
+   requirements, and open discussion threads that materially changed a
+   division or bullet.  State the exact `Routed:` address or say that no such
+   record exists; never imply a feedback row landed merely because it was read.
+4. **Human decision** — say precisely what can be approved now, what still
+   blocks approval, and which choice belongs to the human.  An `approved:` or
+   `Decide:` tick is never inferred from a vague positive reaction.
+
+Use clickable local-file links in the response when the host supports them.
+If the packet would be long, preserve all four parts but collapse routine
+items into counts and show only material evidence/feedback rows; offer the
+full linked records rather than omitting the provenance.  The same packet is
+required when revising an already-reviewed outline, with a short “changed
+since v<N>” line under Current Shape.
+
+### 🧑 The tick governs the fork; mode governs whether work waits
+
+- **A person reads the 🧭 tab and ticks `approved:`.** The job there is to
+  BREAK the plan: the division that argues nothing, the figure that shows the
+  wrong thing, the answer that dodges its ask. The tick means "I tried to
+  break it and failed", the one meaning left after a machine checked the
+  arithmetic.
+- **A chat approval is transcribed, never decided**:
+  `approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"`.
+  A machine writes `checked:` for itself and nothing more.
+- **Copilot waits; auto records debt.** In `copilot`, an unticked
+  person-reserved gate routes to HOLD. In `auto`, the machine may follow the
+  checked plan while recording `approved:` or `Decide` on the owed ledger.
+  Deferral is not approval and never supplies durable evidence for a Page Type
+  closing gate that requires a person.
+- **A tick belongs to the version it ticked.** Evidence that changes an
+  approved plan makes `v<N+1>`; `v<N>` is kept, because it was right at its
+  date.
+- **The gate is where the planning loop exits.** EMBED always returns here with
+  plan v<N+1>. In copilot, `approved:` with every table row `folded` releases
+  CONTENT and fresh marks send the Page to SURVEY. In auto, the same fork is
+  taken from `checked:` plus the declared gate policy while the missing human
+  act remains owed.
+
+## 🔍 SURVEY · map the Run graph for each ready-evidence contract
+
+SURVEY runs only after SHAPE has named every item and the outline is either
+approved in copilot or allowed forward under the explicit auto gate policy.
+It inventories the current `task/` and `discoveries/` libraries, classifies
+each selected route as existing Result, Ticket only, rerun, or new design, and
+writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
+worker, materialize a Result, or write prose. For a Paper-local Run only,
+SURVEY reserves the proposed `P jNN.tNN.rNN` address so the Run remains
+indexable before LAND; `new` still means that no Run Ticket exists.
+
+- **Preserve SHAPE's contract.** Item id, type, name, Target, Label, Need,
+  Expected, and Acceptance are frozen inputs to SURVEY. If they are insufficient or
+  impossible, route the item back to SHAPE; do not repair the meaning here.
+- **Map Supporting Runs, zero to many.** Each existing Run is
+  `Execution | Discovery · reuse | rerun | registered · bNNjNNtNNrNN`.
+  Read the actual Ticket, receipt, and Result before choosing: an accepted
+  Result is `reuse`; a real Ticket with no completed attempt is `registered`
+  and has the derived availability state `Ticket only`; a failed, smoke-only,
+  invalid, or explicitly stale attempt is `rerun`. When the task exists but no
+  Ticket exists, write `new-run · bNNjNNtNN`; when the task is absent, write
+  `new-task · bNNjNN`; when the job is absent, write `new-job · bNN`; use
+  `new-block` only for a bounded block not yet placed in that hierarchy. Do not
+  mint an `rNN` during inventory. Write `[]` when no upstream support is needed.
+- **Use one global Run identity in two typographies.** Supporting records store the canonical
+  compact id `bNNjNNtNNrNN`; the reader-facing table may display the same id as
+  `bNN.jNN.tNN.rNN`. The dotted form is a hyperlink label, not a different
+  identity. A planned parent `bNNjNNtNN` has no `rNN` until the owning workflow
+  allocates a real Run.
+- **Plan exactly one Local Input.** State whether its one future frozen
+  envelope contains Supporting Results, named governed page-local static
+  paths, or `item contract only`. Cross-Folder evidence must enter through a
+  Supporting Run Result; Related Page links from Context Workspace are
+  navigation/constraints only. A sibling item's future local Result is
+  not a local source; both items must name the shared upstream
+  Execution/Discovery Run instead.
+- **Map exactly one Local Run declaration.** Paper-local Runs use their own
+  compact namespace `pjNNtNNrNN`, displayed as `P jNN.tNN.rNN`. `P` is the
+  fixed Paper block; `jNN` indexes the Page, `tNN` preserves the stable
+  Evidence Item number, and `rNN` indexes the proposed attempt (`r01` first).
+  Write `Page · Evidence Item · new-run · pjNNtNNrNN` when no Ticket exists;
+  `new` means proposed, not allocated. After LAND creates the Ticket, use
+  `registered`, `reuse`, or `rerun` with that same Paper-local identity.
+  Do not use a free-text dash placeholder as an action. Its future frozen input envelope may
+  include every Supporting Result plus local source material. Its future Result
+  must satisfy the item's typed Acceptance contract. Page interpretation is not
+  part of this Run.
+- **Keep family and action separate.** Discovery is a Supporting Run family,
+  not an action. Existing accepted work is `reuse`; an existing Ticket that
+  must be executed again is `rerun`; a real never-attempted Ticket is
+  `registered`. Changed target/input/acceptance needs a new designed route.
+  Supporting `new-run`, `new-task`, `new-job`, and `new-block` routes remain
+  inventory findings and do not invent an external `rNN`. The Paper-local
+  `new-run` is the bounded exception: SURVEY reserves its full P/J/T/R index,
+  while LAND remains the first phase allowed to create its Ticket.
+  There is no `found`, `person`, or `none` action.
+- **Citations use the same graph.** A `CITE` item may reuse or commission a
+  Discovery Run, then its local Page Evidence Item Run produces the focal,
+  verified citation claim. It is not routed to a special `person` outcome.
+- **A SURVEY row is complete** when every declared Supporting and Local route
+  is honestly classified (existing Result, Ticket only, rerun, or new design),
+  one Local Input is explicit, the derived
+  `outline/evidence/supporting-runs/` map is current, and Decide is signed (`☑ make`, `☑ defer`,
+  or `☑ drop`). A planned route is a plan, not `Ready` evidence. LAND refuses
+  `☐`, an ambiguous route, or a fake/guessed Run identity.
+
+The Outline plugin's Evidence Workspace joins the generated evidence snapshot
+and `outline/evidence/supporting-runs/` map into one card per Evidence Item. Its identity is the same
+compact `E<n><kind>.<Label>` used by the Outline Table; Supporting and Local
+Runs are grouped Run items inside that card. The internal `Evidences` lens
+explains each Evidence contract; the internal `Runs` lens groups by Evidence
+and renders every mapped Supporting or Paper-local route as its own Run card.
+It reports both mapping and unique-Run counts because shared Runs may appear in
+several Evidence groups. This is SURVEY's source inventory, not proof that a
+planned route has been allocated. Reader-facing paths are `Run` and
+`Result`, with exact paths collapsed behind `Run & Result paths`. SURVEY does
+not make the overview carry logs, commands, or output trees.
+
+Each Run item must also answer “what is this for?” Existing Runs take their
+Purpose from the real Ticket plus the owning Evidence Item. A proposed route
+shows a Plan synthesized from Expected, Acceptance, and Local Input, which
+remain authored in `<stem>-evidence-items.md`; SURVEY creates no second plan
+file. Present `Availability` separately from `Next action`: existence is
+`Planned | Run exists · Result missing | Run + Result | Paths unresolved`,
+while action is `Allocate and run | Run | Rerun | Reuse Result | Resolve path`.
+Do not present `new`, `rerun`, `run only`, and `ready` as one status scale.
+
+### 🧑 The Decide ends the cycle
+
+A person reads the table on the 🧭 tab (the Evidence Workspace lens, which renders
+the table joined to the disk with a derived Status chip per row) and writes
+one Decide per row. A machine may transcribe a chat decision with the quote;
+it never ticks `☑` on its own. `cli/evidence-status.py` prints the classified
+lineage and `cycle: SURVEY · decided n/n` until every row is signed and mapped,
+then `cycle: LAND`.
+
+## 🔀 Routes
 
 ```text
-  the PAGE TYPE     WHICH WORDS this page may use, in what order,
-  (10 of them)      and how many of each                     ── the TEMPLATE
-                    read from metadata.outline, §📐 above
-
-  THIS PHASE        WHICH ARGUMENT those words are arranged to make,
-  (one of it)       on this page, this round                 ── the ARC
+SHAPE  any of the five ❌                     fix the plan here; no tick yet
+SHAPE  five pass, items owed, gate allows      OUTLINE / SURVEY
+SHAPE  five pass, every item folded, allowed   CONTENT / WRITE
+SHAPE  approved ⬜ in copilot                   HOLD
+SHAPE  approved ⬜ in auto                      record owed; follow declared gate policy
+SURVEY route ambiguous or Decide open          OUTLINE / SURVEY; HOLD only when policy requires
+SURVEY every make graph classified + allowed  EVIDENCE / LAND
+SURVEY item cannot be specified truthfully    SHAPE, naming item and target bullet
+owning phase policy refuses the shape         fix the plan, unless the mismatch is a real
+                                              finding against that policy
 ```
 
-**Why the split had to be made.** The rule below lived inside
-`haipipe-page-for-task` from its 0.7.0 until 260822, so nine other types had no
-statement of it at all — and the failure it prevents is not task-shaped. Any
-page whose divisions were ordered by the author's history passes every
-mechanical check and still fails its reader. A `fixed`-mode type suffers it too:
-the type lists the divisions, and the arc question becomes what each one is FOR
-and whether the list, filled this way, argues anything.
+OUTLINE never routes directly to CHECK; a Page version must first pass CONTENT.
 
-**⛔ ROLE-COMPLETE IS NOT ARC-COHERENT.** A plan may carry every word its type
-allows, each division correct and each in present tense, and still not be a
-report. That is the commonest shape that passes every check and fails its
-reader, and it fails for one reason: the order came from the author's history
-instead of the reader's need.
-
-**Three orderings all read as a log, and the third is nearly invisible:**
-
-```text
-  ① run order          the order the scripts executed
-  ② config order       the order the yaml files sit in
-  ③ 🔴 LEARNING ORDER  the order the AUTHOR found things out
-```
-
-① and ② are easy to catch, because the division titles carry the machinery's own
-names. ③ survives every mechanical check. Each division states the present, cites
-its evidence and names what the reader learns; nothing on the page mentions a
-date. The diary is in the SPACING between divisions, and only a reader who does
-not already know the story can feel it.
-
-**The swap test, one question per boundary:**
-
-```text
-  For each pair of adjacent divisions, name why N must come before N+1.
-
-  ✅ "Method must precede Result, or the number cannot be believed."
-  ✅ "Data must precede Method, or the sample the method ran on is unknown."
-  ✅ "Concept must precede Landscape, or the field map is in unmet terms."
-  🔴 "That is the order we found them in."
-     └─ reorder. A reason that is a date is not a reason.
-```
-
-Ruled 260820 (JL, on a Board plan whose divisions ran old-machinery, its-gap,
-new-machinery, measurement, contract, proposal): every head was present tense and
-every count was checked, and the divisions still fell into three blocks that
-matched what was known before the session, what the session did, and what it left
-open. The repair merged the two machinery divisions into one, because they are two
-halves of one machine and their only separation was arrival time.
-
-**⛔ THE BIGGEST FINDING GETS A DIVISION, NOT A BULLET INSIDE SOMEONE ELSE'S**
-(260822, found by running this section against `QC1-postrain-replication` before
-writing it). That page's largest measured effect — training cutting
-non-termination roughly tenfold, on two benchmarks and two measurement surfaces —
-was bullet `B7` inside a division titled for the run that happened to produce it.
-The plan was coverage-complete, address-clean and value-checked. It was also
-mis-weighted, and no existing check could say so.
-
-```text
-  a finding's WEIGHT is not what produced it, it is what a reader carries away
-  ⇒ if the strongest sentence on the page cannot be found from the table of
-    contents, the arc is wrong even when every division is correct
-```
-
-**What this section does NOT do.** It does not choose the words — the type did
-that, and a word outside the type's set is a SHAPE failure, not an ARC failure.
-It does not judge whether the plan aims at the right thing; that is the person's,
-at `approved:`.
-
-## 🚧 Why this is a phase and not a step inside DRAFT
-
-It was a step inside DRAFT until 260817, and the day it stopped being one is on the record. One phase owned both "agree the shape" and "write the page", so a single done-report covered both, and the plan ended up pasted into the page's own `## Content` where it immediately went stale (`QC1-visitlbp`, CMSRegBoard).
-
-**The gate is the cheapest one on the board, which is the whole argument for it.**
-
-```text
-  change a section list   BEFORE the prose   one line
-  change a section list   AFTER  the prose   the prose
-```
-
-A phase whose entire output fits on one screen, and which a person can reject in ten seconds, belongs in front of every expensive phase rather than folded into one.
-
-## 🔁 The PREPARE loop, and why this phase repeats (260819)
-
-Ruled by JL: "outline 之后就直接 probe 准备证据，基于证据我们再改 outline，直到
-outline 自己是自洽的."
-
-```text
-  ┌── PREPARE · repeat until self-consistent ─────────────┐
-  │   🧭 OUTLINE ──▶ 📮 PROBE ──▶ 🃏 EVIDENCE             │
-  │       ▲                            │                  │
-  │       └──── the answer changes the plan ───────────────┤
-  └──────────────────────┬────────────────────────────────┘
-                         ▼ 🚧 ONE gate: the plan AND its evidence
-                     ✏️ DRAFT
-```
-
-**Evidence does not confirm a plan; it changes it.** That is the whole reason
-this is a loop and not a line, and 260819 produced two worked cases on
-`QPw00-page-loop`: a division the plan wanted turned out to score 0 of 4 on the
-split tests and was folded away, and a count of 17 was recomputed as 13. Neither
-was a defect. A plan written before its evidence is a guess.
-
-## 🚦 Self-consistent means FIVE things, and each one is checkable
-
-"Until the outline is self-consistent" has to be a test, or the loop cannot stop
-and "it feels about right" becomes the gate. It is these five, in this order:
-
-```text
-  ⓪ ARC        the division SEQUENCE argues something, and the plan says what
-               ⓪.1 the plan carries one `arc:` line: the argument the sequence
-                   makes, in one sentence. "This page reports the results of X"
-                   is a table of contents, not an argument, and fails.
-               ⓪.2 every ADJACENT PAIR passes the swap test (§🎭): name why N
-                   must precede N+1. A reason that is a date, a run name or a
-                   config name is not a reason.
-               ⓪.3 the plan's HEAVIEST finding has its own division. A finding
-                   a reader cannot reach from the division list is mis-weighted
-                   however correct its bullet is.
-               ⚠️ runs FIRST, because a plan with the wrong arc is not worth
-                  address-checking; the other four verify a shape ⓪ accepts.
-  ① COVERAGE   the plan⇄disk join, BOTH directions. Forward: every mark is
-               served by at least one card — the PROBE receipt already
-               reports `coverage: n of n`. Reverse: every display unit on
-               disk is cited by ≥1 bullet, or retired; an orphaned 🖼 is a
-               COVERAGE failure, not a footnote (JL 260819, on seeing
-               Display4 under "on disk, cited by no bullet": "you should
-               try to make every display to be used")
-  ② ADDRESS    every card's `serves:` names an address this plan really has
-               ⚠️ three cards on QPw00 pointed at renumbered bullets on 260819
-  ③ VALUE      every recomputable number matches the repo
-               `checks/values.py`, and it caught 17-vs-13 on its first run
-  ④ SHAPE      the plan's divisions match the Page Type's declared mode
-               `plan-shape-off-type`; no `page-type:` key = base order only
-```
-
-⚠️ **⓪ and ④ are different questions and neither substitutes for the other.**
-④ asks whether the words are the type's; ⓪ asks whether their order is an
-argument. A plan can pass ④ with every word legal and fail ⓪ because it is a run
-log wearing correct prefixes — which is precisely the failure §🎭 exists to name.
-
-**All five run BEFORE the person is asked.** That is what makes the human tick
-worth something: a machine says the plan is consistent with what is on disk, and
-the person answers the one question no file can, which is whether the plan is
-aimed at the right thing.
-
-⓪ is the one of the five a machine can only half-run: `arc:` present is
-mechanical, and whether the sentence is an argument is a judgement the phase
-makes and the person may overturn. It is stated as a check anyway, because a
-judgement with a written form is arguable and one with none is not.
-
-**An answered ask is APPENDED, never re-asked and never re-bulleted** (JL
-260819, on `📮 PP04 answered · 5 values`: "我们其实需要更新一下这个 bullet
-points，把那 5 个 value 也列出来，这样的话就是有问有答"): when a bullet's card
-lands its `## Values`, the SAME bullet gains the answer — prose quoting each
-value id inline (`PP<NN>.v<n>` then the number and its meaning) — and the 📮
-mark stays end-anchored. The ask and the answer live on one bullet; a new
-bullet for the answer is wrong, and an asking bullet left answer-less after
-its card landed is fold debt.
-
-The same rule reaches 🖼 (JL, same night: "做完之后把这个图填上去…再 append 到
-bullet points 上，说这个 Display 已经做好了，并描述它说明了什么"): a built
-unit's citing bullet gains `Drawn: <what the figure shows>`, TRANSCRIBED from
-the unit's own README claim, never composed fresh. Evidence must WORK on the
-plan's face: a value says what its number means, a display says what its
-picture shows.
-
-**The fold marks a self-referential value `· recount`** (JL 260820): a value
-that counts the RUN'S OWN artifacts — receipts in `_runs/`, checker findings,
-a pinned hash — moves every time a later phase appends, so its `Answered:`
-line ends in `· recount`. DRAFT re-reads only these cards and trusts every
-unmarked value as the plan states it (haipipe-page-draft §📖); QPw00's first
-DRAFT re-read all 14 evidence folders to find 3 drifts, and all 3 were
-self-referential counts.
-
-⚠️ **A tick belongs to the version it ticked.** If evidence changes the plan after
-`approved: ✅`, that is a `v<N+1>` and a new tick, not a quiet edit. On 260819 the
-tick stayed on `v2` while `v2` was edited five more times, and all three stale
-`serves:` addresses came from exactly that.
-
-## 📦 The deliverable, and the one thing that ends the phase
-
-```text
-<page>/outline/<stem>-outline-v<N>.md      the plan · AUTHORED · versioned
-        approved: ⬜  →  ✅                 🚧 a person, never a machine
-```
-
-The file's shape, its `C<n>.P<n>.B<n>` addressing, its five marks and its version rules are `haipipe-plugin-outline`'s, stated once there. What belongs HERE is what ends the phase: **a person reads the 🧭 tab and ticks `approved:`.** And the person's job there is to BREAK it, not bless it (JL 260819: "人看的时候不是去 approve，而是去 break——看看这个 outline 是不是你想要的，有些图是不是觉得不行"): hunt for the division that argues nothing, the figure that shows the wrong thing, the answer that dodges its ask. The tick means "I tried to break it and failed", which is the only meaning that survives a machine already having checked the arithmetic. No machine may write that tick, for the same reason no machine accepts a display render: what it judges is whether a plan is the right plan, and no check reaches that.
-
-## 🔓 Before the tick it is a working document
-
-```text
-  ✍️ unapproved   discuss it · rewrite it · DELETE a bullet that is wrong
-                  no version, no record, nobody agreed to it yet
-  🔒 approved     frozen · correct as of that date
-  ✍️ v2           the work moved on · `supersedes: v1` · v1 is KEPT
-```
-
-**The version rule protects a PROMISE, never a FORMAT** (JL 260819: "remove
-all the legacy-grammar, I don't want to maintain the old things"). A plan
-written under an older grammar is REWRITTEN into the current grammar on its
-next OUTLINE pass — in place while unapproved, as `v<N+1>` when a tick froze
-it, Aims moved into the file included. On 260819 `QC1-visitlbp`'s plan sat two
-days in the 260817 long-sentence grammar because a fold pass read "append,
-never edit" as covering format too, and no machine check said otherwise. The
-sweep now FAILS such bullets as `bullet-missing-note` (`checks/outline.py`,
-every plan, no legacy carve-out); a plan showing any may not be put to the
-person.
-
-**`v2` does not mean `v1` was wrong** (JL 260817). It means `v1` was right then and the work has since moved, which is why the old version is kept rather than corrected. A plan deleted while unapproved needs no record at all.
-
-## 🕳 What OUTLINE does with a hole
-
-A bullet may name evidence it does not have. That is the phase working, not failing:
-
-```text
-  ✅ "- B2 · Does the estimate survive the placebo test?   📮 PP02"
-  ✅ "- B3 · Five coefficients at each rung        🧮 PP02.v1"
-     names what is owed. PROBE dispatches it, EVIDENCE lands it.
-
-  🚫 "- B2 · The five coefficients are stable"
-     asserts an answer nobody has. That is not a plan, it is a guess.
-```
-
-OUTLINE marks the hole and STOPS. It does not raise the card, it does not ask the bank, and it does not write the sentence. A plan that already knows every answer was written after the fact.
-
-## 🔀 Exit and routing
-
-```text
-  any of the four ❌ ─▶ fix the plan HERE. The person is not asked yet.
-  four pass, new Task/Discovery question ─▶ the 🧑 LOOK, then ② PROBE
-  four pass, existing card or other landing gap ─▶ the 🧑 LOOK, then ③ EVIDENCE
-  four pass, nothing owed, approved ✅ ──▶ ④ DRAFT
-  not yet   ⬜  ────▶  stay in OUTLINE, or HOLD if the person is unavailable
-  a Page Type refuses the shape ──▶ fix the plan, never the Page Type,
-                                    unless the mismatch is a real finding
-                                    against that type (record it as one)
-```
-
-OUTLINE never routes to REVISE. A new Task/Discovery question never skips PROBE;
-OUTLINE may route directly to EVIDENCE only for an existing raised card, a
-citation/display landing gap, or another support item that needs no dispatch.
-
-## 🧾 RUN receipt
-
-The receipt records what a later reader cannot reconstruct: which version was produced, whether it was approved, and by whom.
+## 🧾 Receipt
 
 ```text
 phase: OUTLINE
-file: <page>/outline/<stem>-outline-v<N>.md
-supersedes: v<N-1> | —
-counts: sections · paragraphs · bullets · marks by kind
-approved: ✅ <who> <date>  |  ⬜ waiting
-next: OUTLINE | PROBE | EVIDENCE | DRAFT | HOLD
+cycle: SHAPE | SURVEY
+file: <page>/outline/<stem>-outline-v<N>.md | <page>/outline/<stem>-evidence-items.md
+supersedes: v<N-1> | none
+requirement: V1 V2 V3 V4 read ✅
+feedback: n routed · n served · n declined
+items: n typed · n specified · n planned · n decided · by type VALUE/CITE/DISPLAY
+runs-mapped: existing supporting n (Execution n · Discovery n) · planned n · local n
+checks: ⓪ ✅ ① ✅ ② ✅ ③ ✅ ④ ✅        (SHAPE)
+counts: divisions · paragraphs · bullets · Evidence Items by type
+threads: D<nn> opened … · D<nn> settled …
+approved: ✅ <who> <date> | ⬜ waiting/owed
+route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | WRITE
 ```
-
-The counts go in because they are the honest size of the plan, and because a later phase's own exit test compares against them.
 
 ## 📂 Files
 
-```
+```text
 haipipe-page-outline/
-├── SKILL.md            this phase contract
-└── CHANGELOG.md        version history
+├── SKILL.md            this phase: the SHAPE and SURVEY cycles
+└── CHANGELOG.md        version history, and the only home for what this phase used to say
 ```
 
-Owns no scripts. The base is `haipipe-page`; the file and the 🧭 tab are `haipipe-plugin-outline`'s; the loop and the receipt are `haipipe-page-workflow`'s; the next phase is `haipipe-page-draft`, which no longer owns the outline.
-
-**This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../haipipe-page-workflow/ref/phase-cards.md` §①. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.
-
-**The Board page that argues this contract** is `QPw1-outline` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open.
+Owns no scripts. The base is `haipipe-page`; the folder, the tab, the plan
+grammar and the item table's grammar are `haipipe-plugin-outline`'s
+(`ref/plan-grammar.md`, `ref/item-table.md`, `ref/record-shape.md`,
+`ref/specimen-section-plan.md`); the Page loop and receipt law are
+`haipipe-page-workflow`'s; the six-field card of every phase is
+`../haipipe-page-workflow/ref/phase-cards.md`; the next phase is
+`haipipe-page-evidence` (LAND, EMBED), and after the plan exits,
+`haipipe-page-content`. The design page is `QPw1-outline` on
+`BoardSkillBoard-260722`.

@@ -219,34 +219,35 @@ Where does a typed page keep the bytes it owns, and what names that folder?
 
 These are page-level Aims, not `A<n>` groups, and on this Page Type they always will be. A criterion cuts across every candidate at once, so it belongs to no single Content division, and `QB4` §0.5 gives `P` to exactly that case. An `A1` group here would be read by the checker as the Aim group of `### 1`, which is a candidate, and the two names would never match.
 
-### P · 🧾 The brief's criteria, and the record that closes them
-- P1 · 🏷 The folder names its own page, with nothing typed twice.
-  **Done when:** every companion in this group is its page's filename exactly, and no QA record needs a `requires:` line to be paired.
-- P2 · 🔭 One glob finds every companion of one type, opening no page to do it.
-  **Done when:** the type's own level lists every companion of that type and nothing that belongs to another.
-- P3 · 🔗 The engine pairs a record to its page from the path alone.
-  **Done when:** `topic_entry_contract.py` resolves a record that declares no `requires:`, using only the drawer it sits in.
-- P4 · 🚚 The old shape stays readable while papers migrate one at a time, and then stops.
-  **Done when:** every paper's drawer is `QA-probe/<page name>/` and `PROBE_DIRS` drops its second entry.
-- P5 · 🏁 Every line of the SELECTION record is filled with something a person can act on.
-  **Done when:** `downstream` names a real consumer, or the contract rules that a winner which is a rule has none.
-
-## States
-
-- 260806 CC · This page declares no `provides:` and no `needs:`, and `python3 unit.py check` reports it as `👁 a view page, provides nothing, correct`. That is the right reading of the type: a design brief selects between candidates and produces nothing another page reads. `QBt3` is the opposite shape, an atom that provides a render; `QBt5` is a view over N atoms. Three pages, three shapes, one resolver.
-- 260806 CC · One defect found while writing, left for the page that owns it. `display/QBt3-for-display/source/gen_display_pipeline.py` still points its docstring at `probes/V01-drift/1-artifact-paths.md`, which has not existed since the 260806 rename; its `NEED` constant is correct. That file belongs to `QBt3`, so it was reported rather than edited.
-
-### P · 🧾 The brief's criteria, and the record that closes them
-- ✅ P1 · Six live companions in this group each carry their page's filename exactly, `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/`, `QA-probe/QBt4-for-literature/`, `QA-probe/QBt5-for-value/`, `slides/QBt9-for-slide/`, `venue/QBt2-for-venue/` and the flat `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex`, and no file under `QA-probe/` carries a `requires:` line at all, so nothing in the group is typed twice.
-- ✅ P2 · One glob per type answers it without opening a page: `displays/*` is every display companion, `QA-probe/*` is every value and literature companion, `slides/*` and `venue/*` hold one each, and `python3 unit.py check` resolves 5 atoms and 5 view pages off those paths alone.
-- ✅ P3 · `topic_entry_contract.py:198` reads `topic_id = requires.group(1) if requires else relative.parts[-2]`, so both records under `QA-probe/QBt5-for-value/` pair to their page with no declared line anywhere in them, which is what commit `dd7998ee` bought.
-- 🔨 P4 · Neither half of the done-when is paid: `PROBE_DIRS = ("QA-probe", "probes")` still carries its second entry at `topic_entry_contract.py:39`, and nine topic folders still sit in three live `probes/` drawers, four under the MISQ paper's `S03-literature`, four under its `S04-value` and one under `Project-PhyPat-Simulation`, so no paper has migrated and the tail cannot drop yet.
-- 🧠 P5 · Waiting on JL, and open on purpose: the SELECTION record's `downstream` line reads `⬜ OPEN` because this winner is a naming rule that no display unit renders, and the first `Decision Now` row below is the ruling that has to arrive before that line can name a real consumer.
-
 ### Decision Now
 
 - 📍 May a design brief's `downstream` line name something that is not a display unit page? **A ·** yes: a rule-shaped winner names its implementing file or contract, and `-for-display` takes over only when the winner is an artifact that renders. **B ·** no: a brief whose winner is not a display candidate is out of this type's scope and belongs on a plain Q page. Until this is ruled, the SELECTION record above cannot be completed, and P5 stays open.
 - 📍 Does the rule say `<type-plural>` or `<type folder>`? Two live instances and one already disobeys the literal wording: the display type's level is `displays`, the plural, and the value type's level is `QA-probe`, a name JL ruled. **A ·** keep `<type-plural>` and rename `QA-probe` to `values/`, which breaks two engine constants and every paper mid-migration. **B ·** reword the rule to `<type folder>/<page name>/`, where each type declares its own folder name and `displays` happens to be a plural.
+
+
+### P · 🧾 The brief's criteria, and the record that closes them
+- ✅ P1 · 🏷 The folder names its own page, with nothing typed twice.
+  **Done when:** every companion in this group is its page's filename exactly, and no QA record needs a `requires:` line to be paired.
+  **Now:** Six live companions in this group each carry their page's filename exactly, `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/displays/QBt3-for-display/`, `QA-probe/QBt4-for-literature/`, `QA-probe/QBt5-for-value/`, `slides/QBt9-for-slide/`, `venue/QBt2-for-venue/` and the flat `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex`, and no file under `QA-probe/` carries a `requires:` line at all, so nothing in the group is typed twice.
+- ✅ P2 · 🔭 One glob finds every companion of one type, opening no page to do it.
+  **Done when:** the type's own level lists every companion of that type and nothing that belongs to another.
+  **Now:** One glob per type answers it without opening a page: `displays/*` is every display companion, `QA-probe/*` is every value and literature companion, `slides/*` and `venue/*` hold one each, and `python3 unit.py check` resolves 5 atoms and 5 view pages off those paths alone.
+- ✅ P3 · 🔗 The engine pairs a record to its page from the path alone.
+  **Done when:** `topic_entry_contract.py` resolves a record that declares no `requires:`, using only the drawer it sits in.
+  **Now:** `topic_entry_contract.py:198` reads `topic_id = requires.group(1) if requires else relative.parts[-2]`, so both records under `QA-probe/QBt5-for-value/` pair to their page with no declared line anywhere in them, which is what commit `dd7998ee` bought.
+- 🔨 P4 · 🚚 The old shape stays readable while papers migrate one at a time, and then stops.
+  **Done when:** every paper's drawer is `QA-probe/<page name>/` and `PROBE_DIRS` drops its second entry.
+  **Now:** Neither half of the done-when is paid: `PROBE_DIRS = ("QA-probe", "probes")` still carries its second entry at `topic_entry_contract.py:39`, and nine topic folders still sit in three live `probes/` drawers, four under the MISQ paper's `S03-literature`, four under its `S04-value` and one under `Project-PhyPat-Simulation`, so no paper has migrated and the tail cannot drop yet.
+- 🧠 P5 · 🏁 Every line of the SELECTION record is filled with something a person can act on.
+  **Done when:** `downstream` names a real consumer, or the contract rules that a winner which is a rule has none.
+  **Now:** Waiting on JL, and open on purpose: the SELECTION record's `downstream` line reads `⬜ OPEN` because this winner is a naming rule that no display unit renders, and the first `Decision Now` row below is the ruling that has to arrive before that line can name a real consumer.
+
+
+## Discussion
+
+### From the retired States section (merged 260831)
+- 260806 CC · This page declares no `provides:` and no `needs:`, and `python3 unit.py check` reports it as `👁 a view page, provides nothing, correct`. That is the right reading of the type: a design brief selects between candidates and produces nothing another page reads. `QBt3` is the opposite shape, an atom that provides a render; `QBt5` is a view over N atoms. Three pages, three shapes, one resolver.
+- 260806 CC · One defect found while writing, left for the page that owns it. `display/QBt3-for-display/source/gen_display_pipeline.py` still points its docstring at `probes/V01-drift/1-artifact-paths.md`, which has not existed since the 260806 rename; its `NEED` constant is correct. That file belongs to `QBt3`, so it was reported rather than edited.
 
 ## Files
 
@@ -283,3 +284,5 @@ These are page-level Aims, not `A<n>` groups, and on this Page Type they always 
 - 260806 CC · The Content headings carry no backticked paths. A backticked path token inside a `###` heading renders a chip whose href skips `tree_reroot()`, which the 260806 sweep found on `QE5` and worked around at the source rather than in the renderer. The candidate paths therefore live in each division's caption and figure, where they read the same and break nothing.
 - 260806 1259 · [REVISE-CC] States now mirrors every Aim id; the nine dated records above moved out of States, which is where history belongs, and two stayed because they still describe right now. P1, P2 and P3 are ✅ on disk: six companions all named for their page, no `requires:` line under `QA-probe/` at all, and `topic_entry_contract.py:198` pairing off `relative.parts[-2]`. P4 is 🔨 with nine topic folders still in three `probes/` drawers. P5 is 🧠 on the first Decision Now row, never ✅, because `downstream` cannot be filled until the type rules whether a rule-shaped winner has a consumer. One moved record is now stale and was left as written: this page IS registered in `board.md`'s `## Pages`, and the checker reports no `not-in-pages` and no dead fragment on the board. One thing checked and worth writing down: `sections/` is the only type level with no page-named FOLDER, because a section's product is the flat file `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex` and its generator `../PaperSkillBoard-260725/QBt-page-types/_fixture-qbt/sections/01_page_types.tex` is shared by every section page, which `QBt6`'s Opening already rules is the type's answer rather than a breach of the winning rule.
 - 260806 · [REVISE-CC] the stale record above is no longer left as written. A cold read hits "Not registered in `board.md`'s `## Pages`, whose QBt list still names two files" before it ever reaches the 1259 line admitting the opposite, so a top-down reader takes the false claim. `board.md`'s `## Pages` lists eight QBt files, `../QBt10-for-design/QPs4-for-design.md` among them, so the record is now marked SUPERSEDED at its head and its original wording is kept underneath as what it said at the time. Nothing else on the page changed; the dead-fragment mechanism it documents is still worth reading.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

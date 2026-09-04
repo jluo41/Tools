@@ -165,9 +165,29 @@ class WriteMixin:
             blank = False
         return out
 
+    # An HTML comment on a sentence line is an INVISIBLE mark, not prose: the
+    # plan binding `<!-- realizes: C2.P1.B1 -->` that the DRAFT phase writes
+    # after each sentence (haipipe-page-draft 0.9.x). The browser never sees
+    # it, so the visible text can only match the source once it is stripped
+    # (JL 260831, "这句话在源文件里没找到" on SM00 P1.S1).
+    _MARK = re.compile(r"\s*<!--.*?-->")
+
+    @classmethod
+    def _split_marks(cls, line):
+        """A source line -> (its prose, the trailing invisible marks verbatim)."""
+        s = line.strip()
+        marks = ""
+        while True:
+            m = re.search(r"\s*<!--.*?-->\s*$", s)
+            if not m:
+                return s, marks
+            marks = s[m.start():].strip() + (" " + marks if marks else "")
+            s = s[:m.start()].rstrip()
+
     @staticmethod
     def _plain_sentence(s):
         """The browser sends visible sentence text; source may have light md."""
+        s = WriteMixin._MARK.sub("", s)
         s = re.sub(r"`([^`]+)`", r"\1", s)
         s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
         s = re.sub(r"~~((?:(?!~~).)+)~~", r"\1", s)          # <del>: text kept
@@ -346,12 +366,14 @@ class WriteMixin:
         hit, err = self._sentence_line(lines, before)
         if err:
             return None, err
-        source_before = lines[hit].strip()
+        source_before, marks = self._split_marks(lines[hit])
         # Replacing a markdown-decorated sentence from a browser's textContent
         # would silently erase its links/code/bold.  v1 is intentionally exact.
+        # The invisible marks are not decoration: they are split off above and
+        # written back after the new sentence, so a plan binding survives.
         if source_before != before:
             return None, "这句话带有 Markdown 格式；为避免丢格式，请先在源文件编辑"
-        lines[hit] = after
+        lines[hit] = after + (" " + marks if marks else "")
         diff = self._change_diff(before, after)
         entry = f"> ✎ {diff} · {who}" + (f" · {when}" if when else "")
         lines.insert(self._apparatus_end(lines, hit), entry)
@@ -359,18 +381,60 @@ class WriteMixin:
         return {"before": before, "after": after, "diff": diff}, None
 
     def add_discuss(self, f, p):
-        """往 ## Discussion 末尾追加一条自由想法（一整段 → 一条 > WHO: …）。
-        跟 add_comment 一样跳 ``` 围栏找真的段；没有 ## Discussion 就在
-        ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
+        """Write a free discussion thought to the Page's active dialect.
+
+        Folded Pages own open questions as board-wide ``D<nn>`` records in
+        ``outline/<stem>-discussion.md``.  Legacy flat Pages retain their
+        historical ``## Discussion`` section writer below.
+        """
         # A SENTENCE comment is written `> Comment WHO …` since 260802. The
         # bare-initial form still parses, but it is not what to write, and
         # `check.py` warns on it inside Content: the engine must not produce
         # what the checker flags. `## Discussion` is untouched below, because
         # its `> JL:` / `>> CC0726:` thread grammar is a different thing.
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
+        thought = (p.get("text") or "").strip()
+        outline = f.parent / "outline"
+        if f.parent.name == f.stem and outline.is_dir():
+            if not thought:
+                return None, "想法是空的"
+            discussion = outline / f"{f.stem}-discussion.md"
+            board = next((parent for parent in f.parents
+                          if (parent / "board.md").is_file()), f.parent)
+            seen = []
+            for record in board.rglob("outline/*.md"):
+                if not (record.name.endswith("-discussion.md")
+                        or record.name.endswith("-log.md")):
+                    continue
+                try:
+                    seen.extend(int(n) for n in re.findall(
+                        r"(?:^#{3,4}\s+D|·\s+D)(\d+)",
+                        record.read_text(encoding="utf-8"), re.M))
+                except OSError:
+                    continue
+            did = max(seen, default=0) + 1
+            ask = " ".join(thought.split())
+            title = ask if len(ask) <= 100 else ask[:97].rstrip() + "…"
+            if discussion.exists():
+                current = discussion.read_text(encoding="utf-8").rstrip()
+            else:
+                current = (f"# {f.stem} · discussion\n"
+                           f"page: {f.stem}\n"
+                           "kind: discussion · authored · open questions only · "
+                           "board-wide D<nn> ids · never versioned")
+            block = (
+                f"### D{did} · {title}\n"
+                f"- **Ask**: {ask}\n"
+                "- **Options**: none here; answer in this thread\n"
+                "- **We lean**: No default; this needs a person’s ruling.\n"
+                f"- **Decide**: JL · opened {time.strftime('%y%m%d')}"
+            )
+            discussion.write_text(current + "\n\n" + block + "\n", encoding="utf-8")
+            return {"discussion": discussion.name, "thread": f"D{did}"}, None
+
         # Same record grammar as a comment: a typed paragraph break survives as
         # a continuation instead of being flattened into one long line.
-        rows = self._record_lines(f"> {who}: ", p.get("text") or "")
+        rows = self._record_lines(f"> {who}: ", thought)
         if not rows:
             return None, "想法是空的"
         t = f.read_text(encoding="utf-8")

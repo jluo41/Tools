@@ -1,4 +1,4 @@
-"""Where ONE page sits in the seven-phase page workflow, computed from DISK.
+"""Where ONE Page sits in the five-phase workflow, computed from disk.
 
 ONE copy of this logic, because two would drift: `cli/pagephase.py` prints the
 full strip, `status.py` prints the compact row inside the closing block, and
@@ -6,20 +6,34 @@ both call `phase_state()` here. Never writes.
 
 The states, and what each is read from:
 
-    🧭 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
-    📮 PROBE     one probe/PP<NN>-*/ per PP id the plan names
-    🃏 EVIDENCE  card state: lines · bibex verified= · display preview.pdf + accepted:
-    ✏️ DRAFT     the page's own ### content divisions, and whether it postdates the tick
-    🖊 REVISE    latex/ present and its newest pdf at least as new as the page (⑥ folded)
+    🧭 CONTEXT   outline/<stem>-context.md exists as the current preflight projection
+    🧩 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
+                 (SHAPE), plus the Evidence Item table's Decide per item (SURVEY)
+    🃏 EVIDENCE  the Evidence Item table joined to local Results: ready · folded (LAND,
+                 EMBED); legacy pages without a table: card state: lines ·
+                 bibex verified= · display preview.pdf + accepted:
+    ✏️ CONTENT   the Page's content divisions postdate the plan; when a LaTeX
+                 delivery lane exists, its newest PDF also postdates the Page
     🔍 CHECK     the newest _runs/page/<page>/*.json receipt routed CLOSE
 
 ⚠️ `now` is the FIRST phase whose exit test fails, in loop order. That is a
 REPORT, never a routing: which phase runs next is decided by authority
-(haipipe-page's authority test) and ⑦ CHECK may route anywhere.
+(haipipe-page's authority test) and CHECK may route anywhere.
 """
 import json
 import re
 from pathlib import Path
+
+from src import item_table
+
+from .common import delivery_lane_dirs, evidence_lane_dirs
+from .folder_contract import (
+    current_folder_kind,
+    resolve as resolve_folder_contract,
+)
+
+
+SKILLS_ROOT = Path(__file__).resolve().parents[3]
 
 MARK = {"done": "✅", "part": "⏳", "owed": "⬜", "hold": "🛑"}
 
@@ -32,8 +46,10 @@ MARK = {"done": "✅", "part": "⏳", "owed": "⬜", "hold": "🛑"}
 #   🧑 copilot   you watch the list shrink and answer as you go
 #   🤖 auto      the run does not stop; the list is what you are handed at the end
 #
-# `QPw00g-human-gate`'s open ruling is "no surface joins the five ticks". This
-# is that join. It is a REPORT: it writes nothing and ticks nothing.
+# `QPw00g-human-gate`'s open ruling was "no surface joins the owed ticks". This
+# is that join. It is a REPORT: it writes nothing and ticks nothing. The list is
+# intentionally variable: a phase-owned Folder may declare that it owes no
+# Page-local RULING because its domain gate owns the closure decision.
 #
 # What each row ASKS is quoted from the matching rules file's `🚫 NOT rules`
 # section — the questions an agent is forbidden to answer because they are
@@ -44,7 +60,7 @@ HUMAN_ASKS = {
     "read":     "was this the right question to ask the bank, and what does the number MEAN here?",
     "verified": "is this the right literature to stand this claim on?",
     "accepted": "is this display good overall, and is it the right kind for the argument?",
-    "ruling":   "the page's own question — deciding it is the point of the page",
+    "ruling":   "the Folder owner's declared closing question — who may decide it, and where?",
 }
 # The agent-side rules file for each tick, or None where none exists BY DESIGN.
 RULES_FILE = {
@@ -70,16 +86,16 @@ def _checked(text):
 # 1, 2, 3, 4 here, it is not that readable, could you change it to be emoji").
 # Circled digits render at a few pixels in a terminal font and were unreadable.
 #
-# ⚠️ ONE deliberate substitution: §🔁 draws ⑦ CHECK as ✅, which is also this
+# ⚠️ ONE deliberate substitution: the loop draws CHECK as ✅, which is also this
 # module's DONE marker, so a bar pairing them reads `✅✅` and says nothing.
 # CHECK carries 🔍 here, the act of judging, and only in the bar.
-PHASES = (("OUTLINE", "🧭"), ("PROBE", "📮"), ("EVIDENCE", "🃏"),
-          ("DRAFT", "✏️"), ("REVISE", "🖊"), ("CHECK", "🔍"))
+PHASES = (("CONTEXT", "🧭"), ("OUTLINE", "🧩"), ("EVIDENCE", "🃏"),
+          ("CONTENT", "✏️"), ("CHECK", "🔍"))
 ORDER = tuple(name for name, _ in PHASES)
 EMOJI = dict(PHASES)
-# What each phase writes, for the full strip's row labels.
-LABEL = {"OUTLINE": "OUTLINE", "PROBE": "PROBE", "EVIDENCE": "EVIDENCE",
-         "DRAFT": "DRAFT", "REVISE": "REVISE·COMPILE", "CHECK": "CHECK"}
+LABEL = {"CONTEXT": "CONTEXT", "OUTLINE": "OUTLINE", "EVIDENCE": "EVIDENCE",
+         "CONTENT": "CONTENT", "CHECK": "CHECK"}
+# the cycle words of the OUTLINE part live on the item table (src/item_table.py)
 
 
 def _latest_outline(pd):
@@ -93,59 +109,74 @@ def _latest_outline(pd):
 
 
 def _cards(pd):
-    pr = pd / "probe"
     rows = []
-    for c in sorted(pr.glob("PP*")) if pr.is_dir() else []:
-        cm = c / "card.md"
-        if not cm.exists():
-            continue
-        t = cm.read_text(encoding="utf-8", errors="replace")
-        rows.append({
-            "id": c.name.split("-")[0],
-            "state": (re.search(r"^state:\s*(\S+)", t, re.M) or [None, "?"])[1],
-            "read": bool(re.search(r"^read:\s*✅", t, re.M)),
-            "bound": bool(re.search(r"^target:\s*\S", t, re.M)),
-            "path": cm, "checked": _checked(t),
-        })
+    seen = set()
+    # Canonical Folder-native evidence lane first. The flat lane remains
+    # readable so stored pre-migration Pages do not disappear from reports.
+    for pr in evidence_lane_dirs(pd, "probe"):
+        for c in sorted(pr.glob("PP*")) if pr.is_dir() else []:
+            if c.name in seen:
+                continue
+            seen.add(c.name)
+            cm = c / "card.md"
+            if not cm.exists():
+                continue
+            t = cm.read_text(encoding="utf-8", errors="replace")
+            rows.append({
+                "id": c.name.split("-")[0],
+                "state": (re.search(r"^state:\s*(\S+)", t, re.M) or [None, "?"])[1],
+                "read": bool(re.search(r"^read:\s*✅", t, re.M)),
+                "bound": bool(re.search(r"^target:\s*\S", t, re.M)),
+                "path": cm, "checked": _checked(t),
+            })
     return rows
 
 
 def _displays(pd):
-    dp = pd / "display"
     rows = []
-    for u in sorted(p for p in dp.iterdir() if p.is_dir()) if dp.is_dir() else []:
-        rm = u / "README.md"
-        inp = u / "intake" / "inputs"
-        rt = rm.read_text(errors="replace") if rm.exists() else ""
-        rows.append({
-            "name": u.name,
-            "frozen": inp.is_dir() and any(inp.iterdir()),
-            "drawn": (u / "preview.pdf").exists(),
-            "accepted": bool(re.search(r"^accepted:\s*✅", rt, re.M)),
-            "path": rm, "checked": _checked(rt),
-        })
+    seen = set()
+    for dp in evidence_lane_dirs(pd, "display"):
+        for u in sorted(p for p in dp.iterdir() if p.is_dir()):
+            if u.name in seen:
+                continue
+            seen.add(u.name)
+            rm = u / "README.md"
+            inp = u / "intake" / "inputs"
+            rt = rm.read_text(errors="replace") if rm.exists() else ""
+            rows.append({
+                "name": u.name,
+                "frozen": inp.is_dir() and any(inp.iterdir()),
+                "drawn": (u / "preview.pdf").exists(),
+                "accepted": bool(re.search(r"^accepted:\s*✅", rt, re.M)),
+                "path": rm, "checked": _checked(rt),
+            })
     return rows
 
 
 def _bibex(pd):
     """One row per bibtex ENTRY, because a count cannot be spent.
 
-    `verified` is a person's (cite-rules, and haipipe-plugin-bibex ruled it
+    `verified` is a person's (cite-rules, and the Outline citation contract rules it
     260815); `checked` is the approver's R1-R7 pass. An entry carrying
     `verified = {}` is EXPLICITLY unverified — cite-rules R7 — so an empty
     brace reads as owed, never as done.
     """
     rows = []
-    for b in sorted((pd / "bibex").glob("*.bib")) if (pd / "bibex").is_dir() else []:
-        bt = b.read_text(encoding="utf-8", errors="replace")
-        for chunk in re.split(r"(?m)^(?=@)", bt):
-            m = re.match(r"@\w+\{\s*([^,\s]+)", chunk)
-            if not m:
+    seen = set()
+    for bx in evidence_lane_dirs(pd, "bibex"):
+        for b in sorted(bx.glob("*.bib")):
+            if b.name in seen:
                 continue
-            v = re.search(r"verified\s*=\s*\{([^}]*)\}", chunk)
-            rows.append({"key": m.group(1), "file": b,
-                         "verified": bool(v and v.group(1).strip()),
-                         "checked": _checked(chunk)})
+            seen.add(b.name)
+            bt = b.read_text(encoding="utf-8", errors="replace")
+            for chunk in re.split(r"(?m)^(?=@)", bt):
+                m = re.match(r"@\w+\{\s*([^,\s]+)", chunk)
+                if not m:
+                    continue
+                v = re.search(r"verified\s*=\s*\{([^}]*)\}", chunk)
+                rows.append({"key": m.group(1), "file": b,
+                             "verified": bool(v and v.group(1).strip()),
+                             "checked": _checked(chunk)})
     return rows
 
 
@@ -205,24 +236,77 @@ def phase_state(page_md, board=None):
     acc = [d for d in disp if d["accepted"]]
 
     page_txt = page_md.read_text(encoding="utf-8", errors="replace")
+    frontmatter_folder_kind = (
+        re.search(r"^folder-kind:\s*([a-z][a-z0-9-]*)\s*$", page_txt, re.M)
+        or [None, ""]
+    )[1]
+    legacy_page_type = (re.search(r"^page-type:\s*([a-z][a-z0-9-]*)\s*$",
+                                  page_txt, re.M) or [None, ""])[1]
+    # Existing Pages without a phase-owned Folder identity keep the historical
+    # conservative default: they owe a local RULING until CHECK closes. A
+    # phase contract may explicitly remove that debt or bind it to its domain
+    # gate. Ambiguity must never silently waive a human-owned decision.
+    owner_ruling = "legacy-default"
+    owner_ruling_required = True
+    owner_ruling_error = ""
+    folder_kind = frontmatter_folder_kind
+    folder_kind_source = "frontmatter" if folder_kind else ""
+    try:
+        phase_folder_kind = current_folder_kind(pd)
+        if phase_folder_kind:
+            page_folder_kind = folder_kind
+            folder_kind = phase_folder_kind
+            folder_kind_source = "workflow/phase.yaml"
+            if page_folder_kind and page_folder_kind != phase_folder_kind:
+                raise ValueError(
+                    "workflow/phase.yaml current.folder-kind "
+                    f"{phase_folder_kind!r} conflicts with Page frontmatter "
+                    f"folder-kind {page_folder_kind!r}"
+                )
+        folder_contract = resolve_folder_contract(
+            SKILLS_ROOT, folder_kind=folder_kind,
+            legacy_page_type=legacy_page_type,
+        )
+    except ValueError as exc:
+        folder_contract = None
+        owner_ruling = "ambiguous"
+        owner_ruling_error = str(exc)
+    if folder_contract is not None:
+        owner_ruling = folder_contract.page_ruling
+        owner_ruling_required = owner_ruling != "none"
     divs = len(re.findall(r"^### \d+ · ", page_txt, re.M))
     md_m = page_md.stat().st_mtime
     ap_m = of.stat().st_mtime if of else 0
-    tex = pd / "latex"
-    pdfs = sorted(tex.rglob("*.pdf")) if tex.is_dir() else []
+    tex_dirs = delivery_lane_dirs(pd, "latex")
+    pdfs = sorted(p for tex in tex_dirs for p in tex.rglob("*.pdf"))
     pdf_fresh = bool(pdfs) and max(p.stat().st_mtime for p in pdfs) >= md_m
 
     rec = _last_receipt(pd, board)
     last = rec["last"] if rec else None
 
+    # The Evidence Item table: SHAPE's typed contracts, SURVEY's Run graphs,
+    # and LAND's local Result pointers. A page with no typed table keeps the
+    # legacy lane-based reading below during migration.
+    items = item_table.summarize(page_md, of) if of else None
+    has_table = bool(items and items["rows"])
+    ic = items["counts"] if items else {}
+    live_rows = (items["marks"] - ic.get("deferred", 0) - ic.get("dropped", 0)) if items else 0
+    folded_rows = ic.get("folded", 0) + ic.get("accepted", 0)
+    context_file = pd / "outline" / f"{page_md.stem}-context.md"
+    context_state = "done" if context_file.is_file() else "owed"
+    content_ready = bool(divs and md_m >= ap_m and (not tex_dirs or pdf_fresh))
+
     states = {
-        "OUTLINE": "done" if approved else ("part" if of else "owed"),
-        "PROBE": "owed" if not cards else ("done" if not missing else "part"),
-        "EVIDENCE": ("done" if (cards and len(answered) >= len(live)
-                                and disp and len(drawn) == len(disp))
-                     else ("owed" if not cards and not disp and not ent else "part")),
-        "DRAFT": "done" if (divs and md_m >= ap_m) else ("part" if divs else "owed"),
-        "REVISE": "done" if pdf_fresh else ("part" if tex.is_dir() else "owed"),
+        "CONTEXT": context_state,
+        "OUTLINE": ("done" if approved and (not has_table or items["decided"] == items["rows"])
+                    else ("part" if of else "owed")),
+        "EVIDENCE": ((("done" if live_rows and folded_rows >= live_rows
+                       else ("owed" if not ic.get("planned") and not ic.get("ready") and not folded_rows
+                             else "part")) if has_table else
+                     ("done" if (cards and len(answered) >= len(live)
+                                 and disp and len(drawn) == len(disp))
+                      else ("owed" if not cards and not disp and not ent else "part")))),
+        "CONTENT": "done" if content_ready else ("part" if divs else "owed"),
         "CHECK": "done" if (last and last.get("phase") == "CHECK"
                             and last.get("route") == "CLOSE") else "owed",
     }
@@ -232,30 +316,35 @@ def phase_state(page_md, board=None):
         "now": next((n for n in ORDER if states[n] != "done"), "CLOSE"),
         "outline": {"file": of, "version": ov, "approved": approved,
                     "marks": marks, "checked": outline_checked},
+        "context": {"file": context_file if context_file.is_file() else None,
+                    "ready": context_state == "done"},
+        "items": items, "cycle": items["cycle"] if items else ("SHAPE" if of else "SHAPE"),
         "cards": cards, "missing": missing, "answered": answered, "blocked": blocked,
         "bibex": {"entries": ent, "verified": ver, "rows": bib},
         "displays": disp, "drawn": drawn, "accepted": acc,
         "divisions": divs, "page_after_tick": md_m >= ap_m,
-        "latex": tex.is_dir(), "pdf_fresh": pdf_fresh,
+        "latex": bool(tex_dirs), "pdf_fresh": pdf_fresh,
         "receipt": rec, "last": last, "dir": pd,
         # The page's OWN words about what it still owes. The RULING is the one
         # tick with no rules file (approve-rules/README.md, on purpose), so the
         # ledger reports this line verbatim rather than inventing a check.
         "state_line": (re.search(r"^state:\s*(.+)$", page_txt, re.M)
                        or [None, ""])[1].strip(),
-        # ⚠️ FIVE ticks, not four. `ruling` was missing here until 260821, so
-        # every count this module printed — the strip's ✋ and status.py's ✋ —
-        # was short by one on every page that had not closed. phase-cards.md
-        # § "The five person-reserved ticks, gathered" has always listed it.
-        # `sum(ticks_owed.values())` must equal `len(owed_ledger(st))`; a test
-        # asserts it, because a count and a list that disagree are how a person
-        # stops trusting both.
+        # The ledger is variable. Four plugin ticks are artifact-driven; the
+        # owner RULING is phase-driven. Legacy Pages conservatively owe it,
+        # while a phase contract may say `none` or reuse its domain gate.
+        # `sum(ticks_owed.values()) == len(owed_ledger(st))` remains invariant.
         "ticks_owed": {
             "approved": 0 if approved else 1, "read": read_owed,
             "verified": max(0, ent - ver),
             "accepted": sum(1 for d in disp if d["drawn"] and not d["accepted"]),
-            "ruling": 0 if states["CHECK"] == "done" else 1,
+            "ruling": 0 if states["CHECK"] == "done" or not owner_ruling_required else 1,
         },
+        "owner_ruling": owner_ruling,
+        "owner_ruling_required": owner_ruling_required,
+        "owner_ruling_error": owner_ruling_error,
+        "folder_kind": folder_kind,
+        "folder_kind_source": folder_kind_source,
     }
 
 
@@ -303,12 +392,12 @@ def owed_ledger(st):
         if d["drawn"] and not d["accepted"]:
             out.append(row("accepted", rel(d["path"]), f"{d['name']} · drawn", d["checked"]))
 
-    # ⑦ the RULING, and it is deliberately last and deliberately uncheckable:
-    # it is the one tick with NO rules file, because deciding a page's own
-    # question is the point of the page (approve-rules/README.md).
-    if st["states"]["CHECK"] != "done":
+    # The owner RULING is last and deliberately uncheckable. Whether it exists
+    # comes from the owning workflow phase, not from the generic Page loop.
+    if st["ticks_owed"]["ruling"]:
         out.append(row("ruling", f"{st['page']}.md",
-                       st["state_line"] or "no state: line", None))
+                       f"{st['state_line'] or 'no state: line'} · "
+                       f"owner: {st['owner_ruling']}", None))
     return out
 
 

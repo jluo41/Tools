@@ -166,37 +166,6 @@ The visible tag and the named settling claim are what make the bet legible rathe
 
 ## Aims
 
-### A1 · The advice entry and its three roles
-
-- A1.1 · Every active advice entry carries a derivation chain to at least one 1c claim.
-  **Done when:** no active A<n> in a 1d-advice.md file lacks a C<n> citation in its derivation field.
-- A1.2 · The explore role carries all three contract conditions (tag, settling claim, rails).
-  **Done when:** CHECK rejects an explore entry that is missing any one of the three, on any venue tier.
-- A1.3 · The actionability test is applied before an entry reaches CHECK.
-  **Done when:** the revision phase includes an explicit actionability pass, and entries that fail it are pushed back to 1c rather than caveated inline.
-
-### A2 · Adopt, decline, and what each commits downstream to
-
-- A2.1 · Declined entries remain in the 1d document and are readable in the next round.
-  **Done when:** a venue retarget finds the prior round's declined entries available in 1d-advice.md without any gap.
-- A2.2 · The adoption record living downstream is sufficient for claim-audit to trace artifact -> A -> C -> anchor.
-  **Done when:** a claim-audit run on an advice-adopting artifact finds the A<n> record in the downstream stage without reading 1d-advice.md.
-
-### A3 · How advice binds to narrative without becoming mandate
-
-- A3.1 · Narrative beats are anchored to A<n> or C<n> ids, never to paraphrase.
-  **Done when:** a narrative page produced from a 1d table has no beat lacking an explicit A<n> or C<n> anchor.
-- A3.2 · The content-WHAT / channel-HOW boundary is stable across venue changes.
-  **Done when:** a retarget to a new venue rewrites 2-venue.md without editing 1d-advice.md, and narrative beats re-anchor to the same A<n> ids.
-
-### P · Page-level
-
-- P1 · A cold reader can distinguish advice (content-WHAT) from Artifact Principles (channel-HOW) after reading this page.
-  **Done when:** a zero-background reviewer names the distinction correctly without reading haipipe-application-advice SKILL.md.
-
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 Should the sweep-or-waive lens be stated as the CHECK gate for the triple (exploit / explore / negative), or does that belong in the haipipe-application-advice SKILL.md?
@@ -208,25 +177,47 @@ The visible tag and the named settling claim are what make the bet legible rathe
       🛑 Blocks nothing on this page; the Content already names all three roles.
       🤖 If nobody answers: treat as A (cross-reference without restating gate mechanics).
 
+
 ### A1 · The advice entry and its three roles
 
-- ⬜ A1.1 · Not started; no live 1d-advice.md file has been checked for derivation completeness.
-- ⬜ A1.2 · Not started; CHECK behavior for explore entries has not been verified on a real file.
-- ⬜ A1.3 · Not started; whether the revision phase enforces an actionability pass is not confirmed from a live run.
+- ⬜ A1.1 · Every active advice entry carries a derivation chain to at least one 1c claim.
+  **Done when:** no active A<n> in a 1d-advice.md file lacks a C<n> citation in its derivation field.
+  **Now:** Not started; no live 1d-advice.md file has been checked for derivation completeness.
+- ⬜ A1.2 · The explore role carries all three contract conditions (tag, settling claim, rails).
+  **Done when:** CHECK rejects an explore entry that is missing any one of the three, on any venue tier.
+  **Now:** Not started; CHECK behavior for explore entries has not been verified on a real file.
+- ⬜ A1.3 · The actionability test is applied before an entry reaches CHECK.
+  **Done when:** the revision phase includes an explicit actionability pass, and entries that fail it are pushed back to 1c rather than caveated inline.
+  **Now:** Not started; whether the revision phase enforces an actionability pass is not confirmed from a live run.
+
 
 ### A2 · Adopt, decline, and what each commits downstream to
 
-- ⬜ A2.1 · Not started; no retarget has been observed with a prior round's declined entries available.
-- ⬜ A2.2 · Not started; no claim-audit run has been traced back through an adopted A<n>.
+- ⬜ A2.1 · Declined entries remain in the 1d document and are readable in the next round.
+  **Done when:** a venue retarget finds the prior round's declined entries available in 1d-advice.md without any gap.
+  **Now:** Not started; no retarget has been observed with a prior round's declined entries available.
+- ⬜ A2.2 · The adoption record living downstream is sufficient for claim-audit to trace artifact -> A -> C -> anchor.
+  **Done when:** a claim-audit run on an advice-adopting artifact finds the A<n> record in the downstream stage without reading 1d-advice.md.
+  **Now:** Not started; no claim-audit run has been traced back through an adopted A<n>.
+
 
 ### A3 · How advice binds to narrative without becoming mandate
 
-- ⬜ A3.1 · Not started; no narrative page produced from a 1d table has been inspected for beat anchoring.
-- ⬜ A3.2 · Not started; no retarget test has been run.
+- ⬜ A3.1 · Narrative beats are anchored to A<n> or C<n> ids, never to paraphrase.
+  **Done when:** a narrative page produced from a 1d table has no beat lacking an explicit A<n> or C<n> anchor.
+  **Now:** Not started; no narrative page produced from a 1d table has been inspected for beat anchoring.
+- ⬜ A3.2 · The content-WHAT / channel-HOW boundary is stable across venue changes.
+  **Done when:** a retarget to a new venue rewrites 2-venue.md without editing 1d-advice.md, and narrative beats re-anchor to the same A<n> ids.
+  **Now:** Not started; no retarget test has been run.
+
 
 ### P · Page-level
 
-- ⬜ P1 · Not started; no zero-background review has been done.
+- ⬜ P1 · A cold reader can distinguish advice (content-WHAT) from Artifact Principles (channel-HOW) after reading this page.
+  **Done when:** a zero-background reviewer names the distinction correctly without reading haipipe-application-advice SKILL.md.
+  **Now:** Not started; no zero-background review has been done.
+
+
 
 
 ## Files
@@ -258,3 +249,5 @@ The visible tag and the named settling claim are what make the bet legible rathe
 ## Log
 
 260802 · QB5-design.md created; Opening, Content (3 divisions), Aims, States, Files, and Glossary written from haipipe-application-advice SKILL.md, haipipe-application-narrative SKILL.md, and QB2@paper (QB2-work.md on the paper board). Decision Now row placed for the sweep-or-waive gate location.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -1,5 +1,11 @@
 # haipipe-page-for-labeling · CHANGELOG
 
+## 0.5.0 · 2026-09-01
+
+Rename the Level-3 surface from a run Page to a Labeling Job Page. Clarify that
+a round fails the Page-unit independence test while still becoming a Level-4
+Calibration Run after human release.
+
 ## 0.1.0 · 2026-08-07
 
 First edition. Splits out of a single worked sample that was trying to be three things at once: a contract, a specimen, and one real run.
@@ -49,3 +55,11 @@ Found by writing a second run page from the specimen and running `stage.py sync`
 Was `haipipe-toolkit/skills/board/page-types/`, is now `subjective-label/skills/`. This is not a new rule: `haipipe-board`'s own 260803 ruling already says a Page Type variant ships WHERE THE BOARD FAMILY MAINTAINS IT, and closes with "who maintains it is the line that held twice; who consumes it never did". Every rule in this contract comes from the subjective-label method, and the board family maintains none of it, so the original placement was wrong by the rule that was already written. JL 260807: a `for-<type>` variant may live in any skill set.
 
 The board family keeps the three variants it does maintain. The `label` value stays in `check.py`'s `PAGE_TYPE_VALUES`, because that list is the board engine's, not this contract's.
+
+## 0.3.1 · 2026-08-30
+
+**Vocabulary follows the family rename.** The two sides are now Building and Scanning (JL 260830: Part 1 builds the label; both sides label something, so "Labeling" named nothing). Division 3 is `Building gates`; division 4 unlocks at `P2 Freeze`, which is a phase since the handoff file is its own artifact; the family contracts this page loads are `subjective-label`, `label-building`, `label-scanning`, `subjective-label-workflow`. No rule of the page itself changed.
+
+## 0.4.0 · 2026-08-30
+
+**The page reads the units.** §2's record is the readable index of one round UNIT (`ref-assets.md` §3): it names `rounds/round_<t>/`, quotes the card's gap and expectation, scores prospect vs actual from `view/result.md`, shows the register movement, and carries the route. §1 quotes the policy version's rendered `cheatsheet.md` and draws seed cases from `gallery.md` by item id, never redrafting rules. §3 gate rows read the newest `checkpoint.json` and name it. §4 shows the handoff id + checksum or stays empty as status; §5 shows `D*` or stays empty. `state:` is derived from checkpoints, the handoff, and the audit receipt. Both templates updated to the 0.4.0 family layout (six phases, three layers).

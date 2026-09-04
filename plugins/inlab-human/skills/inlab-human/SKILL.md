@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-10"
-  summary: "Tier-1: console mode (default, on-demand inference) + study mode (reader protocol)."
 ---
 
 Skill: inlab-human (in-lab human evaluation, tier-1)

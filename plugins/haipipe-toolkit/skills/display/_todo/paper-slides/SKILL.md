@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-24"
-  summary: "Compiled paper → talk outline → dispatch to haipipe-display-slides. Owns extraction; owns no layout."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

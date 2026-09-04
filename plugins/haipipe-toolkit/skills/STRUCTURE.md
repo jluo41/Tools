@@ -115,9 +115,9 @@ checks; `board/agents/` owns the read-only fresh-context reviewer. The Board use
 to design that package remains at `diagrams/BoardSkillBoard-260722/`, because working
 design records and delivery skills have different lifecycles.
 
-There is no top-level `narrative` bucket. Narrative is one Paper Page Type under
-`paper/page-types/`; the top-level evidence executor bucket is `discovery`, not
-`discover`.
+There is no top-level `narrative` bucket. Narrative is one Paper journey-phase
+skill under `paper/workflow-phases/` (page-types/ replaced 260831); the
+top-level evidence executor bucket is `discovery`, not `discover`.
 
 There is no live `insight` bucket either — the insight layer (D/I/K/W cards) was
 RETIRED 2026-07-12 (JL) and its skills were deleted on 260822. Nothing is left on

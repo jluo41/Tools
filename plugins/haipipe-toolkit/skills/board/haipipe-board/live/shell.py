@@ -92,6 +92,10 @@ body.pane-chat #chat .hd .x{display:none !important}
    and keeps doing the work, hidden, because the switch hands a session back and
    forth under QD1's one-window Law and should have one implementation. */
 body.pane-chat #chat .hd .term{display:none !important}
+/* …except while the TERMINAL is showing (JL 260831 "there is no place to be
+   back to GUI"): the composer — the door IN — hides with the GUI, so the
+   header's '← GUI' must surface. body.termon is termView()'s own mark. */
+body.pane-chat.termon #chat .hd .term{display:inline-flex !important;align-items:center}
 """,
     "page": """
 /* QD5 page pane: the page, alone. The sidebar is the index pane's job now, and the
@@ -99,7 +103,8 @@ body.pane-chat #chat .hd .term{display:none !important}
    in the file (A2.2 is what deletes the bytes; this only stops drawing them). */
 body.pane-page{padding:0 !important}
 body.pane-page .sidebar,body.pane-page .sbtoggle,body.pane-page .sbrz,
-body.pane-page #chat,body.pane-page #chatfab{display:none !important}
+body.pane-page #chat,body.pane-page #chatfab,body.pane-page #chatfabmore,
+body.pane-page #chatpick{display:none !important}
 """,
 }
 
@@ -124,12 +129,12 @@ document.addEventListener('click', function (e) {
   var a = e.target.closest && e.target.closest('a');
   if (!a) return;
   var href = a.getAttribute('href') || '';
-  if (!href || href[0] === '#' || /^[a-z]+:/i.test(href) || !/\.html/.test(href)) return;
+  if (!href || href[0] === '#' || /^[a-z]+:/i.test(href) || !/\\.html/.test(href)) return;
   var go = null;
   try { go = parent.frames.page && parent.frames.page.__boardGo; } catch (err) { return; }
   if (typeof go !== 'function') return;          // fall through to target="page"
   e.preventDefault();
-  go(new URL(a.href, location.href).href.replace(/\?pane=page/, '') + '?pane=page', true);
+  go(new URL(a.href, location.href).href.replace(/\\?pane=page/, '') + '?pane=page', true);
 });
 """,
     "chat": """
@@ -222,12 +227,11 @@ def _shell_doc(page_url, index_url):
 <style>
   /* THE SAME SURFACE AS THE BOARD. The shell shipped in its own dark chrome and
      read as three windows in a black frame (JL 260802: "I don't want the black
-     boundary for the three split... make it the same style like the old
-     version"). The one-document board separates its sidebar, page and drawer with
-     a single hairline on a shared background, so the split does the same: these
+     boundary for the three split... make it the same style like the page"). The
+     page uses a single hairline on a shared background, so the split does the same: these
      are the board's own variables, values and dark query copied, because the
      shell is a separate document and cannot inherit them. */
-  :root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;
+  :root{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff;
     --accent:#1f5aa8}
   @media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
     --line:#2c2e33;--card:#1d1f23;--accent:#6ea8f0}}
@@ -285,24 +289,34 @@ def _shell_doc(page_url, index_url):
     grid-template-columns:var(--iw,250px) 5px 1fr 5px var(--cw,520px)}
   #split.hi{grid-template-columns:0 0 1fr 5px var(--cw,520px)}
   #rp{display:flex;flex-direction:column;min-width:0;overflow:hidden;
-  border-left:1px solid var(--line,#e4e4df);background:var(--bg,#fff)}
+  border-left:1px solid var(--line,#e4e4e7);background:var(--bg,#fff)}
 #rptabs{flex:0 0 auto;display:flex;align-items:stretch;gap:2px;padding:5px 6px 0 6px;
-  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
-.rpt{border:1px solid var(--line,#e4e4df);border-bottom:0;background:transparent;
+  border-bottom:1px solid var(--line,#e4e4e7);background:var(--card,#fff);overflow-x:auto}
+.rpt{border:1px solid var(--line,#e4e4e7);border-bottom:0;background:transparent;
   color:var(--mut,#7c7c78);cursor:pointer;border-radius:7px 7px 0 0;padding:5px 11px;
+  min-height:36px;
   font:600 12px/1 ui-monospace,Menlo,monospace}
 .rpt:hover{background:var(--bg,#f1f3f5)}
 /* the OPEN tab is the one that looks attached to the pane below it */
 .rpt[aria-selected="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c);
-  border-color:var(--line,#e4e4df);margin-bottom:-1px;padding-bottom:6px}
+  border-color:var(--line,#e4e4e7);margin-bottom:-1px;padding-bottom:6px}
 .rpt[hidden]{display:none}
 .rp-sp{flex:1}
-/* the OPEN SET machinery (haipipe-plugin): the active tab's own ✕, the ＋
-   that lists what this page could open, and the ＋ menu with its ● material dot */
+/* The page's applicable category plugins are direct tabs.  The list can be
+   wider than a narrow reader pane, so the strip scrolls horizontally instead
+   of hiding Runs or wrapping the tab text into unreadable stacks. */
 #rp{position:relative}
-#rptset{display:flex;align-items:stretch;gap:2px}
-.rptx{margin-left:8px;color:var(--mut,#7c7c78);font-weight:700}
-.rptx:hover{color:#c94a4a}
+#rptset{display:flex;align-items:stretch;gap:2px;flex:0 0 auto}
+.rptwrap{position:relative;display:flex;align-items:stretch;flex:0 0 auto}
+.rpt[aria-selected="true"]{padding-right:42px}
+/* A close glyph is not a close target.  Give the active tab's real button a
+   full finger-sized lane so a phone tap cannot accidentally reactivate the
+   tab underneath or beside it. */
+.rptx{position:absolute;z-index:2;right:0;top:0;bottom:0;width:36px;min-width:36px;
+  border:0;background:transparent;color:var(--mut,#7c7c78);cursor:pointer;padding:0;
+  display:grid;place-items:center;touch-action:manipulation;
+  font:700 16px/1 ui-monospace,Menlo,monospace}
+.rptx:hover,.rptx:focus-visible{color:#c94a4a}
 #rpplus{border:1px solid transparent;background:transparent;color:var(--mut,#7c7c78);
   cursor:pointer;border-radius:7px 7px 0 0;padding:5px 9px;
   font:700 13px/1 ui-monospace,Menlo,monospace}
@@ -319,22 +333,27 @@ def _shell_doc(page_url, index_url):
 /* the FORM segment: subordinate to the Chat tab, never a tab itself */
 #rpmode{display:flex;align-items:center;gap:2px;padding-bottom:4px}
 #rpmode[hidden]{display:none}
-.rpm{border:1px solid var(--line,#e4e4df);background:transparent;cursor:pointer;
+.rpm{border:1px solid var(--line,#e4e4e7);background:transparent;cursor:pointer;
   color:var(--mut,#7c7c78);border-radius:6px;padding:3px 8px;
   font:600 11px/1 ui-monospace,Menlo,monospace}
 .rpm:hover{background:var(--bg,#f1f3f5)}
 .rpm[aria-checked="true"]{background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #rp iframe{flex:1 1 auto;min-height:0}
+/* 🎨 Studio (JL 260831): the drawing above, the chat below — zero-basis flex
+   so the ratio, not the content, sets the split; the ✨ bar leads. */
+#rp.studio #rptabs{order:-3}
+#rp.studio #fd{order:-1;flex:1.15 1 0;min-height:0}
+#rp.studio #fc{flex:1 1 0;min-height:0}
 #rp iframe[hidden]{display:none}
 /* ✨ the Draw and Slides tabs' control bars: one ask, one button, one status word */
 #drawbar,#slidebar{flex:0 0 auto;display:flex;gap:6px;align-items:center;padding:6px 8px;
-  border-bottom:1px solid var(--line,#e4e4df);background:var(--card,#fff)}
+  border-bottom:1px solid var(--line,#e4e4e7);background:var(--card,#fff)}
 #drawbar[hidden],#slidebar[hidden]{display:none}
 #adask,#sdask{flex:1 1 auto;min-width:0;font:12px ui-monospace,Menlo,monospace;
-  padding:5px 8px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  padding:5px 8px;border:1px solid var(--line,#e4e4e7);border-radius:7px;
   background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #adgo,#sdgo{flex:0 0 auto;font:600 12px/1 ui-monospace,Menlo,monospace;cursor:pointer;
-  padding:6px 10px;border:1px solid var(--line,#e4e4df);border-radius:7px;
+  padding:6px 10px;border:1px solid var(--line,#e4e4e7);border-radius:7px;
   background:var(--bg,#fff);color:var(--fg,#1c1c1c)}
 #adgo:hover,#sdgo:hover{background:var(--bg,#f1f3f5)}
 #adgo:disabled,#sdgo:disabled{opacity:.5;cursor:default}
@@ -365,8 +384,8 @@ def _shell_doc(page_url, index_url):
   }
   iframe{border:0;width:100%;height:100%;display:block;background:var(--bg)}
   /* A HAIRLINE, not a bar. The 5px is the grab area a drag needs; what the eye
-     sees is one 1px line in the board's own --line, the same separator the sidebar
-     and the drawer draw on the one-document board. */
+     sees is one 1px line in the board's own --line, matching the page-frame
+     separators. */
   .gr{background:var(--bg);border-left:1px solid var(--line);
     cursor:col-resize;touch-action:none}
   .gr:hover,.gr.on{border-left-color:var(--accent);
@@ -396,7 +415,6 @@ def _shell_doc(page_url, index_url):
   <span id="where">board</span>
   <span class="sep">·</span>
   <span id="what">loading…</span>
-  <a id="plain" href="__PAGEPATH__?plain" target="_top" title="open this page on its own, without the split">↗ plain</a>
 </div>
 <div id="split">
   <iframe name="index" id="fi" data-src="__INDEX__" title="pages"></iframe>
@@ -432,16 +450,9 @@ def _shell_doc(page_url, index_url):
           title="The real CLI in a terminal: long jobs, skills">⌨️ TUI</button>
       </span>
     </div>
-    <!-- ✨ THE DRAW TAB'S ONE CONTROL (JL 260815: "what I want is like a button,
-         and it can generate what we want"). Ask is optional: empty means draw
-         this page's ## Diagram. Claude authors the scene server-side
-         (/_board/autodraw) and the watcher below repaints the canvas. -->
-    <div id="drawbar" hidden>
-      <input id="adask" type="text" spellcheck="false"
-        placeholder="what to draw · empty = this page's ## Diagram">
-      <button id="adgo" type="button">✨ Draw it</button>
-      <span id="adstat"></span>
-    </div>
+    <!-- ✨ the drawbar RETIRED 260831 (JL: "I want it to be in the input
+         box"): the composer's 🖌 menu presses window.__studioDrawIt with the
+         composer text as the ask, and window.__studioToggleDraw for the fold. -->
     <!-- ✨ THE SLIDES TAB'S ONE CONTROL (JL 260815: "add a new button to it so
          we can regenerate the slide"). Ask is optional: empty means present the
          page's argument. Claude authors the deck server-side (/_board/autodeck)
@@ -554,7 +565,6 @@ def _shell_doc(page_url, index_url):
     var name = (OPENED.split('/board/')[0] || '').split('/').filter(Boolean).pop() || 'board';
     document.getElementById('where').textContent = name;
     document.getElementById('what').textContent = t.replace(/\s+/g, ' ').trim();
-    document.getElementById('plain').href = p + '?plain';   // the way OUT
   }
 
   /* ② THE REFRESH IS NOT HERE. Each pane asks about its own URL and reloads
@@ -588,7 +598,7 @@ def _shell_doc(page_url, index_url):
   window.__boardMirror = mirror;
   mirror();
 
-  /* ④ THE TOGGLES. Same two gestures as the one-document board — ☰ hides the
+  /* ④ THE TOGGLES. Two direct gestures — ☰ hides the
      sidebar, 💬 hides the chat — and each remembers itself per machine, the way
      `--iw` and `--cw` already do. Hiding is a zero-width COLUMN, never an
      unloaded frame: a terminal mid-command must survive being put away. */
@@ -629,10 +639,18 @@ def _shell_doc(page_url, index_url):
      clicking the lit one hides the pane, and neither lit means there is no chat
      on screen. The pane is only ever COLLAPSED, never unloaded, so a terminal
      mid-command is still running when you bring it back. */
-  var hidden = true;                     // hidden until asked for
-  try { hidden = localStorage.getItem('board-split-chat') !== '1'; } catch (e) {}
-  var wanted = 'tui';
-  try { wanted = localStorage.getItem('board-split-mode') || 'tui'; } catch (e) {}
+  /* A first-time reader sees the direct plugin strip immediately.  A saved
+     choice still wins, so someone who deliberately closed the pane keeps that
+     preference. */
+  var hidden = false;
+  try {
+    var savedPane = localStorage.getItem('board-split-chat');
+    if (savedPane !== null) hidden = savedPane !== '1';
+  } catch (e) {}
+  /* GUI is the form a fresh reader gets (JL 260831: "if choose the Chat
+     Plugin, make the GUI the default"); a stored choice still wins. */
+  var wanted = 'gui';
+  try { wanted = localStorage.getItem('board-split-mode') || 'gui'; } catch (e) {}
   var btns = [document.getElementById('mtui'), document.getElementById('mgui')];
 
   /* The registry lives in the PAGE frame, which is same-origin, so the shell reads it
@@ -657,7 +675,8 @@ def _shell_doc(page_url, index_url):
              page column. On a BARE page there is no shell and no tab strip, so the
              menu entry is still the only door and still works. */
           if (e.id === 'gui' || e.id === 'tui' || e.id === 'chat'
-              || e.id === 'draw' || e.id === 'slides' || e.tab) return;
+              || e.id === 'draw' || e.id === 'slides' || e.id === 'studio'
+              || e.tab) return;
           rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                       run: function () { e.open(w.boardPlugins.livePage()); } });
         });
@@ -674,30 +693,31 @@ def _shell_doc(page_url, index_url):
     /* ONE row for the one Chat (JL 260815): it opens in the last-used form and
        the strip's segment is where the form is chosen, so the menu stops
        selling GUI and TUI as two surfaces. */
+    /* ONE ROOM (JL 260831: "put both of them into the studio, as one page"):
+       the 💬 Chat and 🖌 Draw rows folded into 🎨 Studio — drawing above,
+       chat below, both live at once, so the scene the chat redraws changes in
+       front of the person talking. The 260815 refusal ("full chat under the
+       canvas") was about the DRAW tab carrying a chat; the studio/ category
+       is the room both tools share. 🎞 Slides lives in the 📤 Delivery tab. */
     var rows = [
-      { id: 'chat', label: '💬 Chat', hint: 'this page’s conversation · pick GUI or TUI inside',
-        run: function () { showTab('chat'); } }
+      { id: 'studio', label: '🎨 Studio', hint: 'the human’s room · drawing above, chat below',
+        run: function () { showTab('studio'); } }
     ];
-    /* Draw is the shell's third surface (JL 260815): the tab strip only shows once
-       the right pane is open, so with the pane collapsed the menu is the one door a
-       reader can see. The row clicks the same showTab the strip uses — one opener,
-       one owner for which file the view saves to — and follows the strip's own
-       applies rule: no drawing on this page, no row. */
-    if (drawURL()) {
-      rows.push({ id: 'draw', label: '🖌 Draw', hint: 'this page’s drawing, in the right pane',
-                  run: function () { showTab('draw'); } });
-    }
-    if (slidesURL()) {
-      rows.push({ id: 'slides', label: '🎞 Slides', hint: 'this page as a deck, in the right pane',
-                  run: function () { showTab('slides'); } });
-    }
     /* Registry tabs (haipipe-plugin): each row opens its right-pane tab
        through the same showTab the strip uses — one opener, one owner. */
     xdefs().forEach(function (e) {
       rows.push({ id: e.id, label: e.label, hint: e.hint || '',
                   run: function () { showTab(e.id); } });
     });
-    return rows.concat(pageEntries('plugin'));
+    var all = rows.concat(pageEntries('plugin'));
+    /* THE DEFAULT LEADS THE MENU (JL 260831: "make the outline the first
+       plugin and the default plugin"). rankDefault() has put it first in the
+       STRIP since 260830, but this menu still opened on 💬 with 🧭 fifth. */
+    var def = defaultTab();
+    for (var i = 1; i < all.length; i++) {
+      if (all[i].id === def) { all.unshift(all.splice(i, 1)[0]); break; }
+    }
+    return all;
   }
   /* 🪜 WORKFLOW · steppers over THIS page, which open along the BOTTOM. The shell owns
      none of these: a workflow is gated on the page's declared type, so the page is the
@@ -788,8 +808,13 @@ def _shell_doc(page_url, index_url):
   function want(mode) {
     /* Another tab may be on stage; a chat ask means "switch to chat", never a
        toggle-away of a pane that is showing something else. */
-    var away = tab !== 'chat';
-    if (away) { tab = 'chat'; ensureOpen('chat'); stage('chat'); }
+    var away = tab !== 'chat' && tab !== 'studio';
+    if (away) {
+      tab = 'studio'; ensureOpen('studio');
+      var du = drawURL();
+      if (du && fd.getAttribute('src') !== du) fd.setAttribute('src', du);
+      stage('studio');
+    }
     if (!hidden && !away && liveMode() === mode) { hidden = true; }   // the lit one = put it away
     else { hidden = false; wanted = mode;
            try { if (frames.chat.__paneMode) frames.chat.__paneMode(mode); } catch (e) {} }
@@ -862,8 +887,13 @@ def _shell_doc(page_url, index_url):
      registering and this shell is not edited for it. */
   var rp = document.getElementById('rp'), fd = document.getElementById('fd');
   var fs = document.getElementById('fs');
-  var tab = 'chat';                 // 'chat' (gui|tui live inside it) · any open tab id
+  var tab = 'studio';               // 🎨 studio (chat gui|tui + draw) · any open tab id
 
+  /* 🎨 whether the studio's draw half is unfolded — per reader, remembered */
+  function drawOpen() {
+    try { return localStorage.getItem('board-studio-draw') !== '0'; }
+    catch (e) { return true; }
+  }
   function drawURL() {
     try {
       var w = frames.page;
@@ -882,40 +912,48 @@ def _shell_doc(page_url, index_url):
      below repaints the canvas when the file lands. The server refuses a
      hand-drawn scene and the group view, and the refusal is shown, not eaten. */
   (function () {
-    var go = document.getElementById('adgo'), askEl = document.getElementById('adask'),
-        st = document.getElementById('adstat');
-    if (!go) return;
     function sceneRelNow() {
       var m = /board=([^&]+)/.exec(fd.getAttribute('src') || '');
       return m ? decodeURIComponent(m[1]) : '';
     }
-    function run(isRetry) {
+    /* ✨ THE DRAW ASK, from the composer (the drawbar retired 260831, JL:
+       "I want it to be in the input box"). One POST; Claude authors the
+       scene server-side; the watcher below repaints the canvas when the
+       file lands. `note` hears the progress lines, so the chat pane can
+       show them however it likes. The server still refuses a hand-drawn
+       scene and the group view, and the refusal is shown, not eaten. */
+    window.__studioDrawIt = function (ask, note, isRetry) {
+      note = note || function () {};
       var rel = sceneRelNow();
-      if (!rel) { st.textContent = 'no scene under this view'; return; }
-      go.disabled = true;
-      st.textContent = '🖌 Claude is drawing… (a minute or two)';
+      if (!rel) { note('✋ no scene under this view'); return; }
+      note('🖌 Claude is drawing… (a minute or two)');
       fetch('/_board/autodraw', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scene: rel, prompt: askEl.value.trim() })
+        body: JSON.stringify({ scene: rel, prompt: (ask || '').trim() })
       }).then(function (r) { return r.json(); }).then(function (j) {
-        go.disabled = false;
-        st.textContent = j.ok ? '✅ drawn (' + j.elements + ' elements) — refreshing'
-                              : '✋ ' + (j.err || 'refused');
+        note(j.ok ? '✅ drawn (' + j.elements + ' elements) — the canvas repaints itself'
+                  : '✋ ' + (j.err || 'refused'));
       }).catch(function () {
         /* A dropped CONNECTION is usually a serve.py restart mid-flight, and
            the drawing may still have landed (the file writes server-side; the
            watcher will show it). Retry once; after that, tell the truth. */
         if (!isRetry) {
-          st.textContent = '⏳ server hiccuped (a restart?) — retrying…';
-          setTimeout(function () { run(true); }, 3000);
+          note('⏳ server hiccuped (a restart?) — retrying…');
+          setTimeout(function () { window.__studioDrawIt(ask, note, true); }, 3000);
           return;
         }
-        go.disabled = false;
-        st.textContent = '✋ server unreachable — is serve.py running?';
+        note('✋ server unreachable — is serve.py running?');
       });
-    }
-    go.addEventListener('click', run);
-    askEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+    };
+    /* 🎨 the fold: one press hides the canvas (chat takes the whole room),
+       one press brings it back; stage() re-reads the choice. */
+    window.__studioToggleDraw = function () {
+      try {
+        localStorage.setItem('board-studio-draw', drawOpen() ? '0' : '1');
+      } catch (e) {}
+      if (tab === 'studio') stage('studio');
+    };
+    window.__studioDrawShown = function () { return drawOpen(); };
   })();
 
   var sceneStamp = '';
@@ -926,7 +964,7 @@ def _shell_doc(page_url, index_url):
     requestAnimationFrame(function () { fd.setAttribute('src', src); });
   }
   setInterval(function () {
-    if (hidden || tab !== 'draw' || fd.hidden) return;
+    if (hidden || (tab !== 'draw' && tab !== 'studio') || fd.hidden) return;
     /* ATTACHMENT IS RE-CHECKED EVERY TICK, not only at open and at mirror():
        every stale path found so far (router swap with the tab hidden, a shell
        loaded before a fix, a restored tab strip) ends the same way — the
@@ -995,7 +1033,7 @@ def _shell_doc(page_url, index_url):
     fetch(surl, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
       if (r.ok) {
         fs.removeAttribute('srcdoc');
-        fs.setAttribute('src', surl + '?plain&v=' + Date.now());
+        fs.setAttribute('src', surl + '?embed&v=' + Date.now());
         return;
       }
       noDeck();
@@ -1052,8 +1090,12 @@ def _shell_doc(page_url, index_url):
     try {
       var w = pageWin();
       if (w && w.boardPlugins) {
-        w.boardPlugins.all().forEach(function (e) {
-          if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides'].indexOf(e.id) < 0)
+        /* The strip, top Plugin menu, and ＋ picker are all doors for THIS
+           Page. Reading the registry's global list let a type-specific tab
+           (notably 🏷 Labeling) remain offerable on an ordinary paper Page,
+           even though the registry's own applies() gate would refuse it. */
+        w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach(function (e) {
+          if (e.tab && ['chat', 'gui', 'tui', 'draw', 'slides', 'studio'].indexOf(e.id) < 0)
             out.push(e);
         });
       }
@@ -1066,6 +1108,7 @@ def _shell_doc(page_url, index_url):
     return null;
   }
   function tabLabel(id) {
+    if (id === 'studio') return '🎨 Studio';
     if (id === 'chat') return '💬 Chat';
     if (id === 'draw') return '🖌 Draw';
     if (id === 'slides') return '🎞 Slides';
@@ -1078,21 +1121,70 @@ def _shell_doc(page_url, index_url):
      the 🛠 tab opens on the skill INDEX, a name opens the skill in the same
      frame, and the viewer's ☰ walks back to the index.) */
   function offerable(id) {
-    if (id === 'chat') return true;
-    if (id === 'draw') return !!drawURL();
-    if (id === 'slides') return !!slidesURL();
+    /* 260831: chat + draw live inside 🎨 Studio (a sceneless page still
+       offers it — the chat half is always there); the strip no longer sells
+       their old ids, and 🎞 rides in 📤 Delivery. */
+    if (id === 'studio') return true;
+    if (id === 'chat' || id === 'draw' || id === 'slides') return false;
     return !!defOf(id);
   }
 
-  /* THE OPEN SET, per page: a reader returns to the pane the way they left it. */
+  /* THE DIRECT PLUGIN STRIP, per page.  JL asked to SEE the page's category
+     plugins — Outline · Studio · Evidence · Runs · Delivery … — rather than
+     discovering a closed surface through ＋.  A first visit opens the whole
+     applicable palette; after that the reader's per-page open set wins, so a
+     tab closed with its ✕ actually stays closed. */
   var openSet = null;
   function tabsKey() { return 'board-split-tabs:' + (shownNow() || OPENED); }
+  /* 🧭 THE DEFAULT TAB IS THE REGISTRY'S, NOT CHAT (JL 260830: "the outline
+     will be shown as the default and be ranked to be the first, not the Chat.
+     This is very important"). The page frame has carried
+     `boardPlugins.setDefault('outline')` since 260818, but only the FAB read
+     it: this shell seeded `['chat']` and `tab = 'chat'` on its own, so every
+     split pane opened on 💬 with 🧭 second or absent. The shell now asks the
+     registry, and the default goes FIRST in the strip on the first visit.
+     A stored set is the reader's choice: rank an open default, but never
+     resurrect one they closed. */
+  function defaultTab() {
+    try {
+      var w = pageWin();
+      var d = w && w.boardPlugins && w.boardPlugins.getDefault(w.boardPlugins.livePage());
+      return (d && d.tab && d.id && offerable(d.id)) ? d.id : '';
+    } catch (e) { return ''; }
+  }
+  function rankDefault() {
+    var id = defaultTab();
+    if (!id || openSet === null) return id;
+    var i = openSet.indexOf(id);
+    if (i > 0) openSet.splice(i, 1);
+    if (i > 0) openSet.unshift(id);
+    return id;
+  }
   function loadSet() {
-    openSet = ['chat'];
+    var storedSet = false;
+    openSet = ['studio'];
     try {
       var v = JSON.parse(localStorage.getItem(tabsKey()) || 'null');
-      if (Array.isArray(v) && v.length) openSet = v;
+      if (Array.isArray(v)) { openSet = v; storedSet = true; }
     } catch (e) {}
+    /* Stored sets predating the 260831 fold speak the old ids: chat and
+       draw became the one 🎨 Studio room, slides moved into 📤 Delivery. */
+    var seen = {};
+    openSet = openSet.map(function (id) {
+      if (id === 'chat' || id === 'draw') return 'studio';
+      if (id === 'slides') return 'delivery';
+      return id;
+    }).filter(function (id) {
+      if (seen[id]) return false; seen[id] = 1; return true;
+    });
+    /* Every applicable category is open on a first visit.  `xdefs()` already
+       applies each plugin's own gate and registry order; later visits retain
+       the reader's deliberate closes. */
+    if (!storedSet) {
+      openSet = ['studio'];
+      xdefs().forEach(function (entry) { openSet.push(entry.id); });
+      rankDefault();
+    }
   }
   function saveSet() {
     try { localStorage.setItem(tabsKey(), JSON.stringify(openSet)); } catch (e) {}
@@ -1120,15 +1212,19 @@ def _shell_doc(page_url, index_url):
   function extraFrames() {
     return [].slice.call(rp.querySelectorAll('iframe[id^="fx-"]'));
   }
-  function stage(id) {                       // exactly one frame on stage
-    document.getElementById('fc').hidden = id !== 'chat';
-    fd.hidden = id !== 'draw';
+  function stage(id) {                       // one frame on stage — or the 🎨 pair
+    /* 🎨 Studio (JL 260831) shows BOTH: the drawing above, the chat below —
+       #rp is a flex column and every visible frame flexes, so the split is
+       the layout's own. A page with no scene staged yet keeps the chat full
+       height. (The 260815 refusal of "full chat under the canvas" was about
+       the DRAW tab; the studio room is both tools', by JL's ask.) */
+    var duo = id === 'studio';
+    var hasScene = !!(fd.getAttribute('src') || '');
+    var showDraw = duo && hasScene && drawOpen();
+    document.getElementById('fc').hidden = id !== 'chat' && !duo;
+    fd.hidden = id !== 'draw' && !showDraw;
     fs.hidden = id !== 'slides';
-    /* ✨ Draw's control bar rides above the canvas, only there (JL 260815: a
-       BUTTON generates the drawing — the full chat under the canvas was tried
-       and refused the same day). */
-    var bar = document.getElementById('drawbar');
-    if (bar) bar.hidden = id !== 'draw';
+    rp.classList.toggle('studio', showDraw);
     var sbar = document.getElementById('slidebar');
     if (sbar) sbar.hidden = id !== 'slides';
     extraFrames().forEach(function (f) { f.hidden = ('fx-' + id) !== f.id; });
@@ -1136,12 +1232,27 @@ def _shell_doc(page_url, index_url):
   function noteDoc(msg) {
     return 'data:text/html;charset=utf-8,' + encodeURIComponent(
       '<body style="margin:0;display:grid;place-items:center;height:100vh;'
-      + 'font:13px ui-monospace,Menlo,monospace;color:#7c7c78;background:#fbfbf9">'
+      + 'font:13px ui-monospace,Menlo,monospace;color:#7c7c78;background:#ffffff">'
       + '<div style="max-width:80%;white-space:pre-wrap">' + msg + '</div></body>');
   }
 
+  var firstPaint = true;
   function paintTabs() {
     if (openSet === null) loadSet();
+    /* The registry may not have existed when loadSet ran at boot; rank again
+       now, and if the pane has never shown anything but the seed, aim it at
+       the default so the first open lands on 🧭 rather than 💬. */
+    var def = rankDefault();
+    /* Boot lands on the default even when the pane comes up VISIBLE (JL
+       260831): the `hidden` guard alone left a pane restored open on 💬,
+       because nothing had chosen 'chat' but the seed. Once the registry has
+       answered, the first paint is the only one allowed to re-aim. */
+    if (def && openSet.indexOf(def) >= 0
+        && tab === 'studio' && (hidden || firstPaint)) {
+      tab = def;
+      if (!hidden) { xframe(def); stage(def); aimTab(def); }
+    }
+    if (def) firstPaint = false;
     /* Prune what this page cannot offer, without persisting the prune: the
        stored set is the reader's choice and the next page may honour it. */
     var set = openSet.filter(offerable);
@@ -1156,16 +1267,27 @@ def _shell_doc(page_url, index_url):
     if (host) {
       host.innerHTML = set.map(function (id) {
         var on = id === live;
-        return '<button class="rpt" data-tab="' + id + '" type="button" role="tab"'
-          + ' aria-selected="' + on + '">' + tabLabel(id)
-          + (on ? '<span class="rptx" title="close this tab">✕</span>' : '')
-          + '</button>';
+        return '<span class="rptwrap"><button class="rpt" data-tab="' + id
+          + '" type="button" role="tab" aria-selected="' + on + '">'
+          + tabLabel(id) + '</button>'
+          + (on ? '<button class="rptx" data-close="' + id + '" type="button"'
+              + ' aria-label="Close ' + id + '" title="Close ' + id + '">×</button>' : '')
+          + '</span>';
       }).join('');
       [].forEach.call(host.querySelectorAll('.rpt'), function (b) {
+        b.addEventListener('click', function () { showTab(b.dataset.tab); });
+      });
+      [].forEach.call(host.querySelectorAll('.rptx'), function (b) {
+        /* Isolate the touch before the browser synthesizes click.  The click
+           remains the activation event for mouse, touch and keyboard.  Do not
+           cancel pointerdown: WebKit may then suppress the click entirely. */
+        b.addEventListener('pointerdown', function (ev) {
+          ev.stopPropagation();
+        });
         b.addEventListener('click', function (ev) {
-          if (ev.target && ev.target.classList
-              && ev.target.classList.contains('rptx')) closeTab(b.dataset.tab);
-          else showTab(b.dataset.tab);
+          ev.preventDefault();
+          ev.stopPropagation();
+          closeTab(b.dataset.close);
         });
       });
     }
@@ -1174,7 +1296,11 @@ def _shell_doc(page_url, index_url):
        whatever mode is actually live, which want() alone decides. */
     var seg = document.getElementById('rpmode');
     if (seg) {
-      seg.hidden = hidden || tab !== 'chat';
+      /* RETIRED from the strip (JL 260831: "I don't want the TUI and GUI
+         here — put it in the chatbot input box"): the composer's ⌨ button
+         opens the terminal form and the pane header's ← returns; the hidden
+         radios stay because want()/restore still speak through them. */
+      seg.hidden = true;
       [].forEach.call(seg.querySelectorAll('.rpm'), function (m) {
         m.setAttribute('aria-checked', String(m.dataset.mode === liveMode()));
       });
@@ -1214,7 +1340,20 @@ def _shell_doc(page_url, index_url):
      server already says no-store; the frame was the stale half. Same src now
      means RELOAD; a changed src navigates as before. */
   function landFrame(f, u) {
-    var src = u + (/\.html$/.test(u) ? '?plain' : '');
+    /* Inspect the URL PATH, not the raw string. A live plugin endpoint can end
+       in `.html` only because its final query value is the generated Page URL
+       (`.../_board/labeling?...&page=/board/SL/S-Label-1.html`). Testing the
+       raw string treated that endpoint as a static Page and appended `?embed`
+       inside its query, corrupting the page binding and leaving the plugin
+       frame blank. */
+    var src = u;
+    try {
+      if (/\.html$/.test(new URL(u, location.href).pathname)) {
+        var hashAt = u.indexOf('#'), hash = hashAt < 0 ? '' : u.slice(hashAt);
+        var base = hashAt < 0 ? u : u.slice(0, hashAt);
+        src = base + (base.indexOf('?') < 0 ? '?embed' : '&embed') + hash;
+      }
+    } catch (e) {}
     if (f.getAttribute('src') !== src) { f.setAttribute('src', src); return; }
     try { f.contentWindow.location.reload(); }
     catch (e) { f.setAttribute('src', src); }
@@ -1231,11 +1370,22 @@ def _shell_doc(page_url, index_url):
     var prev = tab;
     paintTabs();                 // may switch via showTab, which aims itself
     if (!hidden && tab === prev && tab !== 'chat' && tab !== 'draw'
-        && offerable(tab)) aimTab(tab);
+        && tab !== 'studio' && offerable(tab)) aimTab(tab);
   }
 
   function showTab(which) {
     ensureOpen(which);
+    if (which === 'studio') {
+      var duurl = drawURL();
+      tab = 'studio';
+      hidden = false;
+      split.classList.remove('hc');
+      if (duurl && fd.getAttribute('src') !== duurl) fd.setAttribute('src', duurl);
+      stage('studio');
+      try { localStorage.setItem('board-split-chat', '1'); } catch (e) {}
+      paint(); paintTabs();
+      return;
+    }
     if (which === 'draw') {
       var url = drawURL();
       if (!url) return;
@@ -1306,6 +1456,9 @@ def _shell_doc(page_url, index_url):
       .then(function (r) { r.ok ? land(u) : build(); })
       .catch(build);
   }
+  /* The page frame's compact picker delegates category opening to the shell.
+     This is the only cross-frame door it needs; lane ids remain internal. */
+  window.__boardShowTab = showTab;
 
   /* ✕ ON THE ACTIVE TAB closes THAT TAB: out of the set, focus to its left
      neighbour, and closing the last one closes the pane. Always visible and
@@ -1320,8 +1473,20 @@ def _shell_doc(page_url, index_url):
     openSet.splice(i, 1);
     saveSet();
     if (tab === id) {
-      var next = openSet[i - 1] || openSet[i] || openSet[0];
-      if (next) { showTab(next); return; }
+      /* Pick a REAL neighbor.  Persisted sets may still name a plugin that
+         this page no longer offers; selecting that stale id makes showTab()
+         return early and leaves the close looking broken. */
+      var next = '', j;
+      for (j = Math.min(i - 1, openSet.length - 1); j >= 0; j--) {
+        if (offerable(openSet[j])) { next = openSet[j]; break; }
+      }
+      for (j = i; !next && j < openSet.length; j++) {
+        if (offerable(openSet[j])) { next = openSet[j]; break; }
+      }
+      if (next) {
+        showTab(next);
+        return;
+      }
       hidden = true;                       // the last tab: the pane goes with it
       try { localStorage.setItem('board-split-chat', '0'); } catch (e) {}
       paint();
@@ -1334,6 +1499,10 @@ def _shell_doc(page_url, index_url):
      material is already on disk, and the offer stands either way. */
   var plus = document.getElementById('rpplus');
   var pmenu = document.getElementById('rpmenu');
+  /* The direct strip supersedes the closed-plugin picker.  Leave the menu
+     machinery in place for older stored shells, but keep its button out of the
+     live surface so no category — especially ⚙️ Runs — is concealed. */
+  if (plus) plus.hidden = true;
   function closePlus() {
     if (!pmenu) return;
     pmenu.hidden = true;
@@ -1346,9 +1515,6 @@ def _shell_doc(page_url, index_url):
     if (!pmenu.hidden) return closePlus();
     if (openSet === null) loadSet();
     var rows = [];
-    ['chat', 'draw', 'slides'].forEach(function (id) {
-      if (openSet.indexOf(id) < 0 && offerable(id)) rows.push({ id: id });
-    });
     xdefs().forEach(function (e) {
       if (openSet.indexOf(e.id) < 0) rows.push({ id: e.id, def: e });
     });
@@ -1402,6 +1568,12 @@ def _shell_doc(page_url, index_url):
     setTimeout(reaimTabs, 300);
   });
   reaimOK = true;
+  var requestedPlugin = '';
+  try { requestedPlugin = new URLSearchParams(location.search).get('plugin') || ''; }
+  catch (e) {}
+  if (requestedPlugin && offerable(requestedPlugin)) {
+    setTimeout(function () { showTab(requestedPlugin); }, 350);
+  }
   setTimeout(paintTabs, 900);
   var _paint = paint;
   paint = function () { _paint(); paintTabs(); };
@@ -1422,12 +1594,13 @@ class ShellMixin:
     def split_of(self, path):
         """Should this request be answered with the SHELL? Returns the page path.
 
-        THE SPLIT IS THE DEFAULT (JL 260802). Opening a board page in a browser
-        gives the three panes; `?plain` gives the one document it always was.
+        THE SPLIT IS THE ONLY reader view. Opening a board page in a browser
+        gives the three panes. `?embed` is an internal iframe route that returns
+        the generated document without wrapping another Board shell around it.
 
         Telling a tab navigation from everything else, over plain HTTP:
 
-          `?pane=` / `?plain`   a frame, or the opt-out          -> the FILE
+          `?pane=` / `?embed`   a frame, or an internal embed    -> the FILE
           Sec-Fetch-Dest        exact, and USELESS HERE: browsers
                                 send it only to trustworthy
                                 origins, meaning https or
@@ -1455,8 +1628,8 @@ class ShellMixin:
         if not head.endswith(".html"):
             return None
         q = urllib.parse.parse_qs(query, keep_blank_values=True)
-        if "pane" in q or "plain" in q:
-            return None                      # a frame, or the opt-out
+        if "pane" in q or "embed" in q:
+            return None                      # a frame, or an internal embed
         if "split" in q:
             return head                      # asked for it by name
         dest = (self.headers.get("Sec-Fetch-Dest") or "").lower()
@@ -1577,7 +1750,7 @@ class ShellMixin:
                 "<style>" + PANE_CSS.get(kind, "") + "</style>")
         if kind in ("index", "page"):
             # A LINK OUT OF A PANE MUST LAND IN A PANE. `target="page"` sends the
-            # href as written, so a sidebar click used to load the plain page into
+            # href as written, so a sidebar click used to load the unwrapped page into
             # the page frame: sidebar inside sidebar, drawer inside drawer, and the
             # router switched back on because nothing told that document it was
             # in a frame. Carrying `?pane=page` on the way out is what keeps the

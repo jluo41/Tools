@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-reviewer-agent
-description: "Read-only REVIEWER for one HAI-Pipe Board, and the BASE of haipipe-page-check-agent, which since 260819 is the RUN controller's phase-⑦ dispatch for judging one exact Page version (this agent still can, as the fallback). In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to one of the routes the run contract declares legal from CHECK. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
+description: "Read-only REVIEWER for one HAI-Pipe Board, and the BASE of haipipe-page-check-agent, the RUN controller's 04 CHECK dispatch for judging one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CONTEXT, OUTLINE, EVIDENCE, CONTENT, CLOSE, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
 tools:
   - Read
   - Grep
@@ -9,8 +9,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-04"
+  version: "0.10.0"
+  last_updated: "2026-09-04"
   summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop."
   changelog: "./CHANGELOG.md"
 ---
@@ -60,7 +60,8 @@ Own:
 - Readability of the changed Q/S pages in the context supplied by `board.md`.
 - Voice and page-specificity of changed Openings when read consecutively in
   Board order.
-- Consistency among the page-level `state:`, `## Aims`, `## States`, and `## Log`.
+- Consistency among page-level `state:`, `## Aims` plus their `Now:` lines,
+  and `outline/<stem>-log.md`.
 - Stale or contradictory claims visible in the Board and the files it links.
 - Page and group ownership clarity when `board.md` changed.
 
@@ -127,10 +128,10 @@ The writer owns every repair and may ask for another fresh review afterward.
    sibling page's subject. The page skill's review questions are probes, not a
    required order. A page may be clear alone and still fail this batch voice
    gate when it reads like a form letter beside the others.
-11. Choose the route by required next authority: realization defect → REVISE;
-    a promised claim with no card → PROBE (card-raising is PROBE's since
-    260817); changed purpose or Aim → DRAFT with
-    `reopens_promise: true`; satisfied machine gate → CLOSE; unavailable input,
+11. Choose the route by required next authority: stale policy/requirement →
+    CONTEXT; changed argument, Aim, or Evidence Item expectation → OUTLINE;
+    missing/invalid Supporting or Local Result → EVIDENCE; realization/build
+    defect → CONTENT; satisfied machine gate → CLOSE; unavailable input,
     version mismatch, or unmet human gate → HOLD.
 12. Return the contract below. Do not write a review file.
 
@@ -155,9 +156,9 @@ status:   pass | revise | blocked
 verdict:  pass | revise | blocked
 route:    one route legal from CHECK; the table lives in
           ../page-workflows/haipipe-page-workflow/ref/page-run-contract.md
-          § Legal routes, never restated here (CHECK→COMPILE is illegal there)
+          § Legal routes, never restated here
           ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The RUN
-          controller forces REVISE while it is above zero, so counting another
+          controller forces CONTENT while it is above zero, so counting another
           page's errors here makes CLOSE unreachable for every page on the
           board. Filter check.py's output to lines whose first field is this
           page's file name.

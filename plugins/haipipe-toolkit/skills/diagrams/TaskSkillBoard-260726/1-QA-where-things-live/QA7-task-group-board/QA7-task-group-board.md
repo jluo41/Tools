@@ -146,18 +146,6 @@ group that should have been two groups.
 - [ ] 🧪 Lay a board over one real group and read it cold
       A group with several children, a board built, and a fresh agent asked what state the group is in without being told. That is the whole proposition, tested once.
 
-## States
-Nothing exists. No task-group on disk carries a board, and the S-page shape above has not been
-written even once, so every claim here is a proposal rather than a report.
-
-What is settled is the surrounding shape rather than this page's own content: `QA4` has JL's
-ruling that entering a group opens a board, and `QA6` has the measurement that says the surface
-it would replace is written by 7% of groups. This face is the part between those two, and it is
-the part with the most unruled decisions on it.
-
-- 260726 CC · 🧩 Named the third kind of board
-      Writing the page shape surfaced that a task board is neither of the two kinds that exist: it does not empty like a design board and it is not the artifact like a paper board, so it is the first board that can be silently wrong about the thing it describes. That is now the face's central problem rather than a footnote.
-
 ## Files
 - `task-structure.md`
   The four `.txt` files this board would absorb, and what each was for.
@@ -169,5 +157,18 @@ the part with the most unruled decisions on it.
 ## Discussion
 > CC 260726: the drift problem is the reason I would not simply copy the paper board's shape and change the nouns. On the paper side, "nothing leaves the board" is safe because the board is the source. Here the code is the source and the board is commentary, so the same sentence would mean the opposite thing: a page that never changes while the folder it describes changes weekly. If only one thing gets ruled from this face, it should be the derived-rows item, because it is the only mechanism that makes the page cheaper to keep true than to let rot.
 
+
+### From the retired States section (merged 260831)
+Nothing exists. No task-group on disk carries a board, and the S-page shape above has not been
+written even once, so every claim here is a proposal rather than a report.
+What is settled is the surrounding shape rather than this page's own content: `QA4` has JL's
+ruling that entering a group opens a board, and `QA6` has the measurement that says the surface
+it would replace is written by 7% of groups. This face is the part between those two, and it is
+the part with the most unruled decisions on it.
+- 260726 CC · 🧩 Named the third kind of board
+      Writing the page shape surfaced that a task board is neither of the two kinds that exist: it does not empty like a design board and it is not the artifact like a paper board, so it is the first board that can be silently wrong about the thing it describes. That is now the face's central problem rather than a footnote.
+
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

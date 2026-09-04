@@ -6,6 +6,142 @@ import re
 from pathlib import Path
 
 
+EVIDENCE_LANES = frozenset({"bibex", "display", "pagex", "materials"})
+LEGACY_EVIDENCE_LANES = frozenset({"probe"})
+DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
+OUTLINE_LANES = frozenset({"skill"})
+
+
+def outline_lane_dirs(page_dir, lane):
+    """Existing Outline-owned lane directories, canonical first and deduped.
+
+    New Skill work lives under ``outline/skill/``.  The former sibling
+    ``skill/`` directory remains readable during migration, but readers never
+    let it outrank the canonical nested lane and writers never select it.
+    """
+    if lane not in OUTLINE_LANES:
+        raise ValueError("not an outline lane: %s" % lane)
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (page_dir / "outline" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def outline_lane_dir(page_dir, lane):
+    """The canonical destination for one Outline-owned lane."""
+    if lane not in OUTLINE_LANES:
+        raise ValueError("not an outline lane: %s" % lane)
+    return Path(page_dir) / "outline" / lane
+
+
+def evidence_lane_dirs(page_dir, lane):
+    """Existing lane directories, canonical first, with symlink aliases deduped.
+
+    New work lives under ``outline/evidence/<lane>/``.  The former
+    ``evidence/<lane>/`` category and a flat ``<lane>/`` remain readable
+    migration aliases.  Readers use every distinct directory; writers always
+    choose the canonical Outline-owned address for a new Page.
+    """
+    page_dir = Path(page_dir)
+    if lane not in EVIDENCE_LANES | LEGACY_EVIDENCE_LANES:
+        raise ValueError("not an evidence lane: %s" % lane)
+    out, seen = [], set()
+    candidates = [page_dir / "evidence" / lane, page_dir / lane]
+    if lane in EVIDENCE_LANES:
+        candidates.insert(0, page_dir / "outline" / "evidence" / lane)
+    for candidate in candidates:
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def evidence_lane_dir(page_dir, lane):
+    """Canonical lane when present/new, or the sole readable lane on old Pages."""
+    dirs = evidence_lane_dirs(page_dir, lane)
+    if dirs:
+        return dirs[0]
+    if lane in EVIDENCE_LANES:
+        return Path(page_dir) / "outline" / "evidence" / lane
+    return Path(page_dir) / "evidence" / lane
+
+
+def evidence_run_dirs(page_dir):
+    """Readable Supporting-Run lineage directories, canonical first.
+
+    These folders contain generated Evidence Item bindings only.  Actual local
+    executions remain in the Page's sibling ``runs/`` and ``results/``.
+    """
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (
+        page_dir / "outline" / "evidence" / "supporting-runs",
+        page_dir / "outline" / "evidence" / "runs",
+        page_dir / "evidence" / "runs",
+    ):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def evidence_run_dir(page_dir):
+    """Canonical generated Supporting-Run lineage directory."""
+    dirs = evidence_run_dirs(page_dir)
+    return (dirs[0] if dirs else
+            Path(page_dir) / "outline" / "evidence" / "supporting-runs")
+
+
+def delivery_lane_dirs(page_dir, lane):
+    """Existing Delivery lane directories, canonical first and deduped.
+
+    New work always lives in ``delivery/<lane>/``.  A pre-migration flat
+    ``<lane>/`` remains readable, including when it is a symlink alias to the
+    canonical directory, but it is never selected as the destination for a
+    new artifact.
+    """
+    if lane not in DELIVERY_LANES:
+        raise ValueError("not a delivery lane: %s" % lane)
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (page_dir / "delivery" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def delivery_lane_dir(page_dir, lane):
+    """The canonical destination for one Delivery lane.
+
+    Unlike the evidence migration helper, this writer deliberately does not
+    fall back to an old flat directory.  Compatibility is a reader concern;
+    every new build makes the nested category truthful on disk.
+    """
+    if lane not in DELIVERY_LANES:
+        raise ValueError("not a delivery lane: %s" % lane)
+    return Path(page_dir) / "delivery" / lane
+
+
 def scene_text(scene) -> str:
     """The ONE way an Excalidraw scene is serialized (JL 260816).
 
@@ -39,7 +175,8 @@ STN = {k.replace("️", ""): v for k, v in ST.items()}
 # "Opening" is the CANON for the lead section (JL 260731: "just one single
 # Opening, Remove all the Question things from the skills"). Every existing
 # page written as `## Question` keeps parsing through the alias, forever.
-ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"], "Diagram": ["图"],
+ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"],
+         "Outline": ["Diagram", "图"],
          "Stage Contract": ["Inherited Requirements", "阶段契约"],
          "Content": ["内容"],
          "Files": ["文件"],
@@ -79,7 +216,9 @@ def sec(d, key):
 # What this unblocks is the migration off checkboxes: 94 Q- ids across those 19
 # pages would have gone invisible the moment they became canonical rows.
 AIM_ID = r"(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*|Q-[A-Za-z][A-Za-z0-9]*-\d+(?:\.\d+)*)"
-AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+({AIM_ID})\s+·\s+\S")
+# Since the 260819 merge an Aim row may open with its own tick (`- ✅ A1.1 · …`);
+# without the optional glyph here every migrated page reported "no aims".
+AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+(?:(?:⬜|🔨|🧠|✅|❄️?|🟡|🟠|⏸️?)\s+)?({AIM_ID})\s+·\s+\S")
 # An Aim row's status glyph. 🔨 / 🧠 / ❄️ replaced 🟡 / 🟠 / ⏸️ on 260802,
 # because the old set carried two of its five meanings in HUE ALONE: 🟡 and 🟠
 # are one shape in two colours, indistinguishable in greyscale and to a
@@ -111,18 +250,25 @@ def aim_progress(aims, state=""):
     checkbox semantics so changing the reader vocabulary never falsifies an
     old Board's progress bar.
     """
-    boxes = re.findall(r"(?m)^\s*[-*]\s*\[([ xX])\]", aims or "")
+    # A `### Decision Now` group moved into Aims with the 260819 merge; its
+    # `- [ ]` rows are a person's asks, not Aims, and must not flip the page
+    # into legacy-checklist counting.
+    aims_only = re.sub(r"(?ms)^###\s+Decision Now\b.*?(?=^###\s|\Z)", "", aims or "")
+    boxes = re.findall(r"(?m)^\s*[-*]\s*\[([ xX])\]", aims_only)
     if boxes:
         met = sum(1 for value in boxes if value.lower() == "x")
         return dict(mode="legacy", total=len(boxes), met=met, hold=0,
                     active=0, waiting=0, open=len(boxes) - met,
                     closed=met, ids=[])
 
-    ids = aim_ids(aims)
+    ids = aim_ids(aims_only)
     states = {}
-    for emoji, aim_id in AIM_STATE_RE.findall(state or ""):
-        e = emoji.replace("️", "")
-        states[aim_id] = AIM_STATUS_ALIAS.get(e, e)
+    # Since 260819 one Aim row carries its own tick; a page still holding
+    # `## States` is read from there first, exactly as before.
+    for src in (state or "", aims_only):
+        for emoji, aim_id in AIM_STATE_RE.findall(src):
+            e = emoji.replace("\ufe0f", "")
+            states.setdefault(aim_id, AIM_STATUS_ALIAS.get(e, e))
     values = [states.get(aim_id, "⬜") for aim_id in ids]
     met = values.count("✅")
     hold = values.count("❄")
@@ -233,7 +379,7 @@ def _in_plugin(p, d):
     page is a plugin (JL 260815: "each subfolder will also be the plugin in
     that page"), and discovery never enters one. Child pages keep nesting, so
     a lifecycle tree still works. A page file lying directly beside the page's
-    own md is a stray for the same reason. Without this rule a `skill/` plugin
+    own md is a stray for the same reason. Without this rule an `outline/skill/` lane
     holding a unit snapshot would surface as a ghost page, because
     `PAGENAME.match("SKILL.md")` is true."""
     parts = p.relative_to(d).parts

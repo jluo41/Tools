@@ -1,3 +1,20 @@
+## 1.0.0 · 2026-09-03
+
+- Retire the Page-local Probe plugin and `probe/` storage lane.
+- Redirect current evidence work to typed Evidence Items in the combined
+  Outline workspace; legacy Probe artifacts remain read-only migration input.
+
+## 0.9.4 · 2026-08-31
+
+- Correct the remaining value and proof examples to canonical
+  `evidence/probe/` and `evidence/display/` addresses.
+
+## 0.9.3 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
 ## 0.9.2 — 2026-08-21
 
 - §🪪's `bank:` row now names what its four words ARE: the cost tier under

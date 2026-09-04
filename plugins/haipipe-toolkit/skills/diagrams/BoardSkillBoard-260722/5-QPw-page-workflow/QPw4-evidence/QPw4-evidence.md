@@ -193,35 +193,6 @@ This phase never edits the outline to add new ids: `serves:` is written by the p
 
 ## Aims
 
-### A1 · 🧾 Three kinds, three hands, three exit tests
-- A1.1 · Each lane's hand and exit test are readable without opening a plugin page.
-  Done when all three lanes name their folder, their hand, and their test in one figure.
-- A1.2 · No card on this board is a duplicate of another card's question.
-  Done when every `serves:` line on this board resolves and no two cards carry the same Q-executor.
-
-### A2 · ⚖️ Lanes, not steps, and the phase ends when all three pass
-- A2.1 · No page or figure on this board draws the three kinds as a sequence.
-  Done when a sweep finds no arrow between two lanes.
-- A2.2 · The declared and rendered display counts agree on every page of this board.
-  Done when `cli/check.py` reports zero `display-declared-not-rendered` findings.
-
-### A3 · 🔁 The six-step loop is one loop across two phases
-- A3.1 · Every step names exactly one owning phase.
-  Done when the six steps each carry one phase label and no step carries two.
-- A3.2 · No bank artifact on this board carries a stake.
-  Done when a sweep of dispatched Q-executors finds no consumer-side language.
-
-### A4 · 🖼 The display walk is split, and this phase owns only step ①
-- A4.1 · No display unit on this board is frozen without a named renderer.
-  Done when every `intake/manifest.yaml` on this board has a `kind:` row resolving to one of the five renderers.
-
-### A5 · ✍️ What this phase writes, and the two surfaces it must never touch
-- A5.1 · No EVIDENCE run has written target prose, purpose, or Aims.
-  Done when a receipt audit over `_runs/page/` shows no EVIDENCE receipt whose artifacts include prose.
-- A5.2 · The Evidence Bundle is derived rather than stored.
-  Done when no folder on this board holds a bundle as a file.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether the three lanes ever become three pages
       📍 `Part` §2, lanes not steps
@@ -231,24 +202,48 @@ This phase never edits the outline to add new ids: `serves:` is written by the p
       🛑 `Blocks` A2.1, and the board's page count
       🤖 `If nobody answers` A takes effect, which is what this page is written as
 
+
 ### A1 · 🧾 Three kinds, three hands, three exit tests
-- ✅ A1.1 · Met. The Diagram carries all three lanes with folder, hand, and exit test.
-- ⬜ A1.2 · Not measured. No sweep of `serves:` lines or Q-executor duplication has been run on this board.
+- ✅ A1.1 · Each lane's hand and exit test are readable without opening a plugin page.
+  Done when all three lanes name their folder, their hand, and their test in one figure.
+  **Now:** Met. The Diagram carries all three lanes with folder, hand, and exit test.
+- ⬜ A1.2 · No card on this board is a duplicate of another card's question.
+  Done when every `serves:` line on this board resolves and no two cards carry the same Q-executor.
+  **Now:** Not measured. No sweep of `serves:` lines or Q-executor duplication has been run on this board.
+
 
 ### A2 · ⚖️ Lanes, not steps, and the phase ends when all three pass
-- 🔨 A2.1 · Being worked on now. This page draws them parallel; the rest of the board has not been swept.
-- ⬜ A2.2 · Not met. `cli/check.py` reports one `display-declared-not-rendered` on `QPf6-Display1-latex-proof` today.
+- 🔨 A2.1 · No page or figure on this board draws the three kinds as a sequence.
+  Done when a sweep finds no arrow between two lanes.
+  **Now:** Being worked on now. This page draws them parallel; the rest of the board has not been swept.
+- ⬜ A2.2 · The declared and rendered display counts agree on every page of this board.
+  Done when `cli/check.py` reports zero `display-declared-not-rendered` findings.
+  **Now:** Not met. `cli/check.py` reports one `display-declared-not-rendered` on `QPf6-Display1-latex-proof` today.
+
 
 ### A3 · 🔁 The six-step loop is one loop across two phases
-- ✅ A3.1 · Met. The six steps each carry one owner in `§3`, split ①②③ to PROBE and ④⑤⑥ here on 260817.
-- ⬜ A3.2 · Not measured. No sweep of dispatched Q-executors for consumer-side language exists.
+- ✅ A3.1 · Every step names exactly one owning phase.
+  Done when the six steps each carry one phase label and no step carries two.
+  **Now:** Met. The six steps each carry one owner in `§3`, split ①②③ to PROBE and ④⑤⑥ here on 260817.
+- ⬜ A3.2 · No bank artifact on this board carries a stake.
+  Done when a sweep of dispatched Q-executors finds no consumer-side language.
+  **Now:** Not measured. No sweep of dispatched Q-executors for consumer-side language exists.
+
 
 ### A4 · 🖼 The display walk is split, and this phase owns only step ①
-- ⬜ A4.1 · Not met. `cli/check.py` reports `display-intake-unfrozen` on FOUR units, not two: `QPf5-Display1`, `QPf5-Display2`, `QPw00-Display1`, `QPw00-Display2`.
+- ⬜ A4.1 · No display unit on this board is frozen without a named renderer.
+  Done when every `intake/manifest.yaml` on this board has a `kind:` row resolving to one of the five renderers.
+  **Now:** Not met. `cli/check.py` reports `display-intake-unfrozen` on FOUR units, not two: `QPf5-Display1`, `QPf5-Display2`, `QPw00-Display1`, `QPw00-Display2`.
+
 
 ### A5 · ✍️ What this phase writes, and the two surfaces it must never touch
-- ⬜ A5.1 · Measurable now and measured: `_runs/page/` holds 5 receipts, all `CHECK` or `REVISE` and none `EVIDENCE`, so no EVIDENCE run has written prose because none has run.
-- ✅ A5.2 · Met. The bundle is defined as a join keyed by Point and no folder holds one.
+- ⬜ A5.1 · No EVIDENCE run has written target prose, purpose, or Aims.
+  Done when a receipt audit over `_runs/page/` shows no EVIDENCE receipt whose artifacts include prose.
+  **Now:** Measurable now and measured: `_runs/page/` holds 5 receipts, all `CHECK` or `REVISE` and none `EVIDENCE`, so no EVIDENCE run has written prose because none has run.
+- ✅ A5.2 · The Evidence Bundle is derived rather than stored.
+  Done when no folder on this board holds a bundle as a file.
+  **Now:** Met. The bundle is defined as a join keyed by Point and no folder holds one.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -298,3 +293,5 @@ This phase never edits the outline to add new ids: `serves:` is written by the p
 
 ## Log
 - 260818 · [DRAFT-CC] page created on JL's ruling that each workflow step gets its own page. Written from `haipipe-page-evidence`, and it answers JL's own proposal in the same round: he asked for QPw4c citation, QPw4d display and QPw4v value as three sub-pages, and the answer is three LANE DIVISIONS instead, because `QPf8`, `QPf9` and `QPf5` already carry those three subjects as folder contracts and three sub-pages would be a third copy. Two further reasons went into the Decision Now row rather than being decided silently: JL folded this exact shape on 260815 when `QPf4`'s four lettered chat faces went back into its Content, and a lettered listing implies a reading order that three parallel lanes do not have. Five divisions: the three lanes, the parallelism rule and the QV2 incident, the six-step loop split across two phases, the display walk's step ①, and the write surfaces. Also corrected here against JL's summary "the probe to get the evidence": probe serves the 🔢 lane only, since a citation comes from a person and a display intake comes from an answer that already landed.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

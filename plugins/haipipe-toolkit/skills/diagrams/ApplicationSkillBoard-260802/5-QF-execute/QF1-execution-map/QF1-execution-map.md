@@ -49,27 +49,24 @@ Materialize one Brief, one Insight with Design Handoff, one Design with visible 
 ## Aims
 
 ### A1 · Contract
-- A1.1 · Skills and Board pass their mechanical validators.
+- ✅ A1.1 · Skills and Board pass their mechanical validators.
   **Done when:** receipts are written in the Log.
+  **Now:** Seven revised skills passed `quick_validate`; Page Type registry tests passed 2/2; Board gate passed with zero errors and no new warnings.
+
 
 #### A2 · Fresh context
-- A2.1 · A new agent follows the intended route without discussion context.
+- ✅ A2.1 · A new agent follows the intended route without discussion context.
   **Done when:** QF2 records pass/fail against explicit criteria.
+  **Now:** Two fresh-context agents selected the local Insight route, many-Design cardinality, no-Probe Design boundary, and projection-first Artifact rule.
+
 
 #### A3 · Runtime
-- A3.1 · Four positive/negative specimens exercise closing semantics.
+- ⬜ A3.1 · Four positive/negative specimens exercise closing semantics.
   **Done when:** QBt/QI specimen States are green.
+  **Now:** Brief, Insight, Design projection, and stale Artifact specimens remain.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Seven revised skills passed `quick_validate`; Page Type registry tests passed 2/2; Board gate passed with zero errors and no new warnings.
-
-#### A2 · Fresh context
-- ✅ A2.1 · Two fresh-context agents selected the local Insight route, many-Design cardinality, no-Probe Design boundary, and projection-first Artifact rule.
-
-#### A3 · Runtime
-- ⬜ A3.1 · Brief, Insight, Design projection, and stale Artifact specimens remain.
+## Discussion
 
 ## Files
 
@@ -91,3 +88,5 @@ Static pass, fresh-agent pass, and runtime specimen pass are three different cla
 260820 · `quick_validate` passed Application, four Page Types, Page, and Board; registry test passed 2/2.
 260820 · Board build/check/gate passed at 39 Pages, zero errors, zero gaps, and no Page warning regression.
 260820 · QF2 recorded two fresh-context behavior passes; runtime Page specimens remain explicit hardening debt.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

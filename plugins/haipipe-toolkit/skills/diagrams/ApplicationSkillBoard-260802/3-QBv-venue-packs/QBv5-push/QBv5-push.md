@@ -166,34 +166,6 @@ The pack names no app and no screen anywhere, so every draft must source its tar
 
 ## Aims
 
-### A1 · 🚦 What the channel gates
-- A1.1 · The skip list reaches STATUS.md through the pin machinery, not from memory.
-  **Done when:** a pinned push intervention's `stages_skipped` row matches the pack's `stages:` block.
-
-### A2 · 🎰 What it rewards: two slots and a light bar
-- A2.1 · Every push draft is measured against both character ceilings before its gate.
-  **Done when:** a draft records its title and body counts against 50 and 100.
-- A2.2 · The claims CHECK applies the light bar with push's 2-entry ceiling.
-  **Done when:** a push claims check names one hook K/W and one action K/W and refuses a third load-bearing entry.
-
-### A3 · 🗣 Who hears it, and how it sounds
-- A3.1 · The voice row is chosen with the audience, not defaulted.
-  **Done when:** a push draft names which of the three rows it imitates.
-
-### A4 · ❌ What desk-rejects a push
-- A4.1 · The implied refusals are run as the draft's self-review, and recorded.
-  **Done when:** a draft records a completed run of the five-box checklist.
-
-### A5 · 🕳 GAP: what is demanded of the pack and not held
-- A5.1 · The pack gains an exemplars/ folder with at least one real push artifact.
-  **Done when:** `venue-push/exemplars/` exists and the style profile points at its contents.
-- A5.2 · Timing and frequency have an owner: the pack or the intervention.
-  **Done when:** JL's Decision Now ruling is recorded and the chosen home carries the cap.
-- A5.3 · The deep-link target's source is settled: a pack-level screen menu, or a requirement pinned at the intervention's seed.
-  **Done when:** a push draft can fill the checklist's target box from a named place rather than ad hoc.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Where does the interruption cap live: in the pack, or in each intervention?
       📍 `§5.2` the GAP it settles
@@ -203,23 +175,45 @@ The pack names no app and no screen anywhere, so every draft must source its tar
       🛑 `Blocks` A5.2, and any push draft's check against an interruption budget
       🤖 `If nobody answers` B in effect by default, since a draft can ship today with no cap anywhere
 
+
 ### A1 · 🚦 What the channel gates
-- ⬜ A1.1 · Not started. No push intervention is pinned, and the block sits unread in the pack.
+- ⬜ A1.1 · The skip list reaches STATUS.md through the pin machinery, not from memory.
+  **Done when:** a pinned push intervention's `stages_skipped` row matches the pack's `stages:` block.
+  **Now:** Not started. No push intervention is pinned, and the block sits unread in the pack.
+
 
 ### A2 · 🎰 What it rewards: two slots and a light bar
-- ⬜ A2.1 · Not started. The ceilings are recorded twice, in Constraints and in the drafting rules, and nothing measures a draft against them.
-- ⬜ A2.2 · Not started. The light bar is schema prose and the 2-entry ceiling is one pack line; no check applies either.
+- ⬜ A2.1 · Every push draft is measured against both character ceilings before its gate.
+  **Done when:** a draft records its title and body counts against 50 and 100.
+  **Now:** Not started. The ceilings are recorded twice, in Constraints and in the drafting rules, and nothing measures a draft against them.
+- ⬜ A2.2 · The claims CHECK applies the light bar with push's 2-entry ceiling.
+  **Done when:** a push claims check names one hook K/W and one action K/W and refuses a third load-bearing entry.
+  **Now:** Not started. The light bar is schema prose and the 2-entry ceiling is one pack line; no check applies either.
+
 
 ### A3 · 🗣 Who hears it, and how it sounds
-- ⬜ A3.1 · Not started. Three rows exist and nothing records a choice.
+- ⬜ A3.1 · The voice row is chosen with the audience, not defaulted.
+  **Done when:** a push draft names which of the three rows it imitates.
+  **Now:** Not started. Three rows exist and nothing records a choice.
+
 
 ### A4 · ❌ What desk-rejects a push
-- ⬜ A4.1 · Not started. The checklist exists in the style profile and no draft has run it.
+- ⬜ A4.1 · The implied refusals are run as the draft's self-review, and recorded.
+  **Done when:** a draft records a completed run of the five-box checklist.
+  **Now:** Not started. The checklist exists in the style profile and no draft has run it.
+
 
 ### A5 · 🕳 GAP: what is demanded of the pack and not held
-- ⬜ A5.1 · Not started. The folder is absent; the pack ships two files.
-- 🧠 A5.2 · Waiting on JL: the Decision Now row above.
-- ⬜ A5.3 · Not started. The checklist demands the box and no named place fills it.
+- ⬜ A5.1 · The pack gains an exemplars/ folder with at least one real push artifact.
+  **Done when:** `venue-push/exemplars/` exists and the style profile points at its contents.
+  **Now:** Not started. The folder is absent; the pack ships two files.
+- 🧠 A5.2 · Timing and frequency have an owner: the pack or the intervention.
+  **Done when:** JL's Decision Now ruling is recorded and the chosen home carries the cap.
+  **Now:** Waiting on JL: the Decision Now row above.
+- ⬜ A5.3 · The deep-link target's source is settled: a pack-level screen menu, or a requirement pinned at the intervention's seed.
+  **Done when:** a push draft can fill the checklist's target box from a named place rather than ad hoc.
+  **Now:** Not started. The checklist demands the box and no named place fills it.
+
 
 ## Files
 
@@ -240,3 +234,5 @@ The pack names no app and no screen anywhere, so every draft must source its tar
 ## Log
 
 260802 · Opened with the QBv venue-pack pages, from the two files under `application/venue/venue-push/` read against `_SCHEMA.md`; the missing exemplars/ folder, the unpriced interruption cost, and the unnamed deep-link targets recorded as GAP-1 to GAP-3, and the cap's home raised to JL as the page's one Decision Now.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

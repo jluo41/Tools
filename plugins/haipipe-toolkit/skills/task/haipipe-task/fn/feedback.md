@@ -9,7 +9,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 Captures feedback about the task SKILL (confusing dashboard, clunky stage, missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE CODE THAT NEEDS FIXING.
 Does NOT fix anything; fixing is a separate revision pass.
-Distinguish from task work: feedback is about the TOOL, not the task-folder it builds.
+Distinguish from task work: feedback is about the TOOL, not the job it builds.
 
 Capture-time routing: each complaint is inferred to a specific DOMAIN FOLDER (the routable unit — `task/` groups its ~40 specialist skills into 9 domain folders, too granular to route to 40 individual skills, plus a shared `agents/` folder) and written into THAT unit's `feedback/` folder.
 When no unit matches (cross-cutting discipline, or genuinely unclassifiable), it lands in the orchestrator fallback `feedback/`.
@@ -18,7 +18,7 @@ The folder a file lives in IS the record of which unit it concerns; there is no 
 ## Capture: `/haipipe-task feedback "<text>"`
 
 ```
-1. Read the active task-folder + task-type from any session/console state if
+1. Read the active job + task-type from any session/console state if
    present (the active task-type is the SECONDARY routing signal).
 2. INFER the target unit (see "Routing the capture" below).
 3. Resolve the unit -> its feedback/ folder PATH (see "Inbox paths").
@@ -83,7 +83,7 @@ resolve:
            trigger word at all (e.g. "the report.yaml never mirrors plan.yaml
            shape" = a lifecycle contract rule -> fallback, NOT -2_nn even mid-nn-task).
          - names a known cross-cutting concern: the 4-phase lifecycle
-           (Plan/Build/Execute/Report), the IPO contract, the task-folder
+           (Plan/Build/Execute/Report), the IPO contract, the job
            scaffold, run conventions (runs/*.sh, papermill, configs/), the
            creator-reviewer loop discipline, stage file-ownership, anything
            true across all domains.
@@ -112,7 +112,7 @@ creator/orchestrator/reviewer agent, dispatch, gate 1,
 gate 2, code review, run audit                                -> agents
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting: the 4-phase lifecycle Plan/Build/Execute/Report,
-          IPO contract, task-folder scaffold, run conventions, anything true
+          IPO contract, job scaffold, run conventions, anything true
           across all domains) ................. -> orchestrator fallback (this folder)
 ```
 
@@ -127,7 +127,7 @@ status: open | fixed
 created: YYYY-MM-DD
 updated: YYYY-MM-DD        # = created until the first merge
 occurrences: 1            # bumped on each same-topic merge
-context: <task-folder/type, or "general">
+context: <job/type, or "general">
 fixed_in: ""
 regressed: ""             # set to a date if a fixed item resurfaces
 ---

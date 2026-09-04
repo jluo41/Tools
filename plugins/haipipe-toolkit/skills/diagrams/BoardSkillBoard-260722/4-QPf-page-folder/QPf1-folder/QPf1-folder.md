@@ -19,6 +19,30 @@ Boards with no folders work just as before.
 **Loose files need no page of their own**: pull a folder's files into a real page with `![[path]]` (`ref/board-form.md` §5).
 Log tracks the old ids these rules came from.
 
+## Diagram
+**The unit folder, two parts (final, JL 260831)**: one grammar for page and task; the root is the code home.
+```text
+<page or task folder>/
+│  ── UPPER · the page part ──
+├── <stem>.md         the PRODUCT · Opening · Diagram · Content · Aims
+├── outline/          HUMAN process · plan (ticked) · D<nn> · log
+├── workflow/         MACHINE process · receipts (task: plan/report.yaml)
+├── evidence/         what the page CITES, each lane behind its gate:
+│                     bibex verified: · probe read: · display accepted: ·
+│                     pagex (links out, task units included) · materials
+├── delivery/         what LEAVES the page: latex · word · slide · render
+├── studio/           the HUMAN's room: chat/ (talk, sessions kept) ·
+│                     draw/ (sketch; the chat may redraw on your ask)
+│  ── LOWER · the code part (the root IS the code folder) ──
+├── scripts/          any language (.py · .do · …) · config/ inside;
+│                     a lane-local script is equally legal
+├── runs/             REQUIRED where code exists · THE ONE DOOR
+└── results/          REQUIRED where code exists · regenerable · never
+                      PHI · never inside evidence/ · becomes evidence
+                      only when a probe card binds it (PP<NN>.v<n>)
+```
+📌 Retired from the page: `meeting/` (→ project/SPACE, parsed into outline/) · `task/` (→ evidence/pagex/) · `logging/` (changes = outline log, executions = runs/) · flat lane names survive only as migration stubs.
+
 ## Content
 ### 1 · You see what your folder holds, and what has gone out of date
 **The 📂 tab**: the first tab on the rail shows what this page's own folder holds, read fresh every time you open it.
@@ -110,7 +134,9 @@ The same walk that counts the folder also lists it, so what you click is exactly
 - [x] 🚪 §2 A status row opens into real files
       Clicking a row in the 📂 tab opens that folder's files right there, each one a link to the real file.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 §1 The 📂 Folder tab sits first on the rail and reads this page's folder on every open, one row per folder beside the `.md`: `bibex/`, `draw/`, `skill/`, `slide/`.
 §1 A folder rebuilt for you reads ⚠️ STALE when its files are older than the `.md`, and it carries ♻ rebuild when a machine can redo it.
 §1 latex, word, chat, display, and meeting have no folder here, so the tab lists them as not present.
@@ -169,6 +195,14 @@ It falls back to the board root only when the group's pages disagree, and an emp
       The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 5] the last flat holdouts fell: chat → studio/chat, pagex → evidence/pagex (inner borrow links re-aimed +1; live/pagex.py now mints relpath from the REAL dir via resolve(), so stub-era re-mints keep depth), task/ folders REMOVED outright (JL: "we will not have the task/ folder anymore", roster row ⚰️), the studio pair pre-created with stubs on all 19 MISQ pages. Also: the 🧭 lens strip wraps as compact rects (the tall-circle collapse in a 500px pane was the "hard and ugly"), GUI/TUI left the strip for the composer's ⌨ (header ← returns), chat text size = the reader's Aa setting in ⚙ (--chatfs, 11/12.5/14/16). SM00 folder tab now reads evidence/bibex · evidence/pagex · studio/chat · studio/draw · outline, 6 stubs, no task. board 0.157.0.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 4] the SWEEP reached its first board: 14 MISQ pages migrated to evidence/+delivery/+studio/ with flat-name stubs (pagex deferred: its borrow symlinks are depth-sensitive until pagex.py adopts the lane resolver); QPf1 finished its own pilot (draw→studio). The shell drawbar RETIRED into the composer's 🖌 menu (__studioDrawIt: composer text = the ask, empty = ## Diagram); evidence records carry the plan's WORDS in their heads (record-shape 0.18.1 — the bare-ref head was the ugly); 📂 rows carry real paths (evidence/bibex/ …) with stubs counted. board 0.156.0.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 2] the chat pane took the Claude Code COMPOSER shape (one rounded card: textarea + row ＋ new chat · 🗂 ✨ ⚙ as POPUP menus, closed by default, reversing the 260815 "list first" boot · 🖌 draw fold remote · ➤ send; plugin-chat 0.4.0); GUI text 14/15px → 12.5/13px (the narrow docked pane was living in the MOBILE media query — the real "too big"); the studio draw half FOLDS (⌄/⌃ + composer 🖌, per reader; plugin-studio 0.1.1); 🗂 Task and 🗣 Meeting menu rows REMOVED (JL; storage stays, task read owed to pagex); 📂 Folder speaks the two-part grammar (category chips + grammar gaps line + pre-migration flat-lane callout, plugin-folder 0.2.1). All Chrome-verified on SM05/SM00; board 0.155.0. The page-folder DISK migration itself is still the sweep.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL: "put both of them into the studio, as one page" + "one plugin for evidence, one for the delivery, only one for the studio"] the strip went FIVE-plus-mirror final: 🧭 🧾 📤 🎨 (⚙️ pending) 📂. NEW 🎨 Studio tab (haipipe-plugin-studio 0.1.0, shell tab id studio): the drawing above with its ✨ bar, the chat below with GUI/TUI, both live, so the scene the chat redraws changes in front of the person; the 💬 🖌 🎞 rows folded, stored tab sets migrate on load; the deck's ✨ pen moved into the 📤 Slides segment. The 260815 "no chat under the canvas" refusal stays true of the draw LANE. Chrome-verified on SM05-results (strip, split geometry, ✨ bar). haipipe-board 0.154.0 · haipipe-plugin 0.3.0.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL: "how do we design the plugin... to represent the above?"] the categories got their PRESENTERS: haipipe-plugin §🔌 splits plugins into LANE (owns one rostered folder's law) and PRESENTER (one surface over a category, no row) — 🧾 Evidence over evidence/, NEW 📤 Delivery over delivery/ (live/delivery.py: 🏠 stat · 📜📝 built on click · 🎞 read-only · 📱 ghost; the separate LaTeX/Word strip rows folded, native 🎞 stays as a tool), ⚙️ code contract-only until the first real runs/. Driven in real Chrome on SM05-results: menu → 📤 tab → LaTeX segment compiled the pdf on click; the drive also caught savedUrl breaking on the shell's board.md path (fixed in delivery+evidence). haipipe-board 0.153.0 · haipipe-plugin 0.2.0.
+- 🗺 260831 · [HAIPIPE-PAGE-SKILL, JL: "this is great, please map it down"] the FINAL two-part unit grammar mapped into this page's Diagram: three upper categories (evidence · delivery · studio) + the root-as-code lower part (scripts · runs · results), the gate line, the stub rule, the retirements. Law home: haipipe-page 0.50.0 §📁 + the roster; pilot QPf1 itself.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] THIS page became the first CATEGORY folder pilot: bibex/probe/display moved under evidence/, latex/word/slide under delivery/, flat names kept as symlink stubs so every unpatched engine path still resolves (bibex saved view 200 via stub, 🧾 tab 200, roster scan silent). Roster gained evidence/ · delivery/ · runs/ rows; meeting leaves the page, task merges into pagex, logging retired. De-symlink debt: ~60 engine sites move to a lane resolver file by file, then the stubs go.
+- 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL ruled] a plugin IS a lane and a SKILL.md is EARNED BY LAW: the roster row is the record; retire/merge candidates tiered (value+folder now, latex+word+slide → one export later). A `code/` lane is agreed: the unit's own SIMPLE scripts with their run records INSIDE the code lane (runs folded into code, JL's call), `logging/` row retires into it; not yet minted.
 - 🔎 260816 · [REVISE-CC] third reviewer pass: §2 numbering, the MISQ path, and the bibex proof
       Six findings arrived, three of them already cured by the tree rewrite that landed in between, and the three live ones were all about evidence a second person cannot check.
       Named so nobody reopens them: the §2 figure gives both folder rows 📁 and keeps 🔗 on the file line, it carries no size column at all so the wrong 10KB for `QPf11-pagex-view.html` is gone with it, and the §1 slide row already shows a state instead of the condition behind it.
@@ -245,3 +279,5 @@ It falls back to the board root only when the group's pages disagree, and an emp
       JL: the openings are too short; say the question, how it is answered, and what turns on it.
 - 🚢 260724 · settled and shipped
       First consumer is the MISQ paper's 0-lifecycle board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

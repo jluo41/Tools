@@ -55,20 +55,18 @@ Someone will edit a rendered file directly, usually while reading it aloud in a 
 ## Aims
 
 ### A1 · Contract
-- A1.1 · A projection is never authored, only rendered.
+- ✅ A1.1 · A projection is never authored, only rendered.
   **Done when:** the render verb refuses an unaccepted division and stamps every output.
+  **Now:** `fn/artifact.md` is a render-only verb with no promotion route since Application 0.9.0.
+
 
 #### A2 · Direction
-- A2.1 · A hand edit reaches its division before it reaches a reader.
+- ✅ A2.1 · A hand edit reaches its division before it reaches a reader.
   **Done when:** reconciliation clears the division's acceptance rather than bypassing it.
+  **Now:** Step 5 of the render procedure requires reconciliation before use.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · `fn/artifact.md` is a render-only verb with no promotion route since Application 0.9.0.
-
-#### A2 · Direction
-- ✅ A2.1 · Step 5 of the render procedure requires reconciliation before use.
+## Discussion
 
 ## Files
 
@@ -85,3 +83,5 @@ The division is the source and the projection is derived. An edit that lands on 
 ## Log
 
 260820 · Reduced `2-artifacts/` to projections when `page-type: artifact` retired, and rewrote `fn/artifact.md` as a render-only verb.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -13,38 +13,37 @@ More room for evidence-backed argumentation than SMS/push.
 - **Subject line:** ≤ 60 chars, specific
 
 
-## Stage requirements
+## Design profile
 
 ```yaml
-stages:
-  seed:       required
-  pitch:      required
-  claims:     required
-  narrative:  required
-  display:    optional
-  section-edit:    skip
-
-claims_settlement: medium
+design_profile:
+  evidence_bar: medium
+  narrative: required
+  display: optional
+  section_edit: none
+  terminal: accepted
 ```
 
+## Phase use
 
-## Lifecycle mappings
+### D1/D2 · bet and realize
 
-### → Claims (medium)
-Select + gap check. Each section's core statement should trace to
-a K/W entry. If a section has no backing, flag the gap.
+Each section's core move traces through the released card grant. If a
+load-bearing section lacks support, record the gap for D4 EMIT rather than
+opening a private evidence search.
 
-### → Narrative (required)
+### D2 · narrative requirement
 Letter-style arc:
 1. Context — why you're receiving this
 2. Finding — what the evidence shows
 3. Recommendation — what to do
 4. Next steps — what happens next
 
-### → Display (optional)
+### D2 · optional display
 If the email includes data (chart, table, KPI), write a display
 map. Otherwise skip — pure-text emails don't need it.
 
-### → Draft
+### D3/D4 · judge and decide
 Subject line + sections following narrative arc.
-Tone per audience profile. Citations per audience rules.
+Tone per audience profile. Check every factual move against the grant, render
+to `delivery/render/`, then accept that version or emit the named gap.

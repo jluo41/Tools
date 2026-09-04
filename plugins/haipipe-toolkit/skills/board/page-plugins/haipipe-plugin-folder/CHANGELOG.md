@@ -1,4 +1,27 @@
+## 0.4.0 — 2026-09-03
+
+- Show `outline/skill/` as its own source-material row beside the Outline
+  process records and Evidence lanes.
+- Treat a root `skill/` row as pre-migration storage, never as the canonical
+  Page layout.
+
 # haipipe-plugin-folder · Changelog
+
+## 0.3.0 — 2026-09-03
+- Show exact category-owned lanes as independent rows, including every existing
+  `outline/evidence/<lane>/` and `delivery/<lane>/`.
+- Count only direct process files on the `outline/` row so evidence is visible
+  without being double-counted under its parent.
+- Remove Evidence and Probe from the active surface/roster wording.
+
+## 0.2.2 — 2026-08-31
+- Rows carry REAL PATHS (evidence/bibex/ …, JL: "really reflect the folder
+  structure"); stubs counted separately; flat callout keyed on path.
+
+## 0.2.1 — 2026-08-31
+- The view speaks the two-part grammar: a category chip per lane row, the
+  gaps line names outline/workflow + missing categories instead of the old
+  flat roster, and flat pre-sweep lanes are called out for the sweep.
 
 ## 0.2.0 · 2026-08-16
 

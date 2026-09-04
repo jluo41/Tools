@@ -18,7 +18,7 @@
   width: 46vw; min-width: 320px; max-width: 72vw;
   z-index: 58;                       /* under the bar (60), over the page */
   display: flex; flex-direction: column;
-  background: var(--bg, #fbfbf9); color: var(--fg, #1c1c1c);
+  background: var(--bg, #ffffff); color: var(--fg, #1c1c1c);
   border-left: 2px solid var(--line, #d8d8d8);
   box-shadow: -10px 0 30px rgba(0, 0, 0, .13);
 }
@@ -42,7 +42,7 @@ body.sd-dragging #sdeck .sd-frame { pointer-events: none; }
   flex: 0 0 auto;
   display: flex; align-items: center; gap: 12px;
   padding: 8px 14px;
-  border-bottom: 1px solid var(--line, #e4e4df);
+  border-bottom: 1px solid var(--line, #e4e4e7);
   background: var(--card, #fff);
   font: 12px/1.3 ui-monospace, Menlo, monospace;
 }
@@ -54,7 +54,7 @@ body.sd-dragging #sdeck .sd-frame { pointer-events: none; }
 .sd-sp { flex: 1 1 auto; }
 .sd-open, .sd-regen {
   flex: 0 0 auto; color: var(--accent, #1f5aa8); text-decoration: none;
-  padding: 5px 9px; border-radius: 6px; border: 1px solid var(--line, #e4e4df);
+  padding: 5px 9px; border-radius: 6px; border: 1px solid var(--line, #e4e4e7);
 }
 .sd-open:hover, .sd-regen:hover { background: var(--bg, #f1f3f5); }
 .sd-open[hidden], .sd-regen[hidden] { display: none; }
@@ -62,7 +62,7 @@ body.sd-dragging #sdeck .sd-frame { pointer-events: none; }
   flex: 0 0 auto;
   font: 500 12px/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding: 6px 11px; cursor: pointer;
-  border: 1px solid var(--line, #e4e4df); border-radius: 6px;
+  border: 1px solid var(--line, #e4e4e7); border-radius: 6px;
   background: var(--bg, #fff); color: var(--fg, #1c1c1c);
 }
 .sd-x:hover { background: var(--card, #f1f3f5); }

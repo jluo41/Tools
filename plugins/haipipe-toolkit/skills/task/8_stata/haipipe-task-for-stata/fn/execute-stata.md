@@ -9,8 +9,8 @@ The server is an isolated machine — Claude never runs the real pipeline.
 When to call
 ------------
 
-As Phase 3 (Execute) of the `/haipipe-task` lifecycle on a Stata task folder.
-Also callable standalone: `/haipipe-task-for-stata execute <task-folder-path>`
+As Phase 3 (Execute) of the `/haipipe-task` lifecycle on a Stata job folder.
+Also callable standalone: `/haipipe-task-for-stata execute <job-path>`
 
 
 Two modes

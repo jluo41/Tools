@@ -2,7 +2,7 @@
  *
  * THE DECK IS THE AI DECK (JL 260815: "We will just have the AI deck"). A deck
  * is an AUTHORED artifact: an agent reads the page's Content, makes editorial
- * choices, and writes `<page>/slide/<page>-deck.html` on html-ppt's own shell.
+ * choices, and writes `<page>/delivery/slide/<page>-deck.html` on html-ppt's own shell.
  * This file owns none of that. It owns exactly one thing: WHERE a page's saved
  * deck lives, and showing it beside the prose it was written from.
  *
@@ -86,7 +86,7 @@
     return (page && page.getAttribute('data-file')) || '';
   }
 
-  /* WHERE A DECK LIVES. A page folder's slide/ plugin is the deck's one home:
+  /* WHERE A DECK LIVES. A page folder's delivery/slide/ lane is the deck's one home:
      the agent-authored deck lands there and nothing else writes one. The path
      is derived the way Draw derives its owner: the page's own URL carries the
      board folder, and `data-file` carries the rest. */
@@ -97,7 +97,7 @@
     var p = decodeURIComponent(location.pathname || '');
     var cut = p.lastIndexOf('/board/');
     if (cut < 0) return '';
-    return p.slice(0, cut) + '/' + m[1] + '/' + m[2] + '/slide/' + m[2] + '-deck.html';
+    return p.slice(0, cut) + '/' + m[1] + '/' + m[2] + '/delivery/slide/' + m[2] + '-deck.html';
   }
 
   /* The page's own .md, root-relative — what /_board/autodeck reads. */
@@ -180,14 +180,14 @@
   function showSaved(d, saved) {
     note(d, 'saved deck · ← → move, T theme, F full, O overview, S presenter');
     var a = d.querySelector('.sd-open');
-    a.href = saved + '?plain'; a.hidden = false;
+    a.href = saved + '?embed'; a.hidden = false;
     var f = d.querySelector('.sd-frame');
     f.removeAttribute('srcdoc');
-    /* `?plain` OR YOU GET A BOARD INSIDE A BOARD. The server wraps any .html it
+    /* `?embed` OR YOU GET A BOARD INSIDE A BOARD. The server wraps any .html it
        serves in the operating shell, so the bare deck URL returns the three-pane
        viewer with the deck hidden in its page frame. The `v=` buster is the
        260815 lesson: a same-src iframe keeps showing the stale document. */
-    f.src = saved + '?plain&v=' + Date.now();
+    f.src = saved + '?embed&v=' + Date.now();
   }
 
   /* ✨ REGENERATE (JL 260815: "add a new button to it so we can regenerate the
@@ -260,24 +260,11 @@
       .catch(function () { showNone(d, page); });
   }
 
-  if (window.boardPlugins) {
-    window.boardPlugins.register({
-      id: 'slides',
-      label: '\u{1F39E} Slides',
-      hint: 'this page’s authored deck, in the right pane',
-      // 🔌 A PLUGIN, not a workflow: it stores nothing on the page and locks no step.
-      menu: 'plugin',
-      // Applies everywhere: every page CAN have a deck, and the panel explains
-      // how to get one when none exists yet.
-      applies: function () { return true; },
-      open: open
-    });
-  }
-
+  /* Slides is an internal Delivery lane. Keep its URL/opener exports for the
+     Delivery presenter; do not register a second top-level Plugin row. */
   window.boardSlidesOpen = open;   // for direct calls and for the tests
-  /* The SHELL's hook (JL 260815: Slides is a TAB beside Chat and Draw). The
-     shell asks WHERE this page's saved deck would be; whether one exists is a
-     HEAD request away, and writing one is an AGENT's job, not a browser's. */
+  /* Delivery asks where this page's saved deck would be; whether one exists is
+     a HEAD request away, and writing one is an agent's job, not a browser's. */
   window.boardSlidesURL = function (page) {
     page = page || (window.boardPlugins && window.boardPlugins.livePage());
     return page ? savedUrl(page) : '';

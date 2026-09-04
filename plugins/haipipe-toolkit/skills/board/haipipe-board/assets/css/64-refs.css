@@ -1,7 +1,7 @@
 /* 📚 the References block above the folds, from the page's own bib (QPf8,
    JL 260815). The inline cite chips and cards are body.py's own styles. */
 .refs{margin:18px 0 6px;padding:10px 14px;background:var(--card,#fff);
-  border:1px solid var(--line,#e4e4df);border-radius:8px}
+  border:1px solid var(--line,#e4e4e7);border-radius:8px}
 .refs .rh{font:700 13px/1.4 ui-monospace,Menlo,monospace;margin-bottom:4px}
 .refs ol{margin:0;padding-left:22px}
 .refs li{font-size:.88em;line-height:1.55;margin:0 0 4px}

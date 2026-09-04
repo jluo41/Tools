@@ -3,11 +3,15 @@ the old render(), moved verbatim). page_stage.py owns embedded source content;
 this file owns the page-template anatomy on stage."""
 import pathlib
 import re
+from urllib.parse import quote
 
 from . import body as _bd
 from .body import (body, flat_rows, inline, note_body, render_apparatus,
                    render_thread, sort_log)
 from .common import aim_progress, aim_summary, esc, sec, stinfo
+from .item_table import (action_label, compact_global_run, compact_paper_run,
+                         readable_global_run, readable_paper_route, repo_root,
+                         readable_task, run_registry, wall_label)
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -179,7 +183,7 @@ def chead(label, inner, tag="div"):
 
 def sect(label, inner, cls="", open_=False):
     """A whole page section that folds from its own heading (JL 260725), by the
-    same native-details mechanism Diagram already uses. Shut, the section keeps
+    same native-details mechanism Outline already uses. Shut, the section keeps
     its text in the DOM, so the zero-script invariant, Ctrl-F, and the section
     ⧉ copy button all keep working.
 
@@ -197,45 +201,405 @@ def sect(label, inner, cls="", open_=False):
             f'{chead(label, inner, tag="summary")}{inner}</details>')
 
 
-# ── 🖼 Diagram = the ascii figure, alone (QPf2, JL 260815) ─────────────────
-# The canvas left the stage: a page's drawing is MATERIAL, so it lives in the
-# page's own `draw/` plugin and opens through the Draw split, never inline in
-# `## Diagram`. What renders here is the figure that survives every host with
-# scripts off. `split_diagram` still runs so a source that carries a leftover
-# bare canvas URL renders its figure clean instead of a naked link — the line
-# stays in the markdown untouched; it just no longer stages anything.
-XCAL_HOSTED = re.compile(r"^\s*https?://(?:app\.)?excalidraw\.com/\S+\s*$")
+# ── 🧭 Outline = current plan table ─────────────────────────────────────────
+# The versioned plan in outline/ is the one reader-facing narrative structure.
+# A Page never carries a second hand-authored map or an inline canvas.
 
 
-def split_diagram(txt):
-    """-> (figure_markdown, canvas_markdown).
-
-    A bare Excalidraw URL alone on a line is the canvas; every other line is
-    the figure. Fenced lines are never canvas lines, so a URL drawn inside an
-    ASCII figure stays in the figure where its author put it."""
-    fig, canvas, fence = [], [], False
-    host = _bd.EXCAL_HOST
-    ours = re.compile(r"^\s*" + re.escape(host) + r"/\S+\s*$") if host else None
-    for ln in txt.split("\n"):
-        if ln.lstrip().startswith("```"):
-            fence = not fence
-            fig.append(ln)
-            continue
-        is_canvas = not fence and (XCAL_HOSTED.match(ln)
-                                   or (ours is not None and ours.match(ln)))
-        (canvas if is_canvas else fig).append(ln)
-    return "\n".join(fig).strip("\n"), "\n".join(canvas).strip("\n")
+def _outline_status_class(status):
+    return "ok" if status in {"ready", "folded", "accepted"} else (
+        # Specified and planned describe normal pre-LAND work, not a warning.
+        # Treating every unpaid item as yellow made an early outline read as
+        # an error dashboard rather than a readable plan.
+        "mut" if status in {"deferred", "dropped", "specified", "planned"}
+        else "warn"
+    )
 
 
-def render_diagram(txt):
-    """The 🖼 Diagram section: the ascii figure, nothing else."""
-    fig, _canvas = split_diagram(txt)
-    if not fig.strip():
+def _outline_grid(page_src):
+    """Render the Page's compact, read-only plan-and-evidence review table.
+
+    The Outline plugin still owns its richer plan card and Evidence lens.  This
+    projection is intentionally a real table for a Section reader: C/P rows
+    give narrative hierarchy; B rows carry a compact evidence identity,
+    Supporting Runs, and a local Run. Item status remains encoded by the
+    Evidence chip colour and is named in its popover; a separate Status column
+    would repeat that state while stealing width from the plan.
+    """
+    from live.outline import _latest_plan, _typed_item_review
+
+    plan, version = _latest_plan(page_src)
+    if plan is None:
         return ""
-    return ('<details class="diagram-section">'
-            '<summary class="ch"><span class="chl">🖼 Diagram</span></summary>'
-            f'<div class="dia">{body(fig, fold_code=False)}</div>'
+    text = plan.read_text(encoding="utf-8", errors="replace")
+    approved = bool(re.search(r"^approved:\s*✅", text, re.M))
+    typed = _typed_item_review(page_src, plan, text, approved)
+
+    gate = "approved" if approved else "approved: ⬜"
+
+    # The Page shows only the four reader-facing cycles.  Evidence-item states
+    # remain available in the Outline plugin, not beside the plan table.
+    cycle_order = ("SHAPE", "SURVEY", "LAND", "EMBED")
+    current_cycle = typed["cycle"].upper()
+    current_index = (cycle_order.index(current_cycle)
+                     if current_cycle in cycle_order else len(cycle_order))
+    cycle_chips = []
+    for index, name in enumerate(cycle_order, start=1):
+        if current_index > index - 1:
+            cls = "done"
+        elif current_cycle == name:
+            cls = "current"
+        else:
+            cls = "next"
+        cycle_chips.append(
+            '<span class="outline-cycle %s">%d %s</span>' %
+            (cls, index, name)
+        )
+    meta = (f'<div class="outline-grid-meta"><b>{"🔒" if approved else "✍️"} '
+            f'plan {esc(version)}</b><span class="{_outline_status_class("accepted" if approved else "specified")}">'
+            f'{esc(gate)}</span></div>'
+            '<div class="outline-cycle-meta">%s</div>' %
+            "".join(cycle_chips))
+
+    registry = run_registry(str(repo_root(pathlib.Path(_bd.BASE or "."))))
+    board_root = pathlib.Path(_bd.BASE or page_src.parent).resolve()
+    workspace_root = repo_root(board_root)
+    try:
+        board_source = "/" + (board_root / "board.md").relative_to(
+            workspace_root
+        ).as_posix()
+    except ValueError:
+        board_source = "/board.md"
+    try:
+        page_file = page_src.resolve().relative_to(board_root).as_posix()
+    except ValueError:
+        page_file = page_src.name
+    outline_url = "/_board/outline?path=%s&amp;file=%s" % (
+        quote(board_source, safe="/"), quote(page_file, safe="/"),
+    )
+
+    def readable_route(address):
+        """Render a Run or its pre-registration parent without inventing ``rNN``."""
+        return (readable_global_run(address) or readable_task(address)
+                or (address or "").strip())
+
+    def run_badge(address, action, family="", *, item_id="", layer=""):
+        """Render one route as ``D|X global-address`` or ``P local-address``.
+
+        Keep SURVEY's next action separate from path-derived availability.
+        The compact chip shows ``plan | run | rerun | reuse`` and its hover
+        names both facts; the Evidence Workspace holds the full Run detail.
+        """
+        is_paper = (family or "").strip().lower().startswith("page")
+        compact = ((compact_paper_run(address) or compact_global_run(address))
+                   if is_paper else compact_global_run(address))
+        readable = readable_route(address)
+        label = action_label(action)
+        if not label:
+            return ""
+        visible_action = (
+            "plan" if action.startswith("new-") else
+            "run" if action == "registered" else
+            "reuse" if action == "reuse" else
+            "rerun" if action == "rerun" else label
+        )
+        record = None if is_paper else registry.get(compact)
+        if record and record.get("result"):
+            availability = "Run + Result"
+        elif record:
+            availability = "Run exists · Result missing"
+        elif action.startswith("new-"):
+            availability = "Planned"
+        else:
+            availability = "Paths unresolved"
+        next_action = (
+            "Allocate and run" if action.startswith("new-") else
+            "Run" if action == "registered" else
+            "Reuse Result" if action == "reuse" else
+            "Rerun" if action == "rerun" else label
+        )
+        css = re.sub(r"[^a-z]+", "-", action.lower()).strip("-")
+        family_key = (family or "").strip().lower()
+        family_mark = ("D" if family_key.startswith("discovery") else
+                       "X" if family_key.startswith("execution") else
+                       "P" if family_key.startswith("page") else "")
+        scope = "Paper Board" if family_mark == "P" else (family or "Run")
+        run_path = str(record.get("ticket", "")) if record else ""
+        result_path = str(record.get("result", "")) if record else ""
+        runtime_path = str(record.get("runtime", "")) if record else ""
+        missing_run = "not allocated" if action.startswith("new-") else "unresolved"
+        run_file = pathlib.PurePosixPath(run_path).name if run_path else missing_run
+        title_lines = [
+            scope,
+            "Run file: %s" % run_file,
+            "Run path: %s" % (run_path or missing_run),
+            "Result path: %s" % (result_path or "not available"),
+        ]
+        if runtime_path:
+            title_lines.append("Runtime path: %s" % runtime_path)
+        title_lines.extend([
+            "Status: %s" % availability,
+            "Next action: %s" % next_action,
+            "Click for full Run details",
+        ])
+        title = "\n".join(title_lines)
+        if family_mark == "P":
+            # The Paper Board is the local block: do not repeat an inherited
+            # global bNN prefix in a Paper-local route.
+            readable = readable_paper_route(address) or readable
+
+        def outline_link(text, class_name):
+            """Deep-link this route to its Run detail inside the Evidence Item."""
+            if not item_id:
+                return '<span class="%s" title="%s">%s</span>' % (
+                    esc(class_name), esc(title), esc(text)
+                )
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
+            return (
+                '<a class="%s" href="%s&amp;lens=workspace&amp;focus=%s&amp;run=%s" '
+                'data-outline-focus="%s" data-outline-run="%s" title="%s">%s</a>' %
+                (esc(class_name), outline_url, esc(focus), esc(readable),
+                 esc(focus), esc(readable), esc(title), esc(text))
+            )
+
+        if not readable and action.startswith("new-"):
+            return outline_link(label, "outline-run-action %s" % css)
+        if compact:
+            run = outline_link(readable, "outline-run-link")
+        elif action.startswith("new-"):
+            run = outline_link(readable or label, "outline-run-link")
+        else:
+            run = ('<span class="outline-run-pending" title="%s">%s</span>' %
+                   (esc(title), esc(readable or label)))
+        marker_class = "paper" if family_mark == "P" else family_key.split(" ", 1)[0]
+        marker_title = "Paper Board" if family_mark == "P" else (family or "Run")
+        marker = ('<span class="outline-run-family %s" title="%s">%s</span>' %
+                  (esc(marker_class), esc(marker_title), family_mark)) if family_mark else ""
+        return ('<span class="outline-run-set">%s%s'
+                '<span class="outline-run-action %s">%s</span></span>' %
+                (marker, run, esc(css), esc(visible_action)))
+
+    def supporting_cell(item):
+        """Show audited supporting Runs; full plans stay in the card."""
+        value = item["supporting_runs"]
+        if not value or value == "[]":
+            return '<span class="outline-run-empty">—</span>'
+        if value.startswith("—"):
+            return '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
+        entries = [entry.strip() for entry in value.split(";") if entry.strip()]
+        links = []
+        for entry in entries:
+            parts = [part.strip() for part in entry.split("·")]
+            if len(parts) < 3:
+                continue
+            link = run_badge(parts[2], parts[1], parts[0], item_id=item.get("id", ""),
+                             layer="supporting")
+            if link:
+                links.append(link)
+        if links:
+            return " ".join(links)
+        return '<span class="outline-run-empty">—</span>'
+
+    def local_cell(item):
+        """Show the one allocated local Run, never a Page evidence reference."""
+        value = item["local_run"]
+        if not value:
+            return '<span class="outline-run-empty">—</span>'
+        if value.startswith("—"):
+            link = run_badge("", item.get("action", ""),
+                             "Page · Evidence Item", item_id=item.get("id", ""),
+                             layer="local")
+            return link or '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
+        link = run_badge(item.get("address", ""), item.get("action", ""),
+                         "Page · Evidence Item", item_id=item.get("id", ""), layer="local")
+        if link:
+            return link
+        return '<span class="outline-run-empty">—</span>'
+
+    def evidence_cell(address):
+        items = typed["by_target"].get(address, [])
+        if not items:
+            empty = "<span class=mut>—</span>"
+            return empty, empty, empty
+        evidence_parts = []
+        for item in items:
+            visible_label = wall_label(
+                item["id"], item["type"], item["name"], item.get("label", "")
+            )
+            popover_id = "outline-item-%s" % re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
+            detail_rows = (
+                ("Label", item.get("label") or "legacy fallback"),
+                ("Name", item["name"]),
+                ("Target", item["target"]),
+                ("Expected", item["expected"]),
+                ("Acceptance", item["acceptance"]),
+                ("Supporting Runs", item["supporting_runs"]),
+                ("Local Input", item["local_input"]),
+                ("Local Run", item["local_run"]),
+                ("Result", item["result"]),
+            )
+            detail = "".join(
+                '<p><b>%s</b><span>%s</span></p>' % (esc(label), esc(value))
+                for label, value in detail_rows
+            )
+            evidence_parts.append(
+                '<button type="button" class="outline-evidence %s" '
+                'popovertarget="%s" aria-label="%s · %s · %s" title="%s · %s">'
+                '<b>%s</b></button>'
+                '<div id="%s" popover class="chipcard outline-item-card %s">'
+                '<div class="cch"><b>%s</b><span class="cck">%s · %s</span></div>'
+                '<div class="outline-item-detail">%s</div></div>' %
+                (_outline_status_class(item["status"]), esc(popover_id),
+                 esc(item["id"]), esc(item["type"]), esc(item["name"]),
+                 esc(item["id"]), esc(item["type"]), esc(visible_label),
+                 esc(popover_id),
+                 _outline_status_class(item["status"]), esc(item["id"]),
+                 esc(item["type"]), esc(item["status"]), detail)
+            )
+        evidence = "".join(evidence_parts)
+        supporting = "".join(supporting_cell(item) for item in items)
+        local = "".join(local_cell(item) for item in items)
+        return evidence, supporting, local
+
+    rows, current_c, current_p = [], "", ""
+    for raw in text.splitlines():
+        if raw.startswith("## ") and not re.match(r"^## C\d+\b", raw):
+            break
+        c = re.match(r"^## (C\d+)\s*·\s*(.+)$", raw)
+        if c:
+            current_c, current_p = c.group(1), ""
+            rows.append('<tr class="outline-grid-division"><th colspan="5">'
+                        '<code>%s</code> %s</th></tr>' %
+                        (esc(current_c), esc(c.group(2).strip())))
+            continue
+        p = re.match(r"^### (C\d+\.P\d+)\s*·\s*(.+)$", raw)
+        if p:
+            current_p = p.group(1)
+            rows.append('<tr class="outline-grid-paragraph"><th scope="row"><code>%s</code></th>'
+                        '<td colspan="4">%s</td></tr>' %
+                        (esc(current_p), esc(p.group(2).strip())))
+            continue
+        bullet = re.match(r"^- (?:[BS](\d+)\s*·\s*)?(.*)$", raw)
+        if not bullet or not current_c or not current_p:
+            continue
+        bullet_no = (bullet.group(1) or
+                     str(sum(1 for row in rows if "outline-grid-bullet" in row) + 1))
+        address = f"{current_p}.B{bullet_no}"
+        headline = bullet.group(2).strip()
+        evidence, supporting, local = evidence_cell(address)
+        rows.append('<tr class="outline-grid-bullet"><th scope="row"><code>%s</code></th>'
+                    '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
+                    (esc(address), esc(headline), evidence, supporting, local))
+
+    if not rows:
+        rows.append('<tr><td colspan="5" class="mut">No C/P/B plan rows yet.</td></tr>')
+    return (f'{meta}<div class="outline-grid-wrap"><table class="outline-grid">'
+            '<thead><tr><th>Address</th><th>Planned move</th><th>Evidence</th>'
+            '<th>Supporting Runs</th><th>Local Run</th></tr></thead><tbody>'
+            f'{"".join(rows)}</tbody></table></div>')
+
+
+def _narrative_section_control(page_src):
+    """Project a Narrative's detailed Section rows into its executive table.
+
+    The detailed rows under Content remain the authority.  Narrative used to
+    copy this table by hand into a legacy ``## Diagram`` block, which let the
+    executive view disagree with the handoff packets below it.  This projection
+    keeps the at-a-glance table while removing that second source of truth.
+    """
+    if page_src is None or not page_src.is_file():
+        return ""
+    text = page_src.read_text(encoding="utf-8", errors="replace")
+    content = re.search(r"(?ms)^## Content\s*$\n(.*?)(?=^##\s|\Z)", text)
+    if not content:
+        return ""
+
+    section_text = content.group(1)
+    heads = list(re.finditer(r"(?m)^####\s+(\d+(?:\.\d+)?)\s*·\s*(.+?)\s*$",
+                             section_text))
+    rows = []
+    required = ("QUESTION", "MOVES", "ESTABLISH", "REFUSE", "GATE", "EXIT")
+    for index, head in enumerate(heads):
+        start = head.end()
+        end = heads[index + 1].start() if index + 1 < len(heads) else len(section_text)
+        block = section_text[start:end]
+        fence = re.search(r"(?ms)^```text\s*$\n(.*?)^```\s*$", block)
+        if not fence:
+            continue
+        fields = {}
+        for line in fence.group(1).splitlines():
+            field = re.match(r"^([A-Z][A-Z0-9_-]*)\s{2,}(.+?)\s*$", line)
+            if field:
+                fields[field.group(1)] = field.group(2)
+        if any(not fields.get(name) for name in required):
+            continue
+        label = re.sub(r"\s*·\s*Story\S+\s*$", "", head.group(2)).strip()
+        values = (
+            label,
+            fields["QUESTION"],
+            fields["MOVES"],
+            fields["ESTABLISH"],
+            fields["REFUSE"],
+            fields["GATE"],
+            fields["EXIT"],
+        )
+        rows.append("<tr>" + "".join(
+            (f'<th scope="row"><code>{esc(value)}</code></th>' if cell == 0 else
+             f"<td>{esc(value)}</td>")
+            for cell, value in enumerate(values)
+        ) + "</tr>")
+
+    if not rows:
+        return ""
+    return (
+        '<div class="narrative-control-note"><b>Runs boundary</b> '
+        'Show claim disposition and only the direction or scale needed to judge the story. '
+        'Exact estimates, intervals, samples, and model labels stay in accepted evidence/value records '
+        'and the Results Section.</div>'
+        '<div class="outline-grid-wrap narrative-control-wrap">'
+        '<table class="outline-grid narrative-control"><thead><tr>'
+        '<th>Section</th><th>Reader job</th><th>Outline shape</th>'
+        '<th>Must establish</th><th>Must refuse</th><th>Evidence gate / cut</th>'
+        '<th>Reader exit</th></tr></thead><tbody>'
+        f'{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_outline(page_src=None, page_type=""):
+    """Render the open Page-level Outline and its authoritative projections."""
+    table = _outline_grid(page_src) if page_src is not None and page_src.is_file() else ""
+    narrative = (_narrative_section_control(page_src)
+                 if (page_type or "").strip() == "narrative" else "")
+    if not table and not narrative:
+        return ""
+    if narrative:
+        primary = ('<div class="outline-table"><div class="fh">▤ Narrative section table</div>'
+                   f'{narrative}</div>')
+        plan = (f'<details class="outline-plan-secondary"><summary>▤ Plan and evidence</summary>'
+                f'<div class="outline-plan-body">{table}</div></details>' if table else "")
+        table_html = primary + plan
+    else:
+        table_html = (f'<div class="outline-table"><div class="fh">▤ Outline table</div>'
+                      f'{table}</div>')
+    return ('<details class="outline-section" open>'
+            '<summary class="ch"><span class="chl">🧭 Outline</span></summary>'
+            f'<div class="outline-body">{table_html}</div>'
             '</details>')
+
+
+def has_outline_plan(page_src):
+    """Whether this Page has a current-plan candidate for its Outline table.
+
+    This deliberately follows the same location and filename contract as
+    ``live.outline.plan_card``.  The sidebar and Board matrix use it so a Page
+    whose source has no Outline block still exposes its rendered plan table.
+    """
+    if page_src is None:
+        return False
+    page_src = pathlib.Path(page_src)
+    return (page_src.is_file()
+            and any((page_src.parent / "outline").glob(
+                f"{page_src.stem}-outline-v*.md")))
 
 
 def split_stage_record(kind, content_sections):
@@ -259,20 +623,21 @@ def split_stage_record(kind, content_sections):
     return "", content_sections
 
 
-def structure_rows(d, content_sections):
+def structure_rows(d, content_sections, has_outline_table=False, page_type=""):
     """The DATA half of the page's Structure map: (key, label, value, subs)
     per section that exists, where key is the stable machine name the sidebar
     outline's JS resolves to a DOM selector, and subs is Content's division
     titles. Shared by the Opening drawer and the sidebar outline (QB2a,
     JL 260731), so the two views can never disagree."""
-    rows = [("opening", "🧭 Opening", "the lead, and this drawer", [])]
-    dia = sec(d, "Diagram").strip()
-    if dia:
-        fig, canvas = split_diagram(dia)
-        nfig = fig.count("```") // 2
-        v = f"{nfig} figure{'s' if nfig != 1 else ''}" if nfig else "no figure"
-        v += " · canvas" if canvas.strip() else " · no canvas"
-        rows.append(("diagram", "🖼 Diagram", v, []))
+    opening_value = ("one reader paragraph"
+                     if (page_type or "").strip() == "section"
+                     else "the lead, and this drawer")
+    rows = [("opening", "🚪 Opening", opening_value, [])]
+    if has_outline_table:
+        outline_label = ("section table · plan folded"
+                         if (page_type or "").strip() == "narrative"
+                         else "plan table")
+        rows.append(("outline", "🧭 Outline", outline_label, []))
     divs = [(h, h) for h, _ in content_sections if h]
     if divs or sec(d, "Content").strip():
         v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
@@ -388,7 +753,8 @@ def render_structure(d, content_sections):
     """The generated `Structure` row that OPENS the drawer (JL 260729: "the
     Structure subsection just above Boundary"): what this page is built of.
     Computed from the parsed page rather than authored, so the map can never
-    go stale — the same bargain as split_diagram: the source gains nothing.
+    go stale — the same bargain as the derived Outline table: the source gains
+    nothing.
     Only sections that exist get a row."""
     def row(label, value):
         return (f'<div class="pmr"><span class="pml">{label}</span>'
@@ -835,6 +1201,7 @@ def _render_question(q, prv, nxt):
     contract_md = re.sub(r"<!--.*?-->", "", sec(q["sec"], "Stage Contract"), flags=re.S)
     contract_sections = parse_content_sections(contract_md)
     is_stage = q.get("kind") == "stage"
+    is_manuscript_section = (q.get("page_type") or "").strip() == "section"
     legacy_record, content_sections = split_stage_record(
         q.get("kind"), content_sections)
     opening_sections = []
@@ -845,14 +1212,14 @@ def _render_question(q, prv, nxt):
     # rhetorical job the paragraph was supposed to do, and that framing is what
     # produced the mad-lib openings the 260801 rewrite banned; the drawer now just
     # says what it is, which is the rest of the Opening.
-    if qrest:
+    if qrest and not is_manuscript_section:
         opening_sections.append(("More details", qrest))
     # Boundary 排在 Why this matters 之后（JL 260801）。这翻掉了 260729 的顺序，
     # 当时 Why this matters 被放在 Boundary「just below」。理由是读者的顺序：
     # pitch 给出承诺 → Why this matters 说明为什么值得在意 → 这时才轮到「哪些不归这页」。
     # 「不管什么」是个限定语，限定语要落在被限定的东西已经站住之后才有意义。
     btxt = sec(q["sec"], "Boundary").strip()
-    if btxt:
+    if btxt and not is_manuscript_section:
         opening_sections.append(("Boundary", btxt))
     # Writing Style 是「页」的元素，不是 S 的（JL 260801：「here is not about S, or
     # Q ... it is just about the Page」）。它原来长在 S 的 Stage Contract 里，跟
@@ -868,7 +1235,7 @@ def _render_question(q, prv, nxt):
     wstyle = _opening_sub(sec(q["sec"], "Opening"), "Writing Style")
     if not wstyle:
         wstyle = sec(q["sec"], "Writing Style").strip()
-    if wstyle:
+    if wstyle and not is_manuscript_section:
         opening_sections.append(("Writing Style", wstyle))
     # Stage Contract joins Opening's collapsed rows (JL 260725: "within the
     # Opening, not a separate section"), after Why this matters / Writing Style.
@@ -885,12 +1252,12 @@ def _render_question(q, prv, nxt):
     # Stage Contract 现在跟它一致（JL 260725：「I don't want to have >」，以及
     # 「why other information are gone」—— 它们没丢，是被第二层 ▸ 关起来了）。
     inner += render_subsections(opening_sections, flat=True)
-    if is_stage:
+    if is_stage and not is_manuscript_section:
         inner += render_contract(contract_sections, lead=legacy_record)
     # Opening 本身不折（JL 260725：「no > in the Opening, it will always be there」）：
-    # 🧭 Opening 这一行和领句永远在台面上。可点的是【领句】—— 点开它，Boundary、
+    # 🚪 Opening 这一行和领句永远在台面上。可点的是【领句】—— 点开它，Boundary、
     # Why this matters、Writing Style、Stage Contract 全在这一个抽屉里，用来解释这句问句。
-    # 中间那版把折叠挂在 🧭 Opening 上，于是节名本身成了一个只写着「Opening」的 ▸ 行，
+    # 中间那版把折叠挂在 🚪 Opening 上，于是节名本身成了一个只写着「Opening」的 ▸ 行，
     # 读者看不出里头有 Boundary —— 正是 260724 那条 Law 要防的（fold 生效且不可见）。
     # 领句的排版跟原版一模一样：<summary> 里仍然是那个 <p class="qlead">，
     # 所以 `.q p` 的 serif 和 `.ask>p:first-of-type` 的字号都照旧命中（JL 260725：
@@ -898,7 +1265,7 @@ def _render_question(q, prv, nxt):
     lead_p = (f'<p class="qlead"><span class="qt">{qlead}</span>'
               + (f'<span class="sbadge">{lead_kind} {lead_heads}</span>' if lead_heads else "")
               + '<span class="cv"></span></p>')
-    opening_head = '<div class="ch opening-head"><span class="chl">🧭 Opening</span></div>'
+    opening_head = '<div class="ch opening-head"><span class="chl">🚪 Opening</span></div>'
     qblock = (
         # The Opening drawer stays shut even when the lead carries a comment
         # (JL 260801: everything collapsed). The ⚑/💬 badge on the lead says it
@@ -917,10 +1284,16 @@ def _render_question(q, prv, nxt):
     # (JL 260802). Files was the last section rendering its `###` groups as
     # flat rows, so a long action map could not be collapsed to its group
     # names while every other section on the page could.
+    page_src = pathlib.Path(_bd.BASE or ".") / q["file"] if q.get("file") else None
+    # A folded Page keeps process records in its outline/ folder.  The main
+    # Page therefore renders only the product and compact Outline projection;
+    # Files, Discussion, and Log belong to the Outline plugin workspaces.
+    has_outline_folder = bool(
+        page_src and (page_src.parent / "outline").is_dir()
+    )
     flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
-    fls = sect("📁 Files", flb, cls="fls")
-    dia_txt = sec(q["sec"], "Diagram")
-    dia = render_diagram(dia_txt) if dia_txt else ""
+    fls = "" if has_outline_folder else sect("📁 Files", flb, cls="fls")
+    dia = render_outline(page_src, q.get("page_type", ""))
     display_preview = render_display_preview(q)
     content = render_content(content_sections, q if is_stage else None,
                              leading=display_preview)
@@ -935,12 +1308,13 @@ def _render_question(q, prv, nxt):
     # The form comes FIRST, above the thread (JL 260802): it is the one thing
     # in this fold a reader can act on, and the newest exchange is right under
     # it, so writing a reply never means scrolling past the whole history.
-    folds = det(f"💬 Discussion ({ndisc})",
-                dadd +
-                (render_thread(disc) if disc else
-                 f'<p class="mut">No discussion yet — add a line under '
-                 f'<code>## Discussion</code> in {q["file"]}: '
-                 f'<code>&gt; Comment JL …</code></p>'))
+    folds = "" if has_outline_folder else det(
+        f"💬 Discussion ({ndisc})",
+        dadd +
+        (render_thread(disc) if disc else
+         f'<p class="mut">No discussion yet — add a line under '
+         f'<code>## Discussion</code> in {q["file"]}: '
+         f'<code>&gt; Comment JL …</code></p>'))
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
     # Every fold says how much is inside, the way Discussion and Log already
@@ -954,7 +1328,8 @@ def _render_question(q, prv, nxt):
                      body(sec(q["sec"], name), apparatus=False, show_lead=True))
     log = sort_log(sec(q["sec"], "Log").strip())
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
-    folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
+    if not has_outline_folder:
+        folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
     html = (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
@@ -962,10 +1337,13 @@ def _render_question(q, prv, nxt):
         # A plugin surface gates on the page's declared type (JL 260807), so the type
         # has to survive into the DOM; before this it lived only in the source head.
         f' data-page-type="{esc(q.get("page_type",""))}">'
-        f'<div class="qh"><span class="qid">{q["id"]}</span>'
+        # No id on the status row: the h2's `.hid` right below and the
+        # breadcrumb already carry it (JL 260831). The `·` before method only
+        # exists when there is a method to separate.
+        f'<div class="qh">'
         f'<span class="pill {cls}">{tok} {esc(lab)}</span>'
         f'<span class="mut">{esc(who)}</span>'
-        f'<span class="mut">· {inline(q["method"])}</span>'
+        + (f'<span class="mut">· {inline(q["method"])}</span>' if q["method"] else "")
         + (
             f'<span class="kind">'
             f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'
@@ -984,10 +1362,11 @@ def _render_question(q, prv, nxt):
         f'<h2 class="h2"><span class="hid">{q["id"]} </span>{inline(q["title"])}</h2>'
         + f'<div class="opening">{ask}{bnd}</div>' + dia + content
         + f'{fs}{fls}<div class="folds">{folds}</div>{nav}</section>')
-    # 📚 the References block lands above the folds, from the page's own
-    # bibex/ store (QPf8, JL 260815); the inline chips are body.py's half.
+    # 📚 References land above durable folds, but only Opening and Outline
+    # start open. The bibliography stays accessible without becoming another
+    # default reading destination.
     refs = references_block(q)
     if refs:
         html = html.replace('<div class="folds">',
-                            refs + '<div class="folds">', 1)
+                            det("📚 References", refs) + '<div class="folds">', 1)
     return html

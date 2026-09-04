@@ -189,21 +189,26 @@ QBt4-for-meta.md
 
 ### QI · Insights
 How one Application-local Page turns Task-backed evidence into a bounded Design
-Handoff, including the missing-insight route.
+Handoff, including the missing-insight route. QI3 adds the 260827 climb machine:
+six phases named by the lane's page types, the cell frontier, and the two door
+tests that decide column versus partition.
 
 QI0-the-local-insights-layer.md
 QI1-the-insight-page.md
 QI2-insight-to-design-handoff.md
+QI3-the-climb-machine.md
 
 ### QD · Design
 The delivery-side counterpart to QI. Where the DesignBoard stops, what one
 signature covers, and why the rendered output is derived rather than a Page.
-QBt2 keeps the Design Page's shape; these pages own its rules. QD3 adds the 260824 design family, where a design is a BET declared before the artifact exists.
+QBt2 keeps the Design Page's shape; these pages own its rules. QD3 adds the 260824 design family, where a design is a BET declared before the artifact exists; QD4 registers the 59 verified sources grounding the design round's five phases; QD5 rules that realize is two movements, since a lane whose every surface narrows can only conclude.
 
 QD0-the-design-layer.md
 QD1-the-acceptance-grain.md
 QD2-projections.md
 QD3-design-as-bets.md
+QD4-round-theory.md
+QD5-open-and-close.md
 
 ## Links
 paper-board ../PaperSkillBoard-260725/board.md
@@ -218,7 +223,8 @@ for-principle/ ../../application/page-types/haipipe-page-for-principle/
 for-wisdom/ ../../application/page-types/haipipe-page-for-wisdom/
 for-question/ ../../application/page-types/haipipe-page-for-question/
 haipipe-design/ ../../application/haipipe-design/
+haipipe-insight/ ../../application/haipipe-insight/
+insight-workflow/ ../../application/haipipe-insight-workflow/
 workflow/ ../../application/haipipe-application-workflow/
 partition.md ../../application/haipipe-application/ref/partition.md
-direction-plugin/ ../../board/page-plugins/haipipe-plugin-direction/
 design-plugin/ ../../board/page-plugins/haipipe-plugin-design/

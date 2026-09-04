@@ -10,7 +10,7 @@ Each domain folder (`1_data` … `9_agent`, plus `agents/`) keeps its OWN
 `feedback/` folder so the report sits next to the code that needs fixing. THIS
 folder is the **fallback**: it holds cross-cutting discipline that no single
 domain owns (the 4-phase lifecycle Plan/Build/Execute/Report, the IPO contract,
-the task-folder scaffold, run conventions, the creator-reviewer loop, stage
+the job scaffold, run conventions, the creator-reviewer loop, stage
 file-ownership) plus anything the router could not classify. The folder a file
 lives in IS the record of which unit it concerns; there is no cross-unit shared
 feedback.

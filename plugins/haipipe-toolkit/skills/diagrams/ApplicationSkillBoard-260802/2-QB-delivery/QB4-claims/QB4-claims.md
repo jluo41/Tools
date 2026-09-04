@@ -129,24 +129,6 @@ That loopback is the ladder working: the refutation is caught for the cost of a 
 
 ## Aims
 
-### A1 · 📒 The ledger
-- A1.1 · The ledger's three sections and the status monopoly are stated so a reader can audit any intervention's 1c-claims.md against this page.
-  **Done when:** a reader can name, from part 1 alone, the three sections, who may write a status, and what `supported` must trace to.
-
-### A2 · 🚪 Settlement depth
-- A2.1 · The settlement bar the tail reads is ruled by JL, not assumed from the skill.
-  **Done when:** the Decision Now row is answered, the ruling lands in `## Law` with the unpinned-venue default named, and this Aim's State flips in the same edit.
-
-### A3 · 🔁 Promotion and the sweep
-- A3.1 · The promotion test and the three-lens sweep are stated with the route a refuted claim takes.
-  **Done when:** part 3 names Rival, Refutes-if, the three lenses, and the `[ROUTE -> themes]` loopback without contradicting the shipped skill.
-
-### P · 🏁 Page-level
-- P1 · This page and the shipped claims skill say the same thing.
-  **Done when:** every contract sentence in Content traces to the claims skill at 0.7.6, and a divergence is either fixed here or logged as a proposed skill change.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Does the venue-scaled settlement gate, including the provisional `light` bar for an unpinned venue, stand as the tail's consumption contract?
       📍 `Part 2` the bar the CHECK gate holds the Evidence Campaign against
@@ -156,17 +138,30 @@ That loopback is the ladder working: the refutation is caught for the cost of a 
       🛑 `Blocks` nothing; the skill's current behavior runs either way.
       🤖 `If nobody answers` A, the shipped behavior stands.
 
+
 ### A1 · 📒 The ledger
-- ✅ A1.1 · Met; part 1 states the three sections, the status monopoly, and the judged-artifact trace, all read from the claims skill at 0.7.6.
+- ✅ A1.1 · The ledger's three sections and the status monopoly are stated so a reader can audit any intervention's 1c-claims.md against this page.
+  **Done when:** a reader can name, from part 1 alone, the three sections, who may write a status, and what `supported` must trace to.
+  **Now:** Met; part 1 states the three sections, the status monopoly, and the judged-artifact trace, all read from the claims skill at 0.7.6.
+
 
 ### A2 · 🚪 Settlement depth
-- 🧠 A2.1 · Waiting on JL; the Decision Now row above carries the two options and the recommendation.
+- 🧠 A2.1 · The settlement bar the tail reads is ruled by JL, not assumed from the skill.
+  **Done when:** the Decision Now row is answered, the ruling lands in `## Law` with the unpinned-venue default named, and this Aim's State flips in the same edit.
+  **Now:** Waiting on JL; the Decision Now row above carries the two options and the recommendation.
+
 
 ### A3 · 🔁 Promotion and the sweep
-- ✅ A3.1 · Met; part 3 states Rival, Refutes-if, the three lenses, and the `[ROUTE -> themes]` loopback as the skill ships them.
+- ✅ A3.1 · The promotion test and the three-lens sweep are stated with the route a refuted claim takes.
+  **Done when:** part 3 names Rival, Refutes-if, the three lenses, and the `[ROUTE -> themes]` loopback without contradicting the shipped skill.
+  **Now:** Met; part 3 states Rival, Refutes-if, the three lenses, and the `[ROUTE -> themes]` loopback as the skill ships them.
+
 
 ### P · 🏁 Page-level
-- ✅ P1 · Met at creation; Content was drafted directly from the claims skill 0.7.6 on 260802 and no divergence is known.
+- ✅ P1 · This page and the shipped claims skill say the same thing.
+  **Done when:** every contract sentence in Content traces to the claims skill at 0.7.6, and a divergence is either fixed here or logged as a proposed skill change.
+  **Now:** Met at creation; Content was drafted directly from the claims skill 0.7.6 on 260802 and no divergence is known.
+
 
 ## Files
 
@@ -189,3 +184,5 @@ That loopback is the ladder working: the refutation is caught for the cost of a 
 ## Log
 
 260802 · Page created from the claims skill 0.7.6 and the QB4@paper precedent; the settlement bar, including the unpinned-venue default, raised to JL as the Decision Now row.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

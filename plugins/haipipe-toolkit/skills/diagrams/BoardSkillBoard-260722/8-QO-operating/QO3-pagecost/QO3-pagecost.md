@@ -205,42 +205,37 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 ## Aims
 
 ### A1 · 🔬 What is measured, and by what
-- A1.1 · Every cost claim on this page names the command that produced it.
+- ✅ A1.1 · Every cost claim on this page names the command that produced it.
   **Done when:** each number in Content can be re-derived from a command written beside it.
-- A1.2 · Every instrument on this page has its blind spot written down.
+  **Now:** Every figure in Content carries its source; the three readings that came from the wrong instrument are named in 1.1 and 1.3 so the mistake is not repeatable.
+- ✅ A1.2 · Every instrument on this page has its blind spot written down.
   **Done when:** the table in 1 names, for each tool, at least one cost it cannot see, and no claim rests on a tool blind to it.
+  **Now:** The table in 1 carries a `LANE HELD` column precisely because the tool used most, `curl`, is the one that cannot see it. That gap is what 1.3 is about.
+
 
 ### A2 · 🚚 The wire half
-- A2.1 · Nothing unchanged is sent twice.
+- ✅ A2.1 · Nothing unchanged is sent twice.
   **Done when:** the assets carry a content hash and an immutable header, and a second page in a session fetches only its own html.
-- A2.2 · Text crosses the wire compressed.
+  **Now:** `serve.py` answers a `?v=` request with `public, max-age=31536000, immutable`; a second page in a session fetches only its own html, measured at 1 request and 29 KB.
+- ✅ A2.2 · Text crosses the wire compressed.
   **Done when:** every text response above 1 KB is gzipped, including vendored assets, with revalidation and `HEAD` unchanged.
-- A2.3 · No request holds a connection longer than it needs.
+  **Now:** `try_gzip` covers static text and `serve_asset` covers the vendored bundle; 304 revalidation, `HEAD` and the `.md` links were each checked by hand afterwards.
+- ✅ A2.3 · No request holds a connection longer than it needs.
   **Done when:** after a page settles, nothing is still pending, and every board endpoint answers in well under a second under concurrent load.
-- A2.4 · What the page list costs is paid on purpose, not by accident.
+  **Now:** `log_boards` prunes in place and caches for two seconds. `POST /_board/activity` went from over 60 s with no answer to 43 ms, ten concurrent to 0.88 s, and a headless load of `QB1-form.html?pane=page` finished all 8 requests with nothing pending.
+- ✅ A2.4 · What the page list costs is paid on purpose, not by accident.
   **Done when:** its bytes are measured and written here, and keeping it is a recorded decision rather than an unexamined default.
+  **Now:** RULED by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The page list ships on every page of every door: 55 page blocks and 303 links, 110,651 bytes, 67% of the file at the ruling, 57 blocks, 995 links and 80% at the 260806 re-count. That is now a price this board pays knowingly for being able to jump anywhere from anywhere, and it is not a defect to be worked off. The Aim was rewritten to match the ruling; what it asks for is measurement and a decision, and it has both.
+
 
 ### A3 · 🧠 The browser half
-- A3.1 · Moving between pages does not rebuild the page from nothing.
+- ✅ A3.1 · Moving between pages does not rebuild the page from nothing.
   **Done when:** a click inside a board replaces the content and keeps the parsed document, on both packagings.
-- A3.2 · The browser half has a number.
+  **Now:** The one-document board always swapped; the split now does too, after a regression that made every click a full document load. 7 requests to 1.
+- ⬜ A3.2 · The browser half has a number.
   **Done when:** parse, execute and paint are timed on a real client and written here.
+  **Now:** Not started. `curl` cannot see it and no headless trace has been taken.
 
-## States
-
-### A1 · 🔬 What is measured, and by what
-- ✅ A1.1 · Every figure in Content carries its source; the three readings that came from the wrong instrument are named in 1.1 and 1.3 so the mistake is not repeatable.
-- ✅ A1.2 · The table in 1 carries a `LANE HELD` column precisely because the tool used most, `curl`, is the one that cannot see it. That gap is what 1.3 is about.
-
-### A2 · 🚚 The wire half
-- ✅ A2.1 · `serve.py` answers a `?v=` request with `public, max-age=31536000, immutable`; a second page in a session fetches only its own html, measured at 1 request and 29 KB.
-- ✅ A2.2 · `try_gzip` covers static text and `serve_asset` covers the vendored bundle; 304 revalidation, `HEAD` and the `.md` links were each checked by hand afterwards.
-- ✅ A2.3 · `log_boards` prunes in place and caches for two seconds. `POST /_board/activity` went from over 60 s with no answer to 43 ms, ten concurrent to 0.88 s, and a headless load of `QB1-form.html?pane=page` finished all 8 requests with nothing pending.
-- ✅ A2.4 · RULED by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The page list ships on every page of every door: 55 page blocks and 303 links, 110,651 bytes, 67% of the file at the ruling, 57 blocks, 995 links and 80% at the 260806 re-count. That is now a price this board pays knowingly for being able to jump anywhere from anywhere, and it is not a defect to be worked off. The Aim was rewritten to match the ruling; what it asks for is measurement and a decision, and it has both.
-
-### A3 · 🧠 The browser half
-- ✅ A3.1 · The one-document board always swapped; the split now does too, after a regression that made every click a full document load. 7 requests to 1.
-- ⬜ A3.2 · Not started. `curl` cannot see it and no headless trace has been taken.
 
 ## Files
 
@@ -273,3 +268,5 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 260802 · Moved from `QC5` to `QD8-pagecost` on JL's call ("move it"), then renumbered to `QD7-pagecost` the same day when the empty QD7 rejoin-bench stub was archived and this lane closed its gap. Both old ids resolve here through `## Links`. The QD8 position was a poor one anyway: it had already meant the activity dashboard, absorbed into `QC2` on 260726, so it was a collision waiting to be read the wrong way. It was opened in the engine lane because every lever it names is engine code, `serve.py`, `build.py`, `live/activity.py`, and that is the wrong test: a lane is chosen by where a cost is FELT, not by which file holds its fix. Waiting stops the work, and `QD` is where the work happens. The QD8 position had been a second alias into `QE2` from the 260731 split, which is one more reason it was the wrong home; `QDb2` still resolves that page, and `QC5-pagecost` and `QD8-pagecost` both resolve here
 260802 · Found and fixed the cause of the one-to-two-minute page JL had reported for days, recorded in 2.3. `POST /_board/activity` never returned, because `log_boards` still ran the unpruned `rglob` that `/boards` had been fixed for that morning. Each hung post held one of the browser's six connections per origin, so a few open tabs left a CLICK with nowhere to go, which is the "Provisional headers are shown" in JL's devtools and the "12 requests / 0 B transferred" beneath it. The diagnosis took as long as it did because every measurement said the server was fast, and it was: 20 to 70 ms to serve a page, on a 24 to 35 ms link. Nothing was measuring whether a socket was free to serve it on, which is why `checks/pending.mjs` now exists and asks exactly that
 260802 · Opened, after the same performance question was asked and answered three times inside `QD5` and did not belong there. `QD5` owns the pane layout; what a page costs to open is true of the one-document board as well, and every lever is in `QC`'s engine. Carries the measurements taken on 260802 from both sides of the wire, including JL's own laptop-side record, and the two readings that came from the wrong half: a `no-store` header read off a URL the browser never requests, and a click called fast because it measured 49 ms on the machine serving it
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

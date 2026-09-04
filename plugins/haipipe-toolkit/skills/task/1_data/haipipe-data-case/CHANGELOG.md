@@ -12,7 +12,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.3.0] — 2026-07-08
 
-- skill-diagnose fixes: CaseSet path now shows the optional `@i{i}n{n}` partition level (all real multi-partition stores have it); Recipe/config locations -> task-folder configs/; dead test block removed from templates/config.yaml; `scripts.haistep.case` -> `scripts.haistepcli.case`; CHANGELOG reordered newest-first.
+- skill-diagnose fixes: CaseSet path now shows the optional `@i{i}n{n}` partition level (all real multi-partition stores have it); Recipe/config locations -> job configs/; dead test block removed from templates/config.yaml; `scripts.haistep.case` -> `scripts.haistepcli.case`; CHANGELOG reordered newest-first.
 - (2026-07-08 earlier, unversioned at the time — recorded here) builder home repointed from code-dev/ to `03_case_fn_develop_<cohort>/`.
 
 ## [1.2.0] — 2026-07-04

@@ -13,18 +13,31 @@ from pathlib import Path
 from src.page_phase import owed_ledger, phase_state, render_ledger
 
 
-def _page(root, *, approved=False, cards=(), bib=(), displays=()):
-    """Write the smallest page that exercises each of the five ticks."""
+def _page(
+    root, *, approved=False, cards=(), bib=(), displays=(),
+    folder_kind=None, phase_folder_kind=None,
+):
+    """Write the smallest Page that exercises the variable owed ledger."""
     pd = Path(root) / "QT1-fixture"
     pd.mkdir(parents=True)
     (pd / "QT1-fixture.md").write_text(
-        "# Fixture\n\nstate: 🟡 PARTIAL · open: 1\n\n## Opening\n\nWhy.\n")
+        "# Fixture\n\n"
+        + (f"folder-kind: {folder_kind}\n\n" if folder_kind else "")
+        + "state: 🟡 PARTIAL · open: 1\n\n## Opening\n\nWhy.\n")
     (pd / "outline").mkdir()
     (pd / "outline" / "QT1-fixture-outline-v1.md").write_text(
         f"# plan\napproved: {'✅ JL 260821' if approved else '⬜'}\n"
         "checked: ✅ auto 260821 · approve-rules R1-R9 pass\n\n## C1 · A\n")
+    if phase_folder_kind:
+        phase = "D1" if phase_folder_kind == "design-card" else "D2"
+        (pd / "workflow").mkdir()
+        (pd / "workflow" / "phase.yaml").write_text(
+            f"current:\n  phase: {phase}\n"
+            f"  folder-kind: {phase_folder_kind}\nhistory: []\n",
+            encoding="utf-8",
+        )
     for name, state, read in cards:
-        c = pd / "probe" / name
+        c = pd / "evidence" / "probe" / name
         c.mkdir(parents=True)
         (c / "card.md").write_text(
             f"# {name}\nstate: {state}\nread: {'✅ JL 260821' if read else '⬜ not yet'}\n"
@@ -59,11 +72,41 @@ class OwedLedgerTest(unittest.TestCase):
         self.assertEqual({r["tick"] for r in owed_ledger(st)},
                          {"approved", "read", "verified", "accepted", "ruling"})
 
-    def test_ruling_is_counted_it_is_the_fifth_tick(self):
-        """It was missing from ticks_owed until 260821, so every ✋ was short by one."""
+    def test_legacy_page_conservatively_owes_a_ruling(self):
+        """A legacy Page keeps the conservative historical local RULING."""
         st = self.state(approved=True)
+        self.assertEqual(st["owner_ruling"], "legacy-default")
         self.assertEqual(st["ticks_owed"]["ruling"], 1)
         self.assertEqual([r["tick"] for r in owed_ledger(st)], ["ruling"])
+
+    def test_phase_owned_mechanical_page_owes_no_owner_ruling(self):
+        st = self.state(approved=True, folder_kind="data")
+        self.assertEqual(st["owner_ruling"], "none")
+        self.assertEqual(st["ticks_owed"]["ruling"], 0)
+        self.assertEqual(owed_ledger(st), [])
+
+    def test_phase_owned_wisdom_reuses_its_domain_gate(self):
+        st = self.state(approved=True, folder_kind="wisdom")
+        self.assertEqual(st["owner_ruling"], "domain-gate")
+        self.assertEqual(st["ticks_owed"]["ruling"], 1)
+        self.assertEqual([r["tick"] for r in owed_ledger(st)], ["ruling"])
+        self.assertIn("owner: domain-gate", owed_ledger(st)[0]["note"])
+
+    def test_in_place_phase_file_resolves_a_card_without_frontmatter(self):
+        st = self.state(approved=True, phase_folder_kind="design-card")
+        self.assertEqual(st["folder_kind"], "design-card")
+        self.assertEqual(st["folder_kind_source"], "workflow/phase.yaml")
+        self.assertEqual(st["owner_ruling"], "domain-gate")
+
+    def test_phase_file_and_markdown_kind_mismatch_is_never_guessed(self):
+        st = self.state(
+            approved=True,
+            folder_kind="design-card",
+            phase_folder_kind="design-unit",
+        )
+        self.assertEqual(st["owner_ruling"], "ambiguous")
+        self.assertIn("conflicts", st["owner_ruling_error"])
+        self.assertEqual(st["ticks_owed"]["ruling"], 1)
 
     def test_an_empty_verified_brace_is_owed_not_done(self):
         """cite-rules R7: `verified = {}` is the EXPLICIT unverified form."""

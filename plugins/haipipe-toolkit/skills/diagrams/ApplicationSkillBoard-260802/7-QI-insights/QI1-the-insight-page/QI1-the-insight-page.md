@@ -61,28 +61,25 @@ Publishes exact K/W rows, strength, boundary, allowed use, prohibited inference,
 ## Aims
 
 ### A1 · Contract
-- A1.1 · One Page answers one Application insight question.
+- ✅ A1.1 · One Page answers one Application insight question.
   **Done when:** every division supports the same downstream decision.
+  **Now:** Fixed by Insight Page Type 0.3.0.
+
 
 #### A2 · Handoff
-- A2.1 · A Design Page can consume the answer without reopening raw evidence.
+- ✅ A2.1 · A Design Page can consume the answer without reopening raw evidence.
   **Done when:** the handoff names exact rows, limits, and staleness.
+  **Now:** Division 8 is mandatory in the shipped contract.
+
 
 ### P · Specimen
-- P1 · One runtime Page exercises D→I→K→W and the handoff.
+- ⬜ P1 · One runtime Page exercises D→I→K→W and the handoff.
   **Done when:** a fresh agent creates or repairs one Page and stops at the correct
   human/validation gate.
+  **Now:** Fresh-context validation has not yet been written back.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Fixed by Insight Page Type 0.3.0.
-
-#### A2 · Handoff
-- ✅ A2.1 · Division 8 is mandatory in the shipped contract.
-
-### P · Specimen
-- ⬜ P1 · Fresh-context validation has not yet been written back.
+## Discussion
 
 ## Files
 
@@ -99,3 +96,5 @@ D/I/K are evidence-led. W may be Application-contextual. The Design Handoff may 
 ## Log
 
 260820 · Added the fixed eight-division Application Insight contract.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -23,7 +23,7 @@ TASK_NAME="01_stage1_extract_tables"     # the <task>.py at task root
 
 # ─── 1. Resolve identity from $0 ───────────────────────────────────────────
 RUN_NAME="$(basename "$0" .sh)"                            # e.g. extract_all
-TASK_DIR="$(cd "$(dirname "$0")/.." && pwd)"                # absolute task-folder path
+TASK_DIR="$(cd "$(dirname "$0")/.." && pwd)"                # absolute job path
 REPO_ROOT="$(git -C "$TASK_DIR" rev-parse --show-toplevel)"
 STARTED="$(date -Iseconds)"
 

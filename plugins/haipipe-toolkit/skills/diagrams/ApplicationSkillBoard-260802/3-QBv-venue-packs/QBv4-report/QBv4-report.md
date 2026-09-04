@@ -188,30 +188,6 @@ Both holes go to JL as Decision Now rows, and this page holds them open.
 
 ## Aims
 
-### A1 · 🚦 What the channel gates, and what it pays back
-- A1.1 · The full settlement bar is applied by the claims gate before report artifact work, rather than recalled by a human.
-  **Done when:** a report round shows the gate refusing a draft over an unsettled load-bearing GAP, or passing one with the judged answers named.
-
-### A2 · 🏛 The audience decides the arc, the citations, and the length
-- A2.1 · The audience is pinned beside the venue before narrative work, since it decides the arc, the citation form, and the cap.
-  **Done when:** a report intervention's STATUS.md records the audience with the venue pin, and its 3-narrative names the matching arc.
-
-### A3 · 🧱 Sections and displays: a DIKW spine, edited one section at a time
-- A3.1 · The spine is adjusted per intervention instead of copied, with the regulator case handled.
-  **Done when:** a regulator-audience report shows a limitations section in its declared sections, or records why the default spine stood.
-
-### A4 · ❌ What bounces a report
-- A4.1 · The self-review checklist runs as a check with verdicts, not as advice.
-  **Done when:** a report draft carries the checklist with each row's verdict, before its gate.
-
-### A5 · 🕳 What the pack lacks, and where it contradicts itself
-- A5.1 · `exemplars/` exists and the Draft mapping's "style from exemplars/" has something to read.
-  **Done when:** the folder holds at least one real report artifact and the README names it.
-- A5.2 · One length table binds.
-  **Done when:** `README.md` and `style-profile.md` state the same per-audience caps, or one names the other as authoritative.
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 Where do report exemplars come from, or does this venue get a pass on the schema's `exemplars/`?
@@ -231,21 +207,39 @@ Both holes go to JL as Decision Now rows, and this page holds them open.
       🛑 `Blocks` A5.2
       🤖 `If nobody answers` drafts follow the stricter table, since a draft under the caps satisfies both.
 
+
 ### A1 · 🚦 What the channel gates, and what it pays back
-- ⬜ A1.1 · Not started. The bar is prose in `_SCHEMA.md` and this page cites no run of the claims gate applying it.
+- ⬜ A1.1 · The full settlement bar is applied by the claims gate before report artifact work, rather than recalled by a human.
+  **Done when:** a report round shows the gate refusing a draft over an unsettled load-bearing GAP, or passing one with the judged answers named.
+  **Now:** Not started. The bar is prose in `_SCHEMA.md` and this page cites no run of the claims gate applying it.
+
 
 ### A2 · 🏛 The audience decides the arc, the citations, and the length
-- ⬜ A2.1 · Not started. The pairing block couples tone to audience, and no pin recording an audience is cited here.
+- ⬜ A2.1 · The audience is pinned beside the venue before narrative work, since it decides the arc, the citation form, and the cap.
+  **Done when:** a report intervention's STATUS.md records the audience with the venue pin, and its 3-narrative names the matching arc.
+  **Now:** Not started. The pairing block couples tone to audience, and no pin recording an audience is cited here.
+
 
 ### A3 · 🧱 Sections and displays: a DIKW spine, edited one section at a time
-- ⬜ A3.1 · Not started. The README says adjust per intervention, and no adjusted spine is cited here.
+- ⬜ A3.1 · The spine is adjusted per intervention instead of copied, with the regulator case handled.
+  **Done when:** a regulator-audience report shows a limitations section in its declared sections, or records why the default spine stood.
+  **Now:** Not started. The README says adjust per intervention, and no adjusted spine is cited here.
+
 
 ### A4 · ❌ What bounces a report
-- ⬜ A4.1 · Not started. The checklist is a fenced block in `style-profile.md` and nothing runs it as a check.
+- ⬜ A4.1 · The self-review checklist runs as a check with verdicts, not as advice.
+  **Done when:** a report draft carries the checklist with each row's verdict, before its gate.
+  **Now:** Not started. The checklist is a fenced block in `style-profile.md` and nothing runs it as a check.
+
 
 ### A5 · 🕳 What the pack lacks, and where it contradicts itself
-- 🧠 A5.1 · Waiting on the first Decision Now row: the source of exemplars is JL's call.
-- 🧠 A5.2 · Waiting on the second Decision Now row: which length table binds is JL's call.
+- 🧠 A5.1 · `exemplars/` exists and the Draft mapping's "style from exemplars/" has something to read.
+  **Done when:** the folder holds at least one real report artifact and the README names it.
+  **Now:** Waiting on the first Decision Now row: the source of exemplars is JL's call.
+- 🧠 A5.2 · One length table binds.
+  **Done when:** `README.md` and `style-profile.md` state the same per-audience caps, or one names the other as authoritative.
+  **Now:** Waiting on the second Decision Now row: which length table binds is JL's call.
+
 
 ## Files
 
@@ -265,3 +259,5 @@ Both holes go to JL as Decision Now rows, and this page holds them open.
 ## Log
 
 260802 · Opened from `application/venue/venue-report/` (two files on disk) read against `venue/_SCHEMA.md`, adapting the outlet-page shape of QBv1@paper with the journal desk swapped for the stakeholder reader; two holes recorded (no `exemplars/`, disagreeing length tables) and both put to JL as Decision Now rows.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

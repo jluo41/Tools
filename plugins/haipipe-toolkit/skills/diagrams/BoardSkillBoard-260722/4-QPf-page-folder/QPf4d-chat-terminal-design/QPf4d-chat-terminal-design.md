@@ -232,49 +232,6 @@ The URL closes only when the pane draws a document rather than a screen.
 
 ## Aims
 
-### A1 · 📐 Why the phone problems all arrive at once
-- A1.1 · The phone gets one ruled form, chosen against its own four limits rather than patched one symptom at a time.
-  **Done when:** JL has ticked one option on the 📐 Decision Now row, and that choice is written into Content 1 as the form this page hands a phone.
-
-### A2 · ⌨️ One press on a phone, two letters on screen
-- A2.1 · Typing on a phone stops riding xterm's hidden textarea.
-  **Done when:** the composer writes to the PTY directly, and one key press on a phone gives exactly one character, with no reconnect banner in sight.
-  **Plan:** run the cheap test first, since a double from the very first key press with no banner proves the composition path before anything is built.
-
-### A3 · 📏 Too narrow to read, even when the drawing is right
-- A3.1 · The page says what 80-column art does on a 46-column screen.
-  **Done when:** Content 3 carries the width below which the raw grid is dropped rather than shrunk, and names the view that takes its place.
-
-### A4 · 🚪 You come back, and the pane is dead
-- A4.1 · Coming back to the board rebuilds what leaving tore down.
-  **Done when:** a `pageshow` handler reattaches the parked terminal's socket, and settles a chat turn whose stream died while the page slept, without waiting out `QUIET_GIVEUP`.
-
-### A5 · 👆 If a finger cannot reach it, a phone cannot use it
-- A5.1 · Every gesture the board offers is reachable on a phone, or is written down as desktop-only on purpose.
-  **Done when:** the audit in Content 5 has one row per gesture, and no row reads "none" without a decision beside it.
-- A5.2 · An image can be put on the board from a phone.
-  **Done when:** a photo picked on a real phone lands in `fig/`, and its path reaches whichever view is showing.
-- A5.3 · A session can be picked while the terminal is showing.
-  **Done when:** the picker can be opened from the terminal view without adding a second chooser.
-
-### A6 · 🪟 Why the chat panel beside it reads so much better
-- A6.1 · The pane reads as ONE pane rather than three colour zones.
-  **Done when:** header, body and footer share a border, a rounded corner and a padding.
-- A6.2 · The pane's content fills the whole width of the pane.
-  **Done when:** the session rail no longer holds a full-height column for one chip, and the pane is not L-shaped.
-- A6.3 · A notice inside the pane is placed against the PANE, not against the window.
-  **Done when:** `#ctoast` and every other in-pane control are placed against their pane's box rather than the window.
-- A6.4 · The terminal pane is not plainly the worse of the two panes.
-  **Done when:** one identical answer is drawn in both panes and compared side by side, and JL does not call the terminal pane the worse one.
-
-### P · Page-level
-- P1 · The line between what this page owns and what `QD3` owns is settled.
-  **Done when:** the 🧭 Decision Now row is ticked, and the losing side is written into the Opening's `Covered elsewhere`.
-- P2 · JL finishes and resumes a turn on the device in hand without knowing which form he was given.
-  **Done when:** JL types a full turn on his own phone with no doubled character, no shredded frame and no chasing the keyboard, and switches away and back mid-turn without the chat panel freezing.
-
-## States
-
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
@@ -319,32 +276,67 @@ These are the calls only JL can make; CC ticks nothing here.
       🛑 `Blocks` P1, and the home of Content 6
       🤖 `If nobody answers` the page keeps behaving as A and the Opening stays as written
 
+
 ### A1 · 📐 Why the phone problems all arrive at once
-- 🧠 A1.1 · Waiting on JL. The model and the four limits are written, the options are costed, and nothing under them should be built until the 📐 row is ticked.
+- 🧠 A1.1 · The phone gets one ruled form, chosen against its own four limits rather than patched one symptom at a time.
+  **Done when:** JL has ticked one option on the 📐 Decision Now row, and that choice is written into Content 1 as the form this page hands a phone.
+  **Now:** Waiting on JL. The model and the four limits are written, the options are costed, and nothing under them should be built until the 📐 row is ticked.
+
 
 ### A2 · ⌨️ One press on a phone, two letters on screen
-- ⬜ A2.1 · Not started. The diagnosis rests on a code read: there is no mobile, touch or composition handling anywhere in the terminal client or in `live/term.py`. So the phone path was never in scope, rather than having been handled and broken. Not confirmed on a device, and the cheap test in Content 2 has not been run.
+- ⬜ A2.1 · Typing on a phone stops riding xterm's hidden textarea.
+  **Done when:** the composer writes to the PTY directly, and one key press on a phone gives exactly one character, with no reconnect banner in sight.
+  **Now:** Not started. The diagnosis rests on a code read: there is no mobile, touch or composition handling anywhere in the terminal client or in `live/term.py`. So the phone path was never in scope, rather than having been handled and broken. Not confirmed on a device, and the cheap test in Content 2 has not been run.
+
+  **Plan:** run the cheap test first, since a double from the very first key press with no banner proves the composition path before anything is built.
 
 ### A3 · 📏 Too narrow to read, even when the drawing is right
-- 🧠 A3.1 · Waiting on the 📐 ruling. The measurement is in: about 390 CSS pixels at 13px metrics is roughly 46 columns, which is below the width Claude's own frames are drawn for.
+- 🧠 A3.1 · The page says what 80-column art does on a 46-column screen.
+  **Done when:** Content 3 carries the width below which the raw grid is dropped rather than shrunk, and names the view that takes its place.
+  **Now:** Waiting on the 📐 ruling. The measurement is in: about 390 CSS pixels at 13px metrics is roughly 46 columns, which is below the width Claude's own frames are drawn for.
+
 
 ### A4 · 🚪 You come back, and the pane is dead
-- 🔨 A4.1 · Half built, on the chat side. `10-sessions.js` now calls `chatRejoin()` on `visibilitychange` and `focus`, attaching to a live turn through `/_board/attach` with a quiet giveup (`QUIET_GIVEUP = attach ? 6000 : 420000`) and falling back to a transcript sync. It refuses while `inflight` is set, so a send whose stream hung while the page slept still waits out the seven minutes. The terminal half is untouched: `pagehide` still parks in `30-terminal.js`, nothing reattaches the socket, and the one `pageshow` under `assets/js/` is `20-live-refresh.js`, which only snaps the refresh poll back to fast. Read from source; not yet confirmed on a device.
+- 🔨 A4.1 · Coming back to the board rebuilds what leaving tore down.
+  **Done when:** a `pageshow` handler reattaches the parked terminal's socket, and settles a chat turn whose stream died while the page slept, without waiting out `QUIET_GIVEUP`.
+  **Now:** Half built, on the chat side. `10-sessions.js` now calls `chatRejoin()` on `visibilitychange` and `focus`, attaching to a live turn through `/_board/attach` with a quiet giveup (`QUIET_GIVEUP = attach ? 6000 : 420000`) and falling back to a transcript sync. It refuses while `inflight` is set, so a send whose stream hung while the page slept still waits out the seven minutes. The terminal half is untouched: `pagehide` still parks in `30-terminal.js`, nothing reattaches the socket, and the one `pageshow` under `assets/js/` is `20-live-refresh.js`, which only snaps the refresh poll back to fast. Read from source; not yet confirmed on a device.
+
 
 ### A5 · 👆 If a finger cannot reach it, a phone cannot use it
-- 🔨 A5.1 · Images and the session picker are both checked and closed below. Warming the assets on hover is still open, with no touch answer and no desktop-only ruling.
-- ✅ A5.2 · Built 260801: `assets/js/10-drawer/35-imagepick.js` plus one button in the panel header. The server already worked on any device and was not touched. The button sits in the HEADER because that is the one strip `termView()` leaves alone, so it can be reached from the TUI. It routes by view, writing a bare repo-root-relative path into the PTY when the terminal is showing, and `![image](path)` into the composer when the chat is. It re-encodes through a canvas before posting, since `live/write.py` caps at 8MB and rejects the HEIC an iPhone shoots. It passes a small PNG through untouched, because re-encoding a screenshot to JPEG blurs the text it was taken to show. Checked in JL's own Chrome over CDP on both branches: a 4000x3000 JPEG went in at 188KB and landed in `fig/` at 12KB, the terminal branch put the path on the CLI prompt line, and the chat branch inserted the full repo-root-relative markdown. Test files were removed afterwards. Confirmation on a real phone is P2, not this row.
-- ✅ A5.3 · Nothing to build. The panel has THREE tabs, `🗂 Sessions · ✨ Quick actions · ⚙ Settings`, and the picker is `.spick` / `.spl` inside the 🗂 Sessions tab, not `.sid` inside ⚙ Settings. `.sid` is only a session-id readout. `termView()` hides `.sfocus .bd .acts .cfg .sid .ft .tip` and does NOT hide `.sessions` or `.spick`, so the picker can be reached while the terminal is showing. Checked in JL's own Chrome over CDP: the tab strip reads exactly those three labels, clicking 🗂 leaves `.utility` at `open show-sessions`, `.sessions` computes to `display:block`, and the list drew two session rows.
+- 🔨 A5.1 · Every gesture the board offers is reachable on a phone, or is written down as desktop-only on purpose.
+  **Done when:** the audit in Content 5 has one row per gesture, and no row reads "none" without a decision beside it.
+  **Now:** Images and the session picker are both checked and closed below. Warming the assets on hover is still open, with no touch answer and no desktop-only ruling.
+- ✅ A5.2 · An image can be put on the board from a phone.
+  **Done when:** a photo picked on a real phone lands in `fig/`, and its path reaches whichever view is showing.
+  **Now:** Built 260801: `assets/js/10-drawer/35-imagepick.js` plus one button in the panel header. The server already worked on any device and was not touched. The button sits in the HEADER because that is the one strip `termView()` leaves alone, so it can be reached from the TUI. It routes by view, writing a bare repo-root-relative path into the PTY when the terminal is showing, and `![image](path)` into the composer when the chat is. It re-encodes through a canvas before posting, since `live/write.py` caps at 8MB and rejects the HEIC an iPhone shoots. It passes a small PNG through untouched, because re-encoding a screenshot to JPEG blurs the text it was taken to show. Checked in JL's own Chrome over CDP on both branches: a 4000x3000 JPEG went in at 188KB and landed in `fig/` at 12KB, the terminal branch put the path on the CLI prompt line, and the chat branch inserted the full repo-root-relative markdown. Test files were removed afterwards. Confirmation on a real phone is P2, not this row.
+- ✅ A5.3 · A session can be picked while the terminal is showing.
+  **Done when:** the picker can be opened from the terminal view without adding a second chooser.
+  **Now:** Nothing to build. The panel has THREE tabs, `🗂 Sessions · ✨ Quick actions · ⚙ Settings`, and the picker is `.spick` / `.spl` inside the 🗂 Sessions tab, not `.sid` inside ⚙ Settings. `.sid` is only a session-id readout. `termView()` hides `.sfocus .bd .acts .cfg .sid .ft .tip` and does NOT hide `.sessions` or `.spick`, so the picker can be reached while the terminal is showing. Checked in JL's own Chrome over CDP: the tab strip reads exactly those three labels, clicking 🗂 leaves `.utility` at `open show-sessions`, `.sessions` computes to `display:block`, and the list drew two session rows.
+
 
 ### A6 · 🪟 Why the chat panel beside it reads so much better
-- 🧠 A6.1 · Not started, and it waits on the 🎨 row only for order of work: one pane is the right answer under options A and B alike.
-- 🧠 A6.2 · Not started. The page list is a full-height white column for one id chip and a ＋, so the pane is L-shaped. Same order of work as A6.1.
-- ⬜ A6.3 · Not started. `#ctoast` is `position:fixed` at `left:50%`, and every other in-pane control carries the same bug, waiting to show.
-- 🧠 A6.4 · Waiting on the 🎨 row. This is the acceptance test for A6.1 through A6.3, and it is JL's own standard from 260801: draw one identical answer in both panes and compare them side by side.
+- 🧠 A6.1 · The pane reads as ONE pane rather than three colour zones.
+  **Done when:** header, body and footer share a border, a rounded corner and a padding.
+  **Now:** Not started, and it waits on the 🎨 row only for order of work: one pane is the right answer under options A and B alike.
+- 🧠 A6.2 · The pane's content fills the whole width of the pane.
+  **Done when:** the session rail no longer holds a full-height column for one chip, and the pane is not L-shaped.
+  **Now:** Not started. The page list is a full-height white column for one id chip and a ＋, so the pane is L-shaped. Same order of work as A6.1.
+- ⬜ A6.3 · A notice inside the pane is placed against the PANE, not against the window.
+  **Done when:** `#ctoast` and every other in-pane control are placed against their pane's box rather than the window.
+  **Now:** Not started. `#ctoast` is `position:fixed` at `left:50%`, and every other in-pane control carries the same bug, waiting to show.
+- 🧠 A6.4 · The terminal pane is not plainly the worse of the two panes.
+  **Done when:** one identical answer is drawn in both panes and compared side by side, and JL does not call the terminal pane the worse one.
+  **Now:** Waiting on the 🎨 row. This is the acceptance test for A6.1 through A6.3, and it is JL's own standard from 260801: draw one identical answer in both panes and compare them side by side.
+
 
 ### P · Page-level
-- 🧠 P1 · Waiting on the 🧭 row. Content 6 is desktop material on a phone-led page, so the page is already acting as if the answer is A.
-- 🧠 P2 · Waiting on JL and on a real phone. CC cannot close this row: there is no phone here, and every earlier round of the doubling bug was called fixed on a desktop and was not.
+- 🧠 P1 · The line between what this page owns and what `QD3` owns is settled.
+  **Done when:** the 🧭 Decision Now row is ticked, and the losing side is written into the Opening's `Covered elsewhere`.
+  **Now:** Waiting on the 🧭 row. Content 6 is desktop material on a phone-led page, so the page is already acting as if the answer is A.
+- 🧠 P2 · JL finishes and resumes a turn on the device in hand without knowing which form he was given.
+  **Done when:** JL types a full turn on his own phone with no doubled character, no shredded frame and no chasing the keyboard, and switches away and back mid-turn without the chat panel freezing.
+  **Now:** Waiting on JL and on a real phone. CC cannot close this row: there is no phone here, and every earlier round of the doubling bug was called fixed on a desktop and was not.
+
 
 ## Files
 
@@ -389,3 +381,5 @@ These are the calls only JL can make; CC ticks nothing here.
 260801 · JL, on a phone: "I type one letter and two come out." `QD3` records this symptom twice already, both times traced to `connectWS()` binding a fresh `termT.onData(...)` on every reconnect without dropping the old one, and that fix is present and correct today. So a phone reporting it is a THIRD cause: the hidden textarea has two live paths on a device with an IME. Supporting it, there is no mobile, touch or composition handling anywhere in the terminal client or in `live/term.py`
 260801 · CC recorded that the narrow width is the shredded screen one device further on: `QD3`'s width nudge on attach was right for a desktop, where the true width still fits the art, and a phone at roughly 46 columns does not clear that bar, so a correct repaint is still an unreadable one
 260801 · Opened from JL after the terminal proved hard to use on a phone: `QD3` owns the engine and has no design half, so the form question gets its own page. Carries the third-cause diagnosis for the doubled keystroke, the width argument that a correct repaint is still unreadable at ~46 columns, the exit-handler-without-entry-handler diagnosis for the freeze on returning, and the phone-form ruling for JL
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

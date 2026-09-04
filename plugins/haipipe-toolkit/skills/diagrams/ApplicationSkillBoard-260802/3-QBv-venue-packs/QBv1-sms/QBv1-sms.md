@@ -184,31 +184,6 @@ The `_SCHEMA.md` implies a gate should apply these checks; the mechanism is abse
 
 ## Aims
 
-### A1 · Channel gates: what SMS enforces before any claim is asked
-- A1.1 · The length, language, link, and opt-out constraints are checked before any artifact is released.
-  **Done when:** a draft artifact passes through a gate that verifies the 160-character limit, the presence of one specific CTA, and the presence of an opt-out mechanism.
-
-### A2 · The 4-slot template: how the 160 characters are divided
-- A2.1 · The benefit slot's claim is traced to a K/W entry or flagged as common knowledge before draft.
-  **Done when:** every benefit-slot sentence in a released artifact names its claim source.
-- A2.2 · The audience axis (patient vs clinician) is declared in the artifact frontmatter and controls tone.
-  **Done when:** every released artifact carries `audience: patient | clinician` in its frontmatter and the body matches the audience profile.
-
-### A3 · Claims settlement: what "light" means for this channel
-- A3.1 · The boundary between "common knowledge" and a K/W-required claim is settled for healthcare SMS.
-  **Done when:** JL rules on what counts as common knowledge in this context and the ruling is recorded in Law.
-
-### A4 · What desk-rejects an SMS
-- A4.1 · The self-review checklist and artifact frontmatter schema are read by a stage gate, not left as prose.
-  **Done when:** at least one stage gate programmatically checks the checklist items and the frontmatter fields named in `style-profile.md`.
-
-### P · Page-level
-- P1 · Every GAP item named in Content has either a ruling in Law or an open Decision Now row.
-  **Done when:** the three GAP items (personalization fallback, common-knowledge boundary, checklist enforcement) are each addressed by a Law ruling or a Decision Now row.
-
-
-## States
-
 ### Decision Now
 
 - [ ] 🗣 What is "common knowledge" in a healthcare SMS context?
@@ -229,21 +204,40 @@ The `_SCHEMA.md` implies a gate should apply these checks; the mechanism is abse
       🛑 `Blocks` A2.2 and P1.
       🤖 `If nobody answers` B takes effect: treat missing variables as blocking errors.
 
+
 ### A1 · Channel gates: what SMS enforces before any claim is asked
-- ⬜ A1.1 · Not started. No stage gate currently checks the 160-character limit or the opt-out field programmatically.
+- ⬜ A1.1 · The length, language, link, and opt-out constraints are checked before any artifact is released.
+  **Done when:** a draft artifact passes through a gate that verifies the 160-character limit, the presence of one specific CTA, and the presence of an opt-out mechanism.
+  **Now:** Not started. No stage gate currently checks the 160-character limit or the opt-out field programmatically.
+
 
 ### A2 · The 4-slot template: how the 160 characters are divided
-- ⬜ A2.1 · Not started. Claim sources are specified in the template but nothing enforces traceability at draft time.
-- ⬜ A2.2 · Not started. The audience field is declared in the frontmatter schema but no gate validates it.
+- ⬜ A2.1 · The benefit slot's claim is traced to a K/W entry or flagged as common knowledge before draft.
+  **Done when:** every benefit-slot sentence in a released artifact names its claim source.
+  **Now:** Not started. Claim sources are specified in the template but nothing enforces traceability at draft time.
+- ⬜ A2.2 · The audience axis (patient vs clinician) is declared in the artifact frontmatter and controls tone.
+  **Done when:** every released artifact carries `audience: patient | clinician` in its frontmatter and the body matches the audience profile.
+  **Now:** Not started. The audience field is declared in the frontmatter schema but no gate validates it.
+
 
 ### A3 · Claims settlement: what "light" means for this channel
-- 🧠 A3.1 · Waiting on JL to rule what counts as common knowledge for healthcare SMS (Decision Now above).
+- 🧠 A3.1 · The boundary between "common knowledge" and a K/W-required claim is settled for healthcare SMS.
+  **Done when:** JL rules on what counts as common knowledge in this context and the ruling is recorded in Law.
+  **Now:** Waiting on JL to rule what counts as common knowledge for healthcare SMS (Decision Now above).
+
 
 ### A4 · What desk-rejects an SMS
-- ⬜ A4.1 · Not started. The checklist and frontmatter schema live in `style-profile.md` as prose; nothing reads them at gate time.
+- ⬜ A4.1 · The self-review checklist and artifact frontmatter schema are read by a stage gate, not left as prose.
+  **Done when:** at least one stage gate programmatically checks the checklist items and the frontmatter fields named in `style-profile.md`.
+  **Now:** Not started. The checklist and frontmatter schema live in `style-profile.md` as prose; nothing reads them at gate time.
+
 
 ### P · Page-level
-- 🧠 P1 · Waiting on the two Decision Now rulings above before the three GAP items can be closed.
+- 🧠 P1 · Every GAP item named in Content has either a ruling in Law or an open Decision Now row.
+  **Done when:** the three GAP items (personalization fallback, common-knowledge boundary, checklist enforcement) are each addressed by a Law ruling or a Decision Now row.
+  **Now:** Waiting on the two Decision Now rulings above before the three GAP items can be closed.
+
+
 
 
 ## Files
@@ -264,3 +258,5 @@ The `_SCHEMA.md` implies a gate should apply these checks; the mechanism is abse
 ## Log
 
 260802 · Opened. Three GAP items identified from _SCHEMA.md cross-check: personalization fallback rule, common-knowledge boundary, checklist enforcement mechanism. Two Decision Now rows written. All Aims ⬜ or 🧠 pending those rulings.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

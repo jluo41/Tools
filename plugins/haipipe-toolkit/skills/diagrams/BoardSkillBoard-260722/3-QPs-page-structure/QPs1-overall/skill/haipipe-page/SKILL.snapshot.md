@@ -103,9 +103,9 @@ page-types/                                     stage of a paper or application
                                                 on a SELECTION record
 
 paper/           haipipe-page-for-venue         QBv<n> · one place a paper goes
-page-types/      haipipe-page-for-narrative     the claims, their order, and the
+page-types/      haipipe-paper-narrative     the claims, their order, and the
   the kinds                                     section-by-section outline
-  only a paper   haipipe-page-for-section       one reader-ordered unit, bound to
+  only a paper   haipipe-paper-section       one reader-ordered unit, bound to
   has                                           its venue allocation · INCLUDES
                                                 appendix units, lettered
                  haipipe-page-for-display       a unit a person must ACCEPT:

@@ -213,34 +213,6 @@ This page records the hole rather than writing compliance doctrine into a venue 
 
 ## Aims
 
-### A1 · 🚦 What the channel gates: four stages on, one off
-- A1.1 · The stage row is applied by the pin, not recalled by a person.
-  **Done when:** an intervention pinned to email shows the README's stages block translated into its STATUS.md `stages_skipped` row, unedited by hand.
-
-### A2 · ⚖️ The settlement bar: medium, and what it asks of the ledger
-- A2.1 · The medium bar is what the claims check actually applies before email artifact work.
-  **Done when:** an email intervention's claims gate shows each primary claim supported or weak-with-caveat and each load-bearing GAP with its campaign row in `1-probes/`.
-
-### A3 · 📐 The shape: a letter arc behind a 60-character subject line
-- A3.1 · Every recorded number is checked on the draft, not remembered at review.
-  **Done when:** an email draft records its measured subject length, word count, and section count against the README's constraint rows.
-
-### A4 · 🗣 The voice: one finding, two audiences
-- A4.1 · The audience is pinned before drafting, since it flips greeting, evidence depth, citation form, and sign-off.
-  **Done when:** an email draft names its audience and the voice example it imitates.
-
-### A5 · 🕳 What fails the desk, and what the pack cannot answer
-- A5.1 · The word-budget contradiction is ruled, and the pack's two records agree with the ruling.
-  **Done when:** the first Decision Now row is closed and README.md and style-profile.md are consistent under the chosen option.
-- A5.2 · The per-audience rows exist: a citation format and a word budget stated per audience instead of read off the examples.
-  **Done when:** the pack states the citation form and the budget for the patient and the clinician audiences in a constraints or style row.
-- A5.3 · The exemplars promise is settled: filled, waived on this page, or amended in the schema.
-  **Done when:** the second Decision Now row is closed and either exemplar files exist under `venue-email/exemplars/`, `_SCHEMA.md` is amended, or the leave-it ruling is recorded here.
-- A5.4 · Deliverability and compliance have a recorded owner.
-  **Done when:** the pack records send rules (opt-out, sender identity, subject-line content), or a dated line on this page names what owns them outside the pack.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Which binds a short email: the 200-word floor, or the pack's own 80-word voice examples?
       📍 `§5.1`, raised there; the constraint itself sits in §3.
@@ -260,23 +232,45 @@ This page records the hole rather than writing compliance doctrine into a venue 
       🛑 `Blocks` nothing; draft runs off style-profile.md today.
       🤖 `If nobody answers` C.
 
+
 ### A1 · 🚦 What the channel gates: four stages on, one off
-- ⬜ A1.1 · Not started; the stage row is recorded in the README and on this page, and no pinned intervention has been checked against it from here.
+- ⬜ A1.1 · The stage row is applied by the pin, not recalled by a person.
+  **Done when:** an intervention pinned to email shows the README's stages block translated into its STATUS.md `stages_skipped` row, unedited by hand.
+  **Now:** Not started; the stage row is recorded in the README and on this page, and no pinned intervention has been checked against it from here.
+
 
 ### A2 · ⚖️ The settlement bar: medium, and what it asks of the ledger
-- ⬜ A2.1 · Not started; the bar is quoted from `_SCHEMA.md` and no email claims gate has been read against it from this page.
+- ⬜ A2.1 · The medium bar is what the claims check actually applies before email artifact work.
+  **Done when:** an email intervention's claims gate shows each primary claim supported or weak-with-caveat and each load-bearing GAP with its campaign row in `1-probes/`.
+  **Now:** Not started; the bar is quoted from `_SCHEMA.md` and no email claims gate has been read against it from this page.
+
 
 ### A3 · 📐 The shape: a letter arc behind a 60-character subject line
-- ⬜ A3.1 · Not started; no email draft exists to measure.
+- ⬜ A3.1 · Every recorded number is checked on the draft, not remembered at review.
+  **Done when:** an email draft records its measured subject length, word count, and section count against the README's constraint rows.
+  **Now:** Not started; no email draft exists to measure.
+
 
 ### A4 · 🗣 The voice: one finding, two audiences
-- ⬜ A4.1 · Not started; the two voice examples are the pack's only audience record.
+- ⬜ A4.1 · The audience is pinned before drafting, since it flips greeting, evidence depth, citation form, and sign-off.
+  **Done when:** an email draft names its audience and the voice example it imitates.
+  **Now:** Not started; the two voice examples are the pack's only audience record.
+
 
 ### A5 · 🕳 What fails the desk, and what the pack cannot answer
-- 🧠 A5.1 · Waiting on JL; the first Decision Now row carries the options.
-- ⬜ A5.2 · Not started; the only citation form on record is the clinician example's "(C3)".
-- 🧠 A5.3 · Waiting on JL; the second Decision Now row carries the options.
-- ⬜ A5.4 · Not started; no file in the pack mentions opt-out, sender identity, send time, or subject-line content limits.
+- 🧠 A5.1 · The word-budget contradiction is ruled, and the pack's two records agree with the ruling.
+  **Done when:** the first Decision Now row is closed and README.md and style-profile.md are consistent under the chosen option.
+  **Now:** Waiting on JL; the first Decision Now row carries the options.
+- ⬜ A5.2 · The per-audience rows exist: a citation format and a word budget stated per audience instead of read off the examples.
+  **Done when:** the pack states the citation form and the budget for the patient and the clinician audiences in a constraints or style row.
+  **Now:** Not started; the only citation form on record is the clinician example's "(C3)".
+- 🧠 A5.3 · The exemplars promise is settled: filled, waived on this page, or amended in the schema.
+  **Done when:** the second Decision Now row is closed and either exemplar files exist under `venue-email/exemplars/`, `_SCHEMA.md` is amended, or the leave-it ruling is recorded here.
+  **Now:** Waiting on JL; the second Decision Now row carries the options.
+- ⬜ A5.4 · Deliverability and compliance have a recorded owner.
+  **Done when:** the pack records send rules (opt-out, sender identity, subject-line content), or a dated line on this page names what owns them outside the pack.
+  **Now:** Not started; no file in the pack mentions opt-out, sender identity, send time, or subject-line content limits.
+
 
 ## Files
 
@@ -298,3 +292,5 @@ This page records the hole rather than writing compliance doctrine into a venue 
 ## Log
 
 260802 · Opened from `venue-email/` (README.md and style-profile.md, the pack's only two files on disk) audited against `_SCHEMA.md`, with the page shape adapted from QBv1@paper; five gaps recorded in §5 and two decisions raised in States.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

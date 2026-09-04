@@ -1,0 +1,4 @@
+interface:
+  display_name: "HAIPipe Run"
+  short_description: "Define and audit one addressable Level-4 Run"
+  default_prompt: "Use $haipipe-run to design or audit an addressable Run and its paired Result."

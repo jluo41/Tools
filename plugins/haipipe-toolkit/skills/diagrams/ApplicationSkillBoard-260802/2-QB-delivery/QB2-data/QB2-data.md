@@ -136,24 +136,6 @@ Whether its cell path counts as a resolving pointer, or whether every pre-fill m
 
 ## Aims
 
-### A1 · 📄 What the rung delivers
-- A1.1 · A cold reader can name the artifact's five sections and say what a D id is from §1 alone.
-  **Done when:** a zero-background read of §1 lists Dataset, Coverage, Descriptions, Q-consumer, and Refresh Log, and restates the D3 citation chain without opening the rung skill.
-
-### A2 · ⚓ The admissibility rule
-- A2.1 · The rule is stated as one testable line with its two exclusions.
-  **Done when:** §2 gives statistic, resolving pointer, and as-of date as the three parts, and names inline computation and raw rows as the two things an entry may never contain.
-- A2.2 · The probe lane is named as the only landing path for a new number.
-  **Done when:** §2 names the values: lane as the door, and no sentence on this page suggests a second one until A3.2's ruling adds or refuses it.
-
-### A3 · 🔁 Staleness and the upstream store
-- A3.1 · The refresh chain is traced end to end with each owner named.
-  **Done when:** §3 runs from `--refresh <Dnn>` through the [STALE D<n> refreshed <date>] stamps to the citing rung's failing CHECK, and says who clears what.
-- A3.2 · The DIKW-Prepare pre-fill lane has a ruling.
-  **Done when:** JL answers the Decision Now row, the ruling lands in a Law entry with the rejected option and its reason, and §3.2 states whether a typed D cell counts as anchored as-is.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 May a typed D cell from the DIKW-Prepare store pre-fill a Description entry as-is?
       📍 `§3.2` the paragraph that names the store and stops short of ruling
@@ -163,16 +145,30 @@ Whether its cell path counts as a resolving pointer, or whether every pre-fill m
       🛑 `Blocks` §3.2 stating the admissibility of pre-filled entries; until then this page treats probe-landed entries as the only anchored kind.
       🤖 `If nobody answers` B's behavior stands: entries keep landing through probes only, because a default should not widen admissibility without a ruling.
 
+
 ### A1 · 📄 What the rung delivers
-- 🔨 A1.1 · Written into §1 from the rung skill's artifact table and round loop; no zero-background read has been run yet.
+- 🔨 A1.1 · A cold reader can name the artifact's five sections and say what a D id is from §1 alone.
+  **Done when:** a zero-background read of §1 lists Dataset, Coverage, Descriptions, Q-consumer, and Refresh Log, and restates the D3 citation chain without opening the rung skill.
+  **Now:** Written into §1 from the rung skill's artifact table and round loop; no zero-background read has been run yet.
+
 
 ### A2 · ⚓ The admissibility rule
-- 🔨 A2.1 · Written into §2.1 and §2.2 from the skill's done-criteria; nothing yet checks a live intervention's entries against it from this page.
-- 🔨 A2.2 · Written into §2.2; the sentence stands, and A3.2's ruling may add a second lane or refuse one.
+- 🔨 A2.1 · The rule is stated as one testable line with its two exclusions.
+  **Done when:** §2 gives statistic, resolving pointer, and as-of date as the three parts, and names inline computation and raw rows as the two things an entry may never contain.
+  **Now:** Written into §2.1 and §2.2 from the skill's done-criteria; nothing yet checks a live intervention's entries against it from this page.
+- 🔨 A2.2 · The probe lane is named as the only landing path for a new number.
+  **Done when:** §2 names the values: lane as the door, and no sentence on this page suggests a second one until A3.2's ruling adds or refuses it.
+  **Now:** Written into §2.2; the sentence stands, and A3.2's ruling may add a second lane or refuse one.
+
 
 ### A3 · 🔁 Staleness and the upstream store
-- 🔨 A3.1 · Written into §3.1 from the skill's refresh contract; no live refresh pass has been traced against it.
-- 🧠 A3.2 · Waiting on JL: the Decision Now row above is unanswered, so §3.2 names the store and stops short of ruling.
+- 🔨 A3.1 · The refresh chain is traced end to end with each owner named.
+  **Done when:** §3 runs from `--refresh <Dnn>` through the [STALE D<n> refreshed <date>] stamps to the citing rung's failing CHECK, and says who clears what.
+  **Now:** Written into §3.1 from the skill's refresh contract; no live refresh pass has been traced against it.
+- 🧠 A3.2 · The DIKW-Prepare pre-fill lane has a ruling.
+  **Done when:** JL answers the Decision Now row, the ruling lands in a Law entry with the rejected option and its reason, and §3.2 states whether a typed D cell counts as anchored as-is.
+  **Now:** Waiting on JL: the Decision Now row above is unanswered, so §3.2 names the store and stops short of ruling.
+
 
 ## Files
 
@@ -197,3 +193,5 @@ Whether its cell path counts as a resolving pointer, or whether every pre-fill m
 ## Log
 
 260802 · Page created against the rung skill, the family README, and QB2@paper; the DIKW-Prepare pre-fill question went to States › Decision Now instead of being ruled here.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

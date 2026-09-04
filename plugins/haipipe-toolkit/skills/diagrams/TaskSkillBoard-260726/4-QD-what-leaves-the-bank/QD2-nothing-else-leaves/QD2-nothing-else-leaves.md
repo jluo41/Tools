@@ -87,14 +87,14 @@ bindings when it verifies that each entry points at a real QA file. An entry poi
 - [ ] 📏 Rule what happens when no digest exists and one is needed
       Today the honest answer is "ask, and wait for a run". Whether a consumer may cite a result while its digest is pending, with the pointer recorded, is the case that decides if this rule is livable.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Stated once, in `SKILL.md`, in a single sentence: a task ends at Report, produces `results/`, and
 the readable answer is the digest a consumer reads instead.
-
 Nothing enforces it, this layer structurally cannot, and the reason behind it is written nowhere.
 Of the four items above, only the third and fourth are about the rule itself; the first two are
 about making it survivable.
-
 - 260726 CC · 🔒 Separated the rule from its enforcement
       The rule belongs here and the checker does not: it has to live on the consumer's side, because this layer cannot see who is reading. Written down so nobody spends effort building a detector on the side that structurally cannot detect it.
 
@@ -108,3 +108,5 @@ about making it survivable.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

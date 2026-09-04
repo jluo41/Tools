@@ -28,6 +28,14 @@ It succeeds when a second reader can use the promised tier through a protected, 
 
 
 ## Aims
+### Decision Now
+- [ ] 🪜 Name the tier the shared URL runs at
+      Tier A is board editing only, with `/_term/` and `/_board/chat` answering 501, and it is the posture the shipped container already runs; tier B adds the shell and the chat, which run on the host and which Docker does not contain.
+      The container reading above argues for tier A; a tick here also closes the 🪜 row in Aims.
+- [ ] ✍️ Decide how comments attribute to people
+      Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Aims.
+
+
 ### Rulings awaiting JL
 - [ ] Sort out "who needs to see it, and which half"
       A read-only glance (②) or commenting and working together (③).
@@ -95,9 +103,44 @@ It succeeds when a second reader can use the promised tier through a protected, 
 - [ ] A second person has actually opened it once
       That is the acceptance line: not "theoretically possible": someone really opened it from another machine and left a comment.
 
-## States
-**One route only: local, tunneled out by Remote-SSH.**
+## Files
+- `cli/serve.py`
+  Bind address, port, write endpoints, and (future) auth all live here.
+- `live/chat.py`
+  `chat_scope()` is where the client-chosen privilege tier would be pinned server-side.
+- `cli/build.py`
+  Writes the `board/` tree and asserts the strip-every-script invariant the static route depends on.
+- `board/` (generated, per board folder)
+  The static-export deliverable itself, `index.html` plus one file per group and per page plus shared
+  `_assets/`; `fig/` and `## Links` relative paths must be verified together.
 
+## Discussion
+> JL: How do you think I can host on <tailscale-ip> with the domain of paper.jjluo.com/paperxxx/ should I can share it with ours with a password. How do you think?
+>> CC0727: measured the three things the question turns on before answering. The named IP is a
+>> tailnet address, so it cannot be the target of a public name; the static half of a real board
+>> was verified portable in the body and dead in its outward links; and the repo holds PHI and
+>> secrets, so the served root matters more than the password. Recommended a narrow publish
+>> directory behind a Cloudflare tunnel, read-only first, with commenting added later through a
+>> default-deny proxy rather than by exposing `serve.py`. The ruling is JL's and is still open.
+> JL: I want it can be modified as the real ones, I mean they should just as the local host.
+>> CC0727: read-only is rejected, so route ③ is the target and the static-snapshot plan is dropped.
+>> Measured what route ③ actually costs and found three preconditions, all now items above: a plain
+>> `GET /env.sh` returns the secrets file, `/_board/chat` lets the CLIENT ask for
+>> `bypassPermissions`, and the ttyd shell tunnels fine over WebSockets rather than failing closed.
+>> The gate belongs in `serve.py`, which has four entry points and no auth flag today. What is
+>> still JL's to name is the TIER: board editing live with the shell off, or the shell included.
+> JL: could we keep things in a docker, and it will mount onf the board folder only, and will only change the things within that board folder, how do you think? we have platforms/HAIChat-SPACE/haichat-board
+>> CC0727: better than gating `serve.py`, because it exposes the program that has no shell. Read the
+>> shipped service: the container, the mount and the narrow writes already exist, and the empty
+>> `INLAB_BOARD_LIVE` already makes tier A the default by 501-ing chat and terminal. So the plan
+>> shrinks to three things: teach discovery to see boards outside `diagram/` (it cannot see the
+>> paper board today), mount a skeleton rather than one folder so the 260724 `## Files` widening
+>> survives, and add the auth that neither program has. Mount shape and discovery are `QE2`'s;
+>> auth and the tunnel stay here.
+
+
+### From the retired States section (merged 260831)
+**One route only: local, tunneled out by Remote-SSH.**
 - How it opens today
   `serve.py --root <repo root> --port 5599`, bound to `127.0.0.1` only; VS Code Remote-SSH forwards 5599 to the laptop; Simple Browser opens it.
 - Why it binds local-only
@@ -197,48 +240,6 @@ It succeeds when a second reader can use the promised tier through a protected, 
   and archives files, so one shared password in front of it is one shared password in front of
   remote code execution.
 
-### Decision Now
-- [ ] 🪜 Name the tier the shared URL runs at
-      Tier A is board editing only, with `/_term/` and `/_board/chat` answering 501, and it is the posture the shipped container already runs; tier B adds the shell and the chat, which run on the host and which Docker does not contain.
-      The container reading above argues for tier A; a tick here also closes the 🪜 row in Aims.
-- [ ] ✍️ Decide how comments attribute to people
-      Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Aims.
-
-## Files
-- `cli/serve.py`
-  Bind address, port, write endpoints, and (future) auth all live here.
-- `live/chat.py`
-  `chat_scope()` is where the client-chosen privilege tier would be pinned server-side.
-- `cli/build.py`
-  Writes the `board/` tree and asserts the strip-every-script invariant the static route depends on.
-- `board/` (generated, per board folder)
-  The static-export deliverable itself, `index.html` plus one file per group and per page plus shared
-  `_assets/`; `fig/` and `## Links` relative paths must be verified together.
-
-## Discussion
-> JL: How do you think I can host on <tailscale-ip> with the domain of paper.jjluo.com/paperxxx/ should I can share it with ours with a password. How do you think?
->> CC0727: measured the three things the question turns on before answering. The named IP is a
->> tailnet address, so it cannot be the target of a public name; the static half of a real board
->> was verified portable in the body and dead in its outward links; and the repo holds PHI and
->> secrets, so the served root matters more than the password. Recommended a narrow publish
->> directory behind a Cloudflare tunnel, read-only first, with commenting added later through a
->> default-deny proxy rather than by exposing `serve.py`. The ruling is JL's and is still open.
-> JL: I want it can be modified as the real ones, I mean they should just as the local host.
->> CC0727: read-only is rejected, so route ③ is the target and the static-snapshot plan is dropped.
->> Measured what route ③ actually costs and found three preconditions, all now items above: a plain
->> `GET /env.sh` returns the secrets file, `/_board/chat` lets the CLIENT ask for
->> `bypassPermissions`, and the ttyd shell tunnels fine over WebSockets rather than failing closed.
->> The gate belongs in `serve.py`, which has four entry points and no auth flag today. What is
->> still JL's to name is the TIER: board editing live with the shell off, or the shell included.
-> JL: could we keep things in a docker, and it will mount onf the board folder only, and will only change the things within that board folder, how do you think? we have platforms/HAIChat-SPACE/haichat-board
->> CC0727: better than gating `serve.py`, because it exposes the program that has no shell. Read the
->> shipped service: the container, the mount and the narrow writes already exist, and the empty
->> `INLAB_BOARD_LIVE` already makes tier A the default by 501-ing chat and terminal. So the plan
->> shrinks to three things: teach discovery to see boards outside `diagram/` (it cannot see the
->> paper board today), mount a skeleton rather than one folder so the 260724 `## Files` widening
->> survives, and add the auth that neither program has. Mount shape and discovery are `QE2`'s;
->> auth and the tunnel stay here.
-
 ## Log
 - 260806 2203 · [REVISE-CC] swept to the 260806 architecture; the retired single-file `board.html` replaced by the generated `board/` tree everywhere it was presented as live (Diagram, read-only Aim, the 260727 route ② measurement, Files), the state line corrected to record JL's 260727 route ③ ruling, `serve.py` remeasured at six flags with the terminal now its own PTY in `live/term.py` rather than ttyd, the `/b/<slug>` short route recorded as shipped on `QE2`, and the two Decision Now pointers moved off the retired `Items to Finish` name
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
@@ -262,3 +263,5 @@ It succeeds when a second reader can use the promised tier through a protected, 
 260724 1324 · Noted: route ③'s vehicle now exists (`boards_api.py` in haichat-inlab, see QE2/QE3); exposure, auth, and attribution stay exactly as open as before
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Opened: the new QE group "putting the board out". The board has always claimed to be for a second reader, yet it lives only on 127.0.0.1
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

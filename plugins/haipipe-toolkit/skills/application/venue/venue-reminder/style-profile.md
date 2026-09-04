@@ -34,5 +34,5 @@ v3: You're doing great with your routine. One more
 [ ] Each ≤ 200 chars
 [ ] Motivation varies across variants
 [ ] Tone is supportive, not nagging
-[ ] adopted_A / declined_A in frontmatter
+[ ] Card id, grant, and exact render version resolve in the Design Folder
 ```

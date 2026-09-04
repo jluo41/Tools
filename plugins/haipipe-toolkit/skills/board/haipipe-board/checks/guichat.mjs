@@ -27,9 +27,7 @@ const BASE = process.env.CHECK_BASE
    chat it checks, and a scratch bench gets archived by whoever tidies next
    (which is what happened to QD7 on 260802). Override with CHECK_PAGE. */
 const PAGE = process.env.CHECK_PAGE || 'QD/QD2-chat-sdk.html';
-/* `?split` is the door to the three panes. A plain board url is the ORIGINAL
-   single-document page, which is a different surface with its own chat button;
-   both work, and this suite is about the split one. */
+/* `?split` explicitly requests the three-pane Board shell used by this suite. */
 const URL = `${BASE}/${PAGE}?split`;
 
 const tab = await (await fetch(`http://${CDP}/json/new`, { method: 'PUT' })).json();
@@ -113,9 +111,9 @@ for (const [btn, want] of [['mgui', 'gui'], ['mtui', 'tui']]) {
   await ev(`localStorage.clear();
     localStorage.setItem('board-split-mode', ${JSON.stringify(want === 'gui' ? 'tui' : 'gui')});
     localStorage.setItem('board-split-chat','0');`);
-  /* Re-NAVIGATE, never reload. Being in the split is remembered in
-     localStorage, so clearing it and reloading lands on the plain
-     single-document page and there is no header to click. */
+  /* TODO(legacy-plain): `?plain` is retired. This reset now only clears
+     first-visit shell preferences; delete this historical marker when the
+     remaining legacy scope-chat test has been replaced. */
   await send('Page.navigate', { url: URL }); await sleep(6500);
   await ev(`document.getElementById('${btn}').click()`); await sleep(6500);
   const s = JSON.parse(await ev(`(function(){
@@ -409,38 +407,6 @@ const stopSays = await ev(`[].map.call(${D}.querySelectorAll('#chat .bd .sys'), 
 ok('stopping says one honest thing about stopping',
    Array.isArray(stopSays) && stopSays.length === 1 && /stop/i.test(stopSays[0]),
    JSON.stringify(stopSays));
-
-// ── T13 · THE OTHER DOOR: the plain page and its picker ───────────────────
-console.log('T13 · the plain page door still works');
-/* Being in the split is STICKY, remembered in localStorage, so a plain url
-   after using the split gives you the split back. To see the original
-   single-document page a reader has to arrive without that memory. */
-await ev(`localStorage.removeItem('board-split-chat'); localStorage.removeItem('board-split-mode');
-  Object.keys(localStorage).filter(function(k){return /split/.test(k)}).forEach(function(k){localStorage.removeItem(k)});`);
-await send('Page.navigate', { url: `${BASE}/${PAGE}?plain` }); await sleep(7000);
-const t13 = JSON.parse(await ev(`JSON.stringify({
-  frames: document.querySelectorAll('iframe').length,
-  fab: !!document.getElementById('chatfab'),
-  drawer: !!document.getElementById('chat') })`));
-/* A board page may legitimately embed an iframe of its own (a drawing, say),
-   so the test is that none of the SHELL's three panes is here. */
-const shellFrames = await ev(`[].map.call(document.querySelectorAll('iframe'), function(f){return f.name;})
-  .filter(function(n){ return ['index','page','chat'].indexOf(n) >= 0; }).length`);
-ok('a plain url gives the single-document page with its own chat button',
-   shellFrames === 0 && t13.fab && t13.drawer,
-   JSON.stringify(Object.assign(t13, { shellFrames })));
-await ev(`document.getElementById('chatfab').click()`); await sleep(1800);
-const t13b = JSON.parse(await ev(`(function(){var p=document.getElementById('chatpick');
-  if(!p||p.hidden) return '{"menu":false}';
-  return JSON.stringify({menu:true, rows:[].map.call(p.querySelectorAll('.pk'),function(b){return b.dataset.v;})});})()`));
-ok('the bottom-right button offers GUI and TUI',
-   t13b.menu && (t13b.rows || []).join(',') === 'gui,tui', JSON.stringify(t13b));
-await ev(`(function(){var b=document.querySelector('#chatpick .pk[data-v="gui"]'); if(b) b.click(); return 1;})()`);
-await sleep(2500);
-ok('choosing GUI on the plain page opens the drawer',
-   (await ev(`document.getElementById('chat').classList.contains('on')`)) === true
-   && (await ev(`document.body.classList.contains('termon')`)) === false,
-   'drawer did not open in GUI mode');
 
 // ── T14 · a NARROW reader can still use it ────────────────────────────────
 console.log('T14 · the drawer is usable at phone width');

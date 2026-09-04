@@ -10,7 +10,7 @@ export const meta = {
 }
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : (args || {})
-const folder = parsed.task_folder
+const folder = parsed.job ?? parsed.task_folder   // `job` is the 260829 name; `task_folder` kept for existing callers
 if (!folder) { log('task-lifecycle: no task_folder in args'); return { status: 'blocked', reason: 'missing task_folder' } }
 const hintType = parsed.type || null
 const stages = parsed.stages || ['plan', 'build', 'execute', 'report']
@@ -30,7 +30,8 @@ const CREATOR_RESULT = {
     type: { type: 'string' },
     plan_path: { type: 'string' },
     script_plans: { type: 'array', items: { type: 'string' } },
-    task_folder: { type: 'string' },
+    job: { type: 'string' },
+    task_folder: { type: 'string' },   // alias of `job` (pre-260829 name)
     files: { type: 'array', items: { type: 'string' } },
     report_path: { type: 'string' },
     phases: { type: 'number' },
@@ -147,13 +148,25 @@ phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
-  const templateRule = isTemplateBased
+  // Two job shapes (hierarchy.md "Two job shapes"): NESTED — <task>/config/<run>.yaml,
+// <task>/runs/<run>.sh, results/<task>/<run>/, notebooks/<task>/<run>.ipynb, shared src/;
+// FLAT legacy — configs/<run>.yaml + runs/<run>.sh at job root. Detect from the folder
+// (a tNN_* child dir at job root = nested 260830; a scripts/ dir with tNN_* children =
+// nested pre-260830; neither = flat) and verify the MATCHING structure.
+const shapeRule =
+  `\n\nJOB SHAPE: jobs are NESTED (<task>/config/<run>.yaml · <task>/runs/<run>.sh · ` +
+  `results/<task>/<run>/ · notebooks/<task>/<run>.ipynb) or FLAT legacy (configs/<run>.yaml · ` +
+  `runs/<run>.sh at job root). Detect the shape from the folder (scripts/ with {NN}_* children ` +
+  `= nested) and verify/create files in THAT shape — never "fix" a nested job flat. ` +
+  `See haipipe-task/ref/hierarchy.md "Two job shapes".`
+
+const templateRule = isTemplateBased
     ? `\n\nIMPORTANT: This is a TEMPLATE-BASED task (type=${detectedType}).` +
       `\nThe main .py script is an EXACT COPY of a template from code/scripts/haistepnb/.` +
       `\nDo NOT modify, rename, or recreate the .py file.` +
       `\nDo NOT create a new .py file — one already exists.` +
       `\nCONFIG is overridden at runtime by papermill, NOT by editing the file.` +
-      `\nOnly verify/fix the four-sister structure: configs/ runs/ results/ notebooks/ dirs exist.`
+      `\nOnly verify/fix the runname-spine structure (config · ticket · results · notebooks) in the job's own shape.`
     : ''
 
   buildResult = await agent(
@@ -161,21 +174,20 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     (isTemplateBased ? ' (template-based — DO NOT modify the .py script)' : '') +
     `\n\n` +
     (isTemplateBased
-      ? `Verify the task-folder structure (do NOT touch the .py script):\n` +
+      ? `Verify the job structure (do NOT touch the .py script):\n` +
         `- Verify the main .py exists and is an exact template copy (DO NOT modify it)\n` +
-        `- Create missing configs/<run>.yaml if needed\n` +
-        `- Create missing runs/<run>.sh if needed\n` +
+        `- Create missing config (<run>.yaml) and ticket (<run>.sh) in the job's shape if needed\n` +
         `- Create missing notebooks/, results/ dirs\n` +
-        `- Verify configs/<run>.yaml has all required fields for this task type\n`
-      : `Fix/scaffold the task-folder structure:\n` +
+        `- Verify the run config has all required fields for this task type\n`
+      : `Fix/scaffold the job structure:\n` +
         `- Add # %% cell markers at logical phase boundaries\n` +
-        `- Create missing configs/<run>.yaml (extract hardcoded constants)\n` +
+        `- Create missing run config (extract hardcoded constants)\n` +
         `- Create missing notebooks/, workflow/ dirs\n` +
-        `- Update runs/<run>.sh for papermill flow\n` +
+        `- Update the ticket for papermill flow\n` +
         `- Ensure Intent docstring per ref/intent-docstring-template.py\n`
     ) +
     `\nRead: haipipe-task/ref/authoring-conventions.md\n` +
-    `Read (glob **/haipipe-task-for-${detectedType}/SKILL.md — nested under its numbered domain folder)` + templateRule + retryNote,
+    `Read (glob **/haipipe-task-for-${detectedType}/SKILL.md — nested under its numbered domain folder)` + shapeRule + templateRule + retryNote,
     { label: `build:create:${attempt}`, phase: 'Build', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
   )
 
@@ -191,12 +203,12 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `Review the task folder:\n` +
     (isTemplateBased
       ? `1. Verify the .py is an unmodified template copy (DO NOT suggest edits to template code)\n` +
-        `2. Check four-sister compliance (configs/ + runs/ + results/ + notebooks/ exist)\n` +
-        `3. Check that configs/<run>.yaml has all required fields\n` +
-        `4. Check that runs/<run>.sh passes CONFIG correctly via papermill\n`
+        `2. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
+        `3. Check that the run config has all required fields\n` +
+        `4. Check that the ticket passes CONFIG correctly via papermill\n`
       : `1. Read the main .py script and its Intent docstring\n` +
         `2. Check for silent semantic bugs (scope, masking, metric units, split leaking)\n` +
-        `3. Check four-sister compliance (configs + runs + results + notebooks)\n` +
+        `3. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
         `4. Check that configs/<run>.yaml has all constants from the script\n`
     ) +
     `\nWrite CODE_REVIEW.md in the task folder.\n` +
@@ -224,13 +236,13 @@ let runResult = null
 let executeReview = null
 
 if (!runExecute) {
-  log('Execute: skipped — run manually: bash runs/<RUN>.sh')
+  log('Execute: skipped — run manually: bash runs/<RUN>.sh (nested: <task>/runs/<RUN>.sh)')
   runResult = { status: 'skipped', note: 'run manually or set autoExecute=true' }
 } else {
   phase('Execute')
   runResult = await agent(
     `Stage: EXECUTE. Task folder: ${folder}.\n` +
-    `Run the task via runs/<RUN>.sh. Report status. Do NOT modify code.`,
+    `Run the job's ticket (runs/<RUN>.sh, or <task>/runs/<RUN>.sh in a nested job). Report status. Do NOT modify code.` + shapeRule,
     { label: 'execute:run', phase: 'Execute', schema: RUN_RESULT }
   )
 

@@ -443,91 +443,82 @@ A render address says where a record appears in the current render, so archive a
 
 ## Aims
 ### A1 · 🧪 Try it yourself: every feature, live on this page
-- A1.1 · A reader can exercise every gesture this page rules without reading the rest of it.
+- ✅ A1.1 · A reader can exercise every gesture this page rules without reading the rest of it.
   **Done when:** `### 1` carries one live row per thing that can be clicked and one written instruction per thing a person does themselves, and every one of them works on the rendered page.
-- A1.2 · A reader has somewhere safe to practise.
+  **Now:** Rebuilt 260802 on JL's ask for a showcase and a test sheet in one. Five live rows to click (card, three lanes, a remark, a change, a broken card), four written procedures (comment, card, lane, edit), the hover rails and the touch menu, three refusals worth trying, and what a good save looks like.
+- ✅ A1.2 · A reader has somewhere safe to practise.
   **Done when:** `### 1.2.5` is a sentence that carries nothing and says it is there to be written on.
+  **Now:** `### 1.2.5` is a bare sentence that says on its face that nothing on it matters.
+
 
 ### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
-- A2.1 · The two surfaces stay apart: a card anchors to marked words, a lane anchors to the whole line.
+- ✅ A2.1 · The two surfaces stay apart: a card anchors to marked words, a lane anchors to the whole line.
   **Done when:** Every face states which of the two it rules, and none of them describes a card as a thing a sentence click opens.
-- A2.2 · A reader can put a card on any words they pick, not only on a marker the build already resolves.
+  **Now:** `### 2` and the `## Diagram` figure split the two anchors, and `### 3` and `### 4` now rule one each. The face that owned both, and mis-titled itself "click a sentence", was archived when the family folded on 260802, so nothing describes a card as a thing a sentence click opens.
+- ✅ A2.2 · A reader can put a card on any words they pick, not only on a marker the build already resolves.
   **Done when:** A span selected on a rendered page gains a card, the write lands in the markdown, and the same click reopens it after a rebuild.
-- A2.3 · The lane's kinds stay an open list, so new work costs a first word and nothing else.
+  **Now:** Built and driven 260802. JL delegated the ruling ("You make the best decision and I will just check it how it works on the board") and CC ruled option D, which none of A, B or C had proposed: the record names its own span, `> Card <the words>: <text>`, so the prose pays nothing. `src/body.py` renders it, `live/write.py`'s `add_card` writes it behind `POST /_board/card`, and 🪪 Card appears beside 💬 Comment on any selection whose words are really in the sentence. Proven in JL's own Chrome by `tests/drive_sentence.py`, now 36 checks green, including select, write, reopen, and three refusals.
+- ✅ A2.3 · The lane's kinds stay an open list, so new work costs a first word and nothing else.
   **Done when:** Every kind named in `### 4` renders with its own glyph, and adding one touches only `src/body.py`'s `LANE` pattern.
-- A2.4 · Saving a record keeps the reader exactly where they were, on EVERY write path.
+  **Now:** Eight typed kinds plus `> Comment WHO` and `> ✎` all render from their first word, through the single `LANE` pattern at `src/body.py:767`. `Card` joins them as the one record that renders inside the sentence instead of under it.
+- ✅ A2.4 · Saving a record keeps the reader exactly where they were, on EVERY write path.
   **Done when:** A recorded browser run shows the scroll position and every open section unchanged across a save, on all four: the card, the comment, the edit, and the typed lane.
-- A2.5 · No write ever waits for a person to press reload.
+  **Now:** Measured on all four. Card 883 to 883 with 16 sections open before and after; comment 1204 to 1204; edit 1925 to 1925 with 16 to 16; typed lane unchanged across the save. A window flag set before the edit is still there after it, which is how the run proves it SWAPPED rather than reloaded.
+- ✅ A2.5 · No write ever waits for a person to press reload.
   **Done when:** Each of the four paths repaints from the write itself, and the run measures how long each took.
+  **Now:** All four repaint in 0.4s. Two were broken until 260802 and neither had ever been tested past the point where it could not fail. Editing called `location.reload()` on save, and even after that was replaced the swap silently refused, because the editor's own textarea sits inside `div.wrap` and the swap will not run while a textarea in there holds text: the `> ✎` record reached the markdown and the page sat unchanged until somebody pressed reload. Adding a typed lane never asked for a repaint at all and waited on the background poll, which backs off to five seconds on a page nobody has touched. Both forms now CLOSE first and then ask.
+
 
 ### A3 · 🎴 The card: what may attach, and how it renders
-- A3.1 · A card renders as the words themselves, never as a control sitting in the prose.
+- ✅ A3.1 · A card renders as the words themselves, never as a control sitting in the prose.
   **Done when:** A card's button matches its paragraph's font, colour and weight, carries no box, and is distinguished only by an underline.
-- A3.2 · A card's content is readable with every script deleted.
+  **Now:** Measured in Chrome, not eyeballed: the card's button reports the same font, colour and weight as its paragraph, `border: none`, and a dotted underline.
+- ✅ A3.2 · A card's content is readable with every script deleted.
   **Done when:** The build's survive-with-scripts-deleted assertion counts the panel text, and a run confirms it on a real page.
-- A3.3 · A card that cannot bind says so where the reader is looking.
+  **Now:** The panel is a native `popover` and its text is counted with every script deleted. 258 marker cards measured on the MISQ board; the record kind driven on the fixture.
+- ✅ A3.3 · A card that cannot bind says so where the reader is looking.
   **Done when:** Words absent from the sentence render a visible row and turn that sentence's badge to ⚠️, and the three write refusals each keep the composer open.
+  **Now:** A card naming absent words renders its row and turns that sentence's badge ⚠️. All three write refusals answer with a reason and leave the typed text in the composer.
+
 
 ### A4 · 📎 The lanes: the kinds, the drawer, and the badge
-- A4.1 · A record keeps whatever shape the person typed, however many lines it runs to.
+- ✅ A4.1 · A record keeps whatever shape the person typed, however many lines it runs to.
   **Done when:** One `_record_lines` serves the comment, lane, card and discussion writers, and a multi-line save produces one `>` run with nothing loose.
-- A4.2 · The drawer stays shut on load and the badge says what is underneath.
+  **Now:** One `_record_lines` has served all four writers since 260801, and a three-line card body arrives whole in its panel.
+- ✅ A4.2 · The drawer stays shut on load and the badge says what is underneath.
   **Done when:** Every sentence drawer is shut on a fresh render, and the badge names the kind rather than only the count.
+  **Now:** Every sentence drawer is shut on a fresh render and the badge names the kind. Verified over 111 window widths that it never takes a line of its own.
+
 
 ### A5 · 🗣 A person's remark: `> Comment WHO`
-- A5.1 · A remark is written under the exact sentence it is about, and survives every rebuild.
+- ✅ A5.1 · A remark is written under the exact sentence it is about, and survives every rebuild.
   **Done when:** A selection saves a `> Comment WHO` row beneath its source sentence, and no page-bottom queue exists anywhere.
+  **Now:** Shipped and settled. A selection writes `> Comment WHO … · time` beneath its sentence; the page-bottom queue and its status lifecycle were deleted on 260729 and are not read, shown, or migrated.
+
 
 ### A6 · ✎ Changing a sentence: one line replaced, one record beside it
-- A6.1 · An edit replaces one source line and leaves one readable record of what moved.
+- ✅ A6.1 · An edit replaces one source line and leaves one readable record of what moved.
   **Done when:** The saved source holds the final sentence plus one whole-sentence diff row, with no History section and no second copy of the old wording.
-- A6.2 · One computation serves every word-level diff on the board.
+  **Now:** Shipped 260729. One source line is replaced and one `> ✎` row records what moved; a duplicate sentence and a decorated sentence are both refused rather than guessed at.
+- ✅ A6.2 · One computation serves every word-level diff on the board.
   **Done when:** The board's `✎` diff and `haipipe-writing`'s `wdiff.py` are one implementation rather than two that agree.
-- A6.3 · The `QE4` boundary is honored: locks and multi-writer stay there.
+  **Now:** Wired 260802 on JL's standing go, which is the row's own default. `live/write.py`'s `_change_diff` now calls `haipipe-writing`'s `wdiff(host="board")`, looked up by path rather than imported so every unit in the family stays deletable from every other. The local computation survives as the fallback, and `tests/test_change_diff.py` compares the two over ten pairs on every run, so the day they drift is the day a test goes red instead of a review trail going quietly wrong.
+- ✅ A6.3 · The `QE4` boundary is honored: locks and multi-writer stay there.
   **Done when:** This page rules the single-sentence write and names `QE4` for concurrency, with no lock rule written here.
+  **Now:** Honored. This page rules the single-sentence write and names `QE4` for locks and concurrent writers, writing no lock rule of its own.
+
 
 ### A7 · 🔗 Why adjacency, and not new syntax
-- A7.1 · Adjacency stays the only binding between a sentence and its records.
+- ✅ A7.1 · Adjacency stays the only binding between a sentence and its records.
   **Done when:** Every attached record on this board is one line an author could have typed, with no id in the prose and no second file.
+  **Now:** Settled and live on every board. `src/body.py` binds a `>` run to the plain sentence above it and reads nothing else.
+
 
 ### A8 · 🗺 What still has its own page
-- A8.1 · Every part of the old five-face family has one findable home.
+- ✅ A8.1 · Every part of the old five-face family has one findable home.
   **Done when:** `QB8a` `QB8b` `QB8c` are folded in and archived, `QB8d` lives in the working lane, `QB8e` stands alone, and every old id still resolves.
+  **Now:** Executed 260802 on JL's go. `QB8a` `QB8b` `QB8c` folded into `### 3` to `### 6` and archived, `QB8d` moved to `QD8`, `QB8e` left standing, and every retired id aliased in `board.md`'s Links table.
 
-## States
-### A1 · 🧪 Try it yourself: every feature, live on this page
-- ✅ A1.1 · Rebuilt 260802 on JL's ask for a showcase and a test sheet in one. Five live rows to click (card, three lanes, a remark, a change, a broken card), four written procedures (comment, card, lane, edit), the hover rails and the touch menu, three refusals worth trying, and what a good save looks like.
-- ✅ A1.2 · `### 1.2.5` is a bare sentence that says on its face that nothing on it matters.
-
-### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
-- ✅ A2.1 · `### 2` and the `## Diagram` figure split the two anchors, and `### 3` and `### 4` now rule one each. The face that owned both, and mis-titled itself "click a sentence", was archived when the family folded on 260802, so nothing describes a card as a thing a sentence click opens.
-- ✅ A2.2 · Built and driven 260802. JL delegated the ruling ("You make the best decision and I will just check it how it works on the board") and CC ruled option D, which none of A, B or C had proposed: the record names its own span, `> Card <the words>: <text>`, so the prose pays nothing. `src/body.py` renders it, `live/write.py`'s `add_card` writes it behind `POST /_board/card`, and 🪪 Card appears beside 💬 Comment on any selection whose words are really in the sentence. Proven in JL's own Chrome by `tests/drive_sentence.py`, now 36 checks green, including select, write, reopen, and three refusals.
-- ✅ A2.3 · Eight typed kinds plus `> Comment WHO` and `> ✎` all render from their first word, through the single `LANE` pattern at `src/body.py:767`. `Card` joins them as the one record that renders inside the sentence instead of under it.
-- ✅ A2.4 · Measured on all four. Card 883 to 883 with 16 sections open before and after; comment 1204 to 1204; edit 1925 to 1925 with 16 to 16; typed lane unchanged across the save. A window flag set before the edit is still there after it, which is how the run proves it SWAPPED rather than reloaded.
-- ✅ A2.5 · All four repaint in 0.4s. Two were broken until 260802 and neither had ever been tested past the point where it could not fail. Editing called `location.reload()` on save, and even after that was replaced the swap silently refused, because the editor's own textarea sits inside `div.wrap` and the swap will not run while a textarea in there holds text: the `> ✎` record reached the markdown and the page sat unchanged until somebody pressed reload. Adding a typed lane never asked for a repaint at all and waited on the background poll, which backs off to five seconds on a page nobody has touched. Both forms now CLOSE first and then ask.
-
-### A3 · 🎴 The card: what may attach, and how it renders
-- ✅ A3.1 · Measured in Chrome, not eyeballed: the card's button reports the same font, colour and weight as its paragraph, `border: none`, and a dotted underline.
-- ✅ A3.2 · The panel is a native `popover` and its text is counted with every script deleted. 258 marker cards measured on the MISQ board; the record kind driven on the fixture.
-- ✅ A3.3 · A card naming absent words renders its row and turns that sentence's badge ⚠️. All three write refusals answer with a reason and leave the typed text in the composer.
-
-### A4 · 📎 The lanes: the kinds, the drawer, and the badge
-- ✅ A4.1 · One `_record_lines` has served all four writers since 260801, and a three-line card body arrives whole in its panel.
-- ✅ A4.2 · Every sentence drawer is shut on a fresh render and the badge names the kind. Verified over 111 window widths that it never takes a line of its own.
-
-### A5 · 🗣 A person's remark: `> Comment WHO`
-- ✅ A5.1 · Shipped and settled. A selection writes `> Comment WHO … · time` beneath its sentence; the page-bottom queue and its status lifecycle were deleted on 260729 and are not read, shown, or migrated.
-
-### A6 · ✎ Changing a sentence: one line replaced, one record beside it
-- ✅ A6.1 · Shipped 260729. One source line is replaced and one `> ✎` row records what moved; a duplicate sentence and a decorated sentence are both refused rather than guessed at.
-- ✅ A6.2 · Wired 260802 on JL's standing go, which is the row's own default. `live/write.py`'s `_change_diff` now calls `haipipe-writing`'s `wdiff(host="board")`, looked up by path rather than imported so every unit in the family stays deletable from every other. The local computation survives as the fallback, and `tests/test_change_diff.py` compares the two over ten pairs on every run, so the day they drift is the day a test goes red instead of a review trail going quietly wrong.
-- ✅ A6.3 · Honored. This page rules the single-sentence write and names `QE4` for locks and concurrent writers, writing no lock rule of its own.
-
-### A7 · 🔗 Why adjacency, and not new syntax
-- ✅ A7.1 · Settled and live on every board. `src/body.py` binds a `>` run to the plain sentence above it and reads nothing else.
-
-### A8 · 🗺 What still has its own page
-- ✅ A8.1 · Executed 260802 on JL's go. `QB8a` `QB8b` `QB8c` folded into `### 3` to `### 6` and archived, `QB8d` moved to `QD8`, `QB8e` left standing, and every retired id aliased in `board.md`'s Links table.
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -619,3 +610,5 @@ A render address says where a record appears in the current render, so archive a
 260729 · Added §1 Demonstration so one sentence exposes Evidence, Comment, Chat, Edit, address, and the QAb4 lifecycle boundary before the reader enters the detailed family map
 260729 · Added QAb4 as the independent Sentence details lifecycle face for filters, statuses, cleanup, archive, restore, and purge
 260729 · Opened as the sentence family's front door when QAb was carved (JL: QAb0 overview, QAb1 evidence card, QAb2 editing)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

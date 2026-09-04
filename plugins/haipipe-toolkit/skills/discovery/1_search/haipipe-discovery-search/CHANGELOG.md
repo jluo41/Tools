@@ -3,6 +3,32 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.4.1] — 2026-09-03
+
+- Route citation aggregation through the Outline Evidence Workspace at
+  `outline/evidence/bibex/`; the retired Evidence plugin is compatibility-only.
+
+## [0.4.0] — 2026-09-02
+
+- Own ACQUIRE craft across Discovery and contribute source-map/source-reading
+  article work during SYNTHESIZE; Evidence owns citation aggregation.
+
+## [0.3.0] — 2026-09-01
+
+- Serve the canonical `source-map` and `source-reading` Discovery Page Types;
+  Search is now a specialist route rather than the durable type field.
+- Write the root Page in its promised article form and declare Discovery
+  runtime family plus paper/source analysis operation for every admitted Run.
+
+## [0.2.0] — 2026-09-01
+
+- Search now finds candidates, resolves canonical Subjects, and materializes
+  one numbered paired Paper Run/Result per admitted source.
+- Topic Page source maps are derived from Results; new monolithic
+  `sources.md`/`notes.md` ledgers are forbidden.
+- Secondary links are Triggers; the resolved evidence Subject owns RUNNAME and
+  the one-entry Result Bib.
+
 
 ## [0.1.3] — 2026-07-24
 

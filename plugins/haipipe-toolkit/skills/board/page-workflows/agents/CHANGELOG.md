@@ -1,3 +1,38 @@
+## 2026-09-04 · canonical Page dependency order
+
+- Align all five phase agents with Page → router → phase → owning workflow →
+  exact Page Type → policy/worker → presenter ordering.
+- Require phase routes and target cycles to remain separate in their shared
+  producer receipt.
+
+## haipipe-page-outline-agent 0.3.1 · haipipe-page-evidence-agent 0.3.1 — 2026-09-02
+
+- Outline SURVEY now plans exact PageX bindings beside Supporting Runs, while
+  Evidence LAND validates and freezes them before the one local item Run.
+- Both producers keep PageX outside Run and Result cardinality and route its
+  lane law through the unified Evidence Plugin.
+
+## haipipe-page-outline-agent 0.3.0 · haipipe-page-evidence-agent 0.3.0 — 2026-09-01
+
+- Outline agent specifies typed Evidence Items at SHAPE and plans their
+  Supporting/Local Run graphs at SURVEY without allocating Runs.
+- Evidence agent executes support → frozen input → one local Result at LAND
+  and limits EMBED to interpreting ready local Results.
+
+## haipipe-page-outline-agent 0.2.0 · haipipe-page-evidence-agent 0.2.0 — 2026-09-01
+
+- Each phase agent owns its phase's two cycles (outline: SHAPE, SURVEY;
+  evidence: LAND, EMBED) and returns `cycle:` beside `phase:`.
+  haipipe-page-probe-agent retired to `_old/` (its installed link removed).
+
+## haipipe-page-outline-agent · haipipe-page-draft-agent — 2026-08-31
+
+- Descriptions aligned with the rewritten phase contracts: the outline agent
+  runs FIVE checks and writes the plan, the open `D<nn>` threads and one log
+  record (not "ONE file"); the draft agent turns a Section slot into one
+  sentence ending `<!-- realizes: … -->` with a `> Value:` lane per number, no
+  hole token, and folds the diff under one log record.
+
 ## haipipe-page-probe-agent 0.3.0 — 2026-08-20
 
 - **REVERSES 0.2.0's no-Agent-tool design, hours later, on JL's refinement**
@@ -57,3 +92,10 @@
   this board drifted within a day. `haipipe-board-creator-agent` stays as the
   shared base (packet, procedure, house rules, return contract) and keeps the
   non-phase verbs: `create-page` and `revise-opening`.
+## 2026-09-04 · five-phase Page workflow
+
+- Add `haipipe-page-context-agent` for 00 CONTEXT/PREPARE.
+- Add `haipipe-page-content-agent` for 03 CONTENT/WRITE.
+- Remove PageX from OUTLINE/SURVEY and EVIDENCE/LAND agent contracts.
+- Keep DRAFT and REVISE agent names only for historical receipt compatibility;
+  new dispatch uses CONTENT.

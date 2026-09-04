@@ -1,5 +1,25 @@
 # haipipe-plugin-slide · Changelog
 
+## 0.2.0 · 2026-09-03
+
+- Make `delivery/slide/` the only current writer destination and update the
+  saved-deck URL accordingly.
+
+## 0.1.4 — 2026-08-31
+- The 📤 Delivery 🎞 segment is now the ONE surface and carries the ✨
+  authoring bar; the shell's native 🎞 row folded (studio fold).
+
+## 0.1.3 — 2026-08-31
+- The saved deck also shows read-only as the 🎞 segment inside the 📤
+  Delivery tab; the native 🎞 tab and its ✨ authoring bar stay.
+
+## 0.1.2 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
+
 ## 0.1.1 · 2026-08-15
 - Caught up with the same evening's rulings the draft predated: `live/deck.py`
   and its fallback sentence removed (the reflow tier was retired, authoring is

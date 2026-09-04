@@ -1,9 +1,0 @@
-# Copy to the local cloudflared configuration directory and fill in the
-# tunnel-specific values. Do not commit the real credentials file.
-tunnel: REPLACE_WITH_TUNNEL_UUID
-credentials-file: /REPLACE_WITH_SECRET_PATH/tunnel-credentials.json
-
-ingress:
-  # SPACE board services are tailnet-only and intentionally have no
-  # Cloudflare hostname routes. Keep this fallback for unrelated routes.
-  - service: http_status:404

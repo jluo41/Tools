@@ -24,7 +24,7 @@ The required inputs for a silent run:
 ```
 □ run NAME              (run_-prefixed, snake_case)
 □ _meta.purpose         (the one hard-required field)
-□ task-folder target    (resolved, not "ASK from cwd")
+□ job target            (resolved, not "ASK from cwd")
 □ type params           (the type's hyperparams / pipeline config)
 ```
 

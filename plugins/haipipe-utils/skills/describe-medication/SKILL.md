@@ -4,7 +4,6 @@ description: "Normalize a logged medication (any cohort's dialect: a WellDoc Med
 metadata:
   version: "0.1.0"
   last_updated: "2026-08-22"
-  summary: "The skill IS the library: mednorm/ ships here, reached through normalize() or an HTTP URL."
   measured: "82.8% of 397,204 administrations get an FDA ingredient; 82.7% get a dose unit; 62.2% typed as insulin"
   chain: "emits DrugKey, which describe-insulin consumes"
 ---

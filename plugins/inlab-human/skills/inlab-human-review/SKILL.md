@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Grep, Glob
 metadata:
   version: "0.1.0"
   last_updated: "2026-07-10"
-  summary: "The reader session: blind -> reveal -> assisted -> responses.jsonl."
 ---
 
 Skill: inlab-human-review

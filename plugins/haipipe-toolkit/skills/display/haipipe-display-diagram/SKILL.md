@@ -6,7 +6,6 @@ allowed-tools: Bash(*), Read, Write, Edit
 metadata:
   version: "0.2.0"
   last_updated: "2026-07-27"
-  summary: "Deterministic vector-diagram renderer that binds FigureSpec facts to a Display Intake."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

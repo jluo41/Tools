@@ -1,3 +1,45 @@
+## 0.7.1 — 2026-09-04
+
+- Use the canonical Page dependency order.
+- Route an absent/incomplete Run graph to OUTLINE/SURVEY, but a complete graph
+  whose local Result is missing, invalid, or stale to EVIDENCE/LAND.
+- Carry the target cycle separately from the Page-phase route.
+
+## 0.6.7 — 2026-09-03
+
+- Route citation verification through the Outline Evidence Workspace and make
+  the legacy `read:`/Probe row migration-only; new Pages use typed Evidence
+  Items without a `evidence/probe/` lane.
+
+## 0.6.6 — 2026-09-03
+
+- Follow the ranked Skills order at its canonical `outline/skill/` path.
+
+## 0.6.5 — 2026-09-02
+
+- Resolve manuscript Section writing instructions from authored W records in
+  `outline/<stem>-requirement.md`; retain source-level Writing Style only as
+  non-Section compatibility.
+
+## 0.6.4 — 2026-09-02
+
+- Assign the citation `verified` gate to `haipipe-plugin-evidence`; the
+  separate Bibex Plugin no longer exists.
+
+## 0.6.3 — 2026-08-31
+
+- Replace the universal five-tick claim with artifact-selected plugin ticks
+  plus phase-owned `page_ruling`; CHECK reuses a domain gate and does not mint
+  a duplicate Page approval.
+- Canonicalize evidence paths in the gate table.
+
+## 0.6.2 — 2026-08-31
+
+- **§📏 The rubric** moved here from `haipipe-page` §🔍 (four axes with their
+  judges, the review units, the four verdicts, the batch-voice readability
+  unit, the one-row report, the read-only rule). `haipipe-page` keeps the
+  requirement-resolution order and points here.
+
 ## 0.6.1 — 2026-08-18
 
 - Pointer added to `../haipipe-page-workflow/ref/phase-cards.md` §⑦, which
@@ -102,3 +144,12 @@ section renamed that morning.
 - Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
   adds its artifact knowledge and obeys this file.
 - Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.7.0 · 2026-09-04
+
+- Number CHECK as `04` and define it explicitly as the whole-Page gate.
+- Replace DRAFT/REVISE repair routes with `CONTENT`; add `CONTEXT` for stale
+  policy, requirements, ownership, and related information.
+- Keep CHECK independent: it reads all three Outline workspaces, judges one
+  exact built version, repairs nothing, and remains the only phase that may
+  CLOSE.
+- Remove PageX rank from the active human-gate inventory.

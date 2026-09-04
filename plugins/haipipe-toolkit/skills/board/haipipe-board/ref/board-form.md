@@ -248,16 +248,18 @@ provides:       → contract    a short delivery note this page gives downstream
 
 ## Opening         → .opening .ask + kind routing  the first question sentence lives in Opening; the explanatory paragraph is described below
 ## Stage Contract  → a collapsed row .csec.contract inside Opening  S's inherited inputs + Venue (folded into Opening, no longer its own visible section)
-## Diagram         → .diagram-section > .dia  its own section, collapsed by default
-                     splits into two sub-sections inside (JL 260726): `details.dsub.dsub-a` (▧ ASCII, `open`)
-                     and `details.dsub.dsub-x` (✏️ Excalidraw, shut). **The source writes only one
-                     `## Diagram`**; the split is computed by `page_question.split_diagram()` under the rule
-                     "a whole line holding exactly one excalidraw URL"; a URL inside a fence does not count.
-                     When there is no canvas, that section still renders (writing "No canvas attached yet"),
-                     because the 🖌 attach-canvas button has to live somewhere.
+## Outline         → .outline-section > .outline-table, its own section, open by default
+                     The Page writes no `## Outline` source block. The renderer reads the current
+                     `outline/<stem>-outline-v<N>.md` and projects it
+                     as the first, read-only five-column `▤ Outline table`: Address · Planned move · Evidence · Supporting Run · Local Run.
+                     C/P rows are group headers; B rows join one claim to its typed Evidence Items and both Run layers.
+                     Evidence chips fit their labels; colour and the popover carry state, never a separate Status column.
+                     There is no Page-authored narrative map. Content, Aims, References, and every other
+                     page fold start collapsed; Opening stays visible. No plan is copied into the Page. A canvas is material in
+                     `studio/draw/`, never an on-page sub-section.
 ## Content         → .content / .opening-context  required on S, optional on Q; see below
                      S carries only what this stage itself produces (JL 260725): Required Inputs and Venue
-                     belong in `## Stage Contract`, prose rules in `## Writing Style`, settled corrections in `## States`, and
+                     belong in `## Stage Contract`, prose rules in `## Writing Style`, settled corrections in an Aim's `Now:` line, and
                      intended outcomes belong in `## Aims`. On S the section title displays the
                      stage's name (`📚 Content · Main 7 §6 Results`, derived from `# short title`, so when
                      the artifact's own numbering does not line up with the board index, title the page
@@ -273,9 +275,8 @@ provides:       → contract    a short delivery note this page gives downstream
                      box that is empty on click. The payoff is that it is checkable: the count of dotted `###`
                      headings IS the subsection count, checkable against the venue blueprint without reading
                      the prose.
-## Aims           → .col.goal   green border, the column header derives `met/total` from States
-## States         → .col.now    yellow border; one current emoji row per Aim
-## Files           → .fls        action map plus scoped Related Board Page context, blue border
+## Aims           → .col.goal   green border; one row per Aim carries its tick, `Done when:` and `Now:`, and the column header derives `met/total` from those ticks (`## States` merged into Aims, JL 260819)
+## Files           → .fls        legacy only (moved to `outline/<stem>-files.md`, JL 260831); rendered when an old page still has it
 ## Why here        → .folds      legacy only; collapsed when an old page still has it
 ## Discussion      → .folds      collapsed
 ## Law             → .folds      collapsed · the rules this question settled
@@ -284,7 +285,7 @@ provides:       → contract    a short delivery note this page gives downstream
 ## Log             → .folds      collapsed
 ```
 
-**Related Board Pages inside Files** use one exact group and row grammar:
+**Related Board Pages inside `outline/<stem>-files.md`** are `### F<n>` records with `- **Role**: related` and the row below verbatim (inside `## Files` on an unmigrated page, under the `### 🔗 Related Board Pages` group); the row grammar is one:
 
 ```markdown
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE
@@ -293,39 +294,43 @@ provides:       → contract    a short delivery note this page gives downstream
 ```
 
 - Relation is one of `reads`, `constrained by`, `continues`, or `contrasts`.
-- Phase is `DRAFT`, `EVIDENCE`, `REVISE`, `CHECK`, or `ALL` (`EVIDENCE` still parses as EVIDENCE).
+- Phase is `CONTEXT`, `OUTLINE`, `EVIDENCE`, `CONTENT`, `CHECK`, or `ALL`.
+  Historical `PROBE`, `DRAFT`, `REVISE`, and `COMPILE` rows resolve to their
+  current authorities.
 - The Markdown target is relative to the Board root, even when the source Page lives in a group folder. The label's Page id must match that source.
-- Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims/States group; several scopes on one target share one identity and Opening in the packet.
+- Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims group; several scopes on one target share one identity and Opening in the packet.
 - `cli/pagecontext.py` filters by phase and follows one hop only. It does not infer dependencies or recursively traverse target rows.
 - `cli/check.py` treats malformed rows, unsafe or dead paths, Page-id mismatches, and dead scopes as errors.
 
-**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Writing Style`, `## Aims`, `## States`.
+**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Aims`.
+`## Writing Style` remains the non-Section compatibility home; a manuscript
+`page-type: section` uses authored W records in `outline/<stem>-requirement.md` instead.
 S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.
-`## Files` is optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
+`## Files` is RETIRED from the page (JL 260831): the file map is `outline/<stem>-files.md`, one `### F<n>` record per file with `Path` and `Role`, and `check.py` reports a surviving section as `retired-section`. Everything else (`method:` and all folded sections) is **optional**. Do not author `## Outline` or `## Diagram`; the current plan table projects automatically, and a Page-Type executive view must likewise be generated from its authoritative Content rows.
 There is no `## Boundary` section. Opening itself states the scope, and a page points at the neighbouring page that owns excluded work.
 The order of the canonical folded sections is fixed by `build.py` (Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file; a legacy Why here is collected ahead of them when an old page still has it.
 
 **The on-stage order is fixed**:
-Q is `Opening → Diagram → Content → Aims → States`;
+Q is `Opening → Outline → Content → Aims`;
 S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
-(Files follows after the state).
-Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. The optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
+(the folds follow after Aims; the file map is in outline/).
+Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. Outline is its own section, collapsed by default, and expands only when the section name is clicked.
 Everything after `## Opening`'s FIRST BLANK LINE, on both Q and S, goes into the More details row of that page's own drawer (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q's explanatory paragraph automatically became Content's first subsection).
 A stage has exactly one contract section and it is `## Stage Contract` (JL 260801). There is no Stage Record: an old page that still holds a direct `### Stage Record` under Content has it lifted into that contract verbatim, as its opening lines, and the remaining subsections stay in Content.
 A Q's explicit Content can be omitted.
 Intent comes first (what is being asked, the boundary, what counts as done), then the state (where things stand now).
-An Aim is intent; its State is fact. The paired section labels are plural: `Aims` and `States`. A Plan, when needed, is optional text inside an Aim and never a third fixed top-level section.
+An Aim is intent; its `Now:` line is fact, on the same row (`## States` merged into `## Aims`, JL 260819). A Plan, when needed, is optional text inside an Aim and never a second fixed top-level section.
 
 **`## Why here` is retired.**
 Its job (why this is hard, what happens if it stays unsettled) is merged into `## Opening` below its first blank line and rendered as "More details" (JL 260801, renamed from "Why this matters"): both Q and S put it in Opening's drawer, which is **shut until the visible paragraph is clicked** (JL 260729; before that Q put it in Content's first subsection) and then shows every row FLAT (JL 260725: one door, and nothing behind it folds a second time).
 The old section on an old board is still collected into the folded area at the bottom.
 
-**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names and the historical `## Done when` / `## Items to Finish` (= `## Aims`) and `## State` / `## Now` / `## Where we are` (= `## States`).
+**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names and the historical `## Done when` / `## Items to Finish` (= `## Aims`) and `## State` / `## Now` / `## Where we are` / `## States` (the retired status section, merged into `## Aims` on 260819; `check.py` reports each as `retired-section`).
 
 **The Q-consumer rule on an S page**: do not open a top-level `## Q-consumer`.
 Each consumer is an Aim inside `## Aims`; its heading keeps both a stable Aim id and `Q-<Stage>-<n>`, while its detail keeps Description / Reason / Probe / Done when.
-Mark it `✅` in `## States` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
-`## States` only summarizes the stage; it does not restate each consumer answer.
+Mark its row `✅` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
+An Aim's `Now:` line summarizes; it does not restate the consumer answer.
 
 **The Stage Contract rule on an S page**: dependencies are read from the top-level metadata only, never guessed from Pages order or from a number in a filename:
 
@@ -447,19 +452,20 @@ The Index shows it at 42px and a focused page presses it down to 24px, so the ti
 
 **What goes on stage and what is shut when focused** (settled by QA4):
 
-- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, More details / Writing Style plus S's Stage Contract (Required Inputs · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
+- **On stage** (top to bottom): the title → `🚪 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, More details / Writing Style plus S's Stage Contract (Required Inputs · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
   Every subheading in the drawer is **a bare word carrying no icon**: previously only 2 of 7 had an icon, and that is the inconsistency JL named, JL 260725) →
-  `🖼 Diagram` (optional; only the section name is on stage, the content is collapsed by default; open it and ▧ ASCII is seen first, while ✏️ Excalidraw takes one more click, JL 260726) →
+  `🧭 Outline` (the current plan appears as its one, open-by-default `▤ Outline table`) →
   `📚 Content` (only the subsections the author wrote explicitly; since 260729 a Q's explanatory paragraph also goes into Opening) →
-  `🎯 Aims` → `📍 States` → `📁 Files`.
-- **Three levels of hierarchy**: section heading (🧭/📚/🎯/📍, with a rule under it) > **group title** (a whole bold line → 🔹 by default, or the emoji it starts with, leading a run of items) > the item's name (`▸`).
-- **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): EVERY section and every Content division, including the first one (JL 260801, reversing the 260725 open-by-default rule now that the sidebar carries the map), the whole `## Diagram`, an item's explanation (collected into a native `<details>`), a sentence's own apparatus, and a code block in the body (collapsed into one line, `</> code · N lines`).
+  `🎯 Aims`.
+- **Paper Section Opening**: a `page-type: section` renders only its one reader paragraph under `🚪 Opening`. Page-owned prose rules live as authored W records in `outline/<stem>-requirement.md`, beside generated venue V records, and both appear through the Outline plugin's `📏 Requirement` lens. The product Page carries no Writing Style block. Post-paragraph notes and Stage Contract remain source-side drafting and CHECK instructions and do not appear on the manuscript review surface.
+- **Three levels of hierarchy**: section heading (🚪/🧭/📚/🎯/📍, with a rule under it) > **group title** (a whole bold line → 🔹 by default, or the emoji it starts with, leading a run of items) > the item's name (`▸`).
+- **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): every section after Outline and every Content division, including the first one, an item's explanation (collected into a native `<details>`), a sentence's own apparatus, and a code block in the body (collapsed into one line, `</> code · N lines`).
   Opening is the one section that does not fold from its heading, because a page whose first section can be shut can open showing nothing; its visible paragraph carries the fold instead.
-  Diagram carries one more layer of ordering: open the section and ▧ ASCII is there while ✏️ Excalidraw is still shut, because a shut `<details>` is not displayed, so a `loading="lazy"` iframe inside it does not load, and a board with 28 canvases no longer starts 28 of them at load time.
+  Outline opens to the read-only `▤ Outline table`; a canvas remains in the Draw plugin, so opening a Page never loads a diagram iframe.
 - **Sunk into the folded area at the bottom**: Discussion · Law · Lesson · Glossary · Log; a legacy Why here is preserved ahead of them when present but is never authored on a new page.
-- The first look at a screen = one clean column of section names and item names; Diagram is opened by hand, and `expand all` spreads out the items / code of the other sections in one click (pure enhancement: with the scripts stripped, every row still opens on its own).
+- The first look at a screen = the Opening and its current plan table; `expand all` spreads out the items / code of the other sections in one click (pure enhancement: with the scripts stripped, every row still opens on its own).
 
-**Other things that are fixed**: Aims and States are **stacked vertically**, not split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
+**Other things that are fixed**: Aims is **stacked** under Content, never split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
 
 **Invariant: delete every `<script>` in the page, and every question and all of the body text is still there.**
 `build.py` asserts this on every generation.

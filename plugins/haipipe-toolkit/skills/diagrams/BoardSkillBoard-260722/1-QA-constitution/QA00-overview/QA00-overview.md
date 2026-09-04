@@ -503,41 +503,6 @@ Mechanical checks catch state; only a fresh reader catches prose, which is why e
 An execute record names its route, its result, and what it refused to touch.
 
 ## Aims
-### P · The page itself
-- P1 · A fresh agent routes five questions from this page alone
-  Done when: five questions naming no page ids each land on the owning page, using only this chapter.
-- P2 · Every pointer on this page resolves on every build
-  Done when: the build's dead-link and unresolved-id checks report zero findings on this page.
-- P3 · The deck presents this chapter, division by division
-  Done when: the `slide/` deck follows `§1` to `§6`, one slide per rung, re-authored after the 260816 fold.
-
-### A4 · The words this family uses
-- A4.1 · JL reads the glossary once and strikes or adds entries
-  Done when: every entry in `§4` is confirmed, struck, or replaced by JL's own word.
-- A4.2 · Every entry names its defining page or file
-  Done when: no entry in `§4` defines anything; each points at the page or file that does.
-
-### A5 · The three folders
-- A5.1 · The three-folder model is confirmed as drawn
-  Done when: JL confirms `①` `②` `③` and the nesting of subskills inside `①`.
-- A5.2 · The two forbidden movements are confirmed
-  Done when: JL confirms no runtime may read a Q page and nothing is hand-written into `board/`.
-- A5.3 · `skills/diagrams/_feedback/` has a ruled home
-  Done when: JL places it inside the map or explicitly outside it.
-- A5.4 · The ✗-direction checker is commissioned or deferred
-  Done when: a checker proves no shipped file cites a Q page, or the deferral is recorded with its reason.
-
-## States
-- ✅ P1 · The routing test ran 260816 and passed 5 of 5: a fresh agent, given only this file, routed section order to `QPs1`, the hand-back gate to `QA3`, meeting notes to `QC2b`, the bind address to `QO9`, and the deck plugin to `QPf3`, quoting the routing sentence each time.
-- ✅ P2 · The 260816 post-fold build reports zero findings on this page; QA0, QA1, and QA1a resolve through `## Links`.
-- ✅ P3 · The deck was re-authored 260816 through `autodeck` (8 slides, validated before the write); it now follows this chapter's divisions.
-- 🧠 A4.1 · Waiting on JL's read; every entry was refreshed to the current architecture before the fold.
-- 🧠 A4.2 · Proposed yes; an entry that defines instead of pointing would make the glossary a second source.
-- 🧠 A5.1 · Proposed yes as drawn; two boards already run on it, and `QC1` and the ladder groups assume it.
-- 🧠 A5.2 · Proposed yes; the whole test is one line: delete `②` and every skill in `①` still runs.
-- 🧠 A5.3 · Proposed: it is `①`'s inbox, since every card's `lands_in:` names a shipped file, so a card graduates exactly as a page's Law does.
-- 🧠 A5.4 · Proposed defer until A5.1 and A5.2 are ticked; a checker can only enforce a rule that has been ruled.
-
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
@@ -549,6 +514,41 @@ These are the calls only JL can make; CC ticks nothing here.
       ⭐ A: synonyms, and a child page is a `child`. ⭐ B: `face` means only the child form.
       🤖 If nobody answers: CC follows A, because 45 pages were reworded from `face` to `page` on the weak-English axis and A is what that wording assumes.
 - [ ] 🧠 Read `§4` once as the glossary (A4.1) and strike or add entries
+
+
+### P · The page itself
+- ✅ P1 · A fresh agent routes five questions from this page alone
+  Done when: five questions naming no page ids each land on the owning page, using only this chapter.
+  **Now:** The routing test ran 260816 and passed 5 of 5: a fresh agent, given only this file, routed section order to `QPs1`, the hand-back gate to `QA3`, meeting notes to `QC2b`, the bind address to `QO9`, and the deck plugin to `QPf3`, quoting the routing sentence each time.
+- ✅ P2 · Every pointer on this page resolves on every build
+  Done when: the build's dead-link and unresolved-id checks report zero findings on this page.
+  **Now:** The 260816 post-fold build reports zero findings on this page; QA0, QA1, and QA1a resolve through `## Links`.
+- ✅ P3 · The deck presents this chapter, division by division
+  Done when: the `slide/` deck follows `§1` to `§6`, one slide per rung, re-authored after the 260816 fold.
+  **Now:** The deck was re-authored 260816 through `autodeck` (8 slides, validated before the write); it now follows this chapter's divisions.
+
+### A4 · The words this family uses
+- 🧠 A4.1 · JL reads the glossary once and strikes or adds entries
+  Done when: every entry in `§4` is confirmed, struck, or replaced by JL's own word.
+  **Now:** Waiting on JL's read; every entry was refreshed to the current architecture before the fold.
+- 🧠 A4.2 · Every entry names its defining page or file
+  Done when: no entry in `§4` defines anything; each points at the page or file that does.
+  **Now:** Proposed yes; an entry that defines instead of pointing would make the glossary a second source.
+
+### A5 · The three folders
+- 🧠 A5.1 · The three-folder model is confirmed as drawn
+  Done when: JL confirms `①` `②` `③` and the nesting of subskills inside `①`.
+  **Now:** Proposed yes as drawn; two boards already run on it, and `QC1` and the ladder groups assume it.
+- 🧠 A5.2 · The two forbidden movements are confirmed
+  Done when: JL confirms no runtime may read a Q page and nothing is hand-written into `board/`.
+  **Now:** Proposed yes; the whole test is one line: delete `②` and every skill in `①` still runs.
+- 🧠 A5.3 · `skills/diagrams/_feedback/` has a ruled home
+  Done when: JL places it inside the map or explicitly outside it.
+  **Now:** Proposed: it is `①`'s inbox, since every card's `lands_in:` names a shipped file, so a card graduates exactly as a page's Law does.
+- 🧠 A5.4 · The ✗-direction checker is commissioned or deferred
+  Done when: a checker proves no shipped file cites a Q page, or the deferral is recorded with its reason.
+  **Now:** Proposed defer until A5.1 and A5.2 are ticked; a checker can only enforce a rule that has been ruled.
+
 
 ## Files
 - `board.md`
@@ -580,3 +580,5 @@ These are the calls only JL can make; CC ticks nothing here.
 - 260815 1540 · [REVISE-CC] R1: the chapters grew from one table into nine divisions, each anchored in its group's own story.
 - 260815 1420 · [DRAFT-CC] opened as the board's chapter 1 (JL ruled D21-D23): pointers and invariants only; QA4 archived and its deck absorbed into this page's slide/ plugin.
 - (the absorbed pages' own Logs stay in `_archive/QA0-three-folders/` and `_archive/QA1-concepts/`, unrewritten)
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

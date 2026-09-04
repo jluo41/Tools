@@ -1,25 +1,24 @@
 ---
 name: haipipe-task-for-agent
-description: "agent task-folder specialist: scaffolds {NN}_<name>/ task-folders in the agent task-group (default F-series) that call an LLM agent with prompts + tools -> results/<run>/{transcript.json, summary.md}. Called by /haipipe-task when task-type=agent. Engine: /haipipe-task-llm-engine."
-argument-hint: "[project_id] [group] [task-name]"
+description: "agent job specialist: scaffolds {NN}_<name>/ jobs in the agent block (default F-series) that call an LLM agent with prompts + tools -> results/<run>/{transcript.json, summary.md}. Called by /haipipe-task when task-type=agent. Engine: /haipipe-task-llm-engine."
+argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.1.3"
   last_updated: "2026-07-04"
-  summary: "agent task-folder build specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-agent
 ==================================
 
-Scaffolds an **LLM-agent task-folder**.
+Scaffolds an **LLM-agent job**.
 The scaffolded script makes its LLM calls through the domain's engine, `/haipipe-task-llm-engine` (owns `code/haiutils/llm_engine/`).
 Inputs: prompts + tool spec + (optional) data context.
 Outputs: transcript + structured result under `results/<run>/`.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
-Always end with the structured return block (status / task_folder / run_name / files).
+Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).
 
 
 
@@ -27,9 +26,9 @@ What this scaffolds
 -------------------
 
 ```
-tasks/F{NN}_<group_name>/                    ← F-series group (agent)
-└── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+tasks/F{NN}_<block_name>/                    ← F-series group (agent)
+└── {NN}_<job_name>/
+    ├── {NN}_<job_name>.py
     ├── prompts/                             system + user prompt files
     │   ├── system.md
     │   └── user.md
@@ -60,7 +59,7 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + task-group.
+  1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
   3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
   4. Seed config from `ref/config-seed.yaml`.
@@ -84,7 +83,7 @@ next:      suggested next command (run.sh / edit prompts/)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

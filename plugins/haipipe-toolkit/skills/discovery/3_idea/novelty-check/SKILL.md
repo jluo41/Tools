@@ -6,7 +6,6 @@ allowed-tools: WebSearch, WebFetch, Grep, Read, Glob, mcp__codex__codex
 metadata:
   version: "0.2.0"
   last_updated: "2026-08-23"
-  summary: "0.2.0 ports two content deltas from the updated ARIS reference (a431e28 -> 9cbb6aa): the anti-hallucination verification rule for prior-work entries (verify or tag [UNVERIFIED], never fabricate ids) and the dossier-file pattern for long reviewer prompts; replaces the stale ARIS trace plumbing with the family's own report rule. Keeps the local venue-filter directive and per-paper subsection format ARIS lacks. 0.1.0 was the initial localized import."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

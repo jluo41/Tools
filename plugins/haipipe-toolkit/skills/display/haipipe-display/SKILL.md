@@ -5,7 +5,6 @@ argument-hint: "[what to display, or a unit/intake path]"
 metadata:
   version: "0.3.0"
   last_updated: "2026-08-16"
-  summary: "The ✒️ tex kind gained its skill (JL 260816), so the door now routes five renderers and names none as unowned."
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -35,7 +34,10 @@ Pick ✒️ tex when the figure should share the document's own fonts and math, 
 ## 🚪 Where the unit lands
 
 A PAPER's unit lands at `displays/displayNN-<slug>/` under the paper root.
-A BOARD PAGE's unit lands at `<page>/display/<stem>-DisplayN-<slug>/`, and the page-side rules (address, citation chips, the human `accepted:` tick) belong to `haipipe-plugin-display`, not to this door.
+A BOARD PAGE's unit lands at
+`<page>/evidence/display/<stem>-DisplayN-<slug>/`, and the page-side rules
+(address, citation chips, the human `accepted:` tick) belong to
+`haipipe-plugin-evidence/ref/displays.md`, not to this door.
 
 ## 📂 Files
 

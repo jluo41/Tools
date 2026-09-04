@@ -189,37 +189,6 @@ The 260818 dispatch is the record, and what it recorded is that this unit cannot
 It declined to shim the controller under `node` instead, and that refusal was correct: the controller needs `agent()`, `log()` and `phase()` as globals, and supplying `agent()` itself would have collapsed the producer, the builder and the judge into one actor.
 
 ## Aims
-### A1 · 🤲 Three hands, and the sentence each may never cross
-- A1.1 · Each hand is stated by the act it may never perform, not by the act it performs.
-  **Done when:** A reader can name all three forbidden acts from this division without opening a contract file.
-
-### A2 · 🗳 One page for one design, not one page per unit
-- A2.1 · The selection that produced one page is recorded with the disposition of the option that lost.
-  **Done when:** The losing option names where its pages went and how their ids resolve.
-
-### A3 · ✍️ The creator, and the caller's half that is still missing
-- A3.1 · The caller's fan-out half lands in `haipipe-board`.
-  **Done when:** Packet assembly runs from an approved proposal table, and the serialized tail runs once, instead of by hand as on 260802.
-- A3.2 · A dispatch that dies mid-batch is recoverable.
-  **Done when:** The caller learns which packets completed without re-reading the files.
-
-### A4 · 🧑‍⚖️ The reviewer, and the pass it has never run
-- A4.1 · The consecutive-Openings pass runs on a real batch.
-  **Done when:** The eight roster Openings waiting since 260802 have been through it and the verdict is recorded.
-- A4.2 · The 260729 remark about the review agent is ruled.
-  **Done when:** It is written down as run-scoped or unit-scoped, and the three written things that depend on it are updated to match.
-
-### A5 · 🔁 The orchestrator, reasoned but never dispatched as itself
-- A5.1 · The charter is dispatched rather than emulated.
-  **Done when:** One RUN goes through the agent itself, exercising its stop rules and its return contract.
-- A5.2 · The auditor's verdict reaches the receipt it audits.
-  **Done when:** A stored `_runs/` receipt carries the return contract's `audit:` field.
-
-### P · Page-level
-- P1 · The page judges the design without restating any unit's procedure.
-  **Done when:** No step described here can go stale independently of the contract file that owns it.
-
-## States
 ### Decision Now
 - [ ] 🗣 Fold the 260819 roster change into this page's five divisions
       📍 the whole `## Content`: §1's three hands, §3's creator, §5's orchestrator
@@ -236,26 +205,51 @@ It declined to shim the controller under `node` instead, and that refusal was co
       🛑 `Blocks` A4.2, and the three written things that cite the unit
       🤖 `If nobody answers` A takes effect, because the unit is still dispatched today
 
+
 ### A1 · 🤲 Three hands, and the sentence each may never cross
-- ✅ A1.1 · Met. Each hand carries its forbidden act in the figure and in `#### 1.1`.
+- ✅ A1.1 · Each hand is stated by the act it may never perform, not by the act it performs.
+  **Done when:** A reader can name all three forbidden acts from this division without opening a contract file.
+  **Now:** Met. Each hand carries its forbidden act in the figure and in `#### 1.1`.
+
 
 ### A2 · 🗳 One page for one design, not one page per unit
-- ✅ A2.1 · Met. 🅱 won on JL's 260815 ruling; the three pre-merge pages are archived whole and their ids resolve through `board.md`'s `## Links`.
+- ✅ A2.1 · The selection that produced one page is recorded with the disposition of the option that lost.
+  **Done when:** The losing option names where its pages went and how their ids resolve.
+  **Now:** Met. 🅱 won on JL's 260815 ruling; the three pre-merge pages are archived whole and their ids resolve through `board.md`'s `## Links`.
+
 
 ### A3 · ✍️ The creator, and the caller's half that is still missing
-- ⬜ A3.1 · Not started. Packet assembly was done by hand for the 260802 fan-out and nothing has been built since.
-- ⬜ A3.2 · Not started. A mid-batch death still leaves the caller reading files.
+- ⬜ A3.1 · The caller's fan-out half lands in `haipipe-board`.
+  **Done when:** Packet assembly runs from an approved proposal table, and the serialized tail runs once, instead of by hand as on 260802.
+  **Now:** Not started. Packet assembly was done by hand for the 260802 fan-out and nothing has been built since.
+- ⬜ A3.2 · A dispatch that dies mid-batch is recoverable.
+  **Done when:** The caller learns which packets completed without re-reading the files.
+  **Now:** Not started. A mid-batch death still leaves the caller reading files.
+
 
 ### A4 · 🧑‍⚖️ The reviewer, and the pass it has never run
-- ⬜ A4.1 · Not started. The batch of eight roster Openings has waited since 260802.
-- 🧠 A4.2 · Waiting on JL, in Decision Now above.
+- ⬜ A4.1 · The consecutive-Openings pass runs on a real batch.
+  **Done when:** The eight roster Openings waiting since 260802 have been through it and the verdict is recorded.
+  **Now:** Not started. The batch of eight roster Openings has waited since 260802.
+- 🧠 A4.2 · The 260729 remark about the review agent is ruled.
+  **Done when:** It is written down as run-scoped or unit-scoped, and the three written things that depend on it are updated to match.
+  **Now:** Waiting on JL, in Decision Now above.
+
 
 ### A5 · 🔁 The orchestrator, reasoned but never dispatched as itself
-- ✅ A5.1 · Met 260818, and the answer was negative. Run `260818-1444-QPw00` dispatched the charter as an agent for the first time; it returned `blocked` at step 2 because a subagent is handed no `Workflow` tool. The charter is now recorded rather than reasoned, and what the record says is that this unit may not dispatch.
-- ⬜ A5.2 · Not started. The one stored receipt carries no `audit:` field.
+- ✅ A5.1 · The charter is dispatched rather than emulated.
+  **Done when:** One RUN goes through the agent itself, exercising its stop rules and its return contract.
+  **Now:** Met 260818, and the answer was negative. Run `260818-1444-QPw00` dispatched the charter as an agent for the first time; it returned `blocked` at step 2 because a subagent is handed no `Workflow` tool. The charter is now recorded rather than reasoned, and what the record says is that this unit may not dispatch.
+- ⬜ A5.2 · The auditor's verdict reaches the receipt it audits.
+  **Done when:** A stored `_runs/` receipt carries the return contract's `audit:` field.
+  **Now:** Not started. The one stored receipt carries no `audit:` field.
+
 
 ### P · Page-level
-- ✅ P1 · Met. Each division says what the unit is for and points at the contract file for how it works.
+- ✅ P1 · The page judges the design without restating any unit's procedure.
+  **Done when:** No step described here can go stale independently of the contract file that owns it.
+  **Now:** Met. Each division says what the unit is for and points at the contract file for how it works.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -295,3 +289,5 @@ It declined to shim the controller under `node` instead, and that refusal was co
 - 260816 · [REVISE-CC] `Design-6` became `QPw00a`, the Design kind folded into the Q series on JL's call: the unit rides the Q page that argues it, so the page keeps its subject and gains a Q id. Its `skill/` plugin, holding the three plugged agent snapshots, its `slide/` deck and its `draw/` scene all moved with it under the new name. Brought to the Q page contract in the same round: the Opening's on-stage paragraph grew from a bare question to a question plus four sentences, `## Writing Style` and `## Files` were added, every Content division gained a face figure and numbered paragraphs, the flat Aims list became `A1` to `A5` groups matching the divisions with `Done when` lines, `## States` became one row per Aim, and the unruled 260729 remark about the review agent became a `### Decision Now` row with its two options and their consequences. `page-type: design` was dropped, because the page is now a Q.
 
 - 260818 1450 · [REVISE-CC] `§5` and `A5.1` rewritten on a real dispatch. The charter had been reasoned since 260805 and was finally run as an agent, on this group's own `QPw00-page-loop`, as run `260818-1444-QPw00`. It returned `blocked` at its own procedure step 2 with 0 steps and no receipt: it declares seven tools and was handed four, missing `Grep`, `Glob` and `Workflow`. The ruling that falls out is that a SUBAGENT is handed no `Workflow` tool, so no charter wording can make this unit the dispatcher; it was demoted to packet builder and receipt keeper at 0.3.0 and the RUN moved to the main session. A second, quieter finding: the charter injected into the running instance was a PRE-0.2.0 copy of the file on disk, so a same-session edit to an agent definition does not reach an agent dispatched in that session.- 260815 1500 · [REVISE-CC] merged from Design-6/7/8 (JL 260815: "one Design can relate to several skills or agents"): one design page, three plugged units, versions in the title; the three originals moved to `_archive/` whole.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

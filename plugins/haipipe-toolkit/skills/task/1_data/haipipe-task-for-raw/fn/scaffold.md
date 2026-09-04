@@ -1,4 +1,4 @@
-fn-scaffold: Scaffold a raw extraction task-folder
+fn-scaffold: Scaffold a raw extraction job
 ===================================================
 
 Extracts source tables from a Databricks catalog as wide parquet files.
@@ -22,11 +22,11 @@ Full contract: `../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks
 Live example: `examples/Project-REACH-ADHD/tasks/A00_rawstore_reachadhd/`.
 
 
-Step 1 — Identify project + task-group
+Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- ASK task-group if not given. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **R**;
+- ASK block if not given. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **R**;
   scaffold a new `R{NN}_<cohort_name>/` if needed
   (see `../../../haipipe-task/fn/task-group.md`).
 - ⚡ P2: embedded rawstore groups are conventionally named

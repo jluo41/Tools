@@ -51,21 +51,6 @@ should it move to haichat-board?  NO —
 - [x] Wait for a quiet window
       Overridden by JL's re-ask ("please think about how to better manage the builder.py… go ahead and continue"), executed immediately instead, with the frozen-board proof standing in for the quiet window.
 
-## States
-**Executed 260724: the page's JS and CSS became real files under `assets/`; output byte-identical; home unchanged (the skill). The 850-line build.py this step produced was then split again by `QC2b` into `src/`, leaving build.py a thin CLI entry (today `cli/build.py`, 164 lines).**
-
-- The numbers
-  This step: build.py 2,488 → 850 lines · assets/board.js 1,173 · assets/board.css 465.
-  The JS became editable with highlighting and checkable in place.
-  Since then: `QC2b` moved the Python into `src/` (build.py became `cli/build.py`, 164 lines today), and the monolith assets grew until 260731, when they were themselves re-split into numbered part files under `assets/css/` + `assets/js/`, concatenated in sorted path order by `src/assets.py`.
-  The static-site turn writes the assembled pair as shared `board/_assets/board.css` + `_assets/board.js` instead of inlining, because VS Code's Live Preview webview blocks inline JS; the one-command offline build still holds.
-- Why not haichat-board (asked and settled)
-  The skill travels with every SPACE via the Tools submodule; the static invariant needs `python3 build.py <dir>` to work offline in any of them.
-  `haichat-board/` is a consumer (it imports `parse_dir`/`to_json` and serve.py's writers); moving the grammar there would invert `QE3`'s settled Law.
-- How the proof worked
-  Snapshot the board folder → build with the split build.py → reconstruct a joined build.py by re-inlining the assets → build again → compare hashes.
-  Same inputs, both code paths, no interference from concurrent editors.
-
 ## Files
 - `cli/build.py`
   The file this page split, today a 164-line CLI entry; the parse surface it had to keep now lives in `src/`: `parse_dir`/`parse_file` (`src/parse.py`), `to_json` (`src/page_board.py`), `sec`/`stinfo` (`src/common.py`); `parse_comments` is retired; the haichat-board console imports through `cli/serve.py`'s re-export block.
@@ -77,6 +62,21 @@ should it move to haichat-board?  NO —
 ## Discussion
 > JL: build.py is so long, could we better manage it? and should it in the haipipe-board project?
 >> CC0724: split yes: CSS and JS out into `assets/` files that build.py inlines, output unchanged and still self-contained. Move no: the grammar must live where every SPACE carries it (the skill, via Tools); `haichat-board/` is one consumer importing it, per QE3's one-grammar Law. Deferred to a quiet window: another session is editing these files live today, and a whole-file split under concurrent edits is merge hell.
+
+
+### From the retired States section (merged 260831)
+**Executed 260724: the page's JS and CSS became real files under `assets/`; output byte-identical; home unchanged (the skill). The 850-line build.py this step produced was then split again by `QC2b` into `src/`, leaving build.py a thin CLI entry (today `cli/build.py`, 164 lines).**
+- The numbers
+  This step: build.py 2,488 → 850 lines · assets/board.js 1,173 · assets/board.css 465.
+  The JS became editable with highlighting and checkable in place.
+  Since then: `QC2b` moved the Python into `src/` (build.py became `cli/build.py`, 164 lines today), and the monolith assets grew until 260731, when they were themselves re-split into numbered part files under `assets/css/` + `assets/js/`, concatenated in sorted path order by `src/assets.py`.
+  The static-site turn writes the assembled pair as shared `board/_assets/board.css` + `_assets/board.js` instead of inlining, because VS Code's Live Preview webview blocks inline JS; the one-command offline build still holds.
+- Why not haichat-board (asked and settled)
+  The skill travels with every SPACE via the Tools submodule; the static invariant needs `python3 build.py <dir>` to work offline in any of them.
+  `haichat-board/` is a consumer (it imports `parse_dir`/`to_json` and serve.py's writers); moving the grammar there would invert `QE3`'s settled Law.
+- How the proof worked
+  Snapshot the board folder → build with the split build.py → reconstruct a joined build.py by re-inlining the assets → build again → compare hashes.
+  Same inputs, both code paths, no interference from concurrent editors.
 
 ## Law
 - The grammar's home is the skill, forever
@@ -97,3 +97,5 @@ should it move to haichat-board?  NO —
 260725 1145 · QB alignment pass: recorded that QC2b's src/ split superseded the 850-line figure (build.py now 69 lines); "(to be created)" dropped from Files
 260724 1510 · Executed on JL's "go ahead and continue": assets split done (2,488 → 850 lines), node --check on the real asset, frozen-board byte proof PASSED after catching two wrapper-newline slips → ✅ SETTLED, Law written
 260724 1455 · Opened on JL's question; recommendation written (split into skill-local assets/, keep the home in the skill), execution parked until the concurrent-session churn quiets
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

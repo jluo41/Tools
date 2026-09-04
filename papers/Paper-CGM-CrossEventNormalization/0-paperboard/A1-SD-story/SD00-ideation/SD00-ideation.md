@@ -262,7 +262,7 @@ PROCEED WITH CAUTION as a supporting direction under Idea 1.
 - `README.md` - project intake and source summary.
 - `../../board.md` - paper board and current journey state.
 - `_WorkSpace/0-RawDataStore/0-EventNorm/` - local event-normalization contracts, examples, corpora, and benchmark runs.
-- `examples/ProjA-CGM-Raw2AIData/diagram/01-DataBoard-260818/` - local DataBoard and analysis pages.
+- `examples/Proj1-CGM-RawData/diagram/01-DataBoard-260818/` - local DataBoard and analysis pages.
 - Remote source: `/home/jluo41/.claude/projects/-home-jluo41-WellDoc-SPACE/beae21bc-6d8b-4b68-a516-34d761f44573.jsonl`.
 - Remote source: `/home/jluo41/.claude/projects/-home-jluo41-WellDoc-SPACE/19088662-a806-4498-971f-9b5b9d15ab7e.jsonl`.
 - Future executor, not yet created: `examples/ProjC-Model-LHM/tasks/B93_event_arch/`.

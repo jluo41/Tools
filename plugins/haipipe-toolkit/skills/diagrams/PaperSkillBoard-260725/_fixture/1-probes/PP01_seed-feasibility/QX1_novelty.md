@@ -15,10 +15,10 @@ Accepted: occupied (name the study) | unoccupied (name the nearest neighbors).
 
 ### bank binding
 **route**: discovery
-**bank**: run · discoveries/P02_misq-novelty/01_review-trait-to-opioid-rx-prior-art/
+**bank**: run · discoveries/b05_misq_novelty/j01_misq_novelty_inquiry/t01_review_trait_to_opioid_rx_prior_art/
 Originally reuse (the 2026-07-03 QA answered this q-executor at confidence medium). ESCALATED to run(1) and ENRICHED in place on 2026-07-20 under human `--depth 1+`, to close its two open verification gaps.
 Enrich result: verdict UNOCCUPIED CONFIRMED, confidence RAISED medium -> medium-high; Bandi 2024 read + classified non-occupying; four near-neighbours (S012-S015) appended; 15/15 sources verified.
-**target**: discoveries/P02_misq-novelty/01_review-trait-to-opioid-rx-prior-art/QA/1-prior-art.md
+**target**: discoveries/b05_misq_novelty/j01_misq_novelty_inquiry/t01_review_trait_to_opioid_rx_prior_art/QA/1-prior-art.md
 **state**: read
 
 ### a-executor
@@ -86,4 +86,3 @@ Not-done (residual, after the 2026-07-20 enrich):
 * Search sweep — PARTIALLY closed: a *direct* Scopus / Web of Science query and a working gray-literature sweep (SSRN/NBER/ResearchGate/ProQuest) remain open.
   Reduced, not eliminated.
 * Appended neighbours S012-S015 were verified by identifier and classified from abstracts/metadata, not read in full — adequate for near-neighbour triangulation; note if any is cited directly.
-

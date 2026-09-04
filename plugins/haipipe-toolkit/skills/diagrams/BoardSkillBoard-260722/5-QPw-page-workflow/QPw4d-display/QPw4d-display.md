@@ -140,38 +140,33 @@ A single count would need a fourth file that copies the other three, and a copy 
 
 ## Aims
 ### A1 · 🖼 This lane freezes, and never draws
-- A1.1 · No EVIDENCE run has written into a unit's `recipe/` or `assets/`.
+- ⬜ A1.1 · No EVIDENCE run has written into a unit's `recipe/` or `assets/`.
   Done when a receipt audit finds no EVIDENCE receipt whose artifacts include a recipe or an asset.
-- A1.2 · Every frozen intake names its renderer.
+  **Now:** Not measurable yet. `_runs/page/` holds five receipts and none is an EVIDENCE receipt, so there is nothing to audit.
+- ⬜ A1.2 · Every frozen intake names its renderer.
   Done when every `intake/manifest.yaml` on this board carries a `kind:` row resolving to one of the five renderer skills.
+  **Now:** Not met. Four units on this board have no frozen `intake/inputs/` at all, so none of the four can name a renderer for a snapshot it does not have.
 ### A2 · ⏱ The unit cannot be declared before an answer exists
-- A2.1 · No unit on this board is declared with an unfrozen intake.
+- ⬜ A2.1 · No unit on this board is declared with an unfrozen intake.
   Done when `cli/check.py` reports zero `display-intake-unfrozen` findings.
-- A2.2 · No unit folder exists without a `claim:` row.
+  **Now:** Not met. `cli/check.py` reports `display-intake-unfrozen` on FOUR units: `QPf5-Display1`, `QPf5-Display2`, `QPw00-Display1`, `QPw00-Display2`.
+- ⬜ A2.2 · No unit folder exists without a `claim:` row.
   Done when `cli/check.py` reports zero `display-declared-no-claim` findings.
+  **Now:** Not met. `cli/check.py` reports one `display-declared-no-claim`, on `QPf6-Display1-latex-proof`.
 ### A3 · 🚫 Rendering is not release
-- A3.1 · No `accepted: ✅` on this board binds a render that has since changed.
+- ✅ A3.1 · No `accepted: ✅` on this board binds a render that has since changed.
   Done when `cli/check.py` reports zero `display-accept-stale` findings.
+  **Now:** Met today. `cli/check.py` reports zero `display-accept-stale` findings, though trivially: no unit on this board carries an `accepted: ✅` at all.
+
 
 ### A5 · 🃏 The display unit IS an evidence card, and card names three shapes
-- A5.1 · Every page's three card kinds are countable from disk without a fourth file.
+- 🔨 A5.1 · Every page's three card kinds are countable from disk without a fourth file.
   Done when `cli/pagestatus.py` reports 📚 · 🔢 · 🖼 per page and no page carries a summary file that restates them.
-- A5.2 · No display unit exists whose intake did not come from a named probe card's `proof/`.
+  **Now:** Partly met. `cli/pagestatus.py` reports the three columns and no page carries a summary file, but the fn is not yet wired as a verb of `haipipe-page`, so nothing calls it on a schedule.
+- ⬜ A5.2 · No display unit exists whose intake did not come from a named probe card's `proof/`.
   Done when every `intake/manifest.yaml` on this board names the `PP<NN>` its snapshot was frozen from.
+  **Now:** Not met, and not measurable: `intake/manifest.yaml` has no field for the `PP<NN>` it froze from, so the link is not merely unwritten, it has nowhere to be written.
 
-## States
-### A1 · 🖼 This lane freezes, and never draws
-- ⬜ A1.1 · Not measurable yet. `_runs/page/` holds five receipts and none is an EVIDENCE receipt, so there is nothing to audit.
-- ⬜ A1.2 · Not met. Four units on this board have no frozen `intake/inputs/` at all, so none of the four can name a renderer for a snapshot it does not have.
-### A2 · ⏱ The unit cannot be declared before an answer exists
-- ⬜ A2.1 · Not met. `cli/check.py` reports `display-intake-unfrozen` on FOUR units: `QPf5-Display1`, `QPf5-Display2`, `QPw00-Display1`, `QPw00-Display2`.
-- ⬜ A2.2 · Not met. `cli/check.py` reports one `display-declared-no-claim`, on `QPf6-Display1-latex-proof`.
-### A3 · 🚫 Rendering is not release
-- ✅ A3.1 · Met today. `cli/check.py` reports zero `display-accept-stale` findings, though trivially: no unit on this board carries an `accepted: ✅` at all.
-
-### A5 · 🃏 The display unit IS an evidence card, and card names three shapes
-- 🔨 A5.1 · Partly met. `cli/pagestatus.py` reports the three columns and no page carries a summary file, but the fn is not yet wired as a verb of `haipipe-page`, so nothing calls it on a schedule.
-- ⬜ A5.2 · Not met, and not measurable: `intake/manifest.yaml` has no field for the `PP<NN>` it froze from, so the link is not merely unwritten, it has nowhere to be written.
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -213,3 +208,4 @@ A single count would need a fourth file that copies the other three, and a copy 
 - 260818 · [DRAFT-CC] created as a lane face of `QPw4` on JL's ruling, given three times before it was executed. Every count on this page was read from `cli/check.py` in the same session rather than recalled, which matters because the earlier summary of this lane on `QPw4` said TWO unfrozen intakes when the real number is FOUR, and an independent reviewer caught it. The page keeps to step ① and names the owner of every other step, since the unit outliving the phase is this lane's whole difficulty.
 
 - 260818 1420 · [DRAFT-CC] `§5` added on JL's ruling "the display will be one evidence card as well". It is already law in `haipipe-page-evidence` §🧾, and what the law does not say out loud is that the three kinds have three DIFFERENT shapes: a bib ENTRY, a `probe/PP<NN>` FOLDER, and a `display/<unit>` FOLDER, with only the middle one carrying a `PP<NN>` id. `§5.1` adds that this lane's card is downstream of a value card rather than a peer, and `§5.2` names the cost: three shapes need three columns in `cli/pagestatus.py`, because a single count would need a fourth file that copies the other three.
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

@@ -1,16 +1,21 @@
 ---
 name: haipipe-plugin-draw
 description: >-
-  The draw/ plugin of a Board page: one PRIMARY Excalidraw scene per owner, page scenes in <page>/draw/, the group scene beside its pages, composed live and saved to exactly one owner. Owns the ownership rule, the two group-editor modes, the split/sync/compose/verify commands, and the ✨ autodraw writer with its style contract: transparent shapes, color on the stroke, Comic Shanns text. Loads haipipe-plugin for the four-facet contract and never restates it. Trigger: draw plugin, attach a drawing, page scene, group scene, excalidraw source, arrange instance, edit page source, draw split, draw sync, draw it, autodraw, generate a drawing, drawing style, /haipipe-plugin-draw.
+  The draw/ plugin of a Board page: one Excalidraw scene per owner, page
+  scenes in <page>/draw/ and the group scene beside its pages. Owns
+  split/sync/compose/verify and the ✨ autodraw writer. Trigger: draw plugin,
+  attach a drawing, page scene, group scene, excalidraw, autodraw, draw it,
+  /haipipe-plugin-draw.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-08-16"
-  summary: "Added the ✨ autodraw writer, the mint, the style contract (transparent fills, stroke color, Comic Shanns), and the verbatim ascii copy above the drawn version (JL 260816)."
+  version: "0.2.4"
+  last_updated: "2026-08-31"
 ---
 # /haipipe-plugin-draw · one scene per owner, saved to exactly one owner
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface, writer, boundary.
 This file owns only draw's delta: who owns which scene, and which gesture writes which file.
+
+> 🎨 Since 260831 evening this editor is the UPPER half of the one 🎨 Studio tab (`haipipe-plugin-studio`), staged above the live chat with its ✨ bar; ownership, the autodraw hand-drawn refusal and the chat pen are unchanged — only where the canvas hangs moved.
 
 ## 🗂 Storage · the page owns its scene, the group owns the relations
 
@@ -44,6 +49,15 @@ group own layer      group.excalidraw
 page instance move   group.excalidraw placement only
 page source edit     <stem>.excalidraw, every group recomposes
 ```
+
+**The chat holds this pen too (JL 260831: "I want the chat can change the
+excalidraw as well during the discussion")**: a page chat may edit that page's
+`<stem>.excalidraw` when the person asks in the session — the ask is the
+grant, quoted in the one log record the write leaves. The ownership rule
+binds unchanged (the chat writes only the open page's scene, never
+`group.excalidraw`); ✨ autodraw's whole-scene authoring still refuses a
+hand-drawn scene, while a chat edit is a scoped MODIFICATION of it — the
+element(s) the ask names, nothing else redrawn.
 
 The group editor has two explicit modes, and the UI always shows which owner will receive the save.
 `Arrange Instance` changes only the imported page's placement, scale, visibility, and crop in the manifest.

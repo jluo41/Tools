@@ -226,6 +226,8 @@ A page is `<name>/<name>.md` and every subfolder of it is a plugin (JL 260815); 
                        read live from plan.yaml / report.yaml / QA/
 🗣 meeting             QPf14 the meeting plugin · a page's own kept
                        record of a conversation, standalone (260818)
+🧾 evidence            QPf15 ONE tab presents the four evidence lanes
+                       as segments · storage and gates stay (260831)
 ⬜ debt                the fixture plugin page, born once its own
                        contract is written
 ```
@@ -247,6 +249,7 @@ QPf11-pagex.md
 QPf12-outline.md
 QPf13-task.md
 QPf14-meeting.md
+QPf15-evidence.md
 ### QPw · Page-Workflow
 How a page MOVES, in two halves that must not be read as one sequence: `QPw1`-`QPw6` are the PHASES, one page per phase, in loop order, and each one RUNS; `QPw00a`-`QPw00g` are the MACHINE, which cuts across every phase and never runs at all. JL 260818: "Please explain what is 7, 8, 9??? I still don't get it?" - the numbering was the whole confusion, because read in sequence it says "CHECK, then agents, then receipts, then the gate", which is not a thing that happens.
 Design-6 became QPw00a on 260816 (renamed off the coined word "hands" on 260818, JL: "why I don't understand 7 specifically"), when the Design kind folded into the Q series: the unit rides the Q page that argues it.

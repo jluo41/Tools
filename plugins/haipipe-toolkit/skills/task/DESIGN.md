@@ -3,7 +3,7 @@ task — Task-Type Specialist Series (DESIGN)
 
 Status: v5.1.0 (2026-06-21). 4-phase code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
 Owner:  jluo41
-Scope:  task-folder lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
+Scope:  job lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
 
 
@@ -42,7 +42,7 @@ applications/        /haipipe-application-*        application/
 The executors answer questions through ONE door each (`/haipipe-task qa`,
 `/haipipe-discovery qa`) and return a PATH to a readable digest. Nothing else crosses.
 
-`project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
+`project/` owns project-scope ops (the umbrella + inspect + organize + project/block scaffold).
 `task/` owns the inside-execution layer — the lifecycle orchestrator, task-type
 specialists, shared agents, and the numbered task-domain families.
 
@@ -79,7 +79,7 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- SKILL.md                        scope resolution + 4-phase code lifecycle dispatch
 |   |-- ref/
 |   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-phase loop
-|   |   |-- hierarchy.md               project -> task-group -> task-folder -> run
+|   |   |-- hierarchy.md               project -> block -> job -> run
 |   |   |-- authoring-conventions.md   cell markers, Intent docstring, config-driven
 |   |   |-- workflow-template.yaml     task-level IPO template (Run/Gate1/Gate2)
 |   |   |-- run-sh-template.sh         papermill wrapper + pre-flight gate
@@ -88,14 +88,14 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |   |-- runtime-yaml-schema.md     run status format
 |   |   |-- intent-docstring-template.py
 |   |   |-- invocation-modes.md        interactive vs headless
-|   |   |-- task-structure.md          group/task-folder layout contract (from project, 2026-07-03)
+|   |   |-- task-structure.md          group/job layout contract (from project, 2026-07-03)
 |   |   |-- scan_status/               status-scan scripts (from project, 2026-07-03)
 |   |-- fn/
 |   |   |-- stage-plan.md              procedure for Plan stage
 |   |   |-- stage-report.md            procedure for Report stage
 |   |   |-- run.md                     procedure for run scaffolding
 |   |   |-- audit.md                   procedure for auditing
-|   |   |-- task-group.md              task-group scaffold (from project, 2026-07-03)
+|   |   |-- task-group.md              block scaffold (from project, 2026-07-03)
 |   |   |-- scan-status.md             cross-group status scan (from project, 2026-07-03)
 |   |   |-- feedback.md + digest.md    feedback capture + session harvest
 |   |-- diagram/
@@ -158,7 +158,7 @@ A and B carry numbers because their position carries meaning:
     to 3_end for deployment, used by 4_individual for inference. The number
     encodes the dependency order.
 
-C is NOT sequenced. It is a type ENUM. The hub detects ONE type per task-folder
+C is NOT sequenced. It is a type ENUM. The hub detects ONE type per job
 and routes to that single spoke. A project may run only display tasks, or only
 eval tasks, in any order; there is no canonical "for-data then for-algo then
 ..." pipeline. Numbering C would:
@@ -179,7 +179,7 @@ The type spokes (C) pair with the task domains (B) by subject matter, but they
 are two LAYERS, not duplicates:
 
 ```
-domain (B): pipeline engine          type spoke (C): how to author a task-folder
+domain (B): pipeline engine          type spoke (C): how to author a job
 1_data       /haipipe-data       <->  for-data
 2_nn         /haipipe-nn         <->  for-algo, for-fit
 3_end        /haipipe-end        <->  for-endpoint, for-eval
@@ -190,7 +190,7 @@ domain (B): pipeline engine          type spoke (C): how to author a task-folder
   - A domain (B) is the pipeline primitive itself: build a SourceSet, train a
     model, deploy an endpoint. It is a standalone, user-facing umbrella skill.
   - A type spoke (C) is the lifecycle hub's knowledge of how to scaffold, build,
-    and lint a TASK-FOLDER that exercises that primitive (scaffold.md,
+    and lint a JOB that exercises that primitive (scaffold.md,
     config-seed.yaml, workflow-plan-sample.yaml, type constraints).
 
 So C is keyed by the same subjects as B, but it lives on the authoring side and
@@ -215,7 +215,7 @@ becomes the single, flat, NUMBERED family of task DOMAINS. There is no parallel
 type-spoke family. Each domain owns both legs:
 
   - run / library leg   the pipeline capability (e.g. /haipipe-data)
-  - task-author leg     how to scaffold/build/lint a task-folder of this kind
+  - task-author leg     how to scaffold/build/lint a job of this kind
                         (the content that used to live in haipipe-task-for-xxx)
 
 Numbering rule (APPEND-ONLY)
@@ -362,7 +362,7 @@ Three ways to enter
 Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
   hub detects type -> reads spoke's ref/ as reference -> runs 4-phase lifecycle
 
-Path 2 — Via hub (scaffold):    /haipipe-task task-folder eval
+Path 2 — Via hub (scaffold):    /haipipe-task job eval
   hub resolves type -> Skill("haipipe-task-for-eval") -> spoke runs fn/scaffold.md
 
 Path 3 — Direct call:           /haipipe-task-for-stata <args>
@@ -395,7 +395,7 @@ What each spoke reads from the hub
 Resource                     | What the spoke gets from the hub
 -----------------------------+--------------------------------------------------
 ref/run-sh-template.sh       | papermill wrapper + pre-flight gate (copied to runs/)
-ref/hierarchy.md             | project -> task-group -> task-folder -> run model
+ref/hierarchy.md             | project -> block -> job -> run model
 ref/authoring-conventions.md | cell markers, Intent docstring, config-driven rules
 ref/config-meta-template.yaml| _meta block template for configs/
 ref/workflow-template.yaml   | task-level IPO template (Run/Gate1/Gate2)
@@ -434,7 +434,7 @@ TWO SESSION MODES:
 THE ONE DOOR IN — the `qa` verb (`haipipe-task/fn/qa.md`). A question arrives as ONE
 QUESTION IN GENERAL LANGUAGE and nothing else. The verb answers it (① QA SCAN → ② DIGEST →
 ③ P-B-E-R at the shallowest depth) or REFUSES it, and returns a path to
-`<task-folder>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
+`<job>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
 
 The pen never leaves this layer: WE write the QA file. A file in this bank authored by an
 outsider carries the outsider's vocabulary — that is exactly how a task result on disk
@@ -486,7 +486,7 @@ required:
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
 
 optional:
-  QA/<n>-<slug>.md                the READABLE digest of a direction this task-folder explored.
+  QA/<n>-<slug>.md                the READABLE digest of a direction this job explored.
                                   Three reasons only: a question arrived · results/ already
                                   answered one but no digest existed · we judged a finding
                                   worth digesting. A QA/ mirroring every result is noise.
@@ -583,8 +583,8 @@ Orchestrator Routing (v5.0.0)
 /haipipe-task execute <path>           Stage 3 only
 /haipipe-task report <path>            Stage 4 only
 /haipipe-task <existing-path>          full lifecycle (all 4 stages)
-/haipipe-task task-folder <type>       scaffold NEW folder via specialist
-task-group scope                       -> iterate child task folders
+/haipipe-task job <type>               scaffold NEW folder via specialist
+block scope                            -> iterate child task folders
 project scope                          -> use /haipipe-project
 ```
 
@@ -657,7 +657,7 @@ Decision Log
 
 2026-05-24  Approved: split into 7 type specialists; group letters A-F + X.
 2026-06-08  Approved: 4-phase lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
-2026-06-08  Approved: move project/task-group scope to project/haipipe-project.
+2026-06-08  Approved: move project/block scope to project/haipipe-project.
 2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
 2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).
 2026-06-09  Approved: add Stata specialist (1 unified specialist handling all 4 stages internally).
@@ -667,6 +667,6 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
-2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <task-folder>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new task-folder), or REFUSE. ADDED: the OPTIONAL QA/ folder — the task-folder's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
+2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <job>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new job), or REFUSE. ADDED: the OPTIONAL QA/ folder — the job's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
 2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

@@ -26,18 +26,22 @@
     '<div class="sfpath"></div><div class="sfquote"></div>' +
     '<details class="sfattached"><summary></summary><pre></pre></details></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
-    '<div class="utility"><div class="utility-tabs">' +
-    /* Sessions belongs beside the other two, not in a separate strip under the
-       header (JL 260801: "我怎么能加一个新的 button，叫 Sessions"). The picker
-       element itself is UNMOVED in every other sense: same .spick / .spl
-       selectors, so loadSessions and renderSessions need no change.
-       ORDER, left to right (JL 260802): which conversation, then what to say in
-       it, then how it is configured — widest scope first, and Settings last
-       because it is the one you touch least. */
-    '<button class="gtoggle" type="button" aria-expanded="false">🗂 Sessions</button>' +
-    '<button class="utoggle" type="button" aria-expanded="false">✨ Quick actions</button>' +
-    '<button class="stoggle" type="button" aria-expanded="false">⚙ Settings</button></div>' +
-    '<div class="utility-body"><div class="acts"></div>' +
+    /* THE COMPOSER CARD (JL 260831, from the Claude Code composer he showed):
+       one rounded box — the textarea on top, a control ROW under it: ＋ new
+       chat · 🗂 sessions · ✨ quick actions · ⚙ settings · 🖌 draw fold on
+       the left, ➤ send on the right. The three toggles open POPUP menus
+       floating above the composer instead of expanding the pane, and nothing
+       opens by itself (reverses the 260815 "list first" boot ruling — JL
+       260831: "make the sessions hidden ... it will show a list of menu").
+       Same .gtoggle/.utoggle/.stoggle classes, so setUtility is unchanged. */
+    '<div class="utility"><div class="utility-body"><div class="acts"></div>' +
+    /* 🖌 the draw menu (JL 260831: the shell's ✨ drawbar retired — "I want
+       it to be in the input box"): Draw-it reads the COMPOSER text as the
+       ask, the fold row is the studio's hide/show. */
+    '<div class="drawmenu">' +
+    '<button class="dact draw-go" type="button">✨ Draw it — uses the text in the box · empty = this page&#39;s ## Diagram</button>' +
+    '<button class="dact draw-fold" type="button">🖌 Hide the drawing</button>' +
+    '</div>' +
     '<div class="sessions"><details class="spick" hidden open>'+
     '<summary></summary><div class="spl"></div></details></div>' +
     '<div class="settings"><div class="tip"></div>' +
@@ -47,14 +51,27 @@
     '<option value="sonnet">Sonnet 5</option><option value="haiku">Haiku 4.5</option></select>' +
     '<select class="eff"><option>low</option><option>medium</option>' +
     '<option selected>high</option><option>xhigh</option><option>max</option></select>' +
+    '<select class="fsz" title="chat text size — JL 260831: windows differ in width and zoom, so the size is yours to set">' +
+    '<option value="10.5">Aa 10.5</option><option value="11.5" selected>Aa 11.5</option>' +
+    '<option value="12.5">Aa 12.5</option><option value="14">Aa 14</option>' +
+    '<option value="16">Aa 16</option></select>' +
     '<select class="scope" title="Permission tier: Scoped = this question only · Full = all tools + skills, like the CLI">' +
     '<option value="scoped">Scoped</option>' +
     '<option value="full" selected>Full · ask</option>' +
     '<option value="bypass">Full · no ask</option></select>' +
     '<span class="cost"></span></div>' +
     '<div class="sid"></div></div></div></div>' +
-    '<div class="ft"><textarea rows="1" placeholder="Ask about this question…"></textarea>' +
-    '<button class="send">➤</button></div>';
+    '<div class="ft"><div class="composer">' +
+    '<textarea rows="1" placeholder="Ask about this question…"></textarea>' +
+    '<div class="crow">' +
+    '<button class="cnew" type="button" title="new chat — starts fresh, primed with this page">＋</button>' +
+    '<button class="gtoggle" type="button" aria-expanded="false" title="sessions">🗂\ufe0f</button>' +
+    '<button class="utoggle" type="button" aria-expanded="false" title="quick actions">✨</button>' +
+    '<button class="stoggle" type="button" aria-expanded="false" title="settings">⚙\ufe0f</button>' +
+    '<button class="dtoggle" type="button" title="show / hide the drawing above">🖌</button>' +
+    '<button class="mtoggle" type="button" title="open this chat in the real terminal (same session) — the ← in the header returns">⌨\ufe0f<span class="lbl">TUI</span></button>' +
+    '<button class="send" title="send">➤</button>' +
+    '</div></div></div>';
   document.body.appendChild(chat);
   /* The drawer is position:fixed OVER the page, so a wheel with nothing to
      scroll inside it chains to the document and the PAGE moves instead — and
@@ -84,9 +101,11 @@
   var utility = chat.querySelector('.utility'), utilityToggle = chat.querySelector('.utoggle'),
       settingsToggle = chat.querySelector('.stoggle'),
       sessionsToggle = chat.querySelector('.gtoggle');
+  var drawToggle = chat.querySelector('.dtoggle');
   var UTABS = [['actions', 'show-actions', utilityToggle],
                ['sessions', 'show-sessions', sessionsToggle],
-               ['settings', 'show-settings', settingsToggle]];
+               ['settings', 'show-settings', settingsToggle],
+               ['draw', 'show-draw', drawToggle]];
   function setUtility(mode) {
     var known = UTABS.filter(function (t) { return t[0] === mode; }).length;
     mode = known ? mode : '';
@@ -105,9 +124,98 @@
       if (sp) sp.open = true;
       if (typeof loadSessions === 'function') loadSessions();   // refresh on reveal
     }
+    if (mode === 'draw') {
+      var fr = chat.querySelector('.draw-fold'), shown = true;
+      try { shown = !parent || !parent.__studioDrawShown || parent.__studioDrawShown(); }
+      catch (e) {}
+      fr.textContent = shown ? '🖌 Hide the drawing' : '🖌 Show the drawing';
+    }
   }
   UTABS.forEach(function (t) {
-    t[2].onclick = function () {
+    t[2].onclick = function (ev) {
+      if (ev) ev.stopPropagation();
       setUtility(utility.classList.contains(t[1]) ? '' : t[0]);
     };
   });
+  /* a popup closes on a click anywhere outside it (the Claude Code manner) */
+  document.addEventListener('click', function (ev) {
+    if (!utility.classList.contains('open')) return;
+    for (var n = ev.target; n; n = n.parentNode) {
+      if (n === utility) return;
+      if (n.classList && n.classList.contains('crow')) return;
+    }
+    setUtility('');
+  });
+  /* ＋ new chat: one press, no menu — the session registry names it later */
+  chat.querySelector('.cnew').onclick = function () {
+    setUtility('');
+    if (window.__chatNewSession) window.__chatNewSession('');
+  };
+  /* one small toast pill for the draw menu's progress words */
+  function drawNote(msg) {
+    var t = chat.querySelector('.lrf.draw');
+    if (!t) {
+      t = document.createElement('div');
+      t.className = 'lrf draw';
+      chat.appendChild(t);
+    }
+    t.textContent = msg;
+    clearTimeout(t._bye);
+    if (/^(✅|✋)/.test(msg)) t._bye = setTimeout(function () { t.remove(); }, 6000);
+  }
+  /* the drawing itself lives in the SHELL (the studio's upper half); the
+     menu rows are the composer's remote for it. Outside the shell they say so. */
+  chat.querySelector('.draw-go').onclick = function () {
+    setUtility('');
+    var ta = chat.querySelector('textarea');
+    var ask = ta.value.trim();
+    try {
+      if (parent && parent.__studioDrawIt) {
+        parent.__studioDrawIt(ask, drawNote);
+        if (ask) ta.value = '';
+        return;
+      }
+    } catch (e) {}
+    drawNote('✋ the drawing lives in the board shell — open this page in the split view');
+  };
+  /* ⤓ open at the NEWEST message EVERY time the pane becomes visible (JL
+     260831 "make the GUI chat to the bottom everytime I open it"): the
+     replay-time scroll (40-permissions) only covers the first open — a tab
+     switch or a return from the terminal reveals the pane mid-transcript.
+     Watch visibility itself: on every hidden→shown edge, snap to bottom. */
+  (function () {
+    var bd = chat.querySelector('.bd');
+    var wasVisible = false;
+    setInterval(function () {
+      var vis = !!bd.offsetParent && bd.clientHeight > 0;
+      if (vis && !wasVisible) bd.scrollTop = bd.scrollHeight;
+      wasVisible = vis;
+    }, 400);
+  })();
+  /* Aa the chat text size is the reader's (JL 260831 "still large here"):
+     one CSS variable, one stored choice, applied at boot. */
+  var FSZ = 'board-chat-fsz';
+  var fszSel = chat.querySelector('.fsz');
+  function applyFsz(v) {
+    chat.style.setProperty('--chatfs', v + 'px');
+    if (fszSel) fszSel.value = v;
+  }
+  try { applyFsz(localStorage.getItem(FSZ) || '11.5'); } catch (e) { applyFsz('11.5'); }
+  if (fszSel) fszSel.onchange = function () {
+    try { localStorage.setItem(FSZ, fszSel.value); } catch (e) {}
+    applyFsz(fszSel.value);
+  };
+  /* ⌨ the GUI/TUI switch moved here from the shell strip (JL 260831).
+     One implementation law (QD1): the header's .term button IS the switch,
+     this row button only presses it. The composer hides in TUI, so this
+     door only ever leads IN; the header's ← leads back. */
+  chat.querySelector('.mtoggle').onclick = function () {
+    var t = chat.querySelector('.hd .term');
+    if (t) t.click();
+  };
+  chat.querySelector('.draw-fold').onclick = function () {
+    setUtility('');
+    try { if (parent && parent.__studioToggleDraw) { parent.__studioToggleDraw(); return; } }
+    catch (e) {}
+    drawNote('✋ the drawing lives in the board shell — open this page in the split view');
+  };

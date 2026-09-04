@@ -58,27 +58,24 @@ Page-level acceptance forces re-approval of unchanged content whenever one messa
 ## Aims
 
 ### A1 · Contract
-- A1.1 · One unit can be accepted while a sibling is not, without a second Page.
+- ✅ A1.1 · One unit can be accepted while a sibling is not, without a second Page.
   **Done when:** acceptance lives on the division and clears per division.
+  **Now:** Design Page Type 0.3.0 carries the per-division `accepted:` row.
+
 
 #### A2 · Scoping
-- A2.1 · A refreshed handoff clears only the divisions that cite it.
+- ✅ A2.1 · A refreshed handoff clears only the divisions that cite it.
   **Done when:** clearing is driven by citation rather than by page.
+  **Now:** Stated in the Design contract and in the public door's acceptance gates.
+
 
 #### A3 · Coverage
-- A3.1 · The case the retired artifact type existed for still works.
+- ✅ A3.1 · The case the retired artifact type existed for still works.
   **Done when:** an independently shipped arm is expressible as one division row.
+  **Now:** The SMS-R4 A/B holdout arm, the motivating case, is one division with its own row.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Design Page Type 0.3.0 carries the per-division `accepted:` row.
-
-#### A2 · Scoping
-- ✅ A2.1 · Stated in the Design contract and in the public door's acceptance gates.
-
-#### A3 · Coverage
-- ✅ A3.1 · The SMS-R4 A/B holdout arm, the motivating case, is one division with its own row.
+## Discussion
 
 ## Files
 
@@ -99,3 +96,5 @@ A signature covers exactly what it can be checked against. One division, one row
 ## Log
 
 260820 · Moved acceptance from the Page to the division and retired `page-type: artifact` (JL: "I think we only need to keep one conception").
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

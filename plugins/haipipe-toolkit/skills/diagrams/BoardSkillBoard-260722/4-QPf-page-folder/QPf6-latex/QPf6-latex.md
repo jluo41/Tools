@@ -90,27 +90,6 @@ A run that fails opens that fold and prints the tail of the log, so the error si
 QPf6-Display1 shows the working case at the size a reader reads it: page 1 of this page's own export, rendered at 150 dpi, so the claim that the projection works is shown rather than asserted a third time.
 
 ## Aims
-### A1 · 🧾 What sits in the folder, and what a rebuild overwrites
-- A1.1 · The route, the master wrap, and the folder shipped.
-  **Done when:** one POST to `/_board/latex` leaves `<stem>.tex`, `<stem>.pdf`, and `<stem>-view.html` in the page's own `latex/` folder and no `-master.*` beside them.
-- A1.2 · A page under a paper root exports with its citations resolved.
-  **Done when:** a page above a real `0-*.bib` compiles with natbib and its `\citep` keys resolve in the PDF's reference list.
-
-### A2 · 📐 What survives the trip to LaTeX, and what is lost
-- A2.1 · The losses are measured on one page full of figures.
-  **Done when:** one page full of ascii figures is exported and the lost glyphs and lost lanes are listed in States. That list then decides whether the master needs a unicode font package, or whether the losses are accepted.
-
-### A3 · 🖼 The tab shows something even when the build fails
-- A3.1 · The 📜 tab shipped and was driven, not assumed.
-  **Done when:** the 📜 tab frames a board page's compiled PDF in a live browser.
-
-### P · 🚧 The checker knows this folder
-- P1 · `latex/` joins the list of folders the checker knows.
-  **Done when:** `check.py` names `latex/` a known plugin folder and warns on nothing inside it.
-
-## States
-The writer half is done and proven, and the measuring half and the checker half are still owed.
-
 ### Decision Now
 - [ ] 🗣 What does git keep of a folder the machine rebuilds?
       This row rules for `latex/`, `word/`, and the rebuilt half of `bibex/` at once, and it lands in the plugin list, because one answer must cover them all.
@@ -120,18 +99,38 @@ The writer half is done and proven, and the measuring half and the checker half 
       🛑 Blocks: nothing; the folders exist either way.
       🤖 If nobody answers: B, the paper's machinery-under-the-delete-test ruling.
 
+
 ### A1 · 🧾 What sits in the folder, and what a rebuild overwrites
-- ✅ A1.1 · Shipped as haipipe-board 0.128.0 on 260815: the endpoint, the master wrap, the paper-root search, the cite-less fallback, the view page written on every run, and the leftover `-master.*` files deleted after it. Every `latex/` folder on this board now holds the three files per stem.
-- ⬜ A1.2 · natbib and bibtex have run: `QPf8`'s compiled PDF prints `[Luo et al., 2026]` inline and a References page after it, compiled from that page's own `bibex/` bib. What has never run is the paper-root half this Aim asks for, because no `0-*.bib` exists anywhere in this board's tree for the upward walk to find.
+- ✅ A1.1 · The route, the master wrap, and the folder shipped.
+  **Done when:** one POST to `/_board/latex` leaves `<stem>.tex`, `<stem>.pdf`, and `<stem>-view.html` in the page's own `latex/` folder and no `-master.*` beside them.
+  **Now:** Shipped as haipipe-board 0.128.0 on 260815: the endpoint, the master wrap, the paper-root search, the cite-less fallback, the view page written on every run, and the leftover `-master.*` files deleted after it. Every `latex/` folder on this board now holds the three files per stem.
+- ⬜ A1.2 · A page under a paper root exports with its citations resolved.
+  **Done when:** a page above a real `0-*.bib` compiles with natbib and its `\citep` keys resolve in the PDF's reference list.
+  **Now:** natbib and bibtex have run: `QPf8`'s compiled PDF prints `[Luo et al., 2026]` inline and a References page after it, compiled from that page's own `bibex/` bib. What has never run is the paper-root half this Aim asks for, because no `0-*.bib` exists anywhere in this board's tree for the upward walk to find.
+
 
 ### A2 · 📐 What survives the trip to LaTeX, and what is lost
-- ⬜ A2.1 · No page full of figures has been exported yet. `QPf4b` was mostly prose, so it made the mapping look better than it is.
+- ⬜ A2.1 · The losses are measured on one page full of figures.
+  **Done when:** one page full of ascii figures is exported and the lost glyphs and lost lanes are listed in States. That list then decides whether the master needs a unicode font package, or whether the losses are accepted.
+  **Now:** No page full of figures has been exported yet. `QPf4b` was mostly prose, so it made the mapping look better than it is.
+
 
 ### A3 · 🖼 The tab shows something even when the build fails
-- ✅ A3.1 · Checked in a browser on 260815: `QPf4b`'s nine-page PDF framed through the driven CDP run, opened from the Plugin menu, closed by its own ✕.
+- ✅ A3.1 · The 📜 tab shipped and was driven, not assumed.
+  **Done when:** the 📜 tab frames a board page's compiled PDF in a live browser.
+  **Now:** Checked in a browser on 260815: `QPf4b`'s nine-page PDF framed through the driven CDP run, opened from the Plugin menu, closed by its own ✕.
+
 
 ### P · 🚧 The checker knows this folder
-- ⬜ P1 · `check.py` does not yet know `latex/` by name.
+- ⬜ P1 · `latex/` joins the list of folders the checker knows.
+  **Done when:** `check.py` names `latex/` a known plugin folder and warns on nothing inside it.
+  **Now:** `check.py` does not yet know `latex/` by name.
+
+
+## Discussion
+
+### From the retired States section (merged 260831)
+The writer half is done and proven, and the measuring half and the checker half are still owed.
 
 ## Files
 ### ⚙️ Engines
@@ -159,3 +158,5 @@ The writer half is done and proven, and the measuring half and the checker half 
 - 260815 1610 · [JL via CC] Display1-latex-proof accepted (JL: "please just do them for me"); preview renders all three divisions.
 - 260815 1605 · [REVISE-CC] the three export defects fixed in md2tex.py and re-compiled through POST /_board/latex: section titles lose their `N ·` whole, a code span's TeX specials are escaped so `\citep` prints instead of running, and --keep-fences renders sketches as transliterated verbatim so a figure-only division no longer exports empty.
 - 260815 · [DRAFT-CC] page born in the plugin round, after the build rather than before it: A1 records what shipped in haipipe-board 0.128.0, A2/A3/P1 hold what the build left open, and the git ruling for all three derived folders is put to JL here.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

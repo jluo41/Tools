@@ -1,96 +1,163 @@
 # Application skill family
 
-An Application is TWO boards. One understands the data; the other designs what gets sent. It ends at accepted.
+An Application is a pair of Boards whose Folders are owned by workflow phases:
 
 ```text
-🔎 InsightBoard                                    🎨 DesignBoard
-Meta + Question registers → D→I→K→W  ── PageX ──▶  Brief → Principle → Design → ✅ accepted
-MT00 says what EXISTS                              only P reads the InsightBoard
-MT01-MT04 say what is ASKED of each rung           render/ plugin projects accepted divisions
+🔎 InsightBoard                                  🎨 DesignBoard
+I0 Meta → I1 Question → I2 D → I3 I → I4 K → I5 W
+                              └── signed W handoff ── PageX ──▶
+                                                  D0 Brief → D1 Card → D2 Unit
+                                                  → D3 Verdict → D4 Division
+                                                  → D5 PageDown → accepted
 ```
+
+It ends at accepted. Building, fielding, allocation, execution, and measurement
+are Task work outside the Application.
+
+## Folder model
+
+`haipipe-folder` is the shared base. Every Folder has:
+
+- a **Page Face** for reading, expression, and judgment;
+- a **Task Face** for intent, work, progress, and closure;
+- a phase-selected plugin profile;
+- one gate and one handoff owned by the same phase.
+
+`primary_face` identifies the normal entry, not the only face. Page Types no
+longer own Application semantics. Existing runtime `page-type:` keys remain
+readable through each phase skill's `legacy_page_type` metadata.
 
 ## Ownership
 
 | Layer | Owns | Does not own |
 |---|---|---|
-| Task/Discovery | execution and source evidence | Application framing |
-| InsightBoard · Meta | source inventory, grain, freshness | any interpretation, any question |
-| InsightBoard · Question registers | what is asked of each rung, raiser, state, the board rollup (on MT04) | any answer, any probe |
-| InsightBoard · D/I/K/W | Task-backed Probe, observations → patterns → claims → counsel, Design Handoff (W only) | final message copy |
-| DesignBoard · Brief | opportunity, audience, outcome, venue scope, needs raised | the answers to those needs |
-| DesignBoard · Principle | because-<W>-do-<move>-within-<rail> warrants · the ONLY DesignBoard reader of the InsightBoard | raw Task/Discovery inspection |
-| DesignBoard · Design | PageX selection, message system, per-division acceptance | probing anything |
+| `haipipe-application` | two-board umbrella, routing verbs, PageX crossing, accepted boundary | interior I/D phases |
+| `haipipe-application-workflow` | cross-board frontier, X0-X3 assertions, delegation and crossing receipts | a third P0-P4 machine |
+| `haipipe-insight` | one-dataset, climb, register, partition, handoff laws | Folder-specific two-face content |
+| `haipipe-insight-workflow` | I0-I5 order, GI0-GI6, cell frontier, dispatch and receipts | Design phases |
+| `haipipe-design` | reads/born-of/grant/stance laws, bets, no-experiment boundary | Folder-specific two-face content |
+| `haipipe-design-workflow` | D0-D5 order, GD0-GD6, thread/round frontier, dispatch and receipts | Insight phases |
+| each phase skill | one Folder kind's Page Face, Task Face, plugins, gate, closure, handoff | family-wide routing |
+| each plugin skill | reusable storage/surface/writer/boundary capability | deciding which phase uses it |
 
-Folder ownership does not transfer evidence authority. A D page lives in the Application folder but follows Task source/run/staleness rules.
-
-Two sibling skills head the family: `haipipe-application/` is the door (what an Application IS, the verbs), `haipipe-application-workflow/` is the RUN head (five phases in two lanes named by their authority pages — Meta, Chain, Wisdom · Brief, Design — with gates G0-G5, four of which a person must open). An InsightBoard has two layouts, chosen once at scaffold: rung-major (groups are the four rungs, the default) and partition-major (groups are partitions, `F` template + `9-X-cross`; grammar in `haipipe-application/ref/partition.md`).
-
-## Page Types
+## Phase skill set
 
 ```text
-application/page-types/
-├── haipipe-page-for-meta/         one InsightBoard head · what data exists · NO question
-├── haipipe-page-for-question/     four registers MT01-MT04 · what is asked of each rung
-├── haipipe-page-for-data/         D · observed, run-bound, uninterpreted
-├── haipipe-page-for-information/  I · rates and contrasts derived from named D rows
-├── haipipe-page-for-knowledge/    K · a proposition with strength, rivals, boundary
-├── haipipe-page-for-wisdom/       W · counsel + Design Handoff · the only bindable level
-├── haipipe-page-for-brief/        one DesignBoard head · what is being built, for whom
-├── haipipe-page-for-principle/    P · why this will work · the WARRANT crossing,
-│                                      when promoted; cards grant evidence
-└── haipipe-page-for-design/       DS · one audience × job × venue message system
+application/workflow-phases/
+├── haipipe-insight-meta/          I0 · meta
+├── haipipe-insight-question/      I1 · question register
+├── haipipe-insight-data/          I2 · run-bound observations
+├── haipipe-insight-information/   I3 · reproducible pattern
+├── haipipe-insight-knowledge/     I4 · bounded claim
+├── haipipe-insight-wisdom/        I5 · counsel + signed handoff
+├── haipipe-design-brief/          D0 · frame
+├── haipipe-design-card/           D1 · bet + release/kill
+├── haipipe-design-unit/           D2 · realization
+├── haipipe-design-verdict/        D3 · independent judgment
+├── haipipe-design-division/       D4 · render + accept/emit
+└── haipipe-design-pagedown/       D5 · prose truth pass + round seal
 ```
 
-`page-type: insight` is TASK-ONLY (the whole chain in one consumer-neutral page, `task/page-types/`). Retired 2026-08-20: `intervention` became `design`; `artifact` was absorbed into a per-division `accepted:` row. Split 2026-08-21: the Meta page's Insight Roster became the four question registers.
+Each file follows the mechanically checked contract:
 
-## Target runtime
+```text
+Position → Folder Kind → Input → Page Face → Task Face → Plugins
+→ Gate and Closure → Handoff → Files
+```
 
-A board's folder name says its subject: the data for an InsightBoard, the topic for a DesignBoard. PascalCase subject, literal kind, so `ls *-DesignBoard` finds them all.
+Run:
+
+```bash
+python3 ../board/haipipe-board/cli/foldercontracts.py --check
+```
+
+## Principle
+
+Principle is not a Page Type or independent phase. The default warrant stays on
+the D1 Card's `stance:`. D4 may promote one subordinate Principle Folder only
+when a warrant serves two or more Design Pages or when two InsightBoards
+conflict. D5 rereads it for staleness. Its rule is:
+
+```text
+because <signed W handoff>, do <move>, within <rail>
+```
+
+## Plugins
+
+The phase selects plugins. Important boundaries:
+
+- PageX is the one cross-Folder binding surface, across Boards and into Task
+  Folders. A Folder card reads live plan/report/QA status when present.
+- There is no `haipipe-plugin-task` or `task/` lane after migration.
+- Code stays named **Code**. Task Face is universal; execution is behavior;
+  Code is the optional presenter over `scripts/config/`, `runs/`, and
+  `results/`.
+- Principle is not a plugin.
+
+## Runtime
+
+Runtime paths and human decisions remain stable during this semantic migration:
 
 ```text
 <application-root>/
-├── InsightBoard-<Cohort>/                e.g. InsightBoard-SMSR2Full
+├── <Subject>-InsightBoard/
 │   ├── board.md
-│   ├── 0-MT-meta/
-│   │   ├── MT00-meta/                    sources · grain · freshness · limits
-│   │   ├── MT01-question-data/           QD<n> · asks of 1-D-data/
-│   │   ├── MT02-question-information/    QI<n> · asks of 2-I-information/
-│   │   ├── MT03-question-knowledge/      QK<n> · asks of 3-K-knowledge/
-│   │   └── MT04-question-wisdom/         QW<n> · asks of 4-W-wisdom/ + board rollup
-│   ├── 1-D-data/D<NN>-<slug>/            observed · run-bound
-│   ├── 2-I-information/I<NN>-<slug>/     derived · cites D
-│   ├── 3-K-knowledge/K<NN>-<slug>/       claimed · cites I
-│   └── 4-W-wisdom/W<NN>-<slug>/          counsel + handoff · cites K
-└── DesignBoard-<Program>/                e.g. DesignBoard-RefillFraming
+│   ├── 0-MT-meta/MT00-meta/ + MT01-MT04/
+│   ├── 1-D-data/
+│   ├── 2-I-information/
+│   ├── 3-K-knowledge/
+│   └── 4-W-wisdom/
+└── <Topic>-DesignBoard/
     ├── board.md
-    ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set · needs
-    ├── 1-P-principle/P<NN>-<slug>/       cites W · the WARRANT crossing, promoted only
-    └── 2-DS-design/DS<NN>-<slug>/        units as divisions · render/ plugin projections
+    ├── 0-BR-brief/BR00-brief/
+    ├── 1-P-principle/          optional promoted D4 role
+    ├── workflow/rounds/R<NN>-pagedown/   minimal D5 audit receipt
+    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/
+        ├── <stem>.md
+        ├── design/             one evolving Card → Unit → Verdict thread Folder
+        ├── delivery/render/
+        ├── evidence/pagex/
+        └── outline/
 ```
 
-Because the subjects are named independently, the count is free: several InsightBoards when the Application reads distinct data, several DesignBoards when it designs for distinct topics, and any DesignBoard may PageX-bind any InsightBoard.
+Insight may also use the partition-major layout defined by
+`haipipe-application/ref/partition.md`. Layout changes paths, not phase
+ownership.
 
-A project using the `<Letter><NN>_<slug>` folder grammar may prefix runtime boards for ordering — `A<NN>_` InsightBoards, `B<NN>_` DesignBoards, as in `A01_InsightBoard-SMSR2Full` — a project-local prefix that never appears inside pages.
+## Cross-board workflow
 
-The MT group law: **nothing in MT concludes**. Meta describes, the registers ask, and neither owns `probe/` or `display/`, because a probe brings back an answer and a figure is one. Only D/I/K/W pages own `probe/`. Each Design Page owns `pagex/` bindings to exact Brief and W-handoff material, and PageX crosses boards unchanged because it binds by path.
-
-## The Application ends at accepted
-
-Deciding that an exact version may go is a design judgment and stays on the DesignBoard. Building it, shipping it, running the experiment, and collecting what came back are task-layer work. There is no `deploy/` folder and no round folder; the loop closes back through a source refresh reopening D pages, not through a stage on this board.
-
-## Router
+`haipipe-application-workflow` reports the native frontiers unchanged:
 
 ```text
-/haipipe-application meta              inventory the data this board reads
-/haipipe-application question          register one question on the rung register it faces
-/haipipe-application chain             open or extend one D→I→K→W chain for one question
-/haipipe-application brief             frame what is being built and the needs it raises
-/haipipe-application design            author one audience/job/venue message system
-/haipipe-application render            project an accepted division through the render/ plugin
-/haipipe-application review | accept   exact-version gates, per division
-/haipipe-application retarget          re-pin venue or audience, reopen dependent Design
+insight: <cell> · I<n> · GI<n>
+design:  <thread> · D<n> · GD<n>
+crossing: X0 need-out | X1 signed-handoff | X2 outbound | X3 read-back
 ```
+
+It delegates to the owning workflow and adds no human gate. The four human
+gates remain Probe release, Wisdom signing, Card release/kill, and Division
+acceptance.
 
 ## Compatibility
 
-Legacy stage skills under `_old/` remain readers during migration. New work does not copy the descriptions/themes/claims/advice ladder, a flat `1-probes/`, a `4-deploy/`, or a `5-rounds/`. An existing page carrying `page-type: intervention` has its key renamed to `design`; one carrying `page-type: artifact` folds into its Design Page as a division. A Meta page still carrying an Insight Roster moves those rows to the four registers, keeping each question's raiser. External settled Insight Pages remain valid PageX inputs and are never moved automatically.
+- Read legacy `page-type: meta|question|data|information|knowledge|wisdom|
+  brief|design` through phase metadata.
+- Do not create new `haipipe-page-for-*` Application skills.
+- Retired `intervention` and `artifact` are read-and-fold inputs only.
+- Retired `principle` has no live compatibility key because no live page used
+  it; D4 owns any future promoted role.
+- Historical boards and receipts are not bulk-rewritten.
+- Unmigrated families may retain legacy compatibility contracts until their
+  own workflow phases absorb those Page faces.
+
+## Validation
+
+The migration is complete only when:
+
+1. Folder-contract validation is clean and proven to fail on a broken fixture.
+2. Page-Face outline resolution works for both `folder-kind:` and legacy
+   `page-type:`.
+3. the Page-Type compatibility inventory has no Application registry drift.
+4. Board checks and Application family tests pass.
+5. a fresh-context agent discovers the phase skill, follows both faces, selects
+   plugins correctly, and stops at the owning gate.

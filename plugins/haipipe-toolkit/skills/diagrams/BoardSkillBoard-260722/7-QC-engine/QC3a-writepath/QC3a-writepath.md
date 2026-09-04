@@ -164,6 +164,24 @@ The server already knows the line, since it just found it, so the response that 
 Formatting is then never guessed at and never erased, the 44.8% refusal disappears, and the rule stays "the machine never rewrites markdown it did not understand".
 
 ## Aims
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🪜 Ratify the ladder and its floor
+      Levels 0 to 2 for finding a line, and no approximate matching in the write path ever, on the grounds that a wrong write is invisible while a wrong highlight is not.
+      → CC's proposal: yes as drawn; it keeps today's behaviour as level 1 and only adds a level for the case that is refused today.
+- [x] ✂️ Rule how a decorated sentence gets edited
+      MOVED to `QB8`'s Decision Now on 260802, at JL's direction: "I think it should be the QB8 question, right?"
+      He is right. `QB8` `### 8` claims "the sentence, and everything written onto it · §6 the edit", so what an author experiences when editing one sentence is that page's, and this face owns only how any write FINDS its line and refuses safely.
+      It was written here because CC was measuring `live/write.py` and anchored the ruling to the file it was reading rather than to the page that owns the gesture, which is what routing's step 3 forbids.
+- [ ] 🔒 Rule the concurrency token, and where it lives
+      A write carries the version it read and is refused on mismatch; the question is whether that belongs here or with `QE4`'s lock.
+      → CC's proposal: the token belongs here because it is part of the write's contract, and the lock stays on `QE4`; they compose, since a lock prevents a collision and a token detects the one that got through.
+- [ ] 🏷 Decide whether markdown block identifiers are wanted at all
+      Level 0 assumes a line can carry a stable `^id` in the Obsidian shape, which is Latin letters, numbers, and dashes appended to the line, and which no markdown standard defines.
+      → CC's proposal: defer; levels 1 and 2 cover every case this board has, and an id is only worth its noise once a sentence needs to survive being reworded.
+
+
 ### Finding the line
 - [x] 🔗 Collapse the two normalizers into one
       Met, and met SILENTLY: `grep -rn "def plain("` across `live/`, `cli/` and `src/` now returns nothing, and every caller goes through the single `_plain_sentence`.
@@ -192,16 +210,16 @@ Formatting is then never guessed at and never erased, the 44.8% refusal disappea
 - [ ] 🧪 Prove the refusals with a test
       A fixture page with a duplicated sentence, a decorated sentence, and a stale version, asserting that each is refused with its own message and that none of them writes anything.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The addressing rule works on this board today and has never written to the wrong line, which is worth saying plainly before changing anything.
 What it lacks is a stated contract, a second level for the case it currently refuses, and any protection against a concurrent write.
 The measurement above is the argument for ordering: the duplicate case is latent, so the edit refusal and the missing version token are the two that cost something today.
-
 Remeasured on 260802, two days after the figures this page was opened with, and three things moved.
 The normalizer duplication is FIXED and this page did not know, which is the reverse of the usual staleness and the more embarrassing direction.
 The edit refusal did not improve: the board grew 58% to 7752 addressable lines and the decorated share only fell from 47.3% to 44.8%, so the absolute count of uneditable sentences rose from 2321 to 3474.
 And the face's own scope aged, because `haipipe-board-routing` 0.9.0 now wants to send agent writes down this same path while the title still says one browser edit.
-
 - 260802 CC · ✅ An Aim was met and nobody claimed it
   The private `plain()` inside `add_sentence` is gone and one `_plain_sentence` serves every caller.
   It most likely went during the `QC2c` live-layer split, which this page records as having moved both copies unchanged, so either that record or the code was wrong for two days and no check compares them.
@@ -212,23 +230,6 @@ And the face's own scope aged, because `haipipe-board-routing` 0.9.0 now wants t
 - 260802 CC · 🌐 A second consumer arrived before the contract was ratified
   `haipipe-board-routing` absorbed the board altitude and named the shared endpoint as its next step, and `cli/sentencerun.py` already calls `_sentence_line` outside the browser path.
   So the four rulings below are now blocking two consumers rather than one, which raises what they cost to leave open.
-
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [ ] 🪜 Ratify the ladder and its floor
-      Levels 0 to 2 for finding a line, and no approximate matching in the write path ever, on the grounds that a wrong write is invisible while a wrong highlight is not.
-      → CC's proposal: yes as drawn; it keeps today's behaviour as level 1 and only adds a level for the case that is refused today.
-- [x] ✂️ Rule how a decorated sentence gets edited
-      MOVED to `QB8`'s Decision Now on 260802, at JL's direction: "I think it should be the QB8 question, right?"
-      He is right. `QB8` `### 8` claims "the sentence, and everything written onto it · §6 the edit", so what an author experiences when editing one sentence is that page's, and this face owns only how any write FINDS its line and refuses safely.
-      It was written here because CC was measuring `live/write.py` and anchored the ruling to the file it was reading rather than to the page that owns the gesture, which is what routing's step 3 forbids.
-- [ ] 🔒 Rule the concurrency token, and where it lives
-      A write carries the version it read and is refused on mismatch; the question is whether that belongs here or with `QE4`'s lock.
-      → CC's proposal: the token belongs here because it is part of the write's contract, and the lock stays on `QE4`; they compose, since a lock prevents a collision and a token detects the one that got through.
-- [ ] 🏷 Decide whether markdown block identifiers are wanted at all
-      Level 0 assumes a line can carry a stable `^id` in the Obsidian shape, which is Latin letters, numbers, and dashes appended to the line, and which no markdown standard defines.
-      → CC's proposal: defer; levels 1 and 2 cover every case this board has, and an id is only worth its noise once a sentence needs to survive being reworded.
 
 ## Files
 ### Engines
@@ -266,3 +267,5 @@ The sources behind §3, so every claim there is checkable.
 260731 · The four write functions this face documents moved from serve.py into live/write.py under QC8's split, verified behaviour-identical by a real comment write; Files and §2 repointed, and the unit-of-change proposal renumbered to QC9
 260731 · §3 corrected against the sources after a research pass: Hypothesis uses approx-string-match rather than diff-match-patch, verifies structural hits against the stored quote, and calls a failed anchor an orphan; Obsidian's term is block identifier
 260731 · Opened on JL's approval of the QA2 proposal, with the anchor rule measured on this board: 4908 addressable sentences, 0 duplicates, 2321 decorated and therefore uneditable, 2 copies of the normalizer, 0 version tokens
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

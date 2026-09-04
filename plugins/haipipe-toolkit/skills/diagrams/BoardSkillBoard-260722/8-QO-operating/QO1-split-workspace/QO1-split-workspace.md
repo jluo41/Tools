@@ -346,80 +346,76 @@ What the split must never do is add a long-lived connection per pane; the design
 ## Aims
 
 ### C1 · What operating the board is today
-- A1.1 · The in-place swap stops being the board's operating model.
+- ✅ A1.1 · The in-place swap stops being the board's operating model.
   **Done when:** `70-router.js` no longer replaces `div.wrap`, because navigation happens inside the page frame.
+  **Now:** The swap stopped being the board's OPERATING MODEL: the index drives the page frame, and inside the index and chat panes the router returns at its first executable line. Reversed in part on 260802: the page pane KEPT the router, because a click that boots a whole document measured slower than the swap (42 ms against 49 ms on the serving machine, worse across a tailnet), so a click inside the page pane is a `div.wrap` swap again; `70-router.js` also still owns navigation for a page opened on its own, which is the packaging `QB2` requires to keep working.
+
 
 ### C2 · Why a refresh is not smooth
-- A2.1 · A saved edit reaches the page in well under a second.
+- ✅ A2.1 · A saved edit reaches the page in well under a second.
   **Done when:** `serve.py` pushes the change over a connection it already holds and the 4000 ms interval is deleted.
-- A2.2 · The page list is fetched once per session, and what each page still ships is a priced choice.
+  **Now:** Each pane asks about its own url every 800 ms, backing off to 5 s while nothing changes, and refreshes itself; the 4000 ms interval is never armed in a pane. Since 260802 that refresh is the same guarded `div.wrap` swap, with a real reload kept only for a changed JS stamp. Measured under a second from this page's own bytes landing, on a fresh open. The push the Aim named was built first and then removed, for the reason C4 P6 records.
+- ✅ A2.2 · The page list is fetched once per session, and what each page still ships is a priced choice.
   **Done when:** the page list is its own frame in the split, and the `sb-out` blocks a page still carries are a recorded ruling rather than an oversight.
-- A2.3 · A page update repaints the page and nothing else.
+  **Now:** Both halves settled, the second by a ruling rather than by code. The page list IS its own frame, so the split fetches it once per session instead of once per page, measured at 34 KB on first show and 0 KB on every toggle after. The blocks a page still ships were then ruled to STAY, by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The Aim's original second clause, that no page carries the other 52 pages' blocks, is therefore retired rather than pending; `QD7` A2.4 holds the 110,651 bytes and the reason they are worth paying.
+- ✅ A2.3 · A page update repaints the page and nothing else.
   **Done when:** the restoration code in `80-restore.js` can be deleted and no reader loses scroll, caret, or an open drawer.
-- A2.4 · Shipping new JavaScript no longer throws the reader out of the board.
+  **Now:** Proven, and the Aim's own reasoning turned out to be half wrong. The outcome holds: `checks/splitgaps.py` G2 opens a drawer, scrolls the frame, rebuilds, and finds both back afterwards. But the Aim expected `80-restore.js` to become deletable, and a real reload genuinely loses scroll where a `div.wrap` swap did not, so that file is now LOAD-BEARING in a pane rather than removable. What went away is the drawer-key matching and the caret bookkeeping across panes, not the restore.
+- ✅ A2.4 · Shipping new JavaScript no longer throws the reader out of the board.
   **Done when:** a changed JS stamp reloads only the frame that owns that file.
-- A2.5 · Opening a page costs what the text costs, not what the markup costs.
+  **Now:** Met in the split, by construction rather than by the hot-swap the Aim imagined. A changed JS stamp changes the page html, so a polling frame sees a new ETag and reloads ITSELF; `20-live-refresh.js:243` returns before the poll is armed in the chat pane, so the frame holding the terminal never reloads at all and the reader is never thrown out of the board. On `?plain` the document still reloads, which is that door's own cost and is recorded on it.
+- ✅ A2.5 · Opening a page costs what the text costs, not what the markup costs.
   **Done when:** `serve.py` sends text compressed, and revalidation, `HEAD` and the `.md` links all still behave exactly as before.
+  **Now:** `try_gzip` in `live/base.py` compresses every text response over 1 KB and `serve_asset` covers the vendored bundle; a cold split went from 937 KB to 206 KB. Revalidation, `HEAD` and the `.md` links were each checked by hand afterwards. The work landed on 260802 and this row did not, which is why the close found it.
+
 
 ### C3 · Three frames, and why iframes won
-- A3.1 · A terminal edit to a page's Markdown refreshes the page frame on its own.
+- ✅ A3.1 · A terminal edit to a page's Markdown refreshes the page frame on its own.
   **Done when:** the terminal writes this page's md and the page frame repaints with no pane reloaded by hand.
-- A3.2 · The terminal survives a page refresh by construction, not by guard code.
+  **Now:** Verified through the write path the terminal and the drawer both use: `checks/splitgaps.py` G4 posts a comment to `/_board/comment`, and the page pane repaints with that comment visible while the chat pane's window marker survives. Finding it took fixing a real bug first, recorded in the Log: `rebuild()` pointed at a `build.py` that the 0.99.0 move had taken into `cli/`, so every write updated the Markdown and silently never rebuilt the html.
+- ❄️ A3.2 · The terminal survives a page refresh by construction, not by guard code.
   **Done when:** deferred swaps, asset-stamp deferral, and PTY parking are removed and the terminal still survives.
-- A3.3 · Each pane's underlying page still reads with every script stripped.
+  **Now:** HELD, because the Aim as written cannot be met and should not be. Its OUTCOME is proven: the chat frame survives every page-frame reload in the suite, and it survives because a reload cannot cross a frame boundary rather than because anything guards it. Its removal clause assumed the split REPLACES the one-document board, and it does not: `?plain` is a supported door (JL 260802), it sets no `__boardPane`, so it still runs the 4000 ms poll at `20-live-refresh.js:314`, the `board-css` and `board-js` stamp comparison, and the parked PTY that lets its reload keep a terminal. Deleting those would break the door they belong to. They are dead weight in a PANE and load-bearing on `?plain`, and removing them is only possible if `?plain` is ever retired.
+- ✅ A3.3 · Each pane's underlying page still reads with every script stripped.
   **Done when:** the strip-scripts assertion in `build.py` passes on the page a pane loads.
+  **Now:** Asserted on the SERVED pane rather than inferred from the built file: `checks/splitgaps.py` G3 fetches all three pane kinds, strips every `<script>`, and finds ~12,000 chars of body text left in each.
+
 
 ### C4 · How the shell works, step by step
-- A4.1 · The shell exists and serves the three frames.
+- ✅ A4.1 · The shell exists and serves the three frames.
   **Done when:** `serve.py` answers one shell route and it loads the index, page, and chat frames from URLs that already work on their own.
+  **Now:** `/_shell?p=…` serves the three frames from URLs that each work on their own, and accepts a board FOLDER as well as a page. Since 260802 the split is the default door: `Open board →` on `/boards` opens it and each card's `↗ plain` link is the opt-out, so nobody types the route.
   **Plan:** Write it as static html plus the twenty lines of address-bar mirroring, and nothing else.
-- A4.2 · Navigation costs no JavaScript.
+- ✅ A4.2 · Navigation costs no JavaScript.
   **Done when:** the index frame's links carry `target="page"` and a click loads the page frame without any script running.
-- A4.3 · A page is linkable even though it lives in a frame.
+  **Now:** The index frame is served with `<base target="page">` and its links carry `?pane=page`; with scripts off, a click loads the sibling frame with no script running in that frame at all. Since 260802 the scripted fast path asks the page pane's own router (`__boardGo`) to swap one column instead, because a whole document load per click read as slow, and the anchor stays as the fallback.
+- ✅ A4.3 · A page is linkable even though it lives in a frame.
   **Done when:** the shell mirrors the page frame's path into its own query string, and opening that address opens the shell already showing that page.
+  **Now:** The shell mirrors the page frame's path into its own query string on every frame load, and `?p=` opens the shell already showing that page.
+
 
 ### C5 · Performance comparison
-- A5.1 · The split is not slower to READ than the board it replaces.
+- ✅ A5.1 · The split is not slower to READ than the board it replaces.
   **Done when:** the same page is measured through both doors on one server with one cold cache, and the split reaches a readable page at least as fast.
-- A5.2 · A pane you cannot see costs nothing.
+  **Now:** Measured 260802: 204 ms and 150 KB the old way, 137 ms and 158 KB in the split. Faster by about a third, for the 8 KB the shell document costs.
+- ✅ A5.2 · A pane you cannot see costs nothing.
   **Done when:** opening a page loads one document, and the index and chat frames are fetched only the first time each is shown.
-- A5.3 · Three panes do not spend three times the connection budget.
+  **Now:** Both side frames ship as `data-src`; opening a page is 157 KB and 4 requests, the page list costs 34 KB when first shown, the chat 228 KB, and toggling either afterwards is 1 to 3 ms and no request at all.
+- ✅ A5.3 · Three panes do not spend three times the connection budget.
   **Done when:** a tab of the split holds no more long-lived connections than the one-document board did, and no pane's request is left pending once the page has settled.
+  **Now:** Lazy panes and the 800 ms to 5 s backoff hold the per-tab cost down, and `checks/pending.mjs` now fails if any pane leaves a request pending. Verified after the `/_board/activity` fix: 8 requests on a page pane, none pending, one ESTABLISHED connection from the laptop where there had been six.
+
 
 ### P · Page-level
-- P1 · The split is proven on one real job.
+- ✅ P1 · The split is proven on one real job.
   **Done when:** the shell opens, a terminal runs inside it, that terminal edits a page, the page frame refreshes, and the terminal keeps running untouched.
+  **Now:** Run end to end in headless Chrome: the shell opens, a real `claude` runs in the chat pane, an edit to the md repaints the page frame, and that terminal keeps running untouched. 23 assertions in `checks/splitshell.mjs`, 21 in `checks/splitgaps.py`, and 12 unit tests in `tests/test_shell.py`.
 
-## States
 
-### C1 · What operating the board is today
-- ✅ A1.1 · The swap stopped being the board's OPERATING MODEL: the index drives the page frame, and inside the index and chat panes the router returns at its first executable line. Reversed in part on 260802: the page pane KEPT the router, because a click that boots a whole document measured slower than the swap (42 ms against 49 ms on the serving machine, worse across a tailnet), so a click inside the page pane is a `div.wrap` swap again; `70-router.js` also still owns navigation for a page opened on its own, which is the packaging `QB2` requires to keep working.
+## Discussion
 
-### C2 · Why a refresh is not smooth
-- ✅ A2.1 · Each pane asks about its own url every 800 ms, backing off to 5 s while nothing changes, and refreshes itself; the 4000 ms interval is never armed in a pane. Since 260802 that refresh is the same guarded `div.wrap` swap, with a real reload kept only for a changed JS stamp. Measured under a second from this page's own bytes landing, on a fresh open. The push the Aim named was built first and then removed, for the reason C4 P6 records.
-- ✅ A2.2 · Both halves settled, the second by a ruling rather than by code. The page list IS its own frame, so the split fetches it once per session instead of once per page, measured at 34 KB on first show and 0 KB on every toggle after. The blocks a page still ships were then ruled to STAY, by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The Aim's original second clause, that no page carries the other 52 pages' blocks, is therefore retired rather than pending; `QD7` A2.4 holds the 110,651 bytes and the reason they are worth paying.
-- ✅ A2.3 · Proven, and the Aim's own reasoning turned out to be half wrong. The outcome holds: `checks/splitgaps.py` G2 opens a drawer, scrolls the frame, rebuilds, and finds both back afterwards. But the Aim expected `80-restore.js` to become deletable, and a real reload genuinely loses scroll where a `div.wrap` swap did not, so that file is now LOAD-BEARING in a pane rather than removable. What went away is the drawer-key matching and the caret bookkeeping across panes, not the restore.
-- ✅ A2.4 · Met in the split, by construction rather than by the hot-swap the Aim imagined. A changed JS stamp changes the page html, so a polling frame sees a new ETag and reloads ITSELF; `20-live-refresh.js:243` returns before the poll is armed in the chat pane, so the frame holding the terminal never reloads at all and the reader is never thrown out of the board. On `?plain` the document still reloads, which is that door's own cost and is recorded on it.
-- ✅ A2.5 · `try_gzip` in `live/base.py` compresses every text response over 1 KB and `serve_asset` covers the vendored bundle; a cold split went from 937 KB to 206 KB. Revalidation, `HEAD` and the `.md` links were each checked by hand afterwards. The work landed on 260802 and this row did not, which is why the close found it.
-
-### C3 · Three frames, and why iframes won
-- ✅ A3.1 · Verified through the write path the terminal and the drawer both use: `checks/splitgaps.py` G4 posts a comment to `/_board/comment`, and the page pane repaints with that comment visible while the chat pane's window marker survives. Finding it took fixing a real bug first, recorded in the Log: `rebuild()` pointed at a `build.py` that the 0.99.0 move had taken into `cli/`, so every write updated the Markdown and silently never rebuilt the html.
-- ❄️ A3.2 · HELD, because the Aim as written cannot be met and should not be. Its OUTCOME is proven: the chat frame survives every page-frame reload in the suite, and it survives because a reload cannot cross a frame boundary rather than because anything guards it. Its removal clause assumed the split REPLACES the one-document board, and it does not: `?plain` is a supported door (JL 260802), it sets no `__boardPane`, so it still runs the 4000 ms poll at `20-live-refresh.js:314`, the `board-css` and `board-js` stamp comparison, and the parked PTY that lets its reload keep a terminal. Deleting those would break the door they belong to. They are dead weight in a PANE and load-bearing on `?plain`, and removing them is only possible if `?plain` is ever retired.
-- ✅ A3.3 · Asserted on the SERVED pane rather than inferred from the built file: `checks/splitgaps.py` G3 fetches all three pane kinds, strips every `<script>`, and finds ~12,000 chars of body text left in each.
-
-### C4 · How the shell works, step by step
-- ✅ A4.1 · `/_shell?p=…` serves the three frames from URLs that each work on their own, and accepts a board FOLDER as well as a page. Since 260802 the split is the default door: `Open board →` on `/boards` opens it and each card's `↗ plain` link is the opt-out, so nobody types the route.
-- ✅ A4.2 · The index frame is served with `<base target="page">` and its links carry `?pane=page`; with scripts off, a click loads the sibling frame with no script running in that frame at all. Since 260802 the scripted fast path asks the page pane's own router (`__boardGo`) to swap one column instead, because a whole document load per click read as slow, and the anchor stays as the fallback.
-- ✅ A4.3 · The shell mirrors the page frame's path into its own query string on every frame load, and `?p=` opens the shell already showing that page.
-
-### C5 · Performance comparison
-- ✅ A5.1 · Measured 260802: 204 ms and 150 KB the old way, 137 ms and 158 KB in the split. Faster by about a third, for the 8 KB the shell document costs.
-- ✅ A5.2 · Both side frames ship as `data-src`; opening a page is 157 KB and 4 requests, the page list costs 34 KB when first shown, the chat 228 KB, and toggling either afterwards is 1 to 3 ms and no request at all.
-- ✅ A5.3 · Lazy panes and the 800 ms to 5 s backoff hold the per-tab cost down, and `checks/pending.mjs` now fails if any pane leaves a request pending. Verified after the `/_board/activity` fix: 8 requests on a page pane, none pending, one ESTABLISHED connection from the laptop where there had been six.
-
+### From the retired States section (merged 260831)
 ### P · Page-level
-- ✅ P1 · Run end to end in headless Chrome: the shell opens, a real `claude` runs in the chat pane, an edit to the md repaints the page frame, and that terminal keeps running untouched. 23 assertions in `checks/splitshell.mjs`, 21 in `checks/splitgaps.py`, and 12 unit tests in `tests/test_shell.py`.
-
 - 260801 CC · 🔀 What is built so far, and what is not ⚠️ SUPERSEDED the same day
       Kept as the record of where the page stood that morning; every count in it is now wrong, and the States rows above are the current truth. `live/shell.py` exists, `cli/serve.py:168-174` routes `/_shell`, `/_events` and `?pane=` ahead of the static handler, and `checks/splitshell.mjs` + `tests/test_shell.py` are both on disk. Nine of twelve Aims are ✅ and P1 ran end to end.
       The decisions and the page are done; not one line of the split itself is written.
@@ -534,3 +530,5 @@ pane: one of the three regions of the operating shell, each loading its own docu
 260801 · Repaired the ASCII that the QD13 to QD5 renumber broke, where substituting QD4-liveupdate for QD4 inside the code block pushed three lines out of alignment and left an em-dash behind
 260801 · Ruled the two open decisions rather than holding them: mechanism A (three iframes in one shell), and supersession A (this page owns the live layer)
 260801 · Opened from JL: make terminal edits to a page's md refresh the webpage automatically, by making QD a SPLIT (index · page · terminal panes) rather than widgets bolted to one html; named as the successor to the archived QD4-liveupdate page's in-place-swap approach
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

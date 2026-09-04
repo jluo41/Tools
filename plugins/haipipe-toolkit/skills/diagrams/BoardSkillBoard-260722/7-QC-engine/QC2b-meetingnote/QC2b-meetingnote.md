@@ -187,6 +187,30 @@ It does not route, summarize, transcribe, or judge.
 Routing is `Design-2-haipipe-board-routing`'s verb, summarizing already happened in the vault, and a generator that started interpreting the meeting would be a second summarizer to keep in step with the first.
 
 ## Aims
+### Decision Now
+- [x] 🧠 Rule how a meeting note enters the board
+      **B, and C next** (JL 260731: "the MEETING-page should be a special page like SKILL, but still fit the Basic page structure"). The page kind is built; routing is the open half below.
+      A · Related Folders only, which works TODAY: declare `meeting/` in `## Related Folders` and the note opens from the Index in one click, embedded at build, no new machinery, no page, no routing.
+      B · A Meeting page kind, generated like `Skill-N`: the meeting gets a real page with a page list row, a chat, sentence rails, and a link anyone can cite, and the transcript stays folded inside it.
+      C · Routing only: read each meeting, land its decisions on the Q pages that own them, and leave no meeting page behind, so the board holds consequences and the vault holds the record.
+      D · B and C together: the page is the citable source, the routed lines are the effect.
+      → CC recommends D, and A tonight as the stopgap, because A costs one paragraph in `board.md` and can be thrown away the moment B lands; on its own, though, A is an archive nobody opens, and C on its own leaves every routed line pointing at a meeting the board cannot show.
+- [ ] 🎙 Rule the Meetings fold on the Index
+      The state each row needs is FREE: `meetingpage.py` stores the note's hash in the page's own marker, so not-imported, in-sync, and note-changed-since-import are all decidable at build.
+      A · a fourth Index fold listing every note with its state, plus an import or resync button that calls the live layer; with scripts off the list still renders and only the buttons go quiet.
+      B · no fold; a meeting is just another page row in `QD`, and importing stays a command you type.
+      C · the fold, but read-only: it reports state and never writes, so importing stays deliberate.
+      → CC recommends A, because the thing you asked to monitor is exactly the state that is already computable, and a board that can tell you "this note changed since you imported it" is the only version of this that stays honest a month from now.
+- [ ] 📼 Rule where the RAW transcript is shown
+      Measured on the real note, the two are not the same material: the chapters carry 250 lines of CURATED quotes, and `## Transcript` carries 1,024 lines of raw ASR (`[0:08] 🎙️ S1 Hello.`).
+      Today the raw half is the last Content division, which puts reference material inside the reading path.
+      A · move it below the reading path, into the fold region `QB4g` owns, where Law, Glossary, Discussion and Log already sit; the renderer needs to accept one more fold name.
+      B · leave it as the last Content division, which costs nothing and is already folded shut.
+      C · keep only the curated quotes on the page and link to the vault note for the raw lines, which makes the page unreadable offline.
+      D · slice the raw lines INTO their chapters: every chapter carries `[00:23-07:00]` and every raw line carries `[m:ss]`, so the split is deterministic and each chapter's drawer could hold its own raw run.
+      → CC recommends A now and D later: A is a small change that puts reference material where reference material goes, and D is the version worth having, because a raw line is only ever wanted next to the moment it belongs to.
+
+
 ### The decision this face owes
 - [x] 🧠 Rule how a meeting note enters the board
       Ruled **B, and C next** (JL 260731); the options and their costs are in the first `Decision Now` row below.
@@ -217,9 +241,10 @@ Routing is `Design-2-haipipe-board-routing`'s verb, summarizing already happened
 - [x] 📐 Write the routing rules down
       Written into the type contract 260805: a decision-shaped line either points at where it landed or is marked not-yet-routed, and a decision whose Q does not exist yet becomes a Q proposal through `haipipe-board-routing`.
 
-## States
-Opened 260731 when JL asked how meeting notes could go on the board, and the artifact half shipped the same evening.
+## Discussion
 
+### From the retired States section (merged 260831)
+Opened 260731 when JL asked how meeting notes could go on the board, and the artifact half shipped the same evening.
 - 260731 JL · 🗂 `Meeting-<n>` is a page kind, and it fits the base page exactly
   JL ruled the shape: a special page like `Skill`, still the base structure.
   It needed three changes in the engine and one new script: `PAGENAME` and `page_files()` learned the prefix, `parse.py` gained a `meeting` kind that sorts after Agent, and `meetingpage.py` reads an echo-meeting note into the page.
@@ -237,29 +262,6 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
   The imported note is 8,573 Chinese words and the rule (JL 260724) is about the prose this team writes, not about a meeting that happened in the language it happened in.
   Managed spans were already skipped by the checker; the two SEEDED lists are outside them by design, because you tick action items and a resync must never eat your ticks.
   So `check.py` now exempts `Meeting-<n>` pages from the CJK and em-dash rules, and the page reports zero warnings rather than 26.
-
-### Decision Now
-- [x] 🧠 Rule how a meeting note enters the board
-      **B, and C next** (JL 260731: "the MEETING-page should be a special page like SKILL, but still fit the Basic page structure"). The page kind is built; routing is the open half below.
-      A · Related Folders only, which works TODAY: declare `meeting/` in `## Related Folders` and the note opens from the Index in one click, embedded at build, no new machinery, no page, no routing.
-      B · A Meeting page kind, generated like `Skill-N`: the meeting gets a real page with a page list row, a chat, sentence rails, and a link anyone can cite, and the transcript stays folded inside it.
-      C · Routing only: read each meeting, land its decisions on the Q pages that own them, and leave no meeting page behind, so the board holds consequences and the vault holds the record.
-      D · B and C together: the page is the citable source, the routed lines are the effect.
-      → CC recommends D, and A tonight as the stopgap, because A costs one paragraph in `board.md` and can be thrown away the moment B lands; on its own, though, A is an archive nobody opens, and C on its own leaves every routed line pointing at a meeting the board cannot show.
-- [ ] 🎙 Rule the Meetings fold on the Index
-      The state each row needs is FREE: `meetingpage.py` stores the note's hash in the page's own marker, so not-imported, in-sync, and note-changed-since-import are all decidable at build.
-      A · a fourth Index fold listing every note with its state, plus an import or resync button that calls the live layer; with scripts off the list still renders and only the buttons go quiet.
-      B · no fold; a meeting is just another page row in `QD`, and importing stays a command you type.
-      C · the fold, but read-only: it reports state and never writes, so importing stays deliberate.
-      → CC recommends A, because the thing you asked to monitor is exactly the state that is already computable, and a board that can tell you "this note changed since you imported it" is the only version of this that stays honest a month from now.
-- [ ] 📼 Rule where the RAW transcript is shown
-      Measured on the real note, the two are not the same material: the chapters carry 250 lines of CURATED quotes, and `## Transcript` carries 1,024 lines of raw ASR (`[0:08] 🎙️ S1 Hello.`).
-      Today the raw half is the last Content division, which puts reference material inside the reading path.
-      A · move it below the reading path, into the fold region `QB4g` owns, where Law, Glossary, Discussion and Log already sit; the renderer needs to accept one more fold name.
-      B · leave it as the last Content division, which costs nothing and is already folded shut.
-      C · keep only the curated quotes on the page and link to the vault note for the raw lines, which makes the page unreadable offline.
-      D · slice the raw lines INTO their chapters: every chapter carries `[00:23-07:00]` and every raw line carries `[m:ss]`, so the split is deterministic and each chapter's drawer could hold its own raw run.
-      → CC recommends A now and D later: A is a small change that puts reference material where reference material goes, and D is the version worth having, because a raw line is only ever wanted next to the moment it belongs to.
 
 ## Files
 ### Engines
@@ -292,3 +294,5 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
 260731 2205 · `Meeting-<n>` page kind SHIPPED: `meetingpage.py new|sync`, three managed spans, Items and Decision Now seeded once; `common.py` + `parse.py` learned the prefix, `check.py` learned the filename and exempts a meeting from English-only, and `page_question.py` stopped printing a managed marker as the lead sentence. Meeting-1 generated from the 260723 note: 6 sections, 18 divisions, 15 sentence drawers, 0 warnings
 260731 2130 · Read the producing end's source (`main.ts` 1,657 lines + 5 python modules): §4 records the pipeline, the section-boundary write discipline it shares with QC7, and the finding that the summarizer's prompt FIXES six sections, so Decisions / Action Items / Open Questions / Diagram map onto board constructs without interpretation
 260731 · Opened when JL asked how meeting notes get onto the board; `2-QB-board/Design-1-haipipe-board/meeting/260723-meeting.md` has been on disk since 260723 and invisible to `page_files()` the whole time. jluo41/echo-meeting + jluo41/echo-capture identified as the producing end
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

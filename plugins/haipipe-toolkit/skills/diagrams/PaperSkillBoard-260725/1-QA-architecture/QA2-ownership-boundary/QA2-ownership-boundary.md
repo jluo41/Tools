@@ -23,6 +23,7 @@ Use one owner per durable artifact.
 ```text
 📄 Page Type       shape + closing rule
 🔁 Page workflow   lifecycle + receipts
+🗺 Paper journey   phases + gates G0–G7 · transitions only, never content
 🃏 Plugins         evidence + displays + projections
 📝 Paper door      route + compose + assemble
 🧪 Task/Discovery  source work reached through Probe's QA lane
@@ -40,19 +41,23 @@ Paper ─▶ reads accepted Page outputs and assembles them
 
 Probe is the umbrella, not a third storage layer. The PageX lane does not reopen raw source folders. The QA lane does not become a second paper outline.
 Paper does not copy plugin contracts or keep a parallel build authority.
+The journey machine (`haipipe-paper-workflow`) states which page holds authority in each phase and when the next may be minted; deleting it would lose no content rule, and that is the test it must keep passing.
+Inside the establish loop the pens never cross: the Roadmap plans and registers, the Seed alone writes E-row flips, and the join is one string on two pages.
 
 ## Aims
 ### A1 · 🧱 Ownership boundary
-- A1.1 · Every durable paper artifact has one owner and one read path.
-  **Done when:** Paper, Page, plugins, Probe's two lanes, Task, and Discovery roles do not overlap.
+- ✅ A1.1 · Every durable paper artifact has one owner and one read path.
+  **Done when:** Paper, journey, Page, plugins, Probe's two lanes, Task, and Discovery roles do not overlap.
+  **Now:** The live architecture assigns one owner to each artifact and binding.
 
-## States
-### A1 · 🧱 Ownership boundary
-- ✅ A1.1 · The live architecture assigns one owner to each artifact and binding.
 
 ## Files
-- `4-QC-composition/QC1-paper-door/QC1-paper-door.md` · composition boundary
-- `4-QC-composition/QC2-page-local-plugins/QC2-page-local-plugins.md` · plugin boundary
+- `3-QC-composition/QC1-paper-door/QC1-paper-door.md` · composition boundary
+- `3-QC-composition/QC2-page-local-plugins/QC2-page-local-plugins.md` · plugin boundary
+- `../../paper/haipipe-paper-workflow/SKILL.md` · journey machine, transitions only
 
 ## Log
 260820 · Grouped PageX under Probe while preserving separate PageX and QA records.
+260828 · Added the journey lane: `haipipe-paper-workflow` owns phases and gates, never content; recorded the establish-loop two-pens rule. Repaired the `4-QC-composition/` paths left dead by the 260820 regroup.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

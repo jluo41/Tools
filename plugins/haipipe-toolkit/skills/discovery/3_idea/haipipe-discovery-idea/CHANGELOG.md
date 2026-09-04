@@ -3,6 +3,29 @@ haipipe-discovery-idea — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.4.1] — 2026-09-03
+
+- Route the Idea citation aggregate through Outline's Evidence Workspace at
+  `outline/evidence/bibex/`.
+
+## [0.4.0] — 2026-09-02
+
+- Own SYNTHESIZE for ideation/novelty Pages, route prior-work gaps back to
+  ACQUIRE, and use Evidence for the citation aggregate.
+
+## [0.3.0] — 2026-09-01
+
+- Serve canonical `ideation` and `novelty-verdict` Page Types; Idea is a
+  specialist route rather than a durable type field.
+- Keep idea synthesis on the root Page, with optional ideas/verdict records;
+  only analyzed prior-work Subjects receive Runs.
+
+## [0.2.0] — 2026-09-01
+
+- Idea generation remains Topic-level Page work and no longer masquerades as a
+  Run. Every prior-work paper used for novelty evidence receives its own
+  numbered Paper Run/Result.
+
 
 ## [0.1.0] — 2026-07-24
 

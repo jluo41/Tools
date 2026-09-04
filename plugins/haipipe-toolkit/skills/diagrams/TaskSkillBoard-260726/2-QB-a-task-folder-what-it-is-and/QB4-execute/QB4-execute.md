@@ -84,10 +84,11 @@ story.
 - [ ] 🚦 Rule when an agent MAY run without asking
       A no-op rerun, a cached-result check and a five-second script are not the case this rule was written for. Either state the exemptions or accept that the rule is routinely and correctly ignored.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Implemented and in daily use across the bank. The human default holds, the automatic record works
 including on failure, and the two open items are both about the override rather than the rule.
-
 - 260726 CC · 📝 Wrote down the reason for the asymmetry
       EXECUTE is the only phase with no review loop, and the reason (expensive plus irreversible) was implied by the design and stated nowhere. A rule whose reason is unwritten is a rule that gets optimized away.
 
@@ -101,3 +102,5 @@ including on failure, and the two open items are both about the override rather 
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

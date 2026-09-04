@@ -94,34 +94,37 @@ If the writer fails, its own error prints where that view would have been.
 
 ## Aims
 ### A1 · 🧾 Three files land in `word/`, and each one is rebuilt for you
-- A1.1 · The route, the twin, and the view all shipped.
+- ✅ A1.1 · The route, the twin, and the view all shipped.
   **Done when:** one POST to `/_board/word` writes a real board page's `.docx`, its PDF twin, and the view that shows the twin beside the ⬇ download, and the no-twin branch still writes that download.
-- A1.2 · The export reads as prose, not as a run of chopped one-sentence rows.
+  **Now:** Shipped in haipipe-board 0.128.0 and driven on 260815 on `QPf4b`: the `.docx`, its twin, and the view all landed, and `live/export.py` writes the ⬇ download in the no-twin branch too.
+- ✅ A1.2 · The export reads as prose, not as a run of chopped one-sentence rows.
   **Done when:** every board export passes `--join-paragraphs`, and a rebuilt `.docx` carries each markdown block as one flowing paragraph in its `document.xml`.
+  **Now:** Shipped 260815: every board export passes `--join-paragraphs`, and QPf8's rebuilt `.docx` carries each block as one flowing paragraph in its `document.xml`.
 
 ### A2 · 💬 Which comments travel into Word, and the one question still open
-- A2.1 · One export reaches one coauthor, and their markup settles which comments we send.
+- ⬜ A2.1 · One export reaches one coauthor, and their markup settles which comments we send.
   **Done when:** a person has read a board page's `.docx` in Word, and States records the ruling: keep Citation, send nothing, or put `--lanes` in the tab.
-- A2.2 · A caption's `**Name**:` marks reach Word as bold text, never as plain asterisks.
+  **Now:** No board export has reached a reader who uses Word yet, so the paper default still runs unchecked.
+- ⬜ A2.2 · A caption's `**Name**:` marks reach Word as bold text, never as plain asterisks.
   **Done when:** a board page is exported again and its captions read bold in Word, and the case where a comment range splits the pair is either converted too or written into States as accepted.
+  **Now:** Since 260816 md2docx turns a matched `**` pair into bold, but no board export has been rebuilt and read since, and an unmatched pair still prints its asterisks.
 
 ### A3 · 🖼 Opening the tab builds the file when it is not there yet
-- A3.1 · The 📝 tab shipped, and someone drove it rather than assuming it worked.
+- ✅ A3.1 · The 📝 tab shipped, and someone drove it rather than assuming it worked.
   **Done when:** the ➕ menu offers 📝 Word with its ● dot in a live browser, and opening it shows the view.
+  **Now:** Checked in a real browser on 260815 through the driven CDP run: the ➕ menu's 📝 row opened and showed `QPf4b`'s view.
 
 ### P · 🚧 The checker's boundary
-- P1 · `word/` joins the list of folders the checker knows.
+- ⬜ P1 · `word/` joins the list of folders the checker knows.
   **Done when:** `check.py` names `word/` a known plugin folder and warns on nothing inside it.
+  **Now:** `check.py` does not yet know `word/` by name.
 
-## States
+
+## Discussion
+
+### From the retired States section (merged 260831)
 The machinery is built and proven.
 What stays open is one reader's ruling, one small markup fault, and the checker's boundary.
-- ✅ A1.1 · Shipped in haipipe-board 0.128.0 and driven on 260815 on `QPf4b`: the `.docx`, its twin, and the view all landed, and `live/export.py` writes the ⬇ download in the no-twin branch too.
-- ✅ A1.2 · Shipped 260815: every board export passes `--join-paragraphs`, and QPf8's rebuilt `.docx` carries each block as one flowing paragraph in its `document.xml`.
-- ⬜ A2.1 · No board export has reached a reader who uses Word yet, so the paper default still runs unchecked.
-- ⬜ A2.2 · Since 260816 md2docx turns a matched `**` pair into bold, but no board export has been rebuilt and read since, and an unmatched pair still prints its asterisks.
-- ✅ A3.1 · Checked in a real browser on 260815 through the driven CDP run: the ➕ menu's 📝 row opened and showed `QPf4b`'s view.
-- ⬜ P1 · `check.py` does not yet know `word/` by name.
 
 ## Files
 ### ⚙️ Engines
@@ -170,3 +173,5 @@ What stays open is one reader's ruling, one small markup fault, and the checker'
 - 260815 · [RULE-JL] the export reads paragraph per paragraph, not sentence per paragraph: the board's one-sentence-per-line source is grammar for the sentence apparatus, and a coauthor gets flowing prose; `--join-paragraphs` became the board default and A1.2 records the proof on QPf8's rebuilt `.docx`. One wart stays open with the writer: the board's `**Name**:` caption markers reach Word as literal asterisks.
 - 260815 · [REVISE-CC] the export cites from the page-owned bibex store: refs.py compiles the bbl beside the bib, md2docx reads it, and QPf8's .docx is the proof, "(Luo et al. 2026)" inline with a References section; md2docx's bbl parser learned plainnat's bare labels on the way (a paper-family fix that benefits the paper path identically).
 - 260815 · [DRAFT-CC] page born in the plugin round, after the build: A1 records haipipe-board 0.128.0's ship and A2 holds the lanes question a real coauthor must answer.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

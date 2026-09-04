@@ -1,3 +1,126 @@
+## 0.8.0 · 2026-09-03
+
+- Make Skills an explicit Outline-owned storage lane at `outline/skill/`.
+- Reserve sibling `skill/` for read-only migration compatibility and keep the
+  sole Skills surface inside Outline → Page Records.
+
+## 0.7.0 · 2026-09-03
+
+- Define Page Records as Files + Log + Skills.
+- Keep the ranked Skills store in `skill/` but present it inside Outline,
+  removing the duplicate top-level Skill picker row.
+
+## 0.6.0 · 2026-09-03
+
+- Name Outline's two primary surfaces Bullet Workspace and Evidence Workspace;
+  group Requirement/Discussion/Feedback as Plan Context and Files/Log as Page
+  Records.
+- Make nested category addresses the current storage contract: evidence lanes
+  live under `outline/evidence/`, and outgoing artifacts under
+  `delivery/<lane>/`; flat names are compatibility reads only.
+
+## 0.5.1 · 2026-09-03
+
+- Make the source-backed Board Page picker contract explicit: Runs stays
+  visible with a truthful empty state, while Evidence and Probe have no
+  top-level tabs.
+- Remove the retired `workflow/` category from the unit-folder description.
+
+## 0.4.3 · 2026-09-03
+
+- Make an active Plugin tab's close control a separate 36×36 touch target,
+  and isolate its gesture from tab activation.
+- Keep closed default tabs closed, skip stale entries when choosing the next
+  tab, and align the contract with the intentionally absent pane-level close.
+- Replace the retired explicit-`＋` opening rule with the direct first-visit
+  category strip and Plugin-picker reopen rule used by the live shell.
+
+## 0.4.0 · 2026-09-02
+
+- Separate rostered storage lanes from Plugin identity: a category Plugin may
+  own several internal lanes without minting one Skill per subfolder.
+- Record the unified Evidence ownership of Citation/Bib, Value, Display, and
+  PageX; Probe remains the separately governed crossing shown in the same tab.
+
+## 0.3.8 · 2026-09-02
+- Treat category Plugins as possible direct owners of an internal lane.
+- `haipipe-plugin-evidence` now owns Citations/Bib at `evidence/bibex/`; a
+  storage lane no longer implies a duplicate Bibex Plugin Skill.
+
+## 0.3.7 · 2026-09-01
+- Make the Runs presenter overview-first: Execution, Discovery, and Page rows
+  each join their authored Ticket to the paired Result; Page divides into
+  Division Writing and Display.
+- Put freestyle Scripts in a separate collapsible region below the overview;
+  Results no longer appear as an independent surface.
+
+## 0.3.6 · 2026-09-01
+- Rename the presenter from Execution to Runs: Execute remains a workflow
+  action, while the plugin presents plural addressable Run attempts.
+- Resolve both Folder-local and Job-backed Task Run/Result dialects without
+  copying generated Job output into the Task Page.
+
+## 0.3.5 · 2026-09-01
+- Rename the optional Code presenter to Execution. `runs/` and `results/`
+  define the capability as exact pairs; scripts/config are optional support.
+- Preserve phase ownership of lifecycle and closure, so Execution remains a
+  presenter rather than a second workflow door.
+
+## 0.3.4 · 2026-09-01
+- roster: the item table (SURVEY) is where every evidence mark is surveyed
+  first; `evidence/probe/` is the outbound-question lane minted at LAND only;
+  `probe/haipipe-probe` retired.
+
+## 0.3.3 · 2026-08-31
+
+The roster now treats `haipipe-application/fn/render.md` as Render's live
+Folder-native writer, with `POST /_board/render` optional, and removes retired
+Task/Direction skills from the active plugin list.
+
+## 0.3.2 · 2026-08-31
+
+task/ row ⚰️ RETIRED outright (JL: "we will not have the task/ folder
+anymore") — swept pages' folders deleted; pagex/ nested under evidence/
+with the mint depth fix noted; studio pair pre-created on swept pages.
+
+## 0.3.1 · 2026-08-31
+
+task/ and meeting/ lose their strip-menu rows (JL: "the task and meeting
+should be removed as well") — storage stays on disk, task's read still owed
+to a pagex card; roster surface cells updated.
+
+## 0.3.0 · 2026-08-31
+
+§🔌 finalized as JL ruled it ("one plugin for evidence, one for the
+delivery, only one for the studio" + outline included): FIVE category
+presenters + the 📂 mirror — 🧭 outline (outline/+workflow/, first and
+default) · 🧾 evidence · 📤 delivery (🎞 segment carries the ✨ pen) ·
+🎨 studio (haipipe-plugin-studio: drawing above, chat below, one page) ·
+⚙️ code (pending). No lane sells its own strip row; roster cells for
+studio/chat/draw/slide repointed.
+
+## 0.2.0 · 2026-08-31
+
+§🔌 the two plugin kinds: LANE plugins own one rostered folder's law;
+PRESENTER plugins own one surface over a category and store nothing (no
+roster row) — folder · value · evidence · delivery · code. The strip law:
+one tab per category (🧭 🧾 📤 ⚙️-pending), one tool per hand (💬 🖌 🎞).
+Roster surface cells repointed: latex/word → 📤 segments, slide → native
+tab + read segment, render → 📤 ghost segment, pagex → 🧾 segment
+(standalone row folded), workflow 🪜 → a 🧭 segment when built.
+
+## 0.1.5 · 2026-08-31
+
+Category folders (evidence/, delivery/), the runs/ execution door and the
+simple-code law stated at the base; rows in ref/roster.md.
+
+
+## 2026-08-31 · roster: the task/ row names the collection job
+
+The `task/` row's ranked list now states that the page's collection job
+(task-type `page`, `haipipe-task-for-page`) ranks first when one exists; the
+lane's storage, surface and writer are unchanged.
+
 ## 0.1.3 — 2026-08-21
 
 - **`ref/roster.md` gains the `outline/` row it had been missing since 260817.**
@@ -57,3 +180,11 @@ Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md fro
 - First conforming instances: the latex/word/bibex tabs
   (`assets/js/10-drawer/82-plugin-exports.js` + `live/export.py` in
   haipipe-board 0.128.0), registered with the `tab: {url, write}` spec.
+## 0.9.0 · 2026-09-04
+
+- Define the Outline category as three peer workspaces: Context, Bullet, and
+  Evidence.
+- Fold the former Plan Context and Page Records UI groups into Context
+  Workspace without merging their source files.
+- Retire PageX from active evidence writes; external evidence now enters
+  through Supporting Run Results.

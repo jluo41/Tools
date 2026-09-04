@@ -19,6 +19,8 @@
 .sidebar a:hover{background:var(--pre)}
 .sidebar .sb-top{font-weight:650;margin-bottom:4px}
 .sidebar .sb-g{font-weight:650;margin-top:10px;color:var(--accent)}
+.sidebar .sb-sub{margin:6px 0 1px 10px;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.sidebar .sb-sub .st{font:600 10px ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:0}
 .sidebar .sb-p .s{flex:none;font-size:10px}
 .sidebar .sb-p .i{flex:none;font:600 10.5px ui-monospace,Menlo,monospace;color:var(--mut)}
 .sidebar .sb-p .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

@@ -167,7 +167,8 @@
      would be noise. Those keep going straight to the last-used view. */
   var TUIKEY = 'board-tui-default';
   function tuiDefault() {
-    try { return localStorage.getItem(TUIKEY) !== '0'; } catch (e) { return true; }
+    /* GUI unless the reader chose TUI (JL 260831); the shell's radio writes this key. */
+    try { return localStorage.getItem(TUIKEY) === '1'; } catch (e) { return false; }
   }
   var pick = document.createElement('div');
   pick.id = 'chatpick';
@@ -219,11 +220,8 @@
     // a plugin contributes its own surface, and an entry that cannot act on the open
     // page is never drawn. `data-v` stays the id so the existing handler still reads it.
     var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
-    // TWO GROUPS, ONE LIST (JL 260808). The shell splits these into two buttons because
-    // it has a bar to put them in; the in-page picker is one popup, so the split shows
-    // as two titled groups. Same registry, same ids, so `data-v` still resolves.
-    // A group with nothing applicable prints no heading: an empty heading claims the
-    // page has a workflow and then shows none, which is worse than saying nothing.
+    // ONE PICKER, ONE LIST. Only category surfaces are offered here; their
+    // internal lanes never sell a second row.
     function group(title, menu) {
       var rows = window.boardPlugins
         ? window.boardPlugins.applicable(page, menu) : [];
@@ -236,8 +234,7 @@
           + '<u></u><s>' + dot + '</s></button>';
       }).join('');
     }
-    pick.innerHTML = group('\u{1F50C} Plugin', 'plugin')
-                   + group('\u{1FA9C} Workflow', 'workflow');
+    pick.innerHTML = group('\u{1F50C} Plugin', 'plugin');
     pick.hidden = false;
     document.addEventListener('pointerdown', pickAway, true);
     document.addEventListener('keydown', pickKey, true);
@@ -258,20 +255,21 @@
     if (first) first.focus();
   }
 
-  // The board owns exactly two surfaces and registers them like anybody else, so the
-  // engine has no privileged path a plugin cannot take. Both are PLUGINS: they open a
-  // surface to the right and neither knows or cares where you are on the page, which
-  // is exactly the line the Workflow menu is on the other side of.
+  // Studio is the one human room. The shell stages Chat + Draw together; a bare
+  // page upgrades itself to that shell instead of reviving a standalone Chat row.
   if (window.boardPlugins) {
-    /* ONE CHAT (JL 260815: "just have one Chat in the plugin, not more ChatGUI
-       or Chat TUI"). The registry stops selling the form: one entry, opening in
-       the last-used form, and the choice lives INSIDE the surface — the shell's
-       mode segment, or the drawer's own `>_` / back pair on a bare page. */
     window.boardPlugins.register({
-      id: 'chat', label: '\u{1F4AC} Chat',
-      hint: 'this page’s conversation · pick GUI or TUI inside',
+      id: 'studio', label: '\u{1F3A8} Studio',
+      hint: 'the human’s room · drawing above, chat below',
+      order: 20,
+      applies: function (page) { return !!page; },
       open: function () {
-        chatOpen(chatTarget() || 'board');
+        try {
+          if (parent !== window && typeof parent.__boardShowTab === 'function') {
+            parent.__boardShowTab('studio'); return;
+          }
+        } catch (e) {}
+        window.location.assign(location.pathname + '?split&plugin=studio');
       } });
   }
 
@@ -284,8 +282,8 @@
   var fabMore = document.createElement('button');
   fabMore.id = 'chatfabmore';
   fabMore.type = 'button';
-  fabMore.setAttribute('aria-label', 'Open the plugin and chat picker');
-  fabMore.title = 'Other plugins, GUI/TUI chat, workflow';
+  fabMore.setAttribute('aria-label', 'Open the plugin picker');
+  fabMore.title = 'Plugins';
   fabMore.textContent = '⋯';
   fabMore.onclick = function () {
     if (!pick.hidden) return pickClose();

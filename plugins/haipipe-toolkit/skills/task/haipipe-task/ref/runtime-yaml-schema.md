@@ -1,7 +1,7 @@
 runtime.yaml — Schema
 ======================
 
-Location: `results/<NAME>/runtime.yaml`
+Location: `results/<NAME>/runtime.yaml` (flat job) · `results/<task>/<NAME>/runtime.yaml` (nested — hierarchy.md "Two job shapes"); examples below show the flat form
 Owner:    Written by `runs/<NAME>.sh` (auto). NEVER edit by hand.
 Status:   Source-of-truth for post-run machine facts about ONE run.
 

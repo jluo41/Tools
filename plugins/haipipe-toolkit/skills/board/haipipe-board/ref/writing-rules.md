@@ -11,10 +11,12 @@ These are not style preferences. `build.py` renders each section a specific way,
 
 - `## Opening` = one lead sentence, then one plain paragraph
   The first paragraph is the actual question, written as a question, and stays in Opening. Everything before the FIRST BLANK LINE is what a reader sees without clicking, and it is 4 to 5 sentences, about five lines on screen, target roughly 450 characters, hard ceiling 520, which is what `check.py` enforces, measured on the render (JL 260801). Inside that ceiling it is **one flowing, page-specific rationale** with no required order of beats. Stop when a cold reader can say why the question deserves attention and what this page owns. Scope, difficulty, failure, downstream effect, and a success consequence are diagnostic prompts, not sentence slots; use only the ones that reveal this page's real stake. build.py labels that drawer "More details" as a collapsed row inside Opening for Q and S (it read "Why this matters" until JL renamed it on 260801). Do NOT use the old bullet form. There is no separate `## Boundary`; name the neighbouring page in this paragraph when it owns excluded work.
-- `## Diagram` = the ascii figure, alone, collapsed by default
-  The page renders a peer-level `🖼 Diagram` row after Opening; the figure stays hidden until that row is clicked. The section holds ascii only: a page's real drawing is an Excalidraw scene in the page's own `draw/` folder, opened through the Draw split, never embedded here (JL 260815). Delete the whole section when the figure adds no information. EVERY FIGURE CARRIES A CAPTION LINE ABOVE IT (JL 260801): write `**Name**: what this diagram shows.` directly above the fence, one line only, since a section may hold several figures and an unlabelled one has to be decoded before it can be read. A ROW IS A LABEL AND ITS VALUE, NEVER A CLAUSE (JL 260801): if a row could end in a period it is prose and belongs in the paragraph under the figure, so write `🎯 Aims   A3.1 · A3.2 · P1` rather than `🎯 Aims are durable targets that stay stable when the route changes`. A figure earns its fence by being scannable.
+  A bare internal address such as `C1`, `E3`, or a Run id does not explain itself and must not carry the Opening. State the plain-English subject first; retain an address only as a secondary handle with a compact name, for example `primary total-MME association (Claim1.TotalMME)`.
+  A manuscript `page-type: section` has the stricter reader surface: only this paragraph renders under `🚪 Opening`. Its page-owned prose rules live as authored W records in `outline/<stem>-requirement.md`, after the generated venue V records, and both appear in the Outline plugin's `📏 Requirement` lens. The product Page carries no `### Writing Style`. Post-paragraph notes and Stage Contract remain source-side instructions for drafting and CHECK and do not render in the manuscript review page.
+- `## Outline` = generated authoritative projections only
+  The page renders a peer-level `🧭 Outline` row after `🚪 Opening`. It reads the current plan from `outline/<stem>-outline-v<N>.md` as `▤ Outline table`; that table is never copied into the Page. A Page Type may place one generated executive projection from its authoritative Content rows first and fold the generic plan table beneath it; Narrative uses this for its Section-control table. Never author an `## Outline` or `## Diagram` map in the Page. A real drawing remains in `studio/draw/` and opens through the Draw split.
 - S `## Content` = the stage's real product, and nothing else (JL 260725)
-  On a manuscript page Content IS the section: its parts, paragraphs, and prose. Keep four kinds of material out of it. Required Inputs and Venue go under `## Stage Contract`; inherited and page-owned prose rules go under `## Writing Style`. `stage.py sync` replaces only their generated `haipipe:contract` and `haipipe:style` blocks. Settled flags and corrections go to `## States`, which is what "what is true now" means. Intended outcomes go to `## Aims`; a temporary next move may appear as that Aim's optional `Plan`. build.py labels the section with the stage's name (`📚 Content · Main 7 §6 Results`), so if the name does not describe what a reader finds here, this section is carrying something that belongs elsewhere. That label comes from the page title, so when the artifact has its own number and it is offset from the board index, title the page `S Main 7 · §6 Results` and both numbers are stated instead of competing.
+  On a manuscript page Content IS the section: its parts, paragraphs, and prose. Keep four kinds of material out of it. Required Inputs and Venue go under `## Stage Contract`; generated venue constraints and authored page-writing rules share `outline/<stem>-requirement.md` as separate V and W blocks. Settled flags and corrections go to an Aim's `Now:` line. Intended outcomes go to `## Aims`; a temporary next move may appear as that Aim's optional `Plan`. build.py labels the section with the stage's name (`📚 Content · Main 7 §6 Results`), so if the name does not describe what a reader finds here, this section is carrying something that belongs elsewhere. That label comes from the page title, so when the artifact has its own number and it is offset from the board index, title the page `S Main 7 · §6 Results` and both numbers are stated instead of competing.
 - `## Content` = two heading levels, and the number carries the depth (JL 260725)
   `###` is a division: a part that holds content of its own and folds on its own. `####` is one paragraph inside it, always, with no third level. Read the depth off the numbering (`§6` against `§6.1`), not off the heading level, because the page folds exactly one level and a deeper tree would collapse a whole section into one box. Write a division only when it holds something: a flat section carries one `### §1 Introduction` over its paragraphs, a subsectioned one starts at `### §6.1`, and no page opens a box onto nothing. The payoff is a shape you can check without reading: the subsection count is the number of `###` headings whose number contains a dot.
 - `#### heading` then a full-line `(…)` = the paragraph and its job
@@ -23,8 +25,11 @@ These are not style preferences. `build.py` renders each section a specific way,
   Everything a stage must honour goes in this section: what it requires, the venue's constraints, what it provides. JL 260801 collapsed the old `### Stage Record` into it, because two names for one obligation meant nobody could say which held what. A legacy `### Stage Record` under `## Content` still renders: build.py lifts it into the Stage Contract as its opening lines. Write nothing new under that heading.
 - `## Aims` = durable targets linked to Content
   Mirror the relevant Content division: `A3.1` is an Aim for division 3, and its group is `### A3 · <that division's name>`, carrying the division's number, name and emoji (JL 260801, the letter fixed to `A` on 260802; `C<n>` still resolves). Use `P1` only when a target crosses divisions. Write `Done when` as a testable result and add `Plan` only when a temporary next move is worth preserving. A checkbox Aim (`- [ ]` with an emoji lead) is the first-class form (JL 260815); write id Aims only when a page's progress must be machine-tracked, and then keep States mirroring the ids.
-- `## States` = one factual current State row per Aim
-  The paired section labels are plural because both contain multiple records: Aims contains Aim records; States contains their State records. Mirror the Aims groups and ids. Use `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or on something outside this page, `✅` met with the evidence named, or `❄️` on ice; each says its meaning by shape (JL 260802), and the older `🟡` `🟠` `⏸️` still parse but are not what to write. A State says what is true now; it never says what should happen next, and it never keeps an earlier now beside the current one. Put the reason for a transition in `## Log`.
+- Each Aim's `Now:` line = its one factual current state
+  Use `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or
+  on something outside this page, `✅` met with the evidence named, or `❄️`
+  on ice. A current fact never keeps an earlier now beside it. Put the reason
+  for a transition in `outline/<stem>-log.md`.
 - Other items (in `## Law`, `## Lesson`, and dated Log records) = `- ICON heading` then a folded explanation
   Only the heading shows on stage, with a caret; the explanation opens on click. Start every item heading with an author-chosen emoji icon (build.py never guesses one). The first indented line is a one-sentence summary; the lines after it are the long explanation. Write the explanation as a real paragraph (what it means, what happened, what we understand so far, why it ended up this way), not a clause. Length is free here because it is folded. A `## Glossary` entry takes the same `- ICON` row, with the TERM in bold and its definition after a colon (JL 260802), because the term is what the reader arrived looking for.
 
@@ -55,7 +60,7 @@ These are not style preferences. `build.py` renders each section a specific way,
 - **No author notes to self**
   Do not write explanations of the markup or the tooling into the page (for example a note about why an ascii figure is left-anchored). The reader needs the content, not the reasoning behind how it was typeset.
 - **A short heading is a phrase, not a sentence**
-  The complete question belongs in `## Opening`. Keep the `# title` and every item heading short.
+  The complete question belongs in `## Opening`. Keep the `# title` and every item heading short. A Page title targets three to five visible words and never exceeds six (JL 260827); acronyms, identifiers, and hyphenated compounds count as one word, and a colon does not create a second allowance.
 - **Give numbers**
   "Basically done" and "works well" say nothing. Write "2 of 7 questions are clear", "agreement fell from 0.93 to 0.67".
 - **Each question is self-contained**
@@ -66,7 +71,7 @@ These are not style preferences. `build.py` renders each section a specific way,
   Sentence-local `> Comment WHO` and `> ✎` lines are the durable review trail; do not erase them. A person's remark is written `> Comment JL …` (JL 260802); the older `> JL:` still renders, and `check.py` warns on it inside Content.
 - **The page says what IS; the Log keeps the story** (JL 260815)
   Write the title, Opening, and Content for someone who arrived today: the current contract, in plain words, standing on its own.
-  Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `## Log` (and the board's Pipeline), where a reader goes when they want the story.
+  Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `outline/<stem>-log.md` (and the board's Pipeline), where a reader goes when they want the story.
   The test: if a sentence needs a date or a name to stay true, it is a Log line, not Content.
   The commonest leak is the attribution parenthetical: a prose sentence ending in `(JL 260816)` is jargon to a cold reader (JL 260816, on QPf9's render); state the rule plainly and let Law or Log carry who ruled it and when. `check.py` warns on the Opening form; in Content the writer catches it.
 - **Clear out stale text**
@@ -101,3 +106,25 @@ Fix what it reports, then it is done.
 For a batch, read the changed sections consecutively in Board order after the page-by-page pass. A page that is clear alone still fails readability when the batch reveals a reusable form-letter voice.
 
 **Convergence test:** no question is "unreadable", every "half" reason is either handled or written down as a known gap, and no changed paragraph remains interchangeable after noun substitution.
+
+## A heading is a lookup key
+
+Governs every skill's H1, a contract's `##` headings, and every page's `###`
+Content divisions. Five tests, each mechanical:
+
+```text
+① states the LAW, not the topic   `One key claims a page`, never `Page Types`
+② no count                        a number in a heading rots (`Seven Page Phases`)
+③ no date                         a heading carrying a date is a record, not a law
+④ no self-reference               the heading names the SUBJECT, never this document
+⑤ a clause after the comma        it earns its place only by ruling out a real
+                                   mistake the first half leaves open: `Write for
+                                   the render, not the source` keeps it; `A heading
+                                   is a lookup key, not a sentence` loses it
+```
+
+Test ⑤ catches machine prose: its tell is a comma followed by a qualifying
+phrase, commonest as the negative restatement. Grep it with
+`grep -n '^#\+ .*, '` and ask of each hit what mistake the clause prevents. A
+skill's H1 says what the skill DOES for its reader, as a verb phrase
+(`judge one version and name its next authority`).

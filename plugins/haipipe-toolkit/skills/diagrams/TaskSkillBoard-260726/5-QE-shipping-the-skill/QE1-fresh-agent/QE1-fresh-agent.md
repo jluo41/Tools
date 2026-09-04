@@ -74,10 +74,11 @@ already decided to replace.
 - [ ] 🔁 Rule what a failure costs
       Whether a stopping point blocks the board's `close:` or is recorded as an open item on the page it names. The second is more honest and the first is what a close condition usually means.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 Not run. It cannot be run until `QA4` settles the entry, and nothing else on this board has
 graduated yet, so a run today would stop at step 1 and report the one thing already known.
-
 - 260726 CC · 🧭 Made the stopping point the output
       Modelled on the paper family's fresh-agent face, with one change: the map from stopping point to page turns a pass/fail test into a diagnostic on this board's own graduation.
 
@@ -91,3 +92,5 @@ graduated yet, so a run today would stop at step 1 and report the one thing alre
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

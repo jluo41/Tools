@@ -8,9 +8,9 @@
 | A1 live search | `tasks/B03_llm_search/01_search_roster/01_search_roster.py` |
 | A2 cards and same-session recommendation | `tasks/B04_llm_record_recommend/01_followup_recommend/01_followup_recommend.py` |
 | B fresh search plus recommendation | `tasks/B01_llm_open_rec/02_run_audit/06_run_b_search_recommend.py` |
-| Stage auditor | `tasks/audit_llmrec_sdk_stage.py` |
+| Stage auditors (one per job, 260830) | `j01_A1_search_physicians/scripts/src/audit_a1_outputs.py` · `j02_A2_followup_from_A1_session/scripts/src/audit_a2_outputs.py` · `j03_B_open_recommendation/scripts/src/audit_b_outputs.py`; shared checks in `code/haiutils/agent_sdk/audit.py` |
 | Deterministic verifier | `tasks/verify_llmrec_agent_sdk.py` |
-| Model/scale runner | `tasks/run_llmrec_model_scale.sh` |
+| Per-job batch runner | `jNN_*/sbatch/run_all_arms.sh <scale>` (the cross-job chain scripts were retired with j05 on 260830; order is held by `required_audits` receipts) |
 
 All `tasks/...` paths above are relative to
 `examples/Project-LLMRec-Physician/` unless otherwise stated.

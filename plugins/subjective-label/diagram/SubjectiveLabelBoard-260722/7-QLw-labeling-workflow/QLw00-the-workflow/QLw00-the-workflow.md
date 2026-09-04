@@ -1,4 +1,11 @@
 # The workflow: the eleven phases of one labeling job, and what a person does in each
+
+> **Superseded runtime model (v0.3 design history).** The active v0.4 family is
+> organized as the `subjective-label` umbrella, the `label-building` and
+> `label-scanning` sibling doors, and `subjective-label-workflow`: six
+> journey phases in two sides (Building: `Contract`, `Round`, `Freeze`;
+> Scanning: `Test`, `Scan`, `Audit`) joined by a signed Label Handoff. The
+> eleven-phase material below remains design history; do not route a run from it.
 state: 🟡 PARTIAL · eleven phases, two rhythms, where each output lands · open: A5.2, no closed round to walk
 owner: JL
 method: Name every phase the work actually has, say what it produces, what the person does, what it costs, how often it happens, and which division of the run page its output lands in.
@@ -400,15 +407,11 @@ Division 5 cites it as a `## Files` path instead, and `haipipe-page-for-labeling
 ## Files
 
 ### 📋 Contracts · what this Page describes
-- `../../skills/page-workflows/label-round/SKILL.md`
-  Phases A to F, the only place the round's sequence exists today, and where the resume promise is made: "Resume the recorded open phase when one exists".
-- `../../skills/page-workflows/label-init/SKILL.md`
-  Phase 1 START.
-- `../../skills/page-workflows/label-evaluate/SKILL.md`
-  Phases 8 FREEZE and 9 SCORE.
-- `../../skills/page-workflows/label-complete/SKILL.md`
-  Phases 10 LABEL ALL and 11 SPOT CHECK.
-- `../../skills/page-workflows/label-status/SKILL.md`
+- `../../skills/label-building/SKILL.md`
+  Phases A to F, the only place the round's sequence exists today, and where the resume promise is made: "Resume the recorded open phase when one exists". Also: Phase 1 START.
+- `../../skills/label-scanning/SKILL.md`
+  Phases 8 FREEZE and 9 SCORE. Also: Phases 10 LABEL ALL and 11 SPOT CHECK.
+- `../../skills/subjective-label/SKILL.md`
   The read-only view of where a job stands.
 - `../../skills/page-types/haipipe-page-for-labeling/SKILL.md`
   The Page Type whose "a round is a record, never a division" ruling assumed the two rhythms this page states, and whose five Content divisions are the surface division 5 maps onto.
@@ -456,3 +459,6 @@ Division 5 cites it as a `## Files` path instead, and `haipipe-page-for-labeling
 260818 · The record line quoted under phase 3 was corrected to the Page Type's verbatim `🎯 challenge  policy and the human disagreed on 11 of 60`; this page had added a `·` the contract does not write.
 260818 · Two claims the Board itself had overtaken were corrected: the Opening said the steps appear as a list in exactly one place, which stopped being true the moment this group's fifteen pages and `board.md`'s own `QLw` block were written, and division 2 backticked the Board Map's elbow as `not stopped, back to QC1`, which is not the line that map draws.
 260818 · Division 5 now names the second page kind `haipipe-page-for-labeling` fixes: `S-Label-Dash` takes no phase's output, because that contract rules an Aim tracking a run's gate belongs on the run's page, so a map that stopped at the run page left a reader guessing whether a phase writes twice.
+260830 · Sibling doors renamed `label-building` / `label-scanning` (JL: Part 1 is Building, not Labeling); Freeze promoted to phase P2 and Test replaces Scorecard, so the family runs six phases; the five `label-*` forwards retired.
+260830 · Stage A of the readiness goal: three layers (LAW doors, ORDER side workflows `label-building-workflow` / `label-scanning-workflow`, CROSSING family workflow); round unit, register and rendered views defined in `ref-assets.md` §3, §6a.
+260830 · Stage B: page type 0.4.0 reads the units (§1 cheatsheet/gallery, §2 round-unit records, §3 checkpoint gates, §4 handoff row); `fixtures/job-mini` (2 closed round units) + its board render clean, 0 errors; plugin 0.5.0.

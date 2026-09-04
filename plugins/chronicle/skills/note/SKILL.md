@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: 1.2.0
   last_updated: 2026-07-08
-  summary: Chat-in → daily chronology + person note when applicable + project/matter note + event artifact when useful, with raw archive and cross-links for review.
 created: 2026-06-27T23:52
 updated: 2026-07-08T00:00
 ---

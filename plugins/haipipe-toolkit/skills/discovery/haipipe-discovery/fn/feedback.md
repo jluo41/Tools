@@ -15,7 +15,7 @@ sources/verdict/landscape/ideas the discovery produces.
 
 Capture-time routing: each complaint is inferred to a specific bucket unit and
 written into THAT unit's `feedback/` folder. When no unit matches (cross-cutting
-discipline: the Plan/Build/Execute/Report lifecycle, the Search/Review/Idea type
+discipline: the SCOPE/PREPARE/ACQUIRE/SYNTHESIZE/CLOSE workflow, the Discovery Page Type
 field, the discovery.yaml schema, the stage strip, or genuinely unclassifiable),
 it lands in the orchestrator fallback `feedback/`. The folder a file lives in IS
 the record of which unit it concerns; there is no separate `skill:` field.
@@ -78,7 +78,7 @@ signal: a routing keyword in the feedback TEXT (plus the conversation's active
 resolve:
   0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
      does the complaint assert a rule TRUE ACROSS ALL discovery types AND stages
-     (something that should hold for Search AND Review AND Idea, at every
+     (something that should hold for every Discovery Page Type and specialist route, at every
      lifecycle stage, however phrased) OR name a known cross-cutting concern --
      rather than report a bug in ONE bucket's behavior or output? If yes ->
      orchestrator FALLBACK, STOP. This overrides any keyword it contains.
@@ -86,8 +86,8 @@ resolve:
          - quantifies over types/stages: "every/each/all types", "at every
            stage", "across the lifecycle", "throughout", "always ... before
            done", or the same idea with no trigger word at all.
-         - names a known cross-cutting concern: the Plan/Build/Execute/Report
-           lifecycle, the Search/Review/Idea type field, the
+         - names a known cross-cutting concern: the D1 five-cycle workflow
+           lifecycle, the Discovery Page Type field and route map, the
            discovery.yaml schema, the report block, the stage
            strip, the dashboard, the group-letter hints, the project.log.jsonl.
        Rule of thumb: "would this complaint be equally true for a Search folder,
@@ -109,8 +109,8 @@ review, lit review, landscape, verdict, synthesize            -> 2_review/feedba
 idea, idea-creator, generate ideas, ideas.md, novelty, 查新    -> 3_idea/feedback/
 creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
 --------------------------------------------------------------------------------
-NO MATCH (cross-cutting: the Plan/Build/Execute/Report lifecycle, the
-Search/Review/Idea type field, the discovery.yaml schema,
+NO MATCH (cross-cutting: the D1 five-cycle workflow, the
+Discovery Page Type field and route map, the discovery.yaml schema,
 the report block, the stage strip, the dashboard, anything true across all
 types) ......................... -> orchestrator fallback (haipipe-discovery/feedback/)
 ```

@@ -56,29 +56,6 @@ Acceptance means the agent opens a valid board, respects every gate, and leaves 
       The handover grew with it: SKILL.md now tells a creator to load `haipipe-page` rather than restating the page grammar, so the next run hands over SKILL.md, `ref/` AND that skill, and nothing else.
       The topic must still force a Q page and an S page, since the two kinds are the reason the 260725 run found anything.
 
-## States
-**Run twice, both YES: 260723 on the Q-only skill, 260725 on the shared Q/S skill. Neither verdict is current, because the page contract left SKILL.md after both of them.**
-
-- 260806 CC · ⌛ The verdict expired, and this page is the only thing that says so
-  On the day of the second run the whole grammar lived in one skill at 0.16.0; that door is now 0.124.0, and the page contract has moved out of it entirely.
-  `haipipe-page` 0.21.0 owns Page = Type x Phase, with ten Page Types under `board/page-types/` and four Page Phases under `board/page-phases/`, plus the verbs CREATE, WORK ON and RUN.
-  That is the largest material change either run has seen, so the re-run rule voids the 260725 verdict and the state drops to 🟡 until a third run.
-  It also changes what "the complete material" means: an agent handed only SKILL.md and `ref/` would stall at the line telling it to load `haipipe-page`, so the next handover includes that skill.
-- 260725 CC · 🔁 Second run passed, and paid for itself in gaps
-  The agent produced a valid board and a correct build, so the verdict is YES, but everything it had to invent was about **S pages**, because the skill described them only for the reading side: ① how an S page is listed in `## Pages` (it invented a `### S · …` group, which happened to be right); ② what `state:` an S carries, since `close` said "human-gated / explicitly parked" while the template offered only four pill values; ③ the `open` procedure asked for "有哪几个 Q" and told you to name files `Q<letter><n>`, never mentioning S at all; ④ the Q-consumer `**Probe:**` line pointed at `1-probes/PPNN_topic/…`, which does not exist on a standalone board.
-  All four were written into `SKILL.md` / `ref/board-form.md` / `ref/page-template.md` in the same pass (0.16.0).
-  It also flagged that `build.py` runs on plain `python3` while `serve.py` needs the venv, now stated in the build section.
-- 260725 CC · ✅ The fixes were verified by a second fresh reader, not by us
-  A third agent, given only the docs and forbidden to read any board or any source file, was asked the five things the second agent had to guess and told that "NOT DOCUMENTED" was an acceptable answer.
-  It answered all five correctly and quoted the sentence behind each one: **ALL DOCUMENTED**.
-  This is the cheap half of the acceptance (a read, not a build) and it is what turns "we wrote something" into "the documents now say it".
-- Known and deliberate
-  `SKILL.md` and `ref/board-form.md` remain largely Chinese while board content is English-only; the reader noted an English-only operator would stall on the operative sections.
-  This is JL's 260724 split (board md/html and artifacts are English; internal skill specs may stay bilingual), so it is recorded here rather than "fixed".
-- Re-run rule
-  Still stands: every material structural change voids the previous verdict.
-  No run is current: the 260725 one was voided when the page contract became its own skill.
-
 ## Files
 - `SKILL.md` · `ref/`
   The board door's own material, and the part of the handover that has not changed since 260723.
@@ -100,6 +77,29 @@ fresh agent: a separately started Claude that cannot see this conversation and s
 
 ## Discussion
 
+
+### From the retired States section (merged 260831)
+**Run twice, both YES: 260723 on the Q-only skill, 260725 on the shared Q/S skill. Neither verdict is current, because the page contract left SKILL.md after both of them.**
+- 260806 CC · ⌛ The verdict expired, and this page is the only thing that says so
+  On the day of the second run the whole grammar lived in one skill at 0.16.0; that door is now 0.124.0, and the page contract has moved out of it entirely.
+  `haipipe-page` 0.21.0 owns Page = Type x Phase, with ten Page Types under `board/page-types/` and four Page Phases under `board/page-phases/`, plus the verbs CREATE, WORK ON and RUN.
+  That is the largest material change either run has seen, so the re-run rule voids the 260725 verdict and the state drops to 🟡 until a third run.
+  It also changes what "the complete material" means: an agent handed only SKILL.md and `ref/` would stall at the line telling it to load `haipipe-page`, so the next handover includes that skill.
+- 260725 CC · 🔁 Second run passed, and paid for itself in gaps
+  The agent produced a valid board and a correct build, so the verdict is YES, but everything it had to invent was about **S pages**, because the skill described them only for the reading side: ① how an S page is listed in `## Pages` (it invented a `### S · …` group, which happened to be right); ② what `state:` an S carries, since `close` said "human-gated / explicitly parked" while the template offered only four pill values; ③ the `open` procedure asked for "有哪几个 Q" and told you to name files `Q<letter><n>`, never mentioning S at all; ④ the Q-consumer `**Probe:**` line pointed at `1-probes/PPNN_topic/…`, which does not exist on a standalone board.
+  All four were written into `SKILL.md` / `ref/board-form.md` / `ref/page-template.md` in the same pass (0.16.0).
+  It also flagged that `build.py` runs on plain `python3` while `serve.py` needs the venv, now stated in the build section.
+- 260725 CC · ✅ The fixes were verified by a second fresh reader, not by us
+  A third agent, given only the docs and forbidden to read any board or any source file, was asked the five things the second agent had to guess and told that "NOT DOCUMENTED" was an acceptable answer.
+  It answered all five correctly and quoted the sentence behind each one: **ALL DOCUMENTED**.
+  This is the cheap half of the acceptance (a read, not a build) and it is what turns "we wrote something" into "the documents now say it".
+- Known and deliberate
+  `SKILL.md` and `ref/board-form.md` remain largely Chinese while board content is English-only; the reader noted an English-only operator would stall on the operative sections.
+  This is JL's 260724 split (board md/html and artifacts are English; internal skill specs may stay bilingual), so it is recorded here rather than "fixed".
+- Re-run rule
+  Still stands: every material structural change voids the previous verdict.
+  No run is current: the 260725 one was voided when the page contract became its own skill.
+
 ## Log
 - 260815 2000 · [GATE-CC] fresh-agent routing gate on the plugin family, 3 probes. Round 1: 0/3, and the misses indicted the ENVIRONMENT: two retired-era names (haipipe-board-page, haipipe-board-sentence) were still installed from WellDoc-SPACE's older toolkit generation, and fresh agents routed straight into them; 5 colliding links removed, 34 WellDoc links left for JL's ruling. Round 2: draw HIT (haipipe-plugin-draw, umbrella inferred from the family pattern); skill-map still missed, quoting a description deleted before the rerun, which proves subagents read this session's roster snapshot, not disk. Finding applied: plugin-skill's triggers gained "page dependencies". The TRUE gate needs a genuinely fresh session; this one cannot instrument it.
 260806 2203 · [REVISE-CC] swept to the 260806 architecture; the 260725 verdict is expired, not current: the page contract left SKILL.md and is now `haipipe-page` 0.21.0 (ten Page Types, four Page Phases, CREATE/WORK ON/RUN) against a 0.16.0 door, so state went ✅ to 🟡 with a re-run Aim opened and the handover widened to include that skill. Also: `QC1` repointed to `QC1a` (QC1 is the skill-family page; QC1a is "What SKILL.md must say" and already points back here), and the "no frame named QF2" note replaced with the real canvas link because `board.excalidraw` now carries a `QF2` frame holding this page's title and diagram
@@ -113,3 +113,5 @@ fresh agent: a separately started Claude that cannot see this conversation and s
 260723 0919 · Renumbered Q5 → QF2
 260723 0915 · The readability acceptance moved to QA5; this question keeps only "can a board be opened from SKILL.md alone"
 260722 2255 · Opened, per the repo CLAUDE.md rule "a changed skill must be validated by a fresh agent"
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

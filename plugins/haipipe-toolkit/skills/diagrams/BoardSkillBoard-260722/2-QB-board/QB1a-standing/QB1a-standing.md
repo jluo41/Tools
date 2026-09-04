@@ -236,35 +236,6 @@ When the owning board is somebody else's, the verb does not land the write.
 It produces a report instead, and the owner decides.
 
 ## Aims
-### A1 · 🏭 Ten boards exist and most of them are not ours
-- A1.1 · The size of the outside is measured rather than remembered.
-  **Done when:** The board count, page count and not-ours count on this page each carry the date they were counted, and a reader can reproduce them from this tree.
-
-### A2 · ✅ Mechanical writes are always allowed
-- A2.1 · The allowed writes are named by the property that makes them safe.
-  **Done when:** Each listed write is either regenerable from the markdown or a transcription of a human act, and the page says which.
-
-### A3 · ⛔ Editorial writes are never ours, however small they look
-- A3.1 · The small editorial writes are refused for the same stated reason as the large ones.
-  **Done when:** A reader can tell from the page why a tick is refused without appealing to how small it is.
-
-### A4 · ⚖️ The hard case is a checker error, and the test is who broke it
-- A4.1 · The who-broke-it test is stated, with the precedent on both branches.
-  **Done when:** Both branches carry a real dated case, and the page says plainly that the diff does not distinguish them.
-- A4.2 · The 260729 repairs are reverted and reported to their owners instead.
-  **Done when:** The three rows are back as their owners left them and each owner has been told what was found.
-
-### A5 · ✍️ The write verb, and what standing bounds
-- A5.1 · The unit that performs the writes obeys this rule in its own contract.
-  **Done when:** `haipipe-board-routing`'s `SKILL.md` states the report end state and points at this page rather than restating the rule.
-- A5.2 · The rule has a mechanical half, so the next agent cannot repeat 260729 by accident.
-  **Done when:** Something in `cli/check.py` or the routing verb refuses an editorial write into a board whose owner is not this one.
-
-### P · Page-level
-- P1 · JL approves the standing rule, so it can graduate into the skill.
-  **Done when:** The rule is ticked here and copied into `SKILL.md`, from which point it binds.
-
-## States
 ### Decision Now
 - [ ] 🗣 Approve the standing rule for writing into a board we render but do not own
       📍 `Part` §2, §3 and §4, which are the whole rule
@@ -283,25 +254,48 @@ It produces a report instead, and the owner decides.
       🛑 `Blocks` nothing mechanical, but it blocks this page reaching ✅
       🤖 `If nobody answers` A takes effect
 
+
 ### A1 · 🏭 Ten boards exist and most of them are not ours
-- ✅ A1.1 · Met. Six boards, 228 pages, 165 not ours, counted on 260816 from this tree; the older 321-page figure counted two boards that are not visible here and has been dropped.
+- ✅ A1.1 · The size of the outside is measured rather than remembered.
+  **Done when:** The board count, page count and not-ours count on this page each carry the date they were counted, and a reader can reproduce them from this tree.
+  **Now:** Met. Six boards, 228 pages, 165 not ours, counted on 260816 from this tree; the older 321-page figure counted two boards that are not visible here and has been dropped.
+
 
 ### A2 · ✅ Mechanical writes are always allowed
-- ✅ A2.1 · Met. Four writes listed, each named as regenerable or as a transcription of a human act.
+- ✅ A2.1 · The allowed writes are named by the property that makes them safe.
+  **Done when:** Each listed write is either regenerable from the markdown or a transcription of a human act, and the page says which.
+  **Now:** Met. Four writes listed, each named as regenerable or as a transcription of a human act.
+
 
 ### A3 · ⛔ Editorial writes are never ours, however small they look
-- ✅ A3.1 · Met. The refusal rests on what the write decides, and §3.1 and §3.2 work the two smallest cases.
+- ✅ A3.1 · The small editorial writes are refused for the same stated reason as the large ones.
+  **Done when:** A reader can tell from the page why a tick is refused without appealing to how small it is.
+  **Now:** Met. The refusal rests on what the write decides, and §3.1 and §3.2 work the two smallest cases.
+
 
 ### A4 · ⚖️ The hard case is a checker error, and the test is who broke it
-- ✅ A4.1 · Met. Both branches carry a dated case, 260726 and 260729, and the page states that the diff does not distinguish them.
-- 🧠 A4.2 · Waiting on JL. The three repairs of 260729 are still standing on their owners' boards and the reports have not been sent.
+- ✅ A4.1 · The who-broke-it test is stated, with the precedent on both branches.
+  **Done when:** Both branches carry a real dated case, and the page says plainly that the diff does not distinguish them.
+  **Now:** Met. Both branches carry a dated case, 260726 and 260729, and the page states that the diff does not distinguish them.
+- 🧠 A4.2 · The 260729 repairs are reverted and reported to their owners instead.
+  **Done when:** The three rows are back as their owners left them and each owner has been told what was found.
+  **Now:** Waiting on JL. The three repairs of 260729 are still standing on their owners' boards and the reports have not been sent.
+
 
 ### A5 · ✍️ The write verb, and what standing bounds
-- 🧠 A5.1 · Waiting. The unit's `SKILL.md` describes the three end states, and its `📮 reported` state cites this page's old address rather than this page.
-- ⬜ A5.2 · Not started. `cli/check.py` carries nothing from this page, so the standing rule has no mechanical half and the 260729 mistake is still available to the next agent.
+- 🧠 A5.1 · The unit that performs the writes obeys this rule in its own contract.
+  **Done when:** `haipipe-board-routing`'s `SKILL.md` states the report end state and points at this page rather than restating the rule.
+  **Now:** Waiting. The unit's `SKILL.md` describes the three end states, and its `📮 reported` state cites this page's old address rather than this page.
+- ⬜ A5.2 · The rule has a mechanical half, so the next agent cannot repeat 260729 by accident.
+  **Done when:** Something in `cli/check.py` or the routing verb refuses an editorial write into a board whose owner is not this one.
+  **Now:** Not started. `cli/check.py` carries nothing from this page, so the standing rule has no mechanical half and the 260729 mistake is still available to the next agent.
+
 
 ### P · Page-level
-- 🧠 P1 · Waiting on JL's tick in Decision Now, after which the rule graduates into `SKILL.md`.
+- 🧠 P1 · JL approves the standing rule, so it can graduate into the skill.
+  **Done when:** The rule is ticked here and copied into `SKILL.md`, from which point it binds.
+  **Now:** Waiting on JL's tick in Decision Now, after which the rule graduates into `SKILL.md`.
+
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -349,3 +343,5 @@ It produces a report instead, and the owner decides.
 
 ## Log
 - 260816 · [DRAFT-CC] Page opened. Split out of `QB1` §4 on JL's call to keep the group at four pages: `QB1` reads as settled while the standing rule inside it was never approved, so a reader scanning the roster could not see the group's one open decision. Carries §4 whole, its two open items as a `### Decision Now` with options, and the write verb `haipipe-board-routing`, whose page `Design-2` dissolved into this one the same round the way `QPs00` dissolved into `QPs1`. The board and page counts were remeasured from this tree, six boards and 228 pages with 165 not ours on 260816, replacing the "ten boards, 321 pages, 266 not ours" figure that counted two boards no longer visible here. `Design-2`'s prose is archived at `_archive/Design-2-haipipe-board-routing/`.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

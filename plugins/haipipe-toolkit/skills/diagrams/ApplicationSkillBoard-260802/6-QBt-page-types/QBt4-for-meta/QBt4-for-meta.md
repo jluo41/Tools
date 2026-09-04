@@ -51,27 +51,24 @@ One row per raised need, with the answering page and its state. A need with no p
 ## Aims
 
 ### A1 · Contract
-- A1.1 · Each board has its own head page and neither carries the other's material.
+- ✅ A1.1 · Each board has its own head page and neither carries the other's material.
   **Done when:** no source inventory remains on the Brief and no delivery framing appears here.
+  **Now:** Shipped in Meta Page Type 0.1.0 and Brief Page Type 0.3.0.
+
 
 #### A2 · Discipline
-- A2.1 · The Page describes without concluding.
+- ✅ A2.1 · The Page describes without concluding.
   **Done when:** no division interprets, compares, ranks, or recommends.
+  **Now:** The closing checks forbid interpretation and question-raising.
+
 
 ### P · Specimen
-- P1 · One runtime Meta Page inventories a real dataset.
+- ⬜ P1 · One runtime Meta Page inventories a real dataset.
   **Done when:** a fresh agent writes one and stops at the correct gate.
+  **Now:** No runtime Meta Page exists yet.
 
-## States
 
-### A1 · Contract
-- ✅ A1.1 · Shipped in Meta Page Type 0.1.0 and Brief Page Type 0.3.0.
-
-#### A2 · Discipline
-- ✅ A2.1 · The closing checks forbid interpretation and question-raising.
-
-### P · Specimen
-- ⬜ P1 · No runtime Meta Page exists yet.
+## Discussion
 
 ## Files
 
@@ -88,3 +85,5 @@ Meta owns the description of the data; Insight owns every claim made from it. A 
 ## Log
 
 260820 · Created by splitting `haipipe-page-for-brief` when the Application became an InsightBoard plus a DesignBoard (JL).
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

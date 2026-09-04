@@ -6,7 +6,6 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-06-26"
-  summary: "Azure + Databricks wiki, lessons, and feedback system."
 ---
 
 Skill: learn-azure

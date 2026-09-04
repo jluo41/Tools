@@ -23,7 +23,7 @@ JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一�
       into the Seed's E-rows):
 
       ```text
-      SD01 §6      R1 claim novelty   ⬜ proposed   6 claim QAs
+      Story01 §6      R1 claim novelty   ⬜ proposed   6 claim QAs
         E1 ◀────────────┤
         E2 ◀────────────┤
         E3 ◀────────────┘
@@ -36,6 +36,21 @@ JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一�
       whether that belongs in `build.py` (a page-type-aware renderer) or in a small
       `haipipe-plugin-*` the page declares, and say so in the contract before writing
       any code.
-- [ ] Check whether Collection wants the same treatment: its laps carry dates, rows,
-      and landed paths, which is also a picture (a timeline) rather than a paragraph.
-      Do not generalize past these two without a third real case.
+- [ ] Check whether the Roadmap's LAP divisions want the same treatment: they carry
+      dates, rows, and landed paths, which is also a picture (a timeline) rather than
+      a paragraph. Do not generalize past these two without a third real case.
+
+Receipt teeth for the establish loop (260827, from the lap-L1 field test)
+-------------------------------------------------------------------------
+
+- [ ] Three grep-shaped checks, mirroring the application board's set-diff hardening:
+      ① a Roadmap page containing a `▶️ released`/`🔵 running`/`✅ landed` row must have
+      a Log row recording the release (the G2 receipt); ② every `landed` QA path on a
+      Roadmap lap must exist on disk; ③ every Seed E-row cite written by a settle
+      must exist on disk and match the lap's path (one string, two pages).
+- [ ] Placement is undecided: check.py is the generic board engine and these are
+      paper-family rules — decide between a page-type-aware rule pack the checker loads
+      from the contract, or a small board-local script the paper board declares.
+- [ ] Each tooth must be proven to FAIL first on a known-broken sample; the 260827
+      pre-repair Story02 (released rows + "Nothing released" Log) is the stored specimen
+      for tooth ①.

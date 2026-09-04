@@ -101,30 +101,27 @@ The link is identical in all three messages, so the sequence reads as one thread
 ## Aims
 
 ### A1 · Design contract
-- A1.1 · Every load-bearing move reaches a settled handoff.
+- ✅ A1.1 · Every load-bearing move reaches a settled handoff.
   **Done when:** the Insight Use Map has no adopted row without a source.
-- A1.2 · Declined insights stay visible with a reason.
+  **Now:** Both principles in division 3 cite H1@v2.
+- ✅ A1.2 · Declined insights stay visible with a reason.
   **Done when:** K2 is recorded as declined and why.
+  **Now:** K2 is declined in the Use Map with its WEAK marking as the reason.
+
 
 #### P · Acceptance
-- P1 · A unit can be accepted while a sibling is not.
+- ✅ P1 · A unit can be accepted while a sibling is not.
   **Done when:** at least one division carries a row and one does not, legally.
+  **Now:** R1 and R2 carry rows; R3 carries none and is open.
+
 
 #### P2 · Cross-unit rails
-- P2.1 · The sequence coheres as one system, not three sends.
+- 🔨 P2.1 · The sequence coheres as one system, not three sends.
   **Done when:** the rails fix the link, the escalation, and the prohibited move.
+  **Now:** Rails are written; the system cannot be judged whole until R3 exists.
 
-## States
 
-### A1 · Design contract
-- ✅ A1.1 · Both principles in division 3 cite H1@v2.
-- ✅ A1.2 · K2 is declined in the Use Map with its WEAK marking as the reason.
-
-#### P · Acceptance
-- ✅ P1 · R1 and R2 carry rows; R3 carries none and is open.
-
-#### P2 · Cross-unit rails
-- 🔨 P2.1 · Rails are written; the system cannot be judged whole until R3 exists.
+## Discussion
 
 ## Files
 
@@ -143,3 +140,5 @@ Acceptance covers one division. A changed handoff clears only the rows that cite
 ## Log
 
 260820 · Accepted R1 and R2 against handoff v2; R3 left open on purpose so the fixture exercises mixed acceptance.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

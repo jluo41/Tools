@@ -133,15 +133,11 @@ It never fabricates a checkpoint, test score, or completed corpus.
 ### Contracts · what this Page changes
 - `../../skills/subjective-label/SKILL.md`
   The router must expose the canonical lifecycle and compatibility aliases.
-- `../../skills/label-init/SKILL.md`
-  Initialization must reserve the seal and prepare a random Round 1.
-- `../../skills/label-round/SKILL.md`
-  The canonical Calibration Round from C_t through closed D_t and G_t.
-- `../../skills/label-evaluate/SKILL.md`
-  The sealed final-test and executor-scorecard command.
-- `../../skills/label-complete/SKILL.md`
-  The validated production, reconciliation, and final-audit command.
-- `../../skills/label-status/SKILL.md`
+- `../../skills/label-building/SKILL.md`
+  Initialization must reserve the seal and prepare a random Round 1. Also: The canonical Calibration Round from C_t through closed D_t and G_t.
+- `../../skills/label-scanning/SKILL.md`
+  The sealed final-test and executor-scorecard command. Also: The validated production, reconciliation, and final-audit command.
+- `../../skills/subjective-label/SKILL.md`
   The read-only state and gate dashboard.
 
 ### 🔗 Related Board Pages · what this Page READS BY SCOPE

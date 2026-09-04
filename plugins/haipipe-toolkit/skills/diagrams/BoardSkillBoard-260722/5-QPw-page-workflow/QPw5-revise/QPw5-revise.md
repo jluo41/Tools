@@ -160,31 +160,6 @@ more work under the same promise                   ─▶ ⑤ REVISE again
 
 ## Aims
 
-### A1 · 🔒 The promise is fixed, and that is the phase's only test
-- A1.1 · The test is stated on a concrete edit list rather than as a principle.
-  Done when six edits are classified and each names its phase.
-
-### A2 · 🧵 Land the facts before polishing the prose around them
-- A2.1 · No page on this board carries a hole that was removed rather than filled.
-  Done when every claim that had a marker either shows a landed value or still shows its marker with its id.
-
-### A3 · 🏗 The page becomes its artifacts here, or it never does
-- A3.1 · No page on this board has a projection older than the source it projects.
-  Done when `cli/check.py` reports zero `projection-stale` findings.
-- A3.2 · Every rendered unit on this board is cited by id in the prose that claims it.
-  Done when `cli/check.py` reports zero `display-rendered-not-cited` findings.
-- A3.3 · COMPILE either earns its own phase page or is recorded as permanently folded.
-  Done when the split test in `QPw00 §7.2` has been applied to COMPILE and its result written here.
-
-### A4 · 🪞 Direct and candidate modes
-- A4.1 · No candidate-mode pass has changed a page.
-  Done when every candidate-mode receipt shows an unchanged source hash.
-
-### A5 · 🔀 Exit and routing, and the one thing REVISE may never do
-- A5.1 · No REVISE receipt on this board routes to CLOSE or claims approval.
-  Done when a receipt audit finds no REVISE row with `route: CLOSE`.
-
-## States
 ### Decision Now
 - [ ] 🗣 Rule whether COMPILE stays folded into REVISE or takes its own phase page
       📍 `Part` §3, the page becomes its artifacts
@@ -194,22 +169,42 @@ more work under the same promise                   ─▶ ⑤ REVISE again
       🛑 `Blocks` A3.3, and the loop's phase count on QPw00
       🤖 `If nobody answers` A takes effect, because the failure that folded it is documented and the split has no incident behind it
 
+
 ### A1 · 🔒 The promise is fixed, and that is the phase's only test
-- ✅ A1.1 · Met. Six edits are classified in `§1`.
+- ✅ A1.1 · The test is stated on a concrete edit list rather than as a principle.
+  Done when six edits are classified and each names its phase.
+  **Now:** Met. Six edits are classified in `§1`.
+
 
 ### A2 · 🧵 Land the facts before polishing the prose around them
-- ⬜ A2.1 · Not measured. No sweep for removed markers has been run, and a removed marker leaves no trace to sweep for, which is itself the finding.
+- ⬜ A2.1 · No page on this board carries a hole that was removed rather than filled.
+  Done when every claim that had a marker either shows a landed value or still shows its marker with its id.
+  **Now:** Not measured. No sweep for removed markers has been run, and a removed marker leaves no trace to sweep for, which is itself the finding.
+
 
 ### A3 · 🏗 The page becomes its artifacts here, or it never does
-- ⬜ A3.1 · Not met. `cli/check.py` reports `projection-stale` on `QPf5-display` for both its `.tex` and its `.docx`, and on `QPw00-page-loop` for its `.tex`.
-- ✅ A3.2 · Met today. `cli/check.py` reports zero `display-rendered-not-cited` findings on this board.
-- 🧠 A3.3 · Waiting on the Decision Now row above.
+- ⬜ A3.1 · No page on this board has a projection older than the source it projects.
+  Done when `cli/check.py` reports zero `projection-stale` findings.
+  **Now:** Not met. `cli/check.py` reports `projection-stale` on `QPf5-display` for both its `.tex` and its `.docx`, and on `QPw00-page-loop` for its `.tex`.
+- ✅ A3.2 · Every rendered unit on this board is cited by id in the prose that claims it.
+  Done when `cli/check.py` reports zero `display-rendered-not-cited` findings.
+  **Now:** Met today. `cli/check.py` reports zero `display-rendered-not-cited` findings on this board.
+- 🧠 A3.3 · COMPILE either earns its own phase page or is recorded as permanently folded.
+  Done when the split test in `QPw00 §7.2` has been applied to COMPILE and its result written here.
+  **Now:** Waiting on the Decision Now row above.
+
 
 ### A4 · 🪞 Direct and candidate modes
-- ⬜ A4.1 · Not measurable yet, because no candidate-mode pass has been recorded on this board.
+- ⬜ A4.1 · No candidate-mode pass has changed a page.
+  Done when every candidate-mode receipt shows an unchanged source hash.
+  **Now:** Not measurable yet, because no candidate-mode pass has been recorded on this board.
+
 
 ### A5 · 🔀 Exit and routing, and the one thing REVISE may never do
-- ⬜ A5.1 · Not measurable until `QPw00r` gives the receipts a page and an audit surface.
+- ⬜ A5.1 · No REVISE receipt on this board routes to CLOSE or claims approval.
+  Done when a receipt audit finds no REVISE row with `route: CLOSE`.
+  **Now:** Not measurable until `QPw00r` gives the receipts a page and an audit surface.
+
 
 ## Files
 ### 📋 Contracts · what CARRIES a rule to other pages
@@ -254,3 +249,5 @@ more work under the same promise                   ─▶ ⑤ REVISE again
 
 ## Log
 - 260818 · [DRAFT-CC] page created to complete the loop after `QPw1`, `QPw2`, `QPw3` and `QPw4`. Written from `haipipe-page-revise`, which also carries COMPILE. Five divisions: the fixed-promise test on a concrete edit list, the five-step order and why each step precedes the next, the realization of both projections with the citation rule, the direct-versus-candidate modes, and routing. Two live checker findings were written into States rather than described as risks: `projection-stale` on `QPf5-display` twice and on `QPw00-page-loop` once. COMPILE's status turned out to be genuinely unsettled, so it is the Decision Now row: the loop's vocabulary names seven phases and only six have contracts, since COMPILE has zero lines of its own.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

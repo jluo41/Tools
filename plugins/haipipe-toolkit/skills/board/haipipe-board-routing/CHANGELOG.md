@@ -7,6 +7,16 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.10.0 - 2026-08-27
+
+- Routed Board and Page writes now resolve a repository-root `.server_config/`
+  before the shared SPACE registry for host, port, public URL, and auth-file
+  startup values. Explicit user or CLI settings may override it; registry data
+  remains ownership and fallback context.
+- The route documents the split between shareable `.server_config/README.md`
+  instructions and machine-local `settings.env` values, which are never
+  printed or edited implicitly.
+
 ## 0.9.1 - 2026-08-03
 
 **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.

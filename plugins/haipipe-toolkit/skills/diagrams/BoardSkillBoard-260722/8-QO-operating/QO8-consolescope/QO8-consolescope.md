@@ -41,18 +41,6 @@ The design works when a newcomer finds Boards quickly without mistaking them for
 - [ ] The zero-background test
       Same bar as `QB2` P1 (the page was `QA2b` until the 260730 rename): a fresh reader lands on the console and finds "where the boards live" within three seconds, and nothing implies a board belongs to a patient.
 
-## States
-**② is implemented: `/boards` is the third top-level entry (260724). Only the zero-background test remains.**
-
-- The shape now
-  Three entries at the very beginning: `/individual` (patient) · `/group` (cohort) · `/boards` (the workroom).
-  The boards page carries the same trio toggle and nothing patient-shaped; the two scope page lists no longer list Boards.
-- The history in one line
-  v1 (same day, earlier) parked Boards inside both scopes' Action group; JL spotted the category error within hours: a board about the board-tool listed under a patient console; moved out the same day.
-- What it cost
-  Exactly the predicted amount: a pathname router in `main.tsx` + `BoardsPage` + one `@app.get("/boards")` + page list cleanup.
-  `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` untouched: it was scope-free by design.
-
 ## Files
 ### The console front (haichat-inlab/, HAIChat-SPACE repo)
 - `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/web/src/main.tsx`
@@ -74,8 +62,22 @@ The design works when a newcomer finds Boards quickly without mistaking them for
 > JL: another question is, board is not individual or group level, how do you think? should we have a individual / group and then /board at the very beginning?
 >> CC0724: agreed: a board's subject is the workroom, not a patient or a cohort, so parking it inside the scopes was a v1 convenience, not a position. My recommendation is your instinct exactly (option ②): individual / group / boards as three top-level entries. ③ (pick the SPACE first, then scope) is the fuller shape but only earns its keep once a second real SPACE is mounted; ② grows into it without rework. Your call; the fork is laid out in the Diagram.
 
+
+### From the retired States section (merged 260831)
+**② is implemented: `/boards` is the third top-level entry (260724). Only the zero-background test remains.**
+- The shape now
+  Three entries at the very beginning: `/individual` (patient) · `/group` (cohort) · `/boards` (the workroom).
+  The boards page carries the same trio toggle and nothing patient-shaped; the two scope page lists no longer list Boards.
+- The history in one line
+  v1 (same day, earlier) parked Boards inside both scopes' Action group; JL spotted the category error within hours: a board about the board-tool listed under a patient console; moved out the same day.
+- What it cost
+  Exactly the predicted amount: a pathname router in `main.tsx` + `BoardsPage` + one `@app.get("/boards")` + page list cleanup.
+  `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` untouched: it was scope-free by design.
+
 ## Log
 - 260806 2202 · [REVISE-CC] swept to the 260806 architecture; `## Files` re-checked against disk: the `/boards` router and `BoardsPage` live in `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/web/src/main.tsx` with the body in `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/web/src/components/BoardsView.tsx`, `views.ts` / `types.ts` no longer carry a `boards` entry (so "where the view is registered and scoped today" was false), `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/main.py` already serves `/boards`, and `../../../../../../platforms/HAIChat-SPACE/haichat-inlab/boards_api.py` was placed in the sibling `haichat-board/`; the fork diagram's ② marked shipped, `QA2b` given its current id `QB2`, two em-dashes removed
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1410 · ② implemented (JL approved the plan): /boards top-level page, trio toggle everywhere, Boards out of the scope page lists; SPA rebuilt, route serves. 🔴 → 🟡; zero-background test remains
 260724 1350 · Opened: JL flagged that boards are neither individual- nor group-level and proposed a top-level /board entry; three options laid out, CC recommends ② (third top-level entry), decision is JL's
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

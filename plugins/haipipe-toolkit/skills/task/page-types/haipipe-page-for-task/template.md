@@ -1,13 +1,17 @@
-<!-- TEMPLATE · haipipe-page-for-task 0.9.0
+<!-- TEMPLATE · haipipe-page-for-task 0.10.2
      Copy to <page>/<page-id>.md and delete each RULE comment as it is satisfied.
      A RULE comment left in a shipped page is an unfinished page.
      The base frame is haipipe-page; only what a TASK page adds is templated here. -->
 
-# <the question this task-folder was run to answer, as a statement>
+# <the question this task was run to answer, as a statement>
 state: ⬜ NOT STARTED
 owner: <who>
 page-type: task
-task-folder: tasks/<G><NN>_<group>/<NN>_<task>/
+task: tasks/bNN_<block>/jNN_<job>/tNN_<task>/
+<!-- `task:` replaced `job:` on 260830 when the page rebound one level down;
+     `job:` replaced `task-folder:` on 260829. Readers treat all three spellings
+     as the SAME field — pages on disk still carry the older two, and a `job:`
+     page is read as covering that job's whole task set. -->
 folder-kind: task
 <!-- RULE · page-type is REQUIRED. A task page wears its folder's name and 31% of
      real folders do not match {NN}_<name>, so no filename shape can mark one. -->
@@ -49,7 +53,8 @@ folder-kind: task
 
 ### 2 · Data · <what went in, and the one fact about it a reader must know>
 <!-- RULE · Machinery names are banned at division level: Inputs, Runs,
-     Provenance, Run receipts. Those go in ## Files. The material survives; the
+     Provenance, Run receipts. Those go in
+     outline/<page-stem>-files.md. The material survives; the retired on-page
      heading does not. -->
 
 ### 3 · Method · <what was run, AND what it was run INSTEAD OF>
@@ -84,19 +89,19 @@ not answered   <what these runs did NOT settle>
 next run       <the run that would settle it, or "none: the question is dead">
 
 ## Aims
-<!-- RULE · one Aim per question this task must answer. -->
+<!-- RULE · one Aim per question this task must answer; its row carries the tick and a
+     **Now:** line saying answered · needs another run · dropped (no `## States`). -->
 
-## States
-<!-- RULE · per question: answered · needs another run · dropped. -->
-
-## Files
-<!-- RULE · ALL machinery lives here, including every QA/<n>-<slug>.md by path.
+<!-- RULE · ALL machinery is registered in outline/<page-stem>-files.md,
+     including every QA/<n>-<slug>.md by path.
      RULE · The <NAME> token binds the four sister files and is what makes
      "every number names its run" checkable:
        configs/<NAME>.yaml · runs/<NAME>.sh · results/<NAME>/ · notebooks/<NAME>.ipynb
+     (nested job: the token is the PATH <task>/<run> — <task>/config/<run>.yaml ·
+      <task>/runs/<run>.sh · results/<task>/<run>/ · notebooks/<task>/<run>.ipynb)
      RULE · NEVER copy QA prose onto the page, and never edit a QA file from it.
      Listing them by path is the whole relationship. -->
 
 ## Law
-
-## Log
+<!-- RULE · Dated change and gate receipts live newest-first in
+     outline/<page-stem>-log.md. Never add an embedded Log section. -->

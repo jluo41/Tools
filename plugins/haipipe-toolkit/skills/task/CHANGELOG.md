@@ -21,7 +21,7 @@ now close that, each covering what the others cannot:
   the config key. `haipipe-probe` §③ R19 owns the contract, and ④ POINT
   VERIFIES the returned QA path lands under the store — otherwise the card
   FAILS, because a misroute leaves a real answer in a bank nobody rescans.
-- **SCAFFOLD ASK.** Creating a task-folder asks once, and only on the one
+- **SCAFFOLD ASK.** Creating a job asks once, and only on the one
   branch of four where it is both unresolved and consequential: no
   `RESULT_STORE`, no config `store:`, but a board with a store exists. It
   BLOCKS rather than defaults — the bug class here is silent misrouting, and a
@@ -48,7 +48,7 @@ test_board_store.py` cover the key's validation and pin the three contracts.
 Caught by review before either shipped anywhere live.
 
 - **`CODE_REVIEW.md` was moved to `$OUTPUT_ROOT` and should not have been.**
-  The reviewer agent writes it to the task-folder, so in mode ② the pre-flight
+  The reviewer agent writes it to the job, so in mode ② the pre-flight
   gate would have looked in the store and blocked every run. It reviews the
   `.py` at a `git_sha` and returns the same verdict whichever cohort the code
   is pointed at, so it belongs with the code in BOTH modes. Being generated is
@@ -58,13 +58,13 @@ Caught by review before either shipped anywhere live.
   `/tasks/` segment, so a declared store received a garbage nested path instead
   of an error. Now a `case` guard exits 2 and names the fix.
 
-Neither reached a live task-folder: the ten patched scripts carry no
+Neither reached a live job: the ten patched scripts carry no
 `CODE_REVIEW` gate and all sit under `tasks/`.
 
-2026-08-21 — two run modes, and what earns a task-folder (JL)
+2026-08-21 — two run modes, and what earns a job (JL)
 --------------------------------------------------------------
 
-**A task-folder runs in one of TWO first-class modes.** Neither is a fallback.
+**A job runs in one of TWO first-class modes.** Neither is a fallback.
 
 ```
 ① SELF-SERVING      output stays in the folder — the classic shape, unchanged
@@ -76,8 +76,8 @@ launched the run. The test: if a second cohort ran through this same code,
 would the two sets of answers need to be kept apart? Yes means mode ②, because
 one folder cannot hold two cohorts' results without one overwriting the other.
 
-**What earns a task-folder** is now stated, where `ref/hierarchy.md` previously
-said only "one runnable unit" and decided nothing. A task-folder is one
+**What earns a job** is now stated, where `ref/hierarchy.md` previously
+said only "one runnable unit" and decided nothing. A job is one
 FUNCTION: one computation, one output contract, one code path; its identity is
 what it COMPUTES, never what data it computes on. Three tests — REUSE, OUTPUT,
 RERUN — with ② and ③ binding in both modes and ① binding only in mode ②, since
@@ -90,18 +90,18 @@ STORE key. Only different columns AND outputs earn a new FOLDER.
 2026-08-21 — output location is RESOLVED, not hardcoded (JL)
 ------------------------------------------------------------
 
-A task-folder is SHARED CODE and a run of it is one CALL. Until now the run
+A job is SHARED CODE and a run of it is one CALL. Until now the run
 script wrote `$TASK_DIR/results/<run>/` unconditionally, so a second cohort
-could only be served by COPYING the task-folder. The folder now holds code and
+could only be served by COPYING the job. The folder now holds code and
 config only, and everything generated lands under `$OUTPUT_ROOT`:
 
 ```
 RESULT_STORE env      one caller overriding one run                    wins
 config `store:` key   a standing declaration for this call
-neither               OUTPUT_ROOT = the task-folder                    default
+neither               OUTPUT_ROOT = the job                            default
 ```
 
-The default is unchanged, so every existing task-folder and every other project
+The default is unchanged, so every existing job and every other project
 keeps working untouched. A declared store mirrors the task tree inside itself,
 `<store>/<path under tasks/>`, so store and task map 1:1 both ways.
 
@@ -114,7 +114,7 @@ keeps working untouched. A declared store mirrors the task tree inside itself,
 - `fn/qa.md`: the QA bank is `$OUTPUT_ROOT/QA/`. This is the sharpest edge —
   scanning the wrong bank makes gate ① miss a `working` file (two callers run
   the same work) or an `answered` one (settled work redone). Two cohorts
-  sharing a task-folder have two banks and must never see each other's.
+  sharing a job have two banks and must never see each other's.
 - A sibling task's OUTPUT is store-keyed too: state such config paths relative
   to `$STORE_ROOT`, never to the task tree, or one cohort's numbers get joined
   to another's.
@@ -138,7 +138,7 @@ Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
   depth (0 read | 1 new run+config | 2 new script | 3 new leaf), or 🚫 REFUSE. Three
   callers, one identical door: a human, the orchestrator self-directed, or a relayed
   question.
-- The **OPTIONAL `QA/` folder** on every task-folder: the leaf's readable, numbered map of
+- The **OPTIONAL `QA/` folder** on every job: the leaf's readable, numbered map of
   the directions it has explored. Authored by THIS layer at Report; write-once; slug only;
   three reasons only; no consumer vocabulary.
 
@@ -203,7 +203,7 @@ Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
 ## [5.1.0] — 2026-06-21
 
 ### Added
-- **"Three Orthogonal Axes" section in DESIGN.md.** Makes explicit that `task/` mixes three different organizing axes: (A) the 4-stage lifecycle, (B) the numbered task domains `1_data / 2_nn / 3_end / 4_individual`, and (C) the `haipipe-task-for-xxx` type spokes. A and B are numbered because they are sequenced (time / data-flow DAG); C stays an unnumbered enum because task type is a classification, not a sequence. Also documents that B and C overlap by domain but are two layers (pipeline primitive vs task-folder authoring), not duplicates.
+- **"Three Orthogonal Axes" section in DESIGN.md.** Makes explicit that `task/` mixes three different organizing axes: (A) the 4-stage lifecycle, (B) the numbered task domains `1_data / 2_nn / 3_end / 4_individual`, and (C) the `haipipe-task-for-xxx` type spokes. A and B are numbered because they are sequenced (time / data-flow DAG); C stays an unnumbered enum because task type is a classification, not a sequence. Also documents that B and C overlap by domain but are two layers (pipeline primitive vs job authoring), not duplicates.
 - Decision Log entry (2026-06-21) recording the axes distinction.
 
 ### Changed
@@ -217,7 +217,7 @@ Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
 
 ### Changed
 - **Sandwich model adopted.** probe open dispatches discoveries/tasks; discover and task do their own work; probe post resumes and judges the claim. task no longer owns insight filing, and insight export is deferred while focusing on Narrative / Probe / Discovery / Task. (Migration Phase 7 closed.)
-- Task-group iteration updated for the pure 4-stage lifecycle.
+- Block iteration updated for the pure 4-stage lifecycle.
 
 
 ## [4.0.0] — 2026-06-11
@@ -256,7 +256,7 @@ Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
 - **4-stage lifecycle (Plan/Build/Execute/Report)** via `task-lifecycle.workflow.js`. Creator-reviewer agent loop at each stage; all plans follow haipipe-workflow IPO schema.
 - **All 13 type specialists aligned** with orchestrator v3: unwrapped prose (one line per paragraph), fixed agent names (`code-creator-for-*` → `haipipe-task-creator-agent`, `stata-script-reviewer-agent` → `haipipe-task-reviewer-agent`), added Invocation modes paragraph, added AUTO_MODE guard to scaffold Step 1.
 - **Hub-and-spoke architecture documented** in DESIGN.md: haipipe-task is the hub, specialists are spokes; arrows go both ways; three entry paths (via hub lifecycle, via hub scaffold, direct spoke call).
-- **Project/task-group scope moved to `project/haipipe-project`.** `fn/project.md` and `fn/task-group.md` relocated; haipipe-task owns task-folder and below only.
+- **Project/block scope moved to `project/haipipe-project`.** `fn/project.md` and `fn/task-group.md` relocated; haipipe-task owns job and below only.
 - **DESIGN.md rewritten** from Phase 2-3 snapshot to v3.0.0 architecture.
 
 ### Added

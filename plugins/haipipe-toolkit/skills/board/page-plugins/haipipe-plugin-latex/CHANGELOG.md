@@ -1,3 +1,18 @@
+## 0.3.0 · 2026-09-03
+
+- Make `delivery/latex/` the only current writer destination; flat `latex/`
+  remains a compatibility read only.
+
+## 0.2.3 — 2026-08-31
+- Surface rehomed: the 📜 tab is now the LaTeX segment inside the one 📤
+  Delivery tab (haipipe-plugin-delivery); builder, storage, route unchanged.
+
+## 0.2.2 · 2026-08-31
+
+Category-folder sweep: lane paths read `<page>/evidence/<lane>` or
+`<page>/delivery/<lane>` (haipipe-page 0.47.0 §📁); flat names are the same
+lane during migration (stubs).
+
 ## 0.2.1 · 2026-08-21
 
 - **A PNG/JPG-rendered figure unit now embeds too.** `live/export.py`'s

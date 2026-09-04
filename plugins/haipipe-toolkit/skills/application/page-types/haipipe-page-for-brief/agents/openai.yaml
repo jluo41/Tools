@@ -1,4 +1,0 @@
-interface:
-  display_name: "Application Brief Page"
-  short_description: "Define an intervention’s audience, outcome, venue, and promise"
-  default_prompt: "Use $haipipe-page-for-brief to create or repair the Brief page for this intervention."

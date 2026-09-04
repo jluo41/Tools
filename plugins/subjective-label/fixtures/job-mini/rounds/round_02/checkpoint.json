@@ -1,0 +1,49 @@
+{
+  "round": "round_02",
+  "closed": "2026-08-30",
+  "policy_out": "G_02",
+  "n_items": 8,
+  "metrics": {
+    "audit_agreement": 0.78,
+    "disagreed": 4,
+    "note": "executors vs human final: weak-a 4/8, weak-b 5/8"
+  },
+  "coverage": {
+    "H": 5,
+    "L": 5,
+    "N": 5,
+    "HL": 2,
+    "LN": 3,
+    "HN": 1,
+    "HLN": 1
+  },
+  "gates": {
+    "quality": {
+      "value": 0.78,
+      "floor": 0.8,
+      "pass": false
+    },
+    "stability": {
+      "streak": 1,
+      "k": 2,
+      "pass": false
+    },
+    "coverage": {
+      "open_cells": [
+        "LN"
+      ],
+      "pass": false
+    },
+    "risk": {
+      "routed": 0.02,
+      "max": 0.1,
+      "pass": true
+    }
+  },
+  "route": "another round",
+  "human_stop_signoff": false,
+  "checksums": {
+    "human_final": "38079295a857546304a66c37e39cfe8fcee1399c46c4e94f08ef1d184cdea209",
+    "manifest": "09e3454ebd9a7f04ef7e94a1df8e3e8a4584be64e640561e8fbacd7f197ae8df"
+  }
+}

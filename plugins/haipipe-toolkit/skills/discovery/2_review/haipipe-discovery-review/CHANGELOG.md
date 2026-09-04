@@ -3,6 +3,29 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.4.1] — 2026-09-03
+
+- Route the Review citation aggregate through Outline's Evidence Workspace at
+  `outline/evidence/bibex/`.
+
+## [0.4.0] — 2026-09-02
+
+- Own SYNTHESIZE for review article types, route missing evidence back to
+  ACQUIRE, and use Evidence for the citation aggregate.
+
+## [0.3.0] — 2026-09-01
+
+- Serve topic-summary, verdict, and landscape article types through the Review
+  route; every type writes the root Page.
+- Treat summary/verdict/landscape files as optional Task-side synthesis
+  records and keep all evidence authority in per-Subject Results.
+
+## [0.2.0] — 2026-09-01
+
+- Review now synthesizes completed Paper Results. Missing evidence is added as
+  new one-Subject Runs, and every terminal claim links to a Result Card plus
+  exact cite key.
+
 
 ## [0.1.0] — 2026-07-24
 

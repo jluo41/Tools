@@ -1,6 +1,12 @@
 ---
 name: haipipe-task-llm-engine
-description: Inspect, maintain, and run Physician-SPACE native LLM Agent SDK runtimes. Use for LLM engine status, Claude, Codex, or DeepSeek calls, OAuth/API-key model routing, LLMRec A1/A2/B search-and-recommend campaigns, SDK-session isolation, CallStore recovery, adding models or scales, and validating LLM task folders. Route existing LLMRec work to its project adapter; deploy the generic engine only when explicitly requested.
+description: >-
+  Inspect, maintain, and run Physician-SPACE native LLM Agent SDK runtimes.
+  Use for LLM engine status, Claude/Codex/DeepSeek calls, model routing,
+  LLMRec campaigns, CallStore recovery, or validating LLM task folders. Route
+  existing LLMRec work to its project adapter. Trigger: llm engine, agent sdk,
+  llmrec, callstore.
+
 ---
 
 # LLM engine task specialist
@@ -69,16 +75,18 @@ From the repository root:
 .venv/bin/python .codex/skills/haipipe-task-llm-engine/scripts/status.py --root .
 
 # Deterministic LLMRec contract validation; no provider call
-.venv/bin/python examples/Project-LLMRec-Physician/tasks/verify_llmrec_agent_sdk.py
+B=examples/Project-LLMRec-Physician/tasks/b02_llm_recommendation_runs
+.venv/bin/python $B/j03_B_open_recommendation/t05_transport_smoke_claude_codex/verify_llmrec_agent_sdk.py
 
-# Isolated DeepSeek smoke1 gates (A1 -> cards -> A2 -> independent B -> receipt)
-examples/Project-LLMRec-Physician/tasks/run_llmrec_model_smoke1.sh \
-  <deepseek_v4_pro|deepseek_v4_flash>
+# One model at one scale = three tickets in order, each auditing ITS OWN outputs into a receipt
+# (j02 refuses to start until j01's receipt for that exact run exists; no orchestration job since 260830)
+bash $B/j01_A1_search_physicians/runs/t01_claude_agent_sdk/r02_smoke1_haiku.sh --execute
+bash $B/j02_A2_followup_from_A1_session/runs/t01_claude_agent_sdk/r02_smoke1_haiku.sh --build-record-cards --execute
+bash $B/j02_A2_followup_from_A1_session/runs/t01_claude_agent_sdk/r02_smoke1_haiku.sh --execute
+bash $B/j03_B_open_recommendation/runs/t01_claude_agent_sdk/r02_smoke1_haiku.sh --execute
 
-# One configured model/scale cell
-examples/Project-LLMRec-Physician/tasks/run_llmrec_model_scale.sh \
-  <claude_sonnet|claude_haiku|claude_opus|codex_luna|codex_terra|codex_sol> \
-  <smoke50|fold00|fold01>
+# Every ticket of one job at one scale, each once, each under its own lock
+bash $B/j01_A1_search_physicians/sbatch/run_all_arms.sh smoke50
 ```
 
 Run a provider call only when the user asked to execute or continue a campaign.

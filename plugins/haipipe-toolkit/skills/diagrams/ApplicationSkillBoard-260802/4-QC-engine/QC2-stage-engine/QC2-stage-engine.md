@@ -109,26 +109,6 @@ All at once removes the mixed period and takes one review, at the price of one l
 
 ## Aims
 
-### A1 · 🗂 A stage as data
-- A1.1 · The application stage contract form is written: the paper core fields that carry over, plus a declared home for each of the three deltas.
-  **Done when:** A contract form names every required field, and venue gating, settlement depth, and ladder gate batching each have one field that carries them.
-- A1.2 · Ten stage.md files exist under stages/, one per lifecycle stage.
-  **Done when:** stages/0-seed through stages/5-section-edit each hold a stage.md that passes a contract check equivalent to paper's check-contracts.py.
-
-### A2 · 📇 What the index resolves
-- A2.1 · stages/index.yml exists with ten rows, each carrying migrated: and, while false, a legacy_skill handoff that resolves.
-  **Done when:** Every row's dir exists and every migrated: false row names a per-stage skill that still exists.
-
-### A3 · 🔁 The cutover order
-- A3.1 · Every per-stage skill folder is retired in the ruled order.
-  **Done when:** All ten index rows read migrated: true and no per-stage skill folder remains under application/_old/1-lifecycle/.
-
-### P · Page-level
-- P1 · JL has ruled the three Decision Now rows.
-  **Done when:** Each row is closed with its ruling recorded in ## Law and the change in ## Log.
-
-## States
-
 ### Decision Now
 - [ ] 🗣 Adopt the stage-engine port for the application family?
       📍 `Part` 1 and 2, the design this row puts in motion
@@ -155,18 +135,33 @@ All at once removes the mixed period and takes one review, at the price of one l
       🛑 `Blocks` nothing until the first ladder rung cuts over; after that, a sweep with no owner blocks the ladder cohort.
       🤖 `If nobody answers` A: keeping the orchestrator costs nothing, and folding it in stays possible later.
 
+
 ### A1 · 🗂 A stage as data
-- ⬜ A1.1 · Not started; the paper form (stages/CONTRACT.md) is read, and no application form is drafted.
-- ⬜ A1.2 · Not started; no stages/ tree exists in the application family.
+- ⬜ A1.1 · The application stage contract form is written: the paper core fields that carry over, plus a declared home for each of the three deltas.
+  **Done when:** A contract form names every required field, and venue gating, settlement depth, and ladder gate batching each have one field that carries them.
+  **Now:** Not started; the paper form (stages/CONTRACT.md) is read, and no application form is drafted.
+- ⬜ A1.2 · Ten stage.md files exist under stages/, one per lifecycle stage.
+  **Done when:** stages/0-seed through stages/5-section-edit each hold a stage.md that passes a contract check equivalent to paper's check-contracts.py.
+  **Now:** Not started; no stages/ tree exists in the application family.
+
 
 ### A2 · 📇 What the index resolves
-- ⬜ A2.1 · Not started; the ten proposed rows exist only on this page.
+- ⬜ A2.1 · stages/index.yml exists with ten rows, each carrying migrated: and, while false, a legacy_skill handoff that resolves.
+  **Done when:** Every row's dir exists and every migrated: false row names a per-stage skill that still exists.
+  **Now:** Not started; the ten proposed rows exist only on this page.
+
 
 ### A3 · 🔁 The cutover order
-- ⬜ A3.1 · Not started; all ten per-stage skill folders are live.
+- ⬜ A3.1 · Every per-stage skill folder is retired in the ruled order.
+  **Done when:** All ten index rows read migrated: true and no per-stage skill folder remains under application/_old/1-lifecycle/.
+  **Now:** Not started; all ten per-stage skill folders are live.
+
 
 ### P · Page-level
-- 🧠 P1 · Waiting on JL; the three Decision Now rows above are open.
+- 🧠 P1 · JL has ruled the three Decision Now rows.
+  **Done when:** Each row is closed with its ruling recorded in ## Law and the change in ## Log.
+  **Now:** Waiting on JL; the three Decision Now rows above are open.
+
 
 ## Files
 
@@ -186,3 +181,5 @@ All at once removes the mixed period and takes one review, at the price of one l
 
 ## Log
 260802 · Page opened; the port laid out from paper's router, index, and contract form, with three decisions put to JL.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

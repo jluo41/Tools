@@ -8,6 +8,134 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.8.1] — 2026-09-04
+
+- Separate technically complete Results from person-verified epistemic Task
+  closure and make the checker expose/reject the corresponding gate.
+- Reconcile report Run counts and canonical Outline-owned Bib paths, reject
+  root `evidence/`, and forbid alternate `build-bib --write` destinations.
+- Reject terminal Task status while the root Page or any Aim remains open.
+- Label a structurally valid but citation-pending check as `CLOSURE_HELD`, and
+  define the harmless whitespace/order normalization allowed in derived Bibs.
+- Clarify that the derived aggregate is not automatically a typed CITE item;
+  only an approved Outline declaration creates one.
+- Clarify that `add`/`run` are orchestration verbs while `paper_runs.py`
+  remains the deterministic check/Bib helper.
+
+## [0.8.0] — 2026-09-03
+
+- Adopt the latest Page contract: Outline owns `outline/evidence/`, typed CITE
+  items, verification, and the derived Discovery Bib.
+- Keep Discovery Paper/Source Runs and Results in their own sibling lanes and
+  treat `haipipe-plugin-evidence` as compatibility-only.
+
+## [0.7.0] — 2026-09-02
+
+- Replace the overloaded Plan/Build/Execute/Report vocabulary with one formal
+  D1 Inquiry Phase and five Cycles: SCOPE, optional PREPARE, ACQUIRE,
+  SYNTHESIZE, and CLOSE.
+- Split one-Subject L4 evidence acquisition from authoritative L3 Page
+  synthesis and publish the full Workflow Table in
+  `haipipe-discovery-workflow`.
+- Route all citation/Bib authority through `haipipe-plugin-evidence`; remove
+  the standalone Bibex Plugin dependency.
+
+## [0.6.2] — 2026-09-01
+
+- Correct the migration altitude: one legacy bank now becomes one Board Block,
+  while each legacy Group becomes a numbered sibling Job under that Block.
+- Preserve Group-level files such as `_index.md` inside the corresponding Job.
+- Add optional `--board-slug` and `--board-title` controls and a regression test
+  preventing the former one-Block-per-Group topology.
+
+## [0.6.1] — 2026-09-01
+
+- Add a deterministic, dry-run-first `scripts/migrate_bjtr.py` for legacy
+  two-level Discovery banks.
+- Migrate each old Group into an explicit Block plus `j01_..._inquiry`, retain
+  leaf numbers as `tNN_`, upgrade manifests, create same-stem Task Pages, and
+  update exact project-local path references.
+- Preserve source/note/synthesis/QA/PDF material without fabricating historical
+  Paper Runs; every migrated Task must pass the BJTR checker.
+- Normalize legacy lifecycle claims against their receipts: Report-level states
+  require `report:`, and an unsupported terminal token reopens as `executing`.
+- Make generated Content and Aim names close exactly, make done Page state agree
+  with Aim ticks, and extend the checker across those two-Face closure gates.
+- Generate the complete migration-state Page frame: bounded four-sentence
+  Opening, Writing Style, four article-promise divisions with face diagrams,
+  and matching A1-A4 groups.
+- Preserve legacy reports as `reported`, never as proof of v6 `ok`; add the
+  dry-run-first `--repair-pages` path for deterministic migration wrappers.
+- Register `folder-kind: discovery` under `haipipe-discovery-workflow` D1 and
+  make the phase contract the single owner of the four-role Page Face and the
+  Paper/Source Run Task Face.
+- Remove the stale `page-type: task` route, enforce four ordered role prefixes
+  with subject-specific titles, and require their complete Writing Style rules.
+
+## [0.6.0] — 2026-09-01
+
+- Make all four Discovery hierarchy segments explicit and uniform:
+  `bNN_` Block -> `jNN_` Job -> `tNN_` Task Page -> `rNN_` Paper/Source Run.
+  `discoveries/` is the unaddressed bank, and bare `01_` folders are invalid.
+- Add readable `bNN.jNN.tNN[.rNN]` and compact `bNNjNNtNN[rNN]` identities to
+  Task manifests and runtime receipts.
+- Extend `paper_runs.py check` to derive BJTR from the path and reject missing
+  levels, mismatched ids/slugs/Page stems, and local-only Run addresses.
+- Update lifecycle, schema, Paper Run, QA, design, and agent contracts to use
+  the same Block–Job–Task–Run grammar.
+
+## [0.5.0] — 2026-09-01
+
+- Promote Discovery type from the old Search/Review/Idea route pair to nine
+  canonical article-shaped `discovery_type` values; keep Search, Review, and
+  Idea as derived specialist routes.
+- Make the root Topic Page universal and classify summary/verdict/landscape/
+  ideas files as optional Task-side typed records, never rival Pages or Runs.
+- Publish the complete Phase × Run Map: only Execute admits Level-4
+  `paper-analysis` or `source-analysis` Runs, one per canonical Subject.
+- Extend `paper_runs.py check` from the Run/Result spine to the Level-3
+  manifest/Page contract and runtime family/operation contract. Legacy
+  `type`/`role` manifests remain readable; new writes use `discovery_type`.
+
+## [0.4.3] — 2026-09-01
+
+- Make the Paper Run contract an explicit specialization of `haipipe-run`;
+  keep canonical Subject, Result Card, facts, and Bib gates Discovery-owned.
+
+## [0.4.2] — 2026-09-01
+
+- Rename the optional presenter from Execution to Runs. Discovery explicitly
+  selects the Folder-local Run/Result dialect; scripts remain optional.
+- Keep Execute in the Discovery lifecycle and leave closure with Discovery.
+
+## [0.4.1] — 2026-09-01
+
+- Bind every materialized Paper Run to the optional
+  `haipipe-plugin-execution` surface: exact Run/Result pairs define it, while
+  Topic `scripts/` remains optional supporting material.
+- Keep Discovery lifecycle ownership in the Discovery workflow; the presenter
+  adds no execution or closure authority.
+
+## [0.4.0] — 2026-09-01
+
+- Replaced the flat one-topic/one-execution model with a Discovery Task Page
+  Folder that owns many Level-4 Paper Runs.
+- Added the exact same-stem spine
+  `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`; one Run resolves one canonical
+  Subject, while Trigger provenance stays distinct.
+- Added `ref/paper-run-contract.md`, Page/Task Face schema v4, per-Result
+  Card/facts/runtime/one-entry Bib gates, and derived Topic Evidence Bib.
+- Added deterministic `scripts/paper_runs.py` check/build-bib commands and
+  positive/negative unit tests.
+- Forward testing closed a provenance hole: complete Results now require
+  `bib.source` + `bib.mode: verbatim_copy`; supplying metadata fields is not
+  equivalent to supplying a complete BibTeX entry.
+- Reclassified `sources.md` and `notes.md` as legacy/derived indexes.
+
+
+## [0.3.5] — 2026-08-27
+
+- Known-dead claim exit added to gate ①: a `working` ticket whose executor is KNOWN to have died before Report (the run ended without completing the file) is reclaimed immediately — fresh `started:`/`by:` on the SAME file, or superseded — with no TTL wait, and a ticket is NEVER deleted. Found in the 260827 paper field test: three executors died mid-lap and the actor's only lawful options were "wait out the TTL" or improvise; it improvised delete-and-remint, which erased claim history.
 
 ## [0.3.4] — 2026-07-24
 

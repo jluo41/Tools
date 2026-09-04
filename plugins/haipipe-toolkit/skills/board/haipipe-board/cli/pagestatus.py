@@ -14,6 +14,11 @@ Never writes. Every column is a count a person can go and verify.
 import argparse, re, sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from src.common import (delivery_lane_dirs, evidence_lane_dirs,
+                        outline_lane_dirs)  # noqa: E402
+
 def _pages(board: Path, group: str | None):
     out = []
     for d in sorted(board.iterdir()):
@@ -35,17 +40,34 @@ def _pages(board: Path, group: str | None):
 def _count(pd: Path, md: Path):
     t = md.read_text(encoding="utf-8", errors="replace")
     r = {}
-    r["div"] = len(re.findall(r"^### \d+ · ", t, re.M))
-    r["sub"] = len(re.findall(r"^#### \d+\.\d+ · ", t, re.M))
+    # Match check.py:1176's division grammar, not a narrower one. A Section
+    # Page numbers its divisions by the MANUSCRIPT (`### §6.1 Main Results`),
+    # which check.py accepts via `§?[\d.]+` and this file used to miss, so all
+    # 15 Section Pages of a paper board read as `§ 0` (JL 260830: "it barely
+    # doesn't work"). One grammar, one place.
+    r["div"] = len(re.findall(r"^### §?[\d.]+(?: · | )\S", t, re.M))
+    r["sub"] = len(re.findall(r"^#### §?[\d.]+(?: · | )\S", t, re.M))
     r["aim"] = len(re.findall(r"^- (?:[⬜🔨🧠✅❄️] )?[AP]\d+\.\d+ · ", t, re.M))
     r["st"]  = len(re.findall(r"^- [⬜🔨🧠✅❄️] [AP]\d+\.\d+ · ", t, re.M))
+    # LEGACY checkbox Aims are a form the engine supports on purpose
+    # (src/common.py aim_progress -> mode="legacy"), and every Section Page of
+    # a paper board uses it. Counting only the canonical form printed `aim 0`
+    # for all 15 of them (JL 260830). `- [ ] 🗣` is a Decision row and is
+    # counted in `dec`, so it is excluded here.
+    if not r["aim"]:
+        legacy = [m for m in re.findall(r"(?m)^- \[([ xX])\] (\S)", t) if m[1] != "🗣"]
+        r["aim"] = len(legacy)
+        r["st"] = sum(1 for box, _ in legacy if box.lower() == "x")
     r["dec"] = len(re.findall(r"^- \[[ x]\] 🗣", t, re.M))
     r["law"] = len(re.findall(r"^- (?:\d{6} \w+ · )?[^\s] \*\*", t, re.M))
     r["dia"] = t.count("```text")   # an INLINE ascii block, never a display unit
 
-    # ── probe/  one folder per question
-    pr = pd / "probe"
-    cards = sorted(pr.glob("PP*")) if pr.is_dir() else []
+    # ── evidence/probe/  one folder per question
+    cards, seen = [], set()
+    for pr in evidence_lane_dirs(pd, "probe"):
+        for card in sorted(pr.glob("PP*")):
+            if card.name not in seen:
+                seen.add(card.name); cards.append(card)
     r["prb"] = len(cards)
     val = read = serves = 0
     for c in cards:
@@ -58,21 +80,25 @@ def _count(pd: Path, md: Path):
         if re.search(r"^serves:", ct, re.M): serves += 1
     r["val"], r["read"], r["srv"] = val, read, serves
 
-    # ── bibex/  one entry per reference
-    bx = pd / "bibex"
+    # ── evidence/bibex/  one entry per reference
     ent = ver = 0
-    if bx.is_dir():
+    seen_bib = set()
+    for bx in evidence_lane_dirs(pd, "bibex"):
         for b in bx.glob("*.bib"):
+            if b.name in seen_bib: continue
+            seen_bib.add(b.name)
             bt = b.read_text(encoding="utf-8", errors="replace")
             ent += len(re.findall(r"^@\w+\{", bt, re.M))
             ver += len(re.findall(r"verified\s*=", bt))
     r["cit"], r["vfd"] = ent, ver
 
-    # ── display/  declared vs rendered vs accepted, three independent counts
-    dp = pd / "display"
+    # ── evidence/display/  declared/rendered/accepted counts
     dec = ren = acc = frz = 0
-    if dp.is_dir():
+    seen_units = set()
+    for dp in evidence_lane_dirs(pd, "display"):
         for u in sorted(p for p in dp.iterdir() if p.is_dir()):
+            if u.name in seen_units: continue
+            seen_units.add(u.name)
             dec += 1
             if (u / "preview.pdf").exists() and any((u / "assets").glob("*")): ren += 1
             rm = u / "README.md"
@@ -81,15 +107,17 @@ def _count(pd: Path, md: Path):
     r["dsp"], r["ren"], r["acc"], r["frz"] = dec, ren, acc, frz
 
     # ── the other plugins, present or absent
-    sk = pd / "skill" / f"{pd.name}.md"
+    skill_dirs = outline_lane_dirs(pd, "skill")
+    sk = ((skill_dirs[0] / f"{pd.name}.md") if skill_dirs
+          else pd / "outline" / "skill" / f"{pd.name}.md")
     r["skl"] = len(re.findall(r"^- \S", sk.read_text(errors="replace"), re.M)) if sk.exists() else 0
     r["out"] = len(list((pd / "outline").glob("*-outline-v*.md"))) if (pd / "outline").is_dir() else 0
     r["apv"] = 0
     for o in ((pd / "outline").glob("*-outline-v*.md") if (pd / "outline").is_dir() else []):
         if re.search(r"^approved:\s*✅", o.read_text(errors="replace"), re.M): r["apv"] += 1
-    r["px"]  = 1 if (pd / "pagex").is_dir() else 0
-    r["tex"] = 1 if (pd / "latex").is_dir() else 0
-    r["doc"] = 1 if (pd / "word").is_dir() else 0
+    r["px"]  = 1 if evidence_lane_dirs(pd, "pagex") else 0
+    r["tex"] = 1 if delivery_lane_dirs(pd, "latex") else 0
+    r["doc"] = 1 if delivery_lane_dirs(pd, "word") else 0
     r["ln"]  = t.count("\n") + 1
     r["state"] = (re.search(r"^state:\s*(\S+)", t, re.M) or [None, "?"])[1]
     r["tick"] = r["apv"] + r["vfd"] + r["read"] + r["acc"]

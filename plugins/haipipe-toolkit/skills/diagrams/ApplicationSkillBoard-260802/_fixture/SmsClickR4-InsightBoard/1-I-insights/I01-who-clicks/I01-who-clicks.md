@@ -101,27 +101,24 @@ No message copy appears here. That is the Design Page's job.
 ## Aims
 
 ### A1 · Application Need
-- A1.1 · No level cites a later level as evidence.
+- ✅ A1.1 · No level cites a later level as evidence.
   **Done when:** every I, K, W and H row names its parent and no D row interprets.
+  **Now:** D holds counts only; I derives the rates; K carries strength and rivals.
+
 
 #### P · Knowledge
-- P1 · Rivals, weak propositions, and gaps stay visible.
+- ✅ P1 · Rivals, weak propositions, and gaps stay visible.
   **Done when:** K carries its rivals and the handoff carries a forbidden clause.
+  **Now:** K2 is marked WEAK and the handoff forbids leaning on it.
+
 
 #### P2 · Design Handoff
-- P2.1 · A Design agent can use H1 without opening a source.
+- ✅ P2.1 · A Design agent can use H1 without opening a source.
   **Done when:** finding, strength, boundary, consequence, and forbidden all read standalone.
+  **Now:** D01 §2 borrows H1 by path and cites no source of its own.
 
-## States
 
-### A1 · Application Need
-- ✅ A1.1 · D holds counts only; I derives the rates; K carries strength and rivals.
-
-#### P · Knowledge
-- ✅ P1 · K2 is marked WEAK and the handoff forbids leaning on it.
-
-#### P2 · Design Handoff
-- ✅ P2.1 · D01 §2 borrows H1 by path and cites no source of its own.
+## Discussion
 
 ## Files
 
@@ -140,3 +137,5 @@ D, I and K are evidence-led and W may be contextual. The handoff may be narrower
 ## Log
 
 260820 · Settled at handoff v2 after the monthly stability check moved K1 from weak to moderate.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

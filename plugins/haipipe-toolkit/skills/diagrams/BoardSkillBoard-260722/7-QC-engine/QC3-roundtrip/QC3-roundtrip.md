@@ -92,6 +92,47 @@ The no-script property moved with the canonical output: every page remains compl
 A single Markdown target may still render one HTML file for compatibility; that is not a Board-folder output and is not a second front door.
 
 ## Aims
+### Decision Now
+- [ ] 🪞 Rule what to do about the page list in every page file
+      112 KB of every page is the page list, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation hides that cost on revisits, and since 260802 the router asks a live server for `?fragment=wrap`, so a served FIRST visit downloads `div.wrap` alone while a static host still pays full price.
+      A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the page list is what makes the tree navigable with scripts off.
+      B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its page list, and a static host is unaffected.
+      C · stop emitting the page list in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
+      → CC recommends B, and B's mechanism is what the engine now runs when a server is present; the tick left for JL is whether B is the ruling or C's smaller files are still wanted. A stays fair if the tree is only ever read over localhost.
+These are the calls only JL can make; CC ticks nothing here.
+
+- [x] 🧭 Rule what the tree's index still owes
+      Before this ruling, the split tree's Index was only a roster and did not carry the Board-level orientation found in the retired monolith.
+      A · port all four onto the tree index, so the tree becomes the only front door.
+      B · port only the progress bar and the Section Matrix, and leave the Board Map and Activity to the single file, keeping the tree lean.
+      C · leave the tree index as a plain roster, and treat the single file as the place you go to see board-level state.
+      → JL chose the canonical tree front door. It carries the Board Map, Related Folders when declared, Section Matrix, page roster, and Activity; progress lives on group pages.
+- [x] 🔍 Rule whether `check.py` looks at the tree at all
+      Before this ruling, no checker verified missing pages, orphan files, scripts-off content, or resource links in the generated tree.
+      A · teach `check.py` the tree: every page has exactly one file, no orphans, and the two packagings list the same pages.
+      B · leave it, on the grounds that the tree is derived and a rebuild fixes everything.
+      → JL chose A. `check.py` now verifies the split site directly, including no orphan, no missing page, scripts-off content, local links, media, and balanced structure.
+
+- [x] 📄 Rule whether `board.html` is dropped now that `board/` ships
+      JL 260731: "then we will not use this anymore, right? we will drop this."
+      A Board-folder build has one live output today: the generated `board/` tree.
+      A · drop `board.html`, leaving one output and nothing to keep in step.
+      B · keep emitting it until `board/` has carried real work for a while, then drop it against a stated criterion.
+      C · keep it permanently as the shareable artifact, which is what `QE3`'s Law says today.
+      → JL chose A. `build.py` removes a leftover monolith after generating the tree, and every new deep link points into `board/`.
+
+- [x] 🗂 The generated tree lives in `board/`
+      BUILT 260731, named by JL, who rejected both `_site` and `_board`: "I just want board".
+      Verified rather than assumed: `page_files()` discovers 54 pages and none come from `board/`, because that folder holds no `.md` at all, so the discovery rule never needed the `_` prefix here.
+      The `.gitignore` entry is ANCHORED on purpose: a bare `**/board/` would also match `skills/board/`, the skill family itself, and silently untrack all 52 of its files.
+      A `board/` folder inside a board folder does not collide with the `/_board/` API either, because every route check is anchored at the server root; both were tested.
+- [ ] 📡 Rule push versus poll
+      A · SSE, so the page is told which page changed the moment the write lands, under 100 ms instead of up to 4 s.
+      B · keep the 4 second poll, which needs no new endpoint and no long-lived connection.
+      → CC now recommends B: the split shell BUILT A on 260802 (an `/_events` stream) and removed it, because the stream held one of the browser's six connections per origin and the terminal's WebSocket spends a second one; the shipped pane refresh is a self-HEAD at 800 ms backing off to 5 s.
+      The SSE lean this row used to cite lived on `QD4-liveupdate`, which is archived; today's `QD4` is the terminal design page.
+
+
 ### The loop as one description
 - [x] 🔁 Write the loop into the skill, once
       `SKILL.md` now states the complete source → render → delivery → write-back loop in one place; the implementation files remain its executable parts.
@@ -108,8 +149,9 @@ A single Markdown target may still render one HTML file for compatibility; that 
 - [x] 🔗 Intercept internal links
       So navigation inside the tree never destroys the drawer or the terminal, and so the no-JS path still navigates.
 
-## States
+## Discussion
 
+### From the retired States section (merged 260831)
 - 260801 JL · 🐢 Navigation was re-downloading a page list it throws away
   JL: "why I feel it will have a long time to navigate to different pages?"
   Measured rather than guessed, and the answer was not the renderer: the server answers in 8ms, wiring a swapped page costs 4ms, and the fetch itself was the whole cost.
@@ -157,46 +199,6 @@ Both directions of the loop work and are now written once in the operating skill
 The return path still has one implementation and one anchoring rule; the forward path has one parser and renderer, one canonical tree, and one explicit unit at each hop.
 Push versus poll remains open because the four-second notification poll is the only hop still larger than the changed page; the shell's own SSE attempt was built and removed on 260802.
 
-### Decision Now
-- [ ] 🪞 Rule what to do about the page list in every page file
-      112 KB of every page is the page list, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation hides that cost on revisits, and since 260802 the router asks a live server for `?fragment=wrap`, so a served FIRST visit downloads `div.wrap` alone while a static host still pays full price.
-      A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the page list is what makes the tree navigable with scripts off.
-      B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its page list, and a static host is unaffected.
-      C · stop emitting the page list in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
-      → CC recommends B, and B's mechanism is what the engine now runs when a server is present; the tick left for JL is whether B is the ruling or C's smaller files are still wanted. A stays fair if the tree is only ever read over localhost.
-These are the calls only JL can make; CC ticks nothing here.
-
-- [x] 🧭 Rule what the tree's index still owes
-      Before this ruling, the split tree's Index was only a roster and did not carry the Board-level orientation found in the retired monolith.
-      A · port all four onto the tree index, so the tree becomes the only front door.
-      B · port only the progress bar and the Section Matrix, and leave the Board Map and Activity to the single file, keeping the tree lean.
-      C · leave the tree index as a plain roster, and treat the single file as the place you go to see board-level state.
-      → JL chose the canonical tree front door. It carries the Board Map, Related Folders when declared, Section Matrix, page roster, and Activity; progress lives on group pages.
-- [x] 🔍 Rule whether `check.py` looks at the tree at all
-      Before this ruling, no checker verified missing pages, orphan files, scripts-off content, or resource links in the generated tree.
-      A · teach `check.py` the tree: every page has exactly one file, no orphans, and the two packagings list the same pages.
-      B · leave it, on the grounds that the tree is derived and a rebuild fixes everything.
-      → JL chose A. `check.py` now verifies the split site directly, including no orphan, no missing page, scripts-off content, local links, media, and balanced structure.
-
-- [x] 📄 Rule whether `board.html` is dropped now that `board/` ships
-      JL 260731: "then we will not use this anymore, right? we will drop this."
-      A Board-folder build has one live output today: the generated `board/` tree.
-      A · drop `board.html`, leaving one output and nothing to keep in step.
-      B · keep emitting it until `board/` has carried real work for a while, then drop it against a stated criterion.
-      C · keep it permanently as the shareable artifact, which is what `QE3`'s Law says today.
-      → JL chose A. `build.py` removes a leftover monolith after generating the tree, and every new deep link points into `board/`.
-
-- [x] 🗂 The generated tree lives in `board/`
-      BUILT 260731, named by JL, who rejected both `_site` and `_board`: "I just want board".
-      Verified rather than assumed: `page_files()` discovers 54 pages and none come from `board/`, because that folder holds no `.md` at all, so the discovery rule never needed the `_` prefix here.
-      The `.gitignore` entry is ANCHORED on purpose: a bare `**/board/` would also match `skills/board/`, the skill family itself, and silently untrack all 52 of its files.
-      A `board/` folder inside a board folder does not collide with the `/_board/` API either, because every route check is anchored at the server root; both were tested.
-- [ ] 📡 Rule push versus poll
-      A · SSE, so the page is told which page changed the moment the write lands, under 100 ms instead of up to 4 s.
-      B · keep the 4 second poll, which needs no new endpoint and no long-lived connection.
-      → CC now recommends B: the split shell BUILT A on 260802 (an `/_events` stream) and removed it, because the stream held one of the browser's six connections per origin and the terminal's WebSocket spends a second one; the shipped pane refresh is a self-HEAD at 800 ms backing off to 5 s.
-      The SSE lean this row used to cite lived on `QD4-liveupdate`, which is archived; today's `QD4` is the terminal design page.
-
 ## Files
 - `../../board/haipipe-board/cli/build.py`
   The forward path's entry point; it decides the output shape, so the `board/` tree is a change here and nowhere else.
@@ -219,3 +221,5 @@ These are the calls only JL can make; CC ticks nothing here.
 260801 0130 · Reindexed QC9 -> QC7: the round trip becomes the parent, with the write path (old QC7) as its face QC7a (JL 260801)
 260731 · `board/` tree BUILT and verified across 6 boards: build.py --split, body.site router opt-out, link interception so the drawer survives navigation, gitignored as derived (haipipe-board 0.80.0)
 260731 · Opened on JL's ask for one Q describing how md renders into html and how page changes go back into md, after the file-layout and Flask discussions kept landing on faces that owned only one hop of the loop
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

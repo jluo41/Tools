@@ -11,8 +11,11 @@ from urllib.parse import quote, unquote
 from . import body as bd
 from .body import body, inline, nav_inline
 from .common import aim_progress, esc, sec, stinfo
-from .page_question import (parse_content_sections, render_question,
-                            split_stage_record, structure_rows)
+from .item_table import (action_label, compact_global_run, planned_route_anchor,
+                         read_items, readable_global_run, readable_task,
+                         repo_root, run_registry)
+from .page_question import (has_outline_plan, parse_content_sections,
+                            render_question, split_stage_record, structure_rows)
 from .page_stage import render_doc_slide
 
 
@@ -118,6 +121,11 @@ def board_map(meta):
     )
 
 
+def pages_only_index(meta):
+    """Whether this Board opts into the deliberately quiet Pages-only index."""
+    return (meta.get("index_view") or "").strip().lower() == "pages"
+
+
 def group_canvas(meta, group, members):
     """The live linked drawing for one generated Group page."""
     host = (meta.get("excalidraw") or "").strip().rstrip("/")
@@ -146,7 +154,7 @@ def group_canvas(meta, group, members):
     except ValueError:
         return ""
     # NO INLINE CANVAS ON STAGE (JL 260815: "I don't want the draw in here").
-    # The same ruling that took Excalidraw out of `## Diagram` applies one level
+    # The same ruling that keeps Excalidraw out of `## Outline` applies one level
     # up: a group page's body stays prose, and the composed drawing opens in the
     # Draw split. What the page emits is only the OWNER ADDRESS, invisible, so
     # the plugin can derive the scene without the build and the client keeping
@@ -318,11 +326,11 @@ def board_status(qs):
         cells = []
         cells.append(cell("opening", "ok" if sec(d, "Opening").strip() else "no",
                           "✓" if sec(d, "Opening").strip() else "—"))
-        dia = sec(d, "Diagram")
-        nfig = dia.count("```") // 2
-        has_canvas = "/_excalidraw/" in dia
-        dtxt = (f"▧{nfig}" if nfig else "") + ("✏️" if has_canvas else "")
-        cells.append(cell("diagram", "ok" if dtxt else "no", dtxt or "—"))
+        page_src = (Path(bd.BASE or ".") / q["file"]
+                    if q.get("file") else None)
+        has_plan = has_outline_plan(page_src)
+        dtxt = "▤" if has_plan else ""
+        cells.append(cell("outline", "ok" if dtxt else "no", dtxt or "—"))
         divs = [(h, b) for h, b in parse_content_sections(sec(d, "Content")) if h]
         faced = sum(1 for _h, b in divs if b.lstrip().startswith("```"))
         if divs:
@@ -363,9 +371,10 @@ def board_status(qs):
             f'<tr><th class="bsp"><a href="#{pid}">{tok} {esc(pid)}</a></th>'
             + "".join(cells) + "</tr>")
 
-    head = ("<tr><th>page</th><th>🧭</th><th>🖼</th><th>📚</th>"
+    head = ("<tr><th>page</th><th>🧭</th><th>▤</th><th>📚</th>"
             "<th>🎯</th><th>📍</th><th>📎</th><th>🗄</th></tr>")
-    legend = ('📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
+    legend = ('🧭 <code>▤</code> current plan table &nbsp;·&nbsp; '
+              '📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
               '🎯 <code>met/total</code> aims &nbsp;·&nbsp; '
               '📍 <code>DN·k</code> Decision Now ticks owed, <code>e</code> dated entries '
               '&nbsp;·&nbsp; 📎 <code>n·gg</code> files · groups &nbsp;·&nbsp; '
@@ -381,6 +390,50 @@ def _gt_link(group, group_href):
     """A group heading links to its own page when the packaging has one."""
     h = group_href(bd.group_token(group))
     return f'<a href="{h}">{inline(group)}</a>' if h else inline(group)
+
+
+# ── desk sub-blocks (PaperSkillBoard QA1 Decision Now, JL 260831) ──────────
+# A paper board keeps ONE group per desk (`B<x>-<desk>`) holding its section
+# pages (S<D> token = main, A<D> token = appendix) and its rounds (RD token)
+# together; that is the layout law of haipipe-paper-workflow §Group mapping.
+# Sixteen rows under one heading hid the paper's shape (JL 260831, reading the
+# MISQ index), so the index and the Pages sidebar cut a desk group into
+# sub-blocks by the page-id TOKEN instead of renaming folders. Only a
+# `dialect: paper` board, only a group whose pages span two or more token
+# families; every other board renders exactly as before.
+def _id_token(qid):
+    m = re.match(r"[A-Za-z]+", qid or "")
+    return m.group(0) if m else (qid or "")
+
+
+def _token_label(tok):
+    u = tok.upper()
+    if u == "RD":
+        return "rounds"
+    if u == "SA":                      # Section-Appendix (JL 260831)
+        return "appendix"
+    if u == "STORY":                   # journey pages incl. the narrative (JL 260831)
+        return "story"
+    if u.startswith("S"):
+        return "main sections"
+    if u.startswith("A"):              # grandfathered A<D> boards
+        return "appendix"
+    return tok
+
+
+def desk_subblocks(meta, qs):
+    """{group: True} for every group of a paper board whose pages span two
+    or more id-token families; the caller emits a sub-heading where the
+    token changes. Empty for any other board, so nothing else moves."""
+    dialect = ((meta or {}).get("dialect") or "").split("#", 1)[0].strip()
+    if dialect != "paper":
+        return {}
+    fam = {}
+    for q in qs:
+        if q.get("kind") == "doc" or not q.get("group"):
+            continue
+        fam.setdefault(q["group"], set()).add(_id_token(q["id"]))
+    return {g: True for g, s in fam.items() if len(s) >= 2}
 
 
 def _gi_body(gi):
@@ -435,10 +488,12 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 if progress["total"] else 0.0)
 
     ginfo = meta.get("groups") or {}
-    rows, cur = [], None
+    dsubs = desk_subblocks(meta, qs)
+    rows, cur, cur_tok = [], None, None
     for q in qs:
         if q.get("group") and q["group"] != cur:
             cur = q["group"]
+            cur_tok = None
             # A group is a place you can travel to (JL 260730): the canvas draws
             # groups, so a group heading needs an anchor of its own. It is NOT a
             # page — `#group-QA` scrolls the index, it does not open a card — so
@@ -466,6 +521,13 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 f'<span class="t">{nav_inline(q["title"])}</span>'
                 f'<span class="w"></span></a>')
             continue
+        if dsubs.get(cur):
+            tok = _id_token(q["id"])
+            if tok != cur_tok:
+                cur_tok = tok
+                rows.append(f'<div class="dsub" data-sub="{esc(tok)}">'
+                            f'<span class="st">{esc(tok)}</span>'
+                            f'<span class="sl">{esc(_token_label(tok))}</span></div>')
         # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
         fr = frac_done(q)
         pct = round(fr * 100)
@@ -479,21 +541,32 @@ def index_rows(meta, qs, href_for=None, group_href=None):
     return rows
 
 
-def sidebar_rows(qs, href_for=None, group_href=None):
+def sidebar_rows(qs, href_for=None, group_href=None, meta=None):
     """The sidebar's rows: group links, page links, and each page's section
-    outline. ONE implementation for the canonical site and legacy renderer."""
+    outline. ONE implementation for the canonical site and legacy renderer.
+    `meta` carries the board dialect for the desk sub-blocks; without it the
+    sidebar renders flat groups, as every non-paper board does anyway."""
     href_for = href_for or (lambda q: "#" + q["id"])
     group_href = group_href or (lambda tok: "#group-" + tok)
+    dsubs = desk_subblocks(meta, qs)
 
     def st(q):
         return stinfo(q["state"])
 
-    sb, sbcur = [], None
+    sb, sbcur, sbtok = [], None, None
     for q in qs:
         if q.get("group") and q["group"] != sbcur:
             sbcur = q["group"]
+            sbtok = None
             sb.append(f'<a class="sb-g" href="{group_href(bd.group_token(sbcur))}">'
                       f'{nav_inline(sbcur)}</a>')
+        if dsubs.get(sbcur) and q.get("kind") != "doc":
+            tok = _id_token(q["id"])
+            if tok != sbtok:
+                sbtok = tok
+                sb.append(f'<div class="sb-sub" data-sub="{esc(tok)}">'
+                          f'<span class="st">{esc(tok)}</span> '
+                          f'<span class="sl">{esc(_token_label(tok))}</span></div>')
         chev = ('' if q.get("kind") == "doc"
                 else '<span class="sb-x" title="sections">▸</span>')
         # `data-page` is what the sidebar matches the open page against. The href
@@ -516,7 +589,11 @@ def sidebar_rows(qs, href_for=None, group_href=None):
             # 于是那一页每一个 division 链接都错开一格（JL 260801 统一命名时发现）。
             _, csecs = split_stage_record(
                 q.get("kind"), parse_content_sections(sec(q["sec"], "Content")))
-            for key, label, val, subs in structure_rows(q["sec"], csecs):
+            page_src = (Path(bd.BASE or ".") / q["file"]
+                        if q.get("file") else None)
+            for key, label, val, subs in structure_rows(
+                    q["sec"], csecs, has_outline_plan(page_src),
+                    q.get("page_type", "")):
                 out.append(f'<a class="sb-s" data-k="{key}" href="{href_for(q)}">'
                            f'<span class="t">{esc(label)}</span>'
                            f'<span class="m">{esc(val)}</span></a>')
@@ -588,12 +665,13 @@ def render(meta, qs):
     # Index → group → page, so a reader can jump from anywhere. It lives
     # OUTSIDE .wrap, so the :target show/hide rules never touch it; a group
     # link re-targets #group-… which also brings the index back on stage.
-    sb = sidebar_rows(qs)
+    sb = sidebar_rows(qs, meta=meta)
     # The Index row unfolds too (QB2a, JL 260731: "what should be the index's
     # section content? Please add them as well"): its rows are the Index's own
     # components in on-page order, each present only when the board has it.
-    bmap = board_map(meta)
-    rf = related_folders(meta)
+    minimal_index = pages_only_index(meta)
+    bmap = "" if minimal_index else board_map(meta)
+    rf = "" if minimal_index else related_folders(meta)
     ix = []
 
     def ixrow(key, label, mtxt=""):
@@ -605,10 +683,11 @@ def render(meta, qs):
         ixrow("map", "🗺 Board Map")
     if rf:
         ixrow("related", "🗂 Related Folders")
-    ixrow("status", "🩺 Section Matrix",
-          f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
     ixrow("pages", "📄 All Pages", str(n))
-    ixrow("activity", "📈 Activity")
+    if not minimal_index:
+        ixrow("status", "🩺 Section Matrix",
+              f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
+        ixrow("activity", "📈 Activity")
 
     sidebar = ('<button type="button" id="sbtoggle" class="sbtoggle" '
                'aria-label="Toggle the pages sidebar">☰</button>'
@@ -636,11 +715,18 @@ def render(meta, qs):
             gated = sum(1 for q in pages if q["state"].startswith("✅"))
             stagebits.append(f"{gated}/{len(pages)} {label}")
     stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
-    return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
-                      close=inline(meta["close"]), bar=bar, done=done, n=nq,
-                      stagebar=stagebar,
-                      board_map=bmap, related=rf, board_status=board_status(qs),
-                      activity=ACTIVITY_HTML,
+    heading = ('<div class="board-heading"><span class="board-mark" aria-hidden="true">'
+               + MARK_SVG + f'</span><h1 class="h1">{esc(meta["title"])}</h1></div>')
+    pages = ('<h3 class="sec" id="qlist">ALL PAGES'
+             '<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>'
+             f'<div class="idx">{idx}</div>')
+    overview = (heading + pages if minimal_index else
+                heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
+                f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
+                f'<p class="bar">{bar}  {done}/{nq} questions settled{stagebar}</p>'
+                + bmap + rf + board_status(qs) + pages)
+    return TPL.format(title=esc(meta["title"]), overview=overview,
+                      activity="" if minimal_index else ACTIVITY_HTML,
                       index=idx,
                       sidebar=sidebar,
                       cards="\n".join(cards), js=JS, css=CSS,
@@ -704,19 +790,7 @@ TPL = """<!DOCTYPE html>
 {css}
 </style></head><body class="single" data-board="{boarddir}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 
-<div class="board-heading"><span class="board-mark" aria-hidden="true">{mark}</span>
-<h1 class="h1">{title}</h1></div>
-<div class="spine"><p><b>🦴 Spine</b> {spine}</p><p><b>🏁 Close when</b> {close}</p></div>
-<p class="bar">{bar}  {done}/{n} questions settled{stagebar}</p>
-
-{board_map}
-
-{related}
-
-{board_status}
-
-<h3 class="sec" id="qlist">ALL PAGES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
-<div class="idx">{index}</div>
+{overview}
 
 <span id="all"></span>
 {cards}
@@ -893,7 +967,8 @@ def tree_sidebar(meta, qs, root):
             '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
             f'<a class="sb-top" data-page="top" href="{root}index.html">🗂 Index</a>'
             + "".join(sidebar_rows(qs, href_for=_href,
-                                   group_href=lambda tok: f"{root}{tok}.html"))
+                                   group_href=lambda tok: f"{root}{tok}.html",
+                                   meta=meta))
             + '</nav>')
 
 
@@ -935,6 +1010,168 @@ def tree_page_name(q):
     """One page, one file: the id is the filename, so a URL is guessable."""
     stem = Path(q.get("file") or q["id"]).stem
     return f"{stem}.html"
+
+
+def run_index_body(qs):
+    """Compatibility page for former static Run Index URLs.
+
+    Run lineage now has two focused surfaces: 🧾 Evidence Items for
+    Supporting and planned work, and ⚙️ Runs for allocated page-local
+    Run→Result pairs.  Retaining only this small page avoids breaking old
+    bookmarks without rebuilding the crowded global index or promoting a
+    ``new-*`` plan into a pretend Run.
+    """
+    return (
+        '<div class="board-heading"><h1 class="h1">Runs moved</h1></div>'
+        '<p class="gpurpose">Use a Section’s <b>🧾 Evidence Items</b> '
+        'to inspect Supporting Runs, rerun findings, and unallocated plans. '
+        'Use <b>⚙️ Runs</b> for real page-local Run → Result pairs only.</p>'
+    )
+
+    # Retained below temporarily as a migration reference for old generated
+    # trees; it is intentionally unreachable and no longer rendered.
+    base = Path(bd.BASE or ".")
+    root = repo_root(base)
+    registry = run_registry(str(root))
+    refs = {}
+    plans = {}
+
+    def record(address, q, item, layer, declaration):
+        compact = compact_global_run(address)
+        if not compact:
+            return
+        refs.setdefault(compact, []).append({
+            "page": q,
+            "item": item["item"],
+            "layer": layer,
+            "declaration": declaration,
+        })
+
+    def plan(address, action, family, q, item, layer, declaration):
+        """Collect an unallocated route without manufacturing a Run identity."""
+        if not action.startswith("new-"):
+            return
+        anchor = planned_route_anchor(
+            address, action, page_id=q["id"], item_id=item["item"], layer=layer,
+        )
+        entry = plans.setdefault(anchor, {
+            "address": address,
+            "action": action,
+            "family": family,
+            "expected": item["expected"],
+            "acceptance": item["acceptance"],
+            "local_input": item["local_input"],
+            "uses": [],
+        })
+        entry["uses"].append({
+            "page": q,
+            "item": item["item"],
+            "layer": layer,
+            "declaration": declaration,
+        })
+
+    for q in qs:
+        source = base / (q.get("file") or "")
+        if not source.is_file():
+            continue
+        for item in read_items(source).values():
+            for entry in item["supporting_runs"].split(";"):
+                parts = [part.strip() for part in entry.split("·")]
+                if len(parts) >= 3:
+                    plan(parts[2], parts[1].lower(), parts[0], q, item,
+                         "Supporting", entry.strip())
+                    record(parts[2], q, item, "Supporting", entry.strip())
+            plan(item.get("address", ""), item.get("action", ""),
+                 "Page · Evidence Item", q, item, "Local", item["local_run"])
+            record(item.get("address", ""), q, item, "Local", item["local_run"])
+
+    heading = ('<div class="board-heading"><h1 class="h1">Run index</h1></div>'
+               '<p class="gpurpose">Planned and registered routes cited by this '
+               'Board’s Evidence Item ledgers. A planned route explains what will '
+               'be made; a registered Run links its Ticket and Result receipt.</p>')
+    if not refs and not plans:
+        return (heading + '<p class="mut">No Run route has been declared on this '
+                'Board yet.</p>')
+
+    def use_list(refs_for_route):
+        uses = []
+        for ref in refs_for_route:
+            q = ref["page"]
+            group = bd.group_token(q.get("group") or "") or "_ungrouped"
+            href = f'{group}/{tree_page_name(q)}'
+            uses.append(
+                '<li><a href="%s">%s · %s</a> <span class="mut">%s</span></li>' %
+                (esc(href), esc(q["id"]), esc(ref["item"]), esc(ref["layer"])))
+        return "".join(uses)
+
+    rows = []
+    for anchor, route in sorted(plans.items()):
+        readable = (readable_global_run(route["address"])
+                    or readable_task(route["address"])
+                    or "Page evidence task")
+        action = action_label(route["action"])
+        paths = [
+            '<p class="run-index-path"><b>Family</b> <code>%s</code></p>' %
+            esc(route["family"]),
+            '<p class="run-index-path"><b>Expected</b> <span>%s</span></p>' %
+            esc(route["expected"]),
+            '<p class="run-index-path"><b>Acceptance</b> <span>%s</span></p>' %
+            esc(route["acceptance"]),
+            '<p class="run-index-path"><b>Ticket</b> '
+            '<span class="mut">not allocated yet</span></p>',
+            '<p class="run-index-path"><b>Result receipt</b> '
+            '<span class="mut">not allocated yet</span></p>',
+        ]
+        if route["local_input"]:
+            paths.insert(
+                2,
+                '<p class="run-index-path"><b>Planned input</b> <span>%s</span></p>' %
+                esc(route["local_input"]),
+            )
+        rows.append(
+            '<section class="run-index-row run-index-plan" id="%s"><h3><code>%s</code> '
+            '<span class="run-index-action %s">%s</span></h3>'
+            '<div class="run-index-paths">%s</div><ul>%s</ul></section>' %
+            (esc(anchor), esc(readable), esc(route["action"]), esc(action),
+             "".join(paths), use_list(route["uses"])))
+    for compact in sorted(refs):
+        readable = readable_global_run(compact)
+        record = registry.get(compact)
+        if record:
+            ticket_href = os.path.relpath(root / record["ticket"], base / "board")
+            paths = [
+                '<p class="run-index-path"><b>Ticket</b> '
+                '<a href="%s"><code>%s</code></a></p>' %
+                (esc(ticket_href), esc(record["ticket"])),
+            ]
+            if record.get("task_root"):
+                paths.insert(
+                    0,
+                    '<p class="run-index-path"><b>Task</b> <code>%s</code></p>' %
+                    esc(record["task_root"]),
+                )
+            if record.get("runtime"):
+                runtime_href = os.path.relpath(root / record["runtime"], base / "board")
+                paths.append(
+                    '<p class="run-index-path"><b>Result receipt</b> '
+                    '<a href="%s"><code>%s</code></a></p>' %
+                    (esc(runtime_href), esc(record["runtime"])),
+                )
+            else:
+                paths.append(
+                    '<p class="run-index-path"><b>Result receipt</b> '
+                    '<span class="mut">not created yet</span></p>'
+                )
+            meta = ('<p><span class="run-index-status">%s</span></p>'
+                    '<div class="run-index-paths">%s</div>' %
+                    (esc(record["label"]), "".join(paths)))
+        else:
+            meta = '<p class="mut">Unregistered: no Ticket + runtime receipt found.</p>'
+        rows.append(
+            '<section class="run-index-row" id="run-%s"><h3><code>%s</code></h3>%s'
+            '<ul>%s</ul></section>' %
+            (esc(compact), esc(readable), meta, use_list(refs[compact])))
+    return heading + '<div class="run-index">%s</div>' % "".join(rows)
 
 
 def render_tree(meta, qs, out_dir, only=None):
@@ -1080,21 +1317,20 @@ def render_tree(meta, qs, out_dir, only=None):
     bd.EMBEDS.clear()
     rows = index_rows(meta, qs, href_for=_href,
                       group_href=lambda tok: f"{tok}.html")
-    # JL 260731 ruled exactly three board-level components onto this index:
-    # the Board Map, the Section Matrix, and the Activity panel. All three are
-    # the SAME generators render() uses, with their fragment links rewritten.
+    # The default index carries Board-level orientation; a Board can opt into
+    # `index-view: pages` when the page roster is the only useful landing view.
     hrefs = tree_href_map(qs)
-    body = (f'<div class="board-heading">'
-            f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
-            f'<h1 class="h1">{esc(meta["title"])}</h1></div>'
-            f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
+    heading = (f'<div class="board-heading">'
+               f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
+               f'<h1 class="h1">{esc(meta["title"])}</h1></div>')
+    pages = f'<h3 class="sec" id="qlist">ALL PAGES</h3><div class="idx">{"".join(rows)}</div>'
+    body = (heading + pages if pages_only_index(meta) else
+            heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
             f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
             + tree_relink(board_map(meta), hrefs)
             + tree_relink(related_folders(meta), hrefs)
             + tree_relink(board_status(qs), hrefs)
-            + f'<h3 class="sec" id="qlist">ALL PAGES</h3>'
-            + f'<div class="idx">{"".join(rows)}</div>'
-            + ACTIVITY_HTML)
+            + pages + ACTIVITY_HTML)
     # `index_rows()` also renders each group's authored intro and ASCII map, so
     # relink the complete body rather than only the three Board-level panels.
     body = tree_relink(body, hrefs)
@@ -1104,12 +1340,24 @@ def render_tree(meta, qs, out_dir, only=None):
                  encoding="utf-8")
     written.append(f)
 
+    # Compatibility page only. The live Evidence and Runs plugins own the
+    # normal surfaces; this keeps bookmarks from becoming a 404.
+    bd.CARDS.clear()
+    bd.CHIP_N = 0
+    bd.EMBED_SEEN.clear()
+    bd.EMBEDS.clear()
+    f = out_dir / "runs.html"
+    f.write_text(scrub_cjk_comments(shell("Run index", run_index_body(qs), "", "",
+                                     tree_sidebar(meta, qs, ""))),
+                 encoding="utf-8")
+    written.append(f)
+
     # Prune orphans. Deleting or renaming a page's .md used to leave its .html
     # in the tree forever: still linkable, still looking real, describing a page
     # that no longer exists (JL 260731, found by deleting one and rebuilding).
     # The expected set is computed from EVERY page, not from `written`, so this
     # is correct under --only too.
-    expected = {out_dir / "index.html"}
+    expected = {out_dir / "index.html", out_dir / "runs.html"}
     for q in qs:
         gt = bd.group_token(q.get("group") or "") or "_ungrouped"
         expected.add(out_dir / gt / tree_page_name(q))

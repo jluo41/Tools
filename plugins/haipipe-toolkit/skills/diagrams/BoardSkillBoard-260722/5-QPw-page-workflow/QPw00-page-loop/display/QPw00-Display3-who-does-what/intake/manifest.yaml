@@ -1,3 +1,9 @@
+# RE-PINNED 260831 (JAMAOpioidBoard session, workflow-phases sweep): the
+# paper family's page-type vocabulary moved (paper/page-types/ ->
+# paper/workflow-phases/haipipe-paper-<phase>), which rewrote the live
+# haipipe-page.SKILL.md inventory block and variant-law prose. The copy was
+# refreshed from the live source and its hash re-pinned. This unit's take from
+# that input is the CREATE verb only, which did not move; no drawn cell changed.
 # RE-FROZEN 260819 night, last pin: page_lifecycle.py gained the PREPARE-pause
 # rule and the cold-CHECK clause after the previous freeze. The figure draws
 # phases, ticks and the gate, none of which moved; copy refreshed, hash re-pinned.
@@ -110,7 +116,7 @@ files:
       zero mechanical errors), and the FIVE-ticks count at :141 and :153"
   - file: inputs/haipipe-page.SKILL.md
     source: board/haipipe-page/SKILL.md
-    sha256: cbbdfd32ba197ac17a1654a4136a4b029171378d125e290bdb209236229bd06a
+    sha256: f767f15672b12941a8d2bbf49fc1c8c1e027cd39e308dae9a48fd4c7a70761c9
     takes: "the CREATE verb, which is where row 0 OPEN comes from: the template
       copy, the purpose-stating title, the board.md roster. CREATE is not a phase."
   - file: inputs/haipipe-plugin-probe.SKILL.md

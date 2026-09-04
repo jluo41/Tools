@@ -33,7 +33,7 @@ No routing or merge logic is duplicated here. digest's only new job is turning a
            - corrections you made to my behavior this session
            - stated preferences about how a stage/skill SHOULD work
            - repeated friction (you had to ask twice, re-route, re-explain)
-     DROP  - task-work discussion (about the TASK-FOLDER being built, not the TOOL)
+     DROP  - task-work discussion (about the JOB being built, not the TOOL)
            - one-off task instructions ("now run the OLS", "fix this config")
            - my own narration / anything you did not actually push back on
 2. DISTILL into discrete candidate items, ONE concern each, in YOUR words

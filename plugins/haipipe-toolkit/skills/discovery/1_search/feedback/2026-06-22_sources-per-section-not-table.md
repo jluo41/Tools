@@ -8,7 +8,7 @@ fixed_in: "2.4.0"
 ---
 
 Reporter (JL): 这个source 可以让他一个source 一个section吗，不要放到一个大表里，一点都不好读
-(re: discoveries/L01_personality-prescribing-landscape/01_trait-via-risk-attitude/sources.md)
+(re: discoveries/b01_personality_prescribing_landscape/j01_personality_prescribing_landscape_inquiry/t01_trait_via_risk_attitude/sources.md)
 
 The search-stage `sources.md` currently renders every citation as ONE wide
 markdown table (`| id | citation/URL | role | verification |`). JL finds it

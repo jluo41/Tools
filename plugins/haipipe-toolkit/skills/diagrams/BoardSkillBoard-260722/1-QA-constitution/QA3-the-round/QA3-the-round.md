@@ -293,27 +293,6 @@ Routing is a verb and is loaded only when a write is being routed, while a board
 Routing keeps the write-lines footer, because those lines exist only when routing ran.
 
 ## Aims
-### A3 · 🚦 The gate, proposed
-- A3.1 · The five conditions run as one command rather than three steps and a remembered number.
-  **Done when:** One invocation prints pass or fail plus the warning delta, and no round has to run `cli/build.py` and `cli/check.py` separately and compare by hand.
-- A3.2 · The round's starting warning count comes from somewhere durable rather than the agent's own memory.
-  **Done when:** Condition ③ reads a recorded baseline, and a session that was not present at the start of the round can still compute the delta.
-- A3.3 · The gate is stated in a skill that a runtime actually loads.
-  **Done when:** The five conditions are written into `haipipe-board-routing` or `haipipe-board`'s SKILL.md, because no runtime reads a Q page.
-
-### A4 · 🧠 What a machine cannot check, and who covers it
-- A4.1 · How often the fresh-context reviewer runs is ruled rather than left to habit.
-  **Done when:** `Agent-1`'s cadence is written into the same skill that carries the gate, and a round can tell from the rule alone whether it owes a cold read.
-
-### A6 · 🎛 Who controls the reply's shape once a board is attached
-- A6.1 · An attached session knows the reply's shape before it writes its first reply.
-  **Done when:** §6's precedence rule sits in `haipipe-board`'s SKILL.md beside the closing block, and a board-attached session given no other instruction produces the pointer form.
-
-### P · 🏁 Page-level validation
-- P1 · A fresh agent given only the shipped rule runs the gate without being told to.
-  **Done when:** `QF2`'s instrument is run on a small board change and the agent builds, checks, compares the counts, and states the numbers unprompted.
-
-## States
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 The five in one line each, so you can see what is waiting before reading any of them:
@@ -383,19 +362,36 @@ The five in one line each, so you can see what is waiting before reading any of 
       🛑 `Blocks` A3.3.
       🤖 `If nobody answers` A takes effect.
 
+
 ### A3 · 🚦 The gate, proposed
-- ✅ A3.1 · `cli/gate.py` is the one command. `--start` records the round's baseline, a bare run rebuilds, checks, and prints pass or fail per condition with the delta. Driven 260802 on this board: clean round passes, and an em-dash added to this page on purpose flipped ③ to FAIL naming `QA3-the-round/QA3-the-round.md: 0 -> 1`, exit 1, back to 0 on revert.
-- ✅ A3.2 · The baseline is a file, keyed by board path under `$TMPDIR/haiboard-gate/`, holding ONE COUNT PER PAGE. Per page rather than per board is what survives concurrency: the total moved 304 to 276 during a round that touched one page. It lives with the live layer's other transient state rather than in the board folder, since a baseline is scratch and not a board record.
-- ✅ A3.3 · Shipped into `haipipe-board-routing`'s SKILL.md, the default of the row above, so the gate and the reply footer stay one contract in one skill.
+- ✅ A3.1 · The five conditions run as one command rather than three steps and a remembered number.
+  **Done when:** One invocation prints pass or fail plus the warning delta, and no round has to run `cli/build.py` and `cli/check.py` separately and compare by hand.
+  **Now:** `cli/gate.py` is the one command. `--start` records the round's baseline, a bare run rebuilds, checks, and prints pass or fail per condition with the delta. Driven 260802 on this board: clean round passes, and an em-dash added to this page on purpose flipped ③ to FAIL naming `QA3-the-round/QA3-the-round.md: 0 -> 1`, exit 1, back to 0 on revert.
+- ✅ A3.2 · The round's starting warning count comes from somewhere durable rather than the agent's own memory.
+  **Done when:** Condition ③ reads a recorded baseline, and a session that was not present at the start of the round can still compute the delta.
+  **Now:** The baseline is a file, keyed by board path under `$TMPDIR/haiboard-gate/`, holding ONE COUNT PER PAGE. Per page rather than per board is what survives concurrency: the total moved 304 to 276 during a round that touched one page. It lives with the live layer's other transient state rather than in the board folder, since a baseline is scratch and not a board record.
+- ✅ A3.3 · The gate is stated in a skill that a runtime actually loads.
+  **Done when:** The five conditions are written into `haipipe-board-routing` or `haipipe-board`'s SKILL.md, because no runtime reads a Q page.
+  **Now:** Shipped into `haipipe-board-routing`'s SKILL.md, the default of the row above, so the gate and the reply footer stay one contract in one skill.
+
 
 ### A4 · 🧠 What a machine cannot check, and who covers it
-- ✅ A4.1 · Ruled `B` and shipped in the same paragraph as the gate: a round that changed PROSE owes a cold read by `haipipe-board-reviewer-agent`, a round that changed only mechanics does not.
+- ✅ A4.1 · How often the fresh-context reviewer runs is ruled rather than left to habit.
+  **Done when:** `Agent-1`'s cadence is written into the same skill that carries the gate, and a round can tell from the rule alone whether it owes a cold read.
+  **Now:** Ruled `B` and shipped in the same paragraph as the gate: a round that changed PROSE owes a cold read by `haipipe-board-reviewer-agent`, a round that changed only mechanics does not.
+
 
 ### A6 · 🎛 Who controls the reply's shape once a board is attached
-- ✅ A6.1 · Ruled `C` and shipped into `haipipe-board`'s SKILL.md beside the closing block: `discussion` keeps the repo default, and `implementation`, `review` and `sourcing` collapse the reply to outcome, footer and strip.
+- ✅ A6.1 · An attached session knows the reply's shape before it writes its first reply.
+  **Done when:** §6's precedence rule sits in `haipipe-board`'s SKILL.md beside the closing block, and a board-attached session given no other instruction produces the pointer form.
+  **Now:** Ruled `C` and shipped into `haipipe-board`'s SKILL.md beside the closing block: `discussion` keeps the repo default, and `implementation`, `review` and `sourcing` collapse the reply to outcome, footer and strip.
+
 
 ### P · 🏁 Page-level validation
-- ✅ P1 · RUN 260802 and passed. A fresh agent was given a one-line edit on `QE6`, the board path, and one instruction: load `haipipe-board-routing` and follow it. The gate was never named to it. It ran the gate anyway and reported all five conditions, and it reported ③ RED rather than hiding it: three pages it had not touched had gained a warning, and it named the concurrent session's commits `d7c400a1` and `6a2d33e2` as the cause, noting the board's page count moved 55 to 54 underneath its round. It also ran the cold read because it had changed prose, which is `A4.1`'s rule arriving unprompted, and the reviewer caught a wrong claim in its draft before it shipped. It went past the design on ④, which the command prints as not tested: it drove `/b/boardform/QE6` itself and confirmed 302 then 200 with the new text rendered. The one thing it did not do was invent scope: it found a stale 'As of 260727' line on the same page and left it, saying so, because it was outside the brief.
+- ✅ P1 · A fresh agent given only the shipped rule runs the gate without being told to.
+  **Done when:** `QF2`'s instrument is run on a small board change and the agent builds, checks, compares the counts, and states the numbers unprompted.
+  **Now:** RUN 260802 and passed. A fresh agent was given a one-line edit on `QE6`, the board path, and one instruction: load `haipipe-board-routing` and follow it. The gate was never named to it. It ran the gate anyway and reported all five conditions, and it reported ③ RED rather than hiding it: three pages it had not touched had gained a warning, and it named the concurrent session's commits `d7c400a1` and `6a2d33e2` as the cause, noting the board's page count moved 55 to 54 underneath its round. It also ran the cold read because it had changed prose, which is `A4.1`'s rule arriving unprompted, and the reviewer caught a wrong claim in its draft before it shipped. It went past the design on ④, which the command prints as not tested: it drove `/b/boardform/QE6` itself and confirmed 302 then 200 with the new text rendered. The one thing it did not do was invent scope: it found a stale 'As of 260727' line on the same page and left it, saying so, because it was outside the brief.
+
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
@@ -443,3 +439,5 @@ The five in one line each, so you can see what is waiting before reading any of 
 260802 · §6 opened on JL's question about who controls a board-attached reply's shape; the body between the outcome and the footer turns out to be unowned, the precedence row is in Decision Now, and CC decided the rule's home itself since nothing stopped on it
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Opened on JL's ask that agents "work and test themself, and reply when the board is ready for the user to check"; the reply's shape was already settled in haipipe-board-routing 0.2.0, so this page owns only the gate before it
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

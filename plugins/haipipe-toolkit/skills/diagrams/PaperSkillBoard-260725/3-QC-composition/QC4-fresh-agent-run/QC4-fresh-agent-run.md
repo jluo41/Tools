@@ -1,6 +1,6 @@
 # QC4 · Observe whether a fresh agent follows the current Paper architecture
 
-state: ✅ SETTLED · final fresh-context route passed
+state: 🟡 PARTIAL · five-type route passed · open: journey-era rerun (A1.3)
 owner: JL
 method: give a clean-context agent one realistic paper task and inspect its route, writes, and stop gates
 
@@ -41,7 +41,7 @@ The run fails if it revives S01 to S10, invents evidence, copies source material
 
 ### 2 · Final receipt
 
-**Validated route**: the fresh agent found both Probe lanes and stopped at human gates.
+**Validated route, five-type era**: the fresh agent found both Probe lanes and stopped at human gates. This run predates the journey; Ideation, Roadmap, and gates G0–G7 were not part of what it observed.
 
 ```text
 Paper → Results Section → Probe ┬─ PageX
@@ -54,23 +54,41 @@ It kept `pagex/` and `probe/` distinct and landed A-consumer in `consumer/a-cons
 It used the marked MISQ Results template and stopped at human gates.
 Focused runtime validation passed the marker/fallback guard and every mechanical-repair route.
 
+### 3 · Journey field record
+
+**Live-fire ledger**: which journey gates have ever run, per the family's dated status.
+
+```text
+fired live   G0 G2 G3 G4     2 boards · 1 formal field test · 3 gaps patched
+never fired  G1 G5 G6 G7     next natural tests: the MS narrative opens G5,
+                             the first decision letter opens G7
+```
+
+The journey machine has been field-tested on live boards rather than this fixture; its source of record is the family status in `paper/README.md`, a dated receipt and never a second authority.
+A journey-era rerun of this fixture is the open obligation this page tracks.
+
 ## Aims
 ### A1 · 🧑‍🔬 Fresh-agent behavior
-- A1.1 · A fresh agent executes a realistic current Paper task through the intended route.
+- ✅ A1.1 · A fresh agent executes a realistic current Paper task through the intended route.
   **Done when:** process evidence covers trigger, routing, evidence lanes, handoffs, checks, and stop gates.
-- A1.2 · Any divergence is repaired and the test is repeated.
+  **Now:** The final fresh agent followed the Page-first route as of the 260820 five-type graph.
+- ✅ A1.2 · Any divergence is repaired and the test is repeated.
   **Done when:** the final fresh run behaves as designed.
+  **Now:** Earlier contradictions were repaired and the rerun passed.
+- 🔨 A1.3 · The journey-era architecture earns the same behavioral proof.
+  **Done when:** a fresh-context run traverses the seven-type graph with the establish loop, or the remaining gates fire on live boards and are registered here.
+  **Now:** The journey machine's gates are live-fired 4/8 on real boards (G0 G2 G3 G4); a journey-era fresh rerun of this fixture has not happened.
 
-## States
-### A1 · 🧑‍🔬 Fresh-agent behavior
-- ✅ A1.1 · The final fresh agent followed the current Page-first route.
-- ✅ A1.2 · Earlier contradictions were repaired and the rerun passed.
 
 ## Files
-- `4-QC-composition/QC3-minimal-fixture/QC3-minimal-fixture.md` · validation subject
+- `3-QC-composition/QC3-minimal-fixture/QC3-minimal-fixture.md` · validation subject
 - `../../paper/haipipe-paper/SKILL.md` · expected public entry
+- `../../paper/README.md` · the dated family status this page's journey record cites
 
 ## Log
 260820 · Reset the behavioral test for the Page-first Paper architecture.
 260820 · Final fresh-context rerun passed after enforcing the template guard and legal repair routes.
 260820 · Moved from QF2 to QC4 so behavioral validation closes the composition topic it tests.
+260828 · Scoped the receipt to the five-type graph it actually observed; registered the journey's live-fire record (G0 G2 G3 G4 on two boards; G1 G5 G6 G7 never) from the family status, and opened A1.3 for the journey-era rerun. Repaired the `4-QC-composition/` path left dead by the 260820 regroup.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

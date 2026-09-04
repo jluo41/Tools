@@ -80,13 +80,13 @@ load-bearing again.
 - [ ] 📏 Say out loud what the name convention IS for
       Sorting. The refs describe the convention in detail and never say that membership is not part of its job, which is exactly the gap the bug grows in.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The rule is settled and stated; the enforcement is partial. `SKILL.md` carries the structural test
 twice with its cost measured, and 107 task-folders are detected by it across 67 groups.
-
 What has not been done is the sweep: no one has checked that every other file in the family, and
 the status scanner in particular, uses structure rather than the name.
-
 - 260726 CC · 🧪 Recorded the 31% as the load-bearing number
       It is what turns "prefer structure" from a style preference into a correctness rule, and it is the reason the ⛔ appears twice in one document.
 
@@ -108,3 +108,5 @@ skips 31% of real task-folders while reporting success.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

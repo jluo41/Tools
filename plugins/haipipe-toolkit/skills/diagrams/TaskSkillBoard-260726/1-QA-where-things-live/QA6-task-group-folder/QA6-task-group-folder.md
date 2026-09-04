@@ -118,18 +118,6 @@ exist, why they belong together, and how far each has got.
 - [ ] 🔍 Make "no consumer vocabulary" checkable
       A grep over `tasks/` for claim ids, paper names and the word "paper" in a stake-bearing sense. The rule is stated in `SKILL.md` and enforced nowhere.
 
-## States
-Nothing is ruled and the measurement is done. 67 task-groups hold 107 task-folders. The
-documented group-level doc surface exists on 5 of them, the per-folder `workflow/` on 21 of 107,
-and a `QA/` on 1 of 107.
-
-The single actionable finding is that the group has no live state surface at all, and the one it
-was given is not written because nothing opens it. That is the fact `QA7` and `QA4` are both
-answers to.
-
-- 260726 CC · 📏 Measured rather than assumed
-      `ref/task-structure.md` and `ref/hierarchy.md` describe the group folder; the counts above come from `ls` over `examples/*/tasks/`. The two disagree, and the docs are the ones that are wrong.
-
 ## Files
 - `task-structure.md`
   The group-folder contract, including the `diagram/` surface that 7% of groups have.
@@ -141,5 +129,18 @@ answers to.
 ## Discussion
 > CC 260726: the parallel to `QA6@paper` is close enough to be worth naming and it stops in one place. There, the ruling was the delete test: a prefix means working machinery and `rm -rf 0-* 1-* 2-*` must leave something submittable. A task-group has no deliverable, so it has no delete test and cannot borrow one. What it has instead is the derivable/authored split above, which does the same job of making a rule checkable rather than tasteful.
 
+
+### From the retired States section (merged 260831)
+Nothing is ruled and the measurement is done. 67 task-groups hold 107 task-folders. The
+documented group-level doc surface exists on 5 of them, the per-folder `workflow/` on 21 of 107,
+and a `QA/` on 1 of 107.
+The single actionable finding is that the group has no live state surface at all, and the one it
+was given is not written because nothing opens it. That is the fact `QA7` and `QA4` are both
+answers to.
+- 260726 CC · 📏 Measured rather than assumed
+      `ref/task-structure.md` and `ref/hierarchy.md` describe the group folder; the counts above come from `ls` over `examples/*/tasks/`. The two disagree, and the docs are the ones that are wrong.
+
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

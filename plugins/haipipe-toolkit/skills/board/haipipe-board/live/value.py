@@ -5,8 +5,9 @@ uses one of them (JL 260819). Until the `PP<NN>.v<n>` id existed, both sentences
 could only cite `PP01`, so nobody could tell which number each used and a value
 nobody used looked exactly like one everybody did.
 
-NO STORAGE and NO WRITER, by contract (`haipipe-plugin-value` §🧊): the number
-lives in `probe/PP<NN>/proof/` with its source, run and sha256. This module reads
+NO STORAGE and NO WRITER, by contract
+(`haipipe-plugin-outline/ref/evidence/values.md` §🧊): the number
+lives in `evidence/probe/PP<NN>/proof/` with its source, run and sha256. This module reads
 `card.md`'s `## Values` block and the page's own prose, and joins them.
 """
 from __future__ import annotations
@@ -14,6 +15,8 @@ from __future__ import annotations
 import html
 import pathlib
 import re
+
+from src.common import evidence_lane_dirs
 
 _ROW = re.compile(r"^-\s*(v\d+)\s*·\s*(.+?)\s*·\s*(.+?)\s*(?:·\s*(.+?))?\s*$", re.M)
 _CITE = re.compile(r"\b(PP\d+)\.(v\d+)\b")
@@ -27,17 +30,19 @@ def _e(s) -> str:
 def read_values(page_src: pathlib.Path):
     """-> {(PP id, v id): (what it is, the number, where from)}, from every card."""
     out = {}
-    d = page_src.parent / "probe"
-    if not d.is_dir():
-        return out
-    for card in sorted(d.glob("PP*/card.md")):
-        pid = card.parent.name.split("-")[0]
-        txt = card.read_text(encoding="utf-8", errors="replace")
-        m = re.search(r"(?ms)^##\s+Values\s*$(.*?)(?=^##\s|\Z)", txt)
-        if not m:
-            continue
-        for vid, what, num, frm in _ROW.findall(m.group(1)):
-            out[(pid, vid)] = (what, num, frm or "")
+    seen = set()
+    for d in evidence_lane_dirs(page_src.parent, "probe"):
+        for card in sorted(d.glob("PP*/card.md")):
+            if card.parent.name in seen:
+                continue
+            seen.add(card.parent.name)
+            pid = card.parent.name.split("-")[0]
+            txt = card.read_text(encoding="utf-8", errors="replace")
+            m = re.search(r"(?ms)^##\s+Values\s*$(.*?)(?=^##\s|\Z)", txt)
+            if not m:
+                continue
+            for vid, what, num, frm in _ROW.findall(m.group(1)):
+                out[(pid, vid)] = (what, num, frm or "")
     return out
 
 

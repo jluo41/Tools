@@ -1,4 +1,4 @@
-"""🖼🚪 Plugview · the EVIDENCE plugins' read-only surfaces: display/ and probe/.
+"""🖼🚪 Plugview · read-only evidence/display/ and evidence/probe/ surfaces.
 
 THE DIVISION OF LABOUR, the same one export.py drew for latex/word/bibex:
 
@@ -28,7 +28,7 @@ from pathlib import Path
 _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>
-:root{{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff}}
+:root{{--bg:#ffffff;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4e7;--card:#fff}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23}}}}
 body{{margin:0;padding:18px;background:var(--bg);color:var(--fg);
@@ -539,6 +539,12 @@ class PlugViewMixin:
 
     # ---- POST /_board/probe ------------------------------------------
     def plug_probe(self, p):
+        """Compatibility refusal: Page-local Probe storage is retired."""
+        return None, ("Probe is retired. Specify a typed Evidence Item in "
+                      "outline/, map Supporting Runs in SURVEY, and LAND one "
+                      "local Result instead.")
+
+    def _retired_plug_probe(self, p):
         """One card per FOLDER, read in WALL ORDER so the reader sees the
         crossing: head, what was asked, what came back, the proof files, and
         the stake-bearing audit copy folded away (haipipe-plugin-probe §🚪).

@@ -79,10 +79,11 @@ and it does not touch `workflow/plan*.yaml`, which is the contract it is being j
 - [ ] 📏 Rule what happens when there is no `Intent` docstring
       The convention says MUST. If the gate proceeds anyway it silently becomes a style review, and if it blocks, every legacy script fails. Neither is written.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The gate runs and produces `CODE_REVIEW.md`. Its purpose is stated in `SKILL.md` prose. Nothing is
 ruled here, and the skip is unrecorded.
-
 - 260726 CC · 🎯 Named the defect class as the gate's whole justification
       Taken from `SKILL.md`'s own description of what the reviewer catches. Written down here because a gate that cannot name what it uniquely catches gets skipped by default within a month.
 
@@ -96,3 +97,5 @@ ruled here, and the skip is unrecorded.
 
 ## Log
 260726 · Created with the board.
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0

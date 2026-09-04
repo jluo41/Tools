@@ -83,11 +83,12 @@ So the run's first assertion is deliberately `page actually loaded`, and any gro
 - [ ] 🧪 Prove it catches a real regression
       The `verify()` gate in `assets.py` was proven by breaking a filename on purpose and watching it fail. This run deserves the same proof, on one of the six failures in §1.
 
-## States
+## Discussion
+
+### From the retired States section (merged 260831)
 The run exists and passes 36 of 36 on 260801, on the boardform board.
 It is not yet a file and nothing dispatches it, so today it protects only the rounds where someone remembers to type it.
 Its dependency half is no longer open: `cli/sentencerun.py` (260801) and `checks/run.py` (260802) both shipped a browser-dependency policy this run can adopt as it stands.
-
 - 260801 JL · 🔬 Opened on JL's ask to run the browser and evaluate
   JL: "could you run the browser to do the evaluation? I think in the QF series, we might have the page to explain what things we might need to check."
   The evaluation ran first and the page was written from its evidence rather than from a plan: nine groups, 36 assertions, all green.
@@ -106,3 +107,5 @@ Its dependency half is no longer open: `cli/sentencerun.py` (260801) and `checks
 ## Log
 - 260806 2201 · [REVISE-CC] swept to the 260806 architecture; the dead `QC9-roundtrip.md` pointer repointed at its live file `7-QC-engine/QC3-roundtrip/QC3-roundtrip.md` (renumbered 260801), and the "the skill declares no browser dependency" claim corrected in Aims and States against `cli/sentencerun.py` (exit 2 + loud SKIP) and `checks/run.py --full` (its own headless Chrome on a free CDP port)
 260801 · Opened after a 36-assertion browser run passed, and written from that run's evidence; the six failures it exists to catch all shipped green through check.py on 260731
+
+- 260831 0113 · `## States` merged into `## Aims` (tick + `Now:` per Aim; asks and threads kept verbatim), skill 0.148.0
