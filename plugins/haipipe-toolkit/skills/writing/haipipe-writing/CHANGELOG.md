@@ -1,4 +1,21 @@
 # haipipe-writing
+## 0.7.0 — 2026-09-04
+
+**Make writing plan/evidence-aware without taking ownership of either.**
+
+The writing worker now documents a second input path: an approved outline,
+section handoff, or division writing ticket plus folded evidence can be realized
+as prose before any sentence-level polish. The new
+`ref/realize-from-plan.md` defines the temporary writing packet, readiness gates,
+authority routing, recipe selection, style precedence, and sentence-consumer
+check. `wdiff.py`, its `✎` contract, and the existing rewrite/check path are
+unchanged.
+
+The reference incorporates the useful ideas behind paper-logic graphs, Compound
+Writing, Writing DNA, sepia, and Stop That Shit as local, opt-in methods. None is
+a runtime dependency, and none may override the host's approved outline,
+evidence, venue, or claim contract.
+
 ## 0.6.1 — 2026-08-02
 
 **A split rewrite anchored its record on the LAST new line, not the first.**
@@ -183,5 +200,6 @@ records on `QB4-overall.md`, and `score` independently surfaced the same `### 3`
 sentences that had been flagged by hand, while reporting 0 bad headings on a
 division whose headings had just been repaired.
 
-Not built yet: a `rewrite` verb that drives the loop end to end. Today step 2 is
-a person or a model reading `score` output and calling `wdiff apply` per sentence.
+Not built yet: an end-to-end driver for the `realize` and `rewrite` paths. Today
+the host or a person/model supplies the candidate prose and calls `wdiff apply`
+per sentence or rewritten run.

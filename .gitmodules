@@ -103,9 +103,6 @@
 [submodule "references/workflow-diagrams/nature-paper-skills"]
 	path = references/workflow-diagrams/nature-paper-skills
 	url = https://github.com/Boom5426/Nature-Paper-Skills
-[submodule "spaces/Physician-SPACE"]
-	path = spaces/Physician-SPACE
-	url = git@github.com:JHU-CDHAI/Physician-SPACE.git
 [submodule "papers/Paper-TestToLearn-MS2026"]
 	path = papers/Paper-TestToLearn-MS2026
 	url = git@github.com:jluo41/Paper-TestToLearn-MS2026.git
@@ -148,3 +145,9 @@
 [submodule "plugins/haipipe-toolkit/skills/paper/venue"]
 	path = plugins/haipipe-toolkit/skills/paper/venue
 	url = git@github.com:jluo41/Venue-Paper.git
+[submodule "references/sepia"]
+	path = references/sepia
+	url = https://github.com/Nanako0129/sepia.git
+[submodule "references/stop-that-shit"]
+	path = references/stop-that-shit
+	url = https://github.com/lennney/stop-that-shit.git

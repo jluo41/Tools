@@ -153,6 +153,20 @@ references:
     license: MIT
     notes: "Skill file for removing common AI tells from prose."
 
+  - name: sepia
+    path: references/sepia
+    type: git-submodule
+    url: https://github.com/Nanako0129/sepia
+    license: MIT
+    notes: "De-AI writing skill with narrative-architecture, discourse-flow, and surface-style passes; supports fiction and venue-routed professional prose."
+
+  - name: stop-that-shit
+    path: references/stop-that-shit
+    type: git-submodule
+    url: https://github.com/lennney/stop-that-shit
+    license: MIT
+    notes: "Multi-platform Hook + Skill Guard for AI coding agents; reference only here, with Hooks not enabled by this repository."
+
   - name: stop-slop-zh
     path: references/stop-slop-zh
     type: git-submodule
@@ -302,8 +316,12 @@ candidates_from_screenshots:
     paths: [references/science-superpowers, references/superpower-socialscience-skills]
   - name: de-ai-flavor skill list
     status: partially-added
-    paths: [references/stop-slop, references/stop-slop-zh, references/tools/chatgpt-comparison-detection]
-    notes: "Added stop-slop, stop-slop-zh, and chatgpt-comparison-detection. humanizer, taste-skill, ai-flavor-remover, shounhenhua, nuwa-skill, writing-agent, and De-AI-Prompt-Enhancer still unresolved."
+    paths: [references/sepia, references/stop-slop, references/stop-slop-zh, references/tools/chatgpt-comparison-detection]
+    notes: "Added sepia, stop-slop, stop-slop-zh, and chatgpt-comparison-detection. humanizer, taste-skill, ai-flavor-remover, shounhenhua, nuwa-skill, writing-agent, and De-AI-Prompt-Enhancer still unresolved."
+  - name: Stop That Shit
+    status: added
+    path: references/stop-that-shit
+    notes: "Matched the screenshot's Stop That Shit（别再造史了） project; tracked as a reference submodule."
   - name: social-science tool list
     status: added
     paths: [references/auto-empirical-research-skills, references/statspai, references/awesome-journal-skills, references/aer-skills, references/auto-research-skills, references/tools/statsmodels, references/tools/dowhy, references/tools/causalml, references/tools/econml, references/tools/python-causality-handbook]

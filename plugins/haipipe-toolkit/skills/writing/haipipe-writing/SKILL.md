@@ -1,52 +1,91 @@
 ---
 name: haipipe-writing
 description: >-
-  The WRITING verb: take prose someone already wrote and make it readable by a
-  weak-English reader, recording every edit as a word-level change under the
-  sentence it changed. Three verbs: `score` ranks what is worth rewriting,
-  `rewrite` changes prose and anchors a ✎ record, `check` audits them.
-  Trigger: rewrite this, make this readable, too long, sounds like AI, plain
-  English, ✎, /haipipe-writing.
+  The WRITING verb: turn an approved outline and evidence packet into readable
+  prose, or revise prose someone already wrote for a weak-English reader,
+  recording every edit as a word-level change under the sentence it changed.
+  The core operations are `score`, `rewrite`, and `check`; plan-aware
+  realization is an input path, not a second planning authority. Trigger:
+  write from an outline, draft from evidence, rewrite this, make this readable,
+  too long, sounds like AI, plain English, ✎, /haipipe-writing.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-02"
+  version: "0.7.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-writing · rewrite prose, and leave a trail
+# /haipipe-writing · realize or rewrite prose, and leave a trail
 
 Prose in this repo is written by someone who already knows the subject.
-That is the problem this skill exists for: the author cannot see their own jargon, and a long sentence reads as precise to the person who built it.
-So the reader who pays is the one who knows least, and nobody in the room is that reader.
+That is the starting point for both paths: an approved plan still needs prose,
+and an existing draft still needs a reader-facing pass. The author cannot see
+their own jargon, and a long sentence reads as precise to the person who built it.
 
-**What this skill is FOR**: rewriting authored prose so a person whose English is weak can follow it, and recording each edit next to the sentence it changed.
+**What this skill is FOR**: realizing an approved plan/evidence slice as prose,
+or rewriting authored prose so a person whose English is weak can follow it,
+and recording each edit next to the sentence it changed.
+
+The plan and evidence remain owned by the host workflow. This skill owns prose
+realization, readability, and its `✎` trail; it does not create a competing
+outline, evidence ledger, or claim authority.
 
 ## 🧭 1 · What it does, in one picture
 
-**The loop**: three verbs, and only the middle one needs judgment.
+**The loop**: two input paths share one writing and checking contract. Only the
+candidate prose needs judgment; code computes the worklist, records the diff,
+and audits the result.
 
 ```
-📄 authored prose
+🧭 approved outline + folded evidence ──► paragraph/section contract
+📄 authored prose ──────────────────────► ranked worklist
+                         \\
+                          \\
+                           ▼
+                 1️⃣ realize or rewrite  🧠 JUDGMENT
+                           |
+                           ▼
+                    ✍️ candidate prose
       |
-      | 1️⃣ score.py         🤖 CODE · ranks what is worth rewriting
-      v
-📋 a ranked worklist ── a person reads it, nothing has changed yet
-      |
-      | 2️⃣ rewrite          🧠 JUDGMENT · the only step a model does
-      v
-✍️ new prose + old prose
-      |
-      | 3️⃣ wdiff.py apply   🤖 CODE · computes the diff, anchors the record
+      | 2️⃣ wdiff.py apply   🤖 CODE · computes the diff, anchors the record
       v
 📝 prose + ✎ record under the sentence it changed
       |
-      | 4️⃣ wdiff.py check   🤖 CODE · every record well-formed and anchored
+      | 3️⃣ wdiff.py check   🤖 CODE · every record well-formed and anchored
       v
 ✅ readable, and reviewable
 ```
 
-🔒 the JUDGMENT is step 2, and ONLY step 2
+🔒 the JUDGMENT is the realization/rewrite step, and ONLY that step
 🚫 a model never writes the diff and never places the record
+
+## 🧩 Outline/evidence-aware realization
+
+Use this path when the host has an approved plan, outline, narrative row, or
+division writing ticket and the evidence it names is ready. Read
+[`ref/realize-from-plan.md`](ref/realize-from-plan.md) before writing. It turns
+the host's existing plan/evidence fields into a temporary writing packet; the
+packet is a view of existing authority, not a new artifact that can override it.
+
+The realization worker:
+
+1. Confirms that the addressed plan slice has one reader job, a bounded
+   paragraph/section move, and all evidence needed for its factual claims.
+2. Reads the exact folded Evidence Results and the host's requirements or venue
+   policy. It does not treat a related link, a plausible fact, or an unfinished
+   probe as evidence.
+3. Writes the planned job in reader order. It may choose sentence shape,
+   explanation, a content-bearing hinge, and paragraph rhythm; it may not add,
+   reorder, broaden, or silently weaken the approved argument.
+4. Applies optional voice and surface rules only after the content job is
+   stable. A style profile changes how the assigned material is expressed, not
+   which facts or claims are present.
+5. Audits coverage, claim/evidence fit, protected numbers and citations, holes,
+   and introduced AI tells. If the problem is the plan, evidence, or promise,
+   route back to the owning phase instead of repairing it in prose.
+
+For a first draft, the writing run/host receipt is the trace of realization. For
+a revision of existing prose, `wdiff.py` is the only writer of the word-level
+`✎` record.
 
 ## ⚖️ 2 · Why the diff is code
 
@@ -130,6 +169,10 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
   Paragraph-to-paragraph arc, hinges, and rhythm. Migrated 260801 out of `haipipe-paper-revise-content`, which still owns when the pass runs.
 - `ref/holes.md`
   What to do about what you do not know: never invent, every hole names an owner, sweep after writing. Migrated 260801 out of the paper DRAFT phase.
+- `ref/realize-from-plan.md`
+  How to realize an approved outline/evidence slice without creating a second
+  plan, claim ledger, or evidence authority; includes the recipe and routing
+  rules for optional style methods.
 
 ## 🔗 6 · It plugs into an apparatus that already exists
 
@@ -165,6 +208,10 @@ tests/test_roundtrip.py     does what `apply` writes, `check` accept?
 ⚠️ It is a FLOOR, not a proof. It checks the two disagreements that have actually bitten, and it stays quiet about path-shaped nouns a skill merely describes, such as `results/` or `1-probes/`, because a checker that cries wolf stops being read.
 
 ## 🚧 8 · What this does NOT own
+
+The plan-aware path does not own OUTLINE, EVIDENCE, venue selection, or final
+acceptance. A failed plan/evidence gate routes backward to its authority; it is
+not hidden by a fluent paragraph.
 
 `haipipe-paper-revise-humanizer` rewrites ACADEMIC prose for a venue: it keeps scholarly precision, evidence-tied claims, and a journal's voice, and it writes `%%` comments into LaTeX.
 This skill has a different reader (someone whose English is weak) and a different host (any file).
