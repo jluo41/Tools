@@ -1,3 +1,15 @@
+## 0.8.0 · 2026-09-03
+
+- Make Skills an explicit Outline-owned storage lane at `outline/skill/`.
+- Reserve sibling `skill/` for read-only migration compatibility and keep the
+  sole Skills surface inside Outline → Page Records.
+
+## 0.7.0 · 2026-09-03
+
+- Define Page Records as Files + Log + Skills.
+- Keep the ranked Skills store in `skill/` but present it inside Outline,
+  removing the duplicate top-level Skill picker row.
+
 ## 0.6.0 · 2026-09-03
 
 - Name Outline's two primary surfaces Bullet Workspace and Evidence Workspace;
@@ -168,3 +180,11 @@ Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md fro
 - First conforming instances: the latex/word/bibex tabs
   (`assets/js/10-drawer/82-plugin-exports.js` + `live/export.py` in
   haipipe-board 0.128.0), registered with the `tab: {url, write}` spec.
+## 0.9.0 · 2026-09-04
+
+- Define the Outline category as three peer workspaces: Context, Bullet, and
+  Evidence.
+- Fold the former Plan Context and Page Records UI groups into Context
+  Workspace without merging their source files.
+- Retire PageX from active evidence writes; external evidence now enters
+  through Supporting Run Results.

@@ -3,6 +3,11 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.4.1] — 2026-09-03
+
+- Route citation aggregation through the Outline Evidence Workspace at
+  `outline/evidence/bibex/`; the retired Evidence plugin is compatibility-only.
+
 ## [0.4.0] — 2026-09-02
 
 - Own ACQUIRE craft across Discovery and contribute source-map/source-reading

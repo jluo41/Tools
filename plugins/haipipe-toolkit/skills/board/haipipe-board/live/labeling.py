@@ -430,28 +430,50 @@ def studio_chat_page_url(
 
 _CSS = """
 :root{--bg:#ffffff;--fg:#202124;--mut:#72747b;--line:#dddeda;--card:#f7f7f8;
- --accent:#8055a5;--ok:#26734d;--hold:#a34b24}
+ --accent:#8055a5;--accent-soft:#f1eaf7;--ok:#26734d;--hold:#a34b24}
 @media(prefers-color-scheme:dark){:root{--bg:#17181a;--fg:#ececea;--mut:#a1a19c;
- --line:#303238;--card:#202226;--accent:#c59be8;--ok:#72c796;--hold:#ee956f}}
+ --line:#303238;--card:#202226;--accent:#c59be8;--accent-soft:#2b2332;
+ --ok:#72c796;--hold:#ee956f}}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);
  font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100vh;
- display:grid;grid-template-rows:minmax(280px,56%) minmax(220px,44%)}
-#work{overflow:auto;padding:14px 16px;border-bottom:2px solid var(--line)}
-header{display:flex;justify-content:space-between;gap:12px;align-items:start}
+ display:grid;grid-template-rows:minmax(320px,58%) minmax(230px,42%)}
+#work{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;justify-content:space-between;gap:12px;align-items:start;
+ padding:12px 16px 9px;border-bottom:1px solid var(--line)}
 h1{font-size:17px;margin:0}.mut{color:var(--mut);font-size:12px}.path{font:12px ui-monospace,Menlo,monospace}
+.statusline{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.tag{border:1px solid var(--line);border-radius:5px;padding:2px 6px;background:var(--card);
+ font:11px ui-monospace,Menlo,monospace}.tag.now{border-color:var(--accent);color:var(--accent)}
+.spacebar{display:flex;gap:3px;overflow:auto;padding:7px 10px 0;border-bottom:1px solid var(--line)}
+.space{appearance:none;border:0;border-bottom:2px solid transparent;background:transparent;
+ color:var(--mut);padding:7px 10px 8px;white-space:nowrap;font:600 12px -apple-system,sans-serif;
+ cursor:pointer}.space:hover{color:var(--fg)}.space.on{color:var(--accent);border-bottom-color:var(--accent)}
+#spaces{min-height:0;flex:1;overflow:auto;padding:12px 16px 18px}.workspace{display:none}
+.workspace.on{display:block}.workspace-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.workspace-head h2{font-size:15px;margin:0}.workspace-head span{color:var(--mut);font-size:12px}
 .phase{display:grid;grid-template-columns:repeat(6,minmax(72px,1fr));gap:5px;margin:12px 0}
 .ph{border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--mut)}
 .ph.now{border-color:var(--accent);color:var(--accent);font-weight:700}.ph.past{color:var(--ok)}
 .decision{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
 .next,.failed{background:var(--card);padding:9px 11px;border-radius:5px}
 .next{border-left:4px solid var(--accent)}.failed{border-left:4px solid var(--hold)}
-.grid{display:grid;grid-template-columns:minmax(270px,1.2fr) minmax(250px,1fr);gap:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:10px}
+.grid.four{grid-template-columns:repeat(4,minmax(155px,1fr))}
 .box{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--card)}
-.box h2{font-size:13px;margin:0 0 6px}.gate{display:grid;grid-template-columns:34px minmax(120px,1fr) auto;gap:7px;
+.box h3{font-size:13px;margin:0 0 6px}.box p{margin:5px 0}.gate{display:grid;grid-template-columns:34px minmax(120px,1fr) auto;gap:7px;
  padding:5px 0;border-top:1px solid var(--line);align-items:baseline}.gate:first-of-type{border-top:0}
 .obs{color:var(--mut);font-size:11px}.hold{color:var(--hold)}.ok{color:var(--ok)}
-#studio-chat{min-height:0;overflow:hidden}#chat{border:0;width:100%;height:100%;display:block}
-@media(max-width:700px){body{grid-template-rows:minmax(360px,60%) minmax(220px,40%)}.grid,.decision{grid-template-columns:1fr}.phase{overflow:auto;grid-template-columns:repeat(6,96px)}}
+.metric{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid var(--line)}
+.metric:first-of-type{border-top:0}.metric b{text-align:right}.empty{color:var(--mut)}
+.round{display:grid;grid-template-columns:minmax(100px,1fr) auto;gap:10px;padding:6px 0;
+ border-top:1px solid var(--line)}.round:first-of-type{border-top:0}
+.guard{margin-top:10px;border:1px dashed var(--line);border-radius:8px;padding:10px;color:var(--mut)}
+#studio-chat{min-height:0;overflow:hidden;border-top:2px solid var(--line)}
+#chat{border:0;width:100%;height:100%;display:block}
+@media(max-width:900px){.grid.four{grid-template-columns:repeat(2,minmax(155px,1fr))}}
+@media(max-width:700px){body{grid-template-rows:minmax(380px,61%) minmax(220px,39%)}
+ .grid,.grid.four,.decision{grid-template-columns:1fr}.phase{overflow:auto;grid-template-columns:repeat(6,96px)}
+ header{padding-right:10px}.path{display:none}}
 """
 
 
@@ -491,28 +513,199 @@ def render(
     chat_url = chat_page + "?pane=chat"
     if hard_hold:
         chat_url += "&labeling_hold=1"
+
+    root = state["root"]
+    run_tickets = sorted((root / "runs").glob("*.yaml")) \
+        if (root / "runs").is_dir() else []
+    run_results = sorted(p for p in (root / "results").iterdir() if p.is_dir()) \
+        if (root / "results").is_dir() else []
+    embedding_versions = sorted(p.name for p in (root / "cache" / "embeddings").iterdir()
+                                if p.is_dir()) \
+        if (root / "cache" / "embeddings").is_dir() else []
+    policy_versions = sorted(p for p in (root / "policy" / "versions").iterdir()
+                             if p.is_dir()) \
+        if (root / "policy" / "versions").is_dir() else []
+    latest_policy = policy_versions[-1] if policy_versions else None
+    policy_parts = ("guideline.md", "boundaries.yaml", "procedure.yaml",
+                    "uncertainty.yaml", "casebook.jsonl", "diff.yaml",
+                    "regression.jsonl", "cheatsheet.md", "gallery.md")
+    policy_seen = sum((latest_policy / name).is_file() for name in policy_parts) \
+        if latest_policy else 0
+    prediction_count = len(list((root / "evaluation" / "predictions").glob("*"))) \
+        if (root / "evaluation" / "predictions").is_dir() else 0
+    scorecard_count = len(list((root / "evaluation" / "scorecards").glob("*"))) \
+        if (root / "evaluation" / "scorecards").is_dir() else 0
+
+    def present(flag: bool, yes="observed", no="not yet") -> str:
+        return '<span class="%s">%s</span>' % (
+            "ok" if flag else "empty", html.escape(yes if flag else no))
+
+    def metric(label: str, value: str) -> str:
+        return '<div class=metric><span>%s</span><b>%s</b></div>' % (
+            html.escape(label), value)
+
+    round_rows = "".join(
+        '<div class=round><span>%s</span><b class="%s">%s</b></div>' % (
+            html.escape(round_dir.name),
+            "ok" if (round_dir / "checkpoint.json").is_file() else "hold",
+            "checkpoint closed" if (round_dir / "checkpoint.json").is_file() else "open",
+        ) for round_dir in reversed(state["round_dirs"])
+    ) or '<div class=empty>No calibration round has been allocated.</div>'
+
+    quality_gates = "".join(
+        '<div class=gate><b>%s</b><span>%s<div class=obs>%s</div></span>'
+        '<span class="%s">%s/%s observed</span></div>' %
+        (gid, html.escape(name), html.escape(str(note)),
+         "ok" if reported else "obs", seen, total)
+        for gid, name, seen, total, reported, note in state["gate_rows"]
+        if gid in {"G3", "G4", "G5", "G6"}
+    )
+
+    active_phase = PHASES[state["phase_i"]]
     return f"""<!doctype html><meta charset=utf-8>
 <title>🏷 Labeling · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <section id=work>
 <header><div><h1>🏷 Labeling · {html.escape(page_src.stem)}</h1>
-<div class=mut>canonical receipts above · Studio Chat below · chat is transport, not authority</div></div>
+<div class=statusline><span class="tag now">{active_phase[0]} · {active_phase[1]}</span>
+<span class=tag>👤 {html.escape(authority)}</span>
+<span class=tag>⚙ {len(run_tickets)} Runs</span>
+<span class="tag {'hold' if hard_hold else ''}">{'HOLD' if hard_hold else 'receipt-first'}</span></div></div>
 <div class="path mut">{html.escape(root_display)}/<br>{html.escape(state['location_note'])}</div></header>
-<div class=phase>{phase}</div>
-<div class=decision><div class=failed><b>First failed / blocked gate</b><br>{html.escape(state['first_failed'])}</div>
-<div class=next><b>One honest next action</b><br>{html.escape(state['next_action'])}</div></div>
-<div class=grid>
- <div class=box><h2>Gates · observed files are not certified passes</h2>{gates}</div>
- <div class=box><h2>Authority and artifacts</h2>
-  <p class="{hold_class}"><b>Human authority:</b> {html.escape(authority)}</p>
-  <p><b>Latest checkpoint:</b> {html.escape(state['latest_round'].name if state['latest_round'] else 'none')}</p>
-  <p><b>Reported Building gates:</b> {html.escape(', '.join(k + (' ✓' if v else ' ·') for k,v in state['gate_pass'].items()) or 'none')}</p>
-  <p><b>Inventory:</b> {html.escape(artifact)}</p>
-  <p class=mut>Protected item text, sealed ids, and per-item judgments are intentionally not rendered here.</p>
- </div>
+<nav class=spacebar role=tablist aria-label="Labeling workspaces">
+ <button class="space on" role=tab aria-selected=true data-space=workflow>🧭 Workflow</button>
+ <button class=space role=tab aria-selected=false data-space=data>🗃 Data</button>
+ <button class=space role=tab aria-selected=false data-space=guideline>📘 Guideline</button>
+ <button class=space role=tab aria-selected=false data-space=human>🧑 Human</button>
+ <button class=space role=tab aria-selected=false data-space=quality>🧪 Quality</button>
+</nav>
+<div id=spaces>
+ <section class="workspace on" data-workspace=workflow>
+  <div class=workspace-head><h2>🧭 Workflow Workspace</h2><span>P0–P5 are state, not navigation</span></div>
+  <div class=phase>{phase}</div>
+  <div class=decision><div class=failed><b>First failed / blocked gate</b><br>{html.escape(state['first_failed'])}</div>
+  <div class=next><b>One honest next action</b><br>{html.escape(state['next_action'])}</div></div>
+  <div class=grid>
+   <div class=box><h3>Gates · observed files are not certified passes</h3>{gates}</div>
+   <div class=box><h3>Authority and operation</h3>
+    <p class="{hold_class}"><b>Human authority:</b> {html.escape(authority)}</p>
+    <p><b>Latest checkpoint:</b> {html.escape(state['latest_round'].name if state['latest_round'] else 'none')}</p>
+    <p><b>Reported Building gates:</b> {html.escape(', '.join(k + (' ✓' if v else ' ·') for k,v in state['gate_pass'].items()) or 'none')}</p>
+    <p><b>Inventory:</b> {html.escape(artifact)}</p>
+    <p><b>Run envelopes:</b> {len(run_tickets)} Ticket(s) · {len(run_results)} Result folder(s)</p>
+   </div>
+  </div>
+ </section>
+
+ <section class=workspace data-workspace=data>
+  <div class=workspace-head><h2>🗃 Data Workspace</h2><span>corpus → embeddings → batches → audited D*</span></div>
+  <div class="grid four">
+   <div class=box><h3>Corpus snapshot</h3>
+    {metric('manifest.json', present((root / 'corpus' / 'manifest.json').is_file()))}
+    {metric('items.jsonl', present((root / 'corpus' / 'items.jsonl').is_file(), 'protected', 'not imported'))}
+   </div>
+   <div class=box><h3>Embeddings</h3>
+    {metric('versions', html.escape(str(len(embedding_versions))))}
+    <p class=mut>{html.escape(', '.join(embedding_versions[-3:]) or 'No embedding cache')}</p>
+   </div>
+   <div class=box><h3>Working batches</h3>
+    {metric('calibration rounds', html.escape(str(len(state['round_dirs']))))}
+    {metric('production episodes', html.escape(str(len(state['prod_runs']))))}
+   </div>
+   <div class=box><h3>Final corpus</h3>
+    {metric('D_star.jsonl', present(state['dstar'].is_file(), 'materialized'))}
+    {metric('manifest.yaml', present(state['dstar_manifest'].is_file(), 'observed'))}
+   </div>
+  </div>
+  <div class=guard>Protected item text, sealed ids, and private judgments never render in this general workspace.</div>
+ </section>
+
+ <section class=workspace data-workspace=guideline>
+  <div class=workspace-head><h2>📘 Guideline Workspace</h2><span>the current human meaning, its boundaries, and version lineage</span></div>
+  <div class=grid>
+   <div class=box><h3>Policy versions</h3>
+    {metric('versions', html.escape(str(len(policy_versions))))}
+    {metric('current closed candidate', html.escape(latest_policy.name if latest_policy else 'none'))}
+    {metric('components', html.escape(f'{policy_seen}/{len(policy_parts)} observed'))}
+   </div>
+   <div class=box><h3>Meaning and regions</h3>
+    {metric('meaning receipt', present(state['meaning_receipt_valid'], 'human-confirmed'))}
+    {metric('seven-region register', present((root / 'register.md').is_file()))}
+    {metric('cumulative gold view', present((root / 'gold' / 'cumulative.md').is_file()))}
+   </div>
+  </div>
+  <div class=grid style="margin-top:10px">
+   <div class=box><h3>Latest version components</h3>
+    <p class=mut>{html.escape(' · '.join(name for name in policy_parts if latest_policy and (latest_policy / name).is_file()) or 'No policy version is readable yet.')}</p>
+   </div>
+   <div class=box><h3>Crossing</h3>
+    {metric('Label Handoff', present(state['handoff'].is_file(), state['handoff_status'] or 'observed'))}
+    <p class=mut>Handoff binds the frozen guideline; Scanning never edits it.</p>
+   </div>
+  </div>
+ </section>
+
+ <section class=workspace data-workspace=human>
+  <div class=workspace-head><h2>🧑 Human Workspace</h2><span>the identified person’s bounded work, never model consensus</span></div>
+  <div class=grid>
+   <div class=box><h3>Authority</h3>
+    <p class="{hold_class}"><b>{html.escape(authority)}</b></p>
+    {metric('meaning confirmation', present(state['meaning_receipt_valid'], 'confirmed'))}
+    {metric('STOP signoff', present(state['stop_signoff'], 'reported by checkpoint'))}
+   </div>
+   <div class=box><h3>Current human work</h3>
+    <p>{html.escape(state['next_action'])}</p>
+    <p class=mut>A protected Judge surface may open only for a commissioned human-work Run with an end-to-end event writer.</p>
+   </div>
+  </div>
+  <div class=grid style="margin-top:10px">
+   <div class=box><h3>Round ledger</h3>{round_rows}</div>
+   <div class=box><h3>Human gold</h3>
+    {metric('cumulative.jsonl', present((root / 'gold' / 'cumulative.jsonl').is_file(), 'checkpoint-owned'))}
+    {metric('test human gold', present((root / 'test' / 'final' / 'human_gold.jsonl').is_file(), 'custodian-owned'))}
+    {metric('audit human gold', present(any((p / 'human_gold.jsonl').is_file() for p in state['audits']), 'audit-owned'))}
+   </div>
+  </div>
+  <div class=guard>Chat may explain or route this work. It cannot write first/final judgment, STOP, Freeze, or human gold.</div>
+ </section>
+
+ <section class=workspace data-workspace=quality>
+  <div class=workspace-head><h2>🧪 Quality Workspace</h2><span>sealed Test → executor qualification → Scan → independent Audit</span></div>
+  <div class="grid four">
+   <div class=box><h3>Sealed test</h3>
+    {metric('reservation', present((root / 'test' / 'sealed' / 'status.json').is_file()))}
+    {metric('T* lock', present((root / 'test' / 'final' / 'lock.json').is_file(), 'locked'))}
+   </div>
+   <div class=box><h3>Executors</h3>
+    {metric('registry', present((root / 'evaluation' / 'registry.yaml').is_file()))}
+    {metric('predictions', html.escape(str(prediction_count)))}
+    {metric('scorecards', html.escape(str(scorecard_count)))}
+   </div>
+   <div class=box><h3>Production scan</h3>
+    {metric('episodes', html.escape(str(len(state['prod_runs']))))}
+    {metric('latest report', present(bool(state['prod_runs']) and (state['prod_runs'][-1] / 'run_report.md').is_file()))}
+   </div>
+   <div class=box><h3>Final audit</h3>
+    {metric('audits', html.escape(str(len(state['audits']))))}
+    {metric('D*', present(state['dstar'].is_file(), 'candidate materialized'))}
+   </div>
+  </div>
+  <div class=box style="margin-top:10px"><h3>Scanning gates</h3>{quality_gates}</div>
+ </section>
 </div></section>
 <section id=studio-chat><iframe id=chat src="{html.escape(chat_url, quote=True)}"
  title="Studio Page Chat"></iframe></section>
 <script>(function(){{'use strict';
+ var key='labeling-workspace:{html.escape(page_src.stem, quote=True)}';
+ var buttons=Array.prototype.slice.call(document.querySelectorAll('.space'));
+ var workspaces=Array.prototype.slice.call(document.querySelectorAll('.workspace'));
+ function showSpace(name){{
+   if(!workspaces.some(function(w){{return w.dataset.workspace===name;}})) name='workflow';
+   buttons.forEach(function(b){{var on=b.dataset.space===name;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');}});
+   workspaces.forEach(function(w){{w.classList.toggle('on',w.dataset.workspace===name);}});
+   try{{localStorage.setItem(key,name);}}catch(e){{}}
+ }}
+ buttons.forEach(function(b){{b.addEventListener('click',function(){{showSpace(b.dataset.space);}});}});
+ try{{showSpace(localStorage.getItem(key)||'workflow');}}catch(e){{showSpace('workflow');}}
  /* The framed document is Studio's exact Page Chat.  Its composer asks its
     parent for the optional Draw controls, so relay those calls to the outer
     split shell when Labeling itself is the registry frame. */

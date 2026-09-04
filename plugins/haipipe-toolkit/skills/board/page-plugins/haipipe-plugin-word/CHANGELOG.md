@@ -1,3 +1,8 @@
+## 0.3.1 · 2026-09-03
+
+- Correct the direct CLI example to write under `delivery/word/`, matching
+  the runtime writer and the canonical folder contract.
+
 ## 0.3.0 · 2026-09-03
 
 - Make `delivery/word/` the only current writer destination; flat `word/`

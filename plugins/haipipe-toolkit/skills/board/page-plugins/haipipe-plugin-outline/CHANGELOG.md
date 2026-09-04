@@ -1,3 +1,75 @@
+## 0.34.0 · 2026-09-04
+
+- Replace the former Plan Context and Page Records top-level groups with one
+  Context Workspace containing Overview, Policy & Requirements, Related
+  Information, Feedback & Decisions, and Records.
+- Add generated `outline/<stem>-context.md` as the ninth process-record kind;
+  `haipipe-page-context` writes it and the Outline plugin presents it.
+- Make Context, Bullet, and Evidence the three peer workspaces shared by the
+  CONTEXT, OUTLINE, and EVIDENCE phases.
+- Remove PageX from the active Evidence Workspace and Evidence Item grammar;
+  keep its reference and lane read-only for migration only.
+- Preserve typed item names, Supporting/Local Run separation, detailed Run
+  popovers, and Paper-local `pjNNtNNrNN` addresses.
+
+## 0.33.6 · 2026-09-04
+
+- Expand compact Outline Run hover text with the actual Run filename,
+  repository-relative Run/Result/Runtime paths, availability status, and next
+  action; planned routes state that no Run has been allocated.
+
+## 0.33.5 · 2026-09-03
+
+- Mirror the Page's `SHAPE → SURVEY → LAND → EMBED` strip in the plan card.
+- Remove the premature Shape-versus-Content alarm from the planning surface;
+  structural conformance remains a phase-boundary check.
+
+## 0.33.4 · 2026-09-03
+
+- Rename the Evidence Items lens to Evidences and make its explanatory role explicit.
+- Add a Runs lens grouped by Evidence, with one card per Run mapping and both
+  mapping and unique-Run counts.
+
+## 0.33.3 · 2026-09-03
+
+- Give every Evidence Run popover a readable Purpose, or a Plan before
+  allocation, without creating a second stored description authority.
+- Separate path-derived Availability from the SURVEY Next action; replace the
+  mixed `new` / `rerun` / `run only` / `ready` chip scale with concise action
+  labels.
+
+## 0.33.0 · 2026-09-03
+
+- Separate Paper-local Run identity (`pjNNtNNrNN`) from typed Evidence labels
+  and global `bNNjNNtNNrNN` Supporting Runs.
+- Render a proposed Paper Run as `P jNN.tNN.rNN new`, preserving the full
+  J/T/R index without claiming that a Ticket exists.
+
+## 0.32.1 · 2026-09-03
+
+- Make current Outline ownership explicit in the VALUE and DISPLAY references;
+  Probe names remain legacy compatibility only.
+
+## 0.32.0 · 2026-09-03
+
+- Move the ranked Skills Page Record from sibling `skill/` to the explicit
+  Outline-owned lane `outline/skill/`.
+- Keep one store and one embedded editor; legacy sibling storage is read-only
+  migration input.
+
+## 0.31.0 · 2026-09-03
+
+- Turn Feedback into a calm review queue: compact tally and main Ask first,
+  requested change plus next Work visible per row.
+- Collapse Round order/gate/source and row provenance/routing; suppress the
+  generated instructional boilerplate from the live surface.
+
+## 0.30.0 · 2026-09-03
+
+- Add Skills to Page Records beside Files and Log.
+- Embed the sibling ranked Skill editor without copying its primary
+  `skill/<stem>.md` store into `outline/`.
+
 ## 0.29.0 · 2026-09-03
 
 - Reframe the Outline surface as `Bullet Workspace + Evidence Workspace`.

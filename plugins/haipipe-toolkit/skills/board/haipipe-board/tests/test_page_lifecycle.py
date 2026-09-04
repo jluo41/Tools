@@ -142,6 +142,57 @@ class PageLifecycleAuditTest(unittest.TestCase):
     def codes(self, value):
         return {finding.code for finding in audit_run(value)}
 
+    def test_current_full_page_route_closes(self):
+        value = run(
+            [
+                producer(1, "CONTEXT", "v0", "v1", "OUTLINE"),
+                producer(2, "OUTLINE", "v1", "v1", "EVIDENCE"),
+                producer(3, "EVIDENCE", "v1", "v2", "OUTLINE"),
+                producer(4, "OUTLINE", "v2", "v2", "CONTENT"),
+                producer(5, "CONTENT", "v2", "v3", "CHECK"),
+                check(6, "v3"),
+            ]
+        )
+        self.assertClean(value)
+        self.assertEqual(
+            [
+                "CONTEXT->OUTLINE", "OUTLINE->EVIDENCE", "EVIDENCE->OUTLINE",
+                "OUTLINE->CONTENT", "CONTENT->CHECK", "CHECK->CLOSE",
+            ],
+            traversed_edges(value["receipts"]),
+        )
+
+    def test_current_check_routes_to_each_owning_authority(self):
+        for target in ("CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT"):
+            with self.subTest(target=target):
+                receipts = [check(1, "v1", target)]
+                if target == "CONTEXT":
+                    receipts.extend([
+                        producer(2, "CONTEXT", "v1", "v1", "OUTLINE"),
+                        producer(3, "OUTLINE", "v1", "v1", "CONTENT"),
+                        producer(4, "CONTENT", "v1", "v2", "CHECK"),
+                        check(5, "v2"),
+                    ])
+                elif target == "OUTLINE":
+                    receipts.extend([
+                        producer(2, "OUTLINE", "v1", "v1", "CONTENT"),
+                        producer(3, "CONTENT", "v1", "v2", "CHECK"),
+                        check(4, "v2"),
+                    ])
+                elif target == "EVIDENCE":
+                    receipts.extend([
+                        producer(2, "EVIDENCE", "v1", "v1", "OUTLINE"),
+                        producer(3, "OUTLINE", "v1", "v1", "CONTENT"),
+                        producer(4, "CONTENT", "v1", "v2", "CHECK"),
+                        check(5, "v2"),
+                    ])
+                else:
+                    receipts.extend([
+                        producer(2, "CONTENT", "v1", "v2", "CHECK"),
+                        check(3, "v2"),
+                    ])
+                self.assertClean(run(receipts))
+
     def test_direct_draft_check_close(self):
         value = run(
             [
@@ -503,15 +554,15 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertEqual({k: set(v) for k, v in LEGAL_ROUTES.items()}, js)
 
     def test_workflow_separates_producer_and_reviewer_agents(self):
-        # One producer agent per phase since 260819 (probe's retired 260901);
+        # One producer agent per current producing phase;
         # the base agent is the dispatch FALLBACK, and the judge is never in
         # the producer map.
         self.assertIn("const PRODUCER_AGENTS = {", self.script)
         for agent_name in (
+            "haipipe-page-context-agent",
             "haipipe-page-outline-agent",
             "haipipe-page-evidence-agent",
-            "haipipe-page-draft-agent",
-            "haipipe-page-revise-agent",
+            "haipipe-page-content-agent",
         ):
             self.assertIn(agent_name, self.script)
         self.assertIn(

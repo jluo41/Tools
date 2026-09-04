@@ -1,3 +1,7 @@
+## 0.4.5 — 2026-09-03
+- Read the Page's ranked Skills boot context from `outline/skill/`, with the
+  former sibling `skill/` accepted only as migration input.
+
 ## 0.4.4 — 2026-08-31
 - Chat routing and traces now name canonical `evidence/probe/` and the grouped
   evidence lanes.

@@ -7,7 +7,7 @@ description: >-
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   folder inventory, /haipipe-plugin-folder.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   last_updated: "2026-09-02"
 ---
 # /haipipe-plugin-folder · the folder is the truth
@@ -26,7 +26,7 @@ A status has no artifact: written to disk it starts aging the moment it lands, a
 Only a DERIVED lane — `delivery/latex` `delivery/word` `outline/evidence/bibex`
 `delivery/slide` `outline/evidence/display` — can be ⚠️ STALE, and it is stale
 exactly when its newest file predates the page's `.md`.
-Source material (`studio/draw` `studio/chat` `meeting` `skill`) is often older
+Source material (`studio/draw` `studio/chat` `meeting` `outline/skill`) is often older
 than the prose and that is HEALTHY: it gets an age, never a warning.
 Widening the flag to source folders would train readers to ignore it, which is the one way a staleness signal dies.
 
@@ -40,8 +40,8 @@ It applies only to a FOLDED page (`<stem>/<stem>.md`); a flat page has no folder
 `GET /_board/folderstat?path=…&file=…` renders one row per material lane — icon
 · exact path · file count and weight · newest age · state (⚠️ STALE / ✅ fresh
 / source material) — plus a ⬜ not-present line for categories the folder lacks.
-`outline/` counts only the process files it directly owns; each existing
-`outline/evidence/<lane>/` is a separate row. Delivery likewise shows
+`outline/` counts only the process files it directly owns; `outline/skill/`
+and each existing `outline/evidence/<lane>/` are separate rows. Delivery likewise shows
 `delivery/latex/`, `delivery/word/`, `delivery/slide/`, and `delivery/render/`.
 No aggregate parent row recursively double-counts the files shown beneath it.
 A row is a door, not just a gauge (JL 260816): clicking it unfolds the folder in place, ▸ turning ▾, and every file is a link that opens the served file itself in a new browser tab, so the status view is also the folder's browser.

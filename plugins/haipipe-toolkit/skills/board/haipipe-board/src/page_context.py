@@ -14,18 +14,15 @@ from .common import ALIAS, PAGENAME
 from .parse import parse_dir
 
 
-# EVERY phase the lifecycle can dispatch, because haipipe-page-workflow SKILL.md
-# §🔁 step 1 requires a context packet before EACH phase dispatch and this module
-# could serve only four of the seven: `--phase OUTLINE` errored outright, and
-# `--phase PROBE` silently returned EVIDENCE's scope (fixed 260821).
-#
-# PROBE retired on 260901. Typed Evidence Items now plan Supporting Runs at
-# SURVEY and execute their support/local graph at LAND. PROBE remains an alias
-# of EVIDENCE for historical rows, on purpose:
-# a `· PROBE ·` row in template, snapshot or archive text selects EVIDENCE's
-# scope instead of silently matching nothing.
-PHASE_ALIASES = {"PROBE": "EVIDENCE"}
-PHASES = ("OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK")
+# Current Page phases. Legacy row tokens still parse into the authority that
+# owns them now, so an old Related Board Pages record remains useful.
+PHASE_ALIASES = {
+    "PROBE": "EVIDENCE",
+    "DRAFT": "CONTENT",
+    "REVISE": "CONTENT",
+    "COMPILE": "CONTENT",
+}
+PHASES = ("CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK")
 ROW_PHASES = PHASES + ("ALL",)
 READABLE_ROW_PHASES = ROW_PHASES + tuple(PHASE_ALIASES)
 RELATIONS = ("reads", "constrained by", "continues", "contrasts")

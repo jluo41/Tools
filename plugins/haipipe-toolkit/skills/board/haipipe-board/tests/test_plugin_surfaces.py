@@ -6,9 +6,11 @@ import unittest
 from pathlib import Path
 
 from live.export import ExportMixin
+from live.write import WriteMixin
 from live.plugview import _display_state, _probe_body_html
 from live.delivery import render as render_delivery
-from src.common import delivery_lane_dir, delivery_lane_dirs
+from src.common import (delivery_lane_dir, delivery_lane_dirs,
+                        outline_lane_dir, outline_lane_dirs)
 
 
 class PluginSurfaceTest(unittest.TestCase):
@@ -83,6 +85,38 @@ class PluginSurfaceTest(unittest.TestCase):
         self.assertEqual(out, page_home / "delivery" / "latex")
         self.assertTrue(out.is_dir())
 
+    def test_skill_writer_is_nested_while_sibling_lane_remains_readable(self):
+        page_home = self.root / "S-Test"
+        legacy = page_home / "skill"
+        legacy.mkdir(parents=True)
+        self.assertEqual(outline_lane_dir(page_home, "skill"),
+                         page_home / "outline" / "skill")
+        self.assertEqual(outline_lane_dirs(page_home, "skill"), [legacy])
+
+        canonical = page_home / "outline" / "skill"
+        canonical.mkdir(parents=True)
+        self.assertEqual(outline_lane_dirs(page_home, "skill"),
+                         [canonical, legacy])
+
+    def test_export_target_creates_canonical_skill_lane(self):
+        page_home = self.root / "S-Test"
+        page_home.mkdir()
+        page = page_home / "S-Test.md"
+        page.write_text("# Test\n", encoding="utf-8")
+        outer = self
+
+        class Fake(ExportMixin):
+            root = outer.root
+
+            def target(self, _payload):
+                return "S-Test/S-Test.md", outer.root
+
+        source, out, _board, err = Fake()._export_target({}, "skill")
+        self.assertIsNone(err)
+        self.assertEqual(source, page)
+        self.assertEqual(out, page_home / "outline" / "skill")
+        self.assertTrue(out.is_dir())
+
     def test_delivery_surface_links_only_nested_current_paths(self):
         page_home = self.root / "S-Test"
         page_home.mkdir()
@@ -94,6 +128,28 @@ class PluginSurfaceTest(unittest.TestCase):
         self.assertNotIn("savedUrl('latex'", body)
         self.assertNotIn("savedUrl('word'", body)
         self.assertNotIn("savedUrl('slide'", body)
+
+    def test_folded_page_discussion_writes_outline_thread_not_page_section(self):
+        board = self.root / "board"
+        board.mkdir()
+        (board / "board.md").write_text("# Board\n", encoding="utf-8")
+        page_home = board / "MAIN" / "S-Test"
+        outline = page_home / "outline"
+        outline.mkdir(parents=True)
+        page = page_home / "S-Test.md"
+        original = "# Test\n\n## Content\n\nOne paragraph.\n"
+        page.write_text(original, encoding="utf-8")
+
+        result, err = WriteMixin().add_discuss(
+            page, {"who": "JL", "text": "Should this stay in one workspace?"}
+        )
+
+        self.assertIsNone(err)
+        self.assertEqual(result["thread"], "D1")
+        self.assertEqual(page.read_text(encoding="utf-8"), original)
+        discussion = outline / "S-Test-discussion.md"
+        self.assertIn("### D1 · Should this stay in one workspace?",
+                      discussion.read_text(encoding="utf-8"))
 
 
 class WordTitleTest(unittest.TestCase):

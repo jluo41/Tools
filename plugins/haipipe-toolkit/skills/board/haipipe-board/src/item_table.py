@@ -1,9 +1,9 @@
 """Typed Evidence Items · read, derive, count.
 
 The authored ledger is ``outline/<stem>-evidence-items.md``. SHAPE specifies
-each ``E<NN>-<TYPE>-<slug>``; SURVEY plans zero-to-many Supporting Runs,
-zero-to-many exact PageX source bindings, and exactly one local Page Evidence
-Item Run; LAND validates and freezes those inputs before binding the local
+each ``E<NN>-<TYPE>-<slug>``; SURVEY plans zero-to-many Supporting Runs, one
+Local Input, and exactly one local Page Evidence Item Run; LAND validates and
+freezes those inputs before binding the local
 Result. This module is the single parser used by the generated evidence view
 and phase strip, so the UI cannot invent a second status contract.
 """
@@ -48,6 +48,7 @@ _LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
 _WALL_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,11}$")
 _EVIDENCE_RE = re.compile(rf"^\s*Evidence:\s*({_ITEM_ID})\s*·\s*(.+)$")
 _GLOBAL_RUN_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
+_PAPER_RUN_RE = re.compile(r"^[pP]\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
 _TASK_RE = re.compile(r"^b\d+\.?j\d+\.?t\d+(?:\.?r\d+)?$")
 _PARENT_TASK_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)$")
 _JOB_RE = re.compile(r"^b\d+(?:\.?j\d+(?:\.?t\d+(?:\.?r\d+)?)?)?$")
@@ -78,13 +79,24 @@ def readable_task(value: str) -> str:
     return "b%s.j%s.t%s" % match.groups()
 
 
-def readable_paper_route(value: str) -> str:
-    """Return a Paper-Board-local relative address for a global route.
+def compact_paper_run(value: str) -> str:
+    """Return the canonical Paper-local Run id, or ``\"\"`` when invalid."""
+    match = _PAPER_RUN_RE.fullmatch((value or "").strip())
+    if not match:
+        return ""
+    return "pj%st%sr%s" % match.groups()
 
-    One Paper Board is the local block. Its UI therefore shows the route below
-    that block (``jNN.tNN[.rNN]``), while the authored ledger retains the full
-    ``bNN...`` address for cross-folder lookup and migration safety.
+
+def readable_paper_route(value: str) -> str:
+    """Return a Paper-Board-local ``jNN.tNN.rNN`` address.
+
+    ``P`` is the fixed Paper block and owns its own namespace.  Legacy
+    ``bNN...`` values remain readable for migration only.
     """
+    paper = _PAPER_RUN_RE.fullmatch((value or "").strip())
+    if paper:
+        job, task, run = paper.groups()
+        return "j%s.t%s.r%s" % (job, task, run)
     full = _GLOBAL_RUN_RE.fullmatch((value or "").strip())
     if full:
         _block, job, task, run = full.groups()
@@ -375,6 +387,15 @@ def _valid_action_address(action: str, address: str) -> bool:
     return False
 
 
+def _valid_local_action_address(action: str, address: str) -> bool:
+    """Validate the distinct Paper-local namespace used by Local Runs."""
+    if action == "new-run":
+        return bool(compact_paper_run(address))
+    if action in ("reuse", "rerun", "registered"):
+        return bool(compact_paper_run(address) or compact_global_run(address))
+    return _valid_action_address(action, address)
+
+
 def _valid_supporting(value: str) -> tuple[bool, int]:
     if value == "[]":
         return True, 0
@@ -406,8 +427,8 @@ def _registered_supports(value: str, registry: dict[str, dict[str, str]]) -> boo
 
 
 def _valid_pagex(value: str) -> tuple[bool, int]:
-    """Validate exact cross-Folder source bindings; PageX is never a Run."""
-    if value == "[]":
+    """Validate a legacy PageX field only far enough to report migration input."""
+    if not value or value == "[]":
         return True, 0
     entries = [entry.strip() for entry in value.split(";") if entry.strip()]
     if not entries:
@@ -441,6 +462,7 @@ def read_items(page_md: Path) -> dict:
         if m:
             item_id, target, name = m.groups()
             cur = {k: "" for k in labels}
+            cur["_legacy_pagex_present"] = False
             cur.update({
                 "item": item_id,
                 "type": item_id.split("-", 2)[1],
@@ -456,6 +478,8 @@ def read_items(page_md: Path) -> dict:
             key = m.group(1).strip().lower()
             if key in labels:
                 cur[key] = m.group(2).strip()
+                if key == "pagex bindings":
+                    cur["_legacy_pagex_present"] = True
     registry = run_registry(str(repo_root(page_md.parent)))
     for row in rows.values():
         row["supporting_runs"] = row.pop("supporting runs")
@@ -467,7 +491,11 @@ def read_items(page_md: Path) -> dict:
         supports_valid, support_count = _valid_supporting(row["supporting_runs"])
         row.update({"support_count": support_count, "supports_valid": supports_valid})
         pagex_valid, pagex_count = _valid_pagex(row["pagex_bindings"])
-        row.update({"pagex_count": pagex_count, "pagex_valid": pagex_valid})
+        row.update({
+            "pagex_count": pagex_count,
+            "pagex_valid": pagex_valid,
+            "legacy_pagex": bool(row.pop("_legacy_pagex_present", False)),
+        })
         d = row["decide"].lower()
         row["decision"] = (
             "make" if "☑" in d and "make" in d else
@@ -481,13 +509,15 @@ def read_items(page_md: Path) -> dict:
             action in ("reuse", "rerun", "registered")
             and compact_global_run(address) in registry
         )
+        local_planned = action.startswith("new-") and _valid_local_action_address(
+            action, address
+        )
         row["runs_registered"] = _registered_supports(
             row["supporting_runs"], registry
-        ) and local_registered
+        ) and (local_registered or local_planned)
         row["planned"] = (
-            supports_valid and pagex_valid and bool(row["local_input"])
-            and (pagex_count == 0 or "pagex" in row["local_input"].lower())
-            and _valid_action_address(action, address) and row["runs_registered"]
+            supports_valid and not row["legacy_pagex"] and bool(row["local_input"])
+            and _valid_local_action_address(action, address) and row["runs_registered"]
         )
     return rows
 

@@ -21,8 +21,7 @@ naming the field rather than guessing it.
 
 ```text
 required:
-  operation:   create-page | revise-opening | outline | draft | probe |
-               evidence | revise | compile
+  operation:   create-page | revise-opening | context | outline | evidence | content
   path:        the exact file path to write, inside its group folder
   id:          the page id (QA3, S-Main-2, ...)
   title:       the short title, unique on this board
@@ -36,13 +35,12 @@ optional:
   owner:       defaults to JL for a decision, CC for a stage
   sources:     files this page must read and cite
   constraints: anything the human already ruled that the page must respect
-  run_id:      required for draft | probe | revise
-  round:       required for draft | revise
-  version:     required source:render identity for draft | revise
-  intent:      required run-level purpose for draft | revise
-  cycle:       required: SHAPE | SURVEY for outline · LAND | EMBED for evidence ·
-               WRITE for draft and revise
-  probe_path:  required for evidence when an outbound card needs a separate persisted surface
+  run_id:      required for context | outline | evidence | content
+  round:       required for outline | evidence | content
+  version:     required source:render identity for content
+  intent:      required run-level purpose for every Page workflow operation
+  cycle:       PREPARE for context · SHAPE | SURVEY for outline ·
+               LAND | EMBED for evidence · WRITE for content
   evidence_units: optional for evidence — the display units whose intake this
                phase must freeze, each `{unit, kind, source}`; the receipt
                returns the renderer that then owes the RENDER step
@@ -57,14 +55,16 @@ For `revise-opening`, the existing `path` is the source of truth. The packet
 must carry facts and scope, not a sentence formula. Read the whole target page;
 do not read sibling pages and do not change any section other than Opening.
 
-For `draft`, `probe`, and `revise`, `run_id`, `round`, `version`, and `intent`
+For `content`, `run_id`, `round`, `version`, and `intent`
 are required. Treat `sources` and `constraints` as the complete raw-material
 boundary. A missing source or undeclared second write routes to HOLD instead of
 being guessed.
 
 ## Procedure
 
-1. Load the page skill and read the canonical sources above. Do not skip the page spec; the
+1. Load the Page base, router, current phase, owning workflow, exact Page Type,
+   phase references/policy, any required Run workers, and finally the presenter,
+   in the canonical order in `haipipe-page-workflow`. Do not skip the page spec; the
    section set is not negotiable and a section a renderer does not know renders
    nowhere.
 2. For every operation except initial `create-page`, read the target Page from
@@ -79,12 +79,14 @@ being guessed.
 5. For `revise-opening`, draft from the page's actual subject and evidence.
    Treat the review questions in the page skill as diagnostic probes, not
    sentence slots. Replace only the Opening body.
-6. For `outline`, `draft`, `evidence`, `revise` or `compile`, perform
+6. For `context`, `outline`, `evidence`, or `content`, perform
    only the authority named by the loaded phase contract. Three of the six write
    somewhere OTHER than the page body, and writing into the body instead is the
    phase boundary being crossed rather than a stylistic choice:
 
    ```text
+   context   ─▶ <page>/outline/<stem>-context.md, generated. It points to
+                source authorities and writes no plan, evidence, or Page prose.
    outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
                 itself. Leave `approved:` UNTICKED: it is a person's.
    evidence  ─▶ outline/evidence/bibex/ entries, accepted local Evidence Item
@@ -101,8 +103,8 @@ being guessed.
    confirm nothing outside Opening changed. This check informs the return; it
    does not award a final pass.
 8. Write the target to the exact `path` given. During EVIDENCE you may also
-   create the declared `probe_path`, a `bibex/` entry landed verbatim from a
-   person, and per unit in `evidence_units` its `README.md`, `intake/`,
+   create a `bibex/` entry landed verbatim from a person, and per unit in
+   `evidence_units` its `README.md`, `intake/`,
    `recipe/`, `assets/` and `preview.pdf`: render, pick and build are
    EVIDENCE's since 260819 (the LAND cycle). Never tick `accepted:`, which stays CHECK's.
 9. Return the contract below. Do not rebuild, do not run the independent check,
@@ -126,9 +128,9 @@ being guessed.
 ```text
 actor:    <your own agent name, exactly as dispatched>
 status:   ok | blocked | failed
-operation: create-page | revise-opening | outline | draft | evidence | revise | compile
-phase:    OUTLINE | DRAFT | EVIDENCE | REVISE | COMPILE
-cycle:    SHAPE | SURVEY | LAND | EMBED | WRITE   (the pass inside the phase)
+operation: create-page | revise-opening | context | outline | evidence | content
+phase:    CONTEXT | OUTLINE | EVIDENCE | CONTENT
+cycle:    PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE
 path:     <the file written, or none>
 id:       <page id>
 title:    <title as written>
@@ -140,7 +142,9 @@ sources:
   read:   <files read and cited>
   unread: <files named in the packet that could not be read, or none>
 open:     <what this page leaves for the human to decide, or none>
-route:    OUTLINE | DRAFT | EVIDENCE | REVISE | COMPILE | CHECK | HOLD
+route:    CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK | HOLD
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE | CHECK
+            (the cycle inside `route`; omit only when routing to HOLD)
 reason:   <which phase authority was exercised and why this route follows>
 reopens_promise: true | false
 artifacts: JSON LIST of repo-relative paths, every file written, target
@@ -160,6 +164,10 @@ self_check:
 needs:    <what the caller must still do: register in board.md, rebuild, review>
 blocked:  <the missing field or unreadable input, when status is blocked>
 ```
+
+`route` always names a Page phase; `cycle` names the cycle just performed;
+`next_cycle` names the requested cycle inside the routed phase. Never place
+`SHAPE`, `SURVEY`, `LAND`, or `EMBED` in `route`.
 
 ⚠️ **Four of these fields are TYPED, and the auditor enforces the types.**
 `artifacts`, `evidence` and `findings` are JSON lists, never prose strings, and

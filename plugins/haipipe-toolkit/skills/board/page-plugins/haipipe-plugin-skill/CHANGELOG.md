@@ -1,3 +1,30 @@
+## 0.4.2 · 2026-09-03
+
+- Stop presenting a freshly seeded sequence as an already completed human
+  ranking: the header now says `drag to rank · refresh appends`.
+- Remove the misleading Page-log-derived `last moved` label from the Skills
+  surface; the plugin has no auditable rank-gesture timestamp.
+
+## 0.4.1 · 2026-09-03
+
+- Expand the seed index from the host `haipipe-toolkit/skills` tree to every
+  installed `Tools/plugins/*/skills` tree and plugin-level agent directory.
+- Preserve the existing modest scan law: only literal names written by the
+  Page are appended, and only a person may rank them.
+
+## 0.4.0 · 2026-09-03
+
+- Move the sole ranked Skills store and generated editor to
+  `outline/skill/<stem>{.md,-skill.html}`.
+- Keep the former sibling `skill/` readable only for migration; every writer
+  now lands in the canonical nested lane.
+
+## 0.3.0 · 2026-09-03
+
+- Move the ranked Skills surface into Outline → Page Records → Skills.
+- Keep `skill/<stem>.md` as the sole primary store and remove the duplicate
+  top-level Plugin picker row; compatibility writer and reader routes remain.
+
 ## 0.2.1 · 2026-08-16
 
 - **Agents joined the list (JL 260816)**: an `agents/<name>-agent.md` is a

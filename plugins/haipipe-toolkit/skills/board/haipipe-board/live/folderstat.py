@@ -44,11 +44,12 @@ ICON = {"draw": "🖌", "slide": "🎬", "chat": "💬", "latex": "📜",
 # their migration destination.
 CATEGORY = {"bibex": "outline/evidence", "display": "outline/evidence",
             "pagex": "outline/evidence", "materials": "outline/evidence",
+            "skill": "outline",
             "latex": "delivery", "word": "delivery", "slide": "delivery",
             "render": "delivery",
             "chat": "studio", "draw": "studio",
             "scripts": "code", "runs": "code", "results": "code"}
-DERIVED = {"latex", "word", "bibex", "slide", "display"}
+DERIVED = {"latex", "word", "bibex", "slide", "display", "render"}
 DERIVED_LABELS = {"outline/evidence/supporting-runs"}
 # STALE rows a click may cure IN PLACE (JL 260816: "could we update them
 # along the time?"): only the MECHANICAL writers — one POST, seconds, no
@@ -213,6 +214,9 @@ def folder_status(page_src):
         # material and avoids counting the same files twice.
         if d.name == "outline":
             rows.append(row_for(d, "outline", recursive=False))
+            skill = d / "skill"
+            if skill.is_dir() and not skill.is_symlink():
+                rows.append(row_for(skill, "outline/skill"))
             evidence = d / "evidence"
             if evidence.is_dir():
                 for lane in sorted(evidence.iterdir()):

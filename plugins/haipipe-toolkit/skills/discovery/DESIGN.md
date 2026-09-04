@@ -38,8 +38,9 @@ address is `bNNjNNtNNrNN`; `discoveries/` is a bank and contributes no segment.
 Page Face                              Task Face
 tNN_<task>.md                         discovery.yaml
 outline/                               scripts/ optional
-evidence/bibex/tNN_<task>.bib          runs/
-topic-level synthesis                  results/
+outline/evidence/bibex/tNN_<task>.bib  runs/
+(CITE lane owned by Outline)           results/
+topic-level synthesis                  runtime receipts
 ~~~
 
 Configuration is not a Folder kind. Each workflow phase configures the Face it
@@ -99,8 +100,10 @@ runtime.yaml
 ~~~
 
 PDF, raw extraction, and captured Trigger are optional. Result Card cite key
-and Bib key are identical. `haipipe-plugin-evidence` owns the deterministic
-derived union of complete Result Bibs; conflicts hard-fail.
+and Bib key are identical. `haipipe-plugin-outline/ref/evidence/citations.md`
+owns the deterministic derived union of complete Result Bibs; conflicts
+hard-fail. The nested `outline/evidence/supporting-runs/` lane is pointer-only
+lineage for Page Evidence Items, not a second Discovery Run inventory.
 
 ## Synthesis
 

@@ -8,8 +8,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-03"
+  version: "0.9.0"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
@@ -84,17 +84,20 @@ Plugin picker. A surface may use its own panel layout after opening, but that
 never creates a second top-level menu.
 A Plugin's OPERATING knowledge lives in its own skill under
 `page-plugins/haipipe-plugin-<name>/`. Internal lanes may instead live as
-references under their owning category skill; Citation/Bib, Value, Display,
-and PageX therefore live under `haipipe-plugin-outline/ref/evidence/` and do not mint
-four duplicate skills.
+references under their owning category skill; Citation/Bib, Value, and Display
+therefore live under `haipipe-plugin-outline/ref/evidence/` and do not mint
+duplicate skills. PageX is legacy migration input only.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
 ## 🗂 Category folders and the Runs door (260901)
 
 A unit folder has TWO PARTS. The UPPER, page part has one combined
-`outline/` authority: its surface is **Bullet Workspace + Evidence Workspace**,
-with Plan Context and Page Records as supporting record groups. Its storage is
+`outline/` authority: its surface is **Context Workspace + Bullet Workspace +
+Evidence Workspace**. Context Workspace merges the former Plan Context and
+Page Records presentation groups while their source files stay separate. Its
+Records lens combines Files, Log, and the ranked Skills record; Skills keeps its primary
+store in the nested `outline/skill/` lane and is only embedded by Outline. Its storage is
 the flat process records plus explicit nested `evidence/` lanes. It also has two
 presentation CATEGORY folders that group lanes without changing their grammar,
 writer or gate — `delivery/` (latex · word ·
@@ -130,13 +133,14 @@ writer, and the gate. It may be a separate Plugin, or an internal reference
 owned by its category.
 A CATEGORY plugin owns one SURFACE over a whole category. It may delegate a
 lane to another contract or own it directly: `haipipe-plugin-outline` owns
-Citation/Bib, Value, Display, and PageX inside its Evidence Workspace. A storage lane therefore does not require a duplicate
-Plugin or Skill. Outline now combines Bullet and Evidence workspaces; Delivery and Studio
+Citation/Bib, Value, and Display inside its Evidence Workspace. PageX remains
+read-only migration input. A storage lane therefore does not require a duplicate
+Plugin or Skill. Outline now combines Context, Bullet, and Evidence workspaces; Delivery and Studio
 remain category surfaces:
 
 ```text
-🧭 Outline   haipipe-plugin-outline    outline/ process + nested evidence
-                                       workspace; FIRST and the default tab
+🧭 Outline   haipipe-plugin-outline    Context + Bullet + Evidence over the
+                                       outline/ process; FIRST/default tab
 📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
                                        🎞 segment carries the deck's ✨ pen
 🎨 Studio    haipipe-plugin-studio     chat + draw AS ONE PAGE: the drawing
@@ -151,15 +155,16 @@ remain category surfaces:
 ```
 
 The reader-facing Plugin picker follows one fixed sequence:
-🧭 Outline · 🎨 Studio · ⚙️ Runs · 📤 Delivery · 📂 Folder · 🛠 Skill ·
-🏷 Labeling. Optional entries still keep their assigned place when applicable;
+🧭 Outline · 🎨 Studio · ⚙️ Runs · 📤 Delivery · 📂 Folder · 🏷 Labeling.
+Optional entries still keep their assigned place when applicable;
 an unassigned third-party entry follows these in stable registration order.
 On every source-backed Board Page, `⚙️ Runs` remains visible even when no local
 Run has been allocated; its truthful empty state says that no local Run exists
-and does not create empty `runs/` or `results/` folders. `🛠 Skill` and
-`🏷 Labeling` follow their own applicability rules. Neither Evidence nor Probe
-gets a top-level picker entry: Evidence is an internal Outline workspace and
-Probe is retired compatibility only.
+and does not create empty `runs/` or `results/` folders. `🏷 Labeling` follows
+its own applicability rules. Skill is an internal Outline → Context Workspace → Records
+surface backed by the nested `outline/skill/` store, so it has no duplicate top-level
+picker row. Neither Evidence nor Probe gets a top-level picker entry: Evidence
+is an internal Outline workspace and Probe is retired compatibility only.
 No lane sells its own strip row; the shell's
 old 💬, 🖌 and 🎞 rows folded 260831 (stored tab sets migrate on load). The
 260815 refusal of "full chat under the canvas" bound the DRAW tab; the

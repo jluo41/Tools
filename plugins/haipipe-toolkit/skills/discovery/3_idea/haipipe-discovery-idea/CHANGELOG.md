@@ -3,6 +3,11 @@ haipipe-discovery-idea — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.4.1] — 2026-09-03
+
+- Route the Idea citation aggregate through Outline's Evidence Workspace at
+  `outline/evidence/bibex/`.
+
 ## [0.4.0] — 2026-09-02
 
 - Own SYNTHESIZE for ideation/novelty Pages, route prior-work gaps back to

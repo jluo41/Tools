@@ -1,3 +1,18 @@
+## 0.3.1 · 2026-09-04
+
+- Make typed CITE creation conditional on an explicit approved Outline item;
+  the derived aggregate and direct Result/cite lineage do not manufacture one.
+- Align CLOSE with report reconciliation and the person-verification terminal
+  gate enforced by the Discovery checker.
+
+## 0.3.0 · 2026-09-03
+
+- Align the D1 Workflow Table with the current Page architecture: Outline owns
+  the Evidence Workspace and CITE/Bib projection; the standalone Evidence
+  plugin is compatibility-only.
+- Keep Discovery Paper/Source Runs as the only local `runs/` inventory and move
+  the derived Task Bib to `outline/evidence/bibex/`.
+
 ## 0.2.0 · 2026-09-02
 
 - Replace the thin Plan/Build/Execute/Report map with one canonical D1

@@ -6,9 +6,8 @@
  * one card per Content division, everything belonging to it inside, plus a
  * 🚦 lens that buckets every aim into ⬜ open and ✅ done.
  *
- * FIRST by explicit Plugin order. Outline and Folder remain twins —
- * 📂 shows what the page's FOLDER holds, 🧭 what its PROSE holds — and both
- * are live meta-surfaces with no subfolder and no roster row.
+ * FIRST by explicit Plugin order. Outline owns the Page's process folder and
+ * reads Bullet + Evidence together; 📂 Folder is the raw inventory twin.
  *
  * RULE-BASED, never authored (QPf12): the mapping is read from the material
  * (the `### A<n>` group grammar, then the `§N` anchor), so the URL is a LIVE
@@ -56,11 +55,13 @@
     var page = link.closest('section.slide.q')
             || (window.boardPlugins && window.boardPlugins.livePage());
     var focus = link.getAttribute('data-outline-focus') || '';
+    var run = link.getAttribute('data-outline-run') || '';
     var url = outlineUrl(page);
     if (!url) return;
     event.preventDefault();
     try {
       localStorage.setItem('board-outline-evidence-focus', focus);
+      localStorage.setItem('board-outline-evidence-run', run);
       localStorage.setItem('board-outline-lens', 'workspace');
     } catch (e) {}
     try {
@@ -69,7 +70,8 @@
         return;
       }
     } catch (e) {}
-    window.location.assign(url + '&lens=workspace&focus=' + encodeURIComponent(focus));
+    window.location.assign(url + '&lens=workspace&focus=' + encodeURIComponent(focus)
+                         + '&run=' + encodeURIComponent(run));
   });
 
   if (window.boardPlugins) {

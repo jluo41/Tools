@@ -3,13 +3,14 @@ name: haipipe-plugin-labeling
 description: >-
   The 🏷 Labeling lane and right-pane surface available beside any real Board
   Page: an optional page-local labeling/ holds the canonical subjective-label
-  job, the upper workbench derives P0-P5 and G0-G6 from receipts or shows the
-  empty P0 contract, and the lower half reuses Studio Chat as transport. Use
+  job, the upper half offers receipt-first Workflow, Data, Guideline, Human,
+  and Quality workspaces, and the persistent lower half reuses Studio Chat as
+  transport. Use
   when designing, opening, diagnosing, or implementing the labeling
   plugin/tab/folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-01"
+  version: "0.5.0"
+  last_updated: "2026-09-03"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -29,8 +30,13 @@ one page folder
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
 🏷 Labeling tab
-├── workbench                    P0-P5 · G0-G6 · authority · artifacts · next action
-└── Studio Chat                  discuss/run one routed action; transport, not gold
+├── upper Workspace stage
+│   ├── Workflow                 P0-P5 · G0-G6 · Runs · next action
+│   ├── Data                     corpus · embeddings · batches · D*
+│   ├── Guideline                meaning · regions · policy versions · handoff
+│   ├── Human                    authority · rounds · bounded human work · gold
+│   └── Quality                  sealed Test · executors · Scan · Audit
+└── persistent Studio Chat       always below; discuss/run one routed action
 ```
 
 ## 🧩 The four-part plugin contract
@@ -38,7 +44,7 @@ one page folder
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on every real Board Page; an absent job is an honest P0 empty state, while existing receipts drive the workbench above the Page's existing Chat |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on every real Board Page; an absent job is an honest P0 empty state, while existing receipts drive five switchable Workspaces above the Page's persistent existing Chat |
 | WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts |
 | BOUNDARY | Board discovery never enters `labeling/`; the surface never renders protected item text or sealed ids and never treats an observed file as a validated gate |
 
@@ -52,22 +58,34 @@ tab.
 
 ## 🖼 Surface law
 
-The workbench answers five questions without opening raw rows:
+The upper stage follows Outline's category pattern: one Plugin owns several
+stable, noun-named Workspaces. Phases are state, never navigation. Switching a
+Workspace hides but does not destroy the others, and the last selected
+Workspace is remembered per Page. The five Workspaces answer:
 
-1. Which P0-P5 authority artifact is the frontier?
-2. Which named G0-G6 assertion fails first?
-3. Who is the declared human semantic authority, and is the job simulation-only?
-4. Which round/checkpoint, handoff, evaluation, production, and audit artifacts exist?
-5. What is exactly one honest next action, human gate, or `HOLD`?
+1. **Workflow** — which P0-P5 authority artifact is the frontier, which G0-G6
+   assertion fails first, which Runs exist, and what is the one next action?
+2. **Data** — which corpus, embedding, calibration/production batches, and
+   audited D* artifacts exist?
+3. **Guideline** — what frozen or draft meaning, regions, policy components,
+   versions, and handoff exist?
+4. **Human** — who is the authority, which rounds and human-work operations
+   exist, and which human-gold artifacts are owned by their Keepers?
+5. **Quality** — what sealed-Test, executor, production-Scan, and final-Audit
+   evidence exists?
+
+These are projections over the one canonical `labeling/` tree, not five new
+`*-space/` storage folders. They render safe metadata and artifact state only.
 
 `GET /_board/labeling` re-reads disk on every open. It may say “observed” or
 “checkpoint reports pass”; only the CROSSING workflow may say a gate passes,
 after rehashing and checking its human receipt. `REPORT.md`, `.state.json`, and
 the Page's prose are useful views, never the source of the frontier.
 
-The lower half frames the exact same generated-Page `?pane=chat` document that
-Studio uses, including its composer, sessions, quick actions, settings, GUI/TUI
-handoff, and optional Draw controls. Labeling does not put a second header,
+The lower half is persistent while every upper Workspace changes. It frames the
+exact same generated-Page `?pane=chat` document that Studio uses, including its
+composer, sessions, quick actions, settings, GUI/TUI handoff, and optional Draw
+controls. Labeling does not put a second header,
 prefill bar, or Chat implementation around it. The Board-source `board.md` is
 only the source resolver and must never receive `?pane=chat`; the current
 generated `<page>.html` URL is carried separately and validated server-side.

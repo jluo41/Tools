@@ -17,8 +17,8 @@ remains is the communication core:
                            the store keeps exactly that order, nothing else
   ✕ is the removal         a removed name stays in the store as a tombstone
                            so a refresh can never re-seed it; ↩ restores
-  MIXED, like bibex        skill/<stem>.md is PRIMARY, the person's ranked
-                           list; the card view beside it is derived
+  MIXED, like bibex        outline/skill/<stem>.md is PRIMARY, the person's
+                           ranked list; the card view beside it is derived
 """
 import re
 from pathlib import Path
@@ -49,25 +49,52 @@ _STORE_HEAD = """# skill map · %s
 class SkillmapMixin:
 
     # ---- the skill index ---------------------------------------------
-    def _skill_index(self):
-        """name -> {dir, skillmd, agent?}, from every SKILL.md in the toolkit
-        tree PLUS every agent definition (JL 260816: "our Skill 其实也是包括
-        Agent 相关的" — the map lists agents beside skills). An agent row is
-        `agents/<name>-agent.md`: no SKILL.md folder, so its open door is
-        mdview and its icon 🤖. Archives and parked work are not offers."""
-        base = Path(__file__).resolve().parents[3]
+    @staticmethod
+    def _skill_roots(source=__file__):
+        """Return every installed plugin's canonical ``skills/`` root.
+
+        The Board implementation lives inside ``haipipe-toolkit``, but a Page
+        may cite a skill shipped by a sibling plugin such as
+        ``subjective-label``.  Falling back to the local toolkit root keeps
+        the module usable when it is copied outside the normal ``plugins/``
+        layout.
+        """
+        source = Path(source).resolve()
+        plugins = next((parent for parent in source.parents
+                        if parent.name == "plugins"), None)
+        if plugins is not None:
+            roots = sorted((plugin / "skills" for plugin in plugins.iterdir()
+                            if (plugin / "skills").is_dir()),
+                           key=lambda path: path.as_posix())
+            if roots:
+                return roots
+        return [source.parents[3]]
+
+    def _skill_index(self, roots=None):
+        """name -> {dir, skillmd, agent?}, across installed plugin skills.
+
+        Include every real SKILL.md plus agent definitions inside a skill tree
+        or at a plugin's top-level ``agents/`` directory (JL 260816: "our Skill
+        其实也是包括 Agent 相关的").  Archives and parked work are not offers.
+        """
+        roots = list(roots or self._skill_roots())
         out = {}
-        for f in base.rglob("SKILL.md"):
-            parts = f.relative_to(base).parts
-            if any(s.startswith("_") or s == "node_modules" for s in parts):
-                continue
-            name = f.parent.name
-            if "-" not in name:          # every real skill name carries one;
-                continue                 # bare words would match everywhere
-            out[name] = {"dir": f.parent, "skillmd": f}
-        for f in base.rglob("agents/*-agent.md"):
-            parts = f.relative_to(base).parts
-            if any(s.startswith("_") or s == "node_modules" for s in parts):
+        agent_files = set()
+        for base in roots:
+            for f in base.rglob("SKILL.md"):
+                parts = f.relative_to(base).parts
+                if any(s.startswith("_") or s == "node_modules" for s in parts):
+                    continue
+                name = f.parent.name
+                if "-" not in name:      # every real skill name carries one;
+                    continue             # bare words would match everywhere
+                out.setdefault(name, {"dir": f.parent, "skillmd": f})
+            agent_files.update(base.rglob("agents/*-agent.md"))
+            plugin_agents = base.parent / "agents"
+            if plugin_agents.is_dir():
+                agent_files.update(plugin_agents.glob("*-agent.md"))
+        for f in sorted(agent_files, key=lambda path: path.as_posix()):
+            if any(s.startswith("_") or s == "node_modules" for s in f.parts):
                 continue
             if f.stem not in out:        # a skill name always outranks
                 out[f.stem] = {"dir": f.parent, "skillmd": f, "agent": True}
@@ -101,8 +128,13 @@ class SkillmapMixin:
             return None, err
         store = out_dir / (page_src.stem + ".md")
         rows, order, legacy = {}, [], False
-        if store.is_file():
-            for line in store.read_text(encoding="utf-8").splitlines():
+        # Canonical wins.  A pre-migration sibling store is a read-only input;
+        # the next refresh/edit writes the same rows to outline/skill/.
+        legacy_store = page_src.parent / "skill" / (page_src.stem + ".md")
+        source_store = store if store.is_file() else legacy_store
+        migrated = source_store == legacy_store and legacy_store.is_file()
+        if source_store.is_file():
+            for line in source_store.read_text(encoding="utf-8").splitlines():
                 m = _ROW.match(line.strip())
                 if m and m.group("name") not in rows:
                     rel = m.group("rel")
@@ -114,7 +146,8 @@ class SkillmapMixin:
                     order.append(m.group("name"))
         return {"page": page_src, "dir": out_dir, "stem": page_src.stem,
                 "store": store, "rows": rows, "order": order,
-                "legacy": legacy, "ctx": self._canon_ctx(board, p)}, None
+                "legacy": legacy or migrated,
+                "ctx": self._canon_ctx(board, p)}, None
 
     def _skillmap_write(self, st):
         lines = [_STORE_HEAD % st["stem"]]
@@ -130,14 +163,19 @@ class SkillmapMixin:
 
     @staticmethod
     def _page_log_date(page_src):
-        """The page's newest Log stamp: Log keeps newest first, so the first
-        dated line under ## Log is the page's own 'last moved'."""
+        """The newest Page Record Log stamp, with legacy Page fallback."""
+        record = (page_src.parent / "outline" /
+                  (page_src.stem + "-log.md"))
+        if record.is_file():
+            text = record.read_text(encoding="utf-8", errors="replace")
+            dates = re.findall(r"(?m)^###\s+(\d{6})", text)
+            return max(dates) if dates else ""
         text = page_src.read_text(encoding="utf-8", errors="replace")
         m = re.search(r"(?ms)^## Log\s*\n(.*)", text)
         if not m:
             return ""
-        d = re.search(r"(?m)^-?\s*(\d{6})", m.group(1))
-        return d.group(1) if d else ""
+        dates = re.findall(r"(?m)^-?\s*(\d{6})", m.group(1))
+        return max(dates) if dates else ""
 
     # ---- POST /_board/skill · the refresh ----------------------------
     def skillmap_refresh(self, p):
@@ -219,7 +257,6 @@ class SkillmapMixin:
         Clicking a NAME navigates the SAME frame to that skill's full view,
         whose bar carries ← ☰ → back. One tab, two depths, no
         judgments."""
-        page_date = self._page_log_date(st["page"])
         shown = [n for n in st["order"] if not st["rows"][n]["removed"]]
         removed = [n for n in st["order"] if st["rows"][n]["removed"]]
         import urllib.parse as _up
@@ -278,12 +315,12 @@ class SkillmapMixin:
                  "<p class='mut'>no skills listed yet — ↻ refresh "
                  "seeds the names this page writes.</p>")
         head = ("<div class='bar'><b>\U0001f6e0 %s</b>"
-                "<span class='mut'>· %d skill%s · top = most "
-                "related · last moved %s</span><span class='sp'></span>"
+                "<span class='mut'>· %d skill%s · drag to rank · "
+                "refresh appends</span><span class='sp'></span>"
                 "<button id='refresh'>↻ refresh</button>"
                 "<a href='%s' download>⬇ store</a></div>"
                 % (_esc(st["stem"]), len(shown),
-                   "" if len(shown) == 1 else "s", _esc(page_date or "?"),
+                   "" if len(shown) == 1 else "s",
                    self._url_of(st["store"])))
         add = ("<details><summary><b>＋ add a skill</b></summary>"
                "<div style='padding:8px 0'>"

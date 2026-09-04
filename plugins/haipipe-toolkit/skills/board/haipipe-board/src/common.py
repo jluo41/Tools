@@ -9,6 +9,36 @@ from pathlib import Path
 EVIDENCE_LANES = frozenset({"bibex", "display", "pagex", "materials"})
 LEGACY_EVIDENCE_LANES = frozenset({"probe"})
 DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
+OUTLINE_LANES = frozenset({"skill"})
+
+
+def outline_lane_dirs(page_dir, lane):
+    """Existing Outline-owned lane directories, canonical first and deduped.
+
+    New Skill work lives under ``outline/skill/``.  The former sibling
+    ``skill/`` directory remains readable during migration, but readers never
+    let it outrank the canonical nested lane and writers never select it.
+    """
+    if lane not in OUTLINE_LANES:
+        raise ValueError("not an outline lane: %s" % lane)
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (page_dir / "outline" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def outline_lane_dir(page_dir, lane):
+    """The canonical destination for one Outline-owned lane."""
+    if lane not in OUTLINE_LANES:
+        raise ValueError("not an outline lane: %s" % lane)
+    return Path(page_dir) / "outline" / lane
 
 
 def evidence_lane_dirs(page_dir, lane):
@@ -349,7 +379,7 @@ def _in_plugin(p, d):
     page is a plugin (JL 260815: "each subfolder will also be the plugin in
     that page"), and discovery never enters one. Child pages keep nesting, so
     a lifecycle tree still works. A page file lying directly beside the page's
-    own md is a stray for the same reason. Without this rule a `skill/` plugin
+    own md is a stray for the same reason. Without this rule an `outline/skill/` lane
     holding a unit snapshot would surface as a ghost page, because
     `PAGENAME.match("SKILL.md")` is true."""
     parts = p.relative_to(d).parts

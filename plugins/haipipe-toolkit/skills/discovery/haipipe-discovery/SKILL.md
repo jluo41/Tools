@@ -12,8 +12,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-02"
+  version: "0.8.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -24,12 +24,13 @@ Folder is one research Topic with BOTH a Page Face and a Task Face. It never ref
 consumer upward; consumers link to its public Result Cards, typed records, or QA
 digests from their own side.
 
-For durable work, LOAD haipipe-folder and haipipe-page for the two Faces. Once
-the Task Page owns a Paper Run, LOAD `haipipe-run` for the neutral Level-4
-contract. Then LOAD `haipipe-plugin-runs` for its Run/Result surface. Then
-LOAD `haipipe-plugin-evidence` for citations, Bib aggregation, and the one
-Evidence surface. Then
-read only the relevant Discovery authorities:
+For durable work, LOAD haipipe-folder and haipipe-page for the two Faces. Load
+`haipipe-plugin-outline` for the Page's Outline + Evidence Workspace and its
+CITE-item/aggregate-Bib authority. Once the Task Page owns a Paper Run, LOAD `haipipe-run`
+for the neutral Level-4 contract. Then LOAD `haipipe-plugin-runs` for its
+read-only Run/Result surface. The old `haipipe-plugin-evidence` entry is a
+compatibility redirect only; do not treat it as a public plugin or citation
+owner. Then read only the relevant Discovery authorities:
 
 ~~~text
 ref/lifecycle-map.md           hierarchy × lifecycle × type
@@ -37,6 +38,10 @@ ref/page-types.md              Discovery article forms and Page/Run boundary
 ref/paper-run-contract.md      Level-4 Run/Result/Bib law
 ref/discovery-yaml-schema.md   Task manifest + typed records
 ref/source-format.md           human source presentation
+../board/page-plugins/haipipe-plugin-outline/ref/item-table.md
+                                typed Evidence Item and Run-lineage grammar
+../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
+                                CITE authority and derived Bib aggregation
 ~~~
 
 ## Verbs
@@ -68,6 +73,13 @@ ref/source-format.md           human source presentation
 /haipipe-discovery <specialist> [args]           one-off worker, no folder
 ~~~
 
+These are user-facing orchestration verbs, not a promise that every verb is a
+subcommand of `paper_runs.py`. The deterministic helper currently implements
+`check` and `build-bib`; the Discovery creator authors each Subject-specific
+ticket from `ref/paper-run-contract.md`, and the `run` verb executes that
+ticket. Worker diversity is receipt detail, not a reason to weaken the common
+Run/Result contract.
+
 ## Model
 
 `folder-kind: discovery` resolves to workflow phase D1 in
@@ -94,8 +106,10 @@ discoveries/
         └── t01_<task_noun>_<qualifier>/  Task = article-shaped Page Folder
             ├── t01_<task_noun>_<qualifier>.md
             ├── discovery.yaml
-            ├── outline/                           optional
-            ├── evidence/bibex/t01_<...>.bib       derived
+            ├── outline/                           Page process + Evidence Workspace
+            │   └── evidence/
+            │       └── bibex/t01_<...>.bib        derived CITE aggregate
+            ├── workflow/                          D1 phase receipts when a pass runs
             ├── scripts/                           optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
@@ -111,12 +125,13 @@ names are Block, Job, Task, and Run.
 Result is not a fifth hierarchy level. A Content division may use many Results,
 and one Result may support many divisions.
 
-The Runs plugin is required once a Task Page owns any Paper Run. Discovery uses its
-Folder-local dialect, the exact `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`
+The Runs plugin is required once a Task Page owns any Paper Run. Discovery uses
+its Folder-local dialect, the exact `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`
 pair; `scripts/` stays optional and appears only as supporting material. Runs
-presents these artifacts but does not own Discovery's
-D1 workflow. The Evidence plugin owns citation/Bib verification, aggregation,
-and presentation; there is no separate Bibex plugin.
+presents these artifacts but does not own Discovery's D1 workflow. The Outline
+plugin owns the Page's Evidence Workspace, CITE verification, and derived Bib;
+the compatibility Evidence entrypoint is not an authority, and there is no
+separate Bibex plugin.
 
 ## Load-bearing Level-4 laws
 
@@ -129,10 +144,15 @@ and presentation; there is no separate Bibex plugin.
    exactly-one-entry <RUNNAME>.bib whose key equals the Card's cite: @Key.
    Runtime must name the Bib source and `mode: verbatim_copy`. Metadata alone
    is not a supplied BibTeX entry and may not be formatted into one.
+   `complete` is technical Result completeness; citation verification may
+   still be `pending`, but then the Task cannot close as `ok` or
+   `inconclusive`.
 5. PDF, raw extraction, and captured Trigger text are optional.
 6. Internal API, CLI, worker, and skill calls are receipt detail, never Runs.
-7. The Task Page Evidence Bib is a deterministic union of completed Result Bibs.
-   It is derived; correction lands in the Result Bib first.
+7. The Task Page Evidence Bib is a deterministic union of completed Result Bibs
+   at `outline/evidence/bibex/<task>.bib`. It is derived; correction lands in
+   the Result Bib first. Every included Result records its person-verification
+   receipt in `runtime.yaml` under `bib.verification`.
 8. sources.md and notes.md are legacy/derived indexes, not authority for new
    per-paper work.
 9. Every runtime receipt stamps the full readable and compact BJTR address;
@@ -166,6 +186,17 @@ The root Page is always the human-facing article. `summary.md`, `verdict.md`,
 they never replace the Page or become Runs. Full grammar and legacy
 `type`/`role` normalization: `ref/page-types.md`.
 
+Page-local evidence follows the shared Page contract: use `outline/evidence/`,
+especially `outline/evidence/bibex/` and the generated Outline Evidence
+Workspace. Discovery Paper/Source Results remain in `results/` and are not
+copied into that workspace. The derived aggregate Bib is a projection, not by
+itself a typed CITE Evidence Item. Create a typed CITE item only when the
+approved Outline explicitly declares that item; then Outline records its
+Supporting Run pointer and any required local Page Evidence Item Run. Direct
+Result/cite lineage may otherwise support the Page without manufacturing an
+item. D1 still owns Topic synthesis and never mints an umbrella Run merely to
+repackage a paper.
+
 ## Routing
 
 1. Resolve `folder-kind: discovery` through `haipipe-discovery-workflow` D1;
@@ -198,9 +229,11 @@ but every new address must pass the explicit b/j/t/r naming gate.
 
 Resolve or allocate the next immutable `bNN_`, `jNN_`, and `tNN_` segments.
 Each name uses a concrete noun plus distinguishing qualifier. Scaffold the Task
-Page's two Faces and only the lanes the workflow needs. The Page filename equals
-the Task folder stem. Do not scaffold empty scripts/, runs/, or results/ merely
-for symmetry.
+Page's two Faces and only the lanes the workflow needs. The Page filename
+equals the Task folder stem. Scaffold the shared `outline/` process records as
+the Page is used; create `outline/evidence/` lanes only when the Evidence
+Workspace needs them. Do not scaffold empty scripts/, runs/, or results/
+merely for symmetry, and never create a root `<task>/evidence/` lane.
 
 A Block is a Board-level evidence program, not a wrapper around one Job. Reuse
 an existing Block whenever a new inquiry belongs to the same program. A
@@ -258,21 +291,29 @@ mint an umbrella Run for them.
 
 ### 7. CLOSE
 
-Run both deterministic gates:
+Build the derived projection, write the closing report, then run the final
+deterministic gate:
 
 ~~~bash
-python scripts/paper_runs.py check <task>
 python scripts/paper_runs.py build-bib <task> --write
+# append/reconcile discovery.yaml report: and Page/Aims state
+python scripts/paper_runs.py check <task>
 ~~~
 
 After SYNTHESIZE has produced the root Task Page and optional typed record,
-use the Evidence citation contract to validate the derived aggregate, append
-`discovery.yaml report:`, reconcile Page/Aims state, set the truthful terminal
-status, and append project log events. CLOSE cannot report `ok` when a
-material Run is unresolved, a load-bearing Aim is held, a promoted citation is
-not person-verified, or the checker fails. Missing work/gates report `blocked`;
+use `haipipe-plugin-outline/ref/evidence/citations.md` to validate the derived
+aggregate under `outline/evidence/bibex/`, append
+`discovery.yaml report:`, reconcile its Run counts and canonical `evidence_bib`
+path with the inventory, reconcile Page/Aims state, set the truthful terminal
+status, and append project log events. The checker reports Result-level
+citation-verification counts and rejects a legacy root `<task>/evidence/` lane.
+CLOSE cannot report `ok` when a material Run is unresolved, a load-bearing Aim
+is held, an aggregated complete Result citation is not person-verified in its
+runtime receipt, or the checker fails. If the Outline
+declares a typed CITE item, that item must independently pass the Outline CITE
+gate. Missing work/gates report `blocked`;
 `inconclusive` is reserved for completed admissible evidence with verified
-promoted citations that cannot establish the substantive answer.
+aggregated Result citations that cannot establish the substantive answer.
 
 ## Maintenance · migrate or repair a legacy bank
 

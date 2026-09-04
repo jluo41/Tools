@@ -6,8 +6,9 @@
  * this entry only names the saved view and the refresh door — the same
  * split the bibex entry holds.
  *
- * Registered with the `tab: {url, write}` spec (haipipe-plugin), so the
- * shell builds the 🛠 tab without being edited.
+ * The visible surface now lives at 🧭 Outline → Page Records → Skills. The
+ * server routes and generated ranked editor remain compatibility machinery;
+ * this asset intentionally registers no duplicate top-level tab.
  */
 (function () {
   'use strict';
@@ -20,8 +21,8 @@
     try { return boardPath(); } catch (e) { return location.pathname; }
   }
 
-  /* folded page -> <dir>/<stem>/skill/<stem>-skill.html; a flat page falls
-     back to the board-level skill/ home, the same fork every plugin takes. */
+  /* folded page -> <dir>/<stem>/outline/skill/<stem>-skill.html; a flat page
+     falls back to the board-level outline/skill/ home. */
   function savedUrl(page) {
     var f = pageFile(page);
     if (!f) return '';
@@ -30,9 +31,9 @@
     if (cut < 0) return '';
     var base = p.slice(0, cut);
     var m = f.match(/^(.*)\/([^\/]+)\/\2\.md$/);
-    if (m) return base + '/' + m[1] + '/' + m[2] + '/skill/' + m[2] + '-skill.html';
+    if (m) return base + '/' + m[1] + '/' + m[2] + '/outline/skill/' + m[2] + '-skill.html';
     var stem = (f.split('/').pop() || '').replace(/\.md$/, '');
-    return stem ? base + '/skill/' + stem + '-skill.html' : '';
+    return stem ? base + '/outline/skill/' + stem + '-skill.html' : '';
   }
 
   function write(page, cb, err) {
@@ -47,23 +48,5 @@
       .catch(function (e) { err && err(String(e)); });
   }
 
-  if (window.boardPlugins) {
-    window.boardPlugins.register({
-      id: 'skill',
-      label: '🛠 Skill',
-      hint: 'the skills related to this page, ranked by you',
-      menu: 'plugin',
-      order: 60,
-      applies: function (page) { return !!pageFile(page); },
-      open: function (page) {
-        write(page, function (j) {
-          if (j.url) window.open(j.url + '?embed', '_blank', 'noopener');
-        }, function (e) { alert('⚠ ' + e); });
-      },
-      tab: {
-        url: function (page) { return savedUrl(page); },
-        write: write
-      }
-    });
-  }
+  // No registry row: Outline embeds the generated view from savedUrl().
 })();

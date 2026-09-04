@@ -2,7 +2,7 @@
 plugin, and discovery never enters one.
 
 The rule this file pins down: `PAGENAME.match("SKILL.md")` is true, so without
-the boundary a `skill/` plugin holding a unit snapshot surfaces as a ghost
+the boundary an `outline/skill/` lane holding a unit snapshot surfaces as a ghost
 page. Child pages must keep nesting, because a lifecycle tree is pages inside
 pages.
 """
@@ -41,7 +41,7 @@ class PageFolderBoundary(unittest.TestCase):
     def test_plugin_content_is_never_a_page(self):
         touch(self.d, "QC/Skill-3-haipipe-page/Skill-3-haipipe-page.md")
         # the hazard this rule exists for: a snapshot whose name matches PAGENAME
-        touch(self.d, "QC/Skill-3-haipipe-page/skill/haipipe-page/SKILL.md")
+        touch(self.d, "QC/Skill-3-haipipe-page/outline/skill/haipipe-page/SKILL.md")
         # ordinary plugin material that happens to look page-shaped
         touch(self.d, "QC/Skill-3-haipipe-page/slide/source/QA4-deck.md")
         self.assertEqual(self.names(), ["Skill-3-haipipe-page.md"])

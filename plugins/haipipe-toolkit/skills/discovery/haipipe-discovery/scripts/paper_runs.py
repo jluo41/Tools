@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import tempfile
+import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -63,6 +64,16 @@ TASK_STATUSES = {
     "blocked",
 }
 REPORT_REQUIRED_TASK_STATUSES = {"reported", "ok", "inconclusive"}
+TERMINAL_TASK_STATUSES = {"ok", "inconclusive"}
+REPORT_COMMON_FIELDS = (
+    "outcome",
+    "summary",
+    "confidence",
+    "completed_runs",
+    "unresolved_runs",
+    "evidence_bib",
+)
+VERIFICATION_STATUSES = {"pending", "verified"}
 NON_ENTRY_TYPES = {"comment", "preamble", "string"}
 DISCOVERY_TYPES = {
     "source-map",
@@ -201,6 +212,38 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
         else {}
     )
     return runs, results
+
+
+def _bib_verification(runtime_text: str) -> tuple[str, str | None, str | None]:
+    """Return citation verification state; an absent receipt is pending."""
+    bib_block = _yaml_block(runtime_text, "bib")
+    if bib_block is None:
+        return "pending", None, None
+    verification = _yaml_block(textwrap.dedent(bib_block), "verification")
+    if verification is None:
+        return "pending", None, None
+    return (
+        _block_field(verification, "status") or "pending",
+        _block_field(verification, "by"),
+        _block_field(verification, "at"),
+    )
+
+
+def verification_counts(topic: Path) -> dict[str, int]:
+    """Count complete Results by citation-verification state."""
+    counts = {"pending": 0, "verified": 0, "invalid": 0}
+    runs, results = _pair_maps(topic)
+    for stem in sorted(runs.keys() & results.keys()):
+        runtime_path = results[stem] / "runtime.yaml"
+        if not runtime_path.is_file():
+            continue
+        status, _, runtime_text = _runtime(runtime_path)
+        if status != "complete":
+            continue
+        verification, _, _ = _bib_verification(runtime_text)
+        key = verification if verification in VERIFICATION_STATUSES else "invalid"
+        counts[key] += 1
+    return counts
 
 
 def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
@@ -384,9 +427,20 @@ def _manifest_errors(topic: Path) -> list[str]:
     elif not (topic / page).is_file():
         errors.append(f"page-missing: {topic / page}")
     else:
+        page_text = (topic / page).read_text(encoding="utf-8")
         errors.extend(
             _page_errors(topic / page, question=_yaml_block(text, "question") or "")
         )
+        page_state = re.search(r"(?m)^state:\s*(.+?)\s*$", page_text)
+        if task_status in TERMINAL_TASK_STATUSES and (
+            page_state is None or not page_state.group(1).startswith("✅")
+        ):
+            errors.append(
+                f"manifest-terminal-page-open: {manifest}: "
+                f"page_state={page_state.group(1)!r}"
+                if page_state
+                else f"manifest-terminal-page-open: {manifest}: page_state=None"
+            )
 
     canonical = _field(text, DISCOVERY_TYPE_RE)
     legacy_type = _field(text, LEGACY_TYPE_RE)
@@ -412,6 +466,65 @@ def _manifest_errors(topic: Path) -> list[str]:
         errors.append(
             f"manifest-discovery-type-conflict: {manifest}: "
             f"{canonical!r} != legacy {legacy!r}"
+        )
+    return errors
+
+
+def _report_errors(
+    topic: Path,
+    counts: dict[str, int],
+    verification: dict[str, int],
+) -> list[str]:
+    manifest = topic / "discovery.yaml"
+    if not manifest.is_file():
+        return []
+    text = manifest.read_text(encoding="utf-8")
+    task_status = _field(text, STATUS_RE)
+    report = _yaml_block(text, "report")
+    errors: list[str] = []
+    if report is None:
+        return errors
+
+    if task_status in TERMINAL_TASK_STATUSES:
+        for field in REPORT_COMMON_FIELDS:
+            if _block_field(report, field) is None:
+                errors.append(f"manifest-report-field-missing: {manifest}: {field}")
+
+    for field, expected in (
+        ("completed_runs", counts["complete"]),
+        ("unresolved_runs", counts["unresolved"]),
+    ):
+        raw = _block_field(report, field)
+        if raw is None:
+            continue
+        try:
+            actual = int(raw)
+        except ValueError:
+            errors.append(f"manifest-report-count-invalid: {manifest}: {field}={raw!r}")
+            continue
+        if actual != expected:
+            errors.append(
+                f"manifest-report-count-mismatch: {manifest}: "
+                f"{field}={actual} != {expected}"
+            )
+
+    evidence_bib = _block_field(report, "evidence_bib")
+    if evidence_bib is not None:
+        canonical_path = default_bib_path(topic)
+        canonical = canonical_path.relative_to(topic).as_posix()
+        if evidence_bib != canonical:
+            errors.append(
+                f"manifest-report-evidence-bib-invalid: {manifest}: "
+                f"{evidence_bib!r} != {canonical!r}"
+            )
+        elif not canonical_path.is_file():
+            errors.append(f"manifest-report-evidence-bib-missing: {canonical_path}")
+
+    pending = verification["pending"] + verification["invalid"]
+    if task_status in TERMINAL_TASK_STATUSES and pending:
+        errors.append(
+            f"manifest-terminal-with-unverified-citation: {manifest}: "
+            f"pending={pending}"
         )
     return errors
 
@@ -453,6 +566,11 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
     if not topic.is_dir():
         return [f"topic-missing: {topic}"], counts, complete_entries
 
+    if (topic / "evidence").exists():
+        errors.append(
+            f"legacy-root-evidence-forbidden: {topic / 'evidence'}: "
+            "use outline/evidence/"
+        )
     errors.extend(_manifest_errors(topic))
     topic_readable, topic_compact, _ = _topic_identity(topic)
 
@@ -539,6 +657,17 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
                 errors.append(
                     f"runtime-bib-mode-invalid: {runtime_path}: {mode!r}"
                 )
+        verification_status, verified_by, verified_at = _bib_verification(runtime_text)
+        if verification_status not in VERIFICATION_STATUSES:
+            errors.append(
+                f"runtime-bib-verification-status-invalid: {runtime_path}: "
+                f"{verification_status!r}"
+            )
+        elif verification_status == "verified":
+            if verified_by is None or not verified_by.startswith("person:"):
+                errors.append(f"runtime-bib-verifier-missing: {runtime_path}")
+            if verified_at is None:
+                errors.append(f"runtime-bib-verified-at-missing: {runtime_path}")
 
         card_path = result_dir / f"{stem}.md"
         facts_path = result_dir / "facts.md"
@@ -569,6 +698,7 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
             )
 
     errors.extend(_bib_conflicts(complete_entries))
+    errors.extend(_report_errors(topic, counts, verification_counts(topic)))
     return errors, counts, complete_entries
 
 
@@ -582,13 +712,14 @@ def aggregate_bib(entries: Iterable[BibEntry]) -> str:
 
 
 def default_bib_path(topic: Path) -> Path:
+    """Return the Outline-owned derived Discovery Bib path for ``topic``."""
     manifest = topic / "discovery.yaml"
     stem = topic.name
     if manifest.is_file():
         page = _field(manifest.read_text(encoding="utf-8"), PAGE_FIELD_RE)
         if page:
             stem = Path(page).stem
-    return topic / "evidence" / "bibex" / f"{stem}.bib"
+    return topic / "outline" / "evidence" / "bibex" / f"{stem}.bib"
 
 
 def atomic_write(path: Path, text: str) -> None:
@@ -609,23 +740,48 @@ def _print_summary(counts: dict[str, int]) -> None:
 def command_check(topic: Path) -> int:
     errors, counts, _ = check_topic(topic)
     _print_summary(counts)
+    verification = verification_counts(topic)
+    print(
+        "citation-verification: "
+        + " ".join(f"{key}={verification[key]}" for key in sorted(verification))
+    )
     if errors:
         for error in errors:
             print(f"ERROR {error}", file=sys.stderr)
         return 1
-    print("OK discovery-page-and-run contract")
+    pending = verification["pending"] + verification["invalid"]
+    if pending:
+        print(
+            "STRUCTURE_OK discovery-page-and-run contract · "
+            f"CLOSURE_HELD citation-verification={pending}"
+        )
+    else:
+        print("OK discovery-page-and-run contract")
     return 0
 
 
 def command_build_bib(topic: Path, output: Path | None, write: bool) -> int:
+    canonical = default_bib_path(topic.resolve())
+    if write and output is not None and output.resolve() != canonical.resolve():
+        print(
+            f"ERROR bib-output-noncanonical: {output}: expected {canonical}",
+            file=sys.stderr,
+        )
+        return 1
     errors, counts, entries = check_topic(topic)
+    if write:
+        errors = [
+            error
+            for error in errors
+            if not error.startswith("manifest-report-evidence-bib-missing:")
+        ]
     _print_summary(counts)
     if errors:
         for error in errors:
             print(f"ERROR {error}", file=sys.stderr)
         return 1
     text = aggregate_bib(entries)
-    output_path = output or default_bib_path(topic)
+    output_path = output or canonical
     if write:
         atomic_write(output_path, text)
         print(f"WROTE {output_path} entries={len(parse_aggregate(text))}")

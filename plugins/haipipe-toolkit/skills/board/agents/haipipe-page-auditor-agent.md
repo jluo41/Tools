@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-auditor-agent
-description: "PACKET BUILDER and RECEIPT KEEPER for one Board Page RUN, and NOT its dispatcher: a subagent is not handed the Workflow tool, so the MAIN session invokes the bounded non-linear Page lifecycle Workflow. This agent validates the raw-material packet before the run, stores the exact Workflow result under the Board's _runs/page/ tree after it, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, loop DRAFT EVIDENCE REVISE CHECK."
+description: "PACKET BUILDER and RECEIPT KEEPER for one Board Page RUN, and NOT its dispatcher: a subagent is not handed the Workflow tool, so the MAIN session invokes the bounded non-linear Page lifecycle Workflow. This agent validates the raw-material packet before the run, stores the exact Workflow result under the Board's _runs/page/ tree after it, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, CONTEXT OUTLINE EVIDENCE CONTENT CHECK."
 tools:
   - Read
   - Write
@@ -11,8 +11,8 @@ tools:
   - Workflow
 model: inherit
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-18"
+  version: "0.4.0"
+  last_updated: "2026-09-04"
   summary: "Demoted from dispatcher to packet builder and receipt keeper: dispatched for the first time on 260818 and found it is handed no Workflow tool."
   changelog: "./CHANGELOG.md"
 ---
@@ -53,11 +53,10 @@ So the RUN is invoked by the MAIN session, which has the tool. This agent runs
 BEFORE it (validate the packet) and AFTER it (store the receipt, audit it).
 
 The Workflow dispatches one producer per phase from its `PRODUCER_AGENTS` map
-(`haipipe-board/ref/page-lifecycle.workflow.js`): `haipipe-page-outline-agent`,
-`haipipe-page-probe-agent`, `haipipe-page-evidence-agent`,
-`haipipe-page-draft-agent`, and `haipipe-page-revise-agent`, which also handles
-COMPILE; `haipipe-page-creator-agent` is the fallback for a phase the map does
-not name. A mechanical snapshot worker builds each version, and
+(`haipipe-board/ref/page-lifecycle.workflow.js`): `haipipe-page-context-agent`,
+`haipipe-page-outline-agent`, `haipipe-page-evidence-agent`, and
+`haipipe-page-content-agent`; `haipipe-page-creator-agent` is the fallback for
+a phase the map does not name. A mechanical snapshot worker builds each version, and
 `haipipe-page-check-agent` judges CHECK. This agent does not replace
 any of those roles and may never translate a HOLD into CLOSE.
 

@@ -2,7 +2,7 @@
 
 `RUN` is the bounded router for one persistent Page. It does not mean
 `ADVANCE`: Page work is non-linear, so the next authority may repeat, branch,
-return to DRAFT in a new round, close, or hold.
+return to CONTEXT, OUTLINE, EVIDENCE, or CONTENT, close, or hold.
 
 The executable controller lives in
 `../../../haipipe-board/ref/page-lifecycle.workflow.js`. The deterministic auditor
@@ -17,10 +17,9 @@ The caller supplies facts and authority, not a proposed paragraph formula.
 run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
 page: /absolute/path/to/QB5-page-loop.md
-start_phase: CHECK             # OUTLINE | DRAFT | EVIDENCE | REVISE | CHECK;
-                               # COMPILE parses for legacy receipts only (folded
-                               # into REVISE 260819); PROBE parses as EVIDENCE
-                               # for receipts older than 260901
+start_phase: CHECK             # CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK
+                               # PROBE → EVIDENCE and DRAFT/REVISE/COMPILE →
+                               # CONTENT when reading historical inputs
 intent: audit and improve the automatic Page loop
 mode: copilot                  # copilot (default) | auto — see § below
 sources:                       # exact files the run may rely on
@@ -104,8 +103,8 @@ controller rematerializes context for the new phase rather than reusing CHECK's
 packet.
 
 For a new Page, CREATE scaffolds and registers the persistent Page first; RUN
-then begins at OUTLINE (the SHAPE cycle), the head of the loop since 260817. Beginning at DRAFT was correct only while DRAFT owned the outline. For an existing Page whose next need is unknown, RUN
-begins at CHECK so a fresh judge routes the visible version.
+then begins at CONTEXT/PREPARE. For an existing Page whose next need is
+unknown, RUN begins at CHECK so a fresh judge routes the visible version.
 
 ## Phase receipt
 
@@ -117,6 +116,7 @@ shape and preserves all receipts in order:
   "step": 4,
   "round": 1,
   "phase": "CHECK",
+  "cycle": "CHECK",
   "actor": "haipipe-page-check-agent",
   "role": "judge",
   "builder_actor": "fresh-page-builder",
@@ -129,8 +129,9 @@ shape and preserves all receipts in order:
   "mechanical_errors": 0,
   "mechanical_warnings": 0,
   "verdict": "revise",
-  "route": "REVISE",
-  "requested_route": "REVISE",
+  "route": "CONTENT",
+  "next_cycle": "WRITE",
+  "requested_route": "CONTENT",
   "reopens_promise": false,
   "reason": "A3.1 lacks visible evidence",
   "artifacts": [],
@@ -166,15 +167,10 @@ snapshot. Every receipt's `version_before` must equal the preceding receipt's
 `checked_version` are identical. Any content edit creates a new version that
 must be checked again.
 
-`reason` names the authority exercised, not merely the file operation. A route
-to DRAFT from REVISE or CHECK is legal ONLY as a reopen (EVIDENCE lost its DRAFT
-edge on 260819: it routes back to OUTLINE, and the plan's gate is the one door
-into DRAFT): the receipt
-names the reopened purpose or Aim, sets `reopens_promise: true`, and increments
-the round, which is the same "only when purpose or an Aim reopened" rule the
-base and QB5 (the loop page, QB9 until 260805) state; a cross-phase route to DRAFT that reopens nothing is an
-illegal route, not a free visit. Repeated DRAFT within the same unsettled
-promise does not increment.
+`reason` names the authority exercised, not merely the file operation. Current
+receipts keep `reopens_promise: false`: the former DRAFT/REVISE round split is
+now internal to CONTENT/WRITE. The field and its old invariants remain in the
+auditor only for immutable historical receipts.
 
 ## Receipt step, field by field
 
@@ -187,17 +183,18 @@ field                 the auditor's rule                           finding code
 ────────────────────────────────────────────────────────────────────────────────
 step                  exactly its 1-based position in receipts:    step-sequence
                       1, 2, 3 … no gap, no reuse
-round                 first receipt: a positive integer; after     round-start ·
-                      that, +1 ONLY when the previous receipt      round-sequence ·
-                      routed DRAFT from a phase other than         max-rounds-exceeded
-                      DRAFT/OUTLINE with reopens_promise true,
-                      else unchanged; never above
-                      limits.max_rounds
-phase                 one of OUTLINE DRAFT EVIDENCE REVISE         unknown-phase ·
-                      COMPILE CHECK (PROBE reads as EVIDENCE in     route-phase-mismatch ·
-                      pre-260901 receipts); must equal the
+round                 first receipt: a positive integer; current   round-start ·
+                      runs normally keep it fixed. Historical      round-sequence ·
+                      reopen receipts retain their old +1 rule;    max-rounds-exceeded
+                      never above limits.max_rounds
+phase                 current: CONTEXT OUTLINE EVIDENCE CONTENT    unknown-phase ·
+                      CHECK; historical DRAFT REVISE COMPILE and   route-phase-mismatch ·
+                      PROBE remain readable; must equal the
                       previous receipt's route; nothing may        receipt-after-terminal
                       follow a CLOSE or HOLD receipt
+cycle / next_cycle    cycle names the work performed; route names  controller rejects a
+                      the next Page phase; next_cycle names the     missing or mismatched
+                      cycle inside that phase. CLOSE/HOLD omit it   next cycle before storage
 route                 in LEGAL_ROUTES[phase]; only CHECK may       illegal-route ·
                       CLOSE; the final receipt must route          producer-closed ·
                       CLOSE or HOLD                                trace-not-terminal
@@ -231,9 +228,8 @@ human_gate            a dict whose `required` equals the           human-gate-co
                       packet's on EVERY step; CLOSE under a        human-gate-fabricated
                       required gate needs status=passed and
                       non-empty evidence
-reopens_promise       true requires route=DRAFT; a non-DRAFT,      reopen-without-draft ·
-                      non-OUTLINE phase routing to DRAFT           draft-without-reopen
-                      requires it true
+reopens_promise       current receipts use false; true is valid    reopen-without-draft ·
+                      only under the historical DRAFT grammar      draft-without-reopen
 ```
 
 Run-level, from the same auditor: the packet must be present with `run_id`,
@@ -253,14 +249,14 @@ route is CLOSE (`status-route-mismatch`).
 ## Legal routes
 
 ```text
-from OUTLINE  → OUTLINE | EVIDENCE | DRAFT | HOLD        (SHAPE ⇄ SURVEY, then LAND, or the DRAFT part)
-from EVIDENCE → EVIDENCE | OUTLINE | HOLD                (LAND → EMBED → back to SHAPE)
-from DRAFT    → DRAFT | OUTLINE | REVISE | CHECK | HOLD  (a claim without a run → SURVEY)
-from REVISE   → REVISE | COMPILE† | OUTLINE | EVIDENCE | DRAFT | CHECK | HOLD
-from COMPILE† → COMPILE† | CHECK | REVISE | HOLD
-from CHECK    → CLOSE | OUTLINE | EVIDENCE | DRAFT | REVISE | HOLD
+from CONTEXT  → CONTEXT | OUTLINE | HOLD
+from OUTLINE  → CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+from EVIDENCE → CONTEXT | EVIDENCE | OUTLINE | HOLD
+from CONTENT  → CONTEXT | CONTENT | OUTLINE | EVIDENCE | CHECK | HOLD
+from CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+```
 
-**The OUTLINE-part pause (260819, renamed 260901).** A `HOLD` from OUTLINE or EVIDENCE while
+**The planning/evidence pause.** A `HOLD` from CONTEXT, OUTLINE, or EVIDENCE while
 the packet's human gate is required and the step's own gate is still open
 (`status: pending`) is a PAUSE between passes of one converging round, not a
 terminal: the next receipt's phase must be legal FROM the paused phase, and
@@ -270,18 +266,20 @@ appends one receipt per pass, a packet's `max_steps` must be declared with the
 loop in mind: it bounds the passes a run may spend, so `1` fits only a
 single-pass errand, never an OUTLINE-part round.
 
-† COMPILE edges are for legacy receipts only (folded into REVISE 260819).
-  The rows stay, in this table and in the auditor's `LEGAL_ROUTES`, because
-  removing them would make a stored receipt naming COMPILE unauditable.
+Compatibility rows for DRAFT, REVISE, and COMPILE remain in the executable
+`LEGAL` table and auditor only because removing them would make stored receipts
+unauditable. They are not current routes and are not offered by the controller.
 
 `PROBE` retired on 260901: its MATCH half is OUTLINE's SURVEY cycle (the item
 table's Run column), its dispatch half is EVIDENCE's LAND cycle (a card only
 when a question leaves the page). A stored receipt naming PROBE reads as
 EVIDENCE through the auditor's alias, so every pre-260901 run stays auditable.
-A producer's receipt carries `cycle:` beside `phase:` since 260901.
-```
+A current producer's receipt carries `cycle:` beside `phase:` and
+`next_cycle:` beside a nonterminal Page-phase `route:`. The controller rejects
+`route: SHAPE` or `route: LAND`: those are cycles, not Page phases. Historical
+receipts predating the split remain readable without `next_cycle`.
 
-Only CHECK may CLOSE. CLOSE is a route, not a fifth Page Phase. HOLD is also a
+Only CHECK may CLOSE. CLOSE is a route, not a sixth Page Phase. HOLD is also a
 terminal route: it preserves a named unresolved gate, missing input, tool
 failure, concurrency mismatch, or exhausted limit without pretending quality
 was achieved.
@@ -290,9 +288,8 @@ was achieved.
 
 ```text
 controller   chooses and records the next legal route; edits no Page prose
-  producer     one agent per phase since 260819 (haipipe-page-<phase>-agent,
-               COMPILE handled by the REVISE agent); performs exactly one phase;
-               may not approve its own version
+producer     one agent for CONTEXT, OUTLINE, EVIDENCE, or CONTENT; performs
+             exactly one phase and may not approve its own version
 builder      rebuilds, runs mechanical checks, and identifies the version
 judge        performs CHECK read-only against that exact version
 human        supplies any ruling required by the Page Type or local contract
@@ -305,17 +302,14 @@ stop into CLOSE.
 
 ## Effort tier per phase
 
-The dispatch runs each phase at the effort its question deserves, measured on
-QPw00's first full loop (260819-20): DRAFT at the session tier spent 77% of
-114k output tokens on thinking while executing an already-approved plan.
+The dispatch runs each phase at the effort its question deserves. Historical
+measurements motivated folding the old writing phases into one CONTENT pass.
 
 ```text
-OUTLINE · CHECK                 inherit the session tier: synthesis and the
-                                verdict are where the hard judgment lives
-EVIDENCE · DRAFT ·              'high', one tier down: they execute a plan a
-REVISE · COMPILE                person already approved, and their own exit
-                                checks (four checks, mechanical checker,
-                                receipt continuity) catch a shallow pass
+CONTEXT · OUTLINE · CHECK       inherit the session tier: policy resolution,
+                                synthesis, and verdict carry the hard judgment
+EVIDENCE · CONTENT              'high': they execute an approved plan and their
+                                own exit checks catch a shallow pass
 ```
 
 The controller sets this in the Workflow dispatch (`PHASE_EFFORT` in
@@ -323,25 +317,21 @@ page-lifecycle.workflow.js); a phase absent from the map inherits. A caller
 may override for one run by saying so in the packet, and the receipt's actor
 line is unaffected either way.
 
-## The fused DRAFT+REVISE pass · the WRITE cycle
+## CONTENT · the WRITE cycle
 
-When DRAFT is entered with the promise UNCHANGED — through the boundary after
-the OUTLINE part, or re-entered without `reopens_promise` — the controller dispatches
-ONE producer that performs DRAFT and then continues into REVISE (COMPILE
-folded in) in the same context: this is the WRITE cycle. Measured on QPw00 (260819-20), the separate
-REVISE boot re-loaded the same contracts and re-read the same page for about 50k
-tokens that bought no independence: DRAFT and REVISE are both unattended, both
-producers, and CHECK judges them cold either way.
+CONTENT is one lifecycle phase. Its internal movements are Draft, Revise,
+Build, and Pre-check. Those movements are not independent lifecycle phases and
+do not create extra L4 Run identities. A normal commission creates one
+`Page · Division Writing` Run per division and promotes its accepted Result
+into Page Content before CHECK judges the whole built Page.
 
 ```text
-fused     one agent · one context · TWO receipt steps in the run file
-          (DRAFT, then REVISE with version_before = DRAFT's version_after)
-          typed return: phase DRAFT, requested route CHECK
-not fused a DRAFT that reopens the promise runs alone, because its REVISE
-          must meet the changed promise in a fresh context
-unchanged the walls (Opening, outline/, outline/evidence/display/,
-          outline/evidence/bibex/, runs/, results/), the
-          builder/judge separation, and every human tick
+L3 phase receipt       one CONTENT receipt per lifecycle pass
+L4 writing work        one indexed Run per commissioned division
+internal movements     Draft → Revise → Build → Pre-check
+backward routes        CONTEXT for stale policy; OUTLINE for wrong plan;
+                       EVIDENCE for missing/invalid Result
+forward route          CHECK only after all commissioned Results are promoted
 ```
 
 ## Durable audit bundle
@@ -400,7 +390,7 @@ ERROR page-path-stale            records <abs>/QS-sentence/…; resolves uniquel
                                  to 6-QS-sentence/…. Audited against that.
 ERROR artifact-version-mismatch  current identity differs from final_version
 FAIL  page-lifecycle: 2 finding(s)
-      edges=CHECK->REVISE,REVISE->CHECK,CHECK->REVISE,REVISE->CHECK,CHECK->CLOSE
+      historical edges=CHECK->REVISE->CHECK->REVISE->CHECK->CLOSE
 ```
 
 The second finding is the one the first was hiding: the page has been edited
@@ -437,10 +427,10 @@ measured 260818 after the fix      board 4 errors, ALL foreign
 ```
 
 Do not append a CHECK result to the Folder's outline log after approval: that
-would change the just-checked version. OUTLINE owns its versioned plan; DRAFT,
-EVIDENCE, and REVISE may update `outline/<stem>-log.md` as part of the version
-they produce; EVIDENCE owns allocated Run ids and local Result pointers in
-`outline/<stem>-evidence-items.md`; COMPILE owns only derived build outputs.
+would change the just-checked version. CONTEXT owns the generated context
+projection; OUTLINE owns its versioned plan and route design; EVIDENCE owns
+allocated Run ids, local Result pointers, and embedded evidence bindings;
+CONTENT owns Page prose and declared delivery outputs.
 Terminal CHECK evidence stays in the audit bundle or the Page Type's declared
 review surface.
 
@@ -468,11 +458,11 @@ the gate and its evidence.
 The shipped harness must exercise at least these cases:
 
 ```text
-  happy paths     OUTLINE→EVIDENCE→OUTLINE→DRAFT→REVISE→CHECK→CLOSE
-                  OUTLINE→DRAFT→CHECK→CLOSE
-  legal loops     OUTLINE→EVIDENCE→OUTLINE (the OUTLINE part);
-                  CHECK→REVISE→CHECK; CHECK→EVIDENCE;
-                  CHECK→OUTLINE; CHECK→DRAFT(new round)
+happy paths     CONTEXT→OUTLINE→CONTENT→CHECK→CLOSE
+                CONTEXT→OUTLINE→EVIDENCE→OUTLINE→CONTENT→CHECK→CLOSE
+legal loops     OUTLINE→EVIDENCE→OUTLINE; CONTENT→CONTENT;
+                CHECK→CONTEXT; CHECK→OUTLINE; CHECK→EVIDENCE; CHECK→CONTENT
+compatibility   stored PROBE/DRAFT/REVISE/COMPILE receipt trails remain auditable
 faults          producer=self-judge; version changed after CHECK; illegal route
 gates           required human approval absent; explicit HOLD
 bounds          max steps reached; non-terminal trace; failed or blocked worker

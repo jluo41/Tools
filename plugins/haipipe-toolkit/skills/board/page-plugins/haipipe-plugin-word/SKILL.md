@@ -7,7 +7,7 @@ description: >-
   plugin, word export, docx export, page to word, coauthor docx,
   /haipipe-plugin-word.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-31"
 ---
 
@@ -57,7 +57,7 @@ The writer directly, board conventions included:
 
 ```bash
 python3 skills/board/page-plugins/_shared-export/md2docx.py <page.md> \
-        -o <page-dir>/word/<stem>.docx --join-paragraphs \
+        -o <page-dir>/delivery/word/<stem>.docx --join-paragraphs \
         [--document-title "Full Page H1"] [--paper-root DIR]
 ```
 

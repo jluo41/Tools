@@ -6,11 +6,10 @@ A row identifies storage, not necessarily a separate Plugin Skill: a category
 Plugin may directly own one of its internal lanes.
 `kind`: PRIMARY = originals a person makes, committed; DERIVED = projections of the page's text, regenerable, gitignorable.
 
-**Outline is one Plugin over the plan and its evidence materials:** Citation/Bib,
-Value, Display, and PageX are internal lanes of its Evidence Workspace. The typed Evidence Item table
+**Outline is one Plugin over context, plan, and evidence materials:** Citation/Bib,
+Value, and Display are internal lanes of its Evidence Workspace. The typed Evidence Item table
 (`outline/<stem>-evidence-items.md`) is where SHAPE specifies the ready target
-and SURVEY plans Supporting Runs, exact PageX bindings, one Local Input, and
-one Local Run. PageX is source authority, never a Run or Result type.
+and SURVEY plans Supporting Runs, one Local Input, and one Local Run.
 
 | name       | kind    | storage (`<page>/<name>/`)          | surface (right-pane tab)             | writer                                        | status |
 |------------|---------|-------------------------------------|--------------------------------------|-----------------------------------------------|--------|
@@ -23,9 +22,9 @@ one Local Run. PageX is source authority, never a Run or Result type.
 | `bibex/`   | MIXED   | `<stem>.bib` PRIMARY + derived `<stem>-bib.html` at `outline/evidence/bibex/` | 📚 Citations lens inside 🧭 Outline → Evidence Workspace | `haipipe-plugin-outline/ref/evidence/citations.md`; compatibility routes `/_board/bibex*` | 🟢 internal Outline evidence lane |
 | `display/` | MIXED   | `<stem>-Display<N>-<slug>/` units at `outline/evidence/display/`; intake/recipe/float.tex PRIMARY, preview/assets/candidates derived | 🖼 Displays lens inside 🧭 Outline → Evidence Workspace | `haipipe-plugin-outline/ref/evidence/displays.md` routes renderer craft and reserves the human `accepted:` tick | 🟢 internal Outline evidence lane |
 | `materials/` | PRIMARY | dated immutable captures at `outline/evidence/materials/`; raw bytes, readable text, and a MANIFEST classification | 📥 Materials lens inside 🧭 Outline → Evidence Workspace | the page's fetch step records source, user-agent, timeout, date, and classification | 🟢 internal Outline evidence lane |
-| `skill/`   | MIXED   | `<stem>.md` PRIMARY (the page's skill list: one `- <name>` row per skill, ORDER = the person's rank) + derived `<stem>-skill.html` | 🛠 skill index: one card per skill with ⠿ drag-to-rank, version, description, open-the-skill, ✕ | `/_board/skill` scan-seed (appends at the bottom, never invents) + `/_board/skill-order` (the drag) + `/_board/skill-entry` (add-at-top, typo-guarded · ✕ remove · ↩ restore) | 🟢 built 260815 · flattened 260816 |
-| `pagex/`   | MIXED   | ranked list + derived relative links at `outline/evidence/pagex/`; an Evidence Item binds an exact file or Result plus accepted authority | 🔗 PageX lens inside 🧭 Outline → Evidence Workspace | `haipipe-plugin-outline/ref/evidence/pagex.md`; compatibility routes remain `/_board/pagex*` | 🟢 internal Outline evidence lane |
-| `outline/` | PRIMARY | EIGHT stemmed process records plus nested `evidence/{bibex,display,pagex,supporting-runs,materials}/`; the compact table is derived from these files and is never stored in `page.md` | 🧭 Outline, FIRST and DEFAULT: Shape and process lenses plus the detailed Evidence Workspace | SHAPE/SURVEY write plan and item graph; LAND binds Results; lane writers land only below `outline/evidence/` | 🟢 single authority 260903 |
+| `outline/skill/` | MIXED | `<stem>.md` PRIMARY (the page's skill list: one `- <name>` row per skill, ORDER = the person's rank) + derived `<stem>-skill.html` | 🧭 Outline → Context Workspace → 🛠 Skills: embedded ranked editor with one card per skill, ⠿ drag-to-rank, version, description, open-the-skill, ✕ | `/_board/skill` scan-seed (appends at the bottom, never invents) + `/_board/skill-order` (the drag) + `/_board/skill-entry` (add-at-top, typo-guarded · ✕ remove · ↩ restore) | 🟢 Outline-owned; sibling `skill/` is read-only migration input |
+| `pagex/`   | MIXED   | historical ranked list + derived links at `outline/evidence/pagex/` | no active lens; migration input only | `haipipe-plugin-outline/ref/evidence/pagex.md`; old `/_board/pagex*` routes remain readable | 🟠 legacy only; migrate evidence to Supporting Run Results or Local Input |
+| `outline/` | PRIMARY | NINE stemmed process records plus nested `skill/` and `evidence/{bibex,display,supporting-runs,materials}/`; old `pagex/` is read-only migration input | 🧭 Outline, FIRST and DEFAULT: Context, Bullet, and Evidence Workspaces | CONTEXT writes Context; SHAPE/SURVEY write plan/item graph; LAND/EMBED bind and fold Results | 🟢 one plugin shared by three phases 260904 |
 | `design/`  | MIXED   | `DU<NN>-<slug>/` one THREAD per folder (260828, absorbed the retired `direction/`): card.md FIRST — stance · thesis · expected effect + falsification line · grant · `state: proposed / released / landed / killed`, released ONLY by a person, killed threads stay card-only as tombstones — then README.md (`kind:` routes to a venue pack) + spec.md COMPILED from Brief + venue rails + evidence.md within the card's grant + `content/` per kind | 🎨 (planned) unit strip, display-style, card state badge first | one designer per RELEASED card writes the whole folder (`haipipe-designer-agent`); the person's `accepted:` lives on the owning division — see `haipipe-plugin-design` (§card holds the card law) | 🟡 contract 260824 · one-folder 260828 · tab pending |
 | `render/` | DERIVED | `delivery/render/<stem>-<unit>-v<N>.<ext>` one file per unit per version (`.txt` sms/push/reminder · `.html` ui-card/dashboard · `.docx` report) + `manifest.json` carrying design/warrants/render stamps | 📱 Render segment inside the 📤 Delivery tab when served; Folder files remain the complete surface | `haipipe-application/fn/render.md` is the executable Folder-native writer; `POST /_board/render` is an optional adapter. Regenerated never edited; an unpinned venue refuses — see `haipipe-plugin-render` | 🟢 Folder writer live · served adapter optional |
 | `workflow/` | MIXED | the MACHINE half of the unit, page and task alike (JL 260831: "we should have the workflow and outline in both"): on a PAGE, one receipt per pass (`receipts/<YYMMDD-HHMM>-<phase>.md`, appended by the chat or the phase agent, never ticked); on a TASK the existing `plan.yaml` + `report.yaml`. `outline/` stays the HUMAN half (agreed plan, threads, log) in both folder kinds | 🪜 (planned) the pass ledger, newest first, as a segment inside the 🧭 outline tab (the plan and its receipts are the two halves of one process) | the RUN controller (chat §🔁 or the phase agents); a person never writes here | 🟡 rostered 260831 · page receipts live · task side unchanged |
@@ -42,7 +41,7 @@ Writers for the DERIVED document trio live in `skills/board/page-plugins/_shared
 `--paper-root` is discovered by walking up from the page for a `0-*.bib`; a page outside any paper exports cite-less rather than refusing.
 Per-plugin Skills ship under a contributing plugin's `skills/page-plugins/`:
 draw · slide · chat · latex · word · outline · skill · meeting ·
-design · render · labeling. Citation/Bib, Value, Display, and PageX
+design · render · labeling. Citation/Bib, Value, and Display
 have no separate active Plugin Skills: `haipipe-plugin-outline` owns their internal lanes.
 The retired Task and Direction plugins have no active row. Labeling's skill
 lives with the subjective-label family while its Board surface is loaded by
@@ -50,7 +49,9 @@ the shared Board engine.
 
 Category and meta Plugins need not correspond one-to-one with storage rows.
 `haipipe-plugin-folder` is the 📂 meta-surface over this list;
-Outline owns Shape plus Citation/Bib, Value, Display, PageX, and run lineage;
+Outline owns Context, Shape, Citation/Bib, Value, Display, run lineage, and
+the embedded Context Workspace Skills surface; `outline/skill/` retains its own storage and
+writer contract without a top-level picker row;
 Delivery presents latex, word, slide, and render; Studio stages Draw and Chat;
 and Runs joins Tickets to Results. Outline absorbs its evidence lanes' writers
 and gates; other category surfaces do not unless their contract says so.

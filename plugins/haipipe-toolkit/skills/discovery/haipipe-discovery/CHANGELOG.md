@@ -8,6 +8,27 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.8.1] — 2026-09-04
+
+- Separate technically complete Results from person-verified epistemic Task
+  closure and make the checker expose/reject the corresponding gate.
+- Reconcile report Run counts and canonical Outline-owned Bib paths, reject
+  root `evidence/`, and forbid alternate `build-bib --write` destinations.
+- Reject terminal Task status while the root Page or any Aim remains open.
+- Label a structurally valid but citation-pending check as `CLOSURE_HELD`, and
+  define the harmless whitespace/order normalization allowed in derived Bibs.
+- Clarify that the derived aggregate is not automatically a typed CITE item;
+  only an approved Outline declaration creates one.
+- Clarify that `add`/`run` are orchestration verbs while `paper_runs.py`
+  remains the deterministic check/Bib helper.
+
+## [0.8.0] — 2026-09-03
+
+- Adopt the latest Page contract: Outline owns `outline/evidence/`, typed CITE
+  items, verification, and the derived Discovery Bib.
+- Keep Discovery Paper/Source Runs and Results in their own sibling lanes and
+  treat `haipipe-plugin-evidence` as compatibility-only.
+
 ## [0.7.0] — 2026-09-02
 
 - Replace the overloaded Plan/Build/Execute/Report vocabulary with one formal

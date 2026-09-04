@@ -34,8 +34,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from src.common import (DELIVERY_LANES, EVIDENCE_LANES, delivery_lane_dir,
-                        evidence_lane_dir, evidence_lane_dirs)
+from src.common import (DELIVERY_LANES, EVIDENCE_LANES, OUTLINE_LANES,
+                        delivery_lane_dir, evidence_lane_dir,
+                        evidence_lane_dirs, outline_lane_dir)
 
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
@@ -100,6 +101,8 @@ class ExportMixin:
                      else Path(board))
         if plugin in EVIDENCE_LANES:
             out_dir = evidence_lane_dir(page_home, plugin)
+        elif plugin in OUTLINE_LANES:
+            out_dir = outline_lane_dir(page_home, plugin)
         elif plugin in DELIVERY_LANES:
             out_dir = delivery_lane_dir(page_home, plugin)
         else:

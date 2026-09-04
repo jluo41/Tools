@@ -12,8 +12,8 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-09-03"
+  version: "0.9.5"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -22,6 +22,8 @@ metadata:
 **LOAD `haipipe-plugin` and `haipipe-run` FIRST.** This is a PRESENTER plugin
 (`haipipe-plugin` §🔌): it owns no folder and has no roster row. It presents
 the Run projections already owned by the Folder or its containing Task Job.
+It is an optional presenter beneath a Folder's Task Face, never a replacement
+for that Face or its workflow authority.
 
 ## 🏷 Runs, not Execution
 
@@ -78,8 +80,11 @@ runs/             actual page-local Runs only
 results/          paired generated page-local Results only
 ```
 
-The `🧭 Outline → Evidence Workspace` explains why an item is supported and
-groups its Supporting and Local Run items. The `⚙️ Runs` plugin lists only a
+The `🧭 Outline → Evidence Workspace` explains why an Evidence exists and
+groups its related Run cards by Evidence. Its internal `Runs` lens includes
+every mapped Supporting and Paper-local route, including planned routes, and
+reports mappings separately from unique Run identities. The top-level `⚙️ Runs`
+plugin lists only a
 physical Run found in the page's own
 `runs/` tree and its paired local Result. A `new-*` route, a parent `bN.jN.tN`
 without an `rN`, an external Supporting Run, or a result copied for display is
@@ -91,8 +96,12 @@ An empty local inventory is still a valid presenter state: render one compact
 external Supporting Run is local.
 
 Accordingly, a Run token in the Outline first deep-links to the owning
-Evidence Item card in the Outline workspace. From there, allocated Run and Result links open
-their real repository-relative paths. Do not send an unallocated or external
+Evidence Item card in the Outline workspace. From there, allocated Run,
+Result, and Runtime paths are displayed as selectable repository-relative text;
+they are not raw browser links because scripts and receipts may download rather
+than open. That evidence-side detail separates Purpose/Plan, Availability, and
+Next action; it does not misuse `new`, `rerun`, `run only`, and `ready` as one
+lifecycle status. Do not send an unallocated or external
 route to this local Runs overview merely because its text resembles a Run id.
 
 `scripts/`, config, and notebooks are optional projections. A Run may instead
@@ -149,15 +158,16 @@ surface those words as alternative object names. Show literal repository-
 relative Run and Result paths and allow them to wrap on narrow screens.
 
 Clicking a row opens that Run's detail: summary, authored Run, paired Result,
-log or error, and links to any script/config/notebook paths the Run
-actually uses. Do not put commands, logs, actor metadata, or full output trees
+log or error, and selectable text for any script/config/notebook paths the Run
+actually uses. Do not link directly to raw Run or Result files; the Runs
+surface must not trigger downloads. Do not put commands, logs, actor metadata, or full output trees
 in the overview.
 
 For Page · Evidence Item rows, the overview shows the actual local Run,
 paired Result, status, and any explicitly bound Evidence Item ids. The
 detail shows the safe target and exact local paths. Supporting Run ids, frozen
-input envelopes, PageX authorities, and unallocated plans remain in Evidence
-Items. PageX links are sources, never extra Runs or Results. Never
+input envelopes and unallocated plans remain in Evidence Items. Historical
+PageX rows are migration input, never extra Runs or Results. Never
 expand Supporting Runs into extra local rows or present the Result as a
 separate Run.
 

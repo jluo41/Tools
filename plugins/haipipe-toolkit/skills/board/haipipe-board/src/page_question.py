@@ -9,9 +9,9 @@ from . import body as _bd
 from .body import (body, flat_rows, inline, note_body, render_apparatus,
                    render_thread, sort_log)
 from .common import aim_progress, aim_summary, esc, sec, stinfo
-from .item_table import (action_label, compact_global_run, readable_global_run,
-                         readable_paper_route, repo_root, readable_task,
-                         run_registry, wall_label)
+from .item_table import (action_label, compact_global_run, compact_paper_run,
+                         readable_global_run, readable_paper_route, repo_root,
+                         readable_task, run_registry, wall_label)
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -286,46 +286,80 @@ def _outline_grid(page_src):
     def run_badge(address, action, family="", *, item_id="", layer=""):
         """Render one route as ``D|X global-address`` or ``P local-address``.
 
-        The action is the decision made by SURVEY (reuse, rerun, registered,
-        or a pre-registration new-* note).  It must not be replaced by the
-        registry's observed receipt state: a Ticket can be "Run only" while
-        the selected action is still ``rerun``.  The latter remains visible;
-        the observed state stays available in the hover detail and Run Index.
+        Keep SURVEY's next action separate from path-derived availability.
+        The compact chip shows ``plan | run | rerun | reuse`` and its hover
+        names both facts; the Evidence Workspace holds the full Run detail.
         """
-        compact = compact_global_run(address)
+        is_paper = (family or "").strip().lower().startswith("page")
+        compact = ((compact_paper_run(address) or compact_global_run(address))
+                   if is_paper else compact_global_run(address))
         readable = readable_route(address)
         label = action_label(action)
         if not label:
             return ""
-        visible_action = "new" if action.startswith("new-") else label
-        record = registry.get(compact)
-        observed = record["label"] if record else "Unregistered"
+        visible_action = (
+            "plan" if action.startswith("new-") else
+            "run" if action == "registered" else
+            "reuse" if action == "reuse" else
+            "rerun" if action == "rerun" else label
+        )
+        record = None if is_paper else registry.get(compact)
+        if record and record.get("result"):
+            availability = "Run + Result"
+        elif record:
+            availability = "Run exists · Result missing"
+        elif action.startswith("new-"):
+            availability = "Planned"
+        else:
+            availability = "Paths unresolved"
+        next_action = (
+            "Allocate and run" if action.startswith("new-") else
+            "Run" if action == "registered" else
+            "Reuse Result" if action == "reuse" else
+            "Rerun" if action == "rerun" else label
+        )
         css = re.sub(r"[^a-z]+", "-", action.lower()).strip("-")
         family_key = (family or "").strip().lower()
         family_mark = ("D" if family_key.startswith("discovery") else
                        "X" if family_key.startswith("execution") else
                        "P" if family_key.startswith("page") else "")
         scope = "Paper Board" if family_mark == "P" else (family or "Run")
-        title = "%s · action: %s · result: %s · inspect in Outline workspace" % (
-            scope, label, observed
-        )
+        run_path = str(record.get("ticket", "")) if record else ""
+        result_path = str(record.get("result", "")) if record else ""
+        runtime_path = str(record.get("runtime", "")) if record else ""
+        missing_run = "not allocated" if action.startswith("new-") else "unresolved"
+        run_file = pathlib.PurePosixPath(run_path).name if run_path else missing_run
+        title_lines = [
+            scope,
+            "Run file: %s" % run_file,
+            "Run path: %s" % (run_path or missing_run),
+            "Result path: %s" % (result_path or "not available"),
+        ]
+        if runtime_path:
+            title_lines.append("Runtime path: %s" % runtime_path)
+        title_lines.extend([
+            "Status: %s" % availability,
+            "Next action: %s" % next_action,
+            "Click for full Run details",
+        ])
+        title = "\n".join(title_lines)
         if family_mark == "P":
             # The Paper Board is the local block: do not repeat an inherited
             # global bNN prefix in a Paper-local route.
             readable = readable_paper_route(address) or readable
 
         def outline_link(text, class_name):
-            """Deep-link this route to its Evidence Item in Outline."""
+            """Deep-link this route to its Run detail inside the Evidence Item."""
             if not item_id:
                 return '<span class="%s" title="%s">%s</span>' % (
                     esc(class_name), esc(title), esc(text)
                 )
             focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
             return (
-                '<a class="%s" href="%s&amp;lens=workspace&amp;focus=%s" '
-                'data-outline-focus="%s" title="%s">%s</a>' %
-                (esc(class_name), outline_url, esc(focus), esc(focus),
-                 esc(title), esc(text))
+                '<a class="%s" href="%s&amp;lens=workspace&amp;focus=%s&amp;run=%s" '
+                'data-outline-focus="%s" data-outline-run="%s" title="%s">%s</a>' %
+                (esc(class_name), outline_url, esc(focus), esc(readable),
+                 esc(focus), esc(readable), esc(title), esc(text))
             )
 
         if not readable and action.startswith("new-"):
@@ -400,7 +434,6 @@ def _outline_grid(page_src):
                 ("Expected", item["expected"]),
                 ("Acceptance", item["acceptance"]),
                 ("Supporting Runs", item["supporting_runs"]),
-                ("PageX Bindings", item["pagex_bindings"]),
                 ("Local Input", item["local_input"]),
                 ("Local Run", item["local_run"]),
                 ("Result", item["result"]),
@@ -1251,9 +1284,15 @@ def _render_question(q, prv, nxt):
     # (JL 260802). Files was the last section rendering its `###` groups as
     # flat rows, so a long action map could not be collapsed to its group
     # names while every other section on the page could.
-    flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
-    fls = sect("📁 Files", flb, cls="fls")
     page_src = pathlib.Path(_bd.BASE or ".") / q["file"] if q.get("file") else None
+    # A folded Page keeps process records in its outline/ folder.  The main
+    # Page therefore renders only the product and compact Outline projection;
+    # Files, Discussion, and Log belong to the Outline plugin workspaces.
+    has_outline_folder = bool(
+        page_src and (page_src.parent / "outline").is_dir()
+    )
+    flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
+    fls = "" if has_outline_folder else sect("📁 Files", flb, cls="fls")
     dia = render_outline(page_src, q.get("page_type", ""))
     display_preview = render_display_preview(q)
     content = render_content(content_sections, q if is_stage else None,
@@ -1269,12 +1308,13 @@ def _render_question(q, prv, nxt):
     # The form comes FIRST, above the thread (JL 260802): it is the one thing
     # in this fold a reader can act on, and the newest exchange is right under
     # it, so writing a reply never means scrolling past the whole history.
-    folds = det(f"💬 Discussion ({ndisc})",
-                dadd +
-                (render_thread(disc) if disc else
-                 f'<p class="mut">No discussion yet — add a line under '
-                 f'<code>## Discussion</code> in {q["file"]}: '
-                 f'<code>&gt; Comment JL …</code></p>'))
+    folds = "" if has_outline_folder else det(
+        f"💬 Discussion ({ndisc})",
+        dadd +
+        (render_thread(disc) if disc else
+         f'<p class="mut">No discussion yet — add a line under '
+         f'<code>## Discussion</code> in {q["file"]}: '
+         f'<code>&gt; Comment JL …</code></p>'))
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
     # Every fold says how much is inside, the way Discussion and Log already
@@ -1288,7 +1328,8 @@ def _render_question(q, prv, nxt):
                      body(sec(q["sec"], name), apparatus=False, show_lead=True))
     log = sort_log(sec(q["sec"], "Log").strip())
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
-    folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
+    if not has_outline_folder:
+        folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
     html = (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'

@@ -219,3 +219,9 @@ section renamed that morning.
 - Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
   adds its artifact knowledge and obeys this file.
 - Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.11.0 · 2026-09-04
+
+- Retire DRAFT as an active Page phase and redirect new work to
+  `haipipe-page-content` → CONTENT/WRITE/Draft.
+- Preserve the DRAFT token only for historical receipt audit and instruction
+  translation.

@@ -1,3 +1,19 @@
+## 0.19.1 · 2026-09-04
+
+- Use the canonical Page dependency order.
+- Keep producer `route` values at Page-phase granularity and carry the target
+  cycle separately as `next_cycle`.
+
+## 0.19.0 · 2026-09-04
+
+- Require a fresh CONTEXT record before LAND and route governing-input drift
+  back to `haipipe-page-context`.
+- Remove PageX Bindings from the active evidence graph. LAND now validates
+  Supporting Results, freezes one Local Input containing those Results plus
+  governed page-local sources, and executes one local Evidence Item Run.
+- Keep cross-Folder evidence behind Supporting Run Results and keep related
+  Page links in Context Workspace as navigation/constraints only.
+
 ## 0.18.3 · 2026-09-03
 
 - Include `new-job` in LAND's complete planned Supporting-route vocabulary.

@@ -12,8 +12,9 @@ discoveries/                                  bank
         └── t01_<noun>_<qualifier>/           Task Page
             ├── t01_<noun>_<qualifier>.md
             ├── discovery.yaml
-            ├── outline/                      optional
-            ├── evidence/bibex/t01_<...>.bib  derived
+            ├── outline/                      Page process + Evidence Workspace
+            │   └── evidence/
+            │       └── bibex/t01_<...>.bib   derived
             ├── scripts/                      optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
@@ -26,6 +27,11 @@ not a Block. The path is the identity: `b01j01t01r01` compact and
 `b01.j01.t01.r01` readable. A bare `01_` at any addressed level is invalid.
 
 Full Level-4 contract: `paper-run-contract.md`.
+
+New manifests point `report.evidence_bib` to the Outline-owned
+`outline/evidence/bibex/` lane. A legacy root `evidence/bibex/` path may be
+read during migration, but new writes must not create or refresh that lane.
+The checker rejects a root `<task>/evidence/` lane in a current v6 Task.
 
 ## Discovery Page Type → route and typed record
 
@@ -142,7 +148,7 @@ report:
   confidence: medium
   completed_runs: 7
   unresolved_runs: 1
-  evidence_bib: evidence/bibex/t01_adaptive_sampling_verdict.bib
+  evidence_bib: outline/evidence/bibex/t01_adaptive_sampling_verdict.bib
 ```
 
 ## Lifecycle status
@@ -184,6 +190,13 @@ novelty-verdict                                     novel | partial | preempted 
 Common fields: `outcome`, `summary`, `confidence`, `completed_runs`,
 `unresolved_runs`, and `evidence_bib`. Verdict types may add `supports_claim` and
 `contradicts_claim`.
+
+For terminal `ok` or `inconclusive`, all common fields are mandatory,
+`completed_runs` and `unresolved_runs` must equal the runtime inventory, and
+`evidence_bib` must be exactly the canonical same-stem path under
+`outline/evidence/bibex/`. The root Page must also carry a closed `✅` state,
+with no active Aim. A preserved legacy `reported` receipt may omit new
+reconciliation fields, but every field it does carry must still be truthful.
 
 ## Typed record templates
 

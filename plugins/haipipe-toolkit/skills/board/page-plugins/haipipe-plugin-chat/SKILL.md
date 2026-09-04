@@ -8,8 +8,8 @@ description: >-
   chat plugin, chat tab, page chat, what can the chat modify, chat rules,
   keep this session, /haipipe-plugin-chat.
 metadata:
-  version: "0.4.4"
-  last_updated: "2026-08-31"
+  version: "0.4.5"
+  last_updated: "2026-09-03"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -150,7 +150,7 @@ you type                 phase     the chat loads                       ends whe
 `live/chat.py prime_context` injects, at connect: the board and page, the
 page's question and open Aims, `page-type:` and the phase strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
-evidence owed and landed), the page's own skill list (`<page>/skill/<stem>.md`,
+evidence owed and landed), the page's own skill list (`<page>/outline/skill/<stem>.md`,
 one ranked `- <name> · note:` row per skill) and its PageX relationships
 (`<page>/outline/evidence/pagex/…`, including any whole executable Folder), the SPACE
 context and the status-strip duty.

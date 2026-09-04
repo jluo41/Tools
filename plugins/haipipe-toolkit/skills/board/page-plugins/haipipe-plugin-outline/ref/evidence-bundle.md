@@ -6,8 +6,8 @@ description: >-
   view, not another evidence folder: source material remains owned by its
   plugin and the bundle is recomputed from the current page state.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-02"
+  version: "0.3.0"
+  last_updated: "2026-09-04"
 ---
 
 # Evidence Bundle · one Point, all of its support
@@ -30,7 +30,7 @@ Point C3.P1.B4
   ├─ Sentence scaffold(s)  realizes: C3.P1.B4
   ├─ Evidence Item(s)      Target: C3.P1.B4
   ├─ Supporting Result(s) Execution/Discovery Run authorities
-  ├─ PageX source(s)       exact file/Result + accepted authority
+  ├─ Local Input           one frozen envelope assembled from valid supports
   ├─ Local Result(s)       VALUE/CITE/DISPLAY, one per made item
   └─ Probe card(s)         only when an external question crossing is needed
 ```
@@ -38,12 +38,11 @@ Point C3.P1.B4
 ## 🧭 Ownership
 
 ```text
-OUTLINE    declares the Point, typed item expectation, and SURVEY source graph
-DRAFT      writes the sentence scaffold and visible holes
-PROBE      governs any separate outbound question crossing
-EVIDENCE   validates supports/PageX, freezes input, and lands one local Result
-REVISE     improves realization without changing the evidence contract
-CHECK      judges the built result and human acceptance
+CONTEXT    freezes the governing Page context
+OUTLINE    declares the Point, typed item expectation, and SURVEY Run graph
+EVIDENCE   validates supports, freezes input, lands one local Result, and EMBEDs
+CONTENT    realizes the folded plan in prose and delivery artifacts
+CHECK      judges the whole built Page and human acceptance
 ```
 
 `serves:` always points backward from material to the frozen Point. The
@@ -64,7 +63,6 @@ obligations:
 resources:
   items: [E01-VALUE-adjusted-effect]
   supporting_runs: [b01j02t03r04]
-  pagex_bindings: [other/page/results/r08/result.yaml]
   local_runs: [b03j01t02r01]
   probes: []
 feedback:
@@ -75,7 +73,7 @@ item_states:
 summary: complete | incomplete
 ```
 
-The `sentences` list is optional while DRAFT is still making the scaffold.
+The `sentences` list is optional while CONTENT is still making the scaffold.
 The resource lists are computed from the page's folders and sentence links;
 they are never hand-maintained in a second manifest.
 
@@ -95,12 +93,11 @@ without copying that decision into the bundle.
 An item's evidence obligation is ready only when it has a ready local Result:
 
 - every declared Supporting Result passes its owning Run gate;
-- every PageX binding resolves an exact source with accepted authority;
 - one frozen Local Input records those sources and hashes;
 - exactly one local Page Evidence Item Run emits an accepted VALUE, CITE, or
   DISPLAY Result.
 
-Sentence or Display work that remains belongs to REVISE or CHECK, not to a new
+Sentence or Display work that remains belongs to CONTENT or CHECK, not to a new
 bundle status. Final acceptance additionally requires the human gates owned by
 the Evidence, Probe, Display, and Page contracts. A folder count alone is never
 a pass.

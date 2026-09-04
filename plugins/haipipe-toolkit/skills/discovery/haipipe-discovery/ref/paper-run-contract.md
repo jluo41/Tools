@@ -84,7 +84,7 @@ WORKER     the selected search/read/analyzer skill, CLI, API, or declared agent
 RESULT     Result Card · facts.md · one-entry Bib · runtime.yaml; optional PDF/raw/trigger
 ACCEPT     exact stem pair, executable Ticket, truthful runtime, complete artifacts,
            canonical identity, cite/Bib equality, and verbatim Bib provenance
-PROMOTION  SYNTHESIZE binds the Result into the root Page and the Evidence
+PROMOTION  SYNTHESIZE binds the Result into the root Page and the Outline
            plugin builds the deterministic aggregate Bib
 REOPEN     a materially changed Subject, analysis question, frozen instrument, or
            acceptance contract allocates a new Run with supersedes:
@@ -101,8 +101,9 @@ does not receive its own Run identity.
 <task>/
 ├── <task>.md                          Page Face: article synthesis
 ├── discovery.yaml                     Task Face manifest
-├── outline/                           optional Page planning material
-├── evidence/bibex/<task>.bib          DERIVED union of completed Result bibs
+├── outline/                           Page planning + Evidence Workspace
+│   └── evidence/
+│       └── bibex/<task>.bib            DERIVED union of completed Result bibs
 ├── scripts/                           optional reusable instrument
 ├── runs/
 │   └── r01_chen2025_trace.sh          executable ticket
@@ -259,17 +260,30 @@ results/*/*.bib
       -> deduplicate exact entries
       -> reject key/DOI conflicts
       -> stable sort by Bib key
-evidence/bibex/<task>.bib
+outline/evidence/bibex/<task>.bib
 ```
 
 Only `status: complete` Results enter the union. Verification or correction
 lands in the Result Bib first, then the aggregate is rebuilt. Never edit the
 derived Task Page Bib as the authority.
+Aggregation may normalize only the ordering and blank separators between whole
+entries. It must not rewrite an entry's fields or use the aggregate as proof
+that the authoritative Result entry was person-verified.
 
 The Result is not Page evidence merely because it exists under `results/`.
-SYNTHESIZE validates promotion, and `haipipe-plugin-evidence` aggregation binds
-the complete Result into the Page citation lane. There is no separate Bibex
-plugin.
+SYNTHESIZE validates promotion and rebuilds the derived aggregate through
+`haipipe-plugin-outline/ref/evidence/citations.md`. That aggregate is not
+automatically a typed CITE Evidence Item. When an approved Outline explicitly
+declares a typed CITE item, bind it through the generic Evidence Item contract;
+otherwise direct Result/Card/cite lineage is sufficient and no duplicate local
+Evidence Item Run is created. The standalone Evidence and Bibex plugins are
+compatibility redirects, not authorities.
+
+Discovery's local `runs/` ↔ `results/` pair remains the primary analysis
+receipt. `outline/evidence/` is the shared Page Evidence Workspace: it records
+any explicitly declared typed CITE items plus derived citation material, but it
+does not replace or duplicate a Paper/Source Result. A root `<task>/evidence/`
+lane is invalid for new or current v6 work.
 
 ## Legacy compatibility
 

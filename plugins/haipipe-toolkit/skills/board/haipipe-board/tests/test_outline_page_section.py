@@ -54,7 +54,6 @@ page: fixture
 - **Expected**: VALUE · one checked source for the page product
 - **Acceptance**: the source and its local receipt are named.
 - **Supporting Runs**: Execution · reuse · b01j01t01r01
-- **PageX Bindings**: []
 - **Local Input**: aggregate result only.
 - **Local Run**: Page · Evidence Item · reuse · b02j01t01r01
 - **Decide**: ☐ make · ☐ defer · ☐ drop
@@ -62,6 +61,31 @@ page: fixture
 
 
 class OutlinePageSectionTest(unittest.TestCase):
+    def test_folded_page_keeps_process_records_out_of_main_page_surface(self):
+        source_text = PAGE + (
+            "\n## Files\n- `old.md`\n"
+            "\n## Discussion\n> JL: legacy thought\n"
+            "\n## Log\n- 260903 · legacy record\n"
+        )
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "QA" / "QA1" / "QA1.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(source_text, encoding="utf-8")
+            (source.parent / "outline").mkdir()
+
+            prior_base = board_body.BASE
+            board_body.BASE = root
+            try:
+                page = parse_page("QA1", source_text, file="QA/QA1/QA1.md")
+                html = render_question(page, None, None)
+            finally:
+                board_body.BASE = prior_base
+
+        self.assertNotIn("📁 Files", html)
+        self.assertNotIn("💬 Discussion", html)
+        self.assertNotIn("📜 Log", html)
+
     def test_outline_section_renders_current_plan_without_a_second_map(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)
@@ -110,15 +134,17 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn('id="outline-item-E01-VALUE-product" popover', html)
         for field in (
             "Label", "Name", "Target", "Expected", "Acceptance", "Supporting Runs",
-            "PageX Bindings", "Local Input", "Local Run", "Result",
+            "Local Input", "Local Run", "Result",
         ):
             self.assertIn(f"<b>{field}</b>", html)
+        self.assertNotIn("PageX Bindings", html)
         self.assertNotIn('href="../runs.html', html)
         self.assertIn(
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;focus=run-E01-VALUE-product"',
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
             html,
         )
         self.assertIn('data-outline-focus="run-E01-VALUE-product"', html)
+        self.assertIn('data-outline-run="b01.j01.t01.r01"', html)
         self.assertIn("b01.j01.t01.r01", html)
         self.assertIn("j01.t01.r01", html)
         self.assertNotIn(">b02.j01.t01.r01</a>", html)
@@ -176,6 +202,13 @@ class OutlinePageSectionTest(unittest.TestCase):
                 "— Design Page Evidence Task",
             )
             (outline / "QA1-evidence-items.md").write_text(items, encoding="utf-8")
+            ticket = (
+                root / "examples" / "Project-Fixture" / "task" /
+                "b03_data" / "j02_regression" / "t01_lbp" / "runs" /
+                "agre" / "r04_D_reg_VisitLBP_agre_af14d_ols.ps1"
+            )
+            ticket.parent.mkdir(parents=True)
+            ticket.write_text("# fixture Run\n", encoding="utf-8")
 
             prior_base = board_body.BASE
             board_body.BASE = root
@@ -189,9 +222,18 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("b01.j01.t01", html)
         self.assertIn('class="outline-run-family discovery" title="Discovery">D</span>', html)
         self.assertIn('class="outline-run-family execution" title="Execution">X</span>', html)
-        self.assertIn(">new</span>", html)
+        self.assertIn(">plan</span>", html)
         self.assertIn("b03.j02.t01.r04", html)
         self.assertIn("rerun", html)
+        self.assertIn("Run file: r04_D_reg_VisitLBP_agre_af14d_ols.ps1", html)
+        self.assertIn(
+            "Run path: examples/Project-Fixture/task/b03_data/j02_regression/"
+            "t01_lbp/runs/agre/r04_D_reg_VisitLBP_agre_af14d_ols.ps1",
+            html,
+        )
+        self.assertIn("Result path: not available", html)
+        self.assertIn("Status: Run exists · Result missing", html)
+        self.assertIn("Next action: Rerun", html)
         self.assertIn("newtask", html)
         self.assertIn(
             'data-outline-focus="run-E01-VALUE-product"', html
@@ -205,6 +247,39 @@ class OutlinePageSectionTest(unittest.TestCase):
             html,
         )
         self.assertNotIn("Run only", html)
+
+    def test_proposed_paper_run_keeps_p_j_t_r_and_separates_plan_from_availability(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "QA" / "QA1.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(PAGE, encoding="utf-8")
+            outline = source.parent / "outline"
+            outline.mkdir()
+            (outline / "QA1-outline-v1.md").write_text(PLAN, encoding="utf-8")
+            items = ITEMS.replace(
+                "Page · Evidence Item · reuse · b02j01t01r01",
+                "Page · Evidence Item · new-run · pj01t01r01",
+            )
+            (outline / "QA1-evidence-items.md").write_text(items, encoding="utf-8")
+
+            prior_base = board_body.BASE
+            board_body.BASE = root
+            try:
+                page = parse_page("QA1", PAGE, file="QA/QA1.md")
+                html = render_question(page, None, None)
+            finally:
+                board_body.BASE = prior_base
+
+        self.assertIn('title="Paper Board">P</span>', html)
+        self.assertIn(">j01.t01.r01</a>", html)
+        self.assertIn('class="outline-run-action new-run">plan</span>', html)
+        self.assertIn("Run file: not allocated", html)
+        self.assertIn("Run path: not allocated", html)
+        self.assertIn("Status: Planned", html)
+        self.assertIn("Next action: Allocate and run", html)
+        self.assertNotIn("action: newrun · result: Unregistered", html)
+        self.assertNotIn(">pj01t01r01</a>", html)
 
     def test_legacy_diagram_source_does_not_render_a_second_outline(self):
         page = parse_page("QA2", PAGE.replace("## Outline", "## Diagram"))

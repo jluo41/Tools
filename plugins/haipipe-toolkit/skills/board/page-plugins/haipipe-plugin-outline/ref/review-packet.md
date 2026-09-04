@@ -19,7 +19,7 @@ approval on the person's behalf.
 - Link `outline/<stem>-evidence-items.md` and report its item count by type
   and derived status from `outline/<stem>-evidence.md` when present.
 - For every item material to the page's headline, show: `target → expected
-  payload → acceptance → Supporting Runs + PageX sources → Local Run`.
+  payload → acceptance → Supporting Runs → Local Input → Local Run`.
 - Group routine items as a count with a link.  A missing, deferred, or
   unbound item is stated plainly; no future result is described as a finding.
 

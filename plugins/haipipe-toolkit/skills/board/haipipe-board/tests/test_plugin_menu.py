@@ -47,7 +47,6 @@ class PluginMenuTest(unittest.TestCase):
             "runs": ROOT / "85-plugin-runs.js",
             "delivery": ROOT / "82-plugin-delivery.js",
             "folder": ROOT / "06-plugin-folder.js",
-            "skill": ROOT / "83-plugin-skillmap.js",
             "labeling": ROOT / "60-plugin-labeling.js",
         }
         expected = {
@@ -56,7 +55,6 @@ class PluginMenuTest(unittest.TestCase):
             "runs": 30,
             "delivery": 40,
             "folder": 50,
-            "skill": 60,
             "labeling": 70,
         }
 
@@ -72,6 +70,8 @@ class PluginMenuTest(unittest.TestCase):
             self.assertEqual(int(match.group(1)), expected[plugin_id])
         for source in ROOT.glob("*.js"):
             self.assertNotIn("id: 'evidence'", source.read_text(encoding="utf-8"))
+        skill = (ROOT / "83-plugin-skillmap.js").read_text(encoding="utf-8")
+        self.assertNotIn("window.boardPlugins.register({", skill)
 
 
 if __name__ == "__main__":

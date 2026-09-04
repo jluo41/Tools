@@ -12,8 +12,8 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-01"
+  version: "0.6.1"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -55,8 +55,10 @@ Mint a Run only when all four are true:
 4. success or truthful non-success can be tested from disk.
 
 Keep planning in `outline/`. A proposed section, unresolved item row, or human
-decision is not yet a Run. Open the Run when the phase commissions an attempt
-and allocates its address.
+decision is not yet a Run. A Paper workflow may reserve a proposed P/J/T/R
+address during SURVEY so the future Run is indexable; the `new` action records
+that no Ticket exists. Open and count the Run only when LAND commissions the
+attempt and creates its authored Ticket.
 
 Do not confuse a workflow's `RUN` or `Execute` verb with this Level-4 identity.
 A router invocation may plan, dispatch zero or many Runs, or only write a
@@ -155,6 +157,19 @@ local identity   r04_execution_fit-model
 global identity  b01j02t03r04
 ```
 
+A Paper Board has a separate local namespace because the Paper itself is the
+fixed block:
+
+```text
+authored plan   pj01t03r01
+wall label      P j01.t03.r01 new
+meaning         Page j01 · Evidence Item t03 · proposed Run r01
+```
+
+The `p` namespace must never be rewritten as `b01`; doing so can collide with
+an Execution or Discovery Run. A reserved Paper address is not counted as a
+Run until its Ticket exists.
+
 `reuse` and `rerun` references require the full `bNNjNNtNNrNN` identity.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
@@ -222,7 +237,7 @@ surface, never a substitute for this phase-owned profile.
 Work one Run in this order:
 
 ```text
-PLAN          outline declares the owed target; no Run yet
+PLAN          outline declares the owed target; Paper may reserve P/J/T/R; no Ticket or Run yet
 ALLOCATE      choose the next RUNNAME; never reuse or renumber
 SCAFFOLD      create the Ticket and runtime receipt; reserve the Result address
 FREEZE        record authoritative inputs and versions before work starts
@@ -261,7 +276,7 @@ inputs:
     sha256: <lowercase-hex>
 worker:
   kind: skill
-  name: haipipe-page-draft
+  name: haipipe-page-content
 started_at: "2026-09-01T12:00:00-04:00"
 finished_at: "2026-09-01T12:08:00-04:00"
 supersedes: null

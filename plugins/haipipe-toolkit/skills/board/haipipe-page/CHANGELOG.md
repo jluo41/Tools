@@ -1,3 +1,11 @@
+## 0.56.2 · 2026-09-03
+
+- Align the canonical Page tree with the Outline-owned Evidence Workspace:
+  evidence lanes now live under `outline/evidence/`, while root
+  `<page>/evidence/` is legacy migration input only.
+- Keep `runs/` and `results/` as the optional local execution presenter and
+  preserve `workflow/` as the machine phase-receipt lane.
+
 ## 0.56.1 · 2026-09-02
 
 - Specify the Page Outline as `Address · Planned move · Evidence ·
@@ -867,3 +875,11 @@ The slide binding (division · source · render · acceptance) is its typed reco
 - Names its own next step from QC6 §7: `serve.py`'s `CHAT_RULES` becomes a consumer
   of this contract instead of a hand-rolled copy, which has already rotted once
   (QB5d caught it describing a page shape that no longer existed).
+## 0.57.0 · 2026-09-04
+
+- Adopt `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, and
+  `04 CHECK` as the Page phases.
+- Add generated `outline/<stem>-context.md` and start new Page Runs at CONTEXT.
+- Replace active DRAFT/REVISE phase authority with `haipipe-page-content`.
+- Remove PageX from new Page evidence storage; keep old lanes read-only and
+  route cross-Folder evidence through Supporting Run Results.

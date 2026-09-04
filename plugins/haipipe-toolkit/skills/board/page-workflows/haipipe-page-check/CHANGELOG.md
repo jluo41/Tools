@@ -1,3 +1,20 @@
+## 0.7.1 — 2026-09-04
+
+- Use the canonical Page dependency order.
+- Route an absent/incomplete Run graph to OUTLINE/SURVEY, but a complete graph
+  whose local Result is missing, invalid, or stale to EVIDENCE/LAND.
+- Carry the target cycle separately from the Page-phase route.
+
+## 0.6.7 — 2026-09-03
+
+- Route citation verification through the Outline Evidence Workspace and make
+  the legacy `read:`/Probe row migration-only; new Pages use typed Evidence
+  Items without a `evidence/probe/` lane.
+
+## 0.6.6 — 2026-09-03
+
+- Follow the ranked Skills order at its canonical `outline/skill/` path.
+
 ## 0.6.5 — 2026-09-02
 
 - Resolve manuscript Section writing instructions from authored W records in
@@ -127,3 +144,12 @@ section renamed that morning.
 - Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
   adds its artifact knowledge and obeys this file.
 - Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.7.0 · 2026-09-04
+
+- Number CHECK as `04` and define it explicitly as the whole-Page gate.
+- Replace DRAFT/REVISE repair routes with `CONTENT`; add `CONTEXT` for stale
+  policy, requirements, ownership, and related information.
+- Keep CHECK independent: it reads all three Outline workspaces, judges one
+  exact built version, repairs nothing, and remains the only phase that may
+  CLOSE.
+- Remove PageX rank from the active human-gate inventory.

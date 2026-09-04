@@ -9,8 +9,8 @@ description: >-
   or repairing its section map. Trigger: narrative page, paper story, claim
   roles, section map, page-type narrative.
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-09-02"
+  version: "0.8.2"
+  last_updated: "2026-09-04"
   group-token: "NA"
   outline:
     mode: grammar
@@ -20,7 +20,8 @@ metadata:
 
 # /haipipe-paper-narrative · claims in reader order
 
-Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
+Load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
+paper-owning workflow, this Page Type, and its phase references in that order.
 Declare `page-type: narrative` and record the shared Venue Page it binds.
 
 ## 🧭 Journey phase
@@ -31,7 +32,8 @@ Seed's handoff (never the Roadmap directly). Exit through gate G5: one bank
 page bound, every claim parented to an E-row, every section-map row budgeted.
 `haipipe-paper-workflow` holds the full gate assertions; this block only places
 the phase. The page itself always runs through `/haipipe-page` and
-`haipipe-page-workflow` (OUTLINE → … → CHECK), never a private lifecycle. In a
+`haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
+never a private lifecycle. In a
 runtime paper board Narratives close the story group: one page per desk, in
 arrival order after the venue-free head, reading the Seed from the same group
 (tokens re-ruled JL 260831; a separate `A2-NA-narrative` group with NA-numbered
@@ -50,9 +52,11 @@ There is one Narrative per target venue. A second target creates a second
 Narrative reading the same Seed.
 
 **The venue DECISION lives here; the venue RECORD does not.** A paper never
-creates a venue page: the shared QBv bank (one consumer-neutral page per desk,
-refreshed on the desk's clock) is bound through `pagex/`, and this page's Venue
-division owns only the decision and its local consequences.
+creates a venue page. The shared QBv bank (one consumer-neutral page per desk,
+refreshed on the desk's clock) is declared as a related source in Files and
+resolved into Context Workspace. This page's Venue division owns only the
+decision and its local consequences. The link constrains the Narrative; it is
+not evidence merely because it is linked.
 
 Narrative owns:
 
@@ -159,8 +163,9 @@ may not be invisible.
 
 Narrative may itself make evidence-dependent judgments. For example, “C2 is the
 peak claim” depends on the magnitude, credibility, and venue fit of its support.
-Such judgments use the Narrative Page's own cards and bindings. The Page is not
-evidence-free merely because its output is an outline.
+Such judgments use the Narrative Page's own typed Evidence Items and accepted
+local Results. The Page is not evidence-free merely because its output is an
+outline.
 
 ## 📋 The governing per-section outline
 
@@ -176,10 +181,8 @@ reader state on entry
 reader state on exit
 claim role and claim ids
 must establish, as propositions
-evidence card ids
-citation ids
-value ids
-display ids or explicit none
+typed Evidence Item ids
+accepted local Result ids by VALUE/CITE/DISPLAY type, or explicit none
 paragraph/move outline
 required transition in
 required transition out
@@ -211,7 +214,7 @@ store. The Section-control table may show:
 It does not show full model tables, logs, exploratory output, or a pile of
 estimates. Exact estimates, confidence intervals, P values, sample sizes,
 cluster counts, and run-specific model/specification labels remain in accepted
-probe `## Values` records and the Results Section. The table may name an
+local VALUE Results and the Results Section. The table may name an
 estimator family such as OLS/LPM when that identity defines the paper boundary
 or distinguishes the licensed analysis from refused alternatives such as IV or
 DID. Evidence/display chips may open their owning accepted artifact on demand;
@@ -223,24 +226,25 @@ does not land is cut without making the sufficient paper look incomplete.
 
 ## 🃏 Evidence and displays
 
-Narrative uses the same Page-local lanes as every Page:
+Narrative uses the shared Outline plugin and the same typed evidence graph as
+every current Page:
 
 ```text
-pagex/     Probe's accepted-Page lane: the Seed (§8 handoff only — never the
-           Roadmap), the bank Venue Page, analysis or
-           literature Pages
-probe/     Probe's Task/Discovery QA lane: unresolved judgments and missing support
-bibex/     citations supporting framing, method rationale, limitations, or claims
-display/   zero or more maps, tables, or figures that make the argument inspectable
+Context Workspace    Seed handoff, Venue source, policy, and requirements
+Bullet Workspace     claim/arc/section bullets and typed Evidence Item ids
+Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
 ```
 
-Values remain in each probe card's `## Values` block and are cited by
-`PP<NN>.v<n>`; Narrative never creates a second value store.
+The Seed and Venue links remain context and authority. When a proposition needs
+their content as evidence, SURVEY names a Supporting Execution or Discovery
+Run Result, LAND freezes it into one Local Input, and the Narrative's local Run
+produces one `VALUE`, `CITE`, or `DISPLAY` Result. There is no active PageX,
+probe, bibex, value, or display plugin; old lanes are migration-only input.
 
-One Narrative may own many displays: a claim map, section matrix, evidence
-ledger, or alternative arc. Each display is independently accepted. Displays
-may later be consumed by the paper, but their first job here is to let a person
-inspect the Narrative itself.
+One Narrative may own many DISPLAY items: a claim map, section matrix, evidence
+ledger, or alternative arc. Each local DISPLAY Result is independently
+accepted. Displays may later be consumed by the paper, but their first job here
+is to let a person inspect the Narrative itself.
 
 ## 📤 Section handoff packet
 
@@ -250,7 +254,7 @@ Each Section receives only:
 Narrative row id and version
 claim ids and exact propositions
 reader entry/exit states
-allowed evidence/citation/value/display ids
+allowed typed Evidence Item ids and accepted local Result ids
 paragraph/move outline
 venue allocation and hard constraints
 open obligations the Section must expose, not invent answers for

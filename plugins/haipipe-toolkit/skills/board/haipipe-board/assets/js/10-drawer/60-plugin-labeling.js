@@ -3,8 +3,8 @@
  * The retired version of this file was a bottom workflow inferred from
  * `## States` and offered /label-* commands.  The 0.5 family made canonical
  * receipts authoritative and retired those commands, so this file now owns
- * only the registry row.  live/labeling.py owns the receipt-first surface and
- * embeds the page's existing Studio Chat as transport.
+ * only the registry row.  live/labeling.py owns five receipt-first Workspaces
+ * in the upper stage and keeps the page's existing Studio Chat below them.
  */
 (function () {
   'use strict';
@@ -54,7 +54,7 @@
     window.boardPlugins.register({
       id: 'labeling',
       label: '🏷 Labeling',
-      hint: 'canonical frontier and gates above · Studio Chat below',
+      hint: 'five artifact workspaces above · Studio Chat always below',
       menu: 'plugin',
       order: 70,
       applies: isSurfacePage,

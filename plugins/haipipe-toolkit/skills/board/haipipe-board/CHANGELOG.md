@@ -1,3 +1,23 @@
+## 0.161.1 · 2026-09-04
+
+- Require producer receipts to report the performed cycle and preserve
+  `next_cycle` separately from their Page-phase route.
+
+## 0.161.0 · 2026-09-04
+
+- Project the current five-phase Page lifecycle in the live status strip:
+  `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, `04 CHECK`.
+- Merge Plan Context and Page Records into one Context Workspace beside Bullet
+  and Evidence; hide the retired PageX field from current Page surfaces.
+- Add current lifecycle dispatch/audit routes while retaining old
+  PROBE/DRAFT/REVISE/COMPILE receipts as compatibility input.
+
+## 0.160.6 · 2026-09-03
+
+- Move Page Skills material into the explicit Outline-owned
+  `outline/skill/` lane and keep the former sibling path read-only during
+  migration.
+
 ## 0.160.4 · 2026-09-02
 
 - Tighten the Page Outline to five columns by removing the redundant Status

@@ -14,14 +14,17 @@ from __future__ import annotations
 import html
 import re
 from pathlib import Path
-from urllib.parse import parse_qs, quote, urlparse
+from urllib.parse import parse_qs, urlparse
 
-from src.item_table import (compact_global_run, read_items, readable_global_run,
-                            readable_paper_route, repo_root)
+from src.item_table import (compact_global_run, compact_paper_run, read_items,
+                            readable_global_run, readable_paper_route, repo_root)
 
 
 _TICKET_SUFFIXES = {".sh", ".ps1", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
-_TICKET_NAME = re.compile(r"(?:^r\d+|^run[-_]|^b\d+[._]j\d+[._]t\d+[._]r\d+)", re.I)
+_TICKET_NAME = re.compile(
+    r"(?:^r\d+|^run[-_]|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]t\d+[._]r\d+)",
+    re.I,
+)
 _STATE_ORDER = {"Running": 0, "Failed": 1, "Held": 2, "Ready": 3, "Done": 4}
 
 
@@ -40,7 +43,7 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left
  text-transform:uppercase;letter-spacing:.035em}tr.run{cursor:pointer}tr.run:hover td{background:var(--card)}
 code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:650}.state{font-weight:650;white-space:nowrap}
 .state.ready{color:var(--acc)}.state.running{color:var(--warn)}.state.done{color:var(--ok)}.state.failed,.state.held{color:var(--bad)}
-a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}.detail[hidden]{display:none}
+.repo-path{white-space:normal;overflow-wrap:anywhere;word-break:break-word;user-select:text}.detail[hidden]{display:none}
 .detail td{padding:0 7px 10px;background:var(--card)}.detailbox{border-left:3px solid var(--acc);padding:7px 9px;margin:3px 0;font-size:12.5px}
 .detailbox p{margin:3px 0}.detailbox b{display:inline-block;min-width:82px;color:var(--mut)}.refs{margin:5px 0 0;padding-left:18px}
 .empty{max-width:620px;margin:30px auto;padding:14px 16px;border:1px solid var(--line);border-radius:8px;color:var(--mut)}
@@ -108,10 +111,10 @@ def _runtime_for(ticket: Path, runs_dir: Path, results_dir: Path) -> Path | None
 
 def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
     """Return Evidence Items only when their ledger has named this local run."""
-    compact = compact_global_run(run_id)
+    compact = compact_paper_run(run_id) or compact_global_run(run_id)
     needles = {run_id, ticket.name, str(ticket.relative_to(page_src.parent))}
     if compact:
-        needles.update({compact, readable_global_run(compact)})
+        needles.update({compact, readable_paper_route(compact), readable_global_run(compact)})
     refs = []
     for item in read_items(page_src).values():
         declared = " ".join((item.get("local_run", ""), item.get("result", "")))
@@ -128,10 +131,13 @@ def local_runs(page_src: Path) -> list[dict]:
     for ticket in _ticket_files(runs_dir):
         runtime = _runtime_for(ticket, runs_dir, results_dir)
         fields = _fields(runtime)
-        compact = compact_global_run(fields.get("global_id", "")) or compact_global_run(ticket.stem)
+        paper_id = (compact_paper_run(fields.get("global_id", ""))
+                    or compact_paper_run(ticket.stem))
+        compact = (paper_id or compact_global_run(fields.get("global_id", ""))
+                   or compact_global_run(ticket.stem))
         # The Paper Board is the local block. This view omits an inherited
         # ``bNN`` prefix, while ledger and receipt retain it for global lookup.
-        global_id = readable_global_run(compact) if compact else ticket.stem
+        global_id = (paper_id or readable_global_run(compact)) if compact else ticket.stem
         relative_id = readable_paper_route(compact) if compact else ""
         run_id = "P " + (relative_id or ticket.stem)
         rows.append({
@@ -152,23 +158,11 @@ def local_runs(page_src: Path) -> list[dict]:
     return sorted(rows, key=lambda row: (_STATE_ORDER.get(row["status"], 9), row["run_id"]))
 
 
-def _href(path: Path | None, root: Path) -> str:
-    if path is None:
-        return ""
-    try:
-        return "/" + quote(str(path.resolve().relative_to(root.resolve())))
-    except ValueError:
-        return ""
-
-
 def _linked(path: Path | None, *, label: str, root: Path) -> str:
+    """Show an exact selectable path without opening or downloading it."""
     if path is None:
         return "—"
-    href = _href(path, root)
-    if not href:
-        return html.escape(label)
-    return '<a href="%s" target="_blank" rel="noopener">%s</a>' % (
-        html.escape(href, quote=True), html.escape(label))
+    return '<code class=repo-path>%s</code>' % html.escape(label)
 
 
 def _shown_path(path: Path | None, root: Path) -> str:
@@ -235,7 +229,7 @@ def render(page_src: Path, _path_q: str, _file_q: str) -> str:
 <script>
 (function () {{ var rows=document.getElementById('rows'); if(!rows)return;
  function toggle(i){{var d=rows.querySelector('tr.detail[data-i="'+i+'"]');if(d)d.hidden=!d.hidden;}}
- rows.addEventListener('click',function(e){{var r=e.target.closest('tr.run');if(r&&!e.target.closest('a'))toggle(r.dataset.i);}});
+ rows.addEventListener('click',function(e){{var r=e.target.closest('tr.run');if(r)toggle(r.dataset.i);}});
  rows.addEventListener('keydown',function(e){{var r=e.target.closest('tr.run');if(r&&(e.key==='Enter'||e.key===' ')){{e.preventDefault();toggle(r.dataset.i);}}}}); }})();
 </script>"""
 

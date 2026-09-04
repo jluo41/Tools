@@ -2,12 +2,12 @@
 name: haipipe-plugin-evidence
 description: >-
   Compatibility redirect for the retired standalone Evidence plugin. Evidence
-  Items, supporting-run lineage, citations, values, displays, PageX, and their
+  Items, supporting-run lineage, citations, values, displays, and their
   detailed workspace now belong to haipipe-plugin-outline. Trigger: old
   evidence plugin, evidence tab, /haipipe-plugin-evidence.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-03"
+  version: "0.6.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,7 +23,7 @@ Load `haipipe-plugin-outline` instead. It owns:
 MAIN PAGE              one compact read-only Outline Table
 OUTLINE PLUGIN         detailed Shape + Evidence Workspace + process materials
 outline/               plan, requirements, feedback, discussion, item ledger, log
-outline/evidence/      citations, displays, PageX, supporting-run lineage, materials
+outline/evidence/      citations, displays, supporting-run lineage, materials
 ```
 
 The old engine route `/_board/evidence` remains an internal compatibility
@@ -36,7 +36,7 @@ Use these current contracts:
 haipipe-plugin-outline/ref/evidence/citations.md
 haipipe-plugin-outline/ref/evidence/values.md
 haipipe-plugin-outline/ref/evidence/displays.md
-haipipe-plugin-outline/ref/evidence/pagex.md
+haipipe-plugin-outline/ref/evidence/pagex.md   # legacy migration reference only
 ```
 
 Actual Page-local execution remains outside Outline at `<page>/runs/` and

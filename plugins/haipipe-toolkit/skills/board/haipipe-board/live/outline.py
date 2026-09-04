@@ -190,7 +190,7 @@ _PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 body{{margin:0;padding:16px;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
 h1{{font-size:17px;margin:0 0 2px}} .mut{{color:var(--mut);font-size:13px}}
-/* Four calm workspaces replace the old nine-button strip.  The second row is
+/* Three calm workspaces replace the old nine-button strip. The second row is
    local navigation inside the selected workspace, so process records no
    longer compete visually with Bullet and Evidence. */
 .spaces,.subchips{{display:flex;gap:5px;margin:10px 0 6px;flex-wrap:wrap}}
@@ -330,14 +330,12 @@ object.evfig{{height:32vh}}
 .bundles{{margin:7px 0 8px;padding:5px 8px;border:1px solid var(--line);
  border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card))}}
 .bundles>summary{{font-size:10px}}
-.reviewpacket{{margin:9px 0 8px;padding:7px 9px;border:1px solid var(--line);
- border-left:3px solid var(--acc);border-radius:7px;background:color-mix(in srgb,var(--acc) 3%,var(--card));
- font-size:12.5px;line-height:1.5}}
-.reviewpacket>b{{font:650 11px -apple-system,sans-serif;text-transform:uppercase;
- letter-spacing:.05em;color:var(--acc)}}
-.reviewsteps{{margin-top:3px;overflow-wrap:anywhere}}
-.reviewpacket details{{margin-top:4px}}
-.reviewpacket summary{{font-size:10.5px}}
+.planmeta{{margin:2px 0 7px;color:var(--mut);font-size:12.5px;line-height:1.45}}
+.cyclebar{{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:2px 0 7px;
+ font:500 11px ui-monospace,Menlo,monospace;color:var(--mut)}}
+.cyclebar span{{white-space:nowrap}}.cyclebar b{{font-weight:500;margin-right:3px}}
+.cyclebar .done{{color:var(--ok)}}.cyclebar .current{{color:var(--fg);font-weight:700;
+ background:color-mix(in srgb,var(--acc) 12%,var(--card));border-radius:5px;padding:0 5px}}
 .bundle-row{{display:flex;gap:7px;align-items:baseline;padding:2px 0;
  font-size:11px;line-height:1.35;border-top:1px solid var(--line)}}
 .bundle-row:first-of-type{{border-top:0}}
@@ -384,6 +382,31 @@ object.evfig{{height:32vh}}
 .rgrp{{margin:12px 0 4px;font:600 12px -apple-system,sans-serif;color:var(--mut);
  text-transform:uppercase;letter-spacing:.05em}}
 .rpre{{color:var(--mut);font-size:13px;margin:2px 0;line-height:1.5}}
+/* Feedback is a decision surface, not a source-file dump. Keep the reviewer's
+   ask and each requested change visible; fold order, gate, provenance and
+   routing so all metadata does not compete at the same visual weight. */
+.fbsummary{{display:flex;gap:12px;flex-wrap:wrap;margin:1px 0 12px;
+ color:var(--mut);font:600 11.5px ui-monospace,Menlo,monospace}}
+.fbsummary b{{color:var(--fg);font-weight:650}}
+.fbgroup{{display:flex;gap:8px;align-items:baseline;margin:12px 0 4px}}
+.fbgroup .rid{{border:0;padding:0;color:var(--acc)}}
+.fbgtitle{{font-size:14px;font-weight:650}}
+.fbask{{margin:7px 0 6px;padding:8px 11px;border-left:3px solid var(--acc);
+ border-radius:0 7px 7px 0;background:color-mix(in srgb,var(--acc) 5%,var(--card));
+ font-size:14px;line-height:1.55}}
+.fbask b,.fbwork b{{font:650 10.5px -apple-system,sans-serif;color:var(--acc);
+ text-transform:uppercase;letter-spacing:.05em;margin-right:7px}}
+.fbsource{{color:var(--mut);font-size:12.5px;line-height:1.45;margin:1px 0 5px}}
+.fbcontext{{margin:2px 0 9px}} .fbcontext>summary{{font-size:11px}}
+.fbcontext .rdb{{margin-left:0}}
+.fbmsg{{margin:6px 0 3px;font-size:14px;line-height:1.55;color:var(--fg)}}
+.fbwork{{margin:3px 0;color:var(--mut);font-size:13px;line-height:1.5}}
+.fbaux{{display:grid;grid-template-columns:4.8em 1fr;gap:5px;
+ padding:1px 0;font-size:12.5px;line-height:1.5}}
+.fbaux b{{font:600 10px -apple-system,sans-serif;color:var(--mut);
+ text-transform:uppercase;letter-spacing:.04em;padding-top:3px}}
+.fbroute{{margin:3px 0;padding-left:9px;border-left:2px solid var(--line);
+ color:var(--mut);font-size:12.5px;line-height:1.5}}
 .lens .card pre{{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}}
 .workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
  min-height:560px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
@@ -408,8 +431,8 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 <div class=lens id=lens-workspace><iframe class=workspace-frame
  title="Evidence Workspace" data-src="{workspace_url}"></iframe></div>{record_lenses}
 <script>
-var SPACE_FOR={{div:'bullet',prog:'bullet',workspace:'evidence',
- req:'context',disc:'context',fb:'context',files:'records',log:'records'}};
+var SPACE_FOR={{div:'bullet',prog:'bullet',workspace:'evidence',ctx:'context',
+ req:'context',disc:'context',fb:'context',files:'context',log:'context',skills:'context'}};
 function showLens(c){{
     document.querySelectorAll('.lens-chip').forEach(function(x){{
       x.classList.remove('on');}});
@@ -420,11 +443,18 @@ function showLens(c){{
     lens.classList.add('show');
     if(c.dataset.lens==='workspace'){{
       var frame=lens.querySelector('iframe'), src=frame.dataset.src||'';
-      var focus='';
+      var focus='',run='';
       try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
-          localStorage.removeItem('board-outline-evidence-focus');}}catch(e){{}}
+          run=localStorage.getItem('board-outline-evidence-run')||'';
+          localStorage.removeItem('board-outline-evidence-focus');
+          localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
       if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+      if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
       if(src)frame.setAttribute('src',src);
+    }} else {{
+      var nested=lens.querySelector('iframe');
+      if(nested && !nested.getAttribute('src') && nested.dataset.src)
+        nested.setAttribute('src',nested.dataset.src);
     }}
 }}
 function activateLens(name){{
@@ -440,10 +470,13 @@ function activateLens(name){{
     if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
       lens.classList.add('show');
       if(name==='workspace'){{
-        var frame=lens.querySelector('iframe'),src=frame.dataset.src||'',focus='';
+        var frame=lens.querySelector('iframe'),src=frame.dataset.src||'',focus='',run='';
         try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
-            localStorage.removeItem('board-outline-evidence-focus');}}catch(e){{}}
+            run=localStorage.getItem('board-outline-evidence-run')||'';
+            localStorage.removeItem('board-outline-evidence-focus');
+            localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
         if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
+        if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
         if(src)frame.setAttribute('src',src);
       }}
     }}
@@ -463,10 +496,12 @@ document.querySelectorAll('a.badge').forEach(function(a){{
     if(el)el.scrollIntoView({{behavior:'smooth'}});
   }});
 }});
-var params=new URLSearchParams(location.search), requested=params.get('lens')||'', focus=params.get('focus')||'';
+var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
+    focus=params.get('focus')||'', run=params.get('run')||'';
 try{{requested=localStorage.getItem('board-outline-lens')||requested;
     localStorage.removeItem('board-outline-lens');
-    if(focus)localStorage.setItem('board-outline-evidence-focus',focus);}}catch(e){{}}
+    if(focus)localStorage.setItem('board-outline-evidence-focus',focus);
+    if(run)localStorage.setItem('board-outline-evidence-run',run);}}catch(e){{}}
 if(requested)activateLens(requested);
 window.addEventListener('storage',function(ev){{
   if(ev.key!=='board-outline-lens'||!ev.newValue)return;
@@ -742,6 +777,20 @@ def _tally(o):
     return " ".join(bits)
 
 
+def _outline_cycle_strip(cycle):
+    """Render the same SHAPE → SURVEY → LAND → EMBED status used on the Page."""
+    stages = ("SHAPE", "SURVEY", "LAND", "EMBED")
+    current = stages.index(cycle) if cycle in stages else len(stages)
+    cells = []
+    for index, stage in enumerate(stages):
+        cls = "done" if index < current else "current" if index == current else "future"
+        aria = ' aria-current="step"' if index == current else ""
+        cells.append('<span class="%s"%s><b>%d</b> %s</span>' % (
+            cls, aria, index + 1, stage
+        ))
+    return '<div class=cyclebar aria-label="Outline evidence workflow">%s</div>' % "".join(cells)
+
+
 
 # ---------------------------------------------------------------- the plan
 # The OUTLINE phase's own file, `<page>/outline/<stem>-outline-v<N>.md`
@@ -822,7 +871,6 @@ def _typed_item_review(page_src, plan, plan_text, approved):
             "expected": (row or {}).get("expected") or expected,
             "acceptance": (row or {}).get("acceptance") or acceptance,
             "supporting_runs": (row or {}).get("supporting_runs") or "— not surveyed",
-            "pagex_bindings": (row or {}).get("pagex_bindings") or "— not surveyed",
             "local_input": (row or {}).get("local_input") or "— not surveyed",
             "local_run": (row or {}).get("local_run") or "— not surveyed",
             "action": (row or {}).get("action") or "",
@@ -847,73 +895,6 @@ def _typed_item_review(page_src, plan, plan_text, approved):
     }
 
 
-def _content_divisions(page_text):
-    """Return the current Content divisions in display order, never prose."""
-    inside, found = False, []
-    for line in page_text.splitlines():
-        if re.match(r"^##\s+Content\b", line, re.I):
-            inside = True
-            continue
-        if inside and line.startswith("## "):
-            break
-        if not inside:
-            continue
-        match = _DIV_RE.match(line)
-        if match and not match.group(2):
-            found.append((match.group(1), (match.group(3) or match.group(4) or "").strip()))
-    return found
-
-
-def _shape_content_map(plan_text, page_text):
-    """A structural map for review, deliberately not a semantic verdict."""
-    shape = []
-    for line in plan_text.splitlines():
-        match = re.match(r"^##\s+C(\d+)\s*·\s*(.*)$", line)
-        if match:
-            shape.append((match.group(1), match.group(2).strip()))
-    content = _content_divisions(page_text)
-
-    def normal(text):
-        return re.sub(r"[^a-z0-9]+", "", text.lower())
-
-    label_matches = sum(
-        1 for (_number, shape_name), (_content_number, content_name)
-        in zip(shape, content)
-        if normal(shape_name) and normal(content_name)
-        and (normal(shape_name) in normal(content_name)
-             or normal(content_name) in normal(shape_name))
-    )
-    if not shape:
-        summary, cls = "⚠️ no Shape divisions in this plan", "warn"
-    elif len(shape) != len(content):
-        summary, cls = (
-            "⚠️ Shape has %d division%s; current Content has %d" % (
-                len(shape), "s"[:len(shape) != 1], len(content)
-            ),
-            "warn",
-        )
-    elif label_matches == len(shape):
-        summary, cls = "✅ %d Shape division%s map to current Content" % (
-            len(shape), "s"[:len(shape) != 1]
-        ), "ok"
-    else:
-        summary, cls = "⚠️ %d Shape ↔ Content divisions; %d/%d labels match" % (
-            len(shape), label_matches, len(shape)
-        ), "warn"
-
-    def show(rows, prefix):
-        return " · ".join(
-            "%s%s %s" % (prefix, number, name or "—") for number, name in rows
-        ) or "—"
-
-    return {
-        "summary": summary,
-        "cls": cls,
-        "shape": show(shape, "C"),
-        "content": show(content, "§"),
-    }
-
-
 def _typed_item_chip(item, popover_id):
     """One compact status tag with its Survey graph behind a native popover."""
     status = item["status"]
@@ -926,7 +907,6 @@ def _typed_item_chip(item, popover_id):
         ("Expected", item["expected"]),
         ("Acceptance", item["acceptance"]),
         ("Supporting Runs", item["supporting_runs"]),
-        ("PageX Bindings", item["pagex_bindings"]),
         ("Local Input", item["local_input"]),
         ("Local Run", item["local_run"]),
         ("Result", item["result"]),
@@ -949,43 +929,6 @@ def _typed_item_chip(item, popover_id):
         '<div class="ccb rrows">%s</div></div>'
         % (cls, popover_id, _e(label), popover_id, cls, _e(item["id"]),
            _e(item["type"]), _e(status), detail)
-    )
-
-
-def _review_packet(page_src, plan_text, typed):
-    """The visible four-step packet used to review one Section at a time."""
-    alignment = _shape_content_map(
-        plan_text, page_src.read_text(encoding="utf-8", errors="replace")
-    )
-    feedback_file = page_src.parent / "outline" / (page_src.stem + "-feedback.md")
-    feedback_count = 0
-    if feedback_file.is_file():
-        feedback_text = feedback_file.read_text(encoding="utf-8", errors="replace")
-        feedback_count = len(re.findall(r"(?m)^###\s+", feedback_text))
-    counts = typed["counts"]
-    status_line = " · ".join(
-        "%d %s" % (counts[word], word)
-        for word in ("specified", "planned", "ready", "folded", "accepted")
-    ) if typed["items"] else "no typed Evidence Item owed"
-    survey = "%d typed item%s · Decide %d/%d · %s" % (
-        len(typed["items"]), "s"[:len(typed["items"]) != 1],
-        typed["decided"], len(typed["items"]), status_line,
-    )
-    return (
-        '<div class="reviewpacket">'
-        '<b>Review this Section</b>'
-        '<div class=reviewsteps>① <b>Shape</b>: read the plan below '
-        '→ ② <b>Survey</b>: %s '
-        '→ ③ <b>Feedback</b>: %d routed record%s in 🗣 Feedback '
-        '→ ④ <b>Content</b>: <span class=%s>%s</span></div>'
-        '<details><summary>Shape ↔ Content map</summary>'
-        '<div class=rr><b>Shape</b><span>%s</span></div>'
-        '<div class=rr><b>Current Content</b><span>%s</span></div>'
-        '<div class=mut>Structural map only; approve the substantive alignment during review.</div>'
-        '</details></div>'
-        % (_e(survey), feedback_count, "s"[:feedback_count != 1],
-           alignment["cls"], _e(alignment["summary"]),
-           _e(alignment["shape"]), _e(alignment["content"]))
     )
 
 
@@ -1792,40 +1735,28 @@ def plan_card(page_src, root=None):
     landed = _count_landed(txt, cards, units, keys)
     accepted = _count_accepted(txt, cards, units)
     head = "%s plan %s" % ("🔒" if approved else "✍️", _e(ver))
-    gate = ('<span class=ok>approved</span>' if approved
-            else '<span class=wait>🚧 approved: ⬜ — waiting on a person</span>')
+    gate = ('<span class=ok>approved: ✅</span>' if approved
+            else '<span class=mut>approved: ⬜</span>')
     # The counts run through _e(), so an `&nbsp;` written into the STRING is
     # escaped and printed as the five literal characters (seen in the 260817
     # screenshot: "0 accepted &nbsp; aim 9"). Separators belong in the markup.
     if typed["items"]:
-        counts = "%d typed · %s" % (
-            len(typed["items"]),
-            " · ".join(
-                "%d %s" % (typed["counts"][word], word)
-                for word in ("specified", "planned", "ready", "folded", "accepted")
-            ),
-        )
-        kinds = " · ".join(
-            ["%s %d" % (kind, typed["types"][kind]) for kind in ITEM_TYPES
-             if typed["types"][kind]]
-            + ["Decide %d/%d" % (typed["decided"], len(typed["items"])),
-               "cycle %s" % typed["cycle"]]
+        item_n = len(typed["items"])
+        counts = "%d evidence item%s · Decisions %d/%d" % (
+            item_n, "s"[:item_n != 1], typed["decided"], item_n,
         )
     else:
         counts = "%d owed · %d landed · %d accepted" % (owed, landed, accepted)
-        kinds = " · ".join("%s %d" % (k, v) for k, v in sorted(tally.items()))
     bundle = ""
     if bundle_rows:
         bundle = ('<details class=bundles><summary>🔗 Evidence Bundles · %d '
                   'Point%s</summary>%s</details>'
                   % (len(bundle_rows), "s"[:len(bundle_rows) != 1],
                      "".join(bundle_rows)))
-    review = _review_packet(page_src, txt, typed)
-    return ('<div class=card><h2>%s %s</h2>'
-            '<div class=mut>%s<span class=sep>%s</span>%s<span class=sep>%s</span>'
-            '%s</div>%s%s%s</div>'
-            % (head, gate, _e(counts), "&nbsp;&middot;&nbsp;", _e(kinds),
-               "&nbsp;&middot;&nbsp;", _e(f.name), review, bundle, "".join(rows)))
+    cycle_strip = _outline_cycle_strip(typed["cycle"])
+    return ('<div class=card><h2>%s · %s</h2>'
+            '%s<div class=planmeta>%s</div>%s%s</div>'
+            % (head, gate, cycle_strip, _e(counts), bundle, "".join(rows)))
 
 
 
@@ -1875,7 +1806,8 @@ def _page_now(plan, plan_head, cards):
 # `## Files`
 # leaves the page for `<stem>-files.md`, one `### F<n> · <what it is for>`
 # per file with Path and Role).
-_SIBLINGS = (("req", "📏 Requirement", "requirement"), ("disc", "💬 Discussion", "discussion"),
+_SIBLINGS = (("ctx", "🧭 Overview", "context"),
+             ("req", "📏 Requirement", "requirement"), ("disc", "💬 Discussion", "discussion"),
              ("fb", "🗣 Feedback", "feedback"),
              ("files", "📎 Files", "files"), ("log", "📜 Log", "log"))
 
@@ -2031,7 +1963,92 @@ def _rec_html(rec, kind):
     h.append("</div>")
     return "".join(h)
 
+def _feedback_rec_html(rec):
+    """Feedback reads as request → next action; provenance stays available."""
+    pill = _pill(rec)
+    h = ['<div class="rec feedback"><div class=rh><span class=rid>%s</span>'
+         '<span class=rt>%s</span>' % (_e(rec["id"]), _inl(rec["head"]))]
+    if pill:
+        h.append('<span class="pill %s">%s</span>' % (pill[1], _e(pill[2])))
+    h.append("</div>")
+    visible, aux = {}, []
+    for label, value in rec["rows"]:
+        low = label.lower()
+        if pill and label == pill[0]:
+            continue
+        if low in ("feedback", "work") and low not in visible:
+            visible[low] = value
+        else:
+            aux.append((label, value))
+    if visible.get("feedback"):
+        h.append('<div class=fbmsg>%s</div>' % _inl(visible["feedback"]))
+    if visible.get("work"):
+        h.append('<div class=fbwork><b>Next</b>%s</div>' % _inl(visible["work"]))
+    folded = []
+    folded.extend('<div class=fbaux><b>%s</b><span>%s</span></div>'
+                  % (_e(label), _inl(value)) for label, value in aux)
+    folded.extend('<div class=fbroute>%s</div>' % _inl(value)
+                  for value in rec["quotes"] + [x for x in rec["detail"] if x])
+    if folded:
+        h.append('<details class="rd fbcontext"><summary>Source &amp; routing</summary>'
+                 '<div class=rdb>%s</div></details>' % "".join(folded))
+    if not visible and not folded:
+        h.append('<div class=mut>no feedback detail</div>')
+    h.append("</div>")
+    return "".join(h)
+
+def _feedback_html(items):
+    """A calm review queue: tally, round ask, then actionable feedback rows."""
+    out, summary, context = [], "", []
+
+    def flush_context():
+        if not context:
+            return
+        body = "".join('<div class=fbaux><b>%s</b><span>%s</span></div>'
+                       % (_e(label), _inl(value)) for label, value in context)
+        out.append('<details class=fbcontext><summary>Order, gate &amp; source</summary>'
+                   '<div class=rdb>%s</div></details>' % body)
+        context[:] = []
+
+    for kind, value in items:
+        if kind == "meta":
+            if value.startswith("status:"):
+                m = re.search(r"(\d+)\s+of\s+(\d+)\s+open\s+·\s+(\d+)\s+landed\s+·\s+(\d+)\s+round", value)
+                if m:
+                    summary = ('<div class=fbsummary><span><b>%s</b> open</span>'
+                               '<span><b>%s</b> landed</span><span><b>%s</b> round%s</span></div>'
+                               % (m.group(1), m.group(3), m.group(4),
+                                  "s"[:m.group(4) != "1"]))
+            continue
+        if kind == "group":
+            flush_context()
+            rid, sep, title = value.partition(" · ")
+            out.append('<div class=fbgroup><span class=rid>%s</span><span class=fbgtitle>%s</span></div>'
+                       % (_e(rid), _inl(title if sep else value)))
+            continue
+        if kind == "text":
+            if value.startswith("The Round's own words"):
+                continue
+            m = re.match(r"\*\*(Ask|Order|Gate)\*\*\s*·\s*(.*)", value)
+            if m:
+                if m.group(1) == "Ask":
+                    out.append('<div class=fbask><b>Main ask</b>%s</div>' % _inl(m.group(2)))
+                else:
+                    context.append((m.group(1), m.group(2)))
+                continue
+            if value.startswith("**"):
+                context.append(("Source", value))
+            else:
+                out.append('<div class=rpre>%s</div>' % _inl(value))
+            continue
+        flush_context()
+        out.append(_feedback_rec_html(value))
+    flush_context()
+    return summary + ("".join(out) or '<div class=mut>nothing here yet</div>')
+
 def _records_html(items, kind):
+    if kind == "fb":
+        return _feedback_html(items)
     out, meta = [], []
     for k, v in items:
         if k == "meta":
@@ -2046,12 +2063,12 @@ def _records_html(items, kind):
     head = ('<div class="mut rmeta">%s</div>' % " · ".join(meta)) if meta else ""
     return head + ("".join(out) or '<div class=mut>nothing here yet</div>')
 
-def _lenses(page_src):
-    """Return the two quiet record groups plus their shared lens bodies.
+def _lenses(page_src, root=None):
+    """Return one Context Workspace over the separate process records.
 
-    Requirement/Discussion/Feedback explain why the plan is shaped this way;
-    Files/Log record what the page touched.  They remain separate records on
-    disk but no longer appear as five competing top-level workspaces.
+    The generated Context overview, Requirement, Discussion, Feedback, Files,
+    Log, and Skills remain separate stores on disk. The workspace merges only
+    their presentation, replacing the old Plan Context/Page Records split.
     """
     if page_src is None:
         return "", "", "", "", ""
@@ -2065,22 +2082,65 @@ def _lenses(page_src):
         chip = ('\n <button class="chip lens-chip" data-lens=%s '
                 'title="outline/%s">%s%s</button>'
                 % (key, f.name, label, (" · %d" % n) if n else ""))
-        (context if key in ("req", "disc", "fb") else records).append(chip)
+        context.append(chip)
         lenses.append('\n<div class=lens id=lens-%s><div class=card>%s</div></div>'
                       % (key, _records_html(items, key)))
+    # Skills is an Outline-owned Page Record under outline/skill/.  A former
+    # sibling skill/ store remains a read-only fallback during migration.
+    skill_dirs = [page_src.parent / "outline" / "skill",
+                  page_src.parent / "skill"]
+    skill_dir = next((d for d in skill_dirs
+                      if (d / (page_src.stem + ".md")).is_file()),
+                     skill_dirs[0])
+    skill_store = skill_dir / (page_src.stem + ".md")
+    if skill_store.is_file():
+        skill_text = skill_store.read_text(encoding="utf-8", errors="replace")
+        skill_count = sum(
+            1 for line in skill_text.splitlines()
+            if line.startswith("- ") and " · removed" not in line
+        )
+        context.append(
+            '\n <button class="chip lens-chip" data-lens=skills '
+            'title="outline/skill/%s">🛠 Skills · %d</button>'
+            % (skill_store.name, skill_count)
+        )
+        skill_view = skill_dir / (page_src.stem + "-skill.html")
+        skill_url = ""
+        if skill_view.is_file() and root is not None:
+            try:
+                skill_url = "/" + skill_view.resolve().relative_to(
+                    Path(root).resolve()).as_posix() + "?embed=1"
+            except ValueError:
+                skill_url = ""
+        if skill_url:
+            skill_body = (
+                '<iframe class=workspace-frame title="Skills" data-src="%s"></iframe>'
+                % html.escape(skill_url, quote=True)
+            )
+        else:
+            active = [
+                line[2:].split(" · ", 1)[0]
+                for line in skill_text.splitlines()
+                if line.startswith("- ") and " · removed" not in line
+            ]
+            skill_body = '<div class=card>%s</div>' % (
+                "".join('<div class=rpre>🛠 %s</div>' % _e(name) for name in active)
+                or '<div class=mut>no skills ranked yet</div>'
+            )
+        lenses.append('\n<div class=lens id=lens-skills>%s</div>' % skill_body)
     context_html = ('<div class=subchips data-subspace=context>%s</div>'
                     % "".join(context)) if context else ""
-    records_html = ('<div class=subchips data-subspace=records>%s</div>'
-                    % "".join(records)) if records else ""
+    records_html = ""
     context_space = ('\n <button class=space data-space=context '
-                     'data-default=%s>Plan Context</button>'
-                     % ("req" if any("data-lens=req" in x for x in context)
+                     'data-default=%s>Context Workspace</button>'
+                     % ("ctx" if any("data-lens=ctx" in x for x in context)
+                        else "req" if any("data-lens=req" in x for x in context)
                         else "disc" if any("data-lens=disc" in x for x in context)
-                        else "fb")) if context else ""
-    records_space = ('\n <button class=space data-space=records '
-                     'data-default=%s>Page Records</button>'
-                     % ("files" if any("data-lens=files" in x for x in records)
-                        else "log")) if records else ""
+                        else "fb" if any("data-lens=fb" in x for x in context)
+                        else "files" if any("data-lens=files" in x for x in context)
+                        else "log" if any("data-lens=log" in x for x in context)
+                        else "skills")) if context else ""
+    records_space = ""
     return context_space, records_space, context_html, records_html, "".join(lenses)
 
 def render(title, o, page_src=None, root=None, path_q="", file_q=""):
@@ -2124,8 +2184,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q=""):
     # is what is written now. Reading them unlabelled beside each other, with
     # two different section lists, is what made the tab confusing.
     plan = plan_card(page_src, root) if page_src is not None else ""
-    plan_head = ('<div class=lead>🧭 THE PLAN &mdash; what this page said it '
-                 'would cover. Authored, frozen when approved.</div>')
+    plan_head = ''
     by_div = _page_now(plan, plan_head, cards) if o["divs"] else (plan +
         cards[-1] + '<div class=mut>no numbered Content divisions found; '
         'everything is 🌐 until the page grows `### N ·` parts</div>')
@@ -2142,7 +2201,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q=""):
 
     lead = ('<div class=lead>%s</div>' % _e(o.get("lead", ""))
             if o.get("lead") else "")
-    context_space, records_space, context_chips, records_chips, record_lenses = _lenses(page_src)
+    context_space, records_space, context_chips, records_chips, record_lenses = _lenses(page_src, root)
     workspace_url = ""
     if page_src is not None:
         workspace_url = ("/_board/evidence?path=%s&file=%s&embed=1" %

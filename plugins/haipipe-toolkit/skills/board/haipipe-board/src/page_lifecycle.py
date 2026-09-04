@@ -9,33 +9,31 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-# PROBE retired 260901; current typed Evidence Items use Supporting/Local Runs.
-# A stored receipt naming PROBE reads as
-# EVIDENCE through PHASE_ALIASES, so every pre-260901 run stays auditable;
-# the short 260816 PROBE-as-EVIDENCE shape (PROBE → REVISE) collapses the
-# same way, so `_legacy_probe` below is now only a flag for the trace note.
+# Current phases are CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK. Historical
+# PROBE/DRAFT/REVISE/COMPILE tokens remain auditable; they are never emitted by
+# the current controller.
 PHASE_ALIASES = {"PROBE": "EVIDENCE"}
-PHASES = {"OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK"}
+PHASES = {
+    "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK",
+    "DRAFT", "REVISE", "COMPILE",
+}
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
 PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
-# THE OUTLINE PART, 260901 (the 260819 PREPARE loop, renamed and re-cut):
-# OUTLINE (SHAPE, SURVEY) -> EVIDENCE (LAND, EMBED) -> OUTLINE, until the
-# plan and its runs agree; the one door out is OUTLINE's approved: tick with
-# every make-item folded, so DRAFT is reachable from OUTLINE only. DRAFT and
-# REVISE (the WRITE cycle) may send a claim without a run back to OUTLINE
-# (SURVEY) and a stale row back to EVIDENCE. CHECK may route anywhere.
-#
-# COMPILE keeps its row. It is folded into REVISE (haipipe-page-revise 0.5.0),
-# has no contract of its own, and a stored receipt may still name it.
-# Removing the row would make an old receipt unauditable, which is the
-# opposite of what this table is for.
+# Current edges are listed with compatibility edges on OUTLINE/CHECK. The
+# historical rows keep immutable receipts auditable after DRAFT/REVISE/COMPILE
+# were folded into CONTENT.
 LEGAL_ROUTES = {
-    "OUTLINE": {"OUTLINE", "EVIDENCE", "DRAFT", "HOLD"},
-    "EVIDENCE": {"EVIDENCE", "OUTLINE", "HOLD"},
+    "CONTEXT": {"CONTEXT", "OUTLINE", "HOLD"},
+    "OUTLINE": {"CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "DRAFT", "HOLD"},
+    "EVIDENCE": {"CONTEXT", "EVIDENCE", "OUTLINE", "HOLD"},
+    "CONTENT": {"CONTEXT", "CONTENT", "OUTLINE", "EVIDENCE", "CHECK", "HOLD"},
     "DRAFT": {"DRAFT", "OUTLINE", "REVISE", "CHECK", "HOLD"},
     "REVISE": {"REVISE", "COMPILE", "OUTLINE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
     "COMPILE": {"COMPILE", "CHECK", "REVISE", "HOLD"},
-    "CHECK": {"CLOSE", "OUTLINE", "EVIDENCE", "DRAFT", "REVISE", "HOLD"},
+    "CHECK": {
+        "CLOSE", "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT",
+        "DRAFT", "REVISE", "HOLD",
+    },
 }
 
 
@@ -472,7 +470,8 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                     )
                 )
             if verdict == "revise" and route not in {
-                "OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE"
+                "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT",
+                "DRAFT", "REVISE", "COMPILE"
             }:
                 findings.append(
                     _finding(
@@ -538,7 +537,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         if previous is not None:
             previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
             previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
-            # THE OUTLINE-PART PAUSE, 260819. A HOLD from OUTLINE/EVIDENCE
+            # THE PLANNING/EVIDENCE PAUSE. A HOLD from CONTEXT/OUTLINE/EVIDENCE
             # while the packet's human gate is required and the step's gate is
             # still open is a PAUSE between passes of one converging round,
             # not a terminal: the ruled loop appends one receipt per pass, and
@@ -548,7 +547,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             # a HOLD outside the OUTLINE part or with a settled gate stays terminal.
             prepare_pause = (
                 previous_route == "HOLD"
-                and previous_phase in {"OUTLINE", "EVIDENCE"}
+                and previous_phase in {"CONTEXT", "OUTLINE", "EVIDENCE"}
                 and declared_gate_required
                 and str(_gate(previous).get("status", "")) in {"pending", "waiting"}
             )

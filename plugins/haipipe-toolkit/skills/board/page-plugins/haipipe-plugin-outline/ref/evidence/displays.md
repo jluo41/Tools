@@ -1,8 +1,8 @@
 # Displays lane · the Page as a small paper
 
 Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
-`DISPLAY`, or when the 🧭 Outline plugin's Evidence Workspace must present a display unit. The unified
-Evidence plugin owns the Page-facing lane and surface. Renderer skills still
+`DISPLAY`, or when the 🧭 Outline plugin's Evidence Workspace must present a display unit. The Outline
+plugin owns the Page-facing lane and surface. Renderer skills still
 own their craft and `recipe/`; they are workers, not Page plugins.
 
 This reference defines where a unit lives on a Page, which renderer makes it,
@@ -82,8 +82,8 @@ The commonest question about a data-driven unit is where its numbers come from (
 
 **A DATA-driven unit may only be created once the Results supporting it are
 valid.** Its `intake/` freezes from the Evidence Item's Local Input, which does
-not exist until LAND validates every declared Supporting Result and PageX
-binding. Until then the typed `DISPLAY` item carries its expectation and Run
+not exist until LAND validates every declared Supporting Result and freezes
+the Local Input. Until then the typed `DISPLAY` item carries its expectation and Run
 plan but no display unit folder. A CONCEPT unit may have zero Supporting Runs
 when its approved item contract is sufficient; LAND still freezes one Local
 Input and executes one Local Run.

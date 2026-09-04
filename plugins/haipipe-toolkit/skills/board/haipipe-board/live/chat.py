@@ -28,6 +28,7 @@ from . import base
 from . import turnring
 from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from .structure import page_id_of
+from src.common import outline_lane_dirs
 from src.server_config import load_server_config, server_config_dir
 
 
@@ -484,11 +485,13 @@ def page_folder_context(f, root):
         pass
     for lane, label in (
             ("skill", "skills this page is written with (load the one a message needs)"),):
-        lst = d / lane / f"{stem}.md"
+        dirs = outline_lane_dirs(d, lane)
+        lst = ((dirs[0] / f"{stem}.md") if dirs
+               else d / "outline" / lane / f"{stem}.md")
         if lst.is_file():
             rows = [ln[2:].strip() for ln in lst.read_text(encoding="utf-8", errors="ignore").splitlines() if ln.startswith("- ")]
             if rows:
-                out.append(f"  · {lane}/: {label}: " + " · ".join(r.split(" · ")[0] for r in rows[:12]))
+                out.append(f"  · outline/{lane}/: {label}: " + " · ".join(r.split(" · ")[0] for r in rows[:12]))
     return out
 
 
@@ -554,43 +557,43 @@ EFFORTS = ("low", "medium", "high", "xhigh", "max")
 PAGE_RULES_BODY = """The page you belong to is the file given below (relative to the repo root,
 which is your working directory: the whole SPACE). Its folder holds:
   <page>.md          Opening · Outline · Content · Aims          the PRODUCT
-  outline/           the plan (-outline-v<N>.md) and six record files: -requirement
-                     -discussion (D<nn> threads) -feedback -evidence -files -log
-  evidence/                       probe/ · bibex/ · display/ · pagex/ lanes
+  outline/           Context, Bullet, and Evidence Workspace records owned by
+                     haipipe-plugin-outline
+  runs/ + results/   Level-4 work and paired Results; scripts/ is their engine
 
 WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full table):
   a comment on a sentence     > Comment WHO · text · YYMMDD HHMM  directly under that sentence
   an answerable question      the reply, plus a >> CC<MMDD>: lane under the sentence
   an open question            ### D<nn> · … (Ask · Options · We lean · Decide) in outline/<stem>-discussion.md
                               id = highest D<nn> on the board + 1 (discussion AND log files)
-  a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (REVISE)
+  a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (CONTENT)
   a plan change               outline/<stem>-outline-v<N>.md; v<N+1> if v<N> is approved ✅ (OUTLINE)
   a ruling by the person      transcribe it with the quote and time; never decide a tick
   a fact the page lacks       a typed record in outline/<stem>-evidence-items.md;
-                              SHAPE sets expectation; SURVEY plans supports + PageX + input + local Run
-  a promise change            the Aim row on the page: Done when: and Now: (DRAFT)
+                              SHAPE sets expectation; SURVEY plans supports + input + local Run
+  a promise change            the Aim row on the page: Done when: and Now: (CONTENT)
   task work                   the task folder the page links; haipipe-task law applies
   EVERY write                 one record in outline/<stem>-log.md:
                               `### YYMMDD HHMM · chat: <what changed>` naming the file (newest first)
 
-THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Two parts, six cycles,
+THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Five indexed phases,
 and the strip below says which one the page is in; a cycle word from the person runs
 that pass here, in this session, leaving the artifact, one log record (receipt folded
 under it) and the strip in your reply:
-  OUTLINE part · the page decides what is true
+  00 CONTEXT  /haipipe-page-context    PREPARE: Collect → Resolve → Freeze into Context Workspace
+  01 OUTLINE  /haipipe-page-outline
     SHAPE    /haipipe-page-outline    brief → propose → react → revise; the person ticks approved:
     SURVEY   /haipipe-page-outline    each typed item gets 0..N Execution/Discovery Supporting Runs,
-                                      0..N exact PageX bindings, one Local Input, one local Run, and Decide
-    LAND     /haipipe-page-evidence   validate/execute supports + PageX, freeze one input, execute one
+                                      one Local Input, one indexed Local Run, and Decide
+  02 EVIDENCE /haipipe-page-evidence
+    LAND     /haipipe-page-evidence   validate/execute supports, freeze one input, execute one
                                       local Run, and bind its ready VALUE/CITE/DISPLAY Result
     EMBED    /haipipe-page-evidence   interpret ready local Results into plan v<N+1>, never
                                       restructure; back to SHAPE
-  DRAFT part · the page is written
-    WRITE    /haipipe-page-draft then /haipipe-page-revise   slot → sentence with realizes: and a
-                                      Value lane; ✎ lanes; latex/ word/ rebuilt; teeth then a fresh
-                                      cold pre-check, budget 3
-    CHECK    dispatch haipipe-page-check-agent (a fresh judge); here only the read-only Quality Check
-Announce the cycle on every reply (`SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
+  03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
+                                      Page Division Writing Run per commissioned division
+  04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only Quality Check
+Announce the phase/cycle on every reply (`01 OUTLINE / SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
 until the plan and its runs agree; every evidence number is answered by a RUN, the run computes
 and the page interprets; WRITE runs without asking; never write the person's ticks (approved:,
 Decide, verified:, accepted:); never judge your own version.

@@ -1,3 +1,10 @@
+## 2026-09-04 · canonical Page dependency order
+
+- Align all five phase agents with Page → router → phase → owning workflow →
+  exact Page Type → policy/worker → presenter ordering.
+- Require phase routes and target cycles to remain separate in their shared
+  producer receipt.
+
 ## haipipe-page-outline-agent 0.3.1 · haipipe-page-evidence-agent 0.3.1 — 2026-09-02
 
 - Outline SURVEY now plans exact PageX bindings beside Supporting Runs, while
@@ -85,3 +92,10 @@
   this board drifted within a day. `haipipe-board-creator-agent` stays as the
   shared base (packet, procedure, house rules, return contract) and keeps the
   non-phase verbs: `create-page` and `revise-opening`.
+## 2026-09-04 · five-phase Page workflow
+
+- Add `haipipe-page-context-agent` for 00 CONTEXT/PREPARE.
+- Add `haipipe-page-content-agent` for 03 CONTENT/WRITE.
+- Remove PageX from OUTLINE/SURVEY and EVIDENCE/LAND agent contracts.
+- Keep DRAFT and REVISE agent names only for historical receipt compatibility;
+  new dispatch uses CONTENT.

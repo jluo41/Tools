@@ -1,3 +1,33 @@
+## 0.26.1 — 2026-09-04
+
+- Define one canonical dependency order for every Page phase: Page base,
+  router, phase, owning workflow, exact Page Type, phase policy, optional Run
+  workers, then the Outline presenter.
+- Distinguish phase `route` from cycle `next_cycle` in producer receipts.
+
+## 0.26.0 — 2026-09-04
+
+- Replace the two-part OUTLINE/DRAFT model with five numbered Page phases:
+  `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, and `04 CHECK`.
+- Add the canonical detailed workflow table with exact inputs, skill chain,
+  Outline workspace, L3 mutations, L4 Runs, exits, and backward routes.
+- Make CONTEXT, OUTLINE, and EVIDENCE share `haipipe-plugin-outline` through
+  Context, Bullet, and Evidence workspaces while preserving distinct phase
+  authority.
+- Replace active DRAFT/REVISE dispatch with one CONTENT/WRITE phase; Draft,
+  Revise, Build, and Pre-check are internal movements.
+- Remove PageX Bindings from the active evidence graph. Cross-Folder evidence
+  now enters through Supporting Run Results; related Pages remain context.
+- Keep stored DRAFT, REVISE, COMPILE, and PROBE receipts as compatibility
+  inputs rather than new workflow outputs.
+
+## 0.25.2 — 2026-09-03
+
+- Route LAND through the current Outline-owned Evidence Workspace and remove
+  the retired standalone Evidence plugin from the active chain.
+- Align the person-reserved citation verification path with
+  `outline/evidence/bibex/`.
+
 ## 0.25.1 — 2026-09-02
 
 - Add the compact Evidence Item `Label` to SHAPE's cross-phase contract;

@@ -22,7 +22,6 @@ class RunsPluginTest(unittest.TestCase):
 - **Expected**: VALUE estimate with interval.
 - **Acceptance**: Aggregate output passes review.
 - **Supporting Runs**: Execution · rerun · b03.j01.t01.r01
-- **PageX Bindings**: []
 - **Local Input**: Frozen aggregate envelope.
 - **Local Run**: Page · Evidence Item · registered · b01.j01.t01.r01 → results/b01.j01.t01.r01/
 - **Decide**: ☑ make
@@ -67,6 +66,8 @@ class RunsPluginTest(unittest.TestCase):
         self.assertIn("runtime.yaml", body)
         self.assertIn("Run path", body)
         self.assertIn("Result path", body)
+        self.assertIn("class=repo-path", body)
+        self.assertNotIn("href=", body)
         self.assertNotIn(">Ticket<", body)
         self.assertNotIn(">Receipt<", body)
         self.assertNotIn("b03.j01.t01.r01</code></td>", body)
@@ -103,6 +104,21 @@ class RunsPluginTest(unittest.TestCase):
         self.assertTrue(by_label["outline/evidence/supporting-runs"]["derived"])
         self.assertFalse(by_label["runs"]["derived"])
         self.assertFalse(by_label["results"]["derived"])
+
+    def test_folder_shows_skill_as_an_explicit_outline_lane(self):
+        skill = self.page.parent / "outline" / "skill"
+        skill.mkdir(parents=True)
+        (skill / "S-Test.md").write_text("- haipipe-page-outline\n",
+                                          encoding="utf-8")
+
+        _title, _mtime, rows, _stubs = folder_status(self.page)
+        by_label = {row["label"]: row for row in rows}
+        self.assertIn("outline/skill", by_label)
+        self.assertEqual(by_label["outline/skill"]["files"], 1)
+        self.assertNotIn(
+            "skill/S-Test.md",
+            [rel for rel, _path in by_label["outline"]["list"]],
+        )
 
 
 if __name__ == "__main__":

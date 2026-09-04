@@ -6,8 +6,8 @@ description: >-
   plugins, five workflow cycles, cross-face closure, and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-02"
+  version: "0.3.1"
+  last_updated: "2026-09-04"
   workflow: haipipe-discovery-workflow
   phase: D1
   folder_kind: discovery
@@ -66,8 +66,16 @@ linked legacy files already satisfy Result-backed synthesis.
 `discovery.yaml` owns intent, lifecycle status, and the closing report. SCOPE
 bounds the question; PREPARE optionally creates a reusable instrument;
 ACQUIRE admits and analyzes canonical Subjects; SYNTHESIZE promotes completed
-Results into the root Page, optional typed record, and derived Evidence Bib;
-CLOSE checks and reconciles both Faces.
+Results into the root Page, optional typed record, and the Outline-owned
+Evidence Workspace; CLOSE checks and reconciles both Faces.
+
+The Page process folder is shared with every Page: `outline/` holds planning
+material and, when the inquiry needs citation material, `outline/evidence/`
+holds the derived Bib plus any typed CITE items explicitly declared by the
+approved Outline. The aggregate alone does not create a typed Evidence Item.
+Discovery's own analysis receipts remain the local `runs/` ↔ `results/` pair;
+do not copy those Results into `outline/evidence/` or create a second local
+Evidence Run merely to repackage a paper.
 
 ### Run Profile
 
@@ -89,12 +97,19 @@ CLOSE checks and reconciles both Faces.
 
 ## Plugins
 
-- **required**: Folder/Page surface and the one Evidence plugin; Evidence owns
-  citation/Bib storage, verification, and the derived Discovery aggregate.
+- **required**: Folder/Page surface and `haipipe-plugin-outline`; Outline owns
+  the Evidence Workspace, any explicitly declared typed CITE items,
+  their verification state, and the derived Discovery aggregate. Each
+  Discovery Result owns its one-entry Bib verification receipt in
+  `runtime.yaml`.
 - **conditional**: Runs presenter when the first Run is admitted; PageX for
-  cross-Folder consumers; Outline for Page planning.
-- **forbidden**: a separate Bibex or reading plugin, empty Runs/Results lanes,
-  or a Task Page compatibility grammar layered over the Discovery Page Face.
+  cross-Folder consumers; an Outline evidence lane only when the Page needs
+  it.
+- **compatibility-only**: `haipipe-plugin-evidence` may resolve legacy routes,
+  but it is not a public tab or storage authority.
+- **forbidden**: a separate Bibex or reading plugin, a root `<page>/evidence/`
+  lane, empty Runs/Results lanes, or a Task Page compatibility grammar layered
+  over the Discovery Page Face.
 
 ## Gate and Closure
 
@@ -102,20 +117,23 @@ The Folder closes only when `paper_runs.py check` passes, every material
 admitted Run is resolved or explicitly held, the Page answers its question at
 the promised `discovery_type`, and Page state agrees with `discovery.yaml`.
 `report:` supports `reported`; `ok` additionally requires the Result-backed
-Evidence map, the Evidence citation aggregate, and all load-bearing Page Aims
+Evidence map, the Outline CITE aggregate, and all load-bearing Page Aims
 to be met. Non-load-bearing limitations may remain recorded, but a held
-load-bearing Aim forbids `ok`. Every promoted citation must also carry the
-Evidence-local person judgment `verified` before CLOSE may claim an epistemic
-`status: ok` or `status: inconclusive` outcome.
+load-bearing Aim forbids `ok`. Every complete Result entering the aggregate
+must also carry the
+Result-runtime person judgment `bib.verification: verified` before CLOSE may
+claim an epistemic `status: ok` or `status: inconclusive` outcome. If an
+approved Outline explicitly declares a typed CITE item, that item also passes
+the Outline CITE gate; the aggregate alone creates no second receipt.
 Missing operational work or that conditional artifact gate yields `blocked`;
 `inconclusive` is reserved for completed admissible evidence that cannot
 establish the substantive answer. Neither receipt may claim `ok`.
 
 ## Handoff
 
-Consumers receive the root Page, exact Result/Card links, cite keys, derived
-Evidence Bib, disagreements, and unresolved limits. A consumer never treats a
-legacy source index as a Result receipt.
+Consumers receive the root Page, exact Result/Card links, cite keys, the
+derived `outline/evidence/bibex/<task>.bib`, disagreements, and unresolved
+limits. A consumer never treats a legacy source index as a Result receipt.
 
 ## Files
 
@@ -124,5 +142,7 @@ legacy source index as a Result receipt.
 - `../../haipipe-discovery/ref/paper-run-contract.md` — Level-4 artifacts.
 - `../../haipipe-discovery/scripts/paper_runs.py` — deterministic gate.
 - `../../haipipe-discovery-workflow/SKILL.md` — workflow map and routing.
-- `../../../board/page-plugins/haipipe-plugin-evidence/SKILL.md` — citation
-  authority and the one Evidence surface.
+- `../../../board/page-plugins/haipipe-plugin-outline/SKILL.md` — Outline and
+  Evidence Workspace owner.
+- `../../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md`
+  — CITE verification and derived Bib authority.

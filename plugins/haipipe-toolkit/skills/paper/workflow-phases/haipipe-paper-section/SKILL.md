@@ -4,11 +4,11 @@ description: >-
   Paper journey phase P4 (Section) and the Page Type contract for one
   reader-ordered manuscript or appendix Section. It executes exactly one
   current Narrative row, resolves venue-and-kind structure, and binds prose to
-  Page-local values, citations, probes, and displays. Use when outlining,
+  typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-01"
+  version: "0.8.1"
+  last_updated: "2026-09-04"
   group-token: "S-<desk>-Main | S-<desk>-Appendix"
   outline:
     mode: resolved
@@ -21,8 +21,9 @@ metadata:
 
 # /haipipe-paper-section · execute one Narrative row
 
-Load `haipipe-page`, this Page Type, and `haipipe-page-workflow`. Declare
-`page-type: section` and `section_kind: <kind>`.
+Load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
+paper-owning workflow, this Page Type, and its phase references in that order.
+Declare `page-type: section` and `section_kind: <kind>`.
 
 ## 🧭 Journey phase
 
@@ -32,7 +33,8 @@ Narrative map row. Gate G6 marks the assembled build SUBMISSION-READY versus
 DRAFT; assemble itself is a verb, not a phase, and runs anytime from the desk
 room. `haipipe-paper-workflow` holds the full gate assertions; this block only
 places the phase. The page itself always runs through `/haipipe-page` and
-`haipipe-page-workflow` (OUTLINE → … → CHECK), never a private lifecycle.
+`haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
+never a private lifecycle.
 
 ## 📄 Grain and authority
 
@@ -60,8 +62,8 @@ minimum orientation needed to enter the manuscript unit. It has no reader
 drawer. Page-owned prose rules live in
 `outline/<stem>-requirement.md` as authored `W<n>` records with `Rule`,
 `Applies`, and `Source`, after the generated venue `V<n>` block. The Outline
-plugin exposes both through one `📏 Requirement` lens for DRAFT, REVISE, and
-CHECK. A Section Page carries no `### Writing Style` block.
+plugin exposes both through one `📏 Requirement` lens for CONTEXT, OUTLINE,
+CONTENT, and CHECK. A Section Page carries no `### Writing Style` block.
 Post-paragraph notes and `## Stage Contract` remain source-side and do not
 render on the manuscript review surface. This keeps writer instructions out
 of the paper reading path without deleting their authority.
@@ -88,9 +90,9 @@ legacy/archive compatibility.
 **Where the words live (0.3.1)**: the tex a unit page tracks sits in its
 telling's desk room, `<N>-<desk><year>/sections/`, and that room is
 self-contained per the door's room law — the unit's `\includegraphics` paths
-resolve inside the room's `displays/` (copies of accepted page-local display
-units), and its citation keys resolve in the room's own `reference.bib`
-(assembled from the consuming pages' `bibex/`). A unit whose tex reaches into
+resolve inside the room's `displays/` (copies of accepted page-local DISPLAY
+Results), and its citation keys resolve in the room's own `reference.bib`
+(assembled from accepted page-local CITE Results). A unit whose tex reaches into
 another room, a shared top-level folder, or a page's `display/` directly is a
 defect: copy the artifact into the room and name the owning page as
 provenance.
@@ -119,12 +121,15 @@ structure-source    the bound QBv page FILE, e.g. `paper/venue/bank/1-QBv-desks/
 structure-division  the row inside it: `§8 Sec-4-Results` (EXACT), `§7
                     Sec-3-Methods · shared with another named Section` (SHARED), or the reason
                     the fallback was taken (ABSENT BY DESIGN · MISSING)
-evidence-allowlist  card, citation, value, and display ids
+evidence-allowlist  typed Evidence Item ids and accepted local Result ids
 transition-in/out   required joins to neighboring Sections
 ```
 
-If the Narrative row is missing or stale, stop section drafting and repair the
-Narrative first.
+If the Narrative row or Venue authority is missing or stale, the Page's
+CONTEXT phase records the exact source and returns `HOLD` to its paper-journey
+owner. That owner repairs and versions the source; the Section then resumes at
+CONTEXT/PREPARE. A Section phase never repairs upstream Narrative or Venue
+policy itself.
 
 ## 🧱 Content outline
 
@@ -244,29 +249,33 @@ quoted in `haipipe-plugin-outline` §✂️.
 
 ## 🃏 Landing evidence in prose
 
-Literature, values, and displays are not separate Page Types. They land through
-the Section's Page-local plugins:
+Literature, values, citations, and displays are typed Evidence Items, not
+separate Page Types or plugins. The Section uses the same Outline plugin as the
+other Page phases:
 
 ```text
-pagex/            Probe's accepted-Page lane: bounded source Page context
-probe/<card>/     Probe's Task/Discovery QA lane: answer, proof, interpretation
-bibex/            citation card and bibliography key used by the sentence
-display/<unit>/   intake, recipe, artifacts, caption, bindings, acceptance
+Context Workspace    Narrative, Venue, requirements, and bounded related links
+Bullet Workspace     sentence slots and their Evidence Item ids
+Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
 ```
 
-The value plugin is a storage-less surface over `probe/<card>/card.md` and the
-Section prose. Cite one exact number as `PP<NN>.v<n>`; never create `value/` as
-a second home.
+Cross-Folder material enters through an Execution or Discovery Supporting Run
+Result. LAND freezes those Results into one Local Input and produces one local
+`VALUE`, `CITE`, or `DISPLAY` Result for the focal item. EMBED binds that local
+Result to its Bullet before CONTENT writes prose. There is no active PageX,
+probe, bibex, value, or display plugin in this contract; old lanes are
+migration-only input.
 
 Every consequential sentence must be one of:
 
-- supported by one or more card/citation/value/display ids;
+- supported by one or more typed Evidence Item and accepted local Result ids;
 - explicitly framed as interpretation and bounded by its evidence;
 - visibly marked as an open obligation that prevents closure.
 
-One Section may cite many displays, including displays owned by another Page,
-but it must record the source unit and accepted version. It may also own several
-local displays.
+One Section may cite many displays. A display owned elsewhere must arrive
+through a named Supporting Run Result; the Section's local DISPLAY Result
+records that source and accepted version. A Section may also create several
+local display items, one typed contract and local Run per item.
 
 ## 🔁 Retargeting
 
@@ -274,9 +283,10 @@ On a venue change:
 
 1. Bind the Section to the new Narrative row.
 2. Re-resolve venue × kind structure and hard constraints.
-3. Preserve evidence ids whose meaning and scope remain valid.
-4. Reopen prose, citations, and displays whose role or placement changed.
-5. Compile and CHECK the new built version.
+3. Preserve Evidence Item/Result ids whose meaning and scope remain valid.
+4. Return changed item meaning to OUTLINE/SHAPE, changed Run design to
+   OUTLINE/SURVEY, and stale Results to EVIDENCE/LAND.
+5. Run CONTENT/WRITE and CHECK the new built version.
 
 ## ✅ Closing checks
 

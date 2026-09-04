@@ -1,14 +1,11 @@
 /* 📄 Page phases · internal lifecycle view (no Plugin row).
  *
- * The Page phases view remains a LOOP — OUTLINE/EVIDENCE
- * (the OUTLINE part) then DRAFT/REVISE/COMPILE/CHECK (the DRAFT part), selected by
- * authority, CHECK routes backward, and
- * only CHECK may CLOSE. So this surface lights the last acted phase and names where
- * it routed; it draws no locks, because the loop has none. SEVEN since 260817, four
- * before it: haipipe-page-workflow §"Why each split" carries the reason for each.
+ * The current loop is 00 CONTEXT → 01 OUTLINE ⇄ 02 EVIDENCE → 03 CONTENT
+ * → 04 CHECK. CHECK routes to the authority that owns a finding; only CHECK
+ * may CLOSE. Legacy receipt tokens are projected into their current phase.
  *
  * INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开").
- * The LEFT column is an index — ① 🧭 OUTLINE … ⑦ ✅ CHECK, names only, one row per
+ * The LEFT column is an index — 00 CONTEXT … 04 CHECK, names only, one row per
  * phase — and the RIGHT column holds the selected phase's content plus the run
  * record, the same left-index-right-content language the board itself speaks. The
  * layout classes (`wf-cols` / `wf-index` / `wf-ix` / `wf-main`) live in
@@ -34,38 +31,25 @@
   'use strict';
 
   var PHASES = [
+    { id: 'CONTEXT', icon: '🧭', name: 'CONTEXT', skill: 'haipipe-page-context',
+      job: 'collect, resolve, and freeze the Page context before planning' },
     { id: 'OUTLINE', icon: '🧭', name: 'OUTLINE', skill: 'haipipe-page-outline',
-      job: 'agree the SHAPE: sections, paragraphs, bullets, and what each owes' },
-    { id: 'DRAFT',  icon: '✏️',  name: 'DRAFT',  skill: 'haipipe-page-draft',
-      job: 'plan it: purpose, Aims, and each division’s own promise' },
+      job: 'SHAPE the Bullet plan, then SURVEY every Evidence Item run graph' },
     { id: 'EVIDENCE', icon: '🔍', name: 'EVIDENCE', skill: 'haipipe-page-evidence',
-      job: 'land every promised claim\u2019s card: citation, value, display intake' },
-    { id: 'REVISE', icon: '🖊', name: 'REVISE', skill: 'haipipe-page-revise',
-      job: 'write the prose, citing every landed card by id' },
-    { id: 'COMPILE', icon: '📄', name: 'COMPILE', skill: 'haipipe-page-revise',
-      job: 'rebuild latex, pdf and word from that prose' },
+      job: 'LAND supporting and local Results, then EMBED them into Bullets' },
+    { id: 'CONTENT', icon: '✏️', name: 'CONTENT', skill: 'haipipe-page-content',
+      job: 'WRITE each division through Draft, Revise, Build, and Pre-check' },
     { id: 'CHECK',  icon: '✅',       name: 'CHECK',  skill: 'haipipe-page-check',
       job: 'judge the BUILT version and route its authority; only CHECK may CLOSE' }
   ];
-  /* PROBE retired 260901: the item table (OUTLINE's SURVEY cycle) took its
-     MATCH half and EVIDENCE's LAND cycle its outbound card. Every stored
-     receipt naming PROBE draws on the EVIDENCE step. Before that, PROBE meant
-     two different phases depending on WHEN the receipt was written: it was
-     EVIDENCE's name from 260816 until 260817, then a phase of its own until 260901.
-     Receipts on disk are immutable, so the token resolves against the run's own
-     date rather than through a global alias, which would relabel every future
-     PROBE as EVIDENCE. An unparseable date reads as CURRENT. */
-  var PROBE_SPLIT = 260817;
-  function runDate(run) {
-    var m = /^(\d{6})/.exec((run && run.run_id) || '');
-    return m ? parseInt(m[1], 10) : PROBE_SPLIT;
-  }
+  /* Immutable historical receipts stay readable in the five-phase view. */
   function phaseId(v, run) {
     v = String(v || '').toUpperCase();
     if (v === 'PROBE') return 'EVIDENCE';
+    if (v === 'DRAFT' || v === 'REVISE' || v === 'COMPILE') return 'CONTENT';
     return v;
   }
-  var NUM = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
+  var NUM = ['00', '01', '02', '03', '04'];
 
   function pageFile(page) {
     return (page && page.getAttribute('data-file')) || '';
@@ -199,7 +183,8 @@
           + '<ul class="wf-rows">'
           + '<li><span class="ti">🚪</span> The run contract’s entry rule: '
           + 'an existing page enters at CHECK so a fresh judge routes it; '
-          + 'a brand-new page enters at DRAFT after CREATE.</li>'
+          + 'a brand-new page enters at CONTEXT so policy and requirements '
+          + 'are frozen before OUTLINE.</li>'
           + '</ul>'
           + cmdRow(file, next)
           + '</div>';

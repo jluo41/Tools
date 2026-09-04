@@ -3,8 +3,8 @@ name: haipipe-discovery-review
 description: "Review-route specialist for topic-summary, verdict, and landscape Discovery Pages: synthesize completed Paper/Source Results into the root article and optional typed record. Missing evidence becomes one numbered Run per canonical Subject. Trigger: topic summary, judge claim, prior art, counterevidence, landscape, lit review for a discovery, /haipipe-discovery-review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-02"
+  version: "0.4.1"
+  last_updated: "2026-09-03"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,8 +34,8 @@ Workers: research-lit (default multi-source), comm-lit-review
 4. Every evidence statement links to a Result Card and uses that Result's cite
    key. Counterevidence is retained, and scope never exceeds the underlying
    Results.
-5. Run the deterministic spine check and ask the Evidence plugin to rebuild
-   the citation aggregate before returning.
+5. Run the deterministic spine check and ask the Outline citation contract to
+   rebuild `outline/evidence/bibex/` before returning.
 6. Return the Page path, optional typed-record path, outcome (or cluster/gap counts), complete and
    unresolved Run counts, and aggregate Bib path. The orchestrator owns topic
    status and CLOSE.

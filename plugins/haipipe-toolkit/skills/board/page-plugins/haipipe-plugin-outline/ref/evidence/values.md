@@ -2,8 +2,8 @@
 
 Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
 `VALUE`, or when the 🧭 Outline plugin's Evidence Workspace must explain a number's provenance. The
-unified Evidence plugin owns the lane and surface; `haipipe-plugin-probe`
-still owns any legacy card whose `## Values` block supplies the value.
+Outline plugin owns the lane and surface; `haipipe-plugin-probe` still owns
+any legacy card whose `## Values` block supplies the value.
 
 ## 🎛 The gap it closes
 

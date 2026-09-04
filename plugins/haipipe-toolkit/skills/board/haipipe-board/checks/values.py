@@ -76,11 +76,11 @@ def _run_index(board: Path):
         r = d.get("receipts") or (d if isinstance(d, list) else [])
         receipts += len(r)
         phases |= {x.get("phase") for x in r if isinstance(x, dict)}
-    six = ["OUTLINE", "DRAFT", "EVIDENCE", "REVISE", "COMPILE", "CHECK"]
-    covered = [p for p in six if p in phases]
+    five = ["CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK"]
+    covered = [p for p in five if p in phases]
     return {"runs_total": len(runs), "receipts_total": receipts,
-            "coverage": "%d of 7" % len(covered),
-            "phases_never_run": len(seven) - len(covered)}
+            "coverage": "%d of 5" % len(covered),
+            "phases_never_run": len(five) - len(covered)}
 
 
 def _lane_census(board: Path):

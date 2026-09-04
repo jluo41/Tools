@@ -1,3 +1,58 @@
+## 0.23.1 · 2026-09-04
+
+- Use the canonical Page dependency order.
+- Make copilot-versus-auto gate behavior explicit: auto records human acts as
+  owed and may follow declared policy, but deferral never becomes approval.
+- Separate phase `route` from `next_cycle` in OUTLINE receipts.
+
+## 0.23.0 · 2026-09-04
+
+- Require the frozen `haipipe-page-context` PREPARE record before SHAPE or
+  SURVEY and present it through the shared Outline plugin's Context Workspace.
+- Remove PageX Bindings from the active SURVEY graph. Cross-Folder evidence
+  now arrives through Supporting Run Results; governed page-local static
+  sources may be named in Local Input.
+- Route an approved, fully folded plan to `haipipe-page-content` instead of the
+  retired DRAFT/REVISE phase split.
+- Keep the typed Evidence Item names, separate Supporting and Local Runs, and
+  Paper-local `pjNNtNNrNN` reservation introduced by the preceding design.
+
+## 0.22.3 · 2026-09-03
+
+- Require the main Page and Outline plan card to use the same four-cycle status
+  strip and keep Shape-versus-Content conformance out of the planning UI.
+
+## 0.22.2 · 2026-09-03
+
+- Require Evidence Workspace to distinguish explanatory Evidences from Run
+  cards grouped under the Evidence contracts they support.
+
+## 0.22.1 · 2026-09-03
+
+- Require Run details to separate Purpose/Plan, path-derived Availability,
+  and Next action.
+- Keep unallocated Page-local Run plans in the Evidence Item's Expected,
+  Acceptance, and Local Input fields until LAND creates `runs/` and `results/`.
+
+## 0.22.0 · 2026-09-03
+
+- Give every proposed Paper-local Evidence Item Run its own `pjNNtNNrNN`
+  identity during SURVEY, displayed as `P jNN.tNN.rNN`; keep `new` explicit
+  until LAND creates the Ticket.
+- Keep Evidence wall labels (`E<n><V/C/D>.<Label>`) separate from Run identity.
+
+## 0.21.0 · 2026-09-03
+
+- Read the ranked Skills Page Record from its canonical Outline-owned path,
+  `outline/skill/<stem>.md`.
+
+## 0.20.0 · 2026-09-03
+
+- Define the addressed Bullet as the primary plan-evidence-draft unit shared by
+  Bullet Workspace and Evidence Workspace.
+- Include Skills with Files and Log under Page Records while keeping its one
+  ranked store at the sibling `skill/<stem>.md` path.
+
 ## 0.19.0 · 2026-09-03
 
 - Define the Outline UI as Bullet Workspace + Evidence Workspace, with Plan

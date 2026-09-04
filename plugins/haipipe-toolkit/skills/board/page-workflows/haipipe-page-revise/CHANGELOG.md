@@ -89,3 +89,9 @@ section renamed that morning.
 - Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
   adds its artifact knowledge and obeys this file.
 - Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.6.0 · 2026-09-04
+
+- Retire REVISE and COMPILE as active Page phases and redirect new work to
+  `haipipe-page-content` → CONTENT/WRITE/Revise or Build.
+- Preserve the old tokens only for historical receipt audit and instruction
+  translation.

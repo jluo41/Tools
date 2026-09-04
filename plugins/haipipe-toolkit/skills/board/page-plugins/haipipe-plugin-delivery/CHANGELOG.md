@@ -1,5 +1,9 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.3.1 — 2026-09-03
+- Clarify that Delivery presents the roster's `delivery/` category row while
+  owning no lane writer or second folder.
+
 ## 0.3.0 — 2026-09-03
 - Make `delivery/latex/`, `delivery/word/`, `delivery/slide/`, and
   `delivery/render/` the physical writer destinations and saved-view URLs.

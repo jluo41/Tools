@@ -1,5 +1,10 @@
 # CHANGELOG · haipipe-plugin-evidence
 
+## 0.6.1 — 2026-09-04
+
+- Remove PageX from the current redirect inventory; its reference remains
+  available only to migrate historical records.
+
 ## 0.6.0 — 2026-09-03
 
 - Retire the standalone Evidence plugin and preserve this skill only as a

@@ -5,9 +5,8 @@
  * live segmented surface is live/delivery.py (/_board/delivery), whose
  * LaTeX and Word segments press the lanes' own deterministic pens
  * (/_board/latex, /_board/word) on demand. Slides is never auto-built there
- * — its pen is claude -p authoring, reached on the native 🎞 tab's ✨ bar,
- * which STAYS in the shell strip the way Draw does: an authoring tool keeps
- * its surface, a projection folds into its category tab.
+ * — its pen is claude -p authoring, reached from the Slides segment's ✨ bar.
+ * All four projections stay folded into this one category tab.
  *
  * WHAT THIS FILE OWNS, and it is one thing: the one registry row. This file
  * replaced 82-plugin-exports.js (git mv, 260831): the separate 📜 LaTeX and

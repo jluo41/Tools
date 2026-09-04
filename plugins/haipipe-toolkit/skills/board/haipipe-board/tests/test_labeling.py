@@ -152,6 +152,16 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertNotIn("board.md?pane=chat", body)
         self.assertIn('title="Studio Page Chat"', body)
         self.assertNotIn("Prefill safe status ask", body)
+        for workspace in ("Workflow", "Data", "Guideline", "Human", "Quality"):
+            self.assertIn(workspace, body)
+        self.assertIn('aria-label="Labeling workspaces"', body)
+        self.assertIn('data-workspace=workflow', body)
+        self.assertIn('data-workspace=data', body)
+        self.assertIn('data-workspace=guideline', body)
+        self.assertIn('data-workspace=human', body)
+        self.assertIn('data-workspace=quality', body)
+        self.assertLess(body.index('id=spaces'), body.index('id=studio-chat'))
+        self.assertEqual(body.count('title="Studio Page Chat"'), 1)
 
     def test_artifact_chain_moves_observed_frontier_without_certifying_g6(self):
         self.make_contract("authority:\n  human_id: JL\n  mode: real-human\n  creates_human_gold: true\n")
@@ -316,6 +326,7 @@ class LabelingRegistrationTest(unittest.TestCase):
         self.assertIn("S-Label-Dash", script)
         self.assertIn("pageURL()", script)
         self.assertIn("page: pageURL()", script)
+        self.assertIn("Studio Chat always below", script)
         for retired in ("/label-init", "/label-round", "/label-evaluate", "/label-complete"):
             self.assertNotIn(retired, script)
 

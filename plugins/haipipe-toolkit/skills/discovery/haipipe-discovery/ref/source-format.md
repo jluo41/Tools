@@ -32,8 +32,11 @@ Required identity header:
 Then follow the Result Card sections in `paper-run-contract.md`: Question,
 Readout, Facts, optional Trigger claim audit, Limits, and Reuse. `VERIFIED`
 means exact title, authors, venue, and locator were confirmed against a trusted
-publisher/index. Anything less remains `NEEDS-VERIFICATION` and cannot produce
-a `status: complete` Result.
+publisher/index by a person. Anything less remains `NEEDS-VERIFICATION`.
+That state does not prevent a technically complete Result when its Card,
+facts, authoritative one-entry Bib, and runtime receipt are all present; it
+does prevent the Discovery Task from claiming an epistemic `ok` or
+`inconclusive` close. Keep the Task blocked/held and show the verification debt.
 
 ## Coverage declaration
 

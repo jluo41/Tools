@@ -1,5 +1,21 @@
 # Changelog · haipipe-plugin-runs
 
+## 0.9.5 — 2026-09-04
+
+- Clarify that Runs is an optional presenter beneath the Task Face and treat
+  PageX only as historical migration input.
+
+## 0.9.4 — 2026-09-03
+
+- Distinguish Outline's evidence-grouped source/Run inventory from this
+  top-level presenter of physically allocated page-local Runs.
+
+## 0.9.3 — 2026-09-03
+
+- Clarify that Outline evidence-side Run details show Purpose/Plan,
+  Availability, and Next action as separate facts while raw paths remain
+  non-downloading text.
+
 ## 0.9.1 — 2026-09-03
 
 - Keep Runs visible on source-backed Board Pages even when no local Run is

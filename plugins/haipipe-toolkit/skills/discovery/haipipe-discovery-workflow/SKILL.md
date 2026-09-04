@@ -8,8 +8,8 @@ description: >-
   Paper/Source Runs. Use when routing, presenting, or validating a Discovery
   Folder, its BJTR lifecycle, or its cross-face closure.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-02"
+  version: "0.3.1"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-discovery-workflow · D1 Inquiry, five explicit cycles
@@ -23,7 +23,7 @@ Table, and prevents Page, Task, Run, and Evidence authorities from collapsing.
 ```text
 D1 Inquiry
 
-┌──────── Frame ────────┐  ┌── Evidence ──┐  ┌──── Article ────┐
+┌──────── Frame ────────┐  ┌── Run intake ──┐  ┌──── Article ────┐
 SCOPE ──> PREPARE? ───────> ACQUIRE ─────────> SYNTHESIZE ───────> CLOSE
                                   ▲                 │
                                   └── need more ────┘
@@ -40,9 +40,9 @@ population.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `d1.scope` | Frame | D1 Inquiry | SCOPE | Freeze the question, article promise, source boundary, and admission rule. | BJTR parent, question, `discovery_type`, Page grammar | `discovery.yaml` intent and root Page opening/boundary | none | scoped Discovery Task Page | BJTR path, manifest, Page, type, and admission rule agree | `d1.prepare`, `d1.acquire`, `HOLD` | none |
 | `d1.prepare` | Frame | D1 Inquiry | PREPARE | Author reusable search, extraction, or synthesis support only when needed. | frozen scope and `instrument` declaration | optional `scripts/`; no empty lane | none | declared instrument or explicit omission | declared path exists and is reusable, or `instrument.needed: false` | `d1.acquire`, `HOLD` | none |
-| `d1.acquire` | Evidence | D1 Inquiry | ACQUIRE | Resolve Triggers, admit canonical Subjects, and produce one truthful analysis Result per Subject. | scope/admission rule, Trigger provenance, Paper Run contract | Task progress/receipt links only; root Page claims remain unchanged | Discovery · `paper-analysis`/`source-analysis` · `N_admitted`; exactly one Subject per Run | reused or newly paired Run/Results plus returned/logged Trigger dispositions | every admitted Subject has one valid same-stem Ticket/Result pair; zero-Subject and unchanged duplicate Triggers open no Run | `d1.acquire`, `d1.synthesize`, `HOLD` | none |
-| `d1.synthesize` | Article | D1 Inquiry | SYNTHESIZE | Promote completed Results into the promised article and its citation projection. | accepted Results, Page Type promise, Evidence citation contract | root Page Content/Aims, optional typed record, derived `evidence/bibex/<task>.bib` | none | evidence-backed Page synthesis with Result links, cite keys, disagreements, and limits | every factual claim resolves to a complete Result/cite key and the `discovery_type` promise is met | `d1.acquire`, `d1.close`, `HOLD` | none; record citation-verification debt |
-| `d1.close` | Article | D1 Inquiry | CLOSE | Reconcile the two Faces and publish the final outcome/receipt. | synthesized Page, `discovery.yaml`, checker, Evidence citation aggregate | `discovery.yaml report/status`, Page state/Aims, final handoff pointers | none | successful close or truthful inconclusive, blocked, or returned receipt | checker passes; material unresolved work is held visibly; Page and Task states agree; any epistemic outcome has verified promoted citations | `CLOSE`, `d1.acquire`, `d1.synthesize`, `HOLD` | Evidence `verified` on promoted citations for `ok` or `inconclusive` |
+| `d1.acquire` | Run | D1 Inquiry | ACQUIRE | Resolve Triggers, admit canonical Subjects, and produce one truthful analysis Result per Subject. | scope/admission rule, Trigger provenance, Paper Run contract | Task progress/receipt links only; root Page claims remain unchanged | Discovery · `paper-analysis`/`source-analysis` · `N_admitted`; exactly one Subject per Run | reused or newly paired Run/Results plus returned/logged Trigger dispositions | every admitted Subject has one valid same-stem Ticket/Result pair; zero-Subject and unchanged duplicate Triggers open no Run | `d1.acquire`, `d1.synthesize`, `HOLD` | none |
+| `d1.synthesize` | Page | D1 Inquiry | SYNTHESIZE | Promote completed Results into the promised article and the Outline Evidence Workspace. | accepted Results, Page Type promise, and typed CITE/item contract only when the approved Outline declares an item | root Page Content/Aims, optional `outline/<stem>-evidence-items.md`, optional typed record, derived `outline/evidence/bibex/<task>.bib` | none beyond the admitted Paper/Source Runs | evidence-backed Page synthesis with Result links, cite keys, optional declared CITE items, disagreements, and limits | every factual claim resolves to a complete Result/cite key and the `discovery_type` promise is met | `d1.acquire`, `d1.close`, `HOLD` | none; record any citation-verification debt |
+| `d1.close` | Page | D1 Inquiry | CLOSE | Reconcile the two Faces and publish the final outcome/receipt. | synthesized Page, Outline Evidence Workspace, `discovery.yaml`, checker | `discovery.yaml report/status`, Page state/Aims, final handoff pointers | none | successful close or truthful inconclusive, blocked, or returned receipt | checker passes; material unresolved work is held visibly; Page and Task states agree; every aggregated complete Result has a person-verified Bib receipt | `CLOSE`, `d1.acquire`, `d1.synthesize`, `HOLD` | Result `bib.verification: verified`; plus Outline CITE verification for any declared typed item |
 
 `N_admitted` is planned evidence-population cardinality, never an actual count.
 Actual inventory comes only from allocated Run Tickets and runtime receipts.
@@ -52,14 +52,16 @@ receipt; `HOLD` preserves a visible blocker without claiming completion.
 Terminal classification is not discretionary:
 
 - **`ok`** — the promised article is established, every load-bearing Aim is
-  met, no material Run remains unresolved, and every promoted citation is
-  person-verified. Non-load-bearing limitations may remain recorded as such.
+  met, no material Run remains unresolved, and every aggregated complete
+  Result citation is
+  person-verified in its Result runtime receipt. Non-load-bearing limitations
+  may remain recorded as such.
 - **`blocked`** — an operational or gate dependency is missing, including
   unresolved intake, retrieval/Bib failure, or citation-verification debt on
   an otherwise epistemic (`ok`/`inconclusive`) close path.
 - **`inconclusive`** — the admitted evidence completed successfully but cannot
-  establish the substantive answer; its promoted citations are verified. It
-  is never a label for missing work.
+  establish the substantive answer; every complete Result citation entering
+  the aggregate is verified. It is never a label for missing work.
 
 ## L3/L4 promotion law
 
@@ -68,9 +70,10 @@ ACQUIRE commissions one-Subject L4 Runs
         ↓
 Run writes its paired Result only
         ↓
-SYNTHESIZE validates and promotes completed Results
+SYNTHESIZE binds completed Results into the Outline Evidence Workspace and
+promotes their supported claims
         ↓
-authoritative L3 Page/typed record/Evidence citation projection changes
+authoritative L3 Page/typed record/Outline CITE projection changes
 ```
 
 A Run never directly writes the Topic argument. Search queries, API calls,
@@ -80,10 +83,14 @@ checker calls are operations or Cycles, not additional Runs.
 ## Page-workflow boundary
 
 Discovery may reuse the shared Page frame, Outline craft, and checking teeth.
-Inside a Discovery Task Folder, however, `runs/` is reserved for Discovery
-Paper/Source analysis. Generic Page Division-Writing or Evidence-Item Runs do
-not enter that Folder's Run inventory. D1 SYNTHESIZE owns the root Page
-promotion and D1 CLOSE owns cross-face closure.
+Page-local evidence material belongs under `outline/evidence/`; its
+`supporting-runs/` lane contains generated pointers only. Inside a Discovery
+Task Folder, `runs/` and `results/` remain reserved for Discovery Paper/Source
+analysis. Do not copy those Results into `outline/evidence/` or mint a second
+Page · Evidence Item Run merely to repackage a paper. The aggregate Bib is a
+derived projection, not a typed CITE item; the generic Evidence Item Run law
+applies only after the approved Outline explicitly declares such an item. D1
+SYNTHESIZE owns the root Page promotion and D1 CLOSE owns cross-face closure.
 
 ## Routing
 
@@ -92,8 +99,12 @@ promotion and D1 CLOSE owns cross-face closure.
 - Route user verbs and maintenance commands to `haipipe-discovery`.
 - Route one-Subject identity and pairing to `haipipe-run` plus
   `haipipe-discovery/ref/paper-run-contract.md`.
-- Route citation/Bib storage, verification, and aggregate presentation to
-  `haipipe-plugin-evidence`; there is no separate Bibex plugin.
+- Route Page Outline/Evidence Workspace storage, citation/Bib verification, and
+  aggregate presentation to `haipipe-plugin-outline/ref/evidence/citations.md`.
+  Route the authoritative one-entry Bib and its person-verification receipt to
+  each Discovery Result runtime through `paper-run-contract.md`;
+  `haipipe-plugin-evidence` is a compatibility redirect only, and there is no
+  separate Bibex plugin.
 - Route Search to ACQUIRE craft; route Review/Idea to SYNTHESIZE craft. A
   synthesis specialist may route back to ACQUIRE when evidence is missing.
 
@@ -101,7 +112,11 @@ promotion and D1 CLOSE owns cross-face closure.
 
 | Action | When | Why | If not completed |
 |---|---|---|---|
-| Verify each promoted citation in the Evidence surface | before CLOSE may publish `status: ok` or `status: inconclusive` | `verified` is an artifact-local person judgment, not something the deterministic Bib builder can assert | publish `blocked` for verification debt or remain on `HOLD`; never claim an epistemic outcome from unverified citations |
+| Verify each complete Result citation and record `bib.verification` in its runtime | before CLOSE may publish `status: ok` or `status: inconclusive` | `verified` is an artifact-local person judgment, not something the deterministic Bib builder can assert | publish `blocked` for verification debt or remain on `HOLD`; never claim an epistemic outcome from unverified citations |
+
+When an approved Outline declares a typed CITE item, that separate item also
+passes the Outline-owned verification gate. The derived aggregate alone creates
+no item and therefore no duplicate verification receipt.
 
 This conditional Evidence gate is not a standing approval between D1 cycles.
 A material ambiguity in SCOPE still returns to the requester before the scope
@@ -124,3 +139,5 @@ under their own workflow.
 - `haipipe-discovery/ref/lifecycle-map.md` — hierarchy × workflow × type.
 - `haipipe-discovery/ref/paper-run-contract.md` — L4 specialization.
 - `../board/haipipe-folder/SKILL.md` — neutral two-Face ownership law.
+- `../board/page-plugins/haipipe-plugin-outline/SKILL.md` — Outline Evidence
+  Workspace and CITE authority.

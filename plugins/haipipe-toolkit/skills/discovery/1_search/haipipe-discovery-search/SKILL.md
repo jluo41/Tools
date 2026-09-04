@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map and source-reading Discovery Pages: find candidates, resolve canonical papers/sources, and materialize one numbered .sh Run plus same-stem Result per admitted Subject. Trigger: search sources, find papers, add paper run, read this paper, source map, source reading, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-02"
+  version: "0.4.1"
+  last_updated: "2026-09-03"
   # version history: ./CHANGELOG.md
 ---
 
@@ -59,7 +59,8 @@ mode records the omitted pass in the Topic coverage declaration.
    the paired Result Card, facts.md, one-entry authoritative <RUNNAME>.bib, and
    the completed runtime receipt. PDF and captured Trigger text are optional.
 6. CHECK the Run/Result spine. Hand completed Results to SYNTHESIZE; the
-   Evidence plugin owns the deterministic Task Page Bib aggregation.
+   Outline plugin's citation contract owns the deterministic Task Page Bib
+   aggregation under `outline/evidence/bibex/`.
 7. During SYNTHESIZE for source-map/source-reading, update the root Page:
    source-map emphasizes coverage and readable source units; source-reading
    synthesizes what selected sources say. Both keep Result links and never

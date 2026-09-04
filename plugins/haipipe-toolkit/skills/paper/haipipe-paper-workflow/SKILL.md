@@ -7,8 +7,8 @@ description: >-
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.7.3"
-  last_updated: "2026-08-31"
+  version: "0.7.4"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -20,7 +20,7 @@ never judges content (that is CHECK plus the human ticks).
 ## 🔤 Terminology law
 
 A **journey phase** is one of the six positions below (P0–P5). A **Page
-phase** is one step of `haipipe-page-workflow`'s OUTLINE…CHECK loop. Every
+phase** is one step of `haipipe-page-workflow`'s CONTEXT…CHECK loop. Every
 `[phase]` argument in the door's verbs is a PAGE phase; a bare "phase" in any
 Paper document must be readable as exactly one of the two, or it is a defect —
 the same law the Round contract holds for "Paper Round" versus "workflow
@@ -88,9 +88,9 @@ desk, one page. One lap:
 ```text
 Seed §6 states the gaps (⬜/🔨 E-rows)
    → Roadmap proposes BLOCK rows · a person releases them, block by block (G2)
-   → the Roadmap dispatches through its probe lane · receipts land on its
-     lap divisions (G3)
-   → settle: the Seed's E-rows flip ✅ citing the landed QA files
+   → the Roadmap's Page loop SURVEYs the Supporting/local Run graph and LANDs
+     typed Results · receipts land on its lap divisions (G3)
+   → settle: the Seed's E-rows flip ✅ citing accepted Result ids and paths
    → gaps remain → next lap on the Roadmap · gaps closed or waived → face G4
 ```
 
@@ -128,9 +128,9 @@ G2  Roadmap plan →         every 🔨/⬜ E-row names a ▶️ released block 
                            by block — a machine proposes and never releases
 
 G3  lap → Seed             the lap's done-when tests hold · every dispatched
-                           card binds a landed QA path · the settle is written
+                           item binds an accepted local Result path · the settle is written
                            on the Seed: each flipped E-row cites the QA file
-                           its block row landed · gaps remain → the next lap
+its block row landed · gaps remain → the next lap
                            on the Roadmap
 
 G4  Seed → Narrative       the Seed's current outline is human-ticked · every

@@ -1136,7 +1136,7 @@ def check_related_board_pages(path, name, text, rep):
     Pages row is narrower: its target must be a real Page on this Board, its
     visible Page id must agree with that source, and its requested Content scope
     must exist. Those facts are deterministic, so malformed context never waits
-    for an agent to discover it during DRAFT, EVIDENCE, REVISE, or CHECK.
+    for an agent to discover it during CONTEXT, OUTLINE, EVIDENCE, CONTENT, or CHECK.
     """
     for finding in audit_related_rows(path, text):
         level = ERROR if finding.level == "ERROR" else WARN

@@ -21,8 +21,8 @@ _spec.loader.exec_module(lo)
 
 from src.item_table import (  # noqa: E402
     CYCLES, EMOJI, ITEM_TYPES, LADDER, action_label, bullets, compact_global_run,
-    cycle_now, item_status, read_items, readable_global_run, readable_task, repo_root, resolve,
-    run_registry,
+    cycle_now, item_status, read_items, readable_global_run, readable_paper_route,
+    readable_task, repo_root, resolve, run_registry,
 )
 from src.common import evidence_run_dir  # noqa: E402
 
@@ -64,7 +64,6 @@ def build(page_md: Path) -> str:
             result = resolve(row["result"], root, page_dir)
             lines.extend([
                 f"- **Supporting Runs**: {row['supporting_runs'] or '—'}",
-                f"- **PageX Bindings**: {row['pagex_bindings'] or '—'}",
                 f"- **Local Input**: {row['local_input'] or '—'}",
                 f"- **Local Run**: {row['local_run'] or '—'}",
                 f"- **Decide**: {row['decide'] or '☐'}",
@@ -73,7 +72,6 @@ def build(page_md: Path) -> str:
         else:
             lines.extend([
                 "- **Supporting Runs**: not surveyed yet",
-                "- **PageX Bindings**: not surveyed yet",
                 "- **Local Input**: not surveyed yet",
                 "- **Local Run**: not surveyed yet",
                 "- **Decide**: ☐",
@@ -107,14 +105,22 @@ def build(page_md: Path) -> str:
     return "\n".join(head + [body, "", END, ""])
 
 
-def _map_href(root: Path, stored_path: str) -> str:
+def _map_href(root: Path, stored_path: str, *, base: Path = None) -> str:
     """A Board-root link from Outline's Supporting-Run map to an artifact."""
     if not stored_path:
         return ""
-    target = root / stored_path
-    if not target.is_file():
+    stored = Path(stored_path)
+    candidates = [stored] if stored.is_absolute() else [root / stored]
+    if base is not None and not stored.is_absolute():
+        candidates.append(base / stored)
+    target = next((candidate for candidate in candidates if candidate.exists()), None)
+    if target is None:
         return ""
-    return "/" + quote(stored_path, safe="/")
+    try:
+        relative = target.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return ""
+    return "/" + quote(relative + ("/" if target.is_dir() else ""), safe="/")
 
 
 def _run_ref(family: str, action: str, address: str, registry: dict[str, dict[str, str]],
@@ -134,12 +140,14 @@ def _run_ref(family: str, action: str, address: str, registry: dict[str, dict[st
     if not record:
         return f"`{route or 'unregistered'}` · {label} · Run/Result paths not found"
     run_href = _map_href(root, record.get("ticket", ""))
-    result_href = _map_href(root, record.get("runtime", ""))
+    result_href = _map_href(root, record.get("result", ""))
+    runtime_href = _map_href(root, record.get("runtime", ""))
     route_label = f"[{route}]({run_href})" if run_href else f"`{route}`"
     run_label = "[Run](%s)" % run_href if run_href else "Run path not found"
     result_label = "[Result](%s)" % result_href if result_href else "Result not found"
+    runtime_label = " · [Runtime](%s)" % runtime_href if runtime_href else ""
     return (f"{route_label} · {label} · {record.get('label') or 'Unregistered'} · "
-            f"{run_label} · {result_label}")
+            f"{run_label} · {result_label}{runtime_label}")
 
 
 def _allocated_local(item: dict, local_rows: list[dict], root: Path) -> str:
@@ -154,14 +162,21 @@ def _allocated_local(item: dict, local_rows: list[dict], root: Path) -> str:
         )
         if any(token and token in declared for token in tokens) or address == str(global_id).replace(".", ""):
             run_href = _map_href(root, str(row["ticket"].relative_to(root)))
-            result_href = (_map_href(root, str(row["runtime"].relative_to(root)))
-                           if row["runtime"] else "")
+            page_dir = row["ticket"].parent.parent
+            result_href = _map_href(root, str(row.get("result", "")), base=page_dir)
+            runtime_href = (_map_href(root, str(row["runtime"].relative_to(root)))
+                            if row["runtime"] else "")
             route_label = f"[{global_id}]({run_href})" if run_href else f"`{global_id}`"
             run_label = "[Run](%s)" % run_href if run_href else "Run path not found"
             result_label = "[Result](%s)" % result_href if result_href else "Result not found"
-            return (f"{route_label} · {row['status']} · {run_label} · {result_label}")
-    if item.get("action", "").startswith("new-") or declared.startswith("—"):
+            runtime_label = " · [Runtime](%s)" % runtime_href if runtime_href else ""
+            return (f"{route_label} · {row['status']} · {run_label} · "
+                    f"{result_label}{runtime_label}")
+    if declared.startswith("—"):
         return "planned local Evidence Task · Run not allocated"
+    if item.get("action", "").startswith("new-"):
+        route = readable_paper_route(address) or address or "unindexed"
+        return f"P {route} · new · Run not allocated"
     return f"`{declared or 'not declared'}` · local Run path not found"
 
 

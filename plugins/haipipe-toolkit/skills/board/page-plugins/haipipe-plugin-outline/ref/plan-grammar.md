@@ -77,7 +77,7 @@ page-type: section     one bullet = one SENTENCE SLOT
                          the claim's sentence
                        a `Cut:` bullet where something LEAVES the page names
                          what leaves and where it goes; zero is normal
-any other type         one bullet = one POINT; DRAFT turns it into one or more
+any other type         one bullet = one POINT; CONTENT turns it into one or more
                        sentences
 ```
 
@@ -92,7 +92,7 @@ first use; a metaphor (`rung`) is rewritten to the plain thing (`step`).
 ## 4 · What a bullet never carries
 
 - the drafted sentence: the sentence lives on the page; a Note that quotes
-  prose is DRAFT leaking upward, and the plan is too long by construction
+  prose is CONTENT leaking upward, and the plan is too long by construction
 - a markdown heading mark (`##`, `####`) inside a head or Note; name the part
   in words or by `§4.1`
 - the card's question, the unit's claim, a contract's rule: each is one
@@ -121,8 +121,7 @@ Accept: <observable checks>                one line directly after each item
 - SHAPE writes the item name, expected ready payload, and `Accept:` line now;
   its matching Evidence Item record also carries a stable compact `Label`
   matching `[A-Za-z][A-Za-z0-9]{0,11}`.
-  SURVEY later plans its Supporting Runs, exact PageX bindings, one Local
-  Input, and one local Run in
+  SURVEY later plans its Supporting Runs, one Local Input, and one local Run in
   `<stem>-evidence-items.md`; it does not invent what the item should become.
 - Several items may belong to one bullet; each has its own immediately
   following `Accept:` line and its own table record.

@@ -1,3 +1,13 @@
+## 0.8.2 · 260904
+
+- Enter Narrative Pages through the five-phase Page lifecycle beginning at
+  CONTEXT and use the canonical dependency order.
+- Resolve Seed/Venue links as Context rather than PageX evidence; when their
+  content supports a proposition, require the current Supporting-to-local Run
+  graph and a typed local Result.
+- Replace active PageX/probe/bibex/value/display plugin language with the
+  shared Outline plugin's Context, Bullet, and Evidence workspaces.
+
 ## 0.7.1 · 260901
 - Corrected the abstraction boundary: the Section-control table is view 2 inside the existing `## Diagram`, not a new surface between Diagram and Content. The Page's large structure remains unchanged.
 

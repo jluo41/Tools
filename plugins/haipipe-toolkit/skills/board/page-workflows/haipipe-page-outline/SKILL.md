@@ -1,57 +1,95 @@
 ---
 name: haipipe-page-outline
 description: >-
-  The OUTLINE phase of a Board Page and the THINKING half of its OUTLINE part:
+  The 01 OUTLINE phase of a Board Page. Treats the addressed Bullet as the
+  primary plan-evidence-content unit:
   two planning cycles, SHAPE (brief → propose → react → revise; name every typed
   Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
-  Execution/Discovery Supporting Runs, zero-to-many exact PageX bindings, plus
-  exactly one local Page Evidence Item Run declaration). Writes the versioned plan,
+  Execution/Discovery Supporting Runs, one Local Input, and exactly one local
+  Page Evidence Item Run declaration). Writes the versioned plan,
   Evidence Item table, open threads and log;
   records evidence-to-Run lineage but allocates no Ticket and executes no material. Trigger: page outline, OUTLINE
   phase, shape the plan, survey the evidence items, evidence item table, review,
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.19.0"
-  last_updated: "2026-09-03"
+  version: "0.23.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-page-outline · SHAPE the plan, then SURVEY what it owes
 
-Load the concrete chain, in order:
+Enter through the canonical Page chain, in order:
 
 ```text
-haipipe-page-workflow
+haipipe-page
+  → haipipe-page-workflow
   → haipipe-page-outline
+  → the exact owning workflow-phase skill
+  → the exact Page Type skill
   → haipipe-plugin-outline/ref/plan-grammar.md
   → haipipe-plugin-outline/ref/item-table.md
-  → haipipe-plugin-outline/ref/evidence/pagex.md (when SURVEY considers a cross-Folder source)
   → haipipe-plugin-outline/ref/review-packet.md (only for a human review or approval)
-  → the exact owning workflow-phase skill, for example haipipe-paper-narrative
+  → haipipe-run + selected workers (SURVEY inventory only; no dispatch)
+  → haipipe-plugin-outline (presentation)
 ```
 
-The owning workflow phase supplies the Page's outline/narrative/style policy.
+The current `haipipe-page-context` PREPARE record must be fresh before this
+chain acts. The owning workflow and Page Type supply the Page's
+outline/narrative/style policy.
 Do not route through `haipipe-page-for-task`; that compatibility variant is no
 longer part of this design. Load no sibling Page and no board-wide checker
 output before reading the target Page.
 
-The page workflow has two PARTS (haipipe-page-workflow §🔁): the OUTLINE part
-decides what is true and what the page will therefore say; the DRAFT part
-writes it. This phase owns the OUTLINE part's two HUMAN-gated cycles; its
-sibling `haipipe-page-evidence` owns the two machine-gated ones (LAND, EMBED).
-The reader sees this authority as one Outline plugin with two primary surfaces:
-**Bullet Workspace** for the plan and **Evidence Workspace** for what each
-bullet needs. Requirement/Discussion/Feedback are Plan Context; Files/Log are
-Page Records. None of these records is copied back into `page.md`.
+The Page workflow gives OUTLINE two planning cycles. Its sibling
+`haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-content` owns the
+later WRITE cycle. All governing context must first be resolved by
+`haipipe-page-context`.
+
+The reader sees these authorities through one Outline plugin with three
+workspaces: **Context Workspace** for governing inputs, **Bullet Workspace**
+for the plan, and **Evidence Workspace** for what each Bullet needs.
+Requirement, Discussion, Feedback, Files, Log, and Skills remain separate
+records on disk but appear together inside Context Workspace. None is copied
+back into `page.md`.
+
+Both the main Page and the Outline plan card expose the same compact numbered
+workflow strip: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`, with the current cycle
+highlighted. Arrow notation describes phase flow, not literal UI separators.
+The planning surface does not show a Shape-versus-Content mismatch alarm;
+Content may correctly be empty before EMBED/CONTENT. Any structural mismatch
+that matters is evaluated by the owning phase's checker at its boundary.
 
 ```text
 OUTLINE part
   SHAPE    this file    plan + typed item expectation          👤 approved:
-  SURVEY   this file    classify routes + PageX + Local Input + Run   👤 Decide, per item
+  SURVEY   this file    classify supports + Local Input + Local Run    👤 Decide, per item
   LAND     evidence     allocate planned routes, execute → Result     ⚙ every make-item ready
   EMBED    evidence     fold ready Results into plan v<N+1>     ⚙ back to SHAPE
 ```
+
+## 🧱 Bullet · the Outline's primary unit
+
+A **Bullet** is one planned reader move with a stable `C<n>.P<m>.B<k>` address.
+It is smaller than a paragraph and more durable than a sentence: a Section Page
+normally realizes one Bullet as one sentence, while another Page type may use
+one or more sentences. Its head names the job the prose must do, not the final
+prose itself.
+
+```text
+Bullet
+├── Address       stable C.P.B identity
+├── Head          planned reader move
+├── Note          bounded rationale or constraint
+├── Evidence      zero-to-many typed Evidence Items
+└── Realization   CONTENT-written Page sentence(s), linked with realizes:
+```
+
+The Bullet is the shared unit across Bullet Workspace and Evidence Workspace.
+SHAPE revises its intended move; SURVEY maps what supports it without changing
+its meaning; LAND and EMBED return ready material; CONTENT alone writes its Page
+prose. Evidence Items serve a Bullet—they do not become competing outline rows.
 
 ## ⚡ Brief
 
@@ -62,23 +100,24 @@ Q        what will this page say, division by division, bullet by bullet;
 READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          (open rows) · outline/<stem>-evidence.md (the table joined to the
          disk) · the owning workflow phase's outline policy · the page · the current plan ·
-         the project's tasks/ tree and unified Evidence PageX shortlist
-         (SURVEY only)
+         the project's Execution/Discovery Run inventories (SURVEY only) ·
+         outline/<stem>-context.md · outline/skill/<stem>.md when present
 WRITES   outline/<stem>-outline-v<N>.md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
          (generated pointers) · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
-         Run map, valid PageX/input, and one decision (SURVEY)
-ENDS     SHAPE: a person ticks approved: (or a chat approval is transcribed
-         with the quote) · SURVEY: every row carries a signed Decide and each make-Run is classified
+         Run map, one explicit Local Input, and one decision (SURVEY)
+ENDS     SHAPE: copilot records a person's approved: tick; auto records the
+         owed tick and follows the declared gate policy · SURVEY: every row is
+         decided, or auto records the person-reserved Decide as owed
 WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
          mints no Aim · names no division the type refuses · ticks nothing ·
          changes a ✅ plan only as v<N+1> · never writes a Status word
-ROUTES   SHAPE → SURVEY (approved, marks owed) · SHAPE → the DRAFT part
-         (approved, every item folded) · SURVEY → LAND (every item graph classified and decided) ·
-         either → SHAPE again · HOLD (the person is unavailable)
+ROUTES   SHAPE → SURVEY (agreed or auto-forwarded, marks owed) · SHAPE → CONTENT
+         (evidence-aware and allowed forward) · SURVEY → LAND (every item graph classified) ·
+         either → SHAPE again · HOLD (copilot waits, or a real input/stop blocks auto)
 RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
          ../haipipe-page-workflow/ref/page-run-contract.md §Receipt step
 ```
@@ -88,7 +127,9 @@ RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
 - **Load**: this brief, the owning workflow phase's outline policy (`fixed` lists the
   divisions · `grammar` fixes a first-word set and an order rule · `resolved`
   points at a source outside the type · no key means the base section order),
-  `ref/plan-grammar.md`, the page, and the eight files under `outline/`. The
+  `ref/plan-grammar.md`, the page, the generated Context record, and the other
+  process records under `outline/`. A missing, stale, or conflicting required
+  Context row routes to CONTEXT before SHAPE or SURVEY continues. The
   policy sits in the phase skill's contract, which the Skill
   tool strips: read the file's first 20 lines with the Read tool. Read the
   page once, with the Read tool; a page piped through `cat` into a persisted
@@ -117,8 +158,8 @@ loop 3 ⇄ 4 until the person ticks approved:
 ```
 
 Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
-on the 🧭 tab. "Draft" and "Brief" are not cycle names: DRAFT is the second
-part of the workflow, and Brief is the design family's D0.
+on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
+movement of the later CONTENT/WRITE phase, while Brief is SHAPE input.
 
 ### ① Prepare · one command runs the mechanical half
 
@@ -169,7 +210,7 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   changes, not a Section.
 - **A Section page plans sentence slots.** One bullet per slot in the
   Narrative row's order; the venue's moves (V4) are the slots' jobs; V2 sets
-  the budget; a division V3 refuses fails ④ here and never reaches the DRAFT
+  the budget; a division V3 refuses fails ④ here and never reaches CONTENT
   part. Terms are defined inline the first time; the plan never quotes the
   sentence it plans.
 - **A hole is specified, never answered.** Add
@@ -246,7 +287,7 @@ full linked records rather than omitting the provenance.  The same packet is
 required when revising an already-reviewed outline, with a short “changed
 since v<N>” line under Current Shape.
 
-### 🧑 The tick ends the cycle, and it carries the fork
+### 🧑 The tick governs the fork; mode governs whether work waits
 
 - **A person reads the 🧭 tab and ticks `approved:`.** The job there is to
   BREAK the plan: the division that argues nothing, the figure that shows the
@@ -256,21 +297,30 @@ since v<N>” line under Current Shape.
 - **A chat approval is transcribed, never decided**:
   `approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"`.
   A machine writes `checked:` for itself and nothing more.
+- **Copilot waits; auto records debt.** In `copilot`, an unticked
+  person-reserved gate routes to HOLD. In `auto`, the machine may follow the
+  checked plan while recording `approved:` or `Decide` on the owed ledger.
+  Deferral is not approval and never supplies durable evidence for a Page Type
+  closing gate that requires a person.
 - **A tick belongs to the version it ticked.** Evidence that changes an
   approved plan makes `v<N+1>`; `v<N>` is kept, because it was right at its
   date.
-- **The tick is where the OUTLINE part exits.** EMBED always returns here with
-  plan v<N+1>; `approved:` with every table row `folded` releases the DRAFT
-  part, `approved:` with fresh marks sends the page to SURVEY again. The
-  machine never decides that the part is over.
+- **The gate is where the planning loop exits.** EMBED always returns here with
+  plan v<N+1>. In copilot, `approved:` with every table row `folded` releases
+  CONTENT and fresh marks send the Page to SURVEY. In auto, the same fork is
+  taken from `checked:` plus the declared gate policy while the missing human
+  act remains owed.
 
 ## 🔍 SURVEY · map the Run graph for each ready-evidence contract
 
-SURVEY runs only after SHAPE has named every item and the outline is approved.
+SURVEY runs only after SHAPE has named every item and the outline is either
+approved in copilot or allowed forward under the explicit auto gate policy.
 It inventories the current `task/` and `discoveries/` libraries, classifies
 each selected route as existing Result, Ticket only, rerun, or new design, and
-writes the evidence-to-Run lineage. It does not allocate an `rNN`, scaffold a
-Ticket, execute a worker, materialize a Result, or write prose.
+writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
+worker, materialize a Result, or write prose. For a Paper-local Run only,
+SURVEY reserves the proposed `P jNN.tNN.rNN` address so the Run remains
+indexable before LAND; `new` still means that no Run Ticket exists.
 
 - **Preserve SHAPE's contract.** Item id, type, name, Target, Label, Need,
   Expected, and Acceptance are frozen inputs to SURVEY. If they are insufficient or
@@ -285,28 +335,25 @@ Ticket, execute a worker, materialize a Result, or write prose.
   `new-task · bNNjNN`; when the job is absent, write `new-job · bNN`; use
   `new-block` only for a bounded block not yet placed in that hierarchy. Do not
   mint an `rNN` during inventory. Write `[]` when no upstream support is needed.
-- **Use one Run identity in two typographies.** Records store the canonical
+- **Use one global Run identity in two typographies.** Supporting records store the canonical
   compact id `bNNjNNtNNrNN`; the reader-facing table may display the same id as
   `bNN.jNN.tNN.rNN`. The dotted form is a hyperlink label, not a different
   identity. A planned parent `bNNjNNtNN` has no `rNN` until the owning workflow
   allocates a real Run.
-- **Bind PageX sources, zero to many.** Write `PageX Bindings: []` when the
-  item uses no cross-Folder Page material. Otherwise name each exact
-  repo-relative file or Result plus its authority using
-  `haipipe-plugin-outline/ref/evidence/pagex.md`. PageX is not a Run family, action, or
-  Result type. A whole-Folder link is navigation only and cannot satisfy an
-  item until an exact accepted source inside it is selected.
 - **Plan exactly one Local Input.** State whether its one future frozen
-  envelope contains Supporting Results, PageX bindings, named pre-existing
-  local paths, or `item contract only`. When PageX bindings exist, the field
-  must explicitly say they are frozen. A sibling item's future local Result is
+  envelope contains Supporting Results, named governed page-local static
+  paths, or `item contract only`. Cross-Folder evidence must enter through a
+  Supporting Run Result; Related Page links from Context Workspace are
+  navigation/constraints only. A sibling item's future local Result is
   not a local source; both items must name the shared upstream
   Execution/Discovery Run instead.
-- **Map exactly one Local Run declaration.** It is always
-  `Page · Evidence Item · reuse | rerun | registered · bNNjNNtNNrNN` when a
-  real local Ticket already exists. When it does not, use the same hierarchy
-  precisely: `new-run · bNNjNNtNN`, `new-task · bNNjNN`, `new-job · bNN`, or
-  `new-block · <bounded block name>`, and leave the local Ticket unallocated.
+- **Map exactly one Local Run declaration.** Paper-local Runs use their own
+  compact namespace `pjNNtNNrNN`, displayed as `P jNN.tNN.rNN`. `P` is the
+  fixed Paper block; `jNN` indexes the Page, `tNN` preserves the stable
+  Evidence Item number, and `rNN` indexes the proposed attempt (`r01` first).
+  Write `Page · Evidence Item · new-run · pjNNtNNrNN` when no Ticket exists;
+  `new` means proposed, not allocated. After LAND creates the Ticket, use
+  `registered`, `reuse`, or `rerun` with that same Paper-local identity.
   Do not use a free-text dash placeholder as an action. Its future frozen input envelope may
   include every Supporting Result plus local source material. Its future Result
   must satisfy the item's typed Acceptance contract. Page interpretation is not
@@ -315,15 +362,17 @@ Ticket, execute a worker, materialize a Result, or write prose.
   not an action. Existing accepted work is `reuse`; an existing Ticket that
   must be executed again is `rerun`; a real never-attempted Ticket is
   `registered`. Changed target/input/acceptance needs a new designed route.
-  `new-run`, `new-task`, `new-job`, and `new-block` are explicit inventory
-  findings; they have no `rNN` until the owning workflow allocates a Ticket.
+  Supporting `new-run`, `new-task`, `new-job`, and `new-block` routes remain
+  inventory findings and do not invent an external `rNN`. The Paper-local
+  `new-run` is the bounded exception: SURVEY reserves its full P/J/T/R index,
+  while LAND remains the first phase allowed to create its Ticket.
   There is no `found`, `person`, or `none` action.
 - **Citations use the same graph.** A `CITE` item may reuse or commission a
   Discovery Run, then its local Page Evidence Item Run produces the focal,
   verified citation claim. It is not routed to a special `person` outcome.
 - **A SURVEY row is complete** when every declared Supporting and Local route
   is honestly classified (existing Result, Ticket only, rerun, or new design),
-  PageX bindings are valid, one Local Input is explicit, the derived
+  one Local Input is explicit, the derived
   `outline/evidence/supporting-runs/` map is current, and Decide is signed (`☑ make`, `☑ defer`,
   or `☑ drop`). A planned route is a plan, not `Ready` evidence. LAND refuses
   `☐`, an ambiguous route, or a fake/guessed Run identity.
@@ -331,9 +380,23 @@ Ticket, execute a worker, materialize a Result, or write prose.
 The Outline plugin's Evidence Workspace joins the generated evidence snapshot
 and `outline/evidence/supporting-runs/` map into one card per Evidence Item. Its identity is the same
 compact `E<n><kind>.<Label>` used by the Outline Table; Supporting and Local
-Runs are grouped Run items inside that card. Reader-facing links are `Run` and
+Runs are grouped Run items inside that card. The internal `Evidences` lens
+explains each Evidence contract; the internal `Runs` lens groups by Evidence
+and renders every mapped Supporting or Paper-local route as its own Run card.
+It reports both mapping and unique-Run counts because shared Runs may appear in
+several Evidence groups. This is SURVEY's source inventory, not proof that a
+planned route has been allocated. Reader-facing paths are `Run` and
 `Result`, with exact paths collapsed behind `Run & Result paths`. SURVEY does
 not make the overview carry logs, commands, or output trees.
+
+Each Run item must also answer “what is this for?” Existing Runs take their
+Purpose from the real Ticket plus the owning Evidence Item. A proposed route
+shows a Plan synthesized from Expected, Acceptance, and Local Input, which
+remain authored in `<stem>-evidence-items.md`; SURVEY creates no second plan
+file. Present `Availability` separately from `Next action`: existence is
+`Planned | Run exists · Result missing | Run + Result | Paths unresolved`,
+while action is `Allocate and run | Run | Rerun | Reuse Result | Resolve path`.
+Do not present `new`, `rerun`, `run only`, and `ready` as one status scale.
 
 ### 🧑 The Decide ends the cycle
 
@@ -348,17 +411,18 @@ then `cycle: LAND`.
 
 ```text
 SHAPE  any of the five ❌                     fix the plan here; no tick yet
-SHAPE  five pass, items owed, approved ✅     SURVEY
-SHAPE  five pass, every item folded, ✅       the DRAFT part (haipipe-page-draft)
-SHAPE  approved ⬜, person unavailable        HOLD
-SURVEY route ambiguous or Decide open          SURVEY · HOLD when human input is required
-SURVEY every make graph classified + decided  LAND (haipipe-page-evidence)
+SHAPE  five pass, items owed, gate allows      OUTLINE / SURVEY
+SHAPE  five pass, every item folded, allowed   CONTENT / WRITE
+SHAPE  approved ⬜ in copilot                   HOLD
+SHAPE  approved ⬜ in auto                      record owed; follow declared gate policy
+SURVEY route ambiguous or Decide open          OUTLINE / SURVEY; HOLD only when policy requires
+SURVEY every make graph classified + allowed  EVIDENCE / LAND
 SURVEY item cannot be specified truthfully    SHAPE, naming item and target bullet
 owning phase policy refuses the shape         fix the plan, unless the mismatch is a real
                                               finding against that policy
 ```
 
-OUTLINE never routes to the DRAFT part's REVISE or CHECK.
+OUTLINE never routes directly to CHECK; a Page version must first pass CONTENT.
 
 ## 🧾 Receipt
 
@@ -371,12 +435,12 @@ requirement: V1 V2 V3 V4 read ✅
 feedback: n routed · n served · n declined
 items: n typed · n specified · n planned · n decided · by type VALUE/CITE/DISPLAY
 runs-mapped: existing supporting n (Execution n · Discovery n) · planned n · local n
-pagex-bindings: n exact · n unresolved/invalid
 checks: ⓪ ✅ ① ✅ ② ✅ ③ ✅ ④ ✅        (SHAPE)
 counts: divisions · paragraphs · bullets · Evidence Items by type
 threads: D<nn> opened … · D<nn> settled …
-approved: ✅ <who> <date> | ⬜ waiting
-next: SHAPE | SURVEY | LAND | DRAFT | HOLD
+approved: ✅ <who> <date> | ⬜ waiting/owed
+route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | WRITE
 ```
 
 ## 📂 Files
@@ -390,10 +454,9 @@ haipipe-page-outline/
 Owns no scripts. The base is `haipipe-page`; the folder, the tab, the plan
 grammar and the item table's grammar are `haipipe-plugin-outline`'s
 (`ref/plan-grammar.md`, `ref/item-table.md`, `ref/record-shape.md`,
-`ref/specimen-section-plan.md`); PageX binding semantics are
-`haipipe-plugin-outline/ref/evidence/pagex.md`; the two-part loop and the receipt law are
+`ref/specimen-section-plan.md`); the Page loop and receipt law are
 `haipipe-page-workflow`'s; the six-field card of every phase is
 `../haipipe-page-workflow/ref/phase-cards.md`; the next phase is
-`haipipe-page-evidence` (LAND, EMBED), and after the part exits,
-`haipipe-page-draft`. The design page is `QPw1-outline` on
+`haipipe-page-evidence` (LAND, EMBED), and after the plan exits,
+`haipipe-page-content`. The design page is `QPw1-outline` on
 `BoardSkillBoard-260722`.

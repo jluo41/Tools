@@ -1,4 +1,4 @@
-"""Where ONE page sits in the seven-phase page workflow, computed from DISK.
+"""Where ONE Page sits in the five-phase workflow, computed from disk.
 
 ONE copy of this logic, because two would drift: `cli/pagephase.py` prints the
 full strip, `status.py` prints the compact row inside the closing block, and
@@ -6,13 +6,14 @@ both call `phase_state()` here. Never writes.
 
 The states, and what each is read from:
 
-    🧭 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
+    🧭 CONTEXT   outline/<stem>-context.md exists as the current preflight projection
+    🧩 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
                  (SHAPE), plus the Evidence Item table's Decide per item (SURVEY)
     🃏 EVIDENCE  the Evidence Item table joined to local Results: ready · folded (LAND,
                  EMBED); legacy pages without a table: card state: lines ·
                  bibex verified= · display preview.pdf + accepted:
-    ✏️ DRAFT     the page's own ### content divisions, and whether it postdates the tick
-    🖊 REVISE    delivery/latex/ present and its newest pdf at least as new as the page (⑥ folded)
+    ✏️ CONTENT   the Page's content divisions postdate the plan; when a LaTeX
+                 delivery lane exists, its newest PDF also postdates the Page
     🔍 CHECK     the newest _runs/page/<page>/*.json receipt routed CLOSE
 
 ⚠️ `now` is the FIRST phase whose exit test fails, in loop order. That is a
@@ -88,12 +89,12 @@ def _checked(text):
 # ⚠️ ONE deliberate substitution: the loop draws CHECK as ✅, which is also this
 # module's DONE marker, so a bar pairing them reads `✅✅` and says nothing.
 # CHECK carries 🔍 here, the act of judging, and only in the bar.
-PHASES = (("OUTLINE", "🧭"), ("EVIDENCE", "🃏"),
-          ("DRAFT", "✏️"), ("REVISE", "🖊"), ("CHECK", "🔍"))
+PHASES = (("CONTEXT", "🧭"), ("OUTLINE", "🧩"), ("EVIDENCE", "🃏"),
+          ("CONTENT", "✏️"), ("CHECK", "🔍"))
 ORDER = tuple(name for name, _ in PHASES)
 EMOJI = dict(PHASES)
-LABEL = {"OUTLINE": "OUTLINE", "EVIDENCE": "EVIDENCE",
-         "DRAFT": "DRAFT", "REVISE": "REVISE·COMPILE", "CHECK": "CHECK"}
+LABEL = {"CONTEXT": "CONTEXT", "OUTLINE": "OUTLINE", "EVIDENCE": "EVIDENCE",
+         "CONTENT": "CONTENT", "CHECK": "CHECK"}
 # the cycle words of the OUTLINE part live on the item table (src/item_table.py)
 
 
@@ -155,7 +156,7 @@ def _displays(pd):
 def _bibex(pd):
     """One row per bibtex ENTRY, because a count cannot be spent.
 
-    `verified` is a person's (cite-rules, and haipipe-plugin-evidence rules it
+    `verified` is a person's (cite-rules, and the Outline citation contract rules it
     260815); `checked` is the approver's R1-R7 pass. An entry carrying
     `verified = {}` is EXPLICITLY unverified — cite-rules R7 — so an empty
     brace reads as owed, never as done.
@@ -291,8 +292,12 @@ def phase_state(page_md, board=None):
     ic = items["counts"] if items else {}
     live_rows = (items["marks"] - ic.get("deferred", 0) - ic.get("dropped", 0)) if items else 0
     folded_rows = ic.get("folded", 0) + ic.get("accepted", 0)
+    context_file = pd / "outline" / f"{page_md.stem}-context.md"
+    context_state = "done" if context_file.is_file() else "owed"
+    content_ready = bool(divs and md_m >= ap_m and (not tex_dirs or pdf_fresh))
 
     states = {
+        "CONTEXT": context_state,
         "OUTLINE": ("done" if approved and (not has_table or items["decided"] == items["rows"])
                     else ("part" if of else "owed")),
         "EVIDENCE": ((("done" if live_rows and folded_rows >= live_rows
@@ -301,8 +306,7 @@ def phase_state(page_md, board=None):
                      ("done" if (cards and len(answered) >= len(live)
                                  and disp and len(drawn) == len(disp))
                       else ("owed" if not cards and not disp and not ent else "part")))),
-        "DRAFT": "done" if (divs and md_m >= ap_m) else ("part" if divs else "owed"),
-        "REVISE": "done" if pdf_fresh else ("part" if tex_dirs else "owed"),
+        "CONTENT": "done" if content_ready else ("part" if divs else "owed"),
         "CHECK": "done" if (last and last.get("phase") == "CHECK"
                             and last.get("route") == "CLOSE") else "owed",
     }
@@ -312,12 +316,14 @@ def phase_state(page_md, board=None):
         "now": next((n for n in ORDER if states[n] != "done"), "CLOSE"),
         "outline": {"file": of, "version": ov, "approved": approved,
                     "marks": marks, "checked": outline_checked},
+        "context": {"file": context_file if context_file.is_file() else None,
+                    "ready": context_state == "done"},
         "items": items, "cycle": items["cycle"] if items else ("SHAPE" if of else "SHAPE"),
         "cards": cards, "missing": missing, "answered": answered, "blocked": blocked,
         "bibex": {"entries": ent, "verified": ver, "rows": bib},
         "displays": disp, "drawn": drawn, "accepted": acc,
         "divisions": divs, "page_after_tick": md_m >= ap_m,
-        "latex": tex.is_dir(), "pdf_fresh": pdf_fresh,
+        "latex": bool(tex_dirs), "pdf_fresh": pdf_fresh,
         "receipt": rec, "last": last, "dir": pd,
         # The page's OWN words about what it still owes. The RULING is the one
         # tick with no rules file (approve-rules/README.md, on purpose), so the

@@ -1,3 +1,13 @@
+## 0.8.1 · 260904
+
+- Enter every Section through the five-phase Page lifecycle beginning at
+  CONTEXT and use the canonical dependency order.
+- Replace active PageX/probe/bibex/value/display plugin language with typed
+  Evidence Items, Supporting Runs, one Local Input, one Local Run, and one
+  accepted local Result in the shared Outline plugin.
+- Return stale Narrative or Venue authority to its paper-journey owner, then
+  resume the Section at CONTEXT/PREPARE.
+
 ## 0.8.0 · 260902
 
 - A Section's page-owned prose rules now live as authored `W<n>` records in

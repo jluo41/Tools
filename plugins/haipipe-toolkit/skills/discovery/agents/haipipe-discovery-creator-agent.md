@@ -28,7 +28,7 @@ Create both Faces of one Task Page:
 
 ~~~text
 discoveries/bNN_<block>/jNN_<job>/tNN_<task>/
-Page Face: tNN_<task>.md, selected outline/evidence lanes
+Page Face: tNN_<task>.md, shared outline/ process and selected outline/evidence lanes
 Task Face: discovery.yaml, optional scripts, runs, results
 ~~~
 
@@ -107,8 +107,10 @@ Batch independent searches and draft each artifact fully before writing. Keep
 all relevance judgment and all file writes in this creator lane.
 Synthesize the root Page from completed Results and, when useful, write one
 optional typed record (`summary.md`, `verdict.md`, `landscape.md`, or
-`ideas.md`). Ask `haipipe-plugin-evidence` to build the deterministic
-citation aggregate. The typed record and Bib build are not Runs.
+`ideas.md`). Ask `haipipe-plugin-outline/ref/evidence/citations.md` to build
+the deterministic citation aggregate under `outline/evidence/bibex/`. The
+typed record and Bib build are not Runs; the Outline Evidence Workspace does
+not replace the owning Result.
 
 ## CLOSE
 

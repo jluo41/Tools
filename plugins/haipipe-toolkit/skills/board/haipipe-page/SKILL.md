@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.56.1"
-  last_updated: "2026-09-02"
+  version: "0.57.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,9 +42,14 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ```text
 <page>/
 ├── <page>.md      Opening · Outline · Content · Aims           THIS contract
-├── outline/       HUMAN process: the plan (versioned, ticked) and six record
-│                  files: requirement · discussion · feedback · evidence ·
-│                  files · log — parsed MEETINGS land here (JL 260831)
+├── outline/       HUMAN process: the plan (versioned, ticked), process records,
+│                  and the nested Evidence Workspace (JL 260903)
+│   ├── <stem>-context.md  generated PREPARE projection for all Page phases
+│   └── evidence/  typed CITE/VALUE/DISPLAY material and Run lineage:
+│       ├── bibex/       citations · verified:
+│       ├── display/     units and recipes · accepted:
+│       ├── supporting-runs/ generated lineage pointers only
+│       └── materials/   dated captures
 ├── workflow/      MACHINE process: one receipt per phase pass
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
@@ -53,13 +58,6 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ├── results/       Folder-local Results only. A canonical Task Page resolves
 │                  generated output at `<job>/results/<task>/<run>/`
 │              ─── the UPPER, PAGE part ───
-├── evidence/      what the page CITES, each lane behind its gate:
-│   ├── bibex/     citations · verified:
-│   ├── probe/     cards + values (PP<NN>.v<n>) · read:
-│   ├── display/   units, recipes inside · accepted:
-│   ├── pagex/     exact-file evidence and whole-Folder relationships;
-│   │              Folder cards show Page Face + live Task status
-│   └── materials/ dated captures
 ├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
 └── studio/        the HUMAN's room on the page (JL 260831): closest to
     ├── chat/      the person · you talk here, sessions kept
@@ -78,6 +76,12 @@ containing Task Job's `results/<task>/<run>/`; scripts, config, and notebooks
 appear only when the dialect owns them. Runs is never a third universal face or
 a lifecycle owner.
 
+All Page Evidence storage is nested under `outline/evidence/`; a root
+`<page>/evidence/` directory is a legacy migration shape, not a new write
+target. The Outline plugin owns the nested workspace and its CITE/VALUE/DISPLAY
+contracts. An existing `outline/evidence/pagex/` lane is also read-only
+migration input; new cross-Folder evidence enters through Supporting Run Results.
+
 A unit MAY carry a `README.md`, and it is DERIVED (JL 260831): a generated
 projection of the two-part tree as it actually stands (which lanes exist,
 their counts, where the product and the rendered page live), regenerated
@@ -91,12 +95,12 @@ A folder is created only when it is used. Values are typed Evidence Items;
 their accepted local Result and provenance are shown inside the Outline
 Evidence Workspace. Every number shown on a Page Face that comes from a Run crosses
 ONE page-serving collection job (`task-type: page`, contract
-`haipipe-task-for-page`); that Folder answers all related task-route cards and
-ranks first among the page's `outline/evidence/pagex/` whole-Folder links. A local Run
+`haipipe-task-for-page`); the Supporting Run Result becomes the explicit
+cross-Folder evidence edge. A local Run
 may validate or reshape non-authoritative intermediates, but it
 cannot become a second value door. A reusable derivation, a source-data change, or any displayed
 numeric result belongs in the linked executable Folder and its QA binding. The
-eight `outline/` process files and its nested evidence workspace, their ids, labels and writers are
+nine `outline/` process files and its nested evidence workspace, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A phase loads those two refs, not the plugin
 skill (which owns the tab).
@@ -197,21 +201,22 @@ re-run `install.sh --global` so the installed symlink follows it.
 ## 🎭 Page phases, independent of Folder kind
 
 A Page Face persists while its Page-workflow authority changes. The page
-workflow (`page-workflows/haipipe-page-workflow`) is TWO PARTS of named
-cycles, independent of the domain workflow phase that owns the Folder kind:
+workflow (`page-workflows/haipipe-page-workflow`) has five numbered phases,
+independent of the domain workflow phase that owns the Folder kind:
 
 ```text
-part      cycle     phase (the skill that acts)                  gate
+index     phase/cycle     skill                                  gate
 ──────────────────────────────────────────────────────────────────────────────────
-OUTLINE   SHAPE     page-workflows/haipipe-page-outline           👤 approved:
-          SURVEY    page-workflows/haipipe-page-outline           👤 Decide per Evidence Item
-          LAND      page-workflows/haipipe-page-evidence          ⚙ every make-item ready
-          EMBED     page-workflows/haipipe-page-evidence          ⚙ back to SHAPE
-DRAFT     WRITE     page-workflows/haipipe-page-draft + -revise   ⚙ cold pre-check ready
-          CHECK     page-workflows/haipipe-page-check             👤 accepted:
+00        CONTEXT/PREPARE  page-workflows/haipipe-page-context     ⚙ resolved context
+01        OUTLINE/SHAPE    page-workflows/haipipe-page-outline     👤 approved:
+          OUTLINE/SURVEY   page-workflows/haipipe-page-outline     👤 Decide per item
+02        EVIDENCE/LAND    page-workflows/haipipe-page-evidence    ⚙ every make-item ready
+          EVIDENCE/EMBED   page-workflows/haipipe-page-evidence    ⚙ back to SHAPE
+03        CONTENT/WRITE    page-workflows/haipipe-page-content     ⚙ cold pre-check ready
+04        CHECK/CHECK      page-workflows/haipipe-page-check       👤 accepted:
 ```
 
-The law under the OUTLINE part: SHAPE specifies typed Evidence Items; SURVEY
+The evidence loop law: SHAPE specifies typed Evidence Items; SURVEY
 plans zero-to-many Execution/Discovery Supporting Runs plus exactly one local
 Page Evidence Item Run; LAND produces one ready local Result; EMBED interprets
 it. The ledger is `outline/<stem>-evidence-items.md`
@@ -226,12 +231,12 @@ support, and CHECK may route to any earlier cycle. When the visible operation
 is ambiguous, the authority test decides:
 
 ```text
+governing policy/context is stale              → PREPARE
 the section list itself is being agreed        → SHAPE
 an item has no valid Run graph or Decide        → SURVEY
 a decided item has no ready local Result        → LAND
 a ready item is not yet in the plan             → EMBED
-purpose or Aims change                         → WRITE, new round (DRAFT)
-the same purpose and Aims are improved         → WRITE (REVISE)
+purpose, Aims, or prose realization changes    → CONTENT / WRITE
 a concrete version is judged                   → CHECK
 ```
 
@@ -255,10 +260,10 @@ The authority is `haipipe-board/ref/board-form.md` §4: the on-stage order is
 ```text
 #   section    conveys · the reader question                 phase authority              omit
 ────────────────────────────────────────────────────────────────────────────────────────────────
-1   🚪 Opening what is this page, why should I care?         DRAFT defines · REVISE clarifies   never
+1   🚪 Opening what is this page, why should I care?         CONTENT defines and clarifies      never
 2   Outline    how is this page structured and supported?    generated authoritative projection       when no plan exists
-3   Content    what does this page actually establish?       DRAFT defines · REVISE realizes    Q may · S never
-4   Aims       what should become true, for which Content    DRAFT sets target and test;        never
+3   Content    what does this page actually establish?       CONTENT writes and builds          Q may · S never
+4   Aims       what should become true, for which Content    CONTENT sets target and test;      never
                division, and what is true now for each?      any phase updates Now:
 ```
 
@@ -297,7 +302,7 @@ A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
 renders exactly one paragraph and has no reader drawer. Its page-owned prose
 rules live as authored `W<n>` records in `outline/<stem>-requirement.md`, after
 its generated venue `V<n>` records. The Outline plugin exposes both through
-one `📏 Requirement` lens to DRAFT, REVISE, and CHECK. The Section
+one `📏 Requirement` lens to CONTEXT, OUTLINE, CONTENT, and CHECK. The Section
 product source carries no `### Writing Style`; post-paragraph notes and Stage
 Contract remain source-side and do not appear on the manuscript review
 surface. Other Page Types retain the ordinary Opening drawer when they need it.
@@ -372,7 +377,7 @@ rewrite a sibling page's content.
 **Run**: the bounded loop lives with `page-workflows/haipipe-page-workflow`.
 The dispatch stays in the session you typed it in: a subagent is not handed
 the `Workflow` tool. A new page is CREATEd and registered first and RUN starts
-at OUTLINE; an existing page with no known next authority starts at CHECK.
+at CONTEXT; an existing page with no known next authority starts at CHECK.
 
 ```bash
 python3 <toolkit>/skills/board/haipipe-board/cli/preview.py <page>

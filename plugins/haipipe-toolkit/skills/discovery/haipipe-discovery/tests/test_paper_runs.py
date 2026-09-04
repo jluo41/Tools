@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 
@@ -204,7 +206,215 @@ executed_at: "2026-09-01T12:00:00-04:00"
     )
 
 
+def add_verification(
+    topic: Path,
+    stem: str,
+    *,
+    status: str = "verified",
+    by: str | None = "person:fixture-reviewer",
+    at: str | None = "2026-09-01T12:05:00-04:00",
+) -> None:
+    runtime = topic / "results" / stem / "runtime.yaml"
+    lines = ["  verification:", f"    status: {status}"]
+    if by is not None:
+        lines.append(f'    by: "{by}"')
+    if at is not None:
+        lines.append(f'    at: "{at}"')
+    text = runtime.read_text(encoding="utf-8").replace(
+        "  mode: verbatim_copy\n",
+        "  mode: verbatim_copy\n" + "\n".join(lines) + "\n",
+    )
+    runtime.write_text(text, encoding="utf-8")
+
+
+def add_report(
+    topic: Path,
+    *,
+    status: str = "ok",
+    completed_runs: int = 1,
+    unresolved_runs: int = 0,
+    evidence_bib: str | None = None,
+) -> None:
+    manifest = topic / "discovery.yaml"
+    canonical = (
+        evidence_bib
+        if evidence_bib is not None
+        else f"outline/evidence/bibex/{topic.name}.bib"
+    )
+    text = manifest.read_text(encoding="utf-8").replace(
+        "status: planned", f"status: {status}"
+    )
+    text += (
+        "report:\n"
+        "  outcome: supports\n"
+        "  summary: The admitted evidence supports the bounded claim.\n"
+        "  confidence: medium\n"
+        f"  completed_runs: {completed_runs}\n"
+        f"  unresolved_runs: {unresolved_runs}\n"
+        f"  evidence_bib: {canonical}\n"
+    )
+    manifest.write_text(text, encoding="utf-8")
+
+
+def close_page(topic: Path) -> None:
+    page = topic / f"{topic.name}.md"
+    text = page.read_text(encoding="utf-8")
+    text = text.replace("state: 🔴 OPEN", "state: ✅ REPORTED")
+    text = text.replace("- 🔨 A", "- ✅ A")
+    page.write_text(text, encoding="utf-8")
+
+
 class PaperRunContractTest(unittest.TestCase):
+    def test_legacy_root_evidence_lane_is_forbidden(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_topic_contract(topic)
+            (topic / "evidence").mkdir()
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(
+                    error.startswith("legacy-root-evidence-forbidden:")
+                    for error in errors
+                ),
+                errors,
+            )
+
+    def test_report_counts_must_match_run_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_report(topic, status="blocked", completed_runs=2)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(
+                    error.startswith("manifest-report-count-mismatch:")
+                    for error in errors
+                ),
+                errors,
+            )
+
+    def test_report_evidence_bib_must_use_canonical_outline_lane(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_report(
+                topic,
+                status="blocked",
+                evidence_bib="evidence/bibex/t01_demo_topic.bib",
+            )
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(
+                    error.startswith("manifest-report-evidence-bib-invalid:")
+                    for error in errors
+                ),
+                errors,
+            )
+
+    def test_terminal_status_rejects_pending_citation_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_report(topic)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(
+                    error.startswith("manifest-terminal-with-unverified-citation:")
+                    for error in errors
+                ),
+                errors,
+            )
+
+    def test_check_labels_pending_verification_as_closure_held(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_pair(topic, "r01_example2026_demo")
+            output = io.StringIO()
+            with redirect_stdout(output), redirect_stderr(io.StringIO()):
+                exit_code = paper_runs.command_check(topic)
+            self.assertEqual(0, exit_code)
+            self.assertIn("CLOSURE_HELD", output.getvalue())
+
+    def test_verified_receipt_requires_person_and_time(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_verification(topic, stem, by=None, at=None)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(
+                    error.startswith("runtime-bib-verifier-missing:")
+                    for error in errors
+                ),
+                errors,
+            )
+            self.assertTrue(
+                any(
+                    error.startswith("runtime-bib-verified-at-missing:")
+                    for error in errors
+                ),
+                errors,
+            )
+
+    def test_terminal_status_accepts_verified_reconciled_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_verification(topic, stem)
+            paper_runs.atomic_write(
+                paper_runs.default_bib_path(topic),
+                paper_runs.aggregate_bib(paper_runs.check_topic(topic)[2]),
+            )
+            close_page(topic)
+            add_report(topic)
+            errors, counts, _ = paper_runs.check_topic(topic)
+            self.assertEqual([], errors)
+            self.assertEqual(1, counts["complete"])
+
+    def test_terminal_status_rejects_open_page_face(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            add_verification(topic, stem)
+            paper_runs.atomic_write(
+                paper_runs.default_bib_path(topic),
+                paper_runs.aggregate_bib(paper_runs.check_topic(topic)[2]),
+            )
+            add_report(topic)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("manifest-terminal-page-open:") for error in errors),
+                errors,
+            )
+
+    def test_build_bib_write_rejects_noncanonical_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_pair(topic, "r01_example2026_demo")
+            alternate = topic / "evidence" / "bibex" / "alternate.bib"
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                exit_code = paper_runs.command_build_bib(topic, alternate, True)
+            self.assertEqual(1, exit_code)
+            self.assertFalse(alternate.exists())
+
+    def test_build_bib_repairs_missing_canonical_report_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_pair(topic, "r01_example2026_demo")
+            add_report(topic, status="blocked")
+            canonical = paper_runs.default_bib_path(topic)
+            self.assertFalse(canonical.exists())
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                exit_code = paper_runs.command_build_bib(topic, None, True)
+            self.assertEqual(0, exit_code)
+            self.assertTrue(canonical.is_file())
+
     def test_page_requires_writing_style(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))
@@ -350,7 +560,7 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertEqual(["Demo2026"], [entry.key for entry in entries])
             self.assertIn("@article{Demo2026", paper_runs.aggregate_bib(entries))
             self.assertEqual(
-                topic / "evidence" / "bibex" / "t01_demo_topic.bib",
+                topic / "outline" / "evidence" / "bibex" / "t01_demo_topic.bib",
                 paper_runs.default_bib_path(topic),
             )
             self.assertEqual(0, paper_runs.command_build_bib(topic, None, True))

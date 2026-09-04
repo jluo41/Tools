@@ -43,9 +43,8 @@ plan: v1
 - **Expected**: VALUE · estimate, interval, unit, population, and model label
 - **Acceptance**: recomputes from the accepted model Result
 - **Supporting Runs**: Execution · reuse · b01j01t01r01
-- **PageX Bindings**: source/page/results/r01/result.yaml · authority b01j01t01r01
-- **Local Input**: Supporting Results + PageX bindings
-- **Local Run**: Page · Evidence Item · new-run · b02j01t01{arrow}
+- **Local Input**: Supporting Results + item contract
+- **Local Run**: Page · Evidence Item · new-run · pj01t01r01{arrow}
 - **Decide**: {decide}
 
 ### E02-CITE-guideline-anchor · C1.P1.B2 · guideline anchor
@@ -55,9 +54,8 @@ plan: v1
 - **Expected**: CITE · verified guideline claim and locator
 - **Acceptance**: source identity and locator resolve
 - **Supporting Runs**: Discovery · rerun · b01j02t01r03
-- **PageX Bindings**: []
 - **Local Input**: Supporting Results only
-- **Local Run**: Page · Evidence Item · new-run · b02j01t01
+- **Local Run**: Page · Evidence Item · new-run · pj01t02r01
 - **Decide**: ☑ defer · awaiting source access
 
 ### E03-DISPLAY-effect-forest · C1.P1.B2 · effect forest
@@ -67,9 +65,8 @@ plan: v1
 - **Expected**: DISPLAY · forest plot ready to place
 - **Acceptance**: preview, caption claim, and frozen intake exist
 - **Supporting Runs**: []
-- **PageX Bindings**: []
 - **Local Input**: item contract only
-- **Local Run**: Page · Evidence Item · new-run · b02j01t01
+- **Local Run**: Page · Evidence Item · new-run · pj01t03r01
 - **Decide**: ☑ drop · no longer needed
 """
 
@@ -123,7 +120,7 @@ def _page(root, *, tick="⬜", decide="☐ make", arrow="", result=True,
             "Execution · reuse · b01j01t01r01",
             "Execution · registered · b01j01t01r01",
         ).replace(
-            f"Page · Evidence Item · new-run · b02j01t01{arrow}",
+            f"Page · Evidence Item · new-run · pj01t01r01{arrow}",
             f"Page · Evidence Item · registered · b02j01t01r01{arrow}",
             1,
         )
@@ -166,6 +163,13 @@ class ItemTableTest(unittest.TestCase):
         self.assertEqual("b01.j02.t03.r04", it.readable_global_run("b01j02t03r04"))
         self.assertEqual("", it.compact_global_run("b01.j02.t03"))
 
+    def test_paper_run_addresses_have_a_separate_p_j_t_r_namespace(self):
+        self.assertEqual("pj01t03r01", it.compact_paper_run("P.j01.t03.r01"))
+        self.assertEqual("j01.t03.r01", it.readable_paper_route("pj01t03r01"))
+        self.assertEqual("", it.compact_global_run("pj01t03r01"))
+        self.assertTrue(it._valid_local_action_address("new-run", "pj01t03r01"))
+        self.assertFalse(it._valid_action_address("new-run", "pj01t03r01"))
+
     def test_read_items_parses_typed_identity_graph_and_local_result(self):
         with tempfile.TemporaryDirectory() as directory:
             page = _page(
@@ -179,16 +183,30 @@ class ItemTableTest(unittest.TestCase):
             self.assertEqual("C1.P1.B1", row["target"])
             self.assertEqual("AdjustedFx", row["label"])
             self.assertEqual("Execution · reuse · b01j01t01r01", row["supporting_runs"])
-            self.assertEqual(
-                "source/page/results/r01/result.yaml · authority b01j01t01r01",
-                row["pagex_bindings"],
-            )
-            self.assertEqual(1, row["pagex_count"])
+            self.assertEqual("", row["pagex_bindings"])
+            self.assertEqual(0, row["pagex_count"])
             self.assertTrue(row["pagex_valid"])
+            self.assertFalse(row["legacy_pagex"])
             self.assertEqual(
-                ("new-run", "b02j01t01", "results/local/value.yaml", "make"),
+                ("new-run", "pj01t01r01", "results/local/value.yaml", "make"),
                 (row["action"], row["address"], row["result"], row["decision"]),
             )
+
+    def test_legacy_pagex_field_is_read_but_forces_resurvey(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, decide="☑ make · JL 260901", registered=True)
+            item_file = page.parent / "outline" / "QT2-evidence-items.md"
+            text = item_file.read_text(encoding="utf-8")
+            text = text.replace(
+                "- **Local Input**: Supporting Results + item contract",
+                "- **PageX Bindings**: old/result.yaml · authority b01j01t01r01\n"
+                "- **Local Input**: Supporting Results + item contract",
+                1,
+            )
+            item_file.write_text(text, encoding="utf-8")
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertTrue(row["legacy_pagex"])
+            self.assertFalse(row["planned"])
 
     def test_plan_parser_allows_multiple_items_on_one_bullet(self):
         got = [(item, target, kind, folded) for item, target, _head, kind, _expected, _accept, folded
@@ -368,24 +386,28 @@ class ItemTableTest(unittest.TestCase):
             page = _page(directory, tick="✅ JL", decide="☑ make · JL 260901", result=False)
             path = it.items_path(page)
             path.write_text(path.read_text().replace(
-                "source/page/results/r01/result.yaml · authority b01j01t01r01",
-                "source/page/ · authority accepted Page v2",
+                "- **Local Input**: Supporting Results + item contract",
+                "- **PageX Bindings**: source/page/ · authority accepted Page v2\n"
+                "- **Local Input**: Supporting Results + item contract",
+                1,
             ))
             row = it.read_items(page)["E01-VALUE-adjusted-effect"]
             self.assertFalse(row["pagex_valid"])
             self.assertFalse(row["planned"])
 
-    def test_pagex_binding_must_be_named_in_local_input(self):
+    def test_even_valid_legacy_pagex_binding_requires_migration(self):
         with tempfile.TemporaryDirectory() as directory:
             page = _page(directory, tick="✅ JL", decide="☑ make · JL 260901", result=False)
             path = it.items_path(page)
             path.write_text(path.read_text().replace(
-                "Supporting Results + PageX bindings",
-                "Supporting Results only",
+                "- **Local Input**: Supporting Results + item contract",
+                "- **PageX Bindings**: source/page/result.yaml · authority b01j01t01r01\n"
+                "- **Local Input**: Supporting Results + item contract",
                 1,
             ))
             row = it.read_items(page)["E01-VALUE-adjusted-effect"]
             self.assertTrue(row["pagex_valid"])
+            self.assertTrue(row["legacy_pagex"])
             self.assertFalse(row["planned"])
 
 

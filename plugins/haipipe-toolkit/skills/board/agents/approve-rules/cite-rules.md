@@ -10,8 +10,9 @@ a machine may SUBSET or TRANSCRIBE a real bibtex record.
 It may NEVER COMPOSE one.
 ```
 
-`haipipe-plugin-evidence` citation law. An agent that cannot find the record does
-NOT write a plausible one; it reports the key as unfound and stops. Every rule
+`haipipe-plugin-outline/ref/evidence/citations.md` citation law. An agent that
+cannot find the record does NOT write a plausible one; it reports the key as
+unfound and stops. Every rule
 below assumes the entry already exists because a person or a resolver landed it.
 
 ## Rules

@@ -381,18 +381,60 @@ class WriteMixin:
         return {"before": before, "after": after, "diff": diff}, None
 
     def add_discuss(self, f, p):
-        """往 ## Discussion 末尾追加一条自由想法（一整段 → 一条 > WHO: …）。
-        跟 add_comment 一样跳 ``` 围栏找真的段；没有 ## Discussion 就在
-        ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
+        """Write a free discussion thought to the Page's active dialect.
+
+        Folded Pages own open questions as board-wide ``D<nn>`` records in
+        ``outline/<stem>-discussion.md``.  Legacy flat Pages retain their
+        historical ``## Discussion`` section writer below.
+        """
         # A SENTENCE comment is written `> Comment WHO …` since 260802. The
         # bare-initial form still parses, but it is not what to write, and
         # `check.py` warns on it inside Content: the engine must not produce
         # what the checker flags. `## Discussion` is untouched below, because
         # its `> JL:` / `>> CC0726:` thread grammar is a different thing.
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
+        thought = (p.get("text") or "").strip()
+        outline = f.parent / "outline"
+        if f.parent.name == f.stem and outline.is_dir():
+            if not thought:
+                return None, "想法是空的"
+            discussion = outline / f"{f.stem}-discussion.md"
+            board = next((parent for parent in f.parents
+                          if (parent / "board.md").is_file()), f.parent)
+            seen = []
+            for record in board.rglob("outline/*.md"):
+                if not (record.name.endswith("-discussion.md")
+                        or record.name.endswith("-log.md")):
+                    continue
+                try:
+                    seen.extend(int(n) for n in re.findall(
+                        r"(?:^#{3,4}\s+D|·\s+D)(\d+)",
+                        record.read_text(encoding="utf-8"), re.M))
+                except OSError:
+                    continue
+            did = max(seen, default=0) + 1
+            ask = " ".join(thought.split())
+            title = ask if len(ask) <= 100 else ask[:97].rstrip() + "…"
+            if discussion.exists():
+                current = discussion.read_text(encoding="utf-8").rstrip()
+            else:
+                current = (f"# {f.stem} · discussion\n"
+                           f"page: {f.stem}\n"
+                           "kind: discussion · authored · open questions only · "
+                           "board-wide D<nn> ids · never versioned")
+            block = (
+                f"### D{did} · {title}\n"
+                f"- **Ask**: {ask}\n"
+                "- **Options**: none here; answer in this thread\n"
+                "- **We lean**: No default; this needs a person’s ruling.\n"
+                f"- **Decide**: JL · opened {time.strftime('%y%m%d')}"
+            )
+            discussion.write_text(current + "\n\n" + block + "\n", encoding="utf-8")
+            return {"discussion": discussion.name, "thread": f"D{did}"}, None
+
         # Same record grammar as a comment: a typed paragraph break survives as
         # a continuation instead of being flattened into one long line.
-        rows = self._record_lines(f"> {who}: ", p.get("text") or "")
+        rows = self._record_lines(f"> {who}: ", thought)
         if not rows:
             return None, "想法是空的"
         t = f.read_text(encoding="utf-8")

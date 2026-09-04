@@ -1,3 +1,10 @@
+## 0.4.0 — 2026-09-03
+
+- Show `outline/skill/` as its own source-material row beside the Outline
+  process records and Evidence lanes.
+- Treat a root `skill/` row as pre-migration storage, never as the canonical
+  Page layout.
+
 # haipipe-plugin-folder · Changelog
 
 ## 0.3.0 — 2026-09-03

@@ -23,9 +23,9 @@ R3  EVERY OWED THING IS NAMED BEFORE APPROVAL. Use
     Evidence line truthfully owes no evidence; 🎯 remains an Aim annotation.
 R4  NO BULLET CONTRADICTS A `## Law` ROW on its own page or on a page that
     page cites as binding.
-R5  THE ROUND IS CLASSIFIED CORRECTLY. A plan that changes purpose or any
-    Aim's intent is a DRAFT round and says so; a plan that only changes
-    realization is REVISE and says so.
+R5  THE AUTHORITY IS CLASSIFIED CORRECTLY. A change to purpose, Aim intent,
+    division shape, or Bullet promise belongs to OUTLINE; realization-only
+    work belongs to CONTENT. Stale governing requirements route to CONTEXT.
 R6  IDS ARE STABLE. Aim and State ids the plan keeps are listed by id, so a
     renumber cannot happen by accident.
 R7  NOTHING IS LOST SILENTLY. Where the plan shrinks or deletes material, it
@@ -38,8 +38,8 @@ R8  NEVER DELETE THE ONLY PLACE A RULE IS WRITTEN, even when the surrounding
     the deletion a finding.
     ⚠️ NOT promoted from any break. This rule was seeded 260818 with a WORKED
     EXAMPLE THAT WAS FALSE: the README claimed the uncertainty rule lived only
-    in QPw00's `#### 1.3`. It does not. `haipipe-page-draft/SKILL.md:24` states
-    it outright and `QPw2-draft §2.2` restates it, which the first approver run
+    in QPw00's `#### 1.3`. It does not. `haipipe-page-content` states
+    the current boundary and the archived DRAFT contract restates it, which the first approver run
     established by checking all twelve deleted paragraphs. The RULE is sound
     and stays; the example was invented and is struck. A seeded rule carries no
     origin stamp because it has no origin, and that is exactly why it must not

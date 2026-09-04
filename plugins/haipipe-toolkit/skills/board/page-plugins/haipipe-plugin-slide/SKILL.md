@@ -2,7 +2,7 @@
 name: haipipe-plugin-slide
 description: >-
   The slide/ plugin of a Board page: the page's deck at
-  <page>/delivery/slide/<stem>-deck.html, derived and regenerable, authored from the
+  delivery/slide/ as a stem-named deck, derived and regenerable, authored from the
   page's own .md by /_board/autodeck. Trigger: slide plugin, page deck,
   regenerate the deck, slides tab, autodeck, /haipipe-plugin-slide.
 metadata:

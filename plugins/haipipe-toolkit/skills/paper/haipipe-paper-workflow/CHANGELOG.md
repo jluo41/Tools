@@ -1,3 +1,10 @@
+## 0.7.4 · 260904
+
+- Name the current Page loop CONTEXT through CHECK.
+- Express the Roadmap dispatch/settle handoff through typed Evidence Items,
+  Supporting/local Runs, and accepted local Results instead of an active probe
+  lane.
+
 ## 0.7.3 · 260831
 - Replace ASCII angle-bracket arrows in the discovery description with Unicode
   journey arrows so the package passes skill metadata validation.

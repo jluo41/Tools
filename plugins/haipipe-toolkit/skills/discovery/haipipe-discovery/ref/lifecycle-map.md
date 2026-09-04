@@ -55,8 +55,8 @@ Page Face                              Task Face
 ---------                              ---------
 tNN_<task>.md                         discovery.yaml
 outline/                               scripts/ (optional instrument)
-evidence/bibex/tNN_<task>.bib          runs/
-(citation lane owned by Evidence)      results/
+outline/evidence/bibex/tNN_<task>.bib  runs/
+(derived Bib; declared CITE items only) results/
 typed Page synthesis                   runtime receipts
 ```
 
@@ -71,7 +71,7 @@ whole folder or the only file that matters.
 | **SCOPE** | freeze BJTR identity, `discovery_type`, question, boundary, and admission rule | `discovery.yaml` intent and Page opening |
 | **PREPARE** *(optional)* | author reusable search/extraction/synthesis support | `scripts/`; never an empty scaffold |
 | **ACQUIRE** | resolve Triggers, admit Subjects, and execute one analysis Run per Subject | `runs/`, paired `results/`, Task progress/receipt links |
-| **SYNTHESIZE** | validate and promote completed Results into the promised article | root Page, optional typed record, derived Evidence citation Bib |
+| **SYNTHESIZE** | validate and promote completed Results into the promised article | root Page, optional typed record/item, derived Outline-owned Bib |
 | **CLOSE** | check and reconcile Page/Task state and publish the outcome receipt | `discovery.yaml report/status`, Page state/Aims, handoff pointers |
 
 Low-level calls to arXiv, Crossref, a CLI, an API, or another skill are recorded
@@ -144,13 +144,20 @@ its frozen inputs. A materially changed analysis allocates a new Run with
 - **reviewer** audits search coverage, Run/Result bijection, Subject identity,
   one-entry Bibs, claim anchors, and topic-level scope.
 
-Citation verification is the highest-value Discovery gate and is owned by
-`haipipe-plugin-evidence`. The checker and Bib builder are deterministic, but
-`verified` is an artifact-local person judgment. Every promoted citation must
-be verified before CLOSE can claim epistemic `status: ok` or
+Citation verification is the highest-value Discovery gate. The Paper Run
+contract owns each Result's `bib.verification` receipt; Outline owns any typed
+CITE-item gate it explicitly declares. The checker and Bib builder are
+deterministic, but `verified` is an artifact-local person judgment. Every
+complete Result entering the aggregate must be verified before CLOSE can claim epistemic `status: ok` or
 `status: inconclusive`; without it, the receipt is `blocked`. `inconclusive`
 is reserved for completed, verified admissible evidence that cannot establish
 the substantive answer.
+
+`outline/evidence/supporting-runs/` is pointer-only lineage for a Page Evidence
+Item that the approved Outline explicitly declares. The derived aggregate Bib
+does not create such an item by itself. Discovery's own Paper/Source Runs remain
+the local `runs/` ↔ `results/` inventory; a consumer does not create a second
+Evidence Run just to repackage one of those Results.
 
 ## Command routing
 

@@ -5,16 +5,19 @@ plugin, to present bibex, display, etc." So this mixin owns PRESENTATION
 ONLY: a live GET composing five segments — Evidence Items (the generated
 outline/<stem>-evidence.md snapshot joined to
 outline/evidence/supporting-runs lineage),
+⚙️ Runs (one Run card per mapping, grouped by Evidence, with unique counts),
 📚 Citations (the bibex saved workbench), 🧮 Values (the live /_board/value
-route), 🖼 Displays (the display saved view), and 🔗 PageX (the borrow view),
-with pens inline; exact-file cards expose Page evidence and
+route), and 🖼 Displays (the display saved view), with pens inline; cross-page
+source bindings remain provenance inside their Evidence Item rather than a
+separate PageX lens. Exact-file cards expose Page evidence and
 whole-Folder cards expose Page/Task Face status). Storage, writers,
 walls and the three human gates (verified: / read: / accepted:) stay with the
-lane contracts (`haipipe-plugin-evidence` is the paper contract for this
-file). Like the 🧮 tab: no storage, no writer, nothing stored, never stale.
+lane contracts (`haipipe-plugin-outline/ref/evidence/citations.md` and its
+sibling evidence references are the current contracts for this file). Like
+the 🧮 tab: no storage, no writer, nothing stored, never stale.
 
 A segment whose saved view does not exist yet is BUILT ON CLICK through the
-lane's own POST route (/_board/bibex, /_board/display, /_board/pagex), which
+lane's own POST route (/_board/bibex or /_board/display), which
 is the same pen the old separate tabs pressed.
 """
 from __future__ import annotations
@@ -44,10 +47,10 @@ nav{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;border-bottom:1px soli
 nav button{border:1px solid var(--line);background:var(--card);color:var(--fg);
  border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;white-space:nowrap;flex:none}
 nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
-#items{padding:12px 16px 20px;max-width:none}
-#items pre{background:var(--card);padding:8px 10px;border-radius:6px;
+#items,#runs{padding:12px 16px 20px;max-width:none}
+#items pre,#runs pre{background:var(--card);padding:8px 10px;border-radius:6px;
  overflow-x:auto;font:12.5px ui-monospace,Menlo,monospace}
-#items code{font:12.5px ui-monospace,Menlo,monospace;background:var(--card);
+#items code,#runs code{font:12.5px ui-monospace,Menlo,monospace;background:var(--card);
  padding:0 3px;border-radius:4px}
 #items h2{font-size:15px;margin:14px 0 4px}
 #items h3{font-size:13.5px;margin:12px 0 3px}
@@ -72,10 +75,16 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
 .runmap-title{font-weight:650;line-height:1.35;min-width:0}.runmap-type{font:650 9.5px -apple-system,sans-serif;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 6px;letter-spacing:.03em}
 .runmap-line{display:grid;grid-template-columns:5.4em minmax(0,1fr);gap:7px;align-items:start;border-top:1px solid var(--line);padding:7px 10px}
 .runmap-label{font:600 10px -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.035em;padding-top:3px}
-.lineage-list{display:flex;flex-wrap:wrap;gap:5px;min-width:0}.lineage-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--fg);text-decoration:none;background:var(--card);font-size:11px;line-height:1.35}.lineage-chip:hover{border-color:var(--acc)}
+.lineage-list{display:flex;flex-wrap:wrap;gap:5px;min-width:0}.lineage-chip{appearance:none;display:inline-flex;align-items:center;gap:5px;max-width:100%;border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--fg);text-decoration:none;background:var(--card);font:11px/1.35 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.lineage-chip:hover,.lineage-chip:focus-visible{border-color:var(--acc);outline:none}
 .lineage-chip:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--mut);flex:none}.lineage-chip.ready:before{background:var(--ok)}.lineage-chip.warn:before{background:var(--warn)}.lineage-chip.planned:before{background:var(--mut)}.lineage-chip code{background:none!important;padding:0!important;font-size:11.5px!important;color:inherit}.lineage-chip small{color:var(--mut);font-size:9.5px;white-space:nowrap}
+.run-popover{width:min(560px,calc(100vw - 28px));box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:0;background:var(--bg);color:var(--fg);box-shadow:0 18px 55px rgba(0,0,0,.22)}.run-popover::backdrop{background:rgba(0,0,0,.22)}
+.run-popover-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:13px 14px 10px;border-bottom:1px solid var(--line)}.run-popover-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.run-popover-title code{font-size:14px!important;background:none!important;padding:0!important}.run-availability{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}.run-close{appearance:none;border:0;background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer;padding:2px 5px;border-radius:6px}.run-close:hover{background:var(--card);color:var(--fg)}
+.run-popover-body{padding:10px 14px 14px}.run-fact{display:grid;grid-template-columns:6.7em minmax(0,1fr);gap:8px;padding:5px 0;font-size:12.5px;line-height:1.5}.run-fact b{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.035em;color:var(--mut);padding-top:3px}.run-fact span{overflow-wrap:anywhere}.run-fact.primary{padding-top:0;padding-bottom:9px}.run-fact.primary span{color:var(--fg)}.run-popover-path{display:grid;grid-template-columns:6.7em minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12px}.run-popover-path b{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.035em;color:var(--mut);padding-top:2px}.run-popover-path code{display:block;background:none!important;padding:0!important;white-space:normal;overflow-wrap:anywhere;word-break:break-word;color:var(--fg);user-select:text}.run-popover-path .missing{color:var(--mut)}
 .runmap-local{display:flex;align-items:center;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding:4px 10px;color:var(--mut);font-size:11.5px;overflow-wrap:anywhere}.runmap-local b{font-size:9.5px;text-transform:uppercase;letter-spacing:.035em}.runmap-card details{border-top:1px solid var(--line);padding:4px 10px 6px;color:var(--mut);font-size:11.5px}.runmap-card summary{cursor:pointer;font-size:11px}.run-detail{display:grid;grid-template-columns:9.5em minmax(0,1fr);gap:6px;padding:4px 0}.run-detail>code{background:none!important;padding:0!important;color:var(--fg)}.run-detail-links{display:grid;gap:3px;min-width:0}.run-path{display:grid;grid-template-columns:3.5em minmax(0,1fr);gap:6px;align-items:start;color:var(--fg);text-decoration:none;min-width:0}.run-path b{font-size:10px;text-transform:uppercase;color:var(--mut)}.run-path code{background:none!important;padding:0!important;white-space:normal;overflow-wrap:anywhere;word-break:break-word}.run-detail .missing{color:var(--mut)}
-@media(max-width:560px){#items{padding:10px 10px 18px}.runmap-head{grid-template-columns:auto minmax(0,1fr) auto}.runmap-addr{display:none}.runmap-line{grid-template-columns:1fr}.runmap-label{padding:0}.lineage-list{gap:4px}.run-detail{grid-template-columns:1fr;gap:1px}.run-path{grid-template-columns:3.2em minmax(0,1fr)}}
+.related-summary{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.related-summary span{border:1px solid var(--line);border-radius:999px;padding:1px 7px;color:var(--mut);font-size:11.5px}.related-summary .all{color:var(--acc);border-color:var(--acc);font-weight:650}.related-evidence-group{margin:14px 0 18px}.related-group-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin:0 0 6px;padding:0 2px}.related-group-head .evid{background:var(--card)}.related-group-title{font-weight:650}.related-group-count{color:var(--mut);font-size:11.5px}
+.related-run-card{border:1px solid var(--line);border-radius:9px;margin:8px 0;background:var(--bg);overflow:hidden}.related-run-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;padding:9px 10px 7px}.related-run-layer{font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 6px}.related-run-head code{font-size:12.5px!important;background:none!important;padding:0!important}.related-run-head .run-availability{margin-left:auto}.related-run-action{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--warn)}
+.related-run-body{border-top:1px solid var(--line);padding:6px 10px}.related-run-body .run-fact{padding:4px 0}.related-evidence-list{display:flex;gap:5px;flex-wrap:wrap}.related-evidence{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:5px;padding:1px 6px;font:650 10.5px ui-monospace,Menlo,monospace;cursor:pointer}.related-evidence:hover,.related-evidence:focus-visible{border-color:var(--acc);outline:none}.related-run-card details{border-top:1px solid var(--line);padding:5px 10px 7px;color:var(--mut);font-size:11.5px}.related-run-card summary{cursor:pointer}.related-run-card .run-popover-path:first-child{border-top:0}
+@media(max-width:560px){#items,#runs{padding:10px 10px 18px}.runmap-head{grid-template-columns:auto minmax(0,1fr) auto}.runmap-addr{display:none}.runmap-line{grid-template-columns:1fr}.runmap-label{padding:0}.lineage-list{gap:4px}.run-detail{grid-template-columns:1fr;gap:1px}.run-path{grid-template-columns:3.2em minmax(0,1fr)}.related-run-head .run-availability{width:100%;margin-left:0}}
 .ghost{color:var(--mut);padding:24px 0;font-size:13.5px}
 #seg{display:none;border:0;width:100%;height:calc(100vh - 92px)}
 """
@@ -202,7 +211,7 @@ def _plan_chips(plan: str) -> str:
     return '<div class=evsummary>%s</div>' % "".join(chips) if chips else ""
 
 
-def _run_chips(value: str) -> str:
+def _run_chips(value: str, evidence_id: str, context: dict[str, str]) -> str:
     """Show compact family, action, and dotted address without inventing rNN."""
     chips = []
     for raw in value.split(";"):
@@ -215,13 +224,24 @@ def _run_chips(value: str) -> str:
         key = family.lower()
         marker = "D" if key.startswith("discovery") else "X" if key.startswith("execution") else ""
         short_action = "new" if action.startswith("new-") else action.replace("-", "")
-        chips.append('<span class=runchip title="%s · %s"><b class="runfam %s">%s</b><code>%s</code><span class=runact>%s</span></span>' % (
-            html.escape(family or "Run", quote=True), html.escape(action or "unspecified", quote=True),
-            html.escape(key, quote=True), marker, html.escape(readable), html.escape(short_action)))
+        survey_action = short_action or "unresolved"
+        availability = "Planned" if survey_action == "new" else "Paths unresolved"
+        next_action = "Rerun" if survey_action == "rerun" else "Allocate and run"
+        state_class = "warn" if survey_action == "rerun" else "planned"
+        chip_action = "rerun" if "rerun" in next_action.lower() else "plan"
+        run = {"address": readable, "run": "", "result": "", "runtime": "",
+               "availability": availability, "next_action": next_action,
+               "chip_action": chip_action, "class": state_class}
+        run = _with_evidence_context(run, context, local=False)
+        chip = _lineage_chip(run, "run-detail-%s-fallback-%d" % (
+            evidence_id, len(chips) + 1
+        ))
+        chips.append('<span class=runchip><b class="runfam %s">%s</b>%s</span>' % (
+            html.escape(key, quote=True), marker, chip))
     return '<div class=runs>%s</div>' % "".join(chips) if chips else "—"
 
 
-def _local_run_chip(value: str) -> str:
+def _local_run_chip(value: str, evidence_id: str, context: dict[str, str]) -> str:
     """Show a Paper-Board-local Run as ``P jNN.tNN.rNN action``."""
     left, _arrow, _result = value.partition("→")
     parts = [part.strip() for part in left.split("·")]
@@ -229,11 +249,13 @@ def _local_run_chip(value: str) -> str:
         return _inline_lite(value)
     action, address = parts[2], parts[3]
     readable = readable_paper_route(address) or address
-    short_action = "new" if action.startswith("new-") else action.replace("-", "")
-    return ('<span class=runchip title="Paper Board-local · %s"><b class="runfam paper">P</b>'
-            '<code>%s</code><span class=runact>%s</span></span>') % (
-                html.escape(action or "unspecified", quote=True),
-                html.escape(readable), html.escape(short_action))
+    run = {"address": "P " + readable, "run": "", "result": "", "runtime": "",
+           "availability": "Planned", "next_action": "Allocate and run",
+           "chip_action": "plan", "class": "planned"}
+    run = _with_evidence_context(run, context, local=True)
+    return _lineage_chip(
+        run, "run-detail-%s-local-fallback" % evidence_id, local=True
+    )
 
 
 def _item_card(record: dict[str, object], binding: dict[str, object] | None = None) -> str:
@@ -246,6 +268,14 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
     compact_id = wall_label(
         evidence_id, type_, str(record["title"]), str(fields.get("label", ""))
     )
+    run_context = {
+        "title": str(record["title"]),
+        "type": type_,
+        "need": str(fields.get("need", "")),
+        "expected": str(fields.get("expected", "")),
+        "acceptance": str(fields.get("acceptance", "")),
+        "local_input": str(fields.get("local input", "")),
+    }
     rows = []
     for label, key in (("Needed", "expected"), ("Ready when", "acceptance")):
         value = str(fields.get(key, ""))
@@ -256,26 +286,40 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
     run_details = []
     if binding is not None:
         supporting_runs = [
-            _run_binding(str(raw)) for raw in binding.get("supporting", [])
+            _with_evidence_context(_run_binding(str(raw)), run_context, local=False)
+            for raw in binding.get("supporting", [])
             if str(raw).strip() not in ("", "—", "-", "[]")
         ]
-        supporting_html = "".join(_lineage_chip(run) for run in supporting_runs) or "—"
+        supporting_html = "".join(
+            _lineage_chip(run, "run-detail-%s-support-%d" % (evidence_id, index))
+            for index, run in enumerate(supporting_runs, 1)
+        ) or "—"
         run_details.extend(_run_detail(run) for run in supporting_runs)
         rows.append('<div class=evrow><b>Supporting runs</b><span class=lineage-list>%s</span></div>' %
                     supporting_html)
 
         local_raw = str(binding.get("local_run", ""))
+        local_has_address = bool(re.match(r"^P\s+j\d+\.t\d+\.r\d+\b", local_raw))
         local_unallocated = (
-            not local_raw
-            or "run not allocated" in local_raw.lower()
-            or "ticket not allocated" in local_raw.lower()
-            or local_raw.strip().lower() in ("not allocated", "not surveyed yet", "—", "-")
+            not local_has_address and (
+                not local_raw
+                or "not declared" in local_raw.lower()
+                or "run not allocated" in local_raw.lower()
+                or "ticket not allocated" in local_raw.lower()
+                or local_raw.strip().lower() in (
+                    "not allocated", "not surveyed yet", "not declared", "—", "-"
+                )
+            )
         )
         if local_unallocated:
             local_html = "not allocated"
         else:
-            local = _run_binding(local_raw)
-            local_html = _lineage_chip(local)
+            local = _with_evidence_context(
+                _run_binding(local_raw), run_context, local=True
+            )
+            local_html = _lineage_chip(
+                local, "run-detail-%s-local" % evidence_id, local=True
+            )
             run_details.append(_run_detail(local))
         rows.append('<div class=evrow><b>Local run</b><span>%s</span></div>' % local_html)
 
@@ -288,12 +332,12 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
         supporting = str(fields.get("supporting runs", ""))
         if supporting:
             rows.append('<div class=evrow><b>Supporting runs</b><span>%s</span></div>' %
-                        _run_chips(supporting))
+                        _run_chips(supporting, evidence_id, run_context))
         local_run = str(fields.get("local run", ""))
         if local_run:
             local_label = "not allocated" if local_run.startswith(("—", "-")) else local_run
             rows.append('<div class=evrow><b>Local run</b><span>%s</span></div>' %
-                        _local_run_chip(local_label))
+                        _local_run_chip(local_label, evidence_id, run_context))
         has = str(fields.get("has", ""))
         if has:
             rows.append('<div class=evrow><b>Result</b><span>%s</span></div>' %
@@ -303,10 +347,9 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
     paths = ('<details><summary>Run &amp; Result paths</summary>%s</details>' % paths_html
              if paths_html else "")
     details = []
-    for label, key in (("Survey note", "local input"), ("PageX", "pagex bindings"),
-                       ("Decision", "decide")):
+    for label, key in (("Local input", "local input"), ("Decision", "decide")):
         value = str(fields.get(key, ""))
-        if value and not (key == "pagex bindings" and value in ("[]", "—", "-")):
+        if value:
             details.append('<div class=evdetail><b>%s</b><span>%s</span></div>' %
                            (label, _inline_lite(value)))
     detail_html = ('<details><summary>survey details</summary>%s</details>' % "".join(details)) if details else ""
@@ -403,54 +446,189 @@ def _run_binding(raw: str) -> dict[str, object]:
         _MARKDOWN_LINK.sub(lambda match: match.group(1), part).strip()
         for part in tail.split(" · ") if part.strip()
     ]
-    lowered = " · ".join(parts).lower()
-    if ("run not allocated" in lowered or "ticket not allocated" in lowered
-            or "not allocated" in address.lower()):
-        state, state_class = "new", "planned"
-    elif ("result not found" in lowered or "no result" in lowered
-          or "no result receipt" in lowered or "run only" in lowered):
-        state, state_class = "run only", "warn"
-    elif "rerun" in lowered:
-        state, state_class = "rerun", "warn"
-    elif links.get("result") or links.get("receipt"):
-        state, state_class = "ready", "ready"
-    else:
-        action = parts[0].lower() if parts else "run"
-        state = "new" if action in ("newrun", "new-run") else action.replace("-", " ")
-        state_class = "planned"
     run_path = links.get("run", "") or links.get("ticket", "") or run_href
-    result_path = links.get("result", "") or links.get("receipt", "")
+    result_path = links.get("result", "")
+    lowered = " · ".join(parts).lower()
+    explicitly_unallocated = (
+        "run not allocated" in lowered
+        or "ticket not allocated" in lowered
+        or "not allocated" in address.lower()
+    )
+    if run_path and result_path:
+        availability = "Run + Result"
+    elif run_path:
+        availability = "Run exists · Result missing"
+    elif explicitly_unallocated or any(
+        token in lowered for token in ("newrun", "new-run", " · new ·")
+    ):
+        availability = "Planned"
+    else:
+        availability = "Paths unresolved"
+
+    if "rerun" in lowered:
+        next_action = "Rerun" if run_path else "Resolve path, then rerun"
+    elif result_path:
+        next_action = "Reuse Result"
+    elif run_path:
+        next_action = "Run"
+    elif availability == "Planned":
+        next_action = "Allocate and run"
+    else:
+        next_action = "Resolve path"
+
+    if result_path:
+        state_class = "ready"
+    elif "rerun" in lowered or run_path or availability == "Paths unresolved":
+        state_class = "warn"
+    else:
+        state_class = "planned"
+    if "rerun" in next_action.lower():
+        chip_action = "rerun"
+    elif next_action == "Reuse Result":
+        chip_action = "reuse"
+    elif availability == "Planned":
+        chip_action = "plan"
+    elif next_action == "Run":
+        chip_action = "run"
+    else:
+        chip_action = "resolve"
     return {
         "address": address.strip(),
         "href": run_path,
         "run": run_path,
         "result": result_path,
-        "state": state,
+        "runtime": links.get("runtime", "") or links.get("receipt", ""),
+        "availability": availability,
+        "next_action": next_action,
+        "chip_action": chip_action,
         "class": state_class,
         "title": " · ".join([address.strip()] + parts),
     }
 
 
-def _lineage_chip(run: dict[str, object]) -> str:
-    tag = "a" if run["href"] else "span"
-    link = (' href="%s" target="_blank" rel="noopener"' %
-            html.escape(str(run["href"]), quote=True)) if run["href"] else ""
-    return ('<%s class="lineage-chip %s"%s title="%s"><code>%s</code><small>%s</small></%s>' % (
-        tag, html.escape(str(run["class"]), quote=True), link,
-        html.escape(str(run["title"]), quote=True), html.escape(str(run["address"])),
-        html.escape(str(run["state"])), tag))
+def _human_run_name(path: str) -> str:
+    """Turn a Ticket filename into a short reader-facing purpose phrase."""
+    stem = pathlib.PurePosixPath(path).stem
+    stem = re.sub(r"^r\d+[_-]?", "", stem, flags=re.IGNORECASE)
+    stem = re.sub(r"[_-]+", " ", stem)
+    stem = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", stem)
+    return re.sub(r"\s+", " ", stem).strip()
+
+
+def _survey_sentence(note: str, address: str) -> str:
+    """Pick the authored SURVEY sentence about one Supporting Run, if any."""
+    if not note:
+        return ""
+    compact = re.sub(r"[^A-Za-z0-9]", "", address).lower()
+    for sentence in re.split(r"(?<=[.!?])\s+", note.strip()):
+        if compact and compact in re.sub(r"[^A-Za-z0-9]", "", sentence).lower():
+            return sentence.strip()
+    return ""
+
+
+def _with_evidence_context(
+    run: dict[str, object], context: dict[str, str], *, local: bool
+) -> dict[str, object]:
+    """Attach a useful purpose/plan without creating another stored authority."""
+    enriched = dict(run)
+    title = context.get("title", "this Evidence Item")
+    expected = context.get("expected", "").strip()
+    payload = expected.split("·", 1)[-1].strip() if expected else "the required evidence"
+    if run.get("run"):
+        ticket_name = _human_run_name(str(run["run"]))
+        description = "%s; supports “%s”." % (
+            ticket_name or "Existing Supporting Run", title
+        )
+        description_label = "Purpose"
+    elif local:
+        description = "Produce the page-local %s Result for “%s”: %s." % (
+            context.get("type", "evidence") or "evidence", title, payload
+        )
+        description_label = "Plan"
+    else:
+        description = "Design a Supporting Run for “%s” to provide %s." % (
+            title, payload
+        )
+        description_label = "Plan"
+    note = context.get("local_input", "").strip()
+    enriched["description"] = description
+    enriched["description_label"] = description_label
+    enriched["survey_note"] = note if local else _survey_sentence(
+        note, str(run.get("address", ""))
+    )
+    return enriched
+
+
+def _run_popover(run: dict[str, object], popover_id: str) -> str:
+    """Render one calm Run detail card with non-navigating path text."""
+    facts = [
+        '<div class="run-fact primary"><b>%s</b><span>%s</span></div>' % (
+            html.escape(str(run.get("description_label", "Purpose"))),
+            html.escape(str(run.get("description", "Surveyed Run for this Evidence Item."))),
+        )
+    ]
+    if run.get("survey_note"):
+        facts.append('<div class=run-fact><b>Survey note</b><span>%s</span></div>' %
+                     html.escape(str(run["survey_note"])))
+    facts.extend([
+        '<div class=run-fact><b>Availability</b><span>%s</span></div>' %
+        html.escape(str(run["availability"])),
+        '<div class=run-fact><b>Next action</b><span>%s</span></div>' %
+        html.escape(str(run["next_action"])),
+    ])
+    paths = []
+    path_rows = [("Run", "run"), ("Result", "result")]
+    if run.get("runtime"):
+        path_rows.append(("Runtime", "runtime"))
+    for label, key in path_rows:
+        href = str(run[key])
+        if href:
+            # Raw scripts and receipts are commonly served as downloads. The
+            # Run chip already opens this detail, so paths remain selectable
+            # text rather than becoming a second navigation door.
+            value = '<code class=repo-path>%s</code>' % html.escape(href)
+        else:
+            value = '<span class=missing>%s</span>' % (
+                "not allocated" if str(run["class"]) == "planned" else "not available"
+            )
+        paths.append('<div class=run-popover-path><b>%s</b>%s</div>' % (label, value))
+    return ('<div id="%s" popover class=run-popover><div class=run-popover-head>'
+            '<div class=run-popover-title><code>%s</code><span class=run-availability>%s</span></div>'
+            '<button type=button class=run-close popovertarget="%s" '
+            'popovertargetaction=hide aria-label="Close Run detail">×</button></div>'
+            '<div class=run-popover-body>%s%s</div></div>') % (
+                html.escape(popover_id, quote=True), html.escape(str(run["address"])),
+                html.escape(str(run["availability"])), html.escape(popover_id, quote=True),
+                "".join(facts), "".join(paths))
+
+
+def _lineage_chip(run: dict[str, object], popover_id: str, *, local: bool = False) -> str:
+    """Open Run detail in place instead of sending a chip to a raw script."""
+    return ('<button type=button class="lineage-chip %s" popovertarget="%s" '
+            'data-run-address="%s" data-run-kind="%s" title="Inspect %s">'
+            '<code>%s</code><small>%s</small>'
+            '</button>%s' % (
+                html.escape(str(run["class"]), quote=True),
+                html.escape(popover_id, quote=True),
+                html.escape(str(run["address"]), quote=True),
+                "local" if local else "supporting",
+                html.escape(str(run["address"]), quote=True),
+                html.escape(str(run["address"])), html.escape(str(run["chip_action"])),
+                _run_popover(run, popover_id)))
 
 
 def _run_detail(run: dict[str, object]) -> str:
-    if not run["run"] and not run["result"]:
+    if not run["run"] and not run["result"] and not run.get("runtime"):
         return ""
     links = []
-    for label, key in (("Run", "run"), ("Result", "result")):
+    path_rows = [("Run", "run"), ("Result", "result")]
+    if run.get("runtime"):
+        path_rows.append(("Runtime", "runtime"))
+    for label, key in path_rows:
         href = str(run[key])
         if href:
-            links.append('<a class=run-path href="%s" target="_blank" rel="noopener">'
-                         '<b>%s</b><code>%s</code></a>' %
-                         (html.escape(href, quote=True), label, html.escape(href)))
+            links.append('<span class=run-path><b>%s</b><code>%s</code></span>' %
+                         (label, html.escape(href)))
         elif label == "Result":
             links.append('<span class="run-path missing"><b>Result</b>'
                          '<span>not available</span></span>')
@@ -465,25 +643,47 @@ def _run_binding_card(record: dict[str, object]) -> str:
     type_ = identity.group(2) if identity and identity.group(2) else ""
     slug = identity.group(3) if identity and identity.group(3) else ""
     short_title = slug.replace("-", " ") if slug else str(record["title"])
+    run_context = {
+        "title": str(record["title"]) or short_title,
+        "type": type_,
+        "need": "",
+        "expected": "",
+        "acceptance": "",
+        "local_input": "",
+    }
     runs = [
-        _run_binding(str(raw)) for raw in record["supporting"]
+        _with_evidence_context(_run_binding(str(raw)), run_context, local=False)
+        for raw in record["supporting"]
         if str(raw).strip() not in ("", "—", "-", "[]")
     ]
-    chips = "".join(_lineage_chip(run) for run in runs) or "—"
+    chips = "".join(
+        _lineage_chip(run, "run-detail-%s-support-%d" % (evidence_id, index))
+        for index, run in enumerate(runs, 1)
+    ) or "—"
     details = "".join(_run_detail(run) for run in runs)
 
     local_run, local_result = str(record["local_run"]), str(record["local_result"])
+    local_has_address = bool(re.match(r"^P\s+j\d+\.t\d+\.r\d+\b", local_run))
     local_unallocated = (
-        not local_run
-        or "run not allocated" in local_run.lower()
-        or "ticket not allocated" in local_run.lower()
-        or local_run.strip().lower() in ("not allocated", "not surveyed yet", "—", "-")
+        not local_has_address and (
+            not local_run
+            or "not declared" in local_run.lower()
+            or "run not allocated" in local_run.lower()
+            or "ticket not allocated" in local_run.lower()
+            or local_run.strip().lower() in (
+                "not allocated", "not surveyed yet", "not declared", "—", "-"
+            )
+        )
     )
     if local_unallocated:
         local_html = "<span>not allocated</span>"
     elif local_run:
-        local = _run_binding(local_run)
-        local_html = _lineage_chip(local)
+        local = _with_evidence_context(
+            _run_binding(local_run), run_context, local=True
+        )
+        local_html = _lineage_chip(
+            local, "run-detail-%s-local" % evidence_id, local=True
+        )
         details += _run_detail(local)
         if not local_result or "not allocated" in local_result.lower():
             local_html += "<span>no result</span>"
@@ -511,6 +711,212 @@ def _run_binding_cards(text: str) -> str:
     return "".join(_run_binding_card(record) for record in records)
 
 
+def _run_key(address: str, *, local: bool) -> str:
+    """Return a stable identity key without conflating Paper and global Runs."""
+    compact = re.sub(r"[^A-Za-z0-9]", "", address).lower()
+    return ("local:" if local else "supporting:") + compact
+
+
+def _record_context(record: dict[str, object]) -> dict[str, str]:
+    fields = record.get("fields", {})
+    return {
+        "title": str(record.get("title", "")),
+        "type": str(fields.get("type", "")),
+        "need": str(fields.get("need", "")),
+        "expected": str(fields.get("expected", "")),
+        "acceptance": str(fields.get("acceptance", "")),
+        "local_input": str(fields.get("local input", "")),
+    }
+
+
+def _support_family(fields: dict[str, object], address: str) -> str:
+    wanted = re.sub(r"[^A-Za-z0-9]", "", address).lower()
+    for raw in str(fields.get("supporting runs", "")).split(";"):
+        parts = [part.strip() for part in raw.split(" · ") if part.strip()]
+        if len(parts) >= 3 and re.sub(r"[^A-Za-z0-9]", "", parts[-1]).lower() == wanted:
+            return parts[0]
+    return "Supporting"
+
+
+def _authored_support(raw: str, context: dict[str, str]) -> tuple[dict[str, object], str] | None:
+    """Build an honest planned/unresolved pointer when the derived map is absent."""
+    parts = [part.strip() for part in raw.split(" · ") if part.strip()]
+    if len(parts) < 3:
+        return None
+    family, action, address = parts[0], parts[1].lower(), parts[-1]
+    readable = readable_global_run(address) or readable_task(address) or address
+    planned = action.startswith("new-")
+    next_action = (
+        "Rerun" if action == "rerun" else
+        "Reuse Result" if action == "reuse" else
+        "Run" if action == "registered" else
+        "Allocate and run" if planned else "Resolve path"
+    )
+    run = {
+        "address": readable, "run": "", "result": "", "runtime": "",
+        "availability": "Planned" if planned else "Paths unresolved",
+        "next_action": next_action,
+        "chip_action": "plan" if planned else action,
+        "class": "planned" if planned else "warn",
+    }
+    return _with_evidence_context(run, context, local=False), family
+
+
+def _related_runs(evidence_text: str, run_text: str) -> list[dict[str, object]]:
+    """Reverse the item-centric binding map into unique Run-centric records."""
+    _plan, evidence_records = _evidence_snapshot(evidence_text)
+    bindings = {
+        str(record["id"]): record for record in _run_binding_snapshot(run_text)
+    }
+    related: dict[str, dict[str, object]] = {}
+
+    def add(run: dict[str, object], record: dict[str, object], *, local: bool,
+            family: str) -> None:
+        key = _run_key(str(run.get("address", "")), local=local)
+        if key.endswith(":"):
+            return
+        entry = related.setdefault(key, {
+            **run, "local": local, "family": family, "evidence": [],
+        })
+        fields = record.get("fields", {})
+        item_id = str(record["id"])
+        compact = wall_label(
+            item_id, str(fields.get("type", "")), str(record.get("title", "")),
+            str(fields.get("label", "")),
+        )
+        if not any(ref["id"] == item_id for ref in entry["evidence"]):
+            entry["evidence"].append({
+                "id": item_id, "label": compact,
+                "title": str(record.get("title", "")),
+            })
+
+    for record in evidence_records:
+        item_id = str(record["id"])
+        fields = record.get("fields", {})
+        context = _record_context(record)
+        binding = bindings.get(item_id)
+        if binding:
+            for raw in binding.get("supporting", []):
+                if str(raw).strip() in ("", "—", "-", "[]"):
+                    continue
+                run = _with_evidence_context(_run_binding(str(raw)), context, local=False)
+                add(run, record, local=False,
+                    family=_support_family(fields, str(run["address"])))
+            local_raw = str(binding.get("local_run", "")).strip()
+            if local_raw and local_raw.lower() not in (
+                "—", "-", "not allocated", "not surveyed yet", "not declared"
+            ) and "not declared" not in local_raw.lower():
+                local = _with_evidence_context(_run_binding(local_raw), context, local=True)
+                add(local, record, local=True, family="Page")
+        else:
+            for raw in str(fields.get("supporting runs", "")).split(";"):
+                authored = _authored_support(raw.strip(), context)
+                if authored:
+                    add(authored[0], record, local=False, family=authored[1])
+            local_raw = str(fields.get("local run", "")).strip()
+            match = re.search(r"(pj\d+t\d+r\d+)", local_raw, re.IGNORECASE)
+            if match:
+                readable = "P " + (readable_paper_route(match.group(1)) or match.group(1))
+                local = _with_evidence_context({
+                    "address": readable, "run": "", "result": "", "runtime": "",
+                    "availability": "Planned", "next_action": "Allocate and run",
+                    "chip_action": "plan", "class": "planned",
+                }, context, local=True)
+                add(local, record, local=True, family="Page")
+    return sorted(
+        related.values(),
+        key=lambda run: (bool(run["local"]), str(run["address"]).lower()),
+    )
+
+
+def _related_run_card(run: dict[str, object], evidence_ref: dict[str, str]) -> str:
+    refs = [evidence_ref]
+    if run.get("run"):
+        purpose = _human_run_name(str(run["run"])) or "Existing Run"
+        purpose = "%s; supports “%s”." % (purpose, evidence_ref["title"])
+        purpose_label = "Purpose"
+    else:
+        purpose = str(run.get("description", "Planned evidence Run."))
+        purpose_label = "Plan"
+    ref_html = "".join(
+        '<button type=button class=related-evidence data-evidence-target="run-%s" '
+        'title="%s">%s</button>' % (
+            html.escape(str(ref["id"]), quote=True),
+            html.escape(str(ref["title"]), quote=True),
+            html.escape(str(ref["label"])),
+        ) for ref in refs
+    )
+    path_rows = []
+    for label, key in (("Run", "run"), ("Result", "result"), ("Runtime", "runtime")):
+        path = str(run.get(key, ""))
+        value = ('<code class=repo-path>%s</code>' % html.escape(path)) if path else (
+            '<span class=missing>%s</span>' % (
+                "not allocated" if run.get("availability") == "Planned" else "not available"
+            )
+        )
+        path_rows.append('<div class=run-popover-path><b>%s</b>%s</div>' % (label, value))
+    safe_id = re.sub(r"[^A-Za-z0-9_-]+", "-", "%s-%s" % (
+        evidence_ref["id"], _run_key(str(run["address"]), local=bool(run["local"]))
+    )).strip("-")
+    layer = "Local · Page" if run["local"] else "Supporting · %s" % run["family"]
+    return ('<article class=related-run-card id="related-run-%s">'
+            '<div class=related-run-head><span class=related-run-layer>%s</span>'
+            '<code>%s</code><span class=run-availability>%s</span>'
+            '<span class=related-run-action>%s</span></div>'
+            '<div class=related-run-body>'
+            '<div class="run-fact primary"><b>%s</b><span>%s</span></div>'
+            '<div class=run-fact><b>Evidence Items</b><span class=related-evidence-list>%s</span></div>'
+            '</div><details><summary>Run &amp; Result paths</summary>%s</details></article>') % (
+                html.escape(safe_id, quote=True), html.escape(layer),
+                html.escape(str(run["address"])), html.escape(str(run["availability"])),
+                html.escape(str(run["next_action"])), purpose_label,
+                html.escape(purpose), ref_html, "".join(path_rows),
+            )
+
+
+def _related_run_cards(evidence_text: str, run_text: str) -> tuple[str, int]:
+    runs = _related_runs(evidence_text, run_text)
+    if not runs:
+        return ('<div class=ghost>No Supporting or Local Runs are mapped to these '
+                'Evidence Items yet.</div>', 0)
+    _plan, records = _evidence_snapshot(evidence_text)
+    groups, mapping_count = [], 0
+    for record in records:
+        item_id = str(record["id"])
+        fields = record.get("fields", {})
+        compact = wall_label(
+            item_id, str(fields.get("type", "")), str(record.get("title", "")),
+            str(fields.get("label", "")),
+        )
+        evidence_ref = {
+            "id": item_id, "label": compact,
+            "title": str(record.get("title", "")),
+        }
+        item_runs = [
+            run for run in runs
+            if any(str(ref["id"]) == item_id for ref in run["evidence"])
+        ]
+        if not item_runs:
+            continue
+        mapping_count += len(item_runs)
+        groups.append(
+            '<section class=related-evidence-group><div class=related-group-head>'
+            '<button type=button class="evid related-evidence" data-evidence-target="run-%s">%s</button>'
+            '<span class=related-group-title>%s</span><span class=related-group-count>%d Run%s</span>'
+            '</div>%s</section>' % (
+                html.escape(item_id, quote=True), html.escape(compact),
+                html.escape(str(record.get("title", ""))), len(item_runs),
+                "" if len(item_runs) == 1 else "s",
+                "".join(_related_run_card(run, evidence_ref) for run in item_runs),
+            )
+        )
+    summary = ('<div class=related-summary><span class=all>%d Run mappings</span>'
+               '<span>%d unique Runs</span><span>%d Evidences</span></div>') % (
+                   mapping_count, len(runs), len(groups)
+               )
+    return summary + "".join(groups), mapping_count
+
+
 def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     stem = page_src.stem
     folded = page_src.parent.name == stem
@@ -522,12 +928,20 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
                    for d in evidence_run_dirs(page_home)
                    if (d / f"{stem}-run-bindings.md").is_file()), None)
     run_text = runmap.read_text(encoding="utf-8") if runmap else ""
-    if ev.exists():
-        body = _evidence_cards(ev.read_text(encoding="utf-8"), run_text)
+    evidence_text = ev.read_text(encoding="utf-8") if ev.exists() else ""
+    if evidence_text:
+        body = _evidence_cards(evidence_text, run_text)
     else:
         body = ("<div class=ghost>No evidence snapshot yet: "
                 "<code>cli/evidence-status.py</code> (or an OUTLINE pass) "
                 "writes <code>outline/%s-evidence.md</code>.</div>" % html.escape(stem))
+    runs_body, related_run_count = _related_run_cards(evidence_text, run_text)
+    _plan, evidence_records = _evidence_snapshot(evidence_text)
+    counts = {kind: 0 for kind in ("CITE", "VALUE", "DISPLAY")}
+    for record in evidence_records:
+        kind = str(record.get("fields", {}).get("type", "")).upper()
+        if kind in counts:
+            counts[kind] += 1
     ctx = json.dumps({"path": path_q, "file": file_q, "stem": stem,
                       "folded": folded})
     return f"""<!doctype html><meta charset=utf-8>
@@ -536,13 +950,14 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
 <header><h1>Evidence Workspace · {html.escape(stem)}</h1>
 <p class=lead>what each bullet needs, what supports it, and what is ready</p></header>
 <nav>
-<button class=on data-seg=items>🧾 Evidence Items</button>
-<button data-seg=bibex>📚 Citations</button>
-<button data-seg=value>🧮 Values</button>
-<button data-seg=display>🖼 Displays</button>
-<button data-seg=pagex>🔗 PageX</button>
+<button class=on data-seg=items>🧾 Evidences · {len(evidence_records)}</button>
+<button data-seg=runs>⚙️ Runs · {related_run_count}</button>
+<button data-seg=bibex>📚 Citations · {counts['CITE']}</button>
+<button data-seg=value>🧮 Values · {counts['VALUE']}</button>
+<button data-seg=display>🖼 Displays · {counts['DISPLAY']}</button>
 </nav>
 <div id=items>{body}</div>
+<div id=runs style="display:none">{runs_body}</div>
 <iframe id=seg></iframe>
 <script>
 (function () {{
@@ -561,12 +976,12 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
   var LANES = {{
     bibex:   {{ext: '-bib.html',  route: 'bibex'}},
     display: {{ext: '-view.html', route: 'display'}},
-    pagex:   {{ext: '-view.html', route: 'pagex'}},
     value:   {{live: '/_board/value?path=' + encodeURIComponent(CTX.path)
                     + '&file=' + encodeURIComponent(CTX.file)}}
   }};
   var frame = document.getElementById('seg'),
-      staticSegs = {{items: document.getElementById('items')}};
+      staticSegs = {{items: document.getElementById('items'),
+                    runs: document.getElementById('runs')}};
   function show(id, btn) {{
     var all = document.querySelectorAll('nav button');
     for (var i = 0; i < all.length; i++) all[i].className = '';
@@ -601,15 +1016,31 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
       b.addEventListener('click', function () {{ show(b.getAttribute('data-seg'), b); }});
     }})(btns[i]);
   }}
+  var evidenceLinks = document.querySelectorAll('[data-evidence-target]');
+  for (var j = 0; j < evidenceLinks.length; j++) {{
+    evidenceLinks[j].addEventListener('click', function () {{
+      var itemsButton = document.querySelector('nav button[data-seg="items"]');
+      show('items', itemsButton);
+      var target = document.getElementById(this.getAttribute('data-evidence-target'));
+      if (!target) return;
+      target.classList.add('run-focus');
+      target.setAttribute('tabindex', '-1');
+      target.focus({{preventScroll: true}});
+      target.scrollIntoView({{block: 'start', behavior: 'smooth'}});
+    }});
+  }}
   var params = new URLSearchParams(location.search),
       requestedSeg = params.get('seg') || '',
-      requestedFocus = params.get('focus') || '';
+      requestedFocus = params.get('focus') || '',
+      requestedRun = params.get('run') || '';
   if (params.get('embed') === '1') document.documentElement.classList.add('embedded');
   try {{
     requestedSeg = localStorage.getItem('board-outline-evidence-seg') || requestedSeg;
     requestedFocus = localStorage.getItem('board-outline-evidence-focus') || requestedFocus;
+    requestedRun = localStorage.getItem('board-outline-evidence-run') || requestedRun;
     localStorage.removeItem('board-outline-evidence-seg');
     localStorage.removeItem('board-outline-evidence-focus');
+    localStorage.removeItem('board-outline-evidence-run');
   }} catch (e) {{}}
   /* Old Outline links remain valid after By bullet and Run links merge. */
   if (requestedSeg === 'runlinks' || requestedSeg === 'bybullet') requestedSeg = 'items';
@@ -617,6 +1048,20 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     var requestedButton = document.querySelector('nav button[data-seg="' +
                                                    requestedSeg + '"]');
     if (requestedButton) show(requestedSeg, requestedButton);
+  }}
+  function runKey(value, local) {{
+    var text = (value || '').trim();
+    var match;
+    if (local) {{
+      match = text.match(/^P?\\s*\\.?j(\\d+)\\.?t(\\d+)\\.?r(\\d+)$/i);
+      if (match) return 'j' + match[1] + '.t' + match[2] + '.r' + match[3];
+      match = text.match(/^b\\d+\\.?j(\\d+)\\.?t(\\d+)\\.?r(\\d+)$/i);
+      if (match) return 'j' + match[1] + '.t' + match[2] + '.r' + match[3];
+    }}
+    match = text.match(/^b(\\d+)\\.?j(\\d+)\\.?t(\\d+)(?:\\.?r(\\d+))?$/i);
+    if (match) return 'b' + match[1] + '.j' + match[2] + '.t' + match[3]
+                      + (match[4] ? '.r' + match[4] : '');
+    return text.toLowerCase();
   }}
   if (requestedFocus) {{
     setTimeout(function () {{
@@ -626,6 +1071,18 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
         target.setAttribute('tabindex', '-1');
         target.focus({{preventScroll: true}});
         target.scrollIntoView({{block: 'start'}});
+        if (requestedRun) {{
+          var buttons = target.querySelectorAll('[data-run-address]');
+          for (var i = 0; i < buttons.length; i++) {{
+            var address = buttons[i].getAttribute('data-run-address') || '';
+            var local = buttons[i].getAttribute('data-run-kind') === 'local';
+            if (runKey(address, local) !== runKey(requestedRun, local)) continue;
+            var panel = document.getElementById(buttons[i].getAttribute('popovertarget'));
+            if (panel && panel.showPopover) panel.showPopover();
+            buttons[i].focus();
+            break;
+          }}
+        }}
       }}
     }}, 0);
   }}

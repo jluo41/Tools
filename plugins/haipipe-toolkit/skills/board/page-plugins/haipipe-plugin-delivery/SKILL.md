@@ -8,7 +8,7 @@ description: >-
   delivery tab, exports tab, show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-08-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -18,8 +18,9 @@ metadata:
 **LOAD `haipipe-plugin` FIRST.** The 🧾 Evidence fold's twin, one category
 over: this plugin owns no storage and no writer, it is the SURFACE over the
 `delivery/` category (roster: latex · word · slide · render — what leaves the
-page). It is a PRESENTER plugin (haipipe-plugin §🔌): no roster row, no
-folder of its own.
+page). It is the PRESENTER for the roster's `delivery/` CATEGORY row
+(haipipe-plugin §🔌): it owns no lane writer or additional folder beyond that
+category.
 
 ```text
 this file     the 📤 Delivery tab: a 🏠 stat of what is built, one segment per lane
