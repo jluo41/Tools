@@ -30,9 +30,12 @@ and mirrors drift (the whole 260819 session is the proof).
 **Load:** read the ⚡ Brief at the top of `haipipe-page-outline` FIRST, then
 follow the router's canonical order: `haipipe-page` →
 `haipipe-page-workflow` → `haipipe-page-outline` → exact Folder-owning
-workflow → exact Page Type → plan/item/policy references → optional
-`haipipe-run` inventory → `haipipe-plugin-outline` presentation. Do not load
-`haipipe-page-for-task`.
+workflow or canonical family skill → exact Page Face owner → plan/item/policy references → optional
+`haipipe-run` inventory. The Page surface already installs the shared
+`haipipe-plugin-outline` presenter; load its exact refs, not the presenter as
+an execution dependency. A Task Folder resolves its Page policy from
+`haipipe-task`; it fills both owner roles and is loaded once, without a
+separate Task Page-Type layer.
 
 **The job in one line:** SHAPE defines what each typed item must become;
 SURVEY plans its Supporting Runs, one frozen Local Input, and
@@ -40,7 +43,7 @@ one local Run without doing the work.
 
 **Role walls** (the contracts hold the content; these are the boundaries):
 - SHAPE writes the plan plus the specification fields in `<stem>-evidence-items.md`; SURVEY writes only the table's Run-graph fields. The page, Tickets, Results, and evidence artifacts are other cycles' property.
-- `approved:` and `Decide` are a person's; a tick belongs to the version it ticked, so evidence moving an approved plan makes a `v<N+1>`.
+- `approved:` and `Decide` are a person's; a tick belongs to the version it ticked, so evidence moving an approved plan makes a `v<N+1>`. Auto may defer an `approved:` review tick, but never invents a branching `Decide`; unsigned Decide routes to HOLD at SURVEY unless a durable owner policy already supplies it.
 - SURVEY finds reusable Runs by READING Tickets, receipts, and Results. It keeps family (`Execution | Discovery`) separate from action (`reuse | rerun | new-run | new-task | new-job | new-block`), requires full global ids for reuse/rerun, and never types Status.
 - Cross-Folder evidence enters only through a Supporting Run Result; related
   Page links remain Context Workspace navigation or constraints.

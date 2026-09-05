@@ -904,7 +904,7 @@ def _shell_doc(page_url, index_url):
   }
 
   /* THE SCENE FILE IS THE ONE TRUTH the dual stage watches. Chat's Claude (or
-     anything else) writes <page>/draw/<id>.excalidraw; the canvas here refetches
+     anything else) writes <page>/studio/draw/<id>.excalidraw; the canvas here refetches
      when the file's stamp moves, so a drawing asked for in the chat appears
      without a gesture. It stays quiet while the canvas itself holds focus — a
      person mid-stroke is the one writer a refetch could hurt. */

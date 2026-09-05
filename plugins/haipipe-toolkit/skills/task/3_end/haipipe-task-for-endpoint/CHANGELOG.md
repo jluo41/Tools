@@ -5,6 +5,13 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.5] — 2026-09-04
+
+- Scaffold new Task Pages with `folder-kind: task` under canonical
+  `haipipe-task` ownership.
+- Stop creating the retired PageX relationship lane; X2 input remains a
+  proposed packet under `workflow/inbox/application/`.
+
 ## [0.2.4] — 2026-08-31
 
 - Move new endpoint scaffolds to the canonical nested Task Folder: Task Page,

@@ -1336,7 +1336,8 @@ def _render_question(q, prv, nxt):
         f' data-session="{esc(q.get("session",""))}"'
         # A plugin surface gates on the page's declared type (JL 260807), so the type
         # has to survive into the DOM; before this it lived only in the source head.
-        f' data-page-type="{esc(q.get("page_type",""))}">'
+        f' data-page-type="{esc(q.get("page_type",""))}"'
+        f' data-folder-kind="{esc(q.get("folder_kind",""))}">'
         # No id on the status row: the h2's `.hid` right below and the
         # breadcrumb already carry it (JL 260831). The `·` before method only
         # exists when there is a method to separate.
@@ -1351,7 +1352,8 @@ def _render_question(q, prv, nxt):
             # the skill kind wears its own badge (JL 260731): a skill page is a
             # synced mirror, and the head should say so before the prose does
             ('<span class="kind">SKILL</span>' if q.get("kind") == "skill" else
-             ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else ""))
+             ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else
+              ('<span class="kind">TASK</span>' if q.get("kind") == "task" else "")))
         )
         # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
         + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'

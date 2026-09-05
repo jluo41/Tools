@@ -12,14 +12,14 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.5.0"
-  last_updated: "2026-09-02"
+  version: "2.6.0"
+  last_updated: "2026-09-04"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
 # Discovery Orchestrator
 
-LOAD haipipe-discovery first. It owns the current hierarchy, verbs, lifecycle,
+LOAD haipipe-discovery first. It owns the current hierarchy, D1 routing, and Page handoff,
 and Level-4 contract. Do not substitute historical flat sources.md behavior.
 
 ## Boundary
@@ -33,13 +33,15 @@ in, restate the question generally, and report that lint defect.
 
 ~~~text
 QA      run fn/qa.md; return one QA path or a refusal
-FULL    open/run one Task Page through SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+FULL    run D1 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> Page 00–04 -> D1 CLOSE
 ENRICH  add the minimum new Paper Run(s) to an existing on-topic Folder
 ~~~
 
-ENRICH never appends anonymous prose to notes.md. It resolves each admitted
-Subject, allocates a numbered Run, executes the paired Result, checks the spine,
-rebuilds the aggregate Bib, and resynthesizes only the affected Topic surface.
+ENRICH never appends anonymous prose to notes.md. It explicitly enters D1
+ACQUIRE, resolves each admitted Subject, reuses an unchanged duplicate or
+allocates a numbered Run for a new/changed analysis, executes the paired
+Result, and checks the spine. It then enters D1 SYNTHESIZE to rebuild the
+aggregate Bib and resynthesize only the affected Topic surface.
 
 ## Dispatch
 
@@ -47,8 +49,8 @@ rebuilds the aggregate Bib, and resynthesizes only the affected Topic surface.
 creator       haipipe-discovery-creator-agent
 reviewer      haipipe-discovery-reviewer-agent
 search fanout haipipe-discovery-search-worker-agent
-ACQUIRE      haipipe-discovery-search
-SYNTHESIZE   haipipe-discovery-search | -review | -idea
+D1 ACQUIRE   haipipe-discovery-search
+Page CONTENT haipipe-discovery-search | -review | -idea
 ~~~
 
 Mechanical channel workers return candidates only. The orchestrator/creator
@@ -59,19 +61,19 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
 1. Resolve the Discovery bank, `bNN_` Block, `jNN_` Job, and `tNN_` Task Page
    structurally. New paths must expose all three prefixes; never infer `tNN`
    from a bare `NN_` folder.
-2. Creator SCOPE; reviewer checks the Topic question, canonical
+2. Creator runs D1 SCOPE; reviewer checks the Topic question, canonical
    `discovery_type`, root Page promise, Page/Task Faces, source coverage, and
    candidate rule.
-3. Creator PREPARE only when a reusable instrument is necessary; reviewer checks
-   it.
-4. Creator ACQUIRE resolves Triggers. One Trigger may yield 0/1/N canonical Subjects;
+3. Creator runs D1 PREPARE only when an instrument is necessary; reviewer checks it.
+4. Creator runs D1 ACQUIRE and resolves Triggers. One Trigger may yield 0/1/N canonical Subjects;
    one Subject creates one same-stem Run/Result pair.
 5. Creator executes pending tickets through Search. Reviewer checks every
    complete Result.
-6. Creator SYNTHESIZE dispatches the type specialist, writes the root Page and
-   optional typed record, then asks Evidence to rebuild the citation aggregate.
-7. Creator CLOSE runs the checker and reconciles the two Faces; any hard
-   failure routes backward and CLOSE cannot claim ok;
+6. Creator runs D1 SYNTHESIZE, which dispatches the shared Page workflow and
+   type specialist; Page phases own root Page writes while D1 records the
+   CONTENT no-Run rationale.
+7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
+   the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
    when commissioned, it completes the already-claimed QA ticket. Reviewer
    runs the final gate.
 

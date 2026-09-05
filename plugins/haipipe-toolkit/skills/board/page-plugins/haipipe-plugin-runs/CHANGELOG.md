@@ -1,5 +1,18 @@
 # Changelog · haipipe-plugin-runs
 
+## 0.9.7 — 2026-09-04
+
+- Resolve canonical Task Tickets from `<task>/runs/` against Job-owned
+  `<job>/results/<task>/<run>/` without copying Results into the Task Folder.
+- Derive a missing Task receipt id from the Block/Job/Task path plus local rNN,
+  and show the full b/j/t/r identity instead of a Paper `P` route.
+
+## 0.9.6 — 2026-09-04
+
+- Distinguish the cross-Folder neutral classification schema from the current
+  Board Page adapter, which truthfully presents Page-local pairs only; external
+  Supporting Runs remain in Outline and open at their owning Folder.
+
 ## 0.9.5 — 2026-09-04
 
 - Clarify that Runs is an optional presenter beneath the Task Face and treat

@@ -4,6 +4,8 @@
 - Express the Roadmap dispatch/settle handoff through typed Evidence Items,
   Supporting/local Runs, and accepted local Results instead of an active probe
   lane.
+- Separate paper-family entry routing from its position as the Folder-owning
+  workflow inside the canonical concrete Page chain.
 
 ## 0.7.3 · 260831
 - Replace ASCII angle-bracket arrows in the discovery description with Unicode

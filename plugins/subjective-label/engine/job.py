@@ -16,6 +16,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -254,7 +255,7 @@ def create_contract(
         project = config["project"] = {}
     project["id"] = job_id
     project["board_page"] = page_file.stem
-    project["page_file"] = str(page_file)
+    project["page_file"] = os.path.relpath(page_file, job_root.resolve())
     construct = config.setdefault("construct", {})
     if not isinstance(construct, dict):
         construct = config["construct"] = {}

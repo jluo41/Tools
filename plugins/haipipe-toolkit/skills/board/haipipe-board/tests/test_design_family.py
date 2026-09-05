@@ -232,7 +232,8 @@ class DesignFamilyTest(unittest.TestCase):
             root = Path(td)
             d = build(root)
             (root / ".git").mkdir()
-            bank = root / "discoveries" / "S01_topic" / "QA"
+            bank = (root / "discoveries" / "b01_topic_bank"
+                    / "j01_topic_inquiry" / "t01_topic_page" / "QA")
             bank.mkdir(parents=True)
             (bank / "1-answer.md").write_text("# QA\n", encoding="utf-8")
             sub("board.md", r"^reads: .*$",

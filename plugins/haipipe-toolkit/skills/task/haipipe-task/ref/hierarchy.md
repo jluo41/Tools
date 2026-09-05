@@ -15,11 +15,12 @@ LEVEL   FOLDER                                DATABRICKS      ONE-LINER
 BLOCK   tasks/bNN_{block_name}/               (none — free)   one large topic
 JOB     jNN_{job_name}/                       Job             self-contained, submittable
 TASK    jNN_{job_name}/tNN_{task_name}/       Task            one script pipeline = one PAGE
-RUN     tNN_{task_name}/config/rNN_{stem}.yaml Run            one submission of one task
+RUN     tNN_{task_name}/scripts/config/rNN_{stem}.yaml Run    one submission of one task
 ```
 
-**The TASK is the PAGE (JL 260830).** A task folder is SELF-CONTAINED: its code, its
-`config/`, its `runs/` tickets and its page `tNN_{task_name}.md` sit together, directly
+**The TASK is the PAGE (JL 260830).** A task folder is SELF-CONTAINED: its code under
+`scripts/`, configuration under `scripts/config/`, its `runs/` tickets, and its Page
+`tNN_{task_name}.md` sit together, directly
 under the job. It maps 1:1 onto a Board page, so the three document levels line up and
 `haipipe-page` and `haipipe-task` address the same folder:
 
@@ -79,7 +80,7 @@ Level 2: Block
 
 ```
 tasks/bNN_{block_name}/              b01_physician_ground_truth  ·  b02_llm_recommendation_runs
-├── board.md           ← the block's head: title · state · owner · Opening · Pages
+├── board.md           ← `board-kind: task-block`; the Block head and Board projection
 ├── jNN_{job1}/        ← jobs (= question groups), and NOTHING runnable beside them
 ├── jNN_{job2}/
 └── diagram/           ← docs only (01-overview, 02-tasks, 03-progress, 04-design + group.excalidraw)
@@ -97,6 +98,16 @@ run it needs (`required_audits`) and its ticket refuses to start without
 that receipt. There is no orchestration-only job. A block holds related
 jobs that share context (same model family, same evaluation suite, same
 figure set) and one diagram narrative.
+
+This is the specialized **Task Block Board** dialect. The disk tree owns
+membership and default order: Block = Board, Job = Group, Task = Page, and Run
+= execution record. `board.md` may add Job headings, introductions, and an
+explicit presentation order, but it never needs to restate the Task tree. When
+it does list Task Pages, each entry uses the full relative path
+`jNN_name/tNN_name/tNN_name.md`; a bare Task filename is invalid when two Jobs
+contain the same Task name. The Page address is read directly from its path,
+for example `b03j01t02`. A Run remains attached to its Task and never becomes a
+Board Page.
 
 **Prefer FEW blocks** (JL 260829): a block is one large topic, and `bNN`
 orders the topics along the pipeline (b01 what the LLMs see → b02 the LLM
@@ -146,7 +157,7 @@ jNN_{job_name}/
 │                               the SPACE's own package owns. `0-libs/` is the pre-260830
 │                               name; it stays READABLE as `src/0-libs/` and is never scaffolded.
 ├── tNN_{task_name}/            ← TASKS (Level 4), directly under the job. AUTHORED side.
-│   ├── tNN_{task_name}.md      the PAGE: Opening · Diagram · Content · Aims · States · Files
+│   ├── tNN_{task_name}.md      the PAGE: Opening · Outline · Content · Aims
 │   ├── scripts/                THE TASK'S OWN CODE (JL 260831), the word a Board Page uses,
 │   │                           because a task folder IS a page folder with the execution
 │   │                           family added. Shared code is the JOB's `src/`, one level up:
@@ -301,7 +312,17 @@ checks it against `git_sha` and not against an extract date. Being generated is
 not the test; being data-dependent is. In mode ① all of it stays exactly where
 it always has.
 
-NO README.md anywhere.
+The only Page-authority exception is a PHI-safe DISPLAY unit that LAND admits
+for Page citation under
+`<task>/outline/evidence/display/<stem>-Display<N>-<slug>/`. The unit is a
+governed Page projection, not the Task Result store. Its paired `result.yaml`
+and `runtime.yaml` remain under `$OUTPUT_ROOT/results/<task>/<run>/` and record
+the unit pointer and hashes. Unadmitted outputs and every other
+generated/data-dependent artifact remain under `$OUTPUT_ROOT`.
+
+No general `README.md` belongs at the project, block, Job, or Task root. A
+contracted internal unit may keep its required `README.md`; for example, a
+display unit uses it for claim, provenance, and the human `accepted:` gate.
 
 
 Level 4: Task
@@ -318,26 +339,25 @@ jNN_{job_name}/
 │                               the rule is: `tNN_*` = exactly one task, anything else = shared.
 └── tNN_{task_name}/            the task is SELF-CONTAINED and IS the page
     ├── tNN_{task_name}.md      the PAGE, named for its own folder, as a Board page is
-    ├── config/                 ALWAYS a folder, even holding one file, so no
-    │   ├── r01_base.yaml       reader ever stats the path to learn the rule.
-    │   └── r02_wide.yaml       rNN is the run's identity; the stem describes it.
+    ├── scripts/                code owned by this task
+    │   ├── <stem>.py           one script pipeline
+    │   └── config/             ALWAYS a folder, even holding one file
+    │       ├── r01_base.yaml   rNN is the Run identity; the stem describes it
+    │       └── r02_wide.yaml
     ├── runs/                   the tickets, beside the configs they name
     │   ├── r01_base.sh
     │   └── r02_wide.sh
     ├── sbatch/                 OPTIONAL: a batcher that loops over THIS task's
     │                           tickets only (a sweep, a GPU partition). One that
     │                           spans tasks belongs at job level instead.
-    ├── <stem>.py               code beside its config: a config is EXECUTED
-    └── <stem>.ipynb            (or `include`d, in Stata), not passed in as a
-                                payload, so it is debugged in the same session
-                                as the steps beside it.
 ```
 
 Rules (JL 260829):
 
-- A TICKET CARRIES NO PARAMETERS. `<task>/runs/<run>.sh` names a config and
-  submits; it defines nothing of its own and never repeats its own name —
-  derive task and run from the ticket's path ($0), so a rename breaks nothing.
+- A TICKET names one config and may select an execution slice such as year,
+  source, or fold. It must not restate a setting already owned by the config.
+  Derive task and Run identity from the ticket path (`$0`), and record every
+  effective setting in the Run's `runtime.yaml` before work starts.
 - A VARIANT IS A CONFIG, NOT A NEW TICKET SCHEME. Two runs of one task differ
   only by config stem. Two DIFFERENT pipelines are two tasks.
 - ZERO-PAD the index to two digits: single digits sort wrong
@@ -398,7 +418,7 @@ Every link in the shape is a folder name, so every link is checkable:
 # every config has a ticket, every ticket has a config — now INSIDE one task folder,
 # so the two can no longer drift across parallel trees; run it per task:
 for t in t[0-9][0-9]_*/; do
-  comm -3 <(ls "$t/config" 2>/dev/null | grep -v '^_' | sed 's/\.[^.]*$//' | sort) \
+  comm -3 <(ls "$t/scripts/config" 2>/dev/null | grep -v '^_' | sed 's/\.[^.]*$//' | sort) \
           <(ls "$t/runs"   2>/dev/null | sed 's/\.sh$//' | sort)
 done
 
@@ -456,7 +476,7 @@ Project   Proj{Series}-{Category}-{Num}-{Name}
 Block     bNN_{block_name}           2 digits, pipeline order
 Job       jNN_{job_name}             2 digits within the block
 Task      tNN_{task_name}            2 digits within the job
-Run       rNN_{stem}.yaml            2 digits within the task's config/; a name, never a folder
+Run       rNN_{stem}.yaml            2 digits within the task's scripts/config/; a name, never a folder
 Cross-ref "b02j01t01r03"             the four prefixes joined, read off the path;
                                      readable "b02.j01.t01.r03"; legacy "A01.01" still resolves
 ```
@@ -536,7 +556,7 @@ projections**. Pairing them by name is mandatory; tooling depends on it.
 
 ```
 NESTED                                 FLAT (legacy, task segment dropped)
-<task>/config/<run>.yaml          📥   configs/<run>.yaml       inputs      ┐ authored,
+<task>/scripts/config/<run>.yaml  📥   configs/<run>.yaml       inputs      ┐ authored,
 <task>/runs/<run>.sh              ▶️    runs/<run>.sh            entry       ┘ in the task
 results/<task>/<run>/             📊   results/<run>/           light out   ┐ generated,
 notebooks/<task>/<run>.ipynb      📓   notebooks/<run>.ipynb    exec record ┘ at job level
@@ -570,7 +590,7 @@ preview-convert beside the .py while writing; that file is untracked scratch.)
    🧑 author
        │
        ▼ edits
-   🐍 <task>/<stem>.py        (notebook-cell source, # %% blocks)
+   🐍 <task>/scripts/<stem>.py  (notebook-cell source, # %% blocks)
        │
        ▼ convert (one-shot, auto by the ticket — but you can preview)
    📓 notebooks/<task>/_source.ipynb  (template, for visual review)
@@ -590,7 +610,7 @@ so the author can **read** the cell flow during review, not edit it.
    ▼ Step 1: convert .py → template .ipynb beside it
    ▼ Step 2: papermill inject parameters + execute
        papermill <template>.ipynb notebooks/<task>/<run>.ipynb \
-                 -p config <task>/config/<run>.yaml ...
+                 -p config <task>/scripts/config/<run>.yaml ...
    │
    ▼ outputs split by weight
        📊 light artifacts  →  results/<task>/<run>/{eval.json, model_path.txt}
@@ -613,8 +633,9 @@ Heavy artifacts in `results/` is a hard error — caught by `-inspect`.
 
 ### sbatch — exogenous to the task
 
-`sbatch/` coordinates, never computes. It carries no parameters — tickets do
-not either; parameters live only in config/. There is no block-level sbatch: a
+`sbatch/` coordinates, never computes, and carries no Task/Run parameters.
+Configuration owns what is computed; a Ticket may select only its execution
+slice without restating configuration. There is no block-level sbatch: a
 batcher that spans jobs is proof those jobs are one job.
 
 **WHICH sbatch, and where (JL 260830).** Since a task is now self-contained, the

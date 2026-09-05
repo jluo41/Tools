@@ -1,11 +1,11 @@
 # Specimen · a Section plan in the approved shape
 
-A frozen copy of the MISQ Abstract v3 plan, now named `S-MISQ-Main-Abstract` (approved by JL 260831 0146). One bullet is one sentence slot; heads are 4 to 11 plain words; every Note is one line; the marks end the Note line; `Routed:` lines follow. Read it beside `ref/plan-grammar.md`; do not edit it.
+A frozen copy of the MISQ Abstract plan as it stood at JL's 260831 0146 approval, now named `S-MISQ-Main-Abstract`. It was numbered `v3` then; under the version rule (`ref/plan-grammar.md` §6) that approval mints `v1.0` from working `v0.3`, which is how the head reads below. One bullet is one sentence slot; heads are 4 to 11 plain words; every Note is one line; the marks end the Note line; `Routed:` lines follow. Read it beside `ref/plan-grammar.md`; do not edit it.
 
 ```markdown
-# S-MISQ-Main-Abstract · outline v3
-outline-version: v3
-supersedes: v2
+# S-MISQ-Main-Abstract · outline v1.0
+outline-version: v1.0
+supersedes: v0.3
 round: RD01-misq-feedback-20260825
 date: 260831
 approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"; transcribed by CC, the tick is JL's

@@ -7,8 +7,9 @@ description: >-
   Section Pages. Use when researching, creating, refreshing, or comparing a
   venue Page.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-31"
+  version: "0.6.0"
+  last_updated: "2026-09-04"
+  page_ruling: none
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -17,9 +18,11 @@ metadata:
 
 # /haipipe-paper-venue · make one external desk inspectable
 
-Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
-Name the Page `QBv<n>-<slug>.md`; that filename is its sole type key under the
-current base resolver.
+For a concrete Venue Page RUN, load `haipipe-page`,
+`haipipe-page-workflow`, the current Page phase, `haipipe-paper-workflow`, this
+Page Type, and its phase references in canonical order. Name the Page
+`QBv<n>-<slug>.md`; that filename is its sole type key under the current base
+resolver.
 
 ## 🏛 Grain and boundary
 
@@ -109,20 +112,25 @@ seven roles inspectable.
 
 ## 🃏 Evidence and displays
 
-Venue Pages are evidence-heavy Pages:
+Venue Pages are evidence-heavy Pages, using the same three Outline-plugin
+workspaces as every current Page:
 
-- `bibex/` stores desk sources, exemplar citations, source notes, and the local
-  bibliography.
-- `probe/` stores questions such as missing limits, review timing, or unclear
-  category rules.
-- The storage-less value surface joins each quantitative venue fact to its
-  probe-card value id `PP<NN>.v<n>`.
-- `display/` may contain a fit matrix, structure table, submission checklist,
-  or comparison diagram. A single Venue Page may own many displays.
-- `pagex/` links reusable playbooks or related Venue Pages by bounded scope.
+```text
+Context Workspace    desk identity, profile, requirements, related links
+Bullet Workspace     venue propositions and typed Evidence Item ids
+Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
+```
 
-Every number and binding rule must be clickable or traceable to its evidence
-card/source. A bare uncited number is an open obligation.
+Desk sources and exemplars normally arrive through Discovery Supporting Run
+Results. LAND freezes the chosen Results and any governed page-local captures
+into one Local Input, then one local Run produces a `VALUE`, `CITE`, or
+`DISPLAY` Result. Related Venue Pages and playbooks remain Context links until
+a Supporting Run Result makes their content independently auditable. There is
+no active PageX, probe, bibex, value, or display plugin; old lanes are
+migration-only input.
+
+Every number and binding rule must resolve to its Evidence Item plus full
+Run/Result identity. A bare uncited number is an open obligation.
 
 ## 📤 Handoff
 
@@ -148,6 +156,11 @@ known conflicts, unknowns, and refresh date
 - Structure totals and per-unit guidance are reconciled or explicitly conflict.
 - Narrative can consume a bounded, versioned venue contract.
 - CHECK judges the rendered Page and its linked evidence before closure.
+
+`page_ruling: none` is explicit: Venue CHECK may close the bank Page when its
+semantic/mechanical contract and artifact-specific gates pass. A later
+Narrative target decision remains owned by the paper journey and is not a
+second Venue-page approval.
 
 `template.md` is the scaffold for a new Venue Page. This variant owns no
 scripts; Board machinery builds and checks it.

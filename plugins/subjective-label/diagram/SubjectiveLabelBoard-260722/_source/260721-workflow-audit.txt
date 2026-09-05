@@ -8,7 +8,7 @@ are now built as engine code (not yet run). Read board.md for live status.
   ❓ the question this audit answered:
        "标一个主观维度，从空白到全量，到底要走哪几站，每一站谁在做，人在哪一站?"
 
-  evidence: examples/Project-Subjective-Label/tasks/B0*/  (read 2026-07-21)
+  evidence: examples-nlp/Project-Subjective-Label/tasks/B0*/  (read 2026-07-21)
 
 
 ─§ ① THE THING — three descriptions that disagree ────────────────────────────

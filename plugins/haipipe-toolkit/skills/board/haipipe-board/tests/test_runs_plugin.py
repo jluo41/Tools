@@ -73,6 +73,43 @@ class RunsPluginTest(unittest.TestCase):
         self.assertNotIn("b03.j01.t01.r01</code></td>", body)
         self.assertNotIn("global Run Index", body)
 
+    def test_task_page_resolves_job_backed_result_and_full_address(self):
+        block = Path(self.tmp.name) / "b03_result_interpretation"
+        (block / "board.md").parent.mkdir(parents=True)
+        (block / "board.md").write_text(
+            "# Task Block\nboard-kind: task-block\n", encoding="utf-8"
+        )
+        task = block / "j02_replication_measurement" / "t01_measure_result"
+        task.mkdir(parents=True)
+        page = task / "t01_measure_result.md"
+        page.write_text("# Measure result\nfolder-kind: task\ntask: .\n", encoding="utf-8")
+        ticket = task / "runs" / "r01_execution_measure-result.sh"
+        ticket.parent.mkdir()
+        ticket.write_text("#!/bin/sh\n", encoding="utf-8")
+        runtime = (task.parent / "results" / task.name / ticket.stem
+                   / "runtime.yaml")
+        runtime.parent.mkdir(parents=True)
+        runtime.write_text(
+            "status: complete\ntarget: replicated measure\n",
+            encoding="utf-8",
+        )
+        (runtime.parent / "result.txt").write_text("ok\n", encoding="utf-8")
+
+        rows = local_runs(page)
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["run_id"], "b03.j02.t01.r01")
+        self.assertEqual(rows[0]["global_id"], "b03.j02.t01.r01")
+        self.assertEqual(rows[0]["compact_id"], "b03j02t01r01")
+        self.assertEqual(rows[0]["runtime"], runtime)
+        self.assertEqual(rows[0]["result"],
+                         "results/t01_measure_result/r01_execution_measure-result")
+        self.assertEqual(rows[0]["status"], "Done")
+        body = render(page, "", "")
+        self.assertIn("b03.j02.t01.r01", body)
+        self.assertIn("j02_replication_measurement/results/t01_measure_result", body)
+        self.assertNotIn("P r01_execution_measure-result", body)
+
     def test_folder_distinguishes_evidence_bindings_from_local_execution(self):
         bindings = (self.page.parent / "outline" / "evidence" /
                     "supporting-runs" / "S-Test-run-bindings.md")

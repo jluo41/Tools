@@ -17,14 +17,14 @@ metadata:
   legacy_page_type: design
   outline:
     mode: grammar
-    source: "GD0-closed Brief + PageX Insight handoffs + venue pack"
+    source: "GD0-closed Brief + landed Insight Evidence Items + venue pack"
     shape: "design contract → insight use → principles → unit map → repeated message/unit divisions → rails → render/acceptance"
 ---
 
 # /haipipe-design-division · make each judged unit decidable
 
 Load `haipipe-folder`, `haipipe-page`, the Design door/workflow,
-`haipipe-plugin-design`, `haipipe-plugin-evidence/ref/pagex.md`, and the venue pack. Existing
+`haipipe-plugin-design`, `haipipe-plugin-outline/ref/item-table.md`, and the venue pack. Existing
 Design Pages may retain `page-type: design`; new work resolves this phase as
 `folder-kind: design-division`.
 

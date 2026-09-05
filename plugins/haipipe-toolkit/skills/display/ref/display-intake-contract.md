@@ -100,6 +100,26 @@ intermediate file.
 The renderer reads `intake/inputs/`; it does not search task folders, inspect
 raw data, or choose a subset by itself.
 
+### Board Page numeric route
+
+A Board Page is the scoped exception to the direct route above.
+An upstream display-input Task never feeds a Page display Intake directly.
+It first feeds the Page's `task-type: page` collection Job, which emits the
+page-service `values.yaml`; that admitted Result becomes the Evidence Item's
+Local Input, and only that Local Input may be frozen into the Page display
+unit's Intake:
+
+```text
+display-input Task Result
+        -> page-service Result values.yaml
+        -> Evidence Item Local Input
+        -> outline/evidence/display/<unit>/intake/
+```
+
+This is the Page family's one numeric door.
+Non-Page holders may continue to materialize a verified display-input Task
+Result directly into their display Intake.
+
 If a task only has a large or ambiguous result file, the right action is a new
 task deliverable: a named, display-ready aggregate.
 It is not acceptable for a renderer to silently select rows from an arbitrary

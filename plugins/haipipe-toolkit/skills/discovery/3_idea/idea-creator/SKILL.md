@@ -1,11 +1,11 @@
 ---
 name: idea-creator
 description: Generate and rank research ideas given a broad direction. Use when user says "找idea", "brainstorm ideas", "generate research ideas", "what can we work on", or wants to explore a research area for publishable directions.
-argument-hint: "[research-direction]"
 allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-14"
+  argument_hint: "[research-direction]"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,7 +24,7 @@ Given a broad research direction from the user, systematically generate, validat
 - **MAX_PILOT_IDEAS = 3** — Pilot at most 3 ideas in parallel. Additional ideas are validated on paper only.
 - **MAX_TOTAL_GPU_HOURS = 8** — Total GPU budget for all pilots combined.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for brainstorming and review. Must be an OpenAI model (e.g., `gpt-5.4`, `o3`, `gpt-4o`).
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `shared-references/reviewer-routing.md`.
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See [`reviewer-routing.md`](../../../../../../references/aris/skills/shared-references/reviewer-routing.md).
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
 
 > 💡 Override via argument, e.g., `/idea-creator "topic" — pilot budget: 4h per idea, 20h total`.
@@ -278,9 +278,9 @@ if research-wiki/ exists:
 ## Output Protocols
 
 > Follow these shared protocols for all output files:
-> - **[Output Versioning Protocol](../shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
-> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — log every output to MANIFEST.md
-> - **[Output Language Protocol](../shared-references/output-language.md)** — respect the project's language setting
+> - **[Output Versioning Protocol](../../../../../../references/aris/skills/shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
+> - **[Output Manifest Protocol](../../../../../../references/aris/skills/shared-references/output-manifest.md)** — log every output to MANIFEST.md
+> - **[Output Language Protocol](../../../../../../references/aris/skills/shared-references/output-language.md)** — respect the project's language setting
 
 ## Key Rules
 
@@ -312,4 +312,9 @@ and judges its own claims in its own `1-claims.md` — we only ever answer the q
 
 ## Review Tracing
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`. Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call,
+save the trace following
+[`review-tracing.md`](../../../../../../references/aris/skills/shared-references/review-tracing.md).
+Use `tools/save_trace.sh` or write files directly to
+`.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter
+(default: `full`).

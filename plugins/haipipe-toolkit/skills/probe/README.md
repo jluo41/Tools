@@ -1,35 +1,25 @@
-# Probe
+# Probe · legacy compatibility family
 
-Probe is the shared evidence-acquisition family for a consumer Page.
+The active Page workflow no longer has Probe or PageX plugins. It uses one
+typed Evidence Item graph:
 
 ```text
-Probe
-├─ PageX      accepted Board Page → exact file/scope binding in OUTLINE
-└─ QA Probe   Task/Discovery → QA-bank crossing at LAND (outbound rows only; `haipipe-probe` retired 260901 into `_old/`)
+SHAPE    name E<NN>-VALUE|CITE|DISPLAY-<slug> and its acceptance contract
+SURVEY   map Supporting Runs + one Local Input + one Local Page Run
+LAND     validate supports, freeze input, execute/reuse the local Run
+EMBED    fold the ready Result back into the Bullet Workspace
 ```
 
-The family has one router, `haipipe-probe`, and two Page-local surfaces:
+Current authorities:
 
-| Lane | Contract | Storage |
+| Concern | Contract | Storage |
 |---|---|---|
-| PageX | `../board/page-plugins/haipipe-plugin-evidence/ref/pagex.md` | `<page>/evidence/pagex/` |
-| QA Probe | `../board/page-plugins/haipipe-plugin-probe/SKILL.md` | `<page>/probe/` |
+| Evidence Item plan and Run graph | `../board/page-plugins/haipipe-plugin-outline/ref/item-table.md` | `<page>/outline/<stem>-evidence-items.md` |
+| Evidence landing and embedding | `../board/page-workflows/haipipe-page-evidence/SKILL.md` | `<page>/runs/` + `<page>/results/` |
+| Supporting execution/discovery | `../board/page-plugins/haipipe-plugin-runs/SKILL.md` | owning Folder's real Run/Result paths |
 
-A THIRD file completes the QA lane and is not listed above because it is not a
-surface: `../board/page-workflows/haipipe-page-probe/SKILL.md` is the Board
-Page's LAND **cycle** (`haipipe-page-evidence` §🚪) — when a card may be created, how `PP<NN>` is allocated,
-and the run receipt. Three files, three altitudes, and each owns exactly one:
-
-```text
-  haipipe-probe          the CROSSING   family-wide · paper, application, page
-  haipipe-page-probe     the PHASE      board-page only · when, and by whom
-  haipipe-plugin-probe   the STORAGE    board-page only · what lands on disk
-```
-
-The crossing is stated ONCE, in the router. Until 260821 the phase file restated
-§①②③ near-verbatim and had grown a sixth bullet mark that no mark authority
-carries; that is why the rule is written here.
-
-PageX is grouped here conceptually but is an internal source-binding lane of
-the unified Evidence Plugin. The lanes never share records: PageX does not
-create QA cards, and QA Probe does not search Pages.
+`_old/haipipe-probe/` and `agents/haipipe-probe-q-executor-agent.md` exist only
+for un-migrated QA-bank records. They must not create a new `<page>/probe/`,
+`<page>/evidence/pagex/`, or standalone Evidence surface. New cross-Folder
+evidence is a Supporting Run Result; Related Page links belong to Context
+Workspace.

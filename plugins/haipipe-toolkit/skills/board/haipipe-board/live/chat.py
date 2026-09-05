@@ -28,7 +28,8 @@ from . import base
 from . import turnring
 from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, group_stem, page_files
 from .structure import page_id_of
-from src.common import outline_lane_dirs
+from src.common import outline_lane_dirs, studio_lane_dir
+from src.outline_version import latest_outline
 from src.server_config import load_server_config, server_config_dir
 
 
@@ -291,9 +292,28 @@ def group_folder(board, gname):
 def drawing_owner_context(target, root):
     """Give Chat the same Group/Page source address the canvas uses."""
     target = Path(target)
-    draw_dir = target / "draw" if target.is_dir() else target.parent / "draw"
-    if not draw_dir.is_dir():
-        return []
+    if target.is_dir():
+        draw_dirs = [target / "draw"]
+    else:
+        page_id = page_id_of(target.stem)
+        if target.parent.name == target.stem:
+            canonical = studio_lane_dir(target.parent, "draw") / f"{page_id}.excalidraw"
+            legacy = target.parent / "draw" / f"{page_id}.excalidraw"
+            if not canonical.is_file() and legacy.is_file():
+                def rel(path):
+                    try:
+                        return str(path.resolve().relative_to(Path(root).resolve()))
+                    except ValueError:
+                        return str(path)
+                return [
+                    f"  · Legacy Page drawing (READ ONLY) -> {rel(legacy)}",
+                    f"  · Canonical edit target -> {rel(canonical)}",
+                    "Before editing, migrate the exact legacy scene to the canonical "
+                    "studio/draw path; never write the flat folded-Page source.",
+                ]
+            draw_dirs = [canonical.parent]
+        else:
+            draw_dirs = [target.parent / "draw"]
 
     def rel(path):
         try:
@@ -302,9 +322,11 @@ def drawing_owner_context(target, root):
             return str(path)
 
     if target.is_dir():
-        group_source = draw_dir / "group.excalidraw"
-        if not group_source.is_file():
+        draw_dir = next((path for path in draw_dirs
+                         if (path / "group.excalidraw").is_file()), None)
+        if draw_dir is None:
             return []
+        group_source = draw_dir / "group.excalidraw"
         pages = []
         for source in sorted(draw_dir.glob("*.excalidraw")):
             if source.name == "group.excalidraw":
@@ -327,9 +349,11 @@ def drawing_owner_context(target, root):
         ]
 
     page_id = page_id_of(target.stem)
-    page_source = draw_dir / f"{page_id}.excalidraw"
-    if not page_source.is_file():
+    draw_dir = next((path for path in draw_dirs
+                     if (path / f"{page_id}.excalidraw").is_file()), None)
+    if draw_dir is None:
         return []
+    page_source = draw_dir / f"{page_id}.excalidraw"
     return [
         f"  · Drawing owner: Page {page_id} -> {rel(page_source)}",
         "When the user asks to change this Page's drawing, edit that source; "
@@ -439,7 +463,7 @@ def prime_context(f, board, root):
 
 
 def page_folder_context(f, root):
-    """What the page's own folder says at connect time (haipipe-plugin-chat §🧠):
+    """What the page's own folder says at connect time (Studio ref/chat.md §🧠):
     page-type, the plan and its tick, open threads, open feedback rows, evidence
     owed/landed, the page's skill list and task list. Read from disk, never
     guessed; every part is optional so a page with none still boots."""
@@ -453,13 +477,12 @@ def page_folder_context(f, root):
         pass
     o = d / "outline"
     if o.is_dir():
-        plans = sorted(o.glob(f"{stem}-outline-v*.md"),
-                       key=lambda p: int(re.search(r"-v(\d+)\.md$", p.name).group(1)) if re.search(r"-v(\d+)\.md$", p.name) else 0)
         parts = []
-        if plans:
-            pt = plans[-1].read_text(encoding="utf-8", errors="ignore")
+        plan = latest_outline(o, stem)
+        if plan:
+            pt = plan.read_text(encoding="utf-8", errors="ignore")
             tick = "✅" if re.search(r"(?m)^approved:\s*✅", pt) else "⬜"
-            parts.append(f"plan {plans[-1].name[len(stem)+1:-3]} approved {tick}")
+            parts.append(f"plan {plan.name[len(stem)+1:-3]} approved {tick}")
         disc = o / f"{stem}-discussion.md"
         if disc.is_file():
             n = len(re.findall(r"(?m)^### D\d+", disc.read_text(encoding="utf-8", errors="ignore")))
@@ -561,13 +584,13 @@ which is your working directory: the whole SPACE). Its folder holds:
                      haipipe-plugin-outline
   runs/ + results/   Level-4 work and paired Results; scripts/ is their engine
 
-WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full table):
+WHERE A MESSAGE LANDS (haipipe-plugin-studio/ref/chat.md §🗺):
   a comment on a sentence     > Comment WHO · text · YYMMDD HHMM  directly under that sentence
   an answerable question      the reply, plus a >> CC<MMDD>: lane under the sentence
   an open question            ### D<nn> · … (Ask · Options · We lean · Decide) in outline/<stem>-discussion.md
                               id = highest D<nn> on the board + 1 (discussion AND log files)
   a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (CONTENT)
-  a plan change               outline/<stem>-outline-v<N>.md; v<N+1> if v<N> is approved ✅ (OUTLINE)
+  a plan change               outline/<stem>-outline-v<N>.<k>.md; next working vN.<k+1> if vN.0 is approved ✅ (OUTLINE)
   a ruling by the person      transcribe it with the quote and time; never decide a tick
   a fact the page lacks       a typed record in outline/<stem>-evidence-items.md;
                               SHAPE sets expectation; SURVEY plans supports + input + local Run
@@ -576,7 +599,7 @@ WHERE A MESSAGE LANDS (haipipe-plugin-chat §🗺; load that skill for the full 
   EVERY write                 one record in outline/<stem>-log.md:
                               `### YYMMDD HHMM · chat: <what changed>` naming the file (newest first)
 
-THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-chat §🔁). Five indexed phases,
+THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-studio/ref/chat.md §🔁). Five indexed phases,
 and the strip below says which one the page is in; a cycle word from the person runs
 that pass here, in this session, leaving the artifact, one log record (receipt folded
 under it) and the strip in your reply:
@@ -588,7 +611,7 @@ under it) and the strip in your reply:
   02 EVIDENCE /haipipe-page-evidence
     LAND     /haipipe-page-evidence   validate/execute supports, freeze one input, execute one
                                       local Run, and bind its ready VALUE/CITE/DISPLAY Result
-    EMBED    /haipipe-page-evidence   interpret ready local Results into plan v<N+1>, never
+    EMBED    /haipipe-page-evidence   interpret ready local Results into next working plan vN.<k+1>, never
                                       restructure; back to SHAPE
   03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
                                       Page Division Writing Run per commissioned division
@@ -602,8 +625,8 @@ WALLS: generated files (-feedback, -requirement, -evidence) are regenerated with
 their cli/*.py, never hand-edited · _runs/, runs/ and a QA file in `state: working`
 are never written · approved: accepted: read: verified: are a person's · a signed
 lane is never deleted · a sentence is never rewritten without its ✎ record ·
-Content states the present (no dates, no names as authority) · a ✅ plan changes
-only as v<N+1>. Before a write, say the address and the row above you are using.
+Content states the present (no dates, no names as authority) · a ✅ vN.0 plan changes
+only as the next working vN.<k+1> revision. Before a write, say the address and the row above you are using.
 Per message load ONE skill's ⚡ Brief (the row names it) and announce it.
 A `>` line under a sentence is a lane addressed to whoever works on that sentence;
 read it as a request about the sentence above, not as quoted prose.
@@ -627,7 +650,7 @@ BOARD_RULES_BODY = """The board folder given below holds `board.md` (title · `s
 ## Topic / ## Pipeline / ## Pages) and one page folder per page. Board-level work is
 yours: which page to act on next, the ## Pages order, grouping and group intros,
 cross-page consistency. Deep work inside one page belongs to that page's own chat
-and follows haipipe-plugin-chat §🗺. Never hand-edit board/ (generated). Every page
+and follows haipipe-plugin-studio/ref/chat.md §🗺. Never hand-edit board/ (generated). Every page
 you change gets one record at the top of its outline/<stem>-log.md:
 `### YYMMDD HHMM · chat: <what changed>`. Preserve every signed `> Comment` and `> ✎`
 line beneath the sentence it concerns.
@@ -647,7 +670,7 @@ BOARD_FULL_RULES = ("You are a full Claude Code session attached to the WHOLE BO
 
 
 def transcript_markdown(rows, head):
-    """One kept session -> the chat/ plugin's transcript.md (QPf4 §1, JL 260815).
+    """One kept session -> Studio Chat's transcript.md (QPf4 §1, JL 260815).
 
     `rows` are session_log's own rows ({"k": you|ai|tool, "t", "ts", ["name"]}),
     so the record and the live replay can never disagree about what happened.
@@ -678,6 +701,71 @@ def transcript_markdown(rows, head):
         else:
             lines += [f"**Claude** · {hhmm(r.get('ts'))}", "", r.get("t", ""), ""]
     return "\n".join(lines).rstrip() + "\n"
+
+
+def digest_markdown(rows, head):
+    """One kept session -> its short reading path, without inventing decisions.
+
+    The first human ask and final assistant outcome are durable anchors already
+    present in the transcript. Any authoritative decision still belongs in the
+    Page's Outline records rather than being inferred here.
+    """
+    name = head.get("name") or head.get("title") or head.get("id", "")[:8]
+    ask = next((r.get("t", "").strip() for r in rows
+                if r.get("k") == "you" and r.get("t", "").strip()), "")
+    outcome = next((r.get("t", "").strip() for r in reversed(rows)
+                    if r.get("k") == "ai" and r.get("t", "").strip()), "")
+    tools = []
+    for row in rows:
+        tool = row.get("name") if row.get("k") == "tool" else None
+        if tool and tool not in tools:
+            tools.append(tool)
+
+    def bounded(value, limit=4000):
+        value = value or "Not recorded."
+        return value if len(value) <= limit else value[:limit].rstrip() + "\n\n…"
+
+    lines = [
+        f"# 💬 {name}",
+        f"session: {head.get('id', '')}",
+        f"kept: {head.get('kept', '')}",
+        "",
+        "This is the reading path for the kept session. Authoritative decisions "
+        "and edits remain in the Page; use [transcript.md](transcript.md) for the "
+        "complete exchange.",
+        "",
+        "## Ask",
+        "",
+        bounded(ask),
+        "",
+        "## Outcome",
+        "",
+        bounded(outcome),
+        "",
+        "## Activity",
+        "",
+        ("Tools observed: " + ", ".join(tools) + ".") if tools
+        else "No tool calls were recorded.",
+    ]
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def kept_session_dir(chat_dir, stamp, sid):
+    """Stable timestamp-first folder; suffix only on a real minute collision."""
+    chat_dir = Path(chat_dir)
+    for index in range(1, 1000):
+        name = stamp if index == 1 else f"{stamp}-{index:02d}"
+        candidate = chat_dir / name
+        if not candidate.exists():
+            return candidate
+        for record in (candidate / "digest.md", candidate / "transcript.md"):
+            try:
+                body = record.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            if re.search(r"(?m)^session:\s*" + re.escape(sid) + r"\s*$", body):
+                return candidate
+    raise RuntimeError(f"too many kept-session collisions at {stamp}")
 
 
 def oauth_token(root):
@@ -1056,7 +1144,7 @@ class ChatMixin:
                         (BOARD_CHAT_RULES + f"\n\nThe board folder you may edit .md files in: {brel}\n\n")
                         if is_board else
                         (CHAT_RULES + f"\n\nThe question file you may edit: {rel}\n\n")) + prime
-                sources = ["user", "project", "local"]   # skills loadable in scoped too (haipipe-plugin-chat 0.2.0)
+                sources = ["user", "project", "local"]   # skills loadable in scoped too (Studio Chat lane)
             else:
                 sysp = ((BOARD_FULL_RULES + f"\n\nThis session's GROUP folder: {rel}\n\n")
                         if is_group else
@@ -1576,17 +1664,16 @@ class ChatMixin:
         return out, None
 
     def keep_sessions(self, f, p):
-        """POST /_board/chat-keep {file} -> this page's sessions land in its
-        chat/ plugin (QPf4, JL 260815: "I want the chat history to be recorded
-        in the chat subfolder").
+        """POST /_board/chat-keep {file} -> sessions land in studio/chat/.
 
         BOUNDED on purpose: only sessions the page has registered (the same
         list the picker shows), never every stray conversation, which is the
         bloat the page's own Decision row warned about. The folder name keys
-        on the session's FIRST timestamp plus the id's head, so a re-keep after
-        more chat refreshes the same folder instead of minting a new one.
-        transcript.md is DERIVED (the jsonl stays the source), so overwriting
-        on re-keep is the sync semantics every other derived block uses."""
+        on the session's FIRST timestamp; a numeric suffix is used only if two
+        different sessions began in the same minute. A re-keep recognizes the
+        recorded session id and refreshes the same folder. ``digest.md`` is the
+        reading path and ``transcript.md`` is the full exchange; the jsonl stays
+        the source, so overwriting both is ordinary sync semantics."""
         f = Path(f)
         if f.is_dir() or f.parent.name != f.stem:
             return {"ok": False, "err": "chat/ needs a folded page "
@@ -1605,7 +1692,7 @@ class ChatMixin:
             first_ts = next((r.get("ts") for r in rows if r.get("ts")), "")
             stamp = (first_ts[2:10].replace("-", "") + "-"
                      + first_ts[11:16].replace(":", "")) if first_ts else "undated"
-            d = f.parent / "chat" / f"{stamp}-{sid[:8]}"
+            d = kept_session_dir(studio_lane_dir(f.parent, "chat"), stamp, sid)
             d.mkdir(parents=True, exist_ok=True)
             head = {"id": sid, "name": row.get("name", ""),
                     "title": row.get("title", ""),
@@ -1613,6 +1700,8 @@ class ChatMixin:
                     "source": str(self._jsonl_path(sid))}
             (d / "transcript.md").write_text(
                 transcript_markdown(rows, head), encoding="utf-8")
+            (d / "digest.md").write_text(
+                digest_markdown(rows, head), encoding="utf-8")
             kept.append(d.name)
         return {"ok": True, "kept": kept, "skipped": skipped}
 

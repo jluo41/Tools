@@ -19,7 +19,7 @@ operating view every phase skill and workflow surface may quote.
    PREPARE ───────────▶    SHAPE ─▶ SURVEY ─────────▶    LAND ─▶ EMBED
       ▲                     ▲                            │       │
       │ policy drift        └────────────────────────────┴───────┘
-      │                                 new plan v<N+1>
+      │                                 next working plan vN.<k+1>
       │                                             │ approved + folded
       │                                             ▼
       └──────────── 04 CHECK ◀──────────── 03 CONTENT
@@ -40,7 +40,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 
 ```text
 ❓ ASKS     what exact context may later Page phases rely on?
-📥 READS    Page/Folder identity · owning workflow · Page Type · policy ·
+📥 READS    Page/Folder identity · Folder owner · Page Face owner · policy ·
             requirements · related information · feedback · discussion ·
             Files/Log/Skills · current plan/evidence/run receipts
 📤 WRITES   generated outline/<stem>-context.md and one phase receipt
@@ -56,7 +56,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 ```text
 ❓ ASKS     what will this Page say, and what typed ready evidence does each
             Bullet expect?
-📥 READS    frozen Context · Page Type outline policy · current Page · prior
+📥 READS    frozen Context · Page Face owner outline policy · current Page · prior
             plan · feedback and decisions
 📤 WRITES   outline/<stem>-outline-v<N>.md; SHAPE fields in
             <stem>-evidence-items.md; open Discussion and one Log record
@@ -76,12 +76,13 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 📥 READS    approved or policy-forwarded typed item contracts ·
             Execution/Discovery Ticket and Result inventories · allowed
             page-local static sources
-📤 WRITES   Supporting Runs · one Local Input plan · one indexed Local Run ·
+📤 WRITES   Supporting Runs · one Local Input plan · one owner-native Local Run ·
             Decide in outline/<stem>-evidence-items.md
 🚪 EXITS    every route is honestly classified; Local Input contents named;
-            exactly one pjNNtNNrNN local route per item; Decide signed or
-            durably owed under auto policy
-✋ TICK     Decide is person-reserved; copilot waits, auto records it owed
+            exactly one owner-native local route per item; Decide explicitly
+            signed or supplied by a prior durable owner policy
+✋ TICK     Decide is person-reserved and branching; auto HOLDs unless an
+            explicit durable owner decision/default policy already supplies it
 🔀 ROUTES   EVIDENCE/LAND · OUTLINE/SHAPE · OUTLINE/SURVEY ·
             CONTEXT/PREPARE · HOLD
 🚫 RUNS     none: it inventories/reserves; LAND allocates and executes
@@ -91,12 +92,12 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 
 ```text
 ❓ ASKS     does every make-item have valid Supporting Results, one frozen
-            input, and one accepted local typed Result?
+            input, and one ready local typed Result?
 📥 READS    decided item table · named Tickets/receipts/Results · worker gates
 📤 WRITES   allocated Tickets and Results · frozen Local Input · full ids and
             Result binding in <stem>-evidence-items.md · generated status
 🚪 EXITS    all Supporting Results pass; each local VALUE/CITE/DISPLAY Result
-            satisfies its item Acceptance contract
+            satisfies its item Acceptance contract; CITE has signed Verified
 ✋ TICK     only worker-specific gates already declared by the selected worker
 🔀 ROUTES   EVIDENCE/EMBED · OUTLINE/SURVEY · OUTLINE/SHAPE ·
             CONTEXT/PREPARE · EVIDENCE/LAND · HOLD
@@ -108,7 +109,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 
 ```text
 ❓ ASKS     what does each ready local Result mean for its target Bullet?
-📥 READS    accepted local Results · current approved plan
+📥 READS    ready local Results · current approved plan
 📤 WRITES   outline v<N+1> with Answered:/Drawn:/Routed: appends;
             approved: resets to ⬜; never changes the Result
 🚪 EXITS    every ready item is folded; contradictions are explicit findings
@@ -123,7 +124,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 ❓ ASKS     does one built Page version realize only what the approved,
             evidence-aware plan supports?
 📥 READS    fresh Context · approved folded plan · ready Evidence Results ·
-            Page Type and narrative/style policy · current Page
+            Page Face owner and narrative/style policy · current Page
 📤 WRITES   Page Content and authorized Opening/Aims · Division Writing
             Tickets/Results and promotion trace · current delivery artifacts · Log
 🚪 EXITS    commissioned divisions accepted/promoted; artifacts current; a
@@ -139,7 +140,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 ```text
 ❓ ASKS     is this exact built Page version closable, and who acts next?
 📥 READS    immutable source/render version · Context · plan · evidence trace ·
-            Page Type closing rule · CONTENT trail · human-gate evidence
+            Page Face owner closing rule · CONTENT trail · human-gate evidence
 📤 WRITES   check receipt and findings/comments in the declared review surface
 🚪 EXITS    CLOSE or one named backward route
 ✋ TICK     accepted: and the Folder owner's declared ruling when applicable;

@@ -22,7 +22,7 @@ The Result is accepted only when:
 2. every factual claim names a folded Evidence Result or an allowed static
    source from the frozen Local Input;
 3. no candidate sentence exceeds the approved claim strength;
-4. the Page Type and narrative/style checks pass;
+4. the Page Face owner and narrative/style checks pass;
 5. `runtime.yaml` records the exact Context, plan, evidence, and prior Page
    versions.
 

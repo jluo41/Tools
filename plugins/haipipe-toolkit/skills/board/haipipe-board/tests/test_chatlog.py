@@ -1,4 +1,4 @@
-"""The chat/ plugin's transcript formatter (QPf4 §1, JL 260815).
+"""Studio Chat kept-session records (QPf4 §1, JL 260815).
 
 transcript_markdown is pure so the record's shape is pinned without a server:
 the same rows the drawer replays are the rows the record writes, and this file
@@ -9,7 +9,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from live.chat import transcript_markdown  # noqa: E402
+from live.chat import (ChatMixin, digest_markdown, kept_session_dir,
+                       transcript_markdown)  # noqa: E402
 
 ROWS = [
     {"k": "you", "t": "what pages relate to chat?", "ts": "2026-08-15T14:02:11Z"},
@@ -40,6 +41,57 @@ class TranscriptMarkdown(unittest.TestCase):
         self.assertIn("# 💬 a title", md)
         md = transcript_markdown([], {"id": "abcd1234-rest"})
         self.assertIn("# 💬 abcd1234", md)
+
+    def test_digest_is_a_short_reading_path_over_the_same_rows(self):
+        md = digest_markdown(ROWS, HEAD)
+        self.assertIn("## Ask", md)
+        self.assertIn("what pages relate to chat?", md)
+        self.assertIn("## Outcome", md)
+        self.assertIn("Seven pages, five in QO.", md)
+        self.assertIn("Tools observed: Read.", md)
+        self.assertIn("[transcript.md](transcript.md)", md)
+
+    def test_kept_folder_uses_timestamp_and_reuses_the_recorded_session(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            chat = Path(tmp) / "studio" / "chat"
+            first = kept_session_dir(chat, "260815-1402", HEAD["id"])
+            self.assertEqual(first.name, "260815-1402")
+            first.mkdir(parents=True)
+            (first / "digest.md").write_text(
+                "session: %s\n" % HEAD["id"], encoding="utf-8")
+            self.assertEqual(
+                kept_session_dir(chat, "260815-1402", HEAD["id"]), first
+            )
+            collided = kept_session_dir(chat, "260815-1402", "other-session")
+            self.assertEqual(collided.name, "260815-1402-02")
+
+    def test_keep_writer_lands_both_records_in_canonical_studio_chat(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            page_home = Path(tmp) / "S-Test"
+            page_home.mkdir()
+            page = page_home / "S-Test.md"
+            page.write_text("# Test\n", encoding="utf-8")
+
+            class Fake:
+                def sessions_list(self, _f, _p):
+                    return {"sessions": [{"id": HEAD["id"], "name": "kept",
+                                           "landed": True}]}, None
+
+                def _session_rows(self, _sid):
+                    return ROWS, None
+
+                def _jsonl_path(self, sid):
+                    return Path(tmp) / (sid + ".jsonl")
+
+            result = ChatMixin.keep_sessions(Fake(), page, {})
+
+            self.assertTrue(result["ok"])
+            kept = page_home / "studio" / "chat" / "260815-1402"
+            self.assertTrue((kept / "digest.md").is_file())
+            self.assertTrue((kept / "transcript.md").is_file())
+            self.assertFalse((page_home / "chat").exists())
 
 
 if __name__ == "__main__":

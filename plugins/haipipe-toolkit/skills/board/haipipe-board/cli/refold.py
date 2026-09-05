@@ -82,11 +82,15 @@ def companions(page, board):
             continue
         keyed = sib / stem
         if keyed.exists():
-            out.append((keyed, group / stem / sib.name / stem))
+            lane = Path("studio") / sib.name if sib.name in {"chat", "draw"} \
+                else Path(sib.name)
+            out.append((keyed, group / stem / lane / stem))
         if pid:
             for scene in sorted(sib.glob(f"{pid}.*")):
                 if scene.is_file():
-                    out.append((scene, group / stem / sib.name / scene.name))
+                    lane = Path("studio") / sib.name if sib.name in {"chat", "draw"} \
+                        else Path(sib.name)
+                    out.append((scene, group / stem / lane / scene.name))
     return out
 
 

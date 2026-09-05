@@ -152,6 +152,15 @@ class PagexFolderTest(unittest.TestCase):
         self.assertNotIn('"/_board/task"', serve)
         self.assertFalse((board / "live" / "task.py").exists())
 
+    def test_pagex_mutation_endpoints_are_retired(self):
+        board = Path(__file__).resolve().parents[1]
+        serve = (board / "cli" / "serve.py").read_text(encoding="utf-8")
+        self.assertIn("PageX was retired", serve)
+        self.assertIn("return self.reply(410", serve)
+        for call in ("self.pagex_refresh(p)", "self.pagex_order(p)",
+                     "self.pagex_entry(p)", "self.pagex_match(p)"):
+            self.assertNotIn(call, serve)
+
 
 if __name__ == "__main__":
     unittest.main()

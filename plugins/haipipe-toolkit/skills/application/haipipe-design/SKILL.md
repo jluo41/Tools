@@ -4,8 +4,8 @@ description: >-
   The design door of the Application family: one place assembling the laws for a DesignBoard that designs as BETS. A board declares reads: (which InsightBoards anything on it may cite); a Brief declares born-of: (the signed W handoff or the mandate it exists because of); a Design page proposes design cards as card.md, the first file of each thread folder under its design/ plugin (stance toward evidence, thesis, expected effect), a person releases each card, one designer realizes each released card as one artifact unit in the design/ plugin, a judge checks the unit against its compiled spec, and a person accepts each division. Ends at ACCEPTED, never ships. Use for creating or driving a DesignBoard, writing a brief, proposing or releasing design cards, realizing units, message or email or UI design, reviewing and accepting. Trigger: design board, design door, design card, release cards, design unit, message design, email design, ui design, born-of, reads whitelist, stance, /haipipe-design.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.0.3"
-  last_updated: "2026-08-31"
+  version: "1.1.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,7 +19,8 @@ metadata:
 haipipe-design               this door · the reads/born-of/stance laws · the verbs
 haipipe-design-workflow      the lane's phase machine: D0-D5, gates GD0-GD6, rounds,
                              the commission entry
-haipipe-plugin-design        the THREAD: the card (§card — proposal, release gate,
+haipipe-plugin-design        the Design-family THREAD contract, physically beside
+                             this door: the card (§card — proposal, release gate,
                              grant) and the unit (spec, evidence, prospect, content,
                              kind routing, the judged: verdict line) · absorbed
                              haipipe-plugin-direction 260828

@@ -20,13 +20,13 @@ JL 260819: "I think the machine should check these numbers."
 
 He is right, and it changes what the human tick is FOR. A card whose `bank:` is
 `code` answered by READING THE REPO, and a repo read can be read again. Nothing
-about comparing 7 to 7 needs a person.
+about comparing 5 to 5 needs a person.
 
     🤖 the machine owns   is the number still true?
     🧑 the person owns    is this the right number to be asking for?
 
 So `read: ✅` stops meaning "I checked the arithmetic" and starts meaning "I
-agree with the judgment inside the question". PP01's `7 phases` is the worked
+agree with the judgment inside the question". PP01's `5 phases` is the worked
 example: counting the folders is mechanical, and whether COMPILE counts as a
 phase at all is not.
 
@@ -47,12 +47,14 @@ ENGINE = Path(__file__).resolve().parents[1]
 SKILLS = ENGINE.parents[1]
 sys.path.insert(0, str(ENGINE))
 
+from src.page_phase import ORDER as PAGE_PHASE_ORDER
+
 
 # ── the recipes, one per value id ────────────────────────────────────────────
 def _phase_census():
     d = SKILLS / "board/page-workflows"
-    contracts = sorted(p for p in d.glob("haipipe-page-*/SKILL.md")
-                       if p.parent.name != "haipipe-page-workflow")
+    contracts = [d / f"haipipe-page-{phase.lower()}/SKILL.md"
+                 for phase in PAGE_PHASE_ORDER]
     cards = (d / "haipipe-page-workflow/ref/phase-cards.md").read_text(
         encoding="utf-8", errors="replace")
     ticks = re.search(r"(?ms)^## 🧾 Person-reserved ticks, gathered.*?```text\n(.*?)```",
@@ -61,7 +63,8 @@ def _phase_census():
     if ticks:
         n_ticks = len([l for l in ticks.group(1).splitlines()
                        if l.strip() and not l.lstrip().startswith(("tick", "──"))])
-    return {"phases_declared": 7, "contracts_shipping": len(contracts),
+    return {"phases_declared": len(PAGE_PHASE_ORDER),
+            "contracts_shipping": sum(path.is_file() for path in contracts),
             "person_reserved_ticks": n_ticks}
 
 

@@ -9,15 +9,15 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-25"
+  version: "0.2.1"
+  last_updated: "2026-09-04"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
 
 # /haipipe-paper-assemble · build the paper from source
 
 This is the paper-level document contract. It is different from
-`haipipe-plugin-word`, which exports one Board Page for a coauthor. Assembly
+`haipipe-plugin-delivery/ref/word.md`, which exports one Board Page for a coauthor. Assembly
 combines the accepted Narrative/Section graph into the complete deliverable
 for one desk.
 
@@ -60,7 +60,7 @@ become inputs to the next build.
 
 | Lane | Input | Output | Purpose |
 |---|---|---|---|
-| Page-level `haipipe-plugin-word` | one Page's Markdown and Page-local evidence | `<page>/word/` | coauthor review of one Section/Page |
+| Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<page>/delivery/word/` | coauthor review of one Section/Page |
 | Paper-level `haipipe-paper-assemble` | desk-room master, sections, displays, bibliography | `<desk>-word/` or configured output room | complete manuscript and supplement |
 
 Page-level Word snapshots are not the assembly input. Paper-level assembly
@@ -114,9 +114,17 @@ sections = "sections"
 displays = "displays"
 bibliography = "reference.bib"
 
+[evidence]
+# A Page-generated receipt: provenance/state only, never manuscript prose.
+lock = "../1-dc2026/assembly/evidence-lock.json"
+# "draft" permits visible [E## pending] markers; "final" rejects them.
+mode = "draft"
+
 [outputs]
 main_docx = "CGMtoHbA1c-DC2026-submission-draft.docx"
 supplement_docx = "CGMtoHbA1c-DC2026-online-supplement-draft.docx"
+main_pdf = "CGMtoHbA1c-DC2026-submission-draft.pdf"
+supplement_pdf = "CGMtoHbA1c-DC2026-online-supplement-draft.pdf"
 section_snapshots = "draft-sections"
 assets = "submission-assets"
 manifest = "build-manifest.json"
@@ -128,6 +136,25 @@ claims, values, citations, captions, or table cells. If a paper needs a
 special section boundary or a nonstandard supplement, that behavior belongs in
 the venue profile or an explicitly named adapter, not in a second hidden Word
 source.
+
+### Evidence receipt boundary
+
+The optional `[evidence] lock` is a materialized receipt generated from the
+Section Pages. It may identify the Section source, Page evidence item, type
+(`VALUE`, `CITE`, or `DISPLAY`), state, and source hashes. The engine uses it
+only to validate traceability and build status:
+
+- the Section source owns the reader-facing claim and any accepted number;
+- the citation is authored in that source and resolved against the declared
+  bibliography;
+- a display is declared in the source and resolved from the desk-room display
+  directory;
+- the engine never copies prose, values, citation text, or display contents
+  out of the receipt.
+
+`mode = "draft"` keeps unresolved `[E## pending]` markers explicit in the
+candidate. `mode = "final"`/`"submission"` rejects both pending markers and
+any non-accepted receipt item. This is a preflight, not a claim-making step.
 
 ## ▶️ Build protocol
 
@@ -165,6 +192,27 @@ The build is deterministic with respect to its declared source, config,
 profile, engine version, and asset files. No LLM call is part of assembly. An
 LLM may edit the source before the build, but it is not a synchronization
 mechanism between Word and TeX.
+
+### Read-only audit protocol
+
+When the request is to inspect provenance, determine whether an assembled
+document is stale, or verify a prior build, do **not** rebuild by default.
+Instead:
+
+1. read `paper-build.toml` and resolve the declared master, sections, displays,
+   bibliography, profile, evidence lock, and output paths;
+2. inspect `build-manifest.json` and compare its config/source/profile/output
+   hashes against the declared files currently on disk;
+3. inspect `build-qa.json` for evidence state, unresolved references, renderer
+   availability, PDF outcome, and G6 status;
+4. if appropriate, invoke only the wrapper's early environment preflight;
+   never invoke the renderer merely to answer an audit question;
+5. report stale/missing/mismatched outputs explicitly and name the source file
+   that must change before a rebuild.
+
+Run an actual build only when the user asks to assemble, regenerate, or update
+the delivery artifacts. A read-only audit may not alter the desk-room,
+deliverables, manifests, or QA receipts.
 
 ## 📦 Required outputs
 
@@ -208,6 +256,8 @@ available:
 - no generated DOCX/PDF/snapshot is read as an input;
 - every `\\input`, citation, label/reference, table asset, and figure asset
   resolves or is listed as a visible failure;
+- when an evidence receipt is declared, its source bindings are recorded and
+  final/submission modes reject pending or non-accepted evidence;
 - no raw TeX commands or parser sentinels leak into emitted prose/cells;
 - main-text word count uses the selected venue profile and states what it
   excludes;

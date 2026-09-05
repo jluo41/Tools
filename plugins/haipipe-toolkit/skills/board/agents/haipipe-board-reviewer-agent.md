@@ -35,7 +35,7 @@ copy is exactly what goes a night out of date while the contract moves:
    the old stub on 260802 all opened with the same rhetorical question.
    ⚠️ These two files are the rule's only homes since the `haipipe-page-for-skill`
    VARIANT was deleted on 260819 (`Skill-`/`Agent-` are filename kinds on the
-   base Page plus `haipipe-plugin-skill`, not a Page Type). Both are executable,
+   base Page plus Outline's `ref/skill-record.md`, not a Page Type). Both are executable,
    so the rule is checked rather than merely written.
 4. `../page-workflows/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed

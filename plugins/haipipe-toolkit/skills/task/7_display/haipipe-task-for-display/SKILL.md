@@ -1,16 +1,15 @@
 ---
 name: haipipe-task-for-display
 description: >-
-  display-input job specialist: scaffolds {NN}_<name>/ folders in the
-  display block (default C-series) producing a verified display-ready
+  Display-input Job specialist: scaffolds canonical b/j/t/r Task folders
+  producing a verified display-ready
   summary CSV plus provenance. The Paper Display stage snapshots that input;
   this task does not own the final paper asset. Called by /haipipe-task when
   task-type=display.
-argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-07-27"
+  version: "0.3.3"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,18 +17,20 @@ Skill: haipipe-task-for-display
 ====================================
 
 Scaffolds a **display-input job** — the verified summary data a paper figure or table needs.
-It consumes `results/<run>/` artifacts from upstream tasks and produces a small,
+It consumes governed Result artifacts from upstream Runs and produces a small,
 display-ready `source_data.csv` plus `provenance.json`.
-The Paper Display stage materializes that input into `displays/displayNN-<slug>/intake/` and
-commissions the renderer that produces the publication-facing asset.
+A non-Page display holder may materialize that input into its Intake directly.
+A Board Page must first route every numeric value through its one
+`task-type: page` collection Job; the page-service Result, not this upstream
+aggregate directly, becomes the Supporting Run edge.
 
 ## Output contract
 
-Every successful run writes:
+Every successful Run writes:
 
 ```text
-results/<run>/source_data.csv   small display-safe aggregate
-results/<run>/provenance.json   task holder, run, source artifacts, selection, and SHA-256
+$OUTPUT_ROOT/results/<task>/<run>/source_data.csv   small display-safe aggregate
+$OUTPUT_ROOT/results/<task>/<run>/provenance.json   Task, Run, sources, selection, and SHA-256
 ```
 
 `provenance.json` follows `ref/provenance-template.json`.
@@ -47,28 +48,34 @@ What this scaffolds
 -------------------
 
 ```
-tasks/C{NN}_<block_name>/                    ← C-series group (display)
-└── {NN}_<figure_or_table_name>/
-    ├── {NN}_<name>.py
-    ├── configs/
-    │   └── figure_<name>.yaml               or table_<name>.yaml
-    ├── runs/
-    │   └── figure_<name>.sh
-    ├── results/
-    │   └── <run>/                           source_data.csv, provenance.json, diagnostics/ (optional)
-    └── notebooks/
+tasks/b<NN>_<display-input-block>/
+└── j<NN>_<figure-or-table-name>/
+    ├── src/
+    └── t01_display_input_summary/
+        ├── t01_display_input_summary.md
+        ├── scripts/
+        │   ├── prepare_display_input.py
+        │   └── config/r01_<kind>_<name>.yaml
+        └── runs/r01_<kind>_<name>.sh
+
+$OUTPUT_ROOT/results/t01_display_input_summary/r01_<kind>_<name>/
+├── source_data.csv
+├── provenance.json
+├── runtime.yaml
+└── diagnostics/                              optional
 ```
 
-Group letter default: **C** (display).
 Heavy outputs: none.
 
 
 Cross-reference to pipeline skill
 ----------------------------------
 
-No corresponding pipeline skill — display-input tasks are independent; they read upstream
-`results/<run>/` and write a verified aggregate, not a publication asset.
-The output can be consumed by any display holder through an Intake manifest.
+No corresponding pipeline skill: display-input Tasks are independent; they
+read upstream governed Results and write a verified aggregate, not a
+publication asset. A non-Page display holder may consume it through an Intake
+manifest. A Page routes it through `haipipe-task-for-page` first, preserving
+the Page family's one numeric door.
 
 
 Scaffold flow
@@ -79,10 +86,12 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
+  3. Create the canonical Job/Task skeleton (`scripts/`, `scripts/config/`, `runs/`).
   4. Seed config from `ref/config-seed.yaml`.
-  5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
-  6. Suggest materializing the verified aggregate into a Display Intake.
+  5. Copy the Ticket template and set family `Execution`, operation
+     `display-input`, target, and both required Result files.
+  6. For a Page consumer, route the aggregate into its page-serving collection
+     Job; otherwise suggest materializing it into the holder's Display Intake.
   7. Emit return contract.
 
 
@@ -93,7 +102,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (usually bash runs/<run>.sh)
+next:      suggested next command (usually bash <task>/runs/<run>.sh)
 ```
 
 

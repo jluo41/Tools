@@ -18,6 +18,13 @@ PHASES = {
     "DRAFT", "REVISE", "COMPILE",
 }
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
+CURRENT_PHASE_CYCLES = {
+    "CONTEXT": {"PREPARE"},
+    "OUTLINE": {"SHAPE", "SURVEY"},
+    "EVIDENCE": {"LAND", "EMBED"},
+    "CONTENT": {"WRITE"},
+    "CHECK": {"CHECK"},
+}
 PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
 # Current edges are listed with compatibility edges on OUTLINE/CHECK. The
 # historical rows keep immutable receipts auditable after DRAFT/REVISE/COMPILE
@@ -322,6 +329,8 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         receipt = raw
         phase = _trace_token(str(receipt.get("phase", "")), legacy_probe)
         route = _trace_token(str(receipt.get("route", "")), legacy_probe)
+        cycle = str(receipt.get("cycle", "")).strip().upper()
+        next_cycle = str(receipt.get("next_cycle", "")).strip().upper()
         role = str(receipt.get("role", "")).lower()
         status = str(receipt.get("status", "")).lower()
         actor = str(receipt.get("actor", "")).strip()
@@ -343,6 +352,42 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(
                 _finding("illegal-route", index, f"{phase} cannot route to {route or '<missing>'}")
             )
+        if route in TERMINAL_ROUTES and "next_cycle" in receipt:
+            findings.append(
+                _finding(
+                    "terminal-next-cycle",
+                    index,
+                    f"{route} must omit next_cycle, not serialize an empty or stale value",
+                )
+            )
+        elif next_cycle:
+            allowed_cycles = CURRENT_PHASE_CYCLES.get(route, set())
+            if allowed_cycles and next_cycle not in allowed_cycles:
+                findings.append(
+                    _finding(
+                        "route-cycle-mismatch",
+                        index,
+                        f"route {route} requires next_cycle in {sorted(allowed_cycles)}, got {next_cycle}",
+                    )
+                )
+        if cycle:
+            phase_cycles = CURRENT_PHASE_CYCLES.get(phase, set())
+            if phase_cycles and cycle not in phase_cycles:
+                findings.append(
+                    _finding(
+                        "phase-cycle-mismatch",
+                        index,
+                        f"phase {phase} requires cycle in {sorted(phase_cycles)}, got {cycle}",
+                    )
+                )
+            if route not in TERMINAL_ROUTES and not next_cycle:
+                findings.append(
+                    _finding(
+                        "missing-next-cycle",
+                        index,
+                        f"current {phase}/{cycle} receipt routing to {route} requires next_cycle",
+                    )
+                )
         if not actor:
             findings.append(_finding("missing-actor", index, "actor identity is required"))
         if not builder:
@@ -537,25 +582,23 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         if previous is not None:
             previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
             previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
-            # THE PLANNING/EVIDENCE PAUSE. A HOLD from CONTEXT/OUTLINE/EVIDENCE
-            # while the packet's human gate is required and the step's gate is
-            # still open is a PAUSE between passes of one converging round,
-            # not a terminal: the ruled loop appends one receipt per pass, and
-            # 10 of tonight's 12 legal passes audited as receipt-after-terminal
-            # before this rule existed. The next phase must be legal FROM the
-            # paused phase (phase-repeat included). CLOSE stays terminal, and
-            # a HOLD outside the OUTLINE part or with a settled gate stays terminal.
-            prepare_pause = (
+            # Compatibility only: old planning/evidence receipts represented
+            # an open-gate HOLD as an in-run pause. Current receipts carry a
+            # cycle and the controller always returns on HOLD, so only the
+            # pre-cycle shape retains this historical audit exception.
+            legacy_prepare_pause = (
                 previous_route == "HOLD"
                 and previous_phase in {"CONTEXT", "OUTLINE", "EVIDENCE"}
                 and declared_gate_required
                 and str(_gate(previous).get("status", "")) in {"pending", "waiting"}
+                and "cycle" not in previous
+                and "next_cycle" not in previous
             )
-            if previous_route in TERMINAL_ROUTES and not prepare_pause:
+            if previous_route in TERMINAL_ROUTES and not legacy_prepare_pause:
                 findings.append(
                     _finding("receipt-after-terminal", index, f"receipt follows {previous_route}")
                 )
-            elif prepare_pause:
+            elif legacy_prepare_pause:
                 # A cold CHECK is legal on ANY version, pauses included: the
                 # judge reads and routes, it does not produce (found by the
                 # first real check-agent dispatch, 260819 step 14).

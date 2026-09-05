@@ -12,6 +12,7 @@ became this script's output and the drift became a finding.
 Three sources, and each answers a different question:
 
     the OWNERS    workflow phase `legacy_page_type` metadata    who maintains it
+                  + skills/*/haipipe-*/ `legacy_page_type`      canonical family owner
                   + skills/*/page-types/haipipe-page-for-<key>/ (unmigrated)
                   + paper/workflow-phases/haipipe-paper-<key>/  (paper, 260831)
                   + paper/haipipe-paper-venue/
@@ -56,14 +57,25 @@ def engine_keys() -> set[str]:
 def contract_keys() -> dict[str, str]:
     """key -> owning skill set, from phase owners and compatibility folders.
 
-    A migrated family declares the old key on the phase that owns its Page
-    Face. Unmigrated families still ship variants under page-types/. Paper's
-    phase skills predate the Folder metadata and keep their filename bridge.
+    A migrated family declares the old key on the phase or canonical family
+    skill that owns its Page Face. Unmigrated families still ship variants
+    under page-types/. Paper's phase skills predate the Folder metadata and
+    keep their filename bridge.
     """
     found = {}
     for contract in folder_contracts(SKILLS):
         if contract.legacy_page_type:
             found[contract.legacy_page_type] = contract.path.parents[2].name
+    for path in sorted(SKILLS.glob("*/haipipe-*/SKILL.md")):
+        front = path.read_text(encoding="utf-8", errors="replace").split("---", 2)
+        if len(front) != 3:
+            continue
+        owner = re.search(
+            r"(?m)^  folder_owner:\s*['\"]?canonical['\"]?\s*$", front[1]
+        )
+        match = re.search(r"(?m)^  legacy_page_type:\s*['\"]?([^'\"\s]+)", front[1])
+        if owner and match:
+            found[match.group(1)] = path.parents[1].name
     for d in sorted(SKILLS.glob("*/page-types/haipipe-page-for-*")):
         if not d.is_dir() or not (d / "SKILL.md").exists():
             continue
@@ -113,34 +125,41 @@ def collect(workspace: pathlib.Path):
     return rows
 
 
-def drift(rows) -> list[str]:
+REGISTRY = SKILLS / "board" / "haipipe-page" / "ref" / "type-registry.md"
+
+
+def registry_records() -> dict:
+    """Load compatibility records once for both drift and law checks."""
+    import yaml
+    text = REGISTRY.read_text(encoding="utf-8")
+    m = re.search(r"```yaml\n(.*?)```", text, re.S)
+    if not m:
+        sys.exit(f"pagetypes: {REGISTRY.name} has no ```yaml block")
+    return yaml.safe_load(m.group(1))
+
+
+def drift(rows, registry: dict) -> list[str]:
     out = []
     for r in rows:
         key, owner, engine, pages = r["key"], r["owner"], r["engine"], r["pages"]
-        if owner == "—" and pages:
+        standing = (registry.get(key) or {}).get("standing", "")
+        registry_owns_law = standing == "record-only"
+        registry_tracks_key = standing in {"record-only", "key-only"}
+        if owner == "—" and pages and not registry_owns_law:
             out.append(f"{key}: {pages} live page(s) and NO contract ships")
-        if owner == "—" and not pages and engine == "✓":
+        if owner == "—" and not pages and engine == "✓" and not registry_tracks_key:
             out.append(f"{key}: the engine accepts it, no contract, no page")
         if owner != "—" and engine == "—" and key not in FILENAME_RESOLVED:
             out.append(f"{key}: a contract ships and the engine rejects the key")
     return out
 
 
-REGISTRY = SKILLS / "board" / "haipipe-page" / "ref" / "type-registry.md"
-
-
-def registry_check(rows) -> list[str]:
+def registry_check(rows, reg: dict) -> list[str]:
     """The registry tooth: every engine key has a record; usage needs law.
 
     A missing or unparseable registry RAISES (a name that does not resolve
     must raise, GATE-3), never returns an empty problem list.
     """
-    import yaml
-    text = REGISTRY.read_text(encoding="utf-8")            # missing file raises
-    m = re.search(r"```yaml\n(.*?)```", text, re.S)
-    if not m:
-        sys.exit(f"pagetypes: {REGISTRY.name} has no ```yaml block")
-    reg = yaml.safe_load(m.group(1))
     out = []
     row_by_key = {r["key"]: r for r in rows}
     for key, r in row_by_key.items():
@@ -158,6 +177,10 @@ def registry_check(rows) -> list[str]:
             for field in ("mode", "evidence", "closing"):
                 if not rec.get(field):
                     out.append(f"{key}: contract record missing field {field!r}")
+        elif standing == "record-only":
+            for field in ("mode", "evidence", "closing"):
+                if not rec.get(field):
+                    out.append(f"{key}: record-only entry missing field {field!r}")
         elif standing == "key-only":
             if r["pages"]:
                 out.append(f"registry-gap {key}: {r['pages']} live page(s), standing key-only — usage without law")
@@ -204,10 +227,11 @@ def main() -> int:
     rows = collect(workspace)
 
     if args.check:
-        problems = drift(rows)
+        reg = registry_records()
+        problems = drift(rows, reg)
         for p in problems:
             print(f"drift · {p}")
-        reg_problems = registry_check(rows)
+        reg_problems = registry_check(rows, reg)
         for p in reg_problems:
             print(f"registry · {p}")
         print(f"{len(rows)} keys · {len(problems)} drift · {len(reg_problems)} registry")

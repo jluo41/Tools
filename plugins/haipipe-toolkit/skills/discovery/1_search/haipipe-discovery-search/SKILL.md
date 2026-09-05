@@ -3,18 +3,19 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map and source-reading Discovery Pages: find candidates, resolve canonical papers/sources, and materialize one numbered .sh Run plus same-stem Result per admitted Subject. Trigger: search sources, find papers, add paper run, read this paper, source map, source reading, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-03"
+  version: "0.5.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-discovery-search · Search type specialist
 
-Owns ACQUIRE craft for every Discovery type and contributes source-map /
-source-reading article craft during SYNTHESIZE, plus one-off inline lookup.
-LOAD haipipe-discovery first for the Topic workflow and
-read `ref/page-types.md` for the Page promise and
-`ref/paper-run-contract.md` for every durable source.
+Owns D1 `ACQUIRE` craft for every Discovery type and
+contributes source-map/source-reading craft during `03 CONTENT / WRITE`, plus
+one-off inline lookup.
+LOAD haipipe-discovery first for the Topic workflow and read
+`../../haipipe-discovery/ref/page-types.md` for the Page promise and
+`../../haipipe-discovery/ref/paper-run-contract.md` for every durable source.
 
 ## Workers
 
@@ -58,10 +59,10 @@ mode records the omitted pass in the Topic coverage declaration.
 5. EXECUTE each pending ticket. Dispatch the appropriate read worker and write
    the paired Result Card, facts.md, one-entry authoritative <RUNNAME>.bib, and
    the completed runtime receipt. PDF and captured Trigger text are optional.
-6. CHECK the Run/Result spine. Hand completed Results to SYNTHESIZE; the
+6. CHECK the Run/Result spine. Hand completed Results to D1 SYNTHESIZE; the
    Outline plugin's citation contract owns the deterministic Task Page Bib
    aggregation under `outline/evidence/bibex/`.
-7. During SYNTHESIZE for source-map/source-reading, update the root Page:
+7. During `03 CONTENT / WRITE` for source-map/source-reading, update the root Page:
    source-map emphasizes coverage and readable source units; source-reading
    synthesizes what selected sources say. Both keep Result links and never
    create a monolithic notes.md.
@@ -75,6 +76,7 @@ formatting those fields into BibTeX is still composition.
 
 ## One-off mode
 
-Return candidates inline in ref/source-format.md shape and write no files. If
+Return candidates inline in `../../haipipe-discovery/ref/source-format.md`
+shape and write no files. If
 the user elects to keep a candidate, hand it to the durable add route; the
 worker call itself never becomes a Run.

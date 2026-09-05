@@ -2,7 +2,8 @@
 
 `task/` is the HAI-Pipe execution and insight family. A task is a runnable work
 unit; the Task/Insights Board turns its results and Discovery evidence into
-consumer-neutral DIKW Pages that Paper and Application can reuse through PageX.
+consumer-neutral DIKW Pages that Paper and Application can reuse through
+Supporting and local Runs.
 
 ## Two surfaces, one family
 
@@ -10,7 +11,7 @@ consumer-neutral DIKW Pages that Paper and Application can reuse through PageX.
 EXECUTION                         KNOWLEDGE
 Task Folder                      Task / Insights Board
 Plan → Build → Execute → Report  Data → Information → Knowledge → Wisdom
-page-type: task                  page-type: insight
+folder-kind: task                page-type: insight
 ```
 
 Execution answers whether the implementation and run are right. An Insight Page
@@ -65,11 +66,13 @@ Chinese mnemonic:
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
-## Page Types
+## Page contracts
 
 ```text
+task/haipipe-task/ref/
+└── task-page.md                 one Task Folder and a run-bound human reading
+
 task/page-types/
-├── haipipe-page-for-task/      one Task Folder and a run-bound human reading
 └── haipipe-page-for-insight/   one reusable DIKW chain around one question
 ```
 

@@ -1,11 +1,11 @@
 ---
 name: research-lit
 description: Search and analyze research papers, find related work, summarize key ideas. Use when user says "find papers", "related work", "literature review", "what does this paper say", or needs to understand academic papers.
-argument-hint: "[paper-topic-or-url]"
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  argument_hint: "[paper-topic-or-url]"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,7 +16,7 @@ Research topic: $ARGUMENTS
 ## Constants
 
 
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `shared-references/reviewer-routing.md`.
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See [`reviewer-routing.md`](../../../../../../references/aris/skills/shared-references/reviewer-routing.md).
 - **PAPER_LIBRARY** — Local directory containing user's paper collection (PDFs). Check these paths in order:
   1. `papers/` in the current project directory
   2. `literature/` in the current project directory
@@ -290,7 +290,7 @@ If Zotero BibTeX was exported, include a `references.bib` snippet for direct use
 
 **Required when `research-wiki/` exists.** Skip entirely (no action, no
 error) if the directory is absent. Per
-[`shared-references/integration-contract.md`](../shared-references/integration-contract.md),
+[`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md),
 this step follows the canonical ingest contract — business logic lives
 in `tools/research_wiki.py`, not in this prose.
 

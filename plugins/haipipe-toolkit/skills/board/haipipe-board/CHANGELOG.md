@@ -1,3 +1,58 @@
+## 0.163.1 · 2026-09-04
+
+- Remove the stale claim that Outline is collapsed by default; the current
+  Outline Table opens by default in both the contract and implementation.
+- Let the Page-type compatibility audit distinguish registry-owned
+  `record-only` laws from genuinely lawless `key-only` keys.
+- Narrow the application phase-family test to the two intended workflow names
+  so `haipipe-discovery-workflow` is not selected by a broad `haipipe-d` prefix.
+
+## 0.163.0 · 2026-09-04
+
+- Add `cli/context-record.py`, the generator for the 00 CONTEXT record
+  `outline/<stem>-context.md`. The phase law and its `ref/context-record.md`
+  shipped in `haipipe-plugin-outline` 0.34.0 without one, while the other
+  three Outline records each had a generator, so every Page reported
+  `CONTEXT: owed` and the only way to satisfy the phase was to hand-write a
+  file the contract calls generated. It resolves CTX1-CTX6 from the Page,
+  the type registry, and the Outline records, and states each source's path
+  plus a short content hash.
+- Run it first in `cli/outline-pass.py`, so the pass now regenerates four
+  derived files and the evidence snapshot measures after the context does.
+
+## 0.162.1 · 2026-09-04
+
+- Make folded-Page Chat and Draw writers target `studio/chat/` and
+  `studio/draw/` directly while retaining flat paths as readable migration
+  inputs; first canonical open copies a legacy scene without changing it, and
+  save/autodraw reject the old path. Group relation scenes remain in
+  Group-owned `draw/`.
+- Make Chat keep land the promised timestamp-first `digest.md` and
+  `transcript.md`, reusing a session folder by its recorded id.
+
+## 0.162.0 · 2026-09-04
+
+- Route all generic Page material through the five public Plugin skills.
+- Remove DRAFT/REVISE redirect skills and agents; historical receipt tokens
+  remain readable through the lifecycle auditor.
+- Retire Page-local meeting routes with an explicit 410 pointing to
+  `haipipe-project-meeting`.
+
+## 0.161.2 · 2026-09-04
+
+- Treat ordinary-Page CITE verification as an authored Evidence Item gate and
+  derive `ready`/owed state from it; retain BibTeX verification as legacy fallback.
+- Prevent CHECK from requesting itself as `next_cycle`, and tell auto producers
+  that an unsigned branching Decide must HOLD rather than become `make`.
+- Omit `next_cycle` from terminal receipts, reject terminal/stale or mismatched
+  cycle fields in the deterministic auditor, and keep pending-HOLD continuation
+  only as an explicit pre-cycle historical compatibility shape.
+- Remove stale six/seven-phase wording from the active Board and chat surfaces;
+  the current Page lifecycle is the five phases `00` through `04`.
+- Retire PageX mutation/match endpoints with HTTP 410 while retaining only the
+  legacy read-only viewer, and route Section sentence diagnostics to the
+  current CONTENT/WRITE contract.
+
 ## 0.161.1 · 2026-09-04
 
 - Require producer receipts to report the performed cycle and preserve
@@ -2267,6 +2322,22 @@ haipipe-board — Changelog
 =========================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+
+## 0.164.0 · 2026-09-04
+
+- Generalize Board from a question/stage-only surface to a container whose
+  explicit kind selects its child mapping.
+- Add the `task-block` adapter: Block = Board, Job = Group, Task = Page, with
+  compact `bNNjNNtNN` addresses and Runs retained as execution records.
+- Treat the Task tree as membership and default-order authority; explicit Task
+  ordering uses full relative paths and supports duplicate Task basenames in
+  different Jobs.
+- Add Task badges, progress labels, checks, and split-page filenames while
+  keeping generic Boards isolated from task-looking files.
+- Resolve Task Page Runs against Job-owned Results with full b/j/t/r identity,
+  and update the template coverage gate for tick-bearing Aim rows.
+- Align current Board wording with Aims-held ticks and the five-phase Page
+  lifecycle.
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 

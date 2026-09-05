@@ -107,7 +107,7 @@ def configured_base_url(root, explicit=None):
 
 
 def group_code(group):
-    match = re.match(r"^(Q[0-9A-Za-z]+)\b", group or "")
+    match = re.match(r"^((?:Q[0-9A-Za-z]+|j\d{2}))\b", group or "", re.I)
     return match.group(1) if match else ""
 
 

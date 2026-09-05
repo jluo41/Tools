@@ -157,3 +157,10 @@ Yes, and one cheap test settles it.
 ## 🙋 What I Need From You
 - **Pick the model** — Bedrock (BAA-covered) or a local in-VPC model
 ```
+
+## 📎 "Show me" means in the reply (JL 260904)
+
+"Show me", "preview", "so we can understand it": paste the content INTO the
+reply, as bullets or a real table. Never answer with an Artifact link, an HTML
+page, a viewer, or a file to open. JL reads the chat; a link is a detour and
+the build is his tokens. An Artifact only when JL says "artifact" or "page".

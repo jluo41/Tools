@@ -26,11 +26,21 @@ from urllib.parse import unquote
 
 from . import base
 from cli.draw import (DrawError, SCHEMA, compose_group_data, read_scene,
-                      reference_ids, scene_text, write_scene_atomic)
+                      reference_ids, scene_text, write_scene_atomic,
+                      write_scene_exclusive)
 
 
 _DRAW_LOCK_GUARD = threading.Lock()
 _DRAW_LOCKS = {}
+
+
+def legacy_folded_page_scene(path):
+    """Whether ``path`` is a retired flat lane beneath a folded Page."""
+    path = Path(path)
+    if path.parent.name != "draw":
+        return False
+    page_dir = path.parent.parent
+    return (page_dir / f"{page_dir.name}.md").is_file()
 
 
 
@@ -58,8 +68,8 @@ class XcalMixin:
             resolved = path.resolve()
             # The containment bound is the GROUP FOLDER, not the group's own
             # draw/. `cli/draw.py` splits a FOLDED page's scene into that
-            # page's own draw/ plugin and writes the manifest source relative
-            # to the group draw dir, so the path is `../<page>/draw/<id>
+            # page's own studio/draw/ lane and writes the manifest source relative
+            # to the group draw dir, so the path is `../<page>/studio/draw/<id>
             # .excalidraw` and it legitimately leaves draw/ — draw.py:415-418
             # says both forms must resolve "through the same join". Bounding at
             # draw/ refused every folded page: a manifest the CLI writer had
@@ -469,6 +479,9 @@ class XcalMixin:
                 "current_revision": current}
 
     def save_linked_page(self, d, f, scene):
+        if legacy_folded_page_scene(f):
+            return {"ok": False, "err": "legacy folded-Page draw/ is read-only; "
+                    "migrate it to studio/draw before editing"}
         ext = scene.get("haipipe", {})
         owner = ext.get("page", {}).get("id")
         if d.get("owner_kind") != "page" or d.get("owner_id") != owner:
@@ -608,6 +621,9 @@ class XcalMixin:
             return {"ok": False, "err": "outside --root"}
         if f.suffix != ".excalidraw" or not f.exists():
             return {"ok": False, "err": f"no scene at {rel!r}"}
+        if legacy_folded_page_scene(f):
+            return {"ok": False, "err": "legacy folded-Page draw/ is read-only; "
+                    "open the canonical studio/draw scene to migrate and edit"}
         try:
             scene = json.loads(f.read_text(encoding="utf-8"))
         except Exception as e:
@@ -715,22 +731,35 @@ class XcalMixin:
         return self.reply_scene(scene)
 
     def mint_page_scene(self, f):
-        """<page>/draw/<id>.excalidraw, absent -> write it EMPTY and return it.
+        """<page>/studio/draw/<id>.excalidraw -> mint EMPTY and return it.
 
-        Only a real page's own scene qualifies: the file must sit in a `draw/`
-        folder whose parent is a page folder carrying `<name>/<name>.md`, and
+        Only a real page's own canonical scene qualifies: the file must sit in
+        `studio/draw/` below a page folder carrying `<name>/<name>.md`, and
         `group.excalidraw` is never minted here (a group view is composed from
         page sources, not authored). Anything else returns None and the caller
-        404s exactly as before. The write is the point: revision checks, the
-        shell's watcher, and the first save all want the file to be real."""
-        if f.suffix != ".excalidraw" or f.parent.name != "draw":
+        404s exactly as before. If a retired flat Page scene exists, first open
+        copies its content into this canonical address without changing the old
+        file; otherwise the canonical scene starts empty. The write is the point:
+        revision checks, the shell's watcher, and the first save all want the
+        file to be real."""
+        if (f.suffix != ".excalidraw" or f.parent.name != "draw"
+                or f.parent.parent.name != "studio"):
             return None
         if f.name == "group.excalidraw":
             return None
-        page_dir = f.parent.parent
+        page_dir = f.parent.parent.parent
         md = page_dir / f"{page_dir.name}.md"
         if not md.is_file():
             return None
+        legacy = page_dir / "draw" / f.name
+        if legacy.is_file():
+            scene = read_scene(legacy)
+            f.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                write_scene_exclusive(f, scene)
+            except FileExistsError:
+                scene = read_scene(f)
+            return scene
         try:
             md_rel = str(md.resolve().relative_to(self.root.resolve()))
         except ValueError:
@@ -745,7 +774,10 @@ class XcalMixin:
                              "kind": "page",
                              "page": {"id": f.stem, "markdown": md_rel}}}
         f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(scene_text(scene), encoding="utf-8")
+        try:
+            write_scene_exclusive(f, scene)
+        except FileExistsError:
+            scene = read_scene(f)
         return scene
 
     def reply_scene(self, scene):

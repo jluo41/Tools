@@ -1,113 +1,130 @@
 runtime.yaml — Schema
 ======================
 
-Location: `results/<NAME>/runtime.yaml` (flat job) · `results/<task>/<NAME>/runtime.yaml` (nested — hierarchy.md "Two job shapes"); examples below show the flat form
-Owner:    Written by `runs/<NAME>.sh` (auto). NEVER edit by hand.
-Status:   Source-of-truth for post-run machine facts about ONE run.
+Location: `$OUTPUT_ROOT/results/<NAME>/runtime.yaml` for a flat Job, or
+`$OUTPUT_ROOT/results/<task>/<NAME>/runtime.yaml` for a canonical nested Task.
+Owner: the Run scaffolder creates `status: planned`; the authored Ticket
+updates the same receipt automatically from launch onward; never edit it by hand.
+Status: source of truth for the lifecycle facts of one Run. The typed payload,
+when the worker owns one, is a separate sibling such as `result.yaml`,
+`values.yaml`, or `metrics.json`.
 
 
-Fields (10 fixed, in this order)
----------------------------------
-
-| Field      | Type     | When written | Source                          |
-|------------|----------|--------------|---------------------------------|
-| status     | enum     | start + end  | `running` \| `ok` \| `failed` \| `aborted` |
-| started    | ISO 8601 | start        | `date -Iseconds` at launch      |
-| ended      | ISO 8601 | end          | `date -Iseconds` at finalize    |
-| duration   | string   | end          | derived from started/ended      |
-| git_sha    | string   | start        | `git rev-parse --short HEAD`    |
-| host       | string   | start        | `hostname/whoami`               |
-| exit_code  | int      | end          | `$?` after script exits         |
-| cmd        | string   | start        | the actual command line         |
-| config     | path     | start        | `configs/<NAME>.yaml`           |
-| notebook   | path     | start        | `notebooks/<NAME>.ipynb`        |
-| headline   | string   | end (opt)    | best-effort from `metrics.json` |
-
-
-Lifecycle
----------
-
-```
-Step 1 (run.sh launches):
-  write runtime.yaml.tmp with status=running + start fields
-  atomic mv runtime.yaml.tmp -> runtime.yaml
-
-Step 2 (run.sh finalizes):
-  write runtime.yaml.tmp with status=ok|failed + all fields
-  atomic mv runtime.yaml.tmp -> runtime.yaml
-
-On crash / Ctrl-C:
-  runtime.yaml stays in status=running state
-  /log task can scan for these to detect abandoned runs
-```
-
-
-Example — running state
------------------------
-
-```yaml
-status:     running
-started:    2026-05-24T14:30:01-04:00
-git_sha:    e2d67d63
-host:       aikong/jluo41
-cmd:        bash runs/run_seed42_baseline.sh
-config:     configs/run_seed42_baseline.yaml
-notebook:   notebooks/run_seed42_baseline.ipynb
-```
-
-Example — finalized (ok)
--------------------------
-
-```yaml
-status:     ok
-started:    2026-05-24T14:30:01-04:00
-ended:      2026-05-24T14:59:33-04:00
-duration:   29m32s
-git_sha:    e2d67d63
-host:       aikong/jluo41
-exit_code:  0
-cmd:        bash runs/run_seed42_baseline.sh
-config:     configs/run_seed42_baseline.yaml
-notebook:   notebooks/run_seed42_baseline.ipynb
-headline:   MAE 24.7
-```
-
-Example — finalized (failed)
------------------------------
-
-```yaml
-status:     failed
-started:    2026-05-24T15:10:00-04:00
-ended:      2026-05-24T15:40:11-04:00
-duration:   30m11s
-git_sha:    e2d67d63
-host:       aikong/jluo41
-exit_code:  137
-cmd:        bash runs/run_seed42_baseline_v2.sh
-config:     configs/run_seed42_baseline_v2.yaml
-notebook:   notebooks/run_seed42_baseline_v2.ipynb
-headline:   -
-```
-
-
-Headline extraction
+Required Run fields
 -------------------
 
-`headline` is best-effort. run.sh tries to extract a one-line metric from
-`results/<NAME>/metrics.json` (priority order):
+These base fields follow `haipipe-run` and never disappear:
 
-1. `summary.headline` if explicitly set by the script
-2. fallback: `-`
+| Field | Type | Rule |
+|---|---|---|
+| `run` | string | local immutable RUNNAME |
+| `family` | string | declared Run family |
+| `operation` | string | independently closable operation |
+| `target` | string | bounded target |
+| `status` | enum | `planned`, `running`, `complete`, `failed`, `blocked`, or `superseded` |
+| `ticket` | path | authored Ticket path |
+| `result` | path | paired Result directory under resolved `$OUTPUT_ROOT` |
+| `inputs` | list | frozen authoritative paths and hashes |
+| `worker` | mapping | worker kind and name |
+| `started_at` | ISO 8601/null | written before expensive work |
+| `finished_at` | ISO 8601/null | written at terminal state |
+| `supersedes` | Run id/null | prior Run when this is a materially new contract |
+| `failure` | string/null | truthful terminal reason |
 
-(That is ALL the shipped run-sh-template.sh implements — emit
-`summary.headline` from your script if you want a headline.)
+A canonical Task receipt also records `address`, `git_sha`, `git_dirty`,
+`host`, `config_file`, `config_sha256`, and `settings`. `settings` must
+account for every value that varied for this Run; at minimum it records the
+pinned configuration and Ticket arguments. `notebook`, `duration`,
+`exit_code`, and `headline` are useful Task-dialect extensions.
 
-The headline does NOT replace metrics.json — it's a scannable shortcut.
+
+Lifecycle and gate
+------------------
+
+```text
+SCAFFOLD          write runtime.yaml.tmp with status: planned and null times
+                  → atomic mv to runtime.yaml
+LAUNCH            replace it atomically with status: running
+EXECUTE           run the worker
+VALIDATE          apply the Ticket's declared REQUIRED_RESULTS and any
+                  worker-specific semantic checks
+TERMINATE         complete only when the Result gate passes;
+                  otherwise failed/blocked with failure
+```
+
+A zero process exit is necessary but not sufficient for `complete`. On crash
+or interruption, the last `running` receipt remains so an auditor can identify
+the abandoned attempt. Always write through `runtime.yaml.tmp` and atomically
+rename it so readers never observe a partial receipt.
 
 
-Atomicity
----------
+Example — running
+-----------------
 
-Always write to `runtime.yaml.tmp` then `mv` (POSIX atomic). This prevents
-half-written YAML if the process is killed mid-write. Readers see either the
-old content or the new content, never a partial blend.
+```yaml
+run: r01_page-evidence-item_e01-display-effect
+family: Page
+operation: evidence-item
+target: E01-DISPLAY-effect
+status: running
+ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
+result: results/t01_example/r01_page-evidence-item_e01-display-effect/
+inputs:
+  - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+    sha256: <64-hex>
+worker:
+  kind: script
+  name: t01_example/scripts/render_effect.py
+started_at: 2026-09-04T16:00:00-04:00
+finished_at: null
+supersedes: null
+failure: null
+address: b01j01t01r01
+git_sha: e2d67d63
+git_dirty: false
+host: aikong/jluo41
+config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+config_sha256: <64-hex>
+settings:
+  config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+  ticket_args: []
+```
+
+
+Example — complete
+------------------
+
+```yaml
+run: r01_page-evidence-item_e01-display-effect
+family: Page
+operation: evidence-item
+target: E01-DISPLAY-effect
+status: complete
+ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
+result: results/t01_example/r01_page-evidence-item_e01-display-effect/
+inputs:
+  - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+    sha256: <64-hex>
+worker:
+  kind: script
+  name: t01_example/scripts/render_effect.py
+started_at: 2026-09-04T16:00:00-04:00
+finished_at: 2026-09-04T16:03:00-04:00
+supersedes: null
+failure: null
+address: b01j01t01r01
+git_sha: e2d67d63
+git_dirty: false
+host: aikong/jluo41
+exit_code: 0
+config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+config_sha256: <64-hex>
+settings:
+  config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
+  ticket_args: []
+duration: 3m00s
+headline: effect figure rendered
+```
+
+`headline` is only a scannable shortcut. It never substitutes for the typed
+Result or its acceptance checks.

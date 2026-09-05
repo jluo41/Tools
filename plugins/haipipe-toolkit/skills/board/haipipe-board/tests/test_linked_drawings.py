@@ -70,6 +70,30 @@ def append_scene_element(board, element):
 
 
 class LinkedDrawingTest(unittest.TestCase):
+    def test_folded_page_scene_lands_in_canonical_studio_draw_lane(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            board, _ = fixture_board(Path(root))
+            source = board / "QA-first" / "QA1-one.md"
+            folded = board / "QA-first" / "QA1-one" / "QA1-one.md"
+            folded.parent.mkdir()
+            source.rename(folded)
+
+            draw.split(board, board / "board.excalidraw", apply=True)
+
+            scene = folded.parent / "studio" / "draw" / "QA1.excalidraw"
+            self.assertTrue(scene.is_file())
+            self.assertFalse((folded.parent / "draw" / "QA1.excalidraw").exists())
+            group = draw.read_scene(
+                board / "QA-first" / "draw" / "group.excalidraw"
+            )
+            source_rel = next(
+                item["source"] for item in group["haipipe"]["imports"]
+                if item["page"] == "QA1"
+            )
+            self.assertEqual(source_rel,
+                             "../QA1-one/studio/draw/QA1.excalidraw")
+
     def test_split_is_non_destructive_and_round_trips(self):
         import tempfile
         with tempfile.TemporaryDirectory() as root:
@@ -161,13 +185,16 @@ class LinkedDrawingTest(unittest.TestCase):
                 encoding="utf-8",
             )
             write(
-                board / "QA-first" / "QA4-new.md",
+                board / "QA-first" / "QA4-new" / "QA4-new.md",
                 "# New\nstate: 🔴 OPEN\nowner: CC\n\n## Opening\nWhat?\n",
             )
             legacy_before = (board / "board.excalidraw").read_bytes()
             existing_before = (board / "QA-first" / "draw" / "QA1.excalidraw").read_bytes()
             self.assertEqual(draw.sync(board, apply=True), 0)
-            page = draw.read_scene(board / "QA-first" / "draw" / "QA4.excalidraw")
+            page = draw.read_scene(
+                board / "QA-first" / "QA4-new" / "studio" / "draw"
+                / "QA4.excalidraw"
+            )
             group = draw.read_scene(board / "QA-first" / "draw" / "group.excalidraw")
             self.assertEqual(page["haipipe"]["page"]["id"], "QA4")
             self.assertEqual(page["elements"], [])

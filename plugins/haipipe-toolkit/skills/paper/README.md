@@ -171,7 +171,7 @@ paper repo — the door's scaffold dropped its tasks/ line to match
 
 ## Complete-paper document build
 
-There are two different Word exports. `haipipe-plugin-word` renders one Page
+There are two different Word exports. `haipipe-plugin-delivery/ref/word.md` renders one Page
 for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
 from the active desk-room master/sections/displays/bibliography. The latter is
 deterministic and source-driven: generated Word files and section snapshots

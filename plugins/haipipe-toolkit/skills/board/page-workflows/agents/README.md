@@ -12,9 +12,10 @@ haipipe-page-content-agent     03 CONTENT · WRITE
 haipipe-page-check-agent       04 CHECK · CHECK; also CONTENT's cold pre-check
 ```
 
-The old `haipipe-page-draft-agent` and `haipipe-page-revise-agent` remain
-compatibility identities for stored receipts. New dispatch uses the CONTENT
-agent. `_old/haipipe-page-probe-agent` remains historical.
+Historical DRAFT/REVISE/COMPILE receipt tokens are interpreted by the
+lifecycle auditor. They do not retain callable agent identities; every current
+writing dispatch uses the CONTENT agent. `_old/haipipe-page-probe-agent`
+remains non-discoverable historical material.
 
 ## Stand-in rule
 

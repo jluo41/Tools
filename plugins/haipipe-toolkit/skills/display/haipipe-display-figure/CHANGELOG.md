@@ -3,6 +3,13 @@ haipipe-display-figure — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.2] — 2026-09-04 — Caller-supplied destination
+
+- Remove the paper-only output path from the generic renderer.
+- Render directly into the caller-supplied unit, including the current Board
+  Page address under `outline/evidence/display/`.
+- Remove the unsupported `argument-hint` frontmatter key.
+
 ## [0.2.1] — 2026-07-27 — Caller-owned wrapper semantics
 
 - Makes the Paper-owned caption, label, and placement boundary explicit; the plot renderer only emits the asset/recipe and may refresh an already-approved asset reference.

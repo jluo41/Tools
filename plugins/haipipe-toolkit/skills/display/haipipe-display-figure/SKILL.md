@@ -1,11 +1,10 @@
 ---
 name: haipipe-display-figure
 description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-display-table."
-argument-hint: "[figure-plan-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-07-27"
+  version: "0.2.2"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,8 +18,11 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 ## Output: write into a display unit
 
-The plot goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../ref/display-unit-output-contract.md`.
+The plot goes directly into the caller-supplied unit directory per the shared
+contract: `../ref/display-unit-output-contract.md`.
+For a Board Page that directory is
+`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/`; a Paper lifecycle
+may instead supply `displays/displayNN-<slug>/`.
 THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `recipe/gen_*.py`
 (+ `recipe/paper_plot_style.py`).
 
@@ -54,7 +56,7 @@ The skill will detect manually-made figures as "existing figures" and preserve t
 - **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle.
   Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
-- **FIG_DIR** — for a paper, the display unit `displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `recipe/`).
+- **FIG_DIR** — the caller-supplied display unit (plot → `assets/figure.pdf`, scripts → `recipe/`).
   Flat `figures/` only with no paper.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 

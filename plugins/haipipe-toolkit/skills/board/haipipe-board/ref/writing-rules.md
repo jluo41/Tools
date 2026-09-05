@@ -114,7 +114,7 @@ Content divisions. Five tests, each mechanical:
 
 ```text
 ① states the LAW, not the topic   `One key claims a page`, never `Page Types`
-② no count                        a number in a heading rots (`Seven Page Phases`)
+② no count                        a number in a heading rots (`Five Page Phases`)
 ③ no date                         a heading carrying a date is a record, not a law
 ④ no self-reference               the heading names the SUBJECT, never this document
 ⑤ a clause after the comma        it earns its place only by ruling out a real

@@ -13,7 +13,7 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.23.1"
+  version: "0.25.0"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -26,21 +26,26 @@ Enter through the canonical Page chain, in order:
 haipipe-page
   → haipipe-page-workflow
   → haipipe-page-outline
-  → the exact owning workflow-phase skill
-  → the exact Page Type skill
+  → the exact Folder-owning workflow or canonical family skill
+  → the exact Page Face owner skill
+  → the exact narrative/style policy, when applicable
   → haipipe-plugin-outline/ref/plan-grammar.md
   → haipipe-plugin-outline/ref/item-table.md
   → haipipe-plugin-outline/ref/review-packet.md (only for a human review or approval)
   → haipipe-run + selected workers (SURVEY inventory only; no dispatch)
-  → haipipe-plugin-outline (presentation)
 ```
 
+The Page surface has already installed `haipipe-plugin-outline` as the shared
+presenter. The refs above are this phase's schema/material dependencies; the
+presenter skill is not another execution step.
+
 The current `haipipe-page-context` PREPARE record must be fresh before this
-chain acts. The owning workflow and Page Type supply the Page's
+chain acts. The Folder owner and Page Face owner supply the Page's
 outline/narrative/style policy.
-Do not route through `haipipe-page-for-task`; that compatibility variant is no
-longer part of this design. Load no sibling Page and no board-wide checker
-output before reading the target Page.
+Do not route through a separate Task Page-Type layer. The owning workflow or
+canonical family skill already supplies the Page contract. For a Task Folder,
+`haipipe-task` fills both owner roles and is loaded once. Load no sibling Page
+and no board-wide checker output before reading the target Page.
 
 The Page workflow gives OUTLINE two planning cycles. Its sibling
 `haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-content` owns the
@@ -66,7 +71,7 @@ OUTLINE part
   SHAPE    this file    plan + typed item expectation          👤 approved:
   SURVEY   this file    classify supports + Local Input + Local Run    👤 Decide, per item
   LAND     evidence     allocate planned routes, execute → Result     ⚙ every make-item ready
-  EMBED    evidence     fold ready Results into plan v<N+1>     ⚙ back to SHAPE
+  EMBED    evidence     fold ready Results into next working plan vN.<k+1> ⚙ back to SHAPE
 ```
 
 ## 🧱 Bullet · the Outline's primary unit
@@ -102,19 +107,19 @@ READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          disk) · the owning workflow phase's outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
          outline/<stem>-context.md · outline/skill/<stem>.md when present
-WRITES   outline/<stem>-outline-v<N>.md · outline/<stem>-evidence-items.md ·
+WRITES   outline/<stem>-outline-v<N>.<k>.md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
          (generated pointers) · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
          Run map, one explicit Local Input, and one decision (SURVEY)
-ENDS     SHAPE: copilot records a person's approved: tick; auto records the
-         owed tick and follows the declared gate policy · SURVEY: every row is
-         decided, or auto records the person-reserved Decide as owed
+ENDS     SHAPE: copilot records a person's approved: tick; auto may record the
+         owed review and follow the declared gate policy · SURVEY: every row
+         has an explicit durable make/defer/drop decision
 WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
          mints no Aim · names no division the type refuses · ticks nothing ·
-         changes a ✅ plan only as v<N+1> · never writes a Status word
+         changes a ✅ vN.0 plan only as working revision vN.1 · never writes a Status word
 ROUTES   SHAPE → SURVEY (agreed or auto-forwarded, marks owed) · SHAPE → CONTENT
          (evidence-aware and allowed forward) · SURVEY → LAND (every item graph classified) ·
          either → SHAPE again · HOLD (copilot waits, or a real input/stop blocks auto)
@@ -150,12 +155,19 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
 
 ```text
 1 BRIEF     the person says the narrative in a few lines: what this page must argue
-2 PROPOSE   the AI writes plan v1 from the brief + owning phase policy + venue;
+2 PROPOSE   the AI writes plan v0.1 from the brief + owning phase policy + venue;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
-4 REVISE    the AI folds the rulings into v2
+4 REVISE    the AI folds each material human-facing revision into v0.2, v0.3, …
 loop 3 ⇄ 4 until the person ticks approved:
 ```
+
+The first channel approval copies the selected `v0.<k>` plan into frozen
+`v1.0`. After an approved baseline `vN.0`, the same loop uses `vN.1`,
+`vN.2`, … . A later channel approval copies the selected revision into the
+next frozen agreement `v<N+1>.0`; a frozen `.0` is never minted before that
+approval. Mechanical repairs needed to make one proposed revision pass its
+checks stay in place and do not consume another minor number.
 
 Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
 on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
@@ -218,7 +230,8 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   `Accept: <observable checks>` under the bullet. TYPE is `VALUE`, `CITE`, or
   `DISPLAY`; a bare `E01` or an icon-only hole is invalid. SHAPE also creates
   the matching record in `<stem>-evidence-items.md` with Target, Label, Need,
-  Expected, and Acceptance. `Label` is a stable 1–12 character ASCII
+  Expected, and Acceptance; a CITE row also initializes `Verified: ⬜` for
+  LAND's later human gate. `Label` is a stable 1–12 character ASCII
   alphanumeric display name such as `LBPEffect`; it is not inferred from the
   full readable name. SHAPE does not plan or allocate a Run.
 - **The fold appends to the bullet that asked** (EMBED's write, read here): a
@@ -226,7 +239,12 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   `Drawn:`, a served Round row becomes `Routed:`; never a new bullet, never an
   edit to the head.
 - **An older-grammar plan is rewritten into the current grammar on this
-  pass**: in place while ⬜, as `v<N+1>` after a tick.
+  pass**: as the next working minor (`v0.<k+1>` while no `v1.0` exists,
+  `vN.<k+1>` under an approved `vN.0`). It becomes the next `.0` only when a
+  person approves that revision in the channel. A legacy integer chain
+  `v1 … vN` first renumbers one to one to `v0.1 … v0.N` (`ref/plan-grammar.md`
+  §6) and its old ticks reset to `⬜`; `outline-pass.py` fails an integer-only
+  latest plan.
 
 ### ③ Threads and the log record
 
@@ -237,7 +255,7 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 - **Every open feedback row is served or declined**: `Routed: <RD> <row id>`
   on the bullet that serves it, or `declined: <RD> <row id> · <reason>` in the
   plan head. `check.py` reports `feedback-unserved` on a row with neither.
-- **One log record per pass**: `### YYMMDD HHMM · SHAPE v<N>: <what changed
+- **One log record per pass**: `### YYMMDD HHMM · SHAPE v<N>.<k>: <what changed
   in one line>` (or `SURVEY: <n> rows …`), the receipt folded under it when
   no run folder holds it.
 
@@ -285,7 +303,7 @@ If the packet would be long, preserve all four parts but collapse routine
 items into counts and show only material evidence/feedback rows; offer the
 full linked records rather than omitting the provenance.  The same packet is
 required when revising an already-reviewed outline, with a short “changed
-since v<N>” line under Current Shape.
+since v<N>.0” line under Current Shape.
 
 ### 🧑 The tick governs the fork; mode governs whether work waits
 
@@ -297,16 +315,20 @@ since v<N>” line under Current Shape.
 - **A chat approval is transcribed, never decided**:
   `approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"`.
   A machine writes `checked:` for itself and nothing more.
-- **Copilot waits; auto records debt.** In `copilot`, an unticked
+- **Copilot waits; auto may defer review debt.** In `copilot`, an unticked
   person-reserved gate routes to HOLD. In `auto`, the machine may follow the
-  checked plan while recording `approved:` or `Decide` on the owed ledger.
-  Deferral is not approval and never supplies durable evidence for a Page Type
-  closing gate that requires a person.
-- **A tick belongs to the version it ticked.** Evidence that changes an
-  approved plan makes `v<N+1>`; `v<N>` is kept, because it was right at its
-  date.
+  checked plan while recording `approved:` on the owed ledger. `Decide` is
+  different: it selects `make`, `defer`, or `drop`, so auto must HOLD at
+  SURVEY unless the packet already contains an explicit durable decision or
+  owner-approved default policy. The machine never converts an owed decision
+  into `make`. Deferral is not approval and never supplies durable evidence
+  for a Page Face owner's closing gate that requires a person.
+- **A tick promotes rather than previews a major.** Working revisions after
+  approved `vN.0` are `vN.1`, `vN.2`, … . A person's channel approval freezes
+  the selected content as `v<N+1>.0` with the approval quote; all earlier
+  frozen and working files remain as history.
 - **The gate is where the planning loop exits.** EMBED always returns here with
-  plan v<N+1>. In copilot, `approved:` with every table row `folded` releases
+  the next working minor. In copilot, an approved major with every table row `folded` releases
   CONTENT and fresh marks send the Page to SURVEY. In auto, the same fork is
   taken from `checked:` plus the declared gate policy while the missing human
   act remains owed.
@@ -318,9 +340,11 @@ approved in copilot or allowed forward under the explicit auto gate policy.
 It inventories the current `task/` and `discoveries/` libraries, classifies
 each selected route as existing Result, Ticket only, rerun, or new design, and
 writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
-worker, materialize a Result, or write prose. For a Paper-local Run only,
-SURVEY reserves the proposed `P jNN.tNN.rNN` address so the Run remains
-indexable before LAND; `new` still means that no Run Ticket exists.
+worker, materialize a Result, or write prose. A new local route normally names
+its real owner/parent and receives `rNN` only when LAND allocates the Ticket.
+For a Paper-local Run only, SURVEY may reserve the proposed
+`P jNN.tNN.rNN` address so the Run remains indexable before LAND; `new` still
+means that no Run Ticket exists.
 
 - **Preserve SHAPE's contract.** Item id, type, name, Target, Label, Need,
   Expected, and Acceptance are frozen inputs to SURVEY. If they are insufficient or
@@ -347,13 +371,16 @@ indexable before LAND; `new` still means that no Run Ticket exists.
   navigation/constraints only. A sibling item's future local Result is
   not a local source; both items must name the shared upstream
   Execution/Discovery Run instead.
-- **Map exactly one Local Run declaration.** Paper-local Runs use their own
-  compact namespace `pjNNtNNrNN`, displayed as `P jNN.tNN.rNN`. `P` is the
-  fixed Paper block; `jNN` indexes the Page, `tNN` preserves the stable
+- **Map exactly one Local Run declaration in the owner's namespace.** An
+  existing route uses `registered`, `reuse`, or `rerun` plus its full Run id.
+  A Task-local route with no Ticket is
+  `Page · Evidence Item · new-run · bNNjNNtNN`; LAND allocates the next `rNN`
+  and writes back `bNNjNNtNNrNN`. Another Folder-local owner names its stable
+  Folder address and follows its Run Profile. Paper alone may reserve a full
+  compact `pjNNtNNrNN`, displayed as `P jNN.tNN.rNN`, before allocation: `P`
+  is the fixed Paper block, `jNN` indexes the Page, `tNN` preserves the stable
   Evidence Item number, and `rNN` indexes the proposed attempt (`r01` first).
-  Write `Page · Evidence Item · new-run · pjNNtNNrNN` when no Ticket exists;
-  `new` means proposed, not allocated. After LAND creates the Ticket, use
-  `registered`, `reuse`, or `rerun` with that same Paper-local identity.
+  In every dialect, `new-run` means proposed, not allocated.
   Do not use a free-text dash placeholder as an action. Its future frozen input envelope may
   include every Supporting Result plus local source material. Its future Result
   must satisfy the item's typed Acceptance contract. Page interpretation is not
@@ -363,9 +390,9 @@ indexable before LAND; `new` still means that no Run Ticket exists.
   must be executed again is `rerun`; a real never-attempted Ticket is
   `registered`. Changed target/input/acceptance needs a new designed route.
   Supporting `new-run`, `new-task`, `new-job`, and `new-block` routes remain
-  inventory findings and do not invent an external `rNN`. The Paper-local
-  `new-run` is the bounded exception: SURVEY reserves its full P/J/T/R index,
-  while LAND remains the first phase allowed to create its Ticket.
+  inventory findings and do not invent an external `rNN`. Paper-local
+  reservation is the bounded exception: SURVEY may reserve its full P/J/T/R
+  index, while LAND remains the first phase allowed to create its Ticket.
   There is no `found`, `person`, or `none` action.
 - **Citations use the same graph.** A `CITE` item may reuse or commission a
   Discovery Run, then its local Page Evidence Item Run produces the focal,
@@ -382,7 +409,7 @@ and `outline/evidence/supporting-runs/` map into one card per Evidence Item. Its
 compact `E<n><kind>.<Label>` used by the Outline Table; Supporting and Local
 Runs are grouped Run items inside that card. The internal `Evidences` lens
 explains each Evidence contract; the internal `Runs` lens groups by Evidence
-and renders every mapped Supporting or Paper-local route as its own Run card.
+and renders every mapped Supporting or local route as its own Run card.
 It reports both mapping and unique-Run counts because shared Runs may appear in
 several Evidence groups. This is SURVEY's source inventory, not proof that a
 planned route has been allocated. Reader-facing paths are `Run` and
@@ -415,7 +442,8 @@ SHAPE  five pass, items owed, gate allows      OUTLINE / SURVEY
 SHAPE  five pass, every item folded, allowed   CONTENT / WRITE
 SHAPE  approved ⬜ in copilot                   HOLD
 SHAPE  approved ⬜ in auto                      record owed; follow declared gate policy
-SURVEY route ambiguous or Decide open          OUTLINE / SURVEY; HOLD only when policy requires
+SURVEY route ambiguous                         OUTLINE / SURVEY
+SURVEY Decide open without durable policy      HOLD at OUTLINE / SURVEY
 SURVEY every make graph classified + allowed  EVIDENCE / LAND
 SURVEY item cannot be specified truthfully    SHAPE, naming item and target bullet
 owning phase policy refuses the shape         fix the plan, unless the mismatch is a real
@@ -429,8 +457,8 @@ OUTLINE never routes directly to CHECK; a Page version must first pass CONTENT.
 ```text
 phase: OUTLINE
 cycle: SHAPE | SURVEY
-file: <page>/outline/<stem>-outline-v<N>.md | <page>/outline/<stem>-evidence-items.md
-supersedes: v<N-1> | none
+file: <page>/outline/<stem>-outline-v<N>.<k>.md | <page>/outline/<stem>-evidence-items.md
+supersedes: v<N>.<k-1> | v<N-1>.0 | none
 requirement: V1 V2 V3 V4 read ✅
 feedback: n routed · n served · n declined
 items: n typed · n specified · n planned · n decided · by type VALUE/CITE/DISPLAY
@@ -440,7 +468,7 @@ counts: divisions · paragraphs · bullets · Evidence Items by type
 threads: D<nn> opened … · D<nn> settled …
 approved: ✅ <who> <date> | ⬜ waiting/owed
 route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
-next_cycle: PREPARE | SHAPE | SURVEY | LAND | WRITE
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | WRITE  # omit on HOLD
 ```
 
 ## 📂 Files

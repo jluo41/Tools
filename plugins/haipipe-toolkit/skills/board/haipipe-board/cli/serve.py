@@ -107,8 +107,7 @@ from live.labeling import LabelingMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
-from live.pagex import PagexMixin
-from live.meeting import MeetingMixin
+from live.pagex import PagexMixin  # legacy read-only viewer; PageX writes retired
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
@@ -139,7 +138,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, MeetingMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -288,7 +287,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return
         if self.path.startswith("/_board/skillview"):  # 🛠 the WHOLE skill, one page
             return self.serve_skillview()
-        if self.path.startswith("/_board/pagexview"):  # 🔗 a borrow, with ← ☰ →
+        if self.path.startswith("/_board/pagexview"):  # legacy PageX read-only view
             return self.serve_pagexview()
         if self.path.startswith("/_board/mdview"):   # 🛠 a .md, rendered to read
             return self.serve_mdview()
@@ -506,34 +505,25 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.skillmap_entry(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        # 🔗 pagex, the THIRD citation twin (QPf11): the page's borrowings
-        # from other pages, one store + symlinks re-minted from it.
-        if self.path == "/_board/pagex":          # re-mint the links + view
-            res, err = self.pagex_refresh(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/pagex-order":    # the drag: rank = the order
-            res, err = self.pagex_order(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/pagex-entry":    # the pen: borrow · ✕ · ↩
-            res, err = self.pagex_entry(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/pagex-match":    # SURVEY's read-only shortlist
-            res, err = self.pagex_match(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        # 🗣 meeting (QPf14): a person's own record of a conversation, kept
-        # under <page>/meeting/<YYMMDD-HHMM>/ — digest.md + transcript.md.
-        if self.path == "/_board/meeting":        # the view: list kept meetings
-            res, err = self.meeting_view(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/meeting-entry":  # the pen: keep a meeting
-            res, err = self.meeting_entry(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
+        # PageX was retired from current Folder/Page work on 260904. Keep the
+        # old GET viewer above for stored migration history, but never refresh,
+        # rank, create, restore, or shortlist PageX bindings through the server.
+        if self.path in {"/_board/pagex", "/_board/pagex-order",
+                         "/_board/pagex-entry", "/_board/pagex-match"}:
+            return self.reply(410, {
+                "ok": False,
+                "err": "PageX is retired; use Context source addresses or "
+                       "Evidence Item Supporting/Local Run bindings",
+            })
+        # Meeting records moved above Page scope on 260904. Existing
+        # <page>/meeting/ bytes remain readable through Folder/static paths,
+        # but the Board server must not mint or present new Page-local records.
+        if self.path in {"/_board/meeting", "/_board/meeting-entry"}:
+            return self.reply(410, {
+                "ok": False,
+                "err": "Page-local meetings are retired; use "
+                       "haipipe-project-meeting at project or SPACE level",
+            })
         # The EVIDENCE plugins' read-only surfaces (QPf5 · QPf9): the view
         # lists the page's units or cards and writes nothing but itself.
         if self.path == "/_board/folderstat":  # 📂 the tab spec's write() twin
@@ -592,7 +582,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.sessions_list(f, p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/chat-keep":      # sessions land in the page's chat/ (QPf4, JL 260815)
+        if self.path == "/_board/chat-keep":      # sessions land in studio/chat/ (QPf4, JL 260815)
             return self.reply(200, self.keep_sessions(f, p))
         if self.path == "/_board/session-log":    # that session's transcript (JL 260801)
             res, err = self.session_log(f, p), None

@@ -140,6 +140,7 @@ RUN_STATUS_LABEL = {
     "failed": "Failed",
     "blocked": "Held",
     "superseded": "Historical",
+    "historical": "Historical Result",
     "rerun": "Rerun",
     "ticket": "Run only",
 }
@@ -164,6 +165,26 @@ def _current_result_status(runtime: Path | None, *, result_files: set[str]) -> t
     fake_worker = "fakestata" in text.lower()
     if complete and artifacts and not fake_worker:
         return "complete", str(runtime.parent)
+
+    # A migrated task may carry a byte-preserved, aggregate-only historical
+    # Result beneath the corresponding current Run.  It is deliberately not
+    # promoted to the current Run receipt: the current runtime can remain
+    # ``planned`` while the historical envelope is exposed as an available
+    # Supporting Result.  Admission is opt-in and machine-checkable so merely
+    # having an ``old/`` directory never makes evidence usable.
+    historical = runtime.parent / "old" / "result.yaml"
+    if historical.is_file():
+        historical_text = historical.read_text(encoding="utf-8", errors="replace")
+        historical_complete = bool(
+            re.search(r"^status:\s*complete\s*$", historical_text, re.M)
+        )
+        supporting_eligible = bool(
+            re.search(r"^supporting_eligible:\s*true\s*$", historical_text, re.M)
+        )
+        tables = runtime.parent / "old" / "tables"
+        aggregate_artifacts = bool(tables.is_dir() and any(tables.glob("*.csv")))
+        if historical_complete and supporting_eligible and aggregate_artifacts:
+            return "historical", str(historical.parent)
     return "rerun", ""
 
 
@@ -454,7 +475,7 @@ def read_items(page_md: Path) -> dict:
         return {}
     labels = (
         "target", "label", "need", "expected", "acceptance", "supporting runs",
-        "pagex bindings", "local input", "local run", "decide",
+        "verified", "pagex bindings", "local input", "local run", "decide",
     )
     rows, cur = {}, None
     for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -501,6 +522,9 @@ def read_items(page_md: Path) -> dict:
             "make" if "☑" in d and "make" in d else
             "defer" if "☑" in d and "defer" in d else
             "drop" if "☑" in d and "drop" in d else ""
+        )
+        row["verification_signed"] = bool(
+            re.search(r"(?:✅|☑)\s*\S+", row.get("verified", ""))
         )
         row["specified"] = all(
             row.get(k) for k in ("target", "need", "expected", "acceptance")
@@ -596,12 +620,24 @@ def item_status(row, folded: bool, page_accepted: bool, plan_mtime: float,
     if row["decision"] == "drop":
         return "dropped"
     result = resolve(row["result"], root, page_dir)
+    if result:
+        envelope = result / "result.yaml" if result.is_dir() else result
+        if envelope.name == "result.yaml" and envelope.is_file():
+            result_text = envelope.read_text(encoding="utf-8", errors="replace")
+            result_status = re.search(r"^status:\s*([^\s#]+)", result_text, re.M)
+            acceptance = re.search(r"^  passed:\s*(true|false)\s*$", result_text, re.M)
+            if ((result_status and result_status.group(1).lower() not in
+                 {"complete", "completed", "done", "ready"}) or
+                    (acceptance and acceptance.group(1) == "false")):
+                return "blocked"
     if result and folded:
         if page_accepted:
             return "accepted"
         if result.stat().st_mtime > plan_mtime + 60:
             return "stale"
         return "folded"
+    if result and row.get("type") == "CITE" and not row.get("verification_signed"):
+        return "planned"
     if result:
         return "ready"
     if row.get("planned") and row["decision"] == "make":

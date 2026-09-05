@@ -69,10 +69,10 @@ readable  b02.j03.t01.r01
 
 No level may use a bare `01_`; the letter is part of the durable address.
 
-## ACQUIRE-cycle Run Profile
+## D1 ACQUIRE Run Profile
 
 This profile is the executable detail for the `d1.acquire` row in
-`lifecycle-map.md`:
+`../../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`:
 
 ```text
 ALLOWED    paper-analysis · source-analysis
@@ -84,7 +84,8 @@ WORKER     the selected search/read/analyzer skill, CLI, API, or declared agent
 RESULT     Result Card · facts.md · one-entry Bib · runtime.yaml; optional PDF/raw/trigger
 ACCEPT     exact stem pair, executable Ticket, truthful runtime, complete artifacts,
            canonical identity, cite/Bib equality, and verbatim Bib provenance
-PROMOTION  SYNTHESIZE binds the Result into the root Page and the Outline
+PROMOTION  D1 SYNTHESIZE binds direct Result/cite lineage into the Page plan;
+           CONTENT writes the root Page; the Outline
            plugin builds the deterministic aggregate Bib
 REOPEN     a materially changed Subject, analysis question, frozen instrument, or
            acceptance contract allocates a new Run with supersedes:
@@ -271,18 +272,18 @@ entries. It must not rewrite an entry's fields or use the aggregate as proof
 that the authoritative Result entry was person-verified.
 
 The Result is not Page evidence merely because it exists under `results/`.
-SYNTHESIZE validates promotion and rebuilds the derived aggregate through
-`haipipe-plugin-outline/ref/evidence/citations.md`. That aggregate is not
-automatically a typed CITE Evidence Item. When an approved Outline explicitly
-declares a typed CITE item, bind it through the generic Evidence Item contract;
-otherwise direct Result/Card/cite lineage is sufficient and no duplicate local
-Evidence Item Run is created. The standalone Evidence and Bibex plugins are
-compatibility redirects, not authorities.
+D1 SYNTHESIZE rebuilds the derived aggregate through
+`haipipe-plugin-outline/ref/evidence/citations.md`, then dispatches the Page
+workflow. The D1 root Page uses direct Result/Card/cite lineage and does not
+declare a redundant typed CITE item or local Evidence Item Run for its own
+Results. A consumer Page may use a Discovery Result as Supporting evidence and
+owns any local Evidence Item Run in the consumer Folder. The standalone
+Evidence and Bibex plugins are compatibility redirects, not authorities.
 
 Discovery's local `runs/` ↔ `results/` pair remains the primary analysis
 receipt. `outline/evidence/` is the shared Page Evidence Workspace: it records
-any explicitly declared typed CITE items plus derived citation material, but it
-does not replace or duplicate a Paper/Source Result. A root `<task>/evidence/`
+derived citation material, but it does not replace or duplicate a Paper/Source
+Result. A root `<task>/evidence/`
 lane is invalid for new or current v6 work.
 
 ## Legacy compatibility

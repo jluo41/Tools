@@ -1,3 +1,14 @@
+## 0.2.1 · 2026-09-04
+
+- Route CONTENT through the exact Page Face owner and load a canonical family
+  owner only once when it also owns the Folder.
+
+## 0.2.0 · 2026-09-04
+
+- Remove the retired DRAFT and REVISE redirect skills and agent identities.
+- Preserve their receipt tokens only in the lifecycle auditor; all current
+  dispatch is CONTENT/WRITE.
+
 ## 0.1.1 · 2026-09-04
 
 - Use the canonical Page dependency order and carry the target cycle separately

@@ -41,12 +41,16 @@ Examples:
 Reference globally as "b01j01" (block.job), or down to one execution as
 "b01j01t01r01" (block.job.task.run) — the prefixes joined, read off the path.
 
-Block folder contents (a block is a folder of jobs and nothing else, JL 260829):
-  jNN_{name}/     jobs.
+Block folder contents (a block is a Board over jobs and tasks, JL 260904):
+  board.md        mandatory Board head with `board-kind: task-block`.
+  jNN_{name}/     jobs; the disk tree owns membership and default order.
   diagram/        docs only, MANDATORY when the block is cohesive (sibling jobs share a narrative). See "Block-level diagram/" below.
   ⛔ no sbatch/, no shared code, no results at block level: what runs lives in a job.
 
-No README.md in block folders. If sibling jobs are unrelated, fall back to
+No README.md in block folders: `board.md` is the one human-facing head. Its
+`## Pages` section may group or introduce Jobs without copying every Task row;
+if it explicitly orders Tasks, it uses
+`jNN_name/tNN_name/tNN_name.md`. If sibling jobs are unrelated, fall back to
 per-job diagrams instead of block/diagram/.
 
 Databricks-native block exceptions (blocks whose stages run ON a cluster,
@@ -103,8 +107,8 @@ NESTED (canonical):
                   (hierarchy.md "`0-libs/`: the one older name"); `code/` is
                   the SPACE's package, not this.
   runs/           TICKETS, one runs/ inside each task folder: <task>/runs/<run>.sh
-                  names a config and submits; carries NO parameters and never
-                  repeats its own name (derive task + run from $0).
+                  names a config and submits; may select an execution slice but
+                  never restates config-owned settings or its own identity.
   results/        light summaries, two levels: results/<task>/<run>/
   notebooks/      MANDATORY runtime record, mirrored: notebooks/<task>/<run>.ipynb
                   (papermill injects params and writes the executed result here;
@@ -136,8 +140,8 @@ JOBS DO NOT HAVE A README.md. The doc surface is block/diagram/ (cohesive
 blocks) or job/diagram/ (divergent jobs).
 
 Task-folder rules (tNN_{task_name}/):
-  - config/ is ALWAYS a folder, even holding one file; the STEM is the run
-    name. Prompts are config: config/prompts/<x>.md beside the config that
+  - scripts/config/ is ALWAYS a folder, even holding one file; the STEM is the run
+    name. Prompts are config: scripts/config/prompts/<x>.md beside the config that
     names it, resolved relative to the config file (JL 260830). A config is EXECUTED (or `include`d), not passed as a payload, so it
     is debugged in the same session as the code beside it.
   - a VARIANT is a config, not a new ticket scheme: two runs of one task
@@ -149,8 +153,9 @@ Task-folder rules (tNN_{task_name}/):
 
 runs/ rules (tickets):
   - ATOMIC: each ticket submits exactly ONE config of ONE task. No loops.
-  - NO parameters, no CLI args, no name repetition: the ticket derives task
-    and run from its own path and hands off. Parameters live only in config/.
+  - no name repetition: the Ticket derives Task and Run from its own path.
+    Configuration owns what is computed; the Ticket may select a slice such as
+    year, source, or fold and records every effective setting in runtime.yaml.
   - no .py in runs/; logic stays in the task's scripts/ or the job's src/.
   - orchestration (loops, GPU assignment) belongs in sbatch/, which calls
     tickets, never code directly.
@@ -353,13 +358,13 @@ Relationship: the task folder <-> results/ <-> notebooks/
 
   AUTHORED — all of it inside ONE self-contained task folder (260830):
 
-  t01_train_num/train_num.py ──────────────> notebooks/t01_train_num/_source.ipynb
+  t01_train_num/scripts/train_num.py ───────> notebooks/t01_train_num/_source.ipynb
                                              (template, rebuilt by every ticket)
 
-  t01_train_num/config/r01_1m.yaml ─┐
+  t01_train_num/scripts/config/r01_1m.yaml ─┐
   t01_train_num/runs/r01_1m.sh ─────┼──────> notebooks/t01_train_num/r01_1m.ipynb
                                     │        results/t01_train_num/r01_1m/
-  t01_train_num/config/r02_5m.yaml ─┐
+  t01_train_num/scripts/config/r02_5m.yaml ─┐
   t01_train_num/runs/r02_5m.sh ─────┼──────> notebooks/t01_train_num/r02_5m.ipynb
                                     │        results/t01_train_num/r02_5m/
                                     │
@@ -368,9 +373,9 @@ Relationship: the task folder <-> results/ <-> notebooks/
   sbatch/run_job_dag.sh ────────────┴──────> spans TASKS: t01 then t02 then t03
   t01_train_num/sbatch/run_task_sweep.sh ──> loops THIS task's tickets only
 
-  - config/ holds the YAML for each run; CONFIG STEM == RUN NAME == TICKET STEM
-  - runs/ sits BESIDE config/ in the task, one ticket per config (parameterless)
-  - notebooks/ and results/ stay at job level and repeat the <task>/<run> path
+  - scripts/config/ holds each Run YAML; CONFIG STEM == RUN NAME == TICKET STEM
+  - runs/ and scripts/ are peer Task lanes; one Ticket pairs with one config
+  - notebooks/ and results/ resolve under $OUTPUT_ROOT and repeat the <task>/<run> path
   - one task = one .py pipeline, multiple configs, multiple runs
   - a batcher that spans tasks is the job's; one that serves a single task is
     the task's (hierarchy.md "WHICH sbatch, and where").

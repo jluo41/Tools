@@ -1,7 +1,11 @@
 # Reference: project configuration
 
-`config.yaml` contains tunable and declared project choices.
-It does not contain runtime state, observed scores, human decisions, or mutable artifact pointers.
+`config.yaml` contains tunable and declared project choices plus the immutable
+P0 authority binding. It does not contain observed scores, mutable artifact
+pointers, or per-item decisions. The `authority.meaning_receipt` written by
+the identified human at G0 is a deliberately bound semantic receipt: the
+canonical `gates/g0/receipt.json` rehashes it and closes the gate. It is not a
+general runtime cache and must never be edited in place.
 
 ## 1. Full conceptual schema
 

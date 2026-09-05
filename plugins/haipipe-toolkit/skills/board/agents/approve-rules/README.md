@@ -27,7 +27,8 @@ which is worse than not asking.
 approve-rules.md   🧭 an OUTLINE plan, before prose is written
 display-rules.md   🖼 a DISPLAY unit, before it is accepted
 cite-rules.md      📚 a BIBEX entry, before it is verified
-value-rules.md     🧮 a PROBE card, before it is read
+value-rules.md     🧮 a historical Probe card, before it is read; current
+                   VALUE items use the Outline item-table acceptance contract
 ```
 
 ## How they grow

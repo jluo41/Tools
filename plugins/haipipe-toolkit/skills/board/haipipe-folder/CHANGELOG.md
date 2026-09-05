@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.5.1 · 2026-09-05
+
+- Fix the future Board Tables row grain as one Board Page/Page Folder while
+  keeping the current Folder tab, Outline, and Runs surfaces separate.
+
+## 0.5.0 · 2026-09-04
+
+- Define Tables as read projections over the Page Face and Task Face, with
+  separate plan and display/runtime lenses.
+- Record that Folder currently has separate Folder-tab inventory, Page Outline
+  planning/evidence, and Runs runtime projections, but no unified Board Table.
+- Reserve Board Tables as a future sibling contract without adding a
+  `board-table/` Folder lane or a second Folder authority.
+
+## 0.4.2 · 2026-09-04
+
+- Add the narrow canonical family-owner contract for a stable base Folder kind
+  such as Task: it owns both faces directly and must not invent a fake workflow
+  phase or duplicate Page-Type skill.
+
+## 0.4.1 · 2026-09-04
+
+- Retire PageX from current Folder plugin selection. Cross-Folder context now
+  uses explicit Context Workspace source addresses; cross-Folder evidence uses
+  full Supporting Run ids or frozen Local Input addresses. Existing PageX
+  material remains read-only migration history.
+
 ## 0.4.0 · 2026-09-01
 
 - Require every phase with addressable work to implement its workflow's

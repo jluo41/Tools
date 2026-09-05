@@ -1,5 +1,11 @@
 # haipipe-display · Changelog
 
+## 0.3.2 — 2026-09-04
+
+- Make the Board Page numeric exception explicit in the shared Intake and
+  output contracts: display-input Task → page-service `values.yaml` →
+  Evidence Local Input → Page display Intake.
+
 ## 0.3.0 — 2026-08-16
 
 - **0.2.0 and 0.3.0 shipped in SKILL.md with no entry here.** Reconstructed from

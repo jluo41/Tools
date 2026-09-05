@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-01"
+  version: "0.7.1"
+  last_updated: "2026-09-04"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
 
@@ -17,18 +17,32 @@ metadata:
 `haipipe-paper` is the Paper-family router. It does not implement the Page
 workflow and it does not replace the specialist Page Type contracts.
 
-Load in this order:
+Use two orders for two different jobs. First route the family request:
 
 ```text
 haipipe-paper
   → haipipe-paper-workflow, when the question is the journey or a gate
-  → haipipe-page
-  → the journey-phase skill under workflow-phases/ (haipipe-paper-<phase>),
-    or haipipe-paper-venue for a bank page
-  → haipipe-page-workflow for RUN
-  → the Page-local plugins actually required
-  → haipipe-paper-assemble, for complete-paper DOCX/PDF/supplement assembly
+  → resolve the concrete Page and its Page Type
 ```
+
+Once one concrete Page RUN begins, use the Page router's canonical order:
+
+```text
+haipipe-page
+  → haipipe-page-workflow
+  → current Page phase
+  → haipipe-paper-workflow (Folder-owning workflow)
+  → exact haipipe-paper-<phase> Page Type, or haipipe-paper-venue
+  → phase references / narrative-style policy
+  → haipipe-run + selected workers, only where Runs exist
+```
+
+For CONTEXT, OUTLINE, and EVIDENCE, the exact material contracts are
+`haipipe-plugin-outline/ref/...` files. The Page surface already installs the
+shared Outline presenter; it is not a final execution dependency.
+
+`haipipe-paper-assemble` is a separate complete-paper verb after routing; it is
+not inserted into a Page phase.
 
 ## 🧭 The six-phase journey (JL 260828)
 
@@ -94,7 +108,7 @@ The seven Page Types, one line each:
   demanded, to the Narrative for retelling, to a Section for rework — and
   closes with a checked response receipt.
 
-`/haipipe-paper status [paper] [section|probe|citation|display]` regenerates
+`/haipipe-paper status [paper] [section|evidence|citation|display]` regenerates
 the same rollup a Dash Page used to hold, as an optional drill-down on the
 existing status command instead of a Page Type of its own: it reports every unit,
 obligation, and gap in one family and never decides anything, so it earns no
@@ -112,49 +126,42 @@ and build they actually reviewed.
 
 ## 🃏 Evidence belongs to the Page that uses it
 
-There is no View layer and there are no active Literature, Value, or Display
-Page Types. Probe is the evidence-acquisition family: PageX is its accepted-Page
-lane, and QA Probe is its Task/Discovery lane. Every Paper Page may carry these
-and the citation/display lanes it actually uses.
-
-```text
-Probe
-├─ PageX      existing accepted Page → exact file and scope
-└─ QA Probe   Task/Discovery → bank-owned QA answer and proof
-```
+There is no View layer and there are no active Literature, Value, Citation,
+Display, Probe, or PageX Page Types/plugins. Every Paper Page uses typed
+Evidence Items and the same Supporting-to-local Run graph.
 
 ```text
 <page-dir>/
 ├── <page>.md                  human-readable argument and bindings
-├── outline/                   frozen, approved shape for the current round
-├── pagex/                     Probe · accepted-Page lane
-├── probe/                     Probe · Task/Discovery QA cards and proof
-├── bibex/                     citation cards, source notes, references.bib
-├── display/                   zero or more independently accepted display units
-├── latex/                     generated Page-level TeX/PDF when requested
-└── word/                      generated Page-level DOCX when requested
+├── outline/
+│   ├── <stem>-context.md      Context Workspace projection
+│   ├── <stem>-outline-vN.md   Bullet Workspace authority
+│   ├── <stem>-evidence-items.md  authored item/Run graph
+│   └── evidence/              Evidence Workspace material by VALUE/CITE/DISPLAY
+├── runs/                      Page-local L4 Run Tickets
+├── results/                   paired local Results/runtime receipts
+└── delivery/                  generated Page-level TeX/PDF/DOCX when requested
 ```
 
-The 🧮 value surface has no folder of its own. Values live in a probe card's
-`## Values` block and are cited from prose as `PP<NN>.v<n>`; the value plugin
-renders the two-way join and exposes unsourced or unused numbers.
+`haipipe-plugin-outline` presents Context, Bullet, and Evidence Workspaces.
+VALUE, CITE, and DISPLAY are Result types inside Evidence Workspace, not
+separate plugins. Exact numbers and citation metadata live in accepted local
+Results; the Page cites their `E<NN>-<TYPE>-<slug>` and full Run/Result ids.
 
-Plugin folders are created only when used. Their absence means “not needed”
-only when the Page says so explicitly; it must never mean “forgotten.”
-
-One Page may own many displays. One display unit may render several artifacts
-or panels, but it has one message, one frozen intake, and one independent
-acceptance state. The root paper build may copy or link accepted artifacts into
-its compiled deliverable; the Page-local display unit remains the evidence
+One Page may own many DISPLAY items. One local DISPLAY Result may contain
+several artifacts or panels, but it has one message, one frozen Local Input,
+and one independent acceptance state. The root paper build may copy accepted
+artifacts into its compiled deliverable; the local Result remains the evidence
 authority.
 
 Evidence evolves through the shared Page loop:
 
 ```text
+CONTEXT       collect, resolve, and freeze policy/requirements/source context
 SHAPE         mark each promised point: prose · 📮 question · 🧮 value ·
               📚 citation · 🖼 display
-SURVEY        one item row per obligation: which run in tasks/ answers it
-LAND · EMBED  make the runs, land proof, values, citations, displays; fold into the plan
+SURVEY        specify each typed item's Supporting Runs, Local Input, and local Run
+LAND · EMBED  complete the supporting/local Runs; fold accepted Results into the plan
 WRITE         write only from the agreed outline and landed runs
               (revise: improve prose and bind row/display ids; COMPILE is folded here)
 CHECK         judge the built version; only CHECK may close the Page
@@ -189,7 +196,7 @@ Resolve the paper root and target Page before changing anything.
 ```text
 /haipipe-paper ideate <direction|idea-id> [phase]
 /haipipe-paper enter [paper]
-/haipipe-paper status [paper] [section|probe|citation|display]
+/haipipe-paper status [paper] [section|evidence|citation|display]
 /haipipe-paper journey [paper]         read the journey position · test the gates ·
                                        never advances anything
 /haipipe-paper seed [paper] [phase]
@@ -202,7 +209,7 @@ Resolve the paper root and target Page before changing anything.
                                        fails is watermarked DRAFT in its receipt
 ```
 
-Every `[phase]` above is a PAGE phase (OUTLINE…CHECK). The journey's six
+Every `[phase]` above is a PAGE phase (CONTEXT…CHECK). The journey's six
 positions are never called by that word in a verb; `haipipe-paper-workflow`
 carries the terminology law.
 
@@ -225,7 +232,8 @@ reopens the affected Section; a prose draft never outranks the current map.
 
 Narrative itself may make factual claims—for example, that a result is the
 paper's peak claim or that a mechanism is sufficiently established. Those
-claims must carry Page-local evidence cards just like claims on any other Page.
+claims must carry typed Evidence Items and accepted local Results just like
+claims on any other Page.
 Narrative does not become evidence-free merely because its output is an
 outline.
 
@@ -270,9 +278,9 @@ would make the paper both the consumer of its evidence and the executor of it.
 only its own `sections/`, includes only from its own `displays/`, cites only
 its own `reference.bib`, and compiles alone. Rooms never reach into each
 other. Evidence AUTHORITY never moves into a room: `displays/` holds COPIES of
-accepted page-local `display/` units, and `reference.bib` is assembled from
-the consuming pages' `bibex/` — reuse across tellings goes through the board
-(pagex, page display units), never through a shared folder. The old shared
+accepted page-local DISPLAY Results, and `reference.bib` is assembled from
+accepted CITE Results. Reuse across tellings goes through named Supporting Run
+Results, never through a shared folder or PageX link. The old shared
 top-level `sections/`, `displays/`, and root `reference.bib` are retired for
 new repos: a second telling that wants the first telling's figure copies it
 from the owning page into its own room, with the page as provenance.
@@ -303,7 +311,7 @@ folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `SC`/`A<D>`/`SD`/`NA` tokens, a separate `A2-NA-narrative` group, a lone `C1-RD-round`
 group, a story group holding a separate `SD03-collection` page) are
 grandfathered and migrate only on explicit request, because the
-rename touches tex `\input` paths, pagex symlinks, and compile scripts.
+rename touches tex `\input` paths, legacy PageX symlinks, and compile scripts.
 
 ## 📦 Assembly and delivery
 
@@ -402,8 +410,8 @@ Before reporting Paper work complete:
   Section.
 - Every Section resolves to one Narrative row and every consequential sentence
   resolves to evidence or is visibly marked as an unsupported obligation.
-- Citation, value, and display bindings live on the consuming Page; each value
-  resolves to a probe-card value id rather than a second storage folder.
+- Citation, value, and display bindings live on the consuming Page; each one
+  resolves to a typed Evidence Item, full local Run id, and accepted Result.
 - Every display has its own intake, artifacts, bindings, and acceptance state.
 - Every Round covers one feedback batch, routes every item exactly once, and
   names checked target-Page versions plus an approved response/build receipt.
@@ -421,7 +429,7 @@ Before reporting Paper work complete:
 ```text
 paper/
 ├── haipipe-paper/          public door; one routing contract
-├── haipipe-paper-workflow/ the seven-phase gate machine; owns transitions only
+├── haipipe-paper-workflow/ the six-phase gate machine; owns transitions only
 ├── haipipe-paper-assemble/  complete-paper DOCX/PDF/supplement build contract
 ├── workflow-phases/        six journey-phase skills, haipipe-paper-ideation
 │                           … haipipe-paper-round; each owns its page-type key
@@ -433,5 +441,6 @@ paper/
 ```
 
 This door owns routing and Paper composition. `haipipe-page` owns the Page
-contract, `haipipe-page-workflow` owns the lifecycle, plugins own evidence
-material, and `haipipe-board` owns rendering and checking machinery.
+contract, `haipipe-page-workflow` owns the lifecycle, Runs/Results own evidence
+artifacts, `haipipe-plugin-outline` presents them, and `haipipe-board` owns
+rendering and checking machinery.

@@ -137,7 +137,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.skills / "task" / "haipipe-task" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("`haipipe-plugin-runs`, not Execution", task)
-        self.assertIn("`results/<task>/<run>/`", task)
+        self.assertIn("`$OUTPUT_ROOT/results/<task>/<run>/`", task)
         self.assertIn("Never copy or symlink", " ".join(runs.split()))
 
     def test_insight_data_separates_relationship_from_evidence_authority(self):
@@ -198,7 +198,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
     def test_render_has_folder_native_writer_and_optional_adapter(self):
         render = (
             self.skills / "board" / "page-plugins"
-            / "haipipe-plugin-render" / "SKILL.md"
+            / "haipipe-plugin-delivery" / "ref" / "render.md"
         ).read_text(encoding="utf-8")
         self.assertIn("haipipe-application/fn/render.md", render)
         self.assertIn("optional served adapter", render)
@@ -207,8 +207,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_unit_readme_never_becomes_the_acceptance_authority(self):
         design = (
-            self.skills / "board" / "page-plugins"
-            / "haipipe-plugin-design" / "SKILL.md"
+            self.application / "haipipe-plugin-design" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("state: draft | judged", design)
         self.assertIn("Acceptance exists only on the parent D4 division row", design)
@@ -365,8 +364,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
                 self.assertNotIn(stale, text, str(path))
 
         design_plugin = (
-            self.skills / "board" / "page-plugins"
-            / "haipipe-plugin-design" / "SKILL.md"
+            self.application / "haipipe-plugin-design" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("DS Folder's `outline/<DS-stem>-log.md`", design_plugin)
         self.assertNotIn("DS page's Log", design_plugin)
@@ -389,11 +387,11 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertNotIn("page's `## Log`", creator)
 
         task_template = (
-            self.skills / "task" / "page-types"
-            / "haipipe-page-for-task" / "template.md"
+            self.skills / "task" / "haipipe-task"
+            / "ref" / "task-page-template.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("outline/<page-stem>-files.md", task_template)
-        self.assertIn("outline/<page-stem>-log.md", task_template)
+        self.assertIn("outline/<stem>-files.md", task_template)
+        self.assertIn("outline/<stem>-log.md", task_template)
         for heading in ("## States", "## Files", "## Discussion", "## Log"):
             self.assertNotRegex(task_template, rf"(?m)^{heading}$")
 
@@ -408,6 +406,8 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("RF is not a\nDesign Handoff", insight)
         self.assertIn("I1 QW", insight)
         self.assertIn("human-signed I5 Wisdom", insight)
+        self.assertIn("parent: haipipe-page", insight)
+        self.assertNotIn("haipipe-page-for-task", insight)
         for stale in (
             "scope: application", "Application Need", "Application Wisdom",
             "both scopes", "one of two scopes",
@@ -428,6 +428,50 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("`I<NN>-<slug>/` Folder", entry)
         self.assertNotIn("folded Q or S Page", entry)
+
+    def test_task_page_contract_is_owned_by_task_door(self):
+        retired = (
+            self.skills / "task" / "page-types" / "haipipe-page-for-task"
+        )
+        self.assertFalse(retired.exists())
+
+        task_skill = (
+            self.skills / "task" / "haipipe-task" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        task_contract = (
+            self.skills / "task" / "haipipe-task" / "ref" / "task-page.md"
+        ).read_text(encoding="utf-8")
+        task_template = (
+            self.skills / "task" / "haipipe-task" / "ref"
+            / "task-page-template.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("legacy_page_type: task", task_skill)
+        self.assertIn("folder_kind: task", task_skill)
+        self.assertIn("folder_owner: canonical", task_skill)
+        self.assertIn("primary_face: task", task_skill)
+        self.assertIn("page_ruling: local", task_skill)
+        self.assertIn("there is no separate Task\nPage skill", task_skill)
+        self.assertIn("Supporting Runs", task_contract)
+        self.assertIn("<!-- realizes: C<n>.P<m>.B<k> -->", task_contract)
+        self.assertIn("<task>.md#reading-current", task_contract)
+        self.assertIn("there is no separate Page\n`accepted:` field", task_contract)
+        self.assertIn("folder-kind: task", task_template)
+        self.assertNotIn("page-type: task", task_template)
+        self.assertNotIn("## Diagram", task_template)
+        self.assertEqual(6, task_template.count("**Division map —"))
+        self.assertIn('<a id="reading-current"></a>', task_template)
+        self.assertIn("| R01 |", task_template)
+
+        item_table = (
+            self.skills / "board" / "page-plugins" / "haipipe-plugin-outline"
+            / "ref" / "item-table.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("exactly one owner-native", item_table)
+        self.assertIn("Task `new-run` names parent `bNNjNNtNN`", item_table)
+        self.assertIn("new-run → registered → reuse", item_table)
+        self.assertIn("A failed attempt\nends as `rerun`", item_table)
+        self.assertNotIn("exactly one Paper-local", item_table)
 
     def test_application_and_task_insight_routes_do_not_share_a_page_type(self):
         application = (
@@ -489,16 +533,17 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("signed: ✅ <initials> <YYMMDD>", wisdom)
         self.assertIn("handoff <W-id>@v<N>", d4)
 
-    def test_endpoint_target_exposes_x2_task_folder_surfaces(self):
+    def test_endpoint_target_uses_canonical_task_folder_surfaces(self):
         endpoint = (
             self.skills / "task" / "3_end"
             / "haipipe-task-for-endpoint" / "SKILL.md"
         ).read_text(encoding="utf-8")
         for surface in (
             "t01_<task_name>.md", "workflow/inbox/application/",
-            "evidence/pagex/", "scripts/config/r01_base.yaml",
+            "folder-kind: task", "scripts/config/r01_base.yaml",
         ):
             self.assertIn(surface, endpoint)
+        self.assertNotIn("evidence/pagex/", endpoint)
         self.assertIn("flat endpoint jobs remain readable", endpoint)
         self.assertNotIn("├── 1_{task_name}.py", endpoint)
 
@@ -528,6 +573,48 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertNotIn("ghost until the lane's route ships", delivery)
         self.assertIn('base / "delivery" / "render"', live_delivery)
         self.assertNotIn("route pending", live_delivery)
+
+    def test_generic_page_plugins_are_exactly_the_five_public_categories(self):
+        root = self.skills / "board" / "page-plugins"
+        found = {
+            path.parent.name
+            for path in root.glob("*/SKILL.md")
+        }
+        self.assertEqual(
+            found,
+            {
+                "haipipe-plugin-outline",
+                "haipipe-plugin-studio",
+                "haipipe-plugin-runs",
+                "haipipe-plugin-delivery",
+                "haipipe-plugin-folder",
+            },
+        )
+        self.assertTrue((root / "haipipe-plugin-studio" / "ref" / "chat.md").is_file())
+        self.assertTrue((root / "haipipe-plugin-studio" / "ref" / "draw.md").is_file())
+        self.assertTrue((root / "haipipe-plugin-outline" / "ref" / "skill-record.md").is_file())
+        for lane in ("latex", "word", "slide", "render"):
+            self.assertTrue((root / "haipipe-plugin-delivery" / "ref" / f"{lane}.md").is_file())
+
+    def test_domain_plugin_and_meeting_ownership_are_outside_page_plugins(self):
+        self.assertTrue((self.application / "haipipe-plugin-design" / "SKILL.md").is_file())
+        meeting = self.skills / "project" / "haipipe-project-meeting" / "SKILL.md"
+        self.assertTrue(meeting.is_file())
+        self.assertIn("<project>/meetings/", meeting.read_text(encoding="utf-8"))
+
+        serve = (
+            self.skills / "board" / "haipipe-board" / "cli" / "serve.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("from live.meeting import", serve)
+        self.assertIn('"/_board/meeting-entry"', serve)
+        self.assertIn("Page-local meetings are retired", serve)
+
+    def test_content_has_no_phase_redirect_skills_or_agents(self):
+        workflows = self.skills / "board" / "page-workflows"
+        self.assertFalse((workflows / "haipipe-page-draft").exists())
+        self.assertFalse((workflows / "haipipe-page-revise").exists())
+        self.assertFalse((workflows / "agents" / "haipipe-page-draft-agent.md").exists())
+        self.assertFalse((workflows / "agents" / "haipipe-page-revise-agent.md").exists())
 
     def test_d3_hands_render_creation_to_d4(self):
         verdict = (

@@ -7,7 +7,7 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.57.0"
+  version: "0.57.8"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -46,7 +46,7 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │                  and the nested Evidence Workspace (JL 260903)
 │   ├── <stem>-context.md  generated PREPARE projection for all Page phases
 │   └── evidence/  typed CITE/VALUE/DISPLAY material and Run lineage:
-│       ├── bibex/       citations · verified:
+│       ├── bibex/       citation files and source metadata
 │       ├── display/     units and recipes · accepted:
 │       ├── supporting-runs/ generated lineage pointers only
 │       └── materials/   dated captures
@@ -56,7 +56,7 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 │   └── config/    Job code stays one level up in `src/`
 ├── runs/          optional authored Run tickets; THE ONE execution door
 ├── results/       Folder-local Results only. A canonical Task Page resolves
-│                  generated output at `<job>/results/<task>/<run>/`
+│                  generated output at `$OUTPUT_ROOT/results/<task>/<run>/`
 │              ─── the UPPER, PAGE part ───
 ├── delivery/      what leaves the page: latex/ · word/ · slide/ · render/
 └── studio/        the HUMAN's room on the page (JL 260831): closest to
@@ -72,7 +72,7 @@ machine-readable phase/run record. Page-heavy work commonly stores phase
 receipts under `workflow/receipts/`; executable work commonly stores
 `plan.yaml` and `report.yaml`. Runs is an optional presenter beneath this shared
 Task Face. It pairs the local ticket with either a Folder-local Result or the
-containing Task Job's `results/<task>/<run>/`; scripts, config, and notebooks
+Task dialect's resolved `$OUTPUT_ROOT/results/<task>/<run>/`; scripts, config, and notebooks
 appear only when the dialect owns them. Runs is never a third universal face or
 a lifecycle owner.
 
@@ -92,26 +92,31 @@ the same walk live (`live/folderstat.py`, whose `--write` becomes the
 generator).
 
 A folder is created only when it is used. Values are typed Evidence Items;
-their accepted local Result and provenance are shown inside the Outline
+their ready local Result and provenance are shown inside the Outline
 Evidence Workspace. Every number shown on a Page Face that comes from a Run crosses
 ONE page-serving collection job (`task-type: page`, contract
 `haipipe-task-for-page`); the Supporting Run Result becomes the explicit
-cross-Folder evidence edge. A local Run
+cross-Folder evidence edge. A display-input Run therefore feeds the
+page-serving collection Job; it does not bypass that one numeric door to feed
+a Page DISPLAY unit directly. A local Run
 may validate or reshape non-authoritative intermediates, but it
 cannot become a second value door. A reusable derivation, a source-data change, or any displayed
 numeric result belongs in the linked executable Folder and its QA binding. The
 nine `outline/` process files and its nested evidence workspace, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
-`ref/plan-grammar.md` beside it. A phase loads those two refs, not the plugin
-skill (which owns the tab).
+`ref/plan-grammar.md` beside it. A phase loads the exact Outline-plugin refs it
+needs as schema/material contracts. The Page surface installs
+`haipipe-plugin-outline` once as the presenter; the presenter skill is not
+appended to each phase's execution dependency chain.
 
 ## 🧬 One owner claims the Page Face
 
 A property every Page carries cannot tell one Folder kind from another. A Page
 shows something, cites something, states a number; so display, literature and
-value are plugins. In migrated families, the workflow phase owns the Folder
-kind and its Page Face. In unmigrated families, a Page Type remains the
-compatibility owner. No `folder-kind:` or `page-type:` key is the flexible base.
+value are plugins. In migrated families, a workflow phase or declared
+canonical family skill owns the Folder kind and its Page Face. In unmigrated
+families, a Page Type remains the compatibility owner. No `folder-kind:` or
+`page-type:` key is the flexible base.
 
 Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
 semantic owner may claim the Page Face. An in-place Folder's
@@ -123,16 +128,17 @@ state and Markdown disagree, fix the Folder, never the resolver.
 step  machine-readable key                    Page Face owner    contract
 ──────────────────────────────────────────────────────────────────────────
 ①     workflow/phase.yaml current kind        workflow phase     phase skill
-②     frontmatter `folder-kind: <key>`        workflow phase     phase skill
-③     frontmatter `page-type: <key>`          compatibility key  phase or for-<key>
+②     frontmatter `folder-kind: <key>`        phase or family    phase/family skill
+③     frontmatter `page-type: <key>`          compatibility key  phase/family/for-<key>
 ④     filename QBv<n>-                        venue              for-venue
 ⑤     filename S-<Family>-<unit>-<slug>       stage              for-stage
 ⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
 ```
 
 A Discovery Folder resolves `folder-kind: discovery` to its Discovery workflow
-phase. Its Task Face does not select the empirical `page-type: task`
-compatibility grammar.
+phase. Its Task Face does not select the Task Folder technical-report grammar:
+the Discovery phase owns that Page Face, while `haipipe-task` owns only
+`folder-kind: task`.
 
 ### The inventory is derived, never written by hand
 
@@ -154,7 +160,8 @@ Since 260831 every key also has a RECORD in `ref/type-registry.md`: four
 fields, one consumer each (`outline` → SHAPE · `evidence` → SURVEY and LAND ·
 `prose` → WRITE · `closing` → CHECK). The phases are the functions; the
 record is their arguments. A `contract` key keeps its outline SHAPE in its
-own frontmatter and the registry points at it; a `key-only` record with live
+own frontmatter and the registry points at it; a `record-only` compatibility
+key keeps its complete law in the registry, while a `key-only` record with live
 pages is a `registry-gap` (usage without law), reported by the same
 `--check`.
 
@@ -194,9 +201,10 @@ wisdom       application   ✓       `page-type:` line
 
 A Page Face specialization defines Content and fixed extension points without
 reordering the base frame. In a migrated family it lives in the workflow phase
-that owns the Folder kind; an unmigrated Page Type remains a base variant under
-`page-types/`. Load the semantic owner before writing. After moving a skill,
-re-run `install.sh --global` so the installed symlink follows it.
+or canonical family skill that owns the Folder kind; an unmigrated Page Type
+remains a base variant under `page-types/`. Load the semantic owner before
+writing. After moving a skill, re-run `install.sh --global` so the installed
+symlink follows it.
 
 ## 🎭 Page phases, independent of Folder kind
 
@@ -245,7 +253,7 @@ a concrete version is judged                   → CHECK
 the packet, receipt, version, role-separation and stop rules, and whose
 `ref/phase-cards.md` states every phase in the same six fields. A pass may run
 inside a person's session (the page chat, which knows the phases and reads the
-strip: `haipipe-plugin-chat` §🔁) or as that phase's agent; both leave the same
+strip: `haipipe-plugin-studio/ref/chat.md` §🔁) or as that phase's agent; both leave the same
 trace (the artifact, one log record, the receipt).
 
 ## 📑 Four sections on stage, and nothing else
@@ -444,7 +452,8 @@ chat, and `haipipe-page-check-agent` runs it in a fresh context.
 ## 🔤 The words
 
 Every term this family uses is defined in `ref/glossary.md` beside the path it
-names: card, unit, mark, plan, bullet, tick, bank, stake, phase, record. Load
+names: Context record, plan, Bullet, Evidence Item, Supporting Run, Local
+Input, local Run, Result, availability, next action, phase, and receipt. Load
 it when a reader asks what a word means or when you are about to coin one;
 `writing-rules.md` forbids a phrase that is neither the source's own wording
 nor defined where a reader can find it.

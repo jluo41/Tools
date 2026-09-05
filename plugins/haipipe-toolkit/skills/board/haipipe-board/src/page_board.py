@@ -623,8 +623,10 @@ def render(meta, qs):
     # reported a denominator one too large. A meeting page decides nothing: what
     # was ruled in the room is routed to the page that owns it, and that page
     # carries the count.
-    qonly = [q for q in qs
-             if q.get("kind") not in ("doc", "stage", "skill", "agent", "meeting")]
+    task_board = meta.get("board_kind") == "task-block"
+    qonly = ([q for q in qs if q.get("kind") == "task"] if task_board else
+             [q for q in qs
+              if q.get("kind") not in ("doc", "stage", "skill", "agent", "meeting", "task")])
     sonly = [q for q in qs if q.get("kind") == "stage"]
     done = sum(1 for q in qonly if q["state"].startswith("✅"))
     nq = len(qonly)
@@ -683,7 +685,7 @@ def render(meta, qs):
         ixrow("map", "🗺 Board Map")
     if rf:
         ixrow("related", "🗂 Related Folders")
-    ixrow("pages", "📄 All Pages", str(n))
+    ixrow("pages", "📄 All Tasks" if task_board else "📄 All Pages", str(n))
     if not minimal_index:
         ixrow("status", "🩺 Section Matrix",
               f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
@@ -717,13 +719,14 @@ def render(meta, qs):
     stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
     heading = ('<div class="board-heading"><span class="board-mark" aria-hidden="true">'
                + MARK_SVG + f'</span><h1 class="h1">{esc(meta["title"])}</h1></div>')
-    pages = ('<h3 class="sec" id="qlist">ALL PAGES'
+    pages = (f'<h3 class="sec" id="qlist">{"ALL TASKS" if task_board else "ALL PAGES"}'
              '<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>'
              f'<div class="idx">{idx}</div>')
+    progress_label = "tasks closed" if task_board else "questions settled"
     overview = (heading + pages if minimal_index else
                 heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
                 f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
-                f'<p class="bar">{bar}  {done}/{nq} questions settled{stagebar}</p>'
+                f'<p class="bar">{bar}  {done}/{nq} {progress_label}{stagebar}</p>'
                 + bmap + rf + board_status(qs) + pages)
     return TPL.format(title=esc(meta["title"]), overview=overview,
                       activity="" if minimal_index else ACTIVITY_HTML,
@@ -1007,8 +1010,11 @@ def frac_done_of(q):
 
 
 def tree_page_name(q):
-    """One page, one file: the id is the filename, so a URL is guessable."""
+    """One Page, one guessable file; Task Pages lead with their full address."""
     stem = Path(q.get("file") or q["id"]).stem
+    if q.get("kind") == "task":
+        slug = re.sub(r"^t\d{2}_", "", stem)
+        return f"{q['id']}-{slug}.html"
     return f"{stem}.html"
 
 
@@ -1287,13 +1293,14 @@ def render_tree(meta, qs, out_dir, only=None):
         rest = _gi_body(gi)
         why = (f'<details class="gwhy"><summary>why this group exists</summary>'
                f'<div class="gwhy-b">{rest}</div></details>') if rest else ""
+        task_group = meta.get("board_kind") == "task-block"
         done = sum(1 for m in members
                    if m["state"].startswith("✅") and m.get("kind") not in ("skill", "agent"))
         counted = [m for m in members if m.get("kind") not in ("skill", "agent")]
         body = (f'<div class="board-heading"><h1 class="h1">{esc(g)}</h1></div>'
                 + purpose + why
-                + f'<p class="bar">{len(members)} pages · '
-                  f'{done}/{len(counted)} settled</p>'
+                + f'<p class="bar">{len(members)} {"tasks" if task_group else "pages"} · '
+                  f'{done}/{len(counted)} {"closed" if task_group else "settled"}</p>'
                 + group_canvas(meta, g, members)
                 + f'<div class="idx">{"".join(rows)}</div>')
         # Group prose may contain authored Q/S references; in a split group
@@ -1323,10 +1330,19 @@ def render_tree(meta, qs, out_dir, only=None):
     heading = (f'<div class="board-heading">'
                f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
                f'<h1 class="h1">{esc(meta["title"])}</h1></div>')
-    pages = f'<h3 class="sec" id="qlist">ALL PAGES</h3><div class="idx">{"".join(rows)}</div>'
+    task_board = meta.get("board_kind") == "task-block"
+    pages = (f'<h3 class="sec" id="qlist">{"ALL TASKS" if task_board else "ALL PAGES"}</h3>'
+             f'<div class="idx">{"".join(rows)}</div>')
+    task_pages = [q for q in qs if q.get("kind") == "task"]
+    task_done = sum(1 for q in task_pages if q["state"].startswith("✅"))
+    task_progress = (
+        f'<p class="bar">{task_done}/{len(task_pages)} tasks closed</p>'
+        if task_board else ""
+    )
     body = (heading + pages if pages_only_index(meta) else
             heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
             f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
+            + task_progress
             + tree_relink(board_map(meta), hrefs)
             + tree_relink(related_folders(meta), hrefs)
             + tree_relink(board_status(qs), hrefs)

@@ -1,11 +1,11 @@
 ---
 name: alphaxiv
 description: Quick single-paper lookup via AlphaXiv LLM-optimized summaries with tiered source fallback. Use when user says "explain this paper", "summarize paper", pastes an arXiv/AlphaXiv URL, or provides a bare arXiv ID for quick understanding - not for broad literature search.
-argument-hint: "[arxiv-id-or-url]"
 allowed-tools: Bash(*), Read, Write, WebFetch, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  argument_hint: "[arxiv-id-or-url]"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -142,7 +142,7 @@ if [ -d research-wiki/ ]:
 
 The helper handles metadata fetch, slug, dedup, page creation, index
 rebuild, and log append — **do not handwrite `papers/<slug>.md`**. See
-[`shared-references/integration-contract.md`](../shared-references/integration-contract.md).
+[`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md).
 If wiki was not present at read time, the user can backfill via
 `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id>`.
 

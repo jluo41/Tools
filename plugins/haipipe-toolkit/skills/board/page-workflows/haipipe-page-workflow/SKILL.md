@@ -3,13 +3,13 @@ name: haipipe-page-workflow
 description: >-
   The Page workflow router: 00 CONTEXT/PREPARE, 01 OUTLINE/SHAPE+SURVEY,
   02 EVIDENCE/LAND+EMBED, 03 CONTENT/WRITE, and 04 CHECK. It selects the
-  exact phase skill, Page Type, policy, Outline workspace, Level-4 Run graph,
+  exact phase skill, Page Face owner, policy, Outline workspace, Level-4 Run graph,
   legal backward route, and auditable receipt for one persistent Page. Use to
   design, run, resume, or audit the complete Page lifecycle. Trigger: Page
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.26.1"
+  version: "0.27.0"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md
 ---
@@ -22,17 +22,21 @@ Load every Page phase through one canonical order:
 haipipe-page
   → haipipe-page-workflow
   → current phase skill
-  → Folder-owning workflow skill
-  → exact Page Type skill
+  → Folder-owning workflow or canonical family skill
+  → Page Face owner skill
   → phase references and narrative/style policy
   → haipipe-run + selected workers, only when this phase commissions Runs
-  → haipipe-plugin-outline, for CONTEXT/OUTLINE/EVIDENCE presentation
 ```
 
-Resolve the Folder's owning workflow and exact Page Type before acting. Load
+Resolve the Folder owner and Page Face owner before acting. A Page Face owner
+is the exact workflow-phase skill, canonical family skill, or unmigrated Page
+Type skill that owns this Folder's readable contract; load it only once when it
+is also the Folder owner. Load
 only the current phase references and the workers for Runs it actually
-commissions. A phase skill may abbreviate this chain, but it may not reorder
-authority or omit the Page Type.
+commissions. For CONTEXT, OUTLINE, and EVIDENCE those references live under
+`haipipe-plugin-outline`; the Page surface has already installed that plugin
+as the shared presenter. A phase skill may abbreviate this chain, but it may
+not reorder authority or omit the Page Face owner.
 
 For an in-place Folder, the authoritative `workflow/phase.yaml` resolves the
 owning workflow and Folder kind before Page frontmatter or legacy names. The
@@ -85,7 +89,7 @@ OUTLINE/SHAPE ── evidence owed ──▶ OUTLINE/SURVEY
        ▲                                  │ decided graph
        │                                  ▼
        └──────── EVIDENCE/EMBED ◀── EVIDENCE/LAND
-                       │ plan v<N+1>
+                       │ next working plan vN.<k+1>
                        └──────────▶ SHAPE re-approval
                                         │ approved + all make-items folded
                                         ▼
@@ -109,8 +113,8 @@ any earlier owning phase.
 | `00` | CONTEXT / PREPARE | `haipipe-page-context` | `outline/<stem>-context.md` | none | context resolved and fresh |
 | `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | plan + Evidence Item specification | none | approved evidence-aware Shape |
 | `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed Local Run plan | none | complete decided Run graph |
-| `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | accepted typed local Results |
-| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | plan v<N+1> bindings | none | all ready Results folded; back to SHAPE |
+| `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | ready typed local Results |
+| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | all ready Results folded; back to SHAPE |
 | `03` | CONTENT / WRITE | `haipipe-page-content` | Page Content + delivery + promotion trace | normally `1` Division Writing Run per commissioned division | fresh pre-check says ready |
 | `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
 
@@ -157,14 +161,17 @@ Use full real addresses for reuse and rerun:
 
 ```text
 global Supporting Run    b01j02t03r04
+Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
+Task-local allocated     b01j02t03r05
 Paper-local Run plan     pj01t03r01     shown as P j01.t03.r01 plan
-allocated local Run      r04_page-evidence-item_e03-cite-prior-work
-Division Writing Run     r05_page-division-writing_c02
+local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
+Division Writing Run     r06_page-division-writing_c02
 ```
 
-SURVEY may reserve the Paper-local address but creates no Ticket. LAND creates
-the Evidence Item Ticket. CONTENT creates a Division Writing Ticket only when
-the work independently satisfies the `haipipe-run` tests.
+SURVEY names the real owner/parent for every new local route and may reserve a
+Paper-local address, but creates no Ticket. LAND allocates the owner-native
+Run id and creates the Evidence Item Ticket. CONTENT creates a Division Writing
+Ticket only when the work independently satisfies the `haipipe-run` tests.
 
 ## 🧠 Exact skill routing
 
@@ -173,25 +180,31 @@ For every phase, record exact names rather than generic labels:
 ```text
 haipipe-page-workflow
   → current phase skill
-  → Folder-owning workflow skill
-  → exact Page Type skill
+  → Folder-owning workflow or canonical family skill
+  → exact Page Face owner skill
   → exact narrative/style/outline policy skill, when applicable
   → haipipe-run + worker skills, only when the phase commissions Runs
-  → haipipe-plugin-outline, when presenting Context/Outline/Evidence
 ```
+
+For the first three phases, append the exact
+`haipipe-plugin-outline/ref/...` material contracts needed by the phase; do
+not append the presenter skill as an execution dependency.
 
 Example for a paper Section Shape:
 
 ```text
-haipipe-page-workflow
+haipipe-page
+  → haipipe-page-workflow
   → haipipe-page-outline
+  → haipipe-paper-workflow
   → haipipe-paper-section
   → haipipe-paper-narrative
   → haipipe-plugin-outline/ref/plan-grammar.md
+  → haipipe-plugin-outline/ref/item-table.md
 ```
 
-Do not restore `haipipe-page-for-task`; the Folder-owning workflow and Page
-Type supply their own Page contract.
+Do not insert a separate Task Page-Type layer. `haipipe-task` is both canonical
+Folder owner and Page Face owner for a Task Folder, so load it once.
 
 ## 🔀 Route by broken authority
 
@@ -242,7 +255,7 @@ behavior changes:
 
 ```text
 copilot   an unanswered selected act may pause the loop
-auto      plugin acts defer to the owed ledger; an explicit stop still wins
+auto      review ticks may defer to the owed ledger; an explicit stop still wins
 ```
 
 The acts remain at their authorities:
@@ -250,12 +263,15 @@ The acts remain at their authorities:
 | Act | Owner |
 |---|---|
 | plan `approved:` | SHAPE |
-| per-item `Decide` | SURVEY |
-| worker-specific verification | LAND worker |
+| per-item `Decide` | SURVEY; branching choice, never auto-deferred |
+| CITE item `Verified` and any worker-specific verification | LAND |
 | Page/display `accepted:` and Folder ruling | CHECK |
 
-No machine writes a person's act. `page_ruling: none | domain-gate | local`
-comes from the Folder-owning workflow. Do not invent a duplicate Page gate.
+No machine writes a person's act. An auto run may continue under the declared
+policy while a review tick is owed, but it must HOLD at SURVEY when `Decide`
+is unsigned; a prior explicit durable decision/default policy may be consumed,
+never invented. `page_ruling: none | domain-gate | local` comes from the
+Folder-owning workflow. Do not invent a duplicate Page gate.
 
 ## 🔁 Run one Page lifecycle
 

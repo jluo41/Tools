@@ -24,6 +24,6 @@ _todo/                      🗃 parked, not deleted · retired 260816: the post
 ```
 
 Start at `haipipe-display/SKILL.md`.
-A board page's units follow `haipipe-plugin-evidence/ref/displays.md` (the
+A board page's units follow `board/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md` (the
 page-side rules); a paper's units follow the paper stage.
 A board page's talk is not a renderer's job: it is the slide plugin's deck, authored from the page and framed in its own tab.

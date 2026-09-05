@@ -38,19 +38,17 @@ Step 3 — Create canonical nested Task Folder
 bNN_<group>/
 └── jNN_<job_name>/
     ├── t01_<task_name>/
-    │   ├── t01_<task_name>.md          Page Face · page-type/task-type
+    │   ├── t01_<task_name>.md          Page Face · folder-kind/task-type
     │   ├── scripts/
     │   │   ├── <task_name>.py          exact copy of c_endpoint_nb.py
     │   │   └── config/r01_base.yaml    from ref/config-seed.yaml
     │   ├── runs/r01_base.sh            papermill runner
-    │   ├── workflow/                   plan/report + inbox/application/
-    │   └── evidence/pagex/
-    │       └── t01_<task_name>.md      whole-Folder relationship list
+    │   └── workflow/                   plan/report + inbox/application/
     ├── results/t01_<task_name>/r01_base/
     └── notebooks/t01_<task_name>/r01_base.ipynb
 ```
 
-The Task Page declares `page-type: task`, `task-type: endpoint`, and `task: .`.
+The Task Page declares `folder-kind: task`, `task-type: endpoint`, and `task: .`.
 The task `.py` is an EXACT copy of the template — CONFIG is overridden at
 runtime by papermill, never by editing the file (see SKILL.md). Legacy flat
 endpoint jobs remain readable but are never scaffolded.
@@ -110,4 +108,4 @@ MUST NOT
 - Package a ModelInstance_Set that has no examples (payload generation needs them).
 - Mutate an existing `_WorkSpace/6-EndpointStore/` entry — new version, new folder.
 - Create `README.md`.
-- Put Task code, config, runs, workflow, or PageX material at the job root.
+- Put Task code, config, runs, or workflow material at the job root.

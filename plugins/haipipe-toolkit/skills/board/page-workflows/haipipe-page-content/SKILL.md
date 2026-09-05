@@ -9,7 +9,7 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.1.1"
+  version: "0.2.1"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md
 ---
@@ -17,9 +17,10 @@ metadata:
 # /haipipe-page-content · write and build one evidence-aware Page version
 
 Load, in order: `haipipe-page`, `haipipe-page-workflow`, this skill, the
-Folder-owning workflow, the exact Page Type,
+Folder-owning workflow or canonical family skill, the exact Page Face owner,
 `haipipe-plugin-outline/ref/plan-grammar.md`, applicable narrative/style
-policy, `haipipe-run`, and the writing/build workers selected by the Page Type.
+policy, `haipipe-run`, and the writing/build workers selected by that owner.
+Load the owner once when one skill fills both Folder and Page Face roles.
 
 CONTENT is one phase with one cycle. Drafting, revising, building, and
 pre-checking are movements inside that cycle, not four Page phases:
@@ -74,13 +75,13 @@ TARGET       exactly one C<n> per Run; cardinality 0..D for D commissioned divis
 TICKET       <page>/runs/rNN_page-division-writing_cNN.<dialect>
 INPUTS       <stem>-context.md + approved outline version + every folded local
              Evidence Result used by C<n> + current Page version
-WORKER       haipipe-page-content plus the selected Page Type/narrative/style skill
+WORKER       haipipe-page-content plus the selected Page Face owner/narrative/style skill
 RESULT       <page>/results/<RUNNAME>/ with candidate.md, trace.md, runtime.yaml
 ACCEPT       candidate covers its plan bullets; every factual claim maps to a
              folded item or declared source; no unsupported hole; style and
-             Page Type checks pass
+             Page Face owner checks pass
 PROMOTION    CONTENT writes the accepted candidate into <page>.md and records RUNNAME
-REOPEN       context, plan, evidence Result, Page Type, acceptance, or target changed
+REOPEN       context, plan, evidence Result, Page Face owner, acceptance, or target changed
 ```
 
 For Job-backed Task Folders, resolve the Result through the `haipipe-run`
@@ -91,7 +92,7 @@ dialect instead of copying it into the Page Folder.
 - Enter only when Context is resolved and the plan version is approved.
 - For each commissioned division, freeze only the addressed plan slice and
   Evidence Results it uses.
-- A Section Page keeps one sentence slot per planned Bullet; other Page Types
+- A Section Page keeps one sentence slot per planned Bullet; other Page Face owners
   may realize one Bullet as one or more sentences.
 - End each realized unit with its stable plan address according to the Page
   Type's sentence contract.
@@ -110,7 +111,7 @@ explicitly asks to compare alternatives.
 
 ## ③ Build
 
-Regenerate only the delivery projections declared by the Page Type or owning
+Regenerate only the delivery projections declared by the Page Face owner or owning
 workflow, such as `delivery/latex/`, `delivery/word/`, or render outputs. The
 source Page remains the authority. A stale or failed build keeps CONTENT open;
 it is not a CHECK finding yet because no checkable version exists.
@@ -155,7 +156,7 @@ pre_check: ready | another-pass | blocked
 artifacts: [<every written path>]
 evidence: [<plan, context, Result, and check paths>]
 route: CONTENT | CONTEXT | OUTLINE | EVIDENCE | CHECK | HOLD
-next_cycle: WRITE | PREPARE | SHAPE | SURVEY | LAND | CHECK
+next_cycle: WRITE | PREPARE | SHAPE | SURVEY | LAND | CHECK  # omit on HOLD
 reason: <authority exercised and why the route follows>
 reopens_promise: <true only when routing to OUTLINE because the promise changed>
 ```
@@ -178,6 +179,6 @@ haipipe-page-content/
 └── ref/division-result.md
 ```
 
-`haipipe-page-draft` and `haipipe-page-revise` remain compatibility redirects
-for historical instructions and receipts; new workflow dispatch uses this
-skill.
+Historical DRAFT/REVISE/COMPILE receipt tokens are interpreted by the
+lifecycle auditor. No redirect skills remain; every current writing dispatch
+uses this skill and records `phase: CONTENT · cycle: WRITE`.

@@ -12,6 +12,9 @@ Human-readable Markdown files are rendered views and never a second source of tr
 ├── .state.json
 ├── REPORT.md
 ├── register.md                       the seven regions × open / covered / risky
+├── gates/
+│   ├── p0-contract/receipt.json       immutable P0 import/checksum receipt
+│   └── g0/receipt.json                human meaning confirmation + G0 binding
 ├── runs/
 │   └── rNN_labeling-<operation>_<target>.yaml      authored Run Ticket
 ├── results/
@@ -139,6 +142,11 @@ scoring, P4 shards and review, and P5 audit and materialization. Round, Test,
 Scan, and Audit are grouping episodes, not extra Runs. Item events, tool calls,
 and retries under unchanged frozen inputs stay inside the relevant operation.
 Read `ref-run.md` for allocation, count law, completion gates, and presentation.
+
+The `gates/` receipts are phase authority, not Run envelopes.  In particular,
+the Board Labeling surface must call the canonical status evaluator whenever a
+P0 or G0 receipt exists; it may show a compatibility file-presence view only
+for historical lanes that have no canonical receipt yet.
 
 ## 3. Calibration Round episode
 

@@ -3,11 +3,29 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-09-04 · Page workflow unification
+
+- Preserve `1_search`, `2_review`, and `3_idea` as numbered skill-family
+  groups parallel to `haipipe-task`; agents dispatch into them but do not treat
+  them as phases.
+- Separate D1 SCOPE/PREPARE/ACQUIRE/SYNTHESIZE/CLOSE ownership from the shared
+  Page 00–04 workflow and make their handoff explicit.
+- Keep one-Subject Discovery Runs under D1 ACQUIRE; Page phases alone own
+  Page-family Runs and Page mutations.
+- Make ENRICH explicitly enter D1 ACQUIRE, constrain reviewer Bib comparison
+  to read-only recomputation, and replace the obsolete lifecycle review with a
+  current authority audit.
+- Reviewer 1.9.1 drops Write/Edit capabilities so the read-only contract is
+  enforced by the agent definition, not only by prose.
+- Reviewer 1.9.2 also drops unrestricted Bash; deterministic commands run by
+  the owning creator/checker and the reviewer inspects their receipts.
+
 ## 2026-09-02 — D1 five-cycle workflow
 
 - Orchestrator 2.5.0, creator 1.14.0, and reviewer 1.8.0 now distinguish
   SCOPE, optional PREPARE, one-Subject ACQUIRE Runs, L3 SYNTHESIZE, and CLOSE.
-- Citation/Bib aggregation routes through `haipipe-plugin-evidence`.
+- Citation/Bib aggregation routes through the Outline Evidence Workspace;
+  `haipipe-plugin-evidence` is compatibility-only.
 
 ## 2026-09-01 — Explicit BJTR addresses
 

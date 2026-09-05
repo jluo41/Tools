@@ -1,40 +1,40 @@
 ---
 name: haipipe-task-for-page
 description: >-
-  Task-type specialist for a PAGE-SERVING collection job: one job per Board
-  Page that answers the page's task-route probe cards with CODE — it reads
-  upstream task folders, computes or extracts every owed value into
-  values.yaml + QA digests, and PROPOSES the upstream task when the value has
-  no source yet. Called by /haipipe-task when task-type=page; dispatched
-  through the probe crossing, never directly by a phase. Trigger: page
+  Task-type specialist for a PAGE-SERVING execution job: one job per Board
+  Page that produces reusable Supporting Run Results for typed Evidence Items.
+  It reads upstream task folders, computes or extracts owed values into
+  values.yaml + QA digests, and proposes the upstream task when a value has no
+  source yet. Called by /haipipe-task when task-type=page; its Results are
+  selected by SURVEY and consumed by LAND. Trigger: page
   collection job, collect the values, serve the page's cards, values.yaml,
   propose the missing task, task-type page, /haipipe-task-for-page.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-08-31"
+  version: "0.3.4"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-task-for-page · one job answers one page's numbers with code
 
 Load `haipipe-task` first (the hierarchy, the four phases, the QA door); this
-file owns the delta for `task-type: page`. The page side of the crossing is
-`board/page-plugins/haipipe-plugin-probe` (the card) and
-`board/page-workflows/haipipe-page-evidence` (the binding); this job never
-loads either, because it stands on the executor side of the wall.
+file owns the delta for `task-type: page`. The consumer side is a typed row in
+`outline/<stem>-evidence-items.md`; SURVEY maps this job's full Run id as a
+Supporting Run and LAND consumes its Result. This job never edits the Page,
+because it stands on the executor side of the wall.
 
 ## ⚡ Brief
 
 ```text
-Q        every number this page promises: computed by code, from named
+Q        every number this page needs: computed by execution, from named
          upstream runs, re-runnable — and every number with no source yet:
          proposed as the task that would produce it
-READS    the page's stripped executor questions (executor/q-executor.md,
-         handed in the dispatch batch) · upstream task folders' report.yaml ·
+READS    a frozen consumer-neutral input batch (expected payload + acceptance,
+         with Page claims removed) · upstream task folders' report.yaml ·
          results/ · QA/
-WRITES   its own job only: plan.yaml · the collection script · config/rNN ·
-         results/<task>/<run>/values.yaml · QA/<n>-<slug>.md ·
+WRITES   its own job only: plan.yaml · scripts/<collector>.py ·
+         scripts/config/rNN · $OUTPUT_ROOT/results/<task>/<run>/values.yaml · QA/<n>-<slug>.md ·
          workflow/proposals.md
 NEVER    a consumer/ file or any stake · the page or its outline/ · a sibling
          job's folder · a value it computed nowhere (GATE-3: a name that does
@@ -48,12 +48,13 @@ EXITS    Report: every question answered in values.yaml + QA, or carried as
 ```text
 project or Application                          any Folder's Page Face
 tasks/                                           <page>/
-└── b<NN>_page_service/         one service      ├── evidence/probe/PP<NN>-<slug>/
-    ├── j01_values_<pageA>/     block per project│     card.md · executor/ · proof/
-    │   ├── t01_collect_values/                  │     ## Values → PP<NN>.v<n>
-    │   │   ├── t01_collect_values.py            └── evidence/pagex/<stem>.md
-    │   │   ├── t01_collect_values.md                  whole job Folder ranked FIRST
-    │   │   ├── config/r01_<batch>.yaml
+└── b<NN>_page_service/         one service      ├── outline/<stem>-evidence-items.md
+    ├── j01_values_<pageA>/     block per project│     E<NN>-VALUE-<slug> · Supporting Runs
+    │   ├── t01_collect_values/                  ├── runs/pj<JJ>t<EE>r<RR>.sh
+    │   │   ├── t01_collect_values.md            └── results/pj<JJ>t<EE>r<RR>/
+    │   │   ├── scripts/
+    │   │   │   ├── collect_values.py
+    │   │   │   └── config/r01_<batch>.yaml
     │   │   └── runs/r01_<batch>.sh
     │   ├── workflow/  plan.yaml · report.yaml · proposals.md
     │   ├── results/t01_collect_values/r01_<batch>/values.yaml
@@ -61,12 +62,10 @@ tasks/                                           <page>/
     └── j02_values_<pageB>/
 ```
 
-- **The card is not replaced.** `PP<NN>.v<n>` stays the page-side address for
-  every value (`haipipe-plugin/ref/roster.md`: a number filed a second time is
-  one thing filed twice). This job is the task-side EXECUTOR that answers a
-  whole page's task-route cards in one place; EVIDENCE ④ POINT binds each
-  card's `target:` to this job's QA file and pulls its value rows from
-  `values.yaml`.
+- **The Evidence Item is not copied here.** Its `E<NN>-VALUE-<slug>` id stays
+  Page-local. This task-side executor produces a consumer-neutral Result; the
+  Page maps its full `b<NN>j<NN>t<NN>r<NN>` address under Supporting Runs and
+  the Local Page Run selects the needed `values.yaml` rows.
 - **One job per Page Face, one service block per project**; three served Pages
   hold three sibling jobs, whether their owning Folder belongs to Paper,
   Application, or another Board family. The canonical stranger-test names are
@@ -75,22 +74,20 @@ tasks/                                           <page>/
   `b<NN>_paper_service` remains readable but is never required for non-Paper
   work. A run config is one batch (`r01_<batch>.yaml`), and a refresh is a new
   run of the same ticket, never a new Folder.
-- **The page links the job as one whole Folder through PageX**
-  (`<page>/evidence/pagex/<stem>.md`), ranked first. The Folder card reads
-  Page Face plus live plan/report/QA state from the source. There is no
-  separate `task/` lane or Task plugin.
+- **The Page links Results, not a whole Folder copy.** SURVEY records the
+  exact Supporting Run id; Context Workspace may separately list the related
+  Task Page when it helps a reader. There is no PageX, `task/`, or Probe lane.
 
 ## 🚪 How work arrives · the same doors, never a new one
 
 ```text
-LAND         executes the Evidence Item Supporting/Local Run graphs and hands any legacy outbound batch through
-             haipipe-probe-q-executor-agent — the ONE door (JL 260820)
-executor     for each task-route question: /haipipe-task qa "<question>" <this job>
+SURVEY       selects this existing/needed Execution Run as a Supporting route
+executor     for each neutral question: /haipipe-task qa "<question>" <this job>
              gate ① existing QA answer → path · ② results/ hold it → digest ·
              ③ neither → ENTER the lifecycle HERE: extend the collection
              script, rerun the ticket, complete the QA file at Report
-LAND         binds card target: → the QA path · allocates PP<NN>.v<n> from
-             values.yaml · a changed value reopens OUTLINE
+LAND         validates the Supporting Result, freezes it into Local Input, and
+             executes the Page-local Evidence Item Run; changed values reopen EMBED
 ```
 
 A phase producer still never calls this specialist directly, and this job
@@ -99,23 +96,24 @@ questions and serves `values.yaml` rows to whoever binds them.
 
 ## 📐 values.yaml · the machine-readable half of the answer
 
-One file per run, beside the run's other results; the QA digest cites it.
+One file per Run under resolved `$OUTPUT_ROOT`, beside the Run's other Results;
+the QA digest cites it.
 Every row resolves or is `owed` — a computed row with an unresolvable
 `source:` raises at run time, never defaults.
 
 ```yaml
-# results/t01_collect_values/r01_intro_batch/values.yaml
+# $OUTPUT_ROOT/results/t01_collect_values/r01_intro_batch/values.yaml
 computed: "260831 1710"
 upstream:                            # every folder this run read, pinned
   - examples/ProjB/tasks/R01_Reg_TraitOpioid · report.yaml 260828
 values:
-  - id: PP03.v1                      # the page-side address, given in the batch
+  - id: adjusted-effect              # consumer-neutral Result key
     question: 2-agreeableness-effect # QA/2-agreeableness-effect.md
     value: "-0.083"
     unit: "SD opioid days per SD agreeableness"
     source: "R01_Reg_TraitOpioid/results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
     state: landed
-  - id: PP05.v1
+  - id: review-coverage
     question: 3-review-coverage
     state: owed                      # no upstream produces it yet
     proposal: workflow/proposals.md#P2
@@ -149,8 +147,8 @@ DIRECTION; direction belongs to the page's prose after EVIDENCE lands.
 ## 🔁 A rerun is the refresh, and staleness is mechanical
 
 Upstream reran → rerun this job's ticket → `values.yaml` regenerates whole →
-diff against the previous run's copy names every drifted value → each drifted
-`PP<NN>.v<n>` is a stale binding EVIDENCE re-lands and OUTLINE absorbs
+diff against the previous run's copy names every drifted value → each mapped
+Evidence Item is a stale binding EVIDENCE re-lands and OUTLINE absorbs
 (`v<N+1>` if the plan was ✅). The page never goes stale silently, because the
 join from sentence to lane to card to values row to upstream run is walkable
 in both directions.
@@ -162,9 +160,15 @@ Plan     workflow/plan.yaml: input = the batch's questions + the upstream
          folders each should read; process = extract | compute | join;
          output = values.yaml rows + QA files. IPO schema:
          task/haipipe-workflow/ref/plan-schema.md
-Build    t01_collect_values.py + config/r<NN>_<batch>.yaml: one entry per
+Build    scripts/collect_values.py + scripts/config/r<NN>_<batch>.yaml: one entry per
          question (id, upstream path, extraction); CODE_REVIEW.md Gate 1
-Execute  bash runs/r<NN>_<batch>.sh → values.yaml + per-question artifacts
+Execute  bash runs/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
+         family `Execution`, operation `collect-page-values`, target `<batch>`, and
+         `REQUIRED_RESULTS=("values.yaml")`
+         `RUN_INPUTS` pins every upstream Result path/hash named by the batch.
+         → values.yaml + per-question artifacts
+         The generic Run scaffolder writes the complete `status: planned`
+         runtime receipt before this Ticket may launch.
 Report   report.yaml mirrors plan · RUN_AUDIT.md Gate 2 · QA/<n>-<slug>.md
          completed per answered question · proposals.md rows for the owed
 ```
@@ -179,7 +183,6 @@ haipipe-task-for-page/
 ```
 
 The base is `haipipe-task` (hierarchy, phases, `fn/qa.md` for the QA-file
-anatomy this job writes). The page-side contracts it serves but never loads:
-`haipipe-plugin-probe` (the card and the wall), `haipipe-page-evidence`
-(the binding), and `haipipe-plugin-evidence/ref/pagex.md` (the exact accepted
-cross-Folder source relationship).
+anatomy this job writes). The Page-side contracts it serves but never edits are
+`haipipe-page-outline`, `haipipe-page-evidence`, and
+`haipipe-plugin-outline/ref/item-table.md`.

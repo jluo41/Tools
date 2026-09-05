@@ -7,8 +7,8 @@ description: >-
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   folder inventory, /haipipe-plugin-folder.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-02"
+  version: "0.4.2"
+  last_updated: "2026-09-05"
 ---
 # /haipipe-plugin-folder · the folder is the truth
 
@@ -26,8 +26,10 @@ A status has no artifact: written to disk it starts aging the moment it lands, a
 Only a DERIVED lane — `delivery/latex` `delivery/word` `outline/evidence/bibex`
 `delivery/slide` `outline/evidence/display` — can be ⚠️ STALE, and it is stale
 exactly when its newest file predates the page's `.md`.
-Source material (`studio/draw` `studio/chat` `meeting` `outline/skill`) is often older
-than the prose and that is HEALTHY: it gets an age, never a warning.
+Current source material (`studio/draw` `studio/chat` `outline/skill`) is often
+older than the prose and that is HEALTHY: it gets an age, never a warning. An
+existing Page-local `meeting/` is shown the same way only as legacy input;
+new meeting records belong to `haipipe-project-meeting` at project/SPACE scope.
 Widening the flag to source folders would train readers to ignore it, which is the one way a staleness signal dies.
 
 ## 📡 Surface · explicit lanes, live on every open
@@ -50,6 +52,19 @@ A file that is a symlink wears a bare 🔗 with its full target on hover, becaus
 Fresh is a two-layer contract (JL 260816): the server sends no-store, and the shell's landing reloads the frame even when the URL is unchanged — one URL per page means "same src" is the common case, and skipping it is how a live view goes stale in the frame while staying fresh on the wire.
 A ⚠️ STALE row of a MECHANICAL writer (latex, word, bibex, display) carries ♻ rebuild: one click fires that plugin's own POST and re-renders (JL 260816: "could we update them along the time?"). display joined the same day (JL: "I want to add the rebuild button"): its POST recompiles each unit's DERIVED preview.tex ▶ preview.pdf and touches no intake, recipe, or accepted: tick. slide alone stays a pointer — a compile may be a button reflex, an AUTHORED artifact (claude -p, minutes, money) never is.
 The header carries the same pill the Word and LaTeX views wear: 🔄 rebuild stale (n) walks every curable row in sequence — never in parallel, the writers share the folder and xelatex is not a thing to race — and the pill renders only while something mechanical is actually stale (JL 260816).
+
+## 🧱 Boundary · inventory is not Board Table
+
+This plugin owns only the Folder tab's live **display** lens. It reports what
+material lanes exist now; it does not own the Page/Outline **plan** lens, Run
+acceptance, or Folder closure. `folderstat.py` therefore remains a live
+inventory and must not grow Board-level plan columns by implication.
+
+The future `Board Tables` sibling may join this inventory with the Page Face,
+Task Face, Outline, Runs, Results, and evidence. Its row grain is one Board
+Page/Page Folder; it must also declare its source authority and write boundary.
+Until then, the Folder tab, Outline plan table, and Runs presenter remain
+separate projections.
 
 ## ⚙️ Writer · a twin that writes nothing
 

@@ -130,6 +130,55 @@ def _page(root, *, tick="⬜", decide="☐ make", arrow="", result=True,
 
 
 class ItemTableTest(unittest.TestCase):
+    def test_historical_result_is_visible_only_after_explicit_supporting_admission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = Path(directory) / "run_result"
+            old = result / "old"
+            tables = old / "tables"
+            tables.mkdir(parents=True)
+            runtime = result / "runtime.yaml"
+            runtime.write_text("status: planned\n")
+            (tables / "aggregate.csv").write_text("estimate,n\n1.0,10\n")
+            historical = old / "result.yaml"
+            historical.write_text(
+                "status: complete\nsupporting_eligible: false\n"
+            )
+            self.assertEqual(
+                ("rerun", ""),
+                it._current_result_status(runtime, result_files={"runtime.yaml"}),
+            )
+            historical.write_text(
+                "status: complete\nsupporting_eligible: true\n"
+            )
+            self.assertEqual(
+                ("historical", str(old)),
+                it._current_result_status(runtime, result_files={"runtime.yaml"}),
+            )
+
+    def test_held_result_envelope_is_blocked_not_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(
+                directory,
+                decide="☑ make · JL 260904",
+                arrow=" → results/local/result.yaml",
+            )
+            result = page.parent / "results" / "local" / "result.yaml"
+            result.write_text(
+                "item: E01-VALUE-adjusted-effect\n"
+                "status: held\n"
+                "acceptance:\n"
+                "  checks: []\n"
+                "  passed: false\n"
+            )
+            row = it.read_items(page)["E01-VALUE-adjusted-effect"]
+            self.assertEqual(
+                "blocked",
+                it.item_status(
+                    row, False, False, time.time(),
+                    Path(directory), page.parent,
+                ),
+            )
+
     def test_wall_label_is_compact_and_keeps_type(self):
         self.assertEqual(
             it.wall_label(
@@ -190,6 +239,39 @@ class ItemTableTest(unittest.TestCase):
             self.assertEqual(
                 ("new-run", "pj01t01r01", "results/local/value.yaml", "make"),
                 (row["action"], row["address"], row["result"], row["decision"]),
+            )
+
+    def test_cite_verification_is_item_level_and_required_for_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory)
+            path = it.items_path(page)
+            path.write_text(path.read_text().replace(
+                "- **Acceptance**: source identity and locator resolve\n"
+                "- **Supporting Runs**: Discovery",
+                "- **Acceptance**: source identity and locator resolve\n"
+                "- **Verified**: ✅ JL 260904 1015\n"
+                "- **Supporting Runs**: Discovery",
+            ))
+            row = it.read_items(page)["E02-CITE-guideline-anchor"]
+            self.assertEqual("✅ JL 260904 1015", row["verified"])
+            self.assertTrue(row["verification_signed"])
+
+            result = Path(directory) / "cite-result.yaml"
+            result.write_text("claim: supported\n")
+            status_row = {
+                "specified": True, "decision": "make", "result": str(result),
+                "planned": True, "type": "CITE", "verification_signed": False,
+            }
+            self.assertEqual(
+                "planned",
+                it.item_status(status_row, False, False, time.time(),
+                               Path(directory), Path(directory)),
+            )
+            status_row["verification_signed"] = True
+            self.assertEqual(
+                "ready",
+                it.item_status(status_row, False, False, time.time(),
+                               Path(directory), Path(directory)),
             )
 
     def test_legacy_pagex_field_is_read_but_forces_resurvey(self):

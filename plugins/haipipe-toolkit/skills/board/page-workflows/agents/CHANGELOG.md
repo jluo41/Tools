@@ -1,7 +1,8 @@
 ## 2026-09-04 · canonical Page dependency order
 
 - Align all five phase agents with Page → router → phase → owning workflow →
-  exact Page Type → policy/worker → presenter ordering.
+  exact Page Face owner → policy/worker → presenter ordering, loading one
+  canonical family owner only once when it also owns the Folder.
 - Require phase routes and target cycles to remain separate in their shared
   producer receipt.
 

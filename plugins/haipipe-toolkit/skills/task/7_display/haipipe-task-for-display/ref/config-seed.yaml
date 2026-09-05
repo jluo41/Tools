@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — display-input task
+# Template for <task>/scripts/config/<RUNNAME>.yaml — display-input Task
 # =============================================================================
 
 _meta:
@@ -10,7 +10,7 @@ _meta:
   input: |
     <e.g., Eval results from tasks B01/01..05 (one per model size)>
   output: |
-    results/<run>/{source_data.csv, provenance.json}
+    $OUTPUT_ROOT/results/<task>/<run>/{source_data.csv, provenance.json}
   provenance: |
     provenance.json records task holder, run, upstream artifacts, selection logic, output hash,
     and `approved_for_display_intake: true` only when this CSV is safe to snapshot into a paper.
@@ -22,10 +22,9 @@ _meta:
 
 display_kind: figure                    # intended consumer: figure | table | diagram | illustration
 
-source_runs:                            # list of upstream result paths
-  - tasks/B01_evaluation_clm/01_eval_d64/results/run_seed42/
-  - tasks/B01_evaluation_clm/02_eval_d128/results/run_seed42/
-  - tasks/B01_evaluation_clm/03_eval_d256/results/run_seed42/
+source_runs:                            # full Run ids + resolved Result paths
+  - run: b01j01t01r01
+    result: <resolved-upstream-result>
 
 summary_params:                         # this task's responsibility: facts, not visual styling
   columns: [model_size, split, mae, ci95]

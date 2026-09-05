@@ -9,7 +9,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.34.0"
+  version: "0.37.0"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -25,7 +25,8 @@ coherent process space.
 ```text
   this file      the FOLDER (nine records + Skill + evidence) and ONE TAB
   ref/           plan-grammar.md · item-table.md · record-shape.md ·
-                 specimen-section-plan.md · evidence-bundle.md: the exact
+                 skill-record.md · specimen-section-plan.md ·
+                 evidence-bundle.md: the exact
                  grammars a writer or parser needs
   the phases     haipipe-page-context · haipipe-page-outline · haipipe-page-evidence
 ```
@@ -41,7 +42,8 @@ stem; only the plan is many-per-page, by version.
 
 ```text
 <page>/outline/
-├── <stem>-outline-v<N>.md    what we AGREED      authored · a person ticks · versioned
+├── <stem>-outline-v<N>.<k>.md
+│                              frozen `.0` baseline or working revision · authored · versioned
 ├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
@@ -67,9 +69,9 @@ This is exhaustive for Page evidence storage. Never create a root
 `<page>/evidence/`, an `outline/evidence/value/` copy lane, or an
 `outline/evidence/probe/` lane. VALUE is an Evidence Item type, not a storage
 folder: its contract and binding stay in the Outline records, while an actual
-page-local VALUE payload is the Result of its local Run in sibling
-`<page>/results/`; an external VALUE stays at its Supporting Run's real Result
-path. Probe is retired compatibility material and has no active Page surface.
+page-local VALUE payload stays at the Result address selected by the Folder
+owner's Run dialect; an external VALUE stays at its Supporting Run's real
+Result path. Probe is retired compatibility material and has no active Page surface.
 `outline/evidence/pagex/` is also legacy migration input: new evidence graphs
 use Supporting Run Results; Related Page links appear in Context Workspace.
 
@@ -165,23 +167,27 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
 - **The address is `C<n>.P<m>.B<k>`** and it is the join key for every other
   file in the folder and every card, key and unit in the sibling lanes.
 
-## 🔒 The plan freezes at approval, not at creation
+## 🔒 Major versions freeze agreement; minor revisions carry discussion
 
 ```text
-  ✍️ v1 · approved: ⬜   a working document: edit, delete, rewrite freely
-        │  🧑 a person ticks approved:
-        ▼
-  🔒 v1 · approved: ✅   frozen, correct as of that date
-        │  the work moves on
-        ▼
-  ✍️ v2 · approved: ⬜   supersedes: v1 · v1 is kept, because it was right then
+  ✍️ v0.1 → v0.2 → …     no approved baseline yet
+             │  🧑 channel approval
+             ▼
+  🔒 v1.0 · approved: ✅ first frozen agreement
+             │  requested change or evidence fold
+             ▼
+  ✍️ v1.1 → v1.2 → …    working revisions under v1.0
+             │  🧑 channel approval
+             ▼
+  🔒 v2.0 · approved: ✅ next frozen agreement
 ```
 
-The fold's appends (`Answered:` `Drawn:` `Routed:` and a `PP<NN>` id once a
-card serves a bullet) are the one write an approved version accepts, and they
-add, never edit: a plan that rewrote its own heads as work landed would always
-look finished. `approved:` is a person's; a machine may transcribe a person's
-chat approval with the quote and the time, and writes `checked:` for itself.
+An approved `.0` baseline is immutable. The fold's appends (`Answered:`,
+`Drawn:`, `Routed:`) create the next working minor instead of modifying the
+baseline. Material human-facing revisions increment the minor; mechanical
+repairs made before presenting that revision remain in place. `approved:` is a
+person's; a machine may transcribe a channel approval into the promoted `.0`
+baseline with the quote and time, and writes `checked:` only for itself.
 
 ## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
 
@@ -238,8 +244,8 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   item's Expected/Acceptance contract and SURVEY's Local Input note. It then
   separates Availability from Next action and prints Run, Result, and Runtime
   paths as selectable text. The plan remains authored in
-  `outline/<stem>-evidence-items.md`; allocation creates the real Run under
-  `runs/` and its generated Result under `results/`.
+  `outline/<stem>-evidence-items.md`; allocation creates the real Run and its
+  generated Result at the addresses selected by the Folder owner's Run dialect.
 - **Probe is not a lens or lane.** Do not create or restore a Probe tab or
   `outline/evidence/probe/`; legacy Probe artifacts may be read only for
   migration and must be routed into typed Evidence Items.
@@ -284,7 +290,7 @@ When a person asks to review, check, read, or approve a page outline, the
 OUTLINE phase reads these existing records as one compact, linked packet:
 
 ```text
-① Current Shape    plan v<N> · approval state · arc · C/P reader path
+① Current Shape    plan v<N>[.<k>] · approval state · arc · C/P reader path
 ② Evidence owed    Evidence Item table · typed/status counts · material source/Run paths
 ③ What shaped it   routed Feedback · applicable Requirement · open Discussion only
 ④ Human decision   exact approval/Decide choice · blockers · no inferred tick
@@ -332,6 +338,14 @@ vocabulary and is not `<stem>-evidence.md`. That generated file is specifically
 the authored Evidence Item table joined to Supporting/Local Run receipts and
 ready local Results.
 
+A DISPLAY unit is the bounded Page-facing projection named by its governed
+local Result. LAND supplies the Page-owned unit directory directly to the
+renderer; the Result envelope records the source Run id, resolved Result path,
+unit pointer, and hashes without a duplicate-and-copy step. LAND may make the
+Result ready under the item's authored `Acceptance` checks.
+CHECK later administers the unit's separate lowercase human `accepted:` gate.
+VALUE and CITE Results receive no analogous copied payload lane.
+
 ## ✍️ Who writes what
 
 ```text
@@ -344,9 +358,9 @@ requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.
 requirement W   the page author; generator preserves verbatim never (authored)
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
-evidence-items  SHAPE: Target · Label · Need · Expected · Acceptance; SURVEY: classified existing/planned Runs +  never
+evidence-items  SHAPE: Target · Label · Need · Expected · Acceptance + CITE Verified ⬜; SURVEY: classified existing/planned Runs +  never
                 one Local Input plan + one Local Run declaration; person: Decide;
-                LAND executes/validates sources and binds input + Result
+                LAND executes/validates sources, binds input + Result, and presents CITE Verified
 evidence        the generator                                 cli/evidence-status.py <page>.md
 files           any phase or the page chat                    never (authored)
 log             every phase and the page chat, append only    never (authored)
@@ -374,5 +388,5 @@ holds; it writes nothing.
 - `../../haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
 - `../../haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators
 - `../../page-workflows/haipipe-page-outline/SKILL.md` · the phase whose deliverable this folder is
-- `../haipipe-plugin-skill/SKILL.md` · the nested ranked store embedded as Context Workspace → Records → Skills
+- `ref/skill-record.md` · the nested ranked store embedded as Context Workspace → Records → Skills
 - `../../../diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf12-outline/QPf12-outline.md` · the design page and its rulings

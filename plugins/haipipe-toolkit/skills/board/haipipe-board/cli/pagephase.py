@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The phase strip: where ONE page sits in the seven-phase page workflow.
+"""The phase strip: where ONE Page sits in the five-phase Page workflow.
 
 Three strips, three questions, and none substitutes for another:
 
@@ -78,6 +78,9 @@ def main():
     L = [f"{st['page']} · phase strip (from disk, "
          f"{'receipt ' + rec['file'] if rec else 'no receipt'})"]
     row = lambda k: f"{MARK[m[k]]} {EMOJI[k]} {LABEL[k]:<14s}"
+    ctx = st["context"]
+    L.append(f"{row('CONTEXT')} "
+             + (f"ready · {ctx['file'].name}" if ctx["file"] else "no context record"))
     it = st.get("items")
     L.append(f"{row('OUTLINE')} v{o['version']} "
              f"{'approved' if o['approved'] else ('UNAPPROVED' if o['file'] else 'no file')}"
@@ -99,12 +102,11 @@ def main():
                  + (f" · MISSING {','.join(st['missing'])}" if st["missing"] else "")
                  + f" · 📚 {st['bibex']['verified']}/{st['bibex']['entries']} verified"
                  + f" · 🖼 {len(st['drawn'])}/{len(disp)} drawn · {len(st['accepted'])}/{len(disp)} accepted")
-    L.append(f"{row('DRAFT')} {st['divisions']} content divisions"
+    L.append(f"{row('CONTENT')} {st['divisions']} content divisions"
              + ("" if not o["file"] else
                 (" · page edited AFTER outline tick" if st["page_after_tick"]
                  else " · page predates outline tick")))
-    L.append(f"{row('REVISE')} latex/ "
-             f"{'present' if st['latex'] else 'absent'}"
+    L[-1] += (f" · latex/ {'present' if st['latex'] else 'absent'}"
              + (f" · pdf {'fresh' if st['pdf_fresh'] else 'STALE/none'}" if st["latex"] else ""))
     L.append(f"{row('CHECK')} last receipt: "
              + (f"{last.get('phase')} → {last.get('route')} (round {last.get('round')})"

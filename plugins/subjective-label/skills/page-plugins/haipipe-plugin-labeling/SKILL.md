@@ -9,8 +9,8 @@ description: >-
   when designing, opening, diagnosing, or implementing the labeling
   plugin/tab/folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-03"
+  version: "0.6.0"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -26,6 +26,7 @@ one page folder
 └── labeling/                    the job itself · canonical
     ├── config.yaml · corpus/ · policy/ · rounds/ · gold/ · handoff/
     ├── test/ · evaluation/ · production/ · audit/
+    ├── gates/                      P0 contract + G0 receipts
     ├── runs/ · results/            Level-4 operation envelopes
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
@@ -61,7 +62,7 @@ tab.
 The upper stage follows Outline's category pattern: one Plugin owns several
 stable, noun-named Workspaces. Phases are state, never navigation. Switching a
 Workspace hides but does not destroy the others, and the last selected
-Workspace is remembered per Page. The five Workspaces answer:
+Workspace is remembered per Board source plus Page file. The five Workspaces answer:
 
 1. **Workflow** — which P0-P5 authority artifact is the frontier, which G0-G6
    assertion fails first, which Runs exist, and what is the one next action?
@@ -77,10 +78,13 @@ Workspace is remembered per Page. The five Workspaces answer:
 These are projections over the one canonical `labeling/` tree, not five new
 `*-space/` storage folders. They render safe metadata and artifact state only.
 
-`GET /_board/labeling` re-reads disk on every open. It may say “observed” or
-“checkpoint reports pass”; only the CROSSING workflow may say a gate passes,
-after rehashing and checking its human receipt. `REPORT.md`, `.state.json`, and
-the Page's prose are useful views, never the source of the frontier.
+`GET /_board/labeling` re-reads disk on every open. For a v2 lane with a
+`gates/p0-contract/receipt.json` or `gates/g0/receipt.json`, it delegates P0/G0
+truth to the canonical subjective-label status evaluator, including checksum
+and receipt validation. A historical lane with no canonical receipt may say
+“observed”, but it must not silently promote that observation to a pass.
+`REPORT.md`, `.state.json`, and the Page's prose are useful views, never the
+source of the frontier.
 
 The lower half is persistent while every upper Workspace changes. It frames the
 exact same generated-Page `?pane=chat` document that Studio uses, including its
@@ -92,6 +96,11 @@ generated `<page>.html` URL is carried separately and validated server-side.
 Chat may prepare or dispatch work, but a semantic decision becomes real only
 when the owning workflow writer lands its canonical event immediately under
 `labeling/`.
+
+The upper/lower boundary has one keyboard- and pointer-accessible splitter. Its
+selected height is a UI preference keyed by the Board source plus Page file,
+never by the Page stem alone; this prevents same-named Pages in different
+Boards from sharing a misleading Workspace or Chat layout.
 
 At `HOLD`, this is a hard boundary: the server re-derives HOLD from canonical
 artifacts and forces that Page's Chat into read-only scoped mode, independently

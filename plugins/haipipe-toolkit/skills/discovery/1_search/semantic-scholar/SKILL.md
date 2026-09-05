@@ -1,11 +1,11 @@
 ---
 name: semantic-scholar
 description: Search published venue papers (IEEE, ACM, Springer, etc.) via Semantic Scholar API. Complements /arxiv (preprints) with citation counts, venue metadata, and TLDR. Use when user says "search semantic scholar", "find IEEE papers", "find journal papers", "venue papers", "citation search", or wants published literature beyond arXiv preprints.
-argument-hint: "query-or-paper-id"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  argument_hint: "query-or-paper-id"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -177,7 +177,7 @@ if [ -d research-wiki/ ]:
 
 The helper handles slug / dedup / page / index / log — **do not
 handwrite `papers/<slug>.md`**. See
-[`shared-references/integration-contract.md`](../shared-references/integration-contract.md).
+[`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md).
 Backfill with `/research-wiki sync --arxiv-ids <id1>,<id2>,...` for
 arXiv-available papers.
 

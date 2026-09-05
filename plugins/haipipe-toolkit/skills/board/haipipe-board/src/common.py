@@ -10,6 +10,7 @@ EVIDENCE_LANES = frozenset({"bibex", "display", "pagex", "materials"})
 LEGACY_EVIDENCE_LANES = frozenset({"probe"})
 DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
 OUTLINE_LANES = frozenset({"skill"})
+STUDIO_LANES = frozenset({"chat", "draw"})
 
 
 def outline_lane_dirs(page_dir, lane):
@@ -140,6 +141,35 @@ def delivery_lane_dir(page_dir, lane):
     if lane not in DELIVERY_LANES:
         raise ValueError("not a delivery lane: %s" % lane)
     return Path(page_dir) / "delivery" / lane
+
+
+def studio_lane_dirs(page_dir, lane):
+    """Existing Studio lane directories, canonical first and deduped.
+
+    New Page-owned Chat and Draw material lives below ``studio/``. The old
+    sibling lane remains a readable migration input (and may be a symlink to
+    the canonical directory), but a writer must never select it for new work.
+    """
+    if lane not in STUDIO_LANES:
+        raise ValueError("not a studio lane: %s" % lane)
+    page_dir = Path(page_dir)
+    out, seen = [], set()
+    for candidate in (page_dir / "studio" / lane, page_dir / lane):
+        if not candidate.is_dir():
+            continue
+        key = candidate.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(candidate)
+    return out
+
+
+def studio_lane_dir(page_dir, lane):
+    """The canonical destination for one Page-owned Studio lane."""
+    if lane not in STUDIO_LANES:
+        raise ValueError("not a studio lane: %s" % lane)
+    return Path(page_dir) / "studio" / lane
 
 
 def scene_text(scene) -> str:
@@ -337,8 +367,24 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # AGENTS.md, DESIGN.md and MEMORY.md out; SKILL.md and STATUS.md do match, but
 # through the pre-existing [QS] branch, which is long-standing behaviour.
 PAGENAME = re.compile(
-    r"^(?:[QS][A-Za-z0-9]*|[A-Z]{1,2}\d[A-Za-z0-9]*|Agent-\d+|Meeting-\d+|Design-\d+)"
+    r"^(?:[QS][A-Za-z0-9]*|[A-Z]{1,2}\d[A-Za-z0-9]*|Agent-\d+|Meeting-\d+|Design-\d+|t\d{2}_)"
     r"[-_A-Za-z0-9]*\.md$")
+TASK_PAGE_NAME = re.compile(r"^t\d{2}_[a-z0-9][a-z0-9_]*\.md$")
+
+
+def board_kind(d):
+    """Return the explicit Board container kind, with no path inference.
+
+    A Task Block is a Board because ``board.md`` says so, not because its
+    directory happens to start with ``bNN_``.  This keeps ordinary Boards from
+    adopting every task-looking Markdown file below a related folder.
+    """
+    try:
+        text = (Path(d) / "board.md").read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    match = re.search(r"(?m)^board-kind:\s*([a-z][a-z0-9-]*)\s*$", text)
+    return match.group(1) if match else ""
 
 
 def _vet_path(name, pattern):
@@ -407,10 +453,18 @@ def q_files(d):
 
 
 def page_files(d):
-    """Q, S, Design, Agent, Meeting and Application runtime pages at any depth,
-    same exclusions. A legacy Skill-* page still rides the S glob, and the
-    M/I/A/D globs are wide on purpose: PAGENAME does the real filtering."""
-    for prefix in tuple("QSABCDEFGHIJKLMNOPRTUVWXYZ") + ("Agent", "Meeting", "Design"):
+    """Discover Pages for the Board kind declared by ``board.md``.
+
+    Generic Boards retain the Q/S/design/application grammar.  A
+    ``board-kind: task-block`` Board additionally exposes canonical same-stem
+    ``tNN_*`` Task Pages.  The opt-in is deliberate: widening every Board's
+    scan would turn implementation notes in related task trees into ghost
+    Pages.
+    """
+    prefixes = tuple("QSABCDEFGHIJKLMNOPRTUVWXYZ") + ("Agent", "Meeting", "Design")
+    if board_kind(d) == "task-block":
+        prefixes += ("t",)
+    for prefix in prefixes:
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):

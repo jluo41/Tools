@@ -12,7 +12,7 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.6.1"
+  version: "0.6.5"
   last_updated: "2026-09-04"
 ---
 
@@ -25,9 +25,12 @@ Level 4 beneath a Folder/Task, but it is not another folder level:
 Run address = authored Ticket identity = generated Result identity
 ```
 
-Load the Folder's owning workflow phase first. The phase owns why this work is
-needed, which Run kinds it permits, and what closes the Folder. Load the
-selected worker/dialect after this contract. Load `haipipe-plugin-runs` only to
+Load the Folder owner first: normally a workflow phase, or a declared canonical
+family skill for a stable base Folder such as Task. Then load the current phase
+that commissions the Run. The Folder owner owns kind, dialect, and cross-face
+closure; the current phase owns why this attempt is needed, which Run kinds it
+permits, and its acceptance/promotion rule. Load the selected worker/dialect
+after this contract. Load `haipipe-plugin-runs` only to
 present the completed structure; the presenter owns no Run semantics.
 
 ## Ownership
@@ -128,6 +131,12 @@ Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
 ```
 
+Inside EVIDENCE/LAND, a DISPLAY-typed Evidence Item is still exactly one
+`Page · Evidence Item` Run. Rendering calls are internal worker steps because
+they share that item's target and Result contract. Use `Page · Display` only
+when a display unit is commissioned as an independently closable target outside
+an Evidence Item Run; never count both families for one unit.
+
 The base classifies these families but does not define their semantic outputs.
 The owning phase supplies the target grammar and the worker/dialect supplies the
 kind-specific Result gate. A phase may extend the vocabulary only when the new
@@ -170,7 +179,9 @@ The `p` namespace must never be rewritten as `b01`; doing so can collide with
 an Execution or Discovery Run. A reserved Paper address is not counted as a
 Run until its Ticket exists.
 
-`reuse` and `rerun` references require the full `bNNjNNtNNrNN` identity.
+`reuse` and `rerun` references require the full owner-native identity:
+`bNNjNNtNNrNN` for a Job-backed Task or global Supporting Run, and
+`pjNNtNNrNN` for a Paper-local Run.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
@@ -187,7 +198,9 @@ FOLDER-LOCAL
 
 JOB-BACKED TASK
   <job>/<task>/runs/<RUNNAME>.sh
-  <job>/results/<task>/<RUNNAME>/
+  $OUTPUT_ROOT/results/<task>/<RUNNAME>/
+  where $OUTPUT_ROOT is the Job in self-serving mode or the consumer-owned
+  mirrored Job root selected by the Task's `store:`/launcher contract
 
 LABELING JOB
   <job>/runs/<RUNNAME>.yaml
@@ -197,7 +210,7 @@ LABELING JOB
 ```
 
 The Result folder is the generated projection of the Run, never Level 5. Do not
-copy or symlink a Job-owned Result into its Task Folder to imitate the local
+copy or symlink a resolved Task Result into its Task Folder to imitate the local
 dialect. A phase may declare another Ticket extension or storage dialect only
 when its Run Profile gives a deterministic Ticket-to-Result resolver.
 
@@ -320,8 +333,13 @@ Promotion  an accepted candidate written into an authority or handoff
 A Result does not become evidence merely because it exists. Execution and
 Discovery Results may support a Page Evidence Item; its one local Page ·
 Evidence Item Result becomes Page evidence only when LAND binds it and EMBED
-interprets it. Division Writing may be promoted into one Content division;
-Display may be promoted into the selected display lane. A Labeling Result may promote
+interprets it. Division Writing may be promoted into one Content division.
+For DISPLAY, the Page-owned display unit may be the renderer's direct output
+destination; the governed Result envelope points to that unit and records its
+hashes instead of first creating and then copying a duplicate payload. In a
+consumer-serving canonical Task this PHI-safe admitted unit is the narrow
+Page-authority exception to `$OUTPUT_ROOT`; `result.yaml` and `runtime.yaml`
+remain in the resolved Result store. A Labeling Result may promote
 closed policy/gold, a qualified route, a production candidate, or audited D*
 only through its owning phase gate. Record the source RUNNAME at the binding or
 promotion boundary.

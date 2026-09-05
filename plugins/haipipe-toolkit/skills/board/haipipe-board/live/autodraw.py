@@ -1,7 +1,7 @@
 """✨ Auto-draw: Claude authors a page's Excalidraw scene on demand.
 
 JL 260815: "what I want is like a button, and it can generate what we want."
-The button lives in the shell's Draw tab; this is the endpoint behind it.
+The button lives in the Draw half of the Studio tab; this is the endpoint behind it.
 POST /_board/autodraw {scene: <root-relative .excalidraw>, prompt: <optional ask>}
 
 THE PEN IS CLAUDE, THE METADATA IS OURS. The model returns only an `elements`
@@ -122,7 +122,7 @@ def autodraw(root, payload):
     if root not in f.parents:
         return _fail("scene escapes the served root")
     if f.suffix != ".excalidraw" or f.parent.name != "draw":
-        return _fail("auto-draw only writes <owner>/draw/*.excalidraw")
+        return _fail("auto-draw only writes a Page draw lane")
     if f.name == "group.excalidraw":
         return _fail("the group view is COMPOSED, never authored — "
                      "draw the pages and it assembles itself")
@@ -133,6 +133,10 @@ def autodraw(root, payload):
     held, reason = labeling_hold_for_scene(root, rel)
     if held:
         return _fail(reason + " · Draw generation is read-only at this gate")
+    legacy_page = f.parent.parent
+    if (legacy_page / f"{legacy_page.name}.md").is_file():
+        return _fail("legacy folded-Page draw/ is read-only — open the Page's "
+                     "canonical studio/draw scene to migrate it first")
 
     scene = None
     if f.is_file():
@@ -144,8 +148,13 @@ def autodraw(root, payload):
             return _fail("this scene is hand-drawn — auto-draw refuses to "
                          "overwrite a person's work")
 
-    page_dir = f.parent.parent
-    md_path = page_dir / f"{page_dir.name}.md"
+    page_dir = (f.parent.parent.parent
+                if f.parent.parent.name == "studio" else f.parent.parent)
+    declared = (scene or {}).get("haipipe", {}).get("page", {}).get("markdown")
+    declared_path = (root / declared).resolve() if declared else None
+    md_path = (declared_path if declared_path and declared_path.is_file()
+               and root in declared_path.parents
+               else page_dir / f"{page_dir.name}.md")
     md = md_path.read_text(encoding="utf-8")[:MAX_MD] if md_path.is_file() else ""
     pid = f.stem
     ask_line = f"THE ASK: {ask}" if ask else \

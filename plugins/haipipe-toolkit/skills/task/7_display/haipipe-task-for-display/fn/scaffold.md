@@ -1,122 +1,131 @@
-fn-scaffold: Scaffold a display job
-=============================================
+fn-scaffold: Scaffold a display-input Job
+=========================================
 
-Produce the verified display-ready summary input for a paper figure or table from upstream results.
-Group letter default: **C** (display).
-
-Output: `tasks/C{NN}_<group>/{NN}_<job_name>/`.
-
-
-Step 1 — Identify project + block
----------------------------------------
-
-- Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **C**; scaffold a new `C{NN}_<block_name>/` if needed.
+Produce one verified display-ready aggregate from governed upstream Results.
+Load `haipipe-task`, its hierarchy, and `haipipe-run` first.
+This specialist creates canonical nested Task structure and never creates the
+final Page or Paper display asset.
 
 
-Step 2 — Collect metadata
---------------------------
+Step 1 — Resolve Project, Block, and mode
+-----------------------------------------
 
-- 2-digit NN: next free in this group.
-- snake_case task_name: descriptive
-  (e.g., `main_figure_mae_vs_modelsize`, `table_ablation_horizons`).
-- Intended display kind: `figure` | `table` | `diagram` | `illustration`.
-- Source runs: list of `<task_path>/results/<run>/` to aggregate from.
-- Output format: `source_data.csv` + `provenance.json`; optional diagnostic images stay under `diagnostics/`.
-- `_meta:` block.
+- Resolve the Project from cwd or the explicit path.
+- Reuse a compatible existing Block when one owns display-input preparation.
+- Otherwise create the next canonical `bNN_<noun>_<qualifier>/` Block through
+  `haipipe-task block`; no project-independent C-series default exists.
+- Decide self-serving versus consumer-serving through the Task owner's
+  `store:` gate before writing generated paths.
+- Return blocked rather than guessing any unresolved owner or store.
 
 
-Step 3 — Create skeleton
--------------------------
+Step 2 — Collect the contract
+-----------------------------
 
+- Job name: `jNN_<noun>_<qualifier>`, passing the stranger test.
+- Task name: normally `t01_display_input_summary`.
+- Run name: `r01_<kind>_<slug>`.
+- Display kind: `figure | table | diagram | illustration`.
+- Source Runs: full Run ids plus resolved Result paths and hashes.
+- Summary parameters: selected columns, grouping, filters, and unit of analysis.
+- Output contract: `source_data.csv` plus `provenance.json`.
+
+
+Step 3 — Create canonical authored structure
+--------------------------------------------
+
+```text
+tasks/bNN_<display-input-block>/
+└── jNN_<figure-or-table-name>/
+    ├── src/
+    └── t01_display_input_summary/
+        ├── t01_display_input_summary.md
+        ├── scripts/
+        │   ├── prepare_display_input.py
+        │   └── config/
+        │       └── r01_<kind>_<slug>.yaml
+        └── runs/
+            └── r01_<kind>_<slug>.sh
 ```
-C{NN}_<group>/
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py
-    ├── configs/
-    │   └── <kind>_<name>.yaml              from ref/config-seed.yaml
-    ├── runs/
-    │   └── <kind>_<name>.sh
-    ├── results/
-    │   └── <run>/                           source_data.csv, provenance.json, diagnostics/ (optional)
-    └── notebooks/
+
+Copy `ref/config-seed.yaml` into the canonical `scripts/config/` path and
+fill every required field.
+All source paths remain in that config; the Python worker hardcodes none.
+
+
+Step 4 — Configure the Ticket and planned receipt
+--------------------------------------------------
+
+Copy `../../../haipipe-task/ref/run-sh-template.sh` into the Task's `runs/`
+lane and set:
+
+```bash
+TASK_NAME="prepare_display_input"
+RUN_FAMILY="Execution"
+RUN_OPERATION="display-input"
+RUN_TARGET="<kind>-<slug>"
+REQUIRED_RESULTS=("source_data.csv" "provenance.json")
+RUN_INPUTS=("<resolved-source-1>|<sha256>" "<resolved-source-2>|<sha256>")
 ```
 
+The generic file-existence gate is necessary but not sufficient.
+Extend `result_gate()` to require `provenance.json` to declare
+`approved_for_display_intake: true`,
+`contains_raw_or_phi: false`, and hashes matching `source_data.csv`.
 
-Step 4 — Seed config
----------------------
-
-Copy `ref/config-seed.yaml` to `configs/<kind>_<name>.yaml`.
-Fill in:
-- `_meta:` block.
-- `display_kind:` (figure | table | diagram | illustration).
-- `source_runs:` — list of upstream result paths.
-- `summary_params:` — selected columns, grouping, filters, and unit of analysis.
-
-The run must also write `results/<run>/provenance.json` using
-`ref/provenance-template.json`.
-It records the producing task holder, run, output hash, upstream artifacts, selected columns,
-filters, and the assertion that the CSV is display-safe and contains no raw or PHI data.
+Resolve the planned Result at
+`$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/`.
+Write the scaffold-time `runtime.yaml` with `status: planned` according to
+`haipipe-task/ref/runtime-yaml-schema.md`.
+Do not create a Task-local `results/` directory.
 
 
-Step 5 — Run-script
---------------------
+Step 5 — Output contract
+------------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/<kind>_<name>.sh`.
-Set `TASK_NAME="{NN}_{job_name}"`.
+The worker writes:
 
-
-Step 6 — Next step
--------------------
-
-After scaffolding, suggest running the task (`bash runs/<run>.sh`), then materializing its
-`source_data.csv` into the display unit's `intake/` with a manifest that names this task holder,
-run, canonical artifact, hashes, and permitted use.
-Figure crafting standards (axes, palette, legend layout) live with Display; this skill only
-guarantees the summary-data and provenance contract.
-
-
-Step 7 — Report
-----------------
-
+```text
+$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/
+├── source_data.csv
+├── provenance.json
+├── runtime.yaml
+└── diagnostics/          optional and never the canonical display asset
 ```
-status:    ok
-summary:   Scaffolded display job <NN>_<name> (kind=<kind>) under C{NN}_<group>.
-artifacts: [paths created]
-next:      list source_runs in config, then run.sh
+
+`provenance.json` follows `ref/provenance-template.json`.
+It records the producing Task and Run, output hash, upstream artifacts,
+selection and filter logic, and the two display-safety assertions.
+A Page consumer sends this aggregate through its one page-serving collection
+Job; LAND freezes the selected page-service Result into the Evidence Item's
+Local Input. A non-Page holder may freeze the approved CSV directly into its
+display Intake. In both cases the final renderer and visible asset remain
+owned by the display unit.
+
+
+Step 6 — Validate and report
+----------------------------
+
+- Run `bash -n` on the Ticket.
+- Run the Task-tree checker on the touched tree.
+- Confirm config/Ticket stems match and every source Run resolves.
+- Confirm the planned receipt contains the neutral Run fields and config hash.
+- Confirm no protected or heavy artifact is planned under `results/`.
+
+```text
+status:    ok | blocked | failed
+summary:   Scaffolded one canonical display-input Task and Run.
+artifacts: [Page, script, config, Ticket, planned runtime receipt]
+next:      satisfy CODE_REVIEW, then launch <task>/runs/<RUNNAME>.sh
 ```
 
 
 MUST NOT
----------
+--------
 
-- Hardcode paths in the .py — all sources go in `configs/<kind>_<name>.yaml`.
-- Modify upstream `results/<run>/` files (read-only inputs).
-- Embed model-training logic — display tasks consume, they don't compute.
-- Create `README.md`.
-- Treat a PDF, PNG, or TeX emitted here as a canonical paper asset. Diagnostics are allowed only
-  under `results/<run>/diagnostics/`; the Display unit owns the promoted asset and its wrapper.
-
-
-First-run gate
----------------
-
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
-For the first run after this scaffold, do ONE of:
-
-  1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     job to produce a fresh `CODE_REVIEW.md`:
-     `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
-
-  2. **Temporary bypass** — set env var at launch:
-     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
-     (skips the gate for one run; logs a warning to stderr.)
-
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
-     ```yaml
-     _meta:
-       skip_review: true
-     ```
-     (Only appropriate for throwaway / disposable runs.)
-
-Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.
+- Scaffold a flat `C{NN}/{NN}/configs/` shape for new work.
+- Hardcode upstream paths in Python.
+- Modify upstream Results.
+- Put model training or the final PDF/PNG/TeX asset in this Task.
+- Create a general README.
+- Mark the planned receipt complete or bypass the provenance gate.

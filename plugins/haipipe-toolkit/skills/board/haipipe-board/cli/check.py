@@ -48,9 +48,12 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
 from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
-                        aim_ids, aim_progress, group_stem,
+                        aim_ids, aim_progress, board_kind, group_stem,
                         page_files)
+from src.dialect_task_block import page_info as task_page_info  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
+from src.outline_version import latest_outline  # noqa: E402
+from src.parse import parse_dir  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
 from src.feedback import rounds as _rounds, parse_round, register_path, register_ids  # noqa: E402
@@ -96,7 +99,8 @@ CONSTRUCTS = [
     ("sentence badge",       "span.sbadge",        r'class="sbadge"',             r"^> (?:Citation|Value|Display|Check|Q-consumer|Link|Source|Note):"),
     ("typed lane",           "div.lane",           r'<div class="lane"',          r"^> (?:Citation|Value|Display|Check|Q-consumer|Link|Source|Note):"),
     ("item with detail",     "details.it.row",     r'<details class="it row"',    r"(?m)^- (?:\[[ xX]\] )?.+\n {2,}\S"),
-    ("aim count",            "n/m in the heading", r'\d+/\d+',                    r"(?m)^- (?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*) ·"),
+    ("aim count",            "n/m in the heading", r'\d+/\d+',
+     r"(?m)^-\s+(?:⬜|🔨|🧠|✅|❄️|🟡|🟠|⏸️)\s+(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*)\s+·"),
     ("dated item",           "span.stmp",          r'class="stmp"',               r"^(?:- )?\d{6}(?: \d{4})? "),
     ("code block",           "details.codef",      r'<details class="it codef"',  r"^```"),
 ]
@@ -284,6 +288,11 @@ def check_board(d, rep):
         return {}, {}, False
     text = bmd.read_text(encoding="utf-8")
     links = declared_links(text)
+    kind = board_kind(d)
+    task_block = kind == "task-block"
+    if kind and kind != "task-block":
+        rep.add(ERROR, "unknown-board-kind", "board.md",
+                f"board-kind {kind!r} has no Board container contract")
 
     if ("InsightBoard" in d.name or "DesignBoard" in d.name) and not (
         APPLICATION_BOARD_NAME.fullmatch(d.name)
@@ -357,23 +366,51 @@ def check_board(d, rep):
                         "(reads -> card grant -> unit evidence) starts here, so a "
                         "dead entry makes every citation under it unverifiable")
 
-    pages = {p.name: p for p in page_files(d)}
+    pages = {
+        (p.relative_to(d).as_posix() if task_block and task_page_info(d, p)
+         else p.name): p
+        for p in page_files(d)
+    }
     # `[MIAD]\d` admits the Application runtime ids (M00-meta.md, I01-<slug>.md,
     # A00-brief.md, D01-<slug>.md) that PAGENAME now discovers; without it every
     # runtime board reported all of its own pages as not-in-pages (260820).
     listed = re.findall(
         r"^((?:[QS]|[A-Z]{1,2}\d|Agent-|Meeting-|Design-)[^\s/]*\.md)\s*$", text, re.M)
+    if task_block:
+        listed += re.findall(
+            r"^([^\s]+/t\d{2}_[a-z0-9_]+/t\d{2}_[a-z0-9_]+\.md)\s*$",
+            text,
+            re.M | re.I,
+        )
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
                     "## Pages names a file that is not on disk")
     for name in sorted(pages):
-        if name not in listed:
+        # A Task Block's tree is the membership authority.  Its ## Pages may
+        # contain group prose only; once it lists any Task explicitly, the
+        # ordinary complete-registry warning applies.
+        if name not in listed and (not task_block or any("/t" in x for x in listed)):
             rep.add(WARN, "not-in-pages", name,
                     "on disk but not in ## Pages, so it renders under the ⚠️ group")
-    check_group_order(d, text, rep)
+    if not task_block:
+        check_group_order(d, text, rep)
     seen = {}
     for name in sorted(pages):
+        if task_block:
+            info = task_page_info(d, pages[name])
+            if info:
+                source = pages[name].read_text(encoding="utf-8", errors="replace")
+                if not re.search(r"(?m)^folder-kind:\s*task\s*$", source):
+                    rep.add(ERROR, "task-page-folder-kind", name,
+                            "a Task Block Page must declare `folder-kind: task`")
+                if not re.search(r"(?m)^task:\s*\.\s*$", source):
+                    rep.add(ERROR, "task-page-self", name,
+                            "a Task Page must declare `task: .` so both faces share one address")
+                if re.search(r"(?m)^page-type:\s*task\s*$", source):
+                    rep.add(WARN, "task-page-legacy-type", name,
+                            "`page-type: task` is a legacy key; `folder-kind: task` owns new Pages")
+                continue
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if not m and not SEMANTIC_SECTION_PAGE.fullmatch(name):
             continue
@@ -886,7 +923,7 @@ def check_content_attribution(text, name, rep):
                 rep.add(WARN, "content-attribution", "%s:%d" % (name, base + i),
                         "Content is the official document and this line carries "
                         + " and ".join(hits) + "; state the rule itself and move "
-                        "the who/when to a Log row (haipipe-page-draft, the "
+                        "the who/when to a Log row (haipipe-page-content, the "
                         "present-tense rule).")
 
 
@@ -896,24 +933,20 @@ _NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+|\b\d+\.\d+\b|\b\d+(?:\.\d+)?\s*(?:mill
 def _latest_plan_approved(path):
     """-> True when the page's newest outline-v<N>.md carries `approved: ✅`."""
     o = path.parent / "outline"
-    if not o.is_dir():
+    plan = latest_outline(o, path.stem)
+    if plan is None:
         return False
-    plans = sorted(o.glob(f"{path.stem}-outline-v*.md"),
-                   key=lambda q: int(re.search(r"-v(\d+)\.md$", q.name).group(1))
-                   if re.search(r"-v(\d+)\.md$", q.name) else 0)
-    if not plans:
-        return False
-    return bool(re.search(r"(?m)^approved:\s*✅", plans[-1].read_text(encoding="utf-8", errors="replace")))
+    return bool(re.search(r"(?m)^approved:\s*✅", plan.read_text(encoding="utf-8", errors="replace")))
 
 
 def check_section_sentences(text, path, name, rep):
-    """The DRAFT contract on a Section page drafted from an APPROVED plan
-    (haipipe-page-draft §① §②): every Content sentence ends `<!-- realizes:
+    """The CONTENT/WRITE contract on a Section Page using an approved plan
+    (haipipe-page-content §①): every Content sentence ends `<!-- realizes:
     C.P.B -->` (`sentence-without-realizes`), and every sentence that carries a
     number (a comma-grouped count, a decimal, `8.69 million`, a percentage) has
     a `> Value:` lane under it (`number-without-lane`). Gated on the approved
     plan because a page with no agreed slot plan has nothing to realize; the
-    pages written before the rule stay silent until their next DRAFT."""
+    pages written before the rule stay silent until their next CONTENT/WRITE."""
     if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
         return
     if not _latest_plan_approved(path):
@@ -939,7 +972,7 @@ def check_section_sentences(text, path, name, rep):
         if "realizes:" not in st:
             rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
                     "a Section sentence drafted from an approved plan names its slot: "
-                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-draft §①)")
+                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-content §①)")
         probe = re.sub(r"\[[^\]]*\]|\\cite[pt]?\{[^}]*\}", "", core)
         if _NUM_RE.search(probe):
             j, has_lane = i + 1, False
@@ -951,7 +984,8 @@ def check_section_sentences(text, path, name, rep):
             if not has_lane:
                 rep.add(WARN, "number-without-lane", "%s:%d" % (name, base + i),
                         "this sentence states a number and no `> Value:` lane follows it; "
-                        "write the source page, bracket or card and its state (haipipe-page-draft §②)")
+                        "write the source Page, bracket or Evidence Item and its state "
+                        "(haipipe-page-content §①)")
 
 
 def check_retired_sections(text, name, rep):
@@ -1417,11 +1451,11 @@ def page_aims_text(text, path):
     if on_page.strip() or path is None:
         return on_page, False
     d = path.parent / "outline"
-    plans = sorted(d.glob("*-outline-v*.md")) if d.is_dir() else []
-    if not plans:
+    plan = latest_outline(d, path.stem)
+    if plan is None:
         return on_page, False
-    plan = plans[-1].read_text(encoding="utf-8", errors="replace")
-    m = re.search(r"(?m)^## Aims\b.*?$(.*)\Z", plan, re.S)
+    plan_text = plan.read_text(encoding="utf-8", errors="replace")
+    m = re.search(r"(?m)^## Aims\b.*?$(.*)\Z", plan_text, re.S)
     return (m.group(1) if m else ""), bool(m)
 
 
@@ -1471,8 +1505,8 @@ def check_feedback_coverage(path, text, name, rep):
         # declined in the plan's header (`declined: <RD> <id> · <reason>`).
         # NA01's field desk (260831) found this tooth missing while the plugin
         # text claimed "both directions".
-        plans = sorted((path.parent / "outline").glob("*-outline-v*.md"))
-        plan = plans[-1].read_text(encoding="utf-8", errors="replace") if plans else ""
+        latest = latest_outline(path.parent / "outline", path.stem)
+        plan = latest.read_text(encoding="utf-8", errors="replace") if latest else ""
         rdid = rd.stem.split("-")[0]
         served = set(re.findall(rf"(?m)^\s+Routed:\s*{rdid}\s+(\S+)", plan))
         declined = set(re.findall(rf"(?m)^declined:\s*{rdid}\s+(\S+)", plan))
@@ -1707,9 +1741,10 @@ def check_group_names(text, name, rep):
 def check_draw_folders(d, rep):
     """Every draw/ holds exactly what its owner may own (QPf2's contract).
 
-    A page's draw/ holds that page's own scene(s), named by the page id the
-    folder name starts with; a group's draw/ holds group.excalidraw. Anything
-    else is a STRAY — the trace an archive or merge leaves behind (found
+    A folded page's studio/draw/ holds that page's own scene(s), named by the
+    page id the folder name starts with; a group's draw/ holds group.excalidraw.
+    A flat legacy Page may share that Group draw/. Anything else is a STRAY —
+    the trace an archive or merge leaves behind (found
     260816: QPf2a's stub sat in QPf2's draw/ for a day, and Design-7/8's
     scenes hid in Design-6's). Underscore entries (_retired, _archive) are a
     person's deliberate parking and stay unjudged; the generated board/ site
@@ -1721,7 +1756,7 @@ def check_draw_folders(d, rep):
         parts = draw.relative_to(d).parts
         if "board" in parts or any(p.startswith("_") for p in parts):
             continue
-        page = draw.parent
+        page = draw.parent.parent if draw.parent.name == "studio" else draw.parent
         is_page = (page / f"{page.name}.md").is_file()
         for f in sorted(draw.iterdir()):
             if f.name.startswith("_") or (f.name == "assets" and f.is_dir()):
@@ -2529,6 +2564,8 @@ def main():
     rep = Report()
     pages, links, decision_only = check_board(d, rep)
     page_ids = set()
+    _parsed_meta, parsed_pages, _parsed_warnings = parse_dir(d)
+    page_ids.update(page["id"] for page in parsed_pages if page.get("id"))
     for name in pages:
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if m:

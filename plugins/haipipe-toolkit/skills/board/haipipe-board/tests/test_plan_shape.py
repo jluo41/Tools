@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.plan_shape import check
+from src.plan_shape import check, type_outline
 
 
 HERE = Path(__file__).resolve().parent.parent
@@ -72,6 +72,49 @@ class ResolvedSectionShapeTest(unittest.TestCase):
             broken = "## C1 · Claim\n## C2 · Strength\n"
             findings = check(page, broken, SKILLS_ROOT)
             self.assertTrue(any("5 declared divisions" in item for item in findings))
+
+    def test_task_folder_kind_resolves_to_canonical_task_owner(self):
+        declaration = type_outline("task", SKILLS_ROOT)
+        self.assertEqual("grammar", declaration["mode"])
+        self.assertTrue(
+            declaration["type_path"].endswith("task/haipipe-task/SKILL.md")
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "t01_model.md"
+            page.write_text("# Fixture\nfolder-kind: task\n", encoding="utf-8")
+            broken = "## C1 · Files listed\n## C2 · Result found\n"
+            findings = check(page, broken, SKILLS_ROOT)
+            self.assertTrue(any("outside the closed set" in item for item in findings))
+
+    def test_legacy_task_page_type_uses_the_same_canonical_owner(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "t01_model.md"
+            page.write_text("# Fixture\npage-type: task\n", encoding="utf-8")
+            broken = "## C1 · Result found\n## C2 · Method chosen\n"
+            findings = check(page, broken, SKILLS_ROOT)
+            self.assertTrue(any("must be last" in item for item in findings))
+
+    def test_matching_task_current_and_legacy_keys_share_one_owner(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "t01_model.md"
+            page.write_text(
+                "# Fixture\nfolder-kind: task\npage-type: task\n",
+                encoding="utf-8",
+            )
+            broken = "## C1 · Result found\n## C2 · Method chosen\n"
+            findings = check(page, broken, SKILLS_ROOT)
+            self.assertFalse(any("different Page Face owners" in item for item in findings))
+            self.assertTrue(any("must be last" in item for item in findings))
+
+    def test_conflicting_current_and_legacy_keys_are_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "t01_model.md"
+            page.write_text(
+                "# Fixture\nfolder-kind: task\npage-type: knowledge\n",
+                encoding="utf-8",
+            )
+            findings = check(page, "## C1 · Result found\n", SKILLS_ROOT)
+            self.assertTrue(any("different Page Face owners" in item for item in findings))
 
 
 if __name__ == "__main__":

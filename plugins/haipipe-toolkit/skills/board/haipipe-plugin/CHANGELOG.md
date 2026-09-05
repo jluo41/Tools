@@ -188,3 +188,11 @@ Skill-scoped changelog (never loaded at invocation). Versions match SKILL.md fro
   Workspace without merging their source files.
 - Retire PageX from active evidence writes; external evidence now enters
   through Supporting Run Results.
+## 1.0.0 · 2026-09-04
+
+- Freeze the generic public Page Plugin set at five: Outline, Studio, Runs,
+  Delivery, and Folder.
+- Make Chat/Draw, LaTeX/Word/Slide/Render, and the ranked Skill record internal
+  references under their owning categories; delete Evidence/Probe redirects.
+- Move Design to its Application family and Meeting to project/SPACE
+  ownership; the Page meeting writer is retired.

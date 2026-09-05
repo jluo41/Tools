@@ -3,6 +3,11 @@ deepxiv — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.1] — 2026-09-04
+
+- Move the invocation hint under supported metadata and repair the canonical
+  ARIS integration-contract link.
+
 
 ## [0.1.0] — 2026-07-24
 

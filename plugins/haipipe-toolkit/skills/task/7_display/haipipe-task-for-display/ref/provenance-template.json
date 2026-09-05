@@ -2,12 +2,12 @@
   "schema": "haipipe-display-input/v1",
   "created_at": "YYYY-MM-DDTHH:MM:SSZ",
   "task": {
-    "holder": "tasks/CNN_display/<NN>_summary_export",
-    "run": "results/<run-id>",
+    "holder": "tasks/bNN_display_inputs/jNN_summary_export/t01_display_input_summary",
+    "run": "bNNjNNt01rNN",
     "git_sha": "<producing-code-git-sha>"
   },
   "output": {
-    "artifact": "results/<run-id>/source_data.csv",
+    "artifact": "$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/source_data.csv",
     "sha256": "<sha256-of-source_data.csv>",
     "row_count": 0,
     "approved_for_display_intake": true,

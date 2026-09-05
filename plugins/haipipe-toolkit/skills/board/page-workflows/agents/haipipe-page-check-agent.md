@@ -30,8 +30,8 @@ yours. This file restates no contract content — the thin-wrapper law of
 **Load:** read the ⚡ Brief at the top of `haipipe-page-check` FIRST, then
 follow the router's canonical order: `haipipe-page` →
 `haipipe-page-workflow` → `haipipe-page-check` → exact Folder-owning workflow
-→ exact Page Type → Page-Type/family checker. Open only what the brief does not
-settle.
+or canonical family skill → exact Page Face owner → owner/family checker. Load
+the owner once when it fills both roles. Open only what the brief does not settle.
 
 **The job in one line:** say whether this exact version is closable, and who
 must act next, by phase NAME.

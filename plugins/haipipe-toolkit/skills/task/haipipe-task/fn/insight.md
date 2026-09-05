@@ -9,11 +9,11 @@ One call creates or resumes one consumer-neutral `page-type: insight` Page. It d
 ```text
 task execution / discovery work
           │
-          │ Probe, only after sources are selected
+          │ Supporting Run Results selected by SURVEY
           ▼
      Insight Page: D → I → K → W
           │
-          │ settled Reusable Finding through PageX
+          │ settled Reusable Finding as a reusable Result
           ▼
      Paper / Application
 ```
@@ -29,7 +29,10 @@ task execution / discovery work
    or `serves:` here; those fields would commission work, while this Board's
    Pages are consumer-neutral.
 5. Seed only Question and Scope, Source Map candidates, Aims, and current States. Do not pre-write K or W before evidence lands.
-6. Use Probe from the Insight Page to reach Task/Discovery sources. Use PageX when another settled Page already answers part of the chain.
+6. In SURVEY, name Task/Discovery sources by full Supporting Run id and freeze
+   any governed page-local source in the Local Input. LAND completes the
+   Supporting Runs and one local Page Evidence Item Run per make-item; it never
+   reads a producing Folder invisibly.
 7. Run the Page workflow and close only under `haipipe-page-for-insight`'s
    fixed task-only outline: Division 1 is Origin and Division 8 is Reusable
    Findings.
@@ -39,7 +42,10 @@ task execution / discovery work
 - A request to execute, rerun, or calculate belongs to P-B-E-R, not this verb.
 - A narrow question about one Task Folder may be answered by `qa`; promote it to an Insight Page only when the answer must be interpreted, combined, or reused.
 - A Paper/Application-specific stake stays downstream. Rewrite the question in consumer-neutral language before it reaches this Board.
-- This Board is where DATASET-FIRST exploration belongs. A dataset can land before any Brief exists; that work opens here, not on an Application InsightBoard, and an Application borrows it later through PageX.
+- This Board is where DATASET-FIRST exploration belongs. A dataset can land
+  before any Brief exists; that work opens here, not on an Application
+  InsightBoard, and an Application later reuses the settled Result through its
+  own Supporting/local Run graph.
 - A Reusable Finding is consumer-neutral and unsigned. It may become evidence
   for an Application-owned I1→I5 bridge, but it never binds directly to Design
   and never becomes a Design Handoff by being reused.

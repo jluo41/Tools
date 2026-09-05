@@ -1,3 +1,12 @@
+## 0.7.0 — 2026-09-04
+
+- Reparent the Insight Page Type directly to `haipipe-page` after retirement
+  of the standalone Task Page variant.
+- Replace active Probe/PageX intake with the shared Supporting Run, frozen
+  Local Input, and local Evidence Item Run graph.
+- Align runtime storage and lifecycle language with the Outline-owned Context,
+  Bullet, and Evidence workspaces and the five Page phases.
+
 ## 0.6.4 — 2026-08-31
 
 - Make the consumption boundary explicit: RF is unsigned, consumer-neutral

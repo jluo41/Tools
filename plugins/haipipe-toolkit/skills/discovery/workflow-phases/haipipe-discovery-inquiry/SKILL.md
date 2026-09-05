@@ -3,10 +3,11 @@ name: haipipe-discovery-inquiry
 description: >-
   D1 Folder contract for one Discovery inquiry. It owns folder-kind discovery,
   the four-role article Page Face, the Paper/Source Run Task Face, selected
-  plugins, five workflow cycles, cross-face closure, and evidence handoff. Use when resolving,
+  plugins, D1 Task workflow, shared Page-workflow handoff, cross-face closure,
+  and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.3.1"
+  version: "0.4.1"
   last_updated: "2026-09-04"
   workflow: haipipe-discovery-workflow
   phase: D1
@@ -23,10 +24,26 @@ metadata:
 
 ## Position
 
-D1 is the sole Folder Phase of `haipipe-discovery-workflow`. Its internal
-SCOPE → PREPARE? → ACQUIRE ↔ SYNTHESIZE → CLOSE cycles grow one stable
-Level-3 Task Page; each admitted canonical paper or source is one Level-4
-Run. The five names are Cycles, not additional Phases.
+D1 is the sole Discovery Folder phase and owns the domain/Task workflow:
+
+```text
+SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+```
+
+The stable metadata value `haipipe-discovery-workflow` is its registry identity,
+not a second skill to load. The Page Face independently advances through
+`haipipe-page-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
+it does not write Page artifacts through a private lifecycle. Each admitted
+canonical paper or source is one Discovery Level-4 Run. The D1 root uses the
+Page CONTENT no-Run route; consumer Pages own any Page-family Runs they need.
+
+At the skill-bank level, `1_search`, `2_review`, and `3_idea` are numbered
+capability families analogous to the numbered groups under `haipipe-task`.
+They select specialist craft; they do not add D1/D2/D3 phases. Only this skill
+under `workflow-phases/` owns the Discovery phase contract.
+
+The canonical Phase × Run declaration, Runs Overview, Human Actions, and Skill
+Coverage live in `ref/workflow-table.md`.
 
 ## Folder Kind
 
@@ -40,7 +57,8 @@ select the empirical `page-type: task` compatibility grammar.
 - One bounded external-world question.
 - A canonical `discovery_type` and source/admission boundary.
 - Zero or more preserved records or candidate sources.
-- For each ACQUIRE Run, one resolved canonical Subject and its Trigger.
+- For each D1 `ACQUIRE` Run, one resolved canonical Subject and its
+  Trigger.
 
 ## Page Face
 
@@ -65,14 +83,14 @@ linked legacy files already satisfy Result-backed synthesis.
 
 `discovery.yaml` owns intent, lifecycle status, and the closing report. SCOPE
 bounds the question; PREPARE optionally creates a reusable instrument;
-ACQUIRE admits and analyzes canonical Subjects; SYNTHESIZE promotes completed
-Results into the root Page, optional typed record, and the Outline-owned
-Evidence Workspace; CLOSE checks and reconciles both Faces.
+ACQUIRE admits and analyzes canonical Subjects; SYNTHESIZE dispatches the
+shared Page workflow and may write an optional Task-side typed record; CLOSE
+updates only the Task report/status after the Page has passed CHECK.
 
 The Page process folder is shared with every Page: `outline/` holds planning
 material and, when the inquiry needs citation material, `outline/evidence/`
-holds the derived Bib plus any typed CITE items explicitly declared by the
-approved Outline. The aggregate alone does not create a typed Evidence Item.
+holds the derived Bib. The D1 root Page uses direct Result/Card/cite lineage
+and does not create a local typed Evidence Item for its own Results.
 Discovery's own analysis receipts remain the local `runs/` ↔ `results/` pair;
 do not copy those Results into `outline/evidence/` or create a second local
 Evidence Run merely to repackage a paper.
@@ -88,24 +106,24 @@ Evidence Run merely to repackage a paper.
 - **WORKER**: the selected research/source-analysis skill.
 - **RESULT**: same-stem Result Card, `facts.md`, `runtime.yaml`, optional PDF,
   and one authoritative one-entry Bib.
+- **COMMISSION**: only D1 `ACQUIRE` may allocate a Discovery Run.
 - **ACCEPT**: identity, pairing, provenance, facts, cite key, and status pass
   `paper_runs.py check`.
 - **PROMOTION**: completed Results may be synthesized many-to-many into the
   Page and derived Evidence Bib.
 - **REOPEN**: a changed Result, material unresolved Run, or expanded evidence
-  population reopens the affected Page Aims.
+  population reopens ACQUIRE and the affected Page workflow authority.
 
 ## Plugins
 
 - **required**: Folder/Page surface and `haipipe-plugin-outline`; Outline owns
-  the Evidence Workspace, any explicitly declared typed CITE items,
-  their verification state, and the derived Discovery aggregate. Each
+  the Evidence Workspace and derived Discovery aggregate. Each
   Discovery Result owns its one-entry Bib verification receipt in
   `runtime.yaml`.
-- **conditional**: Runs presenter when the first Run is admitted; PageX for
-  cross-Folder consumers; an Outline evidence lane only when the Page needs
-  it.
-- **compatibility-only**: `haipipe-plugin-evidence` may resolve legacy routes,
+- **conditional**: Runs presenter when the first Run is admitted; an Outline
+  evidence lane only when the Page needs it. Cross-Folder consumers use
+  Supporting Run Result pointers, not PageX.
+- **compatibility-only**: the legacy Evidence renderer may resolve old routes,
   but it is not a public tab or storage authority.
 - **forbidden**: a separate Bibex or reading plugin, a root `<page>/evidence/`
   lane, empty Runs/Results lanes, or a Task Page compatibility grammar layered
@@ -113,7 +131,8 @@ Evidence Run merely to repackage a paper.
 
 ## Gate and Closure
 
-The Folder closes only when `paper_runs.py check` passes, every material
+The Page must close through `04 CHECK` before D1 CLOSE may close the Folder's
+Task Face. D1 closure requires `paper_runs.py check` to pass, every material
 admitted Run is resolved or explicitly held, the Page answers its question at
 the promised `discovery_type`, and Page state agrees with `discovery.yaml`.
 `report:` supports `reported`; `ok` additionally requires the Result-backed
@@ -122,10 +141,8 @@ to be met. Non-load-bearing limitations may remain recorded, but a held
 load-bearing Aim forbids `ok`. Every complete Result entering the aggregate
 must also carry the
 Result-runtime person judgment `bib.verification: verified` before CLOSE may
-claim an epistemic `status: ok` or `status: inconclusive` outcome. If an
-approved Outline explicitly declares a typed CITE item, that item also passes
-the Outline CITE gate; the aggregate alone creates no second receipt.
-Missing operational work or that conditional artifact gate yields `blocked`;
+claim an epistemic `status: ok` or `status: inconclusive` outcome.
+Missing operational work or citation-verification debt yields `blocked`;
 `inconclusive` is reserved for completed admissible evidence that cannot
 establish the substantive answer. Neither receipt may claim `ok`.
 
@@ -137,11 +154,15 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 
 ## Files
 
-- `../../haipipe-discovery/SKILL.md` — executor and user verbs.
+- `ref/workflow-table.md` — canonical Discovery specialization of the shared
+  Page phases, Runs Overview, Human Actions, and Skill Coverage.
+- `../../haipipe-discovery/SKILL.md` — user door, executor, and compatibility
+  verbs.
 - `../../haipipe-discovery/ref/page-types.md` — type-specific payload promises.
 - `../../haipipe-discovery/ref/paper-run-contract.md` — Level-4 artifacts.
 - `../../haipipe-discovery/scripts/paper_runs.py` — deterministic gate.
-- `../../haipipe-discovery-workflow/SKILL.md` — workflow map and routing.
+- `../../../board/page-workflows/haipipe-page-workflow/SKILL.md` — the only
+  Page lifecycle and phase router.
 - `../../../board/page-plugins/haipipe-plugin-outline/SKILL.md` — Outline and
   Evidence Workspace owner.
 - `../../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md`

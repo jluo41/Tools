@@ -1,8 +1,8 @@
 ---
 name: haipipe-task
 description: >-
-  Task-family door for execution and reusable insight: runs Plan → Build →
-  Execute → Report on jobs, iterates blocks, answers source
+  Task-family door and owner of both Task Folder faces: runs Plan → Build →
+  Execute → Report, keeps the run-bound technical Page Face, iterates blocks, answers source
   questions through `qa`, and creates DIKW Insight Pages through `insight`.
   Use for task execution, Task Board status, QA files, or result
   interpretation. Hierarchy: block to job to task to run (task-group and
@@ -11,8 +11,17 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.12.6"
-  last_updated: "2026-09-01"
+  version: "0.15.0"
+  last_updated: "2026-09-04"
+  folder_owner: canonical
+  folder_kind: task
+  primary_face: task
+  page_ruling: local
+  legacy_page_type: task
+  outline:
+    mode: grammar
+    source: "ref/task-page.md"
+    shape: "FLAT or NESTED; first word from {Introduction, Concept, Landscape, Data, Method, Result, Conclusion}; Introduction when present is division 1 and appears once; Concept, Landscape, Data may sit page-level; Method, Landscape and Result repeat; a residual earns its own Result-role division; Conclusion is one page-level division, always last"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,13 +45,15 @@ project        examples/Proj{...}/
               │     └── runs/rNN_<stem>.sh     TICKET: names its config; may carry SLICE settings
               │                                (year, source, fold), never a setting the config
               │                                already holds. Wherever a setting lives, the run
-              │                                records it in results/<task>/<run>/runtime.yaml
+              │                                records it in $OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
               ├── src/                     SHARED by more than one task in this job. Two words on
               │                            purpose: `src/` is shared, `scripts/` is owned, so the
               │                            NAME says which without reading the path
               ├── sbatch/                  batcher that SPANS tasks (one for a single
               │                            task goes in tNN_<task>/sbatch/ instead)
-              └── results/<task>/<run>/    a RUN is an execution, never a folder of its own
+              └── $OUTPUT_ROOT/results/<task>/<run>/
+                                            generated projection; a RUN is an execution,
+                                            never a folder level of its own
               ONE GRAMMAR at every level: <level letter b·j·t·r><NN>_<noun>_<qualifier>;
               the address is the prefixes joined, read off the path: b02j01t01r03
               (legacy: code at the task ROOT, pre-260831;
@@ -61,6 +72,18 @@ project        examples/Proj{...}/
 This skill owns **job**, **block**, and the Task/Insights Board entry surface.
 For a job, it runs the 4-phase code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
 For a block, it iterates over each child job and runs the lifecycle on each one. Type specialists (one per type):
+
+### A Block is a Task Block Board
+
+Every canonical `bNN_<block>/` carries `board.md` with `board-kind: task-block`. The Task hierarchy is the source of truth; `haipipe-board` projects it without copying executable state:
+
+```text
+Block = Board  →  Job = Group  →  Task = Page  →  Run = execution record
+```
+
+The Block's `## Pages` may contain only Job headings and introductions because membership and default order derive from the direct `jNN_/tNN_` tree. If a person needs an explicit Task order, rows use full Board-relative Task Page paths, never ambiguous bare filenames. Board rendering and navigation belong to `haipipe-board`; Job/Task/Run identity and P-B-E-R remain owned here.
+
+The Task Page `state:` is the Folder's cross-face closure state. Report finishing does not make it ✅. It becomes ✅ only when P-B-E-R is terminal, every load-bearing Result receipt is current, and `ref/task-page.md`'s current READING gate passes. A rerun reopens the dependent reading and therefore reopens the Task on the Block Board.
 
 ```
 task-type     Specialist                              Cross-skill
@@ -203,35 +226,77 @@ one applies is decided by who owns the answer, not by who launched the run.
 Build's outputs stay in the job either way, because code and config ARE
 the job.
 
+One narrow Page-authority exception is explicit: a PHI-safe DISPLAY unit that
+LAND admits for Page citation remains under the Task Page's
+`outline/evidence/display/<unit>/`. It is a governed Page projection, not the
+Task Result store. The paired Result envelope and runtime receipt still live
+under `$OUTPUT_ROOT/results/<task>/<run>/` and record the unit pointer and
+hashes. No other generated/data-dependent artifact earns this exception.
+
 **QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
 A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 
 So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ enters the phases (writing a `working` claim before Plan, the answer at Report). See `fn/qa.md`.
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
-**The unit symmetry (JL 260831)**: a task folder is a special page folder, and both carry the same two process lanes. `workflow/` is the MACHINE half (this folder, unchanged). `outline/` is the HUMAN half and is now legal in a task folder too: the prose plan a person ticks, the open `D<nn>` threads, and the log, in the page family's record shape (`haipipe-plugin-outline/ref/record-shape.md`). The board renders a task's `tNN_<task>.md` as a page already; `outline/` gives its human decisions the same home a page's have. First real instance: the page-serving collection job (`haipipe-task-for-page`).
+**The unit symmetry (JL 260831)**: a Task Folder owns both faces. `workflow/`
+is the MACHINE half: P-B-E-R intent, progress, and receipts. `outline/` is the
+HUMAN half: Page context, plan, Evidence Items, open `D<nn>` threads, and log,
+in the Page family's record shape
+(`haipipe-plugin-outline/ref/record-shape.md`). The same-stem
+`tNN_<task>.md` is the Page Face a reader opens. Its technical-report grammar,
+Run-reading rule, and current template are owned here in
+`ref/task-page.md` and `ref/task-page-template.md`; there is no separate Task
+Page skill.
+
+New Task Pages declare `folder-kind: task`. Existing `page-type: task` pages
+remain readable through `metadata.legacy_page_type`; do not add that legacy key
+to a new page. Load `haipipe-page` and `haipipe-page-workflow` before changing
+the Page Face, then load `ref/task-page.md` for the Task-specific promise.
+
+This is a canonical family-owned Folder rather than a domain phase-owned
+Folder: `folder_owner: canonical` makes `haipipe-task` the owner of both faces,
+`primary_face: task` selects the ordinary entry, and `page_ruling: local`
+requires the Task Page's `#### READING · current` table to be person-read and
+named by the CHECK receipt before Folder closure. Do not
+invent a workflow/phase identity solely to express this stable Folder kind.
 
 Load `haipipe-run` for the neutral Level-4 identity and pairing contract.
 The optional Task-side presenter is `haipipe-plugin-runs`, not Execution.
 Execute remains phase 3 of P-B-E-R; **Runs** lists the durable attempts. For a
 canonical nested Task Page it resolves the authored
-`<task>/runs/<run>.sh` ticket against the Job-owned generated
-`results/<task>/<run>/` and optional `notebooks/<task>/<run>.ipynb`. It never
+`<task>/runs/<run>.sh` ticket against the resolved generated
+`$OUTPUT_ROOT/results/<task>/<run>/` and optional
+`$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb`. `$OUTPUT_ROOT` is the Job in
+self-serving mode or its consumer-owned mirror in consumer-serving mode. Runs never
 copies those outputs into the Task Folder. A standalone/Discovery Folder uses
 the Folder-local `runs/<run>.sh ↔ results/<run>/` dialect instead.
 
-A task ends at Report: it produces `results/` and stops. 
+A Task execution lifecycle ends at Report: it produces `results/` and stops.
+The Folder closes only when both faces are current. Its Page Face can therefore
+remain open after Report, and a rerun reopens the reading bound to that Result.
 
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
 
-**Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task Page reads one run against one task question; an Insight Folder may synthesize several Task Pages, QA answers, Discovery Pages, or prior Insight Folders around one consumer-neutral question. It carries the trace `D → I → K → W → RF`. Its Task Face may PageX-link the producing Folder and acquire an accepted QA answer through Probe, but it never executes that Folder or reads raw `results/` when QA/report is owed. Paper and Application read only settled **Reusable Findings** through PageX; they never cross into the producing Task Folder. An RF is unsigned, consumer-neutral evidence—not an Application Design Handoff, not a `serves:` decision, and never direct Design authority. An Application that uses it must own the downstream I1 registration and contextual, signed I5 Wisdom bridge.
+**Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task
+Page reads Runs against one task question; an Insight Folder may synthesize
+several Task Pages, QA answers, Discovery Pages, or prior Insight Folders around
+one consumer-neutral question. It carries the trace `D → I → K → W → RF`.
+Cross-Folder evidence enters its Evidence Workspace through full Supporting Run
+Result ids; one local Page Evidence Item Run makes each focal item ready. It
+never executes a producing Folder invisibly or reads raw `results/` when
+QA/report is owed. Paper and Application reuse only settled **Reusable
+Findings** through their own Supporting/local Run graph. An RF is unsigned,
+consumer-neutral evidence, not an Application Design Handoff, not a `serves:`
+decision, and never direct Design authority. An Application that uses it must
+own the downstream I1 registration and contextual, signed I5 Wisdom bridge.
 
 ### Incoming Application candidates
 
 An accepted Design candidate may cross into an explicitly named executable
 Folder at `workflow/inbox/application/<packet-id>.yaml`. The Application
-crossing writer may add this immutable raw-material packet plus a reciprocal
-PageX binding; it may not edit the target's plan, code, runs, results, QA, or
+crossing writer may add this immutable raw-material packet; it may not add a
+private binding lane or edit the target's plan, code, runs, results, QA, or
 terminal state. The packet remains `state: proposed` until the target Task
 owner validates it and enters its own Plan. Its grammar is owned by
 `haipipe-application-workflow` X2. There is no Task plugin and no invisible
@@ -303,6 +368,28 @@ Independence comes from fresh-agent reasoning: the reviewer starts with clean co
 Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstring (template: `ref/intent-docstring-template.py`). Skip mechanisms for the run.sh pre-flight gate: `_meta.skip_review: true` in config, or `HAIPIPE_SKIP_REVIEW=1` env var.
 
 ---
+
+Definition of done for a TREE (JL 260904)
+-----------------------------------------
+
+A restructured or scaffolded tree is not done when its folders exist; it is done
+when `ref/task-tree-checklist.md` passes on disk. The list is short and every row
+has a code and a command: names (N1 N5 N9), shape (S5 S10 S11 S12 S14 S17
+S18, R02
+every task owes a `runs/` ticket even when its script reads no config), wiring
+(N7 ticket ↔ config ↔ script, S15 no store path named after a ticket), results
+(R01 R05 at `$OUTPUT_ROOT/results/<task>/<run>/`), the root walk (S13), and PROOF: the
+checker must FIRE on a known-broken tree before its pass on the new one is
+believed, one ticket per task type must have produced a receipt, and the
+`/task-table` Findings block must be empty. Run it before saying "done":
+
+```
+cp -R <one block> <scratch>/mut
+# Plant a known break in the copy, such as removing board.md or one runs/ folder.
+python3 ref/check_task_tree.py <scratch>/mut --expect-fail
+python3 ref/check_task_tree.py <tasks-dir>                 # on the new tree: 0 findings
+```
+
 
 Guardrails (learned the hard way — do NOT skip)
 ------------------------------------------------
@@ -509,17 +596,16 @@ Step 4: RUN THE CHECKLIST before reporting anything.
   is an unverified claim that happens to print a tick (GATE-1).
 
   ```
-  python3 <project>/tasks/_tools/check_task_tree.py <block>
+  python3 <skill>/ref/check_task_tree.py <tasks-dir-or-block>     # Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/
   ```
 
-  Thirteen codes, each one a break this repo actually hit:
+  Every code is a break a real tree hit (the full list: ref/task-tree-checklist.md):
 
   ```
   N1  a name that does not stand alone     a job/task name read in a queue or a log
   N2  a run name with no stage or kind     rNN_<A|B|C|D>_<cms|case|data|reg>_...
   N4  unordered alternatives                the folders a config picks between
   N5  shape words only                      data, table, pipeline, pool, rank
-  N6  two tasks in one block sharing a name one rename map hits both
   N7  a ticket and its config disagree      the pair can no longer be checked
   N8  not exactly one shared config         a script cannot find what it must not spell
   S1  a do-path that does not resolve       from the JOB root, which is Stata's cwd
@@ -532,13 +618,16 @@ Step 4: RUN THE CHECKLIST before reporting anything.
   S9  an entry point splatting @Rest         -WhatIf binds positionally and it fails
   S10 code at the wrong LEVEL              a job holding scripts/, a task holding src/,
                                            or config/ left at a task root
+  S17 a job with no visible src/ slot       shared code ownership is invisible
+  S18 a canonical Block with no Board head board.md must opt in as task-block
+  R02 a Task with no rNN_ Ticket            there is no execution door
   ```
 
   S8 is the one that pays for itself: a page listing what the tree already holds
   drifts on the next rename. Generate those pages instead of typing them, and let
   S8 catch the ones nobody regenerated.
 
-  Naming rules in prose, with the break behind each: `tasks/_tools/NAMING.md`.
+  Naming rules in prose, with the break behind each: `ref/naming-bjtr.md`.
   Non-zero exit means findings; fix them BEFORE emitting the tail below. To prove
   the checker can still fail, run it with `--expect-fail` against a broken copy.
 

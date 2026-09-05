@@ -7,6 +7,11 @@
 
 # haipipe-plugin-folder · Changelog
 
+## 0.4.2 · 2026-09-05
+
+- State that the future Board Tables sibling owns one Board Page/Page Folder
+  row and may join this live inventory only through its own contract.
+
 ## 0.3.0 — 2026-09-03
 - Show exact category-owned lanes as independent rows, including every existing
   `outline/evidence/<lane>/` and `delivery/<lane>/`.

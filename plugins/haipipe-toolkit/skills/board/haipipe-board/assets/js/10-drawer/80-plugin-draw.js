@@ -1,7 +1,8 @@
 /* 🖌 Draw · open THIS page's own drawing, beside the page you are reading.
  *
  * WHY IT NEEDED BUILDING AT ALL. The linked-drawing split (QD5a) gave every page
- * its own `draw/<Page>.excalidraw` and gave every group a `group.excalidraw` that
+ * its own `studio/draw/<Page>.excalidraw` and gave every group a
+ * `draw/group.excalidraw` that
  * composes them. The GROUP pages then got a canvas printed into their body. The
  * 68 PAGE sources got nothing: the files existed and no surface opened them, so a
  * page's own picture was reachable only by opening its group and hunting for it
@@ -28,7 +29,8 @@
  *    └────────── board folder ─────────┘ └─ output ─┘
  *
  * Cut at the last `/board/` and the prefix IS the repo-relative board folder. Add
- * the group folder from `data-file`, then `draw/<section id>.excalidraw`. Nothing
+ * the folder from `data-file`, then the folded Page's
+ * `studio/draw/<section id>.excalidraw`. Nothing
  * here re-implements the build's path logic; it reads the URL the build produced.
  *
  * A GROUP PAGE OPENS THE GROUP'S OWN SCENE. `livePage()` finds `section.slide.q`,
@@ -66,9 +68,12 @@
       var file = page.getAttribute('data-file') || '';
       var id = page.id || '';
       var dir = file.indexOf('/') < 0 ? '' : file.slice(0, file.lastIndexOf('/'));
+      var stem = (file.slice(file.lastIndexOf('/') + 1).replace(/\.md$/, ''));
+      var tail = dir.slice(dir.lastIndexOf('/') + 1);
+      var lane = tail === stem ? ['studio', 'draw'] : ['draw'];
       var base = boardRel();
       if (!id || !base) return null;
-      var rel = [base, dir, 'draw', id + '.excalidraw']
+      var rel = [base, dir].concat(lane, [id + '.excalidraw'])
                   .filter(Boolean).join('/');
       /* EDITABLE, because a page's own source has exactly ONE owner and there is
          nothing to disambiguate: the composed group view is the ambiguous case,

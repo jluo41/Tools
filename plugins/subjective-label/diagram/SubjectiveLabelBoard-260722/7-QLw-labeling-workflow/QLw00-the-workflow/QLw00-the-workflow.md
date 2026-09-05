@@ -417,9 +417,9 @@ Division 5 cites it as a `## Files` path instead, and `haipipe-page-for-labeling
   The Page Type whose "a round is a record, never a division" ruling assumed the two rhythms this page states, and whose five Content divisions are the surface division 5 maps onto.
 
 ### 📥 Input files · what division 5 was read against
-- `../../../../../examples/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-1-acibench-authority.md`
+- `../../../../../examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-1-acibench-authority.md`
   The first run page written, and the specimen division 5 checks its map against: the five divisions in place, `📌 0 rounds closed`, and a sealed `test3` of 1,213 items.
-- `../../../../../examples/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-2-acibench-social-proof.md`
+- `../../../../../examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-2-acibench-social-proof.md`
   The second run page, read to check that the map is not shaped by one specimen: same five divisions, same `📌 0 rounds closed`, and the same sealed split shared with `S-Label-1`.
 
 ## Law

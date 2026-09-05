@@ -7,7 +7,7 @@ approval on the person's behalf.
 
 ## 1 · Current Shape
 
-- Link the latest `outline/<stem>-outline-v<N>.md` and state its version and
+- Link the latest `outline/<stem>-outline-v<N>.<k>.md` and state its version and
   `approved:` value.
 - Give its one-line `arc:` and a compact reader path: `C1 → C2 → …`; add
   decisive P/B labels when that helps the person inspect sequencing.

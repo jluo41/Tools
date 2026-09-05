@@ -1,9 +1,10 @@
-"""The ⚙️ Runs tab: real page-local Run → Result pairs, read-only.
+"""The ⚙️ Runs tab: real Folder-owned Run → Result pairs, read-only.
 
 Evidence owns why an item needs work. Its ``outline/evidence/supporting-runs/`` binding map may
 cite external Supporting Runs and a planned local route. This presenter answers
 the distinct question: which local work has actually been allocated here?
-It walks only ``<page>/runs/`` and paired ``<page>/results/``.
+It resolves Folder-local pairs and canonical Task pairs whose Result lives in
+the containing Job.
 
 ``new-*`` is a plan, not a Run. Supporting Runs stay in Evidence lineage and
 never become duplicate rows here. Nothing in this module executes or edits a
@@ -18,11 +19,12 @@ from urllib.parse import parse_qs, urlparse
 
 from src.item_table import (compact_global_run, compact_paper_run, read_items,
                             readable_global_run, readable_paper_route, repo_root)
+from src.dialect_task_block import page_info as task_page_info
 
 
 _TICKET_SUFFIXES = {".sh", ".ps1", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
 _TICKET_NAME = re.compile(
-    r"(?:^r\d+|^run[-_]|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]t\d+[._]r\d+)",
+    r"(?:^r\d+|^run[-_]|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]?t\d+[._]?r\d+)",
     re.I,
 )
 _STATE_ORDER = {"Running": 0, "Failed": 1, "Held": 2, "Ready": 3, "Done": 4}
@@ -109,6 +111,24 @@ def _runtime_for(ticket: Path, runs_dir: Path, results_dir: Path) -> Path | None
     return None
 
 
+def _task_context(page_src: Path):
+    """Return the Task adapter record and containing Job for a Task Page."""
+    if len(page_src.parents) < 3:
+        return None, None
+    block = page_src.parents[2]
+    info = task_page_info(block, page_src)
+    return (info, page_src.parents[1]) if info else (None, None)
+
+
+def _fallback_result(runtime: Path | None, base: Path) -> str:
+    if runtime is None:
+        return ""
+    try:
+        return str(runtime.parent.relative_to(base))
+    except ValueError:
+        return str(runtime.parent)
+
+
 def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
     """Return Evidence Items only when their ledger has named this local run."""
     compact = compact_paper_run(run_id) or compact_global_run(run_id)
@@ -124,29 +144,45 @@ def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
 
 
 def local_runs(page_src: Path) -> list[dict]:
-    """Read allocated page-local Tickets and their paired local Results only."""
+    """Read allocated Folder-local or Job-backed Task Run pairs."""
     page_dir = page_src.parent
-    runs_dir, results_dir = page_dir / "runs", page_dir / "results"
+    task_info, job_dir = _task_context(page_src)
+    runs_dir = page_dir / "runs"
+    if task_info:
+        results_dir = job_dir / "results" / page_dir.name
+        result_base = job_dir
+    else:
+        results_dir = page_dir / "results"
+        result_base = page_dir
     rows = []
     for ticket in _ticket_files(runs_dir):
         runtime = _runtime_for(ticket, runs_dir, results_dir)
         fields = _fields(runtime)
-        paper_id = (compact_paper_run(fields.get("global_id", ""))
-                    or compact_paper_run(ticket.stem))
-        compact = (paper_id or compact_global_run(fields.get("global_id", ""))
-                   or compact_global_run(ticket.stem))
-        # The Paper Board is the local block. This view omits an inherited
-        # ``bNN`` prefix, while ledger and receipt retain it for global lookup.
-        global_id = (paper_id or readable_global_run(compact)) if compact else ticket.stem
-        relative_id = readable_paper_route(compact) if compact else ""
-        run_id = "P " + (relative_id or ticket.stem)
+        if task_info:
+            compact = (compact_global_run(fields.get("global_id", ""))
+                       or compact_global_run(ticket.stem))
+            local_run = re.match(r"^(r\d{2})(?:_|$)", ticket.stem, re.I)
+            if not compact and local_run:
+                compact = f"{task_info['id']}{local_run.group(1).lower()}"
+            global_id = readable_global_run(compact) if compact else ticket.stem
+            run_id = global_id
+        else:
+            paper_id = (compact_paper_run(fields.get("global_id", ""))
+                        or compact_paper_run(ticket.stem))
+            compact = (paper_id or compact_global_run(fields.get("global_id", ""))
+                       or compact_global_run(ticket.stem))
+            # The Paper Board is the local block. This view omits an inherited
+            # ``bNN`` prefix, while ledger and receipt retain it for global lookup.
+            global_id = (paper_id or readable_global_run(compact)) if compact else ticket.stem
+            relative_id = readable_paper_route(compact) if compact else ""
+            run_id = "P " + (relative_id or ticket.stem)
         rows.append({
             "run_id": run_id,
             "global_id": global_id,
             "compact_id": compact,
             "ticket": ticket,
             "runtime": runtime,
-            "result": fields.get("result", "") or (str(runtime.parent.relative_to(page_dir)) if runtime else ""),
+            "result": fields.get("result", "") or _fallback_result(runtime, result_base),
             "target": fields.get("target", "") or "page-local work",
             "status": _status(runtime, fields),
             "refs": _evidence_refs(
@@ -171,7 +207,7 @@ def _shown_path(path: Path | None, root: Path) -> str:
     try:
         return str(path.resolve().relative_to(root.resolve()))
     except ValueError:
-        return path.name
+        return str(path.resolve())
 
 
 def _detail(row: dict, root: Path) -> str:
@@ -199,9 +235,8 @@ def render(page_src: Path, _path_q: str, _file_q: str) -> str:
     if rows:
         table_rows = []
         for index, row in enumerate(rows):
-            run_label = str(row["ticket"].relative_to(page_src.parent))
-            result_label = (str(row["runtime"].relative_to(page_src.parent))
-                            if row["runtime"] else "—")
+            run_label = _shown_path(row["ticket"], root)
+            result_label = _shown_path(row["runtime"], root)
             state = row["status"].lower()
             table_rows.append(
                 '<tr class="run" data-i="%d" tabindex="0"><td><code class=route>%s</code></td>'
@@ -221,11 +256,11 @@ def render(page_src: Path, _path_q: str, _file_q: str) -> str:
     else:
         main = ("<div class=empty><b>No local Run allocated.</b><br>"
                 "This page has no real Run in <code>runs/</code> yet. Supporting Runs, rerun findings, and <code>new-*</code> plans are Evidence lineage—not local Runs. "
-                "Allocate a Run only when you are ready to execute it; its paired Result belongs under <code>results/</code>.</div>")
+                "Allocate a Run only when you are ready to execute it; its paired Result belongs at the Folder dialect's resolved Result address.</div>")
     return f"""<!doctype html><meta charset=utf-8>
 <title>⚙️ Runs · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <header><h1>⚙️ Runs · {html.escape(page_src.stem)}</h1>
-<p class=lead>allocated page-local Run → Result pairs · read-only</p></header>{main}
+<p class=lead>allocated Folder-owned Run → Result pairs · read-only</p></header>{main}
 <script>
 (function () {{ var rows=document.getElementById('rows'); if(!rows)return;
  function toggle(i){{var d=rows.querySelector('tr.detail[data-i="'+i+'"]');if(d)d.hidden=!d.hidden;}}

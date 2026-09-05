@@ -16,11 +16,10 @@ exit-state: <reader state on exit>
 claim-ids: [<exact Narrative ids>]
 venue-allocation: <binding rules; pack observations labeled separately>
 structure-source: ref/generic-template.md · <why: ABSENT BY DESIGN or MISSING>
-evidence-allowlist:
-  pagex: [<accepted Page and scope>]
-  probe: [<PP ids and values>]
-  citations: [<bibex keys>]
-  displays: [<unit ids and accepted versions>]
+evidence-items:
+  - <E01-VALUE-readable-name>
+  - <E02-CITE-readable-name>
+  - <E03-DISPLAY-readable-name>
 transition-in: <join from prior Narrative row>
 transition-out: <join to next Narrative row>
 ```
@@ -38,7 +37,7 @@ Create only the moves required by the current Narrative row. For each move:
 reader move
 claim ids advanced
 exact proposition established
-PageX/probe/citation/value/display bindings
+typed Evidence Item ids and accepted local Result bindings
 expected prose or display placement
 transition to the next move
 known limitation or unresolved obligation
@@ -51,7 +50,8 @@ introducing a new claim.
 
 - Every move traces to the current Narrative row.
 - Every consequential statement has inspectable support or remains visibly open.
-- Probe used the PageX lane for accepted Pages and the QA lane for
-  Task/Discovery; their durable records remain distinct.
+- Every typed Evidence Item names its Supporting Run ids, one frozen Local
+  Input, one local Page Run, and one accepted local Result in the Evidence
+  Workspace; the plan binds only the item/result interpretation.
 - Venue rules and pack observations are not conflated.
 - The compiled output reflects the accepted Page version.

@@ -2,14 +2,14 @@
 name: haipipe-page-check
 description: >-
   The 04 CHECK phase contract for any Board Page: judge one rendered version
-  against its purpose, Aims, evidence, and Page Type, then route to CLOSE,
+  against its purpose, Aims, evidence, and Page Face owner, then route to CLOSE,
   CONTEXT, OUTLINE, EVIDENCE, CONTENT, or HOLD. In pre-check mode it gates the
   WRITE cycle's inner loop and may only say another pass or ready. It judges the BUILT
   deliverable, not only the Markdown, and never cures its own findings.
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.7.1"
+  version: "0.7.3"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -22,15 +22,15 @@ Load the contracts in this order:
 haipipe-page
   → haipipe-page-workflow
   → haipipe-page-check
-  → Folder-owning workflow
-  → exact Page Type, when one exists
+  → Folder-owning workflow or canonical family skill
+  → exact Page Face owner
   → haipipe-sentence, when findings use sentence lanes
   → family checker, when the Page belongs to paper or application
 ```
 
 What is CHECK's alone: it is the only phase that may CLOSE, and the only one forbidden to change what it judges.
 Its risk is becoming a hidden revision: curing its own finding and calling the same version checked, which is why the fix always runs under another phase and returns for a fresh look.
-The Page Type or local contract supplies the closing rule and whether a person must rule.
+The Page Face owner supplies the closing rule and whether a person must rule.
 
 ## ⚡ Brief
 
@@ -117,8 +117,8 @@ The changed version must be checked again.
 ```
 
 A chat report is a map, not the review surface.
-When the Page Type supports comment lanes, put one concrete finding at the exact location it concerns and preserve the reply with it.
-When the deliverable must remain clean, use the Page Type's declared ledger or review surface instead.
+When the Page Face owner supports comment lanes, put one concrete finding at the exact location it concerns and preserve the reply with it.
+When the deliverable must remain clean, use the Page Face owner's declared ledger or review surface instead.
 
 ## 📦 Judge the BUILT artifact, not only the Markdown
 
@@ -176,7 +176,7 @@ Returning to CONTENT does not create another Page. It starts another WRITE
 pass on the same persistent Page; if the promise or structure changed, CONTENT
 routes through OUTLINE before writing.
 
-## 🚪 Human gates belong to the Page Type or local contract
+## 🚪 Human gates belong to the Page Face owner
 
 CHECK does not assume every Page has the same gate.
 A Q decision Page may close when its Aims are met, a Stage Page may require an explicit human ruling, and a Skill mirror may close when its unit ships.
@@ -216,15 +216,18 @@ tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
 `approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
 `Decide`         outline/<stem>-evidence-items.md, per item  haipipe-page-outline  SURVEY
-`verified`       each outline/evidence/bibex entry haipipe-plugin-outline    LAND
+`Verified`       each authored CITE Evidence Item  haipipe-page-evidence     LAND
 `read:`          legacy outbound source material   owning workflow phase    LAND
 `accepted: ✅`   the page · each display README    this contract            CHECK
 the RULING       phase Gate/Closure, when declared  owning workflow phase    CHECK
 ```
 
-New Pages use typed Evidence Items and Outline-owned CITE verification; they
-do not create a new `evidence/probe/` lane. A legacy `read:` receipt may still
-be displayed while that migrated outbound material is being retired.
+New Pages use typed Evidence Items. Each ordinary-Page CITE gate lives as
+`Verified: ✅ <who> <timestamp>` on its authored Evidence Item row and is
+administered by EVIDENCE/LAND; the CITE Result is not ready without it. They do
+not create a new `evidence/probe/` lane. Discovery Result verification remains
+in the owning Discovery runtime receipt. A legacy BibTeX `verified` field or
+`read:` receipt may still be displayed while migrated material is retired.
 
 `read:` and `accepted: ✅` REVERT when their inputs change. For a phase-owned
 Folder, `page_ruling: none` adds no owner tick, `domain-gate` reuses the phase
@@ -271,7 +274,9 @@ verdict            pass | revise | blocked
 findings           exact defects or none
 evidence           visible support for every pass claim
 route              CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
-next_cycle         CHECK | PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE
+next_cycle         PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE
+                   (required only for a nonterminal Page-phase route; omit on
+                   CLOSE or HOLD)
 human_gate         required, status, and durable evidence
 ```
 
@@ -285,7 +290,7 @@ durable passed evidence routes to HOLD.
 ## 📏 The rubric · four axes, four verdicts, one row per unit
 
 Requirements resolve in the order `haipipe-page` §🔍 states (base and
-template → Page Type → Phase → the page's authored W records in
+template → Page Face owner → current Page phase → the page's authored W records in
 `outline/<stem>-requirement.md` and Stage Contract → the division purpose
 and each paragraph's job line); a conflict between two sources is reported
 and that criterion is not judged. A non-Section compatibility page may still
@@ -329,7 +334,10 @@ page-workflows/haipipe-page-check/
 ```
 
 Owns no scripts.
-The base is `haipipe-page`; Page Type variants live under `page-types/`; the sentence-level lane contract is `haipipe-sentence`; family checkers own their deterministic tools and artifact-specific gates.
+The base is `haipipe-page`; a Page Face owner may be a workflow phase,
+canonical family skill, or legacy variant under `page-types/`; the
+sentence-level lane contract is `haipipe-sentence`; family checkers own their
+deterministic tools and artifact-specific gates.
 The Board engine owns execution and audit; this phase owns only its authority and receipt.
 
 **The Board page that argues this phase** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.

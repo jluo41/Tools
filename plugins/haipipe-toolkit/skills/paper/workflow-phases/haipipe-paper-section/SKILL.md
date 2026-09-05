@@ -7,8 +7,9 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.8.1"
+  version: "0.8.2"
   last_updated: "2026-09-04"
+  page_ruling: none
   group-token: "S-<desk>-Main | S-<desk>-Appendix"
   outline:
     mode: resolved
@@ -125,11 +126,13 @@ evidence-allowlist  typed Evidence Item ids and accepted local Result ids
 transition-in/out   required joins to neighboring Sections
 ```
 
-If the Narrative row or Venue authority is missing or stale, the Page's
-CONTEXT phase records the exact source and returns `HOLD` to its paper-journey
-owner. That owner repairs and versions the source; the Section then resumes at
-CONTEXT/PREPARE. A Section phase never repairs upstream Narrative or Venue
-policy itself.
+If a Narrative row is missing or stale, CONTEXT records its exact source and
+returns `HOLD` to `haipipe-paper-narrative`, the paper-journey owner. If Venue
+authority is missing or stale, it returns `HOLD` to
+`haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a library, not
+a journey phase. After the exact owner repairs and versions the source, the
+Section resumes at CONTEXT/PREPARE. A Section phase never repairs upstream
+Narrative or Venue policy itself.
 
 ## 🧱 Content outline
 
@@ -299,6 +302,12 @@ On a venue change:
 - Venue rules are distinguished from pack observations.
 - The generated TeX/PDF/DOCX reflects the accepted Page version.
 - CHECK, not prose completion, closes the Section.
+
+`page_ruling: none` is explicit for the per-Section Page. CHECK may close one
+unit when its Section contract and artifact-specific gates pass. Paper gate G6
+is separate and non-circular: it waits until every mapped Section is closed,
+then governs whether the assembled paper is SUBMISSION-READY and receives the
+paper-level human decision.
 
 ## 📏 Measuring the form · `cli/section-stats.py`
 

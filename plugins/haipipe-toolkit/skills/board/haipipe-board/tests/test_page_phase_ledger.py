@@ -6,6 +6,8 @@ list. A count and a list that disagree are how a person stops trusting both, so
 the invariant is asserted here rather than left to a comment.
 """
 
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -116,6 +118,39 @@ class OwedLedgerTest(unittest.TestCase):
         self.assertEqual([r["where"].split(" · ")[-1]
                           for r in owed_ledger(st) if r["tick"] == "verified"], ["k1"])
 
+    def test_typed_page_owes_verification_on_the_cite_item_not_bibtex(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, approved=True, folder_kind="data")
+            plan = page.parent / "outline" / "QT1-fixture-outline-v1.md"
+            plan.write_text(plan.read_text() +
+                "### C1.P1 · claim\n- B1 · supported claim\n"
+                "  Evidence: E01-CITE-anchor · source claim and locator\n"
+                "  Accept: source identity and locator resolve\n")
+            (page.parent / "results").mkdir()
+            (page.parent / "results" / "cite.yaml").write_text("claim: supported\n")
+            items = page.parent / "outline" / "QT1-fixture-evidence-items.md"
+            items.write_text(
+                "### E01-CITE-anchor · C1.P1.B1 · anchor\n"
+                "- **Target**: C1.P1.B1\n- **Label**: Anchor\n"
+                "- **Need**: support the claim\n"
+                "- **Expected**: CITE · source claim and locator\n"
+                "- **Acceptance**: source identity and locator resolve\n"
+                "- **Verified**: ⬜\n- **Supporting Runs**: []\n"
+                "- **Local Input**: item contract only\n"
+                "- **Local Run**: Page · Evidence Item · new-run · pj01t01r01 → results/cite.yaml\n"
+                "- **Decide**: ☑ make · JL 260904\n")
+
+            st = phase_state(page)
+            verified_rows = [r for r in owed_ledger(st) if r["tick"] == "verified"]
+            self.assertEqual(len(verified_rows), 1)
+            self.assertIn("E01-CITE-anchor", verified_rows[0]["where"])
+            self.assertNotIn(".bib", verified_rows[0]["where"])
+
+            items.write_text(items.read_text().replace(
+                "- **Verified**: ⬜", "- **Verified**: ✅ JL 260904 1015"))
+            st = phase_state(page)
+            self.assertEqual([r for r in owed_ledger(st) if r["tick"] == "verified"], [])
+
     def test_an_undrawn_unit_owes_a_render_not_a_person(self):
         st = self.state(approved=True, displays=(("QT1-Display1-x", False, False),))
         self.assertEqual([r["tick"] for r in owed_ledger(st)], ["ruling"])
@@ -136,6 +171,22 @@ class OwedLedgerTest(unittest.TestCase):
     def test_render_never_writes_and_always_returns_lines(self):
         st = self.state(approved=True)
         self.assertTrue(all(isinstance(x, str) for x in render_ledger(st)))
+
+    def test_full_cli_renders_the_current_five_phase_strip(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory, approved=True)
+            cli = Path(__file__).resolve().parents[1] / "cli" / "pagephase.py"
+            got = subprocess.run(
+                [sys.executable, str(cli), str(page.parent)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(got.returncode, 0, got.stderr)
+            for phase in ("CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK"):
+                self.assertIn(phase, got.stdout)
+            self.assertNotIn("DRAFT", got.stdout)
+            self.assertNotIn("REVISE", got.stdout)
 
 
 if __name__ == "__main__":

@@ -113,9 +113,11 @@ silently replace what a document currently shows.
 
 ## Invariants
 
-- **Numbers come from a task, never from the renderer.** A data display is rendered from a
-  caller-supplied intake snapshot. Its manifest points to the producing task holder, run, and
-  canonical `source_data.csv`; its recipe reads the frozen `intake/inputs/` extract. A hand-typed
+- **Numbers come through an admitted producer, never from the renderer.** A data display is rendered from a
+  caller-supplied intake snapshot. For a non-Page holder, its manifest points to the producing Task holder,
+  Run, and canonical `source_data.csv`. For a Board Page, it points through the page-service `values.yaml`
+  admitted as the Evidence Item's Local Input; the upstream Task and Run remain in that provenance chain.
+  Its recipe reads the frozen `intake/inputs/` extract. A hand-typed
   coefficient, or a number typed into `float.tex`, is a placeholder and not a display. Concept
   figures carry no data and skip this, but a schematic is still annotated with REAL counts supplied
   by the caller, never invented ones.
@@ -149,7 +151,9 @@ values input, though a schematic still carries real counts.
   fed them; both are parked under `_todo/`. A board page's talk is the slide plugin's deck.
 - `haipipe-task-for-display` produces a canonical display-ready aggregate and its provenance.
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
-  they are not canonical paper assets until a display unit accepts and renders them.
+  they are not canonical assets until a display unit accepts and renders them. For a Board Page,
+  this aggregate first crosses the Page family's one numeric door through
+  `haipipe-task-for-page`; only a non-Page holder consumes it directly.
 - Split out of the paper skill on 2026-07-26: this half is generic, and the paper-specific half
   (unit placement, paper-root-relative paths, the combined gallery, caption/label/placement
   ownership, and the lifecycle handoff) moved to the paper adapter named above.

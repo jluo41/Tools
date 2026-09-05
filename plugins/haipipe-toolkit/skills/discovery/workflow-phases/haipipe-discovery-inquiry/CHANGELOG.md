@@ -1,3 +1,22 @@
+## 0.4.1 · 2026-09-04
+
+- Clarify that `1_search`, `2_review`, and `3_idea` are numbered capability
+  families, not D1/D2/D3 workflow phases; executable ownership remains under
+  `workflow-phases/`.
+
+## 0.4.0 · 2026-09-04
+
+- Make D1 the direct Discovery workflow-table owner and remove the redundant
+  standalone workflow skill.
+- Separate D1 SCOPE/PREPARE/ACQUIRE/SYNTHESIZE/CLOSE domain authority from the
+  shared Page `00–04` authority and define their Result/receipt handoff.
+- Add the canonical Full Workflow Table, Page crosswalk, Runs Overview, Human
+  Actions, Skill Coverage, and the explicit `R_discovery = N_admitted` law.
+- Reserve the D1 Folder's local Runs for Paper/Source Subjects: direct cite
+  lineage skips Page EVIDENCE, and CONTENT records its no-Run rationale.
+- Preserve `haipipe-discovery-workflow` only as the stable Folder-contract
+  registry identity used by metadata and existing receipts.
+
 ## 0.3.1 · 2026-09-04
 
 - Clarify that Outline owns the derived Bib and only explicitly declared typed

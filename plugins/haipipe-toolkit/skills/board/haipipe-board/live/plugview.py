@@ -158,7 +158,7 @@ bank:       reuse | run | code | new
 target:     &lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</pre>
 <div class="mut">nothing asked yet · this is the card shape the contract expects (QPf9 §1)</div></div>"""
 
-# The protocol's own ladder (haipipe-probe, via haipipe-plugin-probe 0.7.0),
+# The historical Probe protocol's own ladder,
 # plus the three retired words so an old card still reads. `planned` and
 # `commissioned` used to fall through to ⬜ here, which is how two ANSWERED
 # cards on QC1-visitlbp read as untouched (fixed 260817).
@@ -203,7 +203,7 @@ def _read(path):
 
 
 def _head_fields(text):
-    """`key: value` lines above the first `##` — haipipe-plugin-probe §🪪."""
+    """`key: value` lines above the first `##` in a legacy Probe card."""
     out = {}
     for ln in text.splitlines():
         if ln.startswith("## "):
@@ -547,7 +547,7 @@ class PlugViewMixin:
     def _retired_plug_probe(self, p):
         """One card per FOLDER, read in WALL ORDER so the reader sees the
         crossing: head, what was asked, what came back, the proof files, and
-        the stake-bearing audit copy folded away (haipipe-plugin-probe §🚪).
+        the stake-bearing audit copy folded away (legacy Probe boundary).
 
         The four counts and the `read` verdict are computed from DISK, never
         from the `state:` word — a folder count is not an answered question.

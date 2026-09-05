@@ -16,7 +16,7 @@ Every file opens with three lines: `# <stem> · <kind>` · `page: <stem>` ·
 ```text
 file                     answers                  id            labels                              writer                         teeth
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-<stem>-outline-v<N>.md   what we AGREED           C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks        plan-* (grammar §7)
+<stem>-outline-v<N>.<k>.md     what we AGREED      C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks        plan-* (grammar §7)
 <stem>-context.md        what later phases MAY    CTX1–CTX6     Status · Sources · Next authority   CONTEXT/PREPARE; generated     context-missing · -stale ·
                          rely on                                                                                                    -conflicting
 <stem>-requirement.md    what we MUST obey        V1 V2 V3 V4   V: Rule · Arc · Words · Citations · generator refreshes V; page     requirement-missing ·
@@ -27,7 +27,7 @@ file                     answers                  id            labels          
                                                   R<nn>         Landed                              the page writes Landed only     -coverage · -unserved
 <stem>-evidence-items.md what each typed item      E<NN>-TYPE-   Target · Label · Need · Expected ·  SHAPE specifies; SURVEY plans;  (ref/item-table.md)
                          must become and its Runs  <slug>        Acceptance · Supporting Runs ·      LAND freezes input + binds Result
-                                                                Local Input · Local Run · Decide
+                                                                Local Input · Local Run · Decide · Verified (CITE only)
 <stem>-evidence.md       what is READY             E<NN>-TYPE-   Status · Label · Target · Expected · cli/evidence-status.py          evidence-stale · -hand-edited
                                                   <slug>        Supporting Runs · Local Input · Local Run · Has
 <stem>-files.md          what it READS and WRITES F<n>          Path · Role                         this page                       dead-file-path
@@ -106,13 +106,15 @@ hand-edit it or place a human gate in it.
 **Evidence Items** is the authored table (`ref/item-table.md`): one record per
 typed outline item. Its immutable id is `E<NN>-<TYPE>-<slug>` where TYPE is
 `VALUE · CITE · DISPLAY`; its head also names the target `C.P.B` and readable
-item name. SHAPE writes `Target · Label · Need · Expected · Acceptance`.
+item name. SHAPE writes `Target · Label · Need · Expected · Acceptance` and
+initializes CITE-only `Verified: ⬜`.
 `Label` is the stable 1–12 character ASCII alphanumeric wall name; the UI does
 not derive it from the full item name. SURVEY writes `Supporting Runs` (zero
 or more Execution/Discovery plans), exactly one `Local Input` envelope plan,
 exactly one `Local Run` (`Page · Evidence Item`), and leaves `Decide` for a
 person. LAND validates every Supporting Result, appends allocated global Run
-ids, freezes the input pointer/hash, and binds the local `→ <Result>`.
+ids, freezes the input pointer/hash, binds the local `→ <Result>`, and presents
+the CITE payload so a person may sign that item's `Verified` gate.
 Cross-Folder evidence enters through Supporting Run Results. No Status word is
 ever typed here.
 

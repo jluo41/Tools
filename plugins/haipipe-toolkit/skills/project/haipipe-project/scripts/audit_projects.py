@@ -181,9 +181,10 @@ def audit(project: Path) -> Result:
 
 def project_paths(args: argparse.Namespace) -> Iterable[Path]:
     if args.all:
-        root = Path(args.root).resolve()
+        roots = [Path(r).resolve() for r in (args.root or ["examples", "examples-nlp"])]
         yield from sorted(
             path
+            for root in roots
             for path in root.glob("Proj*")
             if path.is_dir() and path.name != "_backup"
         )
@@ -220,7 +221,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("projects", nargs="*")
     parser.add_argument("--all", action="store_true")
-    parser.add_argument("--root", default="examples")
+    parser.add_argument(
+        "--root", action="append", default=None,
+        help="project world to walk with --all; repeatable; default: examples and examples-nlp",
+    )
     parser.add_argument("--format", choices={"text", "markdown"}, default="text")
     args = parser.parse_args()
 

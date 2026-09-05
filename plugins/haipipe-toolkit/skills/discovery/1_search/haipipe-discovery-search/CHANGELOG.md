@@ -3,6 +3,12 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.5.0 · 2026-09-04
+
+- Keep acquisition under D1 `ACQUIRE`, route source-map/source-reading craft
+  through Page `03 CONTENT / WRITE`, and make the cross-workflow handoff
+  explicit.
+
 ## [0.4.1] — 2026-09-03
 
 - Route citation aggregation through the Outline Evidence Workspace at

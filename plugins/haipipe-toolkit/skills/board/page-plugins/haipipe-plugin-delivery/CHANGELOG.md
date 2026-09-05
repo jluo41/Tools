@@ -1,5 +1,11 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.4.0 — 2026-09-04
+- Make Delivery the only callable skill for exported Page material; LaTeX,
+  Word, Slide, and Render retain their full lane contracts under `ref/`.
+- Delivery now owns each internal lane's storage/writer/gate contract instead
+  of presenting a set of duplicate Plugin skills.
+
 ## 0.3.1 — 2026-09-03
 - Clarify that Delivery presents the roster's `delivery/` category row while
   owning no lane writer or second folder.

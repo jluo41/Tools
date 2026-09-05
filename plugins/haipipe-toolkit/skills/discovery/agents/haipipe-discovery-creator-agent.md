@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.14.0"
-  last_updated: "2026-09-02"
+  version: "1.15.0"
+  last_updated: "2026-09-04"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
 
@@ -22,7 +22,7 @@ metadata:
 LOAD haipipe-discovery first and follow its refs. I create; the reviewer
 evaluates. I never review my own work.
 
-## SCOPE
+## D1 SCOPE
 
 Create both Faces of one Task Page:
 
@@ -33,7 +33,7 @@ Task Face: discovery.yaml, optional scripts, runs, results
 ~~~
 
 Use ref/discovery-yaml-schema.md. Do not put parent/consumer data or a copied
-Run inventory in YAML. Do not scaffold empty execution lanes until the workflow
+Run inventory in YAML. Do not scaffold empty execution lanes until the D1 workflow
 needs them. New manifests write one canonical `discovery_type`; legacy
 `type`/`role` fields are read-only compatibility input.
 
@@ -42,12 +42,12 @@ Block, then Job, then Task. `discoveries/` is the bank, not a Block. The Page
 stem equals the Task folder stem. Stamp readable and compact Task addresses in
 the manifest.
 
-## PREPARE
+## D1 PREPARE
 
 Author a reusable query strategy, extraction schema, prompt, or rubric under
 scripts/ only when PREPARE is justified. There is no per-run config folder.
 
-## ACQUIRE · Add
+## D1 ACQUIRE · Add
 
 For every incoming Trigger:
 
@@ -55,8 +55,12 @@ For every incoming Trigger:
 2. Classify whether it is the evidence Subject or only a lead to one.
 3. Resolve exact canonical Subject identity from trusted sources.
 4. Fan out a multi-paper Trigger; one Run must never contain multiple papers.
-5. Allocate the next immutable rNN_authorYEAR_slug.
-6. Create executable runs/<RUNNAME>.sh and
+5. Compare canonical Subject plus frozen intent with existing runtimes. An
+   unchanged duplicate DOI/URL reuses its existing Run/Result and opens no new
+   `rNN`; a materially changed analysis records `supersedes:` on a new Run.
+6. Only for a new or changed analysis, allocate the next immutable
+   rNN_authorYEAR_slug.
+7. Create executable runs/<RUNNAME>.sh and
    results/<RUNNAME>/runtime.yaml with status planned in the same edit pass.
    Runtime declares `family: discovery` and `operation: paper-analysis` for a
    paper Subject or `source-analysis` for another source Subject, plus the full
@@ -68,7 +72,7 @@ blocked or unresolved plus a reason. Never mint a plausible Bib entry from
 memory. Metadata supplied as fields is not a person-supplied BibTeX entry;
 without a verbatim entry/export, do not complete.
 
-## ACQUIRE · Run
+## D1 ACQUIRE · Run
 
 Set runtime to running, then dispatch the appropriate Search/read worker. Write
 only the paired Result:
@@ -87,7 +91,7 @@ The Card cite key must equal the Result Bib key. On failure write blocked or
 unresolved truthfully. A complete status around missing artifacts is a lying
 receipt. Runtime also records `bib.source` and `bib.mode: verbatim_copy`.
 
-## SYNTHESIZE by Discovery Page Type
+## D1 SYNTHESIZE · Page workflow handoff
 
 ~~~text
 source-map | source-reading
@@ -100,28 +104,32 @@ ideation | novelty-verdict
 ~~~
 
 Search supplies ACQUIRE and the source-map/source-reading payload. Review
-synthesizes completed Results, routing missing evidence back to ACQUIRE. Idea
+synthesizes completed Results under Page CONTENT, routing missing evidence back
+through Page SURVEY to D1 ACQUIRE. Idea
 generation is Topic-level work; papers used for novelty still become Runs.
 
 Batch independent searches and draft each artifact fully before writing. Keep
 all relevance judgment and all file writes in this creator lane.
-Synthesize the root Page from completed Results and, when useful, write one
-optional typed record (`summary.md`, `verdict.md`, `landscape.md`, or
-`ideas.md`). Ask `haipipe-plugin-outline/ref/evidence/citations.md` to build
+Dispatch the shared Page workflow for root Page synthesis; its current phase
+owns each Page mutation. The D1 root Page skips Page EVIDENCE and records the
+CONTENT no-Run rationale, preserving its paper/source-only local Run inventory.
+When useful, D1 may write one
+optional Task-side typed record (`summary.md`, `verdict.md`, `landscape.md`, or
+`ideas.md`). D1 SYNTHESIZE asks `haipipe-plugin-outline/ref/evidence/citations.md` to build
 the deterministic citation aggregate under `outline/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
 not replace the owning Result.
 
-## CLOSE
+## D1 CLOSE · after Page CHECK
 
 1. Run scripts/paper_runs.py check on the Task Page.
-2. Require a no-diff rebuild of the Evidence citation aggregate.
+2. Require the checker to validate the already-built Evidence citation aggregate.
 3. Append discovery.yaml report: and set the truthful terminal status.
 4. Reconcile Page state/Aims with the Task Face.
 5. Append project log events.
 6. Complete an owned QA ticket when applicable.
 
-CLOSE cannot be ok while the checker fails or a material Trigger is unresolved.
+D1 CLOSE cannot report ok while Page CHECK is open, the checker fails, or a material Trigger is unresolved.
 
 ## QA ticket
 

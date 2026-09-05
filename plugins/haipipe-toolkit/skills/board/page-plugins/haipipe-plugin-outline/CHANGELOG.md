@@ -1,3 +1,75 @@
+## 0.37.0 · 2026-09-04
+
+- Render the plan-version ladder as explicit frozen `vN.0` baselines and
+  unapproved `vN.1+` revisions. This matches the plan grammar and prevents an
+  integer-looking review draft from appearing approved.
+
+## 0.36.0 · 2026-09-04
+
+- Distinguish approved integer plan versions from unapproved decimal review
+  revisions. A channel approval promotes the selected `vN.k` content to the
+  next frozen `v<N+1>`; evidence folds and later changes begin at `.1` beneath
+  that approved baseline.
+- Make approved majors immutable and render decimal revisions as the current
+  plan when they are numerically newer.
+
+## 0.35.5 · 2026-09-04
+
+- Repair the five cross-family paths in the Display evidence reference so a
+  fresh agent can resolve the shared unit contract, presenter, citation
+  reader, drawer registration, and plugin roster directly.
+
+## 0.35.4 · 2026-09-04
+
+- Fix the common typed Evidence Item Result filename and keys at
+  `<resolved-result>/result.yaml`; keep lifecycle facts in `runtime.yaml`.
+- State the narrow consumer-serving exception for a PHI-safe admitted Page
+  DISPLAY unit while preserving `$OUTPUT_ROOT` as the Result authority.
+
+## 0.35.3 · 2026-09-04
+
+- Resolve canonical Task Results through `$OUTPUT_ROOT`, preserving both
+  self-serving and consumer-serving Task modes.
+- Make the Page-owned DISPLAY unit the renderer's direct output destination;
+  its governed Result envelope points to and hashes the unit instead of
+  requiring an intermediate copy.
+
+## 0.35.2 · 2026-09-04
+
+- Resolve Run and Result locations through the Folder owner's dialect instead
+  of assuming sibling `runs/` and `results/` paths.
+- Define a DISPLAY unit as the bounded Page-facing projection of a governed
+  local DISPLAY Result, with source Run, Result, and hash bindings.
+- Separate the Evidence Item's authored `Acceptance` checks at LAND from the
+  display unit's lowercase human `accepted:` gate administered by CHECK.
+
+## 0.35.1 · 2026-09-04
+
+- Make the Evidence Item `Local Run` field owner-native: Task routes use
+  `bNNjNNtNN[rNN]`, Paper may reserve `pjNNtNNrNN`, and other Folder-local
+  owners use their declared Folder/Run address instead of a Paper-only id.
+- Define the LAND action transition: `new-run → registered → reuse` after the
+  first accepted Result, or `rerun` after a failed, invalid, or stale attempt.
+
+## 0.35.0 · 2026-09-04
+
+- Fold the ranked Skill record contract into `ref/skill-record.md`; Outline is
+  its only callable Plugin owner and public surface.
+- Delete the Evidence and Probe compatibility skills. Evidence remains an
+  internal workspace; Probe remains history handled through migration reads.
+
+## 0.34.2 · 2026-09-04
+
+- Add CITE-only `Verified` to the authored Evidence Item grammar and require
+  it for `ready`; keep it separate from legacy BibTeX verification.
+- State that auto cannot turn an unsigned branching Decide into `make`.
+
+## 0.34.1 · 2026-09-04
+
+- Replace the legacy Probe-card VALUE reference with the current typed local
+  VALUE Result contract: Supporting Runs, one frozen Local Input, one local
+  Run, one accepted Result, then EMBED.
+
 ## 0.34.0 · 2026-09-04
 
 - Replace the former Plan Context and Page Records top-level groups with one

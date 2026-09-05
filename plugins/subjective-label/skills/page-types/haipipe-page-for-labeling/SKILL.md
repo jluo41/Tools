@@ -11,8 +11,8 @@ description: >-
   when rounds become sections, when freeze is mistaken for completion, when a
   score has no bound handoff, or when a machine proposal is read as gold.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-01"
+  version: "0.6.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -43,7 +43,7 @@ per-target job S-Label-<n>-<corpus>-<target>.md ONE corpus and ONE     its human
 A human authority can accept `authority` on a corpus and still refuse `social-proof` on the same corpus, so each target is its own Page/Job unit with its own gate.
 Size does not decide it, and neither does how long the page grows.
 
-**⛔ A ROUND IS NOT A PAGE UNIT.** Round 4 cannot be approved while round 3 is refused, because a round opens only after the previous checkpoint closed. Rounds are strictly ordered, so they fail the Page-unit test. Once released, each round is nevertheless one Level-4 Calibration Run with its own Ticket, Result, and receipt.
+**⛔ A ROUND IS NOT A PAGE UNIT.** Round 4 cannot be approved while round 3 is refused, because a round opens only after the previous checkpoint closed. Rounds are strictly ordered, so they fail the Page-unit test. A released round is an episode that groups its independently allocated Labeling Runs; it is not itself an extra umbrella Run.
 
 **One target per page also keeps the class single-valued.** One item may carry two targets at once. Giving each target its own page keeps each page's HIGH, LOW, and NONE clean, and lets multi-label live across pages instead of forcing one page to hold classes that are not mutually exclusive.
 
@@ -53,9 +53,11 @@ Size does not decide it, and neither does how long the page grows.
 
 Rounds keep arriving, and the base fixes the section order, so a `###` per round would make the Page grow without end and change shape every round.
 One `### 2 · Rounds` division holds them all, newest first, as record blocks.
-A released round is a Calibration Run on disk (`ref/ref-assets.md` §3), and the
-record is its readable index: it names the Run, quotes the card's wager, and scores the
-prospect against what happened.
+A released round is a grouping episode on disk (`ref/ref-assets.md` §3), and the
+record is its readable index: it names the released operation Tickets, quotes
+the card's wager, and scores the prospect against what happened. The canonical
+Run envelopes remain under `runs/` and `results/`; the round folder is not a
+second Run identity.
 
 ```markdown
 **round_03** · closed 260806 · G_02 → G_03 · 60 items (40 challenge / 20 audit)
@@ -180,7 +182,7 @@ id and checksum once it exists (and stays empty as status before), §5 shows
 
 Two kinds, two specimens. Copying the Job specimen for a control page produces a page with `requires:` it does not have and Aims about a job it does not own.
 
-`examples/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-1-acibench-authority.md` is the reference implementation, and `S-Label-Dash.md` beside it is the control page.
+`examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807/SL-labeling-runs/S-Label-1-acibench-authority.md` is the reference implementation, and `S-Label-Dash.md` beside it is the control page.
 Read them before writing a new one.
 A worked example lives on a board and never in this folder, because a page that renders nowhere cannot show that its Decision Now row can be answered.
 

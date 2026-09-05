@@ -1,5 +1,10 @@
 # value-rules · what an agent checks before a person's 🧮 `read:`
 
+> Compatibility only. Current `E<NN>-VALUE-*` Evidence Items have no `read:`
+> tick; readiness comes from their accepted local Result contract in
+> `haipipe-plugin-outline/ref/item-table.md`. These rules interpret historical
+> Probe-card receipts without keeping the retired Plugin skill alive.
+
 Seeded 260818. `read:` means "a person read the answer"; what an agent can
 establish is everything AROUND that: that the number in the prose is the number
 in the file, and that the file is the one the card asked for.
@@ -21,9 +26,9 @@ R5  serves: NAMES REAL ADDRESSES. Every `C<n>.P<n>.B<n>` in `serves:` exists
     in the approved outline of the round that raised the card.
 R6  THE STATE LADDER IS THE PLUGIN'S, ALL EIGHT OF IT. `planned ·
     commissioned · answered · answered-local · read · deferred · failed ·
-    concern`, the list `haipipe-plugin-probe` §✍️ and `ref/check-probe.py`
-    both carry, and nothing outside it. `raised`, `working` and `bound` were
-    retired at haipipe-plugin-probe 0.7.0 and are defects where they appear.
+    concern`, the historical Probe-card list, and nothing outside it.
+    `raised`, `working` and `bound` were retired before the current Evidence
+    Item model and are defects where they appear.
     ⚠️ Until 260821 this rule named only the first four, so a legally
     `deferred`, `failed` or `concern` card FAILED R6 — the rule reported the
     ladder it had been given, not a defect on the card.
@@ -54,6 +59,6 @@ R9  THE AGENT WRITES `checked:`, NEVER `read:`. Two fields, two authors, the
 ```
 
 What a number MEANS is the page's argument and is re-judged each time, so it
-is a person's 🛑. And `read:` itself stays a person's tick under
-haipipe-plugin-probe: an agent that passes R1-R8 writes `checked:` (R9) and
+is a person's 🛑. On a historical Probe card, `read:` itself stays a
+person's tick: an agent that passes R1-R8 writes `checked:` (R9) and
 stops there.

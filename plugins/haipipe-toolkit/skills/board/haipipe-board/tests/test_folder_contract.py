@@ -21,7 +21,14 @@ class TestFolderContract(unittest.TestCase):
 
     def test_application_phase_family_is_complete(self):
         contracts, problems = validate_tree(self.skills)
-        app = [item for item in contracts if item.workflow.startswith("haipipe-i") or item.workflow.startswith("haipipe-d")]
+        application_workflows = {
+            "haipipe-insight-workflow",
+            "haipipe-design-workflow",
+        }
+        app = [
+            item for item in contracts
+            if item.workflow in application_workflows
+        ]
         self.assertEqual(problems, [])
         self.assertEqual(
             {(item.workflow, item.phase) for item in app},

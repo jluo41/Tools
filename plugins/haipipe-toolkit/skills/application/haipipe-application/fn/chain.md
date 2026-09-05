@@ -13,7 +13,8 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
 
    For a valid match, register or resume one `QW<n>` row in MT04, record the
    exact Task Page/RF version and one local I5 Wisdom Folder on that row, and
-   PageX-bind the RF from the local W Folder. Run I5 there: cite rather than
+   register the RF's producing Run Result in the local W Folder's Evidence Item
+   graph. Run I5 there: cite rather than
    copy the Task K/W/RF rows, test them against this Application's audience,
    context, and decision, write local counsel and forbidden overreach, then
    stop at `signed: ⬜`. A person may sign the resulting **Application-owned**
@@ -31,7 +32,7 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
    - I settled, no K → `3-K-knowledge/K<NN>-<slug>/` with `folder-kind: knowledge`
    - K settled, no W → `4-W-wisdom/W<NN>-<slug>/` with `folder-kind: wisdom`
    On a partition-major board (`ref/partition.md`) the rungs live inside partition groups: resolve the owning group from the question's Queue CELL (its column names the partition; a dot cell routes to the X group), then open `<group>/<L><rung letter><NN>-<slug>/` with the partition letter prefixed to the page id. The phase-owned Folder contracts are the same four.
-4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. Load `haipipe-plugin-probe` for a D Folder commissioning missing evidence and `haipipe-plugin-evidence/ref/pagex.md` for the producing Folder or any accepted parent.
+4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. For missing or reused evidence load `haipipe-page-outline`, `haipipe-page-evidence`, and `haipipe-plugin-outline/ref/item-table.md`; external evidence enters through Supporting Run Results, while Related Page links remain Context.
 5. Cite the parent page and the parent ROWS by id. Never restate a parent's content: a D page's counts are cited, not copied.
 6. Update the question's Queue row on its register with the new page id and state.
 7. Run the Page workflow until CHECK settles or holds the page.

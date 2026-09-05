@@ -8,7 +8,7 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "0.9.0"
+  version: "1.0.0"
   last_updated: "2026-09-04"
 ---
 
@@ -41,7 +41,9 @@ registration—the shell is never edited for it.
 Material lands in its rostered lane, and artifacts carry the page's stem. A
 standalone lane uses `<page-dir>/<lane>/`; a category-owned lane uses its real
 nested address, such as `outline/evidence/bibex/` or `delivery/latex/`.
-PRIMARY plugins hold originals a person makes (draw, chat, meeting): they are committed and only their writer edits them.
+PRIMARY lanes hold originals a person makes (draw, chat): they are committed
+and only their category-owned writer edits them. Meetings are project/SPACE
+records owned by `haipipe-project-meeting`, never current Page material.
 DERIVED plugins hold projections of the page's own text (slide, latex, word,
 citation workbench): they regenerate on demand, a hand edit is overwritten on
 the next build, and the folder is safe to gitignore.
@@ -82,11 +84,14 @@ The `session:` line and the page's own text stay `haipipe-page`'s; this contract
 Every optional surface, including the Page phases stepper, appears in the one
 Plugin picker. A surface may use its own panel layout after opening, but that
 never creates a second top-level menu.
-A Plugin's OPERATING knowledge lives in its own skill under
-`page-plugins/haipipe-plugin-<name>/`. Internal lanes may instead live as
-references under their owning category skill; Citation/Bib, Value, and Display
-therefore live under `haipipe-plugin-outline/ref/evidence/` and do not mint
-duplicate skills. PageX is legacy migration input only.
+A generic Page Plugin's OPERATING knowledge lives in one of exactly five
+public skills under `page-plugins/`: Outline, Studio, Runs, Delivery, or
+Folder. Internal lanes live as references under their owning category skill;
+they never mint duplicate callable skills. Outline owns Citation/Bib, Value,
+Display, and the ranked Skill record; Studio owns Chat and Draw; Delivery owns
+LaTeX, Word, Slide, and Render. PageX is legacy migration input only.
+Domain extensions live with their domain owner (for example
+`application/haipipe-plugin-design`), not in this generic directory.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
@@ -129,8 +134,8 @@ presents the evidence-side lineage.
 ## 🔌 The two plugin kinds, and the tab bar they make (260831)
 
 A LANE contract owns one rostered folder's LAW—storage grammar, the one
-writer, and the gate. It may be a separate Plugin, or an internal reference
-owned by its category.
+writer, and the gate. For generic Page material it is an internal reference
+owned by its category, never a second Plugin skill.
 A CATEGORY plugin owns one SURFACE over a whole category. It may delegate a
 lane to another contract or own it directly: `haipipe-plugin-outline` owns
 Citation/Bib, Value, and Display inside its Evidence Workspace. PageX remains
@@ -160,11 +165,11 @@ Optional entries still keep their assigned place when applicable;
 an unassigned third-party entry follows these in stable registration order.
 On every source-backed Board Page, `⚙️ Runs` remains visible even when no local
 Run has been allocated; its truthful empty state says that no local Run exists
-and does not create empty `runs/` or `results/` folders. `🏷 Labeling` follows
-its own applicability rules. Skill is an internal Outline → Context Workspace → Records
+and does not create empty `runs/` or `results/` folders. `🏷 Labeling` is a
+domain extension and follows its own applicability rules. Skill is an internal Outline → Context Workspace → Records
 surface backed by the nested `outline/skill/` store, so it has no duplicate top-level
-picker row. Neither Evidence nor Probe gets a top-level picker entry: Evidence
-is an internal Outline workspace and Probe is retired compatibility only.
+picker row. Neither Evidence nor Probe has a skill or a top-level picker entry:
+Evidence is an internal Outline workspace and Probe is retired history.
 No lane sells its own strip row; the shell's
 old 💬, 🖌 and 🎞 rows folded 260831 (stored tab sets migrate on load). The
 260815 refusal of "full chat under the canvas" bound the DRAW tab; the

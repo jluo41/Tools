@@ -1,0 +1,6 @@
+interface:
+  display_name: "Task Tables"
+  short_description: "Show one row per task plus config and run detail"
+  default_prompt: "Use $task-table to render one row per Task Folder with plan and display lenses, a Config Catalog, and a Runs Overview—or to check a TASK-TABLE.md still matches the tree."
+policy:
+  allow_implicit_invocation: true

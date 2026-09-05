@@ -7,14 +7,14 @@ own their craft and `recipe/`; they are workers, not Page plugins.
 
 This reference defines where a unit lives on a Page, which renderer makes it,
 and how a sentence cites it.
-The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-output-contract.md` is adopted verbatim (QPf5, ruled JL 260815), and this skill cites it the way `haipipe-plugin-latex` cites `md2tex.py` — a caller, never a fork.
+The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-output-contract.md` is adopted verbatim (QPf5, ruled JL 260815), and this reference cites it the way Delivery's `ref/latex.md` cites `md2tex.py` — a caller, never a fork.
 
 ## 🗂 Storage · one unit per folder, the paper contract at a page address
 
 ```text
 <page>/outline/evidence/display/
 └── <stem>-Display<N>-<slug>/     the unit, named by the page's stem
-    ├── README.md                 claim · kind · accepted: — the human gate lives here
+    ├── README.md                 claim · kind · source Result · accepted:
     ├── intake/                   🧑 manifest.yaml + small approved extracts
     ├── recipe/                   🎨 renderer-owned script, spec, receipts
     ├── float.tex                 the unit test: the float a citing page would \input
@@ -53,24 +53,30 @@ Three names for one mechanism would be the drift.
 The family retired its poster and slides renderers the same day; a page's talk is the slide plugin's deck, never a display unit.
 
 Data-driven kinds take their numbers ONLY through `intake/` citing the task bank by id — ask once, cite twice (QPf5 §4); a render never invents a value.
-Every unit walks the same five steps, and the hands alternate:
+Every unit walks the same five steps, and the hands alternate. LAND owns steps
+①–④ as Result production in the caller-supplied Page unit; CHECK administers
+step ⑤ after the unit can be judged in the built Page:
 
 ```text
 ① INTAKE 🧑 → ② RENDER ⚙️ → ③ PICK 🧑 → ④ BUILD ⚙️ → ⑤ ACCEPT 🧑
 ```
 
-Only a person ticks `accepted:` in the unit's README, and a changed `intake/` drops the tick back to ⬜ — acceptance binds the render to the inputs it was accepted with.
+Only a person ticks `accepted:` in the unit's README, and a changed `intake/`
+drops the tick back to ⬜. This lowercase human decision is distinct from the
+Evidence Item's capitalized `Acceptance` checks: those checks make the local
+DISPLAY Result ready during LAND; `accepted:` is the later CHECK gate that
+binds the visible render to its inputs.
 
-## ❄️ Intake · a data unit freezes FROM a probe card, never from the workspace
+## ❄️ Intake · a data unit freezes from its Local Input, never from the workspace
 
 The commonest question about a data-driven unit is where its numbers come from (JL 260817: "是不是 display 可以去 get 这个 probe 里面的东西，然后把 probe 里面的东西复制到 display 那个 folder 去，然后它再去做图?"). Yes, and the path is fixed:
 
 ```text
-  task folder / shipped run
-        │  LAND pulls, with source · run · sha256 · aggregate: true
+  Supporting Execution/Discovery Result(s)
+        │  LAND validates source · run · sha256 · aggregate: true
         ▼
-  evidence/probe/PP<NN>-<slug>/proof/<file> ← the card's own evidence
-        │  ① INTAKE copies it, verbatim, and records the SAME sha256
+  one frozen Evidence Item Local Input
+        │  ① INTAKE reads/copies it and records the SAME sha256
         ▼
   display/<stem>-Display<N>-<slug>/intake/inputs/<file>
         │  ② RENDER reads the frozen copy at run time
@@ -78,7 +84,11 @@ The commonest question about a data-driven unit is where its numbers come from (
   assets/table-body.tex · float.tex · preview.pdf
 ```
 
-**The unit never reaches into the workspace a second time.** The card already crossed the wall and recorded the provenance; a unit that re-pulls the same file is a second, unwitnessed pull that can silently disagree with the card. `intake/manifest.yaml` names the card, the card's state, and the card's own `sha256`, which is what makes staleness COMPUTABLE: if the card re-pulls and the hash moves, the intake is stale and `accepted:` drops back to ⬜.
+**The unit never reaches into the workspace a second time.** Supporting Results
+already crossed the wall and the Local Input froze their provenance. A unit
+that re-pulls a source is a second, unwitnessed pull. `intake/manifest.yaml`
+names the Evidence Item, Supporting Result ids/paths, and hashes. If any source
+hash moves, the intake is stale and `accepted:` drops back to ⬜.
 
 **A DATA-driven unit may only be created once the Results supporting it are
 valid.** Its `intake/` freezes from the Evidence Item's Local Input, which does
@@ -88,9 +98,29 @@ plan but no display unit folder. A CONCEPT unit may have zero Supporting Runs
 when its approved item contract is sufficient; LAND still freezes one Local
 Input and executes one Local Run.
 
-**The recipe TYPES no cell.** `recipe/` reads the frozen intake at run time, so re-running it against the same intake yields the same bytes and a reader can check any printed number against the card's `proof/`. It also fails loudly on a ragged read: `QC1-visitlbp-Display1-control-ladder` caught Stata writing `="771,449"`, where the `=` outside the quote makes a CSV parser split inside the number and deliver 11 cells where 5 were expected.
+**The recipe TYPES no cell.** `recipe/` reads the frozen intake at run time, so
+re-running it against the same intake yields the same bytes and a reader can
+check any printed number against the bound Supporting/local Results. It also
+fails loudly on a ragged read: `QC1-visitlbp-Display1-control-ladder` caught
+Stata writing `="771,449"`, where the `=` outside the quote makes a CSV parser
+split inside the number and deliver 11 cells where 5 were expected.
 
-**A unit names the bullet it serves**, the same backlink a probe card carries (`haipipe-plugin-probe` §↩), in a `serves:` row of its README: the plan was frozen before the unit existed, so the unit points at the plan and never the reverse.
+**A unit names the bullet it serves** in a `serves:` row of its README. The plan
+was frozen before the unit existed, so the unit points at the plan and never
+the reverse.
+
+**A unit names its provenance authority.** LAND passes this Page-owned unit
+directory directly to the renderer. The governed Result envelope and the
+unit's `intake/manifest.yaml`/README record the source local Run id, resolved
+Result path, unit pointer, and hashes. The Result does not first hold a duplicate
+render payload that must be copied here; the unit is still not a second
+independently authored Result.
+
+In a consumer-serving canonical Task, a PHI-safe unit admitted by LAND remains
+at this Page address as the narrow Page-authority exception. Its governed
+`result.yaml` and `runtime.yaml` stay under
+`$OUTPUT_ROOT/results/<task>/<RUNNAME>/` and point to/hash the unit. This does
+not authorize any other generated output inside the Job.
 
 ## 🖼 Evidence segment · the strip that shows everything and writes nothing
 
@@ -119,21 +149,25 @@ The `> Display:` lane under a sentence is the FILING surface, kept for two cases
 `dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/outline/evidence/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
 Inside its own Page, write the bare Page-local id (`Display1`, `Display2`, …); cross-page prose may use the fully qualified `<stem>-DisplayN` id. Both aliases resolve to the same unit and both exporters place that unit once. A backticked id is a code span, and a code span QUOTES instead of chipping.
 Naming a ⬜ unit is legal and useful — it binds a pending render, and the chip says what is owed.
-Candidate rendering does not wait for release approval: PHI-safe aggregate intake may be rendered for review while a method or provenance Probe remains open. Release and interpretation still require the Probe gates and the separate human `accepted:` decision.
-THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph (the winning asset, the unit's own caption and label), and the word export embeds the rasterized figure with the inline `(Figure n)` and a 🖼 Display comment on the sentence — the per-projection mechanics are `haipipe-plugin-latex`'s and `haipipe-plugin-word`'s rows, not this file's.
+Candidate rendering does not wait for final Page closure: PHI-safe aggregate
+intake may be rendered for review while a worker-specific provenance gate is
+open. EMBED may interpret the DISPLAY Result after its authored `Acceptance`
+checks pass. Final Page closure and release still require the separate human
+`accepted:` decision when declared.
+THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph (the winning asset, the unit's own caption and label), and the word export embeds the rasterized figure with the inline `(Figure n)` and a 🖼 Display comment on the sentence — the per-projection mechanics are Delivery's `ref/latex.md` and `ref/word.md`, not this file's.
 
 
 > Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
 
 ## 📂 Files and ownership
 
-- `../../../display/ref/display-unit-output-contract.md`
+- `../../../../../display/ref/display-unit-output-contract.md`
   The unit's internal shape; adopted verbatim, never forked.
-- `../../haipipe-board/live/plugview.py`
+- `../../../../haipipe-board/live/plugview.py`
   The 🖼 surface: strip, chips, trees, ghost scaffold; read-only.
-- `../../haipipe-board/src/dialect_paper.py`
+- `../../../../haipipe-board/src/dialect_paper.py`
   The citation index: `<page>/outline/evidence/display/*/float.tex` → evidence chips.
-- `../../haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
-  The drawer registration: the Plugin ▾ rows for 🖼 Display and 🚪 Probe.
-- `../../haipipe-plugin/ref/roster.md`
+- `../../../../haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
+  The drawer registration for the shared Outline workspaces.
+- `../../../../haipipe-plugin/ref/roster.md`
   The internal `display/` storage row owned by `haipipe-plugin-outline`.

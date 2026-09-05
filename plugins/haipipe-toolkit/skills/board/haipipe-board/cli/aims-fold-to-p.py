@@ -15,6 +15,10 @@ Usage: aims-fold-to-p.py [--write] <board-dir>...
 import re, sys, datetime
 from pathlib import Path
 
+HERE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(HERE))
+from src.outline_version import latest_outline  # noqa: E402
+
 TICK = r"(?:⬜|🔨|🧠|✅|❄️?|🟡|🟠|⏸️?)"
 AROW = re.compile(rf"^- (?:{TICK}\s+)?(A(\d+)\.(\d+))\s+·\s+")
 PROW = re.compile(rf"^- (?:{TICK}\s+)?P(\d+)\s+·\s+")
@@ -71,8 +75,7 @@ def fold(page):
     all_text = "\n".join(head_lines)
     pmax = max([int(x) for x in re.findall(r"(?m)^- (?:%s\s+)?P(\d+)\s+·" % TICK, all_text)] or [0])
     # plan ids too, so a P the plan already uses is not reused
-    plans = sorted((page.parent / "outline").glob(f"{page.stem}-outline-v*.md"))
-    latest = plans[-1] if plans else None
+    latest = latest_outline(page.parent / "outline", page.stem)
     if latest:
         pmax = max(pmax, *([int(x) for x in re.findall(r"\bP(\d+)\b", latest.read_text(encoding="utf-8"))] or [0]))
     mapping, moved, folded_names = {}, [], []
@@ -136,7 +139,7 @@ def main():
             page.write_text(r["new_text"], encoding="utf-8")
             touched = []
             for f in sorted((page.parent / "outline").glob("*.md")):
-                if re.search(r"-outline-v\d+\.md$", f.name) and f != r["latest"]:
+                if re.search(r"-outline-v\d+(?:\.\d+)?\.md$", f.name) and f != r["latest"]:
                     continue                      # frozen history
                 if rename_in(f, r["mapping"]): touched.append(f.name)
             log = page.parent / "outline" / f"{page.stem}-log.md"

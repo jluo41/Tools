@@ -10,8 +10,8 @@ description: >-
   tables or a single-run status report.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-01"
+  version: "0.4.1"
+  last_updated: "2026-09-05"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,6 +34,34 @@ a Skill Coverage projection so the workflow can show which skills it depends
 on and whether those skills are current and exercised. It is not a giant
 checklist, a concrete Run inventory, or a replacement for the phase skill that
 owns the actual work.
+
+## 🪞 Tables family · plan plus display
+
+Every table in this family has two synchronized lenses over the same work:
+
+```text
+plan lens      what should happen, why, with which input, gate, and route
+display lens   what is present, active, finished, missing, or held
+                         ↓
+                 one read projection
+```
+
+The table is a projection, not a third Folder face and not a new authority.
+The plan lens must point back to the owning workflow, Page, Task, or Outline;
+the display lens must come from observed structure, files, Runs, receipts, or
+human records. A status or file count must never silently become a plan.
+
+| Table | Row grain | Plan lens | Display lens | Availability |
+|---|---|---|---|---|
+| **Workflow Table** | Phase/Cycle | purpose, input/policy, gate, route, Run demand | compact status, active Runs, human action | current |
+| **Task Tables** | Task folder | `develops:` / `input:` / `output:` on the task page | task tree, code, tickets, receipts, stores | current: `/task-table` |
+| **Board Tables** | one Board Page/Page Folder | Page/Outline and cross-lane intent | Folder lanes, Tasks, Runs, Results, evidence | reserved for a future sibling |
+
+`Board Tables` is therefore not a name for the current Folder inventory. It
+will be a future read projection with one row per Board Page/Page Folder. It
+joins the Page Face, Task Face, selected plugin lanes, and runtime evidence;
+the Board Page/Page Folder remains the row owner and the table remains a
+projection rather than a new authority.
 
 ## 🧭 Core model
 
@@ -372,6 +400,9 @@ missing input and stop at `HOLD`. Do not fill the cell with a plausible guess.
   lifecycle when that skill is available.
 - `haipipe-run` owns Level-4 identity, Ticket/Result pairing, receipts, and
   Run counting when that skill is available.
+- `haipipe-folder` owns the two Folder faces and records which current Folder
+  views are only inventory or planning projections; it does not currently
+  provide a unified Board Table.
 - The owning workflow and phase skills remain authoritative for domain meaning,
   gates, and actual file ownership.
 

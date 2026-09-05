@@ -104,6 +104,34 @@ Measured on 260726: after moving 154 pages, 17 declared Links broke, all of the 
 Pages lists bare filenames so it is unaffected; Links holds real paths, and it is exactly this moment that exposes the difference between the two sections.
 The checker reports these as `dead-link` / `dead-href`, so `check.py` must run once after every move.
 
+### Task Block Board shape
+
+A Task Block becomes a Board only through an explicit head declaration:
+
+```markdown
+board-kind: task-block
+```
+
+The mapping is fixed: Block is Board, each direct Job is one Group, each same-stem Task Markdown file is one Page, and each Run stays an execution record beneath that Task. The Task family owns the hierarchy and P-B-E-R; the Board family owns presentation, navigation, and aggregate status.
+
+```text
+bNN_<block>/
+├── board.md
+├── jNN_<job>/
+│   ├── tNN_<task>/
+│   │   ├── tNN_<task>.md
+│   │   ├── scripts/
+│   │   └── runs/
+│   ├── results/ · notebooks/ · workflow/
+│   └── src/
+├── diagram/
+└── board/                         generated
+```
+
+The `jNN_/tNN_` tree is the membership and default-order authority. `## Pages` may name only Job headings and their introductions, so the Board does not restate a tree that already exists. If it explicitly orders Tasks, each row is the Board-relative path `jNN_<job>/tNN_<task>/tNN_<task>.md`; bare filenames are accepted only when unique across the Block. The Page id is the compact path address `bNNjNNtNN`. A generic Board never discovers Task Pages merely because one lies below it.
+
+Every Task Page declares `folder-kind: task` and `task: .`. Its `state:` is the Folder's cross-face status: ✅ requires terminal P-B-E-R plus a current person-read READING gate. A successful Run, completed Report, or finished Page Face alone cannot close the Task or its Block Board.
+
 ## 2. Numbering and kind
 
 The filename prefix IS this question's id: `Q` + group letter + sequence number within the group.
@@ -167,6 +195,7 @@ An unregistered one still displays, filed under the ⚠️ group.
 
 ```markdown
 # Board title: one sentence stating what this board is for
+board-kind: task-block  # only for the Task Block Board dialect; omit on a generic Board
 spine: The spine. What this board is solving, in one sentence. The topic must not drift until it is solved.
 close: The close condition. When this board can be closed.
 source: optional, where this board comes from (a meeting-notes path or similar)
@@ -213,7 +242,7 @@ S-Seed-0-seed.md
 S-Seed-1-literature.md
 ```
 
-**Pages only handles ordering and grouping**; it never copies a title or body text, because a copy would go out of sync.
+**Pages only handles ordering and grouping**; it never copies a title or body text, because a copy would go out of sync. On a Task Block Board, the Task tree supplies membership and default order, so Pages may contain Job headings and introductions without listing every Task.
 
 **The `doc:` line (formerly QF2, JL 260724; **retired 260726**, do not use it again)**: to display a file that lives elsewhere, use §5's `![[path]]` to embed it into a real page instead, which is equally zero-copy but the page then gets a state, a checklist count, and a place for comments.
 The paragraph below is kept only for old boards, and the parser still recognizes it (no one in the whole SPACE uses it today): `doc: notes/readme.md` renders the listed source files **directly** as one page (id = the **folder** the first file sits in; a top-level file uses its filename stem instead, so `2b-pitch/PITCH_LOG.md`'s page is called `2b-pitch`, and two `README.md` files never collide; the title takes the first file's own `#`/setext heading, or the id if there is none).
@@ -314,7 +343,7 @@ The order of the canonical folded sections is fixed by `build.py` (Discussion ·
 Q is `Opening → Outline → Content → Aims`;
 S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
 (the folds follow after Aims; the file map is in outline/).
-Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. Outline is its own section, collapsed by default, and expands only when the section name is clicked.
+Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. Outline is its own section and opens by default to the current read-only Outline Table.
 Everything after `## Opening`'s FIRST BLANK LINE, on both Q and S, goes into the More details row of that page's own drawer (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q's explanatory paragraph automatically became Content's first subsection).
 A stage has exactly one contract section and it is `## Stage Contract` (JL 260801). There is no Stage Record: an old page that still holds a direct `### Stage Record` under Content has it lifted into that contract verbatim, as its opening lines, and the remaining subsections stay in Content.
 A Q's explicit Content can be omitted.
@@ -440,7 +469,7 @@ One generated site has three URL kinds and no second deck:
 
 - **Index**: `board/index.html` carries the spine, Board Map, Related Folders when declared, Section Matrix, page roster, and Activity.
 - **Group**: `board/<GROUP>.html` carries that group's purpose, expandable explanation, progress, and page rows.
-- **Page**: `board/<GROUP>/<page>.html` carries one permanently focused Q/S page, with the shared sidebar preserving navigation.
+- **Page**: `board/<GROUP>/<page>.html` carries one permanently focused Board Page, including a Task Page on a Task Block Board, with the shared sidebar preserving navigation.
 
 Internal links are ordinary HTML links when scripts are off. With scripts on, the router swaps the requested page into the current document so the attached chat or terminal session survives navigation.
 

@@ -11,10 +11,11 @@ authored HERE is the bibex extractor, because
 citation-craft.md forbids generating bibtex: it may only SUBSET a `.bib` a person
 already wrote, so it is thirty lines of copying and belongs to no other family.
 
-WHERE AN EXPORT LANDS is the plugin contract (haipipe-plugin): a folded page
-owns its material, so `<page-dir>/<plugin>/<stem>.<ext>`; a flat page falls back
-to the board-level `<board>/<plugin>/`. The fallback is this door's own: the
-slide plugin has none, because `autodeck.py` refuses a flat page outright.
+WHERE AN EXPORT LANDS is the category-aware plugin contract
+(`haipipe-plugin`): a folded Page writes Delivery lanes below
+`<page-dir>/delivery/<lane>/`, Outline lanes below `outline/`, and Studio lanes
+below `studio/`. A flat legacy Page may fall back to a board-level lane where
+that writer explicitly supports it. `autodeck.py` refuses a flat Page outright.
 
 WHY EVERY OUTPUT GETS AN .html BESIDE IT when the artifact itself cannot be
 framed: the surface is a right-pane TAB, and a tab needs a URL a browser can
@@ -35,8 +36,9 @@ import sys
 from pathlib import Path
 
 from src.common import (DELIVERY_LANES, EVIDENCE_LANES, OUTLINE_LANES,
+                        STUDIO_LANES,
                         delivery_lane_dir, evidence_lane_dir,
-                        evidence_lane_dirs, outline_lane_dir)
+                        evidence_lane_dirs, outline_lane_dir, studio_lane_dir)
 
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
@@ -105,6 +107,8 @@ class ExportMixin:
             out_dir = outline_lane_dir(page_home, plugin)
         elif plugin in DELIVERY_LANES:
             out_dir = delivery_lane_dir(page_home, plugin)
+        elif plugin in STUDIO_LANES:
+            out_dir = studio_lane_dir(page_home, plugin)
         else:
             out_dir = page_home / plugin
         out_dir.mkdir(parents=True, exist_ok=True)

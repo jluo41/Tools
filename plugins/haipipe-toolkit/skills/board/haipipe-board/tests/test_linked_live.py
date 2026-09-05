@@ -9,6 +9,7 @@ ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ENGINE))
 
 from cli.draw import SCHEMA, read_scene  # noqa: E402
+from live.autodraw import autodraw  # noqa: E402
 from live.chat import drawing_owner_context  # noqa: E402
 from live.xcal import XcalMixin  # noqa: E402
 
@@ -54,6 +55,23 @@ class Live(XcalMixin):
 
 
 class LinkedLiveTest(unittest.TestCase):
+    def test_missing_folded_page_scene_mints_only_in_studio_draw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "G-one" / "G1-page" / "G1-page.md"
+            page.parent.mkdir(parents=True)
+            page.write_text("# Page\n", encoding="utf-8")
+            live = Live(root)
+            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
+            legacy = page.parent / "draw" / "G1.excalidraw"
+
+            scene = live.mint_page_scene(canonical)
+
+            self.assertIsNotNone(scene)
+            self.assertTrue(canonical.is_file())
+            self.assertIsNone(live.mint_page_scene(legacy))
+            self.assertFalse(legacy.exists())
+
     def test_chat_receives_the_same_group_and_page_owner_addresses(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -67,6 +85,89 @@ class LinkedLiveTest(unittest.TestCase):
             self.assertIn("Drawing owner: Page G1 -> G-one/draw/G1.excalidraw",
                           page_context)
             self.assertIn("Never edit the derived composed scene", group_context)
+
+    def test_chat_names_flat_folded_draw_as_read_only_migration_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "G-one" / "G1-page" / "G1-page.md"
+            page.parent.mkdir(parents=True)
+            page.write_text("# Page\n", encoding="utf-8")
+            legacy = page.parent / "draw" / "G1.excalidraw"
+            write_scene(legacy, {
+                "type": "excalidraw", "version": 2, "elements": [],
+                "appState": {}, "files": {},
+            })
+            (page.parent / "studio" / "draw").mkdir(parents=True)
+
+            context = "\n".join(drawing_owner_context(page, root))
+
+            self.assertIn("G-one/G1-page/draw/G1.excalidraw", context)
+            self.assertIn("READ ONLY", context)
+            self.assertIn("studio/draw", context)
+
+            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
+            write_scene(canonical, {
+                "type": "excalidraw", "version": 2, "elements": [],
+                "appState": {}, "files": {},
+            })
+            context = "\n".join(drawing_owner_context(page, root))
+            self.assertIn("G-one/G1-page/studio/draw/G1.excalidraw", context)
+            self.assertNotIn("Legacy Page drawing", context)
+
+    def test_canonical_open_migrates_legacy_scene_without_changing_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "G-one" / "G1-page" / "G1-page.md"
+            page.parent.mkdir(parents=True)
+            page.write_text("# Page\n", encoding="utf-8")
+            legacy = page.parent / "draw" / "G1.excalidraw"
+            source = {
+                "type": "excalidraw", "version": 2,
+                "elements": [{"id": "kept", "type": "text", "text": "mine"}],
+                "appState": {}, "files": {},
+                "haipipe": {"schema": SCHEMA, "kind": "page",
+                            "page": {"id": "G1", "markdown": "G-one/G1-page/G1-page.md"}},
+            }
+            write_scene(legacy, source)
+            before = legacy.read_bytes()
+            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
+
+            migrated = Live(root).mint_page_scene(canonical)
+
+            self.assertEqual(migrated["elements"][0]["text"], "mine")
+            self.assertTrue(canonical.is_file())
+            self.assertEqual(legacy.read_bytes(), before)
+
+    def test_linked_save_refuses_a_flat_folded_page_scene(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            page = root / "G-one" / "G1-page" / "G1-page.md"
+            page.parent.mkdir(parents=True)
+            page.write_text("# Page\n", encoding="utf-8")
+            legacy = page.parent / "draw" / "G1.excalidraw"
+            source = {
+                "type": "excalidraw", "version": 2, "elements": [],
+                "appState": {}, "files": {},
+                "haipipe": {"schema": SCHEMA, "kind": "page",
+                            "page": {"id": "G1", "markdown": "G-one/G1-page/G1-page.md"}},
+            }
+            write_scene(legacy, source)
+            live = Live(root)
+
+            result = live.save_linked_page(
+                {"owner_kind": "page", "owner_id": "G1", "elements": [],
+                 "base_revision": live.scene_revision(legacy)},
+                legacy, source,
+            )
+
+            self.assertFalse(result["ok"])
+            self.assertIn("read-only", result["err"])
+
+            generated = autodraw(root, {
+                "scene": str(legacy.relative_to(root)), "prompt": "draw it"
+            })
+            self.assertFalse(generated["ok"])
+            self.assertIn("read-only", generated["err"])
 
     def test_group_runtime_composes_every_page_and_names_the_save_owner(self):
         with tempfile.TemporaryDirectory() as tmp:

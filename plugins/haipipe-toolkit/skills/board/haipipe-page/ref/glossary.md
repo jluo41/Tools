@@ -18,8 +18,15 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `<project>/diagram/<NN>-<Name>-<date>/`
 - **Page** — one question (Q) or one lifecycle stage (S), and the folder that
   holds everything it owns. `<board>/<group>/<PageId>-<slug>/<PageId>-<slug>.md`
-- **Page Type** — which KIND of page this is (task, section, venue, narrative,
-  dash …), fixed for the page's life. `board/page-types/haipipe-page-for-*`
+- **Folder kind** — the stable domain kind whose workflow phase or canonical
+  family skill owns the Folder and its Page Face. `workflow/phase.yaml`
+  `current.folder-kind` or the Page's `folder-kind:` field.
+- **Page Type** — the compatibility key used by an unmigrated Page. New Pages
+  resolve their Page Face through Folder kind; `page-type:` and
+  `board/page-types/haipipe-page-for-*` remain fallbacks.
+- **Context record** — the generated PREPARE projection of the governing
+  identity, ownership, policy, requirements, related information, feedback,
+  decisions, and Page records. `<page>/outline/<stem>-context.md`
 - **plan**, also **the outline file** — the agreed SHAPE of a page, written and
   approved before any prose. `<page>/outline/<stem>-outline-v<N>.md`
 - **bullet** — one POINT in the plan: a short capitalized HEAD, then one folded
@@ -34,19 +41,29 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   ready → folded → accepted`).
 - **Supporting Run** — an Execution or Discovery Run whose detailed Result is
   frozen into an Evidence Item's one local input envelope. Zero or more per item.
+- **Local Input** — one immutable envelope containing the Evidence Item
+  contract, exact Supporting Result paths and hashes, and any governed
+  page-local static sources allowed by SURVEY. It is frozen by LAND.
 - **local Evidence Item Run** — the one Page · Evidence Item Run that converts
   the frozen input into a focal ready VALUE/CITE/DISPLAY Result for EMBED.
-- **probe card** — retired Page-local compatibility shape. New evidence work
-  is a typed Evidence Item with Supporting Runs, an exact Local Input, and one
-  local Run; never create a new `probe/` lane.
+- **Result** — the output artifact of one allocated Run. A Supporting Result
+  remains detailed reusable upstream output; an accepted local Evidence Item
+  Result is the focal VALUE, CITE, or DISPLAY payload that EMBED may interpret.
+- **Run item** — one reader-facing presentation of a mapped Supporting or local
+  Run. It displays the global Run identity and its purpose, availability, next
+  action, Run path, and Result path; it does not create another Ticket.
 - **display unit**, often shortened to **unit** — ONE picture and everything
-  needed to rebuild it. Created at LAND, one per 🖼 mark.
+  needed to rebuild it. LAND supplies its Page-owned directory directly to the
+  renderer; the governed DISPLAY Result envelope points to the unit and records
+  its source Run, resolved Result path, and hashes. CHECK administers its later
+  human `accepted:` gate. One per 🖼 mark.
   `<page>/outline/evidence/display/<PageId>-Display<N>-<slug>/` holding `intake/`,
   `recipe/`, `assets/`, `float.tex`, `preview.pdf`, `README.md`.
 - **intake** — the unit's FROZEN inputs plus their sha256 hashes, so a moved
   source file is caught rather than silently redrawn. `<unit>/intake/`
-- **bibex entry** — one reference, landed by a person, never invented.
-  `<page>/outline/evidence/bibex/<stem>.bib`
+- **bibex entry** — one citation file or source-metadata projection.
+  `<page>/outline/evidence/bibex/<stem>.bib`. The person's CITE verification
+  is `Verified:` on the authored Evidence Item row, not a second bibex gate.
 - **receipt** — the machine-readable record of one phase pass: who acted, which
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
 - **the bank** — the task and discovery folders that ANSWER questions, and know
@@ -61,34 +78,44 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   number and names nothing a person can open (JL 260820: "what is the QA/5?
   how to understand it?"). Say the file: the folder it lives in, then its name.
 
-## 🗣 The four words inside a card, and why there are four
+## 🗂 Evidence and Run presentation
 
-A card is split so a question can cross to the bank without carrying what the
-page hopes the answer will be. That hope is the **stake**, and it never crosses.
+- **Evidence Workspace** — the Outline plugin's joined view of Evidence Item
+  contracts, mapped Runs, citation material, values, displays, and their
+  provenance. Its authority remains the records under `<page>/outline/`.
+- **Evidences lens** — the contract-first view: what each Evidence Item is for,
+  what ready payload it expects, and how acceptance will be checked.
+- **Runs lens** — the execution-first view: every mapped Supporting or local
+  Run is one Run item, grouped beneath each Evidence Item it supports. A shared
+  Run may appear in several groups while retaining one global identity.
+- **Run & Result paths** — the collapsed detail that exposes the exact Ticket
+  and Result locations. `Run` and `Result` are the reader-facing labels.
+- **legacy Probe or PageX material** — read-only migration input. Existing
+  files may still be rendered or audited, but new Page work creates neither a
+  `probe/` lane nor an active PageX binding; cross-Folder evidence enters via a
+  Supporting Run Result.
 
-- **q-consumer** — the question WITH its stake: what this page loses if the
-  answer goes the wrong way. Stays home. `<card>/consumer/q-consumer.md`
-- **q-executor** — the same question STRIPPED: no page, no claim id, no hoped-for
-  answer. The only part that crosses. `<card>/executor/q-executor.md`
-- **a-executor** — the answer as the executor gives it, plus the raw evidence
-  pulled into `<card>/proof/`. `<card>/executor/a-executor.md`
-- **a-consumer** — what the page MAKES of that answer. Stake-aware, so it is the
-  consumer's to write, never the executor's.
+## 🚦 State, action, and person-reserved acts
 
-## 🚦 Words for state, and who may write them
-
-- **tick** — a box only a PERSON may check. Four of them, and a machine may
-  transcribe one only on an explicit instruction in chat, saying so in the line:
-  `approved:` on a plan · `read:` on a card · `verified` on a bibex entry ·
-  `accepted:` on a display unit.
-- **state:** — the card's own line, DERIVED from what exists, never asserted:
-  `planned` → `commissioned` → `working` → `answered` (or `answered-local` when
-  the page's own reading of shipped output settled it) → `read`. `blocked-*`
-  names what is missing instead of pretending progress.
-- **serves:** — the backlink from a card or unit to the bullets it answers,
-  e.g. `serves: C4.P1.B4`. Without it, evidence exists but nothing uses it.
-- **target:** — the card's pointer at the QA file in the bank that answered it,
-  written by PATH so it can be opened and checked.
+- **Evidence state** — a derived Evidence Item progression:
+  `specified → planned → ready → folded → accepted`. It is computed from the
+  contract, Run graph, Result binding, plan fold, and applicable acceptance;
+  it is never a manually typed generic Status.
+- **Availability** — what physically exists for a Run item:
+  `Planned` · `Run exists · Result missing` · `Run + Result` ·
+  `Paths unresolved`.
+- **Next action** — what should happen to that Run item:
+  `Allocate and run` · `Run` · `Rerun` · `Reuse Result` · `Resolve path`.
+  Availability and Next action are independent; `new`, `rerun`, `run only`,
+  and `ready` never form one status scale.
+- **Target** — the Evidence Item's stable Bullet address, such as `C2.P1.B4`.
+  It states which planned reader move the ready Result must serve.
+- **person-reserved act** — an authored decision a machine may only transcribe
+  from explicit durable human input: `approved:` on an outline version;
+  per-item `Decide` (`make | defer | drop`) during SURVEY; `Verified:` on a
+  CITE Evidence Item during LAND; Page/display `accepted:` and any declared
+  Folder-owner ruling during CHECK. A legacy `read:` receipt may remain visible
+  while old outbound material is migrated, but it is not created by new work.
 
 ## ⏱️ Words for time, and none substitutes for another
 
@@ -96,13 +123,13 @@ Defined once in `page-workflows/haipipe-page-workflow` §🔤; repeated here onl
 as pointers, because that section is the authority.
 
 - **workflow** — which LOOP this is. Never repeats.
-- **phase** — which AUTHORITY is acting: 🧭 OUTLINE · 🃏 EVIDENCE · ✏️ DRAFT ·
-  🖊 REVISE (📄 COMPILE folded) · ✅ CHECK. REPEATS, which is why it is not
-  called a step.
-- **cycle** — the named pass inside a phase: SHAPE · SURVEY (OUTLINE) · LAND ·
-  EMBED (EVIDENCE) · WRITE (DRAFT + REVISE) · CHECK. The OUTLINE part is the
-  first four; the DRAFT part the last two. Never a letter code, never a
-  circled number.
+- **phase** — which AUTHORITY is acting: `00 CONTEXT` · `01 OUTLINE` ·
+  `02 EVIDENCE` · `03 CONTENT` · `04 CHECK`. REPEATS, which is why it is not
+  called a step. DRAFT and REVISE are CONTENT movements, never phase ids.
+- **cycle** — the named pass inside a phase: PREPARE (CONTEXT) · SHAPE and
+  SURVEY (OUTLINE) · LAND and EMBED (EVIDENCE) · WRITE
+  (Draft · Revise · Build · Pre-check inside CONTENT) · CHECK. Never a letter
+  code, never a circled number.
 - **step** — WHERE in this run, a number that never repeats.
 - **round** — which PROMISE era; repeats when a page is reopened.
 - **RUN, not ADVANCE** — a page may repeat a phase, branch, HOLD, or go back;
@@ -115,10 +142,11 @@ as pointers, because that section is the authority.
 - **judge** — the cold read of a BUILT version at CHECK (and, in pre-check
   mode, inside WRITE's loop). May never be the
   same actor that produced it. `haipipe-page-check-agent`
-- **haipipe-probe-q-executor-agent** — the ONE agent allowed to hand stripped
-  questions to the bank, shared by every consumer family (JL 260820). Called
-  by exactly one caller per family; for a page that is
-  `haipipe-page-probe-agent`.
+- **phase producer** — the current writer for CONTEXT, OUTLINE, EVIDENCE, or
+  CONTENT. The active roster is `haipipe-page-context-agent`,
+  `haipipe-page-outline-agent`, `haipipe-page-evidence-agent`, and
+  `haipipe-page-content-agent`; Draft, Revise, and Probe are not phase-agent
+  identities.
 - **orchestrator** — the bank's own dispatcher, `haipipe-task-orchestrator-agent`
   or `haipipe-discovery-orchestrator-agent`. No page-side hand calls one
   directly.

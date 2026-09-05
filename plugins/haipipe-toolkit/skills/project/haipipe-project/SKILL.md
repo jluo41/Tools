@@ -1,7 +1,7 @@
 ---
 name: haipipe-project
 description: >-
-  Create, inspect, audit, or safely update project containers under examples/.
+  Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-nlp/.
   Owns the Project boundary, README.md, project.yaml, project profile and Git
   mode, and the optional top-level worlds tasks/, discoveries/, diagram/,
   papers/, applications/, and external/. Use for new projects, repository

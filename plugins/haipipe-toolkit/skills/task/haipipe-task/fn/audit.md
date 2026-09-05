@@ -25,11 +25,12 @@ Procedure
 
 ### Step 1 — Discover run names
 
-Scan directories and collect all unique run names. First detect the job
-SHAPE (hierarchy.md "Two job shapes"): a scripts/ dir with {NN}_* children =
-NESTED, else FLAT. In a nested job a run's NAME is the PATH `<task>/<run>`,
-and every glob goes one level deeper — flat globs at the job root match
-nothing there, so a shallow audit would report a working nested job as empty.
+Scan directories and collect all unique run names.
+First detect the Job SHAPE from structure: one or more direct `tNN_*` Task
+folders means canonical NESTED; otherwise use the FLAT legacy reader.
+In a nested Job a run's NAME is the PATH `<task>/<run>`, and every authored
+glob starts inside that Task while Results resolve through `$OUTPUT_ROOT`.
+A shallow Job-root audit would report a working nested Job as empty.
 
 **Python/papermill tasks (FLAT):**
 ```
@@ -41,13 +42,13 @@ NAMES_FROM_NOTEBOOKS = stem of each notebooks/*.ipynb
 ALL_NAMES = union of all four sets
 ```
 
-**Python/papermill tasks (NESTED)** — same four sets, one task deeper,
-keyed by `<task>/<run>` (skip `0-*` shared dirs, they are never tasks):
+**Python/papermill tasks (NESTED)** — same four sets, keyed by
+`<task>/<run>` (only direct `tNN_*` folders are Tasks):
 ```
-NAMES_FROM_CONFIGS   = <task>/<stem> of each scripts/*/config/*.yaml
-NAMES_FROM_RUNS      = <task>/<stem> of each runs/*/*.{sh,ps1}
-NAMES_FROM_RESULTS   = <task>/<name> of each results/*/*/
-NAMES_FROM_NOTEBOOKS = <task>/<stem> of each notebooks/*/*.ipynb  (excl. _source)
+NAMES_FROM_CONFIGS   = <task>/<stem> of each <task>/scripts/config/*.yaml
+NAMES_FROM_RUNS      = <task>/<stem> of each <task>/runs/*.{sh,ps1}
+NAMES_FROM_RESULTS   = <task>/<name> of each $OUTPUT_ROOT/results/<task>/*/
+NAMES_FROM_NOTEBOOKS = <task>/<stem> of each $OUTPUT_ROOT/notebooks/<task>/*.ipynb  (excl. _source)
 ```
 
 **Stata tasks** (configs may be .do or .yaml, no notebooks):
@@ -76,7 +77,7 @@ For each name in ALL_NAMES, check sisters exist.
 The "four sisters" vary by engine:
 
 **Python (flat):**   configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
-**Python (nested):** <task>/config/<run>.yaml + <task>/runs/<run>.sh + results/<task>/<run>/ + notebooks/<task>/<run>.ipynb
+**Python (nested):** <task>/scripts/config/<run>.yaml + <task>/runs/<run>.sh + $OUTPUT_ROOT/results/<task>/<run>/ + $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
 **Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
 
 ```

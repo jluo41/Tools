@@ -1,3 +1,14 @@
+## 0.7.3 — 2026-09-04
+
+- Resolve closing policy through the exact Page Face owner, including a
+  canonical family owner such as `haipipe-task` loaded once.
+
+## 0.7.2 — 2026-09-04
+
+- Read ordinary-Page CITE verification from its authored Evidence Item row,
+  with Discovery runtime and BibTeX fields retained only in their proper modes.
+- Remove CHECK from CHECK's legal `next_cycle`; terminal routes omit the field.
+
 ## 0.7.1 — 2026-09-04
 
 - Use the canonical Page dependency order.

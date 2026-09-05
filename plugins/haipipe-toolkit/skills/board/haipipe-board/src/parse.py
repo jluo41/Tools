@@ -4,6 +4,8 @@ import re
 
 from .body import LINKS
 from .common import page_files, sec
+from .dialect_task_block import group_token as task_group_token
+from .dialect_task_block import page_info as task_page_info
 from .stage_contract import contract_status
 
 
@@ -54,6 +56,7 @@ def parse_board(board):
         if len(parts) == 2 and not ln.startswith("#"):
             LINKS[parts[0]] = parts[1].strip()
     return dict(title=title, spine=f("spine"), close=f("close"),
+                board_kind=f("board-kind"),
                 # `index-view: pages` keeps a Board landing page to its name
                 # and page roster; orientation material remains source-only.
                 index_view=f("index-view"),
@@ -136,7 +139,7 @@ def strip_notes(md):
 
 
 def parse_page(qid, txt, group="", file="", kind="question", family=""):
-    """One Q/S page (title, meta lines, and ## sections) -> data dict."""
+    """One Board Page (title, metadata, and sections) -> data dict."""
     lines = txt.split("\n")
     i = 0
     while i < len(lines) and not lines[i].strip():
@@ -160,6 +163,9 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         # variants; this one names the variant outright, and a plugin surface
         # gates on it (JL 260807), so it has to reach the page dict and the DOM.
         "page_type": "",
+        "folder_kind": "",
+        "task": "",
+        "task_type": "",
         "session": "",
         "requires": "",
         "style_from": "",
@@ -168,7 +174,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     }
     while i < len(lines) and not lines[i].startswith("## "):
         m = re.match(
-            r"^(state|owner|method|route|page-type|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
+            r"^(state|owner|method|route|page-type|folder-kind|task|task-type|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
             lines[i].strip(),
         )
         if m:
@@ -200,23 +206,24 @@ def parse_file(md):
 
 
 def parse_dir(d):
-    """house form: board.md + Q<n>-<slug>.md files in one folder tree.
+    """Parse a Board folder according to its explicit Board kind.
 
-    The Q files ARE the board — binding is by PATH (under the board folder),
-    the way 1-probes/ does it, so a question can never desync from its Pages
-    entry. board.md's optional `## Pages` only sets ORDER and GROUPING; a file
-    on disk that nobody listed is still rendered (under ⚠️), never silently
-    dropped. Since QC3 a Q file may sit in a subfolder (its home folder); the
-    Pages section keeps listing bare filenames.
+    On a generic Board, Q/S and named Page files bind by path; ``## Pages``
+    controls presentation only. On ``board-kind: task-block``, the canonical
+    jNN/tNN tree supplies membership and default order, Job folders become
+    Groups, and explicit ordering uses Board-relative Page paths.
     """
     bp = d / "board.md"
     board = re.sub(r"^\[BOARD\]\s*\n", "",
                    bp.read_text(encoding="utf-8") if bp.exists() else "")
+    meta = parse_board(board)
+    task_block = meta.get("board_kind") == "task-block"
     # 文件名前缀就是这题的编号：Q1 / QA1 / QAa1 / Q0s1。组是大写字母（可带一个
     # 小写子组字母，QAa/QAb 这样把一个组一分为二）或「数字+小写」（Q0s 这类
     # 排在字母组之前的前置组），数字是组内序号。
     disk, dupes = {}, []
     for p in page_files(d):
+        task_info = task_page_info(d, p) if task_block else None
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
         # A NAMED Q family (JL 260727): `Q-Skill-haipipe-board.md`. Same idea as
         # the named S families, and for the same reason: a skill page is
@@ -307,9 +314,14 @@ def parse_dir(d):
         # word-token page sorts by its word, exactly as a letter-token page
         # sorts by its letters.
         app_m = re.match(r"([A-Z]{1,2}|[A-Z][a-z]+)(\d+)-(.+)$", p.stem)
-        if (qm or sm or named_qm or skill_m or agent_m
+        if (task_info or qm or sm or named_qm or skill_m or agent_m
                 or meeting_m or design_m or app_m):
-            if app_m:
+            if task_info:
+                key = (-1, *task_info["sort_key"])
+                page_id = task_info["id"]
+                kind = task_info["kind"]
+                family = task_info["family"]
+            elif app_m:
                 family = app_m.group(1)
                 page_id = f"{app_m.group(1)}{app_m.group(2)}"
                 # letter orders the family, digits order inside it, so a board
@@ -404,18 +416,22 @@ def parse_dir(d):
                 key = (1, family_order, 0, int(order.group(1)), order.group(2))
                 page_id = prefix + legacy_sm.group(2)
                 kind = "stage"
-            if p.name in disk:
+            disk_key = task_info["reference"] if task_info else p.name
+            if disk_key in disk:
                 dupes.append(
-                    f"{p.name} appears twice "
-                    f"({disk[p.name][2].relative_to(d)} and {p.relative_to(d)}); "
+                    f"{disk_key} appears twice "
+                    f"({disk[disk_key][2].relative_to(d)} and {p.relative_to(d)}); "
                     "keeping the first")
                 continue
-            disk[p.name] = (key, page_id, p, kind, family)
+            default_group = task_info["group"] if task_info else ""
+            group_key = task_info["group_token"] if task_info else ""
+            disk[disk_key] = (key, page_id, p, kind, family,
+                              default_group, group_key)
     pages_txt = sec(split_sections(board), "Pages")
     if not disk and not re.search(r"^doc:", pages_txt, re.M):
         return parse_file(board)        # legacy: everything in one board.md
 
-    order, seen, warn, group, gintro = [], set(), dupes, "", {}
+    order, seen, warn, group, gintro, group_heads = [], set(), dupes, "", {}, []
     in_fence = False
     for raw in pages_txt.split("\n"):
         ln = raw.strip()
@@ -426,6 +442,7 @@ def parse_dir(d):
             continue
         if ln.startswith("### "):
             group = ln[4:].strip()
+            group_heads.append(group)
         elif ln.startswith("doc:"):
             # doc slide（QF2，JL 260724）：这一行列出的源文件直接渲染成一页 ——
             # 没有 Q 文件、没有 state/清单/评论；标题取第一份文件的标题。
@@ -434,10 +451,22 @@ def parse_dir(d):
                 order.append((group, parse_doc(d, paths)))
         elif ln.endswith(".md"):
             name = ln.lstrip("-*· ").strip()
-            if name in disk:
-                order.append((group, disk[name][2]))
-                seen.add(name)
-            else:
+            key_name = name if name in disk else ""
+            ambiguous = False
+            if not key_name and task_block and "/" not in name:
+                matches = [key for key, entry in disk.items()
+                           if entry[2].name == name]
+                if len(matches) == 1:
+                    key_name = matches[0]
+                elif len(matches) > 1:
+                    ambiguous = True
+                    warn.append(
+                        f"{name} is ambiguous in a Task Block Board; list its "
+                        "job/task/page relative path")
+            if key_name:
+                order.append((group, disk[key_name]))
+                seen.add(key_name)
+            elif not ambiguous:
                 warn.append(f"{name} is listed in Pages but no such file exists")
         elif ln.startswith("```") and group:
             in_fence = True
@@ -449,25 +478,35 @@ def parse_dir(d):
             # which MAY include a ``` ascii diagram (JL 260724).
             gintro.setdefault(group, []).append(raw)
     listed = bool(order)
-    for name, (key, qid, p, kind, family) in sorted(disk.items(), key=lambda kv: kv[1][0]):
+    for name, entry in sorted(disk.items(), key=lambda kv: kv[1][0]):
+        key, qid, p, kind, family, default_group, group_key = entry
         if name not in seen:
             if listed:
                 warn.append(f"{name} is not listed in board.md's ## Pages")
-            order.append(("⚠️ Not in Pages" if listed else "", p))
+            auto_group = default_group
+            if task_block and group_key:
+                auto_group = next(
+                    (head for head in group_heads
+                     if task_group_token(head) == group_key.casefold()),
+                    default_group,
+                )
+            order.append(("⚠️ Not in Pages" if listed else auto_group, entry))
 
-    qs = [p if isinstance(p, dict)
-          else parse_page(disk[p.name][1], p.read_text(encoding="utf-8"), g,
-                          p.relative_to(d).as_posix(), disk[p.name][3], disk[p.name][4])
-          for g, p in order]
-    for q, (g, p) in zip(qs, order):
-        if isinstance(p, dict):
+    qs = []
+    for g, item in order:
+        if isinstance(item, dict):
+            q = item
             q["group"] = g
+        else:
+            _key, qid, p, kind, family, _default_group, _group_key = item
+            q = parse_page(qid, p.read_text(encoding="utf-8"), g,
+                           p.relative_to(d).as_posix(), kind, family)
+        qs.append(q)
     by_id = {q["id"].casefold(): q for q in qs if q.get("file")}
     for q in qs:
         status = contract_status(d, q, by_id)
         if status:
             warn.append(status)
-    meta = parse_board(board)
     meta["dir"] = str(d.resolve())
     meta["groups"] = {g: ls for g, ls in gintro.items() if ls}
     return meta, qs, warn

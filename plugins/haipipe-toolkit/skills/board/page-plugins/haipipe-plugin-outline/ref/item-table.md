@@ -11,9 +11,10 @@ answers, for every thing the approved outline needs:
    executes it.
 
 SHAPE and SURVEY are planning cycles. Neither scaffolds or executes a Level-4
-Run. SURVEY reserves a complete Paper-local P/J/T/R address for each proposed
-local Run; LAND is the first cycle that creates its Ticket/runtime receipt,
-executes it, or materializes a Result.
+Run. SURVEY names the real owner/parent for each proposed local Run; Paper may
+reserve a complete P/J/T/R address as its explicit namespace exception. LAND
+is the first cycle that creates a Ticket/runtime receipt, executes it, or
+materializes a Result.
 
 ```text
 <stem>-evidence-items.md  AUTHORED   item identity + expectation + audited candidate Run graph
@@ -34,7 +35,37 @@ The initial type vocabulary is closed:
 |---|---|---|
 | `VALUE` | a checked scalar, interval, count, or comparison | structured value + units + provenance |
 | `CITE` | a source claim ready to cite | verified citation record + supported claim |
-| `DISPLAY` | a figure, table, diagram, or illustration ready to place | preview/build artifact + caption claim + provenance |
+| `DISPLAY` | a figure, table, diagram, or illustration ready to place | governed Result envelope + direct unit pointer, caption claim, and provenance |
+
+Every allocated local Evidence Item Run writes one common envelope at
+`<resolved-result>/result.yaml`; sibling `runtime.yaml` owns execution state.
+Type references may extend `payload`, but these keys never disappear:
+
+```yaml
+item: E01-DISPLAY-example
+type: DISPLAY
+run: b01j01t01r01
+status: complete
+input:
+  path: <frozen-local-input>
+  sha256: <64-hex>
+supporting_results: []
+local_sources: []
+payload:
+  unit: <page>/outline/evidence/display/<unit>/
+  artifacts: []
+acceptance:
+  checks: []
+  passed: true
+provenance: {}
+```
+
+`supporting_results` entries name the full Run id, Result path, and hash;
+`local_sources` entries name governed paths and hashes. DISPLAY records unit
+and artifact hashes in `provenance`. VALUE and CITE use their typed payload
+keys from the references below. A failed or blocked attempt keeps a truthful
+envelope with `status`, failed checks, and provenance rather than pretending
+to be ready.
 
 Examples: `E01-VALUE-adjusted-effect`, `E02-DISPLAY-effect-forest`,
 `E03-CITE-prior-work`. Never use a bare `E01`: the type and human-readable
@@ -50,7 +81,7 @@ old one; do not silently redefine it.
 # <stem> · evidence items
 page: <stem>
 kind: evidence-items · authored · SHAPE specifies; SURVEY classifies; LAND allocates/binds
-plan: v<N>
+plan: v<N>.<k>
 surveyed: YYMMDD HHMM · <who>
 
 ### E01-VALUE-adjusted-effect · C2.P3.B1 · adjusted treatment effect
@@ -61,10 +92,25 @@ surveyed: YYMMDD HHMM · <who>
 - **Acceptance**: recomputes from named Results; aggregate only; no row-level data
 - **Supporting Runs**: Execution · reuse · b01j02t03r04; Discovery · registered · b02j01t05r01
 - **Local Input**: Supporting Results + page-local methods.yaml
-- **Local Run**: Page · Evidence Item · new-run · pj01t01r01
+- **Local Run**: Page · Evidence Item · new-run · b03j01t02
 - **Decide**: ☑ make · JL 260901
 > Comment JL · local input freezes both Supporting Results before execution · 260901
 ```
+
+This specimen is a Task-local plan: `b03j01t02` is the real parent, not an
+invented Run. LAND allocates its next `rNN` and writes the resulting full
+`b03j01t02rNN` identity back into `Local Run`. A Paper specimen may instead
+reserve `pj01t01r01` during SURVEY.
+
+A CITE row inserts one additional fixed field immediately after Acceptance:
+
+```text
+- **Verified**: ⬜
+```
+
+SHAPE initializes it blank; EVIDENCE/LAND presents the completed CITE Result
+for review, and only a person may replace it with
+`✅ <who> <timestamp>`. VALUE and DISPLAY rows omit this field.
 
 The record head has three parts: item id, target bullet address, and a short
 human-readable evidence name. `Target` repeats the address intentionally so
@@ -89,9 +135,10 @@ Ticket that has never produced an attempt receipt is `registered`; a prior
 failed, smoke-only, invalid, or explicitly stale attempt is `rerun`. `Ticket
 only` is a derived Result-availability state, not a competing action token. An
 absent external Ticket is displayed as `needs … Run` and never assigned an invented
-address. A Paper-local proposed Run instead reserves its own non-colliding
-`pjNNtNNrNN` plan identity and displays `P jNN.tNN.rNN plan`. An unregistered
-`new-*` route is an honest SURVEY finding and may
+address. A proposed local Run uses its owning Folder's namespace. A Task route
+records parent `bNNjNNtNN` until LAND allocates its `rNN`; a Paper route may
+reserve its non-colliding `pjNNtNNrNN` identity and display
+`P jNN.tNN.rNN plan`. An unregistered `new-*` route is an honest SURVEY finding and may
 close SURVEY when its parent route and bounded design are explicit; LAND later
 allocates the `rNN`. The Page Outline grid has no
 separate item `Status` column: colour is only the compact signal. A Run
@@ -103,7 +150,7 @@ several citation items may support one bullet.
 The Outline Evidence Workspace reuses this same `E<n><kind>.<Label>` identity.
 Its `Evidences` lens renders one card per Evidence Item and explains what that
 Evidence is about, what it must contain, and when it is ready. Its `Runs` lens
-groups by Evidence and renders one card per mapped Supporting or Paper-local
+groups by Evidence and renders one card per mapped Supporting or local
 Run inside that group. A shared Run may appear under several Evidences; the
 surface reports both total Run mappings and unique Run identities so repetition
 is explicit. Planned routes remain visible there but are not counted as
@@ -119,10 +166,11 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Need` | SHAPE | why the outline needs this item, in one line |
 | `Expected` | SHAPE | `<TYPE> · <ready-to-use payload>` |
 | `Acceptance` | SHAPE | observable checks for the ready Evidence Result |
+| `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
-| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one Paper-local `Page · Evidence Item · new-run/reuse/rerun/registered · pjNNtNNrNN [→ Result]`; `new-run` has no Ticket |
-| `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop` |
+| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one owner-native `Page · Evidence Item · <action> · <address> [→ Result]`; existing actions name a full Run id, Task `new-run` names parent `bNNjNNtNN`, and Paper `new-run` may reserve `pjNNtNNrNN`; `new-run` has no Ticket |
+| `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
 Comments hold rationale; they never replace an expected payload, acceptance
 test, or Run address. A typed `Status` label is a defect because status is
@@ -138,7 +186,14 @@ Local Input       1     one frozen envelope containing those Results/local sourc
 Local Run         1     Page · Evidence Item
                          ↓
 Ready Result      1     VALUE | CITE | DISPLAY, accepted by this item's contract
+                         + signed Verified for CITE
 ```
+
+The authored capitalized `Acceptance` field is the Result-readiness gate that
+LAND evaluates. It is not the lowercase human `accepted:` decision on a
+display unit. A DISPLAY may become ready and be folded before CHECK asks a
+person to accept the rendered unit; Page closure still requires that later
+human gate when the owner declares it.
 
 This is the precise meaning of “one input and one execution”: one Evidence
 Item has one frozen input envelope and exactly one local execution. The input
@@ -152,10 +207,25 @@ The local Result is factual and reusable; it does not interpret the evidence
 for the Page. EMBED owns that interpretation and writes it into the next
 outline version.
 
-Paper-local indexing is structural: `P` is the fixed Paper block, `jNN`
-indexes the Page, `tNN` preserves the Evidence Item number, and `rNN` indexes
-the attempt. Thus Abstract Page `j01`, item `E03`, first proposed attempt is
-stored as `pj01t03r01` and shown as `P j01.t03.r01 plan`.
+VALUE and CITE payloads remain only at their governed Result addresses.
+DISPLAY is the bounded Page-facing exception: LAND supplies
+`outline/evidence/display/<unit>/` directly to the renderer as the caller-owned
+unit directory. The governed Result envelope records the source local Run id,
+resolved Result path, unit pointer, and hashes. There is no intermediate
+duplicate payload to copy; the Result envelope remains the provenance authority.
+For a consumer-serving canonical Task, the admitted PHI-safe unit is the narrow
+Page-authority exception to `$OUTPUT_ROOT`; `result.yaml` and `runtime.yaml`
+remain in the resolved Result store and point to/hash the unit.
+
+Local indexing is owner-native. A Job-backed Task uses the Task's normal
+`bNNjNNtNNrNN` identity; before allocation its `new-run` declaration names the
+real parent `bNNjNNtNN`, and LAND appends the next allocated `rNN`. A
+Folder-local Page uses its Folder address plus the local `rNN` assigned by its
+owner. Paper alone may reserve before LAND: `P` is the fixed Paper block,
+`jNN` indexes the Page, `tNN` preserves the Evidence Item number, and `rNN`
+indexes the attempt, so Abstract Page `j01`, item `E03`, first proposed attempt
+is `pj01t03r01`, shown as `P j01.t03.r01 plan`. The `p` namespace must never be
+rewritten as `b01`.
 
 ## Run detail · description, availability, and action are different facts
 
@@ -173,9 +243,10 @@ Ticket remains the purpose authority and the Evidence Item explains why it is
 used here. For a proposed Page-local Run, the plan remains in
 `<stem>-evidence-items.md`: Expected and Acceptance define the Result target,
 and Local Input defines the future frozen envelope. LAND creates the authored
-Run in `runs/`; the generated output and runtime receipt live under
-`results/`. Raw paths are selectable text in the popover, never download
-anchors.
+Run and generated Result at the addresses selected by the Folder owner's Run
+dialect. For a canonical Task, the Ticket is under the Task's `runs/` and the
+Result is under resolved `$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. Raw paths are
+selectable text in the popover, never download anchors.
 
 ## Families and actions are separate dimensions
 
@@ -193,19 +264,35 @@ The action vocabulary is:
 | `reuse` | an accepted Result already satisfies this support or local target | full global Run id and registered Ticket/receipt required |
 | `rerun` | the same frozen Run contract must execute again | full global Run id and registered Ticket/receipt required |
 | `registered` | a real Ticket exists but has not produced a completed attempt; LAND will execute it | full global Run id required |
-| `new-run` | no Run Ticket exists; LAND allocates/scaffolds | Supporting: parent `bNNjNNtNN`; Paper-local: reserved `pjNNtNNrNN` |
+| `new-run` | no Run Ticket exists; LAND allocates/scaffolds | Supporting or Task-local: parent `bNNjNNtNN`; Paper-local may reserve `pjNNtNNrNN`; another Folder-local owner names its stable Folder address |
 | `new-task` | task does not exist; LAND scaffolds task and Run | parent `bNNjNN` |
 | `new-job` | job does not exist; LAND scaffolds job, task, and Run | parent `bNN` |
 | `new-block` | only a bounded planned block exists; LAND routes it through the owning workflow | planned block name |
 
 Supporting `reuse`, `rerun`, and `registered` name a full global id such as
-`b01j02t03r04`; Paper-local actions name `pjNNtNNrNN`. `rerun` means an execution was attempted or the existing
+`b01j02t03r04`; local existing actions use the owner-native full id (Task
+`bNNjNNtNNrNN`, Paper `pjNNtNNrNN`). `rerun` means an execution was attempted or the existing
 historical Ticket is explicitly required to run fresh; a never-attempted real
 Ticket is `registered`. The derived phrase `Ticket only` describes missing
 Result availability and never replaces the action. `rerun` preserves the same
 target, frozen inputs, and acceptance contract. If
 any of those change materially, register a new Run and record
 `supersedes: b01j02t03r04` in the new Run receipt.
+
+LAND updates a local route's current action as work becomes durable:
+
+```text
+new-run    no Ticket; SURVEY declaration
+registered Ticket allocated, no completed attempt
+reuse      accepted Result exists, including the first successful LAND
+rerun      an attempted Result failed, is smoke-only, invalid, or stale
+```
+
+Thus a successful first LAND rewrites `new-run` to `registered` when the Ticket
+is allocated and then to `reuse` when the Result passes Acceptance, appending
+the full owner-native Run id and `→ <Result>`. The Run receipt preserves the
+creation history; the item row states the current next action. A failed attempt
+ends as `rerun`, never as `reuse`.
 
 There is no `person`, `found`, or `none` action. A citation can use a Discovery
 Supporting Run; existing work is `reuse`; and an impossible item routes back
@@ -240,17 +327,20 @@ field.
 
 | Cycle | Level-4 Runs? | Writes to this table |
 |---|---:|---|
-| SHAPE | none | item id/name/type, Target, Label, Need, Expected, Acceptance |
-| SURVEY | none; Paper address reservation only | classified existing/planned Supporting routes, one Local Input plan, exactly one indexed Paper-local Run, Decide gate |
-| LAND | allocate/scaffold planned routes, then execute/reuse | full allocated Run ids, frozen Local Input, and `→ <Result>` on completed bindings |
+| SHAPE | none | item id/name/type, Target, Label, Need, Expected, Acceptance; initializes CITE `Verified: ⬜` |
+| SURVEY | none; Paper may reserve an address | classified existing/planned Supporting routes, one Local Input plan, exactly one owner-native Local Run declaration, Decide gate |
+| LAND | allocate/scaffold planned routes, then execute/reuse | action transition `new-run → registered → reuse` (or `rerun` after failed/stale attempt), full allocated Run ids, frozen Local Input, `→ <Result>` on accepted bindings, and person-signed CITE `Verified` |
 | EMBED | none | nothing; it writes `Answered:` or `Drawn:` into outline v<N+1> |
 
 SURVEY is complete when every approved item has every Supporting and Local
 route honestly classified as existing Result, Ticket only, rerun, or bounded
 new design; one explicit Local Input plan; and a signed
-decision. Existing Supporting routes carry full ids; planned Supporting routes
+decision. Auto may prepare the whole proposed graph but must HOLD at SURVEY on
+an unsigned `Decide` unless a prior explicit durable owner policy supplies the
+choice; it never treats review debt as `make`. Existing Supporting routes carry full ids; planned Supporting routes
 carry only their real parent address or bounded block name. Every planned Local
-Run carries its Paper-local `pjNNtNNrNN` address. `Ready` on a Run means its Ticket is
+Run names the owner-native parent or, for Paper, its reserved `pjNNtNNrNN`
+address. `Ready` on a Run means its Ticket is
 ready to execute; evidence-item `ready` still requires a validated local
 Result. LAND refuses an undecided or ambiguous route, not an honestly planned
 unallocated route. Item graphs may execute in parallel,
@@ -267,8 +357,8 @@ state; the authored table never stores it:
 | State | Meaning | Next cycle |
 |---|---|---|
 | `specified` | SHAPE fields exist; Run graph or decision is incomplete | SURVEY |
-| `planned` | Run graph is complete and `Decide = make`; local Result absent | LAND |
-| `ready` | the local Page · Evidence Item Result exists and passes acceptance | EMBED |
+| `planned` | Run graph is complete and `Decide = make`; local Result or required CITE verification is still absent | LAND |
+| `ready` | the local Page · Evidence Item Result exists and passes acceptance; CITE also has signed `Verified` | EMBED |
 | `folded` | the next outline version binds the ready Result | SHAPE / CONTENT |
 | `accepted` | the Page passed CHECK | closed |
 | `stale` | a bound Result changed after the fold | LAND or EMBED |

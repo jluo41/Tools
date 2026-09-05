@@ -60,6 +60,8 @@ def build(page_md: Path) -> str:
             f"- **Expected**: {(row or {}).get('expected') or expected}",
             f"- **Acceptance**: {(row or {}).get('acceptance') or acceptance or '—'}",
         ]
+        if item_type == "CITE":
+            lines.append(f"- **Verified**: {(row or {}).get('verified') or '⬜'}")
         if row:
             result = resolve(row["result"], root, page_dir)
             lines.extend([

@@ -13,9 +13,11 @@ metadata:
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
 
-Load `haipipe-paper` first; this file is its phase authority. It never edits a
-Page, never runs a Page's lifecycle (that is `haipipe-page-workflow`), and
-never judges content (that is CHECK plus the human ticks).
+For a paper-journey question, enter through `haipipe-paper`; this file is its
+phase authority. Inside one concrete Page RUN, the already-selected
+`haipipe-page-workflow` loads this file as the Folder-owning workflow after the
+current Page-phase skill and before the exact Paper Page Type. It never edits a
+Page, runs the Page lifecycle, or judges content.
 
 ## 🔤 Terminology law
 

@@ -24,8 +24,11 @@ cannot override this binding: `phase` is CONTEXT and `cycle` is PREPARE.
 
 Follow the router's canonical order: `haipipe-page` →
 `haipipe-page-workflow` → `haipipe-page-context` → exact Folder-owning
-workflow → exact Page Type → `haipipe-plugin-outline/ref/record-shape.md` →
-`haipipe-plugin-outline` presentation.
+workflow or canonical family skill → exact Page Face owner →
+`haipipe-plugin-outline/ref/record-shape.md`. Load the owner once when the same
+skill fills both owner roles.
+The Page surface already installs the shared Outline presenter; do not append
+it as an execution dependency.
 
 Collect only declared sources; resolve authority without guessing; write the
 generated `outline/<stem>-context.md` projection; freeze source addresses and

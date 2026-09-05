@@ -25,7 +25,8 @@ cannot override this binding: `phase` is CONTENT and `cycle` is WRITE.
 
 Follow the router's canonical order: `haipipe-page` →
 `haipipe-page-workflow` → `haipipe-page-content` → exact Folder-owning
-workflow → exact Page Type → narrative/style policy → `haipipe-run` → required
+workflow or canonical family skill → exact Page Face owner → narrative/style
+policy → `haipipe-run` → required
 writing/delivery workers.
 
 Work only from a fresh Context record and an approved evidence-aware plan.

@@ -66,9 +66,12 @@ bib:
 
 Missing `verification` means `pending`; a machine may never write
 `status: verified`. For an ordinary Page, the authoritative CITE Evidence Item
-stores `verified: ✅` beside that item and its workflow receipt records person
-and timestamp. The HTML workbench only presents these judgments and is never
-their authority.
+stores `Verified: ✅ <who> <timestamp>` on that item's authored row. The LAND
+receipt links the exact item and preserves the same person and timestamp. A
+CITE local Result is not `ready` until its payload passes Acceptance and this
+item-level gate is signed. The HTML workbench only presents these judgments
+and is never their authority. Legacy BibTeX `verified = {...}` fields remain
+readable during migration but are not the new ordinary-Page write target.
 
 The exact Paper Run contract lives in
 `../../../../discovery/haipipe-discovery/ref/paper-run-contract.md`.

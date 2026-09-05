@@ -32,6 +32,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from src.common import evidence_lane_dirs
+from src.outline_version import latest_outline, version_tag
 from src.item_table import (
     ITEM_TYPES,
     LADDER as ITEM_LADDER,
@@ -819,18 +820,10 @@ _MARK = {"🎯": "aim", "📚": "cite", "📮": "probe",
 def _latest_plan(page_src):
     """-> (Path, version) of the highest outline file, or (None, '')."""
     d = page_src.parent / "outline"
-    if not d.is_dir():
+    best = latest_outline(d, page_src.stem)
+    if best is None:
         return None, ""
-    best, bestkey = None, None
-    for f in d.glob("*-outline-*.md"):
-        tag = f.stem.split("-outline-")[-1]
-        # v2 beats v1; v_0707 sorts by its own digits. A plain string sort
-        # would put v10 before v2, so pull the digits out.
-        digits = re.sub(r"\D", "", tag) or "0"
-        key = (len(digits), digits, tag)
-        if bestkey is None or key > bestkey:
-            best, bestkey = f, key
-    return best, (best.stem.split("-outline-")[-1] if best else "")
+    return best, version_tag(best) or best.stem.split("-outline-")[-1]
 
 
 def _typed_item_review(page_src, plan, plan_text, approved):
@@ -953,7 +946,7 @@ def _disk_state(page_src):
                 continue
             t = c.read_text(errors="replace")
             st = (re.search(r"^state:\s*(\w+)", t, re.M) or [None, "?"])[1]
-            # `proof/` is the name in haipipe-plugin-probe 0.4.0; `answer/`
+            # `proof/` is the historical Probe-card name; `answer/`
             # was 0.3.0's and real cards on disk still use it. Read BOTH: a
             # renamed contract must not make an existing card read as empty.
             n = 0
@@ -1077,7 +1070,7 @@ def _disk_state(page_src):
 
 
 # THE PROBE STATE LADDER, and it is the plugin's, not this file's.
-# `haipipe-plugin-probe` 0.7.0 retired the invented raised/working/bound ladder
+# The retired Probe contract removed the invented raised/working/bound ladder
 # for haipipe-probe's own words. This file counted on `bound`, a word no card
 # carries any more, so four cards on QC1-visitlbp read `⬜` and their bullets
 # read `0 of 1 bound` while two of them were ANSWERED (found 260817 by asking

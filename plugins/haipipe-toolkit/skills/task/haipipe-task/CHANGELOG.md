@@ -3,6 +3,115 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.15.0 · 2026-09-04
+
+- Make every canonical Block an explicit Task Block Board with
+  `board-kind: task-block`: Block = Board, Job = Group, Task = Page, Run =
+  execution record.
+- Replace the retired group-letter and Block-level `sbatch/` scaffolder with a
+  Board-first Block scaffold and canonical `board.md` template.
+- Add S18 to enforce the Block Board head for nested b/j/t trees, while keeping
+  legacy flat Blocks readable.
+- Retire N6's Block-wide Task-name uniqueness. Task names are scoped to their
+  Job; full b/j/t addresses and Board-relative paths make cross-Job repeats
+  unambiguous.
+- Define Task Page state as cross-face Folder closure over current P-B-E-R and
+  READING, not as the success state of one Run.
+
+## 0.14.7 · 2026-09-04
+
+- Freeze every launch-time `RUN_INPUTS` hash once and reuse the identical
+  binding in the running and terminal runtime receipts.
+- Bring the audit reader and Task Page shape in line with canonical
+  Task-owned `scripts/config/`, `runs/`, and `$OUTPUT_ROOT` Results.
+
+## 0.14.6 · 2026-09-04
+
+- Preserve declared frozen Run inputs across Ticket launch with `RUN_INPUTS`
+  path/hash bindings instead of replacing the planned graph with only the Run
+  config.
+- Separate receipt ownership explicitly: scaffolder writes `planned`; Ticket
+  atomically advances `running` and the terminal state.
+
+## 0.14.5 · 2026-09-04
+
+- Rewrite `fn/run.md` around canonical `scripts/config/` plus Task-local
+  `runs/`, resolved `$OUTPUT_ROOT`, all five Ticket declarations, and an
+  atomic scaffold-time `status: planned` receipt.
+- Remove remaining obsolete Task-root config/code and parameterless-Ticket
+  language from `ref/task-structure.md`.
+
+## 0.14.4 · 2026-09-04
+
+- Repair the canonical Ticket template to resolve Task code from `scripts/`
+  and configuration from `scripts/config/`, retaining read compatibility for
+  older nested and flat shapes.
+- Upgrade `runtime.yaml` to the neutral Run receipt contract, including Run
+  identity, family/operation/target, paths, frozen input hash, worker,
+  timestamps, config hash/settings, and truthful terminal status.
+- Require declared Result files and optional worker-specific validation before
+  a zero process exit may become `status: complete`.
+
+## 0.14.3 · 2026-09-04
+
+- Declare the narrow consumer-serving exception for a PHI-safe DISPLAY unit
+  admitted into Task Page authority at `outline/evidence/display/<unit>/`;
+  its Result envelope and runtime receipt remain under `$OUTPUT_ROOT`.
+- Scope the no-README rule to hierarchy/documentation roots so a contracted
+  display unit may keep its required internal `README.md`.
+
+## 0.14.2 · 2026-09-04
+
+- Reconcile the hierarchy reference with the canonical Task shape:
+  task-owned code lives in `scripts/`, configuration in `scripts/config/`,
+  and Tickets in `runs/`.
+- Preserve the settled split that a Ticket may select a slice while all
+  effective settings are recorded in the Run receipt.
+
+## 0.14.1 · 2026-09-04
+
+- Resolve generated Task Results through
+  `$OUTPUT_ROOT/results/<task>/<run>/`: the Job in self-serving mode or the
+  consumer-owned mirrored Job root in consumer-serving mode.
+- Keep authored Tickets with Task code and forbid copying resolved Results
+  into the Task Folder merely to make them appear local.
+
+## 0.14.0 · 2026-09-04
+
+- Add `ref/task-tree-checklist.md`: the definition of done for a bNN/jNN/tNN/rNN
+  tree, one code and one command per row (JL: "you didn't follow the
+  /haipipe-task; we need to give it a checklist").
+- `ref/check_task_tree.py` gains the dialect-neutral rows the 260904 PhyReview
+  restructure shipped broken: R02 every task owes an rNN_ ticket, N9 ticket
+  grammar, S11 batchers out of runs/, S12 no task-local results, S13 no
+  parents[N] root walk, S14 no configs/ at the task root, S15 no store path
+  named after a ticket, N7 for yaml dialects, R01/R05 job-level results.
+- N1 for jobs now asks two words (`<noun>_<qualifier>`, R1), not three.
+- Fresh-subagent field test 260904 added: N0 (a tree with no bNN_ block), S16 (a
+  `tasks/…` path in code, config or ticket that does not exist), N8 gated on the
+  Stata dialect, the S8 token regex accepts `-` and `.`, checklist order fixed
+  (check the table before re-rendering; GATE-1 on a mutated copy, not the old tree).
+- S17: every job keeps `src/` visible with a `.gitkeep` naming its shared-code slot (JL 260904).
+- SKILL.md: a "Definition of done for a TREE" section before the guardrails.
+
+## 0.13.1 · 2026-09-04
+
+- Declare `haipipe-task` as the canonical Task Folder owner with task-primary
+  entry and a local Page ruling, without inventing a fake workflow phase.
+- Remove the obsolete Page-level Diagram from the Task Page template and make
+  each Content division open with its own captioned face diagram.
+- Define Task prose backlinks and the exact durable local Page ruling: one
+  stable READING table, no separate `accepted:`, and a CHECK evidence pointer.
+
+## 0.13.0 · 2026-09-04
+
+- Absorb the Task Folder Page Face and its run-bound reading grammar into the
+  Task owner; remove the standalone Task Page skill.
+- Make `folder-kind: task` canonical for new Pages while keeping
+  `page-type: task` as a read-only compatibility key.
+- Move the Task Page contract and template under `haipipe-task/ref/` and align
+  Insight evidence reuse with Supporting and local Runs.
+
 ## 0.12.6 · 2026-09-01
 
 - Make the Job-backed Task Run dialect an explicit specialization of

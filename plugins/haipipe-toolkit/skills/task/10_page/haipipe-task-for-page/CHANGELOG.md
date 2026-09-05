@@ -1,5 +1,30 @@
 # CHANGELOG · haipipe-task-for-page
 
+## 0.3.4 · 2026-09-04
+
+Require page-service Tickets to preserve every upstream Result path/hash in
+`RUN_INPUTS` across planned, running, and terminal receipts.
+
+## 0.3.3 · 2026-09-04
+
+Specify the complete page-service Ticket delta, including `TASK_NAME`, and
+require the generic scaffolder's full `status: planned` receipt before launch.
+Repair the specimen proposal's canonical Result path.
+
+## 0.3.2 · 2026-09-04
+
+Pin the page-serving Ticket contract: family `Execution`, operation
+`collect-page-values`, target batch, and `values.yaml` as the declared Result
+gate, so the generic scaffolder cannot retain unrelated defaults.
+
+## 0.3.1 · 2026-09-04
+
+Align the page-serving specialist with the canonical nested Task dialect:
+task-owned code lives in `scripts/`, per-Run configuration in
+`scripts/config/`, Tickets in `runs/`, and generated Results under resolved
+`$OUTPUT_ROOT/results/<task>/<run>/`. Replace the specimen's retired Probe
+binding with current Supporting Run → Local Input → local Evidence Item Run.
+
 ## 0.2.2 · 2026-08-31
 
 Make the serving job genuinely generic: any Folder Page Face uses

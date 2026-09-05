@@ -1,3 +1,35 @@
+## 0.25.0 · 2026-09-04
+
+- Make the semantic plan version explicit: an approved baseline is now
+  `vN.0`; working revisions are `vN.1`, `vN.2`, …; first approval promotes
+  `v0.k` to `v1.0`, and later approval promotes `vN.k` to `v<N+1>.0`.
+- Keep legacy integer `vN` plans readable for migration only. New or migrated
+  current plans use the explicit `.0` baseline, so no unapproved plan can look
+  like a frozen version.
+
+## 0.24.0 · 2026-09-04
+
+- Reserve integer outline versions for channel-approved agreements. Draft and
+  review iterations now use minor revisions under the latest approved major
+  (`v5.1`, `v5.2`, …); a first outline uses `v0.1`, `v0.2`, … until approval
+  promotes it to `v1`.
+- Keep mechanical fixes inside one minor revision while preserving each
+  materially presented revision as review history.
+
+## 0.23.3 · 2026-09-04
+
+- Resolve Task Folder Page policy from canonical `haipipe-task` ownership;
+  remove the retired standalone Page-Type layer from OUTLINE routing.
+- Make Local Run declarations owner-native: a new Task-local route names its
+  `bNNjNNtNN` parent until LAND allocates `rNN`; only Paper may reserve `pj…`.
+
+## 0.23.2 · 2026-09-04
+
+- Let auto defer review confirmation only; an unsigned per-item Decide now
+  HOLDs at SURVEY unless a prior durable owner policy supplies the branch.
+- Initialize CITE `Verified: ⬜` during SHAPE and treat exact Outline refs,
+  rather than the presenter skill, as phase dependencies.
+
 ## 0.23.1 · 2026-09-04
 
 - Use the canonical Page dependency order.

@@ -2,11 +2,11 @@
 name: evidence-bundle
 description: >-
   The derived, point-addressed view that joins a frozen Outline Point to its
-  sentence scaffold, Probe cards, citations, proof, and Display units. It is a
+  sentence scaffold and typed VALUE/CITE/DISPLAY Results. It is a
   view, not another evidence folder: source material remains owned by its
   plugin and the bundle is recomputed from the current page state.
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-04"
 ---
 
@@ -31,8 +31,7 @@ Point C3.P1.B4
   ├─ Evidence Item(s)      Target: C3.P1.B4
   ├─ Supporting Result(s) Execution/Discovery Run authorities
   ├─ Local Input           one frozen envelope assembled from valid supports
-  ├─ Local Result(s)       VALUE/CITE/DISPLAY, one per made item
-  └─ Probe card(s)         only when an external question crossing is needed
+  └─ Local Result(s)       VALUE/CITE/DISPLAY, one per made item
 ```
 
 ## 🧭 Ownership
@@ -64,10 +63,9 @@ resources:
   items: [E01-VALUE-adjusted-effect]
   supporting_runs: [b01j02t03r04]
   local_runs: [b03j01t02r01]
-  probes: []
 feedback:
-  - PP03: read
-  - Display2: accepted
+  - E03-CITE-prior-work: Verified ✅ on the authored item row
+  - E04-DISPLAY-effect-forest: accepted
 item_states:
   E01-VALUE-adjusted-effect: ready
 summary: complete | incomplete
@@ -86,8 +84,8 @@ accepted`, plus its exception states). `summary` is only a live roll-up:
 accepted; otherwise `incomplete`. It is never persisted as another authority.
 
 `feedback` is a derived review signal, not a fourth storage plugin. It points
-to the owner-held decision (`state: read`, `accepted: ✅`, `verified`, or an
-explicit rejection/defer) so REVISE and CHECK can see what a person said
+to the owner-held decision (`accepted: ✅`, CITE-item `Verified`, or an explicit
+rejection/defer) so CONTENT and CHECK can see what a person said
 without copying that decision into the bundle.
 
 An item's evidence obligation is ready only when it has a ready local Result:
@@ -96,15 +94,16 @@ An item's evidence obligation is ready only when it has a ready local Result:
 - one frozen Local Input records those sources and hashes;
 - exactly one local Page Evidence Item Run emits an accepted VALUE, CITE, or
   DISPLAY Result.
+- a CITE item's authored `Verified` gate is signed before that Result is ready.
 
 Sentence or Display work that remains belongs to CONTENT or CHECK, not to a new
 bundle status. Final acceptance additionally requires the human gates owned by
-the Evidence, Probe, Display, and Page contracts. A folder count alone is never
+the Evidence worker, DISPLAY Result, and Page contracts. A folder count alone is never
 a pass.
 
 ## 🚫 Boundary
 
 Do not create `<page>/evidence/` merely to hold this view. A copied bundle
-would become stale as soon as a Probe answer, citation verification, or Display
+would become stale as soon as a Result, citation verification, or DISPLAY
 acceptance changed. If a human makes a selection, persist only that selection
 at the owning unit (`selected:` / `rejected:`); derive the rest again.

@@ -10,8 +10,9 @@ It never resolves an id.
 A consumer is just one caller among three.
 
 ⚠️ `qa` is this layer's SIDE door, not its engine.
-The discovery session's PRIMARY mode is autonomous SCOPE → PREPARE? →
-ACQUIRE ↔ SYNTHESIZE → CLOSE, with no question pending at all.
+The discovery session's PRIMARY mode is autonomous D1 SCOPE → PREPARE? →
+ACQUIRE ↔ SYNTHESIZE → CLOSE, with SYNTHESIZE dispatching the shared Page
+workflow and no question pending at all.
 Most questions should already have an answer sitting in the bank before anyone asks.
 
 QA-file anatomy — the field names, the state values, the TTL constant and the race guard — is DEFINED HERE, in the sections below.
@@ -73,8 +74,8 @@ The gate — ① ② ③, shallowest first
   ② DIGEST      no QA file, but completed Results / root Page / typed records already
                 hold the answer → write from them. no Run executes.               cheap
 
-  ③ RUN IT      neither → run the lifecycle at the shallowest depth (below),
-                then complete the QA file at CLOSE.                               agent
+  ③ RUN IT      neither → enter D1 at the shallowest depth (below),
+                then complete the QA file at D1 CLOSE.                            agent
 
   🚫 REFUSE     not this layer's question, or not this discovery-folder's
                 → return the reason + the re-route. the CALLER re-routes.
@@ -100,11 +101,11 @@ A REFUSE is a COMPLETE answer, never a failure.
 It writes no QA file and produces no `working` state — there is nothing to clean up.
 
 
-How deep (③) — the depth IS the entry point into the D1 workflow
+How deep (③) — the depth selects the D1 entry and any Page-workflow handoff
 ---------------------------------------------------------------------------------
 
 ```
-  depth 0  READ         Results/Page/typed records hold it → enter at SYNTHESIZE. nothing runs.
+  depth 0  READ         Results/Page/typed records hold it → enter at D1 SYNTHESIZE. nothing runs.
   depth 1  ENRICH       same Task, missing evidence         → add minimum rNN Run(s)
   depth 2  NEW TASK     different article, same Job         → sibling tNN_ Task Page
   depth 3  NEW JOB      different inquiry, same Block       → sibling jNN_ Job + Task
@@ -113,7 +114,7 @@ How deep (③) — the depth IS the entry point into the D1 workflow
 
 **Depth 1** appends to an existing topic — one or more numbered Paper Runs, or
 a verification correction landed in the owning Result Bib/Card. Never rewrite
-a landed typed record in place; synthesize a new CLOSE receipt or superseding record.
+a landed typed record in place; synthesize a new D1 CLOSE receipt or superseding record.
 
 **Depth 2 through 4** mint explicit BJTR segments. New names always use
 `bNN_`, `jNN_`, or `tNN_` plus a concrete noun and distinguishing qualifier.
@@ -152,7 +153,7 @@ if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF
 ## Not-done
 EOF
 then
-  : # WON  → run ③. complete this file at CLOSE.
+  : # WON  → run ③. complete this file at D1 CLOSE.
 else
   : # LOST → it already exists. go back to ① ONCE, read the winner's state line,
     #        return its path. run nothing. do not loop.

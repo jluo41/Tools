@@ -1,5 +1,6 @@
 """The 🏷 Labeling tab reads receipts honestly and reveals no item text."""
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -151,6 +152,10 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
         self.assertIn('title="Studio Page Chat"', body)
+        self.assertIn('id=splitter', body)
+        self.assertIn('Resize Labeling workspaces and Studio Chat', body)
+        self.assertIn('labeling-workspace:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
+        self.assertIn('labeling-split:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
         self.assertNotIn("Prefill safe status ask", body)
         for workspace in ("Workflow", "Data", "Guideline", "Human", "Quality"):
             self.assertIn(workspace, body)
@@ -185,6 +190,23 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("None observed", state["first_failed"])
         g6 = [row for row in state["gate_rows"] if row[0] == "G6"][0]
         self.assertFalse(g6[4], "the read-only surface must not certify G6")
+
+    def test_canonical_status_rehashes_the_real_job_before_reporting_frontier(self):
+        repo = Path(__file__).resolve().parents[7]
+        source = (repo / "examples-nlp/Project-Subjective-Label/diagram/01-label-runs-260807"
+                  / "pages/S-Label-1-acibench-authority/labeling")
+        shutil.copytree(source, self.job)
+        state = inspect(self.page)
+        self.assertIsNotNone(state["canonical_status"])
+        self.assertFalse(state["canonical_status"]["meaning_receipt_valid"])
+        self.assertFalse([row for row in state["gate_rows"] if row[0] == "G0"][0][4])
+
+        items = self.job / "corpus" / "items.jsonl"
+        items.write_bytes(items.read_bytes() + b'{"tampered":true}\n')
+        tampered = inspect(self.page)
+        self.assertIn("corpus items checksum mismatch", tampered["canonical_integrity_errors"])
+        self.assertEqual(tampered["phase_i"], 0)
+        self.assertIn("G0 Contract integrity", tampered["first_failed"])
 
     def test_old_field_test_layout_is_read_only_bridge_not_new_canonical_shape(self):
         old = self.job / "field-tests" / "FT_01" / "run"

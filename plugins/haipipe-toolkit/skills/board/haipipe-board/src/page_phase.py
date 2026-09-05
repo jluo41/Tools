@@ -31,6 +31,7 @@ from .folder_contract import (
     current_folder_kind,
     resolve as resolve_folder_contract,
 )
+from .outline_version import latest_outline, version_tag
 
 
 SKILLS_ROOT = Path(__file__).resolve().parents[3]
@@ -100,12 +101,9 @@ LABEL = {"CONTEXT": "CONTEXT", "OUTLINE": "OUTLINE", "EVIDENCE": "EVIDENCE",
 
 def _latest_outline(pd):
     od = pd / "outline"
-    best, bn = None, 0
-    for f in (od.glob("*-outline-v*.md") if od.is_dir() else []):
-        m = re.search(r"-outline-v(\d+)\.md$", f.name)
-        if m and int(m.group(1)) >= bn:
-            best, bn = f, int(m.group(1))
-    return best, bn
+    best = latest_outline(od)
+    tag = version_tag(best) if best else ""
+    return best, tag.removeprefix("v")
 
 
 def _cards(pd):
@@ -226,9 +224,8 @@ def phase_state(page_md, board=None):
     live = [c for c in cards if not c["state"].startswith("blocked")]
 
     bib = _bibex(pd)
-    # The counts stay exactly as they were: `ent` is every entry, `ver` every
-    # entry carrying a NON-EMPTY verified (cite-rules R7's `verified = {}` is
-    # the explicit unverified form and must not count as done).
+    # Legacy BibTeX verification remains readable only when no typed Evidence
+    # Item table owns the ordinary-Page CITE gate.
     ent, ver = len(bib), sum(1 for e in bib if e["verified"])
 
     disp = _displays(pd)
@@ -289,6 +286,18 @@ def phase_state(page_md, board=None):
     # legacy lane-based reading below during migration.
     items = item_table.summarize(page_md, of) if of else None
     has_table = bool(items and items["rows"])
+    typed_rows = item_table.read_items(page_md) if has_table else {}
+    cite_verification = []
+    for item_id, item in typed_rows.items():
+        result = item_table.resolve(item.get("result", ""),
+                                    item_table.repo_root(pd), pd)
+        if (item.get("type") == "CITE" and result
+                and not item.get("verification_signed")):
+            cite_verification.append({
+                "item": item_id,
+                "where": f"outline/{page_md.stem}-evidence-items.md",
+                "checked": None,
+            })
     ic = items["counts"] if items else {}
     live_rows = (items["marks"] - ic.get("deferred", 0) - ic.get("dropped", 0)) if items else 0
     folded_rows = ic.get("folded", 0) + ic.get("accepted", 0)
@@ -319,6 +328,7 @@ def phase_state(page_md, board=None):
         "context": {"file": context_file if context_file.is_file() else None,
                     "ready": context_state == "done"},
         "items": items, "cycle": items["cycle"] if items else ("SHAPE" if of else "SHAPE"),
+        "cite_verification": cite_verification,
         "cards": cards, "missing": missing, "answered": answered, "blocked": blocked,
         "bibex": {"entries": ent, "verified": ver, "rows": bib},
         "displays": disp, "drawn": drawn, "accepted": acc,
@@ -336,7 +346,7 @@ def phase_state(page_md, board=None):
         # `sum(ticks_owed.values()) == len(owed_ledger(st))` remains invariant.
         "ticks_owed": {
             "approved": 0 if approved else 1, "read": read_owed,
-            "verified": max(0, ent - ver),
+            "verified": (len(cite_verification) if has_table else max(0, ent - ver)),
             "accepted": sum(1 for d in disp if d["drawn"] and not d["accepted"]),
             "ruling": 0 if states["CHECK"] == "done" or not owner_ruling_required else 1,
         },
@@ -379,12 +389,18 @@ def owed_ledger(st):
         if c["state"].startswith("answered") and not c["read"]:
             out.append(row("read", rel(c["path"]), f"{c['id']} · {c['state']}", c["checked"]))
 
-    # ③c every bibtex entry without a person's `verified`. cite-rules R7: an
-    # empty `verified = {}` is the EXPLICIT unverified form, so it lands here.
-    for e in st["bibex"]["rows"]:
-        if not e["verified"]:
-            out.append(row("verified", f"{rel(e['file'])} · {e['key']}",
-                           "entry landed, unverified", e["checked"]))
+    # ③c New Pages keep verification on each authored CITE Evidence Item.
+    # Legacy Pages without a typed table retain the BibTeX-entry reading.
+    if st["items"] and st["items"]["rows"]:
+        for cite in st["cite_verification"]:
+            out.append(row("verified", f"{cite['where']} · {cite['item']}",
+                           "CITE Result ready; item verification owed",
+                           cite["checked"]))
+    else:
+        for e in st["bibex"]["rows"]:
+            if not e["verified"]:
+                out.append(row("verified", f"{rel(e['file'])} · {e['key']}",
+                               "legacy entry landed, unverified", e["checked"]))
 
     # ③d every DRAWN unit nobody has accepted. An undrawn unit owes a render
     # first, which is EVIDENCE's machine work and not a person's act.

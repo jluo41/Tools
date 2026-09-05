@@ -19,6 +19,7 @@ sys.path.insert(0, str(BOARD_SKILL))
 from src.plan_shape import (check as plan_shape_check, check_serves,      # noqa: E402
                             check_bullet_grammar, check_head_style,
                             check_note_quotes_page, check_coverage)
+from src.outline_version import latest_outline, legacy_integer_issue, version_policy_issues    # noqa: E402
 
 SKILLS = BOARD_SKILL.parent.parent                # skills/
 
@@ -39,10 +40,7 @@ def _board_of(page: Path) -> Path:
 
 def _latest_plan(page: Path):
     o = page.parent / "outline"
-    plans = sorted(o.glob(f"{page.stem}-outline-v*.md"),
-                   key=lambda p: int(re.search(r"-v(\d+)\.md$", p.name).group(1))
-                   if re.search(r"-v(\d+)\.md$", p.name) else 0) if o.is_dir() else []
-    return plans[-1] if plans else None
+    return latest_outline(o, page.stem)
 
 
 def main():
@@ -58,8 +56,11 @@ def main():
     o = page.parent / "outline"
     out = []
 
-    # ① the three derived files, regenerated whole
-    for script, label in (("requirement.py", "requirement"), ("feedback.py", "feedback"),
+    # ① the four derived files, regenerated whole. context-record.py joined
+    # 260904 with the 00 CONTEXT phase: its record is generated like the other
+    # three, so a hand-written one is a contract break, not a shortcut.
+    for script, label in (("context-record.py", "context"),
+                          ("requirement.py", "requirement"), ("feedback.py", "feedback"),
                           ("evidence-status.py", "evidence")):
         cmd = [str(HERE / script)] + (["collect"] if script == "feedback.py" else []) + [str(page)]
         rc, txt = _run(cmd)
@@ -88,7 +89,7 @@ def main():
     plan = _latest_plan(page)
     fails, gaps = [], []
     if plan is None:
-        print("plan         none yet: write outline/<stem>-outline-v1.md from ref/plan-grammar.md")
+        print("plan         none yet: write outline/<stem>-outline-v0.1.md from ref/plan-grammar.md")
     else:
         txt = plan.read_text(encoding="utf-8", errors="replace")
         tick = "✅" if re.search(r"(?m)^approved:\s*✅", txt) else "⬜"
@@ -101,6 +102,15 @@ def main():
         fails += check_note_quotes_page(page, txt)
         if not arc:
             fails.append("plan-no-arc: no `arc:` line")
+        for candidate in o.glob(f"{stem}-outline-*.md"):
+            candidate_text = candidate.read_text(encoding="utf-8", errors="replace")
+            fails += [
+                f"version-policy: {message}"
+                for message in version_policy_issues(candidate, candidate_text)
+            ]
+        legacy = legacy_integer_issue(plan)
+        if legacy:
+            fails.append(f"version-policy: {legacy}")
         gaps += check_coverage(page, txt)
         print(f"plan         {plan.name} · approved {tick} · checks {'✅ 0 ❌' if not fails else f'❌ {len(fails)}'} · coverage gaps {len(gaps)}")
         for f in fails[:20]:

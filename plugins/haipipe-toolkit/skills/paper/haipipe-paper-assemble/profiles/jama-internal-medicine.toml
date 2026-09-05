@@ -1,0 +1,20 @@
+# JAMA Internal Medicine manuscript presentation rules.
+# This file contains venue behaviour only.  Paper prose, values, citations,
+# and display choices remain in the desk room and its evidence lock.
+layout = "jama-internal-medicine"
+venue_label = "JAMA Internal Medicine"
+font = "Times New Roman"
+line_numbers = true
+line_number_distance = 360
+restart_line_numbers_each_page = false
+# JAMA's manuscript layout uses directly formatted headings so line numbering
+# is stable in LibreOffice/Word, rather than relying on application-specific
+# Heading style inheritance.
+heading_style = "normal"
+headings_keep_with_next = false
+draft_label = "DRAFT — NOT SUBMISSION READY"
+key_points_heading = "KEY POINTS"
+abstract_heading = "ABSTRACT"
+references_heading = "REFERENCES"
+supplement_title = "ONLINE-ONLY SUPPLEMENTAL MATERIAL"
+include_main_displays = false

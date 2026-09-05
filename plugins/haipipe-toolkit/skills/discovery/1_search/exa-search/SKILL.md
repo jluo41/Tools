@@ -1,11 +1,11 @@
 ---
 name: exa-search
 description: AI-powered web search via Exa with content extraction. Use when user says "exa search", "web search with content", "find similar pages", or needs broad web results beyond academic databases (arXiv, Semantic Scholar).
-argument-hint: "[search-query-or-url]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  argument_hint: "[search-query-or-url]"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -167,7 +167,7 @@ if [ -d research-wiki/ ] and query category was "research paper":
 
 The helper handles slug / dedup / page / index / log — **do not
 handwrite `papers/<slug>.md`**. See
-[`shared-references/integration-contract.md`](../shared-references/integration-contract.md).
+[`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md).
 
 ## Key Rules
 - Always check that `EXA_API_KEY` is set before searching

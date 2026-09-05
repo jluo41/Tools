@@ -1,3 +1,62 @@
+## 0.57.8 · 2026-09-04
+
+- Close the mandatory Page-type audit by distinguishing registry-owned
+  `record-only` compatibility laws from genuinely lawless `key-only` keys.
+- Record the live legacy collection, labeling, view, and filename-resolved
+  stage semantics without inventing missing standalone Page-Type folders.
+
+## 0.57.7 · 2026-09-04
+
+- Make the single numeric Page door explicit: a display-input aggregate feeds
+  the page-serving collection Job, whose Result is the Supporting Run edge;
+  it may not bypass that Job into a Page DISPLAY unit.
+
+## 0.57.6 · 2026-09-04
+
+- Resolve canonical Task Page Results through
+  `$OUTPUT_ROOT/results/<task>/<run>/` so both self-serving and
+  consumer-serving Task modes remain valid.
+- Define DISPLAY as direct rendering into the Page-owned unit with its
+  governed Result envelope retaining provenance authority.
+
+## 0.57.5 · 2026-09-04
+
+- Replace active Probe-card glossary terms with the current Evidence Item,
+  Supporting Run, Local Input, local Run, and Result vocabulary.
+- Define the Evidence Workspace's Evidences and Runs lenses, and separate
+  Evidence state from Run Availability and Next action.
+- Align person-reserved acts with `approved:`, per-item `Decide`, item-level
+  `Verified`, display/Page `accepted:`, and any Folder-owner ruling; retain
+  `read:` only as an explicitly legacy receipt.
+- Clarify that `outline/evidence/bibex/` stores citation files and source
+  metadata while CITE verification lives on the authored Evidence Item row.
+- Define a display unit as a bounded projection of its governed DISPLAY Result
+  and distinguish LAND's `Acceptance` checks from CHECK's human `accepted:`
+  gate.
+
+## 0.57.4 · 2026-09-04
+
+- Resolve the Task Folder Page Face through canonical `haipipe-task` ownership
+  rather than a standalone Page-Type skill.
+- Allow a canonical family skill to own a legacy compatibility key while new
+  Pages use `folder-kind:`.
+
+## 0.57.3 · 2026-09-04
+
+- Align the glossary with the five indexed phases and name Draft, Revise,
+  Build, and Pre-check only as internal CONTENT/WRITE movements.
+
+## 0.57.2 · 2026-09-04
+
+- Clarify that phases load exact Outline-plugin refs as material contracts;
+  the Page surface installs the shared presenter once.
+
+## 0.57.1 · 2026-09-04
+
+- Align Paper and Design registry evidence rows with typed Evidence Items,
+  Supporting/local Runs, and the shared Outline plugin; remove active PageX,
+  probe-card value, and standalone bibex/display plugin requirements.
+
 ## 0.56.2 · 2026-09-03
 
 - Align the canonical Page tree with the Outline-owned Evidence Workspace:

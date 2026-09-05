@@ -1,5 +1,20 @@
 # Changelog · workflow-table
 
+## 0.4.1 · 2026-09-05
+
+- Fix the Tables-family boundary to name the Board Table row grain explicitly:
+  one Board Page/Page Folder, with Tasks and runtime evidence summarized below
+  that owner.
+
+## 0.4.0 · 2026-09-04
+
+- Define the Tables family as a two-lens projection: a plan lens plus an
+  observed display lens, with the owning workflow/Page/Task/Outline remaining
+  authoritative.
+- Name `Task Tables` as the current task-folder sibling and reserve `Board
+  Tables` as a future Board/Folder projection rather than conflating it with
+  the existing Folder inventory.
+
 ## 0.3.0 · 2026-09-01
 
 - Remove the obsolete `skill-inspect` dependency and make Skill Coverage own

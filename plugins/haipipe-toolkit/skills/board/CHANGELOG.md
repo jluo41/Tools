@@ -4,6 +4,15 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-09-04 - Task Blocks become Boards
+
+- Define Board as a kind-selected Page container rather than only a
+  question/stage collection.
+- Add the explicit `task-block` dialect: Block = Board, Job = Group, Task =
+  Page, and Run remains an execution record.
+- Align Task scaffolding, hierarchy references, Board parsing/rendering, and
+  structural checks around one disk-tree authority with relative Task paths.
+
 ## 2026-08-21 — skills audit sweep · rulings that never left the file they landed in
 
 A full read of `board/` + `probe/` (30 SKILL.md, 4 rules files, 6 phase agents,

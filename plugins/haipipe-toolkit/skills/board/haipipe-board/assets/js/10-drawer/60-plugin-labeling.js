@@ -1,7 +1,7 @@
 /* 🏷 Labeling · one right-pane plugin for a Page's optional subjective-label job.
  *
  * The retired version of this file was a bottom workflow inferred from
- * `## States` and offered /label-* commands.  The 0.5 family made canonical
+ * `## States` and offered /label-* commands.  The 0.6 family made canonical
  * receipts authoritative and retired those commands, so this file now owns
  * only the registry row.  live/labeling.py owns five receipt-first Workspaces
  * in the upper stage and keeps the page's existing Studio Chat below them.

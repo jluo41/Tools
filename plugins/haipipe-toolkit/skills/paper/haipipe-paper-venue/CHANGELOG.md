@@ -1,3 +1,12 @@
+## 0.6.0 — 2026-09-04
+
+- Enter concrete Venue work through the canonical five-phase Page chain.
+- Replace active PageX/probe/bibex/value/display plugin language with typed
+  VALUE/CITE/DISPLAY Results over Supporting Runs, one Local Input, and one
+  local Run in the shared Outline plugin.
+- Declare `page_ruling: none`; paper targeting remains a Narrative/journey
+  decision rather than a second Venue-page gate.
+
 ## 0.5.0 — 2026-08-31
 
 - **Renamed** (JL 260831: "you should have it for the haipipe-paper-venue"):

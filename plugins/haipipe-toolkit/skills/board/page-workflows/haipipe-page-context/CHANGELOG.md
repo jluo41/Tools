@@ -1,3 +1,13 @@
+## 0.1.3 · 2026-09-04
+
+- Resolve an exact Page Face owner—workflow phase, canonical family, or legacy
+  Page Type—and load it once when it is also the Folder owner.
+
+## 0.1.2 · 2026-09-04
+
+- Route stale Narrative authority to the paper journey but stale Venue
+  authority to the QBv bank Page Type, because Venue is a library.
+
 ## 0.1.1 · 2026-09-04
 
 - Follow the canonical Page dependency order.

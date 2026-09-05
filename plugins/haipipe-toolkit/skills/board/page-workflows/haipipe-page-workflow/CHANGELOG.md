@@ -1,8 +1,39 @@
+## 0.27.0 — 2026-09-04
+
+- Align EMBED with semantic outline versioning: it produces the next working
+  `vN.<k+1>` plan, while a human approval alone freezes `v<N+1>.0`.
+
+## 0.26.4 — 2026-09-04
+
+- Call LAND outputs `ready typed local Results` after their authored
+  capitalized `Acceptance` checks pass; reserve lowercase `accepted:` for the
+  later person-only CHECK gate.
+- Clarify that a DISPLAY-typed Evidence Item remains one Page Evidence Item
+  Run; renderer calls inside it are not an additional Page Display Run.
+
+## 0.26.3 — 2026-09-04
+
+- Route Task Folder Page semantics through canonical `haipipe-task` ownership
+  and remove the retired standalone compatibility skill from the chain.
+- Make SURVEY's Local Run declaration owner-native: Task uses its real parent
+  until LAND allocates `rNN`, while Paper may reserve its dedicated `pj…` id.
+
+## 0.26.2 — 2026-09-04
+
+- Separate the shared Outline presenter from phase execution dependencies:
+  CONTEXT, OUTLINE, and EVIDENCE load its exact refs, while Page installs it once.
+- Make per-item Decide a non-deferrable branch choice and remove CHECK as a
+  legal CHECK `next_cycle`.
+- Make current HOLD terminal across prose, controller, and auditor; preserve
+  only old receipts without cycle fields as audit compatibility.
+- Put ordinary-Page CITE verification on the authored Evidence Item row.
+
 ## 0.26.1 — 2026-09-04
 
 - Define one canonical dependency order for every Page phase: Page base,
-  router, phase, owning workflow, exact Page Type, phase policy, optional Run
-  workers, then the Outline presenter.
+  router, phase, Folder owner, exact Page Face owner, phase policy, optional
+  Run workers, then the Outline presenter. A canonical family owner such as
+  `haipipe-task` occupies both owner positions and is loaded once.
 - Distinguish phase `route` from cycle `next_cycle` in producer receipts.
 
 ## 0.26.0 — 2026-09-04

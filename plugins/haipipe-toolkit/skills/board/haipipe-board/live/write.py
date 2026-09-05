@@ -167,7 +167,7 @@ class WriteMixin:
 
     # An HTML comment on a sentence line is an INVISIBLE mark, not prose: the
     # plan binding `<!-- realizes: C2.P1.B1 -->` that the DRAFT phase writes
-    # after each sentence (haipipe-page-draft 0.9.x). The browser never sees
+    # after each sentence (historical DRAFT rule, now CONTENT/WRITE). The browser never sees
     # it, so the visible text can only match the source once it is stripped
     # (JL 260831, "这句话在源文件里没找到" on SM00 P1.S1).
     _MARK = re.compile(r"\s*<!--.*?-->")

@@ -1,6 +1,6 @@
 # The plan file · one grammar, with phase-owned outline policy
 
-The plan is `<page>/outline/<stem>-outline-v<N>.md`: what the page WILL say,
+The plan is `<page>/outline/<stem>-outline-v<N>.<k>.md`: what the page WILL say,
 agreed before it says it. This file is the grammar every plan obeys, and the
 one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A phase
 loads THIS file, not the plugin skill. The approved example is
@@ -9,9 +9,9 @@ loads THIS file, not the plugin skill. The approved example is
 ## 1 · The head
 
 ```text
-# <stem> · outline v<N>
-outline-version: v<N>
-supersedes: v<N-1> | none
+# <stem> · outline v<N>.<k>
+outline-version: v<N>.<k>
+supersedes: v<N>.<k-1> | v<N-1>.0 | none
 date: YYMMDD
 approved: ⬜  |  ✅ <WHO> <YYMMDD HHMM> · in chat: "<the person's words>"
 arc: <the argument the division sequence makes, in one sentence>
@@ -132,14 +132,35 @@ Accept: <observable checks>                one line directly after each item
 ## 6 · Versions
 
 ```text
-approved: ⬜   a working document: edit, delete, rewrite freely; no record needed
-approved: ✅   frozen as of that date; any change is v<N+1> with `supersedes:`;
-               v<N> is kept, because it was right at its date
+no approved baseline   v0.1 → v0.2 → … → channel approval → v1.0
+approved baseline vN.0 vN.1 → vN.2 → … → channel approval → v<N+1>.0
+
+approved: ⬜   a working revision; a material human-facing revision increments <k>
+approved: ✅   a `.0` baseline frozen by the person's channel approval
 ```
 
-A plan written in an older grammar is rewritten into this one on its next
-pass: in place while ⬜, as `v<N+1>` after a tick. A tick belongs to the
-version it ticked.
+A major number records agreement, not editing activity. Never mint `v<N+1>.0`
+while the proposed change is still being discussed. Preserve every prior major
+and human-facing minor. Mechanical fixes made before presenting one revision
+(grammar, checks, paths, formatting) stay within that same minor and do not
+consume another number.
+
+When the person approves a working revision in the channel, copy its exact
+plan content into the next `.0` baseline, change `approved:` to the transcribed
+approval, and set `supersedes:` to the prior approved major. The selected minor
+remains an unapproved review artifact; the promoted major becomes the current
+plan. A later evidence fold or requested shape change starts at `.1` beneath
+that newly approved major.
+
+Integer-only `vN` files are legacy input, never a current plan. A page whose
+chain is `v1 … vN` migrates ONE TO ONE to `v0.1 … v0.N`: every file keeps its
+text, only the number changes, and the latest becomes the working revision.
+No legacy tick mints `v1.0`: a `✅` written before this rule was a working
+go-ahead, so `approved:` resets to `⬜` and the old tick moves, with its
+quote, into that file's `status:` line and into one page-log record. The only
+way to `v1.0` is a fresh channel approval that names the version (JL 260905:
+"we haven't made them from v0 to v1 yet"). Do not create new integer-only
+plan files; `outline-pass.py` fails a page whose latest plan is one.
 
 ## 7 · What the checker enforces
 

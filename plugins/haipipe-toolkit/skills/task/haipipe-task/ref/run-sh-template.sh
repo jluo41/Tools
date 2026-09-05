@@ -7,9 +7,10 @@
 #   1. Snapshots launch state -> results/<NAME>/runtime.yaml (status: running)
 #   2. Convert .py -> template .ipynb
 #   3. papermill execute -> notebooks/<NAME>.ipynb
-#   4. Finalize runtime.yaml (status: ok | failed)
+#   4. Apply the declared Result gate and finalize runtime.yaml
+#      (status: complete | failed)
 #
-# Notebook policy (configs/<RUN>.yaml -> _meta.notebook: full | thin | off):
+# Notebook policy (resolved Run config -> _meta.notebook: full | thin | off):
 #   full (default) keep the executed notebook with all outputs
 #   thin           execute, then clear cell outputs (small record; keeps code+params,
 #                  drops bulky stream/image output) — good for heavy compute (training/data)
@@ -18,7 +19,13 @@
 # All three execute the .py the same way; they differ only in what notebook is retained.
 #
 # Variables you MUST set:
-#   TASK_NAME — the .py basename (without .py) at task root
+#   TASK_NAME       — the .py basename (without .py) under scripts/ in a
+#                     canonical nested Task, or at Job root in a flat legacy Job
+#   RUN_FAMILY      — the haipipe-run family, normally Execution
+#   RUN_OPERATION   — the independently closable operation
+#   RUN_TARGET      — the bounded target
+#   REQUIRED_RESULTS — relative paths under RESULT_DIR that constitute the
+#                      worker/dialect's minimum Result gate
 #
 # Everything else is derived from $0 (the script path).
 # =============================================================================
@@ -26,7 +33,19 @@
 set -uo pipefail
 
 # ─── Manual config: edit for the task ──────────────────────────────────────
-TASK_NAME="01_pretrain_baseline"          # the .py stem: <task>/<stem>.py (nested) or <stem>.py at job root (flat)
+TASK_NAME="01_pretrain_baseline"
+RUN_FAMILY="Execution"
+RUN_OPERATION="task-execution"
+RUN_TARGET="01_pretrain_baseline"
+REQUIRED_RESULTS=("metrics.json")
+# Additional frozen inputs as "path|sha256". Paths may be absolute or
+# Job-relative. Use "path|auto" only when this Ticket is allowed to hash the
+# resolved file at launch; Page Evidence Item Tickets pin the LAND-frozen hash.
+RUN_INPUTS=()
+
+# Extend this function in a specialized Ticket when existence is not the full
+# semantic Result gate. It runs only after every REQUIRED_RESULTS path exists.
+result_gate() { return 0; }
 
 # ─── 1. Resolve identity from $0 (a ticket never repeats its own name) ─────
 # Canonicalize FIRST: a symlinked ticket must resolve shape + job from its
@@ -58,16 +77,20 @@ esac
 REPO_ROOT="$(git -C "$TASK_DIR" rev-parse --show-toplevel)"
 STARTED="$(date -Iseconds)"                                # 2026-05-24T14:30:01-04:00
 
-if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
-  CONFIG="${TASK_SEG}/config/${RUN_NAME}.yaml"             # nested: config lives IN the task
+if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/scripts/config" ]; then
+  CONFIG="${TASK_SEG}/scripts/config/${RUN_NAME}.yaml"     # canonical nested
+elif [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
+  CONFIG="${TASK_SEG}/config/${RUN_NAME}.yaml"             # pre-260831 nested
 elif [ -n "$TASK_SEG" ]; then
-  CONFIG="scripts/${TASK_SEG}/config/${RUN_NAME}.yaml"     # nested pre-260830
+  CONFIG="scripts/${TASK_SEG}/config/${RUN_NAME}.yaml"     # older mirrored nested
 else
   CONFIG="configs/${RUN_NAME}.yaml"                        # flat legacy
 fi
-# PY_PREFIX mirrors the CONFIG branch: where the task's .py lives relative to
-# the job (260830 nested: in the task folder; pre-260830: under scripts/).
-if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
+# PY_PREFIX mirrors the CONFIG branch: where the Task's .py lives relative to
+# the Job.
+if [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/scripts/config" ]; then
+  PY_PREFIX="${TASK_SEG}/scripts/"
+elif [ -n "$TASK_SEG" ] && [ -d "$TASK_DIR/$TASK_SEG/config" ]; then
   PY_PREFIX="${TASK_SEG}/"
 elif [ -n "$TASK_SEG" ]; then
   PY_PREFIX="scripts/${TASK_SEG}/"
@@ -86,7 +109,7 @@ fi
 #   config `store:` key    a standing declaration for this call
 #   neither                task-local $TASK_DIR                   (the default)
 #
-# The task layer is told a PATH, never a consumer identity: a dispatching probe
+# The task layer is told a PATH, never a consumer identity: a dispatching caller
 # supplies the store, and the executor still cannot learn whose claim it serves.
 # `store:` is a JOB property (JL 260829): declared once in the job's defaults
 # (src/config-defaults.yaml nested, configs/_defaults.yaml flat);
@@ -120,7 +143,7 @@ else
       echo "==> [warn] SPLIT BANK: this run writes task-local, but a store already" >&2
       echo "    holds a QA bank for ${_rel}:" >&2
       echo "$_hits" | sed 's/^/      /' >&2
-      echo "    Declare store: in configs/${RUN_NAME}.yaml, or export RESULT_STORE," >&2
+      echo "    Declare store: in src/config-defaults.yaml, or export RESULT_STORE," >&2
       echo "    unless serving no consumer is genuinely what you want here." >&2
     fi
     unset _rel _hits
@@ -167,14 +190,52 @@ fi
 
 # ─── 2. Capture launch state ───────────────────────────────────────────────
 GIT_SHA="$(git -C "$TASK_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+GIT_DIRTY=$([ -n "$(git -C "$TASK_DIR" status --porcelain 2>/dev/null)" ] && echo true || echo false)
+CONFIG_SHA256="$(shasum -a 256 "$TASK_DIR/$CONFIG" 2>/dev/null | awk '{print $1}')"
+CONFIG_SHA256="${CONFIG_SHA256:-unknown}"
 HOST="$(hostname)/$(whoami)"
 CMD="bash $TICKET"
+TICKET_ARGS_JSON="$(python3 -c 'import json, sys; print(json.dumps(sys.argv[1:]))' "$@")"
+TICKET_PATH="${TICKET#${TASK_DIR}/}"
+RESULT_PATH="${RESULTS_DIR#${OUTPUT_ROOT}/}"
+WORKER_PATH="${PY_PREFIX}${TASK_NAME}.py"
+
+_yaml_sq() { printf '%s' "$1" | sed "s/'/''/g"; }
+# Resolve every launch-time `|auto` binding exactly once. The running and
+# terminal receipts must describe the same frozen input graph even when an
+# upstream file changes while the worker is executing.
+RESOLVED_RUN_INPUTS=()
+for _input_spec in "${RUN_INPUTS[@]}"; do
+  _input_path="${_input_spec%%|*}"
+  if [ "$_input_path" = "$_input_spec" ]; then
+    _input_sha=auto
+  else
+    _input_sha="${_input_spec#*|}"
+  fi
+  if [ "$_input_sha" = auto ]; then
+    case "$_input_path" in /*) _input_abs="$_input_path" ;; *) _input_abs="$TASK_DIR/$_input_path" ;; esac
+    _input_sha="$(shasum -a 256 "$_input_abs" 2>/dev/null | awk '{print $1}')"
+    _input_sha="${_input_sha:-unresolved}"
+  fi
+  RESOLVED_RUN_INPUTS+=("${_input_path}|${_input_sha}")
+done
+
+emit_inputs_yaml() {
+  printf "  - path: '%s'\n" "$(_yaml_sq "$CONFIG")"
+  printf "    sha256: '%s'\n" "$CONFIG_SHA256"
+  for _input_spec in "${RESOLVED_RUN_INPUTS[@]}"; do
+    _input_path="${_input_spec%%|*}"
+    _input_sha="${_input_spec#*|}"
+    printf "  - path: '%s'\n" "$(_yaml_sq "$_input_path")"
+    printf "    sha256: '%s'\n" "$(_yaml_sq "$_input_sha")"
+  done
+}
 
 # ─── 2a. Pre-flight code review gate ───────────────────────────────────────
 # Block launch unless a fresh CODE_REVIEW.md (produced by the haipipe-task-reviewer-agent (Gate 1)
 # agent) exists for this job and matches the current git_sha.
 # Skip mechanisms (any one):
-#   • _meta.skip_review: true   in configs/<RUN_NAME>.yaml
+#   • _meta.skip_review: true   in the resolved Run config
 #   • HAIPIPE_SKIP_REVIEW=1     env var at launch
 # Verdict semantics:
 #   pass | skipped → proceed
@@ -225,15 +286,36 @@ fi
 
 # ─── 3. Write runtime.yaml (status: running, atomic) ───────────────────────
 cat > "$RUNTIME_YAML.tmp" <<EOF
+run:        $RUN_NAME
+family:     $RUN_FAMILY
+operation:  $RUN_OPERATION
+target:     $RUN_TARGET
 status:     running
-started:    $STARTED
+ticket:     $TICKET_PATH
+result:     $RESULT_PATH
+inputs:
+EOF
+emit_inputs_yaml >> "$RUNTIME_YAML.tmp"
+cat >> "$RUNTIME_YAML.tmp" <<EOF
+worker:
+  kind: script
+  name: $WORKER_PATH
+started_at: $STARTED
+finished_at: null
+supersedes: null
+failure: null
 git_sha:    $GIT_SHA
+git_dirty:  $GIT_DIRTY
 host:       $HOST
 cmd:        $CMD
 address:    ${ADDRESS:-<none>}
 address_readable: $ADDRESS_READABLE
 project:    $_PROJECT
-config:     $CONFIG
+config_file: $CONFIG
+config_sha256: $CONFIG_SHA256
+settings:
+  config_file: $CONFIG
+  ticket_args: $TICKET_ARGS_JSON
 notebook:   $NOTEBOOK_RECORD
 EOF
 mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
@@ -271,7 +353,28 @@ s = datetime.fromisoformat('$STARTED'); e = datetime.fromisoformat('$ENDED')
 d = e - s; m, s = divmod(int(d.total_seconds()), 60); h, m = divmod(m, 60)
 print(f'{h}h{m:02d}m' if h else f'{m}m{s:02d}s')
 ")"
-STATUS=$([ $EXIT_CODE -eq 0 ] && echo ok || echo failed)
+STATUS=complete
+FAILURE=null
+if [ "$EXIT_CODE" -ne 0 ]; then
+  STATUS=failed
+  FAILURE=process-exit-$EXIT_CODE
+else
+  for _required in "${REQUIRED_RESULTS[@]}"; do
+    if [ ! -e "$RESULTS_DIR/$_required" ]; then
+      STATUS=failed
+      FAILURE=missing-required-result
+      EXIT_CODE=3
+      echo "==> [result-gate] missing $RESULTS_DIR/$_required" >&2
+      break
+    fi
+  done
+  if [ "$STATUS" = complete ] && ! result_gate; then
+    STATUS=failed
+    FAILURE=result-gate-failed
+    EXIT_CODE=4
+    echo "==> [result-gate] worker-specific validation failed" >&2
+  fi
+fi
 HEADLINE="$(python3 -c "
 import json
 try:
@@ -282,16 +385,39 @@ except Exception:
 ")"
 
 cat > "$RUNTIME_YAML.tmp" <<EOF
+run:        $RUN_NAME
+family:     $RUN_FAMILY
+operation:  $RUN_OPERATION
+target:     $RUN_TARGET
 status:     $STATUS
-started:    $STARTED
-ended:      $ENDED
-duration:   $DURATION
+ticket:     $TICKET_PATH
+result:     $RESULT_PATH
+inputs:
+EOF
+emit_inputs_yaml >> "$RUNTIME_YAML.tmp"
+cat >> "$RUNTIME_YAML.tmp" <<EOF
+worker:
+  kind: script
+  name: $WORKER_PATH
+started_at: $STARTED
+finished_at: $ENDED
+supersedes: null
+failure: $FAILURE
 git_sha:    $GIT_SHA
+git_dirty:  $GIT_DIRTY
 host:       $HOST
 exit_code:  $EXIT_CODE
 cmd:        $CMD
-config:     $CONFIG
+address:    ${ADDRESS:-<none>}
+address_readable: $ADDRESS_READABLE
+project:    $_PROJECT
+config_file: $CONFIG
+config_sha256: $CONFIG_SHA256
+settings:
+  config_file: $CONFIG
+  ticket_args: $TICKET_ARGS_JSON
 notebook:   $NOTEBOOK_RECORD
+duration:   $DURATION
 headline:   $HEADLINE
 EOF
 mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"

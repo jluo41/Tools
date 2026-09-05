@@ -33,7 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent      # the engine dir
 sys.path.insert(0, str(HERE))
-from live.outline import parse_outline, plan_card, render, _anchors   # noqa: E402
+from live.outline import parse_outline, plan_card, render, _anchors, _latest_plan  # noqa: E402
 from src.plan_shape import check as plan_shape_check                  # noqa: E402
 from src.plan_shape import check_serves, check_coverage              # noqa: E402
 from src.plan_shape import check_bullet_grammar                      # noqa: E402
@@ -287,11 +287,10 @@ def main():
                 # `plan-shape-off-type` (260819): a plan whose divisions
                 # contradict the shape its Page Type declares. Pages with no
                 # `page-type:` key are the flexible default and return clean.
-                plans = sorted((p.parent / "outline").glob("*-outline-*.md")) \
-                    if (p.parent / "outline").is_dir() else []
-                if plans:
-                    plan_txt = plans[-1].read_text(encoding="utf-8",
-                                                   errors="replace")
+                plan, _version = _latest_plan(p)
+                if plan:
+                    plan_txt = plan.read_text(encoding="utf-8",
+                                              errors="replace")
                     for msg in plan_shape_check(p, plan_txt, SKILLS):
                         fails.append(f"{p.name} plan-shape-off-type: {msg}")
                     # self-consistency test ② (haipipe-page-outline §🚦): a

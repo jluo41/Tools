@@ -15,6 +15,32 @@ haipipe-discovery/ref/discovery-yaml-schema.md
 This file explains their relationship; when details differ, those runtime refs
 win.
 
+## Numbered skill-family groups
+
+Discovery keeps the same family-level organization used by `haipipe-task`:
+
+~~~text
+discovery/
+├── haipipe-discovery/                         public door
+├── workflow-phases/
+│   └── haipipe-discovery-inquiry/             sole D1 phase
+├── 1_search/                                  acquisition family
+│   ├── haipipe-discovery-search/              family router
+│   └── source FIND/READ workers
+├── 2_review/                                  synthesis family
+│   ├── haipipe-discovery-review/              family router
+│   └── review workers
+├── 3_idea/                                    ideation family
+│   ├── haipipe-discovery-idea/                family router
+│   └── idea/novelty workers
+└── agents/                                    execution roles
+~~~
+
+The numeric prefixes order and group the skill bank, like `task/1_data`,
+`task/2_nn`, and `task/3_end`. They are not executable phase numbers and must
+not be renamed to a parallel `routes/` hierarchy. Runtime phase ownership is
+declared only under `workflow-phases/`; for Discovery that owner is D1 Inquiry.
+
 ## Four levels
 
 ~~~text
@@ -50,7 +76,9 @@ owns. The manifest plans the Topic; a .sh ticket plans one Paper Run.
 
 ~~~text
 Hierarchy   Block -> Job -> Task Page -> Run
-Workflow    D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+Domain      D1 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+Page        shared 00 CONTEXT -> 01 OUTLINE -> 02 EVIDENCE ->
+            03 CONTENT -> 04 CHECK
 Page Type   source-map | source-reading | topic-summary | prior-art-verdict |
             counterevidence-review | landscape-review | benchmark-landscape |
             ideation | novelty-verdict
@@ -62,20 +90,26 @@ specialist routes: Search resolves evidence Subjects, Review synthesizes
 completed Results, and Idea works at Topic level while using Paper Runs for
 novelty evidence. Worker/API/CLI calls are runtime detail inside a Run receipt.
 
-## D1 Cycle × Run map
+## D1 domain-cycle × Run map
 
 ~~~text
-SCOPE       no Run
+SCOPE       no Run; writes manifest intent
 PREPARE     no Run; scripts/ are supporting instruments
 ACQUIRE     paper-analysis | source-analysis × N admitted Subjects
-SYNTHESIZE  no Run; promotes Results into Page/typed record/Evidence Bib
-CLOSE       no Run; checks and reconciles the two Faces
+SYNTHESIZE  no Discovery Run; dispatches shared Page workflow
+CLOSE       no Run; reconciles the already-CHECKed Page and Task Face
 
 Total R = N admitted canonical Subjects
 ~~~
 
 Search queries, candidate rows, synthesis passes, and idea generation are not
 Runs. A Run begins only after one canonical evidence Subject is admitted.
+
+The canonical table, Runs Overview, Human Actions, and Skill Coverage live at
+`workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. There is no
+separate Discovery workflow skill; D1 owns the domain workflow and the shared
+Page workflow owns Page artifacts. The D1 root uses the permitted no-Run route;
+consumer Pages own any Page-family Runs they commission.
 
 ## Trigger and Subject
 

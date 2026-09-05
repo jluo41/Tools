@@ -1,136 +1,143 @@
 fn-run: Scaffold a New Run
-============================
+==========================
+
+A Run is one authored Ticket paired with one generated Result address and one
+runtime receipt.
+Load `haipipe-run`, `ref/hierarchy.md`, and
+`ref/runtime-yaml-schema.md` before scaffolding.
+This verb creates the pre-run contract and never executes it.
 
 
-> JL: do not break the sentences. One line one sentence.
->> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
+Step 1 — Resolve Job, Task, mode, and RUNNAME
+----------------------------------------------
 
-A run is the unit of execution within a job.
-The four sister files share one NAME token:
+Resolve the Job by structure, never by its name.
+For a canonical nested Job, resolve exactly one `tNN_<task>/`; cwd inside the
+Task wins, one Task total is unambiguous, and otherwise interactive mode asks.
+For a flat legacy Job, the Task segment is empty.
 
-```
-configs/<NAME>.yaml             📥 frozen input (_meta + params)
-runs/<NAME>.sh                  ▶️  entry (wraps papermill + auto-logs)
-results/<NAME>/                 📊 light artifacts + runtime.yaml
-notebooks/<NAME>.ipynb          📓 papermill executed-notebook record
-```
+Resolve `$OUTPUT_ROOT` using the Task owner's mode law:
 
-Plus the shared daily file:
-
-```
-runlogs/<DATE>-runlog.md        📝 daily index + narrative (run.sh appends)
-```
-
-This scaffold creates the **pre-run** half (config + run.sh); the rest is auto-created by `runs/<NAME>.sh` at execution.
-
-
-Step 1 — Resolve job + shape + NAME
-------------------------------------
-
-Auto-detect job from cwd.
-If cwd is not a job, ASK.
-
-Detect the job SHAPE (hierarchy.md "Two job shapes"): a scripts/ dir with
-{NN}_* children = NESTED, else FLAT legacy. In a nested job also resolve
-TASK_SEG — which <task>/ this run belongs to (cwd inside one wins;
-one task total = that one; else ASK). Never scaffold a flat ticket into a
-nested job: the template's own auto-detect would then resolve the wrong
-config and script paths.
-
-ASK for `<NAME>` if not given.
-Constraints:
-  - Convention: prefix with `run_` (e.g. `run_seed42_baseline`)
-  - Descriptive — encodes the variant (seed/arch/data slice)
-  - Unique within this job (refuse on collision)
-  - Lowercase, snake_case, `[a-z0-9_]+`
-
-
-Step 2 — Collect _meta fields (4 questions)
---------------------------------------------
-
-**Dual-mode (see `../ref/invocation-modes.md`):** if the spec already carries these fields (agent / headless path), DO NOT ASK — use them verbatim and run silently.
-Only ASK for fields genuinely missing AND when a user is present.
-If `purpose` is missing and there is no user (agent path), return `status: blocked, missing: [purpose]` — never invent it.
-
-ASK (interactive path only) in this order.
-`purpose` is REQUIRED:
-
-```
-1. purpose  — One sentence: why does this run exist?
-              (required; if user can't answer, halt)
-2. note     — Free-form thoughts / discussion-derived rationale (multi-line ok)
-3. input    — Semantic description of data + ckpt origin
-4. output   — Expected artifacts + headline guess
+```text
+RESULT_STORE from the dispatching caller      wins
+Job `store:` declaration                     consumer-serving
+neither                                      Job root, self-serving
 ```
 
-End every invocation with the structured return block from `../ref/invocation-modes.md` (status / task_folder / run_name / files), so an agent caller can locate the scaffolded folder to author into.
+Ask for the RUNNAME when it is not supplied.
+New canonical names are `rNN_<family-bearing-stem>`, lowercase, immutable,
+and unique within the Task.
+Use the next free two-digit `rNN`; never renumber or overwrite.
 
 
-Step 3 — Create files
-----------------------
+Step 2 — Collect the Run contract
+---------------------------------
 
-```
-config — configs/<NAME>.yaml (flat) · <TASK_SEG>/config/<NAME>.yaml (nested 260830)
-         · scripts/<TASK_SEG>/config/<NAME>.yaml (nested pre-260830)
-  Copy from ../ref/config-meta-template.yaml.
-  Fill in _meta: block with values from Step 2.
-  Leave params section as a comment placeholder for user to fill.
+Use supplied fields verbatim.
+Ask only for genuinely missing fields when a person is present.
+Headless mode returns blocked rather than inventing a required field.
 
-ticket — runs/<NAME>.sh (flat) · runs/<TASK_SEG>/<NAME>.sh (nested)
-  Copy from ../ref/run-sh-template.sh (it detects the shape from its own path).
-  Edit line `TASK_NAME=...` to match the .py basename.
-  chmod +x.
-
-results/<NAME>/ (flat) · results/<TASK_SEG>/<NAME>/ (nested)
-  mkdir -p (empty; the ticket will populate runtime.yaml at launch).
-
-notebooks/
-  mkdir -p if missing (shared per task, not per run).
-
-runlogs/
-  mkdir -p if missing (shared per task, not per run).
+```text
+purpose          why this Run exists
+family           Execution | Discovery | Page | Labeling
+operation        independently closable operation
+target           bounded target
+input            authoritative inputs to freeze
+output           expected Result payload
+required_results relative files under Result dir that form the minimum gate
 ```
 
+For a Page Evidence Item Run, set `family=Page`,
+`operation=evidence-item`, `target=<full Evidence Item id>`, and
+`required_results=("result.yaml")`; add its frozen Local Input path and LAND
+hash to `RUN_INPUTS`.
+For a page-serving aggregate Run, set `family=Execution`,
+`operation=collect-page-values`, and
+`required_results=("values.yaml")`.
 
-Step 4 — Validate
-------------------
 
-  - Confirm task .py basename matches `runs/<NAME>.sh` TASK_NAME line
-  - Confirm `configs/<NAME>.yaml` has non-empty `_meta.purpose`
-  - Confirm no name collision in `configs/`, `runs/`, `results/`,
-    `notebooks/`
+Step 3 — Create the authored projections
+-----------------------------------------
 
+```text
+flat legacy
+  config   <job>/configs/<RUNNAME>.yaml
+  Ticket   <job>/runs/<RUNNAME>.sh
 
-Step 5 — Report
-----------------
-
-Print:
-
-```
-✅ Scaffolded run: <NAME>
-   configs/<NAME>.yaml      (filled _meta, params TODO)
-   runs/<NAME>.sh           (executable, auto-meta wrapper)
-   results/<NAME>/          (empty)
-
-Next:
-   1. Fill params in configs/<NAME>.yaml (below _meta:)
-   2. bash runs/<NAME>.sh
+canonical nested
+  config   <job>/<task>/scripts/config/<RUNNAME>.yaml
+  Ticket   <job>/<task>/runs/<RUNNAME>.sh
 ```
 
+Copy `../ref/config-meta-template.yaml` for the config and fill its required
+`_meta.purpose`.
+Copy `../ref/run-sh-template.sh` for the Ticket and set all five contract
+declarations: `TASK_NAME`, `RUN_FAMILY`, `RUN_OPERATION`, `RUN_TARGET`,
+and `REQUIRED_RESULTS`.
+Set `RUN_INPUTS` to every declared frozen input path/hash beyond the Run config;
+the Ticket resolves any permitted `|auto` hash once at launch and preserves
+that same binding in both running and terminal receipts.
+Extend `result_gate()` when file existence is not the worker's full semantic
+acceptance test.
+Make the Ticket executable.
 
-Risk profile
--------------
 
-CREATES files under existing job.
-Refuses to overwrite.
-For moving / renaming an existing run, see `-organize` specialist.
+Step 4 — Create the planned generated projection
+-------------------------------------------------
+
+Create the resolved Result directory:
+
+```text
+flat legacy       $OUTPUT_ROOT/results/<RUNNAME>/
+canonical nested  $OUTPUT_ROOT/results/<task>/<RUNNAME>/
+```
+
+At scaffold time write `runtime.yaml` atomically with `status: planned` and
+the complete neutral identity fields from `ref/runtime-yaml-schema.md`.
+Record the Ticket path, Result path, declared inputs, worker, config path/hash,
+settings, `started_at: null`, `finished_at: null`, and `failure: null`.
+The Ticket changes the same receipt to `running` before expensive work and to
+a truthful terminal state after the declared Result gate.
+
+Create the resolved `$OUTPUT_ROOT/notebooks/<task>/` parent only when the
+selected notebook policy owns an execution record.
+Do not create `runlogs/`; the Run inventory comes from Tickets and receipts,
+and Page/Task Logs use their owning contracts.
+
+
+Step 5 — Validate
+-----------------
+
+- Confirm the canonical Task script resolves at
+  `<task>/scripts/<TASK_NAME>.py`.
+- Confirm the Ticket and config share one RUNNAME.
+- Confirm `_meta.purpose` is non-empty.
+- Confirm all five required Ticket declarations and every `RUN_INPUTS`
+  path/hash match the collected contract.
+- Confirm the resolved planned receipt contains every required neutral and
+  Task-dialect field.
+- Confirm there is no collision in config, Ticket, Result, or notebook paths.
+- Run `bash -n <ticket>`.
+
+
+Step 6 — Report
+---------------
+
+```text
+status:    ok | blocked | failed
+summary:   Scaffolded <global Run id> as one Ticket → Result contract.
+artifacts: [config, Ticket, planned runtime receipt]
+next:      fill parameters, satisfy the code-review gate, then launch the Ticket
+```
 
 
 MUST NOT
----------
+--------
 
-- Create `<NAME>` without a `_meta.purpose` value.
-- Touch other runs' files.
-- Run the script (this is scaffold-only — separate concern).
-- Modify the run.sh wrapper template (always copy-and-edit per-run).
-- Skip the auto-meta wrapper (every run.sh must have it).
+- Execute the Ticket.
+- Create a Task-local `results/` directory in a canonical nested Task.
+- Use `<task>/config/` or `<job>/runs/<task>/` for a new Run.
+- Leave the copied Ticket's default family, operation, target, or Result gate
+  unchanged when they do not match the commissioned Run.
+- Mark the planned receipt complete.
+- Touch another Run's files.

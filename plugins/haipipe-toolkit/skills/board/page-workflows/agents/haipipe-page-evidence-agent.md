@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-evidence-agent
-description: "Write-scoped EVIDENCE producer for one Board Page. LAND executes each decided typed Evidence Item graph: validate zero-to-many Execution/Discovery Supporting Results, freeze one Local Input, then execute exactly one Page Evidence Item Run and bind its ready Result. EMBED interprets only the ready local Result into plan v<N+1> as Answered:/Drawn:, never restructures. It never writes Content, Decide, Status, raw rows, or PHI. Trigger: page evidence producer, EVIDENCE phase, land Evidence Items, make Supporting Runs, make local Run, embed ready Result, fold evidence, evidence agent."
+description: "Write-scoped EVIDENCE producer for one Board Page. LAND executes each decided typed Evidence Item graph: validate zero-to-many Execution/Discovery Supporting Results, freeze one Local Input, then execute exactly one Page Evidence Item Run and bind its ready Result. EMBED interprets only the ready local Result into the next working plan vN.<k+1> as Answered:/Drawn:, never restructures. It never writes Content, Decide, Status, raw rows, or PHI. Trigger: page evidence producer, EVIDENCE phase, land Evidence Items, make Supporting Runs, make local Run, embed ready Result, fold evidence, evidence agent."
 tools:
   - Read
   - Write
@@ -33,9 +33,13 @@ and mirrors drift (the whole 260819 session is the proof).
 **Load:** read the ⚡ Phase card at the top of `haipipe-page-evidence` FIRST,
 then follow the router's canonical order: `haipipe-page` →
 `haipipe-page-workflow` → `haipipe-page-evidence` → exact Folder-owning
-workflow → exact Page Type → item/type references → `haipipe-run` → selected
-Supporting/local workers → `haipipe-plugin-outline` presentation. Do not load
-`haipipe-page-for-task`.
+workflow or canonical family skill → exact Page Face owner → item/type
+references → `haipipe-run` → selected
+Supporting/local workers. The Page surface already installs the shared
+`haipipe-plugin-outline` presenter; load its exact refs, not the presenter as
+an execution dependency. A Task Folder resolves its Page policy from
+`haipipe-task`; it fills both owner roles and is loaded once, without a
+separate Task Page-Type layer.
 
 **The job in one line:** LAND validates Supporting Results, then turns their
 frozen Local Input into one focal ready Result per item; EMBED

@@ -73,3 +73,9 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [3.0.5] — 2026-07-03
 
 - ADOPT mode — an existing <org>/<name> repo is no longer a preflight failure: skip create, submodule add pulls the existing content, scaffold only missing folders (JL: 如果已经有，就直接pull). Description frontmatter tightened.
+## 0.4.0 · 2026-09-04
+
+- Add optional, on-demand `meetings/` ownership through
+  `haipipe-project-meeting`; project scaffolding still creates no empty lane.
+- Replace the retired Page Probe/PageX scaffold description with typed
+  Evidence Items and Supporting/Local Run binding.

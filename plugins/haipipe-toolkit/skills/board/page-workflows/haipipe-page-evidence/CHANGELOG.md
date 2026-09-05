@@ -1,3 +1,55 @@
+## 0.20.0 · 2026-09-04
+
+- Make EMBED create only the next unapproved working plan (`vN.<k+1>`), never
+  a new frozen major. A human approval is the only promotion to `v<N+1>.0`.
+
+## 0.19.7 · 2026-09-04
+
+- Name `<resolved-result>/result.yaml` as the typed Evidence Item envelope and
+  keep execution lifecycle in sibling `runtime.yaml`.
+- Declare a PHI-safe admitted DISPLAY unit as the narrow Page-authority
+  exception in consumer-serving Tasks; both Result files remain under
+  `$OUTPUT_ROOT` and point to/hash the Page unit.
+
+## 0.19.6 · 2026-09-04
+
+- Resolve Task Results through `$OUTPUT_ROOT` so consumer-serving runs point
+  to the consumer-owned mirrored Job root rather than a hardcoded Job path.
+- Make the Page display unit the renderer's direct caller-owned destination;
+  the governed Result envelope records its pointer and hashes without an
+  intermediate duplicate-and-copy step.
+
+## 0.19.5 · 2026-09-04
+
+- Separate LAND's authored `Acceptance` checks, which make a local Result
+  ready for EMBED, from the lowercase human display `accepted:` decision that
+  CHECK administers later.
+- Define DISPLAY's bounded promotion: the governed local Result remains the
+  provenance authority while LAND projects selected safe files into the
+  Page-facing `outline/evidence/display/<unit>/` with source Run, Result, and
+  hash bindings.
+
+## 0.19.4 · 2026-09-04
+
+- Remove the ambiguous claim that every Page-local Run and Result occupies
+  sibling folders. Resolve both through the Folder owner's Run dialect:
+  Folder-local Results may be sibling, while canonical Task Results remain in
+  the Job-owned `results/<task>/<RUNNAME>/` store.
+- Describe LAND writes as owner-governed Run and Result stores rather than
+  assuming every route is an owning Task.
+
+## 0.19.3 · 2026-09-04
+
+- Resolve Task Folder Page policy from canonical `haipipe-task` ownership;
+  remove the retired standalone Page-Type layer from EVIDENCE routing.
+- Allocate local Evidence Item Runs in the Folder owner's namespace and
+  resolve Task Results at their Job-backed address rather than copying them.
+
+## 0.19.2 · 2026-09-04
+
+- Make CITE verification an item-level LAND gate before the local Result is ready.
+- Treat Outline refs as material contracts while Page owns presenter installation.
+
 ## 0.19.1 · 2026-09-04
 
 - Use the canonical Page dependency order.

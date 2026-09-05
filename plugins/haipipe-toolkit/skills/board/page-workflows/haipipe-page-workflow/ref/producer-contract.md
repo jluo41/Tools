@@ -62,9 +62,11 @@ being guessed.
 
 ## Procedure
 
-1. Load the Page base, router, current phase, owning workflow, exact Page Type,
-   phase references/policy, any required Run workers, and finally the presenter,
-   in the canonical order in `haipipe-page-workflow`. Do not skip the page spec; the
+1. Load the Page base, router, current phase, Folder-owning workflow or
+   canonical family skill, exact Page Face owner, phase references/policy, and
+   any required Run workers in the canonical
+   order in `haipipe-page-workflow`. The Page surface already installs the
+   shared Outline presenter; a phase loads only its exact refs. Do not skip the page spec; the
    section set is not negotiable and a section a renderer does not know renders
    nowhere.
 2. For every operation except initial `create-page`, read the target Page from
@@ -80,7 +82,7 @@ being guessed.
    Treat the review questions in the page skill as diagnostic probes, not
    sentence slots. Replace only the Opening body.
 6. For `context`, `outline`, `evidence`, or `content`, perform
-   only the authority named by the loaded phase contract. Three of the six write
+   only the authority named by the loaded phase contract. Three of the five write
    somewhere OTHER than the page body, and writing into the body instead is the
    phase boundary being crossed rather than a stylistic choice:
 
@@ -89,9 +91,9 @@ being guessed.
                 source authorities and writes no plan, evidence, or Page prose.
    outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
                 itself. Leave `approved:` UNTICKED: it is a person's.
-   evidence  ─▶ outline/evidence/bibex/ entries, accepted local Evidence Item
-                Results, and frozen outline/evidence/display/ intake/. Leave
-                `verified` and `read:` UNTICKED.
+   evidence  ─▶ ready local Evidence Item Results and frozen inputs, plus
+                Result bindings in the authored item table. Leave CITE
+                `Verified`, legacy `read:`, and display `accepted:` UNTICKED.
    ```
 
    Stop before the returned route begins. Record a

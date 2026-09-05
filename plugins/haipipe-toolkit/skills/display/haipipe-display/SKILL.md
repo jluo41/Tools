@@ -1,10 +1,9 @@
 ---
 name: haipipe-display
 description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
-argument-hint: "[what to display, or a unit/intake path]"
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-16"
+  version: "0.3.2"
+  last_updated: "2026-09-04"
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -35,9 +34,9 @@ Pick ✒️ tex when the figure should share the document's own fonts and math, 
 
 A PAPER's unit lands at `displays/displayNN-<slug>/` under the paper root.
 A BOARD PAGE's unit lands at
-`<page>/evidence/display/<stem>-DisplayN-<slug>/`, and the page-side rules
+`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/`, and the page-side rules
 (address, citation chips, the human `accepted:` tick) belong to
-`haipipe-plugin-evidence/ref/displays.md`, not to this door.
+`board/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`, not to this door.
 
 ## 📂 Files
 

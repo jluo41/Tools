@@ -14,8 +14,8 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Status**: resolved
 - **Page**: <repo-relative path>
 - **Folder kind**: <kind> · source <path or resolver step>
-- **Owning workflow**: <exact skill name>
-- **Page Type**: <exact skill name or none>
+- **Folder owner**: <exact workflow or canonical family skill name>
+- **Page Face owner**: <exact phase, canonical family, or legacy Page-Type skill name>
 - **Current authority**: CONTEXT
 
 ### CTX2 · Purpose and scope

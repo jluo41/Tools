@@ -1,98 +1,109 @@
-# Values lane · every number, and where it came from
+# VALUE Results · one checked quantity ready for one Page use
 
-Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
-`VALUE`, or when the 🧭 Outline plugin's Evidence Workspace must explain a number's provenance. The
-Outline plugin owns the lane and surface; `haipipe-plugin-probe` still owns
-any legacy card whose `## Values` block supplies the value.
+Read this reference from `haipipe-plugin-outline` when an Evidence Item is
+`VALUE`, or when Evidence Workspace must explain a number's provenance. The
+Outline plugin owns only the workspace and presentation. The Page EVIDENCE
+phase owns LAND/EMBED; the local Run owns the Result.
 
-## 🎛 The gap it closes
+## 🎯 Ready-evidence contract
 
-A probe card is ONE question. Its answer usually holds SEVERAL numbers, and a
-sentence uses one of them (JL 260819: "probe 是一个大 folder，里面放了所有的
-value，而有的时候我们在正文里面只会用到一个具体的 value").
+A VALUE item has an immutable typed id and one focal payload:
 
 ```text
-  evidence/probe/PP01-phase-contract-count/  one question, four numbers
-    v1  phases the loop declares   7
-    v2  contracts that ship        6
-    v3  person-reserved ticks      5
-    v4  runs executed              → not here, PP02 owns it
-
-  §1  uses v1     §13 uses v4
+E01-VALUE-adjusted-effect
+Expected: VALUE · estimate, interval, unit, population, and model label
+Acceptance: recomputes from named Supporting Results; aggregate only
 ```
 
-Until 260819 both sentences could only write `[PP01]`, so nobody could tell which
-number each used, and a value nobody used looked exactly like one everybody did.
+The local Result must contain exactly what SHAPE's `Expected` and `Acceptance`
+fields require. A bare number, an unlabeled interval, or a number copied from
+another Page is not a ready VALUE Result.
 
-## 🧊 Four facets, and only two of them exist
+## 🔗 One graph, two Run layers
 
 ```text
-📦 storage   NONE. The number lives in evidence/probe/PP<NN>/proof/ with its source, run
-             and sha256. A <page>/value/ folder would be a second home for one
-             thing, which is the rule that retired the proof mark on 260819 (its glyph 🧮 now means value here).
-📡 surface   the 🧮 Values segment of the 🧭 Outline plugin's Evidence Workspace. One row per
-             value on the page, read live on every open.
-✍️ writer    NOBODY. EVIDENCE writes the `## Values` block in card.md when the
-             answer lands. This surface never writes and calls no model.
-🚧 boundary  reads evidence/probe/*/card.md and the Page's own .md. Nothing else.
+Supporting Runs  0..N  Execution and/or Discovery
+                         ↓ validated Results
+Local Input        1    frozen Result paths + hashes + governed local sources
+                         ↓
+Local Run          1    Page · Evidence Item
+                         ↓
+VALUE Result       1    checked quantity + meaning + provenance
+                         ↓
+EMBED                    Answered: binding on the target Bullet
 ```
 
-**Storage-less is not a new idea on this board**: `haipipe-plugin-outline` 0.1.0
-shipped that way. The difference is that outline later grew a file because a plan
-must exist before the thing it plans; a value cannot exist before its answer, so
-it never will.
+SURVEY plans and classifies the graph; it creates no Ticket. LAND validates or
+executes the Supporting Runs, freezes one Local Input, allocates/executes the
+one local Run, and binds its Result. EMBED interprets the accepted Result in
+the next outline version. CONTENT may then use it in prose.
 
-## 📐 The id, and where it is allocated
+## 📦 Result shape
 
-The grammar is `haipipe-plugin-probe` §🧮's and is not restated here beyond the
-shape:
+The local Result lives under the Page Folder's paired `results/` tree, never in
+a separate value plugin:
+
+```yaml
+item: E01-VALUE-adjusted-effect
+run: pj01t01r01
+type: VALUE
+status: complete
+payload:
+  estimate: 9.34
+  interval: [7.81, 10.87]
+  unit: MME per visit
+  population: eligible visits, primary specification
+  model: adjusted OLS
+provenance:
+  supporting_results:
+    - run: b01j02t03r04
+      result: tasks/.../results/r04_.../result.yaml
+      sha256: <64-hex>
+  local_input: results/r01_.../input.yaml#<sha256>
+acceptance:
+  recomputed: true
+  aggregate_only: true
+  checks: [estimate-present, interval-ordered, unit-present, population-present]
+```
+
+The exact payload may vary with the item contract, but `item`, full Run id,
+type, status, provenance, and observable acceptance checks never disappear.
+Raw rows and PHI never enter this Result.
+
+## 🧭 Workspace and writing join
+
+Evidence Workspace derives one row per VALUE item:
 
 ```text
-  PP01.v2      card PP01, its second value
-  ## Values    in card.md, written at EVIDENCE, never earlier
-  - v2 · what the number IS · the number · where in proof/ it was read from
+Item                          Supporting Runs   Local Run       State    Result
+E01-VALUE-adjusted-effect     1 Execution       pj01t01r01      ready    9.34 [7.81, 10.87] MME/visit
 ```
 
-A row whose last field names no file is not a value; it is a number somebody
-typed. The surface renders that as a named 🚨 rather than dropping the row.
+Clicking the item exposes the full Expected/Acceptance contract, Supporting
+Run and Result paths, frozen Local Input, local Run receipt, and payload. The
+overview stays compact; it never invents a second Status record.
 
-## 🔗 The join runs BOTH ways, which is the whole point
+The Bullet and later Page prose cite the Evidence Item id and local Result/Run
+identity. This gives a two-way join:
 
 ```text
-  🕳 UNSOURCED   the prose carries a number and cites no PP<NN>.v<n>
-                 ← the failure this surface exists for
-  🎈 UNUSED      a card holds a value no sentence cites
-                 ← a question that was answered for nobody
-  ✅ BOUND       both sides agree, and the row shows the number and its file
+unsourced   prose has a quantity but no VALUE item/local Result
+unused      accepted VALUE Result is folded nowhere
+bound       Result → item → Bullet → Content all resolve
 ```
 
-Both render as a named row, never as a blank, which is the same rule the probe
-and display strips already carry.
+## 🚧 Boundaries and legacy input
 
-## 📡 Evidence segment · one parse, one table
+- No `value/` plugin or folder exists.
+- No new Probe card or `PP<NN>.v<n>` id is created for VALUE work.
+- A related Page link is context, not evidence.
+- Cross-Folder quantities enter through named Supporting Run Results.
+- A Page-local governed static source may enter only through the frozen Local
+  Input exception in the item-table contract.
+- Legacy Probe `## Values` records and `PP<NN>.v<n>` references are read-only
+  migration input. SURVEY converts their evidentiary source to a Supporting
+  Result or governed Local Input; new work receives an `E<NN>-VALUE-<slug>` id
+  and one local VALUE Run/Result.
 
-`GET /_board/value?path=<board>&file=<page>` (`live/value.py`) remains the
-compatibility route loaded inside the 🧭 Outline plugin's Evidence Workspace. It is not a
-standalone Plugin surface.
-
-```text
-  id        what it is                    number   from                 used by
-  ─────────────────────────────────────────────────────────────────────────────
-  PP01.v1   phases the loop declares      7        phase-census.json    §1
-  PP01.v2   contracts that ship           6        phase-census.json    🎈 nobody
-  PP05.v1   phases with a duration        0        why_empty            §15
-```
-
-`POST /_board/value` exists only so the shell's `tab: {url, write}` contract
-holds; it writes nothing.
-
-## 📂 Files and ownership
-
-This reference owns no scripts. `haipipe-plugin-outline` owns the Page-facing
-lane and joined surface; the phase that binds a ready value is
-`page-workflows/haipipe-page-evidence` at LAND. The card, its states, and any
-legacy `## Values` grammar remain `haipipe-plugin-probe`'s until that storage
-is migrated.
-
-**The Board page that argues this contract** is `QPw4v-value` on
-`BoardSkillBoard-260722`.
+The common item and graph laws are in `../item-table.md`; LAND/EMBED authority
+is in `haipipe-page-evidence`. This reference owns no scripts or writer.

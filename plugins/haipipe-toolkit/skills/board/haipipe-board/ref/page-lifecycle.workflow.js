@@ -40,10 +40,10 @@ const maxRounds = limits.max_rounds || 3
 // UNANSWERED:
 //
 //   copilot   the human half BLOCKS. A person is here; wait for them.
-//   auto      the human half DEFERS. The loop keeps moving and the debt
-//             accumulates on the ledger (`cli/pagephase.py --owed`), which is
-//             handed over together at the end instead of interrupting once
-//             per selected tick.
+//   auto      review confirmation may DEFER. The loop may continue on the
+//             machine half and accumulate review debt. A branching Decide
+//             (make | defer | drop) never becomes an invented route: without
+//             an explicit durable decision/default policy, SURVEY must HOLD.
 //
 // This is JL's 260818 ruling made executable: "human not to approve, they to
 // break" — the RUN proceeds on `checked: ✅` alone, and a plan nobody objected
@@ -111,8 +111,9 @@ const PHASE_CYCLES = {
   CHECK: ['CHECK'],
 }
 const legalNextCycle = (route, nextCycle) =>
-  ['CLOSE', 'HOLD'].includes(route) ||
-  ((PHASE_CYCLES[route] || []).includes(String(nextCycle || '').toUpperCase()))
+  (['CLOSE', 'HOLD'].includes(route)
+    ? !String(nextCycle || '').trim()
+    : (PHASE_CYCLES[route] || []).includes(String(nextCycle || '').toUpperCase()))
 // CURRENT grammar comes first. The DRAFT/REVISE/COMPILE rows and edges remain
 // below only so the Python auditor can verify immutable historical receipts.
 const LEGAL = {
@@ -183,7 +184,7 @@ const REVIEW_RESULT = {
     status: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
     verdict: { type: 'string', enum: ['pass', 'revise', 'blocked'] },
     route: { type: 'string', enum: ROUTES },
-    next_cycle: { type: 'string', enum: ['PREPARE', 'SHAPE', 'SURVEY', 'LAND', 'EMBED', 'WRITE', 'CHECK'] },
+    next_cycle: { type: 'string', enum: ['PREPARE', 'SHAPE', 'SURVEY', 'LAND', 'EMBED', 'WRITE'] },
     reason: { type: 'string' },
     checked_version: { type: 'string' },
     reopens_promise: { type: 'boolean' },
@@ -313,7 +314,6 @@ for (let step = 1; step <= maxSteps; step++) {
         verdict: 'blocked',
         route: 'HOLD',
         requested_route: 'HOLD',
-        next_cycle: '',
         reopens_promise: false,
         reason: 'independent reviewer unavailable',
         artifacts: [],
@@ -400,7 +400,9 @@ for (let step = 1; step <= maxSteps; step++) {
       verdict,
       route,
       requested_route: review.route,
-      next_cycle: review.next_cycle || '',
+      ...(!['CLOSE', 'HOLD'].includes(route) && review.next_cycle
+        ? { next_cycle: review.next_cycle }
+        : {}),
       reopens_promise: false,
       reason,
       artifacts: [],
@@ -424,16 +426,18 @@ for (let step = 1; step <= maxSteps; step++) {
     `Perform exactly one ${current} phase for one Board Page.\n\n` +
     `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
-    `Read the ⚡ Brief at the top of haipipe-page-${phaseSkill} first; then load the canonical chain: haipipe-page, haipipe-page-workflow, the current phase, the Folder-owning workflow, the exact Page Type, phase policy, any selected Run workers, and the presenter. ` +
+    `Read the ⚡ Brief at the top of haipipe-page-${phaseSkill} first; then load the canonical chain: haipipe-page, haipipe-page-workflow, the current phase, the Folder-owning workflow, the exact Page Type, phase policy and material refs, and any selected Run workers. The Page surface already installs the presenter. ` +
     `Follow the phase boundary. CONTEXT, OUTLINE, and EVIDENCE share haipipe-plugin-outline but may write only their own records. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
     (mode === 'auto'
-      ? `MODE: auto — nobody is watching this run. A tick that is a person's ` +
-        `(approved: · verified · read: · accepted:) is DEFERRED, never waited on: ` +
-        `route FORWARD on the machine half (checked:, agents/approve-rules/) and ` +
-        `record the owed tick, per JL 260818 "human not to approve, they to break". ` +
-        `HOLD only for a MISSING INPUT you cannot obtain or a person's standing 🛑 — ` +
-        `never for an unticked gate alone. You still may not write a person's tick. `
+      ? `MODE: auto — nobody is watching this run. A review confirmation ` +
+        `(approved: · Verified/legacy verified · read: · accepted:) may be deferred ` +
+        `only where the declared gate policy allows; record the owed tick and never ` +
+        `write it. Decide is different: it chooses make, defer, or drop. Never turn ` +
+        `an unsigned Decide into make or route to LAND without a prior explicit ` +
+        `durable owner decision/default policy. HOLD at SURVEY when that choice is ` +
+        `missing. A CITE item also cannot route to EMBED as ready until its authored ` +
+        `Verified gate is signed. A person's standing 🛑 still wins. `
       : `MODE: copilot — a person is attending. An unticked person-reserved gate is ` +
         `a legitimate HOLD; stop and name which tick and which file. `) +
     `Return one phase receipt and suggest the next legal route. CONTENT owns Draft, Revise, Build, and Pre-check as internal WRITE movements, not separate phases.`,
@@ -466,7 +470,6 @@ for (let step = 1; step <= maxSteps; step++) {
       verdict: '',
       route: 'HOLD',
       requested_route: 'HOLD',
-      next_cycle: '',
       reopens_promise: false,
       reason: 'phase producer unavailable',
       artifacts: [],
@@ -541,7 +544,9 @@ for (let step = 1; step <= maxSteps; step++) {
     verdict: '',
     route,
     requested_route: producer.route,
-    next_cycle: producer.next_cycle || '',
+    ...(!['CLOSE', 'HOLD'].includes(route) && producer.next_cycle
+      ? { next_cycle: producer.next_cycle }
+      : {}),
     reopens_promise: false,
     reason,
     artifacts: producer.artifacts,

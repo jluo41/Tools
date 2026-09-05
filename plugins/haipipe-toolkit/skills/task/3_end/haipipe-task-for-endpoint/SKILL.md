@@ -3,8 +3,8 @@ name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.4"
-  last_updated: "2026-08-31"
+  version: "0.2.5"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -46,25 +46,24 @@ What this scaffolds
 tasks/bNN_<endpoint-block>/
 └── jNN_<endpoint-job>/
     ├── t01_<task_name>/
-    │   ├── t01_<task_name>.md       ← Page Face (`page-type: task`)
+    │   ├── t01_<task_name>.md       ← Page Face (`folder-kind: task`)
     │   ├── scripts/
     │   │   ├── <task_name>.py       ← exact copy of c_endpoint_nb.py
     │   │   └── config/
     │   │       └── r01_base.yaml    ← endpoint config
     │   ├── runs/
     │   │   └── r01_base.sh          ← papermill runner
-    │   ├── workflow/                ← Task Face: plan/report + inbox/
-    │   │   └── inbox/application/   ← immutable X2 candidates, when present
-    │   └── evidence/pagex/
-    │       └── t01_<task_name>.md   ← whole-Folder relationship list
+    │   └── workflow/                ← Task Face: plan/report + inbox/
+    │       └── inbox/application/   ← immutable X2 candidates, when present
     ├── results/t01_<task_name>/r01_base/      ← created at runtime
     └── notebooks/t01_<task_name>/r01_base.ipynb
 ```
 
-The Page Face declares `task-type: endpoint` and binds this Folder. An X2
-writer may add only a proposed packet under `workflow/inbox/application/` and
-a reciprocal whole-Folder PageX row; Plan/Build/Execute/Report remain owned by
-the endpoint Task.
+The Page Face declares `folder-kind: task`, `task-type: endpoint`, and
+`task: .`. An X2 writer may add only a proposed packet under
+`workflow/inbox/application/`; Plan/Build/Execute/Report remain owned by the
+endpoint Task. Cross-Folder evidence later enters a consumer through its
+Supporting/local Run graph, never through a scaffolded binding lane.
 
 
 Config YAML structure
@@ -195,8 +194,7 @@ Scaffold flow
 
   1. Identify project + block (letter C).
   2. Collect metadata (NN, name, model ref, 5 Fn names, _meta).
-  3. Create `t01_<task_name>/t01_<task_name>.md`, `workflow/`, and
-     `evidence/pagex/t01_<task_name>.md`.
+  3. Create `t01_<task_name>/t01_<task_name>.md` and `workflow/`.
   4. Copy `c_endpoint_nb.py` to `t01_<task_name>/scripts/<task_name>.py`
      (exact copy).
   5. Seed `scripts/config/r01_base.yaml` from `ref/config-seed.yaml`.
@@ -223,7 +221,6 @@ status:     ok | blocked | failed
 task_folder: <path to scaffolded task folder>
 run_name:   r01_base
 files:      [t01_<task_name>.md, scripts/<task_name>.py,
-             scripts/config/r01_base.yaml, runs/r01_base.sh,
-             evidence/pagex/t01_<task_name>.md]
+             scripts/config/r01_base.yaml, runs/r01_base.sh]
 next:       run the task, then /haipipe-end deploy <target>
 ```

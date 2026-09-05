@@ -1,101 +1,107 @@
-fn-block: Scaffold a New Block
+fn-block: Scaffold a New Task Block Board
 ==========================================
 
-A block holds related jobs that share context: one diagram narrative, one sbatch coordinator, one group letter.
+A Block is the Board over one large task topic. It contains related Jobs;
+their Tasks are the Board Pages and their Runs remain execution records.
 
-Output: `examples/{PROJECT_ID}/tasks/bNN_{group_name}/` (b = the level letter; NN = next free index in pipeline order).
+Output: `examples/{PROJECT_ID}/tasks/bNN_{block_name}/`.
 
 
-Step 1 — Identify project (auto-cascade if missing)
-----------------------------------------------------
+Step 1 - Identify the project
+-----------------------------
 
 Resolve the parent project:
 
-  - explicit `--project-id <PROJECT_ID>`           → use it.
-  - cwd inside `examples/Proj*/`                   → use it.
-  - missing
-      AUTO mode  → if `--project-id` given but no folder exists,
-                   scaffold it via Skill("haipipe-project",
-                   args="<PROJECT_ID> --auto"), then continue here.
-                   If no project_id at all → status: blocked,
-                   reason: "no parent project; pass --project-id or cd in."
-      interactive → ASK which project (or scaffold one via /haipipe-project).
+- explicit `--project-id <PROJECT_ID>` -> use it;
+- cwd inside `examples/Proj*/` -> use it;
+- project id present but folder missing in AUTO mode -> scaffold it through
+  `haipipe-project`, then continue;
+- no project can be resolved -> block and request the project id.
 
 
-Step 2 — Collect metadata
---------------------------
+Step 2 - Name and index the Block
+---------------------------------
 
-  Group letter (G)    A / B / C / D / E / F / R / X  (DEFAULTS — the
-                      project's existing scheme always wins; SKILL.md top NOTE)
-                      A = fit              (training: pretraining, finetuning)
-                      B = eval             (evaluation, inference, scoring)
-                      C = display          (paper figures, paper tables)
-                      D = data-pipeline    (Stage 1-4 builders)
-                      E = individual       (individual-centric query / visualization)
-                      F = agent            (LLM agent / prompt task)
-                      R = raw              (Stage 0 extraction; embedded rawstore
-                                            groups often use A00_rawstore_<cohort>)
-                      X = algo-dev demo    (paired Track A smoke-test;
-                                            X_algo/ — typically one per project)
+Use the next free two-digit pipeline index, starting at 01 with no gap at
+scaffold time. The name is snake_case `<noun>_<qualifier>` and passes the
+stranger test: a reader can tell what thing and which one from the folder name.
 
-  2-digit index (NN)  next free index within letter (no gaps; start 01).
-                      Exception: `X_algo/` has no NN (singleton per project).
+Compose `bNN_{block_name}`, for example:
 
-  snake_case name     <noun>_<qualifier>, passing the STRANGER TEST (hierarchy.md
-                      "Naming"): a reader who never opened the folder reads WHAT
-                      THING and WHICH ONE off the name. e.g. physician_ground_truth,
-                      llm_recommendation_runs, paper_figures. ⛔ a shape word alone
-                      (data, analysis, pool, rank) — REFUSE and ask "what thing?".
+- `b01_physician_ground_truth`
+- `b02_llm_recommendation_runs`
+- `b05_paper_display`
 
-  Compose: `bNN_{group_name}` (e.g. `b01_physician_ground_truth`, `b02_llm_recommendation_runs`; the old letter form `A01_pretraining_clm` is legacy —
-                                       `D01_data_wellreadi`,
-                                       `C01_paper_figures`),
-           or `X_algo` (no NN, no name suffix).
-
-  Check existing groups under `tasks/` to avoid index collision.
-
-  Letters are DEFAULTS, not type indicators — never infer task-type
-  from the letter. The default scheme lives in `../SKILL.md` top NOTE;
-  the project's own scheme always wins.
+The `b` prefix carries level only. Never infer a Task type from the Block
+index or resurrect the retired A/B/C/D type-letter scheme.
 
 
-Step 3 — Create skeleton
--------------------------
+Step 3 - Create the Board skeleton
+----------------------------------
+
+Create exactly:
 
 ```
-tasks/bNN_{group_name}/
-├── sbatch/
-│   └── env.sh                ← seed with project env vars
-└── (no README.md)
+tasks/bNN_{block_name}/
+├── board.md
+└── diagram/                 optional until a shared narrative is authored
 ```
 
-If the group is **cohesive** (multiple related jobs coming): also create `diagram/` and author via `/diagram-ascii`:
+Start `board.md` from `ref/block-board-template.md` and set:
 
-```
-01-overview.txt    Group purpose / scope / how tasks relate
-02-tasks.txt       Table | Task | Type | Status | Notes |  (seed empty)
-03-progress.txt    Dated log, newest on top, seeded with
-                   "{YYMMDD} — group scaffolded"
-04-design.txt      Shared design decisions across the group
-                   (architecture choice, eval suite, figure style, ...)
+```yaml
+board-kind: task-block
 ```
 
-Then bundle:
+The Task tree is the membership and default-order authority:
+
 ```
-/diagram-ascii-canvas {GROUP}/diagram/  →  group.excalidraw
+Block Board -> Job Group -> Task Page -> Run execution record
 ```
 
+`## Pages` may contain Job headings and introductions without restating Task
+rows. If an explicit Task order is needed, list the full relative Page path:
 
-Step 4 — Optionally proceed to first job
--------------------------------------------------
+```
+j01_job_name/t01_task_name/t01_task_name.md
+```
 
-Seed the first task within this group via the orchestrator's job scaffold: `Skill("haipipe-task", args="job <type> ...")`
-(SKILL.md Step 3a dispatches to the type specialist).
+Do not use a bare Task filename: two Jobs may legitimately contain the same
+Task name.
+
+When the Block is cohesive and its shared narrative is ready, create
+`diagram/` through `diagram-ascii` with the canonical overview, task map,
+progress, and design records, then bundle the canvas. Do not invent diagram
+content merely to fill the folder.
+
+
+Step 4 - Optionally create the first Job
+----------------------------------------
+
+Proceed through the Task orchestrator's Job scaffold. The Job, not the Block,
+owns `sbatch/`, shared `src/`, generated `results/`, and its Tasks.
+
+
+Step 5 - Check the new Board
+----------------------------
+
+Run both contracts before reporting the scaffold complete:
+
+```bash
+python3 Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/cli/check.py <block>
+python3 Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/check_task_tree.py <block>
+```
+
+The Board check must be clean immediately. A container-only Block may also be
+clean in the Task-tree checker; run the checker again after the first Job and
+Task are scaffolded so S18 and the execution-shape rows are exercised.
 
 
 MUST NOT
----------
+--------
 
-- Create `README.md` in the group folder.
-- Skip `sbatch/env.sh` — every group needs at least the env stub.
-- Author diagram .txt content inline (always via `/diagram-ascii`).
+- Create `README.md` in the Block.
+- Create Block-level `sbatch/`, `src/`, `scripts/`, `results/`, or workflow
+  code. Runnable material belongs to a Job or Task.
+- Copy the Task tree into `board.md` merely to make Tasks visible.
+- Turn a Run into a Board Page.

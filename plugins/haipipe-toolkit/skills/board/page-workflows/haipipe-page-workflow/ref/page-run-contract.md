@@ -31,7 +31,7 @@ related_context:               # derived from this Page's Files for start_phase
 constraints:                   # settled rulings that no phase may reopen silently
   - Page is not a configuration
 page_ruling: none              # none | domain-gate | local; resolved from the
-                               # Folder's owning phase; omit only for legacy Pages
+                               # Page Face owner; omit only for legacy Pages
 human_gate:
   required: false              # controller hardens domain-gate/local, plus a
   rule: all Aims met or explicitly held   # legacy Page in auto; see § below
@@ -45,27 +45,28 @@ Required fields are `run_id`, `board`, `page`, `start_phase`, and `intent`.
 
 ## 🔀 `mode` · copilot and auto are ONE rule set read two ways (260821)
 
-The selected person-reserved ticks are identical in both modes, and no machine
-writes one in either. What changes is what happens while a tick is UNANSWERED:
+The person-reserved fields are identical in both modes, and no machine writes
+one in either. Waiting behavior differs only for review confirmations; a
+branching choice still blocks when it has no durable answer:
 
 ```text
   🧑 copilot   the human half BLOCKS.  A person is here; an unticked gate is a
                legitimate HOLD, and the receipt names which tick and which file.
-  🤖 auto      the human half DEFERS.  The loop keeps moving on the machine half
-               (`checked:`, agents/approve-rules/) and the debt accumulates on
-               the ledger, handed over once at the end instead of interrupting
-               once per selected tick.  `cli/pagephase.py <page-dir> --owed`
+  🤖 auto      review confirmation may DEFER. The loop may keep moving on the
+               machine half (`checked:`, agents/approve-rules/) and the debt
+               accumulates on the ledger. A semantic branch choice never
+               defers into an invented route. `cli/pagephase.py <page-dir> --owed`
 ```
 
 This is JL's 260818 ruling made executable — *"human not to approve, they to
-break"*: the RUN proceeds on `checked: ✅` alone, and a plan nobody objected to is
-not blocked. A person's 🛑 still outranks everything and still stops the run in
-either mode.
+break"*: where policy allows, the RUN proceeds on `checked: ✅` while a review
+confirmation remains owed. That rule never chooses a SURVEY branch. A person's
+🛑 still outranks everything and stops the run in either mode.
 
-**AUTO DEFERS PLUGIN TICKS; `page_ruling` OWNS THE CLOSING GATE.** `approved:`
-`verified` `read:` and `accepted:` each have a rules file under
+**AUTO MAY DEFER REVIEW TICKS; `page_ruling` OWNS THE CLOSING GATE.** `approved:`
+`Verified`/legacy `verified`, `read:` and `accepted:` each have a rules file under
 `agents/approve-rules/`, so an approver can establish everything around them.
-The owning workflow phase supplies one of three policies:
+The Page Face owner supplies one of three policies:
 
 ```text
   none         no owner RULING; the Page loop adds no gate
@@ -80,15 +81,22 @@ packet because the deterministic auditor asserts that every receipt's
 `human_gate.required` equals the packet's. A hardened gate the echoed packet did
 not know about would fail the audit on its own receipt.
 
+`Decide` is not a review tick. It chooses `make`, `defer`, or `drop`, changes
+the route, and therefore cannot be pushed onto the owed ledger as though work
+had been selected. Auto HOLDs at SURVEY on an unsigned Decide unless a prior
+explicit durable owner decision/default policy supplies the branch. It never
+turns an owed Decide into `make`.
+
 An auto run may therefore reach HOLD **by design, not by failure** when a required
-owner or caller gate remains open. A `page_ruling: none` Folder with no separately
+owner or caller gate remains open, when CITE verification is required before
+EMBED, or when Decide is unresolved. A `page_ruling: none` Folder with no separately
 declared gate may CLOSE after its mechanical and semantic checks pass.
 
 `mode` is echoed on every run result, so a stored receipt can never be read
 without knowing which reading of the ticks produced it.
 The caller resolves the phase-owned Folder contract before dispatch:
 `workflow/phase.yaml current.folder-kind` for an in-place Folder, then Page
-`folder-kind:` for a fixed identity. A legacy Page Type/filename is fallback
+`folder-kind:` for a fixed identity. A legacy Page-Type/filename route is fallback
 only. A missing source, malformed current block, conflicting kind, unknown
 policy, or ambiguous authority is a named HOLD, never a guessed input.
 
@@ -256,15 +264,14 @@ from CONTENT  → CONTEXT | CONTENT | OUTLINE | EVIDENCE | CHECK | HOLD
 from CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 ```
 
-**The planning/evidence pause.** A `HOLD` from CONTEXT, OUTLINE, or EVIDENCE while
-the packet's human gate is required and the step's own gate is still open
-(`status: pending`) is a PAUSE between passes of one converging round, not a
-terminal: the next receipt's phase must be legal FROM the paused phase, and
-`receipt-after-terminal` does not fire, and a cold CHECK may follow the pause directly: the judge reads and routes any version, it produces nothing. `CLOSE` is always terminal, and a HOLD
-outside the OUTLINE part, or with a settled gate, stays terminal. Because one round
-appends one receipt per pass, a packet's `max_steps` must be declared with the
-loop in mind: it bounds the passes a run may spend, so `1` fits only a
-single-pass errand, never an OUTLINE-part round.
+**HOLD is terminal in the current controller.** It returns one named unresolved
+gate, missing input, tool failure, concurrency mismatch, or exhausted limit;
+continuation starts a new Page RUN at the receipt's named phase/cycle. The
+auditor retains one narrow compatibility exception for pre-current receipts:
+a pending CONTEXT/OUTLINE/EVIDENCE HOLD that has neither `cycle` nor
+`next_cycle` may be followed by another historical receipt. The executable
+controller never emits that shape. A current HOLD always omits `next_cycle`
+and no receipt follows it.
 
 Compatibility rows for DRAFT, REVISE, and COMPILE remain in the executable
 `LEGAL` table and auditor only because removing them would make stored receipts
@@ -292,7 +299,7 @@ producer     one agent for CONTEXT, OUTLINE, EVIDENCE, or CONTENT; performs
              exactly one phase and may not approve its own version
 builder      rebuilds, runs mechanical checks, and identifies the version
 judge        performs CHECK read-only against that exact version
-human        supplies any ruling required by the Page Type or local contract
+human        supplies any ruling required by the Page Face owner
 ```
 
 The producer, builder, and judge for one version must have distinct actor
@@ -431,7 +438,7 @@ would change the just-checked version. CONTEXT owns the generated context
 projection; OUTLINE owns its versioned plan and route design; EVIDENCE owns
 allocated Run ids, local Result pointers, and embedded evidence bindings;
 CONTENT owns Page prose and declared delivery outputs.
-Terminal CHECK evidence stays in the audit bundle or the Page Type's declared
+Terminal CHECK evidence stays in the audit bundle or the Page Face owner's declared
 review surface.
 
 ## What the audit can prove

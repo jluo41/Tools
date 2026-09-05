@@ -4,24 +4,27 @@ description: >-
   The task-only Page Type for one CONSUMER-NEUTRAL Insight Page on the
   Task/Insights Board: a whole D→I→K→W chain plus reusable findings, carrying
   no downstream stake. This is where dataset-first exploration lives; Paper
-  and Application consumers borrow a settled chain through PageX. Trigger:
+  and Application consumers reuse a settled chain through Supporting Run
+  Results. Trigger:
   task insight, DIKW page, dataset exploration, insights board, page-type
   insight.
 metadata:
-  version: "0.6.4"
-  last_updated: "2026-08-31"
+  version: "0.7.0"
+  last_updated: "2026-09-04"
   outline:
     mode: fixed
     source: "this SKILL.md"
     shape: "Origin → Question/Scope → Sources → D → I → K → W → Reusable Findings"
-  parent: haipipe-page-for-task
+  parent: haipipe-page
 ---
 
 # /haipipe-page-for-insight · turn evidence into a reusable D→I→K→W chain
 
-Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load
-`haipipe-plugin-probe` when inspecting Task/Discovery sources and
-`haipipe-plugin-evidence/ref/pagex.md` when reusing accepted Page material.
+Load `haipipe-page`, `haipipe-page-workflow`, then this contract. Load
+`haipipe-plugin-outline/ref/item-table.md` and the current Page phase material
+when mapping Task/Discovery Supporting Run Results or making local Evidence
+Items ready. This type inherits directly from the shared Page Face; its Task
+family location names its creator, not a second parent contract.
 
 ## Where this type is used, and where it is not
 
@@ -36,7 +39,8 @@ Load `haipipe-page`, then `haipipe-page-for-task`, then this contract. Load
 
 An Application decomposes the chain because its levels get reused across questions and refreshed on different clocks. This Board keeps them in one page because a consumer-neutral exploration has no roster to reassemble the chain for it, and one page is how it stays readable.
 
-An Application borrows a settled chain from here through PageX rather than reopening the question locally.
+An Application borrows a settled chain from here through an Evidence Item's
+Supporting Run Result rather than reopening the question locally.
 
 What it borrows is an unsigned, consumer-neutral Reusable Finding. RF is not a
 Design Handoff, has no `serves:` authority, and may not bind directly to an
@@ -46,14 +50,14 @@ Folder.
 
 **Ownership, settled 260820.** This contract ships under `task/page-types/` because the task layer is now its only creator, which resolves the question QI0 raised while it governed both layers.
 
-## Inherit and replace
+## Base and specialization
 
 ```text
-INHERIT from Task Page              REPLACE for Insight Page
-source/run binding                  one-job grain → one neutral insight question
-every shown number names a run      Why/Method/Result grammar → D→I→K→W
-rerun reopens dependent reading     task verdict → Reusable Findings
-human reads the result              one source → several Task/Discovery/Page sources allowed
+INHERIT from haipipe-page            SPECIALIZE for Insight
+shared Page frame                    one neutral insight question
+CONTEXT→OUTLINE→EVIDENCE→CONTENT     fixed D→I→K→W Content grammar
+Supporting/local Run evidence graph several Task/Discovery/Page sources
+version-bound CHECK and reopening    Reusable Findings
 ```
 
 Do not inherit a desired answer or downstream stake. A later Paper or
@@ -79,8 +83,9 @@ One Page covers one answerable insight question. Split when two questions can se
 ```text
 Task/Discovery Folder   executes or gathers source evidence
 Task QA / source Page   says what data exists, at what grain, and how fresh
+Supporting Run Result  carries the cross-Folder evidence edge
 Task Insight Page       owns traceable D→I→K→W and reusable findings
-Paper / Application    PageX-borrows a settled finding and decides its own use
+Paper / Application    reuses the exact settled Result and decides its own use
 ```
 
 This Page may name source population and analysis context, but never a
@@ -128,29 +133,42 @@ source/run → D<n> → I<n> → K<n> → W<n> → RF<n> Reusable Finding
 
 No level cites a later level as evidence. Preserve null, negative, and contradictory results. A contextual W may be useful and still fail when no K parent warrants it.
 
-## Probe and PageX
+## Supporting and local Runs
 
 ```text
-Task / Discovery Folder ─── Probe ──▶ Task Insight Page
-accepted existing Page ──── PageX ──▶ Task Insight Page
-settled Reusable Finding ─── PageX ──▶ any future consumer
+Task / Discovery Folder ── Supporting Run Result ─┐
+accepted governed source ── frozen Local Input ───┼─▶ local Evidence Item Run
+                                                   └─▶ ready D/I/K/W evidence
+settled Reusable Finding ── Supporting Run Result ───▶ future consumer
 ```
 
-On its board this Page Type inspects Task/Discovery sources through Probe. A consuming Paper or Application borrows a settled chain through PageX and never copies this Page's cards.
+SURVEY records every source as a full Supporting Run id or a governed local
+source in the frozen Local Input. LAND completes the Supporting Runs and one
+local Page Evidence Item Run per make-item. A consuming Paper or Application
+reuses the exact settled Result through its own Supporting/local Run graph and
+never copies this Page's records.
 
-For an Application, that PageX edge terminates at its I5 bridge Folder, not at
-Design. The Task Page supplies pre-climbed DIKW evidence; Application I1/I5 own
-the commission, applicability judgment, design consequence, and signature.
+For an Application, the reused evidence terminates at its I5 bridge Folder,
+not at Design. The Task Page supplies pre-climbed DIKW evidence; Application
+I1/I5 own the commission, applicability judgment, design consequence, and
+signature.
 
 ## Runtime shape
 
 ```text
 <task-board>/I<NN>-<slug>/                the Task/Insights Board, never an Application board
 ├── I<NN>-<slug>.md
-└── evidence/
-    ├── probe/   Task/Discovery cards and bindings
-    ├── pagex/   accepted cross-Folder inputs
-    └── display/ optional evidence views
+├── outline/
+│   ├── <stem>-context.md
+│   ├── <stem>-plan-v<N>.md
+│   ├── <stem>-evidence-items.md
+│   └── evidence/
+│       ├── supporting-runs/ generated lineage pointers
+│       ├── materials/       frozen governed source captures
+│       ├── bibex/           accepted CITE Results
+│       └── display/         accepted DISPLAY Results
+├── runs/                                local Page Run tickets, when commissioned
+└── results/                             local Page Results
 ```
 
 The Page owns interpretation, not source code or raw results.
@@ -158,15 +176,15 @@ The Page owns interpretation, not source code or raw results.
 
 ## Workflow and staleness
 
-Run the full shared workflow when needed:
+Run the full shared workflow:
 
 ```text
-SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED (the OUTLINE part) → WRITE → CHECK (the DRAFT part)
+CONTEXT → SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED → WRITE → CHECK
 ```
 
-Changing a named run/source reopens dependent D/I/K/W/RF rows. A consumer's
-context change does not rewrite this Page; that consumer must recheck the
-PageX binding's applicability. A changed RF version stales every consuming
+Changing a named Run or source reopens dependent D/I/K/W/RF rows. A consumer's
+context change does not rewrite this Page; that consumer must recheck its own
+Supporting/local Result binding. A changed RF version stales every consuming
 binding until it is rechecked.
 
 ## Closing checks
@@ -182,7 +200,8 @@ binding until it is rechecked.
 - No RF claims a signature, `serves:` decision, Design Handoff, or direct
   Design authority.
 - Source reruns have not left a settled but stale reading.
-- A fresh consumer can use Division 8 through PageX without opening Task/Discovery sources.
+- A fresh consumer can reuse Division 8 through a full Supporting Run Result
+  without opening Task/Discovery source folders.
 - Division 8 reads correctly to a consumer that did not exist when it was written.
 
 This variant owns no scripts.

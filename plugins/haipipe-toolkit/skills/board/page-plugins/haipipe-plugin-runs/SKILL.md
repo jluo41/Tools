@@ -2,8 +2,9 @@
 name: haipipe-plugin-runs
 description: >-
   The Runs presenter of a Folder: one ⚙️ surface over authored Run
-  tickets and their paired generated Results. Its default overview table groups
-  Runs as Execution, Discovery, Page, or Labeling; Page divides into Evidence
+  tickets and their paired generated Results. Its neutral overview schema groups
+  Runs as Execution, Discovery, Page, or Labeling when the owning Folder surface
+  exposes those families; Page divides into Evidence
   Item, Division Writing, and Display, while Labeling groups its independently
   closable operations by P0-P5 episode. A second, collapsible Scripts region shows freestyle
   implementation files when present. Use for Discovery Paper Runs, Task Page
@@ -12,7 +13,7 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.9.5"
+  version: "0.9.7"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -213,12 +214,12 @@ BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
   exist; their absence does not invalidate a Run, and unused supporting files
   do not invalidate Scripts.
 
-## 🗺 Status · 🟢 live 260902
+## 🗺 Status · 🟢 live 260904
 
 `live/runs.py` and `85-plugin-runs.js` serve the read-only Board Page view.
-The current surface is intentionally local-page-only; Task, Discovery, and
-Labeling workflow owners remain responsible for their own allocation and run
-surfaces. The 📂 Folder tab remains the raw filesystem inventory.
+The surface resolves both Folder-local and canonical Job-backed Task pairs;
+Discovery and Labeling workflow owners remain responsible for their own custom
+allocation surfaces. The 📂 Folder tab remains the raw filesystem inventory.
 
 ## 📂 Files
 

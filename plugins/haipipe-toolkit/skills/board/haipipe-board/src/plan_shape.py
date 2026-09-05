@@ -1,8 +1,10 @@
 """`plan-shape-off-type` · does a plan obey its Folder Page Face?
 
-Phase-owned Folder contracts and legacy Page Types declare a mode in an
-`outline:` block under `metadata:`. Workflow phases resolve first; Page-Type
-folders remain the compatibility fallback for families not yet migrated.
+Phase-owned Folder contracts, canonical family owners, and legacy Page Types
+declare a mode in an `outline:` block under `metadata:`. Workflow phases
+resolve first; a canonical family owner may retain a legacy key without
+shipping another Page-Type skill; Page-Type folders remain the fallback for
+families not yet migrated.
 
 NO `page-type:` KEY IS THE FLEXIBLE DEFAULT, which is 247 of this repo's 274
 pages: those owe the base section order and nothing more, so this check returns
@@ -43,6 +45,27 @@ def folder_kind(page_src: pathlib.Path) -> str:
     return m.group(1) if m else ""
 
 
+def _canonical_owners(kind: str, skills_root: pathlib.Path) -> list[pathlib.Path]:
+    """Return declared canonical family owners for one Folder/legacy key."""
+    found = []
+    for path in sorted(skills_root.glob("*/haipipe-*/SKILL.md")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        front = text.split("---", 2)
+        if len(front) != 3:
+            continue
+        owner = re.search(
+            r"(?m)^  folder_owner:\s*['\"]?canonical['\"]?\s*$", front[1]
+        )
+        current = re.search(r"(?m)^  folder_kind:\s*['\"]?([^'\"\s]+)", front[1])
+        legacy = re.search(r"(?m)^  legacy_page_type:\s*['\"]?([^'\"\s]+)", front[1])
+        if owner and (
+            (current and current.group(1) == kind)
+            or (legacy and legacy.group(1) == kind)
+        ):
+            found.append(path)
+    return found
+
+
 def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     """Read Page-Face outline metadata from its semantic owner.
 
@@ -53,8 +76,9 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     phase = resolve_folder_contract(
         skills_root, folder_kind=kind, legacy_page_type=kind
     )
-    hits = ([phase.path] if phase else
-            list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
+    canonical = _canonical_owners(kind, skills_root)
+    hits = ([phase.path] if phase else canonical
+            or list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
             # paper ships its types as journey-phase skills since 260831
             or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
             or list(skills_root.glob("paper/haipipe-paper-%s/SKILL.md" % kind)))
@@ -141,27 +165,26 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
     """Return findings when a plan violates its Folder's Page Face shape."""
     current = folder_kind(page_src)
     legacy = page_type(page_src)
-    current_contract = (
-        resolve_folder_contract(skills_root, folder_kind=current)
-        if current else None
-    )
-    kind = current if current_contract else legacy
+    kind = current or legacy
     if not kind:
         return []                      # the flexible default: nothing to check
     decl = type_outline(kind, skills_root)
-    key_name = "folder-kind" if current_contract else "page-type"
+    key_name = "folder-kind" if current else "page-type"
     if decl.get("missing"):
         return ["%s `%s` names no Page Face contract on disk" % (key_name, kind)]
     if decl.get("no_block"):
         return ["%s `%s` declares no `outline:` block" % (key_name, kind)]
 
-    if current_contract and legacy:
-        legacy_contract = resolve_folder_contract(
-            skills_root, legacy_page_type=legacy
-        )
-        if legacy_contract and legacy_contract.path != current_contract.path:
+    if current and legacy:
+        legacy_decl = type_outline(legacy, skills_root)
+        if legacy_decl.get("missing"):
             return [
-                "folder-kind `%s` and legacy page-type `%s` resolve to different phases"
+                "folder-kind `%s` is authoritative but legacy page-type `%s` "
+                "names no Page Face contract" % (current, legacy)
+            ]
+        if legacy_decl.get("type_path") != decl.get("type_path"):
+            return [
+                "folder-kind `%s` and legacy page-type `%s` resolve to different Page Face owners"
                 % (current, legacy)
             ]
 

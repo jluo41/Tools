@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Split and recompose a Board Excalidraw scene as linked Group/Page sources.
 
-The legacy scene stays untouched. ``split`` writes only new lowercase ``draw/``
-directories beside each Page group. A Group scene owns its own elements and an
-import manifest; every Page scene remains an ordinary, independently editable
-Excalidraw file.
+The legacy scene stays untouched. ``split`` writes a Group's relation scene to
+its lowercase ``draw/`` folder and each folded Page's own source to
+``studio/draw/``. A Group scene owns its own elements and an import manifest;
+every Page scene remains an ordinary, independently editable Excalidraw file.
 
     python3 cli/draw.py split <board>             # read-only plan
     python3 cli/draw.py split <board> --apply     # create new draw/ sources
@@ -104,6 +104,16 @@ def write_scene_exclusive(path: Path, scene: dict) -> None:
         raise
 
 
+def ensure_parent_dirs(path: Path) -> list[Path]:
+    """Create a target's missing parent chain and return it parent-first."""
+    missing, cursor = [], path.parent
+    while not cursor.exists():
+        missing.append(cursor)
+        cursor = cursor.parent
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return list(reversed(missing))
+
+
 def group_id(label: str) -> str:
     token = label.split("·", 1)[0].strip()
     if not re.fullmatch(r"[A-Za-z0-9-]+", token):
@@ -122,8 +132,8 @@ def board_inventory(board: Path):
         gid = group_id(label)
         parent = Path(page["file"]).parent
         # A folded page owns its folder (`<name>/<name>.md`, JL 260815), so its
-        # GROUP folder is one level up, and its scenes live in its own `draw/`
-        # plugin rather than the group's.
+        # GROUP folder is one level up, and its scene lives in its own
+        # `studio/draw/` lane rather than the group's relation scene.
         if parent.name == Path(page["file"]).stem:
             page["dir"] = parent
             parent = parent.parent
@@ -413,12 +423,13 @@ def split_plan(board: Path, source_path: Path):
             else:
                 selected, local = [], []
                 origin = {"x": 0, "y": 0}
-            # A folded page's scene lands in its own draw/ plugin; a flat
+            # A folded page's scene lands in its own studio/draw/ lane; a flat
             # page's stays beside the group scene. The manifest's `source` is
             # relative to the group draw dir either way, so verify/compose/
             # sync resolve both forms through the same join.
             page_name = f"{page['id']}.excalidraw"
-            page_draw = (board / page["dir"] / "draw") if page.get("dir") else draw_dir
+            page_draw = (board / page["dir"] / "studio" / "draw"
+                         if page.get("dir") else draw_dir)
             page_path = page_draw / page_name
             page_extension = {
                 "schema": SCHEMA,
@@ -471,8 +482,7 @@ def split(board: Path, source_path: Path, apply: bool) -> int:
     try:
         for path, scene in outputs:
             if not path.parent.exists():
-                path.parent.mkdir(parents=True, exist_ok=False)
-                created_dirs.append(path.parent)
+                created_dirs.extend(ensure_parent_dirs(path))
             write_scene_exclusive(path, scene)
             created.append(path)
     except Exception as exc:
@@ -521,7 +531,8 @@ def sync_plan(board: Path):
         additions = []
         for page in missing:
             page_name = f"{page['id']}.excalidraw"
-            page_draw = (board / page["dir"] / "draw") if page.get("dir") else group_path.parent
+            page_draw = (board / page["dir"] / "studio" / "draw"
+                         if page.get("dir") else group_path.parent)
             page_path = page_draw / page_name
             if page_path.exists():
                 raise DrawError(
@@ -555,11 +566,14 @@ def sync(board: Path, apply: bool) -> int:
         print("dry run; add --apply to add only the missing linked sources")
         return 0
     created = []
+    created_dirs = []
     replaced = []
     try:
         for group_path, original, updated, additions in plans:
             original_bytes = group_path.read_bytes()
             for page_path, page_scene in additions:
+                if not page_path.parent.exists():
+                    created_dirs.extend(ensure_parent_dirs(page_path))
                 write_scene_exclusive(page_path, page_scene)
                 created.append(page_path)
             if group_path.read_bytes() != original_bytes:
@@ -571,6 +585,11 @@ def sync(board: Path, apply: bool) -> int:
             write_scene_atomic(group_path, original)
         for page_path in reversed(created):
             page_path.unlink(missing_ok=True)
+        for directory in reversed(created_dirs):
+            try:
+                directory.rmdir()
+            except OSError:
+                pass
         raise DrawError(f"sync rolled back after write failure: {exc}") from exc
     print(f"wrote : {count} new Page source(s); updated {len(plans)} manifest(s)")
     return 0

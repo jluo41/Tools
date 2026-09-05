@@ -8,8 +8,10 @@ workflow remains the only writer of labeling events and receipts.
 from __future__ import annotations
 
 import html
+import importlib.util
 import json
 import re
+from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
@@ -112,9 +114,85 @@ def _job_root(page_src: Path) -> tuple[Path, str]:
     return lane, location_note
 
 
+@lru_cache(maxsize=1)
+def _canonical_job_module():
+    """Load the subjective-label writer's read-only status API.
+
+    The Board engine and the domain plugin are deliberately separate plugin
+    roots.  Loading the small, dependency-stable ``job.py`` module by path
+    keeps the presenter from maintaining a second checksum implementation and
+    avoids making either plugin depend on the other's Python package layout.
+    """
+    here = Path(__file__).resolve()
+    candidate = next(
+        (parent / "subjective-label" / "engine" / "job.py"
+         for parent in here.parents
+         if (parent / "subjective-label" / "engine" / "job.py").is_file()),
+        None,
+    )
+    if candidate is None:
+        return None
+    spec = importlib.util.spec_from_file_location(
+        "haipipe_subjective_label_job_for_board", candidate
+    )
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _canonical_status(root: Path) -> dict | None:
+    """Return the canonical P0 frontier when this is a real v2 job.
+
+    Older field-test fixtures often contain only placeholder P0 files.  They
+    remain readable through the compatibility presenter, but once a canonical
+    receipt exists the Board must defer to the domain engine and surface its
+    checksum/receipt failures instead of guessing from file presence.
+    """
+    if not any(
+        (root / rel).is_file()
+        for rel in ("gates/p0-contract/receipt.json", "gates/g0/receipt.json")
+    ):
+        return None
+    try:
+        module = _canonical_job_module()
+        if module is None:
+            return {
+                "phase": "P0",
+                "missing": [],
+                "integrity_errors": ["canonical subjective-label status API unavailable"],
+                "meaning_confirmed": False,
+                "meaning_receipt_valid": False,
+                "g0_integrity": False,
+                "g0_receipt_valid": False,
+                "next_action": "repair canonical status API before proceeding",
+            }
+        return module.status(root)
+    except Exception as error:  # the surface must fail closed, not crash the Board
+        return {
+            "phase": "P0",
+            "missing": [],
+            "integrity_errors": [f"canonical status could not be derived: {type(error).__name__}"],
+            "meaning_confirmed": False,
+            "meaning_receipt_valid": False,
+            "g0_integrity": False,
+            "g0_receipt_valid": False,
+            "next_action": "repair canonical P0 status before proceeding",
+        }
+
+
 def inspect(page_src: Path) -> dict:
     root, location_note = _job_root(page_src)
     p0 = {rel: (root / rel).is_file() for rel in P0_FILES}
+    canonical = _canonical_status(root)
+    if canonical:
+        # Once a canonical receipt exists, the domain engine—not this view's
+        # file-presence heuristics—owns P0 checksum and receipt truth.
+        p0 = {
+            rel: bool((canonical.get("p0_files") or {}).get(rel, present))
+            for rel, present in p0.items()
+        }
     round_dirs = sorted(
         (p for p in (root / "rounds").glob("round_*") if p.is_dir()),
         key=lambda p: p.name,
@@ -164,6 +242,9 @@ def inspect(page_src: Path) -> dict:
         and _yaml_child_scalar(config, "meaning_receipt", "human_id") == human_id
         and _yaml_child_scalar(config, "meaning_receipt", "confirmed_at")
     )
+    if canonical:
+        meaning_confirmed = bool(canonical.get("meaning_confirmed"))
+        meaning_receipt_valid = bool(canonical.get("meaning_receipt_valid"))
     missing_human = all(p0.values()) and not human_id
     authority_hold = missing_human or simulation or "simulation" in authority_mode.lower() \
         or (creates_gold and not _truth(creates_gold))
@@ -184,12 +265,25 @@ def inspect(page_src: Path) -> dict:
                       if latest_round else "P0 Contract artifacts")
 
     missing = [rel for rel, present in p0.items() if not present]
+    canonical_integrity_errors = [
+        str(error) for error in (canonical or {}).get("integrity_errors", [])
+    ]
     meaning_open = (all(p0.values()) and not authority_hold and bool(meaning_value)
                     and not meaning_receipt_valid)
+    if canonical and (
+        canonical_integrity_errors
+        or not canonical.get("meaning_receipt_valid")
+        or not canonical.get("g0_receipt_valid")
+    ):
+        phase_i = 0
     if meaning_open and not checkpoints and not round_dirs:
         phase_i = 0
     if not root.exists():
         next_action = "P0 Contract · create the page-local labeling/ job through /subjective-label"
+    elif canonical_integrity_errors:
+        next_action = "P0 Contract · " + str(
+            canonical.get("next_action") or "repair canonical P0 integrity"
+        )
     elif missing:
         next_action = "P0 Contract · supply: " + ", ".join(missing)
     elif authority_hold:
@@ -197,6 +291,8 @@ def inspect(page_src: Path) -> dict:
         next_action = ("HOLD · owner: one identified real human semantic authority + "
                        "Checkpoint Keeper · preserve: %s · next: start a new "
                        "real-authority Building lineage%s" % (checkpoint_rel, target))
+    elif canonical and not canonical.get("meaning_receipt_valid"):
+        next_action = "P0 Contract · the identified human must confirm the current meaning"
     elif meaning_open:
         next_action = ("P0 Contract · the identified human must confirm the target, "
                        "class meanings, regions, uncertainty, and unresolved disposition")
@@ -221,10 +317,14 @@ def inspect(page_src: Path) -> dict:
     else:
         next_action = "COMPLETE candidate · rehash G6 and verify the audit receipt before claiming D*"
 
-    if missing:
+    if canonical_integrity_errors:
+        first_failed = "G0 Contract integrity · " + "; ".join(canonical_integrity_errors[:3])
+    elif missing:
         first_failed = "G0 Contract → Round · missing " + ", ".join(missing)
     elif missing_human:
         first_failed = "G0 Contract → Round · " + authority_reason
+    elif canonical and not canonical.get("meaning_receipt_valid"):
+        first_failed = "P0 Contract · human meaning confirmation remains open"
     elif meaning_open:
         first_failed = "P0 Contract · human meaning confirmation remains open"
     elif not checkpoints:
@@ -256,11 +356,27 @@ def inspect(page_src: Path) -> dict:
         first_failed = "None observed · G6 still requires workflow rehash before a completion claim"
 
     g2_reported = bool(checkpoints and all(gate_pass.values()) and stop_signoff)
+    g0_reported = bool(
+        canonical and canonical.get("g0_integrity")
+        and canonical.get("meaning_receipt_valid")
+        and canonical.get("g0_receipt_valid")
+    )
+    if canonical_integrity_errors:
+        g0_note = "; ".join(canonical_integrity_errors[:3])
+    elif canonical:
+        g0_note = (
+            "canonical P0 checksums and G0 meaning receipt validated"
+            if g0_reported else
+            "P0 is intact; human meaning confirmation/G0 receipt remains open"
+        )
+    else:
+        g0_note = (
+            "required files observed; P0 meaning confirmation remains open before G0 may be tested"
+            if meaning_open else
+            "required files observed; canonical receipt/checksum validation is not present"
+        )
     gate_rows = [
-        ("G0", "Contract → Round", sum(p0.values()), len(p0), False,
-         ("required files observed; P0 meaning confirmation remains open before G0 may be tested"
-          if meaning_open else
-          "required files observed; hashes are not revalidated by this surface")),
+        ("G0", "Contract → Round", sum(p0.values()), len(p0), g0_reported, g0_note),
         ("G1", "Round close", len(checkpoints), len(round_dirs), False,
          (latest.get("state") or latest.get("closed") or "no checkpoint") if checkpoints else "no checkpoint"),
         ("G2", "Round → Freeze", 1 if g2_reported else 0, 1, g2_reported,
@@ -278,6 +394,8 @@ def inspect(page_src: Path) -> dict:
 
     return {
         "root": root, "location_note": location_note, "phase_i": phase_i,
+        "canonical_status": canonical,
+        "canonical_integrity_errors": canonical_integrity_errors,
         "p0": p0, "round_dirs": round_dirs, "checkpoints": checkpoints,
         "open_rounds": open_rounds, "latest_round": latest_round,
         "latest": latest, "handoff": handoff, "handoff_status": handoff_status,
@@ -328,10 +446,11 @@ def labeling_hold_for_scene(root: Path, scene_q: str) -> tuple[bool, str]:
     """Bind one Draw scene to its Board Page, then derive Labeling HOLD.
 
     Draw addresses a scene rather than a Page source, so it cannot use the
-    ordinary ``path`` + ``file`` resolver.  The builder's ownership law gives
-    us the exact inverse: ``<source-dir>/draw/<page-id>.excalidraw``.  Reparse
-    the closest Board and accept only that mapping; a caller-supplied browser
-    flag can neither invent nor disable the hold.
+    ordinary ``path`` + ``file`` resolver. The builder's ownership law gives
+    us the canonical inverse ``<folded-page>/studio/draw/<page-id>.excalidraw``;
+    a flat legacy Page remains in its Group ``draw/``. Reparse the closest Board
+    and accept only those mappings; a caller-supplied browser flag can neither
+    invent nor disable the hold.
     """
     root = Path(root).resolve()
     scene = (root / (scene_q or "").strip().lstrip("/")).resolve()
@@ -354,11 +473,19 @@ def labeling_hold_for_scene(root: Path, scene_q: str) -> tuple[bool, str]:
         return False, ""
     for page in pages:
         file_q = page.get("file") or ""
+        page_source = board_dir / file_q
+        page_home = page_source.parent
+        folded = page_home.name == page_source.stem
         expected = (
-            board_dir / Path(file_q).parent / "draw" /
+            page_home / "studio" / "draw" /
+            (str(page.get("id") or "") + ".excalidraw")
+            if folded else
+            page_home / "draw" /
             (str(page.get("id") or "") + ".excalidraw")
         ).resolve()
-        if expected != scene:
+        legacy = (page_home / "draw" /
+                  (str(page.get("id") or "") + ".excalidraw")).resolve()
+        if scene not in ({expected, legacy} if folded else {expected}):
             continue
         page_src = board_dir / file_q
         if not is_labeling_surface_page(page_src):
@@ -436,7 +563,7 @@ _CSS = """
  --ok:#72c796;--hold:#ee956f}}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);
  font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100vh;
- display:grid;grid-template-rows:minmax(320px,58%) minmax(230px,42%)}
+ display:grid;grid-template-rows:minmax(0,58fr) 8px minmax(120px,42fr);overflow:hidden}
 #work{min-height:0;display:flex;flex-direction:column;overflow:hidden}
 header{display:flex;justify-content:space-between;gap:12px;align-items:start;
  padding:12px 16px 9px;border-bottom:1px solid var(--line)}
@@ -468,12 +595,16 @@ h1{font-size:17px;margin:0}.mut{color:var(--mut);font-size:12px}.path{font:12px 
 .round{display:grid;grid-template-columns:minmax(100px,1fr) auto;gap:10px;padding:6px 0;
  border-top:1px solid var(--line)}.round:first-of-type{border-top:0}
 .guard{margin-top:10px;border:1px dashed var(--line);border-radius:8px;padding:10px;color:var(--mut)}
+#splitter{background:var(--line);cursor:row-resize;touch-action:none;position:relative;z-index:2}
+#splitter:after{content:"";position:absolute;left:calc(50% - 22px);top:2px;width:44px;height:3px;border-radius:4px;background:var(--mut);opacity:.55}
 #studio-chat{min-height:0;overflow:hidden;border-top:2px solid var(--line)}
 #chat{border:0;width:100%;height:100%;display:block}
 @media(max-width:900px){.grid.four{grid-template-columns:repeat(2,minmax(155px,1fr))}}
-@media(max-width:700px){body{grid-template-rows:minmax(380px,61%) minmax(220px,39%)}
+@media(max-width:700px){body{grid-template-rows:minmax(0,55fr) 8px minmax(120px,45fr)}
  .grid,.grid.four,.decision{grid-template-columns:1fr}.phase{overflow:auto;grid-template-columns:repeat(6,96px)}
  header{padding-right:10px}.path{display:none}}
+@media(max-height:420px){body{grid-template-rows:minmax(0,52fr) 8px minmax(110px,48fr)}
+ #spaces{padding-bottom:8px}header{padding-top:7px;padding-bottom:5px}}
 """
 
 
@@ -514,11 +645,36 @@ def render(
     if hard_hold:
         chat_url += "&labeling_hold=1"
 
+    # Include the Board source and Page file in client preferences.  A stem is
+    # not globally unique: two Boards can legitimately contain the same Page
+    # name, and their selected Workspace/split must not bleed into each other.
+    identity = f"{path_q}|{file_q}"
+    def js_string(value: str) -> str:
+        # JSON handles quotes/backslashes; escaping HTML-significant characters
+        # keeps an untrusted URL component from terminating this inline script.
+        return (json.dumps(value, ensure_ascii=False)
+                .replace("<", "\\u003c")
+                .replace(">", "\\u003e")
+                .replace("&", "\\u0026"))
+
+    workspace_key = js_string("labeling-workspace:" + identity)
+    split_key = js_string("labeling-split:" + identity)
+
     root = state["root"]
     run_tickets = sorted((root / "runs").glob("*.yaml")) \
         if (root / "runs").is_dir() else []
     run_results = sorted(p for p in (root / "results").iterdir() if p.is_dir()) \
         if (root / "results").is_dir() else []
+    run_rows = "".join(
+        '<div class=round><span><b>%s</b><br><span class=obs>Ticket</span></span>'
+        '<b class="%s">%s</b></div>' % (
+            html.escape(ticket.stem),
+            "ok" if (root / "results" / ticket.stem).is_dir() else "hold",
+            "result present" if (root / "results" / ticket.stem).is_dir()
+            else "awaiting result",
+        )
+        for ticket in run_tickets
+    ) or '<div class=empty>No allocated Run Ticket is present.</div>'
     embedding_versions = sorted(p.name for p in (root / "cache" / "embeddings").iterdir()
                                 if p.is_dir()) \
         if (root / "cache" / "embeddings").is_dir() else []
@@ -593,6 +749,10 @@ def render(
     <p><b>Inventory:</b> {html.escape(artifact)}</p>
     <p><b>Run envelopes:</b> {len(run_tickets)} Ticket(s) · {len(run_results)} Result folder(s)</p>
    </div>
+  </div>
+  <div class=box style="margin-top:10px"><h3>Run envelopes · read-only</h3>
+   <p class=mut>One row per authored Ticket; a round, phase, Chat turn, or retry is not an extra Run.</p>
+   {run_rows}
   </div>
  </section>
 
@@ -692,10 +852,14 @@ def render(
   <div class=box style="margin-top:10px"><h3>Scanning gates</h3>{quality_gates}</div>
  </section>
 </div></section>
+<div id=splitter role=separator aria-label="Resize Labeling workspaces and Studio Chat"
+ aria-controls="spaces studio-chat" aria-valuemin="20" aria-valuemax="80" tabindex=0></div>
 <section id=studio-chat><iframe id=chat src="{html.escape(chat_url, quote=True)}"
  title="Studio Page Chat"></iframe></section>
 <script>(function(){{'use strict';
- var key='labeling-workspace:{html.escape(page_src.stem, quote=True)}';
+ var key={workspace_key};
+ var splitKey={split_key};
+ var shell=document.body, splitter=document.getElementById('splitter');
  var buttons=Array.prototype.slice.call(document.querySelectorAll('.space'));
  var workspaces=Array.prototype.slice.call(document.querySelectorAll('.workspace'));
  function showSpace(name){{
@@ -706,6 +870,42 @@ def render(
  }}
  buttons.forEach(function(b){{b.addEventListener('click',function(){{showSpace(b.dataset.space);}});}});
  try{{showSpace(localStorage.getItem(key)||'workflow');}}catch(e){{showSpace('workflow');}}
+ function clampTop(value){{
+   var h=window.innerHeight, gap=8, minChat=Math.min(120, Math.max(72, h*.25));
+   var maxTop=Math.max(0, h-gap-minChat), minTop=Math.min(160, Math.max(72, h*.35));
+   return Math.max(Math.min(minTop,maxTop), Math.min(maxTop, value));
+ }}
+ function applySplit(value, persist){{
+   var top=clampTop(value), chat=Math.max(0, window.innerHeight-top-8);
+   shell.style.gridTemplateRows=top+'px 8px '+chat+'px';
+   splitter.setAttribute('aria-valuenow', String(Math.round(top/window.innerHeight*100)));
+   if(persist){{try{{localStorage.setItem(splitKey,String(Math.round(top)));}}catch(e){{}}}}
+ }}
+ var savedSplit=0;
+ try{{savedSplit=parseInt(localStorage.getItem(splitKey)||'',10)||0;}}catch(e){{}}
+ if(savedSplit>0) applySplit(savedSplit,false);
+ var dragging=false;
+ splitter.addEventListener('pointerdown',function(ev){{
+   dragging=true; splitter.setPointerCapture(ev.pointerId); ev.preventDefault();
+ }});
+ splitter.addEventListener('pointermove',function(ev){{
+   if(dragging) applySplit(ev.clientY,true);
+ }});
+ splitter.addEventListener('pointerup',function(ev){{
+   dragging=false; try{{splitter.releasePointerCapture(ev.pointerId);}}catch(e){{}}
+ }});
+ splitter.addEventListener('pointercancel',function(){{dragging=false;}});
+ splitter.addEventListener('keydown',function(ev){{
+   var rows=getComputedStyle(shell).gridTemplateRows.split(/\x5cs+/), top=parseFloat(rows[0])||window.innerHeight*.58;
+   if(ev.key==='ArrowUp'){{applySplit(top-24,true);ev.preventDefault();}}
+   if(ev.key==='ArrowDown'){{applySplit(top+24,true);ev.preventDefault();}}
+   if(ev.key==='Home'){{applySplit(window.innerHeight*.35,true);ev.preventDefault();}}
+   if(ev.key==='End'){{applySplit(window.innerHeight*.75,true);ev.preventDefault();}}
+ }});
+ window.addEventListener('resize',function(){{
+   if(!dragging){{var rows=getComputedStyle(shell).gridTemplateRows.split(/\x5cs+/), top=parseFloat(rows[0])||0;
+     if(top) applySplit(top,false);}}
+ }});
  /* The framed document is Studio's exact Page Chat.  Its composer asks its
     parent for the optional Draw controls, so relay those calls to the outer
     split shell when Labeling itself is the registry frame. */

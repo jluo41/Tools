@@ -46,7 +46,7 @@ seed:
   standing: contract
   token: SD
   mode: fixed
-  evidence: "source pages bound via pagex; Establishment Board E-rows carry the novelty column"
+  evidence: "source pages resolve through Context; evidentiary reuse enters through typed Supporting/local Run Results; Establishment Board E-rows carry the novelty column"
   closing: "G4: ticked outline, novelty column filled, pitch sells only ✅ rows"
   law: paper/workflow-phases/haipipe-paper-seed
 roadmap:
@@ -62,7 +62,7 @@ narrative:
   standing: contract
   token: NA
   mode: grammar
-  evidence: "the venue bank page bound at §1; claims parented to Seed E-rows; map rows budgeted"
+  evidence: "the venue bank page resolved through Context at §1; claims parented to Seed E-rows; typed Evidence Items use Supporting/local Results; map rows budgeted"
   closing: "G5: bank page bound, claims parented, map rows budgeted"
   law: paper/workflow-phases/haipipe-paper-narrative
 section:
@@ -70,7 +70,7 @@ section:
   standing: contract
   token: "S<D> | SA"
   mode: resolved
-  evidence: "a bibex key per claim; every number a PP<NN>.v<n> with its > Value: lane; a display unit per shown finding; a probe card per owed fact"
+  evidence: "typed E<NN>-VALUE|CITE|DISPLAY items; each make-item has 0..N Supporting Runs, one frozen Local Input, one local Page Run, and one accepted Result"
   closing: "per-unit CHECK ✅ against the resolved QBv division and the current Narrative row"
   law: paper/workflow-phases/haipipe-paper-section
 round:
@@ -95,32 +95,31 @@ task:
   standing: contract
   token: "folder-kind: task"
   mode: grammar
-  evidence: "every shown number names the run that produced it; a rerun reopens the page"
-  closing: "a person has read the result against the folder's own kind; a rerun reopens"
-  law: task/page-types/haipipe-page-for-task
+  evidence: "typed Evidence Items use 0..N Supporting Runs, one frozen Local Input, and one local Page Run; every shown number names its full producing Run id"
+  closing: "P-B-E-R is reported and a person has read each bound Result against the Task question; a rerun reopens dependent readings"
+  law: task/haipipe-task
 insight:
   owner: task
   standing: contract
   token: DIKW
   mode: fixed
-  evidence: "QA files and Task Pages cited by path; the D → I → K → W trace"
+  evidence: "Task/Discovery evidence enters through full Supporting Run Results and one local Evidence Item Run; the D → I → K → W trace stays version-bound"
   closing: "the trace is complete and Reusable Findings stand alone (provisional)"
   law: task/page-types/haipipe-page-for-insight
 # ── board ──────────────────────────────────────────────────────────────
 stage:
   owner: board
-  standing: contract
+  standing: record-only
   token: "S-<Family>-<unit>"
   mode: resolved
   evidence: "Required Inputs and Product declared on the live stage contract the page resolves"
   closing: "closes only when its human gate passes"
-  law: board/page-types/haipipe-page-for-stage
 # ── application ────────────────────────────────────────────────────────
 brief:
   owner: application
   standing: contract
   mode: fixed
-  evidence: "core PageX inputs named; insight needs raised as questions"
+  evidence: "core related inputs resolved through Context; evidentiary inputs enter through Supporting Results; insight needs become typed Evidence Items"
   closing: "the promise and Design roster stand alone for a Design page (provisional)"
   law: application/workflow-phases/haipipe-design-brief
 data:
@@ -178,16 +177,26 @@ wisdom:
   evidence: "every counsel names a K parent; the forbidden clause is written"
   closing: "every counsel names a K parent, the forbidden clause is written, and the handoff reads standalone"
   law: application/workflow-phases/haipipe-insight-wisdom
-# ── key-only: the engine accepts them, no contract and no record ───────
+# ── registry-owned compatibility records ──────────────────────────────
 collection:
-  owner: none
-  standing: key-only          # live pages exist -> registry-gap until owned
+  owner: paper
+  standing: record-only
+  mode: fixed
+  evidence: "each retained collection move names its typed Evidence Items and bound Supporting/local Runs"
+  closing: "every collection candidate is retained, deferred, or rejected with a recorded reason (provisional)"
 labeling:
-  owner: none
-  standing: key-only          # live pages exist -> registry-gap until owned
+  owner: subjective-label
+  standing: record-only
+  mode: fixed
+  evidence: "each labeling claim names the label source, selected Run, and Result used to judge it"
+  closing: "the labeling page closes only after its declared human review gate passes (provisional)"
 view:
-  owner: none
-  standing: key-only          # live pages exist -> registry-gap until owned
+  owner: board
+  standing: record-only
+  mode: fixed
+  evidence: "each view claim traces to a named source, value, or governed Result"
+  closing: "the requested view and its provenance are readable without reconstructing the producing session (provisional)"
+# ── key-only: engine compatibility with no live Page law ───────────────
 dash:
   owner: none
   standing: key-only          # engine-accepted, unused

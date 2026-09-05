@@ -1,11 +1,11 @@
 ---
 name: deepxiv
 description: Search and progressively read open-access academic papers through DeepXiv. Use when the user wants layered paper access, section-level reading, trending papers, or DeepXiv-backed literature retrieval.
-argument-hint: "[query-or-paper-id]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  argument_hint: "[query-or-paper-id]"
+  version: "0.1.1"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -210,7 +210,7 @@ if [ -d research-wiki/ ]:
 
 The helper handles metadata / slug / dedup / page / index / log in one
 call — **do not handwrite `papers/<slug>.md`**. See
-[`shared-references/integration-contract.md`](../shared-references/integration-contract.md).
+[`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md).
 Backfill missed ingests with
 `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id1>,<id2>,...`.
 

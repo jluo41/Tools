@@ -46,7 +46,8 @@ For /haipipe-application feedback "<text>":
     X0-X3 handoff/routing                              haipipe-application-workflow
     Folder, Page Face, Task Face, phase ownership      haipipe-folder
     shared Page frame or Page-local workflow           haipipe-page / haipipe-page-workflow
-    PageX source binding or live Folder navigation     haipipe-plugin-evidence/ref/pagex.md
+    Evidence Item source binding                       haipipe-plugin-outline/ref/item-table.md
+    live related-Page context                          haipipe-page-context
     optional run/result + supporting files surface     haipipe-plugin-runs
 
     Insight lane/register/partition/climb              haipipe-insight
@@ -67,7 +68,7 @@ For /haipipe-application feedback "<text>":
     D4 Division/render/accept/emit/Principle role      haipipe-design-division
     D5 PageDown/round truth pass                       haipipe-design-pagedown
     design/ thread storage                             haipipe-plugin-design
-    render projection                                  haipipe-plugin-render
+    render projection                                  haipipe-plugin-delivery/ref/render.md
     venue/channel-specific rail                        application/venue/venue-<name>
 
 Runs presentation is not lifecycle ownership. Route lifecycle, Execute,

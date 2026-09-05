@@ -35,6 +35,8 @@ CONFIG_PATH = (
 )
 WORD_ROOM = CONFIG_PATH.parent
 ROOT = WORD_ROOM.parent
+SKILL_ROOT = Path(__file__).resolve().parent.parent
+PROFILE_ROOT = SKILL_ROOT / "profiles"
 
 
 def load_config() -> dict[str, object]:
@@ -44,9 +46,30 @@ def load_config() -> dict[str, object]:
 
 
 BUILD_CONFIG = load_config()
+PAPER_CONFIG = BUILD_CONFIG.get("paper", {})
+PROFILE_NAME = str(PAPER_CONFIG.get("venue_profile", "")) if isinstance(PAPER_CONFIG, dict) else ""
+
+
+def load_shared_profile(name: str) -> dict[str, object]:
+    """Load venue behaviour from the skill, never manuscript content from a paper."""
+    if not name:
+        return {}
+    path = PROFILE_ROOT / f"{name}.toml"
+    if not path.exists():
+        raise FileNotFoundError(f"Venue profile not found: {path}")
+    return tomllib.loads(path.read_text(encoding="utf-8"))
+
+
+SHARED_PROFILE = load_shared_profile(PROFILE_NAME)
+PAPER_PROFILE = BUILD_CONFIG.get("profile", {})
+if not isinstance(PAPER_PROFILE, dict):
+    raise TypeError("[profile] must be a TOML table")
+PROFILE_CONFIG = {**SHARED_PROFILE, **PAPER_PROFILE}
 SOURCE_CONFIG = BUILD_CONFIG.get("source", {})
 OUTPUT_CONFIG = BUILD_CONFIG.get("outputs", {})
-PROFILE_CONFIG = BUILD_CONFIG.get("profile", {})
+EVIDENCE_CONFIG = BUILD_CONFIG.get("evidence", {})
+if not isinstance(SOURCE_CONFIG, dict) or not isinstance(OUTPUT_CONFIG, dict) or not isinstance(EVIDENCE_CONFIG, dict):
+    raise TypeError("[source], [outputs], and [evidence] must be TOML tables")
 LATEX_ROOM = (WORD_ROOM / Path(str(SOURCE_CONFIG.get("room", ".")))).resolve()
 SECTION_DIR = LATEX_ROOM / str(SOURCE_CONFIG.get("sections", "sections"))
 DISPLAY_DIR = LATEX_ROOM / str(SOURCE_CONFIG.get("displays", "displays"))
@@ -61,6 +84,8 @@ def output_path(key: str, default: str) -> Path:
 
 MAIN_PATH = output_path("main_docx", "manuscript-submission-draft.docx")
 SUPP_PATH = output_path("supplement_docx", "manuscript-online-supplement-draft.docx")
+MAIN_PDF_PATH = output_path("main_pdf", MAIN_PATH.with_suffix(".pdf").name)
+SUPP_PDF_PATH = output_path("supplement_pdf", SUPP_PATH.with_suffix(".pdf").name)
 DRAFT_SECTION_ROOM = output_path("section_snapshots", "draft-sections")
 ASSET_DIR = output_path("assets", "submission-assets")
 MANIFEST_PATH = output_path("manifest", "build-manifest.json")
@@ -72,7 +97,7 @@ RUNNING_TITLE_FALLBACK = str(
     )
 )
 
-FONT = "Arial"
+FONT = str(PROFILE_CONFIG.get("font", "Arial"))
 CITATION_NUMBERS: dict[str, int] = {}
 REF_NUMBERS: dict[str, str] = {}
 REF_TEXT: dict[str, str] = {}
@@ -376,12 +401,20 @@ def find_asset(reference: str) -> Path | None:
 
 
 def parse_table_rows(block: str) -> list[list[str]]:
+    # `tabularx` has a width argument plus a column specification; ordinary
+    # `tabular`/`longtable` have only the latter.  Keeping those declarations
+    # outside the captured body prevents column specs such as ``X r X`` from
+    # becoming a spurious first table row in Word.
     match = re.search(
-        r"\\begin\{(tabularx?|longtable)\}(?:\{[^{}]*\})?(.*?)\\end\{\1\}", block, re.S
+        r"\\begin\{tabularx\}\{[^{}]*\}\{[^{}]*\}(.*?)\\end\{tabularx\}", block, re.S
     )
     if match is None:
+        match = re.search(
+            r"\\begin\{(tabular|longtable)\}\{[^{}]*\}(.*?)\\end\{\1\}", block, re.S
+        )
+    if match is None:
         return []
-    body = match.group(2)
+    body = match.group(1) if "tabularx" in match.group(0).split("}", 1)[0] else match.group(2)
     body = re.sub(
         r"\\(?:toprule|midrule|bottomrule|hline|addlinespace|cline\{[^}]*\}|cmidrule(?:\([^)]*\))?\{[^}]*\})",
         "",
@@ -438,6 +471,9 @@ def parse_events(text: str) -> tuple[list[Event], list[Display]]:
     text = re.sub(r"\\(?:clearpage|newpage|pagebreak)\b", "\n", text)
     text = re.sub(r"\\(?:maketitle|thispagestyle|pagestyle)\s*(?:\{[^}]*\})?", "", text)
     text = re.sub(r"\\(?:bibliographystyle|bibliography)\s*(?:\{[^}]*\})?", "", text)
+    # Counter and naming declarations control TeX's rendering; they are not
+    # manuscript prose and must not leak into a Word projection.
+    text = re.sub(r"(?m)^\s*\\(?:setcounter|renewcommand)\b.*$", "", text)
     text = re.sub(r"\\(?:begin|end)\{(?:document|abstract)\}", "", text)
     blocks: dict[str, tuple[str, str]] = {}
     displays: list[Display] = []
@@ -558,6 +594,20 @@ def configure_document(doc: Document, *, body_size: float = 12, line_spacing: fl
     doc.styles["Caption"].paragraph_format.space_after = Pt(6)
     doc.styles["List Bullet"].paragraph_format.left_indent = Inches(0.25)
     doc.styles["List Bullet"].paragraph_format.first_line_indent = Inches(-0.15)
+    if bool(PROFILE_CONFIG.get("line_numbers", False)):
+        set_line_numbering(section)
+
+
+def set_line_numbering(section) -> None:
+    """Apply continuous Word line numbers when the selected venue requires them."""
+    sect_pr = section._sectPr
+    existing = sect_pr.find(qn("w:lnNumType"))
+    if existing is None:
+        existing = OxmlElement("w:lnNumType")
+        sect_pr.append(existing)
+    existing.set(qn("w:countBy"), "1")
+    existing.set(qn("w:distance"), str(PROFILE_CONFIG.get("line_number_distance", 360)))
+    existing.set(qn("w:restart"), "newPage" if bool(PROFILE_CONFIG.get("restart_line_numbers_each_page", False)) else "continuous")
 
 
 def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, align=None, style: str = "Normal") -> None:
@@ -576,9 +626,15 @@ def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, 
 def add_heading(doc: Document, text: str, level: int = 1) -> None:
     if not text:
         return
-    paragraph = doc.add_paragraph(style=f"Heading {min(level, 3)}")
-    paragraph.paragraph_format.keep_with_next = True
+    heading_style = str(PROFILE_CONFIG.get("heading_style", "heading")).lower()
+    style = "Normal" if heading_style == "normal" else f"Heading {min(level, 3)}"
+    paragraph = doc.add_paragraph(style=style)
+    paragraph.paragraph_format.keep_with_next = bool(PROFILE_CONFIG.get("headings_keep_with_next", True))
     paragraph.paragraph_format.line_spacing = 2.0
+    # An explicit before-space keeps LibreOffice's DOCX renderer from visually
+    # joining an immediately preceding body paragraph and its next heading.
+    paragraph.paragraph_format.space_before = Pt(6)
+    paragraph.paragraph_format.space_after = Pt(0)
     run = paragraph.add_run(text.upper() if level == 1 else text)
     set_font(run, size=12, bold=True)
 
@@ -788,6 +844,82 @@ def add_title_page(doc: Document, title: str, running_title: str, word_count: in
     doc.add_page_break()
 
 
+def labelled_blocks(doc: Document, heading: str, block: str) -> None:
+    """Render JAMA Key Points or a structured abstract from labelled TeX prose."""
+    add_heading(doc, heading, 1)
+    labels = list(re.finditer(r"\\noindent\s*\\textbf\s*\{([^{}]+)\}", block))
+    if not labels:
+        add_text(doc, latex_to_text(block))
+        return
+    for index, match in enumerate(labels):
+        end = labels[index + 1].start() if index + 1 < len(labels) else len(block)
+        paragraph = doc.add_paragraph(style="Normal")
+        paragraph.paragraph_format.line_spacing = 2.0
+        paragraph.paragraph_format.space_after = Pt(0)
+        label_run = paragraph.add_run(latex_to_text(match.group(1)) + " ")
+        body_run = paragraph.add_run(latex_to_text(block[match.end():end]))
+        set_font(label_run, size=12, bold=True)
+        set_font(body_run, size=12)
+
+
+def extract_jama_title(center_block: str) -> tuple[str, str]:
+    """Read the title and blinded-author line from JAMA's source-owned title block."""
+    title_part = center_block.split(r"\vspace", 1)[0]
+    title_part = re.sub(r"\\(?:begin|end)\{center\}", "", title_part)
+    title_part = re.sub(r"\\(?:Large|large|bfseries)\b", "", title_part)
+    title = latex_to_text(title_part.replace(r"\\", " "))
+    author_match = re.search(r"\vspace\{[^}]+\}\s*(.*?)\s*\vspace", center_block, re.S)
+    author = latex_to_text(author_match.group(1).strip()) if author_match else ""
+    return title, author
+
+
+def jama_parts(raw_master: str) -> tuple[str, str, str, str, str, str]:
+    """Split a JAMA IM desk room without requiring a generic abstract environment."""
+    body = clean_fragment(raw_master, MASTER.parent, remove_abstract=False)
+    body = body.split(r"\begin{document}", 1)[-1].split(r"\end{document}", 1)[0]
+    center_match = CENTER_PATTERN.search(body)
+    if center_match is None:
+        raise RuntimeError("JAMA IM source is missing its title-page center block")
+    title, author = extract_jama_title(center_match.group(0))
+
+    key_match = re.search(r"\\section\*\{Key Points\}(.*?)\\section\*\{Abstract\}", body, re.S)
+    abstract_match = re.search(r"\\section\*\{Abstract\}(.*?)\\section\s*\{Introduction\}", body, re.S)
+    bib_match = re.search(r"\\bibliography\s*\{", body)
+    appendix_match = re.search(r"\\appendix\b", body)
+    if abstract_match is None or bib_match is None or appendix_match is None:
+        raise RuntimeError("JAMA IM source is missing Key Points, Abstract, bibliography, or appendix boundary")
+    key_points = key_match.group(1) if key_match else ""
+    abstract = abstract_match.group(1)
+    intro = re.search(r"\\section\s*\{Introduction\}", body)
+    if intro is None:
+        raise RuntimeError("JAMA IM source is missing Introduction")
+    main_text = body[intro.start():bib_match.start()]
+    supplement_text = body[appendix_match.end():]
+    return title, author, key_points, abstract, main_text, supplement_text
+
+
+def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
+                        table_count: int, figure_count: int, evidence: dict[str, object]) -> None:
+    """Venue-only title packaging; all study-specific text remains in the room source."""
+    add_text(doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+    if str(evidence.get("mode", "draft")) not in {"final", "submission", "submission-ready"}:
+        add_text(doc, str(PROFILE_CONFIG.get("draft_label", "DRAFT — NOT SUBMISSION READY")),
+                 align=WD_ALIGN_PARAGRAPH.CENTER)
+    if author:
+        add_text(doc, author, align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_text(doc, str(PROFILE_CONFIG.get("venue_label", "JAMA Internal Medicine")),
+             align=WD_ALIGN_PARAGRAPH.CENTER)
+    date = str(PROFILE_CONFIG.get("document_date", "")).strip()
+    if date:
+        add_text(doc, date, align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_text(doc, f"Main-text source word count: {main_words}", align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_text(doc, f"Main displays: {table_count} tables; {figure_count} figures", align=WD_ALIGN_PARAGRAPH.CENTER)
+    if evidence.get("pending_markers"):
+        add_text(doc, "Evidence placeholders remain; this build is not submission-ready.",
+                 align=WD_ALIGN_PARAGRAPH.CENTER)
+    doc.add_page_break()
+
+
 def initials(author: str) -> str:
     tokens = re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ]+", author)
     return "".join(token[0].upper() for token in tokens if token)
@@ -832,6 +964,8 @@ def format_reference(key: str) -> str:
 
 
 def add_references(doc: Document) -> None:
+    if not CITATION_NUMBERS:
+        return
     add_heading(doc, str(PROFILE_CONFIG.get("references_heading", "REFERENCES")), 1)
     for number, key in enumerate(CITATION_NUMBERS, start=1):
         paragraph = doc.add_paragraph(style="Normal")
@@ -865,7 +999,8 @@ def write_section_snapshots(section_specs: list[tuple[str, str]], running_title:
     readme = DRAFT_SECTION_ROOM / "README.md"
     readme.write_text(
         "# Generated section snapshots\n\n"
-        "These DOCX files are generated from the configured desk-room sections by `build_word.py`. "
+        "These DOCX files are generated from the configured desk-room sections by the shared "
+        "`haipipe-paper-assemble` engine, launched through this paper's thin wrapper. "
         "They are review snapshots only and are never used as builder inputs.\n",
         encoding="utf-8",
     )
@@ -881,33 +1016,222 @@ def write_section_snapshots(section_specs: list[tuple[str, str]], running_title:
         doc.save(DRAFT_SECTION_ROOM / output_name)
 
 
+def evidence_lock_path() -> Path | None:
+    """Return the materialized room-local evidence receipt, when configured."""
+    raw = EVIDENCE_CONFIG.get("lock")
+    if not raw:
+        return None
+    path = Path(str(raw))
+    return path if path.is_absolute() else (WORD_ROOM / path).resolve()
+
+
+def evidence_preflight() -> dict[str, object]:
+    """Validate evidence state without creating or replacing manuscript prose.
+
+    The Section projection owns the words.  The lock records which Page Evidence
+    Items those words depend on.  A draft can keep visible ``[E## pending]``
+    markers; a final build cannot.
+    """
+    mode = str(EVIDENCE_CONFIG.get("mode", "none")).lower()
+    path = evidence_lock_path()
+    source_text = "\n".join(path.read_text(encoding="utf-8", errors="replace")
+                            for path in sorted(SECTION_DIR.glob("*.tex")))
+    pending_markers = sorted(set(re.findall(r"\[E\d{2}\s+pending\]", source_text)))
+    report: dict[str, object] = {
+        "mode": mode,
+        "lock": str(path.relative_to(ROOT)) if path and path.is_relative_to(ROOT) else (str(path) if path else None),
+        "pending_markers": pending_markers,
+        "items": 0,
+        "unaccepted_items": [],
+        "lock_exists": path.exists() if path else None,
+    }
+    if path is None:
+        return report
+    if not path.exists():
+        raise FileNotFoundError(f"Configured evidence lock not found: {path}")
+    lock = json.loads(path.read_text(encoding="utf-8"))
+    items = lock.get("items", [])
+    if not isinstance(items, list):
+        raise ValueError(f"Evidence lock has non-list items: {path}")
+    unaccepted = [
+        f"{item.get('page', 'unknown')}/{item.get('item', 'unknown')} ({item.get('state', 'unknown')})"
+        for item in items if isinstance(item, dict) and item.get("state") != "accepted"
+    ]
+    report["items"] = len(items)
+    report["unaccepted_items"] = unaccepted
+    if mode in {"final", "submission", "submission-ready"} and (pending_markers or unaccepted):
+        raise RuntimeError(
+            "Final build blocked by unresolved evidence: "
+            + ", ".join(pending_markers + unaccepted)
+        )
+    return report
+
+
 def source_manifest() -> dict[str, object]:
     paths = [MASTER, BIB_PATH]
     paths.extend(sorted(SECTION_DIR.glob("*.tex")))
     paths.extend(sorted(DISPLAY_DIR.rglob("*.tex")))
     paths.extend(sorted(DISPLAY_DIR.rglob("*.png")))
     paths.extend(sorted(DISPLAY_DIR.rglob("*.pdf")))
+    lock_path = evidence_lock_path()
+    if lock_path and lock_path.exists():
+        paths.append(lock_path)
     files = []
     for path in paths:
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         files.append({"path": str(path.relative_to(ROOT)), "sha256": digest})
     config_hash = hashlib.sha256(CONFIG_PATH.read_bytes()).hexdigest() if CONFIG_PATH.exists() else None
+    profile_path = PROFILE_ROOT / f"{PROFILE_NAME}.toml" if PROFILE_NAME else None
+    profile_hash = (
+        hashlib.sha256(profile_path.read_bytes()).hexdigest()
+        if profile_path and profile_path.exists() else None
+    )
+    output_paths = [MAIN_PATH, SUPP_PATH, MAIN_PDF_PATH, SUPP_PDF_PATH]
+    output_hashes = {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in output_paths if path.exists()
+    }
     return {
-        "engine": "haipipe-paper-assemble/latex_room_to_docx-0.1.0",
+        "engine": "haipipe-paper-assemble/latex_room_to_docx-0.2.1",
         "builder": "haipipe-paper-assemble/scripts/latex_room_to_docx.py",
         "config": str(CONFIG_PATH.relative_to(ROOT)) if CONFIG_PATH.exists() else None,
         "config_sha256": config_hash,
+        "profile": str(profile_path.relative_to(SKILL_ROOT)) if profile_path and profile_path.exists() else None,
+        "profile_sha256": profile_hash,
         "venue_profile": PROFILE_CONFIG.get("venue_profile", BUILD_CONFIG.get("paper", {}).get("venue_profile")),
         "source_of_record": str(MASTER.relative_to(ROOT)),
         "outputs": [
             str(MAIN_PATH.relative_to(ROOT)),
             str(SUPP_PATH.relative_to(ROOT)),
+            str(MAIN_PDF_PATH.relative_to(ROOT)),
+            str(SUPP_PDF_PATH.relative_to(ROOT)),
             str(DRAFT_SECTION_ROOM.relative_to(ROOT)),
             str(MANIFEST_PATH.relative_to(ROOT)),
             str(QA_REPORT_PATH.relative_to(ROOT)),
         ],
+        "output_sha256": output_hashes,
         "files": files,
     }
+
+
+def render_submission_pdfs() -> dict[str, object]:
+    """Render configured DOCX deliverables to PDFs when LibreOffice is available."""
+    soffice = shutil.which("soffice")
+    report: dict[str, object] = {
+        "renderer": "LibreOffice" if soffice else None,
+        "available": bool(soffice),
+        "outputs": [],
+        "errors": [],
+    }
+    if not soffice:
+        return report
+    for docx_path, pdf_path in ((MAIN_PATH, MAIN_PDF_PATH), (SUPP_PATH, SUPP_PDF_PATH)):
+        pdf_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            subprocess.run(
+                [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(pdf_path.parent), str(docx_path)],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            produced = pdf_path.parent / docx_path.with_suffix(".pdf").name
+            if produced != pdf_path and produced.exists():
+                shutil.move(str(produced), str(pdf_path))
+            if not pdf_path.exists():
+                raise RuntimeError(f"LibreOffice did not create {pdf_path.name}")
+            report["outputs"].append(str(pdf_path.relative_to(ROOT)))  # type: ignore[index]
+        except (OSError, subprocess.CalledProcessError, RuntimeError) as error:
+            report["errors"].append(f"{docx_path.name}: {error}")  # type: ignore[index]
+    return report
+
+
+def write_common_receipts(main_events: list[Event], main_displays: list[Display],
+                          supplement_events: list[Event], running_title: str,
+                          evidence: dict[str, object], pdf_report: dict[str, object]) -> None:
+    """Write derived receipts only; they are never inputs to a later build."""
+    snapshot_config = BUILD_CONFIG.get("snapshots", {})
+    configured_sections = snapshot_config.get("sections", []) if isinstance(snapshot_config, dict) else []
+    section_specs = [
+        (str(item["source"]), str(item["label"]))
+        for item in configured_sections
+        if isinstance(item, dict) and "source" in item and "label" in item
+    ]
+    if not section_specs:
+        section_specs = [
+            (path.name, path.stem.replace("_", " ").title())
+            for path in sorted(SECTION_DIR.glob("*.tex"))
+        ]
+    write_section_snapshots(section_specs, running_title)
+    ASSET_DIR.mkdir(parents=True, exist_ok=True)
+    manifest = source_manifest()
+    manifest["evidence"] = evidence
+    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    word_limit = PROFILE_CONFIG.get("main_text_word_limit")
+    qa_report = {
+        "status": "DRAFT" if evidence.get("pending_markers") or evidence.get("unaccepted_items") else "CANDIDATE",
+        "source_of_record": str(MASTER.relative_to(ROOT)),
+        "venue_profile": PROFILE_NAME,
+        "main_text_words": word_count(main_events),
+        "main_text_word_limit": word_limit,
+        "citations": len(CITATION_NUMBERS),
+        "main_tables": len([display for display in main_displays if display.kind == "table"]),
+        "main_figures": len([display for display in main_displays if display.kind == "figure"]),
+        "supplement_events": len(supplement_events),
+        "evidence": evidence,
+        "pdf": pdf_report,
+        "checks": {
+            "master_exists": MASTER.exists(),
+            "bibliography_exists": BIB_PATH.exists(),
+            "citations_resolved": True,
+            "within_declared_word_limit": (
+                word_limit is None or word_count(main_events) <= int(word_limit)
+            ),
+            "evidence_lock_exists": evidence.get("lock_exists"),
+            "no_pending_evidence": not evidence.get("pending_markers") and not evidence.get("unaccepted_items"),
+            "pdf_outputs_rendered": not pdf_report.get("available") or not pdf_report.get("errors"),
+            "g6_human_decision": False,
+        },
+    }
+    QA_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    QA_REPORT_PATH.write_text(json.dumps(qa_report, indent=2) + "\n", encoding="utf-8")
+
+
+def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -> tuple[Path, Path]:
+    """JAMA IM is a venue profile, not a paper-specific renderer."""
+    title, author, key_points, abstract, main_text, supplement_text = jama_parts(raw_master)
+    main_events, main_displays = parse_events(main_text)
+    supplement_events, _ = parse_events(supplement_text)
+    missing = [key for key in CITATION_NUMBERS if key not in BIB]
+    if missing:
+        raise RuntimeError(f"Citations missing from reference.bib: {missing}")
+    main_tables = [display for display in main_displays if display.kind == "table"]
+    main_figures = [display for display in main_displays if display.kind == "figure"]
+    MAIN_PATH.parent.mkdir(parents=True, exist_ok=True)
+    SUPP_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    main_doc = Document()
+    configure_document(main_doc)
+    add_jama_title_page(main_doc, title, author, word_count(main_events), len(main_tables), len(main_figures), evidence)
+    if key_points:
+        labelled_blocks(main_doc, str(PROFILE_CONFIG.get("key_points_heading", "KEY POINTS")), key_points)
+    labelled_blocks(main_doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), abstract)
+    add_events(main_doc, main_events, include_displays=bool(PROFILE_CONFIG.get("include_main_displays", False)))
+    add_references(main_doc)
+    main_doc.save(MAIN_PATH)
+
+    supp_doc = Document()
+    configure_document(supp_doc, body_size=11, line_spacing=1.5)
+    add_text(supp_doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")),
+             bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+    supp_doc.add_page_break()
+    add_events(supp_doc, supplement_events, include_displays=True, compact=True)
+    supp_doc.save(SUPP_PATH)
+
+    pdf_report = render_submission_pdfs()
+    write_common_receipts(main_events, main_displays, supplement_events, title, evidence, pdf_report)
+    return MAIN_PATH, SUPP_PATH
 
 
 def build() -> tuple[Path, Path]:
@@ -923,6 +1247,9 @@ def build() -> tuple[Path, Path]:
     REF_TEXT = {}
 
     raw_master = MASTER.read_text(encoding="utf-8")
+    evidence = evidence_preflight()
+    if str(PROFILE_CONFIG.get("layout", "")).lower() == "jama-internal-medicine":
+        return build_jama_internal_medicine(raw_master, evidence)
     running_match = re.search(r"Running title\s*\(<[^>]+>\):\s*(.+)", raw_master)
     running_title = running_match.group(1).strip() if running_match else RUNNING_TITLE_FALLBACK
     title = latex_to_text(extract_command(raw_master, "title"))
@@ -985,45 +1312,8 @@ def build() -> tuple[Path, Path]:
     add_events(supp_doc, supplement_events, include_displays=True, compact=True)
     supp_doc.save(SUPP_PATH)
 
-    snapshot_config = BUILD_CONFIG.get("snapshots", {})
-    configured_sections = snapshot_config.get("sections", []) if isinstance(snapshot_config, dict) else []
-    section_specs = [
-        (str(item["source"]), str(item["label"]))
-        for item in configured_sections
-        if isinstance(item, dict) and "source" in item and "label" in item
-    ]
-    if not section_specs:
-        section_specs = [
-            (path.name, path.stem.replace("_", " ").title())
-            for path in sorted(SECTION_DIR.glob("*.tex"))
-        ]
-    write_section_snapshots(section_specs, running_title)
-    ASSET_DIR.mkdir(parents=True, exist_ok=True)
-    manifest = source_manifest()
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    word_limit = PROFILE_CONFIG.get("main_text_word_limit")
-    qa_report = {
-        "status": "DRAFT",
-        "source_of_record": str(MASTER.relative_to(ROOT)),
-        "venue_profile": manifest.get("venue_profile"),
-        "main_text_words": word_count(main_events),
-        "main_text_word_limit": word_limit,
-        "citations": len(CITATION_NUMBERS),
-        "main_tables": len(main_tables),
-        "main_figures": len(main_figures),
-        "supplement_events": len(supplement_events),
-        "checks": {
-            "master_exists": MASTER.exists(),
-            "bibliography_exists": BIB_PATH.exists(),
-            "citations_resolved": not missing,
-            "within_declared_word_limit": (
-                word_limit is None or word_count(main_events) <= int(word_limit)
-            ),
-            "g6_human_decision": False,
-        },
-    }
-    QA_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    QA_REPORT_PATH.write_text(json.dumps(qa_report, indent=2) + "\n", encoding="utf-8")
+    pdf_report = render_submission_pdfs()
+    write_common_receipts(main_events, main_displays, supplement_events, running_title, evidence, pdf_report)
     return MAIN_PATH, SUPP_PATH
 
 

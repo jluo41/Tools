@@ -3,6 +3,11 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.5.0 · 2026-09-04
+
+- Route review synthesis through Page `03 CONTENT / WRITE`, missing evidence
+  back to D1 ACQUIRE, and consume the one aggregate built by D1 SYNTHESIZE.
+
 ## [0.4.1] — 2026-09-03
 
 - Route the Review citation aggregate through Outline's Evidence Workspace at
@@ -11,7 +16,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [0.4.0] — 2026-09-02
 
 - Own SYNTHESIZE for review article types, route missing evidence back to
-  ACQUIRE, and use Evidence for the citation aggregate.
+  ACQUIRE, and use the Outline Evidence Workspace for citation aggregation.
 
 ## [0.3.0] — 2026-09-01
 

@@ -1,7 +1,7 @@
 # Naming rules for block · job · task · run
 
 Every rule below came from a break this repo actually hit, and every one is
-checked mechanically by `_tools/check_task_tree.py`.
+checked mechanically by `ref/check_task_tree.py` (this skill's copy; a project may mirror it under `tasks/_tools/`).
 
 ## The pattern
 

@@ -1,3 +1,11 @@
+## 0.8.2 · 260904
+
+- Split stale upstream ownership precisely: Narrative returns to the journey;
+  Venue returns to its QBv bank Page Type before Section resumes CONTEXT.
+- Align the generic fallback template with typed Evidence Items and the
+  Supporting Run → Local Input → Local Page Run → Result graph; remove its
+  final active PageX/probe allowlist.
+
 ## 0.8.1 · 260904
 
 - Enter every Section through the five-phase Page lifecycle beginning at
@@ -7,6 +15,8 @@
   accepted local Result in the shared Outline plugin.
 - Return stale Narrative or Venue authority to its paper-journey owner, then
   resume the Section at CONTEXT/PREPARE.
+- Declare `page_ruling: none` for the unit Page; paper-level G6 remains the
+  separate assembly/readiness human gate after all Sections close.
 
 ## 0.8.0 · 260902
 

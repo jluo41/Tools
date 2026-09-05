@@ -1,4 +1,4 @@
-# Discovery Lifecycle Map (v6 — D1 cycles over BJTR + Paper Runs)
+# Discovery Lifecycle Map (v7 — D1 Task workflow × Page workflow × BJTR Runs)
 
 A Discovery `tNN_` Folder is one durable research article/question with BOTH a
 Page Face and a Task Face. It is a Task Page, not a flat citation note. This file
@@ -9,7 +9,8 @@ only in `paper-run-contract.md`.
 
 ```text
 HIERARCHY       Block -> Job -> Task Page -> Paper/Source Run
-WORKFLOW        D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+DOMAIN WORKFLOW D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
+PAGE WORKFLOW   00 CONTEXT -> 01 OUTLINE -> 02 EVIDENCE -> 03 CONTENT -> 04 CHECK
 DISCOVERY TYPE  one article form from page-types.md
 ```
 
@@ -56,7 +57,7 @@ Page Face                              Task Face
 tNN_<task>.md                         discovery.yaml
 outline/                               scripts/ (optional instrument)
 outline/evidence/bibex/tNN_<task>.bib  runs/
-(derived Bib; declared CITE items only) results/
+(derived union of complete Result Bibs)    results/
 typed Page synthesis                   runtime receipts
 ```
 
@@ -64,34 +65,30 @@ The Faces work on the same Task question. The Page synthesizes many Results; the
 Face plans and executes them. `discovery.yaml` is the Task manifest, not the
 whole folder or the only file that matters.
 
-## D1 Cycle ownership
+## The two workflow authorities
 
-| Cycle | Meaning | Authoritative writes |
-|---|---|---|
-| **SCOPE** | freeze BJTR identity, `discovery_type`, question, boundary, and admission rule | `discovery.yaml` intent and Page opening |
-| **PREPARE** *(optional)* | author reusable search/extraction/synthesis support | `scripts/`; never an empty scaffold |
-| **ACQUIRE** | resolve Triggers, admit Subjects, and execute one analysis Run per Subject | `runs/`, paired `results/`, Task progress/receipt links |
-| **SYNTHESIZE** | validate and promote completed Results into the promised article | root Page, optional typed record/item, derived Outline-owned Bib |
-| **CLOSE** | check and reconcile Page/Task state and publish the outcome receipt | `discovery.yaml report/status`, Page state/Aims, handoff pointers |
+| D1 cycle | Domain/Task meaning | Authoritative writes | Discovery Runs |
+|---|---|---|---|
+| `SCOPE` | freeze BJTR identity, type, question, boundary, and admission rule | `discovery.yaml` intent | none |
+| `PREPARE` | author optional reusable instrument | optional used `scripts/` | none |
+| `ACQUIRE` | resolve Triggers, admit Subjects, and execute one analysis per Subject | `runs/`, paired `results/`, Task receipts | `paper-analysis` / `source-analysis` x `N_admitted` |
+| `SYNTHESIZE` | hand accepted Results to the shared Page workflow | Task progress and optional typed record only | none; the D1 root records Page CONTENT no-Run rationale |
+| `CLOSE` | reconcile the already-CHECKed Page with the Task Face | `discovery.yaml report/status` and handoff | none |
 
 Low-level calls to arXiv, Crossref, a CLI, an API, or another skill are recorded
 inside a Paper Run receipt. They are not Level-4 Runs themselves.
 
 ## Workflow summary
 
-The complete contract table is owned by `haipipe-discovery-workflow`:
-
-| Cycle | L3 authority | L4 Run profile | Gate | Route |
-|---|---|---|---|---|
-| SCOPE | manifest intent + Page boundary | none | path/manifest/Page/type agree | PREPARE / ACQUIRE |
-| PREPARE | optional `scripts/` | none | declared support exists or is omitted | ACQUIRE |
-| ACQUIRE | Task progress only | Discovery paper/source analysis · `N_admitted` | one valid Ticket/Result per admitted Subject | ACQUIRE / SYNTHESIZE / HOLD |
-| SYNTHESIZE | Page + typed record + derived Evidence Bib | none | every claim resolves to an accepted Result/cite key | ACQUIRE / CLOSE / HOLD |
-| CLOSE | report/status + Page state/Aims | none | checker passes and both Faces agree | CLOSE / ACQUIRE / SYNTHESIZE / HOLD |
+The complete contract table is owned by
+`../../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. It also
+contains the Runs Overview, Human Actions, exact skill chains, and Skill
+Coverage. The separate `haipipe-discovery-workflow` skill is retired; D1 owns
+the domain table while `haipipe-page-workflow` independently owns Page writes.
 
 Expected total Level-4 Runs is `R = N_admitted canonical Subjects`. Search
 queries, candidate rows, redirects, worker/API calls, synthesis passes, typed
-records, and the SYNTHESIZE/CLOSE cycles do not add Runs. Actual inventory comes only from
+records, and SYNTHESIZE/CLOSE do not add Discovery Runs. Actual inventory comes only from
 allocated Tickets with runtime receipts.
 
 ## Discovery Types and specialist routes
@@ -148,7 +145,7 @@ Citation verification is the highest-value Discovery gate. The Paper Run
 contract owns each Result's `bib.verification` receipt; Outline owns any typed
 CITE-item gate it explicitly declares. The checker and Bib builder are
 deterministic, but `verified` is an artifact-local person judgment. Every
-complete Result entering the aggregate must be verified before CLOSE can claim epistemic `status: ok` or
+complete Result entering the aggregate must be verified before D1 CLOSE can claim epistemic `status: ok` or
 `status: inconclusive`; without it, the receipt is `blocked`. `inconclusive`
 is reserved for completed, verified admissible evidence that cannot establish
 the substantive answer.
@@ -166,18 +163,18 @@ Evidence Run just to repackage one of those Results.
 /haipipe-discovery open-block <name>            -> scaffold bNN Block
 /haipipe-discovery open-job <block> <name>      -> scaffold jNN Job
 /haipipe-discovery open <job> <type> <question> -> scaffold tNN Task Page
-/haipipe-discovery scope <task>                 -> freeze manifest intent and boundary
-/haipipe-discovery prepare <task>               -> author optional instrument
-/haipipe-discovery add <task> <trigger>         -> resolve trigger; scaffold Paper Run(s)
-/haipipe-discovery run <task> [RUNNAME]         -> execute one/all Paper Runs
-/haipipe-discovery acquire <task>               -> resolve/admit/analyze Subjects
-/haipipe-discovery synthesize <task>            -> promote completed Results
-/haipipe-discovery close <task>                 -> check and reconcile both Faces
+/haipipe-discovery scope <task>                 -> D1 SCOPE; Page 00 consumes it
+/haipipe-discovery prepare <task>               -> D1 PREPARE
+/haipipe-discovery add <task> <trigger>         -> D1 ACQUIRE intake
+/haipipe-discovery run <task> [RUNNAME]         -> D1 ACQUIRE execution
+/haipipe-discovery acquire <task>               -> D1 ACQUIRE
+/haipipe-discovery synthesize <task>            -> D1 SYNTHESIZE -> Page workflow
+/haipipe-discovery close <task>                 -> Page 04 CHECK -> D1 CLOSE
 /haipipe-discovery plan|build|execute|report    -> compatibility aliases
 /haipipe-discovery <task>                       -> run full Task lifecycle
 /haipipe-discovery <specialist> [args]          -> one-off worker, no durable folder
 ```
 
-`add` resolves intake and `run` executes Level-4 tickets inside ACQUIRE.
-SYNTHESIZE changes authoritative L3 Page content; CLOSE only checks,
-reconciles, and publishes the outcome.
+`add` resolves intake and `run` executes Discovery Level-4 tickets inside D1
+ACQUIRE. Page CONTENT changes authoritative Page content; Page CHECK returns
+its receipt to D1 CLOSE, which reconciles and publishes the Task outcome.

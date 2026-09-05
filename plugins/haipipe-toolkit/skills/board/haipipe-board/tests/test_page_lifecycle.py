@@ -463,6 +463,35 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value["packet"]["page_ruling"] = "none"
         self.assertClean(value)
 
+    def test_terminal_route_must_omit_next_cycle(self):
+        receipt = check(1, "v1")
+        receipt["next_cycle"] = "WRITE"
+        self.assertIn("terminal-next-cycle", self.codes(run([receipt])))
+
+        receipt["next_cycle"] = ""
+        self.assertIn("terminal-next-cycle", self.codes(run([receipt])))
+
+        receipt.pop("next_cycle")
+        self.assertClean(run([receipt]))
+
+    def test_nonterminal_next_cycle_must_match_routed_phase(self):
+        first = producer(1, "CONTENT", "v0", "v1", "CHECK")
+        first["cycle"] = "WRITE"
+        first["next_cycle"] = "WRITE"
+        second = check(2, "v1")
+        self.assertIn("route-cycle-mismatch", self.codes(run([first, second])))
+
+        first["next_cycle"] = "CHECK"
+        self.assertClean(run([first, second]))
+
+    def test_current_cycle_receipt_requires_matching_phase_and_next_cycle(self):
+        first = producer(1, "CONTENT", "v0", "v1", "CHECK")
+        first["cycle"] = "LAND"
+        second = check(2, "v1")
+        codes = self.codes(run([first, second]))
+        self.assertIn("phase-cycle-mismatch", codes)
+        self.assertIn("missing-next-cycle", codes)
+
     def test_receipt_round_cannot_exceed_declared_bound(self):
         receipt = check(1, "v1", "HOLD", round=4, verdict="blocked")
         value = run([receipt], status="blocked")
@@ -489,11 +518,8 @@ class PageLifecycleAuditTest(unittest.TestCase):
                 {finding.code for finding in audit_artifacts(value)},
             )
 
-    def test_prepare_pause_allows_the_next_pass_after_hold(self):
-        """260819 pause rule: a HOLD from OUTLINE/EVIDENCE with an open
-        required gate is a PAUSE between passes of one round, not a terminal.
-        The live 260819 round appended one receipt per pass and 10 of 12 legal
-        passes audited as receipt-after-terminal before this rule existed."""
+    def test_legacy_pre_cycle_prepare_pause_remains_auditable(self):
+        """Historical receipts lacking cycle/next_cycle retain their pause rule."""
         gate = {"required": True, "status": "pending",
                 "evidence": ["outline approved: line, unticked"]}
         steps = []
@@ -503,6 +529,18 @@ class PageLifecycleAuditTest(unittest.TestCase):
             steps.append(r)
         value = run(steps, status="hold", gate_required=True)
         self.assertNotIn("receipt-after-terminal", self.codes(value))
+
+    def test_current_hold_is_terminal_even_with_a_pending_gate(self):
+        gate = {"required": True, "status": "pending",
+                "evidence": ["outline approved: line, unticked"]}
+        r1 = producer(1, "OUTLINE", "v0", "v1", "HOLD")
+        r1["cycle"] = "SHAPE"
+        r1["human_gate"] = dict(gate)
+        r2 = producer(2, "OUTLINE", "v1", "v1", "HOLD")
+        r2["cycle"] = "SHAPE"
+        r2["human_gate"] = dict(gate)
+        value = run([r1, r2], status="hold", gate_required=True)
+        self.assertIn("receipt-after-terminal", self.codes(value))
 
     def test_prepare_pause_still_requires_a_legal_next_phase(self):
         gate = {"required": True, "status": "pending",

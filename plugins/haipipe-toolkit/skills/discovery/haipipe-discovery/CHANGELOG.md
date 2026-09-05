@@ -8,6 +8,30 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.9.1] — 2026-09-04
+
+- Keep `1_search`, `2_review`, and `3_idea` as numbered skill-family groups,
+  parallel to the organization of `haipipe-task`; explicitly distinguish them
+  from executable D1 phases and reject a duplicate `routes/` hierarchy.
+
+## [0.9.0] — 2026-09-04
+
+- Retire the redundant standalone `haipipe-discovery-workflow` skill and route
+  `folder-kind: discovery` directly to the D1 Inquiry phase contract.
+- Separate D1's domain/Task workflow from the shared Page `00 CONTEXT` through
+  `04 CHECK` workflow; D1 SYNTHESIZE orchestrates their handoff but does not
+  write through Page-phase authority.
+- Move the canonical full Workflow Table, Runs Overview, Human Actions, and
+  Skill Coverage into the D1 phase's `ref/workflow-table.md`.
+- Fix the Phase × Run map: only D1 ACQUIRE commissions local Runs, one
+  Paper/Source Run per admitted Subject. The D1 root uses direct Result/cite
+  lineage, skips Page EVIDENCE, and records the Page CONTENT no-Run rationale;
+  consumer Pages own any Page-family Runs they commission.
+- Repair the main-door relative links to the shared Outline item and citation
+  contracts.
+- Record the passing fresh-context D1 fixture test: duplicate Subject reuse,
+  one-Subject Run cardinality, and truthful `CLOSURE_HELD` behavior.
+
 ## [0.8.1] — 2026-09-04
 
 - Separate technically complete Results from person-verified epistemic Task

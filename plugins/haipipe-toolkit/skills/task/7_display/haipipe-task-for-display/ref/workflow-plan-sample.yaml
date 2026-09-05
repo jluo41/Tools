@@ -3,7 +3,8 @@
 # Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
 # Typical display-input phases: Load → Summarize → Validate → Export
-# All outputs are small, display-safe inputs (results/<run>/{source_data.csv, provenance.json}).
+# All outputs are small, display-safe inputs under
+# $OUTPUT_ROOT/results/<task>/<run>/{source_data.csv, provenance.json}.
 
 # ─── Header ──────────────────────────────────────────────────────
 name: display-input-<NAME>
@@ -13,12 +14,12 @@ skill: haipipe-task-for-display
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: t01_display_input_summary/scripts/config/<RUN>.yaml
     display_kind: <figure | table | diagram | illustration>
   files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
-    - results/<UPSTREAM_RUN>/metrics.json
+    - t01_display_input_summary/scripts/prepare_display_input.py
+    - t01_display_input_summary/scripts/config/<RUN>.yaml
+    - <resolved-upstream-result>/metrics.json
 
 # ─── P: Phases ───────────────────────────────────────────────────
 phases:
@@ -31,7 +32,7 @@ phases:
         required: true
         prompt: "Load upstream results (metrics.json, source_data.csv)"
         files_in:
-          - results/<UPSTREAM_RUN>/metrics.json
+          - <resolved-upstream-result>/metrics.json
         files_out: []
 
   - title: Summarize
@@ -60,16 +61,16 @@ phases:
       - label: "export:display-input"
         type: agent
         required: true
-        prompt: "Save source_data.csv + provenance.json to results/<RUN>/; optional diagnostics stay in diagnostics/."
+        prompt: "Save source_data.csv + provenance.json to $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/; optional diagnostics stay in diagnostics/."
         files_in: []
         files_out:
-          - results/<RUN>/source_data.csv
-          - results/<RUN>/provenance.json
+          - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/source_data.csv
+          - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/provenance.json
 
 # ─── O: Output ───────────────────────────────────────────────────
 output:
   returns:
-    status: ok
+    status: complete
   files_out:
-    - results/<RUN>/source_data.csv
-    - results/<RUN>/provenance.json
+    - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/source_data.csv
+    - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/provenance.json

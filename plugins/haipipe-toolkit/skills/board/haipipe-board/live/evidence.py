@@ -11,7 +11,8 @@ route), and 🖼 Displays (the display saved view), with pens inline; cross-page
 source bindings remain provenance inside their Evidence Item rather than a
 separate PageX lens. Exact-file cards expose Page evidence and
 whole-Folder cards expose Page/Task Face status). Storage, writers,
-walls and the three human gates (verified: / read: / accepted:) stay with the
+walls and the human gates (CITE-item Verified / legacy read: / display
+accepted:) stay with the
 lane contracts (`haipipe-plugin-outline/ref/evidence/citations.md` and its
 sibling evidence references are the current contracts for this file). Like
 the 🧮 tab: no storage, no writer, nothing stored, never stale.
@@ -347,7 +348,8 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
     paths = ('<details><summary>Run &amp; Result paths</summary>%s</details>' % paths_html
              if paths_html else "")
     details = []
-    for label, key in (("Local input", "local input"), ("Decision", "decide")):
+    for label, key in (("Local input", "local input"),
+                       ("Verified", "verified"), ("Decision", "decide")):
         value = str(fields.get(key, ""))
         if value:
             details.append('<div class=evdetail><b>%s</b><span>%s</span></div>' %

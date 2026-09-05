@@ -74,7 +74,7 @@ canonical Subjects become Runs. Full article grammar and legacy mapping:
 | `sources` | optional | coverage and candidate-selection policy |
 | `instrument` | optional | `{needed, path}` under `scripts/` |
 | `typed_record` | optional | `summary.md`, `verdict.md`, `landscape.md`, or `ideas.md` when the type owns one |
-| `report` | at CLOSE | appended outcome block; absent before CLOSE |
+| `report` | at D1 `CLOSE` | appended outcome block; absent before CLOSE |
 | `created_at`, `updated_at` | yes | quoted ISO8601 strings |
 
 No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
@@ -141,7 +141,7 @@ instrument:
   path: ""
 typed_record: verdict.md
 
-# Appended at CLOSE only:
+# Appended at D1 CLOSE only:
 report:
   outcome: supports
   summary: One line a human can act on.
@@ -160,9 +160,8 @@ planned -> building (optional) -> executing -> reported -> ok | inconclusive | b
 This v6 field is a backward-compatible summary, not the D1 Cycle identity:
 `planned` roughly covers SCOPE, `building` covers optional PREPARE,
 `executing` may cover ACQUIRE or SYNTHESIZE, and reported/terminal values
-belong to CLOSE. Do not infer an exact current Cycle from `status`. A later
-schema migration will split workflow state/current Cycle from epistemic
-`report.outcome`; until then the Workflow Table and receipts are authoritative.
+belong to CLOSE. Do not infer an exact current Cycle from `status`; the D1
+Workflow Table and Page receipts are authoritative.
 
 Task Page status and Paper Run status are different axes. A Task Page may report an
 `inconclusive` outcome while every admitted Paper Run is technically complete.

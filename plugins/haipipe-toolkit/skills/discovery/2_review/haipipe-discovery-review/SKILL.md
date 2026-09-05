@@ -3,17 +3,18 @@ name: haipipe-discovery-review
 description: "Review-route specialist for topic-summary, verdict, and landscape Discovery Pages: synthesize completed Paper/Source Results into the root article and optional typed record. Missing evidence becomes one numbered Run per canonical Subject. Trigger: topic summary, judge claim, prior art, counterevidence, landscape, lit review for a discovery, /haipipe-discovery-review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-03"
+  version: "0.5.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-discovery-review · Review type specialist
 
-Owns SYNTHESIZE for `topic-summary`, `prior-art-verdict`,
+Owns `03 CONTENT / WRITE` craft for `topic-summary`, `prior-art-verdict`,
 `counterevidence-review`, `landscape-review`, and `benchmark-landscape`.
 Every type writes the root Page; summary/verdict/landscape files are optional
-typed Task-side records selected by `ref/page-types.md`.
+typed Task-side records selected by
+`../../haipipe-discovery/ref/page-types.md`.
 
 Workers: research-lit (default multi-source), comm-lit-review
 (communications), and academic-researcher (cross-discipline).
@@ -25,7 +26,7 @@ Workers: research-lit (default multi-source), comm-lit-review
    results/*/<RUNNAME>.md plus facts.md. If sources.from_topic names another
    Discovery Task Page, read its root Page, typed record, and completed Results; never depend on
    its legacy notes.md.
-2. Test evidence sufficiency. When new papers are required, route to ACQUIRE;
+2. Test evidence sufficiency. When new papers are required, route to D1 ACQUIRE;
    Search resolves candidates and adds one paired Run/Result per Subject.
    Inline worker calls and search queries are not Runs.
 3. Dispatch the review worker with the output contract below. Write the root
@@ -34,8 +35,8 @@ Workers: research-lit (default multi-source), comm-lit-review
 4. Every evidence statement links to a Result Card and uses that Result's cite
    key. Counterevidence is retained, and scope never exceeds the underlying
    Results.
-5. Run the deterministic spine check and ask the Outline citation contract to
-   rebuild `outline/evidence/bibex/` before returning.
+5. Run the deterministic spine check and consume the D1 SYNTHESIZE aggregate
+   at `outline/evidence/bibex/`; do not create a second rebuild authority.
 6. Return the Page path, optional typed-record path, outcome (or cluster/gap counts), complete and
    unresolved Run counts, and aggregate Bib path. The orchestrator owns topic
    status and CLOSE.
