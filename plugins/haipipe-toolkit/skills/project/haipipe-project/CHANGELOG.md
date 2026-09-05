@@ -4,6 +4,23 @@ haipipe-project — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.4.0] -- 2026-09-04
+
+- Replace name-selected project kinds with independent `profile` and
+  `git_mode` fields in the new `haipipe-project/v1` manifest.
+- Require `README.md` and `project.yaml` for every active Project while
+  making all content worlds lazy rather than scaffolding empty directories.
+- Add `external/` as a narrow read-only upstream boundary and define
+  research/software/hybrid root-code profiles.
+- Align the Project boundary with current BJTR Task, Run, Discovery, Page, and
+  Task/Insights Board contracts; remove stale two-level Task, retired Probe,
+  and top-level Insight rules.
+- Add read-only `audit`, safe `update`, and deterministic
+  `scripts/audit_projects.py`. Routine updates record risky relocations as
+  migration debt instead of moving submodules, Results, Boards, or code trees.
+- Remove the missing `PREFERENCES.md` dependency from the entrypoint.
+
+
 ## [0.3.4] -- 2026-08-06
 
 - `ref/project-structure.md` papers/ row repointed: the paper-folder contract is

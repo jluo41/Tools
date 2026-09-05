@@ -8,16 +8,15 @@ projects / tasks it scaffolds or audits.
 Feedback is ROUTED at capture time to the specific sub-skill it concerns. Each
 sub-skill keeps its OWN `feedback/` folder so the report sits next to the code
 that needs fixing. THIS folder is the **fallback**: it holds cross-cutting
-discipline that no single specialist owns (the three-level hierarchy rule, the
-group-letter convention, the paired-example rule, the return-contract tail, the
-structured dispatch, project / task-group / task-folder SCAFFOLDING behavior
-itself, and ROUTING to /haipipe-task) plus anything the router could not
-classify. The folder a file lives in IS the record of which skill it concerns;
+discipline that no single specialist owns (README + project.yaml identity,
+profile versus Git mode, lazy worlds, root migration safety, the return-contract
+tail, structured dispatch, and routing to child-world owners) plus anything the
+router could not classify. The folder a file lives in IS the record of which skill it concerns;
 there is no cross-skill shared feedback.
 
-Note: task-folder / run scaffolding runs in a DIFFERENT layer (/haipipe-task).
-Feedback about how THIS orchestrator dispatches to or hands off to /haipipe-task
-is orchestrator-level and lands HERE, not in the task layer's inboxes.
+Note: Block / Job / Task / Run scaffolding runs in a DIFFERENT layer
+(/haipipe-task). Feedback about this orchestrator's handoff is Project-level and
+lands HERE; feedback about BJTR behavior lands in the Task inbox.
 
 ## How
 

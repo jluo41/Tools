@@ -1,104 +1,44 @@
-Track A: Code Development Structure (code/ + code-dev/)
-=========================================================
+# Project-level code placement
 
-Two sub-tracks:
+Read `project.yaml.profile` before deciding whether root-owned code is legal.
 
-  A1 -- Pipeline functions (SourceFn, RecordFn, CaseFn, TfmFn, SplitFn)
-       Developed in: code-dev/1-PIPELINE/    Generated to: code/haifn/
+## Research
 
-  A2 -- ML models (Algorithm, Tuner, Instance)
-       Developed in: code/hainn/
+A `research` Project does not own a root software package. Execution code
+belongs to its BJTR Job/Task under `tasks/`; generated output belongs to the
+Job or its consumer-owned store. Reusable SPACE libraries remain in the SPACE's
+own code package, outside the Project.
 
----
+Root `src/`, `scripts/`, `configs/`, `tests/`, and `docs/` are migration
+debt for this profile. Do not move them automatically: first determine whether
+the Project should be reclassified or the code belongs to a Job.
 
-Builder Pattern (A1)
-=====================
+## Software
 
-NEVER edit code/haifn/ directly. Edit code-dev/ builder, then run it.
+A `software` Project is itself a package or product repository. Conventional
+root structure is valid:
 
-  code-dev/1-PIPELINE/
-  +-- 1-Source-WorkSpace/   -> code/haifn/fn_source/    (SourceFn, HumanFn)
-  +-- 2-Record-WorkSpace/   -> code/haifn/fn_record/    (RecordFn)
-  +-- 3-Case-WorkSpace/     -> code/haifn/fn_case/      (TriggerFn, CaseFn)
-  +-- 4-AIData-WorkSpace/   -> code/haifn/fn_aidata/    (TfmFn, SplitFn)
-  +-- 5-Instance-WorkSpace/ -> code/haifn/fn_model/     (ModelInstanceFn)
-  +-- 6-Endpoint-WorkSpace/ -> code/haifn/fn_endpoint/  (EndpointFn)
+```text
+src/
+tests/
+scripts/
+configs/
+docs/
+pyproject.toml or another build manifest
+```
 
----
+Tasks may describe development or evaluation work but should call the package,
+not duplicate its implementation.
 
-ML Model Layout (A2)
-=====================
+## Hybrid
 
-  code/hainn/
-  +-- algo/{family}/algorithm_{name}.py
-  +-- tuner/{family}/tuner_{name}.py
-  +-- instance/{family}/instance_{name}.py
-  +-- instance/{family}/configuration_{name}.py
-  +-- nn/                       <- shared neural net blocks
+A `hybrid` Project combines a root software artifact with research worlds.
+The same no-duplication rule applies: root code owns the reusable product;
+Task-owned `scripts/` own bounded experimental pipelines; Job `src/` owns
+code shared only by sibling Tasks in that Job.
 
-  Families: tsforecast, mlpredictor, tefm, tediffusion, bandit
+## Universal boundary
 
----
-
-When to Create Track A Stubs
-==============================
-
-  New dataset/modality?       -> SourceFn/RecordFn stubs (code-dev/)
-  New feature engineering?    -> CaseFn/TfmFn stubs
-  New model architecture?     -> algo + tuner + instance stubs (code/hainn/)
-  Purely experimental/reuse?  -> Track A not needed
-
-Every Track A stub auto-generates a paired Track B example task with the standard layout (including diagram/). Status is tracked in:
-  - {task}/diagram/03-runs.txt             (Status = "stub" until implemented)
-The paired task does NOT contain a README.md — diagram/ is the doc surface.
-
----
-
-Stub File Locations
-====================
-
-Pipeline Fn stubs:
-  code-dev/1-PIPELINE/{N}-*-WorkSpace/build_{dataset}_{layer}.py
-
-ML model stubs:
-  code/hainn/algo/{family}/algorithm_{name}.py
-  code/hainn/tuner/{family}/tuner_{name}.py
-  code/hainn/instance/{family}/instance_{name}.py
-  code/hainn/instance/{family}/configuration_{name}.py
-
----
-
-code/INDEX.md -- Codebase-Wide Registry
-========================================
-
-Location: code/INDEX.md (shared across ALL projects).
-Read BEFORE creating any new Fn or model -- reuse first.
-
-  ## Pipeline Functions (code/haifn/)
-  | FnClass | Stage | Dataset | Location | Projects Using | Status |
-
-  ## ML Models (code/hainn/)
-  | ModelClass | Family | Tuner | Location | Projects Using | Status |
-
-  Status: stub | wip | done
-
-Update after: creating stubs, implementing, or reviewing.
-
----
-
-Skill Handoff
-==============
-
-  Stage 1-4 Fns    ->  /haipipe-data design-chef {stage}
-  Stage 5 models   ->  /haipipe-nn
-  Stage 6 endpoints ->  /haipipe-end
-
----
-
-Review Checklist for Track A
-=============================
-
-  [ ] Builder exists in code-dev/ for each declared stage
-  [ ] Generated code/haifn/ has Fn class (not just stub)
-  [ ] For new models: algo, tuner, instance, configuration files exist
-  [ ] code-dev/ builder and code/haifn/ output in sync
+No profile permits root `results/`. Runtime output belongs to the Task/Job
+contract or a consumer-owned store. Upstream repositories that are not the
+Project's product belong under `external/` and remain read-only.

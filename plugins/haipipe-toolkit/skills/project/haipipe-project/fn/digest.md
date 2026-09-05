@@ -49,20 +49,17 @@ session into a clean candidate list and gating it.
 2. DISTILL into discrete candidate items, ONE concern each, in YOUR words
    (quote where possible; do not invent feedback you cannot point to).
    COMPOUND TURNS are the norm, not the exception: a single turn often bundles
-   feedback + a one-off task instruction + a file path (e.g. "the overview
-   should group by task-group not dump every file ... go ahead and scaffold the
-   new C01 group, and the project lives under examples/ProjB"). Extract ONLY the
+   feedback + a one-off task instruction + a file path (e.g. "the Project
+   audit should show migration debt ... go ahead and scaffold the new b01
+   Block, and the project lives under examples/ProjB"). Extract ONLY the
    feedback clause(s); DROP the task clause ("go scaffold it", "review X now");
    a path is a location, not feedback. One turn may yield TWO feedback items
    (split them) or ZERO.
 3. DEDUP each candidate, and infer its target via the feedback router. ROUTING
    ORDER MATTERS: the cross-cutting GUARD runs BEFORE the keyword map
-   (fn/feedback.md resolve step 0), so a project-wide rule like "every new task
-   folder should get a diagram stub" is caught by the guard and is NEVER
-   keyword-routed to a specialist. Route by the complaint's SUBJECT, not by a
-   skill-name or path it MENTIONS: "add feedback to /haipipe-organize that the
-   overview must group by task-group" is about the OVERVIEW (the subject, ->
-   -inspect), not -organize (a mis-named destination).
+   (fn/feedback.md resolve step 0), so a Project-wide rule like "every Project
+   needs project.yaml" is caught by the guard. Route by the complaint's
+   SUBJECT, not by a skill-name or path it merely mentions.
      a. within-batch:  collapse candidates that are the same topic this run.
         The survivor is the batch-master; the rest are tagged [DUP-IN-BATCH]
         and FOLD INTO the master -- they are not routed on their own.
@@ -126,7 +123,7 @@ digest files ONLY skill-feedback into sub-skill inboxes. Some session remarks
 are GLOBAL BEHAVIORAL preferences (how the agent should act across ALL sessions,
 not a project-skill defect). Do NOT file those -- FLAG them in the report and
 suggest you `/remember` them. One job per verb.
-  skill defect    "project inventory miscounted task-folders"   -> inbox
+  skill defect    "project audit hid a legacy root"             -> inbox
   global behavior "always show me a diagram instead of prose"   -> flag -> memory
 ```
 

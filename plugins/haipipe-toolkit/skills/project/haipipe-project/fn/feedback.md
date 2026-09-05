@@ -76,28 +76,23 @@ signal B (secondary): the active sub-skill from this session's last dispatch
 resolve:
   0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
      does the complaint assert a rule TRUE ACROSS ALL PROJECT OPERATIONS
-     (something that should hold for every scaffold/review/organize, however
+     (something that should hold for every scaffold/audit/update, however
      phrased) OR name a known cross-cutting concern -- rather than report a bug
      in ONE specialist's behavior or output? If yes -> orchestrator FALLBACK,
      STOP. This overrides any keyword it contains.
        Signals that it is project-wide (non-exhaustive examples, NOT a checklist):
          - quantifies over operations: "every/each/all", "always", "whenever I
-           scaffold/review/organize", "across the board", or the same idea with
+           scaffold/audit/update", "across the board", or the same idea with
            no trigger word at all.
-         - names a known cross-cutting concern: the three-level hierarchy rule
-           (project -> task-group -> task-folder), the group-letter convention
-           (A=training/B=eval/C=display/D=data/E=individual/F=agent/X=algo),
-           the paired-example rule (code always has a paired example), the
-           return-contract tail, the structured dispatch, project / task-group /
-           task-folder SCAFFOLDING behavior itself, and ROUTING to /haipipe-task
-           (a different layer -- feedback about how THIS orchestrator hands off
-           to /haipipe-task is orchestrator-level, NOT task-layer feedback).
-       Rule of thumb: "would this complaint be equally true when scaffolding a
-       project, reviewing a project, AND reorganizing files?" If yes, it is
+         - names a known cross-cutting concern: README + project.yaml identity,
+           profile versus Git mode, lazy world creation, root migration safety,
+           the return-contract tail, structured dispatch, Project-root
+           scaffolding/audit/update behavior, and ROUTING to child-world owners.
+       Rule of thumb: "would this complaint be equally true when scaffolding,
+       auditing, AND updating a Project root?" If yes, it is
        cross-cutting.
-       Contrast: "every new task folder should get a diagram stub" -> fallback
-       (project-wide scaffold rule); "the review missed a flat task folder" ->
-       haipipe-project fn/repo-project (one fn bug).
+       Contrast: "every Project needs project.yaml" -> fallback; "the Task
+       checker missed a flat Job" -> haipipe-task (child-world bug).
   1. else keyword match in TEXT -> that skill (most specific wins)
   2. else active sub-skill from this session (if known)
   3. else orchestrator fallback
@@ -106,16 +101,16 @@ resolve:
 Keyword -> skill map (first/most-specific match wins):
 
 ```
-inspect, review, summary, summarize, inventory,
-  scan-status, eval status                           -> /haipipe-task (fn moved 2026-07-03)
-organize, reorganize, move files, restructure,
-  relocate, fix structure                            -> retired 260822 and deleted
+Project root, manifest, profile, Git mode,
+  Project audit, root migration                       -> /haipipe-project
+Task status, BJTR, Block, Job, Task, Run              -> /haipipe-task
+Discovery structure                                  -> /haipipe-discovery
+Paper/Application/Board/Page internals                -> their owning skill
 workflow, IPO, phases, plan workflow                 -> haipipe-workflow
 --------------------------------------------------------------------------
-NO MATCH  (cross-cutting: project / task-group / task-folder SCAFFOLDING &
-          routing to /haipipe-task, new-task creation, the three-level
-          hierarchy rule, group-letter convention, paired-example rule,
-          return-contract tail, anything true across all project operations)
+NO MATCH  (cross-cutting Project-root setup/audit/update, owner routing,
+          lazy worlds, migration safety, return-contract tail, or anything
+          true across all Project operations)
                                        ........... -> orchestrator fallback (this folder)
 ```
 
@@ -124,9 +119,9 @@ signal is the active sub-skill and the complaint is plainly cross-cutting,
 prefer the fallback over the active-skill (do not bury a project-wide rule
 inside one specialist).
 
-NB: task-folder / run scaffolding is performed by /haipipe-task in a DIFFERENT
-layer. Feedback about how THIS orchestrator chooses, dispatches to, or hands off
-to /haipipe-task is CROSS-CUTTING (orchestrator-level) and lands in the fallback.
+NB: Block / Job / Task / Run scaffolding is performed by /haipipe-task in a
+DIFFERENT layer. Feedback about how THIS orchestrator chooses, dispatches to, or
+hands off to a child-world owner is CROSS-CUTTING and lands in the fallback.
 Do NOT route it into the task layer's inboxes.
 
 ### One file per item (schema)
@@ -159,9 +154,10 @@ orchestrator folder, i.e. `…/skills/project`, NOT
 capture, so a mapped folder not existing yet is expected, not an error.
 
 ```
-fn/project, fn/repo-project   haipipe-project/feedback/  (tag the fn in the item)
+fn/project, fn/repo-project,
+fn/audit, fn/update           haipipe-project/feedback/  (tag the fn in the item)
 haipipe-workflow              ../task/haipipe-workflow/feedback/  (lives in task/)
-task-group / scan-status      ../task/haipipe-task/feedback/      (fns moved to task/)
+BJTR / scan-status            ../task/haipipe-task/feedback/
 ORCHESTRATOR FALLBACK         haipipe-project/feedback/  (this skill's own folder)
 ```
 
@@ -213,6 +209,6 @@ Keep the file as history; never delete it.
 There is no single inbox. Each skill keeps its OWN `feedback/` folder so the
 report sits right next to the code that needs fixing; the orchestrator's
 `feedback/` is the fallback for cross-cutting and unclassifiable items (and for
-all project / task-group / task-folder scaffolding + /haipipe-task routing
-feedback, which is orchestrator-level). There is no cross-skill shared feedback.
+all Project-root setup/audit/update + child-owner routing feedback, which is
+orchestrator-level). There is no cross-skill shared feedback.
 All inboxes travel with the skills in the submodule.

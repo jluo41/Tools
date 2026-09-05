@@ -1,59 +1,52 @@
-fn-project: Scaffold a New Project (plain directory)
-====================================
+# `new` · create a workspace-backed Project
 
-Output: `examples/{PROJECT_ID}/` container folders (see Step 2 skeleton).
-Forbidden at top level: README.md, docs/, cc-archive/, _old/, configs/, results/.
+Create a Project root under `examples/` without fabricating empty worlds.
 
-ROUTING: this fn creates a PLAIN DIRECTORY (ProjX-* names). If the name starts with `Project-`, the user wants a REPO-BACKED project (own GitHub repo + submodule) -> use `fn/repo-project.md` instead.
+## Inputs
 
-A project is the outer container. It holds task-groups (Level 2), which hold task-folders (Level 3). See `ref/hierarchy.md`.
-
-QUICK BY DEFAULT: setup creates the folders and stops. No metadata questionnaire, no diagram authoring, no seed task-group, no code stubs. Those are on-request extras (see the last section).
-
-
-Step 1 -- Resolve PROJECT_ID
-----------------------------
-
-If the invocation already carries a well-formed name, use it. Otherwise ask ONE question:
-
-  Series letter / Category / Num / CamelCase Name
-  → compose PROJECT_ID = `Proj{Series}-{Category}-{Num}-{Name}`
-
-Nothing else is collected at setup.
-
-
-Step 2 -- Create skeleton
--------------------------
-
-```
-examples/{PROJECT_ID}/
-├── tasks/             internal structure owned by /haipipe-task
-├── discoveries/       internal structure owned by /haipipe-discovery
-├── diagram/           EMPTY at setup; authored later via /diagram-ascii on request
-└── papers/            papers land here later (owned by /haipipe-paper-*)
+```text
+/haipipe-project new <id> [--profile research|software|hybrid]
+                         [--git-mode workspace]
+                         [--mission "..."]
 ```
 
-Create the top-level folders only. Each world's internal structure is scaffolded later by its owning skill when first used; this fn never restates their rules.
+Default `profile` to `research` only when no root-owned software artifact was
+requested. `git_mode` is `workspace` for this verb. If the id or mission is
+missing, ask only for the missing value.
 
+## Preflight
 
-Step 3 -- Report
-----------------
+- Read `../ref/project-structure.md`.
+- Confirm `examples/<id>` does not already exist. If it exists, route to
+  `update`, never overwrite it.
+- Confirm the id is readable and stable. Do not derive Git mode from its name.
 
-Print the folders created + the on-request extras below as suggested next steps. Done.
+## Create
 
-
-On request only (NOT part of default setup)
---------------------------------------------
-
+```text
+examples/<id>/
+├── README.md
+└── project.yaml
 ```
-project diagram      user asks "author the project diagram" →
-                       collect: research question / why it matters / in-out of scope
-                       /diagram-ascii → 01-story.txt, 02-boundary.txt (one call per file)
-                       /diagram-ascii-canvas {PROJECT}/diagram/ → project.excalidraw
 
-first task-group /   → /haipipe-task (task-group + task-folder scaffolds live there)
-task-folder
+`README.md` states the mission in one short opening and lists only real entry
+points. `project.yaml` uses schema `haipipe-project/v1`.
 
-Track A code stubs   new pipeline Fn or ML model → ref/code-structure.md
-                       (paired-example rule: every stub gets a demo task)
+Do not create empty `tasks/`, `discoveries/`, `diagram/`, `papers/`,
+`applications/`, or `external/`. When the user also requests first content,
+route that content to its owning skill, which materializes the corresponding
+world.
+
+Do not create root Results, code stubs, seed Tasks, Boards, or diagrams unless
+the user requested them separately.
+
+## Verify and return
+
+Run:
+
+```text
+python3 <haipipe-project>/scripts/audit_projects.py examples/<id>
 ```
+
+Return created paths, profile, Git mode, compliance result, and the appropriate
+first-content command.

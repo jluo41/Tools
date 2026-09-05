@@ -1,154 +1,118 @@
 ---
 name: haipipe-project
 description: >-
-  Quick project setup: create the container folders and stop. Project-* is
-  repo-backed (gh repo under a user-chosen org, submodule at examples/name);
-  ProjX-* is a plain directory. Owns ONLY the container layout: tasks/
-  discoveries/ papers/ applications/ diagram/. Trigger: new project, project
-  scaffold, repo project, project submodule, /haipipe-project.
+  Create, inspect, audit, or safely update project containers under examples/.
+  Owns the Project boundary, README.md, project.yaml, project profile and Git
+  mode, and the optional top-level worlds tasks/, discoveries/, diagram/,
+  papers/, applications/, and external/. Use for new projects, repository
+  topology, project structure reviews, compliance previews, or root-level
+  migrations. Child-world internals remain owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.4"
-  last_updated: "2026-08-05"
+  version: "0.4.0"
+  last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-project (project setup)
-=======================================
+# /haipipe-project · own the Project boundary
 
-One job: **set up a well-formed project container, QUICKLY.** Setup = folders ready (plus README + .gitignore for the repo kind) and stop. No metadata questionnaire, no diagram authoring, no seed tasks -- those are on-request extras. The name decides the kind:
+One Project is one durable research or software boundary. This skill owns only
+the root contract; it never restates or rewrites the internal grammar of a
+Task, Discovery, Paper, Application, Page, or Run.
 
-```
-/haipipe-project repo <Project-Name> [--org <owner>]
-                                         REPO-BACKED project (fn/repo-project.md)
-                                           gh repo create <org>/<name> --private
-                                           + submodule at examples/<name>
-                                           + scaffold + push + workspace pointer bump
-                                           papers inside are submodules OF THE PROJECT
-                                           org resolved per invocation (flag or ask;
-                                           NO default org -- skill serves many owners)
+## Canonical root
 
-/haipipe-project new <ProjX-Name>        PLAIN-DIRECTORY project (fn/project.md)
-                                           examples/<ProjX-Name>/ container folders (papers/ etc.)
-
-/haipipe-project feedback "<text>"       capture skill feedback (merge-or-create)
-/haipipe-project digest [session] [--dry-run]   harvest feedback from a transcript
-/haipipe-project                         list projects under examples/ + the two setup paths
+```text
+examples/ProjNN-<domain>-<purpose>/
+├── README.md       required human entry
+├── project.yaml    required machine contract
+├── tasks/          optional/lazy · computational evidence bank
+├── discoveries/    optional/lazy · external-evidence bank
+├── diagram/        optional/lazy · story, Boards, and meetings
+├── papers/         optional/lazy · academic consumers
+├── applications/   optional/lazy · non-academic consumers
+└── external/       optional/lazy · pinned, read-only upstream material
 ```
 
-Not this skill's job (where it lives instead):
+Do not create empty world directories merely to satisfy a skeleton. Git cannot
+preserve them without placeholder noise; the owning skill creates a world when
+the first real artifact is requested.
 
-```
-task-group / task-folder / run scaffolding   -> /haipipe-task   (task/)
-eval status scanning (scan-status)           -> /haipipe-task   (task/)
-workflow plan/report schema                  -> task/haipipe-workflow
-paper folders inside a project               -> /haipipe-paper folder
-project audits / reorganization              -> retired 260822 and deleted; see git
-claims / evidence questions                  -> /haipipe-probe crossing + the
-                                                consuming Page's local probe plugin
-asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa
+Two independent declarations replace name-based inference:
+
+```yaml
+profile: research | software | hybrid
+git_mode: workspace | submodule
 ```
 
----
+`profile` says what may live at the root. `git_mode` says how the Project is
+stored. A `Proj...` name does not imply either value.
 
-Container Layout + Structure Ownership
-----------------------------------------
+Read `ref/project-structure.md` before creating, auditing, or updating a Project.
 
-This skill owns ONLY the top-level container. Each subfolder's INTERNAL structure is owned by its skill family; when setup or a question needs the details, CONSULT (infer from) the owner listed below -- never restate its rules here.
+## Commands
 
-```
-📦 examples/<name>/   (this skill sets up the container)
-   ├── ⚙️ tasks/          owner: /haipipe-task        two-level hierarchy, group letters, task-folder anatomy
-   ├── 🔎 discoveries/    owner: /haipipe-discovery   one topic = one folder (Search / Review / Idea types)
-   ├── 📄 papers/         owner: /haipipe-paper-*     paper-folder contract (paper wiki); each paper a submodule (legacy projects use singular paper/; do not migrate)
-   ├── 📬 applications/   owner: /haipipe-application-*  non-academic deliverables
-   └── 🗺️ diagram/        owner: this skill (via /diagram-ascii)  01-story, 02-boundary -- EMPTY at setup, authored on request
-```
+```text
+/haipipe-project new <id> [--profile <profile>] [--git-mode workspace]
+    Create README.md + project.yaml. Create no empty worlds. Read fn/project.md.
 
-**The evidence contract, in the four lines this skill must not get wrong** (owner:
-`/haipipe-probe`; full detail in `skills/probe/haipipe-probe/SKILL.md`):
+/haipipe-project repo <id> --org <owner> [--profile <profile>]
+    Create or adopt a repo-backed Project and record git_mode: submodule.
+    Read fn/repo-project.md. `repo` is explicit authorization for that topology;
+    the Project name is not a router.
 
-```
-   🔀 PROBE ROUTES BY SOURCE. Accepted Pages use PageX in OUTLINE. Task/Discovery
-      questions use the QA branch in PROBE/EVIDENCE. This scaffold creates neither lane.
+/haipipe-project audit [<project>|--all]
+    Read-only Project-root compliance report. Read fn/audit.md.
 
-   ⚙️ THE BANK is PROBE-UNAWARE.  tasks/<task-group>/<task-folder>/ and discoveries/<discovery-group>/<discovery-folder>/ carry NO _ASK/,
-      NO _ANS/, NO `answers:` field, NO PP id -- ever. THIS SKILL NEVER MINTS ONE.
-      A leaf MAY carry an OPTIONAL QA/ folder: QA/<n>-<slug>.md, the executor's readable
-      digest, written by the EXECUTOR at its Report stage. Numbering IS the index.
-      Not scaffolded at setup -- it appears when the task-folder has something to say.
+/haipipe-project update [<project>|--all]
+    Add or reconcile the root contract without moving legacy code, Results, or
+    submodules. Record unsafe moves as migration debt. Read fn/update.md.
 
-   📄 THE CONSUMER holds QA questions on its owning Page-local probe surface.
-      For a Board Page: <page>/probe/PP<NN>-<slug>/. PROBE creates the card and
-      EVIDENCE binds the answer. This project scaffold never creates that folder.
+/haipipe-project feedback "<text>"
+/haipipe-project digest [session] [--dry-run]
+    Existing feedback capture and confirmed transcript harvest.
 
-   🔗 THEY BIND BY PATH.  A section's `target:` names a QA file. No id crosses. Nothing
-      to renumber, no ledger, no shared namespace.
+/haipipe-project
+    List active Projects, profile, Git mode, state, and migration status.
 ```
 
-Two refs live here: `ref/project-structure.md` (the top-level container contract only: naming, standard layout, the seven-worlds table + dependency map, project-level diagram/, structure-ownership pointers) and `ref/code-structure.md` (Track A layout + the paired-example rule: every new pipeline Fn or ML model stub gets a paired example task). The tasks/ internals (group folders, task naming, task-folder anatomy, run scripts) live at `task/haipipe-task/ref/task-structure.md`, moved there 2026-07-03.
+## Boundary and ownership
 
----
-
-Routing Logic
--------------
-
-```
-Step 1: Parse $ARGUMENTS.
-Step 2: Resolve verb.
-  - "feedback" first token -> fn/feedback.md (resolve BEFORE other parsing)
-  - "digest" first token   -> fn/digest.md   (resolve BEFORE other parsing)
-  - "repo" or a Project-*  name              -> fn/repo-project.md
-  - "new" / "project" or a ProjX-* name      -> fn/project.md
-  - task/task-group/task-folder/run verbs    -> tell the user: /haipipe-task
-  - review/organize/inventory/overview verbs -> tell the user: retired
-                                                (deleted 260822; see git)
-  - no args -> list examples/ projects (one line each) + the two setup commands
-Step 3: Run the fn. Step 4: Present with the return contract tail.
+```text
+tasks/          → haipipe-task       BJTR execution; Task = Page; Run = identity
+discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
+papers/         → haipipe-paper      academic consumer
+applications/   → haipipe-application
+diagram/        → haipipe-board / haipipe-page plus Project story surfaces
+external/       → this skill owns only the read-only root boundary
 ```
 
-Return contract:
+Task/Discovery evidence may be interpreted by a consumer-neutral Insight Page
+on the Task/Insights Board. `insights/` is not a top-level world. Consumer-owned
+generated stores remain with their Board/Paper/Application; `results/` is never
+a canonical Project-root directory.
 
+## Safe update law
+
+- Add a missing `project.yaml` or `README.md` when the user asks to update.
+- Reconcile facts that are observable on disk; do not invent ownership or state.
+- Treat `paper/`, `insights/`, root `results/`, old pipeline roots, and misplaced
+  submodules as migration debt until their owner and destination are resolved.
+- Never move a submodule, generated Result bank, or large code tree as part of a
+  routine update. Report the exact source, proposed destination, and required
+  pointer/config edits first.
+- A manifest that acknowledges legacy paths is honest but not fully compliant.
+- Exclude `examples/_backup/` from active-project audit and update.
+
+`fn/update.md` owns the exact mutation boundary. `scripts/audit_projects.py`
+provides deterministic root checks. Route any deeper request to the child-world
+owner instead of extending this skill downward.
+
+## Return
+
+```text
+status:    ok | debt | blocked | failed
+summary:   what was created, reconciled, or found
+artifacts: paths changed or inspected
+next:      safest concrete next action
 ```
-status:    ok | blocked | failed
-summary:   2-3 sentences on what was done
-artifacts: [paths created]
-next:      suggested next command
-```
-
----
-
-## Feedback
-
-`/haipipe-project feedback "<text>"` captures a complaint / confusion / wish about
-the project SKILL, recorded in this skill's `feedback/` folder with the fn named
-in the item (e.g. a repo-scaffold gripe -> tagged fn/repo-project); workflow items
-route to `task/haipipe-workflow/feedback/`. There is no `skill:` field -- the
-folder plus fn tag is the record. `feedback list` aggregates open items;
-`feedback move <file> <skill>` re-routes a mis-filed item. Capture is
-MERGE-OR-CREATE: a same-topic complaint updates the existing file (appends a
-dated recurrence, preserves prior wording verbatim, reopens if fixed) so
-inboxes stay self-limiting.
-
-`/haipipe-project digest ["<session-name|id>"] [--dry-run]` is the bulk
-harvester: scans a session transcript (CURRENT session, or a named/id'd past
-one), distills discrete TOOL/SKILL feedback (dropping one-off instructions,
-project-content talk, bare paths), dedups (within-batch + against inbox), and
-after a MANDATORY confirm gate routes each item through the SAME capture
-(merge-or-create, BATCH mode, no per-item re-confirm). It NEVER auto-files;
-`--dry-run` presents the list and stops; global behavioral prefs are FLAGGED
-for `/remember`, not filed. Full conventions: `fn/digest.md`.
-
-Routing is CROSS-CUTTING-GUARD-FIRST: a complaint asserting a rule true across
-all project operations, or naming a cross-cutting concern (three-level
-hierarchy, group letters, paired-example rule, return-contract tail, routing to
-/haipipe-task) -> this skill's own inbox, overriding any keyword. Feedback about
-how this skill HANDS OFF to /haipipe-task is orchestrator-level, not task-layer.
-Full conventions: `fn/feedback.md`; fallback inbox: `feedback/README.md`.
-
-## Behavioral Preferences (portable)
-
-ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
-global behavioral preferences (e.g. communicate via ASCII diagrams) that survive
-a machine change, unlike the machine-local `~/.claude` auto-memory. Kept in sync
-across orchestrators by digest's global-pref fan-out (merge-or-create).

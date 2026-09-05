@@ -1,50 +1,33 @@
-haipipe-project
-===============
+# haipipe-project
 
-Quick project setup: create the container folders and stop. Two kinds by name; everything else (task scaffolding, audits, summaries) moved out or retired.
+Project-root setup, audit, and safe reconciliation for `examples/`.
 
----
+## Commands
 
-Commands
---------
+```text
+/haipipe-project new <id> [--profile research|software|hybrid]
+/haipipe-project repo <id> --org <owner> [--profile ...]
+/haipipe-project audit [<project>|--all]
+/haipipe-project update [<project>|--all]
+```
 
-  /haipipe-project repo <Project-Name> [--org <owner>]
-      REPO-BACKED project: gh repo under a user-chosen org (never assumed) +
-      submodule at examples/<name> + scaffold + push + workspace pointer bump.
-      If the repo already exists, ADOPT: skip create, submodule add pulls it.
-      Recipe: fn/repo-project.md. Papers inside are submodules OF THE PROJECT.
+Every active Project has `README.md` and `project.yaml`. Content worlds are
+lazy: `tasks/`, `discoveries/`, `diagram/`, `papers/`, `applications/`,
+and `external/` appear when first used.
 
-  /haipipe-project new <ProjX-Name>
-      PLAIN-DIRECTORY project under examples/. Recipe: fn/project.md.
+`profile` and `git_mode` are independent manifest fields; names never choose
+repository topology. Routine updates record unsafe moves as migration debt
+instead of relocating submodules, generated Results, or large code trees.
 
-  /haipipe-project feedback "<text>"       capture skill feedback (merge-or-create)
-  /haipipe-project digest [session] [--dry-run]   harvest feedback from a transcript
-  /haipipe-project                         list projects + the two setup paths
+## Files
 
-Setup is QUICK by default: folders ready (plus README + .gitignore for the repo kind), then stop. No metadata questionnaire, no diagram authoring, no seed tasks. Retired verbs (task/overview/review/summarize/organize) were deleted 260822; git history is the only copy.
-
----
-
-Container Layout
------------------
-
-  examples/<name>/
-  +-- tasks/          owner: /haipipe-task
-  +-- discoveries/    owner: /haipipe-discovery
-  +-- papers/         owner: /haipipe-paper-*  (each paper a submodule; legacy projects use singular paper/)
-  +-- diagram/        owner: this skill via /diagram-ascii (EMPTY at setup, authored on request)
-
-Forbidden at top level: docs/, cc-archive/, _old/, configs/, results/ (plain-dir kind also forbids README.md).
-
----
-
-Skill Files
-------------
-
-  SKILL.md                    Router and dispatch table
-  fn/repo-project.md          Repo-backed setup (preflight, ADOPT mode, scaffold, double-bump)
-  fn/project.md               Plain-directory setup (3 steps + on-request extras)
-  fn/feedback.md, fn/digest.md  Feedback capture + session harvest
-  ref/project-structure.md    Top-level container contract only (tasks/ internals: task/haipipe-task/ref/task-structure.md)
-  ref/code-structure.md       Track A layout + paired-example rule
-  CHANGELOG.md                Version history
+```text
+SKILL.md                   entrypoint and routing
+ref/project-structure.md   schema and Project-root authority
+ref/code-structure.md      profile-specific root-code boundary
+fn/project.md              workspace-backed creation
+fn/repo-project.md         submodule-backed creation/adoption
+fn/audit.md                read-only compliance
+fn/update.md               safe reconciliation
+scripts/audit_projects.py  deterministic root audit
+```

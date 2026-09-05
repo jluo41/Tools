@@ -1,146 +1,179 @@
-Project Container Structure (examples/)
-========================================
+# Project Container Contract · haipipe-project/v1
 
-Scope: /haipipe-project owns ONLY the top-level project container described here. Each subfolder's internal structure is owned by its skill family (see Structure Ownership at the bottom) and is consulted at the owner, never restated in this file.
+This reference owns the root of `examples/<project>/` only. Load a child
+world's Skill for everything below that root.
 
-The doc surface of a project is diagram/, not README.md (plain-dir projects; repo-backed Project-* projects do get a README.md). Diagram .txt sources are authored via /diagram-ascii (ASCII + emoji) and bundled into .excalidraw via /diagram-ascii-canvas. Both .txt and .excalidraw are committed: .txt is grep-able and LLM-readable; .excalidraw is the human-readable, annotatable canvas.
+## Identity
 
----
+A Project is one durable question, product, or research program that benefits
+from one boundary for execution, evidence, interpretation, and delivery.
 
-Naming
-=======
+Use a stable readable id such as:
 
-Two project kinds, decided by name:
+```text
+Proj32-CGM-Event-Pred
+```
 
-  ProjX-*     plain directory under examples/ (fn/project.md)
-  Project-*   repo-backed: own GitHub repo + submodule at examples/<name> + scaffold + push + pointer bump (fn/repo-project.md)
+The id is an address, not metadata. Do not infer repository topology, execution
+model, or project profile from spelling.
 
-Plain-dir naming:
+Every active Project carries:
 
-  Proj{Series}-{Category}-{Num}-{Name}
+```text
+README.md       human entry: mission, boundary, current shape, entry points
+project.yaml    machine entry: identity, profile, Git mode, state, migration debt
+```
 
-  Series    single uppercase letter (A=misc, B=benchmarking, C=models, D=EHR)
-  Category  short descriptor (Bench, Model, EHR, Pretrain)
-  Num       sequential integer within Series-Category
-  Name      CamelCase (FairGlucose, ScalingLaw, WeightPredict)
+## Manifest schema
 
----
+Required fields:
 
-Standard Top-Level Layout
-==========================
+```yaml
+schema: haipipe-project/v1
+id: Proj32-CGM-Event-Pred
+profile: research                 # research | software | hybrid
+git_mode: workspace              # workspace | submodule
+state: active                    # active | paused | archived
+mission: "Predict glucose from CGM plus event context."
+```
 
-  examples/{PROJECT_ID}/
-  ├── tasks/          MANDATORY  execution work (owner: /haipipe-task)
-  ├── discoveries/    MANDATORY  external-evidence topics, one topic = one folder (owner: /haipipe-discovery)
-  │                   (probes/ RETIRED 2026-07-05 — the probe owns no folder in the execution tree.
-  │                    insights/ RETIRED 2026-07-12 — the insight layer is fully retired. Legacy
-  │                    probes/ and insights/ folders in old projects are dead history: nothing reads
-  │                    them, nothing writes them; do NOT delete, do NOT scaffold.)
-  ├── diagram/        MANDATORY  project-level story, high-level only (owner: this skill)
-  ├── papers/         OPTIONAL   manuscripts; each Paper-{Name}-{venue}/ often a git submodule (owner: /haipipe-paper-*)
-  └── applications/   OPTIONAL   external deliverables: messages / ui / reports (owner: /haipipe-application-*)
+Optional root-migration disclosure:
 
-papers/ is plural for all NEW scaffolds, matching its sibling collections; legacy projects (ProjA-D) use singular paper/; do not migrate them (submodule paths in .gitmodules). diagram/ stays singular (it is a doc surface, not a collection).
+```yaml
+migration:
+  status: needed                 # needed | planned
+  legacy_paths:
+    - paper
+    - insights
+    - results
+  note: "Paths are preserved until owner-specific migration is approved."
+```
 
-Forbidden at top level: configs/, results/, docs/, cc-archive/, _old/, and README.md for plain-dir ProjX-* projects (repo-backed Project-* projects DO get a README.md).
+`migration` records debt; it does not waive the canonical contract or claim a
+move has happened. Omit it when the Project root is clean.
 
----
+## Canonical root
 
-The Five Worlds
-================
+```text
+examples/<project>/
+├── README.md             REQUIRED
+├── project.yaml          REQUIRED
+│
+├── tasks/                LAZY · internal computational executor
+├── discoveries/          LAZY · external-evidence executor
+├── diagram/              LAZY · Project story and Board/view surfaces
+├── papers/               LAZY · academic consumers
+├── applications/         LAZY · non-academic consumers
+└── external/             LAZY · read-only upstream repositories/assets
+```
 
-  Folder          Role               One-liner
-  --------------  -----------------  ------------------------------------------------------------------------
-  tasks/          WORK               execution: code, configs, runs, metrics; one task-folder = one runnable unit
-  discoveries/    EXTERNAL-EVIDENCE  Search / Review / Idea folders; one topic = one folder; consumer-unaware
-  papers/         PUBLISH            academic manuscripts
-  applications/   DELIVER            external artifacts for non-academic audiences
-  diagram/        STORY              high-level project motivation / boundary / exploration
+LAZY means “create on first use,” not “missing capability.” Empty directories
+are not a useful contract because Git cannot preserve them without placeholders.
 
-  tasks/ + discoveries/ are the two EXECUTORS — same shape, same rules. Together they are the
-  project's evidence BANK. papers/ + applications/ are the CONSUMERS.
+New work always uses plural `papers/`. Existing `paper/` paths, especially
+submodules, are legacy debt and are not renamed without an explicit migration.
 
-  (insights/ was a sixth world — the D/I/K/W knowledge base — RETIRED 2026-07-12. What a K card
-   was meant to be is now split correctly in two: the general, reusable FACT is the executor's
-   own QA/<n>-<slug>.md; the paper-specific JUDGMENT is that paper's own 1-claims.md entry.)
+## Worlds and flow
 
-One-way dependency map (cross-cutting orientation; no single world owns it):
+```text
+external/ ──▶ discoveries/ ──┐
+                             ├──▶ Task/Insights Board ──▶ papers/
+tasks/ ──────────────────────┘                         └──▶ applications/
+```
 
-  papers/        Probe routes accepted Pages through PageX and reaches tasks/ +
-                 discoveries/ through QA cards bound to exact paths
-  applications/  same crossing model through its owning consumer surface; NEVER write back
-  discoveries/   consumer-unaware (the consumer records the link on its own side)
-  tasks/         NEVER read discoveries/ papers/ applications/
+| Root | Role | Owner and boundary |
+|---|---|---|
+| `tasks/` | computational evidence bank | `haipipe-task`; Block → Job → Task → Run |
+| `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
+| `diagram/` | navigation and interpretation surfaces | Project story plus project-level Boards and meetings |
+| `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
+| `applications/` | non-academic consumer | `haipipe-application` |
+| `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 
----
+An Insight is a Page type on the Task/Insights Board, not a sixth root world.
+Reusable Findings flow to Paper/Application through their Page contracts. Raw
+Task Results do not move to the Project root.
 
-The Evidence Contract (this skill's ONE hard rule about the bank)
-==================================================================
+## Profiles
 
-Owner: /haipipe-probe (skills/probe/haipipe-probe/SKILL.md). Restated here ONLY as a scaffolding
-prohibition, because this skill is the thing that creates folders.
+Profiles answer what kind of root this is. They do not alter child-world
+contracts.
 
-  🔀 PROBE HAS TWO PAGE-LOCAL LANES. `pagex/` binds exact accepted Page files in
-     OUTLINE; `probe/` binds Task/Discovery QA in PROBE/EVIDENCE. This project
-     scaffold creates neither lane.
+| Profile | Root-owned code allowed | Intended use |
+|---|---|---|
+| `research` | no | execution code belongs to Job/Task; shared SPACE libraries remain external to the Project |
+| `software` | yes | the Project itself is a package/product repository; conventional `src/`, `tests/`, and build files are valid |
+| `hybrid` | yes | a software artifact plus research Tasks/Discoveries/Papers; Tasks call the package instead of duplicating it |
 
-  ⚙️ THE BANK IS PROBE-UNAWARE. Nothing under tasks/ or discoveries/ may carry an _ASK/ folder,
-     an _ANS/ folder, an `answers:` field, or a PP id. THIS SKILL NEVER MINTS ONE. (The _ASK/
-     mailbox of the 2026-07-11 bridge design is DEAD — killed 2026-07-14.)
+For `software` and `hybrid`, conventional root directories such as `src/`,
+`tests/`, `scripts/`, `configs/`, and `docs/` are profile-owned. Generated
+`results/` remains forbidden at the Project root in every profile.
 
-  ✅ WHAT A LEAF MAY CARRY, optionally:
+## Git modes
 
-       tasks/{G}{NN}_{group}/{NN}_{task}/          discoveries/{S|L|P}{NN}_{group}/{NN}_{topic}/
-       ├── workflow/plan.yaml   Q  code            ├── discovery.yaml              Q  spec
-       ├── results/             A  code            ├── sources.md · verdict.md ·
-       └── QA/                  A  readable        │   landscape.md                A  raw
-           ├── 1-<slug>.md                         └── QA/                  A  readable
-           └── 2-<slug>.md                             └── 1-<slug>.md
+| Git mode | Meaning |
+|---|---|
+| `workspace` | files are tracked by the containing SPACE repository |
+| `submodule` | the Project has its own repository and is linked under `examples/` |
 
-     QA/<n>-<slug>.md — the executor's READABLE digest of a direction it has explored.
-       · <n> = creation order. The NUMBERING IS THE INDEX; `ls QA/` IS the index. No INDEX file.
-       · SLUG ONLY. A PP id in a bank filename is the contract broken.
-       · WRITER: the EXECUTOR, at its Report stage. Write-once.
-       · NOT SCAFFOLDED AT SETUP. It appears when the task-folder has something to say.
-       · Applies to BOTH banks — task and discovery are both executors.
+Repository topology is observable and declared. Never route on `Proj...` versus
+`Project-...`. Papers may be nested submodules regardless of Project spelling.
 
-  📄 THE CONSUMER holds questions on its owning Page-local probe surface. For a
-     Board Page this is <page>/probe/PP<NN>-<slug>/. PROBE creates the card;
-     EVIDENCE binds it to the bank BY PATH. This project scaffold never creates
-     consumer probe folders.
+## `external/`
 
----
+`external/` is optional and has one narrow meaning: upstream material whose
+identity and history are owned elsewhere. Prefer a pinned submodule or another
+resolvable origin. Do not develop project-owned code there. If the Project
+modifies an upstream codebase as its product, that code belongs to the
+software/hybrid profile instead.
 
-Project-Level diagram/
-=======================
+Heavy data remains outside the repository in configured stores. `external/`
+may contain metadata or a code/reference checkout, not an uncontrolled data
+dump.
 
-The one subfolder whose internal structure this skill owns. EMPTY at setup (setup is quick); authored later on request via /diagram-ascii, bundled via /diagram-ascii-canvas (txt-to-canvas.py).
+## `diagram/`
 
-  examples/{PROJECT_ID}/diagram/
-  ├── 01-story.txt          motivation, research question, expected impact
-  ├── 02-boundary.txt       in-scope / out-of-scope / definitions / assumptions
-  └── project.excalidraw    bundle (built by txt-to-canvas)
+`diagram/` is no longer restricted to two static ASCII files. It may contain:
 
-HIGH-LEVEL ONLY: research narrative, not an operational dashboard. Status tables, run metrics, and daily logs belong in group/task diagram/ (owner: /haipipe-task). Refresh on substantive narrative change; otherwise stable.
+```text
+diagram/
+├── project/       mission, boundary, architecture, durable decisions
+├── boards/        project-level Task/Insights and other Board surfaces
+└── meetings/      optional meeting records tied to this Project
+```
 
----
+Existing flat Board folders remain readable. New work may adopt these zones
+incrementally; no routine update moves an active Board.
 
-_WorkSpace Paths
-=================
+Block-local `board.md` remains under its owning `tasks/bNN_.../` Block and does
+not move to the Project diagram tree.
 
-Heavy data stores (_WorkSpace/) are declared in env.sh and read by setup_workspace() in code/haipipe/base.py. NEVER inside the project folder.
+## Root prohibitions and debt
 
----
+Never create these as new root structures:
 
-Structure Ownership
-====================
+- `results/`: generated output belongs to a Job or consumer-owned store.
+- `insights/`: use an Insight Page on the Task/Insights Board.
+- `probes/`: use the current Page evidence contract.
+- `_old/`, `cc-archive/`: archive inside the owning world, or preserve only as
+  declared migration debt.
+- `tasks.old/`: temporary migration name only; durable history belongs under
+  `tasks/_legacy/` after explicit migration.
 
-For anything below the top level, consult the owner; this file never restates their rules.
+For a research profile, root `src/`, `scripts/`, `configs/`, `tests/`, and
+`docs/` are also debt until reclassified or moved. For software/hybrid they are
+valid profile-owned structure.
 
-  World           Owner skill              Schema authority
-  --------------  -----------------------  --------------------------------------------------------------------------
-  tasks/          /haipipe-task            task/haipipe-task/ref/task-structure.md (layout), plus ref/hierarchy.md + ref/authoring-conventions.md
-  discoveries/    /haipipe-discovery       discovery/haipipe-discovery/SKILL.md (folder contract: discovery.yaml + evidence files)
-  papers/         /haipipe-paper           paper/haipipe-paper/SKILL.md + paper/README.md (thin Paper graph and owned Page Types)
-  applications/   /haipipe-application-*   application/_audience/audience-requirements.md + the venue playbooks under application/_venue/
-  diagram/        this skill               this file (Project-Level diagram/ section above)
+## Structure ownership
+
+| Scope | Authority |
+|---|---|
+| Project root, manifest, profile, Git mode, `external/` boundary | `haipipe-project` |
+| `tasks/` internals | `haipipe-task` + `haipipe-run` |
+| `discoveries/` internals | `haipipe-discovery` |
+| Board/Page internals | `haipipe-board`, `haipipe-page`, owning workflow |
+| `papers/` internals | `haipipe-paper` |
+| `applications/` internals | `haipipe-application` |
+
+An audit at this layer checks only Project-root truth. It must not claim that a
+child world is internally compliant without invoking that world's checker.
