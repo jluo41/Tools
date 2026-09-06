@@ -48,20 +48,13 @@ def check(root):
 
     for block in rows(root):
         jobs = [p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")]
-        # S18 a canonical nested Block is also a Task Block Board. Legacy flat
-        # blocks remain readable, but the b/j/t tree must expose its one Board
-        # head and opt in explicitly so generic Boards never adopt tNN files.
-        nested_tasks = any(
-            p.is_dir() and p.name.startswith("t")
-            for job in jobs
-            for p in job.iterdir()
-        )
-        if nested_tasks:
-            head = block / "board.md"
-            if not head.is_file():
-                bad("S18", block.name, "canonical Block has no board.md Task Block Board head")
-            elif not re.search(r'^board-kind:\s*task-block\s*$', head.read_text(errors="replace"), re.M):
-                bad("S18", f"{block.name}/board.md", "missing exact `board-kind: task-block`")
+        # S18 every canonical Block is one Task Block Board, including a Block
+        # whose Jobs still use the readable flat-legacy runtime shape.
+        head = block / "board.md"
+        if not head.is_file():
+            bad("S18", block.name, "canonical Block has no board.md Task Block Board head")
+        elif not re.search(r'^board-kind:\s*task-block\s*$', head.read_text(errors="replace"), re.M):
+            bad("S18", f"{block.name}/board.md", "missing exact `board-kind: task-block`")
         for lvl, p in [("b", block)] + [("j", j) for j in jobs]:
             m = IDX.match(p.name)
             if not m or m.group(1) != lvl:

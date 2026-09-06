@@ -11,7 +11,7 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.15.0"
+  version: "0.15.1"
   last_updated: "2026-09-04"
   folder_owner: canonical
   folder_kind: task
@@ -75,7 +75,10 @@ For a block, it iterates over each child job and runs the lifecycle on each one.
 
 ### A Block is a Task Block Board
 
-Every canonical `bNN_<block>/` carries `board.md` with `board-kind: task-block`. The Task hierarchy is the source of truth; `haipipe-board` projects it without copying executable state:
+Every canonical `bNN_<block>/` carries `board.md` with `board-kind: task-block`,
+including Blocks whose Jobs still use the supported flat-legacy runtime shape.
+The Task hierarchy is the source of truth; `haipipe-board` projects it without
+copying executable state:
 
 ```text
 Block = Board  →  Job = Group  →  Task = Page  →  Run = execution record

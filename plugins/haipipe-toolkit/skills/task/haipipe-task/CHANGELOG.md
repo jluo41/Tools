@@ -3,6 +3,12 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.15.1 · 2026-09-05
+
+- Enforce one Board per canonical Task Block even when its Jobs still use the
+  supported flat-legacy runtime shape. S18 now requires the explicit
+  `board-kind: task-block` head for every lowercase `bNN_` Block.
+
 ## 0.15.0 · 2026-09-04
 
 - Make every canonical Block an explicit Task Block Board with
