@@ -10,7 +10,7 @@
 # Options:
 #   --global              Also symlink all skills to ~/.claude/skills/
 #   --project <path>      Symlink all skills into <path>/.claude/skills/ and
-#                         <path>/.codex/skills/ when those directories exist
+#                         <path>/.codex/skills/ (creating the local dirs)
 #   --hooks               Also configure sound hooks in settings.json
 #   --all                 Do everything (marketplace + global + hooks)
 #   --no-marketplace      Skip marketplace registration (mirrors install.ps1)
@@ -55,7 +55,7 @@ done
 # Auto-detect parent workspace if --project was not given
 if [ -z "$PROJECT_PATH" ]; then
     PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-    if [ -d "$PARENT_DIR/.claude" ] || [ -d "$PARENT_DIR/.codex" ]; then
+    if [ -f "$PARENT_DIR/pyproject.toml" ] || [ -d "$PARENT_DIR/.git" ]; then
         PROJECT_PATH="$PARENT_DIR"
         echo "  Auto-detected workspace: $PROJECT_PATH"
     fi
@@ -280,7 +280,7 @@ install_project_skills() {
     # Compute relative path from the target skills dir back to Tools/plugins/
     # e.g., ../../Tools/plugins
     local tools_rel
-    tools_rel="$(python3 -c "import os.path; print(os.path.relpath('$SCRIPT_DIR/plugins', '$target_dir'))")"
+    tools_rel="$(python3 -c "import os.path; print(os.path.relpath(os.path.realpath('$SCRIPT_DIR/plugins'), os.path.realpath('$target_dir')))")"
 
     local installed cleaned skill_path plugin_name rel_path skill_name target link
     installed=0
@@ -321,54 +321,58 @@ install_project_skills() {
 # ─── 3. Project-level installation (--project) ──────────────────────────────
 
 if [ -n "$PROJECT_PATH" ]; then
-    if [ -d "$PROJECT_PATH/.claude" ]; then
-        PROJECT_SKILLS="$PROJECT_PATH/.claude/skills"
-        install_project_skills "$PROJECT_SKILLS" "Claude project"
+    if [ ! -d "$PROJECT_PATH" ]; then
+        echo "Project path does not exist: $PROJECT_PATH" >&2
+        exit 2
     fi
 
-    if [ -d "$PROJECT_PATH/.codex" ]; then
-        CODEX_PROJECT_SKILLS="$PROJECT_PATH/.codex/skills"
-        install_project_skills "$CODEX_PROJECT_SKILLS" "Codex project"
-    fi
+    # Project installation is intentionally local to the requested workspace.
+    # Creating both directories makes a fresh clone behave like an existing
+    # workspace without touching ~/.claude or ~/.codex.
+    mkdir -p "$PROJECT_PATH/.claude" "$PROJECT_PATH/.codex"
+
+    PROJECT_SKILLS="$PROJECT_PATH/.claude/skills"
+    install_project_skills "$PROJECT_SKILLS" "Claude project"
+
+    CODEX_PROJECT_SKILLS="$PROJECT_PATH/.codex/skills"
+    install_project_skills "$CODEX_PROJECT_SKILLS" "Codex project"
 
     # ── Project-level agent installation ──
-    if [ -d "$PROJECT_PATH/.claude" ]; then
-        PROJECT_AGENTS="$PROJECT_PATH/.claude/agents"
-        echo ""
-        echo "Installing agents to project: $PROJECT_AGENTS ..."
-        mkdir -p "$PROJECT_AGENTS"
+    PROJECT_AGENTS="$PROJECT_PATH/.claude/agents"
+    echo ""
+    echo "Installing agents to project: $PROJECT_AGENTS ..."
+    mkdir -p "$PROJECT_AGENTS"
 
-        TOOLS_REL_AGENTS="$(python3 -c "import os.path; print(os.path.relpath('$SCRIPT_DIR/plugins', '$PROJECT_AGENTS'))")"
+    TOOLS_REL_AGENTS="$(python3 -c "import os.path; print(os.path.relpath(os.path.realpath('$SCRIPT_DIR/plugins'), os.path.realpath('$PROJECT_AGENTS')))")"
 
-        agent_installed=0
-        while IFS=$'\t' read -r agent_path plugin_name rel_path; do
-            agent_name=$(basename "$agent_path" .md)
-            target="$PROJECT_AGENTS/$agent_name.md"
+    agent_installed=0
+    while IFS=$'\t' read -r agent_path plugin_name rel_path; do
+        agent_name=$(basename "$agent_path" .md)
+        target="$PROJECT_AGENTS/$agent_name.md"
 
-            if [ -e "$target" ] && [ ! -L "$target" ]; then
-                echo "  . $agent_name (kept, not a symlink)"
-                continue
-            fi
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "  . $agent_name (kept, not a symlink)"
+            continue
+        fi
 
-            [ -L "$target" ] && rm "$target"
-            ln -s "$TOOLS_REL_AGENTS/$plugin_name/$rel_path" "$target"
-            agent_installed=$((agent_installed + 1))
-        done < <(enumerate_agents "$SCRIPT_DIR/plugins")
+        [ -L "$target" ] && rm "$target"
+        ln -s "$TOOLS_REL_AGENTS/$plugin_name/$rel_path" "$target"
+        agent_installed=$((agent_installed + 1))
+    done < <(enumerate_agents "$SCRIPT_DIR/plugins")
 
-        # Clean stale agent symlinks
-        agent_cleaned=0
-        shopt -s nullglob
-        for link in "$PROJECT_AGENTS"/*; do
-            if [ -L "$link" ] && [ ! -e "$link" ]; then
-                echo "  - $(basename "$link") (stale, removed)"
-                rm "$link"
-                agent_cleaned=$((agent_cleaned + 1))
-            fi
-        done
-        shopt -u nullglob
+    # Clean stale agent symlinks
+    agent_cleaned=0
+    shopt -s nullglob
+    for link in "$PROJECT_AGENTS"/*; do
+        if [ -L "$link" ] && [ ! -e "$link" ]; then
+            echo "  - $(basename "$link") (stale, removed)"
+            rm "$link"
+            agent_cleaned=$((agent_cleaned + 1))
+        fi
+    done
+    shopt -u nullglob
 
-        echo "  $agent_installed agents symlinked, $agent_cleaned stale links removed."
-    fi
+    echo "  $agent_installed agents symlinked, $agent_cleaned stale links removed."
 fi
 
 # ─── 4. Sound hooks (--hooks) ────────────────────────────────────────────────
