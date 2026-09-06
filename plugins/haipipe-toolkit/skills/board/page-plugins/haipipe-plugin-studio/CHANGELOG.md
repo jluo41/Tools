@@ -1,5 +1,10 @@
 # Changelog · haipipe-plugin-studio
 
+## 0.2.2 — 2026-09-06
+
+- Align live Chat plan-version examples with the shared
+  `v<G>.<S>[.<E>]` contract.
+
 ## 0.2.1 — 2026-09-04
 - Make `studio/chat/` and `studio/draw/` the direct destinations of every new
   folded-Page writer; retain flat lane paths as read-only migration inputs.
@@ -25,3 +30,7 @@
   staging the drawing above the chat, both live; shell strip rows 💬 🖌 🎞
   folded (🎞's ✨ pen moved to the 📤 Delivery slides segment); stored tab
   sets migrate on load; chat/draw rules untouched.
+## 0.2.2 — 2026-09-06
+
+- Align the Chat lane's Shape and evidence/Run revision examples with
+  `v<G>.<S>[.<E>]`, including the G>=1 CONTENT route after an evidence fold.

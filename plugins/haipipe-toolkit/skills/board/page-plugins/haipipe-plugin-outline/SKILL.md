@@ -9,8 +9,8 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.37.0"
-  last_updated: "2026-09-04"
+  version: "0.45.2"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,8 +42,8 @@ stem; only the plan is many-per-page, by version.
 
 ```text
 <page>/outline/
-├── <stem>-outline-v<N>.<k>.md
-│                              frozen `.0` baseline or working revision · authored · versioned
+├── <stem>-outline-v<G>.<S>[.<E>].md
+│                              generation · Shape · optional evidence revision · authored · versioned
 ├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
@@ -88,10 +88,12 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
 - **The page keeps four on-stage sections**, 🚪 Opening · 🧭 Outline · Content ·
   Aims, and nothing this folder holds. Opening stays visible and the Page's
   `🧭 Outline` opens by default and renders only the read-only current-plan
-  table. The grid is `Address · Planned move · Evidence · Supporting Runs ·
-  Local Run`: C/P headers keep the plan's reader order and B rows join
-  typed Evidence Items to their surveyed Supporting Runs and local route in
-  separate columns. A real Run is a short, linked readable address such as
+  table. The grid is `Address · Planned move · Feedback · Evidence · Supporting
+  Runs · Local Run`: C/P headers keep the plan's reader order and B rows join
+  routed Feedback, typed Evidence Items, their surveyed Supporting Runs, and
+  local route in separate columns. A Feedback token opens the exact record in
+  Context Workspace's Feedback lens; it is never inert summary text. A real
+  Run is a short, linked readable address such as
   `b01.j02.t03.r04` plus a compact next-action label (`run`, `rerun`, or
   `reuse`). A never-attempted real Ticket is `registered`; a failed,
   smoke-only, invalid, or explicitly stale attempt is `Rerun`, never `Done`;
@@ -102,23 +104,39 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   hovering it shows the Run filename, repository-relative Run path, available
   Result/Runtime paths, availability status, and next action; an unallocated
   route says so explicitly rather than inventing a path. On click, it opens
-  the Outline plugin's `Evidence Workspace` at that Evidence Item, where
-  its grouped Run items and exact Run/Result paths are shown as selectable
-  text. Raw Run, Result, and Runtime paths are never direct browser anchors:
-  script and receipt responses may otherwise download instead of opening. The old
-  `By bullet` and `Run links` segments are compatibility aliases only. An
+  the Outline plugin's `Evidence Workspace → Runs` lens at the exact real Run
+  card, where its Purpose/Plan, Availability, Next action, and exact Run/Result
+  paths are shown as selectable text. Raw Run, Result, and Runtime paths are
+  never direct browser anchors:
+  script and receipt responses may otherwise download instead of opening.
+  The Page-to-Outline hand-off is one URL carrying `lens=workspace`, the
+  workspace segment `seg` (`runs` for a Run token, `items` for an Evidence
+  chip), the owning Evidence Item `focus`, and, for a Run, the exact `run`; do
+  not split this state across one-shot browser storage keys. That explicit
+  route remains authoritative while the Page frame finishes loading: no pending
+  default refresh may replace it. Normal Run navigation does not open a
+  modal/popover. A bounded inspector fallback may appear only when the named
+  Run has no matching Runs-lens card, and it must remain closable and
+  viewport-bounded on mobile Safari.
+  The old `By bullet` and `Run links` segments are compatibility aliases only. A
   bounded `new-*` route stays visibly planned and may close SURVEY; only an
   ambiguous or unplaced route keeps SURVEY open. Item
-  status has no column: chip colour carries the quick signal. A Run popover
-  never compresses unlike facts into one status; it shows `Purpose` (or
-  `Plan` before allocation), `Availability`, and `Next action` separately.
+  status has no column: chip colour carries the quick signal. A Run card—or
+  its bounded fallback inspector—never compresses unlike facts into one status;
+  it shows `Purpose` (or `Plan` before allocation), `Availability`, and `Next
+  action` separately.
   Availability says `Planned`, `Run exists · Result missing`, `Run + Result`,
   or `Paths unresolved`; next action says `Allocate and run`, `Run`, `Rerun`,
   `Reuse Result`, or `Resolve path`. The compact Evidence label is
   `E<n><V/C/D>.<Label>`, where the authored `Label` is 1–12 ASCII
-  alphanumeric characters; clicking it reveals the immutable id,
-  full readable name, full type, governed input sources,
-  acceptance contract, routes, and Result. There is no separate Page-authored
+  alphanumeric characters; its accessible label carries `id · type · readable
+  name` and its title carries `id · type · status`. Clicking it takes the same precise
+  route a Run token takes: it opens the Outline plugin's `Evidence Workspace →
+  Evidences` lens at the exact item card (`seg=items`, `focus=run-<id>`),
+  scrolled into view and highlighted, where the immutable id, full readable
+  name, full type, governed input sources, acceptance contract, routes, and
+  Result are shown once. The compact Page opens no Evidence popover and
+  renders no card of those fields. There is no separate Page-authored
   narrative map. Content, Aims, and every other fold start shut. This folder
   remains the only authority for all nine records. A manuscript Section keeps
   no `### Writing Style` block in its product source; its page-owned writing
@@ -149,6 +167,7 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
   Note: <≤ 30 words> [🎯 Aim]        the constraint or definition
   Evidence: E<NN>-<TYPE>-<slug> · …  named expectation, written at SHAPE
   Accept: …                           observable ready-evidence contract
+  Evidence: none · …                  explicit source-free realization contract
   Answered: · Drawn: · Routed:       appended by the fold, one per line
 ```
 
@@ -159,35 +178,42 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
   page; the plan says what the sentence must do and what constrains it. A Note
   is at most 30 words (a wrapped source line is still one Note); a Note that
   carries prose is CONTENT leaking upward.
-- **Typed Evidence Items are the exception**: `E<NN>-VALUE-<slug>`,
+- **Every Bullet declares its evidence boundary.** Use one or more typed
+  `E<NN>-VALUE-<slug>`,
   `E<NN>-CITE-<slug>`, or `E<NN>-DISPLAY-<slug>`, each with an expectation and
-  an `Accept:` line. No Evidence line means nothing is owed.
+  an `Accept:` line; otherwise use exactly `Evidence: none · <reason>`. A
+  missing Evidence line is a SHAPE defect, not shorthand for nothing owed.
+  `none` forbids citation placements, concrete empirical values, figures, and
+  tables in that Bullet's CONTENT realization.
+- **Evidence does not inherit through a paragraph.** Paragraph and division
+  cards only group the display. Each evidence-dependent Bullet owns its own
+  typed Item; Bullets supporting different propositions may reuse the same
+  source and Supporting Run, but never the same claim-level Item.
 - **The plan carries no Aim rows.** Aims live on the page; a 🎯 annotation names one.
   An ask with no Aim is a `D<nn>` thread, never a minted Aim.
 - **The address is `C<n>.P<m>.B<k>`** and it is the join key for every other
   file in the folder and every card, key and unit in the sibling lanes.
 
-## 🔒 Major versions freeze agreement; minor revisions carry discussion
+## 🔒 Generation · Shape · Evidence
 
 ```text
-  ✍️ v0.1 → v0.2 → …     no approved baseline yet
-             │  🧑 channel approval
-             ▼
-  🔒 v1.0 · approved: ✅ first frozen agreement
-             │  requested change or evidence fold
-             ▼
-  ✍️ v1.1 → v1.2 → …    working revisions under v1.0
-             │  🧑 channel approval
-             ▼
-  🔒 v2.0 · approved: ✅ next frozen agreement
+v0.16       pre-Content Shape 16
+v0.16.1     same Shape, Evidence/Run fold 1
+v1.0        first approved Content-eligible generation
+v1.0.1      same approved Shape, Evidence/Run fold 1
+v1.1        bounded Shape revision inside generation 1
+v2.0        unapproved major redesign opened when substantial review calls for it
 ```
 
-An approved `.0` baseline is immutable. The fold's appends (`Answered:`,
-`Drawn:`, `Routed:`) create the next working minor instead of modifying the
-baseline. Material human-facing revisions increment the minor; mechanical
-repairs made before presenting that revision remain in place. `approved:` is a
-person's; a machine may transcribe a channel approval into the promoted `.0`
-baseline with the quote and time, and writes `checked:` only for itself.
+The version is `v<G>.<S>[.<E>]`; omitting `E` means zero. `G=0` never touches
+Content. A bounded Shape change increments `S` and resets `E`; an evidence or
+Run fold increments `E` without changing Shape. From `G>=1`, every version
+change refreshes Content. A pure evidence revision declares its `shape-base`
+and inherits that Shape's approval. Increment `G` only for a large change to
+the central argument, hypotheses, major divisions, or overall narrative after
+a substantial review round. Mechanical repairs stay within the current
+version. `approved:` remains a person's act; a machine may only transcribe a
+direct approval or an existing Shape approval inherited by an evidence fold.
 
 ## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
 
@@ -226,7 +252,10 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   ⬜ before ✅, because opening it is asking what the page still owes.
 - **Evidence Workspace is an internal lens, not another plugin.** Its compact
   navigation is `Evidences · n | Runs · n | Citations · n | Values · n | Displays · n`,
-  with counts derived from the current typed Evidence Item records. It joins
+  where Evidences/Values/Displays count typed Evidence Items, Runs reports both
+  mappings and unique Run identities, and Citations counts verified source
+  entries rather than CITE Items. A CITE Item is a claim-support contract; one
+  may contain several sources, and one source may serve several items. It joins
   each Evidence Item to Supporting Runs, its optional local Run/Result,
   citation, value, display, and governed source provenance. Cross-Folder
   evidence appears through its Supporting Run Result; related Page links stay
@@ -238,7 +267,8 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   evidence-source inventory, not the top-level `⚙️ Runs` inventory of only
   physically allocated page-local Runs. The standalone Evidence tab is retired; the
   compatibility `/_board/evidence` renderer may be embedded here only.
-- **Each Run chip opens the Run item, not a file download.** The detail begins
+- **Each Run chip opens the exact Runs-lens card, not a file download or the
+  owning Evidence card.** The detail begins
   with a readable Purpose derived from an allocated Run's Ticket name and the
   owning Evidence Item. Before allocation it shows a Plan derived from that
   item's Expected/Acceptance contract and SURVEY's Local Input note. It then
@@ -279,10 +309,16 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
 
 The built Board page also carries a smaller, always-visible **Page Outline
 table** (`haipipe-board/src/page_question.py::_outline_grid`). It is a compact
-projection, not a second full tab: `Address · Planned move · Evidence ·
-Supporting Runs · Local Run`. It deliberately omits aggregate state counts and
-the broader sibling-material bundle. Those remain in the richer live 🧭 tab;
-item state on the compact table is conveyed only by chip colour and popover.
+projection, not a second full tab: `Address · Planned move · Feedback ·
+Evidence · Supporting Runs · Local Run`. It deliberately omits aggregate state
+counts and the broader sibling-material bundle. Those remain in the richer
+live 🧭 tab; item state on the compact table is conveyed only by chip colour
+and the chip's title, and every chip (Feedback, Evidence, Supporting Run,
+Local Run) is a deep link into the one live 🧭 tab rather than a card of its own.
+
+In that compact Evidence column, a valid source-free Bullet renders `none` and
+exposes its reason on hover. An omitted evidence decision renders `missing` as
+a defect; it is never visually conflated with an intentional source-free move.
 
 ### 🤝 Human review packet · the chat counterpart of the tab
 
@@ -290,8 +326,8 @@ When a person asks to review, check, read, or approve a page outline, the
 OUTLINE phase reads these existing records as one compact, linked packet:
 
 ```text
-① Current Shape    plan v<N>[.<k>] · approval state · arc · C/P reader path
-② Evidence owed    Evidence Item table · typed/status counts · material source/Run paths
+① Current Shape    plan v<G>.<S>[.<E>] · approval · arc · C/P path · Section form audit
+② Evidence owed    typed/status counts · distinct item/source/placement/key metrics · material paths
 ③ What shaped it   routed Feedback · applicable Requirement · open Discussion only
 ④ Human decision   exact approval/Decide choice · blockers · no inferred tick
 ```
@@ -305,20 +341,27 @@ read-only and belongs to the human-chat contract in
 `page-workflows/haipipe-page-outline`; the tab remains the authoritative live
 surface and writes nothing.
 
+For a Section, the form audit reports paragraph jobs/transitions, word and
+sentence-slot budgets, implied sentence length, venue citation-density
+expectation when available, and any paragraph whose sole job is defensive
+meta-commentary. Citation reporting never substitutes CITE Item count for
+source entries, realized placements, key mentions, or cited-sentence density.
+
 ### Chips stay inside the sentence
 
 ```text
 ① INLINE, never a column   a chip lives in the row's own span; a sibling column steals the text's width
 ② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px padding
 ③ the note is a WORD       `in bibex/` → nothing (the colour says it) · `no unit declared yet` → `owed`
-④ never say it twice       a chip is `E<n><V/C/D>.<Label>` (≤ 12 chars); the ↩ tag is suppressed for a card the row already names
+④ never say it twice       a chip is `E<n><V/C/D>.<Label>` (Label ≤ 12 chars); the ↩ tag is suppressed for a card the row already names
 ```
 
 No emoji inside a tag; colour is only a quick signal. A Run chip's small word
 is its next action (`plan`, `run`, `rerun`, or `reuse`), never a combined
-status. A chip opens a native popover holding the THING itself
-(the reference as printed, the card's own question, the unit's own claim); a
-📚 panel prints `Author et al.`, never the author list.
+status. On the compact Page an Evidence chip is a route to its Evidence
+Workspace item card, never a popover; inside the live tab the THING itself
+(the reference as printed, the card's own question, the unit's own claim) is
+shown on that card, and a 📚 panel prints `Author et al.`, never the author list.
 `CITE` is one Evidence Item type, not a separate table column: one bullet may
 show several compact `E<n>C.<Label>` chips beside its VALUE and DISPLAY items.
 A Results bullet may legitimately show no CITE chip when it reports only this
@@ -383,7 +426,7 @@ holds; it writes nothing.
 - `ref/evidence/pagex.md` · legacy PageX migration note; no active binding field
 - `../../haipipe-board/live/outline.py` · the parse, the lenses, `plan_card`, `_records`, the chips
 - `../../haipipe-board/live/shell.py` · the tab strip; 🧭 ranked first and opened by default
-- `../../haipipe-board/src/page_question.py` · the compact five-column Page Outline projection
+- `../../haipipe-board/src/page_question.py` · the compact six-column Page Outline projection
 - `../../haipipe-board/checks/outline.py` · the standing check over every board's plans
 - `../../haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
 - `../../haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators

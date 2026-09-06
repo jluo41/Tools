@@ -75,13 +75,50 @@ The item id is stable across outline versions. If its evidence type, target,
 or acceptance meaning changes materially, create a new item id and retire the
 old one; do not silently redefine it.
 
+### CITE boundary · claim contract, source set, and placement
+
+A CITE Evidence Item is the contract for one externally supportable proposition
+at exactly one target Bullet. Its identity is defined by the proposition and
+acceptance test—not by any one paper and not by the typography that later cites
+it.
+
+```text
+Bullet proposition  1 ──→ 1 CITE Evidence Item ──→ 1..N verified sources
+verified source     1 ──→ 0..N CITE Evidence Items
+CITE Evidence Item  1 ──→ 0..N CONTENT citation placements
+```
+
+- Keep one item when several sources jointly establish one proposition.
+- Reuse a source across items when it independently supports several claims.
+- Split when either claim could be removed, contradicted, accepted, or replaced
+  without changing the other. If both claims occupy one Section bullet, split
+  the bullet or attach two CITE items.
+- Treat a future LaTeX `\\cite{}` as CONTENT realization. Repeating, moving, or
+  consolidating a citation does not create, delete, or redefine the Evidence
+  Item.
+- After CONTENT exists, every citation placement traces through its `realizes:`
+  Bullet to a CITE item, and every cited key belongs to that item's verified
+  source set. A ready CITE item is eventually placed, explicitly left unplaced,
+  or retired; it does not disappear into an aggregate citation count.
+
+The decision is made at every Bullet, not once for a paragraph. A Bullet that
+needs no item writes `Evidence: none · <reason>` in the plan and creates no
+ledger row. That declaration is binding: its CONTENT realization may contain
+no citation placement, empirical value, figure, or table. An omitted Evidence
+line means SHAPE is incomplete; it is never interpreted as `none`.
+
+Paragraph and division grouping creates no evidence inheritance. A reference
+such as “use E01's source” on a sibling Bullet does not satisfy that Bullet's
+decision. Create a separate claim-level Item for the sibling and reuse the
+same verified source or Supporting Run underneath both Items when appropriate.
+
 ## The authored grammar
 
 ```text
 # <stem> · evidence items
 page: <stem>
 kind: evidence-items · authored · SHAPE specifies; SURVEY classifies; LAND allocates/binds
-plan: v<N>.<k>
+plan: v<G>.<S>[.<E>]
 surveyed: YYMMDD HHMM · <who>
 
 ### E01-VALUE-adjusted-effect · C2.P3.B1 · adjusted treatment effect
@@ -330,7 +367,7 @@ field.
 | SHAPE | none | item id/name/type, Target, Label, Need, Expected, Acceptance; initializes CITE `Verified: ⬜` |
 | SURVEY | none; Paper may reserve an address | classified existing/planned Supporting routes, one Local Input plan, exactly one owner-native Local Run declaration, Decide gate |
 | LAND | allocate/scaffold planned routes, then execute/reuse | action transition `new-run → registered → reuse` (or `rerun` after failed/stale attempt), full allocated Run ids, frozen Local Input, `→ <Result>` on accepted bindings, and person-signed CITE `Verified` |
-| EMBED | none | nothing; it writes `Answered:` or `Drawn:` into outline v<N+1> |
+| EMBED | none | nothing; it writes `Answered:` or `Drawn:` into the next `v<G>.<S>.<E+1>` evidence revision |
 
 SURVEY is complete when every approved item has every Supporting and Local
 route honestly classified as existing Result, Ticket only, rerun, or bounded

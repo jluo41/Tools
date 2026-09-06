@@ -42,8 +42,9 @@ chat honest is the same three things that keep a phase honest:
 The four ticks (`approved:` `accepted:` `read:` `verified:`) are a person's;
 the chat transcribes a person's words with the quote and the time, and never
 decides one. A signed lane is never deleted; a sentence is never rewritten
-without its `✎` record; a `✅ vN.0` plan is changed only as the next working
-`vN.<k+1>` revision; nothing from
+without its `✎` record; a `✅ v<G>.<S>[.<E>]` plan changes only as the next
+bounded Shape revision `v<G>.<S+1>` or evidence revision `v<G>.<S>.<E+1>`;
+nothing from
 the past goes into Content. The tiers (`scoped` · `full` · `bypass`) still
 exist as a switch; a browser that names none gets `bypass`, and `scoped` keeps
 the Skill tool because a session that cannot load a rule cannot follow it.
@@ -58,7 +59,7 @@ what you type                         lands in                                gr
 "should the title get a subtitle?"    outline/<stem>-discussion.md            ### D<nn> · Ask · Options · We lean ·   OUTLINE · plugin-outline
   an open question                                                            Decide (board-wide id)                    ref/record-shape.md
 "make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-page-content
-"add a sentence on X" · "drop S7"     outline/<stem>-outline-v<N>.<k>.md      a plan bullet; next vN.<k+1> if vN.0 is ✅ OUTLINE · haipipe-page-outline
+"add a sentence on X" · "drop S7"     outline/<stem>-outline-v<G>.<S>[.<E>].md  a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-page-outline
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
@@ -103,10 +104,10 @@ word you type is the verb:
 you type                 phase     the chat loads                       ends when                                   trace it leaves
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 "prepare context"        PREPARE   haipipe-page-context + ref/record-shape.md     required authorities resolve and freeze  outline/<stem>-context.md · receipt
-"outline it" · "plan"    SHAPE     haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<N>.<k> · D<nn> · log record · receipt
+"outline it" · "plan"    SHAPE     haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<G>.<S>[.<E>] · D<nn> · log record · receipt
 "survey"                 SURVEY    haipipe-page-outline                 every item has support + input + local Run  outline/<stem>-evidence-items.md · log · receipt
 "land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make item has a ready local Result  Runs · item → Result · receipt
-"embed" · "fold"         EMBED     haipipe-page-evidence                every ready item is in next working plan    outline/<stem>-outline-v<N>.<k+1>.md · receipt
+"embed" · "fold"         EMBED     haipipe-page-evidence                every ready item is in next evidence revision  outline/<stem>-outline-v<G>.<S>.<E+1>.md · receipt
 "draft it"               WRITE     haipipe-page-content                 commissioned divisions pass trace/style   Page Content · Division Results · receipt
 "revise" · "trim"        WRITE     haipipe-page-content                 revised divisions pass trace/style        Page Content · Division Results · receipt
 "build" · "compile"      WRITE     haipipe-page-content                 delivery projections match Page source    delivery/ · build receipt

@@ -439,7 +439,13 @@ def parse_page(path, keep_fences=False):
     figure-only division exported as an empty section). A paper still drops
     sketches, because its figures are display units; a board page's sketch IS
     the content, so the board asks for `("fence", text)` blocks instead."""
-    lines = open(path, encoding="utf-8", errors="replace").read().splitlines()
+    with open(path, encoding="utf-8", errors="replace") as source:
+        raw_page = source.read()
+    # HTML comments are invisible Markdown apparatus. Stable Bullet-address
+    # receipts such as ``<!-- realizes: C1.P1.B1 -->`` must remain available
+    # to Board checks without leaking into either Word or LaTeX prose.
+    raw_page = re.sub(r"<!--.*?-->", "", raw_page, flags=re.S)
+    lines = raw_page.splitlines()
     try:
         start = next(i for i, l in enumerate(lines) if l.strip() == "## Content")
     except StopIteration:

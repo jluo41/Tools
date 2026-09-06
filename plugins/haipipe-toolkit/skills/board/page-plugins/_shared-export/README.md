@@ -10,4 +10,9 @@ Board Page plugins:
 They are shared Page-plugin implementation, not Paper routing logic. They moved
 from `paper/haipipe-paper/scripts/to-word/` when the Paper family retired its
 stage runtime on 2026-08-20. `haipipe-board/live/export.py` is the caller.
+# Shared delivery writers
+
+The shared Markdown reader removes HTML comments before creating Word or
+LaTeX blocks. These comments may carry invisible Board receipts such as stable
+Bullet realization addresses, but they are never manuscript prose.
 

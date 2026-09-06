@@ -99,7 +99,8 @@ Loading and toolbar navigation never arm autosave: the first non-toolbar human g
 Pasted Page image bytes land under `studio/draw/assets/<owner>/`; Group image
 bytes remain under its Group-owned `draw/assets/<owner>/`; the scene keeps a
 relative pointer.
-`cli/xcal.py` is a legacy seeder for old boards, not the source contract for new drawing work.
+`legacy/xcal.py` is a compatibility seeder for old boards, not the source
+contract for new drawing work.
 
 ## 📂 Files
 

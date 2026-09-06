@@ -1,6 +1,6 @@
 # The plan file · one grammar, with phase-owned outline policy
 
-The plan is `<page>/outline/<stem>-outline-v<N>.<k>.md`: what the page WILL say,
+The plan is `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`: what the page WILL say,
 agreed before it says it. This file is the grammar every plan obeys, and the
 one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A phase
 loads THIS file, not the plugin skill. The approved example is
@@ -9,11 +9,13 @@ loads THIS file, not the plugin skill. The approved example is
 ## 1 · The head
 
 ```text
-# <stem> · outline v<N>.<k>
-outline-version: v<N>.<k>
-supersedes: v<N>.<k-1> | v<N-1>.0 | none
+# <stem> · outline v<G>.<S>[.<E>]
+outline-version: v<G>.<S>[.<E>]
+supersedes: <previous exact version> | none
+shape-base: v<G>.<S>                    # required only when E > 0
 date: YYMMDD
-approved: ⬜  |  ✅ <WHO> <YYMMDD HHMM> · in chat: "<the person's words>"
+approved: ⬜  |  ✅ <WHO> <YYMMDD HHMM> · in chat: "<the person's words>" |
+           ✅ inherited from v<G>.<S> · <original Shape approval>
 arc: <the argument the division sequence makes, in one sentence>
 ```
 
@@ -56,6 +58,8 @@ is `C1` with `P1` to `P<n>`.
   Drawn: <what the figure shows>          appended by the fold, transcribed from the
                                           unit's README claim, never composed
   Routed: <RD> <row id>                   appended by ⓪ COLLECT, one line per row served
+  Evidence: none · <reason>               alternative when this Bullet needs no
+                                          citation, value, figure, or table
 ```
 
 The address is `C<n>.P<m>.B<k>`. `C` prints once on the division heading;
@@ -64,6 +68,15 @@ the rows carry `B<k>`. A continuation line starts with one of `Note`,
 (`bullet-missing-note`). A division name is the subject's real name
 (`Shared lookup rules for BatchReader and OnlineReader`), never a count or a
 role word (`One contract, two readers`).
+
+Every Bullet has exactly one evidence decision: one or more typed
+`Evidence:`/`Accept:` pairs, or one `Evidence: none · <reason>` line. Omission
+is a coverage defect; `none` cannot be mixed with a typed item. For `CITE`, one
+`Evidence:` line names one claim-support contract at this
+Bullet. It may admit several verified sources and may later realize as several
+`\\cite{}` placements. It is not a paper record or a placement counter. Two
+independently removable or falsifiable propositions require two CITE items (or
+two bullets); one source may legitimately serve both.
 
 ## 3 · The bullet grain, by Page Type
 
@@ -81,7 +94,11 @@ any other type         one bullet = one POINT; CONTENT turns it into one or more
                        sentences
 ```
 
-Both grains: 3 to 6 bullets per paragraph, seven is two paragraphs. A head
+Both grains: 3 to 6 bullets per paragraph, seven is two paragraphs. For an
+MISQ Section, five or six sentence-slot Bullets per paragraph is the default
+unless the direct venue contract or paragraph job requires otherwise. Each
+slot carries one point; split compound definition, mechanism, boundary, and
+transition jobs before CONTENT. A head
 says the content in plain words: `The question: agreeable doctors, patient
 pressure, room to decide` passes; `The question, with its two conditions
 named once` names nothing and fails. A term is defined inline the first time
@@ -114,8 +131,11 @@ Evidence: E03-DISPLAY-<slug> · <expected>  figure/table/diagram ready to place
 Accept: <observable checks>                one line directly after each item
 ```
 
-- A bullet with no `Evidence:` line owes no evidence. `🎯` remains an Aim
-  annotation and is not an Evidence Item.
+- A source-free bullet writes `Evidence: none · <reason>`. This is a CONTENT
+  constraint: its realization contains no citation placement, empirical value,
+  figure, or table. A transition, research question, paper-owned design move,
+  or roadmap can qualify. If later prose needs material, return to SHAPE and
+  mint a typed item. `🎯` remains an Aim annotation and is not an Evidence Item.
 - Every item id is `E<NN>-<TYPE>-<slug>`; bare `E01` and unnamed icon-only marks
   are invalid. Item numbers are stable within the Page and never renumbered.
 - SHAPE writes the item name, expected ready payload, and `Accept:` line now;
@@ -132,25 +152,47 @@ Accept: <observable checks>                one line directly after each item
 ## 6 · Versions
 
 ```text
-no approved baseline   v0.1 → v0.2 → … → channel approval → v1.0
-approved baseline vN.0 vN.1 → vN.2 → … → channel approval → v<N+1>.0
+v<G>.<S>[.<E>] = generation · shape · evidence
 
-approved: ⬜   a working revision; a material human-facing revision increments <k>
-approved: ✅   a `.0` baseline frozen by the person's channel approval
+v0.16       pre-Content Shape 16; omitted evidence component means zero
+v0.16.1     the same Shape with its first evidence/Run fold
+v0.17       a new pre-Content Shape; evidence returns to zero
+
+v1.0        first approved, Content-eligible generation
+v1.0.1      the same approved Shape with a new evidence/Run fold
+v1.1        a bounded Shape revision inside generation 1
+v2.0        an unapproved major redesign opened when substantial review calls for it
 ```
 
-A major number records agreement, not editing activity. Never mint `v<N+1>.0`
-while the proposed change is still being discussed. Preserve every prior major
-and human-facing minor. Mechanical fixes made before presenting one revision
-(grammar, checks, paths, formatting) stay within that same minor and do not
-consume another number.
+The two-part form is canonical shorthand for evidence zero: `v1.2` means
+`v1.2.0`. Do not create both aliases for one state.
 
-When the person approves a working revision in the channel, copy its exact
-plan content into the next `.0` baseline, change `approved:` to the transcribed
-approval, and set `supersedes:` to the prior approved major. The selected minor
-remains an unapproved review artifact; the promoted major becomes the current
-plan. A later evidence fold or requested shape change starts at `.1` beneath
-that newly approved major.
+`G=0` is the pre-Content family. A Shape change increments `S`; an EMBED that
+only appends or refreshes `Answered:`/`Drawn:` bindings increments `E` under
+the same Shape. `v0.S.E` is valid in both copilot and auto: checked Shape may
+proceed through SURVEY, LAND, and EMBED before the first approval, but no
+`v0.*` plan releases or refreshes Content. The first explicit channel approval
+promotes the selected Shape-and-evidence state to `v1.0`; it does not assert
+that every Evidence Item is ready. Unfinished evidence continues through
+SURVEY/LAND/EMBED under `v1.0` before CONTENT.
+
+For `G>=1`, every version change refreshes CONTENT. A bounded Shape change
+increments `S`, resets `E` to zero, and receives its own human review before
+Content follows it. An evidence-only change increments `E`, preserves every
+division, paragraph, Bullet head/order, Evidence contract, and acceptance
+rule, declares `shape-base: v<G>.<S>`, and inherits that Shape's approval. It
+does not request a duplicate Shape approval. CONTENT refreshes only the
+realizations affected by the changed evidence, then records the exact plan
+version it consumed.
+
+Increment `G` only when a substantial review or feedback round calls for a
+large structural reconsideration: a changed central argument, hypotheses,
+major divisions, or overall narrative. Open that redesign as the next
+generation's unapproved baseline (for example `v2.0` with `approved: ⬜`),
+then record direct approval on that exact version after review. Approval stays
+on the version reviewed; approving `v1.1` does not mechanically rename it
+`v2.0`. Mechanical repairs within one Shape or evidence revision do not
+consume another number.
 
 Integer-only `vN` files are legacy input, never a current plan. A page whose
 chain is `v1 … vN` migrates ONE TO ONE to `v0.1 … v0.N`: every file keeps its
@@ -170,8 +212,9 @@ bullet-missing-note   a bullet with no continuation line                   src/p
 plan-no-arc           no `arc:` line                                       cli/check.py
 feedback-unserved     an open Round row no bullet serves and none declines cli/check.py
 serves: anchor        a card's `serves:` names an address the plan lacks    src/plan_shape.py
-coverage              every Evidence line has a typed id, expectation and   checks/outline.py
-                      Accept line; every item has one table record after SHAPE
+coverage              every Bullet declares typed item(s) or explicit none;  checks/outline.py
+                      typed lines have id, expectation, immediate Accept,
+                      and one table record after SHAPE
 value                 every 🧮 number recomputes                            checks/values.py
 head-too-long         a head over 11 words                                  src/plan_shape.py
 head-too-short        a head under 4 words (a code-word head)               src/plan_shape.py

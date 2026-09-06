@@ -1,3 +1,106 @@
+## 0.45.2 · 2026-09-06
+
+- Make `v0.S.E` valid before approval in both interaction modes while Content
+  remains closed.
+- Define first approval as promotion of the selected Shape-and-evidence state
+  and define a major redesign as an unapproved next-generation baseline.
+
+## 0.45.1 · 2026-09-06
+
+- Replace remaining live single-counter language in item-table and related
+  presenter guidance with generation/Shape/evidence notation.
+
+## 0.45.0 · 2026-09-06
+
+- Define plans as `v<G>.<S>[.<E>]`: generation, Shape, and optional evidence
+  revision, with a two-part version meaning evidence zero.
+- Keep `v0.*` planning-only. From generation one onward, every version change
+  refreshes Content; evidence revisions inherit the current Shape approval.
+- Reserve generation changes for large structural revisions after substantial
+  review rather than promoting every approved Shape edit.
+
+## 0.44.0 · 2026-09-06
+
+- Route the compact Page Outline table's Evidence chips through the same
+  precise Outline hand-off as Feedback ids and Run tokens: one URL carrying
+  `lens=workspace`, `seg=items`, and `focus=run-<item>` opens Evidence
+  Workspace → Evidences at the exact item card, scrolled into view and
+  highlighted. The compact Page no longer renders an Evidence popover or a
+  second copy of the item's fields.
+- Make the Evidence Workspace segment an explicit part of the route contract
+  (`seg=runs` for a Run token, `seg=items` for an Evidence chip) instead of a
+  value derived later from whether a Run was named; older links without `seg`
+  still resolve.
+
+## 0.43.0 · 2026-09-06
+
+- Define the MISQ Section planning grain as five or six one-point sentence
+  slots per paragraph unless a direct venue or paragraph constraint overrides.
+- Keep compound definition, mechanism, boundary, and transition jobs out of a
+  single slot so the word budget cannot force routine 35-word sentences.
+
+## 0.42.0 · 2026-09-06
+
+- State the non-inheritance rule on the presenting surface: paragraph and
+  division cards group Bullets but own no Evidence Items.
+- Let separate Bullet-level Items reuse a source or Supporting Run without
+  collapsing their distinct claim-support contracts.
+
+## 0.41.0 · 2026-09-06
+
+- Make the Evidence column a complete per-Bullet decision surface: typed
+  Evidence Item(s), explicit `none`, or a visible `missing` defect.
+- Reserve `Evidence: none · <reason>` for source-free realizations and forbid
+  citations, empirical values, figures, and tables on those Bullets.
+
+## 0.40.0 · 2026-09-06
+
+- Separate citation Evidence Items from citation sources and CONTENT
+  placements: `Evidences` counts claim contracts, while `Citations` counts
+  verified source entries; review reports placements, key mentions, and
+  cited-sentence density as distinct units.
+- Add the Section form audit to the human-review contract, including paragraph
+  jobs, transitions, coherent word/sentence budgeting, venue citation density,
+  and detection of standalone defensive prose.
+
+## 0.39.0 · 2026-09-06
+
+- Expand the compact Page Outline table to six columns by adding routed
+  `Feedback` between Planned move and Evidence. Each feedback id is a deep link
+  to its exact Context Workspace record rather than inert summary text.
+- Route every Supporting and Local Run token to the exact real card in
+  `Evidence Workspace → Runs`, with the card focused and scrolled into view.
+  The ordinary path no longer opens a long nested popover on mobile.
+- Make the one atomic `lens + focus + run` route win both routing races: the
+  generic same-site Page router cannot consume the same click, and a pending
+  default Outline refresh cannot overwrite the explicit destination.
+- Keep a closable, viewport-bounded Run inspector only as a fallback when no
+  matching Runs-lens card exists, including browsers without native Popover API.
+
+## 0.38.1 · 2026-09-05
+
+- Make every compact Outline-table Run link carry its workspace, Evidence Item,
+  and exact Run address atomically into the Outline plugin. This removes the
+  storage/reload race that returned an already-open plugin to Bullet Workspace.
+- Add a small Run-inspector fallback for browsers without the native Popover API;
+  tap, automatic deep-link open, close, and Escape remain available.
+
+## 0.38.0 · 2026-09-05
+
+- Migration rule for legacy integer plans (JL 260905, "we haven't made them
+  from v0 to v1 yet"): a chain `v1 … vN` renumbers ONE TO ONE to
+  `v0.1 … v0.N`; no legacy tick mints `v1.0`. The old tick resets to `⬜` and
+  survives, with its quote, in that file's `status:` line and one page-log
+  record. Only a fresh channel approval that names the version freezes `v1.0`
+  (`ref/plan-grammar.md` §6).
+- `ref/item-table.md`, `ref/review-packet.md`, `ref/record-shape.md` and the
+  🧭 Current Shape line no longer allow a bare `v<N>`; the minor is mandatory
+  (`v<N>.<k>`).
+- `ref/specimen-section-plan.md` now reads in the grammar it teaches: the
+  260831-approved Abstract plan is `v1.0`, `supersedes: v0.3`.
+- Applied to the MISQ board: 19 pages, 74 plan files renumbered, 16 old ticks
+  reset; the JAMA board's five Story pages still carry integer `v1`.
+
 ## 0.37.0 · 2026-09-04
 
 - Render the plan-version ladder as explicit frozen `vN.0` baselines and
@@ -845,3 +948,7 @@ First contract for a plugin that had already SHIPPED without one.
   a fifth phase would only take DRAFT's authority over what divisions exist.
 - States the one-click test: a page whose 🧭 tab is one big 🌐 card has no plan
   yet, only prose.
+## 0.45.1 · 2026-09-06
+
+- Align the Evidence Item table's EMBED reference with the next
+  `v<G>.<S>.<E+1>` evidence revision.

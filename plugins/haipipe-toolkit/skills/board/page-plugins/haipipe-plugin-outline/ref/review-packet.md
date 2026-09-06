@@ -7,19 +7,34 @@ approval on the person's behalf.
 
 ## 1 · Current Shape
 
-- Link the latest `outline/<stem>-outline-v<N>.<k>.md` and state its version and
+- Link the latest `outline/<stem>-outline-v<G>.<S>[.<E>].md` and state its version and
   `approved:` value.
 - Give its one-line `arc:` and a compact reader path: `C1 → C2 → …`; add
   decisive P/B labels when that helps the person inspect sequencing.
 - On a revision, identify what changed since the prior version and why.  Do
   not recite every bullet when a division map is enough.
+- For a Section, include a compact form audit: paragraph count; one reader job
+  per paragraph; sentence-slot count; word target; implied words per sentence;
+  transitions; and any paragraph whose job is merely defensive, cautionary, or
+  meta-commentary. Compare paragraph, sentence, and citation expectations to
+  the resolved venue source when one exists.
 
 ## 2 · Evidence owed
 
 - Link `outline/<stem>-evidence-items.md` and report its item count by type
-  and derived status from `outline/<stem>-evidence.md` when present.
+  and derived status from `outline/<stem>-evidence.md` when present. Also
+  report `typed-item Bullets · explicit-none Bullets · missing decisions`; the
+  last number must be zero before approval.
+- Keep citation units explicit: `CITE Items · verified source entries · citation
+  placements · citation-key mentions · cited sentences / total sentences`.
+  Before CONTENT exists, label placements, key mentions, and realized density
+  as planned or not yet measurable. Never call the number of CITE Evidence
+  Items “the number of citations.”
 - For every item material to the page's headline, show: `target → expected
   payload → acceptance → Supporting Runs → Local Input → Local Run`.
+- Confirm that each citation/value/display-bearing Bullet owns the matching
+  type at that exact address. An explicit `none` is valid only for a realization
+  with no citation, empirical value, figure, or table.
 - Group routine items as a count with a link.  A missing, deferred, or
   unbound item is stated plainly; no future result is described as a finding.
 
@@ -41,16 +56,18 @@ approval on the person's behalf.
 - Ask for the smallest concrete human ruling: approve/revise the Shape, choose
   between named alternatives, or sign/defer/drop a SURVEY `Decide` row.
 - Preserve the boundary: a chat acknowledgement, “looks good,” or silence is
-  not an approval unless the person explicitly approves the named version.
+  not a Shape approval unless the person explicitly approves the named Shape
+  version. A pure evidence revision reports the inherited `shape-base` instead
+  of asking for the same Shape decision again.
 
 ## Response shape
 
 ```text
 ## 🧭 Current Shape
-<link · approval state · arc · C/P map>
+<link · approval state · arc · C/P map · Section form audit when applicable>
 
 ## 🧾 Evidence owed
-<link · typed/status count · material item table>
+<link · typed/status count · distinct citation units · material item table>
 
 ## 🗣 What shaped it
 <feedback/requirement/discussion links · routed rows → plan effect>
